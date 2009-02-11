@@ -34,17 +34,17 @@ package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.*;
 import ucar.nc2.ft.point.StructureDataIteratorLinked;
+import ucar.nc2.ft.point.StructureDataIteratorIndexed;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.FeatureType;
 import ucar.ma2.*;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Formatter;
+import java.util.*;
 import java.io.IOException;
 
 /**
- * A generalization of a Structure. Main function is to return a StructureDataIterator
+ * A generalization of a Structure. Main function is to return a StructureDataIterator,
+ *   iterating over its table rows
  *
  * @author caron
  * @since Jan 20, 2009
@@ -56,41 +56,45 @@ public abstract class Table {
   }
 
   public enum Type {
-    ArrayStructure, Construct, Contiguous, LinkedList, MultiDimInner, MultiDimOuter, NestedStructure, Singleton, Structure, Top
+    ArrayStructure, Construct, Contiguous, LinkedList, MultiDimInner, MultiDimOuter, NestedStructure,
+    ParentIndex, Singleton, Structure, Top
   }
 
   public static Table factory(NetcdfDataset ds, TableConfig config) {
 
     switch (config.type) {
 
-      case ArrayStructure:
+      case ArrayStructure: // given array of StructureData
         return new TableArrayStructure(ds, config);
 
-      case Construct:
+      case Construct: // construct the table from its children
         return new TableConstruct(ds, config);
 
-      case Contiguous:
+      case Contiguous: // contiguous list of child record, using indexes
         return new TableContiguous(ds, config);
 
-      case LinkedList:
+      case LinkedList: // linked list of child records, using indexes
         return new TableLinkedList(ds, config);
 
-      case MultiDimInner:
+      case MultiDimInner: // inner struct of a multdim
         return new TableMultiDimInner(ds, config);
 
-      case MultiDimOuter:
+      case MultiDimOuter: // outer struct of a multdim
         return new TableMultiDimOuter(ds, config);
 
-      case NestedStructure:
+      case NestedStructure: // Structure or Sequence is nested in the parent
         return new TableNestedStructure(ds, config);
 
-      case Singleton:
+      case ParentIndex: // linked list of child records, using indexes
+        return new TableParentIndex(ds, config);
+
+      case Singleton: // singleton row, with given StructureData
         return new TableSingleton(ds, config);
 
-      case Structure:
+      case Structure: // Structure or PsuedoStructure
         return new TableStructure(ds, config);
 
-      case Top:
+      case Top: // singleton consisting of top variables and constants
         return new TableTop(ds, config);
     }
 
@@ -167,6 +171,7 @@ public abstract class Table {
   public static class TableStructure extends Table {
     Structure struct;
     Dimension dim;
+    boolean addIndex;
 
     TableStructure(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
@@ -250,7 +255,8 @@ public abstract class Table {
 
   ///////////////////////////////////////////////////////
   public static class TableContiguous extends TableStructure {
-    private String start, numRecords;
+    private String start; // variable name holding the starting index in parent
+    private String numRecords; // variable name holding the number of children in parent
 
     TableContiguous(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
@@ -266,8 +272,27 @@ public abstract class Table {
   }
 
   ///////////////////////////////////////////////////////
+  public static class TableParentIndex extends TableStructure {
+    private Map<Integer, List<Integer>> indexMap;
+    private String parentIndexName;
+
+    TableParentIndex(NetcdfDataset ds, TableConfig config) {
+      super(ds, config);
+      this.indexMap = config.indexMap;
+      this.parentIndexName = config.parentIndex;
+    }
+
+    public StructureDataIterator getStructureDataIterator(StructureData parentStruct, int bufferSize) throws IOException {
+      int parentIndex = parentStruct.getScalarInt( parentIndexName);
+      List<Integer> index = indexMap.get( parentIndex);
+      return new StructureDataIteratorIndexed(struct, index);
+    }
+  }
+
+  ///////////////////////////////////////////////////////
   public static class TableLinkedList extends TableStructure {
-    private String start, next;
+    private String start; // variable name holding the starting index in parent
+    private String next; // variable name holding the next index in child
 
     TableLinkedList(NetcdfDataset ds, TableConfig config) {
       super(ds, config);

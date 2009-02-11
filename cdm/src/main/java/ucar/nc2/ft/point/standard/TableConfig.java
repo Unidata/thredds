@@ -36,9 +36,11 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.Dimension;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.StructureData;
+import ucar.ma2.Array;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * This encapsolates the info needed by NestedTable to handle point feature "nested table" datasets.
@@ -58,7 +60,11 @@ public class TableConfig {
   public String structName; // full name of structure
   public String  nestedTableName; // short name of structure
   public boolean isPsuedoStructure = false;
-  public String start, next, numRecords, parentIndex; // names of variables
+
+  // linked, contiguous  list
+  public String start;  // name of variable - starting child index (in parent)
+  public String next;  // name of variable - next child index (in child)
+  public String numRecords;  // name of variable - number of children (in parent)
 
   // top only
   public FeatureType featureType;
@@ -71,6 +77,11 @@ public class TableConfig {
 
   // Table.Type Singleton
   public StructureData sdata;
+
+  // Table.Type ParentIndex
+  public Map<Integer, List<Integer>> indexMap;
+  public boolean addIndex; // set true in parent table
+  public String parentIndex;  // name of variable - parent index (in parent)
 
   // coordinate variable names
   public String lat, lon, elev, time, timeNominal, limit;
@@ -93,17 +104,5 @@ public class TableConfig {
     children.add(t);
     t.parent = this;
   }
-
-  /* public static class JoinConfig {
-    public Join.Type joinType;
-    public Join override;
-
-    // variable names for linked and contiguous lists
-    public String start, next, numRecords, parentIndex;
-
-    public JoinConfig(Join.Type joinType) {
-      this.joinType = joinType;
-    }
-  }  */
 
 }

@@ -1,9 +1,9 @@
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
- *
- * Portions of this software were developed by the Unidata Program at the
+ * 
+ * Portions of this software were developed by the Unidata Program at the 
  * University Corporation for Atmospheric Research.
- *
+ * 
  * Access and use of this software shall impose the following obligations
  * and understandings on the user. The user is granted the right, without
  * any fee or cost, to use, copy, modify, alter, enhance and distribute
@@ -20,7 +20,7 @@
  * any support, consulting, training or assistance of any kind with regard
  * to the use, operation and performance of this software nor to provide
  * the user with any updates, revisions, new versions or "bug fixes."
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -30,27 +30,53 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.nc2.ft.point.standard;
+package ucar.nc2.ft.point;
 
+import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureData;
+import ucar.nc2.Structure;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Iterator;
 
 /**
- * Keeps track of the iteration through the table
  * @author caron
- * @since Jan 24, 2009
+ * @since Feb 11, 2009
  */
-public class Cursor {
-  Object what; // used by StationConstruct
-  StructureData[] tableData;
+public class StructureDataIteratorIndexed implements StructureDataIterator {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructureDataIteratorLinked.class);
 
-  Cursor(int nlevels) {
-    tableData = new StructureData[nlevels];
+  private Structure s;
+  private List<Integer> index;
+  private Iterator<Integer> indexIter;
+
+  public StructureDataIteratorIndexed(Structure s, List<Integer> index) throws IOException {
+    this.s = s;
+    this.index = index;
+    reset();
   }
 
-  Cursor copy() {
-    Cursor clone = new Cursor(tableData.length);
-    clone.what = what;
-    System.arraycopy(this.tableData, 0, clone.tableData, 0, tableData.length);
-    return clone;
+  public StructureData next() throws IOException {
+    StructureData sdata;
+    int recno = indexIter.next();
+    try {
+      sdata = s.readStructure( recno);
+    } catch (ucar.ma2.InvalidRangeException e) {
+      log.error("StructureDataIteratorIndexed.nextStructureData recno=" + recno, e);
+      throw new IOException(e.getMessage());
+    }
+    return sdata;
   }
+
+  public boolean hasNext() throws IOException {
+    return indexIter.hasNext();
+  }
+
+  public StructureDataIterator reset() {
+    this.indexIter = index.iterator();
+    return this;
+  }
+
+  public void setBufferSize(int bytes) {}
 }

@@ -52,8 +52,10 @@ public class PointObVar {
 
   public PointObVar() {}
 
-  public PointObVar(String name, DataType dtype, int len) {
+  public PointObVar(String name, String units, String desc, DataType dtype, int len) {
     this.name = name;
+    this.units = units;
+    this.desc = desc;
     this.dtype = dtype;
     this.len = len;
   }

@@ -54,7 +54,7 @@ public class StandardPointCollectionImpl extends PointCollectionImpl {
   }
 
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-    // only one List object needed - it will be used for each iteration with different structData's
+    // only one Cursor object needed - it will be used for each iteration with different structData's
     Cursor tableData = new Cursor(ft.getNumberOfLevels());
     boolean calcBB = (boundingBox == null) || (dateRange == null);
 

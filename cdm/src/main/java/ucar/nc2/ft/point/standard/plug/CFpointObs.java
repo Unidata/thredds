@@ -38,8 +38,13 @@ import ucar.nc2.ft.point.standard.CoordSysEvaluator;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.CF;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.Dimension;
+import ucar.nc2.Variable;
+import ucar.ma2.Array;
 
 import java.util.*;
+import java.io.IOException;
 
 /**
  * CF "point obs" Convention
@@ -52,6 +57,8 @@ public class CFpointObs extends TableConfigurerImpl {
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     // find datatype
     String datatype = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt, null);
+    if (datatype == null)
+      datatype = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt2, null);
     if (datatype == null)
       return false;
 
@@ -72,12 +79,12 @@ public class CFpointObs extends TableConfigurerImpl {
     return false;
   }
 
-  public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
+  public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
     String ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt, null);
     CF.FeatureType ftype = (ftypeS == null) ? CF.FeatureType.point : CF.FeatureType.valueOf(ftypeS);
     switch (ftype) {
       case point: return getPointConfig(ds, errlog);
-      case station: return getStationConfig(ds, errlog);
+      case stationTimeSeries: return getStationConfig(ds, errlog);
       case profile: return getProfileConfig(ds, errlog);
       case trajectory: return getTrajectoryConfig(ds, errlog);
       case stationProfile: return getStationProfileConfig(ds, errlog);
@@ -94,21 +101,88 @@ public class CFpointObs extends TableConfigurerImpl {
     return nt;
   }
 
-  // ??
-  protected TableConfig getStationConfig(NetcdfDataset ds, Formatter errlog) {
-    TableConfig nt = new TableConfig(Table.Type.Singleton, "station");
+  protected TableConfig getStationConfig(NetcdfDataset ds, Formatter errlog) throws IOException {
+    TableConfig nt = new TableConfig(Table.Type.Structure, "station");
     nt.featureType = FeatureType.STATION;
+    nt.isPsuedoStructure = true;
+    nt.addIndex = true;
+    CoordSysEvaluator.findCoords(nt, ds);
 
-    nt.lat = Evaluator.getVariableName(ds, "latitude", errlog);
-    nt.lon = Evaluator.getVariableName(ds, "longitude", errlog);
+    // find lat coord
+    Variable lat = CoordSysEvaluator.findCoordByType(ds, AxisType.Lat);
+    if (lat == null) {
+      errlog.format("Must have a Latitude coordinate");
+      return null;
+    }
+    nt.lat= lat.getName();
 
-    nt.stnId = Evaluator.getVariableWithAttribute(ds, "standard_name", "station_name");
-    //nt.stnDesc = Evaluator.getVariableName(ds, ":description", errlog);
+    // find lon coord
+    Variable lon = CoordSysEvaluator.findCoordByType(ds, AxisType.Lon);
+    if (lon == null) {
+      errlog.format("Must have a Longitude coordinate");
+      return null;
+    }
+    nt.lon= lon.getName();
 
-    TableConfig obs = new TableConfig(Table.Type.Structure, "record");
-    obs.structName = "record";
-    obs.dim = Evaluator.getDimension(ds, "time", errlog);
-    obs.time = Evaluator.getVariableName(ds, "time", errlog);
+    // optional alt coord
+    Variable alt = CoordSysEvaluator.findCoordByType(ds, AxisType.Height);
+    if (alt != null)
+      nt.elev = alt.getName();
+
+    // station id
+    nt.stnId = Evaluator.getVariableWithAttribute(ds, "standard_name", "station_id");
+    if (nt.stnId == null) {
+      errlog.format("Must have a Station id variable with standard name station_id");
+      return null;
+    }
+    Variable stnId = ds.findVariable(nt.stnId);
+
+    // check dimensions
+    Dimension stationDim = stnId.getDimension(0);
+    if (!lat.getDimension(0).equals(stationDim)) {
+      errlog.format("Station id outer dimension must match latitude dimension");
+      return null;
+    }
+    if (!lon.getDimension(0).equals(stationDim)) {
+      errlog.format("Station id outer dimension must match longitude dimension");
+      return null;
+    }
+
+    nt.dim = stationDim;
+
+    // ragged array
+    String ragged_parentIndex = Evaluator.getVariableWithAttribute(ds, "standard_name", "ragged_parentIndex");
+    Variable rpIndex = ds.findVariable(ragged_parentIndex);
+    Dimension obsDim = rpIndex.getDimension(0);
+    boolean hasStruct = obsDim.isUnlimited();
+
+    TableConfig obs = new TableConfig(Table.Type.Structure, obsDim.getName());
+    obs.structName = hasStruct ? "record" : obsDim.getName();
+    obs.dim = obsDim;
+    obs.isPsuedoStructure = !hasStruct;
+
+    // construct the map
+    Array index = rpIndex.read();
+    int childIndex = 0;
+    Map<Integer, List<Integer>> map = new HashMap<Integer, List<Integer>>( (int) (2 * index.getSize()));
+    while (index.hasNext()) {
+      int parent = index.nextInt();
+      List<Integer> list = map.get(parent);
+      if (list == null) {
+        list = new ArrayList<Integer>();
+        map.put(parent, list);
+      }
+      list.add(childIndex);
+      childIndex++;
+    }
+    obs.indexMap = map;
+
+    Variable time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
+    if (time == null) {
+      errlog.format("Must have a Time coordinate");
+      return null;
+    }
+    obs.time = time.getName();
     nt.addChild(obs);
 
     return nt;

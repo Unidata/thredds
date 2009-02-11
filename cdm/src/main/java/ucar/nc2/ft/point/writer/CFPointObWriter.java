@@ -155,11 +155,11 @@ public class CFPointObWriter {
     }
 
     public List<Attribute> getAttributes() {
-      if (atts == null) {
+      if (atts == null)
         atts = new ArrayList<Attribute>(2);
-        if (pov.getDesc() != null) atts.add(new Attribute("long_name", pov.getDesc()));
-        if (pov.getUnits() != null) atts.add(new Attribute("units", pov.getUnits()));
-      }
+      
+      if (pov.getDesc() != null) atts.add(new Attribute("long_name", pov.getDesc()));
+      if (pov.getUnits() != null) atts.add(new Attribute("units", pov.getUnits()));
       return atts;
     }
 
@@ -378,8 +378,8 @@ public class CFPointObWriter {
   public static void main(String args[]) throws IOException {
 
     List<PointObVar> dataVars = new ArrayList<PointObVar>();
-    dataVars.add(new PointObVar("test1", DataType.CHAR, 4));
-    dataVars.add(new PointObVar("test2", DataType.CHAR, 4));
+    dataVars.add(new PointObVar("test1", "units1", "desc1", DataType.CHAR, 4));
+    dataVars.add(new PointObVar("test2", "units2", "desc3", DataType.CHAR, 4));
 
     //   public CFPointObWriter(DataOutputStream stream, List<Attribute> globalAtts, String altUnits, List<PointObVar> dataVars) throws IOException {
 

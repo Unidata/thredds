@@ -40,20 +40,21 @@ package ucar.nc2.constants;
  */
 public class CF {
   public static final String featureTypeAtt = "CF:featureType";
+  public static final String featureTypeAtt2 = "CF-featureType";
 
   /**
    * Start of map from CF feature type names to our FeatureType enums.
    * Unofficial.
    */
   public enum FeatureType {
-    point, station, profile, trajectory, stationProfile, section;
+    point, stationTimeSeries, profile, trajectory, stationProfile, section;
 
     public static FeatureType convert(ucar.nc2.constants.FeatureType ft) {
       switch (ft) {
         case POINT:
           return CF.FeatureType.point;
         case STATION:
-          return CF.FeatureType.station;
+          return CF.FeatureType.stationTimeSeries;
         case PROFILE:
           return CF.FeatureType.profile;
         case TRAJECTORY:

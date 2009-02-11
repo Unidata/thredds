@@ -39,7 +39,7 @@ import ucar.ma2.StructureDataIterator;
 import java.io.IOException;
 
 /**
- * Use linked lists to iterate over members of a Structure
+ * Use contiguous or linked lists to iterate over members of a Structure
  * @author caron
  * @since Mar 26, 2008
  */
