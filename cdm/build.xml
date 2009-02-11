@@ -51,7 +51,7 @@
             value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/javadoc/"/>
   <property name="release.javadocAll.dir"
             value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/javadocAll/"/>
-  <property name="webstart_dir" value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/webstart"/>
+  <property name="webstart_dir" value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/temp"/>
 
   <!-- property name="bzip2.jar" value="bzip2.jar"/ -->
   <!-- property name="gnu-regexp.jar" value="gnu-regexp-1.1.4.jar"/ -->
@@ -290,7 +290,7 @@
       <fileset dir="${build.classes.dir}">
         <exclude name="thredds/catalog2/**"/>
         <!-- exclude name="thredds/wcs/**"/ -->
-        <exclude name="ucar/unidata/geoloc/ogc/**"/>
+        <!-- exclude name="ucar/unidata/geoloc/ogc/**"/ -->
       </fileset>
       <fileset dir="${build.dir}" includes="README"/>
       <fileset dir="${build.dir}" includes="CHANGES"/>
@@ -546,8 +546,8 @@
       <excludepackage name="ucar/nc2/jni"/>
       <excludepackage name="ucar/nc2/jni/**"/>
       <excludepackage name="ucar/nc2/util/reflect"/>
-      <excludepackage name="ucar/unidata/geoloc/ogc"/>
-      <excludepackage name="thredds/wcs/**" />
+      <!-- excludepackage name="ucar/unidata/geoloc/ogc"/>
+      <excludepackage name="thredds/wcs/**" / -->
     </javadoc>
 
     <jar jarfile="${build.dir}/${jarJavadocAll}" index="true" duplicate="preserve">
