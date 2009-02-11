@@ -44,9 +44,9 @@ import ucar.ma2.Array;
 import java.io.IOException;
 
 /**
- * NsslRadarMosaicConvention Convention
- * <p/>
- * http://www.nmq.nssl.noaa.gov/~qpeverif/blog/?page_id=12
+ * NsslRadarMosaicConvention Convention.
+ *
+ * @see "http://www.nmq.nssl.noaa.gov/~qpeverif/blog/?page_id=12"
  *
  * @author caron
  */

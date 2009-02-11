@@ -45,6 +45,8 @@ import ucar.nc2.dataset.VariableEnhanced;
 import java.io.IOException;
 
 /**
+ * NCAR RAF / NIMBUS
+ * @see "http://www.eol.ucar.edu/raf/Software/netCDF.html"
  * @author caron
  * @since Dec 31, 2008
  */

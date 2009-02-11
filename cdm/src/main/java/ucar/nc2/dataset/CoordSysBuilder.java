@@ -110,7 +110,17 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   static private boolean useMaximalCoordSys = true;
   static private boolean userMode = false;
 
+  /**
+   * Allow plug-ins to determine if it owns a file based on the file's Convention attribute.
+   */
   static public interface ConventionNameOk {
+
+    /***
+     * Do you own this file?
+     * @param convName name in the file
+     * @param wantName name passed into registry
+     * @return true if you own this file
+     */
     boolean isMatch(String convName, String wantName);
   }
 

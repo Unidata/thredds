@@ -47,7 +47,9 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /**
- *
+ * Unidata Observation Dataset v1.0
+ * Use CF for new files.
+ * @see "http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html"
  * @author caron
  */
 public class UnidataObsConvention extends CoordSysBuilder {

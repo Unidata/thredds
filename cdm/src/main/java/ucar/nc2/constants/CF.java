@@ -33,23 +33,35 @@
 package ucar.nc2.constants;
 
 /**
+ * Constants used in CF Conventions.
+ *
  * @author caron
  * @since Jan 21, 2009
  */
 public class CF {
   public static final String featureTypeAtt = "CF:featureType";
 
+  /**
+   * Start of map from CF feature type names to our FeatureType enums.
+   * Unofficial.
+   */
   public enum FeatureType {
     point, station, profile, trajectory, stationProfile, section;
 
     public static FeatureType convert(ucar.nc2.constants.FeatureType ft) {
       switch (ft) {
-        case POINT: return CF.FeatureType.point;
-        case STATION: return CF.FeatureType.station;
-        case PROFILE: return CF.FeatureType.profile;
-        case TRAJECTORY: return CF.FeatureType.trajectory;
-        case STATION_PROFILE: return CF.FeatureType.stationProfile;
-        case SECTION: return CF.FeatureType.section;
+        case POINT:
+          return CF.FeatureType.point;
+        case STATION:
+          return CF.FeatureType.station;
+        case PROFILE:
+          return CF.FeatureType.profile;
+        case TRAJECTORY:
+          return CF.FeatureType.trajectory;
+        case STATION_PROFILE:
+          return CF.FeatureType.stationProfile;
+        case SECTION:
+          return CF.FeatureType.section;
       }
       return null;
     }

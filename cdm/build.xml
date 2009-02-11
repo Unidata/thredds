@@ -51,7 +51,7 @@
             value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/javadoc/"/>
   <property name="release.javadocAll.dir"
             value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/javadocAll/"/>
-  <property name="webstart_dir" value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/temp"/>
+  <property name="webstart_dir" value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/webstart"/>
 
   <!-- property name="bzip2.jar" value="bzip2.jar"/ -->
   <!-- property name="gnu-regexp.jar" value="gnu-regexp-1.1.4.jar"/ -->
