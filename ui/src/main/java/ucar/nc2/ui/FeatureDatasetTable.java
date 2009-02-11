@@ -70,6 +70,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.*;
 
 /**
+ * Scan for Feature Datasets
  * @author caron
  * @since Dec 30, 2008
  */

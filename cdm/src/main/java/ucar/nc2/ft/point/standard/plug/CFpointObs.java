@@ -81,6 +81,8 @@ public class CFpointObs extends TableConfigurerImpl {
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
     String ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt, null);
+    if (ftypeS == null)
+      ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt2, null);
     CF.FeatureType ftype = (ftypeS == null) ? CF.FeatureType.point : CF.FeatureType.valueOf(ftypeS);
     switch (ftype) {
       case point: return getPointConfig(ds, errlog);
@@ -102,11 +104,6 @@ public class CFpointObs extends TableConfigurerImpl {
   }
 
   protected TableConfig getStationConfig(NetcdfDataset ds, Formatter errlog) throws IOException {
-    TableConfig nt = new TableConfig(Table.Type.Structure, "station");
-    nt.featureType = FeatureType.STATION;
-    nt.isPsuedoStructure = true;
-    nt.addIndex = true;
-    CoordSysEvaluator.findCoords(nt, ds);
 
     // find lat coord
     Variable lat = CoordSysEvaluator.findCoordByType(ds, AxisType.Lat);
@@ -114,7 +111,6 @@ public class CFpointObs extends TableConfigurerImpl {
       errlog.format("Must have a Latitude coordinate");
       return null;
     }
-    nt.lat= lat.getName();
 
     // find lon coord
     Variable lon = CoordSysEvaluator.findCoordByType(ds, AxisType.Lon);
@@ -122,70 +118,94 @@ public class CFpointObs extends TableConfigurerImpl {
       errlog.format("Must have a Longitude coordinate");
       return null;
     }
-    nt.lon= lon.getName();
+
+    if (lat.getRank() != lon.getRank()) {
+      errlog.format("Lat and Lon coordinate must have same rank");
+      return null;
+    }
+
+    // check dimensions
+    boolean isScalar = (lat.getRank() == 0);
+    boolean isSingle = (lat.getRank() == 1) && (lat.getSize() == 1);
+    Dimension stationDim = null;
+
+    if (!isScalar) {
+      if (lat.getDimension(0) != lon.getDimension(0)) {
+        errlog.format("Lat and Lon coordinate must have same size");
+        return null;
+      }
+      stationDim = lat.getDimension(0);
+    }
+
+    Table.Type stationTableType = isScalar ? Table.Type.Top : Table.Type.Structure;
+    TableConfig stnTable = new TableConfig(stationTableType, "station");
+    stnTable.featureType = FeatureType.STATION;
+    stnTable.isPsuedoStructure = !stationDim.isUnlimited();
+    stnTable.dim = stationDim;
+
+    stnTable.lat= lat.getName();
+    stnTable.lon= lon.getName();
 
     // optional alt coord
     Variable alt = CoordSysEvaluator.findCoordByType(ds, AxisType.Height);
     if (alt != null)
-      nt.elev = alt.getName();
+      stnTable.stnAlt = alt.getName();
 
     // station id
-    nt.stnId = Evaluator.getVariableWithAttribute(ds, "standard_name", "station_id");
-    if (nt.stnId == null) {
+    stnTable.stnId = Evaluator.getVariableWithAttribute(ds, "standard_name", "station_id");
+    if (stnTable.stnId == null) {
       errlog.format("Must have a Station id variable with standard name station_id");
       return null;
     }
-    Variable stnId = ds.findVariable(nt.stnId);
+    Variable stnId = ds.findVariable(stnTable.stnId);
 
-    // check dimensions
-    Dimension stationDim = stnId.getDimension(0);
-    if (!lat.getDimension(0).equals(stationDim)) {
-      errlog.format("Station id outer dimension must match latitude dimension");
-      return null;
-    }
-    if (!lon.getDimension(0).equals(stationDim)) {
-      errlog.format("Station id outer dimension must match longitude dimension");
-      return null;
-    }
-
-    nt.dim = stationDim;
-
-    // ragged array
-    String ragged_parentIndex = Evaluator.getVariableWithAttribute(ds, "standard_name", "ragged_parentIndex");
-    Variable rpIndex = ds.findVariable(ragged_parentIndex);
-    Dimension obsDim = rpIndex.getDimension(0);
-    boolean hasStruct = obsDim.isUnlimited();
-
-    TableConfig obs = new TableConfig(Table.Type.Structure, obsDim.getName());
-    obs.structName = hasStruct ? "record" : obsDim.getName();
-    obs.dim = obsDim;
-    obs.isPsuedoStructure = !hasStruct;
-
-    // construct the map
-    Array index = rpIndex.read();
-    int childIndex = 0;
-    Map<Integer, List<Integer>> map = new HashMap<Integer, List<Integer>>( (int) (2 * index.getSize()));
-    while (index.hasNext()) {
-      int parent = index.nextInt();
-      List<Integer> list = map.get(parent);
-      if (list == null) {
-        list = new ArrayList<Integer>();
-        map.put(parent, list);
+    if (!isScalar) {
+      if (!stnId.getDimension(0).equals(stationDim)) {
+        errlog.format("Station id outer dimension must match latitude/longitude dimension");
+        return null;
       }
-      list.add(childIndex);
-      childIndex++;
     }
-    obs.indexMap = map;
 
+    // obs table
     Variable time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
     if (time == null) {
       errlog.format("Must have a Time coordinate");
       return null;
     }
-    obs.time = time.getName();
-    nt.addChild(obs);
+    Dimension obsDim = time.getDimension(0);
+    boolean hasStruct = obsDim.isUnlimited();
 
-    return nt;
+    Table.Type obsTableType = isScalar || isSingle ? Table.Type.Structure : Table.Type.ParentIndex;
+    TableConfig obs = new TableConfig(obsTableType, obsDim.getName());
+    obs.structName = hasStruct ? "record" : obsDim.getName();
+    obs.isPsuedoStructure = !hasStruct;
+    obs.dim = obsDim;
+    obs.time = time.getName();
+    stnTable.addChild(obs);
+
+    if (obsTableType == Table.Type.ParentIndex) {
+      // non-contiguous ragged array
+      String ragged_parentIndex = Evaluator.getVariableWithAttribute(ds, "standard_name", "ragged_parentIndex");
+      Variable rpIndex = ds.findVariable(ragged_parentIndex);
+  
+      // construct the map
+      Array index = rpIndex.read();
+      int childIndex = 0;
+      Map<Integer, List<Integer>> map = new HashMap<Integer, List<Integer>>( (int) (2 * index.getSize()));
+      while (index.hasNext()) {
+        int parent = index.nextInt();
+        List<Integer> list = map.get(parent);
+        if (list == null) {
+          list = new ArrayList<Integer>();
+          map.put(parent, list);
+        }
+        list.add(childIndex);
+        childIndex++;
+      }
+      obs.indexMap = map;
+    }
+
+    return stnTable;
   }
 
   protected TableConfig getProfileConfig(NetcdfDataset ds, Formatter errlog) {

@@ -6,6 +6,7 @@ Changes in version 4.0
 
  Release Details:
   32:
+    CFPointObs station ragged 
     put thredds/wcs back into netdf.jar for now
     NetcdfDataset.main() now is a cover to FileWriter.
     CoordinateAxis1D - dont convert misssing values to NaNs, missing values not alllowed so likely a user metadata error
@@ -13,8 +14,7 @@ Changes in version 4.0
     CFPointObWriter more bugs
     N3streamWriter takes an optional numrec, if numrec are know in advance to avoid new streaming format
     NetcdfDataset : disambiguate bare http URL requests, use HttpClient
-  31:
-    UnidataPointObs : allow POINT type even if really a STATION.
+  31: UnidataPointObs : allow POINT type even if really a STATION.
     NSSLRadarConvention checks no Convention is set.
     COARDS : look for units of meters for vertical coords (again), when all else fails.
     DefaultCoordBuilder no longer extends COARDS, to avoid such nonsense.

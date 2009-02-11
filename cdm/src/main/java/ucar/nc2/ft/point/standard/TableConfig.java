@@ -80,7 +80,6 @@ public class TableConfig {
 
   // Table.Type ParentIndex
   public Map<Integer, List<Integer>> indexMap;
-  public boolean addIndex; // set true in parent table
   public String parentIndex;  // name of variable - parent index (in parent)
 
   // coordinate variable names

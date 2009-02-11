@@ -219,10 +219,12 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
         System.out.println("dodsVersion = " + dodsConnection.getServerVersion());
 
     } catch (opendap.dap.parser.ParseException e) {
+      //e.printStackTrace();
       logger.info("DODSNetcdfFile " + datasetURL, e);
       throw new IOException(e.getMessage());
 
     } catch (DAP2Exception dodsE) {
+      //dodsE.printStackTrace();
       if (dodsE.getErrorCode() == DAP2Exception.NO_SUCH_FILE)
         throw new FileNotFoundException(dodsE.getMessage());
       else
@@ -230,6 +232,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
     } catch (Exception e) {
       logger.info("DODSNetcdfFile " + datasetURL, e);
+      //e.printStackTrace();
       throw new IOException(e.getMessage());
     }
 

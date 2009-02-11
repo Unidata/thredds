@@ -64,6 +64,11 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
    * <li> Call TableAnalyzer.factory() to create a TableAnalyzer
    * <li> TableAnalyzer must agree it can handle the requested FeatureType
    * </ol>
+   * @param wantFeatureType destired feature type
+   * @param ds analyse this dataset
+   * @param errlog log error messages here (may not be null)
+   * @return if successful, return non-null. This object is then passed back into open(), so analysis can be reused.
+   * @throws IOException
    */
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
 
@@ -100,11 +105,8 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
     if (analyser == null)
       return null;
 
-    if (!analyser.featureTypeOk( wantFeatureType)) {
-      if (wantFeatureType == null)
-        errlog.format("TableAnalyzer "+ analyser.getName()+" couldnt find lat/lon/time coordinates");
-      else
-        errlog.format("PointDataset wants "+wantFeatureType+" but analyser "+ analyser.getName()+" has "+analyser.getFirstFeatureType());
+    errlog.format("%s%n", analyser.errlog.toString());
+    if (!analyser.featureTypeOk( wantFeatureType, errlog)) {
       return null;
     }
 

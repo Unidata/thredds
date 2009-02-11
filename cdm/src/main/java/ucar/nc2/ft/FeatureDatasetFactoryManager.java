@@ -129,7 +129,7 @@ public class FeatureDatasetFactoryManager {
    * @param location URL or file location of the dataset
    * @param task user may cancel
    * @param errlog place errors here, may not be null
-   * @return a subclass of FeatureDataset, or null if no factory was found
+   * @return a subclass of FeatureDataset, or null if no suitable factory was found
    * @throws java.io.IOException on io error
    */
   static public FeatureDataset open( FeatureType wantFeatureType, String location, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
@@ -150,7 +150,7 @@ public class FeatureDatasetFactoryManager {
    * @param ncd  the NetcdfDataset to wrap as a FeatureDataset
    * @param task user may cancel
    * @param errlog place errors here, may not be null
-   * @return a subclass of FeatureDataset, or null if no factory was found
+   * @return a subclass of FeatureDataset, or null if no suitable factory was found
    * @throws java.io.IOException on io error
    */
   static public FeatureDataset wrap( FeatureType wantFeatureType, NetcdfDataset ncd, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
