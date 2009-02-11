@@ -45,11 +45,11 @@ import ucar.nc2.iosp.grid.GridIndexToNC;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DiskCache;
 import ucar.nc2.NetcdfFile;
-import ucar.grib.NotSupportedException;
-import ucar.grib.GribGridRecord;
-import ucar.grib.Index;
-import ucar.grib.GribReadIndex;
+import ucar.grib.*;
 import ucar.grib.grib1.Grib1Data;
+import ucar.grib.grib1.Grib1Record;
+import ucar.grib.grib1.Grib1Input;
+import ucar.grib.grib1.Grib1GridTableLookup;
 import ucar.grib.grib2.*;
 import ucar.grid.GridRecord;
 import ucar.grid.GridIndex;
@@ -108,10 +108,9 @@ public class GribGridServiceProvider extends GridServiceProvider {
     if (edition == 2) {
       lookup = getLookup2();
     } else {
-      lookup = getLookup2(); // TODO: need getLookup1
+      lookup = getLookup1();
     }
     // make it into netcdf objects
-    //GridIndexToNC delegate = new GridIndexToNC();
     new GridIndexToNC().open(index, lookup, edition, ncfile, fmrcCoordSys, cancelTask);
 
     ncfile.finish();
@@ -127,8 +126,6 @@ public class GribGridServiceProvider extends GridServiceProvider {
   // not used
   public void open(GridIndex index, CancelTask cancelTask) {
   }
-
-  ;
 
   protected GridTableLookup getLookup2() throws IOException {
 
@@ -160,6 +157,37 @@ public class GribGridServiceProvider extends GridServiceProvider {
 
   }
 
+  protected GridTableLookup getLookup1() throws IOException {
+
+    Grib1Record firstRecord = null;
+    try {
+      Grib1Input g1i = new Grib1Input(raf);
+
+      long start2 = System.currentTimeMillis();
+      // params getProducts (implies  unique GDSs too), oneRecord
+      // open it up and get the first product
+      raf.seek(0);
+      g1i.scan(false, true);
+
+      List records = g1i.getRecords();
+      firstRecord = (Grib1Record) records.get(0);
+      if (debugTiming) {
+        long took = System.currentTimeMillis() - start2;
+        System.out.println("  read one record took=" + took + " msec ");
+      }
+
+    } catch (NotSupportedException noSupport) {
+      System.err.println("NotSupportedException : " + noSupport);
+    } catch (NoValidGribException noValid ) {
+      System.err.println("NoValidGribException : " + noValid);
+    }
+
+    Grib1GridTableLookup lookup = new Grib1GridTableLookup(firstRecord);
+    dataReaderGrib1 = new Grib1Data(raf);
+
+    return lookup;
+  }
+
   /**
    * Open the index file. If not exists, create it.
    * When writing use DiskCache, to make sure location is writeable.
@@ -177,9 +205,10 @@ public class GribGridServiceProvider extends GridServiceProvider {
     File indexFile;
 
     if (indexLocation.startsWith("http:")) { // direct access through http
-      InputStream ios = indexExistsAsURL(indexLocation);
-      if (ios != null) {
-        index = new GribReadIndex().open(indexLocation, ios);
+      index = new GribReadIndex().open(indexLocation);
+      if (index == null) {
+        // need to write it some where
+        //index = new GribReadIndex().open(indexLocation, ios);
         log.debug("opened HTTP index = " + indexLocation);
         return index;
 
@@ -215,42 +244,48 @@ public class GribGridServiceProvider extends GridServiceProvider {
     } else {
       // doesnt exist (or is being forced), create it and write it
       log.debug("  write index = " + indexFile.getPath());
-      //index = writeIndex(edition, indexFile, raf);
+      index = writeIndex( indexFile, raf);
     }
 
     return index;
   }
 
-  // if exists, return input stream, otherwise null
-  private InputStream indexExistsAsURL(String indexLocation) {
+  private GridIndex writeIndex( File indexFile, RandomAccessFile raf) throws IOException {
+    GridIndex index = null;
+
     try {
-      URL url = new URL(indexLocation);
-      return url.openStream();
-    } catch (IOException e) {
-      return null;
+
+      if (indexFile.exists()) {
+        indexFile.delete();
+        log.debug("Delete old index " + indexFile);
+      }
+
+      raf.seek(0);
+      Grib2Input g2i = new Grib2Input(raf);
+      int edition = g2i.getEdition();
+
+      if (edition == 1) {
+        DataOutputStream out = new DataOutputStream(
+            new BufferedOutputStream(
+                new FileOutputStream(indexFile.getPath(), false)));
+
+        //index = new Grib1WriteIndex().writeFileIndex(raf, out, true);
+
+      } else if (edition == 2) {
+        DataOutputStream out = new DataOutputStream(
+            new BufferedOutputStream(
+                new FileOutputStream(indexFile.getPath(), false)));
+
+        index = new Grib2WriteIndex().writeFileIndex(raf, out, true);
+      }
+
+      return index;
+
+    } catch (NotSupportedException noSupport) {
+      System.err.println("NotSupportedException : " + noSupport);
+    //} catch (NoValidGribException noValid ) {
+    //  System.err.println("NoValidGribException : " + noValid);
     }
-  }
-
-  private Index writeIndex(int edition, File indexFile, RandomAccessFile raf) throws IOException {
-    if (indexFile.exists()) {
-      indexFile.delete();
-      log.debug("Delete old index " + indexFile);
-    }
-
-    Index index = null;
-    raf.seek(0);
-
-    if (edition == 1) {
-      ucar.grib.grib1.Grib1Indexer indexer = new ucar.grib.grib1.Grib1Indexer();
-      PrintStream ps = new PrintStream(new BufferedOutputStream(new FileOutputStream(indexFile)));
-      index = indexer.writeFileIndex(raf, ps, true);
-
-    } else if (edition == 2) {
-      ucar.grib.grib2.Grib2Indexer indexer2 = new ucar.grib.grib2.Grib2Indexer();
-      PrintStream ps = new PrintStream(new BufferedOutputStream(new FileOutputStream(indexFile)));
-      index = indexer2.writeFileIndex(raf, ps, true);
-    }
-
     return index;
   }
 
@@ -260,8 +295,8 @@ public class GribGridServiceProvider extends GridServiceProvider {
     GribGridRecord ggr = (GribGridRecord) gr;
     if (edition == 2) {
       return dataReaderGrib2.getData(ggr.offset1, ggr.offset2);
-    } else {  //TODO: needs g1 params
-      return dataReaderGrib2.getData(ggr.offset1, ggr.offset2);
+    } else {   
+      return dataReaderGrib1.getData(ggr.offset1, ggr.decimalScale, ggr.bmsExists);
     }
   }
 }

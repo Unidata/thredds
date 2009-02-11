@@ -117,12 +117,8 @@ public class Grib1ServiceProvider extends GribServiceProvider {
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
   protected float[] _readData( long dataOffset1, long dataOffset2, int decimalScale, boolean bmsExists ) throws IOException {
-    try {
       //System.out.println("dataOffset1="+ dataOffset1 +" scale ="+ decimalScale +" bmsE ="+ bmsExists );
       return dataReader.getData( dataOffset1, decimalScale, bmsExists );
-    } catch (NotSupportedException e) {
-      throw new IOException(e.getMessage());
-    }
   }
 
 } // end Grib1ServiceProvider
