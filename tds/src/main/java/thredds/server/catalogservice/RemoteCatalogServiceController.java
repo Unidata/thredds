@@ -190,7 +190,8 @@ public class RemoteCatalogServiceController extends AbstractController
       Map<String, Object> model = new HashMap<String,Object>();
       model.put( "catalogUrl", uri );
       model.put( "message", validateMess.toString() );
-      model.put( "siteLogoPath", HtmlWriter.getInstance().getContextPath() + HtmlWriter.getInstance().getContextLogoPath() );
+      model.put( "siteUrl", this.tdsContext.getContextPath() + "/" + this.tdsContext.getTdsConfigHtml().getSiteUrl() );
+      model.put( "siteLogoPath", this.tdsContext.getContextPath() + "/" + HtmlWriter.getInstance().getContextLogoPath() );
       model.put( "siteLogoAlt", HtmlWriter.getInstance().getContextLogoAlt() );
       model.put( "serverName", HtmlWriter.getInstance().getContextName() );
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ));
@@ -238,7 +239,8 @@ public class RemoteCatalogServiceController extends AbstractController
       Map<String, Object> model = new HashMap<String, Object>();
       model.put( "catalogUrl", uri );
       model.put( "message", validateMess.toString() );
-      model.put( "siteLogoPath", HtmlWriter.getInstance().getContextPath() + HtmlWriter.getInstance().getContextLogoPath() );
+      model.put( "siteUrl", this.tdsContext.getContextPath() + "/" + this.tdsContext.getTdsConfigHtml().getSiteUrl() );
+      model.put( "siteLogoPath", HtmlWriter.getInstance().getContextPath() + "/" + HtmlWriter.getInstance().getContextLogoPath() );
       model.put( "siteLogoAlt", HtmlWriter.getInstance().getContextLogoAlt() );
       model.put( "serverName", HtmlWriter.getInstance().getContextName() );
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ));

@@ -9,11 +9,7 @@
 </head>
 
 <body>
-<%--<c:set var="siteLogoPath" value="${catalog.datasets}" scope="request"/>--%>
-<%--<c:set var="siteLogoAlt" value="" scope="request"/>--%>
-<c:import url="/siteHeader.jsp" />
-<%--<c:remove var="curDsListParam" scope="request"/>--%>
-<%--<c:remove var="curLevelParam" scope="request"/>--%>
+<c:import url="/WEB-INF/jsp/siteHeader.jsp" />
 <hr>
 <h2>Catalog Service Request - Catalog Validation</h2>
 

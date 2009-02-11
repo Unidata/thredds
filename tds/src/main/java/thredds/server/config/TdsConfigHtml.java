@@ -48,8 +48,10 @@ public class TdsConfigHtml
   private String webappVersion;
   private String pageCssPath;
   private String catalogCssPath;
+  private String webappUrl;
   private String webappLogoPath;
   private String webappLogoAlt;
+  private String siteUrl;
   private String siteLogoPath;
   private String siteLogoAlt;
   private String webappDocsPath;          
@@ -130,6 +132,21 @@ public class TdsConfigHtml
   }
 
   /**
+   * Return a URL to the main web page for the webapp.
+   *
+   * @return a URL to the main web page for the webapp.
+   */
+  public String getWebappUrl()
+  {
+    return webappUrl;
+  }
+
+  public void setWebappUrl( String webappUrl )
+  {
+    this.webappUrl = webappUrl;
+  }
+
+  /**
    * Return the path to the logo file for the webapp.
    *
    * If the path does not starts with "/", it is relative
@@ -160,6 +177,21 @@ public class TdsConfigHtml
   public void setWebappLogoAlt( String webappLogoAlt )
   {
     this.webappLogoAlt = webappLogoAlt;
+  }
+
+  /**
+   * Return the URL to the top level of this site.
+   *
+   * @return the URL to the top level of this site.
+   */
+  public String getSiteUrl()
+  {
+    return siteUrl;
+  }
+
+  public void setSiteUrl( String siteUrl )
+  {
+    this.siteUrl = siteUrl;
   }
 
   /**
