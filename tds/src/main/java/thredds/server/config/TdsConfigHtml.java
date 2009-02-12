@@ -51,10 +51,13 @@ public class TdsConfigHtml
   private String webappUrl;
   private String webappLogoPath;
   private String webappLogoAlt;
-  private String siteUrl;
-  private String siteLogoPath;
-  private String siteLogoAlt;
-  private String webappDocsPath;          
+  private String installationUrl;
+  private String installationLogoPath;
+  private String installationLogoAlt;
+  private String hostUrl;
+  private String hostLogoPath;
+  private String hostLogoAlt;
+  private String webappDocsPath;
   private String folderIconPath;
   private String folderIconAlt;
   private String datasetIconPath;
@@ -132,9 +135,10 @@ public class TdsConfigHtml
   }
 
   /**
-   * Return a URL to the main web page for the webapp.
+   * Return the URL to the main web page for the webapp.
+   * For example, "http://server:port/thredds/catalog.html".
    *
-   * @return a URL to the main web page for the webapp.
+   * @return the URL to the main web page for the webapp.
    */
   public String getWebappUrl()
   {
@@ -144,6 +148,23 @@ public class TdsConfigHtml
   public void setWebappUrl( String webappUrl )
   {
     this.webappUrl = webappUrl;
+  }
+
+  /**
+   * Return the URI to the webapp documentation page.
+   * <p/>
+   * If the URI is relative, it is considered relative to the webapp context path.
+   *
+   * @return the URI to the webapp documentation page.
+   */
+  public String getWebappDocsPath()
+  {
+    return webappDocsPath;
+  }
+
+  public void setWebappDocsPath( String webappDocsPath )
+  {
+    this.webappDocsPath = webappDocsPath;
   }
 
   /**
@@ -180,68 +201,99 @@ public class TdsConfigHtml
   }
 
   /**
-   * Return the URL to the top level of this site.
+   * Return the URL to the top level of this installation.
    *
-   * @return the URL to the top level of this site.
+   * @return the URL to the top level of this installation.
    */
-  public String getSiteUrl()
+  public String getInstallationUrl()
   {
-    return siteUrl;
+    return installationUrl;
   }
 
-  public void setSiteUrl( String siteUrl )
+  public void setInstallationUrl( String installationUrl )
   {
-    this.siteUrl = siteUrl;
+    this.installationUrl = installationUrl;
   }
 
   /**
-   * Return the path to the logo file for the site running the webapp.
+   * Return the path to the logo file for this installation of the webapp.
    *
    * If the path does not starts with "/", it is relative
    * to the context path.
    *
-   * @return the path to the logo file for the site running the webapp.
+   * @return the path to the logo file for this installation of the webapp.
    */
-  public String getSiteLogoPath()
+  public String getInstallationLogoPath()
   {
-    return siteLogoPath;
+    return installationLogoPath;
   }
 
-  public void setSiteLogoPath( String siteLogoPath )
+  public void setInstallationLogoPath( String installationLogoPath )
   {
-    this.siteLogoPath = siteLogoPath;
+    this.installationLogoPath = installationLogoPath;
   }
 
   /**
-   * Return the alternate text for the site logo.
+   * Return the alternate text for the logo for this installation.
    *
-   * @return the alternate text for the site logo.
+   * @return the alternate text for the logo for this installation.
    */
-  public String getSiteLogoAlt()
+  public String getInstallationLogoAlt()
   {
-    return siteLogoAlt;
+    return installationLogoAlt;
   }
 
-  public void setSiteLogoAlt( String siteLogoAlt )
+  public void setInstallationLogoAlt( String installationLogoAlt )
   {
-    this.siteLogoAlt = siteLogoAlt;
+    this.installationLogoAlt = installationLogoAlt;
   }
 
   /**
-   * Return the path to the webapp documents.
+   * Return the URL to a web page for the institution hosting this installation.
    *
-   * If the path is not absolute, it is relative to the context path.
-   *
-   * @return the path to the webapp documents.
+   * @return the URL to a web page for the institution hosting this installation.
    */
-  public String getWebappDocsPath()
+  public String getHostUrl()
   {
-    return webappDocsPath;
+    return hostUrl;
   }
 
-  public void setWebappDocsPath( String webappDocsPath )
+  public void setHostUrl( String hostUrl )
   {
-    this.webappDocsPath = webappDocsPath;
+    this.hostUrl = hostUrl;
+  }
+
+  /**
+   * Return the path to the logo file for the institution hosting this installation.
+   *
+   * If the path does not starts with "/", it is relative
+   * to the context path.
+   *
+   * @return the path to the logo file for the institution hosting this installation.
+   */
+  public String getHostLogoPath()
+  {
+    return hostLogoPath;
+  }
+
+  public void setHostLogoPath( String hostLogoPath )
+  {
+    this.hostLogoPath = hostLogoPath;
+  }
+
+  /**
+   * Return the alternate text for the logo for the institution hosting this installation.
+   *
+   * @return the alternate text for the logo for the institution hosting this installation.
+   */
+  public String getHostLogoAlt()
+  {
+    return hostLogoAlt;
+  }
+
+  public void setHostLogoAlt( String hostLogoAlt )
+  {
+    this.hostLogoAlt = hostLogoAlt;
   }
 
   public String getFolderIconPath()

@@ -4,9 +4,10 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.0
  Features
-  * Add new configuration options to threddsConfig.xml to enable various services:
-    "allow" for CatalogGen, DLwriter, and DqcService; and "allowRemote" for
-    CatalogServices, DLwriter, and WCS. All new options default to false.
+  * Configuration in threddsConfig.xml required to enable the following
+    services:
+      * CatalogGen, DLwriter, and DqcService: <allow>true</allow>; and
+      * CatalogServices, DLwriter, and WCS: <allowRemote>false<allowRemote>.
   * Use Stax for metars ncss xml writing - for now rely on using 1.6
  Libraries
   * commons-fileUpload 1.2.1

@@ -190,9 +190,20 @@ public class RemoteCatalogServiceController extends AbstractController
       Map<String, Object> model = new HashMap<String,Object>();
       model.put( "catalogUrl", uri );
       model.put( "message", validateMess.toString() );
-      model.put( "siteUrl", this.tdsContext.getContextPath() + "/" + this.tdsContext.getTdsConfigHtml().getSiteUrl() );
-      model.put( "siteLogoPath", this.tdsContext.getContextPath() + "/" + HtmlWriter.getInstance().getContextLogoPath() );
-      model.put( "siteLogoAlt", HtmlWriter.getInstance().getContextLogoAlt() );
+
+      model.put( "installationUrl", this.tdsContext.getContextPath()
+                            + "/" + this.tdsContext.getTdsConfigHtml().getInstallationUrl() );
+      model.put( "installationLogoPath", this.tdsContext.getContextPath()
+                                         + "/" + this.tdsContext.getTdsConfigHtml().getInstallationLogoPath());
+      model.put( "installationLogoAlt", this.tdsContext.getTdsConfigHtml().getInstallationLogoAlt() );
+      model.put( "webappName", this.tdsContext.getWebappName());
+      model.put( "webappVersion", this.tdsContext.getWebappVersionFull());
+      model.put( "webappBuildDate", this.tdsContext.getWebappBuildDate());
+      model.put( "webappUrl", this.tdsContext.getTdsConfigHtml().getWebappUrl());
+      model.put( "webappDocsPath", this.tdsContext.getTdsConfigHtml().getWebappDocsPath());
+      model.put( "webappLogoPath", this.tdsContext.getContextPath()
+                                   + "/" + this.tdsContext.getTdsConfigHtml().getWebappLogoPath());
+      model.put( "webappLogoAlt", this.tdsContext.getTdsConfigHtml().getWebappLogoAlt());
       model.put( "serverName", HtmlWriter.getInstance().getContextName() );
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ));
       // ToDo LOOK - This "Validate" header was in CatalogServicesServlet so added here. Do we need it?
@@ -239,9 +250,21 @@ public class RemoteCatalogServiceController extends AbstractController
       Map<String, Object> model = new HashMap<String, Object>();
       model.put( "catalogUrl", uri );
       model.put( "message", validateMess.toString() );
-      model.put( "siteUrl", this.tdsContext.getContextPath() + "/" + this.tdsContext.getTdsConfigHtml().getSiteUrl() );
-      model.put( "siteLogoPath", HtmlWriter.getInstance().getContextPath() + "/" + HtmlWriter.getInstance().getContextLogoPath() );
-      model.put( "siteLogoAlt", HtmlWriter.getInstance().getContextLogoAlt() );
+
+      model.put( "installationUrl", this.tdsContext.getContextPath()
+                                    + "/" + this.tdsContext.getTdsConfigHtml().getInstallationUrl() );
+      model.put( "installationLogoPath", this.tdsContext.getContextPath()
+                                         + "/" + this.tdsContext.getTdsConfigHtml().getInstallationLogoPath() );
+      model.put( "installationLogoAlt", this.tdsContext.getTdsConfigHtml().getInstallationLogoAlt() );
+      model.put( "webappName", this.tdsContext.getWebappName() );
+      model.put( "webappVersion", this.tdsContext.getWebappVersionFull() );
+      model.put( "webappBuildDate", this.tdsContext.getWebappBuildDate() );
+      model.put( "webappUrl", this.tdsContext.getTdsConfigHtml().getWebappUrl() );
+      model.put( "webappDocsPath", this.tdsContext.getTdsConfigHtml().getWebappDocsPath() );
+      model.put( "webappLogoPath", this.tdsContext.getContextPath()
+                                   + "/" + this.tdsContext.getTdsConfigHtml().getWebappLogoPath() );
+      model.put( "webappLogoAlt", this.tdsContext.getTdsConfigHtml().getWebappLogoAlt() );
+
       model.put( "serverName", HtmlWriter.getInstance().getContextName() );
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ));
       return new ModelAndView( "/thredds/server/catalogservice/validationMessage", model );

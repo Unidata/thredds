@@ -18,7 +18,8 @@
 <pre style="margin-left: 40px;">
   ${message}
 </pre>
-<hr>
+
+<c:import url="/WEB-INF/jsp/webappFooter.jsp" />
 
 </body>
 </html>

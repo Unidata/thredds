@@ -86,8 +86,8 @@ public class TdsConfigContextListener
                      tdsContext.getTdsConfigHtml().getCatalogCssPath(),
                      tdsContext.getTdsConfigHtml().getWebappLogoPath(),
                      tdsContext.getTdsConfigHtml().getWebappLogoAlt(),
-                     tdsContext.getTdsConfigHtml().getSiteLogoPath(),
-                     tdsContext.getTdsConfigHtml().getSiteLogoAlt(),
+                     tdsContext.getTdsConfigHtml().getInstallationLogoPath(),
+                     tdsContext.getTdsConfigHtml().getInstallationLogoAlt(),
                      tdsContext.getTdsConfigHtml().getFolderIconPath(),
                      tdsContext.getTdsConfigHtml().getFolderIconAlt() );
 

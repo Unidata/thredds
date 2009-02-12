@@ -127,13 +127,23 @@ public class DLwriterServlet extends AbstractServlet {
     }
   }
 
-  private void doit(HttpServletRequest req, HttpServletResponse res, String catURL, boolean isDIF) throws IOException, URISyntaxException {
+  private void doit(HttpServletRequest req, HttpServletResponse res, String catURL, boolean isDIF)
+          throws IOException {
 
-    // resolve if needed
-    String reqBase = ServletUtil.getRequestBase( req); // this is the base of the request
-    URI reqURI = new URI( reqBase);
-    URI catURI = reqURI.resolve( catURL);
-    catURL = catURI.toString();
+    URI catURI;
+    try
+    {
+      // Resolve against the request URL.
+      URI reqURI = new URI( req.getRequestURL().toString() );
+      catURI = reqURI.resolve( catURL );
+    }
+    catch ( URISyntaxException e )
+    {
+      res.sendError( HttpServletResponse.SC_FORBIDDEN, "Given catalog URL not a URL." );
+      log.debug( "doGet(): Given catalog URL not a URL", e );
+      log.info( "doGet(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ) );
+      return;
+    }
 
     // parse the catalog
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory( false);
@@ -153,13 +163,13 @@ public class DLwriterServlet extends AbstractServlet {
       res.setContentType("text/html");
       res.setHeader("Validate", "FAIL");
       PrintWriter pw = new PrintWriter(res.getOutputStream());
-      showValidationMesssage( catURL, sb.toString(), pw);
+      showValidationMesssage( catURI.toString(), sb.toString(), pw);
       pw.flush();
       return;
     }
 
     StringBuffer mess = new StringBuffer();
-    mess.append("Catalog " + catURL+"\n\n");
+    mess.append("Catalog " + catURI.toString()+"\n\n");
 
     if (isDIF) {
       mess.append("DIF records:"+"\n");
