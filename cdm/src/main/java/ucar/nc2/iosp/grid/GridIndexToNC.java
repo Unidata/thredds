@@ -165,10 +165,9 @@ public class GridIndexToNC {
             }
 
             // (GridDefRecord gdsIndex, String grid_name, String shape_name, Group g)
-            GridHorizCoordSys hcs = new GridHorizCoordSys(gdsIndex, lookup,
-                                        g);
+            GridHorizCoordSys hcs = new GridHorizCoordSys(gdsIndex, lookup, g);
 
-            hcsHash.put(gdsIndex.getParam(gdsIndex.GDS_KEY), hcs);
+          hcsHash.put(gdsIndex.getParam(gdsIndex.GDS_KEY), hcs);
         }
 
         // run through each record
