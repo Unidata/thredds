@@ -79,8 +79,16 @@ public class PolarStereographic extends AbstractCoordTransBuilder {
         scale = 1.0;
       }
     }
+    double false_easting = readAttributeDouble(ctv, "false_easting", 0.0);
+    double false_northing = readAttributeDouble(ctv, "false_northing", 0.0);
 
-    ucar.unidata.geoloc.projection.Stereographic proj = new ucar.unidata.geoloc.projection.Stereographic( lat0, lon0, scale);
+    if ((false_easting != 0.0) || (false_northing != 0.0)) {
+      double scalef = getFalseEastingScaleFactor(ds, ctv);
+      false_easting *= scalef;
+      false_northing *= scalef;
+    }
+
+    ucar.unidata.geoloc.projection.Stereographic proj = new ucar.unidata.geoloc.projection.Stereographic( lat0, lon0, scale, false_easting, false_northing);
     return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
   }
 }
