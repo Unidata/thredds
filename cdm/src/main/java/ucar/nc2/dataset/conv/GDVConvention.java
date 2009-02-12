@@ -44,7 +44,7 @@ import java.util.*;
 
 /**
  * GDV Conventions.
- * Deprecateed - use CF or _Coordinates.
+ * Deprecated - use CF or _Coordinates.
  *
  * @author caron
  */
@@ -55,6 +55,7 @@ public class GDVConvention extends CSMConvention {
 
   public GDVConvention() {
     this.conventionName = "GDV";
+    checkForMeter = false;
   }
 
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {

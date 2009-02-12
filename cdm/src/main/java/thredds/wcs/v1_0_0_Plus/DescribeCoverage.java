@@ -308,7 +308,7 @@ public class DescribeCoverage extends WcsRequest
       // See verAxis.getUnitsString()
       double zeroIndexValue = vertAxis.getCoordValue( 0 );
       double sizeIndexValue = vertAxis.getCoordValue( ( (int) vertAxis.getSize() ) - 1 );
-      if ( vertAxis.getPositive().equals( CoordinateAxis.POSITIVE_UP ) )
+      if ( vertAxis.getPositive().equals( ucar.nc2.constants.CF.POSITIVE_UP ) )
       {
         firstPosition += " " + zeroIndexValue;
         secondPosition += " " + sizeIndexValue;

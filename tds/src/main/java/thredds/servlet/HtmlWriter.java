@@ -321,7 +321,7 @@ public class HtmlWriter {
   }
 
   private String getDirectory(String path, File dir) {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
 
     // Render the page header
     sb.append(getHtmlDoctypeAndOpenTag()); // "<html>\n" );

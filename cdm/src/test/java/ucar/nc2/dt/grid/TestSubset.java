@@ -81,6 +81,11 @@ public class TestSubset extends TestCase {
     assert data.getShape()[2] == 22 : data.getShape()[2];
     assert data.getShape()[3] == 31 : data.getShape()[3];
 
+    // check axes
+    for (CoordinateAxis axis : gcs_section.getCoordinateAxes()) {
+      assert axis.getAxisType() != null;
+    }
+
     // NCdump.printArray( data, "grid_section", System.out,  null);
     dataset.close();
   }

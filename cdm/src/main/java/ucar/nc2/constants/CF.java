@@ -39,6 +39,9 @@ package ucar.nc2.constants;
  * @since Jan 21, 2009
  */
 public class CF {
+  public final static String POSITIVE_UP = "up";
+  public final static String POSITIVE_DOWN = "down";
+
   public static final String featureTypeAtt = "CF:featureType";
   public static final String featureTypeAtt2 = "CF-featureType";
 

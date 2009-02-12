@@ -214,7 +214,7 @@ public class GridDataset {
     while (iter.hasNext()) {
       CoordinateAxis axis = (CoordinateAxis) iter.next();
       if (axis.getAxisType() == null) continue;
-      buf.append( axis.getInfo());
+      //buf.append( axis.getInfo());
       buf.append( "\n");
     }
     return buf.toString();

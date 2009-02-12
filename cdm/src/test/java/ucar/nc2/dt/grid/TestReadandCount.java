@@ -65,7 +65,7 @@ public class TestReadandCount extends TestCase {
   } */
 
   public void testRead1() throws Exception {
-    doOne(griddir+"avhrr/","amsr-avhrr-v2.20040729.nc", 4, 1, 4, 1);
+    doOne(griddir+"avhrr/","amsr-avhrr-v2.20040729.nc", 0, 1, 4, 0);
   }
 
   public void testRead() throws Exception {
@@ -185,9 +185,6 @@ public class TestReadandCount extends TestCase {
       assert ncoordAxes == countCoordAxes : "CoordAxes " + ncoordAxes + " != " + countCoordAxes;
     if (nVertCooordAxes >= 0)
       assert nVertCooordAxes == countVertCooordAxes : "VertAxes" + nVertCooordAxes + " != " + countVertCooordAxes;
-
-    if (show)
-      System.out.println(gridDs.getInfo());
 
     gridDs.close();
   }

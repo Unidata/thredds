@@ -102,7 +102,7 @@ public class AxisSubset
       throw new IllegalArgumentException( "GridCoordSystem vertical axis does not contain min/max points." );
     }
 
-    if ( this.coordAxis.getPositive().equalsIgnoreCase( CoordinateAxis.POSITIVE_DOWN ) )
+    if ( this.coordAxis.getPositive().equalsIgnoreCase( ucar.nc2.constants.CF.POSITIVE_DOWN ) )
       return new Range( maxIndex, minIndex, stride );
     else
       return new Range( minIndex, maxIndex, stride );

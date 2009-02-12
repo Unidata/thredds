@@ -497,7 +497,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     while (ii.hasNext())
       ii.setDoubleCurrent(factor * ii.getDoubleNext());
 
-    CoordinateAxis newAxis = axis.makeCopy();
+    CoordinateAxis newAxis = axis.copyNoCache();
     newAxis.setCachedData(data, false);
     newAxis.setUnitsString("km");
     return newAxis;
@@ -656,7 +656,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   public boolean isZPositive() {
     if (vertZaxis == null) return false;
     if (vertZaxis.getPositive() != null) {
-      return vertZaxis.getPositive().equalsIgnoreCase(CoordinateAxis.POSITIVE_UP);
+      return vertZaxis.getPositive().equalsIgnoreCase(ucar.nc2.constants.CF.POSITIVE_UP);
     }
     if (vertZaxis.getAxisType() == AxisType.Height) return true;
     if (vertZaxis.getAxisType() == AxisType.Pressure) return false;

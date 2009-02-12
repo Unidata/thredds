@@ -11,11 +11,18 @@
     <property name="tdsContext" ref="tdsContext"/>
   </bean>
 
+  <bean id="contentController" class="thredds.server.root.ContentController" >
+    <property name="tdsContext" ref="tdsContext"/>
+  </bean>
+
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
       <value>
         /=rootController
         /**/*=rootController
+        /content/=contentController
+        /content/*=contentController
+        /content/**/*=contentController
       </value>
     </property>
   </bean>

@@ -69,9 +69,6 @@ import java.io.IOException;
 public class CoordinateAxis extends VariableDS {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis.class);
 
-  public final static String POSITIVE_UP = "up";
-  public final static String POSITIVE_DOWN = "down";
-
   protected NetcdfDataset ncd; // container dataset
   protected AxisType axisType = null;
   protected String positive = null;
@@ -97,7 +94,7 @@ public class CoordinateAxis extends VariableDS {
 
   /**
    * Create a coordinate axis from an existing Variable.
-   *
+   * General case.
    * @param ncd the containing dataset
    * @param vds an existing Variable
    */
@@ -130,7 +127,11 @@ public class CoordinateAxis extends VariableDS {
     this.ncd = ds;
   }
 
-  public CoordinateAxis makeCopy() {
+  /**
+   * Make a copy, with an independent cache.
+   * @return copy of this CoordinateAxis
+   */
+  public CoordinateAxis copyNoCache() {
     CoordinateAxis axis = new CoordinateAxis( ncd, getParentGroup(), getShortName(), getDataType(), getDimensionsString(),
             getUnitsString(), getDescription());
     axis.cache = new Variable.Cache(); // decouple cache
@@ -144,6 +145,7 @@ public class CoordinateAxis extends VariableDS {
   }
 
   /**
+   * Get type of axis
    * @return type of axis, or null if none.
    */
   public AxisType getAxisType() {
@@ -159,12 +161,14 @@ public class CoordinateAxis extends VariableDS {
     this.axisType = axisType;
   }
 
+  @Override
   public String getUnitsString() {
     String units = super.getUnitsString();
     return units == null ? "" : units;
   }
 
   /**
+   * Does the axis have numeric values.
    * @return true if the CoordAxis is numeric, false if its string valued ("nominal").
    */
   public boolean isNumeric() {
@@ -243,6 +247,7 @@ public class CoordinateAxis extends VariableDS {
   }
 
   /**
+   * The smallest coordinate value. Only call if isNumeric.
    * @return the minimum coordinate value
    */
   public double getMinValue() {
@@ -251,6 +256,7 @@ public class CoordinateAxis extends VariableDS {
   }
 
   /**
+   * The largest coordinate value. Only call if isNumeric.
    * @return the maximum coordinate value
    */
   public double getMaxValue() {
@@ -260,10 +266,10 @@ public class CoordinateAxis extends VariableDS {
 
   //////////////////////
   /**
-   * @return formatted string representation
+   * Get a string representation
+   * @param buf place info here
    */
-  public String getInfo() {
-    StringBuilder buf = new StringBuilder(200);
+  public void getInfo(StringBuilder buf) {
     buf.append(getName());
     Format.tab(buf, 15, true);
     buf.append(getSize()).append("");
@@ -298,7 +304,6 @@ public class CoordinateAxis extends VariableDS {
    } */
 
     //buf.append("\n");
-    return buf.toString();
   }
 
   /**

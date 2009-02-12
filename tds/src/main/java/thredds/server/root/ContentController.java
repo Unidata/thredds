@@ -41,7 +41,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletContext;
 
 import thredds.servlet.ServletUtil;
+import thredds.servlet.HtmlWriter;
 import thredds.server.config.TdsContext;
+import thredds.server.views.FileView;
+import thredds.catalog.InvCatalogImpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,28 +55,47 @@ import java.io.IOException;
  * @author edavis
  * @since 4.0
  */
-public class ContentController extends AbstractController
-{
+public class ContentController extends AbstractController {
 //  private static org.slf4j.Logger log =
 //          org.slf4j.LoggerFactory.getLogger( RootController.class );
 
   private TdsContext tdsContext;
 
-  public void setTdsContext( TdsContext tdsContext )
-  {
+  public void setTdsContext(TdsContext tdsContext) {
     this.tdsContext = tdsContext;
   }
 
-  public void init()
-  {
+  public void init() {
   }
 
-  public void destroy()
-  {
+  public void destroy() {
   }
 
-  protected ModelAndView handleRequestInternal( HttpServletRequest request, HttpServletResponse response ) throws Exception
-  {
-    return null;
+  protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
+
+    File file = null;
+    String path = ServletUtil.getRequestPath( req);
+
+    if ((path == null) || (path.length() == 0)) {
+      path = "";
+      file = tdsContext.getContentDirectory();
+    } else {
+      if (path.startsWith("/content/"))
+        path = path.substring(9);
+      file = new File(tdsContext.getContentDirectory(), path);
+    }
+
+    if (file == null) {
+      tdsContext.getDefaultRequestDispatcher().forward(req, res);
+      return null;
+    }
+
+    if (file.isDirectory()) {
+      HtmlWriter.getInstance().writeDirectory( res, file, path );
+      return null;
+    }
+
+    return new ModelAndView(new FileView(), "file", file);
   }
+
 }

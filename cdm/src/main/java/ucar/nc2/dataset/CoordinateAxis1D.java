@@ -46,65 +46,63 @@ import java.util.List;
 
 /**
  * A 1-dimensional Coordinate Axis. Its values must be monotonic.
- *
+ * <p/>
  * If this is char valued, it will have rank 2, otherwise it will have rank 1.
- * <p>
+ * <p/>
  * If string or char valued, only <i>getCoordName()</i> can be called.
- * <p>
+ * <p/>
  * If the coordinates are regularly spaced, <i>isRegular()</i> is true, and the values are equal to
- *   <i>getStart()</i> + i * <i>getIncrement()</i>.
+ * <i>getStart()</i> + i * <i>getIncrement()</i>.
  *
- * @see CoordinateAxis#factory
  * @author john caron
+ * @see CoordinateAxis#factory
  */
 
 public class CoordinateAxis1D extends CoordinateAxis {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis1D.class);
 
 
-  /** Create a 1D coordinate axis from an existing Variable
+  /**
+   * Create a 1D coordinate axis from an existing Variable
+   *
    * @param ncd the containing dataset
    * @param vds wrap this VariableDS, which is not changed.
    */
   public CoordinateAxis1D(NetcdfDataset ncd, VariableDS vds) {
-    super( ncd, vds);
+    super(ncd, vds);
     setIsLayer();
   }
 
-  public CoordinateAxis makeCopy() {
-    CoordinateAxis1D axis = new CoordinateAxis1D( ncd, getParentGroup(), getShortName(), getDataType(), getDimensionsString(),
-            getUnitsString(), getDescription());
-    axis.cache = new Variable.Cache(); // decouple cache 
-    return axis;
-  }
-
   CoordinateAxis1D(NetcdfDataset ncd, CoordinateAxis1D org) {
-    super( ncd, org.getParentGroup(), org.getShortName(), org.getDataType(), org.getDimensionsString(),
-            org.getUnitsString(), org.getDescription());
-
+    //super(ncd, org.getParentGroup(), org.getShortName(), org.getDataType(), org.getDimensionsString(),
+    //        org.getUnitsString(), org.getDescription());
+    super( ncd, org);
     this.orgName = org.orgName;
     this.cache = new Variable.Cache(); // decouple cache
     setIsLayer();
   }
 
-  /** Constructor when theres no underlying variable. You better set the values too!
-    * @param ds the containing dataset.
-    * @param group the containing group; if null, use rootGroup
-    * @param shortName axis name.
-    * @param dataType data type
-    * @param dims list of dimension names
-    * @param units units of coordinates, preferably udunit compatible.
-    * @param desc long name.
-    */
+  /**
+   * Constructor when theres no underlying variable. You better set the values too!
+   *
+   * @param ds        the containing dataset.
+   * @param group     the containing group; if null, use rootGroup
+   * @param shortName axis name.
+   * @param dataType  data type
+   * @param dims      list of dimension names
+   * @param units     units of coordinates, preferably udunit compatible.
+   * @param desc      long name.
+   */
   public CoordinateAxis1D(NetcdfDataset ds, Group group, String shortName,
-                          DataType dataType, String dims, String units, String desc) {
+          DataType dataType, String dims, String units, String desc) {
 
-    super( ds, group, shortName, dataType, dims, units, desc);
+    super(ds, group, shortName, dataType, dims, units, desc);
     setIsLayer();
   }
 
   /**
    * Create a new CoordinateAxis1D as a section of this CoordinateAxis1D.
+   *
    * @param r the section range
    * @return a new CoordinateAxis1D as a section of this CoordinateAxis1D
    * @throws InvalidRangeException if IllegalRange
@@ -114,14 +112,24 @@ public class CoordinateAxis1D extends CoordinateAxis {
     return (CoordinateAxis1D) section(section);
   }
 
-   // for section and slice
+  // for section and slice
   @Override
   protected Variable copy() {
     return new CoordinateAxis1D(this.ncd, this);
   }
 
-  /** The "name" of the ith coordinate. If nominal, this is all there is to a coordinate.
-   *  If numeric, this will return a String representation of the coordinate.
+  @Override
+  public CoordinateAxis copyNoCache() {
+    CoordinateAxis1D axis = new CoordinateAxis1D(ncd, getParentGroup(), getShortName(), getDataType(), getDimensionsString(),
+            getUnitsString(), getDescription());
+    axis.cache = new Variable.Cache(); // decouple cache
+    return axis;
+  }
+
+  /**
+   * The "name" of the ith coordinate. If nominal, this is all there is to a coordinate.
+   * If numeric, this will return a String representation of the coordinate.
+   *
    * @param index which one ?
    * @return the ith coordinate value as a String
    */
@@ -133,109 +141,125 @@ public class CoordinateAxis1D extends CoordinateAxis {
       return names[index];
   }
 
-  /** Get the ith coordinate value. This is the value of the coordinate axis at which
-   *  the data value is associated. These must be strictly monotonic.
-   *  @param index which coordinate. Between 0 and getNumElements()-1 inclusive.
-   *  @return coordinate value.
-   *  @exception UnsupportedOperationException if !isNumeric()
+  /**
+   * Get the ith coordinate value. This is the value of the coordinate axis at which
+   * the data value is associated. These must be strictly monotonic.
+   *
+   * @param index which coordinate. Between 0 and getNumElements()-1 inclusive.
+   * @return coordinate value.
+   * @throws UnsupportedOperationException if !isNumeric()
    */
   public double getCoordValue(int index) {
     if (!isNumeric())
-       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
+      throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
     if (!wasRead) doRead();
     return midpoint[index];
   }
 
+  @Override
   public double getMinValue() {
     if (!isNumeric())
-       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
+      throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
     if (!wasRead) doRead();
 
-    return Math.min( midpoint[0], midpoint[(int) getSize() -1]);
+    return Math.min(midpoint[0], midpoint[(int) getSize() - 1]);
   }
 
+  @Override
   public double getMaxValue() {
     if (!isNumeric())
-       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
+      throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
     if (!wasRead) doRead();
 
-    return Math.max( midpoint[0], midpoint[(int) getSize() -1]);
+    return Math.max(midpoint[0], midpoint[(int) getSize() - 1]);
   }
 
-  /** Get the ith coordinate edge. Exact only if isContiguous() is true, otherwise use getBound1() and getBound2().
-   *  This is the value where the underlying grid element switches
-   *  from "belonging to" coordinate value i-1 to "belonging to" coordinate value i.
-   *  In some grids, this may not be well defined, and so should be considered an
-   *  approximation or a visualization hint.
-   *  <p><pre>
+  /**
+   * Get the ith coordinate edge. Exact only if isContiguous() is true, otherwise use getBound1() and getBound2().
+   * This is the value where the underlying grid element switches
+   * from "belonging to" coordinate value i-1 to "belonging to" coordinate value i.
+   * In some grids, this may not be well defined, and so should be considered an
+   * approximation or a visualization hint.
+   * <p><pre>
    *  Coordinate edges must be strictly monotonic:
    *    coordEdge(0) < coordValue(0) < coordEdge(1) < coordValue(1) ...
    *    ... coordEdge(i) < coordValue(i) < coordEdge(i+1) < coordValue(i+1) ...
    *    ... coordEdge(n-1) < coordValue(n-1) < coordEdge(n)
    *  </pre>
-   *  @param index which coordinate. Between 0 and getNumElements() inclusive.
-   *  @return coordinate edge.
-   *  @exception UnsupportedOperationException if !isNumeric()
+   *
+   * @param index which coordinate. Between 0 and getNumElements() inclusive.
+   * @return coordinate edge.
+   * @throws UnsupportedOperationException if !isNumeric()
    */
   public double getCoordEdge(int index) {
     if (!isNumeric())
-       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordEdge() on non-numeric");
+      throw new UnsupportedOperationException("CoordinateAxis1D.getCoordEdge() on non-numeric");
     if (!wasRead) doRead();
     return edge[index];
   }
 
-  /** Get the coordinate values as a double array.
-   *  @return coordinate value.
-   *  @exception UnsupportedOperationException if !isNumeric()
+  /**
+   * Get the coordinate values as a double array.
+   *
+   * @return coordinate value.
+   * @throws UnsupportedOperationException if !isNumeric()
    */
   public double[] getCoordValues() {
     if (!isNumeric())
-       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValues() on non-numeric");
+      throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValues() on non-numeric");
     if (!wasRead) doRead();
     return midpoint.clone();
   }
 
-  /** Get the coordinate edges as a double array.
+  /**
+   * Get the coordinate edges as a double array.
    * Exact only if isContiguous() is true, otherwise use getBound1() and getBound2().
-   *  @return coordinate edges.
-   *  @exception UnsupportedOperationException if !isNumeric()
+   *
+   * @return coordinate edges.
+   * @throws UnsupportedOperationException if !isNumeric()
    */
   public double[] getCoordEdges() {
     if (!isNumeric())
-       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordEdges() on non-numeric");
+      throw new UnsupportedOperationException("CoordinateAxis1D.getCoordEdges() on non-numeric");
     if (!wasRead) doRead();
     return edge.clone();
   }
 
-  /** Get the coordinate bound1 as a double array.
-   *  bound1[i] # coordValue[i] # bound2[i], where # is < if increasing (bound1[i] < bound1[i+1])
-   *  else < if decreasing.
-   *  @return coordinate bound1.
-   *  @exception UnsupportedOperationException if !isNumeric()
+  /**
+   * Get the coordinate bound1 as a double array.
+   * bound1[i] # coordValue[i] # bound2[i], where # is < if increasing (bound1[i] < bound1[i+1])
+   * else < if decreasing.
+   *
+   * @return coordinate bound1.
+   * @throws UnsupportedOperationException if !isNumeric()
    */
   public double[] getBound1() {
     if (!isNumeric())
-       throw new UnsupportedOperationException("CoordinateAxis1D.getBound1() on non-numeric");
+      throw new UnsupportedOperationException("CoordinateAxis1D.getBound1() on non-numeric");
     if (!wasRead) doRead();
     return bound1.clone();
   }
 
-  /** Get the coordinate bound1 as a double array.
-   *  bound1[i] # coordValue[i] # bound2[i],  where # is < if increasing (bound1[i] < bound1[i+1])
-   *  else < if decreasing.
-   *  @return coordinate bound2.
-   *  @exception UnsupportedOperationException if !isNumeric()
+  /**
+   * Get the coordinate bound1 as a double array.
+   * bound1[i] # coordValue[i] # bound2[i],  where # is < if increasing (bound1[i] < bound1[i+1])
+   * else < if decreasing.
+   *
+   * @return coordinate bound2.
+   * @throws UnsupportedOperationException if !isNumeric()
    */
   public double[] getBound2() {
     if (!isNumeric())
-       throw new UnsupportedOperationException("CoordinateAxis1D.getBound2() on non-numeric");
+      throw new UnsupportedOperationException("CoordinateAxis1D.getBound2() on non-numeric");
     if (!wasRead) doRead();
     return bound2.clone();
   }
 
 
-  /** Get the coordinate edges for the ith coordinate.
-   *  Can use this for isContiguous() true or false.
+  /**
+   * Get the coordinate edges for the ith coordinate.
+   * Can use this for isContiguous() true or false.
+   *
    * @param i coordinate index
    * @return double[2] edges for ith coordinate
    */
@@ -244,7 +268,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     double[] e = new double[2];
     if (isContiguous()) {
       e[0] = getCoordEdge(i);
-      e[1] = getCoordEdge(i+1);
+      e[1] = getCoordEdge(i + 1);
     } else {
       e[0] = bound1[i];
       e[1] = bound2[i];
@@ -252,19 +276,20 @@ public class CoordinateAxis1D extends CoordinateAxis {
     return e;
   }
 
-  /** Given a coordinate position, find what grid element contains it.
-    This means that
-    <pre>
-    edge[i] <= pos < edge[i+1] (if values are ascending)
-    edge[i] > pos >= edge[i+1] (if values are descending)
-    </pre>
-
-    @param coordVal position in this coordinate system
-    @return index of grid point containing it, or -1 if outside grid area
-  */
+  /**
+   * Given a coordinate position, find what grid element contains it.
+   * This means that
+   * <pre>
+   * edge[i] <= pos < edge[i+1] (if values are ascending)
+   * edge[i] > pos >= edge[i+1] (if values are descending)
+   * </pre>
+   *
+   * @param coordVal position in this coordinate system
+   * @return index of grid point containing it, or -1 if outside grid area
+   */
   public int findCoordElement(double coordVal) {
     if (!isNumeric())
-       throw new UnsupportedOperationException("CoordinateAxis.findCoordElement() on non-numeric");
+      throw new UnsupportedOperationException("CoordinateAxis.findCoordElement() on non-numeric");
 
     if (isRegular())
       return findCoordElementRegular(coordVal, false);
@@ -274,66 +299,68 @@ public class CoordinateAxis1D extends CoordinateAxis {
       return findCoordElement(coordVal, -1);
   }
 
-  /** Given a coordinate position, find what grid element contains it.
-    This means that
-    <pre>
-    edge[i] <= pos < edge[i+1] (if values are ascending)
-    edge[i] > pos >= edge[i+1] (if values are descending)
-    </pre>
-
-    @param coordVal position in this coordinate system
-    @param lastIndex last position we looked for, or -1 if none
-    @return index of grid point containing it, or -1 if outside grid area
-  */
+  /**
+   * Given a coordinate position, find what grid element contains it.
+   * This means that
+   * <pre>
+   * edge[i] <= pos < edge[i+1] (if values are ascending)
+   * edge[i] > pos >= edge[i+1] (if values are descending)
+   * </pre>
+   *
+   * @param coordVal  position in this coordinate system
+   * @param lastIndex last position we looked for, or -1 if none
+   * @return index of grid point containing it, or -1 if outside grid area
+   */
   public int findCoordElement(double coordVal, int lastIndex) {
     if (!isNumeric())
-       throw new UnsupportedOperationException("CoordinateAxis.findCoordElement() on non-numeric");
+      throw new UnsupportedOperationException("CoordinateAxis.findCoordElement() on non-numeric");
 
     if (axisType == AxisType.Lon) {
-      for (int x=0; x < getSize(); x++) {
-        if (betweenLon( coordVal, getCoordEdge(x), getCoordEdge(x+1)))
+      for (int x = 0; x < getSize(); x++) {
+        if (betweenLon(coordVal, getCoordEdge(x), getCoordEdge(x + 1)))
           return x;
       }
       return -1;
     }
 
-    if (lastIndex < 0) lastIndex = (int) getSize()/2;
+    if (lastIndex < 0) lastIndex = (int) getSize() / 2;
 
     if (isAscending) {
 
-      if ((coordVal < getCoordEdge(0)) || (coordVal > getCoordEdge((int)getSize())))
+      if ((coordVal < getCoordEdge(0)) || (coordVal > getCoordEdge((int) getSize())))
         return -1;
       while (coordVal < getCoordEdge(lastIndex))
         lastIndex--;
-      while (coordVal > getCoordEdge(lastIndex+1))
+      while (coordVal > getCoordEdge(lastIndex + 1))
         lastIndex++;
       return lastIndex;
 
     } else {
 
-      if ((coordVal > getCoordEdge(0)) || (coordVal < getCoordEdge((int)getSize())))
+      if ((coordVal > getCoordEdge(0)) || (coordVal < getCoordEdge((int) getSize())))
         return -1;
       while (coordVal > getCoordEdge(lastIndex))
         lastIndex--;
-      while (coordVal < getCoordEdge(lastIndex+1))
+      while (coordVal < getCoordEdge(lastIndex + 1))
         lastIndex++;
       return lastIndex;
     }
   }
 
-  private boolean betweenLon(double lon, double lonBeg,  double lonEnd) {
+  private boolean betweenLon(double lon, double lonBeg, double lonEnd) {
     while (lon < lonBeg) lon += 360;
     return (lon >= lonBeg) && (lon <= lonEnd);
   }
 
   /**
    * Given a coordinate position, find what grid element contains it, but always return valid index.
-    @param coordVal position in this coordinate system
-    @return index of grid point containing it, or closest
+   *
+   * @param coordVal position in this coordinate system
+   * @return index of grid point containing it, or closest
    */
   public int findCoordElementBounded(double coordVal) {
     if (!isNumeric())
-       throw new UnsupportedOperationException("CoordinateAxis.findCoordElement() on non-numeric");
+      throw new UnsupportedOperationException("CoordinateAxis.findCoordElement() on non-numeric");
 
     if (isRegular())
       return findCoordElementRegular(coordVal, true);
@@ -343,38 +370,39 @@ public class CoordinateAxis1D extends CoordinateAxis {
       return findCoordElementBounded(coordVal, -1);
   }
 
-  /** Given a coordinate position, find what grid element contains it, but always return valid index.
-    This means that
-    <pre>
-      if values are ascending:
-        pos < edge[0] return 0
-        edge[n] < pos return n-1
-        edge[i] <= pos < edge[i+1] return i
-
-      if values are descending:
-        pos > edge[0] return 0
-        edge[n] > pos return n-1
-        edge[i] > pos >= edge[i+1] return i
-    </pre>
-
-    @param pos position in this coordinate system
-    @param lastIndex last position we looked for, or -1 if none
-    @return index of grid point containing it
-  */
+  /**
+   * Given a coordinate position, find what grid element contains it, but always return valid index.
+   * This means that
+   * <pre>
+   * if values are ascending:
+   * pos < edge[0] return 0
+   * edge[n] < pos return n-1
+   * edge[i] <= pos < edge[i+1] return i
+   * <p/>
+   * if values are descending:
+   * pos > edge[0] return 0
+   * edge[n] > pos return n-1
+   * edge[i] > pos >= edge[i+1] return i
+   * </pre>
+   *
+   * @param pos       position in this coordinate system
+   * @param lastIndex last position we looked for, or -1 if none
+   * @return index of grid point containing it
+   */
   private int findCoordElementBounded(double pos, int lastIndex) {
     if (!isNumeric())
-       throw new UnsupportedOperationException("CoordinateAxis.findCoordElement() on non-numeric");
+      throw new UnsupportedOperationException("CoordinateAxis.findCoordElement() on non-numeric");
 
     if (axisType == AxisType.Lon) {
-      for (int x=0; x < getSize(); x++) {
-        if (betweenLon( pos, getCoordEdge(x), getCoordEdge(x+1)))
+      for (int x = 0; x < getSize(); x++) {
+        if (betweenLon(pos, getCoordEdge(x), getCoordEdge(x + 1)))
           return x;
       }
-      return pos <= getCoordEdge(0) ? 0 : (int)getSize()-1;  // LOOK could screw up if pos not normalized to longitude interval
+      return pos <= getCoordEdge(0) ? 0 : (int) getSize() - 1;  // LOOK could screw up if pos not normalized to longitude interval
     }
 
-    if (lastIndex < 0) lastIndex = (int) getSize()/2;
-    int n = (int)getSize();
+    if (lastIndex < 0) lastIndex = (int) getSize() / 2;
+    int n = (int) getSize();
 
     if (isAscending) {
 
@@ -382,12 +410,12 @@ public class CoordinateAxis1D extends CoordinateAxis {
         return 0;
 
       if (pos > getCoordEdge(n))
-        return n-1;
+        return n - 1;
 
       while (pos < getCoordEdge(lastIndex))
         lastIndex--;
 
-      while (pos > getCoordEdge(lastIndex+1))
+      while (pos > getCoordEdge(lastIndex + 1))
         lastIndex++;
 
       return lastIndex;
@@ -398,12 +426,12 @@ public class CoordinateAxis1D extends CoordinateAxis {
         return 0;
 
       if (pos < getCoordEdge(n))
-        return n-1;
+        return n - 1;
 
       while (pos > getCoordEdge(lastIndex))
         lastIndex--;
 
-      while (pos < getCoordEdge(lastIndex+1))
+      while (pos < getCoordEdge(lastIndex + 1))
         lastIndex++;
 
       return lastIndex;
@@ -414,127 +442,136 @@ public class CoordinateAxis1D extends CoordinateAxis {
   // following is from Jon Blower's ncWMS
   // faster routines for coordValue -> index search
   // significantly modified
-  
-   /**
+
+  /**
    * Optimize the regular case
    * Gets the index of the given point. Uses index = (value - start) / stride,
    * hence this is faster than an exhaustive search.
    * from blower ncWMS.
+   *
    * @param coordValue The value along this coordinate axis
-   * @param bounded if false and not in range, return -1, else nearest index
+   * @param bounded    if false and not in range, return -1, else nearest index
    * @return the index that is nearest to this point, or -1 if the point is
-   * out of range for the axis
+   *         out of range for the axis
    */
-   private int findCoordElementRegular(double coordValue, boolean bounded) {
-     int n = (int) this.getSize();
+  private int findCoordElementRegular(double coordValue, boolean bounded) {
+    int n = (int) this.getSize();
 
-     if (axisType == AxisType.Lon) {
-       double maxValue = this.start + this.increment * n;
-       if (/* this.wraps || */ betweenLon(coordValue, this.start, maxValue)) {
-         double distance = LatLonPointImpl.getClockwiseDistanceTo(this.start, coordValue);
-         double exactNumSteps = distance / this.increment;
-         // This axis might wrap, so we make sure that the returned index is within range
-         return ((int) Math.round(exactNumSteps)) % (int) this.getSize();
+    if (axisType == AxisType.Lon) {
+      double maxValue = this.start + this.increment * n;
+      if (/* this.wraps || */ betweenLon(coordValue, this.start, maxValue)) {
+        double distance = LatLonPointImpl.getClockwiseDistanceTo(this.start, coordValue);
+        double exactNumSteps = distance / this.increment;
+        // This axis might wrap, so we make sure that the returned index is within range
+        return ((int) Math.round(exactNumSteps)) % (int) this.getSize();
 
-       } else if (coordValue < this.start) {
-         return bounded ? 0 : -1;
-       } else {
-         return bounded ? n-1 : -1;
-       }
-     }
+      } else if (coordValue < this.start) {
+        return bounded ? 0 : -1;
+      } else {
+        return bounded ? n - 1 : -1;
+      }
+    }
 
-     double distance = coordValue - this.start;
-     double exactNumSteps = distance / this.increment;
-     int index = (int) Math.round(exactNumSteps);
-     if (index < 0)
-       return bounded ? 0 : -1;
-     else if (index >= n)
-       return bounded ? n-1 : -1;
-     return index;
-   }
+    double distance = coordValue - this.start;
+    double exactNumSteps = distance / this.increment;
+    int index = (int) Math.round(exactNumSteps);
+    if (index < 0)
+      return bounded ? 0 : -1;
+    else if (index >= n)
+      return bounded ? n - 1 : -1;
+    return index;
+  }
 
-   /**
+  /**
    * Performs a binary search to find the index of the element of the array
    * whose value is contained in the interval, so must be contiguous.
-    *
-   * @param target The value to search for
+   *
+   * @param target  The value to search for
    * @param bounded if false, and not in range, return -1, else nearest index
    * @return the index of the element in values whose value is closest to target,
-   * or -1 if the target is out of range
+   *         or -1 if the target is out of range
    */
-   private int findCoordElementIrregular(double target, boolean bounded) {
-     if (!wasRead) doRead();
+  private int findCoordElementIrregular(double target, boolean bounded) {
+    if (!wasRead) doRead();
 
-     int n = (int) this.getSize();
-     int low = 0;
-     int high = n;
+    int n = (int) this.getSize();
+    int low = 0;
+    int high = n;
 
-     // special case for longitude
-     if (axisType == AxisType.Lon) {
-       if (target < this.edge[low]) {
-         target += 360.0;
-         if (target > this.edge[high])
-           return bounded ? 0 : -1;
+    // special case for longitude
+    if (axisType == AxisType.Lon) {
+      if (target < this.edge[low]) {
+        target += 360.0;
+        if (target > this.edge[high])
+          return bounded ? 0 : -1;
 
-       } else if (target > this.edge[high]) {
-         target -= 360.0;
-         if (target < this.edge[low])
-           return bounded ? n-1 : -1;
-       }
-     }
+      } else if (target > this.edge[high]) {
+        target -= 360.0;
+        if (target < this.edge[low])
+          return bounded ? n - 1 : -1;
+      }
+    }
 
-     if (isAscending) {
-       // Check that the point is within range
-       if (target < this.edge[low])
-         return bounded ? 0 : -1;
-       else if (target > this.edge[high])
-         return bounded ? n-1 : -1;
+    if (isAscending) {
+      // Check that the point is within range
+      if (target < this.edge[low])
+        return bounded ? 0 : -1;
+      else if (target > this.edge[high])
+        return bounded ? n - 1 : -1;
 
-       // do a binary search to find the nearest index
-       int mid = low;
-       while (high > low + 1) {
-         mid = (low + high) / 2;
-         double midVal = this.edge[mid];
-         if (midVal == target) return mid;
-         else if (midVal < target) low = mid;
-         else high = mid;
-       }
+      // do a binary search to find the nearest index
+      int mid = low;
+      while (high > low + 1) {
+        mid = (low + high) / 2;
+        double midVal = this.edge[mid];
+        if (midVal == target) return mid;
+        else if (midVal < target) low = mid;
+        else high = mid;
+      }
 
-       return low;
+      return low;
 
-     } else {
+    } else {
 
-       // Check that the point is within range
-       if (target > this.edge[low])
-         return bounded ? 0 : -1;
-       else if (target < this.edge[high])
-         return bounded ? n-1 : -1;
+      // Check that the point is within range
+      if (target > this.edge[low])
+        return bounded ? 0 : -1;
+      else if (target < this.edge[high])
+        return bounded ? n - 1 : -1;
 
-       // do a binary search to find the nearest index
-       int mid = low;
-       while (high > low + 1) {
-         mid = (low + high) / 2;
-         double midVal = this.edge[mid];
-         if (midVal == target) return mid;
-         else if (midVal < target) high = mid;
-         else low = mid;
-       }
+      // do a binary search to find the nearest index
+      int mid = low;
+      while (high > low + 1) {
+        mid = (low + high) / 2;
+        double midVal = this.edge[mid];
+        if (midVal == target) return mid;
+        else if (midVal < target) high = mid;
+        else low = mid;
+      }
 
-       return high;
-     }
-   }
+      return high;
+    }
+  }
 
-     ///////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////
   // checkIsRegular
   private boolean isRegular = false;
   private double start, increment;
 
-  /** @return Starting value if isRegular() */
+  /**
+   * Get starting value if isRegular()
+   * @return starting value if isRegular()
+   */
   public double getStart() {
     calcIsRegular();
     return start;
   }
-  /** @return Increment value if isRegular() */
+
+  /**
+   * Get increment value if isRegular()
+   *
+   * @return increment value if isRegular()
+   */
   public double getIncrement() {
     calcIsRegular();
     return increment;
@@ -542,24 +579,34 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
 
   private boolean isLayer = false;
+
   /**
    * Caution: many datasets do not explicitly specify this info, this is often a guess; default is false.
+   *
    * @return true if coordinate lies between a layer, or false if its at a point.
    */
-  public boolean isLayer() { return isLayer; }
-  /** Set if coordinate lies between a layer, or is at a point.
+  public boolean isLayer() {
+    return isLayer;
+  }
+
+  /**
+   * Set if coordinate lies between a layer, or is at a point.
+   *
    * @param isLayer true if coordinate lies between a layer, or false if its at a point
    */
-  public void setLayer(boolean isLayer) { this.isLayer = isLayer; }
+  public void setLayer(boolean isLayer) {
+    this.isLayer = isLayer;
+  }
 
   private void setIsLayer() {
-    Attribute att = findAttribute(_Coordinate.ZisLayer) ;
+    Attribute att = findAttribute(_Coordinate.ZisLayer);
     if ((att != null) && att.getStringValue().equalsIgnoreCase("true"))
       this.isLayer = true;
   }
 
   /**
    * If true, then value(i) = <i>getStart()</i> + i * <i>getIncrement()</i>.
+   *
    * @return if evenly spaced.
    */
   public boolean isRegular() {
@@ -578,10 +625,10 @@ public class CoordinateAxis1D extends CoordinateAxis {
     else {
       start = getCoordValue(0);
       int n = (int) getSize();
-      increment = (getCoordValue(n-1) - getCoordValue(0))/(n-1);
+      increment = (getCoordValue(n - 1) - getCoordValue(0)) / (n - 1);
       isRegular = true;
-      for (int i=1; i< getSize(); i++)
-        if (!ucar.nc2.util.Misc.closeEnough(getCoordValue(i) - getCoordValue(i-1), increment, 5.0e-3)) {
+      for (int i = 1; i < getSize(); i++)
+        if (!ucar.nc2.util.Misc.closeEnough(getCoordValue(i) - getCoordValue(i - 1), increment, 5.0e-3)) {
           isRegular = false;
           // double diff = Math.abs(getCoordValue(i) - getCoordValue(i-1) - increment);
           //System.out.println(i+" diff= "+getCoordValue(i)+" "+getCoordValue(i-1));
@@ -590,12 +637,14 @@ public class CoordinateAxis1D extends CoordinateAxis {
     }
     wasCalc = true;
   }
+
   private boolean wasCalc = false;
 
   ///////////////////////////////////////////////////////////////////////////////
 
   private boolean isAscending;
   private boolean wasRead = false;
+
   private void doRead() {
     if (isNumeric()) {
       readValues();
@@ -617,6 +666,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   private String[] names = null;
+
   private void readStringValues() {
     int count = 0;
     Array data;
@@ -627,7 +677,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       throw new IllegalStateException(ioe);
     }
 
-    names = new String[ (int) data.getSize()];
+    names = new String[(int) data.getSize()];
     IndexIterator ii = data.getIndexIterator();
     while (ii.hasNext())
       names[count++] = (String) ii.getObjectNext();
@@ -643,7 +693,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       throw new IllegalStateException(ioe);
     }
     ArrayChar.StringIterator iter = data.getStringIterator();
-    names = new String[ iter.getNumElems()];
+    names = new String[iter.getNumElems()];
     while (iter.hasNext())
       names[count++] = iter.next();
   }
@@ -653,14 +703,14 @@ public class CoordinateAxis1D extends CoordinateAxis {
   private double[] edge; // n+1 edges, edge[k] < midpoint[k] < edge[k+1]
 
   private void readValues() {
-    midpoint = new double[ (int) getSize()];
+    midpoint = new double[(int) getSize()];
     int count = 0;
     Array data;
     try {
       setUseNaNs(false); // missing values not allowed
       data = read();
     } catch (IOException ioe) {
-      log.error("Error reading coordinate values ",ioe);
+      log.error("Error reading coordinate values ", ioe);
       throw new IllegalStateException(ioe);
     }
 
@@ -695,7 +745,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       log.warn("CoordinateAxis1D.hasBounds read failed ", e);
       return false;
     }
-    
+
     // extract the bounds
     int n = shape[0];
     double[] value1 = new double[n];
@@ -718,22 +768,22 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
     // decide if they are contiguous
     boolean contig = true;
-    for (int i = 0; i < n-1; i++) {
-      if (!ucar.nc2.util.Misc.closeEnough(value1[i+1], value2[i]))
+    for (int i = 0; i < n - 1; i++) {
+      if (!ucar.nc2.util.Misc.closeEnough(value1[i + 1], value2[i]))
         contig = false;
     }
 
     if (contig) {
-      edge = new double[n+1];
+      edge = new double[n + 1];
       edge[0] = value1[0];
-      for(int i=1; i<n+1; i++)
-        edge[i] = value2[i-1];
+      for (int i = 1; i < n + 1; i++)
+        edge[i] = value2[i - 1];
     } else {
-      edge = new double[n+1];
+      edge = new double[n + 1];
       edge[0] = value1[0];
-      for(int i=1; i<n; i++)
-        edge[i] = (value1[i] + value2[i-1])/2;
-      edge[n] = value2[n-1];
+      for (int i = 1; i < n; i++)
+        edge[i] = (value1[i] + value2[i - 1]) / 2;
+      edge[n] = value2[n - 1];
       setContiguous(false);
     }
 
@@ -745,30 +795,30 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
   private void makeEdges() {
     int size = (int) getSize();
-    edge = new double[size+1];
+    edge = new double[size + 1];
     if (size < 1) return;
-    for(int i=1; i<size; i++)
-      edge[i] = (midpoint[i-1] + midpoint[i])/2;
+    for (int i = 1; i < size; i++)
+      edge[i] = (midpoint[i - 1] + midpoint[i]) / 2;
     edge[0] = midpoint[0] - (edge[1] - midpoint[0]);
-    edge[size] = midpoint[size-1] + (midpoint[size-1] - edge[size-1]);
+    edge[size] = midpoint[size - 1] + (midpoint[size - 1] - edge[size - 1]);
   }
 
   private void makeMidpoints() {
     int size = (int) getSize();
     midpoint = new double[size];
-    for(int i=0; i<size; i++)
-      midpoint[i] = (edge[i] + edge[i+1])/2;
+    for (int i = 0; i < size; i++)
+      midpoint[i] = (edge[i] + edge[i + 1]) / 2;
   }
 
   private void makeBoundsFromEdges() {
     int size = (int) getSize();
     if (size == 0) return;
-    
+
     bound1 = new double[size];
     bound2 = new double[size];
-    for(int i=0; i<size; i++) {
+    for (int i = 0; i < size; i++) {
       bound1[i] = edge[i];
-      bound2[i] = edge[i+1];
+      bound2[i] = edge[i + 1];
     }
 
     // flip if needed
@@ -781,6 +831,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
   ////////////////////////////////////////////////////////////////////
   protected ArrayList<NamedObject> named;
+
   private void makeNames() {
     named = new ArrayList<NamedObject>();
     int n = (int) getSize();
@@ -801,6 +852,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
   /**
    * Get the index corresponding to the name. Reverse of getCoordName(i)
+   *
    * @param name getCoordName(i)
    * @return index, or -1 if not found
    */
@@ -821,9 +873,17 @@ public class CoordinateAxis1D extends CoordinateAxis {
       this.desc = desc;
     }
 
-    public String getName() { return name; }
-    public String getDescription() { return desc; }
-    public String toString() { return name; }
+    public String getName() {
+      return name;
+    }
+
+    public String getDescription() {
+      return desc;
+    }
+
+    public String toString() {
+      return name;
+    }
   }
 
 }

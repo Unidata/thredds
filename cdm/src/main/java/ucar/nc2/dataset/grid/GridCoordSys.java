@@ -523,7 +523,7 @@ public class GridCoordSys extends CoordinateSystem {
   public boolean isZPositive() {
     if (vertZaxis == null) return false;
     if (vertZaxis.getPositive() != null) {
-      return vertZaxis.getPositive().equalsIgnoreCase(CoordinateAxis.POSITIVE_UP);
+      return vertZaxis.getPositive().equalsIgnoreCase(ucar.nc2.constants.CF.POSITIVE_UP);
     }
     if (vertZaxis.getAxisType() == AxisType.Height) return true;
     if (vertZaxis.getAxisType() == AxisType.Pressure) return false;

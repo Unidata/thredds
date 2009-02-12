@@ -356,7 +356,7 @@ public class WcsCoverage
         throw new IllegalArgumentException( "GridCoordSystem vertical axis does not contain min/max points." );
       }
 
-      if ( vertAxis.getPositive().equalsIgnoreCase( CoordinateAxis.POSITIVE_DOWN ) )
+      if ( vertAxis.getPositive().equalsIgnoreCase( ucar.nc2.constants.CF.POSITIVE_DOWN ) )
         return new Range( maxIndex, minIndex, stride );
       else
         return new Range( minIndex, maxIndex, stride );

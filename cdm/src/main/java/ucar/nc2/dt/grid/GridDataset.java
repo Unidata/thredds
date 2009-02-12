@@ -290,11 +290,9 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
 
   /**
    * Show Grids and coordinate systems.
-   *
-   * @return info about this GridDataset
+   * @param buf put info here
    */
-  public String getInfo() {
-    StringBuilder buf = new StringBuilder(20000);
+  public void getInfo(StringBuilder buf) {
     int countGridset = 0;
     buf.setLength(0);
 
@@ -318,10 +316,9 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
     buf.append("Name___________Len__Unit________________Type___Description\n");
     for (CoordinateAxis axis : ds.getCoordinateAxes()) {
       if (axis.getAxisType() == null) continue;
-      buf.append(axis.getInfo());
+      axis.getInfo(buf);
       buf.append("\n");
     }
-    return buf.toString();
   }
 
   // private Form parseInfo = new StringBuilder(); // debugging
@@ -331,7 +328,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
    */
   public String getDetailInfo() {
     StringBuilder buff = new StringBuilder(5000);
-    buff.append(getInfo());
+    getInfo(buff);
     buff.append("\n\n----------------------------------------------------\n");
     NetcdfDatasetInfo info = null;
     try {
@@ -343,7 +340,6 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
       if (info != null) try { info.close(); } catch (IOException ee) {} // do nothing
     }
     buff.append("\n\n----------------------------------------------------\n");
-   // buff.append(parseInfo.toString());
     buff.append(ds.toString());
     buff.append("\n\n----------------------------------------------------\n");
 

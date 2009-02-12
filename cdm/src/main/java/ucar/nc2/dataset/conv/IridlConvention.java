@@ -42,7 +42,7 @@ import ucar.nc2.util.CancelTask;
  * @author caron
  */
 
-public class IridlConvention extends GDVConvention {
+public class IridlConvention extends DefaultConvention {
 
   public IridlConvention() {
     this.conventionName = "IRIDL";
