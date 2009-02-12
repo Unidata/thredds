@@ -70,6 +70,9 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
     /** the file we are reading */
     protected RandomAccessFile raf;
 
+    /** should file be synced or extended */
+    protected boolean syncExtend = false;
+
     /** place to store debug stuff */
     protected StringBuilder parseInfo = new StringBuilder();
 
@@ -148,12 +151,20 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
     /**
      * Sync and extend
      *
-     * @return false
+     * @return syncExtend
      */
     public boolean syncExtend() {
-        return false;
+        return syncExtend;
     }
 
+    /**
+     * Sync and extend
+     *
+     * @return syncExtend
+     */
+    public void setSyncExtend( boolean se ) {
+        syncExtend = se;
+    }
     /**
      * Get the detail information
      *

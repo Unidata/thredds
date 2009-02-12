@@ -46,10 +46,7 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DiskCache;
 import ucar.nc2.NetcdfFile;
 import ucar.grib.*;
-import ucar.grib.grib1.Grib1Data;
-import ucar.grib.grib1.Grib1Record;
-import ucar.grib.grib1.Grib1Input;
-import ucar.grib.grib1.Grib1GridTableLookup;
+import ucar.grib.grib1.*;
 import ucar.grib.grib2.*;
 import ucar.grid.GridRecord;
 import ucar.grid.GridIndex;
@@ -68,6 +65,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
 
   // keep this info to reopen index when extending or syncing
   private long rafLength;    // length of the file when opened - used for syncing
+  private long rafLastModified; 
   private int edition = 0;
   private String saveLocation;
    
@@ -238,7 +236,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
         log.debug("  opened index = " + indexFile.getPath());
       } else {  // rewrite if fail to open
         log.debug("  write index = " + indexFile.getPath());
-        //index = writeIndex(edition, indexFile, raf);
+        index = writeIndex( indexFile, raf);
       }
 
     } else {
@@ -252,7 +250,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
 
   private GridIndex writeIndex( File indexFile, RandomAccessFile raf) throws IOException {
     GridIndex index = null;
-
+    DataOutputStream out = null;
     try {
 
       if (indexFile.exists()) {
@@ -264,18 +262,12 @@ public class GribGridServiceProvider extends GridServiceProvider {
       Grib2Input g2i = new Grib2Input(raf);
       int edition = g2i.getEdition();
 
+      out = new DataOutputStream(new BufferedOutputStream(
+                new FileOutputStream(indexFile.getPath(), false)));
+
       if (edition == 1) {
-        DataOutputStream out = new DataOutputStream(
-            new BufferedOutputStream(
-                new FileOutputStream(indexFile.getPath(), false)));
-
-        //index = new Grib1WriteIndex().writeFileIndex(raf, out, true);
-
+        index = new Grib1WriteIndex().writeFileIndex(raf, out, true);
       } else if (edition == 2) {
-        DataOutputStream out = new DataOutputStream(
-            new BufferedOutputStream(
-                new FileOutputStream(indexFile.getPath(), false)));
-
         index = new Grib2WriteIndex().writeFileIndex(raf, out, true);
       }
 
@@ -283,8 +275,9 @@ public class GribGridServiceProvider extends GridServiceProvider {
 
     } catch (NotSupportedException noSupport) {
       System.err.println("NotSupportedException : " + noSupport);
-    //} catch (NoValidGribException noValid ) {
-    //  System.err.println("NoValidGribException : " + noValid);
+    } finally {
+      if ( out != null)
+        out.close();
     }
     return index;
   }
