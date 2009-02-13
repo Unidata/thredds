@@ -81,9 +81,8 @@
   <property name="fileupload.jar" value="external/commons-fileupload-1.2.1.jar"/>
   <property name="httpclient.jar" value="external/commons-httpclient-3.1.jar"/>
   <property name="jdom.jar" value="external/jdom.jar"/>
-  <property name="loggingAPI.jar" value="external/slf4j-api-1.5.6.jar"/>
-  <property name="slf4j.jar" value="external/slf4j-log4j12-1.5.6.jar"/>
-  <property name="logging-maximal.jar" value="external/slf4j-log4j12-1.5.6.jar"/>
+  <property name="slf4jAPI.jar" value="external/slf4j-api-1.5.6.jar"/>
+  <property name="slf4jImpl.jar" value="external/slf4j-log4j12-1.5.6.jar"/>
   <property name="log4j.jar" value="external/log4j-1.2.15.jar"/>
   <property name="nlog4j.jar" value="external/nlog4j-1.2.25.jar"/>
   <property name="spring.jar" value="external/spring-2.5.jar"/>
@@ -129,8 +128,7 @@
       <!-- include name="${gnu-regexp.jar}"/ -->
       <include name="${httpclient.jar}"/>
       <include name="${jdom.jar}"/>
-      <include name="${loggingAPI.jar}"/>
-      <include name="${slf4j.jar}"/>
+      <include name="${slf4jAPI.jar}"/>
       <include name="${nlog4j.jar}"/>
       <include name="${spring.jar}"/>
       <include name="${spring-webmvc.jar}"/>
@@ -142,6 +140,7 @@
       <include name="${threddsResources.jar}" />
       <include name="${http-codec.jar}"/>
       <include name="${http-logging.jar}"/>
+      <include name="${slf4jImpl.jar}"/>
       <include name="${jpeg2000.jar}"/>
       <include name="${nlog4j.jar}"/>
       <include name="${jstl.jar}"/>
