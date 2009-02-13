@@ -33,7 +33,13 @@
  */
 
 
+
 package ucar.nc2.iosp.gempak;
+
+
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.Station;
 
 
 import ucar.unidata.util.Format;
@@ -46,8 +52,9 @@ import ucar.unidata.util.StringUtil;
  *
  * @author Don Murray
  */
-public class GempakStation implements ucar.unidata.geoloc.Station,
-                                      Comparable {
+public class GempakStation implements 
+// Station, 
+Comparable {
 
     /** STID identifier */
     public static final String STID = "STID";
@@ -104,13 +111,13 @@ public class GempakStation implements ucar.unidata.geoloc.Station,
     private String wfo2 = "";
 
     /** station latitude */
-    private int slat;
+    private int slat = -9999;
 
     /** station longitude */
-    private int slon;
+    private int slon = -9999;
 
     /** station elevation */
-    private int selv;
+    private int selv = -9999;
 
     /** priority */
     private int spri;
@@ -398,5 +405,22 @@ public class GempakStation implements ucar.unidata.geoloc.Station,
         GempakStation so = (GempakStation) o;
         return getName().compareTo(so.getName());
     }
+
+    /**
+     * Are either lat or lon missing?
+     * @return true if lat or lon is missing
+     */
+    public boolean isMissing() {
+        return ((slat == -9999) || (slon == -9999));
+    }
+
+    /**
+     * Get the lat/lon location
+     * @return lat/lon location
+     */
+    public LatLonPoint getLatLon() {
+        return new LatLonPointImpl(getLatitude(), getLongitude());
+    }
+
 }
 
