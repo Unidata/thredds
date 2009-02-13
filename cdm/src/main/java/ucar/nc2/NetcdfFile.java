@@ -201,7 +201,11 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
-
+    try {
+      registerIOProvider("ucar.nc2.iosp.fysat.Fysatiosp");
+    } catch (Throwable e) {
+      if (loadWarnings) log.info("Cant load class: " + e);
+    }
     userLoads = true;
   }
 
@@ -709,7 +713,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
   /**
    * Public by accident.
-   * Optional file caching. 
+   * Optional file caching.
    */
   public void setFileCache(ucar.nc2.util.cache.FileCache cache) {
     this.cache = cache;
@@ -804,7 +808,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @see NetcdfFile#unescapeName
    */
   public Variable findVariable(String fullNameEscaped) {
-    if (fullNameEscaped == null || fullNameEscaped.length ( ) == 0) { return null; } 
+    if (fullNameEscaped == null || fullNameEscaped.length ( ) == 0) { return null; }
 
     Group g = rootGroup;
     String vars = fullNameEscaped;
@@ -824,7 +828,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
     StringTokenizer stoke = new StringTokenizer(vars, ".");
     if (!stoke.hasMoreTokens()) return null;
-    
+
     String varShortName = NetcdfFile.unescapeName(stoke.nextToken());
     Variable v = g.findVariable( varShortName);
     if (v == null) return null;
@@ -1429,7 +1433,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     if (immutable) throw new IllegalStateException("Cant modify");
     this.location = location;
   }
- 
+
   /**
    * Make this immutable.
    * @return this
@@ -1599,7 +1603,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   protected Array readData(ucar.nc2.Variable v, Section ranges) throws IOException, InvalidRangeException {
     if (showRequest)
       System.out.println("Data request for variable: "+v.getName()+" section= "+ranges);
-    
+
     Array result = spi.readData(v, ranges);
     result.setUnsigned(v.isUnsigned());
     return result;
