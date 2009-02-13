@@ -46,7 +46,8 @@ import ucar.unidata.util.StringUtil;
  *
  * @author Don Murray
  */
-public class GempakStation implements Comparable {
+public class GempakStation implements ucar.unidata.geoloc.Station,
+                                      Comparable {
 
     /** STID identifier */
     public static final String STID = "STID";
