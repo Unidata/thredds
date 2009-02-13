@@ -273,32 +273,4 @@ public class LocalCatalogServiceController extends AbstractController
     log.info( UsageLog.closingMessageForRequestContext( -1, -1 ) );
     return null;
   }
-
-  private ModelAndView constructModelForCatalogView( InvCatalog cat )
-  {
-    // Hand to catalog view.
-    String catName = cat.getName();
-    String catUri = cat.getUriString();
-    if ( catName == null )
-    {
-      List childrenDs = cat.getDatasets();
-      if ( childrenDs.size() == 1 )
-      {
-        InvDatasetImpl onlyChild = (InvDatasetImpl) childrenDs.get( 0 );
-        catName = onlyChild.getName();
-      }
-      else
-        catName = "";
-    }
-
-    Map<String, Object> model = new HashMap<String, Object>();
-    model.put( "catalog", cat );
-    model.put( "catalogName", HtmlUtils.htmlEscape( catName ) );
-    model.put( "catalogUri", HtmlUtils.htmlEscape( catUri ) );
-    model.put( "webappName", this.getServletContext().getServletContextName() );
-    model.put( "webappVersion", tdsContext.getWebappVersion() );
-    model.put( "webappBuildDate", tdsContext.getWebappVersionBuildDate() );
-    model.put( "webappDocsPath", tdsContext.getTdsConfigHtml().getWebappDocsPath() );
-    return new ModelAndView( "thredds/server/catalog/catalog", model );
-  }
 }

@@ -6,11 +6,11 @@
 <c:if test="${not empty webappUrl}">
   <a href="${webappUrl}">
 </c:if>
-<img src="${webappLogoPath}" alt="${webappLogoAlt}" align="left">
+<img src="${webappLogoUrl}" alt="${webappLogoAlt}" align="left">
 ${webappName}
 <c:if test="${not empty webappUrl}">
   </a>
 </c:if>
 
-[Version ${webappVersion} - ${webappBuildDate}]
+[Version ${webappVersion} - ${webappVersionBuildDate}]
 <a href="${webappDocsPath}">Documentation</a>

@@ -15,12 +15,8 @@
 
   <bean id="tdsContext" class="thredds.server.config.TdsContext">
     <property name="webappVersion" value="${tds.version}"/>
-    <property name="webappVersionFull" value="${tds.version.full}"/>
+    <property name="webappVersionBrief" value="${tds.version.brief}"/>
     <property name="webappVersionBuildDate" value="${tds.version.builddate}"/>
-
-    <property name="webappDocumentationUrl" value="${tds.documentation.url}"/>
-    <property name="webappLogoUrl" value="${tds.logo.url}"/>
-    <property name="webappLogoAlt" value="${tds.logo.alt}"/>
 
     <property name="contentPath" value="${tds.content.path}"/>
     <property name="startupContentPath" value="${tds.content.startup.path}"/>
@@ -28,6 +24,7 @@
     <property name="motherlodeContentPath" value="${tds.content.motherlode.path}"/>
 
     <property name="tdsConfigFileName" value="${tds.config.file}"/>
+
     <property name="tdsConfigHtml" ref="tdsConfigHtml"/>
   </bean>
 
@@ -35,39 +32,19 @@
     <constructor-arg ref="tdsContext" />
   </bean>
   
-  <!--
-  <bean id="tdsCatConfig" class="thredds.server.config.TdsCatConfig">
-    <constructor-arg ref="tdsContext"/>
-  </bean>
-  -->
-
   <bean id="tdsConfigHtml" class="thredds.server.config.TdsConfigHtml">
-    <property name="catalogCssPath" value="${tds.html.css.catalog}"/>
-    <property name="pageCssPath" value="${tds.html.css}"/>
+    <property name="webappUrl" value="${tds.url}" />
+    <property name="webappDocsUrl" value="${tds.documentation.url}" />
+    <property name="webappLogoUrl" value="${tds.logo.url}" />
+    <property name="webappLogoAlt" value="${tds.logo.alt}" />
 
-    <property name="folderIconPath" value="${tds.html.folder.icon.path}"/>
-    <property name="folderIconAlt" value="${tds.html.folder.icon.alt}"/>
-    <property name="datasetIconPath" value="${tds.html.dataset.icon.path}"/>
-    <property name="datasetIconAlt" value="${tds.html.dataset.icon.alt}"/>
-
-    <property name="webappDocsPath" value="${tds.html.webapp.docs.path}"/>
-    <property name="webappLogoPath" value="${tds.html.webapp.logo.path}"/>
-    <property name="webappLogoAlt" value="${tds.html.webapp.logo.alt}"/>
-
-    <property name="installationUrl" value="${tds.html.installation.url}"/>
-    <property name="installationLogoPath" value="${tds.html.installation.logo.path}"/>
-    <property name="installationLogoAlt" value="${tds.html.installation.logo.alt}"/>
-
-    <property name="hostUrl" value="${tds.html.host.url}"/>
-    <property name="hostLogoPath" value="${tds.html.host.logo.path}"/>
-    <property name="hostLogoAlt" value="${tds.html.host.logo.alt}"/>
+    <property name="installUrl" value="${tds.install.url}" />
   </bean>
 
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="locations">
       <list>
         <value>classpath:thredds/server/tds.properties</value>
-        <value>classpath:thredds/server/tds.html.properties</value>
       </list>
     </property>
   </bean>

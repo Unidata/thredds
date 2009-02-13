@@ -104,8 +104,8 @@ public class TestDataRootHandler extends TestCase
   {
     // Create, configure, and initialize a DataRootHandler.
     TdsContext tdsContext = new TdsContext();
-    tdsContext.setWebappVersion( "0.0" );
-    tdsContext.setWebappVersionFull( "0.0.0.0" );
+    tdsContext.setWebappVersion( "0.0.0.0" );
+    tdsContext.setWebappVersionBrief( "0.0" );
     tdsContext.setWebappVersionBuildDate( "20080904.2244" );
     tdsContext.setContentPath( "thredds" );
     tdsContext.setStartupContentPath( "startup" );

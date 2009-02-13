@@ -34,13 +34,21 @@ package thredds.server.catalogservice;
 
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ValidationUtils;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.HtmlUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import thredds.catalog.InvDataset;
-import thredds.catalog.InvCatalogImpl;
+import thredds.catalog.InvCatalog;
+import thredds.catalog.InvDatasetImpl;
 import thredds.servlet.UsageLog;
+import thredds.server.config.TdsConfigHtml;
+
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.net.URI;
 
 /**
  * _more_
@@ -50,6 +58,8 @@ import thredds.servlet.UsageLog;
  */
 public class CatalogServiceUtils
 {
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( CatalogServiceUtils.class );
+
   private CatalogServiceUtils() {}
 
   public static BindingResult bindAndValidateRemoteCatalogRequest( HttpServletRequest request )
@@ -83,4 +93,62 @@ public class CatalogServiceUtils
     return bindingResult;
   }
 
+  public static ModelAndView constructModelForCatalogView( InvCatalog cat, TdsConfigHtml htmlConfig )
+  {
+    // Hand to catalog view.
+    String catName = cat.getName();
+    String catUri = cat.getUriString();
+    if ( catName == null )
+    {
+      List childrenDs = cat.getDatasets();
+      if ( childrenDs.size() == 1 )
+      {
+        InvDatasetImpl onlyChild = (InvDatasetImpl) childrenDs.get( 0 );
+        catName = onlyChild.getName();
+      }
+      else
+        catName = "";
+    }
+
+    Map<String, Object> model = new HashMap<String, Object>();
+    model.put( "catalog", cat );
+    model.put( "catalogName", HtmlUtils.htmlEscape( catName ) );
+    model.put( "catalogUri", HtmlUtils.htmlEscape( catUri ) );
+
+    htmlConfig.addWebappInfoToMap( model );
+
+    return new ModelAndView( "thredds/server/catalog/catalog", model );
+  }
+
+  public static ModelAndView constructValidationMessageModelAndView( URI uri,
+                                                                     String validationMessage,
+                                                                     TdsConfigHtml htmlConfig )
+  {
+    Map<String, Object> model = new HashMap<String, Object>();
+    model.put( "catalogUrl", uri );
+    model.put( "message", validationMessage );
+
+    htmlConfig.addHostInstitutionInfoToMap( model );
+    htmlConfig.addInstallationInfoToMap( model );
+    htmlConfig.addWebappInfoToMap( model );
+
+    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
+    return new ModelAndView( "/thredds/server/catalogservice/validationMessage", model );
+  }
+
+  public static ModelAndView constructValidationErrorModelAndView( URI uri,
+                                                                   String validationMessage,
+                                                                   TdsConfigHtml htmlConfig )
+  {
+    Map<String, Object> model = new HashMap<String, Object>();
+    model.put( "catalogUrl", uri );
+    model.put( "message", validationMessage );
+
+    htmlConfig.addHostInstitutionInfoToMap( model );
+    htmlConfig.addInstallationInfoToMap( model );
+    htmlConfig.addWebappInfoToMap( model );
+
+    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
+    return new ModelAndView( "/thredds/server/catalogservice/validationError", model );
+  }
 }

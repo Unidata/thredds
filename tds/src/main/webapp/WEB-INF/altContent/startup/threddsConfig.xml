@@ -15,6 +15,47 @@
   -->
 
   <!--
+   Setup for generated HTML pages.
+
+   NOTE: URLs may be absolute or relative, relative URLs must be relative
+   to the webapp URL, i.e., http://server:port/thredds/.
+    -->
+  <htmlSetup>
+    <!-- CSS documents used in generated HTML pages.
+      The CSS document given in the "cssCatalog" element is used for all pages
+      that are HTML catalog views. The CSS document given in the "cssPage"
+      element is used in all other generated HTML pages.
+      -->
+    <cssPage>tds.css</cssPage>
+    <cssCatalog>tdsCat.css</cssCatalog>
+
+    <!-- The URLs (relative to "/thredds/") and alternate text for both
+       folder and dataset icons used in HTML catalog views.
+      -->
+    <folderIconUrl>folder.gif</folderIconUrl>
+    <folderIconAlt>Folder</folderIconAlt>
+    <datasetIconUrl>dataset.gif</datasetIconUrl>
+    <datasetIconAlt>Dataset</datasetIconAlt>
+
+    <!-- The URL and alternate text for this TDS installations logo.
+     -->
+    <installName>Motherlode</installName>
+    <installLogoUrl>unidataLogo.gif</installLogoUrl>
+    <installLogoAlt>Unidata</installLogoAlt>
+
+    <!--
+     Information for the institution hosting this TDS installation:
+     - a URL for the institution;
+     - a URL to the institution logo; and
+     - alternate text for the institution logo.
+     -->
+    <hostInstName>Unidata</hostInstName>
+    <hostInstUrl>http://www.unidata.ucar.edu/</hostInstUrl>
+    <hostInstLogoUrl>unidataLogo.gif</hostInstLogoUrl>
+    <hostInstLogoAlt>Unidata</hostInstLogoAlt>
+  </htmlSetup>
+
+  <!--
    The <CatalogServices> element:
    - Services on local TDS served catalogs are always on.
    - Services on remote catalogs are set with the allowRemote element

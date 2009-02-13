@@ -80,15 +80,15 @@ public class TdsConfigContextListener
     // LOOK! ToDo This should be removed once the catalog service controllers uses JSP.
     HtmlWriter.init( tdsContext.getContextPath(),
                      tdsContext.getWebappName(),
-                     tdsContext.getWebappVersionFull(),
-                     tdsContext.getTdsConfigHtml().getWebappDocsPath(),
-                     tdsContext.getTdsConfigHtml().getPageCssPath(),
-                     tdsContext.getTdsConfigHtml().getCatalogCssPath(),
-                     tdsContext.getTdsConfigHtml().getWebappLogoPath(),
+                     tdsContext.getWebappVersion(),
+                     tdsContext.getTdsConfigHtml().getWebappDocsUrl(),
+                     tdsContext.getTdsConfigHtml().getPageCssUrl(),
+                     tdsContext.getTdsConfigHtml().getCatalogCssUrl(),
+                     tdsContext.getTdsConfigHtml().getWebappLogoUrl(),
                      tdsContext.getTdsConfigHtml().getWebappLogoAlt(),
-                     tdsContext.getTdsConfigHtml().getInstallationLogoPath(),
-                     tdsContext.getTdsConfigHtml().getInstallationLogoAlt(),
-                     tdsContext.getTdsConfigHtml().getFolderIconPath(),
+                     tdsContext.getTdsConfigHtml().getInstallLogoUrl(),
+                     tdsContext.getTdsConfigHtml().getInstallLogoAlt(),
+                     tdsContext.getTdsConfigHtml().getFolderIconUrl(),
                      tdsContext.getTdsConfigHtml().getFolderIconAlt() );
 
     logger.debug( "contextInitialized(): done.");

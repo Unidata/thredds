@@ -32,6 +32,12 @@
  */
 package thredds.server.config;
 
+import thredds.servlet.ThreddsConfig;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Map;
+
 /**
  * _more_
  *
@@ -40,103 +46,71 @@ package thredds.server.config;
  */
 public class TdsConfigHtml
 {
-  private static org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger( TdsConfigHtml.class );
+//  private static org.slf4j.Logger log =
+//          org.slf4j.LoggerFactory.getLogger( TdsConfigHtml.class );
 
-  private String webappContextPath;
-  private String webappName;
-  private String webappVersion;
-  private String pageCssPath;
-  private String catalogCssPath;
+  private TdsContext tdsContext;
+
   private String webappUrl;
-  private String webappLogoPath;
+  private String webappDocsUrl;
+  private String webappLogoUrl;
   private String webappLogoAlt;
-  private String installationUrl;
-  private String installationLogoPath;
-  private String installationLogoAlt;
-  private String hostUrl;
-  private String hostLogoPath;
-  private String hostLogoAlt;
-  private String webappDocsPath;
-  private String folderIconPath;
+
+  private String pageCssUrl;
+  private String catalogCssUrl;
+
+  private String folderIconUrl;
   private String folderIconAlt;
-  private String datasetIconPath;
+  private String datasetIconUrl;
   private String datasetIconAlt;
+
+  private String installName;
+  private String installUrl;
+  private String installLogoUrl;
+  private String installLogoAlt;
+
+  private String hostInstName;
+  private String hostInstUrl;
+  private String hostInstLogoUrl;
+  private String hostInstLogoAlt;
 
   public void init( TdsContext tdsContext )
   {
-    this.webappContextPath = tdsContext.getContextPath();
-    this.webappName = tdsContext.getWebappName();
-    this.webappVersion = tdsContext.getWebappVersionFull();
+    this.tdsContext = tdsContext;
+
+    this.pageCssUrl    = ThreddsConfig.get( "htmlSetup.cssPage", "" );
+    this.catalogCssUrl = ThreddsConfig.get( "htmlSetup.cssCatalog", "");
+
+    this.folderIconUrl  = ThreddsConfig.get( "htmlSetup.folderIconUrl", "");
+    this.folderIconAlt  = ThreddsConfig.get( "htmlSetup.folderIconAlt", "");
+    this.datasetIconUrl = ThreddsConfig.get( "htmlSetup.datasetIconUrl", "");
+    this.datasetIconAlt = ThreddsConfig.get( "htmlSetup.datasetIconAlt", "");
+
+    this.installName    = ThreddsConfig.get( "htmlSetup.installName", "");
+    this.installLogoUrl = ThreddsConfig.get( "htmlSetup.installLogoUrl", "");
+    this.installLogoAlt = ThreddsConfig.get( "htmlSetup.installLogoAlt", "");
+
+    this.hostInstName    = ThreddsConfig.get( "htmlSetup.hostInstName", "" );
+    this.hostInstUrl     = ThreddsConfig.get( "htmlSetup.hostInstUrl", "" );
+    this.hostInstLogoUrl = ThreddsConfig.get( "htmlSetup.hostInstLogoUrl", "" );
+    this.hostInstLogoAlt = ThreddsConfig.get( "htmlSetup.hostInstLogoAlt", "" );
   }
 
   /**
-   * Return the webapp context path.
+   * Return the name of this webapp. The name is that given by display-name in web.xml.
    *
-   * @return the webapp context path.
-   */
-  public String getWebappContextPath()
-  {
-    return webappContextPath;
-  }
-
-  /**
-   * Return the name of the webapp.
-   * @return the name of the webapp.
+   * @return the name of this webapp.
    */
   public String getWebappName()
   {
-    return webappName;
-  }
-
-  /**
-   * Return the version of the webapp.
-   * @return the version of the webapp.
-   */
-  public String getWebappVersion()
-  {
-    return webappVersion;
-  }
-
-  /**
-   * Return the path to the CSS file used for most HTML pages.
-   *
-   * If the path does not starts with "/", it is relative
-   * to the context path.
-   *
-   * @return the path to the CSS file used for most HTML pages.
-   */
-  public String getPageCssPath()
-  {
-    return pageCssPath;
-  }
-
-  public void setPageCssPath( String pageCssPath )
-  {
-    this.pageCssPath = pageCssPath;
-  }
-
-  /**
-   * Return the path to the CSS file used for catalog HTML pages.
-   *
-   * If the path does not starts with "/", it is relative
-   * to the context path.
-   *
-   * @return the path to the CSS file used for catalog HTML pages.
-   */
-  public String getCatalogCssPath()
-  {
-    return catalogCssPath;
-  }
-
-  public void setCatalogCssPath( String catalogCssPath )
-  {
-    this.catalogCssPath = catalogCssPath;
+    return this.tdsContext.getWebappName();
   }
 
   /**
    * Return the URL to the main web page for the webapp.
-   * For example, "http://server:port/thredds/catalog.html".
+   *
+   * <p>Note: A relative URL is considered relative to the webapp context path.
+   * That is, it is relative to "http://server:port/thredds/".
    *
    * @return the URL to the main web page for the webapp.
    */
@@ -145,44 +119,45 @@ public class TdsConfigHtml
     return webappUrl;
   }
 
-  public void setWebappUrl( String webappUrl )
+  public void setWebappUrl( String webappUrl)
   {
     this.webappUrl = webappUrl;
   }
 
   /**
-   * Return the URI to the webapp documentation page.
-   * <p/>
-   * If the URI is relative, it is considered relative to the webapp context path.
+   * Return the URL to the webapp documentation page.
    *
-   * @return the URI to the webapp documentation page.
+   * <p>Note: A relative URL is considered relative to the webapp context path.
+   * That is, it is relative to "http://server:port/thredds/".
+   *
+   * @return the URL to the webapp documentation page.
    */
-  public String getWebappDocsPath()
+  public String getWebappDocsUrl()
   {
-    return webappDocsPath;
+    return webappDocsUrl;
   }
 
-  public void setWebappDocsPath( String webappDocsPath )
+  public void setWebappDocsUrl( String webappDocsUrl )
   {
-    this.webappDocsPath = webappDocsPath;
+    this.webappDocsUrl = webappDocsUrl;
   }
 
   /**
-   * Return the path to the logo file for the webapp.
+   * Return the Url to the logo file for the webapp.
    *
-   * If the path does not starts with "/", it is relative
-   * to the context path.
+   * <p>Note: A relative URL is considered relative to the webapp context path.
+   * That is, it is relative to "http://server:port/thredds/".
    *
    * @return the path to the logo file for the webapp.
    */
-  public String getWebappLogoPath()
+  public String getWebappLogoUrl()
   {
-    return webappLogoPath;
+    return webappLogoUrl;
   }
 
-  public void setWebappLogoPath( String webappLogoPath )
+  public void setWebappLogoUrl( String webappLogoUrl )
   {
-    this.webappLogoPath = webappLogoPath;
+    this.webappLogoUrl = webappLogoUrl;
   }
 
   /**
@@ -201,109 +176,42 @@ public class TdsConfigHtml
   }
 
   /**
-   * Return the URL to the top level of this installation.
+   * Return the URL to the CSS file used for all non-catalog HTML pages.
    *
-   * @return the URL to the top level of this installation.
+   * <p>Note: A relative URL is considered relative to the webapp context path.
+   * That is, it is relative to "http://server:port/thredds/".
+   *
+   * @return the Url to the CSS file used for all non-catalog HTML pages.
    */
-  public String getInstallationUrl()
+  public String getPageCssUrl()
   {
-    return installationUrl;
-  }
-
-  public void setInstallationUrl( String installationUrl )
-  {
-    this.installationUrl = installationUrl;
+    return pageCssUrl;
   }
 
   /**
-   * Return the path to the logo file for this installation of the webapp.
+   * Return the URL to the CSS file used for catalog HTML pages.
    *
-   * If the path does not starts with "/", it is relative
-   * to the context path.
+   * <p>Note: A relative URL is considered relative to the webapp context path.
+   * That is, it is relative to "http://server:port/thredds/".
    *
-   * @return the path to the logo file for this installation of the webapp.
+   * @return the URL to the CSS file used for catalog HTML pages.
    */
-  public String getInstallationLogoPath()
+  public String getCatalogCssUrl()
   {
-    return installationLogoPath;
-  }
-
-  public void setInstallationLogoPath( String installationLogoPath )
-  {
-    this.installationLogoPath = installationLogoPath;
+    return catalogCssUrl;
   }
 
   /**
-   * Return the alternate text for the logo for this installation.
+   * Return the URL to the icon document used for folders in HTML catalog views.
    *
-   * @return the alternate text for the logo for this installation.
+   * <p>Note: A relative URL is considered relative to the webapp context path.
+   * That is, it is relative to "http://server:port/thredds/".
+   *
+   * @return the URL to the icon document used for folders in HTML catalog views.
    */
-  public String getInstallationLogoAlt()
+  public String getFolderIconUrl()
   {
-    return installationLogoAlt;
-  }
-
-  public void setInstallationLogoAlt( String installationLogoAlt )
-  {
-    this.installationLogoAlt = installationLogoAlt;
-  }
-
-  /**
-   * Return the URL to a web page for the institution hosting this installation.
-   *
-   * @return the URL to a web page for the institution hosting this installation.
-   */
-  public String getHostUrl()
-  {
-    return hostUrl;
-  }
-
-  public void setHostUrl( String hostUrl )
-  {
-    this.hostUrl = hostUrl;
-  }
-
-  /**
-   * Return the path to the logo file for the institution hosting this installation.
-   *
-   * If the path does not starts with "/", it is relative
-   * to the context path.
-   *
-   * @return the path to the logo file for the institution hosting this installation.
-   */
-  public String getHostLogoPath()
-  {
-    return hostLogoPath;
-  }
-
-  public void setHostLogoPath( String hostLogoPath )
-  {
-    this.hostLogoPath = hostLogoPath;
-  }
-
-  /**
-   * Return the alternate text for the logo for the institution hosting this installation.
-   *
-   * @return the alternate text for the logo for the institution hosting this installation.
-   */
-  public String getHostLogoAlt()
-  {
-    return hostLogoAlt;
-  }
-
-  public void setHostLogoAlt( String hostLogoAlt )
-  {
-    this.hostLogoAlt = hostLogoAlt;
-  }
-
-  public String getFolderIconPath()
-  {
-    return folderIconPath;
-  }
-
-  public void setFolderIconPath( String folderIconPath )
-  {
-    this.folderIconPath = folderIconPath;
+    return folderIconUrl;
   }
 
   public String getFolderIconAlt()
@@ -311,19 +219,17 @@ public class TdsConfigHtml
     return folderIconAlt;
   }
 
-  public void setFolderIconAlt( String folderIconAlt )
+  /**
+   * Return the URL to the icon document used for datasets in HTML catalog views.
+   *
+   * <p>Note: A relative URL is considered relative to the webapp context path.
+   * That is, it is relative to "http://server:port/thredds/".
+   *
+   * @return the URL to the icon document used for datasets in HTML catalog views.
+   */
+  public String getDatasetIconUrl()
   {
-    this.folderIconAlt = folderIconAlt;
-  }
-
-  public String getDatasetIconPath()
-  {
-    return datasetIconPath;
-  }
-
-  public void setDatasetIconPath( String datasetIconPath )
-  {
-    this.datasetIconPath = datasetIconPath;
+    return datasetIconUrl;
   }
 
   public String getDatasetIconAlt()
@@ -331,8 +237,155 @@ public class TdsConfigHtml
     return datasetIconAlt;
   }
 
-  public void setDatasetIconAlt( String datasetIconAlt )
+  /**
+   * Return the name of this TDS installation.
+   *
+   * @return the name of this TDS installation.
+   */
+  public String getInstallName()
   {
-    this.datasetIconAlt = datasetIconAlt;
+    return installName;
+  }
+
+  /**
+   * Return the URL to the top level of this TDS installation.
+   * <p/>
+   * <p>Note: A relative URL is considered relative to the webapp context path.
+   * That is, it is relative to "http://server:port/thredds/".
+   *
+   * @return the URL to the top level of this installation.
+   */
+  public String getInstallUrl()
+  {
+    return installUrl;
+  }
+
+  public void setInstallUrl( String installUrl )
+  {
+    this.installUrl = installUrl;
+  }
+
+  /**
+   * Return the path to the logo file for this TDS installation.
+   * <p/>
+   * <p>Note: A relative URL is considered relative to the webapp context path.
+   * That is, it is relative to "http://server:port/thredds/".
+   *
+   * @return the path to the logo file for this installation of the webapp.
+   */
+  public String getInstallLogoUrl()
+  {
+    return installLogoUrl;
+  }
+
+  /**
+   * Return the alternate text for the logo for this TDS installation.
+   *
+   * @return the alternate text for the logo for this installation.
+   */
+  public String getInstallLogoAlt()
+  {
+    return installLogoAlt;
+  }
+
+  /**
+   * Return the name of the institution hosting this TDS installation.
+   *
+   * @return the name of the institution hosting this TDS installation.
+   */
+  public String getHostInstName()
+  {
+    return hostInstName;
+  }
+
+  /**
+   * Return the URL to a web page for the institution hosting this installation.
+   * <p/>
+   * <p>Note: A relative URL is considered relative to the webapp context path.
+   * That is, it is relative to "http://server:port/thredds/".
+   *
+   * @return the URL to a web page for the institution hosting this installation.
+   */
+  public String getHostInstUrl()
+  {
+    return hostInstUrl;
+  }
+
+  /**
+   * Return the path to the logo file for the institution hosting this installation.
+   * <p/>
+   * <p>Note: A relative URL is considered relative to the webapp context path.
+   * That is, it is relative to "http://server:port/thredds/".
+   *
+   * @return the path to the logo file for the institution hosting this installation.
+   */
+  public String getHostInstLogoUrl()
+  {
+    return hostInstLogoUrl;
+  }
+
+  /**
+   * Return the alternate text for the logo for the institution hosting this installation.
+   *
+   * @return the alternate text for the logo for the institution hosting this installation.
+   */
+  public String getHostInstLogoAlt()
+  {
+    return hostInstLogoAlt;
+  }
+
+  /**
+   * Return a URL ready to use in a generated HTML page from a URL that
+   * is either absolute or relative to the webapp context path. That is,
+   * if relative, it is relative to "http://server:port/thredds/".
+   *
+   * <p>For simplicity, all relative URLs are converted to URLs that are
+   * absolute paths. For instance, "catalog.xml" becomes "/thredds/catalog.xml".
+   *
+   * @param url the URL to prepare for use in HTML.
+   * @return a URL ready to use in a generated HTML page.
+   */
+  public String prepareUrlStringForHtml( String url )
+  {
+    URI uri = null;
+    try
+    {
+      uri = new URI( url );
+    }
+    catch ( URISyntaxException e )
+    {
+      throw new IllegalArgumentException( "Given a bad URL [" + url + "].", e );
+    }
+    if ( uri.isAbsolute() )
+      return uri.toString();
+    if ( url.startsWith( "/" ) )
+      return url;
+    return this.tdsContext.getContextPath() + "/" + url;
+  }
+
+  public void addHostInstitutionInfoToMap( Map<String, Object> model )
+  {
+    model.put( "hostInstName", this.getHostInstName() );
+    model.put( "hostInstUrl", this.prepareUrlStringForHtml( this.getHostInstUrl() ) );
+    model.put( "hostInstLogoUrl", this.prepareUrlStringForHtml( this.getHostInstLogoUrl() ) );
+    model.put( "hostInstLogoAlt", this.getHostInstLogoAlt() );
+  }
+
+  public void addInstallationInfoToMap( Map<String, Object> model )
+  {
+    model.put( "installationName", this.getInstallName() );
+    model.put( "installationUrl", this.prepareUrlStringForHtml( this.getInstallUrl() ) );
+    model.put( "installationLogoUrl", this.prepareUrlStringForHtml( this.getInstallLogoUrl() ) );
+    model.put( "installationLogoAlt", this.getInstallLogoAlt() );
+  }
+  public void addWebappInfoToMap( Map<String, Object> model)
+  {
+    model.put( "webappName", this.getWebappName() );
+    model.put( "webappVersion", this.tdsContext.getWebappVersion() );
+    model.put( "webappVersionBuildDate", this.tdsContext.getWebappVersionBuildDate() );
+    model.put( "webappUrl", this.prepareUrlStringForHtml( this.getWebappUrl() ) );
+    model.put( "webappDocsUrl", this.prepareUrlStringForHtml( this.getWebappDocsUrl() ));
+    model.put( "webappLogoUrl", this.prepareUrlStringForHtml( this.getWebappLogoUrl() ) );
+    model.put( "webappLogoAlt", this.getWebappLogoAlt() );
   }
 }
