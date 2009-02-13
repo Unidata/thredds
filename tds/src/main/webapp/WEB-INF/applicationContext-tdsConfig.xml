@@ -18,6 +18,10 @@
     <property name="webappVersionFull" value="${tds.version.full}"/>
     <property name="webappVersionBuildDate" value="${tds.version.builddate}"/>
 
+    <property name="webappDocumentationUrl" value="${tds.documentation.url}"/>
+    <property name="webappLogoUrl" value="${tds.logo.url}"/>
+    <property name="webappLogoAlt" value="${tds.logo.alt}"/>
+
     <property name="contentPath" value="${tds.content.path}"/>
     <property name="startupContentPath" value="${tds.content.startup.path}"/>
     <property name="iddContentPath" value="${tds.content.idd.path}"/>

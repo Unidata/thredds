@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.net.URI;
 
 import thredds.util.filesource.*;
 import thredds.servlet.ThreddsConfig;
@@ -61,6 +62,10 @@ public class TdsContext
   private String webappVersion;
   private String webappVersionFull;
   private String webappVersionBuildDate;
+
+  private String webappDocumentationUrl;
+  private String webappLogoUrl;
+  private String webappLogoAlt;
 
   private String contextPath;
 
@@ -98,6 +103,10 @@ public class TdsContext
   public void setWebappVersion( String ver) { this.webappVersion = ver; }
   public void setWebappVersionFull( String verFull) { this.webappVersionFull = verFull; }
   public void setWebappVersionBuildDate( String buildDateString) { this.webappVersionBuildDate = buildDateString; }
+
+  public void setWebappDocumentationUrl( String webappDocumentationUrl ) { this.webappDocumentationUrl = webappDocumentationUrl; }
+  public void setWebappLogoUrl( String webappLogoUrl ) { this.webappLogoUrl = webappLogoUrl; }
+  public void setWebappLogoAlt( String webappLogoAlt ) { this.webappLogoAlt = webappLogoAlt; }
 
   public void setContentPath( String contentPath) {this.contentPath = contentPath; }
   public void setStartupContentPath( String startupContentPath ) { this.startupContentPath = startupContentPath; }

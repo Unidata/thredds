@@ -2,6 +2,11 @@
 tds.version=@VERSION@
 tds.version.full=@VERSION.MINOR@
 tds.version.builddate=@BUILDTIME@
+
+tds.documentation.url=http://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html
+tds.logo.url=threddsSmall.jpg
+tds.logo.alt=TDS
+
 tds.content.path=thredds
 tds.content.startup.path=WEB-INF/altContent/startup
 tds.content.idd.path=WEB-INF/altContent/idd/thredds
