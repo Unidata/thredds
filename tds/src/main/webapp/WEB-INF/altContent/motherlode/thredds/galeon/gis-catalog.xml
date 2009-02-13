@@ -15,7 +15,14 @@
       <dataType>Grid</dataType>
     </metadata>
     <filter>
+      <include wildcard="*.bufr"/>
+      <include wildcard="*.gini"/>
       <include wildcard="*.grib"/>
+      <include wildcard="*.grib1"/>
+      <include wildcard="*.grib2"/>
+      <include wildcard="*.nc"/>
+      <include wildcard="*.ar2v"/>
+      <include wildcard="*.nids"/>
     </filter>
   </datasetScan>
 

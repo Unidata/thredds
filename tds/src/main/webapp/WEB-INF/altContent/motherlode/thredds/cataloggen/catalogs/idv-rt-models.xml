@@ -1,0 +1,1077 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE catalog SYSTEM "http://www.unidata.ucar.edu/projects/THREDDS/xml/InvCatalog.0.6.dtd">
+
+<catalog xmlns="http://www.unidata.ucar.edu/thredds" xmlns:xlink="http://www.w3.org/1999/xlink" name="Unidata IDD Model Data" version="0.6">
+  <dataset name="Unidata IDD Model Data" dataType="Grid" serviceName="mlode">
+    <service name="latest" serviceType="Resolver" base="http://motherlode.ucar.edu:9080/thredds/dqc/latestModel-InvCat0.6" />
+    <service name="mlode" serviceType="DODS" base="http://motherlode.ucar.edu:9080/thredds/dodsC/modelsNc/" />
+    <dataset name="NCEP NAM 80km CONUS model data">
+      <dataset name="Latest NCEP NAM 80km CONUS model data" urlPath="?nam_211" serviceName="latest" />
+      <dataset name="NCEP NAM 80km CONUS 2008-07-11 12:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080711_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-07-11 00:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080711_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-07-10 12:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080710_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-07-10 00:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080710_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-07-09 12:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080709_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-07-09 00:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080709_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-07-08 12:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080708_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-07-08 00:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080708_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-07-07 12:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080707_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-07-07 00:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080707_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-07-06 12:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080706_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-07-06 00:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080706_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-07-05 12:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080705_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-07-05 00:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080705_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-07-04 12:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080704_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-07-04 00:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080704_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-07-03 12:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080703_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-07-03 00:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080703_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-07-02 12:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080702_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-07-02 00:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080702_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-07-01 12:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080701_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-07-01 00:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080701_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-06-30 12:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080630_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-06-30 00:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080630_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-06-29 12:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080629_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-06-29 00:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080629_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-06-28 12:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080628_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-06-28 00:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080628_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-06-27 12:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080627_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-06-27 00:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080627_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-06-26 12:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080626_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-06-26 00:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080626_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP NAM 80km CONUS 2008-06-25 12:00:00 GMT" urlPath="NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20080625_1200.nc" serviceName="mlode" />
+    </dataset>
+    <dataset name="NCEP GFS 80km CONUS model data">
+      <dataset name="Latest NCEP GFS 80km CONUS model data" urlPath="?gfs_211" serviceName="latest" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-11 12:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080711_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-11 06:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080711_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-11 00:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080711_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-10 18:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080710_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-10 12:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080710_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-10 06:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080710_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-10 00:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080710_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-09 18:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080709_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-09 12:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080709_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-09 06:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080709_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-09 00:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080709_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-08 18:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080708_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-08 12:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080708_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-08 06:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080708_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-08 00:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080708_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-07 18:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080707_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-07 12:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080707_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-07 06:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080707_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-07 00:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080707_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-06 18:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080706_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-06 12:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080706_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-06 06:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080706_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-06 00:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080706_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-05 18:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080705_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-05 12:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080705_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-05 06:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080705_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-05 00:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080705_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-04 18:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080704_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-04 12:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080704_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-04 06:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080704_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-04 00:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080704_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-03 18:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080703_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-03 12:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080703_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-03 06:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080703_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-03 00:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080703_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-02 18:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080702_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-02 12:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080702_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-02 06:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080702_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-02 00:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080702_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-01 18:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080701_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-01 12:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080701_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-01 06:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080701_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-07-01 00:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080701_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-06-30 18:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080630_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-06-30 12:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080630_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-06-30 06:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080630_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-06-30 00:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080630_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-06-29 18:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080629_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-06-29 12:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080629_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-06-29 06:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080629_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-06-29 00:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080629_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-06-28 18:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080628_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-06-28 12:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080628_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-06-28 06:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080628_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-06-28 00:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080628_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-06-27 18:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080627_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-06-27 12:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080627_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-06-27 06:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080627_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-06-27 00:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080627_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-06-26 18:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080626_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-06-26 12:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080626_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-06-26 06:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080626_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-06-26 00:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080626_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-06-25 18:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080625_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-06-25 12:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080625_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-06-25 06:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080625_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS 80km CONUS 2008-06-25 00:00:00 GMT" urlPath="NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20080625_0000.nc" serviceName="mlode" />
+    </dataset>
+    <dataset name="NCEP GFS Global 5.0 x 2.5 degree model data (thin grid)">
+      <dataset name="Latest NCEP GFS Global 5.0 x 2.5 degree model data" urlPath="?gfs_37-44" serviceName="latest" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-11 12:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080711_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-11 06:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080711_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-11 00:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080711_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-10 12:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080710_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-10 06:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080710_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-10 00:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080710_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-09 18:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080709_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-09 12:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080709_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-09 06:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080709_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-09 00:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080709_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-08 18:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080708_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-08 12:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080708_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-08 06:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080708_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-08 00:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080708_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-07 18:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080707_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-07 12:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080707_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-07 06:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080707_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-07 00:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080707_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-06 18:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080706_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-06 12:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080706_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-06 06:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080706_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-06 00:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080706_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-05 18:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080705_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-05 12:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080705_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-05 06:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080705_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-05 00:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080705_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-04 18:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080704_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-04 12:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080704_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-04 06:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080704_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-04 00:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080704_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-03 18:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080703_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-03 12:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080703_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-03 06:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080703_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-03 00:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080703_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-02 18:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080702_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-02 12:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080702_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-02 06:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080702_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-02 00:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080702_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-01 18:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080701_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-01 12:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080701_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-01 06:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080701_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-07-01 00:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080701_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-06-30 18:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080630_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-06-30 12:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080630_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-06-30 06:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080630_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-06-30 00:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080630_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-06-29 18:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080629_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-06-29 12:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080629_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-06-29 06:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080629_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-06-29 00:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080629_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-06-28 18:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080628_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-06-28 12:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080628_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-06-28 06:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080628_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-06-28 00:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080628_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-06-27 18:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080627_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-06-27 12:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080627_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-06-27 06:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080627_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-06-27 00:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080627_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-06-26 18:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080626_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-06-26 12:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080626_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-06-26 06:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080626_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-06-26 00:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080626_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-06-25 18:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080625_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-06-25 12:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080625_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-06-25 06:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080625_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2008-06-25 00:00:00 GMT" urlPath="NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20080625_0000.nc" serviceName="mlode" />
+    </dataset>
+    <dataset name="NCEP GFS Extended Global 5.0x5.0 degree model data">
+      <dataset name="Latest NCEP GFS Extended Global 5.0x5.0 degree model data" urlPath="?gfs_25-26" serviceName="latest" />
+      <dataset name="NCEP GFS Extended Global 5.0x5.0 degree 2008-07-11 00:00:00 GMT" urlPath="NCEP/GFS/Extended_Global_5p0deg/GFS_Extended_Global_5p0deg_20080711_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Extended Global 5.0x5.0 degree 2008-07-10 00:00:00 GMT" urlPath="NCEP/GFS/Extended_Global_5p0deg/GFS_Extended_Global_5p0deg_20080710_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Extended Global 5.0x5.0 degree 2008-07-09 00:00:00 GMT" urlPath="NCEP/GFS/Extended_Global_5p0deg/GFS_Extended_Global_5p0deg_20080709_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Extended Global 5.0x5.0 degree 2008-07-08 00:00:00 GMT" urlPath="NCEP/GFS/Extended_Global_5p0deg/GFS_Extended_Global_5p0deg_20080708_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Extended Global 5.0x5.0 degree 2008-07-07 00:00:00 GMT" urlPath="NCEP/GFS/Extended_Global_5p0deg/GFS_Extended_Global_5p0deg_20080707_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Extended Global 5.0x5.0 degree 2008-07-06 00:00:00 GMT" urlPath="NCEP/GFS/Extended_Global_5p0deg/GFS_Extended_Global_5p0deg_20080706_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Extended Global 5.0x5.0 degree 2008-07-05 00:00:00 GMT" urlPath="NCEP/GFS/Extended_Global_5p0deg/GFS_Extended_Global_5p0deg_20080705_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Extended Global 5.0x5.0 degree 2008-07-04 00:00:00 GMT" urlPath="NCEP/GFS/Extended_Global_5p0deg/GFS_Extended_Global_5p0deg_20080704_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Extended Global 5.0x5.0 degree 2008-07-03 00:00:00 GMT" urlPath="NCEP/GFS/Extended_Global_5p0deg/GFS_Extended_Global_5p0deg_20080703_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Extended Global 5.0x5.0 degree 2008-07-02 00:00:00 GMT" urlPath="NCEP/GFS/Extended_Global_5p0deg/GFS_Extended_Global_5p0deg_20080702_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Extended Global 5.0x5.0 degree 2008-07-01 00:00:00 GMT" urlPath="NCEP/GFS/Extended_Global_5p0deg/GFS_Extended_Global_5p0deg_20080701_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Extended Global 5.0x5.0 degree 2008-06-30 00:00:00 GMT" urlPath="NCEP/GFS/Extended_Global_5p0deg/GFS_Extended_Global_5p0deg_20080630_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Extended Global 5.0x5.0 degree 2008-06-29 00:00:00 GMT" urlPath="NCEP/GFS/Extended_Global_5p0deg/GFS_Extended_Global_5p0deg_20080629_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Extended Global 5.0x5.0 degree 2008-06-28 00:00:00 GMT" urlPath="NCEP/GFS/Extended_Global_5p0deg/GFS_Extended_Global_5p0deg_20080628_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Extended Global 5.0x5.0 degree 2008-06-27 00:00:00 GMT" urlPath="NCEP/GFS/Extended_Global_5p0deg/GFS_Extended_Global_5p0deg_20080627_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Extended Global 5.0x5.0 degree 2008-06-26 00:00:00 GMT" urlPath="NCEP/GFS/Extended_Global_5p0deg/GFS_Extended_Global_5p0deg_20080626_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP GFS Extended Global 5.0x5.0 degree 2008-06-25 00:00:00 GMT" urlPath="NCEP/GFS/Extended_Global_5p0deg/GFS_Extended_Global_5p0deg_20080625_0000.nc" serviceName="mlode" />
+    </dataset>
+    <dataset name="NCEP RUC 80km CONUS model data">
+      <dataset name="Latest NCEP RUC 80km CONUS model data" urlPath="?ruc_211" serviceName="latest" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-11 19:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080711_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-11 18:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080711_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-11 17:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080711_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-11 16:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080711_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-11 15:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080711_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-11 14:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080711_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-11 13:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080711_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-11 12:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080711_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-11 11:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080711_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-11 10:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080711_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-11 09:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080711_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-11 08:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080711_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-11 07:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080711_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-11 06:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080711_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-11 05:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080711_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-11 04:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080711_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-11 03:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080711_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-11 02:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080711_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-11 01:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080711_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-11 00:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080711_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-10 23:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080710_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-10 22:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080710_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-10 16:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080710_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-10 15:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080710_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-10 14:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080710_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-10 13:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080710_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-10 12:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080710_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-10 11:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080710_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-10 10:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080710_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-10 09:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080710_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-10 08:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080710_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-10 07:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080710_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-10 06:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080710_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-10 05:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080710_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-10 04:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080710_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-10 03:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080710_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-10 02:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080710_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-10 01:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080710_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-10 00:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080710_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-09 23:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080709_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-09 22:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080709_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-09 21:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080709_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-09 20:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080709_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-09 19:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080709_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-09 18:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080709_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-09 17:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080709_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-09 16:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080709_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-09 15:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080709_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-09 14:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080709_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-09 13:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080709_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-09 12:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080709_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-09 11:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080709_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-09 10:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080709_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-09 09:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080709_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-09 08:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080709_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-09 07:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080709_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-09 06:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080709_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-09 05:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080709_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-09 04:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080709_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-09 03:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080709_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-09 02:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080709_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-09 01:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080709_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-09 00:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080709_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-08 23:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080708_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-08 22:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080708_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-08 21:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080708_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-08 20:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080708_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-08 19:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080708_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-08 18:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080708_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-08 17:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080708_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-08 16:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080708_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-08 15:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080708_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-08 14:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080708_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-08 13:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080708_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-08 12:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080708_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-08 11:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080708_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-08 10:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080708_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-08 09:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080708_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-08 08:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080708_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-08 07:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080708_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-08 06:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080708_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-08 05:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080708_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-08 04:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080708_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-08 03:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080708_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-08 02:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080708_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-08 01:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080708_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-08 00:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080708_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-07 23:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080707_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-07 22:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080707_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-07 21:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080707_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-07 20:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080707_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-07 19:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080707_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-07 18:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080707_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-07 17:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080707_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-07 16:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080707_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-07 15:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080707_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-07 14:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080707_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-07 13:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080707_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-07 12:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080707_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-07 11:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080707_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-07 10:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080707_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-07 09:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080707_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-07 08:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080707_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-07 07:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080707_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-07 06:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080707_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-07 05:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080707_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-07 04:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080707_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-07 03:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080707_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-07 02:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080707_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-07 01:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080707_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-07 00:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080707_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-06 23:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080706_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-06 22:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080706_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-06 21:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080706_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-06 20:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080706_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-06 19:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080706_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-06 18:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080706_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-06 17:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080706_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-06 16:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080706_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-06 15:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080706_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-06 14:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080706_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-06 13:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080706_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-06 12:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080706_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-06 11:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080706_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-06 10:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080706_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-06 09:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080706_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-06 08:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080706_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-06 07:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080706_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-06 06:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080706_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-06 05:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080706_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-06 04:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080706_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-06 03:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080706_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-06 02:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080706_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-06 01:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080706_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-06 00:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080706_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-05 23:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080705_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-05 22:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080705_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-05 21:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080705_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-05 20:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080705_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-05 19:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080705_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-05 18:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080705_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-05 17:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080705_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-05 16:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080705_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-05 15:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080705_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-05 14:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080705_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-05 13:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080705_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-05 12:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080705_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-05 11:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080705_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-05 10:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080705_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-05 09:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080705_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-05 08:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080705_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-05 07:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080705_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-05 06:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080705_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-05 05:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080705_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-05 04:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080705_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-05 03:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080705_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-05 02:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080705_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-05 01:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080705_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-05 00:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080705_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-04 23:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080704_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-04 22:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080704_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-04 21:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080704_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-04 20:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080704_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-04 19:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080704_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-04 18:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080704_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-04 17:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080704_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-04 16:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080704_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-04 15:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080704_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-04 14:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080704_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-04 13:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080704_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-04 12:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080704_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-04 11:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080704_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-04 10:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080704_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-04 09:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080704_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-04 08:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080704_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-04 07:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080704_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-04 06:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080704_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-04 05:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080704_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-04 04:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080704_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-04 03:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080704_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-04 02:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080704_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-04 01:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080704_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-04 00:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080704_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-03 23:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080703_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-03 22:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080703_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-03 21:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080703_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-03 20:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080703_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-03 19:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080703_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-03 18:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080703_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-03 17:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080703_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-03 16:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080703_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-03 15:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080703_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-03 14:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080703_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-03 13:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080703_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-03 12:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080703_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-03 11:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080703_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-03 10:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080703_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-03 09:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080703_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-03 08:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080703_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-03 07:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080703_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-03 06:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080703_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-03 05:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080703_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-03 04:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080703_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-03 03:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080703_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-03 02:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080703_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-03 01:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080703_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-03 00:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080703_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-02 23:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080702_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-02 22:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080702_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-02 21:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080702_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-02 20:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080702_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-02 19:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080702_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-02 18:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080702_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-02 17:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080702_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-02 16:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080702_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-02 15:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080702_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-02 14:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080702_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-02 13:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080702_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-02 12:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080702_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-02 11:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080702_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-02 10:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080702_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-02 09:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080702_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-02 08:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080702_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-02 07:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080702_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-02 06:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080702_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-02 05:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080702_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-02 04:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080702_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-02 03:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080702_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-02 02:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080702_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-02 01:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080702_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-02 00:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080702_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-01 23:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080701_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-01 22:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080701_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-01 21:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080701_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-01 20:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080701_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-01 19:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080701_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-01 18:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080701_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-01 17:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080701_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-01 16:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080701_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-01 15:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080701_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-01 14:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080701_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-01 13:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080701_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-01 12:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080701_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-01 11:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080701_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-01 10:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080701_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-01 09:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080701_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-01 08:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080701_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-01 07:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080701_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-01 06:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080701_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-01 05:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080701_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-01 04:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080701_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-01 03:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080701_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-01 02:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080701_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-01 01:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080701_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-07-01 00:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080701_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-30 23:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080630_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-30 22:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080630_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-30 21:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080630_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-30 20:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080630_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-30 19:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080630_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-30 18:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080630_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-30 17:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080630_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-30 16:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080630_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-30 15:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080630_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-30 14:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080630_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-30 13:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080630_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-30 12:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080630_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-30 11:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080630_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-30 10:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080630_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-30 09:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080630_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-30 08:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080630_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-30 07:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080630_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-30 06:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080630_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-30 05:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080630_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-30 04:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080630_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-30 03:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080630_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-30 02:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080630_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-30 01:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080630_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-30 00:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080630_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-29 23:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080629_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-29 22:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080629_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-29 21:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080629_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-29 20:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080629_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-29 19:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080629_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-29 18:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080629_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-29 17:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080629_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-29 16:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080629_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-29 15:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080629_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-29 14:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080629_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-29 13:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080629_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-29 12:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080629_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-29 11:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080629_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-29 10:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080629_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-29 09:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080629_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-29 08:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080629_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-29 07:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080629_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-29 06:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080629_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-29 05:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080629_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-29 04:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080629_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-29 03:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080629_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-29 02:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080629_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-29 01:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080629_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-29 00:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080629_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-28 23:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080628_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-28 22:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080628_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-28 21:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080628_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-28 20:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080628_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-28 19:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080628_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-28 18:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080628_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-28 17:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080628_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-28 16:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080628_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-28 15:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080628_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-28 14:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080628_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-28 13:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080628_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-28 12:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080628_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-28 11:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080628_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-28 10:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080628_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-28 09:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080628_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-28 08:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080628_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-28 07:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080628_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-28 06:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080628_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-28 05:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080628_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-28 04:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080628_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-28 03:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080628_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-28 02:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080628_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-28 01:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080628_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-28 00:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080628_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-27 23:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080627_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-27 22:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080627_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-27 21:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080627_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-27 20:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080627_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-27 19:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080627_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-27 18:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080627_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-27 17:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080627_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-27 16:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080627_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-27 15:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080627_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-27 14:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080627_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-27 13:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080627_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-27 12:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080627_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-27 11:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080627_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-27 10:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080627_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-27 09:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080627_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-27 08:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080627_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-27 07:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080627_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-27 06:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080627_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-27 05:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080627_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-27 04:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080627_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-27 03:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080627_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-27 02:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080627_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-27 01:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080627_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-27 00:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080627_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-26 23:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080626_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-26 22:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080626_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-26 21:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080626_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-26 20:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080626_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-26 19:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080626_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-26 18:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080626_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-26 17:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080626_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-26 16:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080626_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-26 15:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080626_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-26 14:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080626_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-26 13:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080626_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-26 12:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080626_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-26 11:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080626_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-26 10:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080626_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-26 09:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080626_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-26 08:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080626_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-26 07:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080626_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-26 06:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080626_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-26 05:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080626_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-26 04:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080626_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-26 03:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080626_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-26 02:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080626_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-26 01:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080626_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-26 00:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080626_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-25 23:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080625_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-25 22:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080625_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-25 21:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080625_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-25 20:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080625_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-25 19:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080625_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-25 18:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080625_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-25 17:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080625_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-25 16:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080625_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-25 15:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080625_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-25 14:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080625_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-25 13:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080625_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-25 12:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080625_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-25 11:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080625_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-25 10:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080625_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-25 09:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080625_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-25 08:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080625_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-25 07:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080625_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-25 06:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080625_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-25 05:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080625_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-25 04:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080625_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC 80km CONUS 2008-06-25 03:00:00 GMT" urlPath="NCEP/RUC/CONUS_80km/RUC_CONUS_80km_20080625_0300.nc" serviceName="mlode" />
+    </dataset>
+    <dataset name="NCEP RUC2 40km CONUS model data">
+      <dataset name="Latest NCEP RUC2 40km CONUS model data" urlPath="?ruc2_236" serviceName="latest" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-11 19:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080711_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-11 18:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080711_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-11 17:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080711_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-11 16:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080711_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-11 15:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080711_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-11 14:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080711_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-11 13:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080711_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-11 12:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080711_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-11 11:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080711_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-11 10:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080711_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-11 09:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080711_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-11 08:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080711_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-11 07:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080711_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-11 06:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080711_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-11 05:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080711_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-11 04:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080711_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-11 03:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080711_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-11 02:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080711_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-11 01:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080711_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-11 00:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080711_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-10 23:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080710_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-10 22:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080710_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-10 16:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080710_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-10 15:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080710_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-10 14:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080710_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-10 13:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080710_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-10 12:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080710_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-10 11:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080710_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-10 10:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080710_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-10 09:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080710_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-10 08:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080710_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-10 07:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080710_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-10 06:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080710_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-10 05:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080710_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-10 04:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080710_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-10 03:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080710_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-10 02:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080710_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-10 01:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080710_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-10 00:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080710_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-09 23:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080709_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-09 22:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080709_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-09 21:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080709_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-09 20:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080709_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-09 19:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080709_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-09 18:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080709_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-09 17:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080709_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-09 16:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080709_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-09 15:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080709_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-09 14:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080709_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-09 13:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080709_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-09 12:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080709_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-09 11:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080709_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-09 10:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080709_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-09 09:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080709_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-09 08:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080709_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-09 07:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080709_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-09 06:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080709_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-09 05:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080709_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-09 04:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080709_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-09 03:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080709_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-09 02:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080709_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-09 01:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080709_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-09 00:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080709_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-08 23:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080708_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-08 22:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080708_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-08 21:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080708_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-08 20:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080708_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-08 19:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080708_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-08 18:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080708_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-08 17:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080708_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-08 16:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080708_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-08 15:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080708_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-08 14:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080708_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-08 13:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080708_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-08 12:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080708_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-08 11:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080708_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-08 10:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080708_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-08 09:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080708_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-08 08:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080708_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-08 07:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080708_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-08 06:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080708_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-08 05:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080708_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-08 04:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080708_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-08 03:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080708_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-08 02:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080708_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-08 01:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080708_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-08 00:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080708_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-07 23:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080707_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-07 22:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080707_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-07 21:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080707_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-07 20:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080707_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-07 19:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080707_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-07 18:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080707_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-07 17:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080707_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-07 16:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080707_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-07 15:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080707_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-07 14:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080707_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-07 13:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080707_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-07 12:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080707_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-07 11:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080707_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-07 10:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080707_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-07 09:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080707_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-07 08:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080707_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-07 07:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080707_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-07 06:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080707_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-07 05:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080707_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-07 04:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080707_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-07 03:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080707_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-07 02:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080707_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-07 01:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080707_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-07 00:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080707_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-06 23:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080706_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-06 22:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080706_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-06 21:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080706_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-06 20:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080706_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-06 19:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080706_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-06 18:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080706_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-06 17:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080706_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-06 16:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080706_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-06 15:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080706_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-06 14:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080706_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-06 13:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080706_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-06 12:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080706_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-06 11:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080706_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-06 10:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080706_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-06 09:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080706_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-06 08:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080706_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-06 07:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080706_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-06 06:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080706_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-06 05:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080706_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-06 04:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080706_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-06 03:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080706_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-06 02:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080706_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-06 01:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080706_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-06 00:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080706_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-05 23:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080705_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-05 22:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080705_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-05 21:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080705_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-05 20:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080705_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-05 19:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080705_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-05 18:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080705_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-05 17:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080705_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-05 16:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080705_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-05 15:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080705_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-05 14:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080705_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-05 13:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080705_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-05 12:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080705_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-05 11:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080705_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-05 10:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080705_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-05 09:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080705_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-05 08:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080705_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-05 07:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080705_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-05 06:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080705_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-05 05:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080705_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-05 04:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080705_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-05 03:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080705_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-05 02:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080705_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-05 01:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080705_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-05 00:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080705_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-04 23:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080704_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-04 22:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080704_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-04 21:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080704_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-04 20:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080704_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-04 19:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080704_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-04 18:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080704_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-04 17:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080704_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-04 16:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080704_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-04 15:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080704_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-04 14:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080704_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-04 13:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080704_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-04 12:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080704_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-04 11:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080704_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-04 10:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080704_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-04 09:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080704_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-04 08:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080704_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-04 07:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080704_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-04 06:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080704_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-04 05:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080704_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-04 04:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080704_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-04 03:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080704_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-04 02:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080704_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-04 01:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080704_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-04 00:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080704_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-03 23:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080703_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-03 22:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080703_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-03 21:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080703_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-03 20:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080703_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-03 19:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080703_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-03 18:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080703_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-03 17:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080703_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-03 16:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080703_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-03 15:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080703_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-03 14:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080703_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-03 13:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080703_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-03 12:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080703_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-03 11:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080703_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-03 10:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080703_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-03 09:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080703_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-03 08:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080703_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-03 07:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080703_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-03 06:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080703_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-03 05:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080703_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-03 04:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080703_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-03 03:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080703_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-03 02:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080703_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-03 01:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080703_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-03 00:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080703_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-02 23:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080702_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-02 22:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080702_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-02 21:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080702_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-02 20:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080702_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-02 19:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080702_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-02 18:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080702_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-02 17:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080702_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-02 16:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080702_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-02 15:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080702_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-02 14:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080702_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-02 13:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080702_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-02 12:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080702_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-02 11:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080702_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-02 10:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080702_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-02 09:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080702_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-02 08:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080702_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-02 07:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080702_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-02 06:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080702_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-02 05:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080702_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-02 04:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080702_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-02 03:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080702_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-02 02:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080702_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-02 01:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080702_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-02 00:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080702_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-01 23:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080701_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-01 22:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080701_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-01 21:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080701_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-01 20:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080701_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-01 19:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080701_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-01 18:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080701_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-01 17:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080701_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-01 16:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080701_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-01 15:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080701_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-01 14:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080701_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-01 13:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080701_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-01 12:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080701_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-01 11:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080701_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-01 10:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080701_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-01 09:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080701_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-01 08:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080701_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-01 07:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080701_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-01 06:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080701_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-01 05:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080701_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-01 04:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080701_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-01 03:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080701_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-01 02:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080701_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-01 01:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080701_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-07-01 00:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080701_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-30 23:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080630_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-30 22:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080630_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-30 21:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080630_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-30 20:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080630_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-30 19:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080630_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-30 18:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080630_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-30 17:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080630_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-30 16:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080630_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-30 15:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080630_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-30 14:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080630_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-30 13:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080630_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-30 12:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080630_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-30 11:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080630_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-30 10:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080630_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-30 09:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080630_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-30 08:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080630_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-30 07:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080630_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-30 06:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080630_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-30 05:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080630_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-30 04:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080630_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-30 03:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080630_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-30 02:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080630_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-30 01:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080630_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-30 00:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080630_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-29 23:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080629_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-29 22:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080629_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-29 21:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080629_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-29 20:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080629_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-29 19:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080629_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-29 18:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080629_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-29 17:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080629_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-29 16:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080629_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-29 15:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080629_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-29 14:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080629_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-29 13:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080629_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-29 12:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080629_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-29 11:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080629_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-29 10:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080629_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-29 09:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080629_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-29 08:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080629_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-29 07:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080629_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-29 06:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080629_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-29 05:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080629_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-29 04:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080629_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-29 03:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080629_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-29 02:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080629_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-29 01:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080629_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-29 00:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080629_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-28 23:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080628_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-28 22:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080628_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-28 21:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080628_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-28 20:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080628_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-28 19:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080628_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-28 18:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080628_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-28 17:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080628_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-28 16:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080628_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-28 15:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080628_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-28 14:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080628_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-28 13:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080628_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-28 12:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080628_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-28 11:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080628_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-28 10:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080628_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-28 09:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080628_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-28 08:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080628_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-28 07:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080628_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-28 06:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080628_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-28 05:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080628_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-28 04:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080628_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-28 03:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080628_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-28 02:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080628_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-28 01:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080628_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-28 00:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080628_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-27 23:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080627_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-27 22:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080627_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-27 21:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080627_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-27 20:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080627_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-27 19:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080627_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-27 18:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080627_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-27 17:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080627_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-27 16:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080627_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-27 15:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080627_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-27 14:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080627_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-27 13:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080627_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-27 12:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080627_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-27 11:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080627_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-27 10:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080627_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-27 09:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080627_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-27 08:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080627_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-27 07:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080627_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-27 06:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080627_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-27 05:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080627_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-27 04:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080627_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-27 03:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080627_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-27 02:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080627_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-27 01:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080627_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-27 00:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080627_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-26 23:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080626_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-26 22:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080626_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-26 21:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080626_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-26 20:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080626_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-26 19:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080626_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-26 18:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080626_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-26 17:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080626_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-26 16:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080626_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-26 15:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080626_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-26 14:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080626_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-26 13:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080626_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-26 12:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080626_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-26 11:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080626_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-26 10:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080626_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-26 09:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080626_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-26 08:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080626_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-26 07:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080626_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-26 06:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080626_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-26 05:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080626_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-26 04:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080626_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-26 03:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080626_0300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-26 02:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080626_0200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-26 01:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080626_0100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-26 00:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080626_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-25 23:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080625_2300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-25 22:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080625_2200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-25 21:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080625_2100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-25 20:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080625_2000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-25 19:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080625_1900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-25 18:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080625_1800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-25 17:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080625_1700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-25 16:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080625_1600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-25 15:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080625_1500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-25 14:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080625_1400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-25 13:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080625_1300.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-25 12:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080625_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-25 11:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080625_1100.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-25 10:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080625_1000.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-25 09:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080625_0900.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-25 08:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080625_0800.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-25 07:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080625_0700.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-25 06:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080625_0600.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-25 05:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080625_0500.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-25 04:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080625_0400.nc" serviceName="mlode" />
+      <dataset name="NCEP RUC2 40km CONUS 2008-06-25 03:00:00 GMT" urlPath="NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_20080625_0300.nc" serviceName="mlode" />
+    </dataset>
+    <dataset name="NCEP SST Global 5.0x2.5 degree model data">
+      <dataset name="Latest NCEP SST Global 5.0x2.5 degree model data" urlPath="?sst_21-24" serviceName="latest" />
+      <dataset name="NCEP SST Global 5.0x2.5 degree 2008-07-10 00:00:00 GMT" urlPath="NCEP/SST/Global_5x2p5deg/SST_Global_5x2p5deg_20080710_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 5.0x2.5 degree 2008-07-09 00:00:00 GMT" urlPath="NCEP/SST/Global_5x2p5deg/SST_Global_5x2p5deg_20080709_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 5.0x2.5 degree 2008-07-08 00:00:00 GMT" urlPath="NCEP/SST/Global_5x2p5deg/SST_Global_5x2p5deg_20080708_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 5.0x2.5 degree 2008-07-07 00:00:00 GMT" urlPath="NCEP/SST/Global_5x2p5deg/SST_Global_5x2p5deg_20080707_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 5.0x2.5 degree 2008-07-06 00:00:00 GMT" urlPath="NCEP/SST/Global_5x2p5deg/SST_Global_5x2p5deg_20080706_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 5.0x2.5 degree 2008-07-05 00:00:00 GMT" urlPath="NCEP/SST/Global_5x2p5deg/SST_Global_5x2p5deg_20080705_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 5.0x2.5 degree 2008-07-04 00:00:00 GMT" urlPath="NCEP/SST/Global_5x2p5deg/SST_Global_5x2p5deg_20080704_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 5.0x2.5 degree 2008-07-03 00:00:00 GMT" urlPath="NCEP/SST/Global_5x2p5deg/SST_Global_5x2p5deg_20080703_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 5.0x2.5 degree 2008-07-02 00:00:00 GMT" urlPath="NCEP/SST/Global_5x2p5deg/SST_Global_5x2p5deg_20080702_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 5.0x2.5 degree 2008-07-01 00:00:00 GMT" urlPath="NCEP/SST/Global_5x2p5deg/SST_Global_5x2p5deg_20080701_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 5.0x2.5 degree 2008-06-30 00:00:00 GMT" urlPath="NCEP/SST/Global_5x2p5deg/SST_Global_5x2p5deg_20080630_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 5.0x2.5 degree 2008-06-29 00:00:00 GMT" urlPath="NCEP/SST/Global_5x2p5deg/SST_Global_5x2p5deg_20080629_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 5.0x2.5 degree 2008-06-28 00:00:00 GMT" urlPath="NCEP/SST/Global_5x2p5deg/SST_Global_5x2p5deg_20080628_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 5.0x2.5 degree 2008-06-27 00:00:00 GMT" urlPath="NCEP/SST/Global_5x2p5deg/SST_Global_5x2p5deg_20080627_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 5.0x2.5 degree 2008-06-26 00:00:00 GMT" urlPath="NCEP/SST/Global_5x2p5deg/SST_Global_5x2p5deg_20080626_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 5.0x2.5 degree 2008-06-25 00:00:00 GMT" urlPath="NCEP/SST/Global_5x2p5deg/SST_Global_5x2p5deg_20080625_0000.nc" serviceName="mlode" />
+    </dataset>
+    <dataset name="NCEP SST Global 2.0x2.0 degree model data">
+      <dataset name="Latest NCEP SST Global 2.0x2.0 degree model data" urlPath="?sst_61-64" serviceName="latest" />
+      <dataset name="NCEP SST Global 2.0x2.0 degree 2008-07-10 00:00:00 GMT" urlPath="NCEP/SST/Global_2x2deg/SST_Global_2x2deg_20080710_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 2.0x2.0 degree 2008-07-09 00:00:00 GMT" urlPath="NCEP/SST/Global_2x2deg/SST_Global_2x2deg_20080709_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 2.0x2.0 degree 2008-07-08 00:00:00 GMT" urlPath="NCEP/SST/Global_2x2deg/SST_Global_2x2deg_20080708_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 2.0x2.0 degree 2008-07-07 00:00:00 GMT" urlPath="NCEP/SST/Global_2x2deg/SST_Global_2x2deg_20080707_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 2.0x2.0 degree 2008-07-06 00:00:00 GMT" urlPath="NCEP/SST/Global_2x2deg/SST_Global_2x2deg_20080706_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 2.0x2.0 degree 2008-07-05 00:00:00 GMT" urlPath="NCEP/SST/Global_2x2deg/SST_Global_2x2deg_20080705_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 2.0x2.0 degree 2008-07-04 00:00:00 GMT" urlPath="NCEP/SST/Global_2x2deg/SST_Global_2x2deg_20080704_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 2.0x2.0 degree 2008-07-03 00:00:00 GMT" urlPath="NCEP/SST/Global_2x2deg/SST_Global_2x2deg_20080703_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 2.0x2.0 degree 2008-07-02 00:00:00 GMT" urlPath="NCEP/SST/Global_2x2deg/SST_Global_2x2deg_20080702_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 2.0x2.0 degree 2008-07-01 00:00:00 GMT" urlPath="NCEP/SST/Global_2x2deg/SST_Global_2x2deg_20080701_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 2.0x2.0 degree 2008-06-30 00:00:00 GMT" urlPath="NCEP/SST/Global_2x2deg/SST_Global_2x2deg_20080630_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 2.0x2.0 degree 2008-06-29 00:00:00 GMT" urlPath="NCEP/SST/Global_2x2deg/SST_Global_2x2deg_20080629_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 2.0x2.0 degree 2008-06-28 00:00:00 GMT" urlPath="NCEP/SST/Global_2x2deg/SST_Global_2x2deg_20080628_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 2.0x2.0 degree 2008-06-27 00:00:00 GMT" urlPath="NCEP/SST/Global_2x2deg/SST_Global_2x2deg_20080627_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 2.0x2.0 degree 2008-06-26 00:00:00 GMT" urlPath="NCEP/SST/Global_2x2deg/SST_Global_2x2deg_20080626_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP SST Global 2.0x2.0 degree 2008-06-25 00:00:00 GMT" urlPath="NCEP/SST/Global_2x2deg/SST_Global_2x2deg_20080625_0000.nc" serviceName="mlode" />
+    </dataset>
+    <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree model data">
+      <dataset name="Latest NCEP Wind-Wave Global 5.0x2.5 degree model data" urlPath="?ocean_21-24" serviceName="latest" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-07-11 00:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080711_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-07-10 12:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080710_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-07-10 00:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080710_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-07-09 12:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080709_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-07-09 00:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080709_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-07-08 12:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080708_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-07-08 00:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080708_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-07-07 12:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080707_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-07-07 00:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080707_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-07-06 12:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080706_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-07-06 00:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080706_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-07-05 12:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080705_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-07-05 00:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080705_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-07-04 12:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080704_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-07-04 00:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080704_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-07-03 12:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080703_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-07-03 00:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080703_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-07-02 12:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080702_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-07-02 00:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080702_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-07-01 12:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080701_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-07-01 00:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080701_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-06-30 12:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080630_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-06-30 00:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080630_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-06-29 12:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080629_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-06-29 00:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080629_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-06-28 12:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080628_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-06-28 00:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080628_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-06-27 12:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080627_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-06-27 00:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080627_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-06-26 12:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080626_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-06-26 00:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080626_0000.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-06-25 12:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080625_1200.nc" serviceName="mlode" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2008-06-25 00:00:00 GMT" urlPath="NCEP/OCEAN/Global_5x2p5deg/OCEAN_Global_5x2p5deg_20080625_0000.nc" serviceName="mlode" />
+    </dataset>
+  </dataset>
+</catalog>
+

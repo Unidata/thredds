@@ -33,12 +33,12 @@
 
     <catalogRef xlink:href="http://moby.itsc.uah.edu/outgoing/thredds/datapool_cat.xml"
                 xlink:title="Global Hydrology Resource Center Data Pool" name="" />
-    
+
     <catalogRef xlink:href="http://apdrc.soest.hawaii.edu/thredds/catalog.xml"
                 xlink:title="Asia-Pacific Data-Research Center (APDRC) - University of Hawaii" name=""/>
     <catalogRef xlink:href=" http://133.11.64.144/thredds/catalog.xml"
                 xlink:title="Waseda Research Lab at University of Tokyo" name=""/>
-    
+
     <catalogRef xlink:href="http://ngportal.sf.utas.edu.au/opendap/catalog.xml"
                 xlink:title="TPAC Ocean and Climate Digital Library Portal" name="" />
 

@@ -45,7 +45,7 @@ import java.util.*;
 /**
  * GDV Conventions.
  * Deprecated - use CF or _Coordinates.
- *
+ * DefaultConvention is now the default Convention
  * @author caron
  */
 

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stationList>
+    <station name="Andrews" value="TADW" state="MD" country="US">
+      <location3D latitude="38.695" longitude="-76.845" elevation="105" />
+    </station>
+    <station name="Atlanta" value="TATL" state="GA" country="US">
+      <location3D latitude="33.647" longitude="-84.262" elevation="328" />
+    </station>
+    <station name="Nashville" value="TBNA" state="TN" country="US">
+      <location3D latitude="35.980" longitude="-86.662" elevation="249" />
+    </station>
+    <station name="Boston" value="TBOS" state="MA" country="US">
+      <location3D latitude="42.158" longitude="-70.933" elevation="80" />
+    </station>
+    <station name="Baltimore" value="TBWI" state="MD" country="US">
+      <location3D latitude="39.090" longitude="-76.630" elevation="91" />
+    </station>
+    <station name="Charlotte" value="TCLT" state="NC" country="US">
+      <location3D latitude="35.337" longitude="-80.885" elevation="265" />
+    </station>
+    <station name="Columbus OH" value="TCMH" state="OH" country="US">
+      <location3D latitude="40.006" longitude="-82.715" elevation="350" />
+    </station>
+    <station name="Cincinnati" value="TCVG" state="KY" country="US">
+      <location3D latitude="38.898" longitude="-84.580" elevation="321" />
+    </station>
+    <station name="Dallas" value="TDAL" state="TX" country="US">
+      <location3D latitude="32.926" longitude="-96.968" elevation="190" />
+    </station>
+    <station name="Dayton OH" value="TDAY" state="OH" country="US">
+      <location3D latitude="40.022" longitude="-84.123" elevation="311" />
+    </station>
+    <station name="DC" value="TDCA" state="VA" country="US">
+      <location3D latitude="38.759" longitude="-76.962" elevation="105" />
+    </station>
+    <station name="Denver" value="TDEN" state="CO" country="US">
+      <location3D latitude="39.728" longitude="-104.526" elevation="1738" />
+    </station>
+    <station name="Fort Worth" value="TDFW" state="TX" country="US">
+      <location3D latitude="33.065" longitude="-96.918" elevation="178" />
+    </station>
+    <station name="Detroit" value="TDTW" state="MI" country="US">
+      <location3D latitude="42.111" longitude="-83.515" elevation="235" />
+    </station>
+    <station name="Newark" value="TEWR" state="NJ" country="US">
+      <location3D latitude="40.593" longitude="-74.270" elevation="41" />
+    </station>
+    <station name="Fort Lauderdale" value="TFLL" state="FL" country="US">
+      <location3D latitude="26.143" longitude="-80.344" elevation="37" />
+    </station>
+    <station name="Houston" value="THOU" state="TX" country="US">
+      <location3D latitude="29.516" longitude="-95.242" elevation="36" />
+    </station>
+    <station name="Dulles" value="TIAD" state="VA" country="US">
+      <location3D latitude="39.084" longitude="-77.529" elevation="144" />
+    </station>
+    <station name="GB/Houston" value="TIAH" state="TX" country="US">
+      <location3D latitude="30.065" longitude="-95.567" elevation="77" />
+    </station>
+    <station name="Wichita" value="TICH" state="KS" country="US">
+      <location3D latitude="37.507" longitude="-97.437" elevation="412" />
+    </station>
+    <station name="Indianapolis" value="TIDS" state="IN" country="US">
+      <location3D latitude="39.637" longitude="-86.436" elevation="258" />
+    </station>
+    <station name="JFK" value="TJFK" state="NY" country="US">
+      <location3D latitude="40.589" longitude="-73.881" elevation="34" />
+    </station>
+    <station name="Las Vegas" value="TLAS" state="NV" country="US">
+      <location3D latitude="36.144" longitude="-115.007" elevation="627" />
+    </station>
+    <station name="Cleveland" value="TLVE" state="OH" country="US">
+      <location3D latitude="41.290" longitude="-82.008" elevation="284" />
+    </station>
+    <station name="Kansas City" value="TMCI" state="MO" country="US">
+      <location3D latitude="39.498" longitude="-94.742" elevation="332" />
+    </station>
+    <station name="Orlando" value="TMCO" state="FL" country="US">
+      <location3D latitude="28.344" longitude="-81.326" elevation="52" />
+    </station>
+    <station name="Chicago Midway" value="TMDW" state="IL" country="US">
+      <location3D latitude="41.651" longitude="-87.730" elevation="233" />
+    </station>
+    <station name="Memphis" value="TMEM" state="TN" country="US">
+      <location3D latitude="34.896" longitude="-89.993" elevation="147" />
+    </station>
+    <station name="Miami" value="TMIA" state="FL" country="US">
+      <location3D latitude="25.758" longitude="-80.491" elevation="38" />
+    </station>
+    <station name="Milwaukee" value="TMKE" state="WI" country="US">
+      <location3D latitude="42.819" longitude="-88.046" elevation="284" />
+    </station>
+    <station name="Minneapolis" value="TMSP" state="MN" country="US">
+      <location3D latitude="44.871" longitude="-92.933" elevation="342" />
+    </station>
+    <station name="New Orleans" value="TMSY" state="LA" country="US">
+      <location3D latitude="30.022" longitude="-90.403" elevation="30" />
+    </station>
+    <station name="Oklahoma City" value="TOKC" state="OK" country="US">
+      <location3D latitude="35.276" longitude="-97.510" elevation="399" />
+    </station>
+    <station name="O'Hare" value="TORD" state="IL" country="US">
+      <location3D latitude="41.797" longitude="-87.858" elevation="227" />
+    </station>
+    <station name="Palm Beach" value="TPBI" state="FL" country="US">
+      <location3D latitude="26.688" longitude="-80.273" elevation="41" />
+    </station>
+    <station name="Philadelphia" value="TPHL" state="PA" country="US">
+      <location3D latitude="39.949" longitude="-75.069" elevation="47" />
+    </station>
+    <station name="Phoenix" value="TPHX" state="AZ" country="US">
+      <location3D latitude="33.421" longitude="-112.163" elevation="332" />
+    </station>
+    <station name="Pittsburgh" value="TPIT" state="PA" country="US">
+      <location3D latitude="40.501" longitude="-80.486" elevation="422" />
+    </station>
+    <station name="Raleigh" value="TRDU" state="NC" country="US">
+      <location3D latitude="36.002" longitude="-78.697" elevation="157" />
+    </station>
+    <station name="Louisville" value="TSDF" state="KY" country="US">
+      <location3D latitude="38.046" longitude="-85.610" elevation="223" />
+    </station>
+    <station name="San Juan" value="TSJU" state="--" country="PU">
+      <location3D latitude="18.474" longitude="-66.179" elevation="48" />
+    </station>
+    <station name="Salt Lake City" value="TSLC" state="UT" country="US">
+      <location3D latitude="40.967" longitude="-111.930" elevation="1309" />
+    </station>
+    <station name="Saint Louis" value="TSTL" state="MO" country="US">
+      <location3D latitude="38.805" longitude="-90.489" elevation="197" />
+    </station>
+    <station name="Tampa Bay" value="TTPA" state="FL" country="US">
+      <location3D latitude="27.860" longitude="-82.518" elevation="28" />
+    </station>
+    <station name="Tulsa" value="TTUL" state="OK" country="US">
+      <location3D latitude="36.071" longitude="-95.827" elevation="251" />
+    </station>
+</stationList>

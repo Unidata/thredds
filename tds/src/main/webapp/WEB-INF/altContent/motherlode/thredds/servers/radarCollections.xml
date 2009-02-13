@@ -2,10 +2,10 @@
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="THREDDS Radar Server" version="1.0.1">
 
   <service name="radarServer" serviceType="DQC" base="/thredds/radarServer/" />
-  <dataset name="NEXRAD Radar Data">
+  <dataset name="Radar Data">
     <service name="radarServer" serviceType="DQC" base="/thredds/radarServer/" />
 
-    <datasetScan name="Level II Radar from IDD" collectionType="TimeSeries" ID="nexrad/level2/IDD" path="nexrad/level2/IDD" location="/data/ldm/pub/native/radar/level2">
+    <datasetScan name="NEXRAD Level II Radar from IDD" collectionType="TimeSeries" ID="nexrad/level2/IDD" path="nexrad/level2/IDD" location="/data/ldm/pub/native/radar/level2">
       <metadata inherited="true">
         <dataType>Radial</dataType>
         <dataFormat>NEXRAD2</dataFormat>
@@ -41,7 +41,7 @@
       </geospatialCoverage>
       </metadata>
     </datasetScan>
-    <datasetScan name="Level II Radar for Case Study CCS039" collectionType="TimeSeries" ID="nexrad/level2/CCS039" path="nexrad/level2/CCS039" location="/data/ldm/pub/casestudies/ccs039/images/radar/level2">
+    <datasetScan name="NEXRAD Level II Radar for Case Study CCS039" collectionType="TimeSeries" ID="nexrad/level2/CCS039" path="nexrad/level2/CCS039" location="/data/ldm/pub/casestudies/ccs039/images/radar/level2">
       <metadata inherited="true">
         <dataType>Radial</dataType>
         <dataFormat>NEXRAD2</dataFormat>
@@ -77,7 +77,7 @@
       </geospatialCoverage>
       </metadata>
     </datasetScan>
-    <datasetScan name="Level 3 Radar from IDD" collectionType="TimeSeries" ID="nexrad/level3/IDD" path="nexrad/level3/IDD" location="/data/ldm/pub/native/radar/level3/">
+    <datasetScan name="NEXRAD Level III Radar from IDD" collectionType="TimeSeries" ID="nexrad/level3/IDD" path="nexrad/level3/IDD" location="/data/ldm/pub/native/radar/level3/">
       <metadata inherited="true">
         <dataType>Radial</dataType>
         <dataFormat>NIDS</dataFormat>
@@ -125,15 +125,18 @@
         <variable name="N0S/Storm-Rel Mean Vel Tilt 1" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
         <variable name="N1S/Storm-Rel Mean Vel Tilt 2" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
         <variable name="N2S/Storm-Rel Mean Vel Tilt 3" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
+        <variable name="N3S/Storm-Rel Mean Vel Tilt 4" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
         <variable name="NET/Echo Tops" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Clouds &gt; Cloud Optical Depth/Thickness" units="1000 feet" />
         <variable name="NVL/Vertical Liquid H2O" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Liquid Water Equivalent" units="kg/m2" />
-        <variable name="NVW/VadWindSpeed" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Atmospheric Winds &gt; Wind Profiles" units="knots" />
-        <variable name="DPA/PrecipArray_0" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Precipitation Amount" units="dBA" />
-        <variable name="DPA/PrecipArray_x" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Precipitation Rate" units="dBA" />
+        <variable name="NVW/Velocity Azimuth Display Wind Profile" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Atmospheric Winds &gt; Wind Profiles" units="knots" />
+        <variable name="DPA/Precipitation Array" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Precipitation Amount" units="dBA" />
+        <variable name="DHR/Digital Hybrid Scan Reflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; " units="dbZ" />
+        <variable name="DSP/Storm Total Precipitation" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; " units="in" />
+        <variable name="NMD/Mesocyclone" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; " units="" />
       </variables>
       </metadata>
     </datasetScan>
-    <datasetScan name="Level 3 Radar for Case Study CCS039" collectionType="TimeSeries" ID="nexrad/level3/CCS039" path="nexrad/level3/CCS039" location="/data/ldm/pub/casestudies/ccs039/images/radar/nids">
+    <datasetScan name="NEXRAD Level III Radar for Case Study CCS039" collectionType="TimeSeries" ID="nexrad/level3/CCS039" path="nexrad/level3/CCS039" location="/data/ldm/pub/casestudies/ccs039/images/radar/nids">
       <metadata inherited="true">
         <dataType>Radial</dataType>
         <dataFormat>NIDS</dataFormat>
@@ -170,6 +173,61 @@
       <variables vocabulary="DIF">
         <variable name="BREF1/BaseReflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
         <variable name="VEL1/BaseVelocity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
+      </variables>
+      </metadata>
+    </datasetScan>
+    <datasetScan name="TDWR Level III Radar from IDD" collectionType="TimeSeries" ID="terminal/level3/IDD" path="terminal/level3/IDD" location="/data/ldm/pub/native/radar/level3/">
+      <metadata inherited="true">
+        <dataType>Radial</dataType>
+        <dataFormat>TDWR</dataFormat>
+        <serviceName>radarServer</serviceName>
+      <documentation type="summary">The TDWR data feed provides roughly 20 radar products sent every 5-10 minutes from 154 sites over NOAAPORT broadcast. These "derived" products include base reflectivity and velocity</documentation>
+      <documentation xlink:href="http://www.unidata.ucar.edu/data/radar.html" xlink:title="Unidata description of NOAAPORT radar data" />
+      <documentation xlink:href="http://www.ncdc.noaa.gov/oa/radar/radarresources.html" xlink:title="NCDC Radar Resources" />
+      <documentation xlink:href="http://lwf.ncdc.noaa.gov/oa/radar/radarproducts.html" xlink:title="Description of Radar Products (NCDC)" />
+      <creator>
+        <name vocabulary="DIF">DOC/NOAA/NWS</name>
+        <contact url="http://www.roc.noaa.gov/" email="http://www.roc.noaa.gov/Feedback/" />
+      </creator>
+      <geospatialCoverage>
+        <northsouth>
+          <start>20.0</start>
+          <size>40.0</size>
+          <units>degrees_north</units>
+        </northsouth>
+        <eastwest>
+          <start>-135.0</start>
+          <size>70.0</size>
+          <units>degrees_east</units>
+        </eastwest>
+        <updown>
+          <start>0.0</start>
+          <size>0.0</size>
+          <units>km</units>
+        </updown>
+      </geospatialCoverage>
+      <timeCoverage>
+        <end>present</end>
+        <duration>14 days</duration>
+      </timeCoverage>
+      <variables vocabulary="DIF">
+        <variable name="TR0/Base Reflectivity Tilt 1" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+        <variable name="TR1/Base Reflectivity Tilt 2" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+        <variable name="TR2/Base Reflectivity Tilt 3" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+        <variable name="TV0/Base Radial Velocity Tilt 1" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
+        <variable name="TV1/Base Radial Velocity Tilt 2" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
+        <variable name="TV2/Base Radial Velocity Tilt 3" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
+        <variable name="TZL/Long Range Reflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; " units="dbZ" />
+        <variable name="DHR/Digital Hybrid Scan Reflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; " units="dbZ" />
+        <variable name="NCR/Composite Reflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+        <variable name="NET/Echo Tops" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Clouds &gt; Cloud Optical Depth/Thickness" units="1000 feet" />
+        <variable name="NVW/Velocity Azimuth Display Wind Profile" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Atmospheric Winds &gt; Wind Profiles" units="knots" />
+        <variable name="NVL/Vertical Integrated Liquid" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Liquid Water Equivalent" units="kg/m2" />
+        <variable name="N1P/Surface Rainfall 1-hour" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Rain" units="in" />
+        <variable name="NTP/Storm Total Rainfall" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Rain" units="in" />
+        <variable name="DPA/Precipitation Array" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Precipitation Amount" units="dBA" />
+        <variable name="DSP/Storm Total Precipitation" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; " units="in" />
+        <variable name="NMD/Mesocyclone" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; " units="" />
       </variables>
       </metadata>
     </datasetScan>

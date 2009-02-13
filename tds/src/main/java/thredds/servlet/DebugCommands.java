@@ -52,8 +52,8 @@ import javax.servlet.http.HttpServletRequest;
 public class DebugCommands {
 
   public DebugCommands() {
-    makeCacheActions();
     makeDebugActions();
+    makeCacheActions();
   }
 
   protected void makeCacheActions() {

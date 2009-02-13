@@ -42,30 +42,24 @@ import thredds.servlet.DebugHandler;
 import thredds.server.config.TdsContext;
 
 /**
- * _more_
+ * Handle the /admin/debug interface
  *
- * @author edavis
+ * @author caron
  * @since 4.0
  */
-public class DebugController extends AbstractController
-{
+public class DebugController extends AbstractController {
   private TdsContext tdsContext;
 
-  public void setTdsContext( TdsContext tdsContext )
-  {
+  public void setTdsContext(TdsContext tdsContext) {
     this.tdsContext = tdsContext;
   }
 
-  protected ModelAndView handleRequestInternal( HttpServletRequest req, HttpServletResponse res )
-          throws Exception
-  {
-    String path = req.getServletPath();
-    if ( path == null || path.equals( "" ) )
-      path = req.getPathInfo();
+  protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    String path = req.getPathInfo();
+    if (path == null) path = "";
 
-    if ( path.equals( "/debug" ) || path.equals( "/debug/" ) )
-    {
-      DebugHandler.doDebug( null, req, res );
+    if (path.equals("/debug") || path.equals("/debug/")) {
+      DebugHandler.doDebug(null, req, res);
     }
     return null; // ToDo 
   }

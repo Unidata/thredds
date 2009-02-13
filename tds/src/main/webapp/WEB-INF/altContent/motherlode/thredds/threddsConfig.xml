@@ -4,7 +4,6 @@
   <contentRoots>
     <contentRoot>content</contentRoot>
     <contentRoot>motherlode</contentRoot>
-    <contentRoot>idd</contentRoot>
   </contentRoots>
 
   <DataRoots>
@@ -24,6 +23,7 @@
   <catalogRoot>cataloggen/catalogs/idv-rt-models.xml</catalogRoot>
 -->
   <catalogRoot>cataloggen/catalogs/uniModelsInvCat1.0en.xml</catalogRoot>
+  <catalogRoot>servers/radarCollections.xml</catalogRoot>
 
   <catalogRoot>casestudies/catalog.xml</catalogRoot>
   <catalogRoot>casestudies/vgeeCatalog.xml</catalogRoot>
@@ -41,29 +41,36 @@
   </CatalogServices>
 
   <NetcdfFileCache>
-    <minFiles>100</minFiles>
-    <maxFiles>200</maxFiles>
-    <scour>10 min</scour>
+    <minFiles>50</minFiles>
+    <maxFiles>100</maxFiles>
+    <scour>5 min</scour>
   </NetcdfFileCache>
 
   <NetcdfDatasetCache>
-    <minFiles>100</minFiles>
-    <maxFiles>200</maxFiles>
-    <scour>10 min</scour>
+    <minFiles>50</minFiles>
+    <maxFiles>100</maxFiles>
+    <scour>5 min</scour>
   </NetcdfDatasetCache>
 
   <HTTPFileCache>
-    <minFiles>25</minFiles>
-    <maxFiles>40</maxFiles>
+    <minFiles>5</minFiles>
+    <maxFiles>20</maxFiles>
     <scour>10 min</scour>
   </HTTPFileCache>
+
+  <CdmValidatorService>
+    <allow>true</allow>
+    <dir>/data/tmp/thredds/cdmValidateCache/</dir>
+    <maxFileUploadSize>1 Gb</maxFileUploadSize>
+    <scour>24 hours</scour>
+    <maxAge>30 days</maxAge>
+  </CdmValidatorService>
 
   <NetcdfSubsetService>
     <allow>true</allow>
     <dir>/data/tmp/thredds/ncSubsetCache/</dir>
-    <metarDataDir>/data/thredds/stndev/</metarDataDir>
-    <!-- metarDataDir>/data/thredds/metars/</metarDataDir>
-    <metarRawDir>/data/ldm/pub/decoded/netcdf/surface/metar/</metarRawDir -->
+    <metarDataDir>/data/thredds/metars/</metarDataDir>
+    <metarRawDir>/data/ldm/pub/decoded/netcdf/surface/metar/</metarRawDir>
     <scour>15 min</scour>
     <maxAge>30 min</maxAge>
   </NetcdfSubsetService>
@@ -88,7 +95,7 @@
     <allow>true</allow>
     <allowRemote>false</allowRemote>
   </DLwriter>
-       
+
   <!-- Enable DqcService.
    -->
   <DqcService>

@@ -72,6 +72,7 @@ public class TdsContext
   private File rootDirectory;
   private File contentDirectory;
   private File publicContentDirectory;
+  private File tomcatLogDir;
 
   private File startupContentDirectory;
   private File iddContentDirectory;
@@ -160,6 +161,20 @@ public class TdsContext
     this.startupContentDirectory = new File( this.rootDirectory, this.startupContentPath );
     this.startupContentDirSource = new BasicDescendantFileSource( this.startupContentDirectory );
     this.startupContentDirectory = this.startupContentDirSource.getRootDirectory();
+
+    // set the tomcat logging directory
+    try {
+      String base = System.getProperty("catalina.base");
+      if (base != null) {
+        this.tomcatLogDir = new File( base, "logs").getCanonicalFile();
+        if ( !this.tomcatLogDir.exists() )
+          log.error( "init(): 'catalina.base' directory not found");
+      } else
+        log.warn( "init(): 'catalina.base' property not found - probably not a tomcat server");
+
+    } catch (IOException e) {
+      log.error( "init(): tomcatLogDir could not be created");
+    }
 
     // Set the content directory and source.
     this.contentDirectory = new File( new File( this.rootDirectory, "../../content"), this.contentPath);
@@ -299,6 +314,16 @@ public class TdsContext
   public File getRootDirectory()
   {
     return rootDirectory;
+  }
+
+  /**
+   * Return the tomcat logging directory
+   *
+   * @return the tomcat logging directory.
+   */
+  public File getTomcatLogDirectory()
+  {
+    return tomcatLogDir;
   }
 
   /**

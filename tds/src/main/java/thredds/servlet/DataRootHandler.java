@@ -1590,13 +1590,16 @@ public class DataRootHandler {
     act = new DebugHandler.Action("showStatic", "Show static catalogs") {
      public void doAction(DebugHandler.Event e) {
        ArrayList<String> list;
-       StringBuffer sbuff = new StringBuffer();
+       StringBuilder sbuff = new StringBuilder();
        synchronized ( DataRootHandler.this )
        {
          list = new ArrayList<String>( staticCatalogHash.keySet());
          Collections.sort(list);
          for (String catPath : list) {
-           sbuff.append(" catalog= ").append(catPath).append("\n");
+           InvCatalogImpl cat = staticCatalogHash.get( catPath);
+           sbuff.append(" catalog= ").append(catPath).append("; ");
+           String filename = StringUtil.unescape(cat.getCreateFrom());
+           sbuff.append(" from= ").append(filename).append("\n");
          }
        }
        e.pw.println( StringUtil.quoteHtmlContent( "\n"+sbuff.toString()));

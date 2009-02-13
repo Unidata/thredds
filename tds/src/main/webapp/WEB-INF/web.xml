@@ -104,7 +104,7 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>debug</servlet-name>
+    <servlet-name>admin</servlet-name>
   </filter-mapping>
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
@@ -291,20 +291,10 @@
   </servlet>
 
   <servlet>
-    <servlet-name>debug</servlet-name>
+    <servlet-name>admin</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>4</load-on-startup>
   </servlet>
-
-  <!--servlet>
-    <servlet-name>dataDir</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>content</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-  </servlet-->
-
 
   <servlet>
     <servlet-name>MetarSubsetService</servlet-name>
@@ -528,22 +518,11 @@
     <url-pattern>/remoteCatalogService</url-pattern>
   </servlet-mapping>
 
+  <!-- old debug, content handling -->
   <servlet-mapping>
-    <servlet-name>debug</servlet-name>
-    <url-pattern>/debug</url-pattern>
+    <servlet-name>admin</servlet-name>
+    <url-pattern>/admin/*</url-pattern>
   </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>debug</servlet-name>
-    <url-pattern>/debug/*</url-pattern>
-  </servlet-mapping>
-  <!--servlet-mapping>
-    <servlet-name>dataDir</servlet-name>
-    <url-pattern>/dataDir/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>content</servlet-name>
-    <url-pattern>/content/*</url-pattern>
-  </servlet-mapping-->
 
   <!-- data services -->
   <servlet-mapping>
@@ -686,34 +665,17 @@
   </security-constraint>
 
   <!-- This allows "remote configuration":
-    /thredds/debug gives access to various debug and status info.
-    ThreddsDefault servlet aliases /thredds/root/ to "{tomcat_home}/webapps/thredds/"
-    ThreddsDefault servlet aliases /thredds/dataDir/path to "dirLocation/" where path is mapped to dirLocation through a
-      datasetRoot or datasetScan element in the catalog. -->
+    /thredds/admin/debug gives access to various debug and status info.
+    /thredds/admin/content/ -> "{tomcat_home}/content/thredds/"
+    /thredds/admin/root/ -> "{tomcat_home}/webapps/thredds/" DISABLED
+    /thredds/admin/dataDir/path -> "{dataRoot(path)}/webapps/thredds/"  DISABLED
+   -->
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>sensitive read access</web-resource-name>
-      <url-pattern>/debug</url-pattern>
-      <url-pattern>/debug/*</url-pattern>
-      <url-pattern>/root/*</url-pattern>
-      <url-pattern>/dataDir/*</url-pattern>
+      <url-pattern>/admin/*</url-pattern>
       <http-method>GET</http-method>
-    </web-resource-collection>
-    <auth-constraint>
-      <role-name>tdsConfig</role-name>
-    </auth-constraint>
-    <user-data-constraint>
-      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
-    </user-data-constraint>
-  </security-constraint>
-
-  <!-- ThreddsDefault servlet aliases /thredds/content/ to "{tomcat_home}/content/thredds/"   -->
-  <security-constraint>
-    <web-resource-collection>
-      <web-resource-name>sensitive read and write access</web-resource-name>
-      <url-pattern>/content/*</url-pattern>
-      <http-method>GET</http-method>
-      <http-method>PUT</http-method>
+      <!-- http-method>PUT</http-method -->
     </web-resource-collection>
     <auth-constraint>
       <role-name>tdsConfig</role-name>
