@@ -4,7 +4,12 @@
   <contentRoots>
     <contentRoot>content</contentRoot>
     <contentRoot>motherlode</contentRoot>
+    <contentRoot>idd</contentRoot>
   </contentRoots>
+
+  <DataRoots>
+    <idd>/data/ldm/pub</idd>
+  </DataRoots>
 
   <catalogRoot>topcatalog.xml</catalogRoot>
   <catalogRoot>gempakTestCat.xml</catalogRoot>

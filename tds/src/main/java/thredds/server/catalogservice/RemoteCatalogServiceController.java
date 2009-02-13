@@ -198,7 +198,7 @@ public class RemoteCatalogServiceController extends AbstractController
       model.put( "installationLogoAlt", this.tdsContext.getTdsConfigHtml().getInstallationLogoAlt() );
       model.put( "webappName", this.tdsContext.getWebappName());
       model.put( "webappVersion", this.tdsContext.getWebappVersionFull());
-      model.put( "webappBuildDate", this.tdsContext.getWebappBuildDate());
+      model.put( "webappBuildDate", this.tdsContext.getWebappVersionBuildDate());
       model.put( "webappUrl", this.tdsContext.getTdsConfigHtml().getWebappUrl());
       model.put( "webappDocsPath", this.tdsContext.getTdsConfigHtml().getWebappDocsPath());
       model.put( "webappLogoPath", this.tdsContext.getContextPath()
@@ -258,7 +258,7 @@ public class RemoteCatalogServiceController extends AbstractController
       model.put( "installationLogoAlt", this.tdsContext.getTdsConfigHtml().getInstallationLogoAlt() );
       model.put( "webappName", this.tdsContext.getWebappName() );
       model.put( "webappVersion", this.tdsContext.getWebappVersionFull() );
-      model.put( "webappBuildDate", this.tdsContext.getWebappBuildDate() );
+      model.put( "webappBuildDate", this.tdsContext.getWebappVersionBuildDate() );
       model.put( "webappUrl", this.tdsContext.getTdsConfigHtml().getWebappUrl() );
       model.put( "webappDocsPath", this.tdsContext.getTdsConfigHtml().getWebappDocsPath() );
       model.put( "webappLogoPath", this.tdsContext.getContextPath()
@@ -302,7 +302,7 @@ public class RemoteCatalogServiceController extends AbstractController
     model.put( "catalogUri", HtmlUtils.htmlEscape( catUri ) );
     model.put( "webappName", this.getServletContext().getServletContextName() );
     model.put( "webappVersion", tdsContext.getWebappVersion() );
-    model.put( "webappBuildDate", tdsContext.getWebappBuildDate() );
+    model.put( "webappBuildDate", tdsContext.getWebappVersionBuildDate() );
     model.put( "webappDocsPath", tdsContext.getTdsConfigHtml().getWebappDocsPath() );
     return new ModelAndView( "thredds/server/catalog/catalog", model );
   }

@@ -160,7 +160,7 @@ public class DataRootHandler {
     String contentReplacementPath = StringUtils.cleanPath( tdsContext.getPublicDocFileSource().getFile( "" ).getPath() );
     this.contentPathAliasReplacement = new StartsWithPathAliasReplacement( "content", contentReplacementPath );
 
-    String iddDataRootReplacementPath = ThreddsConfig.get( "contentRoot.iddDataRoot", null );
+    String iddDataRootReplacementPath = ThreddsConfig.get( "DataRoots.idd", null );
     if ( iddDataRootReplacementPath != null )
     {
       iddDataRootReplacementPath = StringUtils.cleanPath( iddDataRootReplacementPath );

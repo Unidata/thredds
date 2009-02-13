@@ -60,13 +60,9 @@ public class TdsContext
   private String webappName;
   private String webappVersion;
   private String webappVersionFull;
-  private String webappBuildDate;
+  private String webappVersionBuildDate;
 
   private String contextPath;
-  private int webappMajorVersion = -1;
-  private int webappMinorVersion = -1;
-  private int webappBugfixVersion = -1;
-  private int webappBuildVersion = -1;
 
   private String contentPath;
   private String startupContentPath;
@@ -98,11 +94,9 @@ public class TdsContext
   private TdsConfigHtml tdsConfigHtml;
 
   public TdsContext() {}
-  public void setMajorVersion( int majorVer) { this.webappMajorVersion = majorVer; }
-  public void setMinorVersion( int minorVer) { this.webappMinorVersion = minorVer; }
-  public void setBugfixVersion( int bugfixVer) { this.webappBugfixVersion = bugfixVer; }
-  public void setBuildVersion( int buildVer) { this.webappBuildVersion = buildVer; }
-  public void setWebappBuildDate( String buildDateString) { this.webappBuildDate = buildDateString; }
+  public void setWebappVersion( String ver) { this.webappVersion = ver; }
+  public void setWebappVersionFull( String verFull) { this.webappVersionFull = verFull; }
+  public void setWebappVersionBuildDate( String buildDateString) { this.webappVersionBuildDate = buildDateString; }
 
   public void setContentPath( String contentPath) {this.contentPath = contentPath; }
   public void setStartupContentPath( String startupContentPath ) { this.startupContentPath = startupContentPath; }
@@ -152,27 +146,10 @@ public class TdsContext
     if ( tmpContextPath == null ) tmpContextPath = "thredds";
     contextPath = "/" + tmpContextPath;
 
-    // Set the version.
-    if ( this.webappMajorVersion < 0 || this.webappMinorVersion < 0 )
-    {
-      this.webappVersion = "unknown";
-      this.webappVersionFull = "unknown";
-    }
-    else
-    {
-      StringBuilder ver = new StringBuilder();
-      ver.append( this.webappMajorVersion)
-              .append( ".").append( this.webappMinorVersion);
-      this.webappVersion = ver.toString();
-
-      if ( this.webappBugfixVersion > -1 )
-      {
-        ver.append( "." ).append( this.webappBugfixVersion );
-        if ( this.webappBuildVersion > -1 )
-          ver.append( "." ).append( this.webappBuildVersion );
-      }
-      this.webappVersionFull = ver.toString();
-    }
+    // Check the version.
+    if ( this.webappVersionFull != null
+         && ! webappVersionFull.startsWith( this.webappVersion + "." ))
+      throw new IllegalStateException( "Full version [" + this.webappVersionFull + "] must start with version [" + this.webappVersion + "].");
 
     // Set the root directory and source.
     this.rootDirectory = new File( servletContext.getRealPath( "/" ) );
@@ -309,9 +286,9 @@ public class TdsContext
     return this.webappVersionFull;
   }
 
-  public String getWebappBuildDate()
+  public String getWebappVersionBuildDate()
   {
-    return this.webappBuildDate;
+    return this.webappVersionBuildDate;
   }
   
   /**

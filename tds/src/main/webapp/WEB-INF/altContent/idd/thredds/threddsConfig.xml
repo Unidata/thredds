@@ -5,6 +5,9 @@
     <contentRoot>content</contentRoot>
     <contentRoot>idd</contentRoot>
   </contentRoots>
+  <DataRoots>
+    <idd>/data/ldm/pub</idd>
+  </DataRoots>
 
   <!--
    The <CatalogServices> element:

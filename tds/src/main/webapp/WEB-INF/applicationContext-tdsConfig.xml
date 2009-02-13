@@ -14,10 +14,9 @@
                 http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
   <bean id="tdsContext" class="thredds.server.config.TdsContext">
-    <property name="majorVersion" value="${tds.major.version}"/>
-    <property name="minorVersion" value="${tds.minor.version}"/>
-    <property name="bugfixVersion" value="${tds.bugfix.version}"/>
-    <property name="buildVersion" value="${tds.build.version}"/>
+    <property name="webappVersion" value="${tds.version}"/>
+    <property name="webappVersionFull" value="${tds.version.full}"/>
+    <property name="webappVersionBuildDate" value="${tds.version.builddate}"/>
 
     <property name="contentPath" value="${tds.content.path}"/>
     <property name="startupContentPath" value="${tds.content.startup.path}"/>

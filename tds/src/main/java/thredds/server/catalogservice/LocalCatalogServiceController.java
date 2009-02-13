@@ -297,7 +297,7 @@ public class LocalCatalogServiceController extends AbstractController
     model.put( "catalogUri", HtmlUtils.htmlEscape( catUri ) );
     model.put( "webappName", this.getServletContext().getServletContextName() );
     model.put( "webappVersion", tdsContext.getWebappVersion() );
-    model.put( "webappBuildDate", tdsContext.getWebappBuildDate() );
+    model.put( "webappBuildDate", tdsContext.getWebappVersionBuildDate() );
     model.put( "webappDocsPath", tdsContext.getTdsConfigHtml().getWebappDocsPath() );
     return new ModelAndView( "thredds/server/catalog/catalog", model );
   }
