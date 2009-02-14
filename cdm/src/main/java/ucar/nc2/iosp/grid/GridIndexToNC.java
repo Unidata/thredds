@@ -87,7 +87,7 @@ public class GridIndexToNC {
      */
     public static String makeLevelName(GridRecord gr, GridTableLookup lookup) {
         String  vname   = lookup.getLevelName(gr);
-        boolean isGrib1 = true;   // same for GEMPAK
+        boolean isGrib1 = true;   // same for GEMPAK //TODO:
         if (isGrib1) {
             return vname;
         }
