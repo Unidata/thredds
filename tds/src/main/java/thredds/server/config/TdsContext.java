@@ -91,7 +91,7 @@ public class TdsContext
   private RequestDispatcher defaultRequestDispatcher;
   private RequestDispatcher jspRequestDispatcher;
 
-  private String tdsConfigFilename;
+  private String tdsConfigFileName;
   private TdsConfigHtml tdsConfigHtml;
 
   public TdsContext() {}
@@ -105,8 +105,8 @@ public class TdsContext
   public void setIddContentPath( String iddContentPath ) { this.iddContentPath = iddContentPath; }
   public void setMotherlodeContentPath( String motherlodeContentPath ) { this.motherlodeContentPath = motherlodeContentPath; }
 
-  public void setTdsConfigFileName( String filename ) { this.tdsConfigFilename = filename; }
-  public String getTdsConfigFileName() { return this.tdsConfigFilename; }
+  public void setTdsConfigFileName( String filename ) { this.tdsConfigFileName = filename; }
+  public String getTdsConfigFileName() { return this.tdsConfigFileName; }
 
   public void setTdsConfigHtml( TdsConfigHtml tdsConfigHtml ) { this.tdsConfigHtml = tdsConfigHtml; }
   public TdsConfigHtml getTdsConfigHtml() { return this.tdsConfigHtml; }
