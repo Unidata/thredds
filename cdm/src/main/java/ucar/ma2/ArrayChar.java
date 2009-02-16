@@ -33,6 +33,8 @@
 package ucar.ma2;
 
 import java.util.List;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 
 /**
  * Concrete implementation of Array specialized for chars.
@@ -137,6 +139,21 @@ public class ArrayChar extends Array {
     char[] ja = (char[]) javaArray;
     for (int i = 0; i < ja.length; i++)
       ja[i] = iter.getCharNext();
+  }
+
+  /**
+   * Trasfer data to a ByteBuffer.
+   * Note we cast char to byte, discarding top byte, if any.
+   * This is because CDM char is really a byte, not a java char.
+   * @return data in a ByteBuffer
+   */
+    @Override
+  public ByteBuffer getDataAsByteBuffer() {
+    ByteBuffer bb = ByteBuffer.allocate((int)getSize());
+    resetLocalIterator();
+    while (hasNext())
+      bb.put( nextByte());
+    return bb;
   }
 
   /**

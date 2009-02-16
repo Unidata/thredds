@@ -30,7 +30,7 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.nc2.stream;
+package ucar.nc2.stream.old;
 
 import ucar.nc2.*;
 import ucar.nc2.util.CancelTask;
@@ -54,6 +54,7 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.methods.GetMethod;
 
 /**
+ * Remote access to a Netcdf object using ncStream protocol
  * @author caron
  * @since Jun 24, 2008
  */

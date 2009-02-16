@@ -7,6 +7,17 @@
 
 <body>
 <h1>Netcdf-Java FAQ</h1>
+<hr />
+<h3>Caching</h3>
+<p><strong>Q: How do I use NetcdfFile object caching</strong>?</p>
+<blockquote>
+  <p>Initialize the object cache by calling <strong>NetcdfDataset.initNetcdfFileCache()</strong>, then open files through <strong>NetcdfDataset.acquireFile() </strong>and<strong> NetcdfDataset.acquireDataset()</strong>. Note that you always close a file in the normal way, ie through <strong>NetcdfFile.close()</strong>. See the javadoc for those methods for more details. </p>
+</blockquote>
+<p><strong>Q: How do I control where temporary files are placed (Disk Caching)</strong>?</p>
+<blockquote>
+  <p>See <a href="Caching.html">Disk Caching</a>.</p>
+</blockquote>
+</blockquote>
 <h3>Logging</h3>
 <p><strong>Q: How do I get rid of the message &quot;log4j:WARN No appenders could be found for logger (ucar.nc2.NetcdfFile).  log4j:WARN Please initialize the log4j system properly&quot; ?</strong></p>
 <blockquote>
@@ -15,16 +26,6 @@
     org.apache.log4j.BasicConfigurator.configure();
     org.apache.log4j.Logger logger = org.apache.log4j.Logger.getRootLogger();
     logger.setLevel(org.apache.log4j.Level.OFF)</pre>
-  </blockquote>
-<h3>Caching</h3>
-<p><strong>Q: How do I use NetcdfFile object caching</strong>?</p>
-<blockquote>
-  <p>Initialize with <strong>NetcdfDataset.initNetcdfFileCache()</strong>, then open files through <strong>NetcdfDataset.acquireFile() </strong>and<strong> NetcdfDataset.acquireDataset()</strong>. Note that you always close a file in the normal way, ie through <strong>NetcdfFile.close()</strong>. See the javadoc for those methods for more details. </p>
-</blockquote>
-<p><strong>Q: How do I control where temporary files are placed (Disk Caching)</strong>?</p>
-<blockquote>
-  <p>See <a href="Caching.html">Disk Caching</a>.</p>
-  </blockquote>
 </blockquote>
 <h3>Multithreading</h3>
 <p><strong>Q: Is the Netcdf-Java library thread-safe?</strong></p>
@@ -45,9 +46,18 @@
 <blockquote>
   <p>NetCDF-4 format is built on top of the <a href="http://www.hdfgroup.org/HDF5/">HDF5 file format</a>. It adds shared dimensions, so it is unfortunately not a strict subset of HDF5. HDF5 is a very complicated format, and at this time we do not have resources to write a 100% Java version for wweiting (we do have a 100% Java version for reading). We are considering a <a href="http://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a> interface to the NetCDF-4 C library, but there is no current timeline for that. </p>
 </blockquote>
+<p><strong>Q: What kind of information should I put into my netCDF file to help others read it? </strong></p>
+<blockquote>
+  <p>Thank you for asking, See: </p>
+  <ul>
+    <li> General Guildelines:<a href="http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html"> http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html</a></li>
+    <li>Recommended Conventions: <a href="http://cf-pcmdi.llnl.gov/">CF Conventions  </a></li>
+    <li>Proposed <a href="http://cf-pcmdi.llnl.gov/trac/wiki/PointObservationConventions">Conventions for Point Observations </a></li>
+  </ul>
+</blockquote>
 <hr />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Feb 10, 2009
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Feb 13, 2009
 </address>
 </body>
 </html>

@@ -53,6 +53,13 @@ public class TestWmsServer extends TestCase {
     super(name);
   }
 
+  public void testNAM() throws IOException {
+    String dataset = server+"testAll/namExtract/20060925_0600.nc";
+    showGetCapabilities(dataset);
+    getMap(dataset, "Pressure_surface", "C:/temp/wmsNAM.jpg");
+  }
+
+
   public void testLatlon() throws IOException {
     String dataset = server+"testWMS/cmor_pcmdi.nc";
     showGetCapabilities(dataset);

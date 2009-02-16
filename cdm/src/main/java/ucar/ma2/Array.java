@@ -647,11 +647,18 @@ public abstract class Array {
     int size;
     Array result;
 
-
     switch (dtype) {
       case BYTE:
         if (shape == null) shape =  new int[]{bb.limit()};
         return factory(dtype, shape, bb.array());
+
+      case CHAR:
+        size = bb.limit();
+        if (shape == null) shape =  new int[]{size};
+        result = factory(dtype, shape);
+        for (int i = 0; i < size; i++)
+          result.setChar(i, (char) bb.get(i));
+        return result;
 
       case SHORT:
         ShortBuffer sb = bb.asShortBuffer();
@@ -698,6 +705,7 @@ public abstract class Array {
           result.setDouble(i, db.get(i));
         return result;
     }
+
     throw new UnsupportedOperationException("" + dtype);
   }
 

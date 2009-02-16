@@ -30,11 +30,13 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.nc2.stream;
+package ucar.nc2.stream.old;
 
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriteable;
+import ucar.nc2.stream.old.Stream2Netcdf;
+import ucar.nc2.stream.old.StreamWriter;
 
 import java.io.*;
 

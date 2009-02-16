@@ -17,4 +17,19 @@ DATA:   http://localhost:8080/thredds/ncstream/stream/temperature.nc?Temperature
 
 using Section spec.
 variable name will need to be UTF8-escape encoded.
-DiskCache
+
+URL = urlpath | urlpath?query
+
+   query = sectionSpec [';' sectionSpec]
+
+   sectionSpec := selector | selector '.' selector
+   selector := varName ['(' dims ')']
+   varName := ESCAPED_STRING
+   ESCAPED_STRING : must escape characters = '.', '(', ','
+
+   dims := dim | dim, dims
+   dim := ':' | slice | start ':' end | start ':' end ':' stride
+   slice := INTEGER
+   start := INTEGER
+   stride := INTEGER
+   end := INTEGER

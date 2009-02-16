@@ -362,19 +362,18 @@
     <servlet-class>thredds.server.radarServer.RadarServer</servlet-class>
   </servlet>
 
-  <!-- Netcdf Server
   <servlet>
-    <servlet-name>NetcdfServer</servlet-name>
-    <servlet-class>thredds.servlet.NetcdfServlet</servlet-class>
-    <load-on-startup>3</load-on-startup>
-  </servlet -->
+    <servlet-name>ncstream</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>4</load-on-startup>
+  </servlet>
 
-  <!-- RemoteNetcdf Server -->
+  <!-- RemoteNetcdf Server ->
   <servlet>
     <servlet-name>RemoteNetcdfServer</servlet-name>
-    <servlet-class>thredds.servlet.RemoteNetcdfServlet</servlet-class>
+    <servlet-class>thredds.server.ncstream.RemoteNetcdfServlet</servlet-class>
     <load-on-startup>3</load-on-startup>
-  </servlet>
+  </servlet -->
 
   <!-- Restricted Access (using container managed security, eg Tomcat, or CAMS) -->
   <servlet>
@@ -566,7 +565,7 @@
   </servlet-mapping -->
 
   <servlet-mapping>
-    <servlet-name>RemoteNetcdfServer</servlet-name>
+    <servlet-name>ncstream</servlet-name>
     <url-pattern>/ncstream/*</url-pattern>
   </servlet-mapping>
 

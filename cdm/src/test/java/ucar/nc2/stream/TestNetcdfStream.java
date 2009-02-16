@@ -11,8 +11,8 @@ public class TestNetcdfStream {
 
 
   static public void main( String args[]) throws IOException {
-    NetcdfFile ncfile = NetcdfFile.open("R:/testdata/grid/netcdf/cf/temperature.nc", null);
-    NetcdfFile ncfileRemote = new NcStreamRemote("http://localhost:8080/thredds/ncstream/stream/temperature.nc", null);
+    NetcdfFile ncfile = NetcdfFile.open("C:\\dev\\tds\\thredds\\tds\\content\\thredds\\public\\testdata/testData.nc", null);
+    NetcdfFile ncfileRemote = new NcStreamRemote("http://localhost:8080/thredds/ncstream/test/testData.nc", null);
     TestCompare.compareFiles(ncfile, ncfileRemote, true, true, false);
   }
 

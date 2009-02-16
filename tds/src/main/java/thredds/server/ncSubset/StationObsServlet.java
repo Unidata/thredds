@@ -47,6 +47,7 @@ import org.jdom.Document;
 
 /**
  * Netcdf StationObs subsetting.
+ * Prototype - DO NOT USE
  *
  * @author caron
  */
@@ -90,7 +91,7 @@ public class StationObsServlet extends AbstractServlet {
       return;
     }
 
-    String metarRawDir = ThreddsConfig.get("NetcdfSubsetService.metarRawDir", "/data/ldm/pub/decoded/netcdf/surface/metar/");
+    String metarRawDir = ThreddsConfig.get("NetcdfSubsetService.metarRawDir", null);
     File rawDir = new File(metarRawDir);
     if (!rawDir.exists()) {
       metarRawDir = null;

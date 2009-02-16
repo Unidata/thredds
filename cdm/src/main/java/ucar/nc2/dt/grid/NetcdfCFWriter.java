@@ -93,6 +93,7 @@ public class NetcdfCFWriter {
           DateRange range, int stride_time,
           boolean addLatLon)
           throws IOException, InvalidRangeException {
+    
     FileWriter writer = new FileWriter(location, false);
     NetcdfDataset ncd = (NetcdfDataset) gds.getNetcdfFile();
 

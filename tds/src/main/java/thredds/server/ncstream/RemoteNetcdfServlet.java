@@ -30,7 +30,7 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.servlet;
+package thredds.server.ncstream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -43,6 +43,7 @@ import java.nio.channels.Channels;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.stream.NcStreamWriter;
+import thredds.servlet.*;
 
 /**
  * Experimental "remote netcdf streaming" data transfer protocol.
@@ -139,7 +140,7 @@ public class RemoteNetcdfServlet extends AbstractServlet {
     System.out.println("req="+pathInfo);
 
     String query = req.getQueryString();
-    if (query != null) System.out.println("req="+pathInfo);
+    if (query != null) System.out.println(" query="+query);
 
     res.setContentType("application/octet-stream");
     res.setHeader("Content-Description", "ncstream");
@@ -153,14 +154,14 @@ public class RemoteNetcdfServlet extends AbstractServlet {
       }
 
       OutputStream out = new BufferedOutputStream( res.getOutputStream(), 10 * 1000);
-      NcStreamWriter ncWriter = new NcStreamWriter(ncfile, req.getRequestURI());
+      NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequest(req));
       if (query == null) { // just the header
         ncWriter.sendHeader(out);
 
       } else { // they want some data
         WritableByteChannel wbc = Channels.newChannel(out);
 
-        StringTokenizer stoke = new StringTokenizer(query, ","); // need UTF/%decode
+        StringTokenizer stoke = new StringTokenizer(query, ";"); // need UTF/%decode
         while (stoke.hasMoreTokens()) {
           ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());
           ncWriter.sendData(out, cer.v, cer.section, wbc);
@@ -170,6 +171,10 @@ public class RemoteNetcdfServlet extends AbstractServlet {
       out.flush();
       res.flushBuffer();
       ServletUtil.logServerAccess(HttpServletResponse.SC_OK, -1);
+
+    } catch (FileNotFoundException e) {
+      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
+      res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
 
     } catch (Throwable e) {
       e.printStackTrace();

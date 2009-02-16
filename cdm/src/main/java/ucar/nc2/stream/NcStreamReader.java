@@ -34,7 +34,6 @@ package ucar.nc2.stream;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Group;
-import ucar.nc2.Variable;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.Section;
@@ -46,7 +45,7 @@ import java.nio.ByteBuffer;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
- * Read an NcStream into a NetcdfFile
+ * Read an ncStream InputStream into a NetcdfFile
  *
  * @author caron
  * @since Feb 7, 2009
@@ -108,8 +107,8 @@ public class NcStreamReader {
     readFully( is, datab);
 
     ByteBuffer dataBB = ByteBuffer.wrap(datab);
-    DataType dataType = NcStream.convertDataType(dproto.getDataType());
-    Section section = NcStream.makeSection(dproto.getSection());
+    DataType dataType = NcStream.decodeDataType(dproto.getDataType());
+    Section section = NcStream.decodeSection(dproto.getSection());
 
     Array data = Array.factory( dataType, section.getShape(), dataBB);
     return new DataResult(dproto.getVarName(), section, data);
@@ -161,16 +160,16 @@ public class NcStreamReader {
   private void readGroup(NcStreamProto.Group proto, NetcdfFile ncfile, Group g) throws InvalidProtocolBufferException {
 
     for (NcStreamProto.Dimension dim : proto.getDimsList())
-      g.addDimension(NcStream.makeDim(dim));
+      g.addDimension(NcStream.decodeDim(dim));
 
     for (NcStreamProto.Attribute att : proto.getAttsList())
-      g.addAttribute(NcStream.makeAtt(att));
+      g.addAttribute(NcStream.decodeAtt(att));
 
     for (NcStreamProto.Variable var : proto.getVarsList())
-      g.addVariable(NcStream.makeVar(ncfile, g, null, var));
+      g.addVariable(NcStream.decodeVar(ncfile, g, null, var));
 
     for (NcStreamProto.Structure s : proto.getStructsList())
-      g.addVariable(NcStream.makeStructure(ncfile, g, null, s));
+      g.addVariable(NcStream.decodeStructure(ncfile, g, null, s));
 
     for (NcStreamProto.Group gp : proto.getGroupsList())
       readGroup(gp, ncfile, g);

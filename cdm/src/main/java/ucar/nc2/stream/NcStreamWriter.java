@@ -35,14 +35,13 @@ package ucar.nc2.stream;
 import ucar.nc2.*;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
-import com.google.protobuf.InvalidProtocolBufferException;
 
 import java.nio.channels.WritableByteChannel;
 import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Write a NetcdfFile to a ncStream
+ * Write a NetcdfFile to a ncStream OutputStream
  *
  * @author caron
  * @since Feb 7, 2009
@@ -51,10 +50,11 @@ public class NcStreamWriter {
   private NetcdfFile ncfile;
   private NcStreamProto.Stream proto;
   private boolean show = false;
+  private int sizeToCache = 100;
 
-  public NcStreamWriter(NetcdfFile ncfile, String location) throws InvalidProtocolBufferException {
+  public NcStreamWriter(NetcdfFile ncfile, String location) throws IOException {
     this.ncfile = ncfile;
-    NcStreamProto.Group.Builder rootBuilder = NcStream.makeGroup( ncfile.getRootGroup());
+    NcStreamProto.Group.Builder rootBuilder = NcStream.encodeGroup( ncfile.getRootGroup(), sizeToCache);
 
     NcStreamProto.Stream.Builder streamBuilder = NcStreamProto.Stream.newBuilder();
     streamBuilder.setName(location == null ? ncfile.getLocation() : location);
@@ -83,7 +83,7 @@ public class NcStreamWriter {
   public long sendData(OutputStream out, Variable v, Section section, WritableByteChannel wbc) throws IOException {
     long size = 0;
     size += writeBytes(out, NcStream.MAGIC_DATA); // magic
-    NcStreamProto.Data dataProto = NcStream.makeDataProto(v, section);
+    NcStreamProto.Data dataProto = NcStream.encodeDataProto(v, section);
     byte[] datab = dataProto.toByteArray();
     size += writeVInt(out, datab.length); // proto len
     size += writeBytes(out, datab); //proto

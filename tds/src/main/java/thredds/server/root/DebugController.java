@@ -61,6 +61,7 @@ public class DebugController extends AbstractController {
     if (path.equals("/debug") || path.equals("/debug/")) {
       DebugHandler.doDebug(null, req, res);
     }
+
     return null; // ToDo 
   }
 }

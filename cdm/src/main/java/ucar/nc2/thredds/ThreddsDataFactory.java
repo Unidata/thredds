@@ -445,7 +445,7 @@ public class ThreddsDataFactory {
     }
 
     // open NetcdfStream
-    if (serviceType == ServiceType.NetcdfStream) {
+    else if (serviceType == ServiceType.NetcdfStream) {
       String curl = NcStreamRemote.canonicalURL(datasetLocation);
       ds = acquire ? NetcdfDataset.acquireDataset(curl, task) : NetcdfDataset.openDataset(curl, true, task);
     }
@@ -504,11 +504,11 @@ public class ThreddsDataFactory {
     if (access == null)
       access = findAccessByServiceType(accessList, ServiceType.NETCDF); //  ServiceType.NETCDF is deprecated, use FILE
     if (access == null)
-      access = findAccessByServiceType(accessList, ServiceType.NetcdfStream);
-    if (access == null)
       access = findAccessByServiceType(accessList, ServiceType.DODS);
     if (access == null)
       access = findAccessByServiceType(accessList, ServiceType.OPENDAP);
+    if (access == null)
+      access = findAccessByServiceType(accessList, ServiceType.NetcdfStream);
 
 // look for HTTP with format we can read
     if (access == null) {

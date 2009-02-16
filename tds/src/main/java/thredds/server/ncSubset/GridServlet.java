@@ -296,7 +296,7 @@ public class GridServlet extends AbstractServlet {
     res.addHeader("Content-Location", url);
     res.setHeader("Content-Disposition", "attachment; filename=" + filename);
 
-    ServletUtil.returnFile(this, "", result.getPath(), req, res, "application/x-netcdf");
+    ServletUtil.returnFile(this, req, res, result, "application/x-netcdf");
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////
@@ -420,7 +420,7 @@ public class GridServlet extends AbstractServlet {
     res.addHeader("Content-Location", url);
     res.setHeader("Content-Disposition", "attachment; filename=" + filename);
 
-    ServletUtil.returnFile(this, "", cacheFilename, req, res, "application/x-netcdf");
+    ServletUtil.returnFile(this, req, res, new File(cacheFilename), "application/x-netcdf");
   }
 
   private void showForm(HttpServletResponse res, GridDataset gds, String path, boolean wantXml, boolean isPoint) throws IOException {

@@ -47,8 +47,9 @@ import java.util.Formatter;
 import java.io.IOException;
 
 /**
- * Standard handler for any Point obs dataset.
+ * Standard handler for Point obs dataset based ona  NetcdfDataset object.
  * Registered with FeatureDatasetFactoryManager.
+ * The convention-specific stuff is handled by TableAnayser.
  *
  * @author caron
  */

@@ -38,10 +38,12 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.methods.GetMethod;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.stream.old.NetcdfRemote;
 
 import ucar.ma2.Array;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.StructureDataIterator;
 
 import java.io.IOException;
 import java.io.FileNotFoundException;
@@ -170,64 +172,51 @@ public class NcStreamRemote extends ucar.nc2.NetcdfFile {
     }
   }
 
-  /* private int copy(InputStream in, byte[] buff, int offset, int want) throws IOException {
-    int done = 0;
-    while (want > 0) {
-      int bytesRead = in.read(buff, offset + done, want);
-      if (bytesRead == -1) break;
-      done += bytesRead;
-      want -= bytesRead;
+  protected StructureDataIterator readSequence(ucar.nc2.Sequence v, String constraint) throws IOException, InvalidRangeException {
+
+    StringBuilder sbuff = new StringBuilder(remoteURI);
+    sbuff.append("?");
+    sbuff.append(v.getShortName());
+    sbuff.append("[");
+    sbuff.append(constraint);
+    sbuff.append("]");
+
+    if (showRequest)
+      System.out.println("NetcdfRemote data request for variable: "+v.getName()+" constraint= "+constraint+ " url="+sbuff);
+
+    HttpMethod method = null;
+    try {
+      method = new GetMethod(sbuff.toString());
+      method.setFollowRedirects(true);
+      int statusCode = httpClient.executeMethod(method);
+
+      if (statusCode == 404)
+        throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
+
+      if (statusCode >= 300)
+        throw new IOException(method.getPath() + " " + method.getStatusLine());
+
+      /* int wantSize = (int) (v.getElementSize() * section.computeSize());
+      Header h = method.getResponseHeader("Content-Length");
+      if (h != null) {
+        String s = h.getValue();
+        int readLen = Integer.parseInt(s);
+        if (readLen != wantSize)
+          throw new IOException("content-length= "+readLen+" not equal expected Size= "+wantSize);
+      } */
+
+      InputStream is = method.getResponseBodyAsStream();
+      NcStreamReader reader = new NcStreamReader();
+      NcStreamReader.DataResult result = reader.readData(is);
+
+      assert v.getName().equals(result.varName);
+      result.data.setUnsigned(v.isUnsigned());
+      return result.data;
+
+    } finally {
+      if (method != null) method.releaseConnection();
     }
-    return done;
   }
 
-  // LOOK - should make Array that wraps a ByteBuffer, to avoid extra copy
-  private Array convert(byte[] result, DataType dt, Section section) {
-    int[] shape = section.getShape();
-    if (dt == DataType.BYTE)
-      return Array.factory(dt.getPrimitiveClassType(), shape, result);
-
-    ByteBuffer bb = ByteBuffer.wrap(result);
-    int n = (int) section.computeSize();
-
-    if (dt == DataType.SHORT) {
-      short[] pa = new short[n];
-      for (int i=0; i<n; i++)
-        pa[i] = bb.getShort();
-      return Array.factory(dt.getPrimitiveClassType(), shape, pa);
-
-    } else if (dt == DataType.INT) {
-      int[] pa = new int[n];
-      for (int i=0; i<n; i++)
-        pa[i] = bb.getInt();
-      return Array.factory(dt.getPrimitiveClassType(), shape, pa);
-
-    } else if (dt == DataType.LONG) {
-      long[] pa = new long[n];
-      for (int i=0; i<n; i++)
-        pa[i] = bb.getLong();
-      return Array.factory(dt.getPrimitiveClassType(), shape, pa);
-
-    } else if (dt == DataType.FLOAT) {
-      float[] pa = new float[n];
-      for (int i=0; i<n; i++)
-        pa[i] = bb.getFloat();
-      return Array.factory(dt.getPrimitiveClassType(), shape, pa);
-
-    } else if (dt == DataType.DOUBLE) {
-      double[] pa = new double[n];
-      for (int i=0; i<n; i++)
-        pa[i] = bb.getDouble();
-      return Array.factory(dt.getPrimitiveClassType(), shape, pa);
-
-    } else if (dt == DataType.CHAR) {
-      char[] pa = new char[n];
-      for (int i=0; i<n; i++)
-        pa[i] = (char) bb.get();
-      return Array.factory(dt.getPrimitiveClassType(), shape, pa);
-    }
-
-    throw new IllegalStateException("unimplemented datatype = "+dt);
-  }   */
 
 }

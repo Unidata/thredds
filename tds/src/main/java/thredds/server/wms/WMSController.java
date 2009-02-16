@@ -114,7 +114,7 @@ public class WMSController extends AbstractController {
 
       colorRange = new HashMap<String, ColorScaleRange>();
 
-      // NetcdfDataset.initNetcdfFileCache(100, 200, 15 * 60); // on application startup
+      // LOOK Problem - global setting
       NetcdfDataset.setDefaultEnhanceMode(EnumSet.of(NetcdfDataset.Enhance.ScaleMissingDefer, NetcdfDataset.Enhance.CoordSystems));
     }
   }

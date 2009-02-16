@@ -45,15 +45,15 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     NcStreamProto.Group root = proto.getRoot();
 
     for (NcStreamProto.Dimension dim : root.getDimsList()) {
-      ncfile.addDimension(null, NcStream.makeDim(dim));
+      ncfile.addDimension(null, NcStream.decodeDim(dim));
     }
 
     for (NcStreamProto.Attribute att : root.getAttsList()) {
-      ncfile.addAttribute(null, NcStream.makeAtt(att));
+      ncfile.addAttribute(null, NcStream.decodeAtt(att));
     }
 
     for (NcStreamProto.Variable var : root.getVarsList()) {
-      ncfile.addVariable(null, NcStream.makeVar(ncfile, null, null, var));
+      ncfile.addVariable(null, NcStream.decodeVar(ncfile, null, null, var));
     }
 
     // LOOK why doesnt this work ?
@@ -77,7 +77,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
       DataSection dataSection = new DataSection();
       dataSection.size = dsize;
       dataSection.filePos = raf.getFilePointer();
-      dataSection.section = NcStream.makeSection( dproto.getSection());
+      dataSection.section = NcStream.decodeSection( dproto.getSection());
 
       Variable v = ncfile.getRootGroup().findVariable( dproto.getVarName());
       v.setSPobject(dataSection);
