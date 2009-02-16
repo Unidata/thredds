@@ -86,7 +86,6 @@ public class GridIndexToNC {
    */
   private boolean useDescriptionForVariableName = true;
 
-  //TODO:  how to make format specific names if these are static
   /**
    * Make the level name
    *
@@ -95,16 +94,18 @@ public class GridIndexToNC {
    * @return name for the level
    */
   public static String makeLevelName(GridRecord gr, GridTableLookup lookup) {
-    String vname = lookup.getLevelName(gr);
-    boolean isGrib1 = true;   // same for GEMPAK //TODO:
-    if (isGrib1) {
-      return vname;
-    }
 
-    // for grib2, we need to add the layer to disambiguate
-    return lookup.isLayer(gr)
+    if (lookup.getGridType().equals("GRIB2")
+        || lookup.getGridType().equals("GRIB1")) {
+      String vname = lookup.getLevelName(gr);
+      // doesn't this apply to grib1 too
+      // for grib2, we need to add the layer to disambiguate
+      return lookup.isLayer(gr)
         ? vname + "_layer"
         : vname;
+    } else {
+      return lookup.getLevelName(gr);  // GEMPAK
+    }
   }
 
   /**
@@ -122,6 +123,8 @@ public class GridIndexToNC {
     if (!g2lookup.isEnsemble(gr)) {
       return "";
     }
+    int ensemble = g2lookup.getTypeGenProcess(gr);
+    String  ensembleName;
     int productDef = g2lookup.getProductDefinition(gr);
     if (productDef == 2) {
 //        Grib 2 table 4.7
@@ -132,26 +135,36 @@ public class GridIndexToNC {
 //        4 Spread of All Members
 //        5 Large Anomaly Index of All Members (see note below)
 //        6 Unweighted Mean of the Cluster Members
-      int ensemble = g2lookup.getTypeGenProcess(gr);
-      String ensembleS;
       if (ensemble < 41000) {
-        ensembleS = "unweightedMean" + Integer.toString(ensemble - 40000);
+         ensembleName = "unweightedMean" + Integer.toString(ensemble - 40000);
       } else if (ensemble < 42000) {
-        ensembleS = "weightedMean" + Integer.toString(ensemble - 41000);
+         ensembleName = "weightedMean" + Integer.toString(ensemble - 41000);
       } else if (ensemble < 43000) {
-        ensembleS = "stdDev" + Integer.toString(ensemble - 42000);
+         ensembleName = "stdDev" + Integer.toString(ensemble - 42000);
       } else if (ensemble < 44000) {
-        ensembleS = "stdDevNor" + Integer.toString(ensemble - 43000);
+         ensembleName = "stdDevNor" + Integer.toString(ensemble - 43000);
       } else if (ensemble < 45000) {
-        ensembleS = "spread" + Integer.toString(ensemble - 44000);
+         ensembleName = "spread" + Integer.toString(ensemble - 44000);
       } else if (ensemble < 46000) {
-        ensembleS = "anomaly" + Integer.toString(ensemble - 45000);
+         ensembleName = "anomaly" + Integer.toString(ensemble - 45000);
+      } else if (ensemble < 47000) {
+         ensembleName = "unweightedMeanCluster" + Integer.toString(ensemble - 46000);
       } else {
-        ensembleS = "unweightedMeanCluster" + Integer.toString(ensemble - 46000);
+         ensembleName = "unknownEnsemble";
       }
-
-
-      return ensembleS;
+    } else if (productDef == 1 || productDef == 11 ) {
+      if (ensemble < 41000) {
+         ensembleName = "C_high" + Integer.toString(ensemble - 40000);
+      } else if (ensemble < 42000) {
+         ensembleName = "C_low" + Integer.toString(ensemble - 41000);
+      } else if (ensemble < 43000) {
+         ensembleName = "P_neg" + Integer.toString(ensemble - 42000);
+      } else if (ensemble < 44000) {
+         ensembleName = "P_pos" + Integer.toString(ensemble - 43000);
+      } else {
+         ensembleName = "unknownEnsemble";
+      }
+      return  ensembleName;
     }
     return "";
   }
