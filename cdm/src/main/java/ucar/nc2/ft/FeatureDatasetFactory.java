@@ -74,4 +74,9 @@ public interface FeatureDatasetFactory {
    */
   public FeatureDataset open( FeatureType ftype, NetcdfDataset ncd, Object analysis, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException;
 
+  /**
+   * This Factory can open these types of Feature datasets.
+   * @return array of FeatureType
+   */
+  public FeatureType[] getFeatureType();
 }

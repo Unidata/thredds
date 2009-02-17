@@ -224,6 +224,7 @@ public class ToolsUI extends JPanel {
     ftTabPane.addTab("Images", new JLabel("Images"));
     ftTabPane.addTab("Fmrc", new JLabel("Fmrc"));
     ftTabPane.addTab("Radial", new JLabel("Radial"));
+    ftTabPane.addTab("StationRadial", new JLabel("StationRadial"));
     ftTabPane.addTab("FeatureScan", new JLabel("FeatureScan"));
     ftTabPane.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
@@ -304,7 +305,7 @@ public class ToolsUI extends JPanel {
       pointFeaturePanel = new PointFeaturePanel((PreferencesExt) mainPrefs.node("pointFeature"));
       c = pointFeaturePanel;
 
-    } else if (title.equals("StationRadars")) {
+    } else if (title.equals("StationRadial")) {
       stationRadialPanel = new StationRadialPanel((PreferencesExt) mainPrefs.node("stationRadar"));
       c = stationRadialPanel;
 
@@ -749,6 +750,13 @@ public class ToolsUI extends JPanel {
     gridPanel.doit(datasetName);
     tabbedPane.setSelectedComponent(ftTabPane);
     ftTabPane.setSelectedComponent(gridPanel);
+  }
+
+  private void openRadialDataset(String datasetName) {
+    makeComponent(ftTabPane, "Radial");
+    radialPanel.doit(datasetName);
+    tabbedPane.setSelectedComponent(ftTabPane);
+    ftTabPane.setSelectedComponent(radialPanel);
   }
 
   // jump to the appropriate tab based on datatype of InvDataset
@@ -2240,12 +2248,10 @@ public class ToolsUI extends JPanel {
           return false;
         }
 
-        //ucar.nc2.dt.radial.RadialDatasetSweepFactory fac = new ucar.nc2.dt.radial.RadialDatasetSweepFactory();
-        //RadialDatasetSweep rds = fac.open(newds);
-        StringBuilder errlog = new StringBuilder();
-        RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open(FeatureType.RADIAL, newds, null, errlog);
+        Formatter errlog = new Formatter();
+        RadialDatasetSweep rds = (RadialDatasetSweep) FeatureDatasetFactoryManager.wrap(FeatureType.RADIAL, newds, null, errlog);
         if (rds == null) {
-          JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + command + "\n" + errlog.toString());
+          JOptionPane.showMessageDialog(null, "FeatureDatasetFactoryManager cant open " + command + "as RADIAL dataset\n" + errlog.toString());
           err = true;
         } else {
           setDataset(rds);
@@ -2668,6 +2674,10 @@ public class ToolsUI extends JPanel {
           else if (e.getPropertyName().equals("openGridDataset")) {
             String datasetName = (String) e.getNewValue();
             openGridDataset( datasetName);
+          }
+          else if (e.getPropertyName().equals("openRadialDataset")) {
+            String datasetName = (String) e.getNewValue();
+            openRadialDataset( datasetName);
           }
         }
       });

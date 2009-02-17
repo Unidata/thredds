@@ -37,6 +37,7 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
+import ucar.nc2.units.DateRange;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
@@ -45,10 +46,7 @@ import ucar.ma2.*;
 import ucar.ma2.DataType;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Date;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -83,6 +81,7 @@ public class Netcdf2Dataset extends RadialDatasetSweepAdapter implements TypedDa
     public TypedDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException {
         return new Netcdf2Dataset(ncd);
     }
+
     public FeatureType getScientificDataType() { return FeatureType.RADIAL; }
 
 
@@ -304,8 +303,7 @@ public class Netcdf2Dataset extends RadialDatasetSweepAdapter implements TypedDa
       return sbuff.toString();
     }
 
-
-    private class Netcdf2Variable extends MyRadialVariableAdapter implements RadialDatasetSweep.RadialVariable {
+  private class Netcdf2Variable extends MyRadialVariableAdapter implements RadialDatasetSweep.RadialVariable {
       ArrayList sweeps;
       int nsweeps;
       String name;

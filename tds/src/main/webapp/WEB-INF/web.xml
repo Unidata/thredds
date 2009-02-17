@@ -150,20 +150,17 @@
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>View</servlet-name>
   </filter-mapping>
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
+    <servlet-name>ncstream</servlet-name>
+  </filter-mapping>
 
   <!-- New -->
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>tester</servlet-name>
   </filter-mapping>
-  <!-- filter-mapping>
-    <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>NetcdfServer</servlet-name>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>RemoteNetcdfServer</servlet-name>
-  </filter-mapping -->
+
 
   <!--
   Filter:
@@ -368,13 +365,6 @@
     <load-on-startup>4</load-on-startup>
   </servlet>
 
-  <!-- RemoteNetcdf Server ->
-  <servlet>
-    <servlet-name>RemoteNetcdfServer</servlet-name>
-    <servlet-class>thredds.server.ncstream.RemoteNetcdfServlet</servlet-class>
-    <load-on-startup>3</load-on-startup>
-  </servlet -->
-
   <!-- Restricted Access (using container managed security, eg Tomcat, or CAMS) -->
   <servlet>
     <servlet-name>RestrictedDataset</servlet-name>
@@ -475,17 +465,6 @@
     <load-on-startup>10</load-on-startup>
   </servlet>
 
-  <!-- Setup for the ADDE servlet.
-<servlet>
-  <servlet-name>adde</servlet-name>
-  <servlet-class>thredds.adde.server.AddeServlet</servlet-class>
-  <init-param>
-     <param-name>DebugOn</param-name>
-     <param-value>AddeServlet/init AddeServlet/update AddeServlet/runTask AddeServlet/monitor AddeServlet/monitorStats AddeDataset/overlapFailure</param-value>
-   </init-param>
-   <load-on-startup>4</load-on-startup>
- </servlet -->
-
   <!-- default servlet -->
   <servlet-mapping>
     <servlet-name>root</servlet-name>
@@ -558,11 +537,6 @@
     <servlet-name>FileServer</servlet-name>
     <url-pattern>/fileServer/*</url-pattern>
   </servlet-mapping>
-
-  <!-- servlet-mapping>
-    <servlet-name>NetcdfServer</servlet-name>
-    <url-pattern>/ncServer/*</url-pattern>
-  </servlet-mapping -->
 
   <servlet-mapping>
     <servlet-name>ncstream</servlet-name>

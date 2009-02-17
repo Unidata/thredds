@@ -1,4 +1,3 @@
-// $Id:LevelII2Dataset.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -39,7 +38,6 @@ import ucar.nc2.constants.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.*;
 import ucar.nc2.units.DateUnit;
-import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.ma2.*;
 import ucar.nc2.Attribute;
@@ -52,10 +50,9 @@ import java.util.*;
 
 
 /**
- * Make a LevelII2 NetcdfDataset into a RadialDataset.
+ * Make a NEXRAD Level 2 NetcdfDataset into a RadialDataset.
  *
  * @author yuan
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedDatasetFactoryIF {

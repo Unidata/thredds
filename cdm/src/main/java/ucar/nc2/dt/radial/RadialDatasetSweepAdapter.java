@@ -1,4 +1,3 @@
-// $Id:RadialDatasetSweepAdapter.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -35,11 +34,13 @@ package ucar.nc2.dt.radial;
 
 import ucar.nc2.dataset.*;
 import ucar.nc2.dt.*;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.units.DateRange;
 import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.Dimension;
 import ucar.nc2.Attribute;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.FeatureDataset;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.ma2.DataType;
 
@@ -49,10 +50,9 @@ import java.util.*;
  * Make a NetcdfDataset into a RadialDatasetSweep.
  *
  * @author yuan
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
-public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl implements RadialDatasetSweep {
+public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl implements RadialDatasetSweep, FeatureDataset {
   protected ucar.unidata.geoloc.EarthLocation origin;
   protected HashMap csHash = new HashMap();
   protected ucar.nc2.units.DateUnit dateUnits;
@@ -78,7 +78,7 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
   protected abstract void setTimeUnits() throws Exception; // reminder for subclasses to set this
 
   public String getDetailInfo() {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
 
     sbuff.append(" Radar ID = "+getRadarID()+"\n");
     sbuff.append(" Radar Name = "+getRadarName()+"\n");
@@ -171,4 +171,24 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
         return at;
     }
   }
+
+  /////////////////////////////////////////////
+  // FeatureDataset
+
+  public FeatureType getFeatureType() {
+    return FeatureType.RADIAL;
+  }
+
+  public DateRange getDateRange() {
+    return new DateRange(getStartDate(), getEndDate());
+  }
+
+  public void getDetailInfo(Formatter sf) {
+    sf.format("%s", getDetailInfo());
+  }
+
+  public String getImplementationName() {
+    return getClass().getName();
+  }
+
 }

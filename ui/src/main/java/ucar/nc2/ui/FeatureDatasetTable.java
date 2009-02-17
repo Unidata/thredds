@@ -126,6 +126,14 @@ public class FeatureDatasetTable extends JPanel {
       }
     });
 
+    varPopup.addAction("Open as RadialDataset", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        FeatureDatasetBean ftb = (FeatureDatasetBean) ftTable.getSelectedBean();
+        if (ftb == null) return;
+        FeatureDatasetTable.this.firePropertyChange("openRadialDataset", null, ftb.f.getPath());
+      }
+    });
+
     // the info window
     infoTA = new TextHistoryPane();
     infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), infoTA);

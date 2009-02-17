@@ -121,6 +121,10 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
     return new PointDatasetDefault(wantFeatureType, (TableAnalyzer) analyser, ncd, errlog);
   }
 
+  public FeatureType[] getFeatureType() {
+    return new FeatureType[] {FeatureType.ANY_POINT};
+  }
+
   /////////////////////////////////////////////////////////////////////
 
   private static class PointDatasetDefault extends PointDatasetImpl {
