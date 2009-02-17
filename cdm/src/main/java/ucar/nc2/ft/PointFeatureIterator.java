@@ -33,7 +33,9 @@
 package ucar.nc2.ft;
 
 /**
- * An iterator over PointFeatures
+ * An iterator over PointFeatures.
+ * You must complete the iteration or call cancel().
+ *
  * @author caron
  * @since Feb 18, 2008
  */
@@ -54,6 +56,12 @@ public interface PointFeatureIterator {
    */
   public PointFeature next() throws java.io.IOException;
 
+  /**
+   * You must complete the iteration (until hasNext() returns false)
+   *  or call cancel().
+   */
+  public void cancel();
+  
   /**
    * Hint to use this much memory in buffering the iteration.
    * No guarentee that it will be used by the implementation.

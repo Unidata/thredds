@@ -40,7 +40,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
 
     byte[] m = new byte[msize];
     raf.read(m);
-    NcStreamProto.Stream proto = NcStreamProto.Stream.parseFrom(m);
+    NcStreamProto.Header proto = NcStreamProto.Header.parseFrom(m);
 
     NcStreamProto.Group root = proto.getRoot();
 

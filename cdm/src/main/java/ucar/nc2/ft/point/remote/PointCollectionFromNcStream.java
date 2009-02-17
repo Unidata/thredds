@@ -50,7 +50,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
+import org.apache.commons.httpclient.HttpMethod;
+
 /**
+ * Connect to remote PointFeatureCollection
  * @author caron
  * @since Feb 16, 2009
  */
@@ -65,13 +68,15 @@ public class PointCollectionFromNcStream extends PointCollectionImpl {
 
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
     try {
-      InputStream in = ncremote.readSequence(makeRequest());
+
+      HttpMethod method = ncremote.readSequence(makeRequest());
+      InputStream in = method.getResponseBodyAsStream();
 
       int len = NcStream.readVInt(in);
       byte[] b = new byte[len];
       NcStream.readFully(in, b);
       PointStreamProto.PointFeatureCollection pfc = PointStreamProto.PointFeatureCollection.parseFrom(b);
-      return new MyPointFeatureIterator(pfc, in);
+      return new RemotePointFeatureIterator(pfc, method, in);
 
     } catch (InvalidRangeException e) {
       e.printStackTrace();
@@ -80,16 +85,19 @@ public class PointCollectionFromNcStream extends PointCollectionImpl {
   }
 
 
-  private class MyPointFeatureIterator implements PointFeatureIterator {
+  private class RemotePointFeatureIterator implements PointFeatureIterator {
     PointStreamProto.PointFeatureCollection pfc;
+    HttpMethod method;
     InputStream in;
+
     int count = 0;
     PointFeature pf;
     DateUnit timeUnit;
     StructureMembers sm;
 
-    MyPointFeatureIterator(PointStreamProto.PointFeatureCollection pfc, InputStream in) throws IOException {
+    RemotePointFeatureIterator(PointStreamProto.PointFeatureCollection pfc, HttpMethod method, InputStream in) throws IOException {
       this.pfc = pfc;
+      this.method = method;
       this.in = in;
 
       try {
@@ -107,7 +115,10 @@ public class PointCollectionFromNcStream extends PointCollectionImpl {
 
     public boolean hasNext() throws IOException {
       int len = NcStream.readVInt(in);
-      if (len <= 0) return false;
+      if (len <= 0) {
+        cancel();
+        return false;
+      }
 
       byte[] b = new byte[len];
       NcStream.readFully(in, b);
@@ -123,6 +134,12 @@ public class PointCollectionFromNcStream extends PointCollectionImpl {
 
     public PointFeature next() throws IOException {
       return pf;
+    }
+
+    public void cancel() {
+      if (method != null)
+        method.releaseConnection();
+      method = null;
     }
 
     public void setBufferSize(int bytes) {

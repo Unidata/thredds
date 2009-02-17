@@ -108,6 +108,8 @@ public abstract class PointIteratorImpl implements PointFeatureIterator {
     structIter.setBufferSize(bytes);
   }
 
+  public void cancel() {}
+
   // so subclasses can override
   protected StructureData nextStructureData() throws IOException {
     return structIter.hasNext() ? structIter.next() : null;

@@ -67,6 +67,8 @@ public class PointIteratorAdapter implements PointFeatureIterator {
     fiter.setBufferSize(bytes);
   }
 
+  public void cancel() {}
+
   public boolean hasNext() throws IOException {
     if (done) return false;
 
