@@ -178,6 +178,8 @@ public class GempakSurfaceFileReader extends GempakFileReader {
         isStandard =
             !(findKey(DATE).type.equals(findKey(GempakStation.SLAT).type));
 
+        //TODO:  handle non-standard surface files
+        // return isStandard;
         return true;
 
     }

@@ -39,8 +39,6 @@
 package ucar.nc2.iosp.gempak;
 
 
-//import ucar.nc2.iosp.grid.GridParameter;
-
 
 import ucar.unidata.util.StringUtil;
 import ucar.grid.GridParameter;
@@ -71,12 +69,12 @@ import java.util.regex.Pattern;
 public class GempakParameterTable {
 
     /** table to hold the  values */
-    private static HashMap<String, GridParameter> paramMap =
-        new HashMap<String, GridParameter>(256);
+    private HashMap<String, GempakParameter> paramMap =
+        new HashMap<String, GempakParameter>(256);
 
     /** table to hold the template values */
-    private static HashMap<String, GridParameter> templateParamMap =
-        new HashMap<String, GridParameter>(20);
+    private HashMap<String, GempakParameter> templateParamMap =
+        new HashMap<String, GempakParameter>(20);
 
     /** indices of breakpoints in the table */
     private static int[] indices = {
@@ -104,7 +102,7 @@ ID# NAME                             UNITS                GNAM         SCALE   M
      *
      * @throws IOException   problem reading table.
      */
-    public static void addParameters(String tbl) throws IOException {
+    public void addParameters(String tbl) throws IOException {
         //String content = IOUtil.readContents(tbl, GempakParameterTable.class);
         InputStream is = getInputStream(tbl);
         if (is == null) {
@@ -140,7 +138,7 @@ ID# NAME                             UNITS                GNAM         SCALE   M
             result.add(words);
         }
         for (int i = 0; i < result.size(); i++) {
-            GridParameter p = makeParameter((String[]) result.get(i));
+            GempakParameter p = makeParameter((String[]) result.get(i));
             if (p != null) {
                 if (p.getName().indexOf("(") >= 0) {
                     templateParamMap.put(p.getName(), p);
@@ -159,7 +157,7 @@ ID# NAME                             UNITS                GNAM         SCALE   M
      *
      * @return  a grid parameter (may be null)
      */
-    private static GempakGridParameter makeParameter(String[] words) {
+    private GempakParameter makeParameter(String[] words) {
         int    num = 0;
         String description;
         if (words[0] != null) {
@@ -201,7 +199,7 @@ ID# NAME                             UNITS                GNAM         SCALE   M
             decimalScale = 0;
         }
 
-        return new GempakGridParameter(num, name, description, unit,
+        return new GempakParameter(num, name, description, unit,
                                        decimalScale);
     }
 
@@ -212,8 +210,8 @@ ID# NAME                             UNITS                GNAM         SCALE   M
      *
      * @return  corresponding parameter or null if not found in table
      */
-    public static GempakGridParameter getParameter(String name) {
-        GempakGridParameter param = (GempakGridParameter) paramMap.get(name);
+    public GempakParameter getParameter(String name) {
+        GempakParameter param = (GempakParameter) paramMap.get(name);
         if (param == null) {  // try the regex list
             Set<String> keys = templateParamMap.keySet();
             if ( !keys.isEmpty()) {
@@ -224,9 +222,9 @@ ID# NAME                             UNITS                GNAM         SCALE   M
                     if (m.matches()) {
                         //System.out.println("found match " + key + " for " + name);
                         String value = m.group(1);
-                        GempakGridParameter match =
-                            (GempakGridParameter) templateParamMap.get(key);
-                        param = new GempakGridParameter(match.getNumber(),
+                        GempakParameter match =
+                            (GempakParameter) templateParamMap.get(key);
+                        param = new GempakParameter(match.getNumber(),
                                 name,
                                 match.getDescription() + " (" + value
                                 + " hour)", match.getUnit(),
@@ -249,7 +247,15 @@ ID# NAME                             UNITS                GNAM         SCALE   M
      */
     public static void main(String[] args) throws IOException {
         GempakParameterTable pt = new GempakParameterTable();
-        pt.addParameters("resources/nj22/tables/gempak/wmogrib3.tbl");
+        //pt.addParameters("resources/nj22/tables/gempak/wmogrib3.tbl");
+        pt.addParameters("resources/nj22/tables/gempak/params.tbl");
+        if (args.length > 0) {
+           String param = args[0];
+           GempakParameter parm = pt.getParameter(param);
+           if (parm != null) {
+               System.out.println("Found " + param + ": " + parm);
+            }
+        }
     }
 
 
@@ -264,7 +270,7 @@ ID# NAME                             UNITS                GNAM         SCALE   M
      *
      * @throws IOException  problem reading contents
      */
-    public static String readContents(InputStream is) throws IOException {
+    private String readContents(InputStream is) throws IOException {
         return new String(readBytes(is));
     }
 
@@ -277,7 +283,7 @@ ID# NAME                             UNITS                GNAM         SCALE   M
      *
      * @throws IOException On badness
      */
-    public static byte[] readBytes(InputStream is) throws IOException {
+    private byte[] readBytes(InputStream is) throws IOException {
         int    totalRead = 0;
         byte[] content   = new byte[1000000];
         while (true) {
@@ -313,8 +319,7 @@ ID# NAME                             UNITS                GNAM         SCALE   M
      *
      * @return The input stream to the resource
      */
-
-    public static InputStream getInputStream(String resourceName) {
+    private InputStream getInputStream(String resourceName) {
 
         InputStream s = null;
 

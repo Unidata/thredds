@@ -88,7 +88,7 @@ public final class GempakLookup implements GridTableLookup {
      */
     public final GridParameter getParameter(GridRecord gr) {
         String        name = gr.getParameterName();
-        GridParameter gp   = GempakParameterTable.getParameter(name);
+        GridParameter gp   = GempakGridParameterTable.getParameter(name);
         if (gp != null) {
             return gp;
         }

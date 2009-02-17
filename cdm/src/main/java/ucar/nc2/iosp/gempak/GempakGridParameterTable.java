@@ -1,4 +1,4 @@
-/*
+ /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
@@ -31,87 +31,46 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-
-
 package ucar.nc2.iosp.gempak;
 
 
-import ucar.unidata.util.StringUtil;
-import ucar.grid.GridParameter;
-//import ucar.nc2.iosp.grid.GridParameter;
+import java.io.IOException;
 
 
 /**
- * Class which represents a GEMPAK grid parameter.  Add on decimal scale
+ * Wrapper around GempakParameterTable for use in a static context.
  */
+public class GempakGridParameterTable {
 
-public class GempakGridParameter extends GridParameter {
+    /** static table */
+    private static GempakParameterTable paramTable =
+        new GempakParameterTable();
 
     /**
-     * decimal scale
+     * Default ctor
      */
-    private int decimalScale = 0;
-
-
-    /**
-     * Create a new GEMPAK grid parameter
-     * @param number
-     * @param name
-     * @param description
-     * @param unit of parameter
-     * @param scale   decimal (10E*) scaling factor
-     */
-    public GempakGridParameter(int number, String name, String description,
-                         String unit, int scale) {
-        super(number, name, description, unit);
-        decimalScale = scale;
-    }
+    public GempakGridParameterTable() {}
 
     /**
-     * Get the decimal scale
-     * @return the decimal scale
-     */
-    public int getDecimalScale() {
-        return decimalScale;
-    }
-
-    /**
-     * Return a String representation of this object
+     * Add parameters from the table
      *
-     * @return a String representation of this object
+     * @param tbl   table location
+     *
+     * @throws IOException   problem reading table.
      */
-    public String toString() {
-        StringBuffer buf = new StringBuffer(super.toString());
-        buf.append(" scale: ");
-        buf.append(getDecimalScale());
-        return buf.toString();
+    public static void addParameters(String tbl) throws IOException {
+        paramTable.addParameters(tbl);
     }
 
     /**
-     * Check for equality
+     * Get the parameter for the given name
      *
-     * @param o  the object in question
+     * @param name   name of the parameter (eg:, TMPK);
      *
-     * @return  true if has the same parameters
+     * @return  corresponding parameter or null if not found in table
      */
-    public boolean equals(Object o) {
-        if ((o == null) || !(o instanceof GempakGridParameter)) {
-            return false;
-        }
-        GempakGridParameter that = (GempakGridParameter) o;
-        return super.equals(that) &&
-               decimalScale == that.decimalScale;
+    public static GempakParameter getParameter(String name) {
+        return paramTable.getParameter(name);
     }
-
-    /**
-     * Generate a hash code.
-     *
-     * @return  the hash code
-     */
-    public int hashCode() {
-        return super.hashCode() + 17*decimalScale;
-    }
-
-
 }
 

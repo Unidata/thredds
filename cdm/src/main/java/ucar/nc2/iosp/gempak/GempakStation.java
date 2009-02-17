@@ -52,9 +52,8 @@ import ucar.unidata.util.StringUtil;
  *
  * @author Don Murray
  */
-public class GempakStation implements 
-// Station, 
-Comparable {
+public class GempakStation implements Station {
+
 
     /** STID identifier */
     public static final String STID = "STID";
@@ -401,9 +400,8 @@ Comparable {
      *
      * @return  comparison on nam
      */
-    public int compareTo(Object o) {
-        GempakStation so = (GempakStation) o;
-        return getName().compareTo(so.getName());
+    public int compareTo(Station o) {
+        return getName().compareTo(o.getName());
     }
 
     /**

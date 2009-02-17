@@ -134,7 +134,7 @@ public class GempakGridRecord implements GridRecord {
         calendar.setTime(refTime);
         calendar.add(Calendar.MINUTE, validOffset);
         validTime = calendar.getTime();
-        GempakGridParameter ggp = GempakParameterTable.getParameter(param);
+        GempakParameter ggp = GempakGridParameterTable.getParameter(param);
         if (ggp != null) {
             decimalScale = ggp.getDecimalScale();
         }
