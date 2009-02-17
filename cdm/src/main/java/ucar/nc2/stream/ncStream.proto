@@ -1,4 +1,4 @@
-package test;
+package ncstream;
 
 option java_package = "ucar.nc2.stream";
 option java_outer_classname = "NcStreamProto";
@@ -66,7 +66,7 @@ message Group {
   repeated Group groups = 6;
 }
 
-message Stream {
+message Header {
   required fixed64 indexPos = 1;
   optional string name = 2;
   required Group root = 3;

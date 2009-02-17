@@ -48,7 +48,7 @@ import java.io.OutputStream;
  */
 public class NcStreamWriter {
   private NetcdfFile ncfile;
-  private NcStreamProto.Stream proto;
+  private NcStreamProto.Header header;
   private boolean show = false;
   private int sizeToCache = 100;
 
@@ -56,12 +56,12 @@ public class NcStreamWriter {
     this.ncfile = ncfile;
     NcStreamProto.Group.Builder rootBuilder = NcStream.encodeGroup( ncfile.getRootGroup(), sizeToCache);
 
-    NcStreamProto.Stream.Builder streamBuilder = NcStreamProto.Stream.newBuilder();
-    streamBuilder.setName(location == null ? ncfile.getLocation() : location);
-    streamBuilder.setRoot(rootBuilder);
-    streamBuilder.setIndexPos(0);
+    NcStreamProto.Header.Builder headerBuilder = NcStreamProto.Header.newBuilder();
+    headerBuilder.setName(location == null ? ncfile.getLocation() : location);
+    headerBuilder.setRoot(rootBuilder);
+    headerBuilder.setIndexPos(0);
 
-    proto = streamBuilder.build();
+    header = headerBuilder.build();
   }
 
   ////////////////////////////////////////////////////////////
@@ -72,7 +72,7 @@ public class NcStreamWriter {
     //// header message
     size += writeBytes(out, NcStream.MAGIC_START); // magic
     size += writeBytes(out, NcStream.MAGIC_HEADER); // magic
-    byte[] b = proto.toByteArray();
+    byte[] b = header.toByteArray();
     size += writeVInt(out, b.length); // len
     if (show) System.out.println("Write Header len=" + b.length);
     // payload

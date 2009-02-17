@@ -1,0 +1,34 @@
+package pointStream;
+
+import "ucar/nc2/stream/ncStream.proto";
+
+option java_package = "ucar.nc2.ft.point.remote";
+option java_outer_classname = "PointStreamProto";
+
+message Location {
+  required double time = 1;
+  required double lat = 2;
+  required double lon = 3;
+  optional double alt = 4;
+  optional double nomTime = 5;
+}
+
+message PointFeature {
+  required Location loc = 1;
+  required bytes data = 3; // fixed length data
+  repeated string sdata = 4; // Strings
+}
+
+message Member {
+  required string name = 1;
+  optional string desc = 2;
+  optional string units = 3;
+  required ncstream.DataType dataType = 4;
+  required ncstream.Section section = 5;
+}
+
+message PointFeatureCollection {
+  required string name = 1;
+  required string timeUnit = 2;
+  repeated Member members = 3;
+}

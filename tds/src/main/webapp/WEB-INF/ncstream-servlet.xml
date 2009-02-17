@@ -18,7 +18,7 @@
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
       <value>
-        /point/*=pointStreamController
+        /point/**=pointStreamController
         /netcdf/*=remoteNetcdfController
       </value>
     </property>

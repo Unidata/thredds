@@ -42,8 +42,45 @@ import java.io.IOException;
  * @since Jun 2, 2008
  */
 public interface FileCacheable {
+
+  /**
+   * The location of the FileCacheable, used only for debug and log messages.
+   * @return location
+   */
   public String getLocation();
+
+  /**
+   * Close the FileCacheable, release all resources.
+   * Also must honor contract with setFileCache().
+   * @throws IOException
+   */
   public void close() throws IOException;
+
+  /**
+   * Sync() is called when the FileCacheable is found in the cache, before returning the object to the
+   *  application. FileCacheable has an opportunity to freshen itself. FileCacheable mag ignore this call.
+   * @return true if FileCacheable was changed
+   * @throws IOException on i/o error.
+   */
   public boolean sync() throws IOException;
+
+  /**
+   * FileCacheable must store the FileCache and call it on close():
+   * <pre>
+  public synchronized void close() throws java.io.IOException {
+    if (isClosed) return;
+    if (cache != null) {
+      cache.release(this);
+    } else {
+      try {
+        if (!isClosed) reallyClose();
+      } finally {
+        isClosed = true;
+      }
+    }
+  }
+   </pre>
+   * @param fileCache must store this, use it on close as above.
+   */
   public void setFileCache( FileCache fileCache);
 }

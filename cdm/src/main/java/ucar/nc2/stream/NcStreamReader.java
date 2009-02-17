@@ -52,7 +52,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
  */
 public class NcStreamReader {
 
-  private NcStreamProto.Stream proto;
+  private NcStreamProto.Header proto;
 
   public NetcdfFile readStream(InputStream is, NetcdfFile ncfile) throws IOException {
     assert readAndTest(is, NcStream.MAGIC_START);
@@ -62,8 +62,8 @@ public class NcStreamReader {
     System.out.println("READ header len= " + msize);
 
     byte[] m = new byte[msize];
-    readFully(is, m);
-    proto = NcStreamProto.Stream.parseFrom(m);
+    NcStream.readFully(is, m);
+    proto = NcStreamProto.Header.parseFrom(m);
     ncfile = proto2nc(proto, ncfile);
 
     // LOOK why doesnt this work ?
@@ -97,14 +97,14 @@ public class NcStreamReader {
     int psize = readVInt(is);
     System.out.println(" readData len= " + psize);
     byte[] dp = new byte[psize];
-    readFully(is, dp);
+    NcStream.readFully(is, dp);
     NcStreamProto.Data dproto = NcStreamProto.Data.parseFrom(dp);
     System.out.println(" readData proto = " + dproto);
 
     int dsize = readVInt(is);
     System.out.println(" readData len= " + dsize);
     byte[] datab = new byte[dsize];
-    readFully( is, datab);
+    NcStream.readFully( is, datab);
 
     ByteBuffer dataBB = ByteBuffer.wrap(datab);
     DataType dataType = NcStream.decodeDataType(dproto.getDataType());
@@ -112,18 +112,6 @@ public class NcStreamReader {
 
     Array data = Array.factory( dataType, section.getShape(), dataBB);
     return new DataResult(dproto.getVarName(), section, data);
-  }
-
-  private int readFully(InputStream is, byte[] b) throws IOException {
-    int done = 0;
-    int want = b.length;
-    while (want > 0) {
-      int bytesRead = is.read(b, done, want);
-      if (bytesRead == -1) break;
-      done += bytesRead;
-      want -= bytesRead;
-    }
-    return done;
   }
 
   private int readVInt(InputStream is) throws IOException {
@@ -138,7 +126,7 @@ public class NcStreamReader {
 
   private boolean readAndTest(InputStream is, byte[] test) throws IOException {
     byte[] b = new byte[test.length];
-    readFully(is, b);
+    NcStream.readFully(is, b);
 
     if (b.length != test.length) return false;
     for (int i = 0; i < b.length; i++)
@@ -146,7 +134,7 @@ public class NcStreamReader {
     return true;
   }
 
-  public NetcdfFile proto2nc(NcStreamProto.Stream proto, NetcdfFile ncfile) throws InvalidProtocolBufferException {
+  public NetcdfFile proto2nc(NcStreamProto.Header proto, NetcdfFile ncfile) throws InvalidProtocolBufferException {
     if (ncfile == null)
       ncfile = new NetcdfFileStream();
     ncfile.setLocation(proto.getName());

@@ -114,18 +114,21 @@ public class NcStream {
     NcStreamProto.Data.Builder builder = NcStreamProto.Data.newBuilder();
     builder.setVarName(var.getName());
     builder.setDataType(encodeDataType(var.getDataType()));
+    builder.setSection(encodeSection(section));
+    return builder.build();
+  }
 
+  static public NcStreamProto.Section encodeSection(Section section) {
     NcStreamProto.Section.Builder sbuilder = NcStreamProto.Section.newBuilder();
     for (Range r : section.getRanges()) {
       NcStreamProto.Range.Builder rbuilder = NcStreamProto.Range.newBuilder();
       rbuilder.setSize(r.length());
       sbuilder.addRange(rbuilder);
     }
-    builder.setSection(sbuilder);
-    return builder.build();
+    return sbuilder.build();
   }
 
-  static void show(NcStreamProto.Stream proto) throws InvalidProtocolBufferException {
+  static void show(NcStreamProto.Header proto) throws InvalidProtocolBufferException {
     NcStreamProto.Group root = proto.getRoot();
 
     for (NcStreamProto.Dimension dim : root.getDimsList()) {
@@ -169,7 +172,7 @@ public class NcStream {
     return writeBytes(out, b, 0, b.length);
   }
 
-  static int writeVInt(OutputStream out, int i) throws IOException {
+  static public int writeVInt(OutputStream out, int i) throws IOException {
     int count = 0;
     while ((i & ~0x7F) != 0) {
       writeByte(out, (byte) ((i & 0x7f) | 0x80));
@@ -196,7 +199,7 @@ public class NcStream {
     return count + 1;
   }
 
-  static int readVInt(InputStream is) throws IOException {
+  static public int readVInt(InputStream is) throws IOException {
     byte b = (byte) is.read();
     int i = b & 0x7F;
     for (int shift = 7; (b & 0x80) != 0; shift += 7) {
@@ -204,6 +207,18 @@ public class NcStream {
       i |= (b & 0x7F) << shift;
     }
     return i;
+  }
+
+  static public int readFully(InputStream is, byte[] b) throws IOException {
+    int done = 0;
+    int want = b.length;
+    while (want > 0) {
+      int bytesRead = is.read(b, done, want);
+      if (bytesRead == -1) break;
+      done += bytesRead;
+      want -= bytesRead;
+    }
+    return done;
   }
 
   static boolean readAndTest(InputStream is, byte[] test) throws IOException {
@@ -281,7 +296,7 @@ public class NcStream {
     return ncvar;
   }
 
-  static Section decodeSection(NcStreamProto.Section proto) {
+  static public Section decodeSection(NcStreamProto.Section proto) {
     Section section = new Section();
 
     for (ucar.nc2.stream.NcStreamProto.Range pr : proto.getRangeList()) {
@@ -317,7 +332,7 @@ public class NcStream {
     throw new IllegalStateException("illegal att type " + dtype);
   }
 
-  static ucar.nc2.stream.NcStreamProto.DataType encodeDataType(DataType dtype) {
+  static public ucar.nc2.stream.NcStreamProto.DataType encodeDataType(DataType dtype) {
     switch (dtype) {
       case CHAR:
         return ucar.nc2.stream.NcStreamProto.DataType.CHAR;
@@ -363,7 +378,7 @@ public class NcStream {
     throw new IllegalStateException("illegal att type " + dtype);
   }
 
-  static DataType decodeDataType(ucar.nc2.stream.NcStreamProto.DataType dtype) {
+  static public DataType decodeDataType(ucar.nc2.stream.NcStreamProto.DataType dtype) {
     switch (dtype) {
       case CHAR:
         return DataType.CHAR;

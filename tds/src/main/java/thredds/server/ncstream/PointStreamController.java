@@ -46,12 +46,19 @@ import javax.servlet.http.HttpServletResponse;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.*;
+import ucar.nc2.ft.point.remote.PointStreamProto;
+import ucar.nc2.ft.point.remote.PointStream;
 import ucar.nc2.stream.NcStreamWriter;
+import ucar.nc2.stream.NcStream;
 
 import java.io.*;
 import java.nio.channels.WritableByteChannel;
 import java.nio.channels.Channels;
 import java.util.StringTokenizer;
+import java.util.Formatter;
+import java.util.List;
 
 /**
  * @author caron
@@ -62,6 +69,20 @@ public class PointStreamController extends AbstractController implements LastMod
 
   private TdsContext tdsContext;
   private boolean allow = true;
+  private String location = "R:\\testdata\\point\\netcdf\\971101.PAM_Atl_met.nc";
+  private FeatureDatasetPoint fd;
+  private PointFeatureCollection pfc;
+
+  void init() {
+    Formatter errlog = new Formatter();
+    try {
+      fd = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.POINT, location, null, errlog);
+      List<FeatureCollection> coll =  fd.getPointFeatureCollectionList();
+      pfc = (PointFeatureCollection) coll.get(0);
+    } catch (Throwable t) {
+      t.printStackTrace();
+    }
+  }
 
   public void setTdsContext(TdsContext tdsContext) {
     this.tdsContext = tdsContext;
@@ -77,6 +98,8 @@ public class PointStreamController extends AbstractController implements LastMod
       return null;
     }
 
+    if (pfc == null) init();
+
     log.info(UsageLog.setupRequestContext(req));
 
     String pathInfo = req.getPathInfo();
@@ -90,26 +113,40 @@ public class PointStreamController extends AbstractController implements LastMod
 
     NetcdfFile ncfile = null;
     try {
-      ncfile = DatasetHandler.getNetcdfFile(req, res, pathInfo);
-      if (ncfile == null) {
-        res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, -1);
-      }
 
       OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
-      NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequest(req));
       if (query == null) { // just the header
+        ncfile = fd.getNetcdfFile();
+        if (ncfile == null) {
+          res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+          ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, -1);
+        }
+        NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequest(req));
         ncWriter.sendHeader(out);
 
       } else { // they want some data
-        WritableByteChannel wbc = Channels.newChannel(out);
 
-        StringTokenizer stoke = new StringTokenizer(query, ";"); // need UTF/%decode
-        while (stoke.hasMoreTokens()) {
-          ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());
-          ncWriter.sendData(out, cer.v, cer.section, wbc);
+
+        int count = 0;
+        PointFeatureIterator pfIter = pfc.getPointFeatureIterator(-1);
+        while( pfIter.hasNext()) {
+          PointFeature pf = pfIter.next();
+          if (count == 0) {
+            PointStreamProto.PointFeatureCollection pfc = PointStream.encodePointFeatureCollection(fd.getLocationURI(), pf);
+            byte[] b = pfc.toByteArray();
+            NcStream.writeVInt(out, b.length);
+            out.write(b);
+          }
+
+          PointStreamProto.PointFeature pfp = PointStream.encodePointFeature(pf);
+          byte[] b = pfp.toByteArray();
+          NcStream.writeVInt(out, b.length);
+          out.write(b);
+          System.out.println(" count = "+count+" pf= "+pf.getLocation());
+          count++;
         }
       }
+      NcStream.writeVInt(out, 0);
 
       out.flush();
       res.flushBuffer();
@@ -124,16 +161,20 @@ public class PointStreamController extends AbstractController implements LastMod
       ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
 
-    } finally {
+    } /* finally {
       if (null != ncfile)
         try {
           ncfile.close();
         } catch (IOException ioe) {
           log.error("Failed to close = " + pathInfo);
         }
-    }
+    } */
 
     return null;
+  }
+
+  private void write(PointFeature pf, OutputStream out) {
+
   }
 
   public long getLastModified(HttpServletRequest req) {

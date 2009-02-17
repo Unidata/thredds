@@ -91,13 +91,13 @@ public final class NcStreamProto {
     
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_test_Attribute_descriptor;
+      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Attribute_descriptor;
     }
     
     @Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_test_Attribute_fieldAccessorTable;
+      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Attribute_fieldAccessorTable;
     }
     
     public static enum Type {
@@ -168,7 +168,7 @@ public final class NcStreamProto {
     public boolean hasName() { return hasName; }
     public java.lang.String getName() { return name_; }
     
-    // required .test.Attribute.Type type = 2;
+    // required .ncstream.Attribute.Type type = 2;
     private boolean hasType;
     private ucar.nc2.stream.NcStreamProto.Attribute.Type type_ = ucar.nc2.stream.NcStreamProto.Attribute.Type.STRING;
     public boolean hasType() { return hasType; }
@@ -314,7 +314,7 @@ public final class NcStreamProto {
         return this;
       }
       
-      // required .test.Attribute.Type type = 2;
+      // required .ncstream.Attribute.Type type = 2;
       public boolean hasType() {
         return result.hasType();
       }
@@ -390,13 +390,13 @@ public final class NcStreamProto {
     
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_test_Dimension_descriptor;
+      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Dimension_descriptor;
     }
     
     @Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_test_Dimension_fieldAccessorTable;
+      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Dimension_fieldAccessorTable;
     }
     
     // optional string name = 1;
@@ -651,13 +651,13 @@ public final class NcStreamProto {
     
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_test_Variable_descriptor;
+      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Variable_descriptor;
     }
     
     @Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_test_Variable_fieldAccessorTable;
+      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Variable_fieldAccessorTable;
     }
     
     // required string name = 1;
@@ -666,13 +666,13 @@ public final class NcStreamProto {
     public boolean hasName() { return hasName; }
     public java.lang.String getName() { return name_; }
     
-    // required .test.DataType dataType = 2;
+    // required .ncstream.DataType dataType = 2;
     private boolean hasDataType;
     private ucar.nc2.stream.NcStreamProto.DataType dataType_ = ucar.nc2.stream.NcStreamProto.DataType.CHAR;
     public boolean hasDataType() { return hasDataType; }
     public ucar.nc2.stream.NcStreamProto.DataType getDataType() { return dataType_; }
     
-    // repeated .test.Dimension shape = 3;
+    // repeated .ncstream.Dimension shape = 3;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> shape_ =
       java.util.Collections.emptyList();
     public java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> getShapeList() {
@@ -683,7 +683,7 @@ public final class NcStreamProto {
       return shape_.get(index);
     }
     
-    // repeated .test.Attribute atts = 4;
+    // repeated .ncstream.Attribute atts = 4;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> atts_ =
       java.util.Collections.emptyList();
     public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> getAttsList() {
@@ -836,7 +836,7 @@ public final class NcStreamProto {
         return this;
       }
       
-      // required .test.DataType dataType = 2;
+      // required .ncstream.DataType dataType = 2;
       public boolean hasDataType() {
         return result.hasDataType();
       }
@@ -854,7 +854,7 @@ public final class NcStreamProto {
         return this;
       }
       
-      // repeated .test.Dimension shape = 3;
+      // repeated .ncstream.Dimension shape = 3;
       public java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> getShapeList() {
         return java.util.Collections.unmodifiableList(result.shape_);
       }
@@ -899,7 +899,7 @@ public final class NcStreamProto {
         return this;
       }
       
-      // repeated .test.Attribute atts = 4;
+      // repeated .ncstream.Attribute atts = 4;
       public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> getAttsList() {
         return java.util.Collections.unmodifiableList(result.atts_);
       }
@@ -984,13 +984,13 @@ public final class NcStreamProto {
     
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_test_Structure_descriptor;
+      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Structure_descriptor;
     }
     
     @Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_test_Structure_fieldAccessorTable;
+      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Structure_fieldAccessorTable;
     }
     
     // required string name = 1;
@@ -999,7 +999,7 @@ public final class NcStreamProto {
     public boolean hasName() { return hasName; }
     public java.lang.String getName() { return name_; }
     
-    // repeated .test.Dimension shape = 2;
+    // repeated .ncstream.Dimension shape = 2;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> shape_ =
       java.util.Collections.emptyList();
     public java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> getShapeList() {
@@ -1010,13 +1010,13 @@ public final class NcStreamProto {
       return shape_.get(index);
     }
     
-    // required .test.DataType dataType = 3;
+    // required .ncstream.DataType dataType = 3;
     private boolean hasDataType;
     private ucar.nc2.stream.NcStreamProto.DataType dataType_ = ucar.nc2.stream.NcStreamProto.DataType.CHAR;
     public boolean hasDataType() { return hasDataType; }
     public ucar.nc2.stream.NcStreamProto.DataType getDataType() { return dataType_; }
     
-    // repeated .test.Attribute atts = 4;
+    // repeated .ncstream.Attribute atts = 4;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> atts_ =
       java.util.Collections.emptyList();
     public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> getAttsList() {
@@ -1027,7 +1027,7 @@ public final class NcStreamProto {
       return atts_.get(index);
     }
     
-    // repeated .test.Variable vars = 5;
+    // repeated .ncstream.Variable vars = 5;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Variable> vars_ =
       java.util.Collections.emptyList();
     public java.util.List<ucar.nc2.stream.NcStreamProto.Variable> getVarsList() {
@@ -1038,7 +1038,7 @@ public final class NcStreamProto {
       return vars_.get(index);
     }
     
-    // repeated .test.Structure structs = 6;
+    // repeated .ncstream.Structure structs = 6;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Structure> structs_ =
       java.util.Collections.emptyList();
     public java.util.List<ucar.nc2.stream.NcStreamProto.Structure> getStructsList() {
@@ -1193,7 +1193,7 @@ public final class NcStreamProto {
         return this;
       }
       
-      // repeated .test.Dimension shape = 2;
+      // repeated .ncstream.Dimension shape = 2;
       public java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> getShapeList() {
         return java.util.Collections.unmodifiableList(result.shape_);
       }
@@ -1238,7 +1238,7 @@ public final class NcStreamProto {
         return this;
       }
       
-      // required .test.DataType dataType = 3;
+      // required .ncstream.DataType dataType = 3;
       public boolean hasDataType() {
         return result.hasDataType();
       }
@@ -1256,7 +1256,7 @@ public final class NcStreamProto {
         return this;
       }
       
-      // repeated .test.Attribute atts = 4;
+      // repeated .ncstream.Attribute atts = 4;
       public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> getAttsList() {
         return java.util.Collections.unmodifiableList(result.atts_);
       }
@@ -1301,7 +1301,7 @@ public final class NcStreamProto {
         return this;
       }
       
-      // repeated .test.Variable vars = 5;
+      // repeated .ncstream.Variable vars = 5;
       public java.util.List<ucar.nc2.stream.NcStreamProto.Variable> getVarsList() {
         return java.util.Collections.unmodifiableList(result.vars_);
       }
@@ -1346,7 +1346,7 @@ public final class NcStreamProto {
         return this;
       }
       
-      // repeated .test.Structure structs = 6;
+      // repeated .ncstream.Structure structs = 6;
       public java.util.List<ucar.nc2.stream.NcStreamProto.Structure> getStructsList() {
         return java.util.Collections.unmodifiableList(result.structs_);
       }
@@ -1413,13 +1413,13 @@ public final class NcStreamProto {
     
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_test_Group_descriptor;
+      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Group_descriptor;
     }
     
     @Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_test_Group_fieldAccessorTable;
+      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Group_fieldAccessorTable;
     }
     
     // required string name = 1;
@@ -1428,7 +1428,7 @@ public final class NcStreamProto {
     public boolean hasName() { return hasName; }
     public java.lang.String getName() { return name_; }
     
-    // repeated .test.Dimension dims = 2;
+    // repeated .ncstream.Dimension dims = 2;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> dims_ =
       java.util.Collections.emptyList();
     public java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> getDimsList() {
@@ -1439,7 +1439,7 @@ public final class NcStreamProto {
       return dims_.get(index);
     }
     
-    // repeated .test.Variable vars = 3;
+    // repeated .ncstream.Variable vars = 3;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Variable> vars_ =
       java.util.Collections.emptyList();
     public java.util.List<ucar.nc2.stream.NcStreamProto.Variable> getVarsList() {
@@ -1450,7 +1450,7 @@ public final class NcStreamProto {
       return vars_.get(index);
     }
     
-    // repeated .test.Structure structs = 4;
+    // repeated .ncstream.Structure structs = 4;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Structure> structs_ =
       java.util.Collections.emptyList();
     public java.util.List<ucar.nc2.stream.NcStreamProto.Structure> getStructsList() {
@@ -1461,7 +1461,7 @@ public final class NcStreamProto {
       return structs_.get(index);
     }
     
-    // repeated .test.Attribute atts = 5;
+    // repeated .ncstream.Attribute atts = 5;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> atts_ =
       java.util.Collections.emptyList();
     public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> getAttsList() {
@@ -1472,7 +1472,7 @@ public final class NcStreamProto {
       return atts_.get(index);
     }
     
-    // repeated .test.Group groups = 6;
+    // repeated .ncstream.Group groups = 6;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Group> groups_ =
       java.util.Collections.emptyList();
     public java.util.List<ucar.nc2.stream.NcStreamProto.Group> getGroupsList() {
@@ -1631,7 +1631,7 @@ public final class NcStreamProto {
         return this;
       }
       
-      // repeated .test.Dimension dims = 2;
+      // repeated .ncstream.Dimension dims = 2;
       public java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> getDimsList() {
         return java.util.Collections.unmodifiableList(result.dims_);
       }
@@ -1676,7 +1676,7 @@ public final class NcStreamProto {
         return this;
       }
       
-      // repeated .test.Variable vars = 3;
+      // repeated .ncstream.Variable vars = 3;
       public java.util.List<ucar.nc2.stream.NcStreamProto.Variable> getVarsList() {
         return java.util.Collections.unmodifiableList(result.vars_);
       }
@@ -1721,7 +1721,7 @@ public final class NcStreamProto {
         return this;
       }
       
-      // repeated .test.Structure structs = 4;
+      // repeated .ncstream.Structure structs = 4;
       public java.util.List<ucar.nc2.stream.NcStreamProto.Structure> getStructsList() {
         return java.util.Collections.unmodifiableList(result.structs_);
       }
@@ -1766,7 +1766,7 @@ public final class NcStreamProto {
         return this;
       }
       
-      // repeated .test.Attribute atts = 5;
+      // repeated .ncstream.Attribute atts = 5;
       public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> getAttsList() {
         return java.util.Collections.unmodifiableList(result.atts_);
       }
@@ -1811,7 +1811,7 @@ public final class NcStreamProto {
         return this;
       }
       
-      // repeated .test.Group groups = 6;
+      // repeated .ncstream.Group groups = 6;
       public java.util.List<ucar.nc2.stream.NcStreamProto.Group> getGroupsList() {
         return java.util.Collections.unmodifiableList(result.groups_);
       }
@@ -1862,29 +1862,29 @@ public final class NcStreamProto {
     }
   }
   
-  public static final class Stream extends
+  public static final class Header extends
       com.google.protobuf.GeneratedMessage {
-    // Use Stream.newBuilder() to construct.
-    private Stream() {}
+    // Use Header.newBuilder() to construct.
+    private Header() {}
     
-    private static final Stream defaultInstance = new Stream();
-    public static Stream getDefaultInstance() {
+    private static final Header defaultInstance = new Header();
+    public static Header getDefaultInstance() {
       return defaultInstance;
     }
     
-    public Stream getDefaultInstanceForType() {
+    public Header getDefaultInstanceForType() {
       return defaultInstance;
     }
     
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_test_Stream_descriptor;
+      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Header_descriptor;
     }
     
     @Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_test_Stream_fieldAccessorTable;
+      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Header_fieldAccessorTable;
     }
     
     // required fixed64 indexPos = 1;
@@ -1899,52 +1899,52 @@ public final class NcStreamProto {
     public boolean hasName() { return hasName; }
     public java.lang.String getName() { return name_; }
     
-    // required .test.Group root = 3;
+    // required .ncstream.Group root = 3;
     private boolean hasRoot;
     private ucar.nc2.stream.NcStreamProto.Group root_ = ucar.nc2.stream.NcStreamProto.Group.getDefaultInstance();
     public boolean hasRoot() { return hasRoot; }
     public ucar.nc2.stream.NcStreamProto.Group getRoot() { return root_; }
     
-    public static ucar.nc2.stream.NcStreamProto.Stream parseFrom(
+    public static ucar.nc2.stream.NcStreamProto.Header parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data).buildParsed();
     }
-    public static ucar.nc2.stream.NcStreamProto.Stream parseFrom(
+    public static ucar.nc2.stream.NcStreamProto.Header parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistry extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data, extensionRegistry)
                .buildParsed();
     }
-    public static ucar.nc2.stream.NcStreamProto.Stream parseFrom(byte[] data)
+    public static ucar.nc2.stream.NcStreamProto.Header parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data).buildParsed();
     }
-    public static ucar.nc2.stream.NcStreamProto.Stream parseFrom(
+    public static ucar.nc2.stream.NcStreamProto.Header parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistry extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data, extensionRegistry)
                .buildParsed();
     }
-    public static ucar.nc2.stream.NcStreamProto.Stream parseFrom(java.io.InputStream input)
+    public static ucar.nc2.stream.NcStreamProto.Header parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return newBuilder().mergeFrom(input).buildParsed();
     }
-    public static ucar.nc2.stream.NcStreamProto.Stream parseFrom(
+    public static ucar.nc2.stream.NcStreamProto.Header parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistry extensionRegistry)
         throws java.io.IOException {
       return newBuilder().mergeFrom(input, extensionRegistry)
                .buildParsed();
     }
-    public static ucar.nc2.stream.NcStreamProto.Stream parseFrom(
+    public static ucar.nc2.stream.NcStreamProto.Header parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return newBuilder().mergeFrom(input).buildParsed();
     }
-    public static ucar.nc2.stream.NcStreamProto.Stream parseFrom(
+    public static ucar.nc2.stream.NcStreamProto.Header parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistry extensionRegistry)
         throws java.io.IOException {
@@ -1954,25 +1954,25 @@ public final class NcStreamProto {
     
     public static Builder newBuilder() { return new Builder(); }
     public Builder newBuilderForType() { return new Builder(); }
-    public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.Stream prototype) {
+    public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.Header prototype) {
       return new Builder().mergeFrom(prototype);
     }
     
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> {
-      // Construct using ucar.nc2.stream.NcStreamProto.Stream.newBuilder()
+      // Construct using ucar.nc2.stream.NcStreamProto.Header.newBuilder()
       private Builder() {}
       
-      ucar.nc2.stream.NcStreamProto.Stream result = new ucar.nc2.stream.NcStreamProto.Stream();
+      ucar.nc2.stream.NcStreamProto.Header result = new ucar.nc2.stream.NcStreamProto.Header();
       
       @Override
-      protected ucar.nc2.stream.NcStreamProto.Stream internalGetResult() {
+      protected ucar.nc2.stream.NcStreamProto.Header internalGetResult() {
         return result;
       }
       
       @Override
       public Builder clear() {
-        result = new ucar.nc2.stream.NcStreamProto.Stream();
+        result = new ucar.nc2.stream.NcStreamProto.Header();
         return this;
       }
       
@@ -1984,14 +1984,14 @@ public final class NcStreamProto {
       @Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ucar.nc2.stream.NcStreamProto.Stream.getDescriptor();
+        return ucar.nc2.stream.NcStreamProto.Header.getDescriptor();
       }
       
-      public ucar.nc2.stream.NcStreamProto.Stream getDefaultInstanceForType() {
-        return ucar.nc2.stream.NcStreamProto.Stream.getDefaultInstance();
+      public ucar.nc2.stream.NcStreamProto.Header getDefaultInstanceForType() {
+        return ucar.nc2.stream.NcStreamProto.Header.getDefaultInstance();
       }
       
-      public ucar.nc2.stream.NcStreamProto.Stream build() {
+      public ucar.nc2.stream.NcStreamProto.Header build() {
         if (!isInitialized()) {
           throw new com.google.protobuf.UninitializedMessageException(
             result);
@@ -1999,7 +1999,7 @@ public final class NcStreamProto {
         return buildPartial();
       }
       
-      private ucar.nc2.stream.NcStreamProto.Stream buildParsed()
+      private ucar.nc2.stream.NcStreamProto.Header buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
         if (!isInitialized()) {
           throw new com.google.protobuf.UninitializedMessageException(
@@ -2008,8 +2008,8 @@ public final class NcStreamProto {
         return buildPartial();
       }
       
-      public ucar.nc2.stream.NcStreamProto.Stream buildPartial() {
-        ucar.nc2.stream.NcStreamProto.Stream returnMe = result;
+      public ucar.nc2.stream.NcStreamProto.Header buildPartial() {
+        ucar.nc2.stream.NcStreamProto.Header returnMe = result;
         result = null;
         return returnMe;
       }
@@ -2051,7 +2051,7 @@ public final class NcStreamProto {
         return this;
       }
       
-      // required .test.Group root = 3;
+      // required .ncstream.Group root = 3;
       public boolean hasRoot() {
         return result.hasRoot();
       }
@@ -2107,13 +2107,13 @@ public final class NcStreamProto {
     
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_test_Data_descriptor;
+      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Data_descriptor;
     }
     
     @Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_test_Data_fieldAccessorTable;
+      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Data_fieldAccessorTable;
     }
     
     // required string varName = 1;
@@ -2122,13 +2122,13 @@ public final class NcStreamProto {
     public boolean hasVarName() { return hasVarName; }
     public java.lang.String getVarName() { return varName_; }
     
-    // required .test.DataType dataType = 2;
+    // required .ncstream.DataType dataType = 2;
     private boolean hasDataType;
     private ucar.nc2.stream.NcStreamProto.DataType dataType_ = ucar.nc2.stream.NcStreamProto.DataType.CHAR;
     public boolean hasDataType() { return hasDataType; }
     public ucar.nc2.stream.NcStreamProto.DataType getDataType() { return dataType_; }
     
-    // required .test.Section section = 3;
+    // required .ncstream.Section section = 3;
     private boolean hasSection;
     private ucar.nc2.stream.NcStreamProto.Section section_ = ucar.nc2.stream.NcStreamProto.Section.getDefaultInstance();
     public boolean hasSection() { return hasSection; }
@@ -2262,7 +2262,7 @@ public final class NcStreamProto {
         return this;
       }
       
-      // required .test.DataType dataType = 2;
+      // required .ncstream.DataType dataType = 2;
       public boolean hasDataType() {
         return result.hasDataType();
       }
@@ -2280,7 +2280,7 @@ public final class NcStreamProto {
         return this;
       }
       
-      // required .test.Section section = 3;
+      // required .ncstream.Section section = 3;
       public boolean hasSection() {
         return result.hasSection();
       }
@@ -2336,13 +2336,13 @@ public final class NcStreamProto {
     
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_test_Range_descriptor;
+      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Range_descriptor;
     }
     
     @Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_test_Range_fieldAccessorTable;
+      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Range_fieldAccessorTable;
     }
     
     // optional uint64 start = 1;
@@ -2549,16 +2549,16 @@ public final class NcStreamProto {
     
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_test_Section_descriptor;
+      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Section_descriptor;
     }
     
     @Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_test_Section_fieldAccessorTable;
+      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Section_fieldAccessorTable;
     }
     
-    // repeated .test.Range range = 1;
+    // repeated .ncstream.Range range = 1;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Range> range_ =
       java.util.Collections.emptyList();
     public java.util.List<ucar.nc2.stream.NcStreamProto.Range> getRangeList() {
@@ -2683,7 +2683,7 @@ public final class NcStreamProto {
       }
       
       
-      // repeated .test.Range range = 1;
+      // repeated .ncstream.Range range = 1;
       public java.util.List<ucar.nc2.stream.NcStreamProto.Range> getRangeList() {
         return java.util.Collections.unmodifiableList(result.range_);
       }
@@ -2735,50 +2735,50 @@ public final class NcStreamProto {
   }
   
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_test_Attribute_descriptor;
+    internal_static_ncstream_Attribute_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_test_Attribute_fieldAccessorTable;
+      internal_static_ncstream_Attribute_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_test_Dimension_descriptor;
+    internal_static_ncstream_Dimension_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_test_Dimension_fieldAccessorTable;
+      internal_static_ncstream_Dimension_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_test_Variable_descriptor;
+    internal_static_ncstream_Variable_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_test_Variable_fieldAccessorTable;
+      internal_static_ncstream_Variable_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_test_Structure_descriptor;
+    internal_static_ncstream_Structure_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_test_Structure_fieldAccessorTable;
+      internal_static_ncstream_Structure_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_test_Group_descriptor;
+    internal_static_ncstream_Group_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_test_Group_fieldAccessorTable;
+      internal_static_ncstream_Group_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_test_Stream_descriptor;
+    internal_static_ncstream_Header_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_test_Stream_fieldAccessorTable;
+      internal_static_ncstream_Header_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_test_Data_descriptor;
+    internal_static_ncstream_Data_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_test_Data_fieldAccessorTable;
+      internal_static_ncstream_Data_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_test_Range_descriptor;
+    internal_static_ncstream_Range_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_test_Range_fieldAccessorTable;
+      internal_static_ncstream_Range_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_test_Section_descriptor;
+    internal_static_ncstream_Section_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_test_Section_fieldAccessorTable;
+      internal_static_ncstream_Section_fieldAccessorTable;
   
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -2788,111 +2788,113 @@ public final class NcStreamProto {
       descriptor;
   static {
     java.lang.String descriptorData =
-      "\n\036ucar/nc2/stream/ncStream.proto\022\004test\"\253" +
-      "\001\n\tAttribute\022\014\n\004name\030\001 \002(\t\022\"\n\004type\030\002 \002(\016" +
-      "2\024.test.Attribute.Type\022\013\n\003len\030\003 \002(\r\022\014\n\004d" +
-      "ata\030\004 \002(\014\"Q\n\004Type\022\n\n\006STRING\020\000\022\010\n\004BYTE\020\001\022" +
-      "\t\n\005SHORT\020\002\022\007\n\003INT\020\003\022\010\n\004LONG\020\004\022\t\n\005FLOAT\020\005" +
-      "\022\n\n\006DOUBLE\020\006\"a\n\tDimension\022\014\n\004name\030\001 \001(\t\022" +
-      "\016\n\006length\030\002 \001(\r\022\023\n\013isUnlimited\030\003 \001(\010\022\016\n\006" +
-      "isVlen\030\004 \001(\010\022\021\n\tisPrivate\030\005 \001(\010\"\207\001\n\010Vari" +
-      "able\022\014\n\004name\030\001 \002(\t\022 \n\010dataType\030\002 \002(\0162\016.t" +
-      "est.DataType\022\036\n\005shape\030\003 \003(\0132\017.test.Dimen" +
-      "sion\022\035\n\004atts\030\004 \003(\0132\017.test.Attribute\022\014\n\004d" +
-      "ata\030\005 \001(\014\"\272\001\n\tStructure\022\014\n\004name\030\001 \002(\t\022\036\n" +
-      "\005shape\030\002 \003(\0132\017.test.Dimension\022 \n\010dataTyp" +
-      "e\030\003 \002(\0162\016.test.DataType\022\035\n\004atts\030\004 \003(\0132\017." +
-      "test.Attribute\022\034\n\004vars\030\005 \003(\0132\016.test.Vari" +
-      "able\022 \n\007structs\030\006 \003(\0132\017.test.Structure\"\260" +
-      "\001\n\005Group\022\014\n\004name\030\001 \002(\t\022\035\n\004dims\030\002 \003(\0132\017.t" +
-      "est.Dimension\022\034\n\004vars\030\003 \003(\0132\016.test.Varia" +
-      "ble\022 \n\007structs\030\004 \003(\0132\017.test.Structure\022\035\n" +
-      "\004atts\030\005 \003(\0132\017.test.Attribute\022\033\n\006groups\030\006" +
-      " \003(\0132\013.test.Group\"C\n\006Stream\022\020\n\010indexPos\030" +
-      "\001 \002(\006\022\014\n\004name\030\002 \001(\t\022\031\n\004root\030\003 \002(\0132\013.test" +
-      ".Group\"Y\n\004Data\022\017\n\007varName\030\001 \002(\t\022 \n\010dataT" +
-      "ype\030\002 \002(\0162\016.test.DataType\022\036\n\007section\030\003 \002" +
-      "(\0132\r.test.Section\"4\n\005Range\022\r\n\005start\030\001 \001(" +
-      "\004\022\014\n\004size\030\002 \002(\004\022\016\n\006stride\030\003 \001(\004\"%\n\007Secti" +
-      "on\022\032\n\005range\030\001 \003(\0132\013.test.Range*|\n\010DataTy" +
-      "pe\022\010\n\004CHAR\020\000\022\010\n\004BYTE\020\001\022\t\n\005SHORT\020\002\022\007\n\003INT" +
-      "\020\003\022\010\n\004LONG\020\004\022\t\n\005FLOAT\020\005\022\n\n\006DOUBLE\020\006\022\n\n\006S" +
-      "TRING\020\007\022\r\n\tSTRUCTURE\020\010\022\014\n\010SEQUENCE\020\tB \n\017" +
-      "ucar.nc2.streamB\rNcStreamProto";
+      "\n\036ucar/nc2/stream/ncStream.proto\022\010ncstre" +
+      "am\"\257\001\n\tAttribute\022\014\n\004name\030\001 \002(\t\022&\n\004type\030\002" +
+      " \002(\0162\030.ncstream.Attribute.Type\022\013\n\003len\030\003 " +
+      "\002(\r\022\014\n\004data\030\004 \002(\014\"Q\n\004Type\022\n\n\006STRING\020\000\022\010\n" +
+      "\004BYTE\020\001\022\t\n\005SHORT\020\002\022\007\n\003INT\020\003\022\010\n\004LONG\020\004\022\t\n" +
+      "\005FLOAT\020\005\022\n\n\006DOUBLE\020\006\"a\n\tDimension\022\014\n\004nam" +
+      "e\030\001 \001(\t\022\016\n\006length\030\002 \001(\r\022\023\n\013isUnlimited\030\003" +
+      " \001(\010\022\016\n\006isVlen\030\004 \001(\010\022\021\n\tisPrivate\030\005 \001(\010\"" +
+      "\223\001\n\010Variable\022\014\n\004name\030\001 \002(\t\022$\n\010dataType\030\002" +
+      " \002(\0162\022.ncstream.DataType\022\"\n\005shape\030\003 \003(\0132" +
+      "\023.ncstream.Dimension\022!\n\004atts\030\004 \003(\0132\023.ncs" +
+      "tream.Attribute\022\014\n\004data\030\005 \001(\014\"\316\001\n\tStruct" +
+      "ure\022\014\n\004name\030\001 \002(\t\022\"\n\005shape\030\002 \003(\0132\023.ncstr" +
+      "eam.Dimension\022$\n\010dataType\030\003 \002(\0162\022.ncstre" +
+      "am.DataType\022!\n\004atts\030\004 \003(\0132\023.ncstream.Att" +
+      "ribute\022 \n\004vars\030\005 \003(\0132\022.ncstream.Variable" +
+      "\022$\n\007structs\030\006 \003(\0132\023.ncstream.Structure\"\304" +
+      "\001\n\005Group\022\014\n\004name\030\001 \002(\t\022!\n\004dims\030\002 \003(\0132\023.n" +
+      "cstream.Dimension\022 \n\004vars\030\003 \003(\0132\022.ncstre" +
+      "am.Variable\022$\n\007structs\030\004 \003(\0132\023.ncstream." +
+      "Structure\022!\n\004atts\030\005 \003(\0132\023.ncstream.Attri" +
+      "bute\022\037\n\006groups\030\006 \003(\0132\017.ncstream.Group\"G\n" +
+      "\006Header\022\020\n\010indexPos\030\001 \002(\006\022\014\n\004name\030\002 \001(\t\022" +
+      "\035\n\004root\030\003 \002(\0132\017.ncstream.Group\"a\n\004Data\022\017" +
+      "\n\007varName\030\001 \002(\t\022$\n\010dataType\030\002 \002(\0162\022.ncst" +
+      "ream.DataType\022\"\n\007section\030\003 \002(\0132\021.ncstrea" +
+      "m.Section\"4\n\005Range\022\r\n\005start\030\001 \001(\004\022\014\n\004siz" +
+      "e\030\002 \002(\004\022\016\n\006stride\030\003 \001(\004\")\n\007Section\022\036\n\005ra" +
+      "nge\030\001 \003(\0132\017.ncstream.Range*|\n\010DataType\022\010" +
+      "\n\004CHAR\020\000\022\010\n\004BYTE\020\001\022\t\n\005SHORT\020\002\022\007\n\003INT\020\003\022\010" +
+      "\n\004LONG\020\004\022\t\n\005FLOAT\020\005\022\n\n\006DOUBLE\020\006\022\n\n\006STRIN" +
+      "G\020\007\022\r\n\tSTRUCTURE\020\010\022\014\n\010SEQUENCE\020\tB \n\017ucar" +
+      ".nc2.streamB\rNcStreamProto";
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
         public com.google.protobuf.ExtensionRegistry assignDescriptors(
             com.google.protobuf.Descriptors.FileDescriptor root) {
           descriptor = root;
-          internal_static_test_Attribute_descriptor =
+          internal_static_ncstream_Attribute_descriptor =
             getDescriptor().getMessageTypes().get(0);
-          internal_static_test_Attribute_fieldAccessorTable = new
+          internal_static_ncstream_Attribute_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_test_Attribute_descriptor,
+              internal_static_ncstream_Attribute_descriptor,
               new java.lang.String[] { "Name", "Type", "Len", "Data", },
               ucar.nc2.stream.NcStreamProto.Attribute.class,
               ucar.nc2.stream.NcStreamProto.Attribute.Builder.class);
-          internal_static_test_Dimension_descriptor =
+          internal_static_ncstream_Dimension_descriptor =
             getDescriptor().getMessageTypes().get(1);
-          internal_static_test_Dimension_fieldAccessorTable = new
+          internal_static_ncstream_Dimension_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_test_Dimension_descriptor,
+              internal_static_ncstream_Dimension_descriptor,
               new java.lang.String[] { "Name", "Length", "IsUnlimited", "IsVlen", "IsPrivate", },
               ucar.nc2.stream.NcStreamProto.Dimension.class,
               ucar.nc2.stream.NcStreamProto.Dimension.Builder.class);
-          internal_static_test_Variable_descriptor =
+          internal_static_ncstream_Variable_descriptor =
             getDescriptor().getMessageTypes().get(2);
-          internal_static_test_Variable_fieldAccessorTable = new
+          internal_static_ncstream_Variable_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_test_Variable_descriptor,
+              internal_static_ncstream_Variable_descriptor,
               new java.lang.String[] { "Name", "DataType", "Shape", "Atts", "Data", },
               ucar.nc2.stream.NcStreamProto.Variable.class,
               ucar.nc2.stream.NcStreamProto.Variable.Builder.class);
-          internal_static_test_Structure_descriptor =
+          internal_static_ncstream_Structure_descriptor =
             getDescriptor().getMessageTypes().get(3);
-          internal_static_test_Structure_fieldAccessorTable = new
+          internal_static_ncstream_Structure_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_test_Structure_descriptor,
+              internal_static_ncstream_Structure_descriptor,
               new java.lang.String[] { "Name", "Shape", "DataType", "Atts", "Vars", "Structs", },
               ucar.nc2.stream.NcStreamProto.Structure.class,
               ucar.nc2.stream.NcStreamProto.Structure.Builder.class);
-          internal_static_test_Group_descriptor =
+          internal_static_ncstream_Group_descriptor =
             getDescriptor().getMessageTypes().get(4);
-          internal_static_test_Group_fieldAccessorTable = new
+          internal_static_ncstream_Group_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_test_Group_descriptor,
+              internal_static_ncstream_Group_descriptor,
               new java.lang.String[] { "Name", "Dims", "Vars", "Structs", "Atts", "Groups", },
               ucar.nc2.stream.NcStreamProto.Group.class,
               ucar.nc2.stream.NcStreamProto.Group.Builder.class);
-          internal_static_test_Stream_descriptor =
+          internal_static_ncstream_Header_descriptor =
             getDescriptor().getMessageTypes().get(5);
-          internal_static_test_Stream_fieldAccessorTable = new
+          internal_static_ncstream_Header_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_test_Stream_descriptor,
+              internal_static_ncstream_Header_descriptor,
               new java.lang.String[] { "IndexPos", "Name", "Root", },
-              ucar.nc2.stream.NcStreamProto.Stream.class,
-              ucar.nc2.stream.NcStreamProto.Stream.Builder.class);
-          internal_static_test_Data_descriptor =
+              ucar.nc2.stream.NcStreamProto.Header.class,
+              ucar.nc2.stream.NcStreamProto.Header.Builder.class);
+          internal_static_ncstream_Data_descriptor =
             getDescriptor().getMessageTypes().get(6);
-          internal_static_test_Data_fieldAccessorTable = new
+          internal_static_ncstream_Data_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_test_Data_descriptor,
+              internal_static_ncstream_Data_descriptor,
               new java.lang.String[] { "VarName", "DataType", "Section", },
               ucar.nc2.stream.NcStreamProto.Data.class,
               ucar.nc2.stream.NcStreamProto.Data.Builder.class);
-          internal_static_test_Range_descriptor =
+          internal_static_ncstream_Range_descriptor =
             getDescriptor().getMessageTypes().get(7);
-          internal_static_test_Range_fieldAccessorTable = new
+          internal_static_ncstream_Range_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_test_Range_descriptor,
+              internal_static_ncstream_Range_descriptor,
               new java.lang.String[] { "Start", "Size", "Stride", },
               ucar.nc2.stream.NcStreamProto.Range.class,
               ucar.nc2.stream.NcStreamProto.Range.Builder.class);
-          internal_static_test_Section_descriptor =
+          internal_static_ncstream_Section_descriptor =
             getDescriptor().getMessageTypes().get(8);
-          internal_static_test_Section_fieldAccessorTable = new
+          internal_static_ncstream_Section_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_test_Section_descriptor,
+              internal_static_ncstream_Section_descriptor,
               new java.lang.String[] { "Range", },
               ucar.nc2.stream.NcStreamProto.Section.class,
               ucar.nc2.stream.NcStreamProto.Section.Builder.class);
