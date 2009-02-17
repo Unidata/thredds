@@ -255,18 +255,17 @@ public final class GribBinaryIndexer {
 
     try {
       if (gbx.exists()) {
-        if( grib.lastModified() > gbx.lastModified() )
+        if (grib.lastModified() < gbx.lastModified() ) //
           return;
         System.out.println("IndexExtending " + grib.getName() + " " +
             Calendar.getInstance().getTime().toString());
-        //new Grib2WriteIndex().extendFileIndex();
+        new Grib2WriteIndex().extendGribIndex( grib, gbx, args[0], args[1], false);
 
-        Grib2IndexExtender.main(args);
-        //ForecastModelRunInventory.main( args );
         ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
       } else {  // create index
         System.out.println("Indexing " + grib.getName() + " " +
             Calendar.getInstance().getTime().toString());
+
         Grib2Indexer.main(args);
         //ForecastModelRunInventory.main( args );
         ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
@@ -275,39 +274,6 @@ public final class GribBinaryIndexer {
       e.printStackTrace();
       System.out.println("Caught Exception doing index or inventory for " + grib.getName());
     }
-
-  }
-
-  /*
-  * reads index to extract the length of the Grib when the index was created
-  *
-  */
-  private long lengthGbx(String gbx) throws IOException {
-
-    InputStream ios = new FileInputStream(gbx);
-    BufferedReader dataIS =
-        new BufferedReader(new InputStreamReader(ios));
-
-    long length = -1;
-    while (true) {
-      String line = dataIS.readLine();
-      if (line == null) {
-        break;
-      }
-      if (line.startsWith("---")) {
-        break;
-      }
-      //System.out.println( line );
-      if (line.startsWith("length")) {
-        String len = line.substring(line.indexOf(" = ") + 3);
-        length = Long.parseLong(len);
-
-        break;
-      }
-    }
-    ios.close();
-    //System.out.println( length );
-    return length;
 
   }
 

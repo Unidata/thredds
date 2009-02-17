@@ -161,7 +161,7 @@ public class RadarServer extends AbstractServlet {
       }
       // radar  query
       if( req.getQueryString() != null) {
-        System.out.println("RadarServer query ="+ req.getQueryString() );
+        //System.out.println("RadarServer query ="+ req.getQueryString() );
         if (debug) System.out.println("<documentation>\n"+ req.getQueryString() +"</documentation>\n");
         rm.radarQuery( radarType, req, res, pw );
         pw.flush();
