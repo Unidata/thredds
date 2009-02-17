@@ -151,13 +151,13 @@ public class TestSubset extends TestCase {
   public void testDODS() throws Exception {
     String ds = "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/DGEX/CONUS_12km/files/latest.xml";
     //String dsid = "#NCEP/DGEX/CONUS_12km/latest.xml";
-    ThreddsDataFactory.Result result = new ThreddsDataFactory().openDatatype("thredds:resolve:" + ds, null);
+    ThreddsDataFactory.Result result = new ThreddsDataFactory().openFeatureDataset("thredds:resolve:" + ds, null);
     System.out.println("result errlog= " + result.errLog);
     assert !result.fatalError;
-    assert result.dataType == FeatureType.GRID;
-    assert result.tds != null;
+    assert result.featureType == FeatureType.GRID;
+    assert result.featureDataset != null;
 
-    GridDataset dataset = (GridDataset) result.tds;
+    GridDataset dataset = (GridDataset) result.featureDataset;
 
     GeoGrid grid = dataset.findGridByName("Temperature");
     assert null != grid;
@@ -181,9 +181,9 @@ public class TestSubset extends TestCase {
 
   public void utestDODS2() throws Exception {
     String threddsURL = "http://lead.unidata.ucar.edu:8080/thredds/dqcServlet/latestOUADAS?adas";
-    ThreddsDataFactory.Result result = new ThreddsDataFactory().openDatatype(threddsURL, null);
-    assert result.tds != null;
-    GridDataset dataset = (GridDataset) result.tds;
+    ThreddsDataFactory.Result result = new ThreddsDataFactory().openFeatureDataset(threddsURL, null);
+    assert result.featureDataset != null;
+    GridDataset dataset = (GridDataset) result.featureDataset;
 
     GeoGrid grid = dataset.findGridByName("PT");
     assert null != grid;

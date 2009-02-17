@@ -636,10 +636,10 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
         ThreddsDataFactory        tdFactory = new ThreddsDataFactory();
         ThreddsDataFactory.Result result;
         //start = System.currentTimeMillis();
-        result = tdFactory.openDatatype(invdata, null);
+        result = tdFactory.openFeatureDataset(invdata, null);
         // took =  0.001* (System.currentTimeMillis() - start);
         //    System.out.println("it took2 =" + took);
-        return (RadialDatasetSweep) result.tds;
+        return (RadialDatasetSweep) result.featureDataset;
     }
 
     /**
@@ -665,10 +665,10 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
         ThreddsDataFactory        tdFactory = new ThreddsDataFactory();
         ThreddsDataFactory.Result result;
         //start = System.currentTimeMillis();
-        result = tdFactory.openDatatype(invdata, null);
+        result = tdFactory.openFeatureDataset(invdata, null);
         // took =  0.001* (System.currentTimeMillis() - start);
         //    System.out.println("it took2 =" + took);
-        return (RadialDatasetSweep) result.tds;
+        return (RadialDatasetSweep) result.featureDataset;
     }
 
     /**
@@ -939,8 +939,8 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
             InvDataset                tdata     = iv.inv;
             ThreddsDataFactory        tdFactory = new ThreddsDataFactory();
             ThreddsDataFactory.Result result;
-            result = tdFactory.openDatatype(tdata, null);
-            datasetList.add(result.tds);
+            result = tdFactory.openFeatureDataset(tdata, null);
+            datasetList.add(result.featureDataset);
         }
 
         return datasetList;
@@ -1060,8 +1060,8 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
             InvDataset                tdata     = ifo.inv;
             ThreddsDataFactory        tdFactory = new ThreddsDataFactory();
             ThreddsDataFactory.Result result;
-            result = tdFactory.openDatatype(tdata, null);
-            datasetList.add(result.tds);
+            result = tdFactory.openFeatureDataset(tdata, null);
+            datasetList.add(result.featureDataset);
             if ((cancel != null) && cancel.isCancel()) {
                 return null;
             }

@@ -81,13 +81,13 @@ public class TestDodsServer extends TestCase {
 
     ThreddsDataFactory fac = new ThreddsDataFactory();
 
-    ThreddsDataFactory.Result dataResult = fac.openDatatype( ds, null);
+    ThreddsDataFactory.Result dataResult = fac.openFeatureDataset( ds, null);
 
     assert dataResult != null;
     assert !dataResult.fatalError;
-    assert dataResult.tds != null;
+    assert dataResult.featureDataset != null;
 
-    GridDataset gds = (GridDataset) dataResult.tds;
+    GridDataset gds = (GridDataset) dataResult.featureDataset;
     GridDatatype grid = gds.findGridDatatype("Z_sfc");
     assert grid != null;
     GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -99,7 +99,7 @@ public class TestDodsServer extends TestCase {
     assert time.getSize() == 1;
     assert 102840.0 == time.readScalarDouble();
 
-    dataResult.tds.close();
+    dataResult.featureDataset.close();
   }
 
 

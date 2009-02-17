@@ -186,9 +186,15 @@ public class FeatureDatasetFactoryManager {
    */
   static public FeatureDataset open(FeatureType wantFeatureType, String location, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
     // special processing for thredds: datasets
-    //if (location.startsWith("thredds:")) {
-    //  return new ThreddsDataFactory().openFeatureType( wantFeatureType, location, task, errlog);
-    //}
+    if (location.startsWith("thredds:")) {
+      ThreddsDataFactory.Result result = new ThreddsDataFactory().openFeatureDataset( wantFeatureType, location, task);
+      errlog.format("%s", result.errLog);
+      if (!featureTypeOk(wantFeatureType, result.featureType)) {
+        errlog.format("wanted %s but dataset is of type %s%n", wantFeatureType, result.featureType);
+        return null;
+      }
+      return result.featureDataset;
+    }
 
     NetcdfDataset ncd = NetcdfDataset.acquireDataset(location, task);
     return wrap(wantFeatureType, ncd, task, errlog);

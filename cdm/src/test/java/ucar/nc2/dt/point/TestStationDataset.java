@@ -96,13 +96,13 @@ public class TestStationDataset extends TestCase {
     long start = System.currentTimeMillis();
 
     ThreddsDataFactory fac = new ThreddsDataFactory();
-    ThreddsDataFactory.Result result = fac.openDatatype( "thredds:resolve:http://motherlode.ucar.edu:9080/thredds/idd/metar?returns=DQC", null);
+    ThreddsDataFactory.Result result = fac.openFeatureDataset( "thredds:resolve:http://motherlode.ucar.edu:9080/thredds/idd/metar?returns=DQC", null);
     if ( result.fatalError )
     {
       System.out.println( "TestStationDataset.testMetarDataset():\n" + result.errLog.toString() );
       assert false;
     }
-    StationObsDataset sod = (StationObsDataset) result.tds;
+    StationObsDataset sod = (StationObsDataset) result.featureDataset;
     assert sod != null;
 
     long took = System.currentTimeMillis() - start;

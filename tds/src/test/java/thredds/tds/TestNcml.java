@@ -48,6 +48,7 @@ import ucar.ma2.InvalidRangeException;
 
 import java.io.IOException;
 import java.io.File;
+import java.util.Formatter;
 
 public class TestNcml extends TestCase {
 
@@ -69,7 +70,7 @@ public class TestNcml extends TestCase {
     assert null == ((InvDatasetImpl)ds).getNcmlElement();
 
     ThreddsDataFactory fac = new ThreddsDataFactory();
-    StringBuilder log = new StringBuilder();
+    Formatter log = new Formatter();
 
     NetcdfDataset ncd = fac.openDataset( ds, false, null, log);
 
@@ -91,7 +92,7 @@ public class TestNcml extends TestCase {
     assert (ds != null) : "cant find dataset 'NcML-modify'";
 
     ThreddsDataFactory fac = new ThreddsDataFactory();
-    StringBuilder log = new StringBuilder();
+    Formatter log = new Formatter();
 
     NetcdfDataset ncd = fac.openDataset( ds, false, null, log);
     assert ncd != null : log.toString();

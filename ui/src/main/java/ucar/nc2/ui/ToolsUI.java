@@ -772,7 +772,7 @@ public class ToolsUI extends JPanel {
       }
 
       // otherwise do the datatype thing
-      ThreddsDataFactory.Result threddsData = threddsDataFactory.openDatatype(invDataset, null);
+      ThreddsDataFactory.Result threddsData = threddsDataFactory.openFeatureDataset(invDataset, null);
       if (threddsData == null) {
         JOptionPane.showMessageDialog(null, "Unknown datatype");
         return;
@@ -796,7 +796,7 @@ public class ToolsUI extends JPanel {
     }
 
     try {
-      ThreddsDataFactory.Result threddsData = threddsDataFactory.openDatatype(invAccess, null);
+      ThreddsDataFactory.Result threddsData = threddsDataFactory.openFeatureDataset(invAccess, null);
       setThreddsDatatype(threddsData);
 
     } catch (IOException ioe) {
@@ -827,39 +827,39 @@ public class ToolsUI extends JPanel {
       return;
     }
 
-    if (threddsData.dataType == FeatureType.GRID) {
+    if (threddsData.featureType == FeatureType.GRID) {
       makeComponent(ftTabPane, "Grids");
-      gridPanel.setDataset((NetcdfDataset) threddsData.tds.getNetcdfFile());
+      gridPanel.setDataset((NetcdfDataset) threddsData.featureDataset.getNetcdfFile());
       tabbedPane.setSelectedComponent(ftTabPane);
       ftTabPane.setSelectedComponent(gridPanel);
 
-    } else if (threddsData.dataType == FeatureType.IMAGE) {
+    } else if (threddsData.featureType == FeatureType.IMAGE) {
       makeComponent(ftTabPane, "Images");
       imagePanel.setImageLocation(threddsData.imageURL);
       tabbedPane.setSelectedComponent(ftTabPane);
       ftTabPane.setSelectedComponent(imagePanel);
 
-    } else if (threddsData.dataType == FeatureType.RADIAL) {
+    } else if (threddsData.featureType == FeatureType.RADIAL) {
       makeComponent(ftTabPane, "Radial");
-      radialPanel.setDataset((RadialDatasetSweep) threddsData.tds);
+      radialPanel.setDataset((RadialDatasetSweep) threddsData.featureDataset);
       tabbedPane.setSelectedComponent(ftTabPane);
       ftTabPane.setSelectedComponent(radialPanel);
 
-    } else if (threddsData.dataType == FeatureType.POINT) {
+    } else if (threddsData.featureType == FeatureType.POINT) {
       makeComponent(ftTabPane, "PointObs");
-      pointObsPanel.setPointObsDataset((PointObsDataset) threddsData.tds);
+      pointObsPanel.setPointObsDataset((PointObsDataset) threddsData.featureDataset);
       tabbedPane.setSelectedComponent(ftTabPane);
       ftTabPane.setSelectedComponent(pointObsPanel);
 
-    } else if (threddsData.dataType == FeatureType.STATION) {
+    } else if (threddsData.featureType == FeatureType.STATION) {
       makeComponent(ftTabPane, "StationObs");
-      stationObsPanel.setStationObsDataset((StationObsDataset) threddsData.tds);
+      stationObsPanel.setStationObsDataset((StationObsDataset) threddsData.featureDataset);
       tabbedPane.setSelectedComponent(ftTabPane);
       ftTabPane.setSelectedComponent(stationObsPanel);
 
-    } else if (threddsData.dataType == FeatureType.STATION_RADIAL) {
+    } else if (threddsData.featureType == FeatureType.STATION_RADIAL) {
       makeComponent(ftTabPane, "StationRadial");
-      stationRadialPanel.setStationRadialDataset((StationRadarCollectionImpl) threddsData.tds);
+      stationRadialPanel.setStationRadialDataset((StationRadarCollectionImpl) threddsData.featureDataset);
       tabbedPane.setSelectedComponent(ftTabPane);
       ftTabPane.setSelectedComponent(stationRadialPanel);
 

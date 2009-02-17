@@ -40,6 +40,7 @@ import java.io.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.*;
+import java.util.Formatter;
 
 import thredds.catalog.crawl.CatalogCrawler;
 import thredds.catalog.*;
@@ -120,7 +121,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
 
     NetcdfDataset ncd = null;
     try {
-      StringBuilder log = new StringBuilder();
+      Formatter log = new Formatter();
       ncd = tdataFactory.openDataset( ds,  false, null, log);
 
       if (ncd == null)

@@ -44,7 +44,6 @@ import ucar.nc2.units.DateUnit;
 
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.util.DateSelection;
-import ucar.unidata.util.DateSelectionInfo;
 import ucar.unidata.util.DatedThing;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.Product;
@@ -446,9 +445,9 @@ public class DqcRadarDatasetCollection extends StationRadarCollectionImpl {
         ThreddsDataFactory        tdFactory = new ThreddsDataFactory();
         ThreddsDataFactory.Result result;
 
-        result = tdFactory.openDatatype(invdata, null);
+        result = tdFactory.openFeatureDataset(invdata, null);
 
-        return (RadialDatasetSweep) result.tds;
+        return (RadialDatasetSweep) result.featureDataset;
     }
 
     /**
@@ -650,8 +649,8 @@ public class DqcRadarDatasetCollection extends StationRadarCollectionImpl {
             InvDataset                tdata     = iv.inv;
             ThreddsDataFactory        tdFactory = new ThreddsDataFactory();
             ThreddsDataFactory.Result result;
-            result = tdFactory.openDatatype(tdata, null);
-            datasetList.add(result.tds);
+            result = tdFactory.openFeatureDataset(tdata, null);
+            datasetList.add(result.featureDataset);
         }
 
         return datasetList;
@@ -756,8 +755,8 @@ public class DqcRadarDatasetCollection extends StationRadarCollectionImpl {
             InvDataset                tdata     = ifo.inv;
             ThreddsDataFactory        tdFactory = new ThreddsDataFactory();
             ThreddsDataFactory.Result result;
-            result = tdFactory.openDatatype(tdata, null);
-            datasetList.add(result.tds);
+            result = tdFactory.openFeatureDataset(tdata, null);
+            datasetList.add(result.featureDataset);
             if ((cancel != null) && cancel.isCancel()) {
                 return null;
             }

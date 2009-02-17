@@ -55,6 +55,7 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.beans.PropertyChangeListener;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -894,7 +895,7 @@ public class GridUI extends JPanel {
     public void run() {
       NetcdfDataset dataset = null;
       GridDataset gridDataset = null;
-      StringBuilder errlog = new StringBuilder();
+      Formatter errlog = new Formatter();
 
       try {
         dataset = factory.openDataset( invds, true, this, errlog);

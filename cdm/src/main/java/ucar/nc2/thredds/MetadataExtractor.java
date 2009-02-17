@@ -68,27 +68,27 @@ public class MetadataExtractor {
     ThreddsDataFactory.Result result = null;
 
     try {
-      result = new ThreddsDataFactory().openDatatype(threddsDataset, null);
+      result = new ThreddsDataFactory().openFeatureDataset(threddsDataset, null);
       if (result.fatalError) {
         System.out.println(" openDatatype errs=" + result.errLog);
         return null;
       }
 
-      if (result.dataType == FeatureType.GRID) {
+      if (result.featureType == FeatureType.GRID) {
         System.out.println(" GRID=" + result.location);
-        GridDataset gridDataset = (GridDataset) result.tds;
+        GridDataset gridDataset = (GridDataset) result.featureDataset;
         return extractGeospatial( gridDataset);
 
-      } else if (result.dataType == FeatureType.POINT) {
-        PointObsDataset pobsDataset = (PointObsDataset) result.tds;
+      } else if (result.featureType == FeatureType.POINT) {
+        PointObsDataset pobsDataset = (PointObsDataset) result.featureDataset;
         LatLonRect llbb = pobsDataset.getBoundingBox();
         if (null != llbb) {
           ThreddsMetadata.GeospatialCoverage gc = new ThreddsMetadata.GeospatialCoverage();
           gc.setBoundingBox(llbb);
           return gc;
         }
-      } else if (result.dataType == FeatureType.STATION) {
-        StationObsDataset sobsDataset = (StationObsDataset) result.tds;
+      } else if (result.featureType == FeatureType.STATION) {
+        StationObsDataset sobsDataset = (StationObsDataset) result.featureDataset;
         LatLonRect llbb = sobsDataset.getBoundingBox();
         if (null != llbb) {
           ThreddsMetadata.GeospatialCoverage gc = new ThreddsMetadata.GeospatialCoverage();
@@ -99,10 +99,10 @@ public class MetadataExtractor {
 
     } finally {
       try {
-        if ((result != null) && (result.tds != null))
-          result.tds.close();
+        if ((result != null) && (result.featureDataset != null))
+          result.featureDataset.close();
       } catch (IOException ioe) {
-        logger.error("Closing dataset "+result.tds, ioe);
+        logger.error("Closing dataset "+result.featureDataset, ioe);
       }
     }
 
@@ -142,19 +142,19 @@ public class MetadataExtractor {
     ThreddsDataFactory.Result result = null;
 
     try {
-      result = new ThreddsDataFactory().openDatatype(threddsDataset, null);
+      result = new ThreddsDataFactory().openFeatureDataset(threddsDataset, null);
       if (result.fatalError) {
         System.out.println(" openDatatype errs=" + result.errLog);
         return null;
       }
 
-      if (result.dataType == FeatureType.GRID) {
+      if (result.featureType == FeatureType.GRID) {
         // System.out.println(" extractVariables GRID=" + result.location);
-        GridDataset gridDataset = (GridDataset) result.tds;
+        GridDataset gridDataset = (GridDataset) result.featureDataset;
         return extractVariables(threddsDataset, gridDataset);
 
-      } else if ((result.dataType == FeatureType.STATION) || (result.dataType == FeatureType.POINT)) {
-        PointObsDataset pobsDataset = (PointObsDataset) result.tds;
+      } else if ((result.featureType == FeatureType.STATION) || (result.featureType == FeatureType.POINT)) {
+        PointObsDataset pobsDataset = (PointObsDataset) result.featureDataset;
         ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables("CF-1.0");
         for (VariableSimpleIF vs  : pobsDataset.getDataVariables()) {
           ThreddsMetadata.Variable v = new ThreddsMetadata.Variable();
@@ -173,10 +173,10 @@ public class MetadataExtractor {
 
     } finally {
       try {
-        if ((result != null) && (result.tds != null))
-          result.tds.close();
+        if ((result != null) && (result.featureDataset != null))
+          result.featureDataset.close();
       } catch (IOException ioe) {
-        logger.error("Closing dataset "+result.tds, ioe);
+        logger.error("Closing dataset "+result.featureDataset, ioe);
       }
     }
 

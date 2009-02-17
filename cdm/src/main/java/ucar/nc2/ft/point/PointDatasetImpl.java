@@ -105,8 +105,4 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
     }
   }
 
-  public String getImplementationName() {
-    return getClass().getName();
-  }
-
 }

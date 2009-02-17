@@ -47,7 +47,6 @@ import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.VerticalCT;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.units.TimeUnit;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionImpl;
@@ -117,7 +116,7 @@ public class TestIDVdatasets {
         try {
           long start = System.currentTimeMillis();
           try {
-            tdata = tdataFactory.openDatatype(ds, null);
+            tdata = tdataFactory.openFeatureDataset(ds, null);
             if (tdata.fatalError) {
               out.println("  *ERROR " + tdata.errLog);
               if (doOneOnly) break;
@@ -133,18 +132,18 @@ public class TestIDVdatasets {
           InvAccess access = tdata.accessUsed;
           String st = (access == null) ? " UNKNOWN" : access.getService().getServiceType().toString();
 
-          if (tdata.dataType == FeatureType.GRID) {
+          if (tdata.featureType == FeatureType.GRID) {
             out.println(" *Opened " + countDone + " GRID " + tdata.location + " " + st + " (" + took + " msecs)");
-            if (extract) extractGrid(out, (GridDataset) tdata.tds);
-          } else if (tdata.dataType == FeatureType.POINT) {
+            if (extract) extractGrid(out, (GridDataset) tdata.featureDataset);
+          } else if (tdata.featureType == FeatureType.POINT) {
             out.println(" *Opened " + countDone + " TYPE " + ds.getDataType() + " " + tdata.location + " " + st);
-          } else if (tdata.dataType == FeatureType.STATION) {
+          } else if (tdata.featureType == FeatureType.STATION) {
             out.println(" *Opened " + countDone + " TYPE " + ds.getDataType() + " " + tdata.location + " " + st);
           }
 
         } finally {
             try {
-              if ((tdata != null) &&(tdata.tds != null)) tdata.tds.close();
+              if ((tdata != null) &&(tdata.featureDataset != null)) tdata.featureDataset.close();
             } catch (IOException ioe) {
               ioe.printStackTrace();
             }

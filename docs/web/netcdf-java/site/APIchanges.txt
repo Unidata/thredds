@@ -91,7 +91,9 @@ API Extensive API changes. Most, but not completely backwards-compatible.
    - VariableDS.isEnhanced() removed
 
   Package ucar.nc2.dt
-   * TypedDatasetFactory.open() uses StringBuilder
+   * TypedDatasetFactory is superceded by ucar.nc2.ft.FeatureDatasetFactoryManager
+   * ucar.nc2.dt.RadialDatasetSweep implements ucar.nc2.ft.FeatureDataset
+   * ucar.nc2.dt.grid.GridDataset implements ucar.nc2.ft.FeatureDataset
 
   Package ucar.nc2.iosp
    * Layouts and Chunkers factored out for reuse
@@ -109,6 +111,11 @@ API Extensive API changes. Most, but not completely backwards-compatible.
 
   Package ucar.nc2.util
     * RuntimeConfigParser -> ucar.nc2.util.xml
+
+  Package ucar.nc2.thredds
+    * ThreddsDataFactory returns ucar.nc2.ft.FeatureDataset instead of ucar.nc2.dt.TypedDataset
+	* ThreddsDataFactory uses Formatter instead of StringBuffer / StringBuilder
+	* ThreddsDataFactory.openDatatype renamed to openFeatureDataset
 
   Package ucar.nc2.util.cache
     * FileCache uses FileCacheable and FileFactory, replaces NetcdfFileCache, NetcdfDatasetCache, HTTPFileCache

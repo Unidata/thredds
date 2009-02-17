@@ -40,15 +40,15 @@ Version 4 is an extensive refactoring of the library, and many significant impro
     <td>Section.getRanges()</td>
   </tr>
   <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
+    <td>ucar.nc2.dt.TypedDatasetFactory</td>
+    <td>ucar.nc2.ft.FeatureDatasetFactoryManager</td>
   </tr>
 </table>
 <h4>Miscellaneous Notes </h4>
 <ul>
-  <li>DateUnit is no longer a subclass of SimpleUnit, so you cannot use SimpleUnit.factory() to create a DateUnit.</li>
-  <li>There is no longer a CoordinateAxis1D(VariableDS) constructor. One must now use CoordinateAxis1D(NetcdfDataset,VariableDS).</li>
-  <li>java.lang.StringBuffer is replaced in various places by java.lang.StringBuilder or java.util.Formatter.</li>
+  <li><strong>DateUnit</strong> is no longer a subclass of SimpleUnit, so you cannot use SimpleUnit.factory() to create a DateUnit.</li>
+  <li>There is no longer a <strong>CoordinateAxis1D(VariableDS)</strong> constructor. One must now use CoordinateAxis1D(NetcdfDataset,VariableDS).</li>
+  <li>java.lang.<strong>StringBuffer</strong> is replaced in various places by java.lang.StringBuilder or java.util.Formatter.</li>
   <li><strong>ucar.nc2.FileWriter.main</strong>() writes CDM files to netcdf-3 format. <strong>ucar.nc2.dataset.NetcdfDataset..main</strong>() will do the same, but you can also open NcML, OPeNDAP, and other datasets accessible with <strong>NetcdfDataset</strong>.<strong>openFile</strong>().</li>
 </ul>
 <hr>

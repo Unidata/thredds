@@ -145,12 +145,12 @@ public class TypedDatasetFactory {
    * @throws java.io.IOException on io error
    */
   static public TypedDataset open( FeatureType datatype, String location, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException {
-    // special processing for thredds: datasets
+    /* special processing for thredds: datasets
     if (location.startsWith("thredds:") && (datatype != null)) {
       ThreddsDataFactory.Result result = new ThreddsDataFactory().openDatatype( location, task);
       errlog.append( result.errLog);
       return (result.fatalError) ? null : result.tds;
-    }
+    } */
 
     NetcdfDataset ncd = NetcdfDataset.acquireDataset( location, task);
     return open( datatype, ncd, task, errlog);

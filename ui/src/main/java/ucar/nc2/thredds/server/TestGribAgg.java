@@ -93,13 +93,13 @@ public class TestGribAgg implements CatalogCrawler.Listener {
 
     ThreddsDataFactory.Result result;
     try {
-      result = tdataFactory.openDatatype( dd, null);
+      result = tdataFactory.openFeatureDataset( dd, null);
       if (result.fatalError) {
         out.println("***CAN'T OPEN "+dd.getName());
         return;
       }
-      process( result.tds.getNetcdfFile());
-      fileList.add( result.tds);
+      process( result.featureDataset.getNetcdfFile());
+      fileList.add( result.featureDataset);
 
     } catch (IOException e) {
       e.printStackTrace();

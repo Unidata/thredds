@@ -52,6 +52,7 @@ import ucar.unidata.util.Parameter;
 
 import java.io.*;
 import java.util.List;
+import java.util.Formatter;
 
 import thredds.catalog.*;
 
@@ -179,7 +180,7 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
     long start = System.currentTimeMillis();
     try {
       // ncd = NetcdfDataset.openDataset( access.getStandardUrlName());
-      StringBuffer log = new StringBuffer();
+      Formatter log = new Formatter();
       ncd = tdataFactory.openDataset(access, true, null, log);
       if (ncd == null) {
         countNoOpen++;
@@ -231,16 +232,16 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
     long start = System.currentTimeMillis();
     ThreddsDataFactory.Result result = null;
     try {
-      result = tdataFactory.openDatatype(ds, null);
+      result = tdataFactory.openFeatureDataset(ds, null);
       int took = (int) (System.currentTimeMillis() - start);
       if (verbose)
-        System.out.println("  **Open " + result.dataType + " " + result.location + " (" + ds.getName() + ") " + took + " msecs");
-      out.println("  **Open " + result.dataType + " " + result.location + " (" + ds.getName() + ") " + took + " msecs");
+        System.out.println("  **Open " + result.featureType + " " + result.location + " (" + ds.getName() + ") " + took + " msecs");
+      out.println("  **Open " + result.featureType + " " + result.location + " (" + ds.getName() + ") " + took + " msecs");
 
       if (result.location == null)
         ok = false;
-      else if (result.dataType == FeatureType.GRID)
-        extractGridDataset(out, (GridDataset) result.tds);
+      else if (result.featureType == FeatureType.GRID)
+        extractGridDataset(out, (GridDataset) result.featureDataset);
 
     } catch (Throwable e) {
       out.println("   **FAILED " + ds.getName());
@@ -250,9 +251,9 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
 
     } finally {
 
-      if ((result != null) && (result.tds != null))  try {
-        result.tds.close();
-        out.println("   Close " + result.dataType + " " + result.location);
+      if ((result != null) && (result.featureDataset != null))  try {
+        result.featureDataset.close();
+        out.println("   Close " + result.featureType + " " + result.location);
       } catch (IOException e) {
         e.printStackTrace();
       }

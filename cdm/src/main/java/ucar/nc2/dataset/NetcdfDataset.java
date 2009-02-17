@@ -620,7 +620,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       return acquireRemote(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through netcdf remote
 
     } else if (location.startsWith("thredds:")) {
-      StringBuilder log = new StringBuilder();
+      Formatter log = new Formatter();
       ThreddsDataFactory tdf = new ThreddsDataFactory();
       NetcdfFile ncfile = tdf.openDataset(location, false, cancelTask, log); // LOOK acquire ??
       if (ncfile == null)

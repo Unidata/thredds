@@ -102,14 +102,14 @@ public class TimeTDSfixed {
     ThreddsDataFactory.Result tdata = null;
     try {
       try {
-        tdata = tdf.openDatatype(dd, null);
+        tdata = tdf.openFeatureDataset(dd, null);
         if (tdata.fatalError) {
           if (out != null) out.println(" --ERROR " + tdata.errLog);
           return;
         }
-        if (out != null) out.println(" *Opened TYPE " + tdata.dataType + " " + tdata.location);
-        if (tdata.dataType == FeatureType.GRID) {
-          GridDataset gds = (GridDataset) tdata.tds;
+        if (out != null) out.println(" *Opened TYPE " + tdata.featureType + " " + tdata.location);
+        if (tdata.featureType == FeatureType.GRID) {
+          GridDataset gds = (GridDataset) tdata.featureDataset;
           List grids = gds.getGrids();
           if (grids.size() > 0) {
             GridDatatype grid = (GridDatatype) grids.get(0);
@@ -128,7 +128,7 @@ public class TimeTDSfixed {
 
     } finally {
       try {
-        if ((tdata != null) && (tdata.tds != null)) tdata.tds.close();
+        if ((tdata != null) && (tdata.featureDataset != null)) tdata.featureDataset.close();
       } catch (IOException ioe) {
       }
     }

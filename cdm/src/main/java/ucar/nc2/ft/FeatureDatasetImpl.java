@@ -179,4 +179,9 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     return null;
   }
 
+
+  public String getImplementationName() {
+    return getClass().getName();
+  }
+
 }

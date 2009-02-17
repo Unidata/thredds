@@ -555,7 +555,7 @@ public class TestAll extends TestCase
     {
       public void getDataset( InvDataset ds )
       {
-        StringBuilder localLog = new StringBuilder();
+        Formatter localLog = new Formatter();
         NetcdfDataset ncd;
         try
         {
@@ -563,7 +563,8 @@ public class TestAll extends TestCase
         }
         catch ( IOException e )
         {
-          failureMsgs.put( ds.getName(), "I/O error while trying to open: " + e.getMessage() + (localLog.length() > 0 ? "\n" + localLog.toString() : "") );
+          String logs = localLog.toString();
+          failureMsgs.put( ds.getName(), "I/O error while trying to open: " + e.getMessage() + (logs.length() > 0 ? "\n" + logs : "") );
           return;
         }
         catch ( Exception e )
@@ -572,13 +573,15 @@ public class TestAll extends TestCase
           PrintStream ps = new PrintStream( os );
           e.printStackTrace( ps);
           ps.close();
-          failureMsgs.put( ds.getName(), "Exception while trying to open: " + os.toString() + ( localLog.length() > 0 ? "\n" + localLog.toString() : "" ) );
+          String logs = localLog.toString();
+          failureMsgs.put( ds.getName(), "Exception while trying to open: " + os.toString() + ( logs.length() > 0 ? "\n" + logs : "" ) );
           return;
         }
 
         if ( ncd == null )
         {
-          failureMsgs.put( ds.getName(), "Failed to open dataset: " + ( localLog.length() > 0 ? "\n" + localLog.toString() : "" ) );
+          String logs = localLog.toString();
+          failureMsgs.put( ds.getName(), "Failed to open dataset: " + ( logs.length() > 0 ? "\n" + logs : "" ) );
           return;
         }
       }
@@ -666,7 +669,7 @@ public class TestAll extends TestCase
     {
       public void getDataset( InvDataset ds )
       {
-        StringBuilder localLog = new StringBuilder();
+        Formatter localLog = new Formatter();
 
         gcsMsg.append( ds.getFullName()).append("\n");
         NetcdfDataset ncd;
@@ -676,7 +679,8 @@ public class TestAll extends TestCase
         }
         catch ( IOException e )
         {
-          failureMsgs.put( ds.getName(), "I/O error while trying to open: " + e.getMessage() + ( localLog.length() > 0 ? "\n" + localLog.toString() : "" ) );
+          String logs = localLog.toString();
+          failureMsgs.put( ds.getName(), "I/O error while trying to open: " + e.getMessage() + ( logs.length() > 0 ? "\n" + logs : "" ) );
           return;
         }
         catch ( Exception e )
@@ -685,13 +689,15 @@ public class TestAll extends TestCase
           PrintStream ps = new PrintStream( os );
           e.printStackTrace( ps );
           ps.close();
-          failureMsgs.put( ds.getName(), "Exception while trying to open: " + os.toString() + ( localLog.length() > 0 ? "\n" + localLog.toString() : "" ) );
+          String logs = localLog.toString();
+          failureMsgs.put( ds.getName(), "Exception while trying to open: " + os.toString() + ( logs.length() > 0 ? "\n" + logs : "" ) );
           return;
         }
 
         if ( ncd == null )
         {
-          failureMsgs.put( ds.getName(), "Failed to open dataset: " + ( localLog.length() > 0 ? "\n" + localLog.toString() : "" ) );
+          String logs = localLog.toString();
+          failureMsgs.put( ds.getName(), "Failed to open dataset: " + ( logs.length() > 0 ? "\n" + logs : "" ) );
           return;
         }
 
