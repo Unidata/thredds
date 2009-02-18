@@ -10,7 +10,7 @@ code {font-size: 11pt;}
 dl {margin: 10px 5px 5px 15px;)
 </style></head>
 <body>
-<h1><img alt="THREDDS" src="../images/THREDDSlogo.jpg" height="54" width="67">THREDDS Reference: TDS Catalog Service</h1>
+<h1><img alt="THREDDS" src="../../images/THREDDSlogo.jpg" height="54" width="67">THREDDS Reference: TDS Catalog Service</h1>
 <div class="head">
 <hr>
 
@@ -52,7 +52,7 @@ returned (this is a logical subset so the dataset contains all
 inherited metadata). Otherwise, an HTML view of the dataset is returned.</li><li>"VALIDATE" - an HTML page is returned which contains THREDDS catalog validation messages (warnings and errors).</li></ul><p>Catalog subsetting is done on the logical structure of the catalog rather than directly on the XML. This means that all <code>service</code> elements are included in the catalog and all metadata&nbsp;inherited by the target dataset are included in the resulting dataset.</p><p>Examples</p><p>The following returns an HTML view of the main TDS catalog on motherlode:</p><pre style="margin-left: 40px;">http://server:port<strong>/thredds/remoteCatalogService</strong>?catalog=http://motherlode.ucar.edu:8080/thredds/catalog.xml</pre><p>
 The following returns an HTML view of one of the datasets from the same catalog:</p><pre style="margin-left: 40px;">http://server:port<strong>/thredds/remoteCatalogService</strong>?catalog=http://motherlode.ucar.edu:8080/thredds/catalog.xml&amp;dataset=IDD</pre><ul></ul></div>
 <hr width="100%">
-<address><img alt="THREDDS" src="../images/thread.png" height="108" width="110">This document is maintained by Unidata and was
+<address><img alt="THREDDS" src="../../images/thread.png" height="108" width="110">This document is maintained by Unidata and was
 last updated February 2009. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
 support</a>.
 </address>
