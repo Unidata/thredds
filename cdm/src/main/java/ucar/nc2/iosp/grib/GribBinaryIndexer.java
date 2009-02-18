@@ -255,7 +255,8 @@ public final class GribBinaryIndexer {
 
     try {
       if (gbx.exists()) {
-        if (grib.lastModified() < gbx.lastModified() ) //
+        // gbx older than grib, no need to check
+        if (grib.lastModified() < gbx.lastModified() )  
           return;
         System.out.println("IndexExtending " + grib.getName() + " " +
             Calendar.getInstance().getTime().toString());
@@ -265,9 +266,8 @@ public final class GribBinaryIndexer {
       } else {  // create index
         System.out.println("Indexing " + grib.getName() + " " +
             Calendar.getInstance().getTime().toString());
-
-        Grib2Indexer.main(args);
-        //ForecastModelRunInventory.main( args );
+        // grib, gribName, gbxName, false(make index)
+        new Grib2WriteIndex().writeGribIndex( grib, args[0], args[1], false);
         ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
       }
     } catch (Exception e) {
