@@ -249,7 +249,7 @@ public class TDServerConfigurator extends JPanel {
         if (ds == null) return;
 
         StringBuilder sbuff = new StringBuilder( 20000);
-        InvDatasetImpl.writeHtmlDescription(sbuff, ds, true, false, false, false);
+        InvDatasetImpl.writeHtmlDescription(sbuff, ds, true, false, false, false, true);
         htmlViewer.setContent( ds.getName(), sbuff.toString());
         htmlWindow.show();
       }

@@ -930,26 +930,46 @@ public class InvDatasetImpl extends InvDataset {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
-
   /**
-   * Write an Html representation of the given dataset.
-   * <p> With datasetEvents, catrefEvents = true, this is used to construct an HTML page on the client
-   * (eg using HtmlPage); the client then detects URL clicks and processes.
-   * <p> With datasetEvents, catrefEvents = false, this is used to construct an HTML page on the server.
-   * (eg using HtmlPage); the client then detects URL clicks and processes.
+   * 
+   * @param buff a
+   * @param ds    a
+   * @param complete a
+   * @param isServer  a
+   * @param datasetEvents a
+   * @param catrefEvents   a
    *
-   * @param buff          put HTML here.
-   * @param ds            the dataset.
-   * @param complete      if true, add HTML header and ender so its a complete, valid HTML page.
-   * @param isServer      if true, then we are in the thredds data server, so do the following: <ul>
-   *                      <li> append "html" to DODS Access URLs
-   *                      </ul>
-   * @param datasetEvents if true, prepend "dataset:" to any dataset access URLS
-   * @param catrefEvents  if true, prepend "catref:" to any catref URLS
+   * @deprecated Instead use {@link #writeHtmlDescription(StringBuilder buff, InvDatasetImpl ds, boolean complete, boolean isServer, boolean datasetEvents, boolean catrefEvents, boolean resolveRelativeUrls)}
    */
+  static public void writeHtmlDescription( StringBuilder buff, InvDatasetImpl ds,
+                                           boolean complete, boolean isServer,
+                                           boolean datasetEvents,
+                                           boolean catrefEvents )
+  {
+    writeHtmlDescription( buff, ds, complete, isServer, datasetEvents, catrefEvents, true);
+  }
+    /**
+     * Write an Html representation of the given dataset.
+     * <p> With datasetEvents, catrefEvents = true, this is used to construct an HTML page on the client
+     * (eg using HtmlPage); the client then detects URL clicks and processes.
+     * <p> With datasetEvents, catrefEvents = false, this is used to construct an HTML page on the server.
+     * (eg using HtmlPage); the client then detects URL clicks and processes.
+     *
+     * @param buff          put HTML here.
+     * @param ds            the dataset.
+     * @param complete      if true, add HTML header and ender so its a complete, valid HTML page.
+     * @param isServer      if true, then we are in the thredds data server, so do the following: <ul>
+     *                      <li> append "html" to DODS Access URLs
+     *                      </ul>
+     * @param datasetEvents if true, prepend "dataset:" to any dataset access URLS
+     * @param catrefEvents  if true, prepend "catref:" to any catref URLS
+     */
 
   static public void writeHtmlDescription(StringBuilder buff, InvDatasetImpl ds,
-                     boolean complete, boolean isServer, boolean datasetEvents, boolean catrefEvents) {
+                     boolean complete, boolean isServer,
+                     boolean datasetEvents, boolean catrefEvents,
+                     boolean resolveRelativeUrls)
+    {
 
     if (ds == null) return;
 
@@ -990,7 +1010,9 @@ public class InvDatasetImpl extends InvDataset {
 
     if (ds instanceof InvCatalogRef) {
       InvCatalogRef catref = (InvCatalogRef) ds;
-      String href = resolve(ds, catref.getXlinkHref());
+      String href = resolveRelativeUrls || catrefEvents
+                    ? resolve( ds, catref.getXlinkHref())
+                    : catref.getXlinkHref();
       if (catrefEvents) href = "catref:" + href;
       buff.append(" <li><em>CatalogRef: </em>").append(makeHref(href, null)).append("</li>\n");
     }
@@ -1018,21 +1040,24 @@ public class InvDatasetImpl extends InvDataset {
       buff.append("<h3>Access:</h3>\n<ol>\n");
       for (InvAccess a : access) {
         InvService s = a.getService();
-        String urlString = a.getStandardUrlName();
-        if (datasetEvents) urlString = "dataset:" + urlString;
+        String urlString = resolveRelativeUrls || datasetEvents
+                           ? a.getStandardUrlName()
+                           : a.getUnresolvedUrlName();
+        String fullUrlString = urlString;
+        if (datasetEvents) fullUrlString = "dataset:" + fullUrlString;
         if (isServer) {
           ServiceType stype = s.getServiceType();
           if ((stype == ServiceType.OPENDAP) || (stype == ServiceType.DODS))
-            urlString = urlString + ".html";
+            fullUrlString = fullUrlString + ".html";
           else if (stype == ServiceType.WCS)
-            urlString = urlString + "?request=GetCapabilities&version=1.0.0&service=WCS";
+            fullUrlString = fullUrlString + "?request=GetCapabilities&version=1.0.0&service=WCS";
           else if (stype == ServiceType.NetcdfServer)
-            urlString = urlString + "?showForm";
+            fullUrlString = fullUrlString + "?showForm";
           else if (stype == ServiceType.NetcdfSubset)
-            urlString = urlString + "/dataset.html";
+            fullUrlString = fullUrlString + "/dataset.html";
         }
         buff.append(" <li> <b>").append(StringUtil.quoteHtmlContent(s.getServiceType().toString()));
-        buff.append(":</b> ").append(makeHref(urlString, a.getStandardUrlName())).append("</li>\n");
+        buff.append(":</b> ").append(makeHref( fullUrlString, urlString)).append("</li>\n");
       }
       buff.append("</ol>\n");
     }
@@ -1084,7 +1109,10 @@ public class InvDatasetImpl extends InvDataset {
         buff.append(" <li><strong>").append(StringUtil.quoteHtmlContent(t.getName())).append("</strong><ul>\n");
         buff.append(" <li><em>email: </em>").append(StringUtil.quoteHtmlContent(t.getEmail())).append("</li>\n");
         if (t.getUrl() != null) {
-          buff.append(" <li> <em>").append(makeHrefResolve(ds, t.getUrl(), null)).append("</em></li>\n");
+          String newUrl = resolveRelativeUrls
+                          ? makeHrefResolve( ds, t.getUrl(), null )
+                          : makeHref(t.getUrl(), null);
+          buff.append(" <li> <em>").append( newUrl ).append("</em></li>\n");
         }
         buff.append(" </ul></li>\n");
       }
@@ -1098,7 +1126,10 @@ public class InvDatasetImpl extends InvDataset {
         buff.append(" <li><strong>").append(StringUtil.quoteHtmlContent(t.getName())).append("</strong><ul>\n");
         buff.append(" <li><em>email: </em>").append(StringUtil.quoteHtmlContent(t.getEmail())).append("\n");
         if (t.getUrl() != null) {
-          buff.append(" <li> <em>").append(makeHrefResolve(ds, t.getUrl(), null)).append("</em>\n");
+          String urlLink = resolveRelativeUrls
+                           ? makeHrefResolve( ds, t.getUrl(), null )
+                           : makeHref( t.getUrl(), null );
+          buff.append(" <li> <em>").append( urlLink ).append("</em>\n");
         }
         buff.append(" </ul>\n");
       }
@@ -1113,7 +1144,10 @@ public class InvDatasetImpl extends InvDataset {
         buff.append( "<li><em>Vocabulary</em> [");
         if (t.getVocabUri() != null) {
           URI uri = t.getVocabUri();
-          buff.append(makeHrefResolve(ds, uri.toString(), t.getVocabulary()));
+          String vocabLink = resolveRelativeUrls
+                             ? makeHrefResolve( ds, uri.toString(), t.getVocabulary() )
+                             : makeHref( uri.toString(), t.getVocabulary());
+          buff.append( vocabLink );
         } else {
           buff.append(StringUtil.quoteHtmlContent(t.getVocabulary()));
         }
@@ -1191,7 +1225,10 @@ public class InvDatasetImpl extends InvDataset {
         String type = (m.getMetadataType() == null) ? "" : m.getMetadataType();
         if (m.hasXlink()) {
           String title = (m.getXlinkTitle() == null) ? "Type " + type : m.getXlinkTitle();
-          buff.append(" <li> ").append(makeHrefResolve(ds, m.getXlinkHref(), title)).append("\n");
+          String mdLink = resolveRelativeUrls
+                          ? makeHrefResolve( ds, m.getXlinkHref(), title )
+                          : makeHref( m.getXlinkHref(), title);
+          buff.append(" <li> ").append( mdLink ).append("\n");
         } //else {
         //buff.append(" <li> <pre>"+m.getMetadataType()+" "+m.getContentObject()+"</pre>\n");
         //}
@@ -1204,7 +1241,12 @@ public class InvDatasetImpl extends InvDataset {
       buff.append("<h3>Properties:</h3>\n<ul>\n");
       for (InvProperty p : props) {
         if (p.getName().equals("attachments")) // LOOK whats this ?
-          buff.append(" <li>").append(makeHrefResolve(ds, p.getValue(), p.getName())).append("\n");
+        {
+          String attachLink = resolveRelativeUrls
+                              ? makeHrefResolve( ds, p.getValue(), p.getName() )
+                              : makeHref( p.getValue(), p.getName());
+          buff.append(" <li>").append( attachLink ).append("\n");
+        }
         else {
           buff.append(" <li>").append(StringUtil.quoteHtmlContent(p.getName() + " = \"" + p.getValue())).append("\"\n");
         }

@@ -725,7 +725,7 @@ public class HtmlWriter {
 
     sb.append( "<h2> Catalog " ).append( catURL ).append( "</h2>\r\n" );
 
-    InvDatasetImpl.writeHtmlDescription( sb, dataset, false, true, false, false );
+    InvDatasetImpl.writeHtmlDescription( sb, dataset, false, true, false, false, ! isLocalCatalog );
 
     // optional access through Viewers
     if ( isLocalCatalog )

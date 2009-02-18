@@ -515,7 +515,7 @@ public class CatalogChooser extends JPanel {
   private void showDatasetInfo(InvDatasetImpl ds) {
     if (ds == null) return;
     StringBuilder sbuff = new StringBuilder( 20000);
-    InvDatasetImpl.writeHtmlDescription(sbuff, ds, true, false, datasetEvents, catrefEvents);
+    InvDatasetImpl.writeHtmlDescription(sbuff, ds, true, false, datasetEvents, catrefEvents, true);
     if (showHTML) System.out.println("HTML=\n"+sbuff);
     htmlViewer.setContent( ds.getName(), sbuff.toString());
   }
