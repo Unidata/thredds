@@ -2,10 +2,9 @@
 <threddsConfig>
 
   <contentRoots>
-    <contentRoot>content</contentRoot>
     <contentRoot>motherlode</contentRoot>
+    <contentRoot>idd</contentRoot>
   </contentRoots>
-
   <DataRoots>
     <idd>/data/ldm/pub</idd>
   </DataRoots>
@@ -32,6 +31,50 @@
   <catalogRoot>casestudies/july18_2002cat.xml</catalogRoot>
 
   <catalogRoot>servers/radarCollections.xml</catalogRoot>
+
+  <!--
+   * Setup for generated HTML pages.
+   *
+   * NOTE: URLs may be absolute or relative, relative URLs must be relative
+   * to the webapp URL, i.e., http://server:port/thredds/.
+    -->
+  <htmlSetup>
+    <!--
+     * CSS documents used in generated HTML pages.
+     * The CSS document given in the "catalogCssUrl" element is used for all pages
+     * that are HTML catalog views. The CSS document given in the "standardCssUrl"
+     * element is used in all other generated HTML pages.
+     * -->
+    <standardCssUrl>tds.css</standardCssUrl>
+    <catalogCssUrl>tdsCat.css</catalogCssUrl>
+
+    <!--
+     * The URLs (relative to "/thredds/") and alternate text for both
+     * folder and dataset icons used in HTML catalog views.
+     * -->
+    <folderIconUrl>folder.gif</folderIconUrl>
+    <folderIconAlt>Folder</folderIconAlt>
+    <datasetIconUrl>dataset.gif</datasetIconUrl>
+    <datasetIconAlt>Dataset</datasetIconAlt>
+
+    <!--
+     * The URL and alternate text for this TDS installations logo.
+     * -->
+    <installName>Motherlode TDS</installName>
+    <installLogoUrl>unidata.gif</installLogoUrl>
+    <installLogoAlt>Motherlode TDS</installLogoAlt>
+
+    <!--
+     * Information for the institution hosting this TDS installation:
+     * - a URL for the institution;
+     * - a URL to the institution logo; and
+     * - alternate text for the institution logo.
+     * -->
+    <hostInstName>Unidata</hostInstName>
+    <hostInstUrl>http://www.unidata.ucar.edu/</hostInstUrl>
+    <hostInstLogoUrl>unidata.gif</hostInstLogoUrl>
+    <hostInstLogoAlt>Unidata</hostInstLogoAlt>
+  </htmlSetup>
 
   <!--
    The <CatalogServices> element:

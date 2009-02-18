@@ -78,8 +78,8 @@ public class TdsConfigHtml
   {
     this.tdsContext = tdsContext;
 
-    this.pageCssUrl    = ThreddsConfig.get( "htmlSetup.cssPage", "" );
-    this.catalogCssUrl = ThreddsConfig.get( "htmlSetup.cssCatalog", "");
+    this.pageCssUrl    = ThreddsConfig.get( "htmlSetup.standardCssUrl", "" );
+    this.catalogCssUrl = ThreddsConfig.get( "htmlSetup.catalogCssUrl", "");
 
     this.folderIconUrl  = ThreddsConfig.get( "htmlSetup.folderIconUrl", "");
     this.folderIconAlt  = ThreddsConfig.get( "htmlSetup.folderIconAlt", "");
@@ -347,6 +347,8 @@ public class TdsConfigHtml
    */
   public String prepareUrlStringForHtml( String url )
   {
+    if ( url == null )
+      return null;
     URI uri = null;
     try
     {

@@ -212,11 +212,12 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     timer = new Timer();
     timer.scheduleAtFixedRate(new CacheScourTask(maxSize), c.getTime(), (long) 1000 * scourSecs);
 
-    HtmlWriter.init(contextPath, this.getContextName(), this.getVersion(), this.getDocsPath(),
-        this.getTdsPageCssPath(), this.getTdsCatalogCssPath(),
-        this.getContextLogoPath(), this.getContextLogoAlt(),
-        this.getInstituteLogoPath(), this.getInstituteLogoAlt(),
-        this.getFolderIconPath(), this.getFolderIconAlt());
+    HtmlWriter.init( null );
+//    HtmlWriter.init(contextPath, this.getContextName(), this.getVersion(), this.getDocsPath(),
+//        this.getTdsPageCssPath(), this.getTdsCatalogCssPath(),
+//        this.getContextLogoPath(), this.getContextLogoAlt(),
+//        this.getInstituteLogoPath(), this.getInstituteLogoAlt(),
+//        this.getFolderIconPath(), this.getFolderIconAlt());
 
     cacheLog.info("Restarted");
     // Checking for double init seeing in intellij debug

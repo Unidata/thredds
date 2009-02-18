@@ -78,18 +78,7 @@ public class TdsConfigContextListener
 
     // Initialize HtmlWriter
     // LOOK! ToDo This should be removed once the catalog service controllers uses JSP.
-    HtmlWriter.init( tdsContext.getContextPath(),
-                     tdsContext.getWebappName(),
-                     tdsContext.getWebappVersion(),
-                     tdsContext.getTdsConfigHtml().getWebappDocsUrl(),
-                     tdsContext.getTdsConfigHtml().getPageCssUrl(),
-                     tdsContext.getTdsConfigHtml().getCatalogCssUrl(),
-                     tdsContext.getTdsConfigHtml().getWebappLogoUrl(),
-                     tdsContext.getTdsConfigHtml().getWebappLogoAlt(),
-                     tdsContext.getTdsConfigHtml().getInstallLogoUrl(),
-                     tdsContext.getTdsConfigHtml().getInstallLogoAlt(),
-                     tdsContext.getTdsConfigHtml().getFolderIconUrl(),
-                     tdsContext.getTdsConfigHtml().getFolderIconAlt() );
+    HtmlWriter.init( tdsContext );
 
     logger.debug( "contextInitialized(): done.");
   }

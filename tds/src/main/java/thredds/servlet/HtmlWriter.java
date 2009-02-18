@@ -33,6 +33,8 @@
 package thredds.servlet;
 
 import thredds.catalog.*;
+import thredds.server.config.TdsContext;
+import thredds.server.config.TdsConfigHtml;
 import ucar.nc2.units.DateType;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.Format;
@@ -66,6 +68,9 @@ public class HtmlWriter {
 
   private static HtmlWriter singleton;
 
+  private TdsContext tdsContext;
+  private TdsConfigHtml tdsHtmlConfig;
+
   private String contextPath;
   private String contextName;
   private String contextVersion;
@@ -82,47 +87,6 @@ public class HtmlWriter {
   private final static String defaultTdsPageCssPath = "tds.css";
   private final static String defaultTdsCatalogCssPath = "tdsCat.css";
   private ucar.nc2.units.DateFormatter formatter = new ucar.nc2.units.DateFormatter();
-
-  /*
-   * <li>Context path: "/thredds"</li>
- * <li>Servlet name: "THREDDS Data Server"</li>
- * <li>Documentation location: "/thredds/docs/"</li>
- * <li>Version information: ThreddsDefault.version</li>
- * <li>Catalog reference URL: "/thredds/catalogServices?catalog="</li>
-
-  */
-
-  /**
-   * Initialize the HtmlWriter singleton instance.
-   * <p/>
-   * Note: All paths must be relative to the context path.
-   *
-   * @param contextPath       the context path for this web app (e.g., "/thredds")
-   * @param contextName       the name of the web app (e.g., "THREDDS Data Server")
-   * @param contextVersion    the version of the web app (e.g., "3.14.00")
-   * @param docsPath          the path for the main documentation page (e.g., "docs/")
-   * @param userCssPath       the path for the CSS document (e.g., "upc.css")
-   * @param contextLogoPath   the path for the context logo (e.g., "thredds.jpg")
-   * @param contextLogoAlt    alternate text for the context logo (e.g., "thredds")
-   * @param instituteLogoPath the path for the institute logo (e.g., "unidataLogo.jpg")
-   * @param instituteLogoAlt  alternate text for the institute logo (e.g., "Unidata")
-   * @param folderIconPath    the path for the folder icon (e.g., "folder.gif"), try to keep small, ours is 20x22 pixels
-   * @param folderIconAlt     alternate text for the folder icon (e.g., "folder")
-   *
-   * @deprecated Use the init() with two CSS paths.
-   */
-  public static void init( String contextPath, String contextName, String contextVersion,
-                           String docsPath, String userCssPath,
-                           String contextLogoPath, String contextLogoAlt,
-                           String instituteLogoPath, String instituteLogoAlt,
-                           String folderIconPath, String folderIconAlt )
-  {
-    init( contextPath, contextName, contextVersion,
-          docsPath, userCssPath, null,
-          contextLogoPath, contextLogoAlt,
-          instituteLogoPath, instituteLogoAlt,
-          folderIconPath, folderIconAlt);
-  }
 
   /**
    * Initialize the HtmlWriter singleton instance.
@@ -141,6 +105,8 @@ public class HtmlWriter {
    * @param instituteLogoAlt  alternate text for the institute logo (e.g., "Unidata")
    * @param folderIconPath    the path for the folder icon (e.g., "folder.gif"), try to keep small, ours is 20x22 pixels
    * @param folderIconAlt     alternate text for the folder icon (e.g., "folder")
+   *
+   * @deprecated Instead use {@link #init(thredds.server.config.TdsContext)}
    */
   public static void init(String contextPath, String contextName, String contextVersion,
                           String docsPath, String tdsPageCssPath, String tdsCatalogCssPath,
@@ -158,6 +124,17 @@ public class HtmlWriter {
         contextLogoPath, contextLogoAlt,
         instituteLogoPath, instituteLogoAlt,
         folderIconPath, folderIconAlt);
+  }
+
+  public static void init( TdsContext tdsContext )
+  {
+    if ( singleton != null )
+    {
+      log.warn( "init(): this method has already been called; it should only be called once." );
+      return;
+      //throw new IllegalStateException( "HtmlWriter.init() has already been called.");
+    }
+    singleton = new HtmlWriter( tdsContext);
   }
 
   public static HtmlWriter getInstance() {
@@ -192,6 +169,29 @@ public class HtmlWriter {
     this.folderIconAlt = folderIconAlt;
   }
 
+  private HtmlWriter( TdsContext tdsContext )
+  {
+    if ( tdsContext == null )
+      throw new IllegalArgumentException( "Null value not allowed for TdsContext or TdsConfigHtml.");
+
+    this.tdsContext = tdsContext;
+    this.tdsHtmlConfig = this.tdsContext.getTdsConfigHtml();
+
+    this.contextPath = this.tdsContext.getContextPath();
+    this.contextName = this.tdsContext.getWebappName();
+    this.contextVersion = this.tdsContext.getWebappVersion();
+
+    this.docsPath = this.tdsHtmlConfig.getWebappDocsUrl();
+    this.tdsPageCssPath = this.tdsHtmlConfig.getPageCssUrl();
+    this.tdsCatalogCssPath = this.tdsHtmlConfig.getCatalogCssUrl();
+    this.contextLogoPath = this.tdsHtmlConfig.getWebappLogoUrl();
+    this.contextLogoAlt = this.tdsHtmlConfig.getWebappLogoAlt();
+    this.instituteLogoPath = this.tdsHtmlConfig.getHostInstLogoUrl();
+    this.instituteLogoAlt = this.tdsHtmlConfig.getHostInstLogoAlt();
+    this.folderIconPath = this.tdsHtmlConfig.getFolderIconUrl();
+    this.folderIconAlt = this.tdsHtmlConfig.getFolderIconAlt();
+  }
+
   public String getContextPath() {
     return contextPath;
   }
@@ -219,7 +219,7 @@ public class HtmlWriter {
   }
 
   public String getHtmlDoctypeAndOpenTag() {
-    return new StringBuffer()
+    return new StringBuilder()
         .append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n")
         .append("        \"http://www.w3.org/TR/html4/loose.dtd\">\n")
         .append("<html>\n")
@@ -227,7 +227,7 @@ public class HtmlWriter {
   }
 
   public String getXHtmlDoctypeAndOpenTag() {
-    return new StringBuffer()
+    return new StringBuilder()
         // .append( "<?xml version=\"1.0\" encoding=\"utf-8\"?>")
         .append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n")
         .append("        \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n")
@@ -237,21 +237,21 @@ public class HtmlWriter {
 
   //  public static final String UNIDATA_CSS
   public String getUserCSS() {
-    return new StringBuffer()
+    return new StringBuilder()
         .append("<link rel='stylesheet' href='")
         .append(this.contextPath)
         .append("/").append( tdsPageCssPath).append("' type='text/css' >").toString();
   }
 
   public String getTdsCatalogCssLink() {
-    return new StringBuffer()
+    return new StringBuilder()
         .append("<link rel='stylesheet' href='")
         .append(this.contextPath)
         .append("/").append(tdsCatalogCssPath).append("' type='text/css' >").toString();
   }
 
   public String getTdsPageCssLink() {
-    return new StringBuffer()
+    return new StringBuilder()
         .append("<link rel='stylesheet' href='")
         .append(this.contextPath)
         .append("/").append(tdsPageCssPath).append("' type='text/css' >").toString();
@@ -259,7 +259,7 @@ public class HtmlWriter {
 
   //  public static final String UNIDATA_HEAD
   public String getUserHead() {
-    return new StringBuffer()
+    return new StringBuilder()
         .append("<table width=\"100%\"><tr><td>\n")
         .append("  <img src=\"").append(contextPath).append("/").append(instituteLogoPath).append("\"\n")
         .append("       alt=\"").append(instituteLogoAlt).append("\"\n")
@@ -270,10 +270,55 @@ public class HtmlWriter {
         .toString();
   }
 
+  private void appendSimpleFooter( StringBuilder sb )
+  {
+    sb.append( "<h3>" );
+    if ( this.tdsHtmlConfig.getInstallName() != null )
+    {
+      String installUrl = this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getInstallUrl() );
+      if ( installUrl != null )
+        sb.append( "<a href='" ).append( installUrl ).append( "'>" );
+      sb.append( this.tdsHtmlConfig.getInstallName() );
+      if ( installUrl != null )
+        sb.append( "</a>" );
+    }
+    if ( this.tdsHtmlConfig.getHostInstName() != null )
+    {
+      sb.append( " at " );
+      String hostInstUrl = this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getHostInstUrl() );
+      if ( hostInstUrl != null )
+        sb.append( "<a href='" ).append( hostInstUrl ).append( "'>" );
+      sb.append( this.tdsHtmlConfig.getHostInstName() );
+      if ( hostInstUrl != null )
+        sb.append( "</a>" );
+      sb.append( "<br>\n" );
+    }
+    sb.append( this.tdsContext.getWebappName() )
+            .append( " [Version " ).append( this.tdsContext.getWebappVersion() );
+    if ( this.tdsContext.getWebappVersionBuildDate() != null )
+      sb.append( " - " ).append( this.tdsContext.getWebappVersionBuildDate() );
+    sb.append( "] <a href='" )
+            .append( this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getWebappDocsUrl() ) )
+            .append( "'> Documentation</a>" );
+    sb.append( "</h3>\n" );
+  }
+
+  private void appendWebappFooter( StringBuilder sb )
+  {
+    sb.append( "<h3>" )
+            .append( this.tdsContext.getWebappName() )
+            .append( " [Version " ).append( this.tdsContext.getWebappVersion() );
+    if ( this.tdsContext.getWebappVersionBuildDate() != null )
+      sb.append( " - " ).append( this.tdsContext.getWebappVersionBuildDate() );
+    sb.append( "] <a href='" )
+            .append( this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getWebappDocsUrl() ) )
+            .append( "'> Documentation</a>" );
+    sb.append( "</h3>\n" );
+  }
 
   //  private static final String TOMCAT_CSS
   private String getTomcatCSS() {
-    return new StringBuffer( "<STYLE type='text/css'><!--" )
+    return new StringBuilder( "<STYLE type='text/css'><!--" )
         .append("H1 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:22px;} ")
         .append("H2 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:16px;} ")
         .append("H3 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:14px;} ")
@@ -429,9 +474,8 @@ public class HtmlWriter {
     sb.append("</table>\r\n");
     sb.append("<HR size=\"1\" noshade=\"noshade\">");
 
-    sb.append("<h3>").append(this.contextVersion);
-    //sb.append( " <a href='").append(this.contextPath).append(this.docsPath).append("'> Documentation</a></h3>\r\n" );
-    sb.append(" <a href='").append(this.docsPath).append("'> Documentation</a></h3>\r\n");
+    appendSimpleFooter( sb );
+
     sb.append("</body>\r\n");
     sb.append("</html>\r\n");
 
@@ -468,7 +512,7 @@ public class HtmlWriter {
    * @param cat catalog to write
    */
   String convertCatalogToHtml(InvCatalogImpl cat, boolean isLocalCatalog) {
-    StringBuffer sb = new StringBuffer(10000);
+    StringBuilder sb = new StringBuilder(10000);
 
     String catname = StringUtil.quoteHtmlContent(cat.getUriString());
 
@@ -512,16 +556,15 @@ public class HtmlWriter {
 
     sb.append("<HR size=\"1\" noshade=\"noshade\">");
 
-    sb.append("<h3>").append(this.contextVersion);
-    //sb.append( " <a href='" ).append( contextPath ).append( "/").append(this.docsPath).append("'> Documentation</a></h3>\r\n" );
-    sb.append(" <a href='").append(this.docsPath).append("'> Documentation</a></h3>\r\n");
+    appendSimpleFooter( sb );
+
     sb.append("</body>\r\n");
     sb.append("</html>\r\n");
 
     return (sb.toString());
   }
 
-  private boolean doDatasets(InvCatalogImpl cat, List<InvDataset> datasets, StringBuffer sb, boolean shade, int level, boolean isLocalCatalog) {
+  private boolean doDatasets(InvCatalogImpl cat, List<InvDataset> datasets, StringBuilder sb, boolean shade, int level, boolean isLocalCatalog) {
     //URI catURI = cat.getBaseURI();
     String catHtml;
     if (!isLocalCatalog) {
@@ -732,7 +775,7 @@ public class HtmlWriter {
   }
 
   private String getCDM(NetcdfDataset ds) {
-    StringBuffer sb = new StringBuffer(10000);
+    StringBuilder sb = new StringBuilder(10000);
 
     String name = StringUtil.quoteHtmlContent(ds.getLocation());
 
@@ -804,16 +847,15 @@ public class HtmlWriter {
 
     sb.append("<HR size=\"1\" noshade=\"noshade\">");
 
-    sb.append("<h3>").append(this.contextVersion);
-    //sb.append( " <a href='" ).append( contextPath ).append( "/" ).append( this.docsPath ).append( "'> Documentation</a></h3>\r\n" );
-    sb.append(" <a href='").append(this.docsPath).append("'> Documentation</a></h3>\r\n");
+    appendSimpleFooter( sb );
+
     sb.append("</body>\r\n");
     sb.append("</html>\r\n");
 
     return (sb.toString());
   }
 
-  private void showAxis(CoordinateAxis axis, StringBuffer sb, boolean shade) {
+  private void showAxis(CoordinateAxis axis, StringBuilder sb, boolean shade) {
 
     sb.append("<tr");
     if (shade) {
@@ -825,7 +867,7 @@ public class HtmlWriter {
     sb.append("<td align=\"left\">");
     sb.append("\r\n");
 
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     axis.getNameAndDimensions(sbuff);
     String name = StringUtil.quoteHtmlContent(sbuff.toString());
     sb.append("&nbsp;");
@@ -847,7 +889,7 @@ public class HtmlWriter {
     sb.append("</tr>\r\n");
   }
 
-  private void showGrid(GridDatatype grid, StringBuffer sb, boolean shade) {
+  private void showGrid(GridDatatype grid, StringBuilder sb, boolean shade) {
 
     sb.append("<tr");
     if (shade) {
