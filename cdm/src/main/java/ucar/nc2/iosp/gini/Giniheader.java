@@ -326,7 +326,7 @@ class Giniheader {
     } else if (proj == 3) {
      att = new Attribute( "ProjName", "LAMBERT_CONFORNAL");
     } else if (proj == 5) {
-     att = new Attribute( "ProjName", "POLARSTEREOGRAPGIC");
+     att = new Attribute( "ProjName", "POLARSTEREOGRAPHIC");
     }
 
     this.ncfile.addAttribute(null, att);
@@ -539,7 +539,7 @@ class Giniheader {
         if (proj == 3 )
           projection = new LambertConformal(latin, lonProjectionOrigin, latin, latin);
         else // (proj == 5)
-          projection = new Stereographic(latin, lonv, imageScale);
+          projection = new Stereographic(90.0, lonv, imageScale);
 
         break;
 
@@ -680,8 +680,7 @@ class Giniheader {
           ProjectionPointImpl pt = (ProjectionPointImpl) projection.latLonToProj( new LatLonPointImpl( lat1, ln));
           data[i] = pt.getX();  // startx + i*dx;
         }
-    }
-    else {
+    } else {
         for (int i = 0; i < data.length; i++)
           data[i] = startx + i*dxKm;
     }
