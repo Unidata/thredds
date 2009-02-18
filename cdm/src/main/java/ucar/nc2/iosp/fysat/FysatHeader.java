@@ -278,8 +278,8 @@ public final class FysatHeader {
                 double lon0 = geoSatelliteSecondHeader.centerLongitudeOfProjection;
                 double par1 = geoSatelliteSecondHeader.standardLatitude1;
                 double par2 = geoSatelliteSecondHeader.standardLatitude2;
-                dxKm = geoSatelliteSecondHeader.horizontalResolution;
-                dyKm = geoSatelliteSecondHeader.verticalResolution;
+                dxKm = geoSatelliteSecondHeader.horizontalResolution/100;
+                dyKm = geoSatelliteSecondHeader.verticalResolution/100;
                 projection = new LambertConformal(lat0, lon0, par1, par2);
             } else if (proj == 3) {
 		        att = new Attribute( "ProjName", "POLARSTEREOGRAPGIC");
@@ -426,7 +426,7 @@ public final class FysatHeader {
             if(proj != 4) {
                  // we have to project in order to find the origin
     	        ProjectionPointImpl start = (ProjectionPointImpl) projection.latLonToProj(
-                        new LatLonPointImpl( geoSatelliteSecondHeader.latitudeOfNorth,
+                        new LatLonPointImpl( geoSatelliteSecondHeader.latitudeOfSouth,
                                              geoSatelliteSecondHeader.longitudeOfWest));
                 double startx = start.getX();
                 double starty = start.getY();
