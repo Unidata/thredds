@@ -268,7 +268,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
       if (edition == 1) {
         index = new Grib1WriteIndex().writeFileIndex(raf, out, true);
       } else if (edition == 2) {
-        index = new Grib2WriteIndex().writeFileIndex(raf, out, true);
+        //index = new Grib2WriteIndex().writeFileIndex(raf, out, true);
       }
 
       return index;
