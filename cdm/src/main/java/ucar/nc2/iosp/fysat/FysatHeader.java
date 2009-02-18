@@ -282,13 +282,13 @@ public final class FysatHeader {
                 dyKm = geoSatelliteSecondHeader.verticalResolution/100;
                 projection = new LambertConformal(lat0, lon0, par1, par2);
             } else if (proj == 3) {
-		        att = new Attribute( "ProjName", "POLARSTEREOGRAPGIC");
+		        att = new Attribute( "ProjName", "POLARSTEREOGRAPHIC");
                 double latt =  geoSatelliteSecondHeader.centerLatitudeOfProjection;
                 double lont = geoSatelliteSecondHeader.centerLongitudeOfProjection;
                 double scale = (1. + Math.sin(DEG_TO_RAD*latt))/2.;
                 dxKm = geoSatelliteSecondHeader.horizontalResolution;
                 dyKm = geoSatelliteSecondHeader.verticalResolution;
-                projection = new Stereographic(latt,  lont,  scale);
+                projection = new Stereographic(90.0,  lont,  scale);
             } else if (proj == 4) {
 		        att = new Attribute( "ProjName", "LatLonProjection");
                 projection = new LatLonProjection();
