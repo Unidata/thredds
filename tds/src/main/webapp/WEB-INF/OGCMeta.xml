@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
    <contact>
-      <name>Pauline Mak</name>
-      <organization>TPAC</organization>
-      <telephone>(03) 6226 7518</telephone>
-      <email>pauline.mak@arcs.org.au</email>
+     <name>Support</name>
+     <organization>Unidata</organization>
+     <email>support-thredds@unidata.ucar.edu</email>
    </contact>
    <server>
-      <title>My ncWMS server</title>
+     <title>THREDDS Data Server / ncWMS</title>
       <allowFeatureInfo>true</allowFeatureInfo>
       <maxImageWidth>1024</maxImageWidth>
       <maxImageHeight>1024</maxImageHeight>
-      <abstract>TPAC Digital Library holdings</abstract>
-      <keywords>ocean, climate, seaice forecast</keywords>
+     <abstract>Scientific Data</abstract>
+     <keywords>ocean, climate, meteorology, atmosphere, earth science</keywords>
    </server>
 </config>
