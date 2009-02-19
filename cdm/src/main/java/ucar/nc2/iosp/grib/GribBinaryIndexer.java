@@ -256,8 +256,9 @@ public final class GribBinaryIndexer {
     try {
       if (gbx.exists()) {
         // gbx older than grib, no need to check
-        if (grib.lastModified() < gbx.lastModified() )  
+        if (grib.lastModified() < gbx.lastModified() ) { 
           return;
+        }
         System.out.println("IndexExtending " + grib.getName() + " " +
             Calendar.getInstance().getTime().toString());
         new Grib2WriteIndex().extendGribIndex( grib, gbx, args[0], args[1], false);
