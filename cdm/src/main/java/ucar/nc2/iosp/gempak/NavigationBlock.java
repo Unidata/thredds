@@ -34,12 +34,11 @@
  */
 
 
-
-
 package ucar.nc2.iosp.gempak;
 
 //import ucar.nc2.iosp.grid.GridDefRecord;
 import ucar.grid.GridDefRecord;
+
 
 /**
  * Class to hold the grid navigation information.
@@ -309,62 +308,58 @@ public class NavigationBlock extends GridDefRecord {
         addParam(LO1, lllon);
         addParam(LA2, urlat);
         addParam(LO2, urlon);
-        if (proj.equals("STR") ||
-            proj.equals("NPS") ||
-            proj.equals("SPS")
-            ) {
+        if (proj.equals("STR") || proj.equals("NPS") || proj.equals("SPS")) {
             addParam(LOV, angle2);
             // TODO:  better to just set pole?
             if (proj.equals("SPS")) {
                 addParam("NpProj", "false");
             }
-        } else if (proj.equals("LCC") ||
-                   proj.equals("SCC")) {
+        } else if (proj.equals("LCC") || proj.equals("SCC")) {
             addParam(LATIN1, angle1);
             addParam(LOV, angle2);
             addParam(LATIN2, angle3);
-        // TODO: test this
-        } else if (proj.equals("MER") ||
-                   proj.equals("MCD")
-            ) {
+            // TODO: test this
+        } else if (proj.equals("MER") || proj.equals("MCD")) {
             String standardLat = "0";
             if (vals[10] == 0) {  // use average latitude
-               float lat =  (vals[8] + vals[6])/2;
-               standardLat = String.valueOf(lat);
+                float lat = (vals[8] + vals[6]) / 2;
+                standardLat = String.valueOf(lat);
             } else {
-               standardLat = angle1;
+                standardLat = angle1;
             }
             addParam("Latin", standardLat);
             addParam(LOV, angle2);
         } else if (proj.equals("CED")) {
-            double lllatv  = vals[6];
-            double lllonv  = vals[7];
-            double urlatv  = vals[8];
-            double urlonv  = vals[9];
-            if (urlonv<lllonv) urlonv += 360.;
-            double dx = Math.abs((urlonv-lllonv)/(vals[4]-1));
-            double dy = Math.abs((urlatv-lllatv)/(vals[5]-1));
+            double lllatv = vals[6];
+            double lllonv = vals[7];
+            double urlatv = vals[8];
+            double urlonv = vals[9];
+            if (urlonv < lllonv) {
+                urlonv += 360.;
+            }
+            double dx = Math.abs((urlonv - lllonv) / (vals[4] - 1));
+            double dy = Math.abs((urlatv - lllatv) / (vals[5] - 1));
             addParam(DX, String.valueOf(dx));
             addParam(DY, String.valueOf(dy));
             addParam(LO2, String.valueOf(urlonv));
-                
-            
+
+
         }
     }
 
     /**
-     * Get a short name for this GDSKey for the netCDF group.  
+     * Get a short name for this GDSKey for the netCDF group.
      * Subclasses should implement as a short description
      * @return short name
      */
     public String getGroupName() {
-       StringBuffer buf = new StringBuffer();
-       buf.append(proj);
-       buf.append("_");
-       buf.append(getParam(NX));
-       buf.append("x");
-       buf.append(getParam(NY));
-       return buf.toString();
+        StringBuffer buf = new StringBuffer();
+        buf.append(proj);
+        buf.append("_");
+        buf.append(getParam(NX));
+        buf.append("x");
+        buf.append(getParam(NY));
+        return buf.toString();
     }
 
 }

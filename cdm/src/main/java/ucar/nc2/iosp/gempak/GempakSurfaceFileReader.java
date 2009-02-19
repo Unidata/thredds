@@ -37,10 +37,15 @@
 package ucar.nc2.iosp.gempak;
 
 
+//import ucar.nc2.units.DateFromString;
+
+
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.*;
 
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -70,49 +75,64 @@ public class GempakSurfaceFileReader extends GempakFileReader {
     /** time key identifier */
     public static final String TIME = "TIME";
 
+    /** standard surface file id */
+    public static final String STANDARD = "standard";
+
+    /** climate surface file id */
+    public static final String CLIMATE = "climate";
+
+    /** ship surface file id */
+    public static final String SHIP = "ship";
+
+    /** Surface obs date format */
+    private static final String DATE_FORMAT = "yyMMdd'/'HHmm";
+
     /** date/time keys */
     private List<Key> dateTimeKeys;
 
     /** station keys */
     private List<Key> stationKeys;
 
-    /** unique list of dates */
+    /** unique list of dates as Strings */
     private List<String> dateList;
+
+    /** unique list of dates as Dates */
+    private List<Date> dates;
 
     /** list of stations */
     private List<GempakStation> stations;
+
+    /** list of parameters */
+    private List<GempakParameter> params;
 
     /** number of parameters */
     private int numParams = 0;
 
     /** flag for standard file */
-    private boolean isStandard = false;
+    private String fileType = null;
+
+    private SimpleDateFormat dateFmt = new SimpleDateFormat(DATE_FORMAT);
 
     /**
      * Default ctor
      */
-    public GempakSurfaceFileReader() {}
+    GempakSurfaceFileReader() {}
 
     /**
-     * Create a Gempak Grid Reader from the file
+     * Initialize the file, read in all the metadata (ala DM_OPEN)
      *
-     * @param filename  filename
+     * @param raf   RandomAccessFile to read.
+     * @param fullCheck  if true, check entire structure
      *
-     * @throws IOException problem reading file
+     * @return A GempakSurfaceFileReader
+     * @throws IOException   problem reading file
      */
-    public GempakSurfaceFileReader(String filename) throws IOException {
-        super(filename);
-    }
-
-    /**
-     * Create a Gempak Grid Reader from the file
-     *
-     * @param raf  RandomAccessFile
-     *
-     * @throws IOException problem reading file
-     */
-    public GempakSurfaceFileReader(RandomAccessFile raf) throws IOException {
-        super(raf);
+    public static GempakSurfaceFileReader getInstance(RandomAccessFile raf,
+            boolean fullCheck)
+            throws IOException {
+        GempakSurfaceFileReader gsfr = new GempakSurfaceFileReader();
+        gsfr.init(raf, fullCheck);
+        return gsfr;
     }
 
     /**
@@ -140,13 +160,14 @@ public class GempakSurfaceFileReader extends GempakFileReader {
             return false;
         }
 
-        // Modeled after GD_OFIL
+        // Modeled after SF_OFIL
         if (dmLabel.kftype != MFSF) {
             logError("not a surface data file ");
             return false;
         }
 
 
+        // TODO: Handle multiple parts
         numParams = 0;
         String partType = ((dmLabel.kfsrce == 100) && (dmLabel.kprt == 1))
                           ? SFTX
@@ -160,6 +181,7 @@ public class GempakSurfaceFileReader extends GempakFileReader {
         } else {
             numParams = part.kparms;
         }
+        params = makeParams(part);
 
         // get the date/time keys
         dateTimeKeys = getDateTimeKeys();
@@ -175,11 +197,18 @@ public class GempakSurfaceFileReader extends GempakFileReader {
         }
         stations = getStationList();
 
-        isStandard =
-            !(findKey(DATE).type.equals(findKey(GempakStation.SLAT).type));
+        String latType = findKey(GempakStation.SLAT).type;
 
-        //TODO:  handle non-standard surface files
-        // return isStandard;
+        if ( !(findKey(DATE).type.equals(latType))) {
+            if (latType.equals(ROW)) {
+                fileType = CLIMATE;
+            } else {
+                fileType = STANDARD;
+            }
+        } else {
+            fileType = SHIP;
+        }
+
         return true;
 
     }
@@ -234,6 +263,36 @@ public class GempakSurfaceFileReader extends GempakFileReader {
         }
 
         return fileDates;
+    }
+
+    /**
+     * Make GempakParameters from the list of 
+     *
+     * @param part  the part to use
+     *
+     * @return  parameters from the info in that part.
+     */
+    private List<GempakParameter> makeParams(DMPart part) {
+        List<GempakParameter> gemparms =
+            new ArrayList<GempakParameter>(part.kparms);
+        for (DMParam param : part.params) {
+            String          name = param.kprmnm;
+            GempakParameter parm = GempakParameters.getParameter(name);
+            if (parm == null) {
+                parm = new GempakParameter(1, name, name, "", 0);
+            }
+            gemparms.add(parm);
+        }
+        return gemparms;
+    }
+
+    /**
+     * Get the list of parameters
+     *
+     * @return  list of parameters
+     */
+    public List<GempakParameter> getParameters() {
+        return params;
     }
 
     /**
@@ -395,6 +454,24 @@ public class GempakSurfaceFileReader extends GempakFileReader {
     }
 
     /**
+     * Get the list of stations in this file.
+     * @return list of stations.
+     */
+    public List<Date> getDates() {
+        if (dates == null || (dates.isEmpty() && !dateList.isEmpty())) {
+            dates = new ArrayList<Date>(dateList.size());
+            for (String dateString : dateList) {
+                Date d =
+                    dateFmt.parse(dateString, new ParsePosition(0));
+                    //DateFromString.getDateUsingSimpleDateFormat(dateString,
+                    //    DATE_FORMAT);
+                dates.add(d);
+            }
+        }
+        return dates;
+    }
+
+    /**
      * Print the list of dates in the file
      */
     public void printDates() {
@@ -428,6 +505,14 @@ public class GempakSurfaceFileReader extends GempakFileReader {
     }
 
     /**
+     * Get the type for this file
+     * @return file type (CLIMATE, STANDARD, SHIP)
+     */
+    public String getSurfaceFileType() {
+        return fileType;
+    }
+
+    /**
      * Run the program
      *
      * @param args  [0] filename (required),
@@ -442,7 +527,8 @@ public class GempakSurfaceFileReader extends GempakFileReader {
             System.exit(1);
         }
 
-        GempakSurfaceFileReader gsfr = new GempakSurfaceFileReader(args[0]);
+        GempakSurfaceFileReader gsfr = getInstance(getFile(args[0]), true);
+        System.out.println("Type = " + gsfr.getSurfaceFileType());
         gsfr.printFileLabel();
         gsfr.printKeys();
         gsfr.printHeaders();

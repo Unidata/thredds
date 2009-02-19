@@ -32,11 +32,11 @@
  */
 
 
-
 package ucar.nc2.iosp.gempak;
 
 
 import ucar.grid.GridParameter;
+
 import ucar.unidata.util.StringUtil;
 
 
@@ -61,7 +61,7 @@ public class GempakParameter extends GridParameter {
      * @param scale   decimal (10E*) scaling factor
      */
     public GempakParameter(int number, String name, String description,
-                         String unit, int scale) {
+                           String unit, int scale) {
         super(number, name, description, unit);
         decimalScale = scale;
     }
@@ -78,12 +78,12 @@ public class GempakParameter extends GridParameter {
      * Return a String representation of this object
      *
      * @return a String representation of this object
-    public String toString() {
-        StringBuffer buf = new StringBuffer(super.toString());
-        buf.append(" scale: ");
-        buf.append(getDecimalScale());
-        return buf.toString();
-    }
+     * public String toString() {
+     *   StringBuffer buf = new StringBuffer(super.toString());
+     *   buf.append(" scale: ");
+     *   buf.append(getDecimalScale());
+     *   return buf.toString();
+     * }
      */
 
     /**
@@ -118,8 +118,7 @@ public class GempakParameter extends GridParameter {
             return false;
         }
         GempakParameter that = (GempakParameter) o;
-        return super.equals(that) &&
-               decimalScale == that.decimalScale;
+        return super.equals(that) && (decimalScale == that.decimalScale);
     }
 
     /**
@@ -128,7 +127,7 @@ public class GempakParameter extends GridParameter {
      * @return  the hash code
      */
     public int hashCode() {
-        return super.hashCode() + 17*decimalScale;
+        return super.hashCode() + 17 * decimalScale;
     }
 
 

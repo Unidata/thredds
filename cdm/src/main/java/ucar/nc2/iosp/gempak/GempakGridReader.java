@@ -34,7 +34,6 @@
  */
 
 
-
 package ucar.nc2.iosp.gempak;
 
 
@@ -89,41 +88,25 @@ public class GempakGridReader extends GempakFileReader {
     private int khdrln = 0;
 
     /**
-     * Bean ctor
+     * Bean ctor.  Need to call init if you want anything to work
      */
-    public GempakGridReader() {}
+    GempakGridReader() {}
 
     /**
-     * Create a Gempak Grid Reader from the file
+     * Initialize the file, read in all the metadata (ala DM_OPEN)
      *
-     * @param filename  filename
+     * @param raf   RandomAccessFile to read.
+     * @param fullCheck  if true, check entire structure
      *
-     * @throws IOException problem reading file
+     * @return A GempakGridReader
+     * @throws IOException   problem reading file
      */
-    public GempakGridReader(String filename) throws IOException {
-        super(filename);
-    }
-
-    /**
-     * Create a Gempak Grid Reader from the file
-     *
-     * @param raf  RandomAccessFile
-     *
-     * @throws IOException problem reading file
-     */
-    public GempakGridReader(RandomAccessFile raf) throws IOException {
-        super(raf);
-    }
-
-    /**
-     * Initialize this reader.  Read all the metadata
-     *
-     * @return true if successful
-     *
-     * @throws IOException  problem reading the data
-     */
-    protected boolean init() throws IOException {
-        return init(true);
+    public static GempakGridReader getInstance(RandomAccessFile raf,
+            boolean fullCheck)
+            throws IOException {
+        GempakGridReader ggr = new GempakGridReader();
+        ggr.init(raf, fullCheck);
+        return ggr;
     }
 
     /**
@@ -259,7 +242,7 @@ public class GempakGridReader extends GempakFileReader {
             System.exit(1);
         }
 
-        GempakGridReader ggr = new GempakGridReader(args[0]);
+        GempakGridReader ggr = getInstance(getFile(args[0]), true);
         String           var = "PMSL";
         if ((args.length > 1) && !args[1].equalsIgnoreCase("X")) {
             var = args[1];

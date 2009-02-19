@@ -34,7 +34,6 @@
  */
 
 
-
 package ucar.nc2.iosp.gempak;
 
 
@@ -113,6 +112,7 @@ public interface GempakConstants {
     public static final int MDGRID = 5;
 
     // Grid params
+
     /** Grid nav block length */
     public static final int LLNNAV = 256;
 

@@ -34,7 +34,6 @@
  */
 
 
-
 package ucar.nc2.iosp.gempak;
 
 
@@ -91,28 +90,36 @@ public class GempakFileReader implements GempakConstants {
     /**
      * Bean ctor
      */
-    public GempakFileReader() {}
+    GempakFileReader() {}
 
     /**
-     * Create a Gempak File Reader from the file
+     * Get a RandomAccessFile for the file location
      *
-     * @param filename  filename
+     * @param filename   filename to read.
+     * @return RandomAccessFile
      *
-     * @throws IOException problem reading file
+     * @throws IOException   problem reading file
      */
-    public GempakFileReader(String filename) throws IOException {
-        this(new RandomAccessFile(filename, "r", 2048));
+    public static RandomAccessFile getFile(String filename)
+            throws IOException {
+        return new RandomAccessFile(filename, "r", 2048);
     }
 
     /**
-     * Create a Gempak File Reader from the file
+     * Initialize the file, read in all the metadata (ala DM_OPEN)
      *
-     * @param raf file to read from
+     * @param raf   RandomAccessFile to read.
+     * @param fullCheck  if true, check entire structure
      *
-     * @throws IOException problem reading file
+     * @return a GempakFileReader
+     * @throws IOException   problem reading file
      */
-    public GempakFileReader(RandomAccessFile raf) throws IOException {
-        init(raf, true);
+    public static GempakFileReader getInstance(RandomAccessFile raf,
+            boolean fullCheck)
+            throws IOException {
+        GempakFileReader gfr = new GempakFileReader();
+        gfr.init(raf, fullCheck);
+        return gfr;
     }
 
     /**
@@ -135,6 +142,17 @@ public class GempakFileReader implements GempakConstants {
             throw new IOException("Unable to open GEMPAK file: "
                                   + errorMessage);
         }
+    }
+
+    /**
+     * Initialize this reader.  Read all the metadata
+     *
+     * @return true if successful
+     *
+     * @throws IOException  problem reading the data
+     */
+    protected boolean init() throws IOException {
+        return init(true);
     }
 
     /**
@@ -510,7 +528,7 @@ public class GempakFileReader implements GempakConstants {
             System.exit(1);
         }
 
-        GempakFileReader gfr = new GempakFileReader(args[0]);
+        GempakFileReader gfr = getInstance(getFile(args[0]), true);
         gfr.printFileLabel();
         gfr.printKeys();
         gfr.printHeaders();

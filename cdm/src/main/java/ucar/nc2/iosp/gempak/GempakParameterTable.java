@@ -34,14 +34,12 @@
  */
 
 
-
-
 package ucar.nc2.iosp.gempak;
 
 
+import ucar.grid.GridParameter;
 
 import ucar.unidata.util.StringUtil;
-import ucar.grid.GridParameter;
 
 import java.io.*;
 
@@ -200,7 +198,7 @@ ID# NAME                             UNITS                GNAM         SCALE   M
         }
 
         return new GempakParameter(num, name, description, unit,
-                                       decimalScale);
+                                   decimalScale);
     }
 
     /**
@@ -224,11 +222,10 @@ ID# NAME                             UNITS                GNAM         SCALE   M
                         String value = m.group(1);
                         GempakParameter match =
                             (GempakParameter) templateParamMap.get(key);
-                        param = new GempakParameter(match.getNumber(),
-                                name,
+                        param = new GempakParameter(match.getNumber(), name,
                                 match.getDescription() + " (" + value
                                 + " hour)", match.getUnit(),
-                                             match.getDecimalScale());
+                                            match.getDecimalScale());
                         paramMap.put(name, param);
                         break;
                     }
@@ -250,10 +247,10 @@ ID# NAME                             UNITS                GNAM         SCALE   M
         //pt.addParameters("resources/nj22/tables/gempak/wmogrib3.tbl");
         pt.addParameters("resources/nj22/tables/gempak/params.tbl");
         if (args.length > 0) {
-           String param = args[0];
-           GempakParameter parm = pt.getParameter(param);
-           if (parm != null) {
-               System.out.println("Found " + param + ": " + parm);
+            String          param = args[0];
+            GempakParameter parm  = pt.getParameter(param);
+            if (parm != null) {
+                System.out.println("Found " + param + ": " + parm);
             }
         }
     }

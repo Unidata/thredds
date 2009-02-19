@@ -37,7 +37,12 @@
 package ucar.nc2.iosp.gempak;
 
 
+import ucar.grid.GridIndex;
+import ucar.grid.GridRecord;
+
+
 import ucar.ma2.*;
+
 import ucar.nc2.*;
 import ucar.nc2.dt.fmr.FmrcCoordSys;
 import ucar.nc2.iosp.IOServiceProvider;
@@ -50,8 +55,6 @@ import ucar.nc2.iosp.grid.GridServiceProvider;
 import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.io.RandomAccessFile;
-import ucar.grid.GridIndex;
-import ucar.grid.GridRecord;
 
 import java.io.IOException;
 
@@ -189,6 +192,16 @@ public class GempakGridServiceProvider extends GridServiceProvider {
      */
     protected static class MakeNetcdfFile extends NetcdfFile {
 
+        /**
+         * Ctor
+         *
+         * @param spi IOServiceProvider
+         * @param raf RandomAccessFile
+         * @param location   location of file?
+         * @param cancelTask CancelTask
+         *
+         * @throws IOException problem opening the file
+         */
         MakeNetcdfFile(IOServiceProvider spi, RandomAccessFile raf,
                        String location, CancelTask cancelTask)
                 throws IOException {
@@ -198,8 +211,6 @@ public class GempakGridServiceProvider extends GridServiceProvider {
 
     /**
      * Initialize the parameter tables.
-     *
-     * @throws IOException problem reading files
      */
     private void initTables() {
         try {
@@ -220,3 +231,4 @@ public class GempakGridServiceProvider extends GridServiceProvider {
         extendIndex = b;
     }
 }
+

@@ -34,14 +34,14 @@
  */
 
 
-
 package ucar.nc2.iosp.gempak;
+
+
+import edu.wisc.ssec.mcidas.McIDASUtil;
 
 
 //import ucar.nc2.iosp.grid.GridRecord;
 import ucar.grid.GridRecord;
-
-import edu.wisc.ssec.mcidas.McIDASUtil;
 
 
 import ucar.unidata.util.StringUtil;

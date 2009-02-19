@@ -1,6 +1,4 @@
 /*
- * $Id: IDV-Style.xjs,v 1.3 2007/02/16 19:18:30 dmurray Exp $
- *
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
@@ -37,54 +35,43 @@
 package ucar.nc2.iosp.gempak;
 
 
+import java.io.IOException;
+
+
 /**
- * Class to hold the Grid Analysis Block
- *
- * @author IDV Development Team
- * @version $Revision: 1.3 $
+ * Wrapper around GempakParameterTable for use in a static context.
  */
-public class AnalysisBlock {
+public class GempakParameters {
 
-    /** raw values */
-    float[] vals = null;
+    /** static table */
+    private static GempakParameterTable paramTable =
+        new GempakParameterTable();
 
     /**
-     * Create a new analysis block
+     * Default ctor
      */
-    public AnalysisBlock() {}
+    public GempakParameters() {}
 
     /**
-     * Create a new analysis block with the values
+     * Add parameters from the table
      *
-     * @param words   analysis block values
+     * @param tbl   table location
+     *
+     * @throws IOException   problem reading table.
      */
-    public AnalysisBlock(float[] words) {
-        setValues(words);
+    public static void addParameters(String tbl) throws IOException {
+        paramTable.addParameters(tbl);
     }
 
     /**
-     * Set the analysis block values
+     * Get the parameter for the given name
      *
-     * @param values   the raw values
-     */
-    public void setValues(float[] values) {
-        vals = values;
-    }
-
-    /**
-     * Print out the analysis block
+     * @param name   name of the parameter (eg:, TMPK);
      *
-     * @return  a String representation of this
+     * @return  corresponding parameter or null if not found in table
      */
-    public String toString() {
-        StringBuffer buf = new StringBuffer();
-        if ((vals != null) && false) {
-            // TODO:  fill this in
-        } else {
-            buf.append("\n\tUNKNOWN ANALYSIS TYPE");
-        }
-        return buf.toString();
+    public static GempakParameter getParameter(String name) {
+        return paramTable.getParameter(name);
     }
-
 }
 

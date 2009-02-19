@@ -33,7 +33,6 @@
  */
 
 
-
 package ucar.nc2.iosp.gempak;
 
 
@@ -95,7 +94,7 @@ public class GempakStation implements Station {
     private String std2 = "";
 
     /** station number */
-    private int stnm = 999999;
+    private int stnm = GempakConstants.IMISSD;
 
     /** state */
     private String stat = "";
@@ -110,13 +109,13 @@ public class GempakStation implements Station {
     private String wfo2 = "";
 
     /** station latitude */
-    private int slat = -9999;
+    private int slat = GempakConstants.IMISSD;
 
     /** station longitude */
-    private int slon = -9999;
+    private int slon = GempakConstants.IMISSD;
 
     /** station elevation */
-    private int selv = -9999;
+    private int selv = GempakConstants.IMISSD;
 
     /** priority */
     private int spri;
@@ -409,7 +408,7 @@ public class GempakStation implements Station {
      * @return true if lat or lon is missing
      */
     public boolean isMissing() {
-        return ((slat == -9999) || (slon == -9999));
+        return ((slat == GempakConstants.IMISSD) || (slon == GempakConstants.IMISSD));
     }
 
     /**
