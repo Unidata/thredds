@@ -302,7 +302,7 @@ public class GridIndexToNC {
     ncfile.addAttribute(
         null,
         new Attribute(
-            "history", "Direct read of " + gridType + " into NetCDF-Java 2.2 API"));
+            "history", "Direct read of " + gridType + " into NetCDF-Java 4.0 API"));
 
     ncfile.addAttribute(
         null,
