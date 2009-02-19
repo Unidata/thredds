@@ -38,8 +38,9 @@ package ucar.nc2.units;
  */
 public class JavaDateUnit extends DateUnit {
 
-  /** Factory
-   * @return a JavaDateUnit
+  /**
+   * Factory method.
+   * @return a DateUnit of "secs since 1970-01-01T00:00:00Z"
    */
   static public JavaDateUnit getJavaDateUnit() {
     try {

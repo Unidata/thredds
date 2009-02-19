@@ -491,7 +491,7 @@
   <property name="jarJavadoc" value="javadoc-${release.version}.jar"/>
   <target name="javadoc" description="make the javadocs">
     <mkdir dir="${javadoc.dir}"/>
-    <javadoc Doctitle="NetCDF-Java ${release.version} API" Use="true" Windowtitle="NetCDF-Java ${release.version} API"
+    <javadoc Doctitle="NetCDF-Java ${release.version} API" Use="true" Windowtitle="NetCDF-Java ${release.version} Public API"
              maxmemory="256m" sourcepathref="sourcepath" destdir="${javadoc.dir}" public="true" source="1.5">
       <classpath refid="compile.classpath"/>
 
@@ -530,7 +530,7 @@
   <property name="jarJavadocAll" value="javadocAll-${release.version}.jar"/>
   <target name="javadocAll" description="make all javadocs">
     <mkdir dir="${javadocAll.dir}"/>
-    <javadoc Doctitle="NetCDF-Java ${release.version} API" Use="true" Windowtitle="NetCDF-Java ${release.version} API"
+    <javadoc Doctitle="NetCDF-Java ${release.version} API" Use="true" Windowtitle="NetCDF-Java ${release.version} Public and Private API"
              maxmemory="256m" sourcepathref="sourcepath" destdir="${javadocAll.dir}" protected="true" source="1.5">
       <classpath refid="compile.classpath"/>
       <classpath refid="compileUI.classpath"/>

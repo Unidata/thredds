@@ -176,6 +176,10 @@ public class DiskCache2 {
     this.cachePathPolicyParam = cachePathPolicyParam;
   }
 
+  /**
+   * Set the cache path policy
+   * @param cachePathPolicy one of CACHEPATH_POLICY__XXXX
+   */
   public void setPolicy(int cachePathPolicy) {
     this.cachePathPolicy = cachePathPolicy;
   }

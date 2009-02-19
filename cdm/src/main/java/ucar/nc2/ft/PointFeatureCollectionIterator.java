@@ -66,6 +66,11 @@ public interface PointFeatureCollectionIterator {
    * A filter on PointFeatureCollection.
    */
   public interface Filter {
+   /**
+     * Filter collections.
+     * @param pointFeatureCollection check this collection
+     * @return true if the collection passes the filter
+     */
     public boolean filter(PointFeatureCollection pointFeatureCollection);
   }
 

@@ -51,8 +51,8 @@ import java.lang.reflect.Method;
 /**
  * Manager of factories for FeatureDatasets.
  * This supercedes ucar.nc2.dt.TypedDatasetFactory
- * <p> all point fetures are going through PointDatasetStandardFactory, which uses TableAnalyzer to deal
- * with specific datasets.
+ * <p> All point datasets are going through PointDatasetStandardFactory, which uses TableAnalyzer to deal
+ * with specific dataset conventions.
  *
  * @author caron
  * @since Mar 19, 2008
@@ -327,6 +327,11 @@ public class FeatureDatasetFactoryManager {
     return false;
   }
 
+  /**
+   * Try to determine the feature type of the dataset, by looking at its metadata.
+   * @param ncd the dataset
+   * @return FeatureType if found, else null
+   */
   static public FeatureType findFeatureType(NetcdfDataset ncd) {
     // look for explicit guidance
     String cdm_datatype = ncd.findAttValueIgnoreCase(null, "cdm_data_type", null);
@@ -343,7 +348,7 @@ public class FeatureDatasetFactoryManager {
         }
     }
 
-    // LOOK - compare to CF names when those are finilized
+    // LOOK - compare to CF names when those are finalized
     String cf_datatype = ncd.findAttValueIgnoreCase(null, "CF:featureType", null);
     if (cf_datatype == null)
       cf_datatype = ncd.findAttValueIgnoreCase(null, "CFfeatureType", null);

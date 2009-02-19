@@ -62,13 +62,13 @@ public interface FeatureDatasetFactory {
 
   /**
    * Open a NetcdfDataset as a FeatureDataset.
-   * Should only be called if isMine() return non-null.
+   * Should only be called if isMine() returns non-null.
    *
    * @param ftype open as this feature type. If null, open as any feature type.
    * @param ncd an already opened NetcdfDataset.
-   * @param analysis the object returned from isMine(). This will posobbly be a different instance of FeatureDatasetFactory
-   * @param task user may cancel
-   * @param errlog place errors here
+   * @param analysis the object returned from isMine(). Likely given to a different instance of FeatureDatasetFactory
+   * @param task user may cancel, may be null
+   * @param errlog write error messages here, may be null
    * @return a subclass of FeatureDataset
    * @throws java.io.IOException on error
    */

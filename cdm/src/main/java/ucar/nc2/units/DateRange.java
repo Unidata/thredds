@@ -39,7 +39,7 @@ import java.text.ParseException;
 /**
  * Implements a range of dates, using DateType and/or TimeDuration.
  * You can use a DateType = "present" and a time duration to specify "real time" intervals, eg
- *   "last 3 days" uses endDate = "present" and duration = "3 days".
+ * "last 3 days" uses endDate = "present" and duration = "3 days".
  *
  * @author john caron
  */
@@ -49,44 +49,48 @@ public class DateRange {
   private TimeDuration duration, resolution;
   private boolean isEmpty, isMoving, useStart, useEnd, useDuration, useResolution;
 
-  /** default Constructor
+  /**
+   * default Constructor
+   *
    * @throws java.text.ParseException artifact, cant happen
    */
   public DateRange() throws ParseException {
-      this( null, new DateType(false, new Date()), new TimeDuration("1 day"), new TimeDuration("15 min"));
+    this(null, new DateType(false, new Date()), new TimeDuration("1 day"), new TimeDuration("15 min"));
   }
 
   /**
    * Create Date Range from a start and end date
+   *
    * @param start start of range
-   * @param end end of range
+   * @param end   end of range
    */
   public DateRange(Date start, Date end) {
-    this( new DateType(false, start), new DateType(false, end), null, null);
+    this(new DateType(false, start), new DateType(false, end), null, null);
   }
 
   /**
    * Create DateRange from another DateRange, with a different units of resolution.
-   * @param range copy start and end from here
+   *
+   * @param range     copy start and end from here
    * @param timeUnits make resolution using new TimeDuration( timeUnits)
    * @throws Exception is units are not valid time units
    */
   public DateRange(DateRange range, String timeUnits) throws Exception {
-    this( new DateType(false, range.getStart().getDate()), new DateType(false, range.getEnd().getDate()), null, new TimeDuration( timeUnits));
+    this(new DateType(false, range.getStart().getDate()), new DateType(false, range.getEnd().getDate()), null, new TimeDuration(timeUnits));
   }
 
   /**
    * Encapsolates a range of dates, using DateType start/end, and/or a TimeDuration.
    * A DateRange can be specified in any of the following ways:
-    <ol>
-     <li> a start date and end date
-     <li> a start date and duration
-     <li> an end date and duration
-    </ol>
+   * <ol>
+   * <li> a start date and end date
+   * <li> a start date and duration
+   * <li> an end date and duration
+   * </ol>
    *
-   * @param start starting date
-   * @param end ending date
-   * @param duration time duration
+   * @param start      starting date
+   * @param end        ending date
+   * @param duration   time duration
    * @param resolution time resolution; optional
    */
   public DateRange(DateType start, DateType end, TimeDuration duration, TimeDuration resolution) {
@@ -110,12 +114,12 @@ public class DateRange {
     } else if (useStart && useDuration) {
       invalid = false;
       this.isMoving = this.start.isPresent();
-      this.end = this.start.add( duration);
+      this.end = this.start.add(duration);
 
     } else if (useEnd && useDuration) {
       invalid = false;
       this.isMoving = this.end.isPresent();
-      this.start = this.end.subtract( duration);
+      this.start = this.end.subtract(duration);
     }
 
     if (invalid)
@@ -131,13 +135,13 @@ public class DateRange {
     else if (this.start.isPresent() || this.end.isPresent())
       isEmpty = duration.getValue() <= 0;
     else
-      isEmpty = this.end.before( this.start);
+      isEmpty = this.end.before(this.start);
 
     if (isEmpty)
       duration.setValueInSeconds(0);
   }
 
-    // choose a resolution based on # seconds
+  // choose a resolution based on # seconds
   private String chooseResolution(double time) {
     if (time < 180) // 3 minutes
       return "secs";
@@ -159,66 +163,82 @@ public class DateRange {
   /**
    * Determine if the given date is included in this date range.
    * The date range includes the start and end dates.
+   *
    * @param d date to check
-   * @return  true if date in inside this range
+   * @return true if date in inside this range
    */
-  public boolean included( Date d) {
+  public boolean included(Date d) {
     if (isEmpty) return false;
 
-    if (getStart().after( d)) return false;
-    if (getEnd().before( d)) return false;
+    if (getStart().after(d)) return false;
+    if (getEnd().before(d)) return false;
 
     return true;
   }
 
   /**
    * Determine if the given range intersects this date range.
-   * @param start_want  range starts here
-   * @param end_want  range ends here
-   * @return  true if ranges intersect
+   *
+   * @param start_want range starts here
+   * @param end_want   range ends here
+   * @return true if ranges intersect
    */
-  public boolean intersects( Date start_want, Date end_want) {
+  public boolean intersects(Date start_want, Date end_want) {
     if (isEmpty) return false;
 
-    if (getStart().after( end_want)) return false;
-    if (getEnd().before( start_want)) return false;
+    if (getStart().after(end_want)) return false;
+    if (getEnd().before(start_want)) return false;
 
     return true;
   }
 
   /**
    * Intersect with another date range
+   *
    * @param clip interset with this date range
    * @return new date range that is the intersection
    */
-  public DateRange intersect( DateRange clip) {
+  public DateRange intersect(DateRange clip) {
     if (isEmpty) return this;
     if (clip.isEmpty) return clip;
 
     DateType ss = getStart();
-    DateType s = ss.before( clip.getStart()) ? clip.getStart() : ss;
+    DateType s = ss.before(clip.getStart()) ? clip.getStart() : ss;
 
     DateType ee = getEnd();
-    DateType e = ee.before( clip.getEnd()) ? ee : clip.getEnd();
+    DateType e = ee.before(clip.getEnd()) ? ee : clip.getEnd();
 
     return new DateRange(s, e, null, resolution);
   }
 
-  /** Extend this date range by the given one.
+  /**
+   * Extend this date range by the given one.
+   *
    * @param dr given DateRange
-   **/
-  public void extend( DateRange dr) {
+   */
+  public void extend(DateRange dr) {
     boolean localEmpty = isEmpty;
-    if (localEmpty || dr.getStart().before( getStart()))
-      setStart( dr.getStart());
+    if (localEmpty || dr.getStart().before(getStart()))
+      setStart(dr.getStart());
     if (localEmpty || getEnd().before(dr.getEnd()))
-      setEnd( dr.getEnd());
+      setEnd(dr.getEnd());
   }
 
+  /**
+   * Get the starting Date.
+   *
+   * @return starting Date
+   */
   public DateType getStart() {
-    return (isMoving && !useStart) ? this.end.subtract( duration) : start;
+    return (isMoving && !useStart) ? this.end.subtract(duration) : start;
   }
 
+  /**
+   * Set the starting Date. Makes useStart true.
+   * If useEnd, recalculate the duration, else recalculate end.
+   *
+   * @param start starting Date
+   */
   public void setStart(DateType start) {
     this.start = start;
     useStart = true;
@@ -230,15 +250,26 @@ public class DateRange {
 
     } else {
       this.isMoving = this.start.isPresent();
-      this.end = this.start.add( duration);
+      this.end = this.start.add(duration);
     }
     checkIfEmpty();
   }
 
+  /**
+   * Get the ending Date.
+   *
+   * @return ending Date
+   */
   public DateType getEnd() {
-    return (isMoving && !useEnd) ? this.start.add( duration) : end;
+    return (isMoving && !useEnd) ? this.start.add(duration) : end;
   }
 
+  /**
+   * Set the ending Date. Makes useEnd true.
+   * If useStart, recalculate the duration, else recalculate start.
+   *
+   * @param end ending Date
+   */
   public void setEnd(DateType end) {
     this.end = end;
     useEnd = true;
@@ -250,29 +281,40 @@ public class DateRange {
 
     } else {
       this.isMoving = this.end.isPresent();
-      this.start = this.end.subtract( duration);
+      this.start = this.end.subtract(duration);
     }
     checkIfEmpty();
   }
 
+  /**
+   * Get the duration of the interval
+   *
+   * @return duration of the interval
+   */
   public TimeDuration getDuration() {
     if (isMoving && !useDuration)
       recalcDuration();
     return duration;
   }
 
+  /**
+   * Set the duration of the interval. Makes useDuration true.
+   * If useStart, recalculate end, else recalculate start.
+   *
+   * @param duration duration of the interval
+   */
   public void setDuration(TimeDuration duration) {
     this.duration = duration;
     useDuration = true;
 
     if (useStart) {
       this.isMoving = this.start.isPresent();
-      this.end = this.start.add( duration);
+      this.end = this.start.add(duration);
       useEnd = false;
 
     } else {
       this.isMoving = this.end.isPresent();
-      this.start = this.end.subtract( duration);
+      this.start = this.end.subtract(duration);
     }
     checkIfEmpty();
   }
@@ -287,55 +329,101 @@ public class DateRange {
 
     if (duration == null) {
       try {
-        duration = new TimeDuration( chooseResolution(secs));
+        duration = new TimeDuration(chooseResolution(secs));
       } catch (ParseException e) {
         // cant happen
       }
     }
 
     if (resolution == null) {
-      duration.setValueInSeconds( secs);
+      duration.setValueInSeconds(secs);
     } else {
-       // make it a multiple of resolution
+      // make it a multiple of resolution
       double resSecs = resolution.getValueInSeconds();
       double closest = Math.round(secs / resSecs);
       secs = closest * resSecs;
-      duration.setValueInSeconds( secs);
+      duration.setValueInSeconds(secs);
     }
 
     hashCode = 0;
   }
 
-  public TimeDuration getResolution() { return resolution; }
+  /**
+   * Get the time resolution.
+   *
+   * @return time resolution as a duration
+   */
+  public TimeDuration getResolution() {
+    return resolution;
+  }
+
+  /**
+   * Set the time resolution.
+   *
+   * @param resolution the time resolution
+   */
   public void setResolution(TimeDuration resolution) {
     this.resolution = resolution;
     useResolution = true;
   }
 
-  public boolean useStart() { return useStart; }
-  public boolean useEnd() { return useEnd; }
-  public boolean useDuration() { return useDuration; }
-  public boolean useResolution() { return useResolution; }
+  /**
+   * Get if the start is fixed.
+   * @return if start is fixed
+   */
+  public boolean useStart() {
+    return useStart;
+  }
+
+  /**
+   * Get if the end is fixed.
+   * @return if end is fixed
+   */
+  public boolean useEnd() {
+    return useEnd;
+  }
+
+  /**
+   * Get if the duration is fixed.
+   * @return if duration is fixed
+   */
+  public boolean useDuration() {
+    return useDuration;
+  }
+
+  /**
+   * Get if the resolution is set.
+   * @return if resolution is fixed
+   */
+  public boolean useResolution() {
+    return useResolution;
+  }
 
   /**
    * Return true if start date equals end date, so date range is a point.
+   *
    * @return true if start = end
    */
   public boolean isPoint() {
-    return !isEmpty && start.equals( end);
+    return !isEmpty && start.equals(end);
   }
 
   /**
    * If the range is empty
+   *
    * @return if the range is empty
    */
   public boolean isEmpty() {
     return isEmpty;
   }
 
-  public String toString() { return "start= "+start +" end= "+end+ " duration= "+ duration
-        + " resolution= "+ resolution; }
+  @Override
+  public String toString() {
+    return "start= " + start + " end= " + end + " duration= " + duration
+        + " resolution= " + resolution;
+  }
 
+  @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof DateRange)) return false;
@@ -347,22 +435,26 @@ public class DateRange {
     return true;
   }
 
- /** Override Object.hashCode() to implement equals. */
+  /**
+   * Override Object.hashCode() to implement equals.
+   */
+  @Override
   public int hashCode() {
     if (hashCode == 0) {
       int result = 17;
-      if ( useStart )
-        result = 37*result + start.hashCode();
-      if ( useEnd )
-        result = 37*result + end.hashCode();
-      if ( useDuration )
-        result = 37*result + duration.hashCode();
-      if ( useResolution )
-        result = 37*result + resolution.hashCode();
+      if (useStart)
+        result = 37 * result + start.hashCode();
+      if (useEnd)
+        result = 37 * result + end.hashCode();
+      if (useDuration)
+        result = 37 * result + duration.hashCode();
+      if (useResolution)
+        result = 37 * result + resolution.hashCode();
       hashCode = result;
     }
     return hashCode;
   }
+
   private int hashCode = 0; // Bloch, item 8
 
 }

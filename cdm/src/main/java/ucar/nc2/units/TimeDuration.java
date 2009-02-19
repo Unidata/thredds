@@ -175,7 +175,8 @@ public class TimeDuration {
   }
 
   /**
-   * @return the duration in natural units, ie units of getTimeUnit()
+   * Get the duration in natural units, ie units of getTimeUnit()
+   * @return the duration in natural units
    */
   public double getValue() {
     return timeUnit.getValue();
@@ -233,6 +234,10 @@ public class TimeDuration {
     return text == null ? timeUnit.toString() : text;
   }
 
+  /**
+   * String representation
+   * @return getText()
+   */
   public String toString() {
     return getText();
   }

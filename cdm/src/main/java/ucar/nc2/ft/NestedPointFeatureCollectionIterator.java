@@ -65,6 +65,11 @@ public interface NestedPointFeatureCollectionIterator {
    * A filter on nestedPointFeatureCollection
    */
   public interface Filter {
+    /**
+     * Filter collections.
+     * @param nestedPointFeatureCollection check this collection
+     * @return true if the collection passes the filter
+     */
     public boolean filter(NestedPointFeatureCollection nestedPointFeatureCollection);
   }
 

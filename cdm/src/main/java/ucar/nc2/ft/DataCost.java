@@ -34,10 +34,11 @@ package ucar.nc2.ft;
 
 /**
  * An estimate of the cost of performing a data access operation.
- *
+ * Experimental.
+ * 
  * @author caron
  */
-public class DataCost {
+class DataCost {
   private int dataCount;
   private int timeMsecs;
 

@@ -37,7 +37,7 @@ import ucar.unidata.geoloc.LatLonPoint;
 /**
  * A set of observations along the vertical (z) axis.
  * All obs have the same lat/lon. Time is either constant, or it may vary with z.
- * The z coordinates are monotonc, but may be increasing or decreasing.
+ * The z coordinates are monotonic, and may be increasing or decreasing.
  *
  * @author caron
  * @since Feb 8, 2008

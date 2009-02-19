@@ -113,6 +113,7 @@ public class TimeUnit extends SimpleUnit {
   }
 
   /** Get the value. */
+  @Override
   public double getValue() { return value; }
 
   /** Get the factor that converts this unit to seconds.
@@ -129,9 +130,11 @@ public class TimeUnit extends SimpleUnit {
   }
 
   /** Get the "base" unit String, eg "secs" or "days" */
+  @Override
   public String getUnitString() { return unitString; }
 
   /** String representation. */
+  @Override
   public String toString() {
     return Format.d(value, 5) + " "+unitString;
   }
@@ -173,6 +176,11 @@ public class TimeUnit extends SimpleUnit {
     return uu.convertTo( value, outputUnit.uu);
   }
 
+  /**
+   * Add the time amount to the given Date, return a new Date.
+   * @param d add to this Date
+   * @return Date with getValueInSeconds() added to it.
+   */
   public Date add( Date d) {
     Calendar cal = Calendar.getInstance();
     cal.setTime( d);
@@ -181,6 +189,7 @@ public class TimeUnit extends SimpleUnit {
   }
 
   /** TimeUnits with same value and unitString are equal */
+  @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof TimeUnit)) return false;
@@ -188,6 +197,7 @@ public class TimeUnit extends SimpleUnit {
   }
 
   /** Override hashcode to be consistent with equals. */
+  @Override
   public int hashCode() {
     if (hashCode == 0) {
       int result = 17;

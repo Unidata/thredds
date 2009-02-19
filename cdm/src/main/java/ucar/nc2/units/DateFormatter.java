@@ -37,7 +37,7 @@ import java.util.Date;
 
 /**
  * Date parsing and formatting. Always uses GMT.
- * Use one of these in each thread for thread safety.
+ * These are not thread-safe.
  *
  * @author caron
  */
@@ -76,8 +76,14 @@ public class DateFormatter {
   }
 
   ////////////////////////////////////////////////////////////////////////////////
- 
 
+
+  /**
+   * Parse the text in W3C profile of ISO 8601 format.
+   * @param text parse this text
+   * @return equivalent Date or null if failure
+   * @see <a href="http://www.w3.org/TR/NOTE-datetime">W3C profile of ISO 8601</a>
+   */
   public Date getISODate(String text) {
     Date result;
 
@@ -119,38 +125,65 @@ public class DateFormatter {
     return null;
   }
 
-
+  /**
+   * Parse text in the format "yyyy-MM-dd HH:mm:ss"
+   * @param text parse this text
+   * @return equivalent Date
+   * @throws java.text.ParseException if not formatted correctly
+   */
   public Date stdDateTimeFormat(String text) throws java.text.ParseException {
     text = (text == null) ? "" : text.trim();
     stdDateTimeFormat();
     return stdDateTimeFormat.parse(text);
   }
 
+  /**
+   * Parse text in the format "yyyy-MM-dd HH:mm"
+   * @param text parse this text
+   * @return equivalent Date
+   * @throws java.text.ParseException if not formatted correctly
+   */
   public Date stdDateNoSecsFormat(String text) throws java.text.ParseException {
     text = (text == null) ? "" : text.trim();
     stdDateNoSecsFormat();
     return stdDateNoSecsFormat.parse(text);
   }
 
+  /**
+   * Parse text in the format "yyyy-MM-dd'T'HH:mm:ss"
+   * @param text parse this text
+   * @return equivalent Date
+   * @throws java.text.ParseException if not formatted correctly
+   */
   public Date isoDateTimeFormat(String text) throws java.text.ParseException {
     text = (text == null) ? "" : text.trim();
     isoDateTimeFormat();
     return isoDateTimeFormat.parse(text);
   }
 
+  /**
+   * Parse text in the format "yyyy-MM-dd'T'HH:mm"
+   * @param text parse this text
+   * @return equivalent Date
+   * @throws java.text.ParseException if not formatted correctly
+   */
   public Date isoDateNoSecsFormat(String text) throws java.text.ParseException {
     text = (text == null) ? "" : text.trim();
     isoDateNoSecsFormat();
     return isoDateNoSecsFormat.parse(text);
   }
 
+  /**
+   * Parse text in the format "yyyy-MM-dd"
+   * @param text parse this text
+   * @return equivalent Date
+   * @throws java.text.ParseException if not formatted correctly
+   */
   public Date dateOnlyFormat(String text) throws java.text.ParseException {
     text = (text == null) ? "" : text.trim();
     dateOnlyFormat();
     return dateOnlyFormat.parse(text);
   }
-
-
 
   ////////////
 
@@ -218,7 +251,7 @@ public class DateFormatter {
     System.out.println(text+" == "+text2);
   }
 
-
+  /** test */
   public static void main(String args[]) {
     test("2001-09-11T12:09:20");
     test("2001-09-11 12:10:12");

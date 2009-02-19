@@ -38,7 +38,7 @@ import ucar.unidata.geoloc.Station;
 import java.io.IOException;
 
 /**
- * Time series of PointFeature at a named location called a Station.
+ * Time series of PointFeature at a named location aka 'station'.
  *
  * @author caron
  */

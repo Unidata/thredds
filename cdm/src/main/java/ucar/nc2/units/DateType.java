@@ -41,24 +41,27 @@ import java.text.SimpleDateFormat;
  * This is mostly a general way to specify dates in a string.
  * It allows a date to mean "present". <strong>"Present" always sorts after any date, including dates in the future.</strong>
  * It allows an optional attribute called "type" which is an enumeration like "created", "modified", etc
- *  taken from Dublin Core vocabulary.
- *
+ * taken from Dublin Core vocabulary.
+ * <p/>
  * A DateType can be specified in the following ways:
  * <ol>
-   <li> an xsd:date, with form "CCYY-MM-DD"
-   <li> an xsd:dateTime with form "CCYY-MM-DDThh:mm:ss"
-   <li> a valid udunits date string
-   <li> the string "present"
-   </ol>
+ * <li> an xsd:date, with form "CCYY-MM-DD"
+ * <li> an xsd:dateTime with form "CCYY-MM-DDThh:mm:ss"
+ * <li> a valid udunits date string
+ * <li> the string "present"
+ * </ol>
  *
- * @see "http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.html#dateType"
- * @see "http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.html#dateTypeFormatted"
  * @author john caron
+ * @see <a href=""http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.html#dateType"">THREDDS dateType</a>
  */
 
 public class DateType {
-  // for bean editing
-  static public String hiddenProperties() { return "text blank present"; }
+  /**
+   * For bean editing, public by accident.
+   */
+  static public String hiddenProperties() {
+    return "text blank present";
+  }
   // static public String editableProperties() { return "date format type"; }
 
   private DateFormatter formatter = null;
@@ -69,38 +72,42 @@ public class DateType {
 
   /**
    * Constructor using a java.util.Date
-   * @param isPresent represents the "present time"
-   * @param date the given date
+   *
+   * @param isPresent if true, this represents the "present time"
+   * @param date      the given date
    */
   public DateType(boolean isPresent, java.util.Date date) {
     this.isPresent = isPresent;
     this.date = date;
-    if (isPresent) text = "present";
   }
 
-  /** no argument constructor for beans */
+  /**
+   * no argument constructor for beans
+   */
   public DateType() {
     isBlank = true;
   }
 
-  /** copy constructor
+  /**
+   * copy constructor
+   *
    * @param src copy from here
    */
-  public DateType( DateType src) {
+  public DateType(DateType src) {
     text = src.getText();
     format = src.getFormat();
     type = src.getType();
     isPresent = src.isPresent();
     isBlank = src.isBlank();
     date = src.getDate();
-    if (isPresent) text = "present";
   }
 
   /**
    * Constructor.
-   * @param text string representation
+   *
+   * @param text   string representation
    * @param format using java.text.SimpleDateFormat, or null
-   * @param type type of date, or null
+   * @param type   type of date, or null
    * @throws java.text.ParseException if error parsing text
    */
   public DateType(String text, String format, String type) throws java.text.ParseException {
@@ -140,103 +147,200 @@ public class DateType {
     if (null == formatter)
       formatter = new DateFormatter();
 
-    date = formatter.getISODate( text);
+    date = formatter.getISODate(text);
   }
 
+  /**
+   * Get this as a Date
+   *
+   * @return Date
+   */
   public Date getDate() {
     return isPresent() ? new Date() : date;
   }
-  public void setDate( Date date) {
+
+  /**
+   * Set the Date. isPresent is set to false.
+   *
+   * @param date set to this Date
+   */
+  public void setDate(Date date) {
     this.date = date;
-    this.text = toDateTimeString();
+    this.text = null;
     this.isPresent = false;
   }
 
-  public boolean isPresent() { return isPresent; }
-  public boolean isBlank() { return isBlank; }
+  /**
+   * Does this represent the present time.
+   *
+   * @return true if present time.
+   */
+  public boolean isPresent() {
+    return isPresent;
+  }
+
+  /**
+   * Was blank text passed to the constructor.
+   *
+   * @return true if blank text passed to the constructor.
+   */
+  public boolean isBlank() {
+    return isBlank;
+  }
+
+  /**
+   * Get a text representation.
+   *
+   * @return text representation
+   */
   public String getText() {
+    if (isPresent) text = "present";
     if (text == null) text = toDateTimeString();
     return text;
   }
-  public String getFormat() { return format; }
-  public String getType() { return type; }
-  public void setType( String type ) { this.type = type; }
 
-  public boolean before( Date d) {
-    if (isPresent()) return false;
-    return date.before( d);
+  /**
+   * Get the SimpleDateFormat format for parsing the text.
+   *
+   * @return SimpleDateFormat format, or null
+   */
+  public String getFormat() {
+    return format;
   }
 
-  public boolean before( DateType d) {
+  /**
+   * Get the type of Date.
+   *
+   * @return type of Date, or null
+   */
+  public String getType() {
+    return type;
+  }
+
+  /**
+   * Set the type of Date.
+   *
+   * @param type type of Date
+   */
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  /**
+   * Is this date before the given date. if isPresent, always false.
+   *
+   * @param d test against this date
+   * @return true if this date before the given date
+   */
+  public boolean before(Date d) {
+    if (isPresent()) return false;
+    return date.before(d);
+  }
+
+  /**
+   * Is this date before the given date. if d.isPresent, always true, else if this.isPresent, false.
+   *
+   * @param d test against this date
+   * @return true if this date before the given date
+   */
+  public boolean before(DateType d) {
     if (d.isPresent()) return true;
     if (isPresent()) return false;
-    return date.before( d.getDate());
+    return date.before(d.getDate());
   }
 
-  public boolean after( Date d) {
+  /**
+   * Is this date after the given date. if isPresent, always true.
+   *
+   * @param d test against this date
+   * @return true if this date after the given date
+   */
+  public boolean after(Date d) {
     if (isPresent()) return true;
-    return date.after( d);
+    return date.after(d);
   }
 
+  /**
+   * Same as DateFormatter.toDateOnlyString()
+   *
+   * @return formatted date
+   */
   public String toDateString() {
     if (null == formatter) formatter = new DateFormatter();
-    return formatter.toDateOnlyString( getDate());
+    return formatter.toDateOnlyString(getDate());
   }
 
+  /**
+   * Same as DateFormatter.toDateTimeString()
+   *
+   * @return formatted date
+   */
   public String toDateTimeString() {
     if (null == formatter) formatter = new DateFormatter();
-    return formatter.toDateTimeString( getDate());
+    return formatter.toDateTimeString(getDate());
   }
 
+  /**
+   * Same as DateFormatter.toDateTimeStringISO()
+   *
+   * @return formatted date
+   */
   public String toDateTimeStringISO() {
     if (null == formatter) formatter = new DateFormatter();
-    return formatter.toDateTimeStringISO( getDate());
+    return formatter.toDateTimeStringISO(getDate());
   }
 
-  public String toString() { return getText(); }
+  /**
+   * String representation
+   *
+   * @return getText()
+   */
+  public String toString() {
+    return getText();
+  }
 
   public int hashCode() {
     if (isBlank()) return 0;
     if (isPresent()) return 1;
     return getDate().hashCode();
   }
-  
+
   public boolean equals(Object o) {
-     if (this == o) return true;
-     if (!(o instanceof DateType)) return false;
-     DateType oo = (DateType) o;
-     if (isPresent() && oo.isPresent()) return true;
-     if (isBlank() && oo.isBlank()) return true;
-     return oo.getDate().equals(getDate());
+    if (this == o) return true;
+    if (!(o instanceof DateType)) return false;
+    DateType oo = (DateType) o;
+    if (isPresent() && oo.isPresent()) return true;
+    if (isBlank() && oo.isBlank()) return true;
+    return oo.getDate().equals(getDate());
   }
 
   private Calendar cal = null;
 
-  public DateType add( TimeDuration d) {
-    return add( d.getTimeUnit());
+  public DateType add(TimeDuration d) {
+    return add(d.getTimeUnit());
   }
 
-  public DateType add( TimeUnit d) {
+  public DateType add(TimeUnit d) {
     if (cal == null) cal = Calendar.getInstance();
-    cal.setTime( getDate());
-    cal.add( Calendar.SECOND, (int) d.getValueInSeconds());
+    cal.setTime(getDate());
+    cal.add(Calendar.SECOND, (int) d.getValueInSeconds());
     return new DateType(false, (Date) cal.getTime().clone()); // prob dont need clone LOOK
   }
 
-  public DateType subtract( TimeDuration d) {
-    return subtract( d.getTimeUnit());
+  public DateType subtract(TimeDuration d) {
+    return subtract(d.getTimeUnit());
   }
 
-  public DateType subtract( TimeUnit d) {
+  public DateType subtract(TimeUnit d) {
     if (cal == null) cal = Calendar.getInstance();
-    cal.setTime( getDate());
-    cal.add( Calendar.SECOND, (int) -d.getValueInSeconds());
+    cal.setTime(getDate());
+    cal.add(Calendar.SECOND, (int) -d.getValueInSeconds());
     return new DateType(false, (Date) cal.getTime().clone());
   }
 
   ////////////////////////////////////////////
   // test
-  private static void doOne( String s) {
+  private static void doOne(String s) {
     try {
       System.out.println("\nStart = (" + s + ")");
       DateType d = new DateType(s, null, null);
@@ -246,6 +350,9 @@ public class DateType {
     }
   }
 
+  /**
+   * test
+   */
   public static void main(String[] args) {
     doOne("1991-11-16");
     doOne("1991-11-16T12:00:00");
