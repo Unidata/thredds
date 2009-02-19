@@ -133,6 +133,7 @@ public class ToolsUI extends JPanel {
   private UnitsPanel unitsPanel;
   private URLDumpPane urlPanel;
   private ViewerPanel viewerPanel;
+  private WmsPanel wmsPanel;
 
   private JTabbedPane tabbedPane;
   private JTabbedPane iospTabPane;
@@ -217,6 +218,7 @@ public class ToolsUI extends JPanel {
     // nested tab - features
     gridPanel = new GeoGridPanel((PreferencesExt) mainPrefs.node("grid"));
     ftTabPane.addTab("Grids", gridPanel);
+    ftTabPane.addTab("WMS", new JLabel("WMS"));
     ftTabPane.addTab("PointFeature", new JLabel("PointFeature"));
     ftTabPane.addTab("PointObs", new JLabel("PointObs"));
     ftTabPane.addTab("StationObs", new JLabel("StationObs"));
@@ -348,6 +350,10 @@ public class ToolsUI extends JPanel {
 
     } else if (title.equals("Viewer")) {
       c = viewerPanel;
+
+    } else if (title.equals("WMS")) {
+      wmsPanel = new WmsPanel((PreferencesExt) mainPrefs.node("wms"));
+      c = wmsPanel;
 
     } else {
       System.out.println("tabbedPane unknown component " + title);
@@ -722,6 +728,7 @@ public class ToolsUI extends JPanel {
     if (unitsPanel != null) unitsPanel.save();
     if (urlPanel != null) urlPanel.save();
     if (viewerPanel != null) viewerPanel.save();
+    if (wmsPanel != null) wmsPanel.save();
   }
 
   //////////////////////////////////////////////////////////////////////////////////
@@ -759,6 +766,13 @@ public class ToolsUI extends JPanel {
     ftTabPane.setSelectedComponent(radialPanel);
   }
 
+  private void openWMSDataset(String datasetName) {
+    makeComponent(ftTabPane, "WMS");
+    wmsPanel.doit(datasetName);
+    tabbedPane.setSelectedComponent(ftTabPane);
+    ftTabPane.setSelectedComponent(wmsPanel);
+  }
+
   // jump to the appropriate tab based on datatype of InvDataset
 
   private void setThreddsDatatype(thredds.catalog.InvDataset invDataset, boolean wantsViewer) {
@@ -792,6 +806,11 @@ public class ToolsUI extends JPanel {
     thredds.catalog.InvService s = invAccess.getService();
     if (s.getServiceType() == thredds.catalog.ServiceType.HTTPServer) {
       downloadFile(invAccess.getStandardUrlName());
+      return;
+    }
+
+    if (s.getServiceType() == thredds.catalog.ServiceType.WMS) {
+      openWMSDataset( invAccess.getStandardUrlName());
       return;
     }
 
@@ -2470,97 +2489,6 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  /* private class PointObsPanel2 extends OpPanel {
-    PointObsViewer2 povTable;
-    JSplitPane split;
-    PointFeatureDataset pobsDataset = null;
-
-    PointObsPanel2(PreferencesExt dbPrefs) {
-      super(dbPrefs, "dataset:", true, false);
-      povTable = new PointObsViewer2(dbPrefs);
-      add(povTable, BorderLayout.CENTER);
-
-      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Dataset Info", false);
-      infoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          String info;
-          if ((pobsDataset != null) && ((info = pobsDataset.getDetailInfo()) != null)) {
-            detailTA.setText(info);
-            detailTA.gotoTop();
-            detailWindow.show();
-          }
-        }
-      });
-      buttPanel.add(infoButton);
-    }
-
-    boolean process(Object o) {
-      String location = (String) o;
-      return setPointObsDataset(location);
-    }
-
-    void save() {
-      super.save();
-      povTable.save();
-    }
-
-    boolean setPointObsDataset(String location) {
-      if (location == null) return false;
-
-      try {
-        if (pobsDataset != null) pobsDataset.close();
-      } catch (IOException ioe) {
-      }
-
-      StringBuilder log = new StringBuilder();
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      try {
-        pobsDataset = (PointFeatureDataset) FeatureDatasetFactoryManager.open(FeatureType.POINT, location, null, log);
-        //pobsDataset = new PointDatasetDefaultHandler( NetcdfDataset.openDataset(location), log);
-        if (pobsDataset == null) {
-          JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + log);
-          return false;
-        }
-
-        povTable.setDataset(pobsDataset);
-        setSelectedItem(location);
-        return true;
-
-      } catch (FileNotFoundException e) {
-        e.printStackTrace(new PrintStream(bos));
-        ta.setText(log.toString());
-        ta.appendLine(bos.toString());
-
-        JOptionPane.showMessageDialog(this, e.getMessage());
-        return false;
-
-      } catch (Exception e) {
-        e.printStackTrace();
-        e.printStackTrace(new PrintStream(bos));
-        ta.setText(log.toString());
-        ta.appendLine(bos.toString());
-
-        JOptionPane.showMessageDialog(this, e.getMessage());
-        return false;
-      }
-    }
-
-    boolean setPointObsDataset(PointFeatureDataset dataset) throws IOException {
-      if (dataset == null) return false;
-
-      try {
-        if (pobsDataset != null) pobsDataset.close();
-      } catch (IOException ioe) {
-      }
-
-      povTable.setDataset(dataset);
-      pobsDataset = dataset;
-      setSelectedItem(pobsDataset.getLocationURI());
-      return true;
-    }
-  } */
-
-
   private class StationObsPanel extends OpPanel {
     StationObsViewer povTable;
     JSplitPane split;
@@ -2645,7 +2573,7 @@ public class ToolsUI extends JPanel {
   /////////////////////////////////////////////////////////////////////
   private class FeatureScanPanel extends OpPanel {
     ucar.unidata.io.RandomAccessFile raf  = null;
-    FeatureDatasetTable ftTable;
+    FeatureScan ftTable;
     final FileManager dirChooser = new FileManager(parentFrame);
 
     boolean useDefinition = false;
@@ -2655,7 +2583,7 @@ public class ToolsUI extends JPanel {
 
     FeatureScanPanel(PreferencesExt p) {
       super(p, "dir:", false, false);
-      ftTable = new FeatureDatasetTable(prefs);
+      ftTable = new FeatureScan(prefs);
       add(ftTable, BorderLayout.CENTER);
       ftTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
         public void propertyChange(java.beans.PropertyChangeEvent e) {
@@ -2742,7 +2670,7 @@ public class ToolsUI extends JPanel {
 
       AbstractAction netcdfAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          String location = pfDataset.getLocationURI();
+          String location = pfDataset.getLocation();
           if (location == null) location = "test";
           int pos = location.lastIndexOf(".");
           if (pos > 0)
@@ -2817,6 +2745,46 @@ public class ToolsUI extends JPanel {
         JOptionPane.showMessageDialog(this, e.getMessage());
         return false;
       }
+    }
+  }
+
+  private class WmsPanel extends OpPanel {
+    WmsViewer wmsViewer;
+    JSplitPane split;
+    FeatureDatasetPoint pfDataset = null;
+    JComboBox types;
+
+    WmsPanel(PreferencesExt dbPrefs) {
+      super(dbPrefs, "dataset:", true, false);
+      wmsViewer = new WmsViewer(dbPrefs, frame);
+      add(wmsViewer, BorderLayout.CENTER);
+
+      buttPanel.add(new JLabel("version:"));
+      types = new JComboBox();
+      types.addItem("1.3.0");
+      types.addItem("1.1.1");
+      types.addItem("1.0.0");
+      buttPanel.add(types);
+
+      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
+      infoButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          detailTA.setText(wmsViewer.getDetailInfo());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(infoButton);
+    }
+
+    boolean process(Object o) {
+      String location = (String) o;
+      return wmsViewer.setDataset((String) types.getSelectedItem(), location);
+    }
+
+    void save() {
+      super.save();
+      wmsViewer.save();
     }
   }
 
@@ -2896,7 +2864,7 @@ public class ToolsUI extends JPanel {
 
       radarCollectionDataset = dataset;
       radialViewer.setDataset((DqcRadarDatasetCollection) radarCollectionDataset);
-      setSelectedItem(radarCollectionDataset.getLocationURI());
+      setSelectedItem(radarCollectionDataset.getLocation());
       return true;
     }
   }
@@ -3472,6 +3440,7 @@ public class ToolsUI extends JPanel {
     HTTPRandomAccessFile.setHttpClient(client);
     NcStreamRemote.setHttpClient(client);
     NetcdfDataset.setHttpClient(client);
+    WmsViewer.setHttpClient(client);
 
     // open dap initializations
     ucar.nc2.dods.DODSNetcdfFile.setAllowSessions(false);

@@ -254,7 +254,7 @@ public class ThreddsDataFactory {
     if (null == result.featureDataset)
       result.fatalError = true;
     else {
-      result.location = result.featureDataset.getLocationURI();
+      result.location = result.featureDataset.getLocation();
       if ((result.featureType == null) && (result.featureDataset != null))
         result.featureType = result.featureDataset.getFeatureType();
     }
@@ -302,7 +302,7 @@ public class ThreddsDataFactory {
     if (null == result.featureDataset)
       result.fatalError = true;
     else {
-      result.location = result.featureDataset.getLocationURI();
+      result.location = result.featureDataset.getLocation();
       if ((result.featureType == null) && (result.featureDataset != null))
         result.featureType = result.featureDataset.getFeatureType();
     }

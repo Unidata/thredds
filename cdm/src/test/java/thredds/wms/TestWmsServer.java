@@ -59,11 +59,13 @@ public class TestWmsServer extends TestCase {
     getMap(dataset, "Pressure_surface", "C:/temp/wmsNAM.jpg");
   }
 
+  // http://localhost:8080/thredds/wms/testWMS/cmor_pcmdi.nc
+
 
   public void testLatlon() throws IOException {
     String dataset = server+"testWMS/cmor_pcmdi.nc";
     showGetCapabilities(dataset);
-    getMap(dataset, "tos", "C:/temp/wmsLatlon.jpg");
+    // getMap(dataset, "tos", "C:/temp/wmsLatlon.jpg");
   }
 
   public void testRot() throws IOException {

@@ -107,6 +107,7 @@ public abstract class TypedDatasetImpl implements TypedDataset {
   public String getTitle() { return title; }
   public String getDescription() { return desc; }
   public String getLocationURI() {return location; }
+  public String getLocation() {return location; }
   public List<Attribute> getGlobalAttributes() {
     if (ncfile == null) return new ArrayList<Attribute>();
     return ncfile.getGlobalAttributes();
@@ -125,7 +126,7 @@ public abstract class TypedDatasetImpl implements TypedDataset {
     DateFormatter formatter = new DateFormatter();
     StringBuffer sbuff = new StringBuffer();
 
-    sbuff.append("  location= ").append(getLocationURI()).append("\n");
+    sbuff.append("  location= ").append(getLocation()).append("\n");
     sbuff.append("  title= ").append(getTitle()).append("\n");
     sbuff.append("  desc= ").append(getDescription()).append("\n");
     sbuff.append("  start= ").append(formatter.toDateTimeString(getStartDate())).append("\n");

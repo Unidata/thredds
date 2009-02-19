@@ -36,11 +36,13 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Attribute;
+import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.util.*;
+import java.io.IOException;
 
 /**
  * Abstract superclass for implementations of FeatureDataset.
@@ -119,7 +121,7 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
   public NetcdfFile getNetcdfFile() { return ncfile; }
   public String getTitle() { return title; }
   public String getDescription() { return desc; }
-  public String getLocationURI() {return location; }
+  public String getLocation() {return location; }
   public List<Attribute> getGlobalAttributes() {
     if (ncfile == null) return new ArrayList<Attribute>();
     return ncfile.getGlobalAttributes();
@@ -130,14 +132,10 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     return ncfile.findGlobalAttributeIgnoreCase( name);
   }
 
-  public void close() throws java.io.IOException {
-    if (ncfile != null) ncfile.close();
-  }
-
   public void getDetailInfo( java.util.Formatter sf) {
     DateFormatter formatter = new DateFormatter();
 
-    sf.format("FeatureDataset on location= %s\n", getLocationURI());
+    sf.format("FeatureDataset on location= %s\n", getLocation());
     sf.format("  featureType= %s\n",getFeatureType());
     sf.format("  title= %s\n",getTitle());
     sf.format("  desc= %s\n",getDescription());
@@ -182,6 +180,30 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
 
   public String getImplementationName() {
     return getClass().getName();
+  }
+
+  //////////////////////////////////////////////////
+  //  FileCacheable
+
+  public synchronized void close() throws java.io.IOException {
+    if (fileCache != null) {
+      fileCache.release(this);
+    } else {
+      try {
+        if (ncfile != null) ncfile.close();
+      } finally {
+        ncfile = null;
+      }
+    }
+  }
+
+  public boolean sync() throws IOException {
+    return false;
+  }
+
+  protected FileCache fileCache;
+  public void setFileCache(FileCache fileCache) {
+    this.fileCache = fileCache;
   }
 
 }

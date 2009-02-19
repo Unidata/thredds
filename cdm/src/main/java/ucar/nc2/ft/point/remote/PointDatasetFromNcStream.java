@@ -85,7 +85,7 @@ public class PointDatasetFromNcStream extends PointDatasetImpl {
   private class RemotePointCollection extends PointCollectionImpl {
 
     RemotePointCollection() {
-      super(getLocationURI());
+      super(getLocation());
     }
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {

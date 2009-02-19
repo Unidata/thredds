@@ -126,6 +126,7 @@ public class WMSController extends AbstractController {
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res)
           throws ServletException, IOException, Exception {
     String jspPage = "";
+    ModelAndView result = null;
 
     if (allow) {
       Map<String, Object> model = new HashMap<String, Object>();
@@ -143,6 +144,8 @@ public class WMSController extends AbstractController {
 
       UsageLog.log.info(UsageLog.setupRequestContext(req));
 
+      System.out.println("WMS query=" + req.getQueryString());
+
       try {
         String request = params.getMandatoryString("request");
         dataset = openDataset(req, res);
@@ -153,34 +156,36 @@ public class WMSController extends AbstractController {
           errMessage = "Error encountered while processing GetCapabilities request";
           GetCapabilities getCap = new GetCapabilities(params, dataset, usageLogEntry);
           getCap.setConfig(config);
-          return getCap.processRequest(res, req);
+          result = getCap.processRequest(res, req);
 
         } else if (request.equalsIgnoreCase("GetMap")) {
           errMessage = "Error encountered while processing GetMap request ";
           WmsGetMap getMapHandler = new WmsGetMap(params, dataset, usageLogEntry);
-          UsageLog.log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
-          return getMapHandler.processRequest(res, req);
+          UsageLog.log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
+          result =  getMapHandler.processRequest(res, req);
 
         } else if (request.equalsIgnoreCase("GetLegendGraphic")) {
           errMessage = "Error encountered while processing GetMap request ";
           GetLegendGraphic legendGraphic = new GetLegendGraphic(params, dataset, usageLogEntry);
-          return legendGraphic.processRequest(res, req);
+          result =  legendGraphic.processRequest(res, req);
 
         } else if (request.equalsIgnoreCase("GetFeatureInfo")) {
           errMessage = "Error encountered while processing GetMap request ";
           GetFeatureInfo featureInfoHandler = new GetFeatureInfo(params, dataset, usageLogEntry);
-          return featureInfoHandler.processRequest(res, req);
+          result =  featureInfoHandler.processRequest(res, req);
 
         } else if (request.equals("GetMetadata")) {
           MetadataResponse metaController = new MetadataResponse(params, dataset, usageLogEntry);
           metaController.setConfig(config);
-          return metaController.processRequest(res, req);
+          result =  metaController.processRequest(res, req);
 
         } else if (request.equals("GetKML")) {
 
         } else if (request.equals("GetKMLRegion")) {
 
         }
+
+        return result;
       }
       catch (MetadataException me) {
         log.debug("MetadataException: " + me.toString());
@@ -206,10 +211,11 @@ public class WMSController extends AbstractController {
         t.printStackTrace();
         throw new RuntimeException(t);
       }
+
       finally {
-        if (dataset != null) {
-          dataset.close();
-        }
+        if ((result == null) || (result.getModel() == null) || (result.getModel().get("dataset") == null)) {
+          closeDataset(dataset);
+        } // else use DatasetCloser HandlerInterceptor
       }
     } else {
       // ToDo - Server not configured to support WMS. Should
@@ -229,6 +235,7 @@ public class WMSController extends AbstractController {
     String datasetPath = req.getPathInfo();
     try {
       dataset = DatasetHandler.openGridDataset(req, res, datasetPath);
+      System.out.println("**openGridDataset "+dataset.getLocationURI());      
     }
     catch (IOException e) {
       log.warn("WMSController: Failed to open dataset <" + datasetPath + ">: " + e.getMessage());
@@ -242,5 +249,15 @@ public class WMSController extends AbstractController {
 
     log.debug("leave openDataset");
     return dataset;
+  }
+
+  private void closeDataset(GridDataset dataset) {
+    if (dataset == null) return;
+    try {
+      //System.out.println("**Controller closed "+dataset.getLocationURI());
+      dataset.close();
+    } catch (IOException ioe) {
+      log.warn("Failed to properly close the dataset", ioe);
+    }
   }
 }

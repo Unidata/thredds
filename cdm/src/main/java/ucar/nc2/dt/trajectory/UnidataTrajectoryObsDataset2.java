@@ -237,7 +237,7 @@ public class UnidataTrajectoryObsDataset2
     return backingTraj.getDescription();
   }
 
-  public String getLocationURI()
+  public String getLocation()
   {
     return backingTraj.getLocationURI();
   }

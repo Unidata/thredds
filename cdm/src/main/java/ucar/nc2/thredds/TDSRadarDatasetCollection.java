@@ -440,7 +440,7 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      *
      * @return _more_
      */
-    public String getLocationURI() {
+    public String getLocation() {
         return this.dsc_location;
     }
 

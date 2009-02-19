@@ -37,7 +37,6 @@ import org.springframework.web.servlet.mvc.LastModified;
 import org.springframework.web.servlet.ModelAndView;
 import thredds.server.config.TdsContext;
 import thredds.servlet.UsageLog;
-import thredds.servlet.DatasetHandler;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.DataRootHandler;
 
@@ -45,7 +44,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.remote.PointStreamProto;
@@ -54,9 +52,6 @@ import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.stream.NcStream;
 
 import java.io.*;
-import java.nio.channels.WritableByteChannel;
-import java.nio.channels.Channels;
-import java.util.StringTokenizer;
 import java.util.Formatter;
 import java.util.List;
 
@@ -132,7 +127,7 @@ public class PointStreamController extends AbstractController implements LastMod
         while( pfIter.hasNext()) {
           PointFeature pf = pfIter.next();
           if (count == 0) {
-            PointStreamProto.PointFeatureCollection pfc = PointStream.encodePointFeatureCollection(fd.getLocationURI(), pf);
+            PointStreamProto.PointFeatureCollection pfc = PointStream.encodePointFeatureCollection(fd.getLocation(), pf);
             byte[] b = pfc.toByteArray();
             NcStream.writeVInt(out, b.length);
             out.write(b);

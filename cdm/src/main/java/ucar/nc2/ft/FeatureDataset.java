@@ -34,6 +34,7 @@
 package ucar.nc2.ft;
 
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateRange;
 
@@ -51,7 +52,7 @@ import java.util.*;
  * @author caron
  */
 
-public interface FeatureDataset {
+public interface FeatureDataset extends FileCacheable {
 
   /**
    * Contains collections of this FeatureType.
@@ -79,7 +80,7 @@ public interface FeatureDataset {
    *
    * @return the URI location of the dataset, or null
    */
-  public String getLocationURI();
+  public String getLocation();
 
   /**
    * Date range for the entire dataset.

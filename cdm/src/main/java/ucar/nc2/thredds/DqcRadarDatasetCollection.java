@@ -288,7 +288,7 @@ public class DqcRadarDatasetCollection extends StationRadarCollectionImpl {
      *
      * @return _more_
      */
-    public String getLocationURI() {
+    public String getLocation() {
         return dqc.getCreateFrom();
     }
 

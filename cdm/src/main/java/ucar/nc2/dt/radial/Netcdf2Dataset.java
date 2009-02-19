@@ -42,6 +42,7 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
+import ucar.nc2.util.cache.FileCache;
 import ucar.ma2.*;
 import ucar.ma2.DataType;
 

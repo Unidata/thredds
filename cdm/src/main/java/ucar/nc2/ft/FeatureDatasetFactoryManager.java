@@ -148,8 +148,8 @@ public class FeatureDatasetFactoryManager {
 
     // find out what type of Features
     try {
-      Method m = c.getMethod("getFeatureType", null);
-      FeatureType[] result = (FeatureType[]) m.invoke(instance, null);
+      Method m = c.getMethod("getFeatureType", new Class[0]);
+      FeatureType[] result = (FeatureType[]) m.invoke(instance, new Object[0]);
       for (FeatureType ft : result) {
         if (userMode)
           factoryList.add(0, new Factory(ft, c, (FeatureDatasetFactory) instance));

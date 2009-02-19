@@ -1051,7 +1051,9 @@ public class InvDatasetImpl extends InvDataset {
             fullUrlString = fullUrlString + ".html";
           else if (stype == ServiceType.WCS)
             fullUrlString = fullUrlString + "?request=GetCapabilities&version=1.0.0&service=WCS";
-          else if (stype == ServiceType.NetcdfServer)
+          else if (stype == ServiceType.WMS)
+            fullUrlString = fullUrlString + "?request=GetCapabilities&version=1.3.0&service=WMS";
+          else if (stype == ServiceType.NetcdfStream)
             fullUrlString = fullUrlString + "?showForm";
           else if (stype == ServiceType.NetcdfSubset)
             fullUrlString = fullUrlString + "/dataset.html";

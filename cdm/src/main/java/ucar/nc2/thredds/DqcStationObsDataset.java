@@ -184,7 +184,7 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
   protected void setBoundingBox() { }
 
   public String getTitle() { return dqc.getName(); }
-  public String getLocationURI() {return dqc.getCreateFrom(); }
+  public String getLocation() {return dqc.getCreateFrom(); }
   public String getDescription() { return desc; }
 
   public List getData( Station s, CancelTask cancel) throws IOException {

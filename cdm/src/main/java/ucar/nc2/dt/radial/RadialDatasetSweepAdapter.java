@@ -39,12 +39,14 @@ import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.Dimension;
 import ucar.nc2.Attribute;
+import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.ma2.DataType;
 
 import java.util.*;
+import java.io.IOException;
 
 /**
  * Make a NetcdfDataset into a RadialDatasetSweep.
@@ -189,6 +191,30 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
 
   public String getImplementationName() {
     return getClass().getName();
+  }
+
+  //////////////////////////////////////////////////
+  //  FileCacheable
+
+  public synchronized void close() throws java.io.IOException {
+    if (fileCache != null) {
+      fileCache.release(this);
+    } else {
+      try {
+        if (ncfile != null) ncfile.close();
+      } finally {
+        ncfile = null;
+      }
+    }
+  }
+
+  public boolean sync() throws IOException {
+    return false;
+  }
+
+  protected FileCache fileCache;
+  public void setFileCache(FileCache fileCache) {
+    this.fileCache = fileCache;
   }
 
 }

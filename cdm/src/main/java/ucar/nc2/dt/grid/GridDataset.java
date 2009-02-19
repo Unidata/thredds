@@ -39,6 +39,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
@@ -179,6 +180,10 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
     return (desc == null) ? getName() : desc;
   }
 
+  public String getLocation() {
+    return ds.getLocation();
+  }
+
   public String getLocationURI() {
     return ds.getLocation();
   }
@@ -216,13 +221,6 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
 
   public NetcdfFile getNetcdfFile() {
     return ds;
-  }
-
-  /**
-   * Close all resources associated with this dataset.
-   */
-  public void close() throws java.io.IOException {
-    ds.close();
   }
 
   private void addGeoGrid(VariableDS varDS, GridCoordSys gcs, Formatter parseInfo) {
@@ -405,6 +403,30 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
 
   public String getImplementationName() {
     return ds.getConventionUsed();
+  }
+
+  //////////////////////////////////////////////////
+  //  FileCacheable
+
+  public synchronized void close() throws java.io.IOException {
+    if (fileCache != null) {
+      fileCache.release(this);
+    } else {
+      try {
+        if (ds != null) ds.close();
+      } finally {
+        ds = null;
+      }
+    }
+  }
+
+  public boolean sync() throws IOException {
+    return false;
+  }
+
+  protected FileCache fileCache;
+  public void setFileCache(FileCache fileCache) {
+    this.fileCache = fileCache;
   }
 
 

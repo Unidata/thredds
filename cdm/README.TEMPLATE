@@ -50,11 +50,11 @@ or
   2. unzip into working directory
   3. java -Xmx512m -jar netcdfUI-@VERSION@.jar 
 
-BUILD AND RUN FROM SOURCE
+BUILD FROM SOURCE
  1. get the source release (ncSrc-@VERSION@.zip)
  2. unzip into working directory
- 3. ant compileFromSrc
- 4. sh runSrcRelease
+ 3. cd /work/cdm
+ 4. ant compile
 
 ---------------------------------------------------------------------------------------------------------------------
 /*

@@ -249,7 +249,8 @@ public class SuperComboBox extends JPanel {
     table.setList(list);
     if (list.size() == 0)
       setLabel("none");
-
+    else
+      setSelectedByIndex(0);
     eventOK = true;
   }
 

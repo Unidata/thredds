@@ -404,6 +404,26 @@ public class IO {
   }
 
   /**
+   * Write byte[] contents to a file.
+   *
+   * @param contents String holding the contents
+   * @param file     write to this file (overwrite if exists)
+   * @throws java.io.IOException on io error
+   */
+  static public void writeToFile(byte[] contents, File file) throws IOException {
+    FileOutputStream fw = new FileOutputStream( file);
+
+    try {
+      fw.write(contents);
+      fw.flush();
+
+    } finally {
+      if (null != fw)
+        fw.close();
+    }
+  }
+
+  /**
    * Write contents to a file, using UTF-8 encoding.
    *
    * @param contents    String holding the contents

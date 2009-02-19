@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="cdm" default="makeMain" basedir=".">
   <property name="release.version" value="4.0"/>
-  <property name="minor" value="32" />
+  <property name="minor" value="34" />
   <!-- "build.number" is already set for TeamCity builds. -->
   <tstamp>
     <format property="build.time.number" pattern="yyyyMMdd.HHmm" timezone="GMT"/>
@@ -399,22 +399,20 @@
   <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
   <!-- source release -->
 
-  <property name="ncSrcRelease.jar" value="ncSrc-${release.version}.jar"/>
+  <property name="ncSrcRelease.jar" value="ncSrc-${release.version}.zip"/>
   <target name="makeSrc-CDM" description="create CDM source release">
 
     <jar jarfile="${build.dir}/${ncSrcRelease.jar}" index="true" duplicate="preserve">
       <fileset dir="${root.dir}/..">
-        <include name="cdm/**"/>
-        <include name="common/**"/>
-        <include name="lib/**"/>
-        <include name="intelliJ/**"/>
-        <include name="ui/**"/>
-
-        <exclude name="cdm/doc/**"/>
-        <exclude name="cdm/target/**"/>
-        <exclude name="ui/target/**"/>
+        <include name="cdm/build.xml"/>
+        <include name="cdm/README.TEMPLATE"/>
+        <include name="cdm/src/main/**"/>
+        <include name="common/src/**"/>
+        <include name="lib/external/**"/>
+        <include name="lib/release/**"/>
+        <include name="ui/src/main/**"/>
       </fileset>
-
+      
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
         <attribute name="Built-On" value="${buildtime2}"/>
@@ -430,14 +428,12 @@
   <target name="makeSrc-Full" description="make nj22/tds full source jar = threddsSrc-${release.version.minor}.jar">
     <jar jarfile="${build.dir}/${fullSrc.jar}" index="true" duplicate="preserve">
       <fileset dir="${root.dir}/..">
-        <exclude name="cdm/doc/**"/>
-        <exclude name="cdm/target/**"/>
-        <exclude name="tds/target/**"/>
-        <exclude name="tds/doc/**"/>
-        <exclude name="tds/content/**"/>
-        <exclude name="ui/target/**"/>
-        <exclude name="docs/**"/>
-        <exclude name="intellij/**"/>
+        <include name="cdm/src/main/**"/>
+        <include name="common/src/**"/>
+        <include name="lib/external/**"/>
+        <include name="lib/release/**"/>
+        <include name="ui/src/main/**"/>
+        <include name="tds/src/main/**"/>
       </fileset>
 
       <manifest>

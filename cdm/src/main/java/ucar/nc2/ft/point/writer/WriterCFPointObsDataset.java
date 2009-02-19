@@ -322,7 +322,7 @@ public class WriterCFPointObsDataset {
         pointFeatureCollection = (PointFeatureCollection) featureCollection;
     }
     if (null == pointFeatureCollection)
-      throw new IOException("There is no PointFeatureCollection in  "+pfDataset.getLocationURI());
+      throw new IOException("There is no PointFeatureCollection in  "+pfDataset.getLocation());
 
      long start = System.currentTimeMillis();
 
@@ -363,7 +363,7 @@ public class WriterCFPointObsDataset {
     out.close();
 
     long took = System.currentTimeMillis() - start;
-    System.out.printf("Write %d records from %s to %s took %d msecs %n", count, pfDataset.getLocationURI(),fileOut,took);
+    System.out.printf("Write %d records from %s to %s took %d msecs %n", count, pfDataset.getLocation(),fileOut,took);
     return count;
   }
 
