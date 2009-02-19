@@ -8,6 +8,7 @@ tds.documentation.url=http://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html
 tds.logo.url=threddsSmall.jpg
 tds.logo.alt=TDS
 
+tds.content.root.path=../../content
 tds.content.path=thredds
 tds.content.startup.path=WEB-INF/altContent/startup
 tds.content.idd.path=WEB-INF/altContent/idd/thredds

@@ -64,6 +64,8 @@ public class TdsContext
 
   private String contextPath;
 
+  private String contentRootPath;
+
   private String contentPath;
   private String startupContentPath;
   private String iddContentPath;
@@ -100,6 +102,8 @@ public class TdsContext
   public void setWebappVersionBrief( String ver) { this.webappVersionBrief = ver; }
   public void setWebappVersionBuildDate( String buildDateString) { this.webappVersionBuildDate = buildDateString; }
 
+  public void setContentRootPath( String contentRootPath) {this.contentRootPath = contentRootPath; }
+  
   public void setContentPath( String contentPath) {this.contentPath = contentPath; }
   public void setStartupContentPath( String startupContentPath ) { this.startupContentPath = startupContentPath; }
   public void setIddContentPath( String iddContentPath ) { this.iddContentPath = iddContentPath; }
@@ -154,7 +158,10 @@ public class TdsContext
       throw new IllegalStateException( "Full version [" + this.webappVersion + "] must start with version [" + this.webappVersionBrief + "].");
 
     // Set the root directory and source.
-    this.rootDirectory = new File( servletContext.getRealPath( "/" ) );
+    String rootPath = servletContext.getRealPath( "/" );
+    if ( rootPath == null )
+      throw new IllegalStateException( "Webapp [" + this.webappName + "] must run with exploded deployment directory (not from .war).");
+    this.rootDirectory = new File( rootPath );
     this.rootDirSource = new BasicDescendantFileSource( this.rootDirectory );
     this.rootDirectory = this.rootDirSource.getRootDirectory();
 
@@ -178,7 +185,16 @@ public class TdsContext
     }
 
     // Set the content directory and source.
-    this.contentDirectory = new File( new File( this.rootDirectory, "../../content"), this.contentPath);
+    File contentRootDir = new File( this.contentRootPath );
+    if ( ! contentRootDir.isAbsolute() )
+      this.contentDirectory = new File( new File( this.rootDirectory, this.contentRootPath ), this.contentPath );
+    else
+    {
+      if ( contentRootDir.isDirectory() )
+        this.contentDirectory = new File( contentRootDir, this.contentPath );
+      else
+        throw new IllegalStateException( "Content root directory [" + this.contentRootPath + "] not a directory.");
+    }
     // If the content directory doesn't exist, try to copy startup content directory.
     if ( ! this.contentDirectory.exists() )
     {

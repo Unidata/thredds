@@ -18,6 +18,8 @@
     <property name="webappVersionBrief" value="${tds.version.brief}"/>
     <property name="webappVersionBuildDate" value="${tds.version.builddate}"/>
 
+    <property name="contentRootPath" value="${tds.content.root.path}"/>
+    
     <property name="contentPath" value="${tds.content.path}"/>
     <property name="startupContentPath" value="${tds.content.startup.path}"/>
     <property name="iddContentPath" value="${tds.content.idd.path}"/>
