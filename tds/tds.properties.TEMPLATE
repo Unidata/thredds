@@ -5,7 +5,7 @@ tds.version.builddate=@BUILDTIME@
 
 tds.url=http://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html
 tds.documentation.url=http://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html
-tds.logo.url=threddsSmall.jpg
+tds.logo.url=threddsIcon.gif
 tds.logo.alt=TDS
 
 tds.content.root.path=../../content

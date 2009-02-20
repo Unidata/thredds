@@ -61,11 +61,11 @@ public class DebugHandler {
     pw.println(HtmlWriter.getInstance().getTdsPageCssLink());
     pw.println("</head>");
     pw.println("<body>");
-    pw.println(HtmlWriter.getInstance().getUserHead());
+    pw.println(HtmlWriter.getInstance().getTableHeader( true, true, true ));
     pw.println("<br><a href='content/logs/'>Show TDS Logs</a>");
     pw.println("<br><a href='logs/'>Show Tomcat Logs</a>");
     pw.println("<h2>Debug Actions</h2>");
-    pw.println("<body><pre>");
+    pw.println("<pre>");
 
     String cmds = request.getQueryString();
     if ((cmds == null) || (cmds.length() == 0)) {

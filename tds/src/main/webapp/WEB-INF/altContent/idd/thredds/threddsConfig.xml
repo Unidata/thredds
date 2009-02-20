@@ -37,7 +37,7 @@
      * The URL and alternate text for this TDS installations logo.
      * -->
     <installName>IDD TDS</installName>
-    <installLogoUrl>thredds.gif</installLogoUrl>
+    <installLogoUrl>threddsIcon.gif</installLogoUrl>
     <installLogoAlt>IDD TDS</installLogoAlt>
 
     <!--

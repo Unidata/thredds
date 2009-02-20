@@ -44,6 +44,7 @@ import java.util.Collections;
 
 import thredds.util.filesource.*;
 import thredds.servlet.ThreddsConfig;
+import thredds.catalog.InvDatasetScan;
 import ucar.nc2.util.IO;
 
 /**
@@ -274,6 +275,10 @@ public class TdsContext
     }
     this.configSource = new ChainedFileSource( chain );
     this.publicDocSource = this.publicContentDirSource;
+
+    // ToDo LOOK Find a better way once thredds.catalog2 is used.
+    InvDatasetScan.setContext( contextPath );
+    InvDatasetScan.setCatalogServletName( "/catalog" );
 
     jspRequestDispatcher = servletContext.getNamedDispatcher( "jsp" );
     defaultRequestDispatcher = servletContext.getNamedDispatcher( "default" );

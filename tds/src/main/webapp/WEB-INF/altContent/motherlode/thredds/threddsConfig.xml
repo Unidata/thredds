@@ -37,7 +37,7 @@
    *
    * NOTE: URLs may be absolute or relative, relative URLs must be relative
    * to the webapp URL, i.e., http://server:port/thredds/.
-    -->
+   * -->
   <htmlSetup>
     <!--
      * CSS documents used in generated HTML pages.
@@ -61,7 +61,7 @@
      * The URL and alternate text for this TDS installations logo.
      * -->
     <installName>Motherlode TDS</installName>
-    <installLogoUrl>unidata.gif</installLogoUrl>
+    <installLogoUrl>threddsIcon.gif</installLogoUrl>
     <installLogoAlt>Motherlode TDS</installLogoAlt>
 
     <!--
@@ -72,7 +72,7 @@
      * -->
     <hostInstName>Unidata</hostInstName>
     <hostInstUrl>http://www.unidata.ucar.edu/</hostInstUrl>
-    <hostInstLogoUrl>unidata.gif</hostInstLogoUrl>
+    <hostInstLogoUrl>unidataIcon.gif</hostInstLogoUrl>
     <hostInstLogoAlt>Unidata</hostInstLogoAlt>
   </htmlSetup>
 

@@ -270,6 +270,106 @@ public class HtmlWriter {
         .toString();
   }
 
+  public String getTableHeader( boolean includeInstall,
+                                boolean includeWebapp,
+                                boolean includeLogos)
+  {
+    StringBuilder sb = new StringBuilder();
+    this.appendTableHeader( sb, includeInstall, includeWebapp, includeLogos );
+    return sb.toString();
+  }
+
+  public void appendTableHeader( StringBuilder stringBuilder,
+                                 boolean includeInstall,
+                                 boolean includeWebapp,
+                                 boolean includeLogos)
+  {
+    // Table setup.
+    stringBuilder
+        .append( "<table width=\"100%\">\n");
+
+    if ( includeInstall )
+    {
+      stringBuilder.append( "<tr><td>\n");
+      appendInstallationInfo( stringBuilder, includeLogos );
+      stringBuilder.append( "</td><td>\n");
+      appendHostInstInfo( stringBuilder, includeLogos );
+      stringBuilder.append( "</td></tr>\n" );
+    }
+
+    if ( includeWebapp )
+    {
+      stringBuilder
+              .append( "<tr><td>\n" );
+      appendWebappInfo( stringBuilder, includeLogos );
+      stringBuilder.append( "</td></tr>\n" );
+    }
+    stringBuilder.append( "</table><hr>\n");
+  }
+
+  private void appendWebappInfo( StringBuilder stringBuilder, boolean includeLogo )
+  {
+    // Include webapp info
+    String webappUrl = this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getWebappUrl() );
+    String webappLogoUrl = this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getWebappLogoUrl() );
+    if ( includeLogo && webappLogoUrl != null )
+      stringBuilder
+              .append( "<img src='" ).append( webappLogoUrl )
+              .append( "' alt='" ).append( this.tdsHtmlConfig.getWebappLogoAlt() )
+              .append( "'> " );
+    stringBuilder
+            .append( "<a href='" ).append( webappUrl ).append( "'>" )
+            .append( this.tdsContext.getWebappName() )
+            .append( "</a>");
+  }
+
+  private void appendHostInstInfo( StringBuilder stringBuilder, boolean includeLogo )
+  {
+    // Include host institution information
+    if ( this.tdsHtmlConfig.getHostInstName() != null )
+    {
+      String hostInstUrl = this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getHostInstUrl() );
+      String hostInstLogoUrl = this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getHostInstLogoUrl() );
+      if ( includeLogo && hostInstLogoUrl != null )
+        stringBuilder
+                .append( "<img src='" ).append( hostInstLogoUrl )
+                .append( "' alt='" ).append( this.tdsHtmlConfig.getHostInstLogoAlt() )
+                .append( "'> " );
+      if ( hostInstUrl != null )
+        stringBuilder.append( "<a href='" ).append( hostInstUrl ).append( "'>" );
+      stringBuilder.append( this.tdsHtmlConfig.getHostInstName() );
+      if ( hostInstUrl != null )
+        stringBuilder.append( "</a>" );
+    }
+    else
+      stringBuilder.append( "Unknown Host Institution");
+  }
+
+  private void appendInstallationInfo( StringBuilder stringBuilder, boolean includeLogo )
+  {
+    // Include information on this intsallation.
+    if ( this.tdsHtmlConfig.getInstallName() != null )
+    {
+      String installUrl = this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getInstallUrl() );
+      String installLogoUrl = this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getInstallLogoUrl() );
+      if ( includeLogo && installLogoUrl != null )
+        stringBuilder
+                .append( "<img src='" ).append( installLogoUrl )
+                .append( "' alt='" ).append( this.tdsHtmlConfig.getInstallLogoAlt() )
+                .append( "'> " );
+      if ( installUrl != null )
+        stringBuilder.append( "<a href='" ).append( installUrl ).append( "'>" );
+      stringBuilder.append( this.tdsHtmlConfig.getInstallName() );
+      if ( installUrl != null )
+        stringBuilder.append( "</a>" );
+    }
+    else
+    {
+      // This installation is not named.
+      stringBuilder.append("Unnamed TDS Installation");
+    }
+  }
+
   private void appendSimpleFooter( StringBuilder sb )
   {
     sb.append( "<h3>" );
@@ -721,7 +821,7 @@ public class HtmlWriter {
     sb.append( this.getTdsPageCssLink() );
     sb.append( "</head>\r\n" );
     sb.append( "<body>\r\n" );
-    sb.append( this.getUserHead() );
+    this.appendTableHeader( sb, true, true, true );
 
     sb.append( "<h2> Catalog " ).append( catURL ).append( "</h2>\r\n" );
 
