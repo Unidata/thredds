@@ -45,12 +45,6 @@ import java.nio.channels.WritableByteChannel;
 
 
 /**
- * RandomAccessFile.java.  By Russ Rew, based on
- * BufferedRandomAccessFile by Alex McManus, based on Sun's source code
- * for java.io.RandomAccessFile.  For Alex McManus version from which
- * this derives, see his <a href="http://www.aber.ac.uk/~agm/Java.html">
- * Freeware Java Classes</a>.
- * <p/>
  * A buffered drop-in replacement for java.io.RandomAccessFile.
  * Instances of this class realise substantial speed increases over
  * java.io.RandomAccessFile through the use of buffering. This is a
@@ -59,6 +53,13 @@ import java.nio.channels.WritableByteChannel;
  * final. However, if it is necessary to use RandomAccessFile and
  * java.io.RandomAccessFile interchangeably, both classes implement the
  * DataInput and DataOutput interfaces.
+ *
+ * <p> By Russ Rew, based on
+ * BufferedRandomAccessFile by Alex McManus, based on Sun's source code
+ * for java.io.RandomAccessFile.  For Alex McManus version from which
+ * this derives, see his <a href="http://www.aber.ac.uk/~agm/Java.html">
+ * Freeware Java Classes</a>.
+ * <p/>
  *
  * @author Alex McManus
  * @author Russ Rew
