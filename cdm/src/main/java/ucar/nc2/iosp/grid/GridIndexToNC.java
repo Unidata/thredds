@@ -124,7 +124,7 @@ public class GridIndexToNC {
       return "";
     }
     int ensemble = g2lookup.getTypeGenProcess(gr);
-    String  ensembleName;
+    String  ensembleName = "";
     int productDef = g2lookup.getProductDefinition(gr);
     if (productDef == 2) {
 //        Grib 2 table 4.7
@@ -164,9 +164,8 @@ public class GridIndexToNC {
       } else {
          ensembleName = "unknownEnsemble";
       }
-      return  ensembleName;
     }
-    return "";
+    return ensembleName;
   }
 
   /**
