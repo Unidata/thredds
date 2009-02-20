@@ -49,6 +49,8 @@ import thredds.server.views.FileView;
 import java.io.File;
 import java.io.IOException;
 
+import ucar.nc2.ncml.AggregationFmrc;
+
 /**
  * _more_
  *
@@ -72,22 +74,6 @@ public class RootController extends AbstractController implements LastModified
     WebApplicationContext webAppContext = this.getWebApplicationContext();
     ServletContext sc = webAppContext.getServletContext();
     initContent();
-
-    // setup logging
-    // setup debug
-    // setup InvDAtasetScan to know context and catalog servlet paths
-    // setup ThreddsConfig
-    // setup GRIB indexing
-    // setup cacheing
-
-    // optimization: netcdf-3 files can only grow, not have metadata changes
-    ucar.nc2.NetcdfFile.setProperty( "syncExtendOnly", "true" );
-
-    // setup aggregation cache and stuff
-    // setup fmrc agg definition directory
-
-    
-
   }
 
   private void initContent()

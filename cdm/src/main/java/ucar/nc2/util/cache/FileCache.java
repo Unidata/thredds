@@ -270,6 +270,7 @@ public class FileCache {
     }
 
     // sync the file when you want to use it again : needed for grib growing index, netcdf-3 record growing, etc
+    // also sets isClosed = false
     if (ncfile != null) {
       try {
         ncfile.sync();
@@ -285,7 +286,7 @@ public class FileCache {
 
   /**
    * Release the file. This unlocks it, updates its lastAccessed date.
-   * Normally you need not call this, just close the file as usual.
+   * Normally applications need not call this, just close the file as usual.
    *
    * @param ncfile release this file.
    * @throws IOException if file not in cache.

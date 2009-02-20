@@ -60,6 +60,8 @@ public class CFpointObs extends TableConfigurerImpl {
     if (datatype == null)
       datatype = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt2, null);
     if (datatype == null)
+      datatype = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt3, null);
+    if (datatype == null)
       return false;
 
     if (CF.FeatureType.valueOf(datatype) == null)
@@ -71,8 +73,8 @@ public class CFpointObs extends TableConfigurerImpl {
     StringTokenizer stoke = new StringTokenizer(conv, ",");
     while (stoke.hasMoreTokens()) {
       String toke = stoke.nextToken().trim();
-      if (toke.startsWith("CF-1.0"))
-        return false;  // let default analyser try
+      //if (toke.startsWith("CF-1.0"))               LOOK ???
+      //  return false;  // let default analyser try
       if (toke.startsWith("CF"))
         return true;
     }
@@ -83,6 +85,9 @@ public class CFpointObs extends TableConfigurerImpl {
     String ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt, null);
     if (ftypeS == null)
       ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt2, null);
+    if (ftypeS == null)
+      ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt3, null);
+
     CF.FeatureType ftype = (ftypeS == null) ? CF.FeatureType.point : CF.FeatureType.valueOf(ftypeS);
     switch (ftype) {
       case point: return getPointConfig(ds, errlog);
@@ -125,11 +130,11 @@ public class CFpointObs extends TableConfigurerImpl {
     }
 
     // check dimensions
-    boolean isScalar = (lat.getRank() == 0);
-    boolean isSingle = (lat.getRank() == 1) && (lat.getSize() == 1);
+    boolean stnIsScalar = (lat.getRank() == 0);
+    boolean stnIsSingle = (lat.getRank() == 1) && (lat.getSize() == 1);
     Dimension stationDim = null;
 
-    if (!isScalar) {
+    if (!stnIsScalar) {
       if (lat.getDimension(0) != lon.getDimension(0)) {
         errlog.format("Lat and Lon coordinate must have same size");
         return null;
@@ -137,7 +142,7 @@ public class CFpointObs extends TableConfigurerImpl {
       stationDim = lat.getDimension(0);
     }
 
-    Table.Type stationTableType = isScalar ? Table.Type.Top : Table.Type.Structure;
+    Table.Type stationTableType = stnIsScalar ? Table.Type.Top : Table.Type.Structure;
     TableConfig stnTable = new TableConfig(stationTableType, "station");
     stnTable.featureType = FeatureType.STATION;
     stnTable.isPsuedoStructure = !stationDim.isUnlimited();
@@ -159,7 +164,7 @@ public class CFpointObs extends TableConfigurerImpl {
     }
     Variable stnId = ds.findVariable(stnTable.stnId);
 
-    if (!isScalar) {
+    if (!stnIsScalar) {
       if (!stnId.getDimension(0).equals(stationDim)) {
         errlog.format("Station id outer dimension must match latitude/longitude dimension");
         return null;
@@ -172,10 +177,10 @@ public class CFpointObs extends TableConfigurerImpl {
       errlog.format("Must have a Time coordinate");
       return null;
     }
-    Dimension obsDim = time.getDimension(0);
+    Dimension obsDim = time.getDimension(0); // what about time(stn, obs) ??
     boolean hasStruct = obsDim.isUnlimited();
 
-    Table.Type obsTableType = isScalar || isSingle ? Table.Type.Structure : Table.Type.ParentIndex;
+    Table.Type obsTableType = stnIsScalar || stnIsSingle ? Table.Type.Structure : Table.Type.ParentIndex;
     TableConfig obs = new TableConfig(obsTableType, obsDim.getName());
     obs.structName = hasStruct ? "record" : obsDim.getName();
     obs.isPsuedoStructure = !hasStruct;

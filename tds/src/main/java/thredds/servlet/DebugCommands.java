@@ -57,32 +57,6 @@ public class DebugCommands {
   }
 
   protected void makeCacheActions() {
-    // NetcdfFileCache : default is allow 200 - 400 open files, cleanup every 10 minutes
-    int min = ThreddsConfig.getInt("NetcdfFileCache.minFiles", 200);
-    int max = ThreddsConfig.getInt("NetcdfFileCache.maxFiles", 400);
-    int secs = ThreddsConfig.getSeconds("NetcdfFileCache.scour", 10 * 60);
-    if (max > 0) {
-      NetcdfDataset.initNetcdfFileCache(min, max, secs);
-    }
-
-    /* NetcdfDatasetCache: // allow 100 - 200 open datasets, cleanup every 10 minutes
-    min = ThreddsConfig.getInt("NetcdfDatasetCache.minFiles", 100);
-    max = ThreddsConfig.getInt("NetcdfDatasetCache.maxFiles", 200);
-    secs = ThreddsConfig.getSeconds("NetcdfDatasetCache.scour", 10 * 60);
-    if (max > 0) {
-      NetcdfDataset.initDatasetCache(min, max, secs);
-    } */
-
-    // LOOK : fileCacheRaf must be set
-    // HTTP file access : // allow 20 - 40 open datasets, cleanup every 10 minutes
-    min = ThreddsConfig.getInt("HTTPFileCache.minFiles", 25);
-    max = ThreddsConfig.getInt("HTTPFileCache.maxFiles", 40);
-    secs = ThreddsConfig.getSeconds("HTTPFileCache.scour", 10 * 60);
-    if (max > 0) {
-      FileCacheRaf fileCacheRaf = new FileCacheRaf(min, max, secs);
-      ServletUtil.setFileCache( fileCacheRaf);
-    }
-
     DebugHandler debugHandler = DebugHandler.get("Caches");
     DebugHandler.Action act;
 

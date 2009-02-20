@@ -44,6 +44,7 @@ public class CF {
 
   public static final String featureTypeAtt = "CF:featureType";
   public static final String featureTypeAtt2 = "CF-featureType";
+  public static final String featureTypeAtt3 = "CFfeatureType";
 
   /**
    * Start of map from CF feature type names to our FeatureType enums.

@@ -930,26 +930,20 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    */
   @Override
   public synchronized void close() throws java.io.IOException {
-    if (agg != null) agg.persistWrite(); // LOOK
+    if (isClosed) return;
+    if (agg != null) agg.persistWrite(); // LOOK  maybe only on real close ??
+
     if (cache != null) {
       cache.release(this);
 
-      /* if (getCacheState() == 3)
-    return;
-  else if (getCacheState() == 2)
-    NetcdfDatasetCache.release(this);
-  else if (getCacheState() == 1) {
-    if (agg != null) agg.persist(); // LOOK
-    NetcdfFileCacheOld.release(this);  */
     } else {
-      if (isClosed) return;
       if (agg != null) agg.close();
       agg = null;
       if (orgFile != null) orgFile.close();
       orgFile = null;
-      isClosed = true;
     }
 
+    isClosed = true;
   }
 
   /*
@@ -976,6 +970,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @throws IOException
    */
   public boolean sync() throws IOException {
+    isClosed = false;
+
     if (agg != null)
       return agg.sync();
 
@@ -986,6 +982,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   public boolean syncExtend() throws IOException {
+    isClosed = false;
+
     if (agg != null)
       return agg.syncExtend(false);
 

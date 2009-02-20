@@ -160,7 +160,6 @@ public class Structure extends Variable {
     if (isImmutable()) throw new IllegalStateException("Cant modify");
     members.add( v);
     memberHash.put( v.getShortName(), v);
-    //smembers = null;
     v.setParentStructure( this);
     return v;
   }

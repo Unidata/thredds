@@ -1216,7 +1216,7 @@ public class Variable implements VariableIF {
    * @param parent    parent Structure, may be null
    * @param shortName variable shortName, must be unique within the Group
    * @param dtype     the Variable's DataType
-   * @param dims      space delimited list of dimension names
+   * @param dims      space delimited list of dimension names. may be null or "" for scalars.
    */
   public Variable(NetcdfFile ncfile, Group group, Structure parent, String shortName, DataType dtype, String dims) {
     this.ncfile = ncfile;

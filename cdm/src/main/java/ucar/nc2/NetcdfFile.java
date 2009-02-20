@@ -675,7 +675,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   ////////////////////////////////////////////////////////////////////////////////////////////////
   protected String location, id, title, cacheName;
   protected Group rootGroup = makeRootGroup();
-  protected boolean isClosed = false;
+  protected boolean isClosed = false; // raf is closed OR in the cache but not locked
   private boolean immutable = false;
 
   protected ucar.nc2.util.cache.FileCache cache;
@@ -686,8 +686,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   protected List<Dimension> dimensions;
   protected List<Attribute> gattributes;
 
-  /**
-   * is the dataset already closed?
+  /*
+   * Is the dataset closed, and not available for use.
    * @return true if closed
    */
   public synchronized boolean isClosed() {
@@ -697,7 +697,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   /**
    * Close all resources (files, sockets, etc) associated with this file.
    * If the underlying file was acquired, it will be released, otherwise closed.
-   * @throws java.io.IOException if error closing
+   * if isClosed() already, nothing will happen
+   * @throws java.io.IOException if error when closing
    */
   public synchronized void close() throws java.io.IOException {
     if (isClosed) return;
@@ -707,12 +708,13 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
     } else {
       try {
-        if ((null != spi) && !isClosed) spi.close();
+        if (null != spi) spi.close();
       } finally {
         spi = null;
-        isClosed = true;
       }
     }
+
+    isClosed = true;
   }
 
   /**
@@ -724,6 +726,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   }
 
   /**
+   * Public by accident.
    * Get the name used in the cache, if any.
    * @return name in the cache.
    */
@@ -732,7 +735,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   }
 
   /**
-   * Used by NetcdfFileCache. Do not use.
+   * Public by accident.
    * @param cacheName name in the cache, should be unique for this NetcdfFile. Usually the location.
    */
   protected void setCacheName(String cacheName) {
@@ -1079,6 +1082,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @throws IOException if error
    */
   public boolean syncExtend() throws IOException {
+    isClosed = false;
     return (spi != null) && spi.syncExtend();
   }
 
@@ -1091,6 +1095,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @throws IOException if error
    */
   public boolean sync() throws IOException {
+    isClosed = false;
     return (spi != null) && spi.sync();
   }
 
@@ -1607,6 +1612,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   protected Array readData(ucar.nc2.Variable v, Section ranges) throws IOException, InvalidRangeException {
     if (showRequest)
       System.out.println("Data request for variable: "+v.getName()+" section= "+ranges);
+    if (isClosed)
+      throw new IllegalStateException("File is closed");
 
     Array result = spi.readData(v, ranges);
     result.setUnsigned(v.isUnsigned());
@@ -1628,6 +1635,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
   public long readToByteChannel(ucar.nc2.Variable v, Section section, WritableByteChannel wbc)
        throws java.io.IOException, ucar.ma2.InvalidRangeException {
+
+    if (isClosed)
+      throw new IllegalStateException("File is closed");
 
     // LOOK: should go through Variable for caching ??
     return spi.readToByteChannel(v, section, wbc);
@@ -1704,8 +1714,10 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
    */
   public Array readSection(String variableSection) throws IOException, InvalidRangeException {
-    ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
+    if (isClosed)
+      throw new IllegalStateException("File is closed");
 
+    ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
     if (cer.child == null) {
       Array result = cer.v.read(cer.section);
       result.setUnsigned(cer.v.isUnsigned());

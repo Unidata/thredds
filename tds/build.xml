@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="tds" default="compile" basedir=".">
   <property name="release.version" value="4.0"/>
-  <property name="release.version.minor" value="${release.version}.04"/>
+  <property name="release.version.minor" value="${release.version}.05"/>
   <tstamp>
     <format property="buildtime" pattern="yyyy-MM-dd HH:mm:ss" timezone="GMT"/>
   </tstamp>
@@ -50,7 +50,6 @@
       <patternset id="ncwms.libs"/>
       <filename name="*.jar"/>
    </fileset>
-
 
   <patternset id="sources">
     <include name="thredds/cataloggen/servlet/*.java"/>
@@ -129,7 +128,7 @@
       <include name="${httpclient.jar}"/>
       <include name="${jdom.jar}"/>
       <include name="${slf4jAPI.jar}"/>
-      <include name="${log4j.jar}"/>
+      <include name="${nlog4j.jar}"/>
       <include name="${spring.jar}"/>
       <include name="${spring-webmvc.jar}"/>
     </patternset>

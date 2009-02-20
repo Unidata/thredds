@@ -76,6 +76,10 @@ public class TdsConfigContextListener
     catHandler.init();
     DataRootHandler.setInstance( catHandler );
 
+    // Initialize the CDM, now that tdsContext is ready
+    CdmInit cdmInit = (CdmInit) wac.getBean( "cdmInit", CdmInit.class );
+    cdmInit.init(tdsContext);
+
     // Initialize HtmlWriter
     // LOOK! ToDo This should be removed once the catalog service controllers uses JSP.
     HtmlWriter.init( tdsContext );

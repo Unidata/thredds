@@ -48,6 +48,13 @@ import java.util.Formatter;
  */
 public class Evaluator {
 
+  /**
+   * Turn the key into a String and return the corresponding featureType, if any.
+   * @param ds look in this datset
+   * @param key if starts with ":", replace with value of global attribute
+   * @param errlog error messages here
+   * @return
+   */
   static public FeatureType getFeatureType(NetcdfDataset ds, String key, Formatter errlog) {
     FeatureType ft = null;
     String fts = getLiteral(ds, key, errlog);

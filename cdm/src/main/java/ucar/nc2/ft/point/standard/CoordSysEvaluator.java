@@ -33,7 +33,6 @@
 
 package ucar.nc2.ft.point.standard;
 
-import ucar.nc2.ft.point.standard.TableConfig;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -48,6 +47,12 @@ import ucar.nc2.Dimension;
  */
 public class CoordSysEvaluator {
 
+  /**
+   * Look for Axis by Type, assign to TableConfig if found.
+   * Looks for Lat, Lon, Time, Height.
+   * @param nt assign coordinates to this table.
+   * @param ds look in this dataset's "Best" coordinate system.
+   */
   static public void findCoords(TableConfig nt, NetcdfDataset ds) {
 
     CoordinateSystem use = findBestCoordinateSystem(ds);
@@ -65,12 +70,24 @@ public class CoordSysEvaluator {
     }
   }
 
+   /**
+   * Look for Axis by Type.
+   * @param ds look in this dataset's "Best" coordinate system.
+   * @param atype look for this type of CoordinateAxis. takes the first one it finds.
+    * @return the found CoordinateAxis name, or null if none
+   */
   static public String findCoordNameByType(NetcdfDataset ds, AxisType atype) {
     CoordinateAxis coordAxis = findCoordByType(ds, atype);
     return coordAxis == null ? null : coordAxis.getName();
   }
 
 
+  /**
+   * Look for Axis by Type.
+   * @param ds look in this dataset's "Best" coordinate system.
+   * @param atype look for this type of CoordinateAxis. takes the first one it finds.
+   * @return the found CoordinateAxis, or null if none
+   */
   static public CoordinateAxis findCoordByType(NetcdfDataset ds, AxisType atype) {
     CoordinateSystem use = findBestCoordinateSystem(ds);
     if (use == null) return null;
@@ -89,6 +106,12 @@ public class CoordSysEvaluator {
     return null;
   }
 
+  /**
+   * Look for Axis by Type.
+   * @param ds look in this dataset's "Best" coordinate system.
+   * @param atype look for this type of CoordinateAxis. takes the first one it finds.
+   * @return the found CoordinateAxis' first Dimension, or null if none or scalar
+   */
   static public Dimension findDimensionByType(NetcdfDataset ds, AxisType atype) {
     CoordinateAxis axis = findCoordByType(ds, atype);
     if (axis == null) return null;
@@ -96,6 +119,11 @@ public class CoordSysEvaluator {
     return axis.getDimension(0);
   }
 
+  /**
+   * Dind the CoordinateSystem with the most number of CoordinateAxes
+   * @param ds look in this dataset
+   * @return CoordinateSystem or null if none
+   */
   static private CoordinateSystem findBestCoordinateSystem(NetcdfDataset ds) {
         // find coordinate system with highest rank (largest number of axes)
     CoordinateSystem use = null;

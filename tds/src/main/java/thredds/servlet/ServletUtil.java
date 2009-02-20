@@ -502,7 +502,7 @@ public class ServletUtil {
   }
 
   static private FileCacheRaf fileCacheRaf;
-  static void setFileCache( FileCacheRaf fileCache) { fileCacheRaf = fileCache; }
+  static public void setFileCache( FileCacheRaf fileCache) { fileCacheRaf = fileCache; }
   static FileCacheRaf getFileCache( ) { return fileCacheRaf; }
 
   /**

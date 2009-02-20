@@ -601,7 +601,9 @@ public class NetcdfFileWriteable extends NetcdfFile {
   // should check if we can keep header (eg attributes only added)
   private void rewrite() throws IOException {
     // close existing file, rename and open as read-only
-    close();
+    spiw.flush();
+    spiw.close();
+
     File prevFile = new File(location);
     File tmpFile = new File(location+".tmp");
     if (tmpFile.exists()) tmpFile.delete();
@@ -623,7 +625,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
     // create new file with current set of objects
     spiw.create(location, this, extraHeader, preallocateSize, isLargeFile);
     spiw.setFill( fill);
-    isClosed = false;
+    //isClosed = false;
 
     // copy old file to new
     List<Variable> oldList = new ArrayList<Variable>(getVariables().size());
@@ -734,9 +736,12 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @throws IOException if I/O error
    */
   public synchronized void close() throws java.io.IOException {
-    flush();
-    spiw.close();
-    isClosed = true;
+    if (spiw != null) {
+      flush();
+      spiw.close();
+      spiw = null;
+    }
+    //isClosed = true;
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////

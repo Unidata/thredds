@@ -72,13 +72,9 @@ public interface FileCacheable {
     if (cache != null) {
       cache.release(this);
     } else {
-      try {
-        if (!isClosed) reallyClose();
-      } finally {
-        isClosed = true;
-      }
+      reallyClose();
     }
-  }
+    isClosed = true;
    </pre>
    * @param fileCache must store this, use it on close as above.
    */

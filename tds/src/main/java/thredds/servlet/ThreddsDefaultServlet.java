@@ -119,6 +119,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
 //       // new FileSystemXmlApplicationContext("C:/dev/tds/thredds/tds/src/main/resources/spring/applic-config.xml");
 //    Object bean = springContext.getBean("openRAFMonitor");
 
+    //// ethan
     // get the URL context :  URLS must be context/catalog/...
     // cannot be overridded in ThreddsConfig
     String contextPath = ServletUtil.getContextPath();
@@ -126,9 +127,11 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     InvDatasetScan.setCatalogServletName("/catalog");
 
     // read in persistent user-defined params from threddsConfog.xml
-    ThreddsConfig.init(this.getServletContext(), contentPath + "/threddsConfig.xml", log);
+    // ThreddsConfig.init(this.getServletContext(), contentPath + "/threddsConfig.xml", log);
     // maybe change the logging
     // ( String datePattern, long maxFileSize, int maxFiles )
+
+    //// not used
     if (ThreddsConfig.hasElement("Logging")) {
       String datePattern = ThreddsConfig.get("Logging.DatePattern", null);
       long maxFileSize = ThreddsConfig.getBytes("Logging.MaxFileSize", -1);
@@ -136,6 +139,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
       changeLogs(datePattern, maxFileSize, maxFiles);
     }
 
+    //// john
     // NetcdfFileCache : default is allow 200 - 400 open files, cleanup every 10 minutes
     int min = ThreddsConfig.getInt("NetcdfFileCache.minFiles", 200);
     int max = ThreddsConfig.getInt("NetcdfFileCache.maxFiles", 400);
@@ -184,8 +188,8 @@ public class ThreddsDefaultServlet extends AbstractServlet {
       Aggregation.setTypicalDatasetMode(typicalDataset);
 
     // some paths cant be set otherwise
-    String defPath = ServletUtil.getRootPath()+"WEB-INF/altContent/idd/thredds/modelInventory";
-    AggregationFmrc.setDefinitionDirectory(defPath);
+    //String defPath = ServletUtil.getRootPath()+"WEB-INF/altContent/idd/thredds/modelInventory";
+    //AggregationFmrc.setDefinitionDirectory(defPath);
 
     // handles all catalogs, including ones with DatasetScan elements, ie dynamic
 //    DataRootHandler.init(contentPath, contextPath);
@@ -197,7 +201,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
 //    DatasetHandler.makeDebugActions();
 
     // Make sure the version info gets calculated.
-    getVersion();
+    // getVersion();
 
     // Nj22 disk cache
     dir = ThreddsConfig.get("DiskCache.dir", contentPath + "cache/");
@@ -212,7 +216,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     timer = new Timer();
     timer.scheduleAtFixedRate(new CacheScourTask(maxSize), c.getTime(), (long) 1000 * scourSecs);
 
-    HtmlWriter.init( null );
+    // HtmlWriter.init( null );
 //    HtmlWriter.init(contextPath, this.getContextName(), this.getVersion(), this.getDocsPath(),
 //        this.getTdsPageCssPath(), this.getTdsCatalogCssPath(),
 //        this.getContextLogoPath(), this.getContextLogoAlt(),

@@ -58,8 +58,8 @@ import java.io.*;
 public class AggregationFmrc extends AggregationOuterDimension {
   static private String definitionDir;
 
-  static public void setDefinitionDirectory(String defDir) {
-    definitionDir = defDir;
+  static public void setDefinitionDirectory(File defDir) {
+    definitionDir = defDir.getPath() + '/';
   }
 
   private FmrcDefinition fmrcDefinition;

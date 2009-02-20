@@ -5,6 +5,8 @@ Build Date = @BUILDTIME@
 Changes in version 4.0
 
  Release Details:
+  35:
+    cleanup NetcdfFile.isClosed(). Make sure you get error if you call read() after close, even in cache/
   34:
     Fmrc.makeDatasets must clear coordinate system.
     GINI polar stereographic bug

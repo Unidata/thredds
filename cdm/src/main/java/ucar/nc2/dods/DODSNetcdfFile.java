@@ -315,9 +315,10 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       cache.release(this);
 
     } else {
-      // if (!isClosed) dodsConnection.closeSession();
-      isClosed = true;
+      dodsConnection = null;
     }
+
+    isClosed = true;
   }
 
   /* parse the DDS, creating a tree of DodsV objects
@@ -1243,6 +1244,9 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   public Array readSection(String variableSection) throws IOException, InvalidRangeException {
     ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
 
+    if (isClosed)
+      throw new IllegalStateException("File is closed");
+
     /* run it through the variableso to pick up caching
     if (cer.child == null) {
       Array result = cer.v.read(cer.section);
@@ -1255,6 +1259,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
   @Override
   protected Array readData(ucar.nc2.Variable v, Section section) throws IOException, InvalidRangeException {
+    if (isClosed)
+      throw new IllegalStateException("File is closed");
 
     // LOOK: what if theres already a CE !!!!
     // create the constraint expression
@@ -1298,6 +1304,9 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   @Override
   public long readToByteChannel(ucar.nc2.Variable v, Section section, WritableByteChannel channel)
         throws java.io.IOException, ucar.ma2.InvalidRangeException {
+    if (isClosed)
+      throw new IllegalStateException("File is closed");
+
     Array result = readData(v, section);
     return IospHelper.transferData(result, channel);
   }
