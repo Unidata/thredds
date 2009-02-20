@@ -33,6 +33,8 @@
  */
 
 
+
+
 package ucar.nc2.iosp.gempak;
 
 
@@ -119,6 +121,9 @@ public class GempakStation implements Station {
 
     /** priority */
     private int spri;
+
+    /** row or column index */
+    private int index;
 
     /** Station description */
     private String sdesc = "";
@@ -408,7 +413,8 @@ public class GempakStation implements Station {
      * @return true if lat or lon is missing
      */
     public boolean isMissing() {
-        return ((slat == GempakConstants.IMISSD) || (slon == GempakConstants.IMISSD));
+        return ((slat == GempakConstants.IMISSD)
+                || (slon == GempakConstants.IMISSD));
     }
 
     /**
@@ -419,5 +425,20 @@ public class GempakStation implements Station {
         return new LatLonPointImpl(getLatitude(), getLongitude());
     }
 
+    /**
+     * Set the row or column index for this station
+     * @param rowOrCol the index
+     */
+    public void setIndex(int rowOrCol) {
+        index = rowOrCol;
+    }
+
+    /**
+     * Get the row or column index for this station
+     * @return the index
+     */
+    public int getIndex() {
+        return index;
+    }
 }
 

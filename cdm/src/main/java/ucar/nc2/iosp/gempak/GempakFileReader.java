@@ -34,6 +34,7 @@
  */
 
 
+
 package ucar.nc2.iosp.gempak;
 
 
@@ -800,6 +801,10 @@ public class GempakFileReader implements GempakConstants {
             buf.append(klnhdr);
             buf.append("; type = ");
             buf.append(ktyprt);
+            buf.append("; packing num = ");
+            buf.append(kpkno);
+            buf.append("; packed rec len = ");
+            buf.append(kwordp);
             buf.append("\nParameters: ");
             if ((params != null) && !params.isEmpty()) {
                 for (int i = 0; i < params.size(); i++) {
@@ -1339,6 +1344,213 @@ public class GempakFileReader implements GempakConstants {
         }
         rf.seek(getOffset(isword));
         return rf.readString(nchar);
+    }
+
+
+    /**
+     * Read the data
+     *
+     * @param  irow  row to read
+     * @param  icol  column to read
+     * @param  partName  part name
+     *
+     * @return  the header and data array  or null;
+     *
+     * @throws IOException problem reading file
+     */
+    public RealData DM_RDTR(int irow, int icol, String partName)
+            throws IOException {
+
+        int ipoint = -1;
+        if ((irow < 1) || (icol > dmLabel.krow) || (icol < 1)
+                || (icol > dmLabel.kcol)) {
+            System.out.println("bad row/column number");
+            return null;
+        }
+        int iprt = getPartNumber(partName);
+        if (iprt == 0) {
+            System.out.println("couldn't find part");
+            return null;
+        }
+        // gotta subtract 1 because parts are 1 but List is 0 based
+        DMPart part = (DMPart) parts.get(iprt - 1);
+        // check for valid data type
+        if ((part.ktyprt != MDREAL) && (part.ktyprt != MDGRID)
+                && (part.ktyprt != MDRPCK)) {
+            System.out.println("Not a valid type");
+            return null;
+        }
+        int ilenhd = part.klnhdr;
+        ipoint = dmLabel.kpdata + (irow - 1) * dmLabel.kcol * dmLabel.kprt
+                 + (icol - 1) * dmLabel.kprt + (iprt - 1);
+
+        float[] rdata  = null;
+        int     istart = DM_RINT(ipoint);
+        if (istart == 0) {
+            return null;
+        }
+        int length = DM_RINT(istart);
+        int isword = istart + 1;
+        if (length <= ilenhd) {
+            System.out.println("length (" + length
+                               + ") is less than header length (" + ilenhd
+                               + ")");
+            return null;
+        } else if (Math.abs(length) > 10000000) {
+            System.out.println("length is huge");
+            return null;
+        }
+        int[] header = new int[ilenhd];
+        DM_RINT(isword, header);
+        int nword = length - ilenhd;
+        isword += header.length;
+        if (part.ktyprt == MDREAL) {
+            rdata = new float[nword];
+            DM_RFLT(isword, rdata);
+            //} else if (part.ktyprt == MDGRID) {
+            //    data = DM_RPKG(isword, nword);
+        } else {  //  packed ints
+            int[] intarr = new int[nword];
+            DM_RINT(isword, intarr);
+            rdata = DM_UNPK(part, intarr);
+        }
+        RealData rd = null;
+        if (rdata != null) {
+            rd = new RealData(header, rdata);
+        }
+
+        return rd;
+
+    }
+
+    /**
+     * Unpack an array of packed integers
+     *
+     * @param part  the part
+     * @param idata the packed data
+     *
+     * @return the unpacked data
+     */
+    public float[] DM_UNPK(DMPart part, int[] idata) {
+        int niword = idata.length;
+        int nparms = part.kparms;
+        int nrword = 0;
+        int nwordp = part.kwordp;
+        if ((part.ktyprt != MDRPCK) || (part.kpkno <= 0)) {
+            System.out.println("Not packed data");
+            return null;
+        }
+        int npack = (niword - 1) / nwordp + 1;
+        if (npack * nwordp != niword) {
+            System.out.println("packed length not quite right");
+            return null;
+        }
+        float[] rdata = new float[npack * nparms];
+        int     ir    = 0;
+        int     ii    = 0;
+        for (int i = 0; i < npack; i++) {
+            DP_UNPK(part.kpkno, idata, ii, rdata, ir);
+            ir += nparms;
+            ii += nwordp;
+        }
+        return rdata;
+
+    }
+
+    /**
+     * Unpack the part
+     *
+     * @param packingNumber the packing number
+     * @param packedData  the array of packed data
+     * @param pOffset     the offset into the array
+     * @param data        the return data
+     * @param uOffset     offset to start writing
+     */
+    public void DP_UNPK(int packingNumber, int[] packedData, int pOffset,
+                        float[] data, int uOffset) {}
+
+    /*
+    public float[] DM_RPKG(int isword, int nword) {
+
+        // from DM_RPKG
+        // read the data packing type
+        int ipktyp = DM_RINT(isword);
+        int iiword = isword + 1;
+        int lendat = nword - 1;
+        if (ipktyp == MDGNON) {  // no packing
+            data = new float[lendat];
+            DM_RFLT(iiword, data);
+            return data;
+        }
+        int iiw;
+        int irw;
+        if (ipktyp == MDGDIF) {
+            iiw = 4;
+            irw = 3;
+        } else if (ipktyp == MDGRB2) {
+            iiw = 4;
+            irw = 1;
+        } else {
+            iiw = 3;
+            irw = 2;
+        }
+        int[]   iarray = new int[iiw];
+        float[] rarray = new float[irw];
+        DM_RINT(iiword, iarray);
+        iiword = iiword + iiw;
+        lendat = lendat - iiw;
+        DM_RFLT(iiword, rarray);
+        iiword = iiword + irw;
+        lendat = lendat - irw;
+        int decimalScale = gr.getDecimalScale();
+
+        if (ipktyp == MDGRB2) {
+            data = unpackGrib2Data(iiword, lendat, iarray, rarray);
+            return data;
+        }
+        int     nbits  = iarray[0];
+        int     misflg = iarray[1];
+        boolean miss   = misflg != 0;
+        int     kxky   = iarray[2];
+        int     mword  = kxky;
+        int     kx     = 0;
+        if (iiw == 4) {
+            kx = iarray[3];
+        }
+        float ref    = rarray[0];
+        float scale  = rarray[1];
+        float difmin = 0;
+        if (irw == 3) {
+            difmin = rarray[2];
+        }
+        data = unpackData(iiword, lendat, ipktyp, kxky, nbits, ref, scale,
+                          miss, difmin, kx, decimalScale);
+    }
+    */
+
+    /**
+     * A class to hold real (float) data
+     *
+     * @author Unidata Development Team
+     */
+    public class RealData {
+
+        /** the header */
+        public int[] header;
+
+        /** the data */
+        public float[] data;
+
+        /**
+         * Create a new holder for the header and data
+         *
+         * @param header  the header
+         * @param data    the data
+         */
+        public RealData(int[] header, float[] data) {
+            this.header = header;
+            this.data   = data;
+        }
     }
 
 }

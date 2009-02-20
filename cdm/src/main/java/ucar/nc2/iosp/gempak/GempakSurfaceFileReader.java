@@ -53,6 +53,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -104,6 +106,9 @@ public class GempakSurfaceFileReader extends GempakFileReader {
 
     /** list of parameters */
     private List<GempakParameter> params;
+
+    /** list of parameters */
+    private Map<String, List<GempakParameter>> partParamMap = new HashMap<String, List<GempakParameter>>();
 
     /** number of parameters */
     private int numParams = 0;
@@ -167,7 +172,6 @@ public class GempakSurfaceFileReader extends GempakFileReader {
         }
 
 
-        // TODO: Handle multiple parts
         numParams = 0;
         String partType = ((dmLabel.kfsrce == 100) && (dmLabel.kprt == 1))
                           ? SFTX
@@ -181,24 +185,26 @@ public class GempakSurfaceFileReader extends GempakFileReader {
         } else {
             numParams = part.kparms;
         }
-        params = makeParams(part);
+
+        for (DMPart apart : parts) {
+            List<GempakParameter> params = makeParams(apart);
+            partParamMap.put(apart.kprtnm, params);
+        }
 
         // get the date/time keys
         dateTimeKeys = getDateTimeKeys();
         if ((dateTimeKeys == null) || dateTimeKeys.isEmpty()) {
             return false;
         }
-        dateList = getDateList();
 
         // get the station info
         stationKeys = getStationKeys();
         if ((stationKeys == null) || stationKeys.isEmpty()) {
             return false;
         }
-        stations = getStationList();
 
+        // determine file type
         String latType = findKey(GempakStation.SLAT).type;
-
         if ( !(findKey(DATE).type.equals(latType))) {
             if (latType.equals(ROW)) {
                 fileType = CLIMATE;
@@ -208,6 +214,9 @@ public class GempakSurfaceFileReader extends GempakFileReader {
         } else {
             fileType = SHIP;
         }
+
+        dateList = getDateList(fileType != SHIP);
+        stations = getStationList();
 
         return true;
 
@@ -236,7 +245,7 @@ public class GempakSurfaceFileReader extends GempakFileReader {
      *
      * @return the list of dates
      */
-    private List<String> getDateList() {
+    private List<String> getDateList(boolean unique) {
         Key         date = dateTimeKeys.get(0);
         Key         time = dateTimeKeys.get(1);
         List<int[]> toCheck;
@@ -245,8 +254,6 @@ public class GempakSurfaceFileReader extends GempakFileReader {
         } else {
             toCheck = headers.colHeaders;
         }
-        SortedSet<String> uniqueTimes =
-            Collections.synchronizedSortedSet(new TreeSet());
         List<String> fileDates = new ArrayList<String>();
         for (int[] header : toCheck) {
             if (header[0] != IMISSD) {
@@ -255,10 +262,14 @@ public class GempakSurfaceFileReader extends GempakFileReader {
                 int itime = header[time.loc + 1];
                 // TODO: Add in the century
                 String dateTime = GempakUtil.TI_CDTM(idate, itime);
-                uniqueTimes.add(dateTime);
+                fileDates.add(dateTime);
             }
         }
-        if ( !uniqueTimes.isEmpty()) {
+        if (unique && !fileDates.isEmpty()) {
+            SortedSet<String> uniqueTimes =
+                Collections.synchronizedSortedSet(new TreeSet<String>());
+            uniqueTimes.addAll(fileDates);
+            fileDates.clear();
             fileDates.addAll(uniqueTimes);
         }
 
@@ -279,6 +290,7 @@ public class GempakSurfaceFileReader extends GempakFileReader {
             String          name = param.kprmnm;
             GempakParameter parm = GempakParameters.getParameter(name);
             if (parm == null) {
+                System.out.println("couldn't find "  + name + " in params table");
                 parm = new GempakParameter(1, name, name, "", 0);
             }
             gemparms.add(parm);
@@ -287,12 +299,13 @@ public class GempakSurfaceFileReader extends GempakFileReader {
     }
 
     /**
-     * Get the list of parameters
+     * Get the list of parameters for the part
      *
+     * @param partName name of the part
      * @return  list of parameters
      */
-    public List<GempakParameter> getParameters() {
-        return params;
+    public List<GempakParameter> getParameters(String partName) {
+        return partParamMap.get(partName);
     }
 
     /**
@@ -311,21 +324,18 @@ public class GempakSurfaceFileReader extends GempakFileReader {
         } else {
             toCheck = headers.colHeaders;
         }
-        SortedSet<GempakStation> uniqueStations =
-            Collections.synchronizedSortedSet(new TreeSet());
         List<GempakStation> fileStations = new ArrayList<GempakStation>();
+        int i = 0;
         for (int[] header : toCheck) {
             if (header[0] != IMISSD) {
                 GempakStation station = makeStation(header);
-                //if (station != null) uniqueStations.add(station);
                 if (station != null) {
+                    station.setIndex(i);
                     fileStations.add(station);
                 }
             }
+            i++;
         }
-        //if (!uniqueStations.isEmpty()) {
-        //     fileStations.addAll(uniqueStations);
-        //}
         return fileStations;
     }
 
@@ -525,6 +535,12 @@ public class GempakSurfaceFileReader extends GempakFileReader {
         if (args.length == 0) {
             System.out.println("need to supply a GEMPAK surface file name");
             System.exit(1);
+        }
+        try {
+            GempakParameters.addParameters(
+                "resources/nj22/tables/gempak/params.tbl");
+        } catch (Exception e) {
+            System.out.println("unable to init param tables");
         }
 
         GempakSurfaceFileReader gsfr = getInstance(getFile(args[0]), true);

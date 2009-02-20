@@ -32,6 +32,8 @@
  */
 
 
+
+
 package ucar.nc2.iosp.gempak;
 
 
@@ -41,7 +43,8 @@ import ucar.unidata.util.StringUtil;
 
 
 /**
- * Class which represents a GEMPAK grid parameter.  Add on decimal scale
+ * Class which represents a GEMPAK parameter.  Add on decimal scale
+ * and numeric flag to the superclass.
  */
 
 public class GempakParameter extends GridParameter {
@@ -53,7 +56,13 @@ public class GempakParameter extends GridParameter {
 
 
     /**
-     * Create a new GEMPAK grid parameter
+     * numeric or char
+     */
+    private boolean isNumeric = true;
+
+
+    /**
+     * Create a new numeric GEMPAK parameter
      * @param number
      * @param name
      * @param description
@@ -62,8 +71,23 @@ public class GempakParameter extends GridParameter {
      */
     public GempakParameter(int number, String name, String description,
                            String unit, int scale) {
+        this(number, name, description, unit, scale, true);
+    }
+
+    /**
+     * Create a new GEMPAK parameter
+     * @param number
+     * @param name
+     * @param description
+     * @param unit of parameter
+     * @param scale   decimal (10E*) scaling factor
+     * @param isNumeric  flag for numeric
+     */
+    public GempakParameter(int number, String name, String description,
+                           String unit, int scale, boolean isNumeric) {
         super(number, name, description, unit);
-        decimalScale = scale;
+        decimalScale   = scale;
+        this.isNumeric = isNumeric;
     }
 
     /**
@@ -72,6 +96,24 @@ public class GempakParameter extends GridParameter {
      */
     public int getDecimalScale() {
         return decimalScale;
+    }
+
+
+    /**
+     * Get whether this is numeric or not
+     * @return true if numeric
+     */
+    public boolean getIsNumeric() {
+        return isNumeric;
+    }
+
+
+    /**
+     * Set whether this is numeric or not
+     * @param yesorno true if numeric
+     */
+    public void setIsNumeric(boolean yesorno) {
+        isNumeric = yesorno;
     }
 
     /**

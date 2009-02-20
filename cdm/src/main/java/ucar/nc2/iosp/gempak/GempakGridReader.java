@@ -374,11 +374,11 @@ public class GempakGridReader extends GempakFileReader {
     }
 
     /**
-     * Get the grid packing type
+     * Read the data
      *
      * @param gr  grid record
      *
-     * @return packing type or error number
+     * @return  the data array
      *
      * @throws IOException problem reading file
      */
