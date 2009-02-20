@@ -421,7 +421,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
   }
 
   public boolean sync() throws IOException {
-    return false;
+    return (ds != null) ? ds.sync() : false;
   }
 
   protected FileCache fileCache;

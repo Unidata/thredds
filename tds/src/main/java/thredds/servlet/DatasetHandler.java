@@ -217,6 +217,16 @@ public class DatasetHandler {
 
   static public GridDataset openGridDataset(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
 
+    /* first look for an fmrc dataset
+    DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
+    if ((match != null) && (match.dataRoot.fmrc != null)) {
+      InvDatasetFmrc fmrc = match.dataRoot.fmrc;
+      if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found InvDatasetFmrc= " + fmrc);
+      GridDataset gridDataset = fmrc.getGridDataset(match.remaining);
+      if (gridDataset == null) throw new FileNotFoundException(reqPath);
+      return gridDataset;
+    } */
+
     // fetch it as a NetcdfFile; this deals with possible NcML
     NetcdfFile ncfile = getNetcdfFile(req, res, reqPath);
     if (ncfile == null) return null;

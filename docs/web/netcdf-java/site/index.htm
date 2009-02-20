@@ -33,7 +33,7 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
 <p>The NetCDF-Java library  implements a <a href="CDM/index.html">Common Data Model </a>(CDM),  a generalization of the NetCDF, OpenDAP and HDF5 data models. The   library is  a prototype for the <a href="http://www.unidata.ucar.edu/content/software/netcdf/netcdf-4/index.html">NetCDF-4 project</a>, which provides a C language  API for the &quot;data access layer&quot; of the CDM, on top of the <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/H5.format.html">HDF5 file format</a>. The NetCDF-Java  library is a 100% Java framework for  <em>reading</em>  netCDF and other file formats into the CDM, as well as <em>writing</em> to the netCDF-3 file format. The NetCDF-Java  library also implements  <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NcML</a>, which allows you to add  metadata to CDM datasets, as well as to create virtual datasets through aggregation.</p>
 <p><strong>Which jar files do I need?</strong> See <a href="reference/JarDependencies.html">Jar Dependencies</a> for explanation of which library you want. </p>
 <p><strong>Which version of Java? </strong>All active versions (2.2.22 and 4.0) require Java 5 or above. Performance and stability is improved in version 6, and so<em> the  latest version of Java 6 is recommended</em><strong>. </strong>NetCDF-Java version 4.1 will likely require Java 1.6. If you are stuck with Java 1.4, you can use the NetCDF-Java 2.2.20 release, but no support or bug fixes are done on that version. </p>
-<h3><strong><a name="v4"></a> Current Development version 4.0 (requires Java 1.5+, will soon require Java 1.6) </strong></h3>
+<h3><strong><a name="v4"></a> Current stable version 4.0 (requires Java 1.5+, will soon require Java 1.6) </strong></h3>
 <p>See <a href="reference/JarDependencies.html">Jar Dependencies</a> for explanation of which library you want:</p>
 <ul>
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdf-4.0.jar">unbundled netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdf-4.0.jar.MD5">MD5</a>) allows you to choose which other jars you need.</li>
@@ -48,11 +48,11 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
   <li>Try out the <strong> 4.0</strong> version of ToolsUI application: <a href="v4.0/webstart/netCDFtools.jnlp">launch from webstart</a>.</li>
 </ul>
 <ul>
-  <li> <a href="v4.0/javadoc/index.html">Public javadoc</a>: This is the public interface. Downloadable <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/javadoc-4.0.jar">jar file</a>. </li>
-  <li><a href="v4.0/javadocAll/index.html">All javadoc: </a>Javadoc for all packages and all methods except private. Downloadable <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/javadocAll-4.0.jar">jar file</a>. CAREFUL, some of this may change.</li>
+  <li> <a href="v4.0/javadoc/index.html">Public javadoc</a>, downloadable <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/javadoc-4.0.jar">jar file</a>. This is the public interface. Future changes to the API will remain backwards compatible with this API. </li>
+  <li><a href="v4.0/javadocAll/index.html">All javadoc, </a>downloadable<a href="v4.0/javadocAll/index.html"> jar file. </a>This is the javadoc for all packages and all methods except private.  CAREFUL, some of this may change.</li>
   <li><a href="transition4.html">Transitioning to version 4.0</a> </li>
 </ul>
-<h3><strong><a name="v22"></a>Current Stable version 2.2.22 (requires Java 1.5+). Bug fixes only, no new development. </strong></h3>
+<h3><strong><a name="v22"></a>Previous stable version 2.2 (requires Java 1.5+). Bug fixes only, no new development. </strong></h3>
 <ul>
   <li> The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.22/ncCore-2.2.22.jar">minimal library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.22/ncCore-2.2.22.jar.MD5">MD5</a>) just reads netcdf-3 (eventually netcdf-4) files.</li>
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.22/netcdf-2.2.22.jar">netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.22/netcdf-2.2.22.jar.MD5">MD5</a>) implements the full CDM model. </li>

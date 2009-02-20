@@ -129,7 +129,7 @@
       <include name="${httpclient.jar}"/>
       <include name="${jdom.jar}"/>
       <include name="${slf4jAPI.jar}"/>
-      <include name="${nlog4j.jar}"/>
+      <include name="${log4j.jar}"/>
       <include name="${spring.jar}"/>
       <include name="${spring-webmvc.jar}"/>
     </patternset>
@@ -142,7 +142,6 @@
       <include name="${http-logging.jar}"/>
       <include name="${slf4jImpl.jar}"/>
       <include name="${jpeg2000.jar}"/>
-      <include name="${nlog4j.jar}"/>
       <include name="${jstl.jar}"/>
       <include name="${jstl-standard.jar}"/>
     </patternset>

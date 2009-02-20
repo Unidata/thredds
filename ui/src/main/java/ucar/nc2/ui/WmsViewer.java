@@ -403,7 +403,7 @@ public class WmsViewer extends JPanel {
 
       for (Element elem : (java.util.List<Element>) layer3Elem.getChildren("Dimension", wmsNamespace)) {
         String name = elem.getAttributeValue("name");
-        System.out.println("Dimension name= " + name);
+        // System.out.println("Dimension name= " + name);
         if (name.equals("time")) {
           String[] st = elem.getText().split(",");
           for (String s : st) times.add(StringUtil.removeWhitespace(s));

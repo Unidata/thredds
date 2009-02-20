@@ -68,7 +68,6 @@
   <property name="logging-minimal.jar" value="slf4j-jdk14-1.5.6.jar"/>
   <property name="logging-maximal.jar" value="slf4j-log4j12-1.5.6.jar"/>
   <property name="log4j.jar" value="log4j-1.2.15.jar"/>
-  <property name="nlog4j.jar" value="nlog4j-1.2.25.jar"/>
   <property name="lucene.jar" value="lucene.jar"/>
   <property name="opendap.jar" value="opendap-2.1.jar"/>
   <property name="resourcesOptional.jar" value="resourcesOptional.jar"/>
@@ -688,7 +687,6 @@
       <fileset refid="runtime.libraries"/>
       <fileset file="${lib.dir}/release/${resourcesOptional.jar}"/>
       <fileset file="${lib.dir}/external/${log4j.jar}"/>
-      <fileset file="${lib.dir}/external/${nlog4j.jar}"/>
       <fileset file="${lib.dir}/external/${logging-maximal.jar}"/>
     </copy>
     <zip destfile="${build.dir}/${ncAll}" basedir="${zip.dir}"/>

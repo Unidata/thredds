@@ -6,7 +6,8 @@ Changes in version 4.0
 
  Release Details:
   34:
-    GINI polar sstereographic bug
+    Fmrc.makeDatasets must clear coordinate system.
+    GINI polar stereographic bug
     grid/grib/gempak refactor
     ToolsUI/FeatureTypes/WMS is rudimentory WMS client
     FeatureDataset extends FileCacheable, so they can be cached directly

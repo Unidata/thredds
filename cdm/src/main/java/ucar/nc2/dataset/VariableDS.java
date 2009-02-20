@@ -206,6 +206,13 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
   }
 
   /**
+   * Remove coordinate system info.
+   */
+  public void clearCoordinateSystems() {
+    this.enhanceProxy = new EnhancementsImpl( this);
+  }
+
+  /**
    * DO NOT USE DIRECTLY. public by accident.
    * Calculate scale/offset/missing value info. This may change the DataType.
    */
@@ -264,10 +271,6 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
    * @return the enhancement mode
    */
   EnumSet<NetcdfDataset.Enhance> getEnhanceMode() { return enhanceMode; }
-
-  //public boolean isCoordinateVariable() {
-  //  return (this instanceof CoordinateAxis) || super.isCoordinateVariable();
-  //}
 
   // Enhancements interface
 

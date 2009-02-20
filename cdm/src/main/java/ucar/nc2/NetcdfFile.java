@@ -90,7 +90,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
   static private int default_buffersize = 8092;
   static private ArrayList<IOServiceProvider> registeredProviders = new ArrayList<IOServiceProvider>();
-  static protected boolean debugSPI = false, debugCompress = false, showRequest = true;
+  static protected boolean debugSPI = false, debugCompress = false, showRequest = false;
   static boolean debugStructureIterator = false;
   static boolean loadWarnings = false;
 

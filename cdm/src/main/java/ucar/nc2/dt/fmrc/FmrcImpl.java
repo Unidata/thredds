@@ -49,12 +49,13 @@ import java.io.PrintWriter;
 
 /**
  * ForecastModelRunCollection implementation.
+ *
  * Uses a GridDataset that has two time dimensions.
  * Assume all grids have the same runTime dimension.
  *
  * @author caron
  */
-public class FmrcImpl implements ForecastModelRunCollection {
+public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.GridDataset {
   static private final String BEST = "best";
   static private final String RUN = "run";
   static private final String FORECAST = "forecast";
@@ -257,14 +258,14 @@ public class FmrcImpl implements ForecastModelRunCollection {
   ////////////////////////////////////////////////////
   // all grids in a gridset have same time coordinate
   private class Gridset {
-    List<GridDatatype> gridList = new ArrayList<GridDatatype>();  // ucar.nc2.dt.GridDatatype
+    List<GridDatatype> gridList = new ArrayList<GridDatatype>();
     ucar.nc2.dt.GridCoordSystem gcs; // keep this so we can call gcs.getTimeAxisForRun( run)
     CoordinateAxis timeAxis;
     String timeDimName;
 
-    HashMap<Date, List<Inventory>> runMap = new HashMap<Date, List<Inventory>>(); // key = run Date, value = List<Invenory>
-    HashMap<Date, List<Inventory>> timeMap = new HashMap<Date, List<Inventory>>(); // key = forecast Date, value = List<Invenory>
-    HashMap<Double, List<Inventory>> offsetMap = new HashMap<Double, List<Inventory>>(); // key = offset Double, value = List<Invenory>
+    HashMap<Date, List<Inventory>> runMap = new HashMap<Date, List<Inventory>>(); // key = run Date
+    HashMap<Date, List<Inventory>> timeMap = new HashMap<Date, List<Inventory>>(); // key = forecast Date
+    HashMap<Double, List<Inventory>> offsetMap = new HashMap<Double, List<Inventory>>(); // key = offset time
     List<Inventory> bestList = new ArrayList<Inventory>();  // best List<Inventory>  */
 
     Gridset(CoordinateAxis timeAxis, ucar.nc2.dt.GridCoordSystem gcs) {
@@ -544,6 +545,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
         Variable orgVar = ncd_2dtime.findVariable(grid.getNameEscaped());
 
         VariableDS v = new VariableDS(target, orgVar, false);
+        v.clearCoordinateSystems();
         v.setDimensions(gridset.makeDimensions(v.getDimensions()));
         v.setProxyReader(subs);
         v.remove(v.findAttribute(_Coordinate.Axes));
@@ -555,8 +557,11 @@ public class FmrcImpl implements ForecastModelRunCollection {
 
     // any non-grid variables
     for (Variable v : src.getVariables()) {
-      if ((null == gridHash.get(v.getName()) && !coordSet.contains(v.getName())))
-        target.addVariable(new VariableDS(newds.getRootGroup(), v, false)); // reparent LOOK fishy !!!!
+      if ((null == gridHash.get(v.getName()) && !coordSet.contains(v.getName()))) {
+        VariableDS vds = new VariableDS(newds.getRootGroup(), v, false); // reparent LOOK fishy !!!!
+        vds.clearCoordinateSystems();
+        target.addVariable(vds);
+      }
     }
 
     newds.finish();
@@ -840,7 +845,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
     //test("C:/dev/thredds/cdm/src/test/data/ncml/AggFmrcGrib.xml", "time");
     //test("C:/dev/thredds/cdm/src/test/data/ncml/aggFmrcGribRunseq.xml", "time");
     //test("C:/dev/thredds/cdm/src/test/data/ncml/aggFmrcNomads.xml", "time");
-    testSync("C:/data/ral/fmrc.ncml", "time");
+    testSync("D:/data/ral/fmrc.ncml", "time");
     //test("C:/data/grib/gfs/puerto/fmrc.ncml", "time");
   }
 
