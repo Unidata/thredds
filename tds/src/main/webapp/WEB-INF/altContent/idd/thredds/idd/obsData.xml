@@ -23,7 +23,7 @@
       </publisher>
     </metadata>
 
-    <!--datasetScan name="Metar Station Data" collectionType="TimeSeries" harvest="true" ID="NWS/METAR" path="station/metar" location="/data/ldm/pub/decoded/netcdf/surface/metar/">
+    <datasetScan name="Metar Station Data" collectionType="TimeSeries" harvest="true" ID="NWS/METAR" path="station/metar" location="/data/ldm/pub/decoded/netcdf/surface/metar/">
       <metadata inherited="true">
         <documentation type="summary">Metars: hourly surface weather observations</documentation>
         <documentation xlink:href="http://metar.noaa.gov/" xlink:title="NWS/NOAA information" />
@@ -76,7 +76,7 @@
           <variable name="wind_speed" vocabulary_name="wind_speed" units="m/s">Wind Speed</variable>
         </variables>
       </metadata>
-      <access urlPath="metars/dataset.html" serviceName="ncss" />
+      <access urlPath="metars" serviceName="ncss" />
       <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" addRecords="true" />
       <filter>
         <include wildcard="*.nc" atomic="true" collection="false" />
@@ -88,7 +88,7 @@
       <addLatest />
       <addDatasetSize />
       <addTimeCoverage datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})_metar.nc$" startTimeSubstitutionPattern="$1-$2-$3T00:00:00" duration="1 day" />
-    </datasetScan-->
+    </datasetScan>
 
     <dataset name="NOAA Profiler Network">
       <metadata inherited="true">

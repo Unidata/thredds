@@ -15,7 +15,7 @@
     <service name="wcsServer" serviceType="WCS" base="/thredds/wcs/" />
   </service>
   <service name="latest" serviceType="Resolver" base="" />
-  <dataset name="NEXRAD Radar">
+  <dataset name="Radar Data">
     <metadata inherited="true">
       <authority>edu.ucar.unidata</authority>
       <documentation type="rights">Freely available</documentation>
@@ -24,8 +24,8 @@
         <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu" />
       </publisher>
     </metadata>
-    <datasetScan name="NEXRAD level 3 Radar (NIDS)" collectionType="TimeSeries" harvest="true" ID="NWS/NEXRAD3" path="nexrad/level3" location="/data/ldm/pub/native/radar/level3/">
-      <documentation type="summary">The NIDS data feed provides roughly 20 radar products sent every 5-10 minutes from 154 sites over NOAAPORT broadcast. These "derived" products include base reflectivity and velocity, composite reflectivity, precipitation estimates, echo tops and VAD winds</documentation>
+    <datasetScan name="NEXRAD Level III Radar" collectionType="TimeSeries" harvest="true" ID="NWS/NEXRAD3" path="nexrad/level3" location="/data/ldm/pub/native/radar/level3/">
+      <documentation type="summary">The Level III data feed provides roughly 20 radar products sent every 5-10 minutes from 154 sites over NOAAPORT broadcast. These "derived" products include base reflectivity and velocity, composite reflectivity, precipitation estimates, echo tops and VAD winds</documentation>
       <documentation xlink:href="http://www.unidata.ucar.edu/data/radar.html" xlink:title="Unidata description of NOAAPORT radar data" />
       <documentation xlink:href="http://www.ncdc.noaa.gov/oa/radar/radarresources.html" xlink:title="NCDC Radar Resources" />
       <documentation xlink:href="http://lwf.ncdc.noaa.gov/oa/radar/radarproducts.html" xlink:title="Description of Radar Products (NCDC)" />
@@ -55,24 +55,27 @@
         <duration>14 days</duration>
       </timeCoverage>
       <variables vocabulary="DIF">
-        <variable name="NTP/PrecipAccum" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Rain" units="in" />
-        <variable name="N1P/PrecipAccum" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Rain" units="in" />
-        <variable name="N0R/BaseReflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
-        <variable name="N1R/BaseReflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
-        <variable name="N2R/BaseReflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
-        <variable name="N3R/BaseReflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
-        <variable name="N0Z/BaseReflecitvity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
-        <variable name="NCR/CompReflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
-        <variable name="N0V/BaseVelocity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
-        <variable name="N1V/BaseVelocity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
-        <variable name="N0S/RadialVelocity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
-        <variable name="N1S/RadialVelocity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
-        <variable name="N2S/RadialVelocity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
-        <variable name="NET/EchoTop" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Clouds &gt; Cloud Optical Depth/Thickness" units="1000 feet" />
-        <variable name="NVL/VertLiquid" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Liquid Water Equivalent" units="kg/m2" />
-        <variable name="NVW/VadWindSpeed" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Atmospheric Winds &gt; Wind Profiles" units="knots" />
-        <variable name="DPA/PrecipArray_0" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Precipitation Amount" units="dBA" />
-        <variable name="DPA/PrecipArray_x" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Precipitation Rate" units="dBA" />
+        <variable name="NTP/Storm Total Rainfall" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Rain" units="in" />
+        <variable name="N1P/Surface Rainfall 1-hour" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Rain" units="in" />
+        <variable name="N0R/Base Reflectivity Tilt 1" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+        <variable name="N1R/Base Reflectivity Tilt 2" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+        <variable name="N2R/Base Reflectivity Tilt 3" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+        <variable name="N3R/Base Reflectivity Tilt 4" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+        <variable name="N0Z/Base Reflecitvity 248nm" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+        <variable name="NCR/Composite Reflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+        <variable name="N0V/Radial Velocity Tilt 1" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
+        <variable name="N1V/Radial Velocity Tilt 2" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
+        <variable name="N0S/Storm-Rel Mean Vel Tilt 1" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
+        <variable name="N1S/Storm-Rel Mean Vel Tilt 2" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
+        <variable name="N2S/Storm-Rel Mean Vel Tilt 3" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
+        <variable name="N3S/Storm-Rel Mean Vel Tilt 4" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
+        <variable name="NET/Echo Tops" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Clouds &gt; Cloud Optical Depth/Thickness" units="1000 feet" />
+        <variable name="NVL/Vertical Liquid H2O" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Liquid Water Equivalent" units="kg/m2" />
+        <variable name="NVW/Velocity Azimuth Display Wind Profile" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Atmospheric Winds &gt; Wind Profiles" units="knots" />
+        <variable name="DPA/Precipitation Array" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Precipitation Amount" units="dBA" />
+        <variable name="DHR/Digital Hybrid Scan Reflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; " units="dbZ" />
+        <variable name="DSP/Storm Total Precipitation" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; " units="in" />
+        <variable name="NMD/Mesocyclone" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; " units="" />
       </variables>
       <metadata inherited="true">
         <serviceName>radial</serviceName>
@@ -80,7 +83,84 @@
         <dataFormat>NIDS</dataFormat>
       </metadata>
       <filter>
-        <include regExp=".*\.nids$" atomic="true" collection="false" />
+        <include wildcard="Level3*.nids" atomic="true" collection="false" />
+        <exclude wildcard="TR*" atomic="false" collection="true" />
+        <exclude wildcard="TV*" atomic="false" collection="true" />
+        <exclude wildcard="TZL" atomic="false" collection="true" />
+      </filter>
+      <addID />
+      <sort>
+        <lexigraphicByName increasing="false" />
+      </sort>
+      <addDatasetSize />
+      <addTimeCoverage datasetNameMatchPattern=".*_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nids$" startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="5 minutes" />
+    </datasetScan>
+    <datasetScan name="TDWR Level III Radar" collectionType="TimeSeries" harvest="true" ID="NWS/TDWR3" path="terminal/level3" location="/data/ldm/pub/native/radar/level3/">
+      <documentation type="summary">The TDWR data feed provides roughly 20 radar products sent every 5-10 minutes from 154 sites over NOAAPORT broadcast. These "derived" products include base reflectivity and velocity, composite reflectivity, precipitation estimates, echo tops and VAD winds</documentation>
+      <documentation xlink:href="http://www.unidata.ucar.edu/data/radar.html" xlink:title="Unidata description of NOAAPORT radar data" />
+      <documentation xlink:href="http://www.ncdc.noaa.gov/oa/radar/radarresources.html" xlink:title="NCDC Radar Resources" />
+      <documentation xlink:href="http://lwf.ncdc.noaa.gov/oa/radar/radarproducts.html" xlink:title="Description of Radar Products (NCDC)" />
+      <creator>
+        <name vocabulary="DIF">DOC/NOAA/NWS</name>
+        <contact url="http://www.roc.noaa.gov/" email="http://www.roc.noaa.gov/Feedback/" />
+      </creator>
+      <geospatialCoverage>
+        <northsouth>
+          <start>20.0</start>
+          <size>40.0</size>
+          <units>degrees_north</units>
+        </northsouth>
+        <eastwest>
+          <start>-135.0</start>
+          <size>70.0</size>
+          <units>degrees_east</units>
+        </eastwest>
+        <updown>
+          <start>0.0</start>
+          <size>0.0</size>
+          <units>km</units>
+        </updown>
+      </geospatialCoverage>
+      <timeCoverage>
+        <end>present</end>
+        <duration>14 days</duration>
+      </timeCoverage>
+      <variables vocabulary="DIF">
+        <variable name="TR0/Base Reflectivity Tilt 1" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+        <variable name="TR1/Base Reflectivity Tilt 2" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+        <variable name="TR2/Base Reflectivity Tilt 3" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+        <variable name="TV0/Base Radial Velocity Tilt 1" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
+        <variable name="TV1/Base Radial Velocity Tilt 2" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
+        <variable name="TV2/Base Radial Velocity Tilt 3" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
+        <variable name="TZL/Long Range Reflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; " units="dbZ" />
+        <variable name="DHR/Digital Hybrid Scan Reflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; " units="dbZ" />
+        <variable name="NCR/Composite Reflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+        <variable name="NET/Echo Tops" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Clouds &gt; Cloud Optical Depth/Thickness" units="1000 feet" />
+        <variable name="NVW/Velocity Azimuth Display Wind Profile" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Atmospheric Winds &gt; Wind Profiles" units="knots" />
+        <variable name="NVL/Vertical Integrated Liquid" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Liquid Water Equivalent" units="kg/m2" />
+        <variable name="N1P/Surface Rainfall 1-hour" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Rain" units="in" />
+        <variable name="NTP/Storm Total Rainfall" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Rain" units="in" />
+        <variable name="DPA/Precipitation Array" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Precipitation Amount" units="dBA" />
+        <variable name="DSP/Storm Total Precipitation" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; " units="in" />
+        <variable name="NMD/Mesocyclone" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; " units="" />
+      </variables>
+      <metadata inherited="true">
+        <serviceName>radial</serviceName>
+        <dataType>Radial</dataType>
+        <dataFormat>TDWR</dataFormat>
+      </metadata>
+      <filter>
+        <include wildcard="Level3*.nids" atomic="true" collection="false" />
+        <exclude wildcard="N0R" atomic="false" collection="true" />
+        <exclude wildcard="N1R" atomic="false" collection="true" />
+        <exclude wildcard="N2R" atomic="false" collection="true" />
+        <exclude wildcard="N3R" atomic="false" collection="true" />
+        <exclude wildcard="N0V" atomic="false" collection="true" />
+        <exclude wildcard="N1V" atomic="false" collection="true" />
+        <exclude wildcard="N0S" atomic="false" collection="true" />
+        <exclude wildcard="N1S" atomic="false" collection="true" />
+        <exclude wildcard="N2S" atomic="false" collection="true" />
+        <exclude wildcard="N3S" atomic="false" collection="true" />
       </filter>
       <addID />
       <sort>
@@ -110,7 +190,7 @@
         </variables>
       </metadata>
       <filter>
-        <include regExp=".*\.ar2v$" atomic="true" collection="false" />
+        <include wildcard="Level2*.ar2v" atomic="true" collection="false" />
       </filter>
       <addID />
       <sort>
@@ -124,12 +204,15 @@
       <metadata inherited="true">
         <dataType>Grid</dataType>
       </metadata>
-      <datasetScan name="NWS NEXRAD Composite 10 km" collectionType="TimeSeries" harvest="true" ID="NWS/NEXRAD/NationalComposite-10km" path="nexrad/composite/nws" location="/data/ldm/pub/native/radar/10km_mosaic/">
+      <datasetScan name="NWS NEXRAD Composite VIP 10 km" collectionType="TimeSeries" harvest="true" ID="NWS/NEXRAD/NationalComposite-10km" path="nexrad/composite/nws" location="/data/ldm/pub/native/radar/10km_mosaic/">
         <variables vocabulary="DIF" />
         <metadata inherited="true">
           <serviceName>all</serviceName>
           <dataFormat>GRIB-1</dataFormat>
-          <documentation type="summary">10 km mosaic of NEXRAD Radar reflectivity. Generated every 30 minutes by NWS, covers continental US.</documentation>
+         <documentation type="summary">10 km mosaic of NEXRAD Radar VIP. Contours of echo reflectivity,
+           also known as "VIP levels" (for Video Integrator and Processor). Generated every 30 minutes
+           by NWS, covers continental US.
+         </documentation>
           <creator>
             <name vocabulary="DIF">DOC/NOAA/NWS</name>
             <contact url="http://www.roc.noaa.gov/" email="http://www.roc.noaa.gov/Feedback/" />
@@ -160,7 +243,7 @@
           </variables>
         </metadata>
         <filter>
-          <include regExp=".*\.grib1$" atomic="true" collection="false" />
+          <include wildcard="RADAR*.grib1" atomic="true" collection="false" />
         </filter>
         <addID />
         <sort>
@@ -207,7 +290,7 @@
           </timeCoverage>
         </metadata>
         <filter>
-          <include regExp=".*\.gini$" atomic="true" collection="false" />
+          <include wildcard="Level3*.gini" atomic="true" collection="false" />
         </filter>
         <addID />
         <sort>
@@ -241,7 +324,7 @@
             <serviceName>radial</serviceName>
           </metadata>
           <filter>
-            <include regExp=".*\.grib2$" atomic="true" collection="false" />
+            <include wildcard="Level3*.grib2" atomic="true" collection="false" />
           </filter>
           <addID />
           <sort>
