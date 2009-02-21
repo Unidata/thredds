@@ -384,10 +384,7 @@ public class GempakGridReader extends GempakFileReader {
      */
     public float[] readGrid(GridRecord gr) throws IOException {
 
-
-        // TODO: merge this with the readData in GempakFileReader.
         int gridNumber = ((GempakGridRecord) gr).getGridNumber();
-        // See DM_RDTR
         int      irow = 1;  // Always 1 for grids
         int      icol = gridNumber;
         RealData data = DM_RDTR(1, gridNumber, "GRID", gr.getDecimalScale());
@@ -397,49 +394,6 @@ public class GempakGridReader extends GempakFileReader {
         }
         return vals;
     }
-
-    /*
-    if ((icol < 1) || (icol > dmLabel.kcol)) {
-        System.out.println("bad grid number " + icol);
-        return null;
-    }
-    int iprt = getPartNumber("GRID");
-    if (iprt == 0) {
-        System.out.println("couldn't find part");
-        return null;
-    }
-    // gotta subtract 1 because parts are 1 but List is 0 based
-    DMPart part = (DMPart) parts.get(iprt - 1);
-    // check for valid data type
-    if (part.ktyprt != MDGRID) {
-        System.out.println("Not a valid type");
-        return null;
-    }
-    int ilenhd = part.klnhdr;
-    int ipoint = dmLabel.kpdata
-                 + (irow - 1) * dmLabel.kcol * dmLabel.kprt
-                 + (icol - 1) * dmLabel.kprt + (iprt - 1);
-    // From DM_RDTR
-    int istart = DM_RINT(ipoint);
-    if (istart == 0) {
-        return null;
-    }
-    int length = DM_RINT(istart);
-    int isword = istart + 1;
-    if (length <= ilenhd) {
-        System.out.println("length (" + length
-                           + ") is less than header length (" + ilenhd
-                           + ")");
-        return null;
-    } else if (Math.abs(length) > 10000000) {
-        System.out.println("length is huge");
-        return null;
-    }
-    int[] header = new int[ilenhd];
-    DM_RINT(isword, header);
-    int nword = length - ilenhd;
-    isword += header.length;
-*/
 
     /**
      * Unpack a packed grid

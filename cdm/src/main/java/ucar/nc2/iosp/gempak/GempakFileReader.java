@@ -1155,7 +1155,7 @@ public class GempakFileReader implements GempakConstants {
         int ipoint = -1;
         if ((irow < 1) || (irow > dmLabel.krow) || (icol < 1)
                 || (icol > dmLabel.kcol)) {
-            System.out.println("bad row/column number");
+            System.out.println("bad row or column number: " + irow + "/" + icol);
             return ipoint;
         }
         int iprt = getPartNumber(partName);
@@ -1363,7 +1363,7 @@ public class GempakFileReader implements GempakConstants {
     }
 
     /**
-     * Read the data
+     * Read the real (float) data
      *
      * @param  irow  row to read
      * @param  icol  column to read
@@ -1498,63 +1498,6 @@ public class GempakFileReader implements GempakConstants {
             throws IOException {
         return null;
     }
-
-    /*
-        // from DM_RPKG
-        // read the data packing type
-        int ipktyp = DM_RINT(isword);
-        int iiword = isword + 1;
-        int lendat = nword - 1;
-        if (ipktyp == MDGNON) {  // no packing
-            data = new float[lendat];
-            DM_RFLT(iiword, data);
-            return data;
-        }
-        int iiw;
-        int irw;
-        if (ipktyp == MDGDIF) {
-            iiw = 4;
-            irw = 3;
-        } else if (ipktyp == MDGRB2) {
-            iiw = 4;
-            irw = 1;
-        } else {
-            iiw = 3;
-            irw = 2;
-        }
-        int[]   iarray = new int[iiw];
-        float[] rarray = new float[irw];
-        DM_RINT(iiword, iarray);
-        iiword = iiword + iiw;
-        lendat = lendat - iiw;
-        DM_RFLT(iiword, rarray);
-        iiword = iiword + irw;
-        lendat = lendat - irw;
-        int decimalScale = gr.getDecimalScale();
-
-        if (ipktyp == MDGRB2) {
-            data = unpackGrib2Data(iiword, lendat, iarray, rarray);
-            return data;
-        }
-        int     nbits  = iarray[0];
-        int     misflg = iarray[1];
-        boolean miss   = misflg != 0;
-        int     kxky   = iarray[2];
-        int     mword  = kxky;
-        int     kx     = 0;
-        if (iiw == 4) {
-            kx = iarray[3];
-        }
-        float ref    = rarray[0];
-        float scale  = rarray[1];
-        float difmin = 0;
-        if (irw == 3) {
-            difmin = rarray[2];
-        }
-        data = unpackData(iiword, lendat, ipktyp, kxky, nbits, ref, scale,
-                          miss, difmin, kx, decimalScale);
-    }
-    */
 
     /**
      * A class to hold real (float) data
