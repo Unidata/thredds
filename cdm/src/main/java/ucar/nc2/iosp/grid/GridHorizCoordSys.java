@@ -156,7 +156,8 @@ public class GridHorizCoordSys {
 
       double np = gds.getDouble( gds.NP ); // # lats between pole and equator  (octet 26/27)
       np = (Double.isNaN(np)) ? 90 : np;
-      gds.addParam(gds.DX, String.valueOf(np));  // fake - need to get actual gaussian calculation here
+      //System.out.println( "np ="+np );
+      gds.addParam(gds.DY, String.valueOf(np));  // fake - need to get actual gaussian calculation here
 
       // hack-a-whack : who is this for ???
       // gds.dy = 2 * gds.La1 / gds.ny;
@@ -281,7 +282,7 @@ public class GridHorizCoordSys {
       double[] yData, xData;
       if (lookup.getProjectionType(gds) == GridTableLookup.RotatedLatLon) {
         double dy = (gds.getDouble("La2") < gds.getDouble(gds.LA1)
-            ? -gds.getDouble("dy") : gds.getDouble("dy"));
+            ? -gds.getDouble(gds.DY) : gds.getDouble(gds.DY));
 
         yData = addCoordAxis(ncfile, "y", gds.getInt(gds.NY),
             gds.getDouble(gds.LA1), dy, "degrees",
