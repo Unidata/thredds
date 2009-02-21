@@ -34,7 +34,6 @@
  */
 
 
-
 package ucar.nc2.iosp.gempak;
 
 
@@ -1360,6 +1359,24 @@ public class GempakFileReader implements GempakConstants {
      */
     public RealData DM_RDTR(int irow, int icol, String partName)
             throws IOException {
+        return DM_RDTR(irow, icol, partName, 1);
+    }
+
+    /**
+     * Read the data
+     *
+     * @param  irow  row to read
+     * @param  icol  column to read
+     * @param  partName  part name
+     * @param  decimalScale scaling factor (power of 10);
+     *
+     * @return  the header and data array  or null;
+     *
+     * @throws IOException problem reading file
+     */
+    public RealData DM_RDTR(int irow, int icol, String partName,
+                            int decimalScale)
+            throws IOException {
 
         int ipoint = -1;
         if ((irow < 1) || (irow > dmLabel.krow) || (icol < 1)
@@ -1369,12 +1386,12 @@ public class GempakFileReader implements GempakConstants {
         }
         int iprt = getPartNumber(partName);
         if (iprt == 0) {
-            System.out.println("couldn't find part");
+            System.out.println("couldn't find part: " + partName);
             return null;
         }
         // gotta subtract 1 because parts are 1 but List is 0 based
         DMPart part = (DMPart) parts.get(iprt - 1);
-        // check for valid data type
+        // check for valid real data type
         if ((part.ktyprt != MDREAL) && (part.ktyprt != MDGRID)
                 && (part.ktyprt != MDRPCK)) {
             System.out.println("Not a valid type");
@@ -1407,12 +1424,10 @@ public class GempakFileReader implements GempakConstants {
         if (part.ktyprt == MDREAL) {
             rdata = new float[nword];
             DM_RFLT(isword, rdata);
-            //} else if (part.ktyprt == MDGRID) {
-            //    data = DM_RPKG(isword, nword);
+        } else if (part.ktyprt == MDGRID) {
+            rdata = DM_RPKG(isword, nword, decimalScale);
         } else {  //  packed ints
-            //int[] intarr = new int[nword];
-            //DM_RINT(isword, intarr);
-            rdata = DM_UNPK(part, isword);
+            rdata = unpackInts(part, isword);
         }
         RealData rd = null;
         if (rdata != null) {
@@ -1424,19 +1439,19 @@ public class GempakFileReader implements GempakConstants {
     }
 
     /**
-     * Unpack the part
+     * Unpack the part  (stand-in for DM_UNPK);
      *
      * @param part  the part
-     * @param isword starting point
-     * @param nword number of words
+     * @param iiword starting word
      *
      * @return the unpacked data
+     *
+     * @throws IOException problem reading file
      */
-    public float[] DM_UNPK(DMPart part, int iiword) 
-            throws IOException {
+    public float[] unpackInts(DMPart part, int iiword) throws IOException {
 
-        List<DMParam> parms = part.params;
-        float[] values = new float[parms.size()];
+        List<DMParam> parms  = part.params;
+        float[]       values = new float[parms.size()];
         bitPos = 0;
         bitBuf = 0;
         next   = 0;
@@ -1445,57 +1460,46 @@ public class GempakFileReader implements GempakConstants {
         ch3    = 0;
         ch4    = 0;
         rf.seek(getOffset(iiword));
-        int   idat;
-        int   i = 0;
+        int idat;
+        int i = 0;
         for (DMParam parm : parms) {
-            float scaleFactor = (float) Math.pow(10.0, -parm.kscale);
-            // TODO: figure out missing bits
+            int   scale       = -parm.kscale;
+            float scaleFactor = (scale == 0)
+                                ? 1.f
+                                : (float) Math.pow(10.0, -parm.kscale);
             idat = bits2UInt(parm.kbits);
+            /* TODO: figure out missing bits
+            not0 = NOT (0)
+            imissc ( idata, ipkno ) = ISHFT ( not0,
+      +                                     nbitsc (idata, ipkno) - 32 )
+            */
             if (idat == IMISSD) {
                 values[i] = IMISSD;
             } else {
                 values[i] = (parm.koffst + idat) * scaleFactor;
             }
-            /*
-            if (i < 25) {
-                System.out.println("values[" + i + "] = " + values[i]);
-            }
-            */
             i++;
         }
         return values;
     }
 
-    /* DM_UNPK
-        int niword = idata.length;
-        int nparms = part.kparms;
-        int nrword = 0;
-        int nwordp = part.kwordp;
-        if ((part.ktyprt != MDRPCK) || (part.kpkno <= 0)) {
-            System.out.println("Not packed data");
-            return null;
-        }
-        int npack = (niword - 1) / nwordp + 1;
-        if (npack * nwordp != niword) {
-            System.out.println("packed length not quite right");
-            return null;
-        }
-        float[] rdata = new float[npack * nparms];
-        int     ir    = 0;
-        int     ii    = 0;
-        for (int i = 0; i < npack; i++) {
-            DP_UNPK(part.kpkno, idata, ii, rdata, ir);
-            ir += nparms;
-            ii += nwordp;
-        }
-        return rdata;
-
-    */
-
+    /**
+     * subclass should implement
+     *
+     * @param isword starting word (1 based)
+     * @param nword  number of words to read
+     * @param decimalScale  decimal scale
+     *
+     * @return  returns null unless subclass overrides
+     *
+     * @throws IOException  problem reading data
+     */
+    public float[] DM_RPKG(int isword, int nword, int decimalScale)
+            throws IOException {
+        return null;
+    }
 
     /*
-    public float[] DM_RPKG(int isword, int nword) {
-
         // from DM_RPKG
         // read the data packing type
         int ipktyp = DM_RINT(isword);

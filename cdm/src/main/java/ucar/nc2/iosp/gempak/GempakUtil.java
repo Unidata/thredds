@@ -331,6 +331,18 @@ public final class GempakUtil {
     }
 
     /**
+     * Test for missing value
+     *
+     * @param value  value to check
+     *
+     * @return  true if missing
+     */
+    public static boolean ERMISS(float value) {
+        return Math.abs(value - GempakConstants.RMISSD)
+               < GempakConstants.RDIFFD;
+    }
+
+    /**
      * This subroutine translates a numeric value for IVCORD into its
      * character value in VCOORD.
      * @param ivcord  integer coordinate value

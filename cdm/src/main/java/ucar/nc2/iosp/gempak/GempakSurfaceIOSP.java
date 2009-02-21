@@ -202,67 +202,58 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         }
         System.out.println("looking for " + v2);
         System.out.println("Section = " + section);
-        long      start         = System.currentTimeMillis();
+        long  start = System.currentTimeMillis();
+        Array array = null;
+        if (gemreader.getSurfaceFileType().equals(gemreader.SHIP)) {
+            //array = readShipData(v2, section);
+        } else if (gemreader.getSurfaceFileType().equals(
+                gemreader.STANDARD)) {
+            array = readStandardData(v2, section);
+        } else {  // climate data
+            //array = readClimateData(v2, section);
+        }
+        //    long took = System.currentTimeMillis() - start;
+        //    System.out.println("  read data took=" + took + " msec ");
+        return array;
+    }
+
+    /**
+     * Read in the data for the variable.  In this case, it should be
+     * a Structure.  The section should be rank 2 (station, time).
+     *
+     * @param v2  variable to read
+     * @param section  section of the variable
+     *
+     * @return the array of data
+     *
+     * @throws IOException  problem reading the file
+     */
+    private Array readStandardData(Variable v2, Section section)
+            throws IOException {
 
         Array dataArray = Array.factory(DataType.FLOAT, section.getShape());
-        Attribute att           = v2.findAttribute("missing_value");
-        float     missing_value = (att == null)
-                                  ? -9999.0f
-                                  : att.getNumericValue().floatValue();
-        /*
-        GridVariable  pv        = (GridVariable) v2.getSPobject();
+        Attribute     att           = v2.findAttribute("missing_value");
+        float         missing_value = (att == null)
+                                      ? -9999.0f
+                                      : att.getNumericValue().floatValue();
+        IndexIterator ii            = dataArray.getIndexIteratorFast();
+        int           rank          = section.getRank();
+        Range         stationRange  = section.getRange(0);
+        Range         timeRange     = section.getRange(1);
 
-        int           count     = 0;
-        Range         timeRange = section.getRange(count++);
-        Range         levRange  = pv.hasVert()
-                                  ? section.getRange(count++)
-                                  : null;
-        Range         yRange    = section.getRange(count++);
-        Range         xRange    = section.getRange(count);
-
-        IndexIterator ii        = dataArray.getIndexIteratorFast();
-
-        // loop over time
-        for (int timeIdx = timeRange.first(); timeIdx <= timeRange.last();
-                timeIdx += timeRange.stride()) {
-            if (pv.hasVert()) {
-                readLevel(v2, timeIdx, levRange, yRange, xRange, ii);
-            } else {
-                readXY(v2, timeIdx, 0, yRange, xRange, ii);
-            }
-        }
-        */
-        IndexIterator ii           = dataArray.getIndexIteratorFast();
-        int           rank         = section.getRank();
-        Range         stationRange = section.getRange(0);
-        Range         timeRange    = null;
-        if (rank > 1) {
-            timeRange = section.getRange(1);
-        }
-        int xyCount = stationRange.length();
-        if (timeRange != null) {
-            xyCount *= timeRange.length();
-        }
-        /*
-        for (int j = 0; j < xyCount; j++) {
-            ii.setFloatNext(missing_value);
-        }
-        */
         for (int y = stationRange.first(); y <= stationRange.last();
                 y += stationRange.stride()) {
             for (int x = timeRange.first(); x <= timeRange.last();
                     x += timeRange.stride()) {
-                GempakFileReader.RealData vals = gemreader.DM_RDTR(x+1,y+1,"SFDT");
+                GempakFileReader.RealData vals = gemreader.DM_RDTR(x + 1,
+                                                     y + 1, "SFDT");
                 if (vals == null) {
-                   ii.setFloatNext(missing_value);
+                    ii.setFloatNext(missing_value);
                 } else {
-                   ii.setFloatNext(vals.data[0]);
+                    ii.setFloatNext(vals.data[0]);
                 }
             }
         }
-
-        //    long took = System.currentTimeMillis() - start;
-        //    System.out.println("  read data took=" + took + " msec ");
 
         return dataArray;
     }
@@ -367,13 +358,17 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         stationTime.add(times);
         // TODO: handle other parts
         List<GempakParameter> params = gemreader.getParameters("SFDT");
-        if (params == null) return;
+        if (params == null) {
+            return;
+        }
         int j = 0;
         for (GempakParameter param : params) {
-            if (j > 0) break;
+            if (j > 0) {
+                break;
+            }
             Variable v = makeParamVariable(param, stationTime);
             v.addAttribute(new Attribute("coordinates",
-                                          "time SLAT SLON SELV"));
+                                         "time SLAT SLON SELV"));
             ncfile.addVariable(null, v);
             j++;
         }

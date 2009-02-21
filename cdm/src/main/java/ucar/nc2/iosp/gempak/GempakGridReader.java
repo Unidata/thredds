@@ -384,57 +384,82 @@ public class GempakGridReader extends GempakFileReader {
      */
     public float[] readGrid(GridRecord gr) throws IOException {
 
-        int     gridNumber = ((GempakGridRecord) gr).getGridNumber();
-        float[] data       = null;
-        // See DM_RDTR
-        int irow = 1;  // Always 1 for grids
-        int icol = gridNumber;
-        if ((icol < 1) || (icol > dmLabel.kcol)) {
-            System.out.println("bad grid number " + icol);
-            return null;
-        }
-        int iprt = getPartNumber("GRID");
-        if (iprt == 0) {
-            System.out.println("couldn't find part");
-            return null;
-        }
-        // gotta subtract 1 because parts are 1 but List is 0 based
-        DMPart part = (DMPart) parts.get(iprt - 1);
-        // check for valid data type
-        if (part.ktyprt != MDGRID) {
-            System.out.println("Not a valid type");
-            return null;
-        }
-        int ilenhd = part.klnhdr;
-        int ipoint = dmLabel.kpdata
-                     + (irow - 1) * dmLabel.kcol * dmLabel.kprt
-                     + (icol - 1) * dmLabel.kprt + (iprt - 1);
-        // From DM_RDTR
-        int istart = DM_RINT(ipoint);
-        if (istart == 0) {
-            return null;
-        }
-        int length = DM_RINT(istart);
-        int isword = istart + 1;
-        if (length <= ilenhd) {
-            System.out.println("length (" + length
-                               + ") is less than header length (" + ilenhd
-                               + ")");
-            return null;
-        } else if (Math.abs(length) > 10000000) {
-            System.out.println("length is huge");
-            return null;
-        }
-        int[] header = new int[ilenhd];
-        DM_RINT(isword, header);
-        int nword = length - ilenhd;
-        isword += header.length;
 
+        // TODO: merge this with the readData in GempakFileReader.
+        int gridNumber = ((GempakGridRecord) gr).getGridNumber();
+        // See DM_RDTR
+        int      irow = 1;  // Always 1 for grids
+        int      icol = gridNumber;
+        RealData data = DM_RDTR(1, gridNumber, "GRID", gr.getDecimalScale());
+        float[]  vals = null;
+        if (data != null) {
+            vals = data.data;
+        }
+        return vals;
+    }
+
+    /*
+    if ((icol < 1) || (icol > dmLabel.kcol)) {
+        System.out.println("bad grid number " + icol);
+        return null;
+    }
+    int iprt = getPartNumber("GRID");
+    if (iprt == 0) {
+        System.out.println("couldn't find part");
+        return null;
+    }
+    // gotta subtract 1 because parts are 1 but List is 0 based
+    DMPart part = (DMPart) parts.get(iprt - 1);
+    // check for valid data type
+    if (part.ktyprt != MDGRID) {
+        System.out.println("Not a valid type");
+        return null;
+    }
+    int ilenhd = part.klnhdr;
+    int ipoint = dmLabel.kpdata
+                 + (irow - 1) * dmLabel.kcol * dmLabel.kprt
+                 + (icol - 1) * dmLabel.kprt + (iprt - 1);
+    // From DM_RDTR
+    int istart = DM_RINT(ipoint);
+    if (istart == 0) {
+        return null;
+    }
+    int length = DM_RINT(istart);
+    int isword = istart + 1;
+    if (length <= ilenhd) {
+        System.out.println("length (" + length
+                           + ") is less than header length (" + ilenhd
+                           + ")");
+        return null;
+    } else if (Math.abs(length) > 10000000) {
+        System.out.println("length is huge");
+        return null;
+    }
+    int[] header = new int[ilenhd];
+    DM_RINT(isword, header);
+    int nword = length - ilenhd;
+    isword += header.length;
+*/
+
+    /**
+     * Unpack a packed grid
+     *
+     * @param isword starting word (1 based)
+     * @param nword  number of words to read
+     * @param decimalScale  decimal scale
+     *
+     * @return  array of unpacked data or null;
+     *
+     * @throws IOException  problem reading data
+     */
+    public float[] DM_RPKG(int isword, int nword, int decimalScale)
+            throws IOException {
         // from DM_RPKG
         // read the data packing type
-        int ipktyp = DM_RINT(isword);
-        int iiword = isword + 1;
-        int lendat = nword - 1;
+        float[] data   = null;
+        int     ipktyp = DM_RINT(isword);
+        int     iiword = isword + 1;
+        int     lendat = nword - 1;
         if (ipktyp == MDGNON) {  // no packing
             data = new float[lendat];
             DM_RFLT(iiword, data);
@@ -460,7 +485,7 @@ public class GempakGridReader extends GempakFileReader {
         DM_RFLT(iiword, rarray);
         iiword = iiword + irw;
         lendat = lendat - irw;
-        int decimalScale = gr.getDecimalScale();
+        //int decimalScale = gr.getDecimalScale();
 
         if (ipktyp == MDGRB2) {
             data = unpackGrib2Data(iiword, lendat, iarray, rarray);
@@ -554,7 +579,10 @@ public class GempakGridReader extends GempakFileReader {
         ch4    = 0;
         rf.seek(getOffset(iiword));
         int   idat;
-        float scaleFactor = (float) Math.pow(10.0, -decimalScale);
+        float scaleFactor = (decimalScale == 0)
+                            ? 1.f
+                            : (float) Math.pow(10.0, -decimalScale);
+        //float scaleFactor = (float) Math.pow(10.0, -decimalScale);
         for (int i = 0; i < values.length; i++) {
             idat = bits2UInt(nbits);
             if (miss && (idat == IMISSD)) {
@@ -671,94 +699,6 @@ public class GempakGridReader extends GempakFileReader {
             printGrids();
         }
     }
-
-    /** bit position */
-    //int bitPos = 0;
-
-    /** bit buffer */
-    //int bitBuf = 0;
-
-    /** bit buffer size */
-    //int next = 0;
-
-    /** character 1 */
-    //private int ch1 = 0;
-
-    /** character 2 */
-    //private int ch2 = 0;
-
-    /** character 3 */
-    //private int ch3 = 0;
-
-    /** character 4 */
-    //private int ch4 = 0;
-
-    /**
-     * Convert bits (nb) to Unsigned Int .
-     *
-     * @param nb  number of bits
-     * @throws IOException
-     * @return int of BinaryDataSection section
-    private int bits2UInt(int nb) throws IOException {
-        int bitsLeft = nb;
-        int result   = 0;
-
-        if (bitPos == 0) {
-            //bitBuf = raf.read();
-            getNextByte();
-            bitPos = 8;
-        }
-
-        while (true) {
-            int shift = bitsLeft - bitPos;
-            if (shift > 0) {
-                // Consume the entire buffer
-                result   |= bitBuf << shift;
-                bitsLeft -= bitPos;
-
-                // Get the next byte from the RandomAccessFile
-                //bitBuf = raf.read();
-                getNextByte();
-                bitPos = 8;
-            } else {
-                // Consume a portion of the buffer
-                result |= bitBuf >> -shift;
-                bitPos -= bitsLeft;
-                bitBuf &= 0xff >> (8 - bitPos);  // mask off consumed bits
-
-                return result;
-            }
-        }                                        // end while
-    }                                            // end bits2Int
-     */
-
-    /**
-     * Get the next byte
-     *
-     * @throws IOException problem reading the byte
-    public void getNextByte() throws IOException {
-        if ( !needToSwap) {
-            // Get the next byte from the RandomAccessFile
-            bitBuf = rf.read();
-        } else {
-            if (next == 3) {
-                bitBuf = ch3;
-            } else if (next == 2) {
-                bitBuf = ch2;
-            } else if (next == 1) {
-                bitBuf = ch1;
-            } else {
-                ch1    = rf.read();
-                ch2    = rf.read();
-                ch3    = rf.read();
-                ch4    = rf.read();
-                bitBuf = ch4;
-                next   = 4;
-            }
-            next--;
-        }
-    }
-     */
 
     /**
      * gb2_ornt
