@@ -243,8 +243,22 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         if (timeRange != null) {
             xyCount *= timeRange.length();
         }
+        /*
         for (int j = 0; j < xyCount; j++) {
             ii.setFloatNext(missing_value);
+        }
+        */
+        for (int y = stationRange.first(); y <= stationRange.last();
+                y += stationRange.stride()) {
+            for (int x = timeRange.first(); x <= timeRange.last();
+                    x += timeRange.stride()) {
+                GempakFileReader.RealData vals = gemreader.DM_RDTR(x+1,y+1,"SFDT");
+                if (vals == null) {
+                   ii.setFloatNext(missing_value);
+                } else {
+                   ii.setFloatNext(vals.data[0]);
+                }
+            }
         }
 
         //    long took = System.currentTimeMillis() - start;
@@ -352,10 +366,18 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         stationTime.add(station);
         stationTime.add(times);
         // TODO: handle other parts
-        /*
         List<GempakParameter> params = gemreader.getParameters("SFDT");
         if (params == null) return;
-        */
+        int j = 0;
+        for (GempakParameter param : params) {
+            if (j > 0) break;
+            Variable v = makeParamVariable(param, stationTime);
+            v.addAttribute(new Attribute("coordinates",
+                                          "time SLAT SLON SELV"));
+            ncfile.addVariable(null, v);
+            j++;
+        }
+        /*
         Structure sfData = makeStructure("SFDT", stationTime);
         if (sfData == null) {
             return;
@@ -363,6 +385,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         sfData.addAttribute(new Attribute("coordinates",
                                           "time SLAT SLON SELV"));
         ncfile.addVariable(null, sfData);
+        */
         ncfile.addAttribute(
             null,
             new Attribute(

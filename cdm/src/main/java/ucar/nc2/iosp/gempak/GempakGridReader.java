@@ -673,25 +673,25 @@ public class GempakGridReader extends GempakFileReader {
     }
 
     /** bit position */
-    int bitPos = 0;
+    //int bitPos = 0;
 
     /** bit buffer */
-    int bitBuf = 0;
+    //int bitBuf = 0;
 
     /** bit buffer size */
-    int next = 0;
+    //int next = 0;
 
     /** character 1 */
-    private int ch1 = 0;
+    //private int ch1 = 0;
 
     /** character 2 */
-    private int ch2 = 0;
+    //private int ch2 = 0;
 
     /** character 3 */
-    private int ch3 = 0;
+    //private int ch3 = 0;
 
     /** character 4 */
-    private int ch4 = 0;
+    //private int ch4 = 0;
 
     /**
      * Convert bits (nb) to Unsigned Int .
@@ -699,7 +699,6 @@ public class GempakGridReader extends GempakFileReader {
      * @param nb  number of bits
      * @throws IOException
      * @return int of BinaryDataSection section
-     */
     private int bits2UInt(int nb) throws IOException {
         int bitsLeft = nb;
         int result   = 0;
@@ -731,12 +730,12 @@ public class GempakGridReader extends GempakFileReader {
             }
         }                                        // end while
     }                                            // end bits2Int
+     */
 
     /**
      * Get the next byte
      *
      * @throws IOException problem reading the byte
-     */
     public void getNextByte() throws IOException {
         if ( !needToSwap) {
             // Get the next byte from the RandomAccessFile
@@ -759,6 +758,7 @@ public class GempakGridReader extends GempakFileReader {
             next--;
         }
     }
+     */
 
     /**
      * gb2_ornt

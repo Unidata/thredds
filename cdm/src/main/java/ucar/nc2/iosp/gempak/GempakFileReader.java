@@ -1154,7 +1154,7 @@ public class GempakFileReader implements GempakConstants {
      */
     public int getDataPointer(int irow, int icol, String partName) {
         int ipoint = -1;
-        if ((irow < 1) || (icol > dmLabel.krow) || (icol < 1)
+        if ((irow < 1) || (irow > dmLabel.krow) || (icol < 1)
                 || (icol > dmLabel.kcol)) {
             System.out.println("bad row/column number");
             return ipoint;
@@ -1362,9 +1362,9 @@ public class GempakFileReader implements GempakConstants {
             throws IOException {
 
         int ipoint = -1;
-        if ((irow < 1) || (icol > dmLabel.krow) || (icol < 1)
+        if ((irow < 1) || (irow > dmLabel.krow) || (icol < 1)
                 || (icol > dmLabel.kcol)) {
-            System.out.println("bad row/column number");
+            System.out.println("bad row/column number " + irow + "/" + icol);
             return null;
         }
         int iprt = getPartNumber(partName);
@@ -1410,9 +1410,9 @@ public class GempakFileReader implements GempakConstants {
             //} else if (part.ktyprt == MDGRID) {
             //    data = DM_RPKG(isword, nword);
         } else {  //  packed ints
-            int[] intarr = new int[nword];
-            DM_RINT(isword, intarr);
-            rdata = DM_UNPK(part, intarr);
+            //int[] intarr = new int[nword];
+            //DM_RINT(isword, intarr);
+            rdata = DM_UNPK(part, isword);
         }
         RealData rd = null;
         if (rdata != null) {
@@ -1424,14 +1424,49 @@ public class GempakFileReader implements GempakConstants {
     }
 
     /**
-     * Unpack an array of packed integers
+     * Unpack the part
      *
      * @param part  the part
-     * @param idata the packed data
+     * @param isword starting point
+     * @param nword number of words
      *
      * @return the unpacked data
      */
-    public float[] DM_UNPK(DMPart part, int[] idata) {
+    public float[] DM_UNPK(DMPart part, int iiword) 
+            throws IOException {
+
+        List<DMParam> parms = part.params;
+        float[] values = new float[parms.size()];
+        bitPos = 0;
+        bitBuf = 0;
+        next   = 0;
+        ch1    = 0;
+        ch2    = 0;
+        ch3    = 0;
+        ch4    = 0;
+        rf.seek(getOffset(iiword));
+        int   idat;
+        int   i = 0;
+        for (DMParam parm : parms) {
+            float scaleFactor = (float) Math.pow(10.0, -parm.kscale);
+            // TODO: figure out missing bits
+            idat = bits2UInt(parm.kbits);
+            if (idat == IMISSD) {
+                values[i] = IMISSD;
+            } else {
+                values[i] = (parm.koffst + idat) * scaleFactor;
+            }
+            /*
+            if (i < 25) {
+                System.out.println("values[" + i + "] = " + values[i]);
+            }
+            */
+            i++;
+        }
+        return values;
+    }
+
+    /* DM_UNPK
         int niword = idata.length;
         int nparms = part.kparms;
         int nrword = 0;
@@ -1455,19 +1490,8 @@ public class GempakFileReader implements GempakConstants {
         }
         return rdata;
 
-    }
+    */
 
-    /**
-     * Unpack the part
-     *
-     * @param packingNumber the packing number
-     * @param packedData  the array of packed data
-     * @param pOffset     the offset into the array
-     * @param data        the return data
-     * @param uOffset     offset to start writing
-     */
-    public void DP_UNPK(int packingNumber, int[] packedData, int pOffset,
-                        float[] data, int uOffset) {}
 
     /*
     public float[] DM_RPKG(int isword, int nword) {
@@ -1550,6 +1574,95 @@ public class GempakFileReader implements GempakConstants {
         public RealData(int[] header, float[] data) {
             this.header = header;
             this.data   = data;
+        }
+    }
+
+
+    /** bit position */
+    int bitPos = 0;
+
+    /** bit buffer */
+    int bitBuf = 0;
+
+    /** bit buffer size */
+    int next = 0;
+
+    /** character 1 */
+    int ch1 = 0;
+
+    /** character 2 */
+    int ch2 = 0;
+
+    /** character 3 */
+    int ch3 = 0;
+
+    /** character 4 */
+    int ch4 = 0;
+
+    /**
+     * Convert bits (nb) to Unsigned Int .
+     *
+     * @param nb  number of bits
+     * @throws IOException
+     * @return int of BinaryDataSection section
+     */
+    public int bits2UInt(int nb) throws IOException {
+        int bitsLeft = nb;
+        int result   = 0;
+
+        if (bitPos == 0) {
+            //bitBuf = raf.read();
+            getNextByte();
+            bitPos = 8;
+        }
+
+        while (true) {
+            int shift = bitsLeft - bitPos;
+            if (shift > 0) {
+                // Consume the entire buffer
+                result   |= bitBuf << shift;
+                bitsLeft -= bitPos;
+
+                // Get the next byte from the RandomAccessFile
+                //bitBuf = raf.read();
+                getNextByte();
+                bitPos = 8;
+            } else {
+                // Consume a portion of the buffer
+                result |= bitBuf >> -shift;
+                bitPos -= bitsLeft;
+                bitBuf &= 0xff >> (8 - bitPos);  // mask off consumed bits
+
+                return result;
+            }
+        }                                        // end while
+    }                                            // end bits2Int
+
+    /**
+     * Get the next byte
+     *
+     * @throws IOException problem reading the byte
+     */
+    public void getNextByte() throws IOException {
+        if ( !needToSwap) {
+            // Get the next byte from the RandomAccessFile
+            bitBuf = rf.read();
+        } else {
+            if (next == 3) {
+                bitBuf = ch3;
+            } else if (next == 2) {
+                bitBuf = ch2;
+            } else if (next == 1) {
+                bitBuf = ch1;
+            } else {
+                ch1    = rf.read();
+                ch2    = rf.read();
+                ch3    = rf.read();
+                ch4    = rf.read();
+                bitBuf = ch4;
+                next   = 4;
+            }
+            next--;
         }
     }
 
