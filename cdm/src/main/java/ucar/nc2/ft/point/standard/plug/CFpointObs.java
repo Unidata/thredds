@@ -101,11 +101,22 @@ public class CFpointObs extends TableConfigurerImpl {
   }
 
   protected TableConfig getPointConfig(NetcdfDataset ds, Formatter errlog) {
-    TableConfig nt = new TableConfig(Table.Type.Structure, "record");
-    nt.structName = "record";
-    nt.featureType = FeatureType.POINT;
-    CoordSysEvaluator.findCoords(nt, ds);
-    return nt;
+        // obs table
+    Variable time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
+    if (time == null) {
+      errlog.format("Must have a Time coordinate");
+      return null;
+    }
+    Dimension obsDim = time.getDimension(0); // what about time(stn, obs) ??
+    boolean hasStruct = obsDim.isUnlimited();
+    TableConfig obs = new TableConfig(Table.Type.Structure, obsDim.getName());
+    obs.structName = hasStruct ? "record" : obsDim.getName();
+    obs.isPsuedoStructure = !hasStruct;
+    obs.dim = obsDim;
+    obs.time = time.getName();
+    obs.featureType = FeatureType.POINT;
+    CoordSysEvaluator.findCoords(obs, ds);
+    return obs;
   }
 
   protected TableConfig getStationConfig(NetcdfDataset ds, Formatter errlog) throws IOException {

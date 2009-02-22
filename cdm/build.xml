@@ -537,10 +537,11 @@
       <package name="thredds.*"/>
       <package name="ucar.*"/>
       <excludepackage name="ucar/nc2/dataset/grid"/>
-      <excludepackage name="ucar/nc2/stream"/>
+      <excludepackage name="ucar/nc2/stream/**"/>
       <excludepackage name="ucar/nc2/jni"/>
       <excludepackage name="ucar/nc2/jni/**"/>
       <excludepackage name="ucar/nc2/util/reflect"/>
+      <excludepackage name="thredds/catalog2/**"/>
       <!-- excludepackage name="ucar/unidata/geoloc/ogc"/>
       <excludepackage name="thredds/wcs/**" / -->
     </javadoc>
