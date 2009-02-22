@@ -1,5 +1,5 @@
 !
-! WMOGRIB1.TBL -- GRIB 1 parameter conversion table version 1
+! GEMPAK Parameter Table
 !
 !ID# NAME                             UNITS                GNAM         SCALE   MISSING  HZREMAP DIRECTION
 !
@@ -21,6 +21,9 @@
 001 Virtual temperature               degC                 TVRC             0  -9999.00        0         0
 001 Virtual temperature               F                    TVRF             0  -9999.00        0         0
 001 Virtual potential temperature     K                    THTV             0  -9999.00        0         0
+001 Maximum 24 hour temperature       degC                 TMAX             0  -9999.00        0         0
+001 Maximum 24 hour temperature       degC                 TMPX             0  -9999.00        0         0
+001 Minimum 24 hour temperature       degC                 TMIN             0  -9999.00        0         0
 001 Maximum 24 hour temperature       degC                 TDXC             0  -9999.00        0         0
 001 Minimum 24 hour temperature       degC                 TDNC             0  -9999.00        0         0
 001 Maximum 24 hour temperature       F                    TDXF             0  -9999.00        0         0
@@ -36,6 +39,7 @@
 001 Daily weather map maximum temp    F                    DMAX             0  -9999.00        0         0
 001 Daily weather map minimum temp    F                    DMIN             0  -9999.00        0         0
 001 Sea Surface Temperature           C                    SSTC             0  -9999.00        0         0
+001 Sea Surface Temperature           C                    SSTM             0  -9999.00        0         0
 001 Sea Surface Temperature           F                    SSTF             0  -9999.00        0         0
 001 Temperature of lifted surface air C                    LTMP             0  -9999.00        0         0
 ! Moisture
@@ -63,8 +67,8 @@
 003 Height                            km                   HGTK             0  -9999.00        0         0
 003 Height                            dam                  HGTD             0  -9999.00        0         0
 003 Height                            ft                   HGFT             0  -9999.00        0         0
-003 Height                            hft                  HGFH             0  -9999.00        0         0
-003 Height                            kft                  HGFK             0  -9999.00        0         0
+003 Height                            100 ft               HGFH             0  -9999.00        0         0
+003 Height                            1000 ft              HGFK             0  -9999.00        0         0
 003 Height                            mile                 HGML             0  -9999.00        0         0
 003 Dry hydrostatic height            meter                DHGT             0  -9999.00        0         0
 003 Moist hydrostatic height          meter                MHGT             0  -9999.00        0         0
@@ -77,9 +81,12 @@
 004 Abbreviated altimeter setting                          SALT             0  -9999.00        0         0
 004 Abbreviated mean sea level press  millibar             SMSL             0  -9999.00        0         0
 004 Pressure tendency                                      PTND             0  -9999.00        0         0
+004 Pressure tendency                                      PT03             0  -9999.00        0         0
 004 3 hr pressure change              millibar             P03C             0  -9999.00        0         0
 004 Pressure tendency and group                            P03D             0  -9999.00        0         0
 004 24 hr pressure change             millibar             P24C             0  -9999.00        0         0
+004 Lowest 1-minute average pressure  millibar             PMN1             0  -9999.00        0         0
+004 Time of lowest 1-min ave pressure                      PMNT             0  -9999.00        0         0
 ! Winds   
 005 u-component of wind (true)        meter/second         UWND             0  -9999.00        0         0
 005 v-component of wind (true)        meter/second         VWND             0  -9999.00        0         0
@@ -95,11 +102,18 @@
 005 Wind gusts                        meter/second         GUMS             0  -9999.00        0         0
 005 Peak 5-second wind direction      degree               PWDR             0  -9999.00        0         0
 005 Peak 5-second wind speed          meter/second         PWSP             0  -9999.00        0         0
+005 Hour of 5-second wind speed       hour                 PWHR             0  -9999.00        0         0
+005 Min  of 5-second wind speed       minute               PWMN             0  -9999.00        0         0
+005 Peak 1-minute wind direction      degree               PKWD             0  -9999.00        0         0
+005 Peak 1-minute wind speed          meter/second         PKWS             0  -9999.00        0         0
+005 Time of peak 1-minute wind (HHMM)                      PKWT             0  -9999.00        0         0
 ! Lifted Condensation Level
 005 Temperature at the LCL            K                    TLCL             0  -9999.00        0         0
 005 Pressure at the LCL               millibar             PLCL             0  -9999.00        0         0
 ! Weather and clouds
 006 Numeric weather code                                   WNUM             0  -9999.00        0         0
+006 Numeric WMO weather code                               WWMO             0  -9999.00        0         0
+006 Numeric past weather WMO code                          PWWM             0  -9999.00        0         0
 006 Cloud height and coverage                              CHC1             0  -9999.00        0         0
 006 Cloud height and coverage                              CHC2             0  -9999.00        0         0
 006 Cloud height and coverage                              CHC3             0  -9999.00        0         0
@@ -107,20 +121,38 @@
 006 Visibility                        km                   VSBK             0  -9999.00        0         0
 006 Visibility                        nautical_mile        VSBN             0  -9999.00        0         0
 006 Duration of sunshine              minute               MSUN             0  -9999.00        0         0
+006 Duration of sunshine              hour                 HSUN             0  -9999.00        0         0
 006 Snow depth                        inch                 SNOW             0  -9999.00        0         0
 006 Amount of new snow                inch                 SNEW             0  -9999.00        0         0
 006 Water equivalent of snow depth    inch                 WEQS             0  -9999.00        0         0
-006 Ceiling                           hft                  CEIL             0  -9999.00        0         0
+006 Ceiling                           100 ft               CEIL             0  -9999.00        0         0
 006 Low-level cloud genera                                 CTYL             0  -9999.00        0         0
 006 Mid-level cloud genera                                 CTYM             0  -9999.00        0         0
 006 High-level cloud genera                                CTYH             0  -9999.00        0         0
 006 Cloud base                                             CBAS             0  -9999.00        0         0
-006 Low Cloud height                  hft                  CLHL             0  -9999.00        0         0
-006 Mid Cloud height                  hft                  CLHM             0  -9999.00        0         0
-006 Hight Cloud height                hft                  CLHH             0  -9999.00        0         0
+006 Low Cloud height                  100 ft               CLHL             0  -9999.00        0         0
+006 Mid Cloud height                  100 ft               CLHM             0  -9999.00        0         0
+006 High Cloud height                 100 ft               CLHH             0  -9999.00        0         0
+006 High Cloud height                 100 ft               CLHH             0  -9999.00        0         0
+006 Cloud Coverage Symbol                                  CFRT             0  -9999.00        0         0
+006 Coverage of celestial dome                             CFRL             0  -9999.00        0         0
 006 Wave height                       m                    WHGT             0  -9999.00        0         0
 006 Wave height                       ft                   WHFT             0  -9999.00        0         0
 006 Wave period                       sec                  WPER             0  -9999.00        0         0
+006 Period of wind wave               sec                  POWW             0  -9999.00        0         0
+006 Height of wind wave               meter                HOWW             0  -9999.00        0         0
+006 Direction of predominant swell    degree               DOSW             0  -9999.00        0         0
+006 Period of predominant swell       second               POSW             0  -9999.00        0         0
+006 Height of predominant swell       meter                HOSW             0  -9999.00        0         0
+006 Direction of secondary swell      degree               DOS2             0  -9999.00        0         0
+006 Period of secondary swell         second               POS2             0  -9999.00        0         0
+006 Height of secondary swell         meter                HOS2             0  -9999.00        0         0
+006 Thickness of ice on ship          meter                IDTH             0  -9999.00        0         0
+006 Rate of ice accretion on ship                          ROIA             0  -9999.00        0         0
+006 Direction from which ship moving  degrees              SHPD             0  -9999.00        0         0
+006 Ship's average speed (3 hour)     knot                 SHPK             0  -9999.00        0         0
+! Misc            
+007 Type of station                                        TOST             0  -9999.00        0         0
 ! Grib functions
 035 Stream function                   m**2 s**-1           STRM             0  -9999.00        0         0
 037 Montgomery streamfunction         m**2 s**-2           PSYM             0  -9999.00        0         0
