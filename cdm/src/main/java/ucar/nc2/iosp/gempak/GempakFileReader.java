@@ -1463,10 +1463,11 @@ public class GempakFileReader implements GempakConstants {
         int idat;
         int i = 0;
         for (DMParam parm : parms) {
-            int   scale       = -parm.kscale;
+            int   scale       = parm.kscale;
+            // save a pow call if we can
             float scaleFactor = (scale == 0)
                                 ? 1.f
-                                : (float) Math.pow(10.0, -parm.kscale);
+                                : (float) Math.pow(10.0, scale);
             idat = bits2UInt(parm.kbits);
             /* TODO: figure out missing bits
             not0 = NOT (0)
@@ -1474,7 +1475,7 @@ public class GempakFileReader implements GempakConstants {
       +                                     nbitsc (idata, ipkno) - 32 )
             */
             if (idat == IMISSD) {
-                values[i] = IMISSD;
+                values[i] = RMISSD;
             } else {
                 values[i] = (parm.koffst + idat) * scaleFactor;
             }

@@ -533,6 +533,7 @@ public class GempakGridReader extends GempakFileReader {
         ch4    = 0;
         rf.seek(getOffset(iiword));
         int   idat;
+        // save a pow call if we can
         float scaleFactor = (decimalScale == 0)
                             ? 1.f
                             : (float) Math.pow(10.0, -decimalScale);
