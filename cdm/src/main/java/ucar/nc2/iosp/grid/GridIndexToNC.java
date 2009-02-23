@@ -154,13 +154,13 @@ public class GridIndexToNC {
       }
     } else if (productDef == 1 || productDef == 11 ) {
       if (ensemble < 41000) {
-         ensembleName = "C_high" + Integer.toString(ensemble - 40000);
+         ensembleName = "Cntrl_high" + Integer.toString(ensemble - 40000);
       } else if (ensemble < 42000) {
-         ensembleName = "C_low" + Integer.toString(ensemble - 41000);
+         ensembleName = "Cntrl_low" + Integer.toString(ensemble - 41000);
       } else if (ensemble < 43000) {
-         ensembleName = "P_neg" + Integer.toString(ensemble - 42000);
+         ensembleName = "Perturb_neg" + Integer.toString(ensemble - 42000);
       } else if (ensemble < 44000) {
-         ensembleName = "P_pos" + Integer.toString(ensemble - 43000);
+         ensembleName = "Perturb_pos" + Integer.toString(ensemble - 43000);
       } else {
          ensembleName = "unknownEnsemble";
       }
