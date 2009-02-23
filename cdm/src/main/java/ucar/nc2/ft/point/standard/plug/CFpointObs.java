@@ -41,6 +41,7 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
+import ucar.nc2.Structure;
 import ucar.ma2.Array;
 
 import java.util.*;
@@ -188,10 +189,43 @@ public class CFpointObs extends TableConfigurerImpl {
       errlog.format("Must have a Time coordinate");
       return null;
     }
-    Dimension obsDim = time.getDimension(0); // what about time(stn, obs) ??
+    Dimension obsDim = time.getDimension(time.getRank()-1); // may be time(time) or time(stn, obs)
     boolean hasStruct = obsDim.isUnlimited();
 
-    Table.Type obsTableType = stnIsScalar || stnIsSingle ? Table.Type.Structure : Table.Type.ParentIndex;
+    Table.Type obsTableType = null;
+    String ragged_parentIndex = Evaluator.getVariableWithAttribute(ds, "standard_name", "ragged_parentIndex");
+    String ragged_rowSize = Evaluator.getVariableWithAttribute(ds, "standard_name", "ragged_rowSize");
+    if (ragged_parentIndex != null)
+      obsTableType = Table.Type.ParentIndex;
+    else if (ragged_rowSize != null)
+      obsTableType = Table.Type.Contiguous;
+
+    // multidim case with Structure (GEMPAK IOSP)
+    if (obsTableType == null) {
+      // Structure(station, time)
+      Structure s = Evaluator.getStructureWithDimensions(ds, stationDim, obsDim);
+      if (s != null) {
+        obsTableType = Table.Type.MultiDimOuter;
+      }
+    }
+
+    // multidim case
+    if (obsTableType == null) {
+      // time(station, time)
+      if (time.getRank() == 2) {
+        obsTableType = Table.Type.MultiDimInner;
+      }
+
+
+      // vars(station, time)
+
+    }
+
+    if (obsTableType == null) {
+        errlog.format("Cannot figure out Station/obs table structure");
+        return null;
+    }
+
     TableConfig obs = new TableConfig(obsTableType, obsDim.getName());
     obs.structName = hasStruct ? "record" : obsDim.getName();
     obs.isPsuedoStructure = !hasStruct;
@@ -199,9 +233,13 @@ public class CFpointObs extends TableConfigurerImpl {
     obs.time = time.getName();
     stnTable.addChild(obs);
 
+    if (obsTableType == Table.Type.MultiDimInner) {
+      obs.dim = obsDim;
+    }
+
+
     if (obsTableType == Table.Type.ParentIndex) {
       // non-contiguous ragged array
-      String ragged_parentIndex = Evaluator.getVariableWithAttribute(ds, "standard_name", "ragged_parentIndex");
       Variable rpIndex = ds.findVariable(ragged_parentIndex);
   
       // construct the map

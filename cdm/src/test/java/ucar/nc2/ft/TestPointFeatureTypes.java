@@ -45,6 +45,7 @@ import java.util.Formatter;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.TestAll;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 import ucar.ma2.DataType;
@@ -61,6 +62,14 @@ public class TestPointFeatureTypes  extends TestCase {
   String topDir = ucar.nc2.TestAll.upcShareTestDataDir+ "station/";
   public TestPointFeatureTypes( String name) {
     super(name);
+  }
+
+  public void testCF() throws IOException {
+    testPointDataset(TestAll.upcShareTestDataDir+"point/netcdf/filtered_apriori_super_calibrated_binned1.nc", FeatureType.POINT, true);
+
+    // CF 1.0 multidim with dimensions reversed 
+    testPointDataset(TestAll.upcShareTestDataDir+"point/netcdf/solrad_point_pearson.ncml", FeatureType.STATION, true);
+
   }
 
   public void testReadAll() throws IOException {
