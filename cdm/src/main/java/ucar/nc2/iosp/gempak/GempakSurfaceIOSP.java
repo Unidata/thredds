@@ -32,6 +32,7 @@
  */
 
 
+
 package ucar.nc2.iosp.gempak;
 
 
@@ -49,6 +50,8 @@ import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
+
+import java.nio.ByteBuffer;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -200,8 +203,8 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         if (gemreader == null) {
             return null;
         }
-        System.out.println("looking for " + v2);
-        System.out.println("Section = " + section);
+        //System.out.println("looking for " + v2);
+        //System.out.println("Section = " + section);
         long  start = System.currentTimeMillis();
         Array array = null;
         if (gemreader.getSurfaceFileType().equals(gemreader.SHIP)) {
@@ -231,31 +234,64 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
     private Array readStandardData(Variable v2, Section section)
             throws IOException {
 
-        Array dataArray = Array.factory(DataType.FLOAT, section.getShape());
-        Attribute     att           = v2.findAttribute("missing_value");
-        float         missing_value = (att == null)
-                                      ? -9999.0f
-                                      : att.getNumericValue().floatValue();
-        IndexIterator ii            = dataArray.getIndexIteratorFast();
-        int           rank          = section.getRank();
-        Range         stationRange  = section.getRange(0);
-        Range         timeRange     = section.getRange(1);
+        Array array = null;
+        if (v2 instanceof Structure) {
+            List<GempakParameter> params =
+                gemreader.getParameters(gemreader.SFDT);
+            Structure                     pdata = (Structure) v2;
+            StructureMembers members            =
+                pdata.makeStructureMembers();
+            List<StructureMembers.Member> mbers = members.getMembers();
+            // each member is a float
+            int i = 0;
+            for (StructureMembers.Member member : mbers) {
+                member.setDataParam(4 * i++);
+            }
+            members.setStructureSize(4 * mbers.size());
+            float[] missing = new float[mbers.size()];
+            int     missnum = 0;
+            for (Variable v : pdata.getVariables()) {
+                Attribute att = v.findAttribute("missing_value");
+                missing[missnum++] = (att == null)
+                                     ? GempakConstants.RMISSD
+                                     : att.getNumericValue().floatValue();
+            }
 
-        for (int y = stationRange.first(); y <= stationRange.last();
-                y += stationRange.stride()) {
-            for (int x = timeRange.first(); x <= timeRange.last();
-                    x += timeRange.stride()) {
-                GempakFileReader.RealData vals = gemreader.DM_RDTR(x + 1,
-                                                     y + 1, "SFDT");
-                if (vals == null) {
-                    ii.setFloatNext(missing_value);
-                } else {
-                    ii.setFloatNext(vals.data[0]);
+
+            int   num          = 0;
+            Range stationRange = section.getRange(0);
+            Range timeRange    = section.getRange(1);
+            int   size         = stationRange.length() * timeRange.length();
+            // Create a ByteBuffer using a byte array
+            byte[]     bytes = new byte[4 * params.size() * size];
+            ByteBuffer buf   = ByteBuffer.wrap(bytes);
+            array = new ArrayStructureBB(members, new int[] { size }, buf, 0);
+
+            for (int y = stationRange.first(); y <= stationRange.last();
+                    y += stationRange.stride()) {
+                for (int x = timeRange.first(); x <= timeRange.last();
+                        x += timeRange.stride()) {
+                    GempakFileReader.RealData vals = gemreader.DM_RDTR(x + 1,
+                                                         y + 1,
+                                                         gemreader.SFDT);
+                    if (vals == null) {
+                        for (int k = 0; i < mbers.size(); k++) {
+                            buf.putFloat(missing[k]);
+                        }
+                    } else {
+                        float[] reals = vals.data;
+                        int     var   = 0;
+                        for (GempakParameter param : params) {
+                            if (members.findMember(param.getName()) != null) {
+                                buf.putFloat(reals[var]);
+                            }
+                            var++;
+                        }
+                    }
                 }
             }
         }
-
-        return dataArray;
+        return array;
     }
 
     /**
@@ -357,7 +393,8 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         stationTime.add(station);
         stationTime.add(times);
         // TODO: handle other parts
-        List<GempakParameter> params = gemreader.getParameters("SFDT");
+        /*
+        List<GempakParameter> params = gemreader.getParameters(gemreader.SFDT);
         if (params == null) {
             return;
         }
@@ -372,15 +409,14 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
             ncfile.addVariable(null, v);
             j++;
         }
-        /*
-        Structure sfData = makeStructure("SFDT", stationTime);
+        */
+        Structure sfData = makeStructure(gemreader.SFDT, stationTime);
         if (sfData == null) {
             return;
         }
         sfData.addAttribute(new Attribute("coordinates",
                                           "time SLAT SLON SELV"));
         ncfile.addVariable(null, sfData);
-        */
         ncfile.addAttribute(
             null,
             new Attribute(
@@ -469,7 +505,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         }
 
         /*
-        List<GempakParameter> params = gemreader.getParameters("SFDT");
+        List<GempakParameter> params = gemreader.getParameters(gemreader.SFDT);
         if (params == null) return;
         for (GempakParameter param : params) {
             Variable var = makeParamVariable(param, records);
@@ -477,7 +513,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
             ncfile.addVariable(null, var);
         }
         */
-        Structure sfData = makeStructure("SFDT", records);
+        Structure sfData = makeStructure(gemreader.SFDT, records);
         if (sfData == null) {
             return;
         }

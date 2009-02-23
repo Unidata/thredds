@@ -34,10 +34,8 @@
  */
 
 
+
 package ucar.nc2.iosp.gempak;
-
-
-//import ucar.nc2.units.DateFromString;
 
 
 import ucar.unidata.io.RandomAccessFile;
@@ -46,15 +44,16 @@ import java.io.*;
 
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.HashMap;
-import java.util.Map;
 
 
 /**
@@ -70,6 +69,9 @@ public class GempakSurfaceFileReader extends GempakFileReader {
 
     /** Surface Data identifier */
     public static final String SFDT = "SFDT";
+
+    /** Surface Data identifier */
+    public static final String SFSP = "SFSP";
 
     /** date key identifier */
     public static final String DATE = "DATE";
@@ -108,7 +110,8 @@ public class GempakSurfaceFileReader extends GempakFileReader {
     private List<GempakParameter> params;
 
     /** list of parameters */
-    private Map<String, List<GempakParameter>> partParamMap = new HashMap<String, List<GempakParameter>>();
+    private Map<String, List<GempakParameter>> partParamMap =
+        new HashMap<String, List<GempakParameter>>();
 
     /** number of parameters */
     private int numParams = 0;
@@ -116,6 +119,7 @@ public class GempakSurfaceFileReader extends GempakFileReader {
     /** flag for standard file */
     private String fileType = null;
 
+    /** data formatter */
     private SimpleDateFormat dateFmt = new SimpleDateFormat(DATE_FORMAT);
 
     /**
@@ -243,6 +247,8 @@ public class GempakSurfaceFileReader extends GempakFileReader {
     /**
      * Get the list of dates
      *
+     * @param unique true for unique list
+     *
      * @return the list of dates
      */
     private List<String> getDateList(boolean unique) {
@@ -277,7 +283,7 @@ public class GempakSurfaceFileReader extends GempakFileReader {
     }
 
     /**
-     * Make GempakParameters from the list of 
+     * Make GempakParameters from the list of
      *
      * @param part  the part to use
      *
@@ -290,7 +296,8 @@ public class GempakSurfaceFileReader extends GempakFileReader {
             String          name = param.kprmnm;
             GempakParameter parm = GempakParameters.getParameter(name);
             if (parm == null) {
-                System.out.println("couldn't find "  + name + " in params table");
+                System.out.println("couldn't find " + name
+                                   + " in params table");
                 parm = new GempakParameter(1, name, name, "", 0);
             }
             gemparms.add(parm);
@@ -325,7 +332,7 @@ public class GempakSurfaceFileReader extends GempakFileReader {
             toCheck = headers.colHeaders;
         }
         List<GempakStation> fileStations = new ArrayList<GempakStation>();
-        int i = 0;
+        int                 i            = 0;
         for (int[] header : toCheck) {
             if (header[0] != IMISSD) {
                 GempakStation station = makeStation(header);
@@ -468,13 +475,12 @@ public class GempakSurfaceFileReader extends GempakFileReader {
      * @return list of stations.
      */
     public List<Date> getDates() {
-        if (dates == null || (dates.isEmpty() && !dateList.isEmpty())) {
+        if ((dates == null) || (dates.isEmpty() && !dateList.isEmpty())) {
             dates = new ArrayList<Date>(dateList.size());
             for (String dateString : dateList) {
-                Date d =
-                    dateFmt.parse(dateString, new ParsePosition(0));
-                    //DateFromString.getDateUsingSimpleDateFormat(dateString,
-                    //    DATE_FORMAT);
+                Date d = dateFmt.parse(dateString, new ParsePosition(0));
+                //DateFromString.getDateUsingSimpleDateFormat(dateString,
+                //    DATE_FORMAT);
                 dates.add(d);
             }
         }
