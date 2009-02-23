@@ -55,22 +55,26 @@ import java.util.ArrayList;
 import org.apache.commons.httpclient.HttpMethod;
 
 /**
- * Connect to remote PointFeatureCollection
+ * Connect to remote Point Dataset
  *
  * @author caron
  * @since Feb 16, 2009
  */
-public class PointDatasetFromNcStream extends PointDatasetImpl {
+public class PointDatasetRemote extends PointDatasetImpl {
+  static public final String SCHEME = "pointDatasetRemote:";
 
   static public FeatureDatasetPoint factory(String endpoint) throws IOException {
+    if (endpoint.startsWith(SCHEME))
+      endpoint = endpoint.substring(SCHEME.length());
+
     NcStreamRemote ncremote = new NcStreamRemote(endpoint, null);
     NetcdfDataset ncd = new NetcdfDataset(ncremote);
-    return new PointDatasetFromNcStream(ncd, ncremote);
+    return new PointDatasetRemote(ncd, ncremote);
   }
 
   private NcStreamRemote ncremote;
 
-  private PointDatasetFromNcStream(NetcdfDataset ncd, NcStreamRemote ncremote) {
+  private PointDatasetRemote(NetcdfDataset ncd, NcStreamRemote ncremote) {
     super(ncd, FeatureType.POINT);
     this.ncremote = ncremote;
     collectionList = new ArrayList<FeatureCollection>(1);
@@ -149,7 +153,7 @@ public class PointDatasetFromNcStream extends PointDatasetImpl {
         EarthLocationImpl location = new EarthLocationImpl(locp.getLat(), locp.getLon(), locp.getAlt());
 
         pf = new MyPointFeature(location, locp.getTime(), locp.getNomTime(), timeUnit, pfp);
-        System.out.println(" count= " + count + " pf=" + pf);
+        //System.out.println(" count= " + count + " pf=" + pf);
         count++;
         return true;
       }
@@ -215,13 +219,37 @@ public class PointDatasetFromNcStream extends PointDatasetImpl {
     }
 
     private String makeRequest() {
-      return "request";
+      boolean needamp = false;
+      StringBuilder sb = new StringBuilder();
+      if (boundingBox != null) {
+        sb.append("east=");
+        sb.append(boundingBox.getLonMin());
+        sb.append("&west=");
+        sb.append(boundingBox.getLonMax());
+        sb.append("&south=");
+        sb.append(boundingBox.getLatMin());
+        sb.append("&north=");
+        sb.append(boundingBox.getLatMax());
+        needamp = true;
+      }
+
+      if (dateRange != null) {
+        if (needamp) sb.append("&");
+        sb.append("time_min=");
+        sb.append(dateRange.getStart().toDateTimeStringISO());
+        sb.append("&time_max=");
+        sb.append(dateRange.getStart().toDateTimeStringISO());
+        needamp = true;
+      }
+
+      if (!needamp) sb.append("all");
+      return sb.toString();
     }
   }
 
   public static void main(String args[]) throws IOException {
     String endpoint = "http://localhost:8080/thredds/ncstream/point/data";
-    FeatureDatasetPoint fd = PointDatasetFromNcStream.factory(endpoint);
+    FeatureDatasetPoint fd = PointDatasetRemote.factory(endpoint);
     PointFeatureCollection pc = (PointFeatureCollection) fd.getPointFeatureCollectionList().get(0);
 
     PointFeatureIterator pfIter = pc.getPointFeatureIterator(-1);

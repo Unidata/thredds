@@ -120,7 +120,7 @@ public class PointStream {
       else
       System.out.println(" unimplemented type = "+m.getDataType());
     }
-    System.out.println(" size= "+size+" bb="+bb.limit());
+    //System.out.println(" size= "+size+" bb="+bb.limit());
     builder.setData(new ByteString( bb.array()));
     return builder.build();
   }

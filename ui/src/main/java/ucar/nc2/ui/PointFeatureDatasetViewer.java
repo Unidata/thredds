@@ -386,12 +386,17 @@ public class PointFeatureDatasetViewer extends JPanel {
   private void subset(LatLonRect geoRegion, DateRange dateRange) throws IOException {
     PointFeatureCollection pc = null;
 
-    if (selectedType == FeatureType.STATION) {
+    if (selectedType == FeatureType.POINT) {
+      PointFeatureCollection ptCollection = (PointFeatureCollection) selectedCollection;
+      pc = ptCollection.subset(geoRegion, dateRange);
+    }
+
+    else if (selectedType == FeatureType.STATION) {
       StationTimeSeriesFeatureCollection stationCollection = (StationTimeSeriesFeatureCollection) selectedCollection;
       pc = stationCollection.flatten(geoRegion, dateRange);
     }
 
-    if (selectedType == FeatureType.STATION_PROFILE) {
+    else if (selectedType == FeatureType.STATION_PROFILE) {
       StationProfileFeatureCollection stationProfileCollection = (StationProfileFeatureCollection) selectedCollection;
       pc = stationProfileCollection.flatten(geoRegion, dateRange);
     }
