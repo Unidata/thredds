@@ -210,6 +210,11 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
+    try {
+      registerIOProvider("ucar.nc2.iosp.gempak.GempakSurfaceIOSP");
+    } catch (Throwable e) {
+      if (loadWarnings) log.info("Cant load class: " + e);
+    }
     userLoads = true;
   }
 
