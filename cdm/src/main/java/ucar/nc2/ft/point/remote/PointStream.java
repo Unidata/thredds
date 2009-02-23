@@ -71,8 +71,10 @@ public class PointStream {
     for (StructureMembers.Member m : sm.getMembers()) {
       PointStreamProto.Member.Builder mbuilder = PointStreamProto.Member.newBuilder();
       mbuilder.setName( m.getName());
-      mbuilder.setDesc( m.getDescription());
-      mbuilder.setUnits( m.getUnitsString());
+      if (null != m.getDescription())
+        mbuilder.setDesc( m.getDescription());
+      if (null != m.getUnitsString())
+        mbuilder.setUnits( m.getUnitsString());
       mbuilder.setDataType( NcStream.encodeDataType(m.getDataType()));
       mbuilder.setSection( NcStream.encodeSection( new ucar.ma2.Section( m.getShape())));
       builder.addMembers(mbuilder);

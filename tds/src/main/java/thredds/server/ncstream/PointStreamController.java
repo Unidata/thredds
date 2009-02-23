@@ -64,7 +64,8 @@ public class PointStreamController extends AbstractController implements LastMod
 
   private TdsContext tdsContext;
   private boolean allow = true;
-  private String location = "R:\\testdata\\point\\netcdf\\971101.PAM_Atl_met.nc";
+  //private String location = "R:\\testdata\\point\\netcdf\\971101.PAM_Atl_met.nc";
+  private String location = "C:/data/ft/point/Compilation_eq.nc";
   private FeatureDatasetPoint fd;
   private PointFeatureCollection pfc;
 
@@ -120,7 +121,6 @@ public class PointStreamController extends AbstractController implements LastMod
         ncWriter.sendHeader(out);
 
       } else { // they want some data
-
 
         int count = 0;
         PointFeatureIterator pfIter = pfc.getPointFeatureIterator(-1);

@@ -154,6 +154,10 @@
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>ncstream</servlet-name>
   </filter-mapping>
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
+    <servlet-name>pointFeature</servlet-name>
+  </filter-mapping>
 
   <!-- New -->
   <filter-mapping>
@@ -265,14 +269,7 @@
   </error-page>
   -->
 
-  <!-- Default Servlet -->
-  <!--
-  <servlet>
-    <servlet-name>ThreddsDefaultServlet</servlet-name>
-    <servlet-class>thredds.servlet.ThreddsDefaultServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-  -->
+  <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
 
   <servlet>
     <servlet-name>root</servlet-name>
@@ -287,21 +284,17 @@
     <load-on-startup>2</load-on-startup>
   </servlet>
 
+  <!-- Setup for the CatalogGen servlet. (Allows scheduling of CatalogGen tasks) -->
   <servlet>
-    <servlet-name>admin</servlet-name>
+    <servlet-name>catalogGen</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>4</load-on-startup>
   </servlet>
 
   <servlet>
-    <servlet-name>MetarSubsetService</servlet-name>
-    <servlet-class>thredds.server.ncSubset.StationObsServlet</servlet-class>
-    <load-on-startup>5</load-on-startup>
-  </servlet>
-
-  <servlet>
-    <servlet-name>GridSubsetService</servlet-name>
-    <servlet-class>thredds.server.ncSubset.GridServlet</servlet-class>
+    <servlet-name>admin</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>4</load-on-startup>
   </servlet>
 
   <!-- data services -->
@@ -333,12 +326,6 @@
     <load-on-startup>3</load-on-startup>
   </servlet>
 
-  <!-- Setup for the CatalogGen servlet. (Allows scheduling of CatalogGen tasks) -->
-  <servlet>
-    <servlet-name>catalogGen</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <load-on-startup>4</load-on-startup>
-  </servlet>
 
   <!-- HTTP File server -->
   <servlet>
@@ -347,11 +334,17 @@
     <load-on-startup>3</load-on-startup>
   </servlet>
 
-  <!-- Metar DQC Server -->
-  <!-- servlet>
-    <servlet-name>MetarServlet</servlet-name>
-    <servlet-class>thredds.servlet.idd.MetarServlet</servlet-class>
-  </servlet -->
+  <servlet>
+    <servlet-name>MetarSubsetService</servlet-name>
+    <servlet-class>thredds.server.ncSubset.StationObsServlet</servlet-class>
+    <load-on-startup>5</load-on-startup>
+  </servlet>
+
+  <servlet>
+    <servlet-name>GridSubsetService</servlet-name>
+    <servlet-class>thredds.server.ncSubset.GridServlet</servlet-class>
+  </servlet>
+
 
   <!-- Radar Server -->
   <servlet>
@@ -359,8 +352,16 @@
     <servlet-class>thredds.server.radarServer.RadarServer</servlet-class>
   </servlet>
 
+  <!-- Experimental ncstream service -->
   <servlet>
     <servlet-name>ncstream</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>4</load-on-startup>
+  </servlet>
+
+  <!-- Experimental point Feature service -->
+  <servlet>
+    <servlet-name>pointFeature</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>4</load-on-startup>
   </servlet>
@@ -465,6 +466,8 @@
     <load-on-startup>10</load-on-startup>
   </servlet>
 
+  <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
+
   <!-- default servlet -->
   <servlet-mapping>
     <servlet-name>root</servlet-name>
@@ -541,6 +544,11 @@
   <servlet-mapping>
     <servlet-name>ncstream</servlet-name>
     <url-pattern>/ncstream/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>pointFeature</servlet-name>
+    <url-pattern>/pointFeature/*</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>

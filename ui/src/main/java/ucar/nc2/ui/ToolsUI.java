@@ -39,6 +39,7 @@ import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.point.writer.WriterCFPointObsDataset;
+import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.ncml.NcMLWriter;
@@ -258,7 +259,7 @@ public class ToolsUI extends JPanel {
       if (cTitle.equals(title)) break;
     }
     if (idx >= n) {
-      if (debugTab) System.out.println("Cant find " + title+" in "+parent);
+      if (debugTab) System.out.println("Cant find " + title + " in " + parent);
       return;
     }
 
@@ -271,7 +272,7 @@ public class ToolsUI extends JPanel {
       ncmlPanel = new NcmlPanel((PreferencesExt) mainPrefs.node("NcML"));
       c = ncmlPanel;
 
-    } else  if (title.equals("BUFR")) {
+    } else if (title.equals("BUFR")) {
       bufrPanel = new BufrPanel((PreferencesExt) mainPrefs.node("bufr"));
       c = bufrPanel;
 
@@ -445,8 +446,8 @@ public class ToolsUI extends JPanel {
           ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
           if (cache != null)
             cache.enable();
-          else 
-            NetcdfDataset.initNetcdfFileCache(10,20,10*60);
+          else
+            NetcdfDataset.initNetcdfFileCache(10, 20, 10 * 60);
         } else {
           ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
           if (cache != null) cache.disable();
@@ -475,26 +476,25 @@ public class ToolsUI extends JPanel {
     BAMutil.setActionProperties(showPropertiesAction, null, "System Properties", false, 'P', -1);
     BAMutil.addActionToMenu(sysMenu, showPropertiesAction);
 
-
-   /* AbstractAction enableDiskCache = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        if (state == isDiskCacheInit) return;
-        isDiskCacheInit = state;
-        if (isDiskCacheInit) {
-          ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
-          if (cache != null)
-            cache.enable();
-          else
-            NetcdfDataset.initNetcdfFileCache(10,20,10*60);
-        } else {
-          ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
-          if (cache != null) cache.disable();
-        }
+    /* AbstractAction enableDiskCache = new AbstractAction() {
+    public void actionPerformed(ActionEvent e) {
+      Boolean state = (Boolean) getValue(BAMutil.STATE);
+      if (state == isDiskCacheInit) return;
+      isDiskCacheInit = state;
+      if (isDiskCacheInit) {
+        ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
+        if (cache != null)
+          cache.enable();
+        else
+          NetcdfDataset.initNetcdfFileCache(10,20,10*60);
+      } else {
+        ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
+        if (cache != null) cache.disable();
       }
-    };
-    BAMutil.setActionPropertiesToggle(enableDiskCache, null, "enable Aggregation DiskCache", isDiskCacheInit, 'N', -1);
-    BAMutil.addActionToMenu(sysMenu, enableDiskCache); */
+    }
+  };
+  BAMutil.setActionPropertiesToggle(enableDiskCache, null, "enable Aggregation DiskCache", isDiskCacheInit, 'N', -1);
+  BAMutil.addActionToMenu(sysMenu, enableDiskCache); */
 
     /* AbstractAction showLoggingAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -810,7 +810,7 @@ public class ToolsUI extends JPanel {
     }
 
     if (s.getServiceType() == thredds.catalog.ServiceType.WMS) {
-      openWMSDataset( invAccess.getStandardUrlName());
+      openWMSDataset(invAccess.getStandardUrlName());
       return;
     }
 
@@ -864,17 +864,11 @@ public class ToolsUI extends JPanel {
       tabbedPane.setSelectedComponent(ftTabPane);
       ftTabPane.setSelectedComponent(radialPanel);
 
-    } else if (threddsData.featureType == FeatureType.POINT) {
-      makeComponent(ftTabPane, "PointObs");
-      pointObsPanel.setPointObsDataset((PointObsDataset) threddsData.featureDataset);
+    } else if (threddsData.featureType.isPointFeatureType()) {
+      makeComponent(ftTabPane, "PointFeature");
+      pointFeaturePanel.setPointFeatureDataset((PointDatasetImpl) threddsData.featureDataset);
       tabbedPane.setSelectedComponent(ftTabPane);
-      ftTabPane.setSelectedComponent(pointObsPanel);
-
-    } else if (threddsData.featureType == FeatureType.STATION) {
-      makeComponent(ftTabPane, "StationObs");
-      stationObsPanel.setStationObsDataset((StationObsDataset) threddsData.featureDataset);
-      tabbedPane.setSelectedComponent(ftTabPane);
-      ftTabPane.setSelectedComponent(stationObsPanel);
+      ftTabPane.setSelectedComponent(pointFeaturePanel);
 
     } else if (threddsData.featureType == FeatureType.STATION_RADIAL) {
       makeComponent(ftTabPane, "StationRadial");
@@ -1320,7 +1314,7 @@ public class ToolsUI extends JPanel {
           {
             try {
               SimpleUnit su = SimpleUnit.factoryWithExceptions(units);
-              sb.append(" unit convert = ").append( su.toString());
+              sb.append(" unit convert = ").append(su.toString());
               if (su.isUnknownUnit())
                 sb.append(" UNKNOWN UNIT");
 
@@ -1513,19 +1507,22 @@ public class ToolsUI extends JPanel {
           if (ds != null) {
             NetcdfDatasetInfo info = null;
             try {
-              info = new NetcdfDatasetInfo( ds.getLocation());
+              info = new NetcdfDatasetInfo(ds.getLocation());
               detailTA.setText(info.writeXML());
               detailTA.appendLine("----------------------");
               detailTA.appendLine(info.getParseInfo());
               detailTA.gotoTop();
 
             } catch (IOException e1) {
-              PrintStream ps = new PrintStream( new ByteArrayOutputStream());
+              PrintStream ps = new PrintStream(new ByteArrayOutputStream());
               e1.printStackTrace(ps);
               detailTA.setText(ps.toString());
 
             } finally {
-              if (info != null) try { info.close(); } catch (IOException ee) {} // do nothing
+              if (info != null) try {
+                info.close();
+              } catch (IOException ee) {
+              } // do nothing
             }
             detailWindow.show();
           }
@@ -1606,7 +1603,7 @@ public class ToolsUI extends JPanel {
 
   /////////////////////////////////////////////////////////////////////
   private class BufrPanel extends OpPanel {
-    ucar.unidata.io.RandomAccessFile raf  = null;
+    ucar.unidata.io.RandomAccessFile raf = null;
     BufrTable bufrTable;
 
     boolean useDefinition = false;
@@ -2024,8 +2021,8 @@ public class ToolsUI extends JPanel {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         FmrcInventory fmrCollection = FmrcInventory.makeFromDirectory(null, "test",
-          null, dirName, suffix, ForecastModelRunInventory.OPEN_FORCE_NEW);
-        
+            null, dirName, suffix, ForecastModelRunInventory.OPEN_FORCE_NEW);
+
         FmrcDefinition def = new FmrcDefinition();
         def.makeFromCollectionInventory(fmrCollection);
 
@@ -2124,23 +2121,21 @@ public class ToolsUI extends JPanel {
           if (ds != null) {
             GridDataset gridDataset = dsTable.getGridDataset();
             URI gdUri = null;
-            try
-            {
-              gdUri = new URI( "http://none.such.server/thredds/wcs/dataset" );
+            try {
+              gdUri = new URI("http://none.such.server/thredds/wcs/dataset");
             }
-            catch ( URISyntaxException e1 )
-            {
+            catch (URISyntaxException e1) {
               e1.printStackTrace();
               return;
             }
             GetCapabilities getCap =
-            ((thredds.wcs.v1_0_0_1.GetCapabilitiesBuilder)
+                ((thredds.wcs.v1_0_0_1.GetCapabilitiesBuilder)
                     thredds.wcs.v1_0_0_1.WcsRequestBuilder
-                            .newWcsRequestBuilder( "1.0.0",
-                                                   thredds.wcs.Request.Operation.GetCapabilities,
-                                                   gridDataset, "" ) )
-                    .setServerUri( gdUri )
-                    .setSection( GetCapabilities.Section.All )
+                        .newWcsRequestBuilder("1.0.0",
+                            thredds.wcs.Request.Operation.GetCapabilities,
+                            gridDataset, ""))
+                    .setServerUri(gdUri)
+                    .setSection(GetCapabilities.Section.All)
                     .buildGetCapabilities();
             try {
               String gc = getCap.writeCapabilitiesReportAsString();
@@ -2572,7 +2567,7 @@ public class ToolsUI extends JPanel {
 
   /////////////////////////////////////////////////////////////////////
   private class FeatureScanPanel extends OpPanel {
-    ucar.unidata.io.RandomAccessFile raf  = null;
+    ucar.unidata.io.RandomAccessFile raf = null;
     FeatureScan ftTable;
     final FileManager dirChooser = new FileManager(parentFrame);
 
@@ -2589,29 +2584,25 @@ public class ToolsUI extends JPanel {
         public void propertyChange(java.beans.PropertyChangeEvent e) {
           if (e.getPropertyName().equals("openPointFeatureDataset")) {
             String datasetName = (String) e.getNewValue();
-            openPointFeatureDataset( datasetName);
-          }
-          else if (e.getPropertyName().equals("openNetcdfFile")) {
+            openPointFeatureDataset(datasetName);
+          } else if (e.getPropertyName().equals("openNetcdfFile")) {
             String datasetName = (String) e.getNewValue();
-            openNetcdfFile( datasetName);
-          }
-          else if (e.getPropertyName().equals("openNetcdfDataset")) {
+            openNetcdfFile(datasetName);
+          } else if (e.getPropertyName().equals("openNetcdfDataset")) {
             String datasetName = (String) e.getNewValue();
-            openNetcdfDataset( datasetName);
-          }
-          else if (e.getPropertyName().equals("openGridDataset")) {
+            openNetcdfDataset(datasetName);
+          } else if (e.getPropertyName().equals("openGridDataset")) {
             String datasetName = (String) e.getNewValue();
-            openGridDataset( datasetName);
-          }
-          else if (e.getPropertyName().equals("openRadialDataset")) {
+            openGridDataset(datasetName);
+          } else if (e.getPropertyName().equals("openRadialDataset")) {
             String datasetName = (String) e.getNewValue();
-            openRadialDataset( datasetName);
+            openRadialDataset(datasetName);
           }
         }
       });
 
       dirChooser.getFileChooser().setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-      dirChooser.setCurrentDirectory( prefs.get("currDir", "."));
+      dirChooser.setCurrentDirectory(prefs.get("currDir", "."));
       AbstractAction fileAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           String filename = dirChooser.chooseFilename();
@@ -2695,10 +2686,10 @@ public class ToolsUI extends JPanel {
       pfViewer.save();
     }
 
-    void doWriteCF( String filename) {
+    void doWriteCF(String filename) {
       try {
         int count = WriterCFPointObsDataset.writePointFeatureCollection(pfDataset, filename);
-        JOptionPane.showMessageDialog(this, count+" records written");
+        JOptionPane.showMessageDialog(this, count + " records written");
       } catch (Exception e) {
         JOptionPane.showMessageDialog(this, "ERROR: " + e.getMessage());
         e.printStackTrace();
@@ -2735,7 +2726,34 @@ public class ToolsUI extends JPanel {
       } catch (IOException e) {
         JOptionPane.showMessageDialog(this, e.getMessage());
         return false;
-        
+
+      } catch (Throwable e) {
+        e.printStackTrace();
+        e.printStackTrace(new PrintStream(bos));
+        ta.setText(log.toString());
+        ta.appendLine(bos.toString());
+
+        JOptionPane.showMessageDialog(this, e.getMessage());
+        return false;
+      }
+    }
+
+    private boolean setPointFeatureDataset(FeatureDatasetPoint pfd) {
+
+      try {
+        if (pfDataset != null) pfDataset.close();
+      } catch (IOException ioe) {
+      }
+      detailTA.clear();
+
+      Formatter log = new Formatter();
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        pfDataset = pfd;
+        pfViewer.setDataset(pfDataset);
+        setSelectedItem(pfDataset.getLocation());
+        return true;
+
       } catch (Throwable e) {
         e.printStackTrace();
         e.printStackTrace(new PrintStream(bos));

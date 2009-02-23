@@ -206,7 +206,7 @@ public class ThreddsDataFactory {
 
     // look for remote FeatureDataset
     if (result.featureType.isPointFeatureType()) {
-      InvAccess access = findAccessByServiceType(invDataset.getAccess(), ServiceType.NetcdfStream);
+      InvAccess access = findAccessByServiceType(invDataset.getAccess(), ServiceType.RemotePointFeature);
       if (access != null)
         return openFeatureDataset(result.featureType, access, task, result);
     }
@@ -287,7 +287,7 @@ public class ThreddsDataFactory {
       return result;
     }
 
-    if (access.getService().getServiceType() == ServiceType.NetcdfStream) {
+    if (access.getService().getServiceType() == ServiceType.RemotePointFeature) {
       result.featureDataset = PointDatasetFromNcStream.factory(access.getStandardUrlName());
 
     } else {
