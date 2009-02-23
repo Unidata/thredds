@@ -108,6 +108,7 @@ public class TestDataRootHandler extends TestCase
     tdsContext.setWebappVersionBrief( "0.0" );
     tdsContext.setWebappVersionBuildDate( "20080904.2244" );
     tdsContext.setContentPath( "thredds" );
+    tdsContext.setContentRootPath( "../../content" );
     tdsContext.setStartupContentPath( "startup" );
     tdsContext.setIddContentPath( "idd" );
     tdsContext.setMotherlodeContentPath( "motherlode" );
