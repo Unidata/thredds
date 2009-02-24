@@ -473,6 +473,41 @@ public class TestSubset extends TestCase {
     dataset.close();
   }
 
+  public void testVerticalAxis() throws Exception {
+    //String uri="dods://www.gri.msstate.edu/rsearch_data/nopp/bora_feb.nc";
+    //String varName = "temp";
+
+    String uri = "C:/dev/tds/thredds/cdm/src/test/data/ncml/nc/cg/CG2006158_120000h_usfc.nc";
+    String varName = "CGusfc";
+    
+
+    GridDataset dataset = GridDataset.open(uri);
+    GeoGrid grid = dataset.findGridByName(varName);
+    assert null != grid;
+
+    GridCoordSystem gcsi = grid.getCoordinateSystem();
+    assert null != gcsi;
+    assert (gcsi.getVerticalAxis() != null);
+
+    GridCoordSys gcs = (GridCoordSys) grid.getCoordinateSystem();
+    assert null != gcs;
+    assert gcs.hasVerticalAxis();          // returns true.
+
+    // subset geogrid
+    GeoGrid subg = grid.subset(null,null,null,1,1,1);
+    assert null != subg;
+
+    GridCoordSystem gcsi2 = subg.getCoordinateSystem();
+    assert null != gcsi2;
+    assert (gcsi2.getVerticalAxis() != null);
+
+    GridCoordSys gcs2 = (GridCoordSys) subg.getCoordinateSystem();
+    assert null != gcs2;
+    assert !gcs2.hasVerticalAxis();          // fails
+
+    dataset.close();
+  }
+
   public void testBBSubsetVP() throws Exception {
     String filename = TestAll.upcShareTestDataDir + "grid/transforms/Eumetsat.VerticalPerspective.grb";
     GridDataset dataset = GridDataset.open(filename);

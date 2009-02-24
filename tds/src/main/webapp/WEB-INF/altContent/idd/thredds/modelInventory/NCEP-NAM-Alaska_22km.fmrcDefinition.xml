@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fmrcDefinition>
-  <vertCoord id="5" name="height_above_ground" units="m">10.0</vertCoord>
-  <vertCoord id="1" name="height_above_ground1" units="m">2.0</vertCoord>
+<fmrcDefinition dataset="http://motherlode.ucar.edu:9080/thredds/catalog/fmrc/NCEP/NAM/Alaska_22km/files/catalog.xml">
+  <vertCoord id="1" name="height_above_ground" units="m">2.0</vertCoord>
+  <vertCoord id="5" name="height_above_ground1" units="m">10.0</vertCoord>
   <vertCoord id="3" name="layer_between_two_heights_above_ground" units="m">0.0,3000.0</vertCoord>
   <vertCoord id="4" name="layer_between_two_isobaric" units="hPa">500.0,1000.0</vertCoord>
   <vertCoord id="2" name="layer_between_two_pressure_difference_from_ground" units="hPa">0.0,30.0</vertCoord>

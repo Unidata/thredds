@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fmrcDefinition dataset="NCEP-GFS-N_Hemisphere_381km">
+<fmrcDefinition dataset="http://motherlode.ucar.edu:9080/thredds/catalog/fmrc/NCEP/GFS/N_Hemisphere_381km/files/catalog.xml">
   <vertCoord id="5" name="isobaric" units="hPa">100.0 150.0 200.0 250.0 300.0 400.0 500.0 700.0 850.0 1000.0</vertCoord>
   <vertCoord id="2" name="isobaric1" units="hPa">200.0 300.0 500.0 700.0 850.0</vertCoord>
-  <vertCoord id="3" name="isobaric2" units="hPa">850.0</vertCoord>
-  <vertCoord id="1" name="isobaric3" units="hPa">500.0</vertCoord>
-  <vertCoord id="4" name="isobaric4" units="hPa">250.0 300.0 400.0 500.0 700.0 850.0</vertCoord>
-  <vertCoord id="0" name="isobaric5" units="hPa">250.0 300.0 500.0 700.0 850.0</vertCoord>
+  <vertCoord id="4" name="isobaric2" units="hPa">250.0 300.0 400.0 500.0 700.0 850.0</vertCoord>
+  <vertCoord id="0" name="isobaric3" units="hPa">500.0</vertCoord>
+  <vertCoord id="3" name="isobaric4" units="hPa">850.0</vertCoord>
+  <vertCoord id="1" name="isobaric5" units="hPa">250.0 300.0 500.0 700.0 850.0</vertCoord>
   <offsetHours id="0">0.0 12.0 24.0 36.0 42.0 48.0 60.0 72.0 84.0 96.0 108.0 120.0</offsetHours>
   <offsetHours id="1">84.0</offsetHours>
   <offsetHours id="2">0.0 6.0 12.0 18.0 24.0 30.0 36.0 42.0 48.0 60.0 66.0 72.0 78.0 84.0 90.0 96.0 102.0 108.0 114.0 120.0</offsetHours>
@@ -17,15 +17,12 @@
   <offsetHours id="8">0.0 12.0 24.0 36.0 48.0 60.0 72.0 84.0 96.0 108.0 120.0</offsetHours>
   <offsetHours id="9">12.0 24.0 36.0 48.0 60.0 72.0 84.0 90.0 96.0 120.0</offsetHours>
   <offsetHours id="10">0.0 6.0 12.0 18.0 24.0 30.0 36.0 42.0 48.0 60.0 72.0 84.0 96.0 108.0</offsetHours>
+  <runSequence allUseSeq="0">
+    <variable name="5-wave_geopotential_height" vertCoord="0" />
+    <variable name="Geopotential_height" vertCoord="1" />
+  </runSequence>
   <runSequence allUseSeq="1">
     <variable name="Convective_precipitation" />
-  </runSequence>
-  <runSequence allUseSeq="0">
-    <variable name="Geopotential_height" vertCoord="0" >
-      <vertTimeCoord restrict="500.0 300.0">42.0</vertTimeCoord >
-      <vertTimeCoord restrict="300.0 500.0 700.0 850.0">96.0</vertTimeCoord >
-    </variable>
-    <variable name="N5-wave_geopotential_height" />
   </runSequence>
   <runSequence allUseSeq="4">
     <variable name="Pressure" />
@@ -37,22 +34,14 @@
     <variable name="Pressure_tropopause" />
   </runSequence>
   <runSequence allUseSeq="3">
-    <variable name="Pressure_vertical_velocity" vertCoord="2" >
-      <vertTimeCoord restrict="500.0">0.0 60.0 72.0 84.0 96.0 108.0 120.0</vertTimeCoord >
-    </variable>
-    <variable name="u_wind" vertCoord="5" >
-      <vertTimeCoord restrict="500.0 250.0">60.0 72.0 84.0 96.0 108.0 120.0</vertTimeCoord >
-    </variable>
+    <variable name="Pressure_vertical_velocity" vertCoord="2" />
+    <variable name="u_wind" vertCoord="5" />
   </runSequence>
   <runSequence allUseSeq="6">
     <variable name="Relative_humidity" vertCoord="3" />
   </runSequence>
   <runSequence allUseSeq="7">
-    <variable name="Temperature" vertCoord="4" >
-      <vertTimeCoord restrict="250.0 500.0 700.0 850.0">0.0 12.0 24.0 36.0 48.0 60.0 84.0 96.0 108.0 120.0</vertTimeCoord >
-      <vertTimeCoord restrict="250.0 300.0 500.0 700.0 850.0">72.0</vertTimeCoord >
-      <vertTimeCoord restrict="400.0">90.0</vertTimeCoord >
-    </variable>
+    <variable name="Temperature" vertCoord="4" />
   </runSequence>
   <runSequence allUseSeq="8">
     <variable name="Temperature_tropopause" />
@@ -64,9 +53,7 @@
     <variable name="Total_precipitation" />
   </runSequence>
   <runSequence allUseSeq="10">
-    <variable name="v_wind" vertCoord="5" >
-      <vertTimeCoord restrict="500.0 250.0">60.0 72.0 84.0 96.0 108.0</vertTimeCoord >
-    </variable>
+    <variable name="v_wind" vertCoord="5" />
   </runSequence>
 </fmrcDefinition>
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fmrcDefinition dataset="http://motherlode.ucar.edu:8081/thredds/catalog/fmrc/NCEP/NAM/Alaska_45km/conduit/files/catalog.xml">
+<fmrcDefinition dataset="http://motherlode.ucar.edu:9080/thredds/catalog/fmrc/NCEP/NAM/Alaska_45km/conduit/files/catalog.xml">
   <vertCoord id="20" name="altitude_above_msl" units="m">914.0 1524.0 1829.0 2134.0 2743.0 3658.0</vertCoord>
   <vertCoord id="15" name="depth_below_surface" units="m">3.0</vertCoord>
   <vertCoord id="14" name="depth_below_surface_layer" units="m">0.1,0.0 0.4,0.1 1.0,0.4 2.0,1.0</vertCoord>
@@ -25,13 +25,11 @@
   <vertCoord id="12" name="pressure_difference_layer5" units="Pa">0.0,3000.0 6000.0,9000.0 12000.0,15000.0 15000.0,18000.0</vertCoord>
   <vertCoord id="19" name="pressure_layer" units="Pa">50000.0,100000.0</vertCoord>
   <offsetHours id="0">0.0 3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0</offsetHours>
-  <offsetHours id="1">0.0 3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0</offsetHours>
-  <offsetHours id="2">0.0 12.0 24.0 36.0 48.0 60.0 72.0</offsetHours>
-  <offsetHours id="3">0.0 6.0 12.0 18.0 24.0 30.0 36.0 42.0 48.0 54.0 60.0 66.0 72.0 78.0</offsetHours>
   <runSequence allUseSeq="0">
     <variable name="Absolute_vorticity" vertCoord="0" />
     <variable name="Albedo" />
-    <variable name="Best_4_layer_Lifted_Index" vertCoord="1" />
+    <variable name="Baseflow-Groundwater_Runoff" />
+    <variable name="Best_Lifted_Index" vertCoord="1" />
     <variable name="Blackadars_Mixing_Length_Scale" />
     <variable name="Categorical_Freezing_Rain" />
     <variable name="Categorical_Ice_Pellets" />
@@ -45,11 +43,13 @@
     <variable name="Convective_available_potential_energy_surface" />
     <variable name="Convective_inhibition" vertCoord="3" />
     <variable name="Convective_inhibition_surface" />
+    <variable name="Convective_precipitation" />
     <variable name="Dew_point_temperature" vertCoord="4" />
     <variable name="Dew_point_temperature_pressure_difference_layer" vertCoord="5" />
     <variable name="Downward_Long-Wave_Rad_Flux" />
     <variable name="Downward_Short-Wave_Rad_Flux" />
     <variable name="Drag_Coefficient" />
+    <variable name="Evaporation" />
     <variable name="Exchange_Coefficient" />
     <variable name="Frictional_Velocity" />
     <variable name="Geopotential_height" vertCoord="6" />
@@ -59,22 +59,25 @@
     <variable name="Geopotential_height_maximum_wind" />
     <variable name="Geopotential_height_surface" />
     <variable name="Geopotential_height_zeroDegC_isotherm" />
+    <variable name="Ground_Heat_Flux" />
     <variable name="High_cloud_cover" />
     <variable name="Horizontal_Moisture_Divergence" vertCoord="7" />
     <variable name="Horizontal_Moisture_Divergence_pressure_difference_layer" vertCoord="5" />
     <variable name="Horizontal_Moisture_Divergence_sigma_layer" />
     <variable name="Ice_cover_Proportion" />
-    <variable name="Land_cover_1land_2sea" />
+    <variable name="Land_cover_1=land,_2=sea" />
+    <variable name="Large_scale_precipitation_non-convective" />
     <variable name="Latent_heat_net_flux" />
     <variable name="Low_cloud_cover" />
     <variable name="MSLP_Eta_Reduction" />
     <variable name="Medium_cloud_cover" />
     <variable name="Moisture_Availability" vertCoord="8" />
-    <variable name="Momentum_flux_u_component" />
-    <variable name="Momentum_flux_v_component" />
+    <variable name="Momentum_flux,_u_component" />
+    <variable name="Momentum_flux,_v_component" />
     <variable name="Parcel_lifted_index_to_500_hPa" vertCoord="5" />
     <variable name="Planetary_Boundary_Layer_Height" />
     <variable name="Plant_Canopy_Surface_Water" />
+    <variable name="Potential_Evaporation" />
     <variable name="Potential_temperature" vertCoord="9" />
     <variable name="Potential_temperature_pressure_difference_layer" vertCoord="5" />
     <variable name="Precipitable_water" />
@@ -101,6 +104,8 @@
     <variable name="Rime_Factor" vertCoord="2" />
     <variable name="Rime_Factor_hybrid" />
     <variable name="Sensible_heat_net_flux" />
+    <variable name="Snow_Phase_Change_Heat_Flux" />
+    <variable name="Snow_melt" />
     <variable name="Snow_mixing_ratio" vertCoord="2" />
     <variable name="Snow_mixing_ratio_hybrid" />
     <variable name="Soil_moisture_content" vertCoord="13" />
@@ -112,6 +117,7 @@
     <variable name="Specific_humidity_pressure_difference_layer" vertCoord="10" />
     <variable name="Specific_humidity_sigma" />
     <variable name="Specific_humidity_surface" />
+    <variable name="Storm_Surface_Runoff" />
     <variable name="Storm_relative_helicity" vertCoord="17" />
     <variable name="Stream_function" vertCoord="18" />
     <variable name="Surface_Lifted_Index" vertCoord="19" />
@@ -131,6 +137,7 @@
     <variable name="Total_Column_Integrated_Snow" />
     <variable name="Total_Condensate" />
     <variable name="Total_cloud_cover" />
+    <variable name="Total_precipitation" />
     <variable name="Turbulent_kinetic_energy" vertCoord="2" />
     <variable name="Turbulent_kinetic_energy_hybrid" />
     <variable name="U-Component_Storm_Motion" vertCoord="21" />
@@ -142,7 +149,9 @@
     <variable name="U-component_of_wind_pressure_difference_layer" vertCoord="10" />
     <variable name="U-component_of_wind_sigma" />
     <variable name="U-component_of_wind_tropopause" />
+    <variable name="Upward_Long-Wave_Rad_Flux" />
     <variable name="Upward_Long-Wave_Rad_Flux_surface" />
+    <variable name="Upward_Short-Wave_Rad_Flux" />
     <variable name="Upward_Short-Wave_Rad_Flux_surface" />
     <variable name="V-Component_Storm_Motion" vertCoord="21" />
     <variable name="V-component_of_wind" vertCoord="6" />
@@ -163,30 +172,6 @@
     <variable name="Water_equivalent_of_accumulated_snow_depth" />
     <variable name="Water_temperature" />
     <variable name="Wind_speed_gust" />
-  </runSequence>
-  <runSequence>
-    <run runHour="0.0" offsetHourSeq="2" />
-    <run runHour="6.0" offsetHourSeq="1" />
-    <run runHour="12.0" offsetHourSeq="2" />
-    <run runHour="18.0" offsetHourSeq="1" />
-    <variable name="Baseflow-Groundwater_Runoff" />
-    <variable name="Convective_precipitation" />
-    <variable name="Evaporation" />
-    <variable name="Large_scale_precipitation_non-convective" />
-    <variable name="Potential_Evaporation" />
-    <variable name="Snow_melt" />
-    <variable name="Storm_Surface_Runoff" />
-    <variable name="Total_precipitation" />
-  </runSequence>
-  <runSequence>
-    <run runHour="0.0" offsetHourSeq="3" />
-    <run runHour="6.0" offsetHourSeq="1" />
-    <run runHour="12.0" offsetHourSeq="3" />
-    <run runHour="18.0" offsetHourSeq="1" />
-    <variable name="Ground_Heat_Flux" />
-    <variable name="Snow_Phase_Change_Heat_Flux" />
-    <variable name="Upward_Long-Wave_Rad_Flux" />
-    <variable name="Upward_Short-Wave_Rad_Flux" />
   </runSequence>
 </fmrcDefinition>
 

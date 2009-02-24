@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fmrcDefinition>
+<fmrcDefinition dataset="http://motherlode.ucar.edu:9080/thredds/catalog/fmrc/NCEP/GFS/CONUS_95km/files/catalog.xml">
   <vertCoord id="7" name="height_above_ground" units="m">10.0</vertCoord>
   <vertCoord id="6" name="height_above_ground1" units="m">2.0</vertCoord>
   <vertCoord id="2" name="isobaric" units="hPa">100.0 150.0 200.0 250.0 300.0 400.0 500.0 700.0 850.0 1000.0</vertCoord>
@@ -22,9 +22,7 @@
     <variable name="Pressure" />
     <variable name="Pressure_reduced_to_MSL" />
     <variable name="Pressure_tropopause" />
-    <variable name="Pressure_vertical_velocity" vertCoord="2">
-      <vertTimeCoord restrict="1200.0 300.0 500.0 700.0 850.0 1000.0">84.0</vertTimeCoord>
-    </variable>
+    <variable name="Pressure_vertical_velocity" vertCoord="2" />
     <variable name="Relative_humidity" vertCoord="3" />
     <variable name="Relative_humidity_layer_between_two_pressure_difference_from_ground" vertCoord="4" />
     <variable name="Relative_humidity_layer_between_two_sigmas" vertCoord="5" />

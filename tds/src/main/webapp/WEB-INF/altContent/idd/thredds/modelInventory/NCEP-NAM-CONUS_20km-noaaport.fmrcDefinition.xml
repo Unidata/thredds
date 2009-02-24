@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fmrcDefinition>
+<fmrcDefinition dataset="http://motherlode.ucar.edu:9080/thredds/catalog/fmrc/NCEP/NAM/CONUS_20km/noaaport/files/catalog.xml">
   <vertCoord id="2" name="height_above_ground" units="m">2.0</vertCoord>
   <vertCoord id="6" name="height_above_ground1" units="m">10.0</vertCoord>
   <vertCoord id="0" name="isobaric" units="hPa">250.0 500.0 700.0 850.0 1000.0</vertCoord>
@@ -8,13 +8,12 @@
   <vertCoord id="1" name="layer_between_two_pressure_difference_from_ground1" units="hPa">0.0,180.0</vertCoord>
   <vertCoord id="3" name="layer_between_two_pressure_difference_from_ground2" units="hPa">0.0,30.0</vertCoord>
   <offsetHours id="0">0.0 3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0</offsetHours>
-  <offsetHours id="1">0.0 3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0</offsetHours>
+  <offsetHours id="1">0.0 3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0</offsetHours>
   <runSequence>
-    <run runHour="0.0" offsetHourSeq="1" />
-    <run runHour="6.0" offsetHourSeq="0" />
-    <run runHour="12.0" offsetHourSeq="1" />
-    <run runHour="18.0" offsetHourSeq="0" />
-    <run runHour="24.0" offsetHourSeq="1" />
+    <run runHour="0.0" offsetHourSeq="0" />
+    <run runHour="6.0" offsetHourSeq="1" />
+    <run runHour="12.0" offsetHourSeq="0" />
+    <run runHour="18.0" offsetHourSeq="1" />
     <variable name="Absolute_vorticity" vertCoord="0" />
     <variable name="Best_4-layer_lifted_index" vertCoord="1" />
     <variable name="Convective_Avail_Pot_Energy" vertCoord="1" />

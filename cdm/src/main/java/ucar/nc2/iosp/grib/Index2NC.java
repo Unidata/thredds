@@ -550,14 +550,20 @@ public class Index2NC  {
       // create a variable for each entry
       Collection<GribVariable> vars = hcs.varHash.values();
       for (GribVariable pv : vars) {
-        Variable v = pv.makeVariable(ncfile, hcs.getGroup(), true);
-        ncfile.addVariable( hcs.getGroup(), v);
+        Group g = hcs.getGroup() == null ? ncfile.getRootGroup() : hcs.getGroup();
+        Variable v = pv.makeVariable(ncfile, g, true);
+        if (g.findVariable( v.getShortName()) != null) { // already got. can happen when a new vert level is added
+          logger.warn("GribServiceProvider.Index2NC: FmrcCoordSys has 2 variables mapped to ="+v.getShortName()+
+                  " for file "+ncfile.getLocation());
+        } else
+          g.addVariable( v);
       }
 
       // add coordinate variables at the end
       for (GribTimeCoord tcs : timeCoords) {
         tcs.addToNetcdfFile(ncfile, hcs.getGroup());
       }
+
       hcs.addToNetcdfFile( ncfile);
       for (GribVertCoord gvcs : vertCoords) {
         gvcs.addToNetcdfFile(ncfile, hcs.getGroup());

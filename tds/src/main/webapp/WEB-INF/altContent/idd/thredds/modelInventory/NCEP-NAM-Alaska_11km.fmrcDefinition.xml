@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmrcDefinition dataset="http://motherlode.ucar.edu:9080/thredds/catalog/fmrc/NCEP/NAM/Alaska_11km/files/catalog.xml">
   <vertCoord id="9" name="height_above_ground" units="m">10.0</vertCoord>
-  <vertCoord id="2" name="height_above_ground1" units="m">1000.0</vertCoord>
-  <vertCoord id="3" name="height_above_ground2" units="m">2.0</vertCoord>
+  <vertCoord id="3" name="height_above_ground1" units="m">2.0</vertCoord>
+  <vertCoord id="2" name="height_above_ground2" units="m">1000.0</vertCoord>
   <vertCoord id="4" name="pressure" units="Pa">10000.0 15000.0 20000.0 25000.0 30000.0 35000.0 40000.0 45000.0 50000.0 52500.0 55000.0 57500.0 60000.0 62500.0 65000.0 67500.0 70000.0 72500.0 75000.0 77500.0 80000.0 82500.0 85000.0 87500.0 90000.0 92500.0 95000.0 97500.0 100000.0</vertCoord>
   <vertCoord id="0" name="pressure1" units="Pa">25000.0 50000.0 70000.0 85000.0 100000.0</vertCoord>
   <vertCoord id="6" name="pressure2" units="Pa">30000.0 35000.0 40000.0 45000.0 50000.0 52500.0 55000.0 57500.0 60000.0 62500.0 65000.0 67500.0 70000.0 72500.0 75000.0 77500.0 80000.0 82500.0 85000.0 87500.0 90000.0 92500.0 95000.0 97500.0 100000.0</vertCoord>
@@ -11,10 +11,10 @@
   <vertCoord id="5" name="pressure_difference_layer2" units="Pa">0.0,3000.0</vertCoord>
   <vertCoord id="8" name="pressure_layer" units="Pa">50000.0,100000.0</vertCoord>
   <offsetHours id="0">0.0 3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0</offsetHours>
-  <offsetHours id="1">0.0 3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0</offsetHours>
+  <offsetHours id="1">3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0</offsetHours>
   <runSequence allUseSeq="0">
     <variable name="Absolute_vorticity" vertCoord="0" />
-    <variable name="Best_4_layer_Lifted_Index" vertCoord="1" />
+    <variable name="Best_Lifted_Index" vertCoord="1" />
     <variable name="Categorical_Freezing_Rain" />
     <variable name="Categorical_Ice_Pellets" />
     <variable name="Categorical_Rain" />
@@ -29,7 +29,7 @@
     <variable name="Geopotential_height" vertCoord="4" />
     <variable name="Geopotential_height_zeroDegC_isotherm" />
     <variable name="MSLP_Eta_Reduction" />
-    <variable name="MaximumComposite_radar_reflectivity" />
+    <variable name="Maximum/Composite_radar_reflectivity" />
     <variable name="Maximum_temperature" vertCoord="3" />
     <variable name="Minimum_temperature" vertCoord="3" />
     <variable name="Parcel_lifted_index_to_500_hPa" vertCoord="5" />
@@ -38,6 +38,9 @@
     <variable name="Pressure_reduced_to_MSL" />
     <variable name="Pressure_surface" />
     <variable name="Pressure_tropopause" />
+    <variable name="Probablity_of_1_tenth_inch_Precipipation_POP" />
+    <variable name="Probablity_of_freezing_precipipation" />
+    <variable name="Probablity_of_frozen_precipipation" />
     <variable name="Relative_humidity" vertCoord="6" />
     <variable name="Relative_humidity_height_above_ground" vertCoord="3" />
     <variable name="Relative_humidity_pressure_difference_layer" vertCoord="7" />
@@ -50,6 +53,7 @@
     <variable name="Temperature_height_above_ground" vertCoord="3" />
     <variable name="Temperature_pressure_difference_layer" vertCoord="7" />
     <variable name="Temperature_tropopause" />
+    <variable name="Thunderstorm_probability" />
     <variable name="Total_cloud_cover" />
     <variable name="U-component_of_wind" vertCoord="4" />
     <variable name="U-component_of_wind_height_above_ground" vertCoord="9" />
@@ -69,10 +73,6 @@
   </runSequence>
   <runSequence allUseSeq="1">
     <variable name="Convective_precipitation" />
-    <variable name="Probablity_of_1_tenth_inch_Precipipation_POP" />
-    <variable name="Probablity_of_freezing_precipipation" />
-    <variable name="Probablity_of_frozen_precipipation" />
-    <variable name="Thunderstorm_probability" />
     <variable name="Total_precipitation" />
   </runSequence>
 </fmrcDefinition>

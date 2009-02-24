@@ -237,6 +237,9 @@ public class CFpointObs extends TableConfigurerImpl {
       obs.dim = obsDim;
     }
 
+    if (obsTableType == Table.Type.Contiguous) {
+      obs.numRecords = ragged_rowSize;
+    }
 
     if (obsTableType == Table.Type.ParentIndex) {
       // non-contiguous ragged array

@@ -3,17 +3,33 @@
   <vertCoord id="2" name="height_above_ground" units="m">10.0</vertCoord>
   <vertCoord id="1" name="height_above_ground1" units="m">2.0</vertCoord>
   <vertCoord id="0" name="pressure_difference_layer" units="Pa">0.0,25500.0</vertCoord>
-  <offsetHours id="0">0.0 1.0 2.0 3.0 6.0 9.0</offsetHours>
-  <offsetHours id="1">0.0 1.0 2.0 3.0 5.0 6.0 8.0 23.0</offsetHours>
-  <offsetHours id="2">0.0 3.0 6.0</offsetHours>
-  <offsetHours id="3">0.0 1.0 2.0 3.0 6.0 9.0 12.0</offsetHours>
-  <offsetHours id="4">0.0 1.0 2.0 3.0 5.0 6.0 8.0 9.0 11.0 23.0</offsetHours>
-  <offsetHours id="5">0.0 3.0 6.0 9.0</offsetHours>
+  <offsetHours id="0">0.0 1.0 2.0 3.0 6.0 9.0 12.0</offsetHours>
+  <offsetHours id="1">0.0 1.0 2.0 3.0 6.0 9.0</offsetHours>
   <runSequence>
-    <run runHour="0.0" offsetHourSeq="3" />
-    <run runHour="1.0" offsetHourSeq="0" />
-    <run runHour="2.0" offsetHourSeq="0" />
-    <run runHour="3.0" offsetHourSeq="3" />
+    <run runHour="0.0" offsetHourSeq="0" />
+    <run runHour="1.0" offsetHourSeq="1" />
+    <run runHour="2.0" offsetHourSeq="1" />
+    <run runHour="3.0" offsetHourSeq="0" />
+    <run runHour="4.0" offsetHourSeq="1" />
+    <run runHour="5.0" offsetHourSeq="1" />
+    <run runHour="6.0" offsetHourSeq="0" />
+    <run runHour="7.0" offsetHourSeq="1" />
+    <run runHour="8.0" offsetHourSeq="1" />
+    <run runHour="9.0" offsetHourSeq="0" />
+    <run runHour="10.0" offsetHourSeq="1" />
+    <run runHour="11.0" offsetHourSeq="1" />
+    <run runHour="12.0" offsetHourSeq="0" />
+    <run runHour="13.0" offsetHourSeq="1" />
+    <run runHour="14.0" offsetHourSeq="1" />
+    <run runHour="15.0" offsetHourSeq="0" />
+    <run runHour="16.0" offsetHourSeq="1" />
+    <run runHour="17.0" offsetHourSeq="1" />
+    <run runHour="18.0" offsetHourSeq="0" />
+    <run runHour="19.0" offsetHourSeq="1" />
+    <run runHour="20.0" offsetHourSeq="1" />
+    <run runHour="21.0" offsetHourSeq="0" />
+    <run runHour="22.0" offsetHourSeq="1" />
+    <run runHour="23.0" offsetHourSeq="1" />
     <variable name="Best_lifted_index_to_500_hPa" />
     <variable name="Categorical_Freezing_Rain" />
     <variable name="Categorical_Ice_Pellets" />
@@ -23,8 +39,10 @@
     <variable name="Convective_available_potential_energy_surface" />
     <variable name="Convective_inhibition" vertCoord="0" />
     <variable name="Convective_inhibition_surface" />
+    <variable name="Convective_precipitation" />
     <variable name="Dew_point_depression_or_deficit" vertCoord="1" />
     <variable name="Dew_point_temperature" vertCoord="1" />
+    <variable name="Large_scale_precipitation_non-convective" />
     <variable name="MSLP_MAPS_System_Reduction" />
     <variable name="Potential_temperature" vertCoord="1" />
     <variable name="Pressure" />
@@ -37,20 +55,6 @@
     <variable name="Temperature_surface" />
     <variable name="U-component_of_wind" vertCoord="2" />
     <variable name="V-component_of_wind" vertCoord="2" />
-  </runSequence>
-  <runSequence>
-    <run runHour="0.0" offsetHourSeq="4" />
-    <run runHour="1.0" offsetHourSeq="1" />
-    <run runHour="2.0" offsetHourSeq="1" />
-    <run runHour="3.0" offsetHourSeq="4" />
-    <variable name="Convective_precipitation" />
-    <variable name="Large_scale_precipitation_non-convective" />
-  </runSequence>
-  <runSequence>
-    <run runHour="0.0" offsetHourSeq="5" />
-    <run runHour="1.0" offsetHourSeq="2" />
-    <run runHour="2.0" offsetHourSeq="2" />
-    <run runHour="3.0" offsetHourSeq="5" />
     <variable name="Water_equivalent_of_accumulated_snow_depth" />
   </runSequence>
 </fmrcDefinition>

@@ -1,32 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmrcDefinition dataset="http://motherlode.ucar.edu:9080/thredds/catalog/fmrc/NCEP/RUC2/CONUS_20km/hybrid/files/catalog.xml">
   <vertCoord id="5" name="depth_below_surface" units="m">0.05 0.2 0.4 1.6 3.0</vertCoord>
-  <vertCoord id="4" name="depth_below_surface1" units="m">0.05 0.1</vertCoord>
-  <vertCoord id="0" name="depth_below_surface2" units="m">3.0</vertCoord>
+  <vertCoord id="0" name="depth_below_surface1" units="m">3.0</vertCoord>
+  <vertCoord id="4" name="depth_below_surface2" units="m">0.05 0.1</vertCoord>
   <vertCoord id="2" name="depth_below_surface3" units="m">0.05</vertCoord>
   <vertCoord id="6" name="height_above_ground" units="m">10.0</vertCoord>
   <vertCoord id="3" name="height_above_ground1" units="m">2.0</vertCoord>
   <vertCoord id="1" name="pressure_difference_layer" units="Pa">0.0,25500.0</vertCoord>
-  <offsetHours id="0">0.0 1.0 2.0 3.0 6.0 9.0</offsetHours>
-  <offsetHours id="1">0.0 3.0 6.0</offsetHours>
-  <offsetHours id="2">0.0 1.0 2.0 3.0 6.0 9.0 12.0</offsetHours>
-  <offsetHours id="3">0.0 3.0 6.0 9.0</offsetHours>
+  <offsetHours id="0">0.0 1.0 2.0 3.0 6.0 9.0 12.0</offsetHours>
+  <offsetHours id="1">0.0 1.0 2.0 3.0 6.0 9.0</offsetHours>
   <runSequence>
-    <run runHour="0.0" offsetHourSeq="2" />
-    <run runHour="1.0" offsetHourSeq="0" />
-    <run runHour="2.0" offsetHourSeq="0" />
-    <run runHour="3.0" offsetHourSeq="2" />
+    <run runHour="0.0" offsetHourSeq="0" />
+    <run runHour="1.0" offsetHourSeq="1" />
+    <run runHour="2.0" offsetHourSeq="1" />
+    <run runHour="3.0" offsetHourSeq="0" />
+    <run runHour="4.0" offsetHourSeq="1" />
+    <run runHour="5.0" offsetHourSeq="1" />
+    <run runHour="6.0" offsetHourSeq="0" />
+    <run runHour="7.0" offsetHourSeq="1" />
+    <run runHour="8.0" offsetHourSeq="1" />
+    <run runHour="9.0" offsetHourSeq="0" />
+    <run runHour="10.0" offsetHourSeq="1" />
+    <run runHour="11.0" offsetHourSeq="1" />
+    <run runHour="12.0" offsetHourSeq="0" />
+    <run runHour="13.0" offsetHourSeq="1" />
+    <run runHour="14.0" offsetHourSeq="1" />
+    <run runHour="15.0" offsetHourSeq="0" />
+    <run runHour="16.0" offsetHourSeq="1" />
+    <run runHour="17.0" offsetHourSeq="1" />
+    <run runHour="18.0" offsetHourSeq="0" />
+    <run runHour="19.0" offsetHourSeq="1" />
+    <run runHour="20.0" offsetHourSeq="1" />
+    <run runHour="21.0" offsetHourSeq="0" />
+    <run runHour="22.0" offsetHourSeq="1" />
+    <run runHour="23.0" offsetHourSeq="1" />
     <variable name="Baseflow-Groundwater_Runoff" vertCoord="0" />
     <variable name="Cloud_mixing_ratio" />
     <variable name="Convective_available_potential_energy" vertCoord="1" />
     <variable name="Convective_inhibition" vertCoord="1" />
+    <variable name="Convective_precipitation" />
     <variable name="Density" vertCoord="2" />
+    <variable name="Direct_evaporation_from_bare_soil" />
     <variable name="Geopotential_height" />
     <variable name="Graupel_snow_pellets" />
     <variable name="Humidity_mixing_ratio" vertCoord="3" />
     <variable name="Humidity_mixing_ratio_hybrid" />
     <variable name="Humidity_mixing_ratio_surface" />
+    <variable name="Ice_cover_Proportion" />
     <variable name="Ice_water_mixing_ratio" />
+    <variable name="Land_cover_1=land,_2=sea" />
+    <variable name="Large_scale_precipitation_non-convective" />
     <variable name="Latent_heat_net_flux" />
     <variable name="Lightning" />
     <variable name="MSLP_MAPS_System_Reduction" />
@@ -49,8 +72,9 @@
     <variable name="Soil_temperature_surface" />
     <variable name="Soil_type_as_in_Zobler" />
     <variable name="Storm_Surface_Runoff" />
+    <variable name="Surface_exchange_coefficients_for_T_and_Q_divided_by_delta_z" />
+    <variable name="Surface_exchange_coefficients_for_U_and_V_divided_by_delta_z" />
     <variable name="Temperature" vertCoord="3" />
-    <variable name="Total_Icing_Potential_Diagnostic" />
     <variable name="Turbulent_kinetic_energy" />
     <variable name="U-component_of_wind" vertCoord="6" />
     <variable name="U-component_of_wind_hybrid" />
@@ -64,13 +88,5 @@
     <variable name="Volumetric_Soil_Moisture_Content" vertCoord="5" />
     <variable name="Volumetric_Soil_Moisture_Content_surface" />
     <variable name="Water_equivalent_of_accumulated_snow_depth" />
-  </runSequence>
-  <runSequence>
-    <run runHour="0.0" offsetHourSeq="3" />
-    <run runHour="1.0" offsetHourSeq="1" />
-    <run runHour="2.0" offsetHourSeq="1" />
-    <run runHour="3.0" offsetHourSeq="3" />
-    <variable name="Convective_precipitation" />
-    <variable name="Large_scale_precipitation_non-convective" />
   </runSequence>
 </fmrcDefinition>
