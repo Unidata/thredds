@@ -30,7 +30,6 @@ package uk.ac.rdg.resc.ncwms.config;
 
 import java.io.File;
 import java.util.Date;
-import org.apache.log4j.Logger;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
@@ -46,8 +45,8 @@ import org.simpleframework.xml.Root;
 @Root(name="config")
 public class Config
 {
-    private static final Logger logger = Logger.getLogger(Config.class);
-    
+    static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Config.class);
+
     // We don't do "private List<Dataset> datasetList..." here because if we do,
     // the config file will contain "<datasets class="java.util.ArrayList>",
     // presumably because the definition doesn't clarify what sort of List should

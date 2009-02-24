@@ -34,7 +34,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
 import ucar.ma2.Range;
 import ucar.nc2.Attribute;
 import ucar.nc2.dataset.*;
@@ -60,13 +59,9 @@ import uk.ac.rdg.resc.ncwms.metadata.projection.HorizontalProjection;
  */
 public class DefaultDataReader extends DataReader
 {
-    private static final Logger logger = Logger.getLogger(DefaultDataReader.class);
-    // We'll use this logger to output performance information
-    private static final Logger benchmarkLogger = Logger.getLogger("ncwms.benchmark");
-    
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DefaultDataReader.class);
+  static private org.slf4j.Logger benchmarkLogger = org.slf4j.LoggerFactory.getLogger("ncwms.benchmark");
 
-    
-    
     /**
      * <p>Reads an array of data from a NetCDF file and projects onto the given
      * {@link HorizontalGrid}.  Reads data for a single timestep and elevation only.

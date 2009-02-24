@@ -35,7 +35,6 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScheme;
 import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
-import org.apache.log4j.Logger;
 import ucar.nc2.util.net.HttpClientManager;
 
 /**
@@ -53,8 +52,8 @@ import ucar.nc2.util.net.HttpClientManager;
  */
 public class NcwmsCredentialsProvider implements CredentialsProvider
 {
-    private static final Logger logger = Logger.getLogger(NcwmsCredentialsProvider.class);
-    
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcwmsCredentialsProvider.class);
+
     // Maps "host:port" to a Credentials object
     private Map<String, Credentials> creds = new HashMap<String, Credentials>();
     

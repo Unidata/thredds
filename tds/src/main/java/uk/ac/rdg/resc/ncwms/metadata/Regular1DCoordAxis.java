@@ -29,7 +29,6 @@
 package uk.ac.rdg.resc.ncwms.metadata;
 
 import com.sleepycat.persist.model.Persistent;
-import org.apache.log4j.Logger;
 import ucar.nc2.constants.AxisType;
 import ucar.unidata.geoloc.LatLonPoint;
 import uk.ac.rdg.resc.ncwms.metadata.projection.HorizontalProjection;
@@ -49,8 +48,8 @@ import uk.ac.rdg.resc.ncwms.metadata.projection.HorizontalProjection;
 @Persistent
 public class Regular1DCoordAxis extends OneDCoordAxis
 {
-    private static final Logger logger = Logger.getLogger(Regular1DCoordAxis.class);
-    
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Regular1DCoordAxis.class);
+
     private double start;  // The first value along the axis
     private double stride; // The stride length along the axis
     private double maxValue; // The maximum value along the axis

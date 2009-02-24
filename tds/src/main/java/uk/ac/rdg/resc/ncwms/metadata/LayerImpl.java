@@ -34,7 +34,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import org.apache.log4j.Logger;
 import uk.ac.rdg.resc.ncwms.exceptions.InvalidDimensionValueException;
 import uk.ac.rdg.resc.ncwms.metadata.projection.HorizontalProjection;
 import uk.ac.rdg.resc.ncwms.styles.Style;
@@ -53,8 +52,7 @@ import ucar.nc2.dt.GridDataset;
 @Persistent // Berkeley DB code uses this
 public class LayerImpl implements Layer
 {
-    private static final Logger logger = Logger.getLogger(LayerImpl.class);
-    
+
     protected String id;
     protected String title = null;
     protected String abstr = null; // "abstract" is a reserved word

@@ -32,7 +32,6 @@ import com.sleepycat.persist.model.Persistent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.apache.log4j.Logger;
 import ucar.nc2.constants.AxisType;
 import ucar.unidata.geoloc.LatLonPoint;
 import uk.ac.rdg.resc.ncwms.metadata.projection.HorizontalProjection;
@@ -48,8 +47,8 @@ import uk.ac.rdg.resc.ncwms.metadata.projection.HorizontalProjection;
 @Persistent
 public class Irregular1DCoordAxis extends OneDCoordAxis
 {
-    private static final Logger logger = Logger.getLogger(Irregular1DCoordAxis.class);
-    
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Irregular1DCoordAxis.class);
+
     /**
      * Maps axis values to their indices along the axis, sorted in ascending order
      * of value.  This level of

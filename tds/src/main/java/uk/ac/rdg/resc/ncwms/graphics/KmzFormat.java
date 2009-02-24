@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.imageio.ImageIO;
-import org.apache.log4j.Logger;
 import uk.ac.rdg.resc.ncwms.metadata.Layer;
 import uk.ac.rdg.resc.ncwms.utils.WmsUtils;
 
@@ -52,8 +51,8 @@ import uk.ac.rdg.resc.ncwms.utils.WmsUtils;
  */
 public class KmzFormat extends ImageFormat
 {
-    private static final Logger logger = Logger.getLogger(KmzFormat.class);
-    
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(KmzFormat.class);
+
     private static final String PICNAME = "frame";
     private static final String PICEXT  = "png";
     private static final String COLOUR_SCALE_FILENAME = "legend.png";

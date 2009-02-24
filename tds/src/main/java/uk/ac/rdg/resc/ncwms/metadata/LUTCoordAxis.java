@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import org.apache.log4j.Logger;
 import ucar.nc2.constants.AxisType;
 
 /**
@@ -54,8 +53,8 @@ import ucar.nc2.constants.AxisType;
 @Persistent
 public class LUTCoordAxis extends TwoDCoordAxis
 {
-    private static final Logger logger = Logger.getLogger(LUTCoordAxis.class);
-    
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(LUTCoordAxis.class);
+
     /**
      * Maps filenames to axes
      */

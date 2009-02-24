@@ -83,7 +83,7 @@
   <property name="slf4jAPI.jar" value="external/slf4j-api-1.5.6.jar"/>
   <property name="slf4jImpl.jar" value="external/slf4j-log4j12-1.5.6.jar"/>
   <property name="log4j.jar" value="external/log4j-1.2.15.jar"/>
-  <property name="nlog4j.jar" value="external/nlog4j-1.2.25.jar"/>
+  <!-- property name="nlog4j.jar" value="external/nlog4j-1.2.25.jar"/ -->
   <property name="spring.jar" value="external/spring-2.5.jar"/>
   <property name="spring-webmvc.jar" value="external/spring-webmvc-2.5.jar"/>
   <property name="jstl.jar" value="external/jstl.jar"/>
@@ -128,7 +128,7 @@
       <include name="${httpclient.jar}"/>
       <include name="${jdom.jar}"/>
       <include name="${slf4jAPI.jar}"/>
-      <include name="${nlog4j.jar}"/>
+      <include name="${log4j.jar}"/>
       <include name="${spring.jar}"/>
       <include name="${spring-webmvc.jar}"/>
     </patternset>

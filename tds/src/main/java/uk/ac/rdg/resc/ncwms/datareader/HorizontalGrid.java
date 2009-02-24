@@ -30,7 +30,6 @@ package uk.ac.rdg.resc.ncwms.datareader;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Logger;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
@@ -54,7 +53,7 @@ import uk.ac.rdg.resc.ncwms.exceptions.InvalidCrsException;
  */
 public class HorizontalGrid
 {
-    private static final Logger logger = Logger.getLogger(HorizontalGrid.class);
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(HorizontalGrid.class);
     public static final String PLATE_CARREE_CRS_CODE = "CRS:84";
     public static final CoordinateReferenceSystem PLATE_CARREE_CRS;
     public static final List<String> SUPPORTED_CRS_CODES = new ArrayList<String>();

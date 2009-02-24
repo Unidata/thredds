@@ -1775,9 +1775,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Logging">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/nlog4j-1.2.25.jar!/" />
           <root url="jar://$MODULE_DIR$/../../lib/external/slf4j-log4j12-1.5.6.jar!/" />
           <root url="jar://$MODULE_DIR$/../../lib/external/slf4j-api-1.5.6.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/log4j-1.2.15.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

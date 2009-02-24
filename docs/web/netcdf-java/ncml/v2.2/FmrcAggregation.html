@@ -50,7 +50,7 @@
 <ol>
   <li>The netcdf element always has <strong>enhance=&quot;true&quot;</strong>, which adds the coordinate systems needed for a GridDataset. </li>
   <li>A <strong>forecastModelRunCollection</strong> aggregation is declared, and an outer dimension called <strong>runtime</strong> will be created.</li>
-  <li>All the files in the collection are explicitly named, as well as their <em><strong>run time coordinate values. </strong></em>The values must be  ISO 8601 formatted dates. The files themselves must contain all the output times from one  model run. The attribute <em><strong>enhance=&quot;true&quot; </strong></em>adds the coordinate systems needed to identify the (forecast) time coordinate. </li>
+  <li>All the files in the collection are explicitly named, as well as their <em><strong>runtime coordinate values. </strong></em>The values must be  ISO 8601 formatted dates. The files themselves must contain all the output times from one  model run. The attribute <em><strong>enhance=&quot;true&quot; </strong></em>adds the coordinate systems needed to identify the (forecast) time coordinate. </li>
 </ol>
 <p>Equivalently, you can  use an NcML <strong>scan</strong> element: </p>
 <pre>   &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br>   &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; enhance=&quot;true&quot; &gt;<br>    &lt;aggregation dimName=&quot;run&quot; type=&quot;forecastModelRunCollection&quot;&gt;
@@ -182,8 +182,14 @@
   <li><a href="models.xml.txt">motherlode production catalog</a></li>
 </ul>
 <hr WIDTH="100%">
+<h2>Debugging Tips</h2>
+<ol>
+  <li>When things dont work, its best to  debug the aggregation outside of the THREDDS Data Server. Put the NcML in its own file, and try to open with ToolsUI. </li>
+  <li>The underlying datasets have to be gridded datasets. Open a component file in ToolsUI and see if its a grid. The CoordSys and FeatureTypes/Grids tabs are used for this. </li>
+</ol>
+<hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by John Caron and was last updated on Nov 20, 2008 
+<img src="../nc.gif" width="64" height="64"> This document is maintained by John Caron and was last updated on Feb 24, 2209
 </address>
 </body>
 </html>
