@@ -3,6 +3,7 @@
 
 <hr size="1" noshade="noshade">
 
+Powered by
 <c:if test="${not empty webappUrl}">
   <a href="${webappUrl}">
 </c:if>

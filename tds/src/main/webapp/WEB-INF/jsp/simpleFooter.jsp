@@ -23,6 +23,7 @@ ${installationName}
 </c:if>
 
 <br>
+Powered by
 <c:if test="${not empty webappUrl}">
   <a href="${webappUrl}">
 </c:if>

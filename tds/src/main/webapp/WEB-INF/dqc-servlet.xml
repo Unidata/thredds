@@ -10,6 +10,8 @@
   <bean id="dqcController" class="thredds.dqc.server.DqcServiceController"
         init-method="init" destroy-method="destroy" >
     <property name="tdsContext" ref="tdsContext"/>
+    <property name="dqcConfigDirName" value="dqcService/config" />
+    <property name="dqcConfigFileName" value="config.xml" />
   </bean>
 
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
