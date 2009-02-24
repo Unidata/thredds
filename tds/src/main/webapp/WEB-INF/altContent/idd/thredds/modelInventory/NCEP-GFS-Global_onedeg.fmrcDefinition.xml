@@ -4,7 +4,7 @@
   <vertCoord id="10" name="depth_below_surface_layer" units="m">0.1,0.0 0.4,0.1 1.0,0.4 2.0,1.0</vertCoord>
   <vertCoord id="11" name="height_above_ground" units="m">10.0</vertCoord>
   <vertCoord id="6" name="height_above_ground1" units="m">2.0</vertCoord>
-  <vertCoord id="5" name="potential_vorticity_surface" units="K m2 kg-1 s-1">-2.0-6 2.0E-6</vertCoord>
+  <vertCoord id="5" name="potential_vorticity_surface" units="K m2 kg-1 s-1">-2.0E-6 2.0E-6</vertCoord>
   <vertCoord id="1" name="pressure" units="Pa">1000.0 2000.0 3000.0 5000.0 7000.0 10000.0 15000.0 20000.0 25000.0 30000.0 35000.0 40000.0 45000.0 50000.0 55000.0 60000.0 65000.0 70000.0 75000.0 80000.0 85000.0 90000.0 92500.0 95000.0 97500.0 100000.0</vertCoord>
   <vertCoord id="4" name="pressure1" units="Pa">50000.0 100000.0</vertCoord>
   <vertCoord id="2" name="pressure2" units="Pa">10000.0 15000.0 20000.0 25000.0 30000.0 35000.0 40000.0 45000.0 50000.0 55000.0 60000.0 65000.0 70000.0 75000.0 80000.0 85000.0 90000.0 92500.0 95000.0 97500.0 100000.0</vertCoord>

@@ -70,7 +70,7 @@
     <variable name="Long-Wave_Radiative_Heating_Rate" />
     <variable name="Low_cloud_cover" />
     <variable name="MSLP_Eta_Reduction" />
-    <variable name="Maximum/Composite_radar_reflectivity" />
+    <variable name="MaximumComposite_radar_reflectivity" />
     <variable name="Maximum_Snow_Albedo" />
     <variable name="Medium_cloud_cover" />
     <variable name="Minimal_Stomatal_Resistance" />
