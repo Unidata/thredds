@@ -48,6 +48,7 @@ public class _Coordinate {
   static public final String Convention = "_Coordinates";
   static public final String ModelBaseDate = "_CoordinateModelBaseDate"; // experimental
   static public final String ModelRunDate = "_CoordinateModelRunDate"; // experimental
+  static public final String SystemFor = "_CoordinateSystemFor";
   static public final String Systems = "_CoordinateSystems";
   static public final String Transforms = "_CoordinateTransforms";
   static public final String TransformType = "_CoordinateTransformType";

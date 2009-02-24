@@ -36,6 +36,8 @@ import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
+import ucar.ma2.DataType;
+
 import java.util.*;
 
 /**
@@ -377,17 +379,38 @@ public class CoordinateSystem {
   }
 
   /**
-   * true if all dimensions in V (including parents) are in the domain of this coordinate system.
+   * Check if this Coordinate System is complete,
+   *   ie if all its dimensions are also used by the Variable.
    * @param v check for this variable
    * @return true if all dimensions in V (including parents) are in the domain of this coordinate system.
    */
   public boolean isComplete(VariableIF v) {
-    List<Dimension> dims = v.getDimensionsAll();
-    for (Dimension d : dims) {
-      if (!(domain.contains(d)))
+    return /* isCoordinateSystemFor(v) && */ isSubset(v.getDimensionsAll(), domain);
+  }
+
+ /**
+   * Check if this Coordinate System can be used for the given variable.
+   * A CoordinateAxis can only be part of a Variable's CoordinateSystem if the CoordinateAxis' set of Dimensions is a
+   * subset of the Variable's set of Dimensions.
+   * So, a CoordinateSystem' set of Dimensions must be a subset of the Variable's set of Dimensions.
+   * @param v check for this variable
+   * @return true if all dimensions in the domain of this coordinate system are in V (including parents).
+   */
+ public boolean isCoordinateSystemFor(VariableIF v) {
+   return isSubset(domain, v.getDimensionsAll());
+ }
+
+  /**
+   * Test if all the Dimensions in subset are in set
+   * @param subset is this a subset
+   * @param set of this?
+   * @return true if all the Dimensions in subset are in set
+   */
+  public static boolean isSubset(List<Dimension> subset, List<Dimension> set) {
+    for (Dimension d : subset) {
+      if (!(set.contains(d)))
         return false;
     }
-
     return true;
   }
 

@@ -54,28 +54,28 @@ import java.util.*;
  * <p/>
  * Subclasses Info:
  * <pre>
-      // identify which variables are coordinate axes
-      // default: 1) coordinate variables 2) variables with _coordinateAxisType attribute 3) variables listed
-      // in a coordinates attribute on another variable.
-      findCoordinateAxes( ncDataset);
-
-      // identify which variables are used to describe coordinate system
-      findCoordinateSystems( ncDataset);
-      // identify which variables are used to describe coordinate transforms
-      findCoordinateTransforms( ncDataset);
-      // turn Variables into CoordinateAxis objects
-      makeCoordinateAxes( ncDataset);
-      // make Coordinate Systems for all Coordinate Systems Variables
-      makeCoordinateSystems( ncDataset);
-
-      // Assign explicit CoordinateSystem objects to variables
-      assignExplicitCoordinateSystems( ncDataset);
-      makeCoordinateSystemsImplicit( ncDataset);
-      if (useMaximalCoordSys)
-      makeCoordinateSystemsMaximal( ncDataset);
-
-      makeCoordinateTransforms( ncDataset);
-      assignCoordinateTransforms( ncDataset);
+ * // identify which variables are coordinate axes
+ * // default: 1) coordinate variables 2) variables with _coordinateAxisType attribute 3) variables listed
+ * // in a coordinates attribute on another variable.
+ * findCoordinateAxes( ncDataset);
+ * <p/>
+ * // identify which variables are used to describe coordinate system
+ * findCoordinateSystems( ncDataset);
+ * // identify which variables are used to describe coordinate transforms
+ * findCoordinateTransforms( ncDataset);
+ * // turn Variables into CoordinateAxis objects
+ * makeCoordinateAxes( ncDataset);
+ * // make Coordinate Systems for all Coordinate Systems Variables
+ * makeCoordinateSystems( ncDataset);
+ * <p/>
+ * // Assign explicit CoordinateSystem objects to variables
+ * assignExplicitCoordinateSystems( ncDataset);
+ * makeCoordinateSystemsImplicit( ncDataset);
+ * if (useMaximalCoordSys)
+ * makeCoordinateSystemsMaximal( ncDataset);
+ * <p/>
+ * makeCoordinateTransforms( ncDataset);
+ * assignCoordinateTransforms( ncDataset);
  * </pre>
  *
  * @author caron
@@ -115,8 +115,9 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    */
   static public interface ConventionNameOk {
 
-    /***
+    /**
      * Do you own this file?
+     *
      * @param convName name in the file
      * @param wantName name passed into registry
      * @return true if you own this file
@@ -226,7 +227,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     // conventionHash.put(conventionName, c);
   }
 
-   static private Class matchConvention(String convName) {
+  static private Class matchConvention(String convName) {
     for (Convention c : conventionList) {
       if ((c.match == null) && c.convName.equalsIgnoreCase(convName)) return c.convClass;
       if ((c.match != null) && c.match.isMatch(convName, c.convName)) return c.convClass;
@@ -274,7 +275,6 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    * @param ds         the NetcdfDataset to modify
    * @param cancelTask allow user to bail out.
    * @return the builder used
-   *
    * @throws java.io.IOException on io error
    */
   static public CoordSysBuilderIF addCoordinateSystems(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
@@ -372,7 +372,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     try {
       builder = (CoordSysBuilderIF) convClass.newInstance();
     } catch (Exception e) {
-      log.error("failed on CoordSysBuilderIF for "+convClass.getName(), e);
+      log.error("failed on CoordSysBuilderIF for " + convClass.getName(), e);
       return null;
     }
 
@@ -408,7 +408,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
   protected String conventionName = _Coordinate.Convention; // default name of Convention, override in subclass
   protected List<VarProcess> varList = new ArrayList<VarProcess>(); // varProcess objects
-  protected Map<Dimension,List<VarProcess>> coordVarMap = new HashMap<Dimension,List<VarProcess>>();
+  protected Map<Dimension, List<VarProcess>> coordVarMap = new HashMap<Dimension, List<VarProcess>>();
   protected Formatter parseInfo = new Formatter();
   protected Formatter userAdvice = new Formatter();
 
@@ -426,11 +426,11 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     userAdvice.format("%s", advice);
   }
 
-  public String getParseInfo( ) {
+  public String getParseInfo() {
     return parseInfo.toString();
   }
 
-  public String getUserAdvice( ) {
+  public String getUserAdvice() {
     return userAdvice.toString();
   }
 
@@ -467,7 +467,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    */
   public void buildCoordinateSystems(NetcdfDataset ncDataset) {
     // put status info into parseInfo that can be shown to someone trying to debug this process
-    parseInfo.format("Parsing with Convention = %s\n",conventionName);
+    parseInfo.format("Parsing with Convention = %s\n", conventionName);
 
     // Bookeeping info for each variable is kept in the VarProcess inner class
     addVariables(ncDataset, ncDataset.getVariables(), varList);
@@ -484,7 +484,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     makeCoordinateSystems(ncDataset);
 
     // assign explicit CoordinateSystem objects to variables
-    assignExplicitCoordinateSystems(ncDataset);
+    assignCoordinateSystemsExplicit(ncDataset);
 
     // assign implicit CoordinateSystem objects to variables
     makeCoordinateSystemsImplicit(ncDataset);
@@ -647,7 +647,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    *
    * @param ncDataset why
    */
-  protected void assignExplicitCoordinateSystems(NetcdfDataset ncDataset) {
+  protected void assignCoordinateSystemsExplicit(NetcdfDataset ncDataset) {
 
     // look for explicit references to coord sys variables
     for (VarProcess vp : varList) {
@@ -669,6 +669,35 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
           VariableEnhanced ve = (VariableEnhanced) vp.v;
           ve.addCoordinateSystem(ap.cs);
+        }
+      }
+    }
+
+    // look for explicit references from coord sys variables to data variables
+    for (VarProcess csVar : varList) {
+      if (!csVar.isCoordinateSystem || (csVar.coordSysFor == null))
+        continue;
+
+      // get list of dimensions from '_CoordinateSystemFor' attribute
+      List<Dimension> dimList = new ArrayList<Dimension>(6);
+      StringTokenizer stoker = new StringTokenizer(csVar.coordSysFor);
+      while (stoker.hasMoreTokens()) {
+        String dname = stoker.nextToken();
+        Dimension dim = ncDataset.findDimension(dname);
+        if (dim == null) {
+          parseInfo.format("***Cant find Dimension %s referenced from CoordSys var= %s%n", dname, csVar.v.getName());
+          userAdvice.format("***Cant find Dimension %s referenced from CoordSys var= %s%n", dname, csVar.v.getName());
+        } else
+          dimList.add(dim);
+      }
+
+      // look for vars with those dimensions
+      for (VarProcess vp : varList) {
+        if (!vp.hasCoordinateSystem() && vp.isData()) {
+          VariableEnhanced ve = (VariableEnhanced) vp.v;
+          if (CoordinateSystem.isSubset(dimList, vp.v.getDimensionsAll()) &&
+                  CoordinateSystem.isSubset(vp.v.getDimensionsAll(), dimList))
+            ve.addCoordinateSystem(csVar.cs);
         }
       }
     }
@@ -990,11 +1019,11 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   }
 
   // track coordinate variables
-  protected void addCoordinateVariable( Dimension dim, VarProcess vp) {
+  protected void addCoordinateVariable(Dimension dim, VarProcess vp) {
     List<VarProcess> list = coordVarMap.get(dim);
     if (list == null) {
       list = new ArrayList<VarProcess>();
-      coordVarMap.put(dim,list);
+      coordVarMap.put(dim, list);
     }
     if (!list.contains(vp))
       list.add(vp);
@@ -1012,7 +1041,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     public boolean isCoordinateVariable;
     public boolean isCoordinateAxis;
     public AxisType axisType;
-    public String coordAxes, coordSys, coordVarAlias, positive, coordAxisTypes;
+    public String coordAxes, coordSys, coordSysFor, coordVarAlias, positive, coordAxisTypes;
     public String coordinates;// CF : partial coordAxes
     public CoordinateAxis axis; // if its made into a Coordinate Axis, this is not null
 
@@ -1083,8 +1112,9 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
       coordAxes = ds.findAttValueIgnoreCase(v, _Coordinate.Axes, null);
       coordSys = ds.findAttValueIgnoreCase(v, _Coordinate.Systems, null);
+      coordSysFor = ds.findAttValueIgnoreCase(v, _Coordinate.SystemFor, null);
       coordTransforms = ds.findAttValueIgnoreCase(v, _Coordinate.Transforms, null);
-      isCoordinateSystem = (coordTransforms != null);
+      isCoordinateSystem = (coordTransforms != null) || (coordSysFor != null);
 
       coordAxisTypes = ds.findAttValueIgnoreCase(v, _Coordinate.AxisTypes, null);
       coordTransformType = ds.findAttValueIgnoreCase(v, _Coordinate.TransformType, null);
@@ -1102,7 +1132,6 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
             isCoordinateSystem = true;
         }
       }
-
     }
 
     // fakeroo
@@ -1122,7 +1151,9 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       return ((VariableEnhanced) v).getCoordinateSystems().size() > 0;
     }
 
-    public String toString() { return v.getShortName(); }
+    public String toString() {
+      return v.getShortName();
+    }
 
     /**
      * Turn the variable into a coordinate axis, if not already. Add to the dataset, replacing variable if needed.
@@ -1145,7 +1176,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         axis.addAttribute(new Attribute(_Coordinate.AxisType, axisType.toString()));
 
         if (((axisType == AxisType.Height) || (axisType == AxisType.Pressure) || (axisType == AxisType.GeoZ)) &&
-            (positive != null)) {
+                (positive != null)) {
           axis.setPositive(positive);
           axis.addAttribute(new Attribute(_Coordinate.ZisPositive, positive));
         }
@@ -1238,17 +1269,17 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     }
   }
 
-    protected VariableDS makeCoordinateTransformVariable(NetcdfDataset ds, CoordinateTransform ct) {
-      VariableDS v = CoordTransBuilder.makeDummyTransformVariable(ds, ct);
-      parseInfo.format("  made CoordinateTransformVariable: %s\n", ct.getName());
-      return v;
-    }
-
-    /**
-     * @deprecated use CoordTransBuilder.makeDummyTransformVariable
-     */
-    static public VariableDS makeDummyTransformVariable(NetcdfDataset ds, CoordinateTransform ct) {
-      return CoordTransBuilder.makeDummyTransformVariable(ds, ct);
-    }
-
+  protected VariableDS makeCoordinateTransformVariable(NetcdfDataset ds, CoordinateTransform ct) {
+    VariableDS v = CoordTransBuilder.makeDummyTransformVariable(ds, ct);
+    parseInfo.format("  made CoordinateTransformVariable: %s\n", ct.getName());
+    return v;
   }
+
+  /**
+   * @deprecated use CoordTransBuilder.makeDummyTransformVariable
+   */
+  static public VariableDS makeDummyTransformVariable(NetcdfDataset ds, CoordinateTransform ct) {
+    return CoordTransBuilder.makeDummyTransformVariable(ds, ct);
+  }
+
+}

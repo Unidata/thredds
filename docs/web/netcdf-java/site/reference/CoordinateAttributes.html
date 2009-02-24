@@ -47,6 +47,10 @@
 </ol>
 <hr>
 <h2>Coordinate Attributes Definition <a name="CoordinateAttributes" id="CoordinateAttributes"></a> </h2>
+<h3><strong>_CoordinateAliasForDimension</strong></h3>
+<p>A one-dimensional variable with monotonic values can act as a coordinate variable for its dimension, even when it doesnt have the same name as the dimension. To indicate this, add an attribute to the variable called <strong>_CoordinateAliasForDimension</strong>, whose value must be the name of its single dimension. A dimension may have multiple coordinate variables in this way, for example if the data is a trajectory. </p>
+<pre>   double valtime(record);<br>     :long_name = &quot;valid time&quot;;<br>     :units = &quot;hours since 1992-1-1&quot;;<br><strong>     :_CoordinateAliasForDimension = &quot;record&quot;;</strong><br>     :_CoordinateAxisType = &quot;Time&quot;;
+</pre>
 <h3><strong>_CoordinateAxes</strong></h3>
 <p>This attribute lists (in any order) names of Coordinate Axis Variables. When a Variable is listed in a <strong>_CoordinateAxes</strong> attribute, it is made into a CoordinateAxis. </p>
 <p>The attribute value must be a space-separated list of names of Coordinate Axis Variables in the same dataset:</p>
@@ -70,7 +74,18 @@
    char ProjectionCoordinateSystem;<br>     ProjectionCoordinateSystem:_CoordinateAxes = &quot;time depth_below_surface y x&quot;;
      ProjectionCoordinateSystem:_CoordinateTransforms = &quot;Lambert_Conformal_Projection&quot;;
 </strong></pre>
-<h3><strong></strong><strong>_CoordinateTransforms</strong></h3>
+<h3><strong></strong><strong>_CoordinateSystemFor </strong></h3>
+<p>This is the way to assign an explicit Coordinate System to variables. The value of the attribute is a list of dimensions. A data variable that does not have an explicit _CoordinateSystem or CoordinateAxes attribute will be assigned this CoordinateSystem, if it contains exactly the listed dimensions.</p>
+<pre><strong>  &lt;variable name=&quot;coordSysVar4D&quot; type=&quot;int&quot; shape=&quot;&quot;&gt;
+    &lt;attribute name=&quot;_CoordinateAxes&quot; value=&quot;x y zpos time&quot;/&gt;
+    &lt;attribute name=&quot;_CoordinateTransforms&quot; value=&quot;zpos&quot;/&gt;
+    &lt;attribute name=&quot;_CoordinateSystemFor&quot; value=&quot;xpos ypos zpos time&quot;/&gt;
+  &lt;/variable&gt;</strong></pre>
+<pre><strong>  &lt;variable name=&quot;coordSysVar3D&quot; type=&quot;int&quot; shape=&quot;&quot;&gt;
+    &lt;attribute name=&quot;_CoordinateAxes&quot; value=&quot;x y time&quot;/&gt;
+    &lt;attribute name=&quot;_CoordinateSystemFor&quot; value=&quot;xpos ypos time&quot;/&gt;
+  &lt;/variable&gt;</strong></pre>
+<h3><strong>_CoordinateTransforms</strong></h3>
 <p>The <strong>_CoordinateTransforms</strong> attribute is used only on Coordinate System Variables and is used to indicate how to transform the Coordinate System to a <strong><em>Reference Coordinate System</em></strong>. A <em>Reference Coordinate System</em> is one that uses <em>Latitude</em>, <em>Longitude</em> for the horizontal axes, and <em>Height</em> or <em>Pressure</em> for the vertical axes. To hold the transform information, create a dummy Variable called the <em><strong>Coordinate Transform Variable</strong></em>. This Coordinate Transform variable always has a name that identifies the transform, and any attributes needed for the transformation. </p>
 <p>The attribute value must be a space-separated list of names of Coordinate Transform Variables in the same dataset. </p>
 <pre><strong>   _CoordinateTransforms = &quot;LambertProjection HybridSigmaVerticalTransform&quot;;
@@ -84,11 +99,6 @@
 <p>The attribute value must be one of the valid Transform types (see <em><strong>ucar.nc2.dataset.TransformType</strong></em>) Currently the valid values are <strong><em>Projection</em> or</strong><em><strong> Vertical</strong></em>.</p>
 <pre><strong>   _CoordinateTransformType = &quot;Projection&quot;;
 </strong></pre>
-<h3><strong>_CoordinateAliasForDimension</strong></h3>
-<p>A one-dimensional variable with monotonic values can act as a coordinate variable for its dimension, even when it doesnt have the same name as the dimension. To indicate this, add an attribute to the variable called <strong>_CoordinateAliasForDimension</strong>, whose value must be the name of its single dimension. A dimension may have multiple coordinate variables in this way, for example if the data is a trajectory. </p>
-<pre>   double valtime(record);<br>     :long_name = &quot;valid time&quot;;<br>     :units = &quot;hours since 1992-1-1&quot;;<br><strong>     :_CoordinateAliasForDimension = &quot;record&quot;;</strong><br>     :_CoordinateAxisType = &quot;Time&quot;;
-
-</pre>
 <h3><strong>_CoordinateZisPositive</strong></h3>
 <p>Only used for vertical coordinate axes to disambiguate direction <em><strong>up</strong></em> or <em><strong>down</strong></em> of increasing coordinate values. </p>
 <p>The attribute value must equal <em><strong>&quot;up&quot;</strong></em> or <em><strong>&quot;down</strong></em>&quot;.</p>
@@ -118,11 +128,13 @@
 <p class="CDL">May have attributes: </p>
 <ul>
   <li><strong>_CoordinateAxes</strong> (required, must be a complete list of axes, must have at least one axis). </li>
+  <li><strong>_CoordinateSystemFor</strong> (list of dimensions) will be assigned to any Variable which contains exactly these dimensions.</li>
   <li><strong>_CoordinateTransforms</strong></li>
 </ul>
 <p>A variable is a Coordinate System Variable if one of these is true: </p>
 <ol>
   <li>It has a <strong>_CoordinateTransforms</strong> attribute.</li>
+  <li>Its has a <strong>_CoordinateSystemFor </strong>attribute<strong>.</strong></li>
   <li>It is listed in a <strong>_CoordinateSystems</strong> attribute from any variable in the file. </li>
 </ol>
 <h3 class="CDL">Coordinate Transform Variable </h3>
@@ -243,7 +255,7 @@
 </table>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 20, 2008
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Feb 24 2008
 </address>
 <p>&nbsp;</p>
 </body>
