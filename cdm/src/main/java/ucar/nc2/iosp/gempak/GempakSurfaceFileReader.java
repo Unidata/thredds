@@ -297,8 +297,8 @@ public class GempakSurfaceFileReader extends GempakFileReader {
             String          name = param.kprmnm;
             GempakParameter parm = GempakParameters.getParameter(name);
             if (parm == null) {
-                System.out.println("couldn't find " + name
-                                   + " in params table");
+                //System.out.println("couldn't find " + name
+                //                   + " in params table");
                 parm = new GempakParameter(1, name, name, "", 0);
             }
             gemparms.add(parm);
