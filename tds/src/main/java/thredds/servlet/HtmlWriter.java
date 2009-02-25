@@ -593,7 +593,16 @@ public class HtmlWriter {
     return ("" + leftSide + "." + rightSide + " kb");
   }
 
-  public void writeCatalog(HttpServletResponse res, InvCatalogImpl cat, boolean isLocalCatalog)
+  /**
+   * Write an InvCatalogImpl to the HttpServletResponse, return the size in bytes of the catalog writtn to the response.
+   *
+   * @param res the HttpServletResponse.
+   * @param cat the InvCatalogImpl to write to the HttpServletResponse.
+   * @param isLocalCatalog indicates whether this catalog is local to this server.
+   * @return the size in bytes of the catalog written to the HttpServletResponse.
+   * @throws IOException if problems writing the response.
+   */
+  public int writeCatalog(HttpServletResponse res, InvCatalogImpl cat, boolean isLocalCatalog)
       throws IOException {
     String catHtmlAsString = convertCatalogToHtml(cat, isLocalCatalog);
 
@@ -603,7 +612,7 @@ public class HtmlWriter {
     writer.write(catHtmlAsString);
     writer.flush();
 
-    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, catHtmlAsString.length()));
+    return catHtmlAsString.length();
   }
 
   /**

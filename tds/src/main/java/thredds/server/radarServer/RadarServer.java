@@ -179,7 +179,8 @@ public class RadarServer extends AbstractServlet {
         return;
       } else if(pathInfo.startsWith("/catalog.html") || pathInfo.startsWith("/dataset.html") ) {
         try {
-            HtmlWriter.getInstance().writeCatalog( res, cat, true ); // show catalog as HTML
+            int i = HtmlWriter.getInstance().writeCatalog( res, cat, true ); // show catalog as HTML
+            log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, i ) );
         } catch (Exception e ) {
           res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "radarServer HtmlWriter error "+ pathInfo);
           return;
@@ -267,7 +268,8 @@ public class RadarServer extends AbstractServlet {
       pw.flush();
     } else {
       try {
-        HtmlWriter.getInstance().writeCatalog( res, tCat, true ); // show catalog as HTML
+        int i = HtmlWriter.getInstance().writeCatalog( res, tCat, true ); // show catalog as HTML
+        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, i ) );
       } catch (Exception e ) {
         pw = res.getWriter();
         pw.println( "<documentation>\n" );

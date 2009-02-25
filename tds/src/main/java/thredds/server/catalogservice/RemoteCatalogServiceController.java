@@ -203,7 +203,8 @@ public class RemoteCatalogServiceController extends AbstractController
     // Otherwise, handle catalog as indicated by "command".
     if ( catalogServiceRequest.getCommand().equals( Command.SHOW))
     {
-      HtmlWriter.getInstance().writeCatalog( response, (InvCatalogImpl) catalog, false );
+      int i = HtmlWriter.getInstance().writeCatalog( response, (InvCatalogImpl) catalog, false );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, i ) );
       return null;
     }
     else if ( catalogServiceRequest.getCommand().equals( Command.SUBSET ))

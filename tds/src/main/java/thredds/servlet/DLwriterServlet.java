@@ -57,7 +57,7 @@ public class DLwriterServlet extends AbstractServlet {
     allow = ThreddsConfig.getBoolean( "DLwriter.allow", false );
     if ( !allow )
     {
-      log.info( "init(): WCS service not enabled in threddsConfig.xml." );
+      log.info( "init(): DLwriter service not enabled in threddsConfig.xml." );
       log.info( "init(): " + UsageLog.closingMessageNonRequestContext() );
       return;
     }

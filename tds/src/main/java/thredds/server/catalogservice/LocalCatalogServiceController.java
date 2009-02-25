@@ -209,7 +209,8 @@ public class LocalCatalogServiceController extends AbstractController
     {
       if ( this.htmlView )
       {
-        HtmlWriter.getInstance().writeCatalog( response, (InvCatalogImpl) catalog, true );
+        int i = HtmlWriter.getInstance().writeCatalog( response, (InvCatalogImpl) catalog, true );
+        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, i ) );
         return null;
         // return constructModelForCatalogView( catalog, this.htmlView );
       }

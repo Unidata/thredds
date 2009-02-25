@@ -1050,9 +1050,9 @@ public class InvDatasetImpl extends InvDataset {
           if ((stype == ServiceType.OPENDAP) || (stype == ServiceType.DODS))
             fullUrlString = fullUrlString + ".html";
           else if (stype == ServiceType.WCS)
-            fullUrlString = fullUrlString + "?request=GetCapabilities&version=1.0.0&service=WCS";
+            fullUrlString = fullUrlString + "?service=WCS&version=1.0.0&request=GetCapabilities";
           else if (stype == ServiceType.WMS)
-            fullUrlString = fullUrlString + "?request=GetCapabilities&version=1.3.0&service=WMS";
+            fullUrlString = fullUrlString + "?service=WMS&version=1.3.0&request=GetCapabilities";
           else if (stype == ServiceType.NetcdfStream)
             fullUrlString = fullUrlString + "?showForm";
           else if (stype == ServiceType.NetcdfSubset)

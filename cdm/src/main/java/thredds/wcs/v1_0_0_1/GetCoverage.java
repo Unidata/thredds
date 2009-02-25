@@ -122,7 +122,10 @@ public class GetCoverage extends WcsRequest
 
     // Assign and validate PARAMETER ("Vertical") parameter.
     this.rangeSetAxisValueRange = verticalRange;
-    this.isSingleVerticalRequest = verticalRange.isSinglePoint();
+    if ( verticalRange != null )
+      this.isSingleVerticalRequest = verticalRange.isSinglePoint();
+    else
+      this.isSingleVerticalRequest = ( null == this.coverage.getCoordinateSystem().getVerticalAxis());
 
     // Assign and validate FORMAT parameter.
     if ( format == null )
@@ -131,7 +134,7 @@ public class GetCoverage extends WcsRequest
       throw new WcsException( WcsException.Code.InvalidParameterValue, "FORMAT", "FORMAT parameter required.");
     }
 
-    if ( ! this.coverage.isSupportedCoverageFormat( this.format ))
+    if ( ! this.coverage.isSupportedCoverageFormat( format ))
     {
       String msg = "Unsupported format value [" + format + "].";
       log.error( "GetCoverage(): " + msg );
