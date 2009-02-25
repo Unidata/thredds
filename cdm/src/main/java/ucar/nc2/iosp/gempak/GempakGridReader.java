@@ -493,7 +493,7 @@ public class GempakGridReader extends GempakFileReader {
         if (ipktyp == MDGGRB) {
             return unpackGrib1Data(iiword, nword, kxky, nbits, ref, scale,
                                    miss, decimalScale);
-            //return unpackGrib1DataG(iiword, nword, kxky, nbits, ref, scale, miss);
+            //return DP_UGRB(iiword, nword, kxky, nbits, ref, scale, miss);
         } else if (ipktyp == MDGNMC) {
             return null;
         } else if (ipktyp == MDGDIF) {
@@ -502,6 +502,62 @@ public class GempakGridReader extends GempakFileReader {
         return null;
     }
 
+    private synchronized float[] DP_UGRB(int iiword, int nword, int kxky, int nbits, int qmin, int scale, int misflg) throws IOException {
+    /*
+      //Check for valid input.
+      //
+        if  ( ( nbits <= 1 ) .or. ( nbits > 31 ) ) {
+            return null;
+        }
+        if  ( scale == 0. ) {
+            return null;
+        }
+      //
+      //Compute missing data value.
+      //
+        int imax = 2 ** nbits - 1;
+      //
+      //Retrieve data points from buffer.
+      //
+        int iword = 0;
+        int ibit  = 1;
+        for (int  i = 0; i < kxky; i++) {
+      //
+      //    Get the integer from the buffer.
+      //
+            int jshft = nbits + ibit - 33;
+            int idat  = 0;
+            idat  = ISHFT ( idata (iword), jshft );
+            idat  = idat & imax;
+      //
+      //    Check to see if packed integer overflows into next word.
+      //
+            if ( jshft > 0 )  {
+                jshft = jshft - 32
+                int idat2 = 0
+                idat2 = ISHFT ( idata (iword+1), jshft )
+                idat  = idat | idat2;
+            }
+      //
+      //    Compute value of word.
+      //
+            if ( ( idat == imax ) && misflg ) {
+                grid [i] = RMISSD;
+            } else {
+                grid [i] = qmin + idat * scale;
+            }
+      //
+      //    Set location for next word.
+      //
+            ibit = ibit + nbits
+            IF  ( ibit .gt. 32 )  THEN
+                ibit  = ibit - 32
+                iword = iword + 1
+            END IF
+        }
+        */
+        return null;
+    }
 
     /**
      * Read packed Grib1 data using ucar.grib code
