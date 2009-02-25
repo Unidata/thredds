@@ -261,10 +261,14 @@ public class GribGridServiceProvider extends GridServiceProvider {
       raf.seek(0);
       Grib2Input g2i = new Grib2Input(raf);
       int edition = g2i.getEdition();
-
-      out = new DataOutputStream(new BufferedOutputStream(
-                new FileOutputStream(indexFile.getPath(), false)));
       File grib = new File( raf.getLocation());
+
+      if( grib.canWrite()) {
+        out = new DataOutputStream(new BufferedOutputStream(
+                new FileOutputStream(indexFile.getPath(), false)));
+      } else {
+        System.out.println( "need to write some where");
+      }
       if (edition == 1) {
         index = new Grib1WriteIndex().writeFileIndex(raf, out, true);
       } else if (edition == 2) {

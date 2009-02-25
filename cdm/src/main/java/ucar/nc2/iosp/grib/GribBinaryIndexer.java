@@ -41,11 +41,8 @@
 package ucar.nc2.iosp.grib;
 
 import ucar.grib.GribChecker;
-import ucar.grib.grib2.Grib2IndexExtender;
-import ucar.grib.grib2.Grib2Indexer;
 import ucar.grib.grib2.Grib2WriteIndex;
-import ucar.grib.grib1.Grib1IndexExtender;
-import ucar.grib.grib1.Grib1Indexer;
+import ucar.grib.grib1.Grib1WriteIndex;
 import ucar.nc2.dt.fmrc.ForecastModelRunInventory;
 
 import java.util.List;
@@ -53,10 +50,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.io.*;
 
-
 // Purpose: 	walks directory structure making Grib Indexes as needed.
-//
-// Description:
+//            Uses a configuration file to designate which dirs to index
 //
 
 public final class GribBinaryIndexer {
@@ -225,18 +220,18 @@ public final class GribBinaryIndexer {
 
     try {
       if (gbx.exists()) {
-        if( grib.lastModified() > gbx.lastModified() )
+        if (grib.lastModified() > gbx.lastModified())
           return;
         System.out.println("IndexExtending " + grib.getName() + " " +
             Calendar.getInstance().getTime().toString());
-        Grib1IndexExtender.main(args);
-        //ForecastModelRunInventory.main( args );
+        // grib, gbx, gribName, gbxName, false(make index)
+        new Grib1WriteIndex().extendGribIndex(grib, gbx, args[0], args[1], false);
         ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
       } else {  // create index
         System.out.println("Indexing " + grib.getName() + " " +
             Calendar.getInstance().getTime().toString());
-        Grib1Indexer.main(args);
-        //ForecastModelRunInventory.main( args );
+        // grib, gribName, gbxName, false(make index)
+        new Grib1WriteIndex().writeGribIndex(grib, args[0], args[1], false);
         ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
 
       }
@@ -256,19 +251,21 @@ public final class GribBinaryIndexer {
     try {
       if (gbx.exists()) {
         // gbx older than grib, no need to check
-        if (grib.lastModified() < gbx.lastModified() ) { 
+        if (grib.lastModified() < gbx.lastModified()) {
           return;
         }
         System.out.println("IndexExtending " + grib.getName() + " " +
             Calendar.getInstance().getTime().toString());
-        new Grib2WriteIndex().extendGribIndex( grib, gbx, args[0], args[1], false);
+        // grib, gbx, gribName, gbxName, false(make index)
+        new Grib2WriteIndex().extendGribIndex(grib, gbx, args[0], args[1], false);
 
         ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
       } else {  // create index
         System.out.println("Indexing " + grib.getName() + " " +
             Calendar.getInstance().getTime().toString());
         // grib, gribName, gbxName, false(make index)
-        new Grib2WriteIndex().writeGribIndex( grib, args[0], args[1], false);
+        new Grib2WriteIndex().writeGribIndex(
+            grib, args[0], args[1], false);
         ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
       }
     } catch (Exception e) {
