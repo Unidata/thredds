@@ -270,7 +270,8 @@ public class GribGridServiceProvider extends GridServiceProvider {
         System.out.println( "need to write some where");
       }
       if (edition == 1) {
-        index = new Grib1WriteIndex().writeFileIndex(raf, out, true);
+        index = new Grib1WriteIndex().writeGribIndex(raf,
+            grib.lastModified(), out, true);
       } else if (edition == 2) {
         index = new Grib2WriteIndex().writeGribIndex( raf,
             grib.lastModified(), out, true);
