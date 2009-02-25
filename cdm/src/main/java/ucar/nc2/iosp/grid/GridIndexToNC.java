@@ -661,6 +661,7 @@ public class GridIndexToNC {
       hcs.addDimensionsToNetcdfFile(ncfile);
 
       // create a variable for each entry
+      /*
       Iterator iter2 = hcs.varHash.values().iterator();
       while (iter2.hasNext()) {
         GridVariable pv = (GridVariable) iter2.next();
@@ -668,7 +669,18 @@ public class GridIndexToNC {
             true);
         ncfile.addVariable(hcs.getGroup(), v);
       }
-
+      */
+      Collection<GridVariable> vars = hcs.varHash.values();
+      for (GridVariable pv : vars) {
+        Group g = hcs.getGroup() == null ? ncfile.getRootGroup() : hcs.getGroup();
+        Variable v = pv.makeVariable(ncfile, g, true);
+        if (g.findVariable( v.getShortName()) != null) { // already got. can happen when a new vert level is added
+          logger.warn("GribServiceProvider.Index2NC: FmrcCoordSys has 2 variables mapped to ="+v.getShortName()+
+                  " for file "+ncfile.getLocation());
+        } else
+          g.addVariable( v);
+      }
+      
       // add coordinate variables at the end
       for (int i = 0; i < timeCoords.size(); i++) {
         GridTimeCoord tcs = (GridTimeCoord) timeCoords.get(i);

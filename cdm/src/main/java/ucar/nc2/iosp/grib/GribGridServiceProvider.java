@@ -264,11 +264,12 @@ public class GribGridServiceProvider extends GridServiceProvider {
 
       out = new DataOutputStream(new BufferedOutputStream(
                 new FileOutputStream(indexFile.getPath(), false)));
-
+      File grib = new File( raf.getLocation());
       if (edition == 1) {
         index = new Grib1WriteIndex().writeFileIndex(raf, out, true);
       } else if (edition == 2) {
-        //index = new Grib2WriteIndex().writeFileIndex(raf, out, true);
+        index = new Grib2WriteIndex().writeGribIndex( raf,
+            grib.lastModified(), out, true);
       }
 
       return index;

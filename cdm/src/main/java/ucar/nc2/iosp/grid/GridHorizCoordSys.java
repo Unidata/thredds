@@ -99,18 +99,18 @@ public class GridHorizCoordSys {
 
   /**
    * GridVariables that have this GridHorizCoordSys
-   */
+   */  //TODO: generics
   HashMap varHash = new HashMap(200);
 
   /**
    * List of GridVariable, sorted by product desc
-   */
+   */  //TODO: generics
   HashMap productHash = new HashMap(100);
 
   /**
    * GridVertCoordSys
-   */
-  HashMap vcsHash = new HashMap(30);
+   */  //TODO: generics
+  //HashMap vcsHash = new HashMap(30);
 
   /**
    * startx, starty
@@ -124,7 +124,7 @@ public class GridHorizCoordSys {
 
   /**
    * list of attributes
-   */
+   */ //TODO: generics
   private ArrayList attributes = new ArrayList();
 
   /**
@@ -154,15 +154,10 @@ public class GridHorizCoordSys {
         && (lookup.getProjectionType(gds) == GridTableLookup.GaussianLatLon)) {
       isGaussian = true;
 
-      double np = gds.getDouble( gds.NP ); // # lats between pole and equator  (octet 26/27)
+      double np = gds.getDouble( GridDefRecord.NP ); // # lats between pole and equator  (octet 26/27)
       np = (Double.isNaN(np)) ? 90 : np;
       //System.out.println( "np ="+np );
-      gds.addParam(gds.DY, String.valueOf(np));  // fake - need to get actual gaussian calculation here
-
-      // hack-a-whack : who is this for ???
-      // gds.dy = 2 * gds.La1 / gds.ny;
-      //gds.nx = 800;
-      //gds.dx = 360.0/gds.nx;
+      gds.addParam(GridDefRecord.DY, String.valueOf(np));  // fake - need to get actual gaussian calculation here
     }
   }
 
@@ -208,7 +203,7 @@ public class GridHorizCoordSys {
    * @return the number of x points
    */
   int getNx() {
-    return gds.getInt(gds.NX);
+    return gds.getInt(GridDefRecord.NX);
   }
 
   /**
@@ -217,7 +212,7 @@ public class GridHorizCoordSys {
    * @return the number of Y points
    */
   int getNy() {
-    return gds.getInt(gds.NY);
+    return gds.getInt(GridDefRecord.NY);
   }
 
   /**
@@ -226,7 +221,7 @@ public class GridHorizCoordSys {
    * @return the X spacing in kilometers
    */
   private double getDxInKm() {
-    return gds.getDouble(gds.DX) * .001;
+    return gds.getDouble(GridDefRecord.DX) * .001;
   }
 
   /**
@@ -235,7 +230,7 @@ public class GridHorizCoordSys {
    * @return the Y spacing in kilometers
    */
   private double getDyInKm() {
-    return gds.getDouble(gds.DY) * .001;
+    return gds.getDouble(GridDefRecord.DY) * .001;
   }
 
   /**
@@ -246,11 +241,11 @@ public class GridHorizCoordSys {
   void addDimensionsToNetcdfFile(NetcdfFile ncfile) {
 
     if (isLatLon) {
-      ncfile.addDimension(g, new Dimension("lat", gds.getInt(gds.NY), true));
-      ncfile.addDimension(g, new Dimension("lon", gds.getInt(gds.NX), true));
+      ncfile.addDimension(g, new Dimension("lat", gds.getInt(GridDefRecord.NY), true));
+      ncfile.addDimension(g, new Dimension("lon", gds.getInt(GridDefRecord.NX), true));
     } else {
-      ncfile.addDimension(g, new Dimension("y", gds.getInt(gds.NY), true));
-      ncfile.addDimension(g, new Dimension("x", gds.getInt(gds.NX), true));
+      ncfile.addDimension(g, new Dimension("y", gds.getInt(GridDefRecord.NY), true));
+      ncfile.addDimension(g, new Dimension("x", gds.getInt(GridDefRecord.NX), true));
     }
   }
 
@@ -262,39 +257,39 @@ public class GridHorizCoordSys {
   void addToNetcdfFile(NetcdfFile ncfile) {
 
     if (isLatLon) {
-      double dy = (gds.getDouble(gds.LA2) < gds.getDouble(gds.LA1))
-          ? -gds.getDouble(gds.DY) : gds.getDouble(gds.DY);
+      double dy = (gds.getDouble(GridDefRecord.LA2) < gds.getDouble(GridDefRecord.LA1))
+          ? -gds.getDouble(GridDefRecord.DY) : gds.getDouble(GridDefRecord.DY);
       if (isGaussian) {
         addGaussianLatAxis(ncfile, "lat", "degrees_north",
             "latitude coordinate", "latitude", AxisType.Lat);
       } else {
-        addCoordAxis(ncfile, "lat", gds.getInt(gds.NY),
-            gds.getDouble(gds.LA1), dy, "degrees_north",
+        addCoordAxis(ncfile, "lat", gds.getInt(GridDefRecord.NY),
+            gds.getDouble(GridDefRecord.LA1), dy, "degrees_north",
             "latitude coordinate", "latitude", AxisType.Lat);
       }
-      addCoordAxis(ncfile, "lon", gds.getInt(gds.NX),
-          gds.getDouble(gds.LO1), gds.getDouble(gds.DX), "degrees_east",
+      addCoordAxis(ncfile, "lon", gds.getInt(GridDefRecord.NX),
+          gds.getDouble(GridDefRecord.LO1), gds.getDouble(GridDefRecord.DX), "degrees_east",
           "longitude coordinate", "longitude", AxisType.Lon);
       addCoordSystemVariable(ncfile, "latLonCoordSys", "time lat lon");
 
     } else {
       makeProjection(ncfile);
-      double[] yData, xData;
+      double[] yData, xData; //TODO: can these be removed
       if (lookup.getProjectionType(gds) == GridTableLookup.RotatedLatLon) {
-        double dy = (gds.getDouble("La2") < gds.getDouble(gds.LA1)
-            ? -gds.getDouble(gds.DY) : gds.getDouble(gds.DY));
+        double dy = (gds.getDouble("La2") < gds.getDouble(GridDefRecord.LA1)
+            ? -gds.getDouble(GridDefRecord.DY) : gds.getDouble(GridDefRecord.DY));
 
-        yData = addCoordAxis(ncfile, "y", gds.getInt(gds.NY),
-            gds.getDouble(gds.LA1), dy, "degrees",
+        yData = addCoordAxis(ncfile, "y", gds.getInt(GridDefRecord.NY),
+            gds.getDouble(GridDefRecord.LA1), dy, "degrees",
             "y coordinate of projection", "projection_y_coordinate", AxisType.GeoY);
-        xData = addCoordAxis(ncfile, "x", gds.getInt(gds.NX),
-            gds.getDouble(gds.LO1), gds.getDouble(gds.DX), "degrees",
+        xData = addCoordAxis(ncfile, "x", gds.getInt(GridDefRecord.NX),
+            gds.getDouble(GridDefRecord.LO1), gds.getDouble(GridDefRecord.DX), "degrees",
             "x coordinate of projection", "projection_x_coordinate", AxisType.GeoX);
       } else {
-        yData = addCoordAxis(ncfile, "y", gds.getInt(gds.NY),
+        yData = addCoordAxis(ncfile, "y", gds.getInt(GridDefRecord.NY),
             starty, getDyInKm(), "km", "y coordinate of projection",
             "projection_y_coordinate", AxisType.GeoY);
-        xData = addCoordAxis(ncfile, "x", gds.getInt(gds.NX),
+        xData = addCoordAxis(ncfile, "x", gds.getInt(GridDefRecord.NX),
             startx, getDxInKm(), "km", "x coordinate of projection",
             "projection_x_coordinate", AxisType.GeoX);
       }
@@ -356,16 +351,15 @@ public class GridHorizCoordSys {
    * @return the values
    */
   private double[] addGaussianLatAxis(NetcdfFile ncfile, String name,
-                                      String units, String desc,
-                                      String standard_name, AxisType axis) {
+    String units, String desc, String standard_name, AxisType axis) {
 
-    double np = gds.getDouble( gds.NUMBERPARALLELS );
+    double np = gds.getDouble( GridDefRecord.NUMBERPARALLELS );
     if (Double.isNaN(np)) {
       throw new IllegalArgumentException(
           "Gaussian LAt/Lon grid must have NumberParallels parameter");
     }
-    double startLat = gds.getDouble(gds.LA1);
-    double endLat = gds.getDouble(gds.LA2);
+    double startLat = gds.getDouble(GridDefRecord.LA1);
+    double endLat = gds.getDouble(GridDefRecord.LA2);
 
     int nlats = (int) (2 * np);
     GaussianLatitudes gaussLats = new GaussianLatitudes(nlats);
@@ -385,7 +379,7 @@ public class GridHorizCoordSys {
         bestEndIndex = i;
       }
     }
-    assert Math.abs(bestEndIndex - bestStartIndex + 1) == gds.getInt(gds.NY);
+    assert Math.abs(bestEndIndex - bestStartIndex + 1) == gds.getInt(GridDefRecord.NY);
     boolean goesUp = bestEndIndex > bestStartIndex;
 
     Variable v = new Variable(ncfile, g, null, name);
@@ -393,7 +387,7 @@ public class GridHorizCoordSys {
     v.setDimensions(name);
 
     // create the data
-    int n = (int) gds.getInt(gds.NY);
+    int n = (int) gds.getInt(GridDefRecord.NY);
     int useIndex = bestStartIndex;
     double[] data = new double[n];
     double[] gaussw = new double[n];
@@ -459,7 +453,7 @@ public class GridHorizCoordSys {
 
       default:
         throw new UnsupportedOperationException("unknown projection = "
-            + gds.getInt(gds.GRID_TYPE));
+            + gds.getInt(GridDefRecord.GRID_TYPE));
     }
 
     Variable v = new Variable(ncfile, g, null, grid_name);
@@ -475,10 +469,10 @@ public class GridHorizCoordSys {
     }
 
     v.addAttribute(new Attribute("earth_shape", shape_name));
-    if (gds.getInt(gds.GRID_SHAPE_CODE) == 1) {
+    if (gds.getInt(GridDefRecord.GRID_SHAPE_CODE) == 1) {
       v.addAttribute(
           new Attribute("spherical_earth_radius_meters",
-              new Double(gds.getDouble(gds.RADIUS_SPHERICAL_EARTH))));
+              new Double(gds.getDouble(GridDefRecord.RADIUS_SPHERICAL_EARTH))));
     }
     addGDSparams(v);
     ncfile.addVariable(g, v);
@@ -541,10 +535,10 @@ public class GridHorizCoordSys {
   private void makeLC() {
     // we have to project in order to find the origin
     proj = new LambertConformal(
-        gds.getDouble(gds.LATIN1), gds.getDouble(gds.LOV),
-        gds.getDouble(gds.LATIN1), gds.getDouble(gds.LATIN2));
+        gds.getDouble(GridDefRecord.LATIN1), gds.getDouble(GridDefRecord.LOV),
+        gds.getDouble(GridDefRecord.LATIN1), gds.getDouble(GridDefRecord.LATIN2));
     LatLonPointImpl startLL =
-        new LatLonPointImpl(gds.getDouble(gds.LA1), gds.getDouble(gds.LO1));
+      new LatLonPointImpl(gds.getDouble(GridDefRecord.LA1), gds.getDouble(GridDefRecord.LO1));
     ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(startLL);
     startx = start.getX();
     starty = start.getY();
@@ -556,8 +550,8 @@ public class GridHorizCoordSys {
     if (GridServiceProvider.debugProj) {
       System.out.println("GridHorizCoordSys.makeLC start at latlon "+ startLL);
 
-      double Lo2 = gds.getDouble(gds.LO2);
-      double La2 = gds.getDouble(gds.LA2);
+      double Lo2 = gds.getDouble(GridDefRecord.LO2);
+      double La2 = gds.getDouble(GridDefRecord.LA2);
       LatLonPointImpl endLL = new LatLonPointImpl(La2, Lo2);
       System.out.println("GridHorizCoordSys.makeLC end at latlon "+ endLL);
 
@@ -571,19 +565,19 @@ public class GridHorizCoordSys {
     }
 
     attributes.add(new Attribute("grid_mapping_name", "lambert_conformal_conic"));
-    if (gds.getDouble(gds.LATIN1) == gds.getDouble(gds.LATIN2)) {
+    if (gds.getDouble(GridDefRecord.LATIN1) == gds.getDouble(GridDefRecord.LATIN2)) {
       attributes.add(new Attribute("standard_parallel",
-          new Double(gds.getDouble(gds.LATIN1))));
+          new Double(gds.getDouble(GridDefRecord.LATIN1))));
     } else {
-      double[] data = new double[]{gds.getDouble(gds.LATIN1),
-          gds.getDouble(gds.LATIN2)};
+      double[] data = new double[]{gds.getDouble(GridDefRecord.LATIN1),
+          gds.getDouble(GridDefRecord.LATIN2)};
       attributes.add(new Attribute("standard_parallel",
           Array.factory(DataType.DOUBLE, new int[]{2}, data)));
     }
     attributes.add(new Attribute("longitude_of_central_meridian",
-            new Double(gds.getDouble(gds.LOV))));
+            new Double(gds.getDouble(GridDefRecord.LOV))));
     attributes.add(new Attribute("latitude_of_projection_origin",
-            new Double(gds.getDouble(gds.LATIN1))));
+            new Double(gds.getDouble(GridDefRecord.LATIN1))));
   }
 
   /**
@@ -592,18 +586,20 @@ public class GridHorizCoordSys {
   private void makePS() {
     double scale = .933;
 
-    String nproj = gds.getParam(gds.NPPROJ);
-    double latOrigin = (nproj.equalsIgnoreCase("true")) ? 90.0 : -90.0;
+    String nproj = gds.getParam(GridDefRecord.NPPROJ);
+    double latOrigin = (nproj == null || nproj.equalsIgnoreCase("true"))
+        ? 90.0 : -90.0;
 
     // Why the scale factor?. accordining to GRIB docs:
     // "Grid lengths are in units of meters, at the 60 degree latitude circle nearest to the pole"
     // since the scale factor at 60 degrees = k = 2*k0/(1+sin(60))  [Snyder,Working Manual p157]
     // then to make scale = 1 at 60 degrees, k0 = (1+sin(60))/2 = .933
-    proj = new Stereographic(latOrigin, gds.getDouble(gds.LOV), scale);
+    proj = new Stereographic(latOrigin, gds.getDouble(GridDefRecord.LOV), scale);
 
     // we have to project in order to find the origin
     ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(
-        new LatLonPointImpl(gds.getDouble(gds.LA1), gds.getDouble(gds.LO1)));
+        new LatLonPointImpl(
+        gds.getDouble(GridDefRecord.LA1), gds.getDouble(GridDefRecord.LO1)));
     startx = start.getX();
     starty = start.getY();
 
@@ -615,13 +611,13 @@ public class GridHorizCoordSys {
       System.out.println("start at proj coord " + start);
       LatLonPoint llpt = proj.projToLatLon(start);
       System.out.println("   end at lat/lon coord " + llpt);
-      System.out.println("   should be lat=" + gds.getDouble(gds.LA1)
-          +" lon=" + gds.getDouble(gds.LO1));
+      System.out.println("   should be lat=" + gds.getDouble(GridDefRecord.LA1)
+          +" lon=" + gds.getDouble(GridDefRecord.LO1));
     }
 
     attributes.add(new Attribute("grid_mapping_name", "polar_stereographic"));
     attributes.add(new Attribute("longitude_of_projection_origin",
-            new Double(gds.getDouble(gds.LOV))));
+            new Double(gds.getDouble(GridDefRecord.LOV))));
     attributes.add(new Attribute("scale_factor_at_projection_origin",
         new Double(scale)));
     attributes.add(new Attribute("latitude_of_projection_origin",
@@ -637,15 +633,16 @@ public class GridHorizCoordSys {
      * @param lon0 longitude of origin (degrees)
      * @param par standard parallel (degrees). cylinder cuts earth at this latitude.
      */
-    double Latin = gds.getDouble(gds.LATIN);
-    double Lo1 = gds.getDouble(gds.LO1); //gds.Lo1;
-    double La1 = gds.getDouble(gds.LA1); //gds.La1;
+    double Latin = gds.getDouble(GridDefRecord.LATIN);
+    double Lo1 = gds.getDouble(GridDefRecord.LO1); //gds.Lo1;
+    double La1 = gds.getDouble(GridDefRecord.LA1); //gds.La1;
 
     // put longitude origin at first point - doesnt actually matter
     proj = new Mercator(Lo1, Latin);
 
     // find out where
-    ProjectionPoint startP = proj.latLonToProj(new LatLonPointImpl(La1, Lo1));
+    ProjectionPoint startP = proj.latLonToProj(
+        new LatLonPointImpl(La1, Lo1));
     startx = startP.getX();
     starty = startP.getY();
 
@@ -654,11 +651,12 @@ public class GridHorizCoordSys {
     attributes.add(new Attribute("longitude_of_projection_origin", Lo1));
 
     if (GridServiceProvider.debugProj) {
-      double Lo2 = gds.getDouble(gds.LO2);
+      double Lo2 = gds.getDouble(GridDefRecord.LO2);
       if (Lo2 < Lo1) Lo2 += 360;
-      double La2 = gds.getDouble(gds.LA2);
+      double La2 = gds.getDouble(GridDefRecord.LA2);
       LatLonPointImpl endLL = new LatLonPointImpl(La2, Lo2);
-      System.out.println("GridHorizCoordSys.makeMercator: end at latlon= "+ endLL);
+      System.out.println("GridHorizCoordSys.makeMercator: end at latlon= "+
+          endLL);
 
       ProjectionPointImpl endPP = (ProjectionPointImpl) proj.latLonToProj(endLL);
       System.out.println("   start at proj coord "+
@@ -674,14 +672,15 @@ public class GridHorizCoordSys {
   // RotatedLatLon
   private void makeRotatedLatLon(NetcdfFile ncfile) {
 
-    double splat = gds.getDouble(gds.SPLAT);
-    double splon = gds.getDouble(gds.SPLON);
-    double spangle = gds.getDouble(gds.ROTATIONANGLE);
+    double splat = gds.getDouble(GridDefRecord.SPLAT);
+    double splon = gds.getDouble(GridDefRecord.SPLON);
+    double spangle = gds.getDouble(GridDefRecord.ROTATIONANGLE);
 
     // Given projection coordinates, need LatLon coordinates
     proj = new RotatedLatLon(splat, splon, spangle);
     LatLonPoint startLL = proj.projToLatLon(
-        new ProjectionPointImpl(gds.getDouble(gds.LO1), gds.getDouble(gds.LA1)));
+        new ProjectionPointImpl(
+            gds.getDouble(GridDefRecord.LO1), gds.getDouble(GridDefRecord.LA1)));
     startx = startLL.getLongitude();
     starty = startLL.getLatitude();
     addCoordSystemVariable(ncfile, "latLonCoordSys", "time y x");
@@ -698,23 +697,23 @@ public class GridHorizCoordSys {
       System.out.println("Axial rotation about pole of rotated grid:" + spangle);
 
       System.out.println("Location of LL in rotated grid:");
-      System.out.println("Lon=" + gds.getDouble(gds.LO1) + ", " +
-          "Lat=" + gds.getDouble(gds.LA1));
+      System.out.println("Lon=" + gds.getDouble(GridDefRecord.LO1) + ", " +
+          "Lat=" + gds.getDouble(GridDefRecord.LA1));
       System.out.println("Location of LL in non-rotated grid:");
       System.out.println("Lon=" + startx + ", Lat=" + starty);
 
-      double Lo2 = gds.getDouble(gds.LO2);
-      double La2 = gds.getDouble(gds.LA2);
+      double Lo2 = gds.getDouble(GridDefRecord.LO2);
+      double La2 = gds.getDouble(GridDefRecord.LA2);
       System.out.println("Location of UR in rotated grid:");
       System.out.println("Lon=" + Lo2 + ", Lat=" + La2);
       System.out.println("Location of UR in non-rotated grid:");
       LatLonPoint endUR = proj.projToLatLon(new ProjectionPointImpl(Lo2, La2));
       System.out.println("Lon=" + endUR.getLongitude() + ", Lat=" + endUR.getLatitude());
 
-      double dy = (La2 < gds.getDouble(gds.LA1)) ?
-          -gds.getDouble(gds.DY) : gds.getDouble(gds.DY);
-      double endx = gds.getDouble(gds.LO1) + (getNx() - 1) * gds.getDouble(gds.DX);
-      double endy = gds.getDouble(gds.LA1) + (getNy() - 1) * dy;
+      double dy = (La2 < gds.getDouble(GridDefRecord.LA1)) ?
+          -gds.getDouble(GridDefRecord.DY) : gds.getDouble(GridDefRecord.DY);
+      double endx = gds.getDouble(GridDefRecord.LO1) + (getNx() - 1) * gds.getDouble(GridDefRecord.DX);
+      double endy = gds.getDouble(GridDefRecord.LA1) + (getNy() - 1) * dy;
 
       System.out.println("End point rotated grid should be x="+
           endx + " y=" + endy);
@@ -725,28 +724,28 @@ public class GridHorizCoordSys {
    * Make a Space View Orthographic projection
    */
   private void makeSpaceViewOrOthographic() {
-    double Lat0 = gds.getDouble(gds.LAP);  // sub-satellite point lat
-    double Lon0 = gds.getDouble(gds.LOP);  // sub-satellite point lon
+    double Lat0 = gds.getDouble(GridDefRecord.LAP);  // sub-satellite point lat
+    double Lon0 = gds.getDouble(GridDefRecord.LOP);  // sub-satellite point lon
 
-    double xp = gds.getDouble(gds.XP);  // sub-satellite point in grid lengths
-    double yp = gds.getDouble(gds.YP);
+    double xp = gds.getDouble(GridDefRecord.XP);  // sub-satellite point in grid lengths
+    double yp = gds.getDouble(GridDefRecord.YP);
 
-    double dx = gds.getDouble(gds.DX);  // apparent diameter in units of grid lengths
-    double dy = gds.getDouble(gds.DY);
+    double dx = gds.getDouble(GridDefRecord.DX);  // apparent diameter in units of grid lengths
+    double dy = gds.getDouble(GridDefRecord.DY);
 
-    double major_axis = gds.getDouble(gds.MAJOR_AXIS_EARTH);  // km
-    double minor_axis = gds.getDouble(gds.MINOR_AXIS_EARTH);  // km
+    double major_axis = gds.getDouble(GridDefRecord.MAJOR_AXIS_EARTH);  // km
+    double minor_axis = gds.getDouble(GridDefRecord.MINOR_AXIS_EARTH);  // km
 
     // Nr = altitude of camera from center, in units of radius
-    double nr = gds.getDouble(gds.NR) * 1e-6;
+    double nr = gds.getDouble(GridDefRecord.NR) * 1e-6;
     double apparentDiameter = 2 * Math.sqrt((nr - 1) / (nr + 1));  // apparent diameter, units of radius (see Snyder p 173)
 
     // app diameter kmeters / app diameter grid lengths = m per grid length
     double gridLengthX = major_axis * apparentDiameter / dx;
     double gridLengthY = minor_axis * apparentDiameter / dy;
 
-    gds.addParam(gds.DX, String.valueOf(1000 * gridLengthX));  // meters
-    gds.addParam(gds.DY, String.valueOf(1000 * gridLengthY));  // meters
+    gds.addParam(GridDefRecord.DX, String.valueOf(1000 * gridLengthX));  // meters
+    gds.addParam(GridDefRecord.DY, String.valueOf(1000 * gridLengthY));  // meters
 
     startx = -gridLengthX * xp;  // km
     starty = -gridLengthY * yp;
@@ -779,8 +778,8 @@ public class GridHorizCoordSys {
 
     if (GridServiceProvider.debugProj) {
 
-      double Lo2 = gds.getDouble(gds.LO2) + 360.0;
-      double La2 = gds.getDouble(gds.LA2);
+      double Lo2 = gds.getDouble(GridDefRecord.LO2) + 360.0;
+      double La2 = gds.getDouble(GridDefRecord.LA2);
       LatLonPointImpl endLL = new LatLonPointImpl(La2, Lo2);
       System.out.println(
           "GridHorizCoordSys.makeOrthographic end at latlon "+ endLL);
@@ -803,8 +802,8 @@ public class GridHorizCoordSys {
    * @param proj   projection for transform
    */
   private void setDxDy(double startx, double starty, ProjectionImpl proj) {
-    double Lo2 = gds.getDouble(gds.LO2);
-    double La2 = gds.getDouble(gds.LA2);
+    double Lo2 = gds.getDouble(GridDefRecord.LO2);
+    double La2 = gds.getDouble(GridDefRecord.LA2);
     if (Double.isNaN(Lo2) || Double.isNaN(La2)) {
       return;
     }
@@ -812,10 +811,10 @@ public class GridHorizCoordSys {
     ProjectionPointImpl end =
         (ProjectionPointImpl) proj.latLonToProj(endLL);
     double dx = 1000 * Math.abs(end.getX() - startx)
-        / (gds.getInt(gds.NX) - 1);
+        / (gds.getInt(GridDefRecord.NX) - 1);
     double dy = 1000 * Math.abs(end.getY() - starty)
-        / (gds.getInt(gds.NY) - 1);
-    gds.addParam(gds.DX, String.valueOf(dx));
-    gds.addParam(gds.DY, String.valueOf(dy));
+        / (gds.getInt(GridDefRecord.NY) - 1);
+    gds.addParam(GridDefRecord.DX, String.valueOf(dx));
+    gds.addParam(GridDefRecord.DY, String.valueOf(dy));
   }
 }
