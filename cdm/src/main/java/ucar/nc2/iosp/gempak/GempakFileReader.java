@@ -34,6 +34,7 @@
  */
 
 
+
 package ucar.nc2.iosp.gempak;
 
 
@@ -42,6 +43,7 @@ import ucar.unidata.io.RandomAccessFile;
 import java.io.*;
 
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
 
@@ -86,6 +88,10 @@ public class GempakFileReader implements GempakConstants {
 
     /** file size */
     protected long fileSize = 0;
+
+    /** masking pattern */
+    //private static int mskpat = 0xFFFF;
+    private static int mskpat = ~0;
 
     /**
      * Bean ctor
@@ -497,12 +503,15 @@ public class GempakFileReader implements GempakConstants {
                 dmp.kbits = DM_RINT(iread++);
             }
         }
-        //  TODO:  Set the packing?
         parts = new ArrayList<DMPart>(numParts);
         for (int i = 0; i < numParts; i++) {
             parts.add(partArray[i]);
         }
-
+        for (DMPart part : parts) {
+            if (part.ktyprt == MDRPCK) {
+                part.packInfo = new PackingInfo(part);
+            }
+        }
     }
 
     /**
@@ -783,6 +792,9 @@ public class GempakFileReader implements GempakConstants {
         /** length of packed rec */
         public int kwordp;
 
+        /** packing info */
+        public PackingInfo packInfo = null;;
+
         /**
          * Default ctor
          */
@@ -852,6 +864,75 @@ public class GempakFileReader implements GempakConstants {
             buf.append(kbits);
             return buf.toString();
         }
+    }
+
+    /**
+     * Class to hold DM Integer packing info
+     */
+    protected class PackingInfo {
+
+        /** offsets */
+        public int[] koffst;
+
+        /** n bits */
+        public int[] nbitsc;
+
+        /** scaling */
+        public double[] scalec;
+
+        /** missing */
+        public int[] imissc;
+
+        /** missing */
+        public int[] iswrdc;
+
+        /** missing */
+        public int[] isbitc;
+
+        /**
+         * Set the packing terms for this part
+         *
+         * @param part The part for the packing
+         */
+        public PackingInfo(DMPart part) {
+            List<DMParam> params    = part.params;
+            int           numParams = params.size();
+            koffst = new int[numParams];
+            nbitsc = new int[numParams];
+            scalec = new double[numParams];
+            imissc = new int[numParams];
+            iswrdc = new int[numParams];
+            isbitc = new int[numParams];
+            int i      = 0;
+            int itotal = 0;
+            for (DMParam param : params) {
+                koffst[i]   = param.koffst;
+                nbitsc[i]   = param.kbits;
+                scalec[i]   = Math.pow(10, param.kscale);
+                imissc[i]   = mskpat >>> (32 - param.kbits);
+                iswrdc[i]   = (itotal / 32);
+                isbitc[i++] = (itotal % 32) + 1;
+                itotal      += param.kbits;
+            }
+            part.kwordp = (itotal - 1) / 32 + 1;
+        }
+
+        /**
+         * Get a String representation of this object.
+         * @return a String representation of this object.
+         * public String toString() {
+         *   StringBuffer buf = new StringBuffer();
+         *   buf.append("Param name = ");
+         *   buf.append(kprmnm);
+         *   buf.append("; scale = ");
+         *   buf.append(kscale);
+         *   buf.append("; offset = ");
+         *   buf.append(koffst);
+         *   buf.append("; bits = ");
+         *   buf.append(kbits);
+         *   return buf.toString();
+         * }
+         */
     }
 
     /**
@@ -1155,7 +1236,8 @@ public class GempakFileReader implements GempakConstants {
         int ipoint = -1;
         if ((irow < 1) || (irow > dmLabel.krow) || (icol < 1)
                 || (icol > dmLabel.kcol)) {
-            System.out.println("bad row or column number: " + irow + "/" + icol);
+            System.out.println("bad row or column number: " + irow + "/"
+                               + icol);
             return ipoint;
         }
         int iprt = getPartNumber(partName);
@@ -1357,7 +1439,7 @@ public class GempakFileReader implements GempakConstants {
      *
      * @throws IOException problem reading file
      */
-    public RealData DM_RDTR(int irow, int icol, String partName)
+    public RData DM_RDTR(int irow, int icol, String partName)
             throws IOException {
         return DM_RDTR(irow, icol, partName, 1);
     }
@@ -1374,8 +1456,8 @@ public class GempakFileReader implements GempakConstants {
      *
      * @throws IOException problem reading file
      */
-    public RealData DM_RDTR(int irow, int icol, String partName,
-                            int decimalScale)
+    public RData DM_RDTR(int irow, int icol, String partName,
+                         int decimalScale)
             throws IOException {
 
         int ipoint = -1;
@@ -1427,61 +1509,99 @@ public class GempakFileReader implements GempakConstants {
         } else if (part.ktyprt == MDGRID) {
             rdata = DM_RPKG(isword, nword, decimalScale);
         } else {  //  packed ints
-            rdata = unpackInts(part, isword);
+            int[] idata = new int[nword];
+            DM_RINT(isword, idata);
+            rdata = DP_UNPK(part, idata);
         }
-        RealData rd = null;
+        RData rd = null;
         if (rdata != null) {
-            rd = new RealData(header, rdata);
+            rd = new RData(header, rdata);
         }
 
         return rd;
 
     }
 
-    /**
-     * Unpack the part  (stand-in for DM_UNPK);
-     *
-     * @param part  the part
-     * @param iiword starting word
-     *
-     * @return the unpacked data
-     *
-     * @throws IOException problem reading file
-     */
-    public float[] unpackInts(DMPart part, int iiword) throws IOException {
 
-        List<DMParam> parms  = part.params;
-        float[]       values = new float[parms.size()];
-        bitPos = 0;
-        bitBuf = 0;
-        next   = 0;
-        ch1    = 0;
-        ch2    = 0;
-        ch3    = 0;
-        ch4    = 0;
-        rf.seek(getOffset(iiword));
-        int idat;
-        int i = 0;
-        for (DMParam parm : parms) {
-            int   scale       = parm.kscale;
-            // save a pow call if we can
-            float scaleFactor = (scale == 0)
-                                ? 1.f
-                                : (float) Math.pow(10.0, scale);
-            idat = bits2UInt(parm.kbits);
-            /* TODO: figure out missing bits
-            not0 = NOT (0)
-            imissc ( idata, ipkno ) = ISHFT ( not0,
-      +                                     nbitsc (idata, ipkno) - 32 )
-            */
-            if (idat == IMISSD) {
-                values[i] = RMISSD;
-            } else {
-                values[i] = (parm.koffst + idat) * scaleFactor;
-            }
-            i++;
+
+    /**
+     * Unpack an array of packed integers.
+     *
+     * @param part the part with packing info
+     * @param ibitst packed integer bit string
+     *
+     * @return unpacked ints as floats
+     */
+    public float[] DP_UNPK(DMPart part, int[] ibitst) {
+        float[]     data  = new float[part.kparms];
+        PackingInfo pkinf = part.packInfo;
+        //
+        //  Move bitstring into internal words.  TODO: necessary?
+        //
+        int[] jdata = new int[ibitst.length];
+        for (int i = 0; i < ibitst.length; i++) {
+            jdata[i] = ibitst[i];
         }
-        return values;
+
+        //
+        //  Extract each data value.
+        //
+        for (int idata = 0; idata < data.length; idata++) {
+
+            //
+            //  Extract correct bits from words using shift and mask
+            //  operations.
+            //
+            int jbit   = pkinf.nbitsc[idata];
+            int jsbit  = pkinf.isbitc[idata];
+            int jshift = 1 - jsbit;
+            int jsword = pkinf.iswrdc[idata];
+            int jword  = jdata[jsword];
+            // use >>> to shift avoid carrying sign along
+            int mask   = mskpat >>> (32 - jbit);
+            int ifield = jword >>> Math.abs(jshift);
+            ifield = ifield & mask;
+            if ((jsbit + jbit - 1) > 32) {
+                jword  = jdata[jsword + 1];
+                jshift = jshift + 32;
+                int iword = jword << jshift;
+                iword  = iword & mask;
+                ifield = ifield | iword;
+            }
+            //
+            //  The integer data is now in ifield.  Use the scaling and
+            //  offset terms to convert to REAL data.
+            //
+            if (ifield == pkinf.imissc[idata]) {
+                data[idata] = RMISSD;
+            } else {
+                data[idata] = (ifield + pkinf.koffst[idata])
+                              * (float) pkinf.scalec[idata];
+            }
+        }
+        return data;
+
+    }
+
+    /**
+     * Get a bit string for an integer
+     *
+     * @param b  the integer
+     * @return a bit string (e.g.: 01100001|11000000|10011010|10110100|)
+     */
+    private static String getBits(int b) {
+        String s = "";
+        for (int i = 31; i >= 0; i--) {
+            if ((b & (1 << i)) != 0) {
+                s = s + "1";
+            } else {
+                s = s + "0";
+            }
+            if (i % 8 == 0) {
+                s = s + "|";
+            }
+        }
+        return s;
     }
 
     /**
@@ -1505,7 +1625,7 @@ public class GempakFileReader implements GempakConstants {
      *
      * @author Unidata Development Team
      */
-    public class RealData {
+    public class RData {
 
         /** the header */
         public int[] header;
@@ -1519,100 +1639,12 @@ public class GempakFileReader implements GempakConstants {
          * @param header  the header
          * @param data    the data
          */
-        public RealData(int[] header, float[] data) {
+        public RData(int[] header, float[] data) {
             this.header = header;
             this.data   = data;
         }
     }
 
-
-    /** bit position */
-    int bitPos = 0;
-
-    /** bit buffer */
-    int bitBuf = 0;
-
-    /** bit buffer size */
-    int next = 0;
-
-    /** character 1 */
-    int ch1 = 0;
-
-    /** character 2 */
-    int ch2 = 0;
-
-    /** character 3 */
-    int ch3 = 0;
-
-    /** character 4 */
-    int ch4 = 0;
-
-    /**
-     * Convert bits (nb) to Unsigned Int .
-     *
-     * @param nb  number of bits
-     * @throws IOException
-     * @return int of BinaryDataSection section
-     */
-    public int bits2UInt(int nb) throws IOException {
-        int bitsLeft = nb;
-        int result   = 0;
-
-        if (bitPos == 0) {
-            //bitBuf = raf.read();
-            getNextByte();
-            bitPos = 8;
-        }
-
-        while (true) {
-            int shift = bitsLeft - bitPos;
-            if (shift > 0) {
-                // Consume the entire buffer
-                result   |= bitBuf << shift;
-                bitsLeft -= bitPos;
-
-                // Get the next byte from the RandomAccessFile
-                //bitBuf = raf.read();
-                getNextByte();
-                bitPos = 8;
-            } else {
-                // Consume a portion of the buffer
-                result |= bitBuf >> -shift;
-                bitPos -= bitsLeft;
-                bitBuf &= 0xff >> (8 - bitPos);  // mask off consumed bits
-
-                return result;
-            }
-        }                                        // end while
-    }                                            // end bits2Int
-
-    /**
-     * Get the next byte
-     *
-     * @throws IOException problem reading the byte
-     */
-    public void getNextByte() throws IOException {
-        if ( !needToSwap) {
-            // Get the next byte from the RandomAccessFile
-            bitBuf = rf.read();
-        } else {
-            if (next == 3) {
-                bitBuf = ch3;
-            } else if (next == 2) {
-                bitBuf = ch2;
-            } else if (next == 1) {
-                bitBuf = ch1;
-            } else {
-                ch1    = rf.read();
-                ch2    = rf.read();
-                ch3    = rf.read();
-                ch4    = rf.read();
-                bitBuf = ch4;
-                next   = 4;
-            }
-            next--;
-        }
-    }
 
 }
 

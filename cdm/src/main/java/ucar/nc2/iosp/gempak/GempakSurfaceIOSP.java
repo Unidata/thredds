@@ -271,9 +271,8 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                     y += stationRange.stride()) {
                 for (int x = timeRange.first(); x <= timeRange.last();
                         x += timeRange.stride()) {
-                    GempakFileReader.RealData vals = gemreader.DM_RDTR(x + 1,
-                                                         y + 1,
-                                                         gemreader.SFDT);
+                    GempakFileReader.RData vals = gemreader.DM_RDTR(x + 1,
+                                                      y + 1, gemreader.SFDT);
                     if (vals == null) {
                         for (int k = 0; i < mbers.size(); k++) {
                             buf.putFloat(missing[k]);

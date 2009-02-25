@@ -34,11 +34,12 @@
  */
 
 
-
 package ucar.nc2.iosp.gempak;
 
 
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.util.Format;
+import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 
@@ -503,6 +504,49 @@ public class GempakSurfaceFileReader extends GempakFileReader {
 
     /**
      * Print the list of dates in the file
+     *
+     * @param row ob row	
+     * @param col ob column
+     */
+    public void printOb(int row, int col) {
+        int           stnIndex = (fileType.equals(CLIMATE))
+                                 ? row
+                                 : col;
+        GempakStation station  = stations.get(stnIndex - 1);
+        StringBuilder builder  = new StringBuilder();
+        builder.append("\nStation:\n");
+        builder.append(station.toString());
+        builder.append("\nObs\n\t");
+        List<GempakParameter> params = getParameters(SFDT);
+        for (GempakParameter parm : params) {
+            builder.append(StringUtil.padLeft(parm.getName(), 7));
+            builder.append("\t");
+        }
+        builder.append("\n");
+        RData rd = null;
+        try {
+            rd = DM_RDTR(row, col, SFDT);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            rd = null;
+        }
+        if (rd == null) {
+            builder.append("No Data Available");
+        } else {
+            builder.append("\t");
+            float[] data = rd.data;
+            for (int i = 0; i < data.length; i++) {
+                builder.append(
+                    StringUtil.padLeft(
+                        Format.formatDouble(data[i], 7, 1), 7));
+                builder.append("\t");
+            }
+        }
+        System.out.println(builder.toString());
+    }
+
+    /**
+     * Print the list of dates in the file
      * @param list  true to list each station, false to list summary
      */
     public void printStations(boolean list) {
@@ -555,8 +599,17 @@ public class GempakSurfaceFileReader extends GempakFileReader {
         gsfr.printKeys();
         gsfr.printHeaders();
         gsfr.printParts();
-        gsfr.printDates();
-        gsfr.printStations(false);
+        //gsfr.printDates();
+        //gsfr.printStations(false);
+        int row = 1;
+        int col = 1;
+        if (args.length > 1) {
+            row = Integer.parseInt(args[1]);
+        }
+        if (args.length > 2) {
+            col = Integer.parseInt(args[2]);
+        }
+        gsfr.printOb(row, col);
     }
 
 }
