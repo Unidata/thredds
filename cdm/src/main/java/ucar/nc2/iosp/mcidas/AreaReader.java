@@ -33,7 +33,6 @@
  */
 
 
-
 package ucar.nc2.iosp.mcidas;
 
 
@@ -109,6 +108,12 @@ public class AreaReader {
     /** list  of bands */
     int[] bandMap = null;
 
+    /** calibration scale */
+    private float calScale = 1.f;
+
+    /** calibration scale */
+    private String calUnit;
+
     /**
      * Default ctor
      */
@@ -163,6 +168,8 @@ public class AreaReader {
             //System.out.println("calibrator = " + calibrator);
 
         }
+        calUnit  = ad.getCalibrationUnitName();
+        calScale = (1.0f / ad.getCalibrationScaleFactor());
 
         // make the dimensions
         Dimension elements     = new Dimension("elements", numElements, true);
@@ -678,7 +685,7 @@ public class AreaReader {
 
           case Calibrator.CAL_ALB :
               longName = "albedo";
-              unit     = "%";
+              //unit     = "%";
               break;
 
           case Calibrator.CAL_BRIT :
@@ -687,12 +694,12 @@ public class AreaReader {
 
           case Calibrator.CAL_TEMP :
               longName = "temperature";
-              unit     = "K";
+              //unit     = "K";
               break;
 
           case Calibrator.CAL_RAD :
               longName = "pixel radiance values";
-              unit     = "mW/m2/sr/cm-1";
+              //unit     = "mW/m2/sr/cm-1";
               break;
 
           case Calibrator.CAL_RAW :
@@ -703,7 +710,12 @@ public class AreaReader {
               break;
         }
         image.addAttribute(new Attribute("long_name", longName));
-        image.addAttribute(new Attribute("units", unit));
+        if (calUnit != null) {
+            image.addAttribute(new Attribute("units", calUnit));
+        }
+        if (calScale != 1.f) {
+            image.addAttribute(new Attribute("scale_factor", calScale));
+        }
 
     }
 
