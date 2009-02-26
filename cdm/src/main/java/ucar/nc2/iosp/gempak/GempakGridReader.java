@@ -35,6 +35,7 @@
 
 
 
+
 package ucar.nc2.iosp.gempak;
 
 
@@ -241,6 +242,14 @@ public class GempakGridReader extends GempakFileReader {
             System.exit(1);
         }
 
+        try {
+            GempakGridParameterTable.addParameters(
+                "resources/nj22/tables/gempak/wmogrib3.tbl");
+            GempakGridParameterTable.addParameters(
+                "resources/nj22/tables/gempak/ncepgrib2.tbl");
+        } catch (Exception e) {
+            System.out.println("unable to init param tables");
+        }
         GempakGridReader ggr = getInstance(getFile(args[0]), true);
         String           var = "PMSL";
         if ((args.length > 1) && !args[1].equalsIgnoreCase("X")) {
@@ -251,28 +260,34 @@ public class GempakGridReader extends GempakFileReader {
         if (gh != null) {
             System.out.println("\n" + var + ":");
             System.out.println(gh);
-            float[] data = ggr.readGrid(gh);
-            if (data != null) {
-                System.out.println("# of points = " + data.length);
-                int   cnt = 0;
-                int   it  = 10;
-                float min = Float.POSITIVE_INFINITY;
-                float max = Float.NEGATIVE_INFINITY;
-                for (int i = 0; i < data.length; i++) {
-                    if (cnt == it) {
-                        cnt = 0;
+            for (int j = 0; j < 2; j++) {
+                System.out.println("Using DP: " + ggr.useDP);
+
+
+                float[] data = ggr.readGrid(gh);
+                if (data != null) {
+                    System.out.println("# of points = " + data.length);
+                    int   cnt = 0;
+                    int   it  = 10;
+                    float min = Float.POSITIVE_INFINITY;
+                    float max = Float.NEGATIVE_INFINITY;
+                    for (int i = 0; i < data.length; i++) {
+                        if (cnt == it) {
+                            cnt = 0;
+                        }
+                        cnt++;
+                        if ((data[i] != RMISSD) && (data[i] < min)) {
+                            min = data[i];
+                        }
+                        if ((data[i] != RMISSD) && (data[i] > max)) {
+                            max = data[i];
+                        }
                     }
-                    cnt++;
-                    if ((data[i] != RMISSD) && (data[i] < min)) {
-                        min = data[i];
-                    }
-                    if ((data[i] != RMISSD) && (data[i] > max)) {
-                        max = data[i];
-                    }
+                    System.out.println("max/min = " + max + "/" + min);
+                } else {
+                    System.out.println("unable to decode grid data");
                 }
-                System.out.println("max/min = " + max + "/" + min);
-            } else {
-                System.out.println("unable to decode grid data");
+                ggr.useDP = !ggr.useDP;
             }
         }
     }
@@ -438,7 +453,6 @@ public class GempakGridReader extends GempakFileReader {
         DM_RFLT(iiword, rarray);
         iiword = iiword + irw;
         lendat = lendat - irw;
-        //int decimalScale = gr.getDecimalScale();
 
         if (ipktyp == MDGRB2) {
             data = unpackGrib2Data(iiword, lendat, iarray, rarray);
@@ -478,7 +492,7 @@ public class GempakGridReader extends GempakFileReader {
      * @param miss           Missing data flag
      * @param difmin         Minimum value of differences
      * @param kx             Number of points in x direction
-     * @param decimalScale   scale of the values
+     * @param decimalScale   scale of the values for the units
      *
      * @return   unpacked data
      *
@@ -491,9 +505,15 @@ public class GempakGridReader extends GempakFileReader {
                                             int kx, int decimalScale)
             throws IOException {
         if (ipktyp == MDGGRB) {
-            return unpackGrib1Data(iiword, nword, kxky, nbits, ref, scale,
-                                   miss, decimalScale);
-            //return DP_UGRB(iiword, nword, kxky, nbits, ref, scale, miss);
+            if ( !useDP) {
+                return unpackGrib1Data(iiword, nword, kxky, nbits, ref,
+                                       scale, miss, decimalScale);
+            } else {
+                int[] ksgrid = new int[nword];
+                DM_RINT(iiword, ksgrid);
+                return DP_UGRB(ksgrid, kxky, nbits, ref, scale, miss,
+                               decimalScale);
+            }
         } else if (ipktyp == MDGNMC) {
             return null;
         } else if (ipktyp == MDGDIF) {
@@ -502,61 +522,93 @@ public class GempakGridReader extends GempakFileReader {
         return null;
     }
 
-    private synchronized float[] DP_UGRB(int iiword, int nword, int kxky, int nbits, int qmin, int scale, int misflg) throws IOException {
-    /*
-      //Check for valid input.
-      //
-        if  ( ( nbits <= 1 ) .or. ( nbits > 31 ) ) {
-            return null;
+    /** flag for using DP_UGRB or not*/
+    public static boolean useDP = true;
+
+    /**
+     * Unpack grib data packed into ints
+     *
+     * @param idata   int array of packed data
+     * @param kxky    number of output points
+     * @param nbits   number of bits per point
+     * @param qmin    minimum (reference) value
+     * @param scale   parameter scale
+     * @param misflg  missing flag
+     * @param decimalScale  scale of value to jive with units
+     *
+     * @return the array of unpacked values
+     *
+     * @throws IOException problem reading from the file
+     */
+    private synchronized float[] DP_UGRB(int[] idata, int kxky, int nbits,
+                                         float qmin, float scale,
+                                         boolean misflg, int decimalScale)
+            throws IOException {
+        float scaleFactor = (decimalScale == 0)
+                            ? 1.f
+                            : (float) Math.pow(10.0, -decimalScale);
+        //
+        //Check for valid input.
+        //
+        float[] grid = new float[kxky];
+        if ((nbits <= 1) || (nbits > 31)) {
+            return grid;
         }
-        if  ( scale == 0. ) {
-            return null;
+        if (scale == 0.) {
+            return grid;
         }
-      //
-      //Compute missing data value.
-      //
-        int imax = 2 ** nbits - 1;
-      //
-      //Retrieve data points from buffer.
-      //
+
+        //
+        //Compute missing data value.
+        //
+        int imax = (int) (Math.pow(2, nbits) - 1);
+        //
+        //Retrieve data points from buffer.
+        //
         int iword = 0;
-        int ibit  = 1;
-        for (int  i = 0; i < kxky; i++) {
-      //
-      //    Get the integer from the buffer.
-      //
+        int ibit  = 1;  // 1 based bit position
+        for (int i = 0; i < kxky; i++) {
+            //
+            //    Get the integer from the buffer.
+            //    
             int jshft = nbits + ibit - 33;
             int idat  = 0;
-            idat  = ISHFT ( idata (iword), jshft );
-            idat  = idat & imax;
-      //
-      //    Check to see if packed integer overflows into next word.
-      //
-            if ( jshft > 0 )  {
-                jshft = jshft - 32
-                int idat2 = 0
-                idat2 = ISHFT ( idata (iword+1), jshft )
+            idat = (jshft < 0)
+                   ? idata[iword] >>> Math.abs(jshft)
+                   : idata[iword] << jshft;
+            idat = idat & imax;
+            //
+            //    Check to see if packed integer overflows into next word.
+            //    
+            if (jshft > 0) {
+                jshft -= 32;
+                int idat2 = 0;
+                idat2 = idata[iword + 1] >>> Math.abs(jshft);
                 idat  = idat | idat2;
             }
-      //
-      //    Compute value of word.
-      //
-            if ( ( idat == imax ) && misflg ) {
-                grid [i] = RMISSD;
+            //
+            //    Compute value of word.
+            //
+            if ((idat == imax) && misflg) {
+                grid[i] = RMISSD;
             } else {
-                grid [i] = qmin + idat * scale;
+                grid[i] = (qmin + idat * scale) * scaleFactor;
             }
-      //
-      //    Set location for next word.
-      //
-            ibit = ibit + nbits
-            IF  ( ibit .gt. 32 )  THEN
-                ibit  = ibit - 32
-                iword = iword + 1
-            END IF
+            //
+            //    Set location for next word.
+            //
+            ibit += nbits;
+            if (ibit > 32) {
+                ibit  -= 32;
+                iword++;
+            }
+            /*
+            if (i < 25) {
+                System.out.println("grid["+i+"]: " + grid[i]);
+            }
+            */
         }
-        */
-        return null;
+        return grid;
     }
 
     /**

@@ -1589,7 +1589,7 @@ public class GempakFileReader implements GempakConstants {
      * @param b  the integer
      * @return a bit string (e.g.: 01100001|11000000|10011010|10110100|)
      */
-    private static String getBits(int b) {
+    protected static String getBits(int b) {
         String s = "";
         for (int i = 31; i >= 0; i--) {
             if ((b & (1 << i)) != 0) {
