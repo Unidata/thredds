@@ -46,6 +46,7 @@ import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
 import ucar.grid.*;
 import ucar.grib.grib2.Grib2GridTableLookup;
+import ucar.grib.grib1.Grib1GridTableLookup;
 
 import java.io.*;
 
@@ -101,8 +102,8 @@ public class GridIndexToNC {
       // doesn't this apply to grib1 too
       // for grib2, we need to add the layer to disambiguate
       return lookup.isLayer(gr)
-        ? vname + "_layer"
-        : vname;
+          ? vname + "_layer"
+          : vname;
     } else {
       return lookup.getLevelName(gr);  // GEMPAK
     }
@@ -124,7 +125,7 @@ public class GridIndexToNC {
       return "";
     }
     int ensemble = g2lookup.getTypeGenProcess(gr);
-    String  ensembleName = "";
+    String ensembleName = "";
     int productDef = g2lookup.getProductDefinition(gr);
     if (productDef == 2) {
 //        Grib 2 table 4.7
@@ -136,33 +137,33 @@ public class GridIndexToNC {
 //        5 Large Anomaly Index of All Members (see note below)
 //        6 Unweighted Mean of the Cluster Members
       if (ensemble < 41000) {
-         ensembleName = "unweightedMean" + Integer.toString(ensemble - 40000);
+        ensembleName = "unweightedMean" + Integer.toString(ensemble - 40000);
       } else if (ensemble < 42000) {
-         ensembleName = "weightedMean" + Integer.toString(ensemble - 41000);
+        ensembleName = "weightedMean" + Integer.toString(ensemble - 41000);
       } else if (ensemble < 43000) {
-         ensembleName = "stdDev" + Integer.toString(ensemble - 42000);
+        ensembleName = "stdDev" + Integer.toString(ensemble - 42000);
       } else if (ensemble < 44000) {
-         ensembleName = "stdDevNor" + Integer.toString(ensemble - 43000);
+        ensembleName = "stdDevNor" + Integer.toString(ensemble - 43000);
       } else if (ensemble < 45000) {
-         ensembleName = "spread" + Integer.toString(ensemble - 44000);
+        ensembleName = "spread" + Integer.toString(ensemble - 44000);
       } else if (ensemble < 46000) {
-         ensembleName = "anomaly" + Integer.toString(ensemble - 45000);
+        ensembleName = "anomaly" + Integer.toString(ensemble - 45000);
       } else if (ensemble < 47000) {
-         ensembleName = "unweightedMeanCluster" + Integer.toString(ensemble - 46000);
+        ensembleName = "unweightedMeanCluster" + Integer.toString(ensemble - 46000);
       } else {
-         ensembleName = "unknownEnsemble";
+        ensembleName = "unknownEnsemble";
       }
-    } else if (productDef == 1 || productDef == 11 ) {
+    } else if (productDef == 1 || productDef == 11) {
       if (ensemble < 41000) {
-         ensembleName = "Cntrl_high" + Integer.toString(ensemble - 40000);
+        ensembleName = "Cntrl_high" + Integer.toString(ensemble - 40000);
       } else if (ensemble < 42000) {
-         ensembleName = "Cntrl_low" + Integer.toString(ensemble - 41000);
+        ensembleName = "Cntrl_low" + Integer.toString(ensemble - 41000);
       } else if (ensemble < 43000) {
-         ensembleName = "Perturb_neg" + Integer.toString(ensemble - 42000);
+        ensembleName = "Perturb_neg" + Integer.toString(ensemble - 42000);
       } else if (ensemble < 44000) {
-         ensembleName = "Perturb_pos" + Integer.toString(ensemble - 43000);
+        ensembleName = "Perturb_pos" + Integer.toString(ensemble - 43000);
       } else {
-         ensembleName = "unknownEnsemble";
+        ensembleName = "unknownEnsemble";
       }
     }
     return ensembleName;
@@ -250,6 +251,8 @@ public class GridIndexToNC {
       System.out.println(" number of products = " + records.size());
     }
     for (int i = 0; i < records.size(); i++) {
+      if( i == 50 )
+        System.out.println( "stop");
       GridRecord gribRecord = (GridRecord) records.get(i);
       if (firstRecord == null) {
         firstRecord = gribRecord;
@@ -279,17 +282,32 @@ public class GridIndexToNC {
     // global stuff
     ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.0"));
 
-    /* TODO:  figure out what to do with these
-    String creator = lookup.getFirstCenterName() + " subcenter = "+lookup.getFirstSubcenterId();
-    if (creator != null)
-      ncfile.addAttribute(null, new Attribute("Originating_center", creator) );
-    String genType = lookup.getTypeGenProcessName( firstRecord);
-    if (genType != null)
-      ncfile.addAttribute(null, new Attribute("Generating_Process_or_Model", genType) );
-    if (null != lookup.getFirstProductStatusName())
-      ncfile.addAttribute(null, new Attribute("Product_Status", lookup.getFirstProductStatusName()) );
-    ncfile.addAttribute(null, new Attribute("Product_Type", lookup.getFirstProductTypeName()) );
-    */
+    if (lookup.getGridType().startsWith("GRIB2")) {
+      Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
+      String creator = g2lookup.getFirstCenterName()
+          + " subcenter = " + g2lookup.getFirstSubcenterId();
+      if (creator != null)
+        ncfile.addAttribute(null, new Attribute("Originating_center", creator));
+      String genType = g2lookup.getTypeGenProcessName(firstRecord);
+      if (genType != null)
+        ncfile.addAttribute(null, new Attribute("Generating_Process_or_Model", genType));
+      if (null != g2lookup.getFirstProductStatusName())
+        ncfile.addAttribute(null, new Attribute("Product_Status", g2lookup.getFirstProductStatusName()));
+      ncfile.addAttribute(null, new Attribute("Product_Type", g2lookup.getFirstProductTypeName()));
+
+    } else if (lookup.getGridType().startsWith("GRIB1")) {
+      Grib1GridTableLookup g1lookup = (Grib1GridTableLookup) lookup;
+      String creator = g1lookup.getFirstCenterName()
+          + " subcenter = " + g1lookup.getFirstSubcenterId();
+      if (creator != null)
+        ncfile.addAttribute(null, new Attribute("Originating_center", creator));
+      String genType = g1lookup.getTypeGenProcessName(firstRecord);
+      if (genType != null)
+        ncfile.addAttribute(null, new Attribute("Generating_Process_or_Model", genType));
+      if (null != g1lookup.getFirstProductStatusName())
+        ncfile.addAttribute(null, new Attribute("Product_Status", g1lookup.getFirstProductStatusName()));
+      ncfile.addAttribute(null, new Attribute("Product_Type", g1lookup.getFirstProductTypeName()));
+    }
 
     // dataset discovery
     ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.GRID.toString()));
@@ -311,8 +329,8 @@ public class GridIndexToNC {
 
     if (fmrcCoordSys != null) {
       makeDefinedCoordSys(ncfile, lookup, fmrcCoordSys);
-      /* else if (GribServiceProvider.useMaximalCoordSys)
-   makeMaximalCoordSys(ncfile, lookup, cancelTask); */
+      /* else if (GridServiceProvider.useMaximalCoordSys)
+      makeMaximalCoordSys(ncfile, lookup, cancelTask); */
     } else {
       makeDenseCoordSys(ncfile, lookup, cancelTask);
     }
@@ -335,20 +353,17 @@ public class GridIndexToNC {
       Iterator iterHcs = hcsHash.values().iterator();
       while (iterHcs.hasNext()) {  // loop over HorizCoordSys
         GridHorizCoordSys hcs = (GridHorizCoordSys) iterHcs.next();
-        System.out.println("******** Horiz Coordinate= "
-            + hcs.getGridName());
+        System.out.println("******** Horiz Coordinate= " + hcs.getGridName());
 
         String lastVertDesc = null;
         ArrayList gribvars = new ArrayList(hcs.varHash.values());
-        Collections.sort(gribvars,
-            new CompareGridVariableByVertName());
+        Collections.sort(gribvars, new CompareGridVariableByVertName());
 
         for (int i = 0; i < gribvars.size(); i++) {
           GridVariable gv = (GridVariable) gribvars.get(i);
           String vertDesc = gv.getVertName();
           if (!vertDesc.equals(lastVertDesc)) {
-            System.out.println("---Vertical Coordinate= "
-                + vertDesc);
+            System.out.println("---Vertical Coordinate= " + vertDesc);
             lastVertDesc = vertDesc;
           }
           gv.dumpMissing();
@@ -400,8 +415,7 @@ public class GridIndexToNC {
           }
         }
         if (useVertCoord == null) {  // nope, got to create it
-          useVertCoord = new GridVertCoord(recordList, vname,
-              lookup);
+          useVertCoord = new GridVertCoord(recordList, vname, lookup);
           vertCoords.add(useVertCoord);
         }
         pv.setVertCoord(useVertCoord);
@@ -483,8 +497,7 @@ public class GridIndexToNC {
 
         } else {
 
-          Collections.sort(
-              plist, new CompareGridVariableByNumberVertLevels());
+          Collections.sort(plist, new CompareGridVariableByNumberVertLevels());
           /* find the one with the most vertical levels
          int maxLevels = 0;
          GridVariable maxV = null;
@@ -503,8 +516,7 @@ public class GridIndexToNC {
             // TODO: is there a better way to do this?
             boolean useDesc = (k == 0 && useDescriptionForVariableName);
             ncfile.addVariable(hcs.getGroup(),
-                pv.makeVariable(ncfile,
-                    hcs.getGroup(), useDesc));
+                pv.makeVariable(ncfile, hcs.getGroup(), useDesc));
           }
         }  // multipe vertical levels
 
@@ -520,10 +532,7 @@ public class GridIndexToNC {
         GridVertCoord gvcs = (GridVertCoord) vertCoords.get(i);
         gvcs.addToNetcdfFile(ncfile, hcs.getGroup());
       }
-
     }          // loop over hcs
-
-
   }
 
 
@@ -557,7 +566,6 @@ public class GridIndexToNC {
     }
   }
 
-
   /**
    * Make coordinate system from a Definition object
    *
@@ -567,8 +575,7 @@ public class GridIndexToNC {
    * @throws IOException problem reading from file
    */
   private void makeDefinedCoordSys(NetcdfFile ncfile,
-                                   GridTableLookup lookup, FmrcCoordSys fmr)
-      throws IOException {
+                                   GridTableLookup lookup, FmrcCoordSys fmr) throws IOException {
 
     ArrayList timeCoords = new ArrayList();
     ArrayList vertCoords = new ArrayList();
@@ -674,13 +681,13 @@ public class GridIndexToNC {
       for (GridVariable pv : vars) {
         Group g = hcs.getGroup() == null ? ncfile.getRootGroup() : hcs.getGroup();
         Variable v = pv.makeVariable(ncfile, g, true);
-        if (g.findVariable( v.getShortName()) != null) { // already got. can happen when a new vert level is added
-          logger.warn("GribServiceProvider.Index2NC: FmrcCoordSys has 2 variables mapped to ="+v.getShortName()+
-                  " for file "+ncfile.getLocation());
+        if (g.findVariable(v.getShortName()) != null) { // already got. can happen when a new vert level is added
+          logger.warn("GribServiceProvider.Index2NC: FmrcCoordSys has 2 variables mapped to =" + v.getShortName() +
+              " for file " + ncfile.getLocation());
         } else
-          g.addVariable( v);
+          g.addVariable(v);
       }
-      
+
       // add coordinate variables at the end
       for (int i = 0; i < timeCoords.size(); i++) {
         GridTimeCoord tcs = (GridTimeCoord) timeCoords.get(i);
