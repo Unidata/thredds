@@ -33,6 +33,7 @@
 package thredds.server.wcs.v1_0_0_1;
 
 import thredds.servlet.ServletUtil;
+import thredds.servlet.UsageLog;
 import thredds.server.wcs.VersionHandler;
 import thredds.server.wcs.Version;
 import thredds.wcs.v1_0_0_1.*;
@@ -101,7 +102,7 @@ public class WcsHandler implements VersionHandler
       {
         res.setContentType( "text/xml" );
         res.setStatus( HttpServletResponse.SC_OK );
-        ServletUtil.logServerAccess( HttpServletResponse.SC_OK, -1 );
+        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ));
 
         PrintWriter pw = res.getWriter();
         ((GetCapabilities) request).writeCapabilitiesReport( pw );
@@ -111,7 +112,7 @@ public class WcsHandler implements VersionHandler
       {
         res.setContentType( "text/xml" );
         res.setStatus( HttpServletResponse.SC_OK );
-        ServletUtil.logServerAccess( HttpServletResponse.SC_OK, -1 );
+        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ));
 
         PrintWriter pw = res.getWriter();
         ((DescribeCoverage) request).writeDescribeCoverageDoc( pw );
@@ -191,7 +192,7 @@ public class WcsHandler implements VersionHandler
   {
     res.setContentType( "application/vnd.ogc.se_xml" );
     res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
-    ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1 );
+    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ));
 
     ExceptionReport exceptionReport = new ExceptionReport( exception );
 

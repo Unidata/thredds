@@ -38,6 +38,7 @@ import thredds.dqc.server.DqcHandler;
 import thredds.catalog.*;
 import thredds.catalog.query.*;
 import thredds.servlet.ServletUtil;
+import thredds.servlet.UsageLog;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -193,7 +194,7 @@ public class JplQuikSCAT extends DqcHandler
       tmpMsg = "Extra path information <" + extraPath + "> not understood.";
       log.error( "handleRequest(): " + tmpMsg );
       res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, tmpMsg );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 ));
       return;
     }
 
@@ -230,7 +231,7 @@ public class JplQuikSCAT extends DqcHandler
                "could not be parsed: " + e.getMessage() ;
       log.debug( "handleRequest(): " + tmpMsg, e);
       res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, tmpMsg );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 ));
       return;
     }
 
@@ -245,7 +246,7 @@ public class JplQuikSCAT extends DqcHandler
       tmpMsg = "Failed to read needed information from backing store: " + e.getMessage();
       log.debug( "handleRequest(): " + tmpMsg, e);
       res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, tmpMsg );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 ));
       return;
     }
     catch (IllegalArgumentException e)
@@ -256,7 +257,7 @@ public class JplQuikSCAT extends DqcHandler
               "outside allowed <" + this.allowedLongitudeRange.getAllowedRangeMin() + "-" + this.allowedLongitudeRange.getAllowedRangeMax() + ">: " + e.getMessage();
       log.debug( "handleRequest(): " + tmpMsg, e);
       res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, tmpMsg );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 ));
       return;
     }
 
@@ -268,7 +269,7 @@ public class JplQuikSCAT extends DqcHandler
     res.setContentType( "text/xml" );
     res.setStatus( HttpServletResponse.SC_OK );
     out.print( catalogAsString );
-    ServletUtil.logServerAccess( HttpServletResponse.SC_OK, catalogAsString.length() );
+    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, catalogAsString.length() ));
     return;
   }
 

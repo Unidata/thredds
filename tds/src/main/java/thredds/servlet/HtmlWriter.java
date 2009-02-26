@@ -438,19 +438,17 @@ public class HtmlWriter {
    * @param dir  directory
    * @param path the URL path reletive to the base
    */
-  public void writeDirectory(HttpServletResponse res, File dir, String path)
+  public int writeDirectory(HttpServletResponse res, File dir, String path)
       throws IOException {
     // error checking
     if (dir == null) {
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
-      return;
+      return 0;
     }
 
     if (!dir.exists() || !dir.isDirectory()) {
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
-      return;
+      return 0;
     }
 
     // Get directory as HTML
@@ -462,7 +460,7 @@ public class HtmlWriter {
     writer.write(dirHtmlString);
     writer.flush();
 
-    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, dirHtmlString.length()));
+    return dirHtmlString.length();
   }
 
   private String getDirectory(String path, File dir) {
@@ -846,7 +844,7 @@ public class HtmlWriter {
     return sb.toString();
   }
 
-  public void showDataset( String catURL, InvDatasetImpl dataset,
+  public int showDataset( String catURL, InvDatasetImpl dataset,
                            HttpServletRequest request,
                            HttpServletResponse response,
                            boolean isLocalCatalog )
@@ -860,7 +858,7 @@ public class HtmlWriter {
     pw.write( datasetAsHtml );
     pw.flush();
 
-    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, datasetAsHtml.length() ));
+    return datasetAsHtml.length();
   }
 
   /**

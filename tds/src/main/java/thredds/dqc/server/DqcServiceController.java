@@ -61,8 +61,7 @@ public class DqcServiceController extends AbstractController
     this.allow = ThreddsConfig.getBoolean( "DqcService.allow", false );
     if ( ! this.allow )
     {
-      log.info( "init(): DqcServlet not enabled in threddsConfig.xml." );
-      log.info( "init(): " + UsageLog.closingMessageNonRequestContext() );
+      log.info( "init(): DqcServlet not enabled in threddsConfig.xml - " + UsageLog.closingMessageNonRequestContext() );
       return;
     }
 
@@ -82,8 +81,7 @@ public class DqcServiceController extends AbstractController
       if ( this.dqcConfigDir == null )
       {
         this.allow = false;
-        log.error( "init(): Disabling DqcService." );
-        log.info( "init(): " + UsageLog.closingMessageNonRequestContext() );
+        log.error( "init(): Disabling DqcService - " + UsageLog.closingMessageNonRequestContext() );
         return;
       }
     }
@@ -96,8 +94,7 @@ public class DqcServiceController extends AbstractController
       if ( this.dqcConfigFile == null )
       {
         this.allow = false;
-        log.error( "init(): Disabling DqcService." );
-        log.info( "init(): " + UsageLog.closingMessageNonRequestContext() );
+        log.error( "init(): Disabling DqcService - " + UsageLog.closingMessageNonRequestContext() );
         return;
       }
     }
@@ -114,7 +111,7 @@ public class DqcServiceController extends AbstractController
     {
       this.allow = false;
       log.error( "init(): Disabling DqcService - failed to read DqcConfig document: " + t.getMessage() );
-      log.info( "init(): " + UsageLog.closingMessageNonRequestContext() );
+      log.error( "init(): " + UsageLog.closingMessageNonRequestContext() );
       return;
     }
 

@@ -141,7 +141,7 @@ public class RadarServer extends AbstractServlet {
     PrintWriter pw = null;
     try {
       if( cat == null || rm.nexradList == null ) { // something major wrong
-        ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1);
+        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1));
         res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                 "radarServer Radar Station/Catalog initialization problem");
         return;
@@ -165,7 +165,7 @@ public class RadarServer extends AbstractServlet {
         if (debug) System.out.println("<documentation>\n"+ req.getQueryString() +"</documentation>\n");
         rm.radarQuery( radarType, req, res, pw );
         pw.flush();
-        ServletUtil.logServerAccess(HttpServletResponse.SC_OK, -1);
+        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
         return;
       }
       // return radarCollections catalog   xml or html
@@ -175,7 +175,7 @@ public class RadarServer extends AbstractServlet {
         pw.println(catAsString);
         res.setStatus( HttpServletResponse.SC_OK );
         pw.flush();
-        ServletUtil.logServerAccess(HttpServletResponse.SC_OK, -1);
+        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
         return;
       } else if(pathInfo.startsWith("/catalog.html") || pathInfo.startsWith("/dataset.html") ) {
         try {
@@ -185,14 +185,14 @@ public class RadarServer extends AbstractServlet {
           res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "radarServer HtmlWriter error "+ pathInfo);
           return;
         }
-        ServletUtil.logServerAccess(HttpServletResponse.SC_OK, -1);
+        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
         return;
       }
       // level2 and level3 catalog/dataset
       if( pathInfo.contains("level2/catalog.") || pathInfo.contains("level3/catalog.")
         || pathInfo.contains("level2/dataset.") || pathInfo.contains("level3/dataset.") ) {
         level2level3catalog( radarType,  pathInfo,  pw, res);
-        ServletUtil.logServerAccess(HttpServletResponse.SC_OK, -1);
+        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
         return;
       }
       // return stations of dataset
@@ -204,20 +204,20 @@ public class RadarServer extends AbstractServlet {
         XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat() );
         pw.println( fmt.outputString(doc) );
         pw.flush();
-        ServletUtil.logServerAccess(HttpServletResponse.SC_OK, -1);
+        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
         return;
       }
       // return specific dataset information, ie IDD
       if( pathInfo.endsWith("dataset.xml") || pathInfo.endsWith("catalog.xml")) {
         datasetInfoXml( radarType, pathInfo, pw );
-        ServletUtil.logServerAccess(HttpServletResponse.SC_OK, -1);
+        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
         return;
       }
       // needs work noboy using it now
       // return Dataset information in html form format
       if( pathInfo.endsWith("dataset.html") || pathInfo.endsWith("catalog.html")) {
         datasetInfoHtml( radarType, pathInfo, pw, res );
-        ServletUtil.logServerAccess(HttpServletResponse.SC_OK, -1);
+        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
         return;
       }
 

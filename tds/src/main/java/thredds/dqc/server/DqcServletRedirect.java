@@ -35,6 +35,7 @@
 package thredds.dqc.server;
 
 import thredds.servlet.ServletUtil;
+import thredds.servlet.UsageLog;
 
 import javax.servlet.ServletException;
 import javax.servlet.RequestDispatcher;
@@ -122,7 +123,7 @@ public class DqcServletRedirect extends HttpServlet
   public void doGet(HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException
   {
-    ServletUtil.logServerAccessSetup( req );
+    log.info( UsageLog.setupRequestContext( req ) );
 
     // Get the request path and query information.
     String reqPath = req.getPathInfo();
@@ -150,7 +151,7 @@ public class DqcServletRedirect extends HttpServlet
   public void doPut( HttpServletRequest req, HttpServletResponse res )
           throws IOException, ServletException
   {
-    ServletUtil.logServerAccessSetup( req );
+    log.info( UsageLog.setupRequestContext( req ) );
 
     doDispatch( req, res, false );
 
@@ -230,7 +231,7 @@ public class DqcServletRedirect extends HttpServlet
       String tmpMsg = "Null ServletContext for \"" + ( useTestContext ? this.testTargetContextPath : this.targetContextPath ) + "\".";
       log.warn( "doDispatch(): " + tmpMsg );
       res.sendError( HttpServletResponse.SC_NOT_FOUND, tmpMsg );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, tmpMsg.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, tmpMsg.length() ));
       return;
     }
     RequestDispatcher dispatcher =
@@ -240,12 +241,12 @@ public class DqcServletRedirect extends HttpServlet
       String tmpMsg = "Null RequestDispatcher for \"" + targetURIPath + "\".";
       log.warn( "doDispatch(): " + tmpMsg );
       res.sendError( HttpServletResponse.SC_NOT_FOUND, tmpMsg );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, tmpMsg.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, tmpMsg.length() ));
       return;
     }
 
     dispatcher.forward( req, res );
-    ServletUtil.logServerAccess( HttpServletResponse.SC_OK, -1 );
+    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ));
 
     return;
   }
@@ -263,7 +264,7 @@ public class DqcServletRedirect extends HttpServlet
       {
         log.warn( "handleGetRequestForRedirectTest(): request not understood <" + reqPath + ">." );
         res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
-        ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, 0 );
+        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, 0 ));
       }
       else if ( queryString.equals( "301" ) )
         this.doRedirect301( req, res, true );
@@ -277,7 +278,7 @@ public class DqcServletRedirect extends HttpServlet
       {
         log.warn( "handleGetRequestForRedirectTest(): request not understood <" + reqPath + " -- " + queryString + ">." );
         res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
-        ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, 0 );
+        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, 0 ));
       }
     }
     else if ( reqPath.equals( testRedirectPath + "/" ) )
@@ -291,7 +292,7 @@ public class DqcServletRedirect extends HttpServlet
       {
         log.warn( "handleGetRequestForRedirectTest(): request not understood <" + reqPath + " -- " + queryString + ">." );
         res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
-        ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, 0 );
+        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, 0 ));
       }
     }
     else if ( reqPath.equals( testRedirectPath + "/301" ) && queryString == null )
@@ -306,7 +307,7 @@ public class DqcServletRedirect extends HttpServlet
     {
       log.warn( "handleGetRequestForRedirectTest(): request not understood <" + reqPath + " -- " + queryString + ">." );
       res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, 0 );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, 0 ));
     }
     return;
   }
@@ -337,7 +338,7 @@ public class DqcServletRedirect extends HttpServlet
     res.setContentType( "text/html" );
     res.setStatus( HttpServletResponse.SC_OK );
     out.print( htmlResp );
-    ServletUtil.logServerAccess( HttpServletResponse.SC_OK, htmlResp.length() );
+    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, htmlResp.length() ));
 
     return;
   }
@@ -394,7 +395,7 @@ public class DqcServletRedirect extends HttpServlet
     res.setContentType( "text/html" );
     out.print( htmlResp );
 
-    ServletUtil.logServerAccess( HttpServletResponse.SC_MOVED_PERMANENTLY, 0 );
+    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_MOVED_PERMANENTLY, 0 ));
     return;
   }
 
@@ -454,7 +455,7 @@ public class DqcServletRedirect extends HttpServlet
     //res.setStatus( HttpServletResponse.SC_MOVED_TEMPORARILY );
     //res.addHeader( "Location", targetURIPath );
 
-    ServletUtil.logServerAccess( HttpServletResponse.SC_MOVED_TEMPORARILY, 0 );
+    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_MOVED_TEMPORARILY, 0 ));
     return;
   }
 
@@ -494,7 +495,7 @@ public class DqcServletRedirect extends HttpServlet
     res.setContentType( "text/html" );
     res.setStatus( HttpServletResponse.SC_USE_PROXY );
     out.print( htmlResp );
-    ServletUtil.logServerAccess( HttpServletResponse.SC_USE_PROXY, 0 );
+    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_USE_PROXY, 0 ));
     return;
   }
 

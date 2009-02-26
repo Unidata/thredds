@@ -42,6 +42,7 @@ import org.springframework.web.util.Log4jWebConfigurer;
 import thredds.servlet.DataRootHandler;
 import thredds.servlet.RestrictedAccessConfigListener;
 import thredds.servlet.HtmlWriter;
+import thredds.servlet.UsageLog;
 
 /**
  * _more_
@@ -70,6 +71,8 @@ public class TdsConfigContextListener
     // which is used in log4j.xml file loaded here.
     Log4jWebConfigurer.initLogging( servletContext );
 
+    logger.info( "contextInitialized(): " + UsageLog.setupNonRequestContext() );
+
     // Initialize the DataRootHandler.
     DataRootHandler catHandler = (DataRootHandler) wac.getBean( "tdsDRH", DataRootHandler.class );
     catHandler.registerConfigListener( new RestrictedAccessConfigListener() );
@@ -84,16 +87,19 @@ public class TdsConfigContextListener
     // LOOK! ToDo This should be removed once the catalog service controllers uses JSP.
     HtmlWriter.init( tdsContext );
 
-    logger.debug( "contextInitialized(): done.");
+    logger.debug( "contextInitialized(): done - " + UsageLog.closingMessageNonRequestContext() );
+
   }
 
   public void contextDestroyed( ServletContextEvent event )
   {
-    logger.debug( "contextDestroyed(): start." );
+    logger.debug( "contextDestroyed(): start." + UsageLog.setupNonRequestContext() );
     ServletContext servletContext = event.getServletContext();
     WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext( servletContext );
     TdsContext tdsContext = (TdsContext) wac.getBean( "tdsContext", TdsContext.class );
     tdsContext.destroy();
+
+    logger.debug( "contextDestroyed(): Done except for shutdownLogging() - " + UsageLog.closingMessageNonRequestContext());
     Log4jWebConfigurer.shutdownLogging( servletContext );
   }
 }

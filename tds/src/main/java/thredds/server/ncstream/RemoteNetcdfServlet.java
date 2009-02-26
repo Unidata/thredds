@@ -110,10 +110,10 @@ public class RemoteNetcdfServlet extends AbstractServlet {
       res.setHeader("Content-Description", "ncstream");
       if (ncfile == null) {
         res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, -1);
+        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
       } else {
         res.setStatus(HttpServletResponse.SC_OK);
-        ServletUtil.logServerAccess(HttpServletResponse.SC_OK, -1);
+        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
       }
 
     } finally {
@@ -150,7 +150,7 @@ public class RemoteNetcdfServlet extends AbstractServlet {
       ncfile = DatasetHandler.getNetcdfFile(req, res, pathInfo);
       if (ncfile == null) {
         res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, -1);
+        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
       }
 
       OutputStream out = new BufferedOutputStream( res.getOutputStream(), 10 * 1000);
@@ -170,15 +170,15 @@ public class RemoteNetcdfServlet extends AbstractServlet {
 
       out.flush();
       res.flushBuffer();
-      ServletUtil.logServerAccess(HttpServletResponse.SC_OK, -1);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
 
     } catch (FileNotFoundException e) {
-      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
 
     } catch (Throwable e) {
       e.printStackTrace();
-      ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
 
     } finally {

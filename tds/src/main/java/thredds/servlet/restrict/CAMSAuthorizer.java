@@ -50,6 +50,8 @@ import java.util.Enumeration;
  * @author caron
  */
 public class CAMSAuthorizer extends TomcatAuthorizer {
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+
     private boolean debugResourceControl = false;
 
     public boolean authorize(HttpServletRequest req, HttpServletResponse res, String role) throws IOException {
@@ -60,7 +62,7 @@ public class CAMSAuthorizer extends TomcatAuthorizer {
     }
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-      UsageLog.log.info( UsageLog.setupRequestContext(req));
+      log.info( UsageLog.setupRequestContext(req));
 
       HttpSession session = req.getSession();
       if (session != null) {
@@ -81,16 +83,19 @@ public class CAMSAuthorizer extends TomcatAuthorizer {
             res.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
             String frag = (origURI.indexOf("?") > 0) ? "&auth" : "?auth";
             res.addHeader("Location", origURI+frag);
+            log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_TEMPORARY_REDIRECT, -1 ) );
             return;
 
           } else {
             res.setStatus(HttpServletResponse.SC_OK); // someone came directly to this page
+            log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1));
             return;
           }
         }
       }
 
       res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Not authorized to access this dataset.");
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_UNAUTHORIZED, -1 ));
     }
 
   private boolean hasCAMSrole( HttpServletRequest req, String role) {

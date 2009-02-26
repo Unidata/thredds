@@ -35,6 +35,7 @@ package thredds.cataloggen.servlet;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.AbstractServlet;
 import thredds.servlet.DataRootHandler;
+import thredds.servlet.UsageLog;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -165,7 +166,7 @@ public class CatGenServlet extends AbstractServlet
   public void doGet(HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException
   {
-    ServletUtil.logServerAccessSetup( req);
+    log.info( UsageLog.setupRequestContext( req ) );
 
     String path = req.getPathInfo();
     log.info( "doGet(): path = " + path );
@@ -176,7 +177,7 @@ public class CatGenServlet extends AbstractServlet
     if ( path == null )
     {
       res.sendRedirect( res.encodeRedirectURL( req.getContextPath() + req.getServletPath() + "/" ) );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_MOVED_PERMANENTLY, 0 );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_MOVED_PERMANENTLY, 0 ));
       return;
     }
     else if ( path.equals( "/" ) )
@@ -186,7 +187,7 @@ public class CatGenServlet extends AbstractServlet
       res.setStatus( HttpServletResponse.SC_OK );
       String resString = this.getHtmlRootRequest( req);
       out.print( resString );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_OK, resString.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, resString.length() ));
       return;
     }
     // Handle requests for documentation files, configuration files, or results catalogs.
@@ -217,7 +218,7 @@ public class CatGenServlet extends AbstractServlet
       res.setStatus( HttpServletResponse.SC_OK );
       String responseString = this.getHtmlReturnMessage( req, tmpMsg);
       out.print( responseString );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_OK, responseString.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, responseString.length() ));
       return;
     }
   }
@@ -235,7 +236,7 @@ public class CatGenServlet extends AbstractServlet
     throws ServletException, IOException
 
   {
-    ServletUtil.logServerAccessSetup( req );
+    log.info( UsageLog.setupRequestContext( req ) );
 
     File tmpFile = null;
     String tmpMsg = null;
@@ -264,7 +265,7 @@ public class CatGenServlet extends AbstractServlet
             {
               this.mainConfig = new CatGenServletConfig( this.catGenResultPath, this.catGenConfigPath, this.configFileName );
               res.setStatus( HttpServletResponse.SC_OK);
-              ServletUtil.logServerAccess( HttpServletResponse.SC_OK, 0 );
+              log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, 0 ));
               return;
             }
             catch ( IOException e )
@@ -274,7 +275,7 @@ public class CatGenServlet extends AbstractServlet
               String tmpMsg2 = tmpMsg + ": " + e.getMessage();
               log.error( "doPut(): " + tmpMsg, e );
               res.sendError( HttpServletResponse.SC_ACCEPTED, tmpMsg2 );
-              ServletUtil.logServerAccess( HttpServletResponse.SC_ACCEPTED, tmpMsg2.length() );
+              log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_ACCEPTED, tmpMsg2.length() ));
               return;
             }
           }
@@ -283,7 +284,7 @@ public class CatGenServlet extends AbstractServlet
             tmpMsg = "Failed to save file <" + path + ">";
             log.error( "doPut(): " + tmpMsg );
             res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, tmpMsg );
-            ServletUtil.logServerAccess( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, tmpMsg.length() );
+            log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, tmpMsg.length() ));
             return;
           }
         }
@@ -302,13 +303,13 @@ public class CatGenServlet extends AbstractServlet
             if ( creatingNewFile )
             {
               res.setStatus( HttpServletResponse.SC_CREATED );
-              ServletUtil.logServerAccess( HttpServletResponse.SC_CREATED, 0 );
+              log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_CREATED, 0 ));
               return;
             }
             else
             {
               res.setStatus( HttpServletResponse.SC_OK);
-              ServletUtil.logServerAccess( HttpServletResponse.SC_OK, 0 );
+              log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, 0 ));
               return;
             }
           }
@@ -317,7 +318,7 @@ public class CatGenServlet extends AbstractServlet
             tmpMsg = "Failed to save file <" + path + ">";
             log.error( "doPut(): " + tmpMsg);
             res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, tmpMsg );
-            ServletUtil.logServerAccess( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, tmpMsg.length() );
+            log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, tmpMsg.length() ));
             return;
           }
         }
@@ -327,7 +328,7 @@ public class CatGenServlet extends AbstractServlet
         tmpMsg = "Cannot PUT a document outside the " + this.catGenConfigDirName + "directory";
         log.warn( "doPut(): " + tmpMsg);
         res.sendError( HttpServletResponse.SC_NOT_FOUND, tmpMsg );
-        ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, tmpMsg.length() );
+        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, tmpMsg.length() ));
         return;
       }
     }
@@ -336,7 +337,7 @@ public class CatGenServlet extends AbstractServlet
       tmpMsg = "Cannot PUT a document here (empty request path)";
       log.warn( "doPut(): " + tmpMsg);
       res.sendError( HttpServletResponse.SC_NOT_FOUND, tmpMsg );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, tmpMsg.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, tmpMsg.length() ));
       return;
     }
   }
@@ -344,7 +345,7 @@ public class CatGenServlet extends AbstractServlet
   public void doPost(HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException
   {
-    ServletUtil.logServerAccessSetup( req );
+    log.info( UsageLog.setupRequestContext( req ) );
 
     String path = req.getPathInfo();
     PrintWriter out = null;
@@ -378,7 +379,7 @@ public class CatGenServlet extends AbstractServlet
             String resMsg = this.getHtmlAddTaskResultSuccess( req, newTask, messages );
             res.setStatus( HttpServletResponse.SC_OK );
             out.print( resMsg );
-            ServletUtil.logServerAccess( HttpServletResponse.SC_OK, resMsg.length() );
+            log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, resMsg.length() ));
             return;
           }
           else
@@ -389,7 +390,7 @@ public class CatGenServlet extends AbstractServlet
             String resMsg = this.getHtmlAddTaskResultDuplicate( req, newTask, messages );
             res.setStatus( HttpServletResponse.SC_OK );
             out.print( resMsg );
-            ServletUtil.logServerAccess( HttpServletResponse.SC_OK, resMsg.length() );
+            log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, resMsg.length() ));
             return;
           }
         }
@@ -402,7 +403,7 @@ public class CatGenServlet extends AbstractServlet
           String resMsg = this.getHtmlAddTaskResultInvalid( req, newTask, messages );
           res.setStatus( HttpServletResponse.SC_OK );
           out.print( resMsg );
-          ServletUtil.logServerAccess( HttpServletResponse.SC_OK, resMsg.length() );
+          log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, resMsg.length() ));
           return;
         }
 
@@ -445,7 +446,7 @@ public class CatGenServlet extends AbstractServlet
             String resMsg = this.getHtmlEditTaskResultSuccess( req, oldTask, newTask, messages );
             res.setStatus( HttpServletResponse.SC_OK );
             out.print( resMsg );
-            ServletUtil.logServerAccess( HttpServletResponse.SC_OK, resMsg.length() );
+            log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, resMsg.length() ));
             return;
           }
           else
@@ -456,7 +457,7 @@ public class CatGenServlet extends AbstractServlet
             String resMsg = this.getHtmlEditTaskResultDuplicate( req, oldTask, newTask, messages );
             res.setStatus( HttpServletResponse.SC_OK );
             out.print( resMsg );
-            ServletUtil.logServerAccess( HttpServletResponse.SC_OK, resMsg.length() );
+            log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, resMsg.length() ));
             return;
           }
         }
@@ -469,7 +470,7 @@ public class CatGenServlet extends AbstractServlet
           String resMsg = this.getHtmlEditTaskResultInvalid( req, oldTask, newTask, messages );
           res.setStatus( HttpServletResponse.SC_OK );
           out.print( resMsg );
-          ServletUtil.logServerAccess( HttpServletResponse.SC_OK, resMsg.length() );
+          log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, resMsg.length() ));
           return;
         }
       }
@@ -490,7 +491,7 @@ public class CatGenServlet extends AbstractServlet
           String resMsg = this.getHtmlReturnMessage( req, "Task to delete not in list (" + fileName + ")" );
           res.setStatus( HttpServletResponse.SC_OK );
           out.print( resMsg );
-          ServletUtil.logServerAccess( HttpServletResponse.SC_OK, resMsg.length() );
+          log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, resMsg.length() ));
           return;
         }
 
@@ -503,7 +504,7 @@ public class CatGenServlet extends AbstractServlet
           String resMsg = this.getHtmlDeleteTaskResultSuccess( req, oldTask );
           res.setStatus( HttpServletResponse.SC_OK );
           out.print( resMsg );
-          ServletUtil.logServerAccess( HttpServletResponse.SC_OK, resMsg.length() );
+          log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, resMsg.length() ));
           return;
         }
         else
@@ -514,7 +515,7 @@ public class CatGenServlet extends AbstractServlet
           String resMsg = this.getHtmlDeleteTaskResultFail( req, oldTask );
           res.setStatus( HttpServletResponse.SC_OK );
           out.print( resMsg );
-          ServletUtil.logServerAccess( HttpServletResponse.SC_OK, resMsg.length() );
+          log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, resMsg.length() ));
           return;
         }
 
@@ -528,7 +529,7 @@ public class CatGenServlet extends AbstractServlet
     String resMsg = this.getHtmlReturnMessage( req, "No path given for POST action." );
     res.setStatus( HttpServletResponse.SC_OK );
     out.print( resMsg );
-    ServletUtil.logServerAccess( HttpServletResponse.SC_OK, resMsg.length() );
+    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, resMsg.length() ));
     return;
   }
 
@@ -581,7 +582,7 @@ public class CatGenServlet extends AbstractServlet
       tmpMsg = "Illegal request <" + path + "> (doGet() should not have passed in the request).";
       log.debug( "doGetFiles(): " + tmpMsg );
       res.sendError( HttpServletResponse.SC_BAD_REQUEST , tmpMsg);
-      ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, tmpMsg.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, tmpMsg.length() ));
       return;
     }
 
@@ -610,7 +611,7 @@ public class CatGenServlet extends AbstractServlet
       tmpMsg = "doGetFiles(): Requested file does not exist or is a directory <" + path + ">";
       log.debug( tmpMsg );
       res.sendError( HttpServletResponse.SC_NOT_FOUND, tmpMsg );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, tmpMsg.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, tmpMsg.length() ));
       // @todo Consider instead creating empty file and returning?
       return;
     }
@@ -630,7 +631,7 @@ public class CatGenServlet extends AbstractServlet
       String responseString = this.getHtmlListTasks( req, this.mainConfig );
       res.setStatus( HttpServletResponse.SC_OK );
       out.print( responseString );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_OK, responseString.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, responseString.length() ));
       return;
     }
     // Redirect to main admin page (above).
@@ -638,7 +639,7 @@ public class CatGenServlet extends AbstractServlet
     {
       res.sendRedirect( res.encodeRedirectURL( req.getContextPath() + req.getServletPath() +
                                                this.adminPath + "/" ) );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_MOVED_PERMANENTLY, 0 );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_MOVED_PERMANENTLY, 0 ));
     }
     // Return form for editing specified task.
     else if ( path.startsWith( this.adminEditTaskPath ) )
@@ -653,7 +654,7 @@ public class CatGenServlet extends AbstractServlet
       String responseString = this.getHtmlEditTask( req, task );
       res.setStatus( HttpServletResponse.SC_OK );
       out.print( responseString );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_OK, responseString.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, responseString.length() ));
       return;
     }
     // Return form for adding a task.
@@ -666,7 +667,7 @@ public class CatGenServlet extends AbstractServlet
       String responseString = this.getHtmlAddTask( req );
       res.setStatus( HttpServletResponse.SC_OK );
       out.print( responseString );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_OK, responseString.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, responseString.length() ));
       return;
     }
     // Return form for deleting the specified task.
@@ -684,7 +685,7 @@ public class CatGenServlet extends AbstractServlet
       String responseString = this.getHtmlDeleteTask( req, task );
       res.setStatus( HttpServletResponse.SC_OK );
       out.print( responseString );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_OK, responseString.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, responseString.length() ));
       return;
     }
     // Otherwise, not a valid request.
@@ -693,7 +694,7 @@ public class CatGenServlet extends AbstractServlet
       String tmpMsg = "Request <" + path + "> not understood";
       log.error( "doGetHtmlUI(): " + tmpMsg );
       res.sendError( HttpServletResponse.SC_NOT_FOUND, tmpMsg );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, tmpMsg.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, tmpMsg.length() ));
       return;
 
     }

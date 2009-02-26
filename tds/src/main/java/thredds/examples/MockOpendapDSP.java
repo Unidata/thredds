@@ -35,6 +35,7 @@ package thredds.examples;
 
 import thredds.servlet.DataServiceProvider;
 import thredds.servlet.ServletUtil;
+import thredds.servlet.UsageLog;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFile;
 
@@ -52,8 +53,7 @@ import java.io.PrintWriter;
  */
 public class MockOpendapDSP implements DataServiceProvider
 {
-//  private static org.apache.commons.logging.Log log =
-//          org.apache.commons.logging.LogFactory.getLog( MockOpendapDSP.class );
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( MockOpendapDSP.class );
 
   public MockOpendapDSP() { }
 
@@ -131,12 +131,12 @@ public class MockOpendapDSP implements DataServiceProvider
         out.print( responseString.toString() );
         out.flush();
 
-        ServletUtil.logServerAccess( HttpServletResponse.SC_OK, responseString.length() );
+        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, responseString.length() ));
         return;
       }
       else
       {
-        ServletUtil.logServerAccess( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1 );
+        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1 ));
         res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Valid CrawlableDatasetFile but File returned by getFile() does not exist." );
         return;
       }
@@ -149,7 +149,7 @@ public class MockOpendapDSP implements DataServiceProvider
     // Don't know how to serve this type of CrawlableDataset
     else
     {
-      ServletUtil.logServerAccess( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 ));
       res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Type of CrawlableDataset <> not undersood." );
       return;
     }
@@ -172,7 +172,7 @@ public class MockOpendapDSP implements DataServiceProvider
     {
       responseString.append( "Not an OPeNDAP request [URL must end in one of the following \".dds\", \".das\", \".dods\", \".html\", ... ." );
 
-      ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, responseString.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, responseString.length() ));
       res.sendError( HttpServletResponse.SC_BAD_REQUEST, responseString.toString() ); // 400
       // @todo Can set an error-page declaration in web.xml to specify HTML page for this error.
       return;
@@ -187,7 +187,7 @@ public class MockOpendapDSP implements DataServiceProvider
               .append( "</p>\n" )
               .append( "</body></html>" );
 
-      ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, responseString.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, responseString.length() ));
       PrintWriter out = res.getWriter();
       res.setContentType( "text/html" );
       res.setStatus( HttpServletResponse.SC_BAD_REQUEST );

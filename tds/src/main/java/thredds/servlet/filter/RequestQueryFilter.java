@@ -34,6 +34,7 @@ package thredds.servlet.filter;
 
 import thredds.util.StringValidateEncodeUtils;
 import thredds.servlet.ServletUtil;
+import thredds.servlet.UsageLog;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -111,7 +112,7 @@ public class RequestQueryFilter
       {
         String msg = "Invalid query string [" + query + "].";
         log.error( "doFilter(): " + msg );
-        ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, msg.length() );
+        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, msg.length() ));
         response.sendError( HttpServletResponse.SC_NOT_FOUND, msg );
         return;
       }

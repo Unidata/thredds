@@ -65,7 +65,7 @@ public class FileServerServlet extends HttpServlet {
     log.info( UsageLog.setupRequestContext(req));
 
     if (!DatasetHandler.resourceControlOk(req, res, null)) {
-      ServletUtil.logServerAccess( -1, 0);  // LOOK dont know the status !!   
+      log.info( UsageLog.closingMessageForRequestContext( -1, 0));  // LOOK dont know the status !!
       return;
     }
 

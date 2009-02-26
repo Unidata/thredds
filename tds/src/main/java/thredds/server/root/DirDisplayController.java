@@ -42,6 +42,7 @@ import javax.servlet.ServletContext;
 
 import thredds.servlet.ServletUtil;
 import thredds.servlet.HtmlWriter;
+import thredds.servlet.UsageLog;
 import thredds.server.config.TdsContext;
 import thredds.server.views.FileView;
 import thredds.catalog.InvCatalogImpl;
@@ -57,6 +58,8 @@ import java.io.IOException;
  * @since 4.0
  */
 public class DirDisplayController extends AbstractController {
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+
 
   private TdsContext tdsContext;
 
@@ -75,7 +78,7 @@ public class DirDisplayController extends AbstractController {
         || path.startsWith("../")
         || path.endsWith("/..")) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Path cannot contain ..");
-      ServletUtil.logServerAccess(HttpServletResponse.SC_FORBIDDEN, -1);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, -1));
       return null;
     }
 
@@ -93,7 +96,9 @@ public class DirDisplayController extends AbstractController {
     }
 
     if (file.isDirectory()) {
-      HtmlWriter.getInstance().writeDirectory(res, file, path);
+      int i = HtmlWriter.getInstance().writeDirectory(res, file, path);
+      int status = i == 0 ? HttpServletResponse.SC_NOT_FOUND : HttpServletResponse.SC_OK;
+      log.info( UsageLog.closingMessageForRequestContext( status, i ) );
       return null;
     }
 

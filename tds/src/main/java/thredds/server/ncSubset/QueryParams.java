@@ -57,6 +57,8 @@ import ucar.nc2.units.DateType;
  * @author caron
  */
 public class QueryParams {
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+
   static public final String RAW = "text/plain";
   static public final String XML = "application/xml";
   static public final String HTML = "text/html";
@@ -488,7 +490,7 @@ public class QueryParams {
   }
 
   public void writeErr(HttpServletResponse res, String s, int code) throws IOException {
-    UsageLog.log.info( UsageLog.closingMessageForRequestContext(code, 0));
+    log.info( "writeErr(): " + UsageLog.closingMessageForRequestContext(code, 0));
     res.setStatus(code);
     if (s.length() > 0) {
       PrintWriter pw = res.getWriter();

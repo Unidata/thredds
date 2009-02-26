@@ -94,14 +94,14 @@ public class FmrcInventoryServlet extends AbstractServlet {
     DataRootHandler h = DataRootHandler.getInstance();
     DataRootHandler.DataRootMatch match = h.findDataRootMatch( req );
     if ((match == null) || (match.dataRoot.fmrc == null)) {
-      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
       return;
     }
 
     InvDatasetFmrc.InventoryParams params = match.dataRoot.fmrc.getFmrcInventoryParams();
     if (params == null) {
-      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
       return;
     }
@@ -131,14 +131,14 @@ public class FmrcInventoryServlet extends AbstractServlet {
     } catch (Exception e) {
       e.printStackTrace();
       log.error("ForecastModelRunCollection.make", e);
-      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
       return;
     }
 
     if (fmr == null) {
       log.warn("ForecastModelRunCollection.make");
-      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
       return;
     }
@@ -156,7 +156,7 @@ public class FmrcInventoryServlet extends AbstractServlet {
       } catch (Exception e) {
         e.printStackTrace();
         log.error("report", e);
-        ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
+        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
         res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       }
       return;
@@ -186,7 +186,7 @@ public class FmrcInventoryServlet extends AbstractServlet {
     OutputStream out = res.getOutputStream();
     out.write(contents.getBytes());
     out.flush();
-    ServletUtil.logServerAccess(HttpServletResponse.SC_OK, contents.length());
+    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, contents.length()));
   }
 
   private void report(FmrcInventory fmrc, HttpServletResponse res, boolean showMissing) throws Exception {
@@ -198,7 +198,7 @@ public class FmrcInventoryServlet extends AbstractServlet {
     report.report( fmrc, ps, showMissing);
     ps.flush();
 
-    ServletUtil.logServerAccess(HttpServletResponse.SC_OK, -1);
+    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
   }
 
   private void reportAll(HttpServletResponse res, boolean showMissing) throws Exception {
@@ -230,7 +230,7 @@ public class FmrcInventoryServlet extends AbstractServlet {
       ps.flush();
     }
 
-    ServletUtil.logServerAccess(HttpServletResponse.SC_OK, -1);
+    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
   }
 
   private void showDefinition(HttpServletResponse res, FmrcInventory fmrc, String define) throws IOException {
@@ -260,7 +260,7 @@ public class FmrcInventoryServlet extends AbstractServlet {
     OutputStream out = res.getOutputStream();
     out.write(xmlString.getBytes());
     out.flush();
-    ServletUtil.logServerAccess(HttpServletResponse.SC_OK, xmlString.length());
+    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, xmlString.length()));
   }
 
   private void showInventory(HttpServletResponse res, FmrcInventory fmr, String varName, String type, boolean wantXml) throws IOException {
@@ -294,7 +294,7 @@ public class FmrcInventoryServlet extends AbstractServlet {
 
       } catch (Exception e) {
         log.error("ForecastModelRunServlet internal error", e);
-        ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
+        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
         res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ForecastModelRunServlet internal error");
         return;
       }
@@ -310,7 +310,7 @@ public class FmrcInventoryServlet extends AbstractServlet {
     out.write(infoString.getBytes());
     out.flush();
 
-    ServletUtil.logServerAccess(HttpServletResponse.SC_OK, infoString.length());
+    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, infoString.length()));
   }
 
   static private InputStream getXSLT(String xslName) {

@@ -190,6 +190,8 @@ public class DataRootHandler {
     ArrayList<String> catList = new ArrayList<String>();
     catList.add( "catalog.xml" ); // always first
     getExtraCatalogs( catList );
+
+    log.info( "initCatalogs(): initializing " + catList.size() + " root catalogs [see catalogErrors.log for details]." );
     this.initCatalogs( catList );
   }
 
@@ -388,12 +390,12 @@ public class DataRootHandler {
       uri = new URI("file:" + StringUtil.escape(catalogFullPath, "/:-_.")); // LOOK needed ?
     }
     catch (URISyntaxException e) {
-      log.error("readCatalog(): URISyntaxException=" + e.getMessage());
+      logCatalogInit.error("readCatalog(): URISyntaxException=" + e.getMessage());
       return null;
     }
 
     // read the catalog
-    log.info("readCatalog(): full path=" + catalogFullPath + "; path=" + path);
+    logCatalogInit.info("readCatalog(): full path=" + catalogFullPath + "; path=" + path);
     InvCatalogImpl cat = null;
     FileInputStream ios = null;
     try {
@@ -402,15 +404,15 @@ public class DataRootHandler {
 
       StringBuilder sbuff = new StringBuilder();
       if (!cat.check(sbuff)) {
-        log.error("readCatalog(): invalid catalog -- " + sbuff.toString());
+        logCatalogInit.error("readCatalog(): invalid catalog -- " + sbuff.toString());
         return null;
       }
-      log.info("readCatalog(): valid catalog -- " + sbuff.toString());
+      logCatalogInit.info("readCatalog(): valid catalog -- " + sbuff.toString());
 
     }
     catch (Throwable t) {
       String msg = (cat == null) ? "null catalog" : cat.getLog();
-      log.error("readCatalog(): Exception on catalog=" + catalogFullPath + " " + t.getMessage()+"\n log="+msg, t);
+      logCatalogInit.error("readCatalog(): Exception on catalog=" + catalogFullPath + " " + t.getMessage()+"\n log="+msg, t);
       return null;
     }
     finally {
@@ -419,7 +421,7 @@ public class DataRootHandler {
           ios.close();
         }
         catch (IOException e) {
-          log.error("readCatalog(): error closing" + catalogFullPath);
+          logCatalogInit.error("readCatalog(): error closing" + catalogFullPath);
         }
       }
     }
@@ -950,7 +952,7 @@ public class DataRootHandler {
     if ( ! isProxyDatasetResolver( path) )
     {
       String resMsg = "Request <" + path + "> not for proxy dataset resolver.";
-      ServletUtil.logServerAccess( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg.length() ));
       log.error( "handleRequestForProxyDatasetResolverCatalog(): " + resMsg );
       res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg );
       return;
@@ -966,7 +968,7 @@ public class DataRootHandler {
     catch ( URISyntaxException e )
     {
       String resMsg = "Request URL <" + baseUriString + "> not a valid URI: " + e.getMessage();
-      ServletUtil.logServerAccess( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg.length() ));
       log.error( "handleRequestForProxyDatasetResolverCatalog(): " + resMsg );
       res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg );
       return;
@@ -976,7 +978,7 @@ public class DataRootHandler {
     if ( cat == null )
     {
       String resMsg = "Could not generate proxy dataset resolver catalog <" + path + ">.";
-      ServletUtil.logServerAccess( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg.length() ));
       log.error( "handleRequestForProxyDatasetResolverCatalog(): " + resMsg );
       res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg );
       return;
@@ -985,7 +987,7 @@ public class DataRootHandler {
     // Return catalog as XML response.
     InvCatalogFactory catFactory = getCatalogFactory( false );
     String result = catFactory.writeXML( cat );
-    ServletUtil.logServerAccess( HttpServletResponse.SC_OK, result.length() );
+    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, result.length() ));
 
     res.setContentLength( result.length() );
     res.setContentType( "text/xml" );
@@ -1043,7 +1045,7 @@ public class DataRootHandler {
       // @todo Check if this is a proxy dataset request (not resolver).
       // Request is not for a known (or allowed) dataset.
       res.sendError( HttpServletResponse.SC_NOT_FOUND ); // 404
-      ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, -1 );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, -1 ));
       return;
     }
 
@@ -1374,7 +1376,7 @@ public class DataRootHandler {
     if (crDs == null) {
       // Request is not for a known (or allowed) dataset.
       res.sendError(HttpServletResponse.SC_NOT_FOUND); // 404
-      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, -1);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
       return;
     }
 
@@ -1427,7 +1429,7 @@ public class DataRootHandler {
 
     if (path.equals("/") || path.equals("")) {
       String resMsg = "No data at root level, \"/latest.xml\" request not available.";
-      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, resMsg.length());
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, resMsg.length()));
       if ( log.isDebugEnabled()) log.debug( "processReqForLatestDataset(): " + resMsg);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
       return false;
@@ -1437,7 +1439,7 @@ public class DataRootHandler {
     DataRoot dataRoot = findDataRoot(path);
     if (dataRoot == null) {
       String resMsg = "No scan root matches requested path <" + path + ">.";
-      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, resMsg.length());
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, resMsg.length()));
       log.warn( "processReqForLatestDataset(): " + resMsg);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
       return false;
@@ -1447,7 +1449,7 @@ public class DataRootHandler {
     InvDatasetScan dscan = dataRoot.scan;
     if (dscan == null) {
       String resMsg = "Probable conflict between datasetScan and datasetRoot for path <" + path + ">.";
-      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, resMsg.length());
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, resMsg.length()));
       log.warn( "processReqForLatestDataset(): " + resMsg);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
       return false;
@@ -1456,7 +1458,7 @@ public class DataRootHandler {
     // Check that latest is allowed
     if (dscan.getProxyDatasetHandlers() == null) {
       String resMsg = "No \"addProxies\" or \"addLatest\" on matching scan root <" + path + ">.";
-      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, resMsg.length());
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, resMsg.length()));
       log.warn( "processReqForLatestDataset(): " + resMsg);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
       return false;
@@ -1471,7 +1473,7 @@ public class DataRootHandler {
     catch ( URISyntaxException e )
     {
       String resMsg = "Request base URL <" + reqBase + "> not valid URI (???): " + e.getMessage();
-      ServletUtil.logServerAccess( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg.length() ));
       log.error( "processReqForLatestDataset(): " + resMsg );
       res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg );
       return false;
@@ -1480,7 +1482,7 @@ public class DataRootHandler {
 
     if (null == cat) {
       String resMsg = "Failed to build response catalog <" + path + ">.";
-      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, resMsg.length());
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, resMsg.length()));
       log.error( "processReqForLatestDataset(): " + resMsg);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
       return false;
@@ -1493,7 +1495,7 @@ public class DataRootHandler {
     res.setContentType("text/xml");
     res.setStatus( HttpServletResponse.SC_OK );
     out.print(catAsString);
-    ServletUtil.logServerAccess(HttpServletResponse.SC_OK, catAsString.length());
+    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, catAsString.length()));
     if (log.isDebugEnabled()) log.debug( "processReqForLatestDataset(): Finished \"" + orgPath + "\".");
     return true;
   }

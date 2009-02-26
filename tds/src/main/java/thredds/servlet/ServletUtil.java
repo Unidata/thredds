@@ -45,7 +45,10 @@ import ucar.nc2.util.cache.FileCacheRaf;
 import ucar.nc2.util.IO;
 import thredds.catalog.XMLEntityResolver;
 
-public class ServletUtil {
+public class ServletUtil
+{
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( ServletUtil.class );
+
   public static final String CONTENT_TEXT = "text/plain; charset=utf-8";
 
   static private boolean isDebugInit = false;
@@ -96,50 +99,6 @@ public class ServletUtil {
         Debug.set(toker.nextToken(), true);
     }
   }
-
-  /////////////////////////////////////////////////////////////////
-
-
-  /**
-   * Gather information from the given HttpServletRequest for inclusion in both
-   * regular logging messages and THREDDS access log messages. Call this method
-   * at start of each doXXX() method (e.g., doGet(), doPut()) in any servlet
-   * you implement.
-   * <p/>
-   * Use the SLF4J API to log a regular logging messages. Use the
-   * logServerAccess() method to log a THREDDS access log message.
-   * <p/>
-   * This method gathers the following information:
-   * 1) "ID" - an identifier for the current thread;
-   * 2) "host" - the remote host (IP address or host name);
-   * 3) "userid" - the id of the remote user;
-   * 4) "startTime" - the system time in millis when this request is started (i.e., when this method is called); and
-   * 5) "request" - The HTTP request, e.g., "GET /index.html HTTP/1.1".
-   * <p/>
-   * The appearance of the regular log messages and the THREDDS access log
-   * messages are controlled in the log4j.xml configuration file. For the log
-   * messages to look like an Apache server "common" log message, use the
-   * following log4j pattern:
-   * <p/>
-   * "%X{host} %X{ident} %X{userid} [%d{dd/MMM/yyyy:HH:mm:ss}] %X{request} %m%n"
-   *
-   * @param req the current HttpServletRequest.
-   */
-  public static void logServerAccessSetup(HttpServletRequest req) {
-    UsageLog.log.info( UsageLog.setupRequestContext(req));
-  }
-
-  /**
-   * Write log entry to THREDDS access log.
-   *
-   * @param resCode        - the result code for this request.
-   * @param resSizeInBytes - the number of bytes returned in this result, -1 if unknown.
-   */
-  public static void logServerAccess(int resCode, long resSizeInBytes) {
-    UsageLog.log.info( UsageLog.closingMessageForRequestContext(resCode, resSizeInBytes));
-  }
-
-  ////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Return the real path on the servers file system that corresponds to the root document ("/") on the given servlet.
@@ -238,7 +197,7 @@ public class ServletUtil {
         || path.startsWith("../")
         || path.endsWith("/..")) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Path cannot contain \"..\" directory.");
-      ServletUtil.logServerAccess(HttpServletResponse.SC_FORBIDDEN, -1);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, -1));
       return;
     }
 
@@ -247,7 +206,7 @@ public class ServletUtil {
     if (upper.indexOf("WEB-INF") != -1
         || upper.indexOf("META-INF") != -1) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Path cannot contain \"WEB-INF\" or \"META-INF\".");
-      ServletUtil.logServerAccess(HttpServletResponse.SC_FORBIDDEN, -1);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, -1));
       return;
     }
 
@@ -290,7 +249,7 @@ public class ServletUtil {
 
     if (regFile == null) {
       res.sendError(HttpServletResponse.SC_NOT_FOUND); // 404
-      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, -1);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
       return;
     }
 
@@ -358,12 +317,12 @@ public class ServletUtil {
       throws IOException {
     if (!pathPrefix.equals("/content/")
         && !pathPrefix.equals("/root/")) {
-      UsageLog.log.error("handleRequestForContentFile(): The path prefix <" + pathPrefix + "> must be \"/content/\" or \"/root/\".");
+      log.error("handleRequestForContentFile(): The path prefix <" + pathPrefix + "> must be \"/content/\" or \"/root/\".");
       throw new IllegalArgumentException("Path prefix must be \"/content/\" or \"/root/\".");
     }
 
     if (!path.startsWith(pathPrefix)) {
-      UsageLog.log.error("handleRequestForContentFile(): path <" + path + "> must start with \"" + pathPrefix + "\".");
+      log.error("handleRequestForContentFile(): path <" + path + "> must start with \"" + pathPrefix + "\".");
       throw new IllegalArgumentException("Path must start with \"" + pathPrefix + "\".");
     }
 
@@ -373,7 +332,7 @@ public class ServletUtil {
         || path.startsWith("../")
         || path.endsWith("/..")) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Path cannot contain \"..\" directory.");
-      ServletUtil.logServerAccess(HttpServletResponse.SC_FORBIDDEN, -1);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, -1));
       return;
     }
 
@@ -388,7 +347,10 @@ public class ServletUtil {
           return;
         }
 
-        HtmlWriter.getInstance().writeDirectory(res, file, path);
+        int i = HtmlWriter.getInstance().writeDirectory(res, file, path);
+        int status = i == 0 ? HttpServletResponse.SC_NOT_FOUND : HttpServletResponse.SC_OK;
+        log.info( UsageLog.closingMessageForRequestContext( status, i ) );
+
         return;
       }
 
@@ -396,7 +358,7 @@ public class ServletUtil {
       ServletUtil.returnFile(servlet, req, res, file, null);
     } else {
       // Requested file not found.
-      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, -1);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
       res.sendError(HttpServletResponse.SC_NOT_FOUND); // 404
     }
   }
@@ -421,8 +383,8 @@ public class ServletUtil {
       uri = new URI(req.getRequestURL().toString());
     }
     catch (URISyntaxException e) {
-      UsageLog.log.error("sendPermanentRedirect(): Bad syntax on request URL <" + req.getRequestURL() + ">.", e);
-      ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
+      log.error("sendPermanentRedirect(): Bad syntax on request URL <" + req.getRequestURL() + ">.", e);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       return;
     }
@@ -450,7 +412,7 @@ public class ServletUtil {
         .append("</body></html>")
         .toString();
 
-    ServletUtil.logServerAccess(HttpServletResponse.SC_MOVED_PERMANENTLY, htmlResp.length());
+    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_MOVED_PERMANENTLY, htmlResp.length()));
 
     // Write the catalog out.
     PrintWriter out = res.getWriter();
@@ -475,17 +437,17 @@ public class ServletUtil {
 
     String filename = ServletUtil.formFilename(contentPath, path);
 
-    UsageLog.log.debug("returnFile(): returning file <" + filename + ">.");
+    log.debug("returnFile(): returning file <" + filename + ">.");
     // No file, nothing to view
     if (filename == null) {
-      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
       return;
     }
 
     // dontallow ..
     if (filename.indexOf("..") != -1) {
-      ServletUtil.logServerAccess(HttpServletResponse.SC_FORBIDDEN, 0);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, 0));
       res.sendError(HttpServletResponse.SC_FORBIDDEN);
       return;
     }
@@ -493,7 +455,7 @@ public class ServletUtil {
     // dont allow access to WEB-INF or META-INF
     String upper = filename.toUpperCase();
     if (upper.indexOf("WEB-INF") != -1 || upper.indexOf("META-INF") != -1) {
-      ServletUtil.logServerAccess(HttpServletResponse.SC_FORBIDDEN, 0);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, 0));
       res.sendError(HttpServletResponse.SC_FORBIDDEN);
       return;
     }
@@ -519,21 +481,21 @@ public class ServletUtil {
       throws IOException {
     // No file, nothing to view
     if (file == null) {
-      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
       return;
     }
 
     // check that it exists
     if (!file.exists()) {
-      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
       return;
     }
 
     // not a directory
     if (!file.isFile()) {
-      ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
       res.sendError(HttpServletResponse.SC_BAD_REQUEST);
       return;
     }
@@ -587,14 +549,14 @@ public class ServletUtil {
     res.setContentLength( (int) contentLength);
 
     boolean debugRequest = Debug.isSet("returnFile");
-    if (debugRequest) UsageLog.log.debug("returnFile(): filename = " + filename + " contentType = " + contentType +
+    if (debugRequest) log.debug("returnFile(): filename = " + filename + " contentType = " + contentType +
         " contentLength = " + contentLength);
 
     // indicate we allow Range Requests
     res.addHeader("Accept-Ranges", "bytes");
 
     if (req.getMethod().equals("HEAD")) {
-      ServletUtil.logServerAccess(HttpServletResponse.SC_OK, 0);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, 0));
       return;
     }
 
@@ -609,7 +571,7 @@ public class ServletUtil {
         try {
           craf = fileCacheRaf.acquire(filename);
           IO.copyRafB(craf.getRaf(), startPos, contentLength, res.getOutputStream(), new byte[60000]);
-          ServletUtil.logServerAccess(HttpServletResponse.SC_PARTIAL_CONTENT, contentLength);
+          log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_PARTIAL_CONTENT, contentLength));
           return;
         } finally {
           if (craf != null) fileCacheRaf.release(craf);
@@ -621,31 +583,31 @@ public class ServletUtil {
       IO.copyFileB(file, out, 60000);
       res.flushBuffer();
       out.close();
-      if (debugRequest) UsageLog.log.debug("returnFile(): returnFile ok = " + filename);
-      ServletUtil.logServerAccess(HttpServletResponse.SC_OK, contentLength);
+      if (debugRequest) log.debug("returnFile(): returnFile ok = " + filename);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, contentLength));
     }
     // @todo Split up this exception handling: those from file access vs those from dealing with response
     //       File access: catch and res.sendError()
     //       response: don't catch (let bubble up out of doGet() etc)
     catch (FileNotFoundException e) {
-      UsageLog.log.error("returnFile(): FileNotFoundException= " + filename);
-      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
+      log.error("returnFile(): FileNotFoundException= " + filename);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
     catch (java.net.SocketException e) {
-      UsageLog.log.info("returnFile(): SocketException sending file: " + filename + " " + e.getMessage());
-      ServletUtil.logServerAccess(1000, 0); // dunno what error code to log
+      log.info("returnFile(): SocketException sending file: " + filename + " " + e.getMessage());
+      log.info( UsageLog.closingMessageForRequestContext(1000, 0)); // dunno what error code to log
     }
     catch (IOException e) {
       String eName = e.getClass().getName(); // dont want compile time dependency on ClientAbortException
       if (eName.equals("org.apache.catalina.connector.ClientAbortException")) {
-        UsageLog.log.info("returnFile(): ClientAbortException while sending file: " + filename + " " + e.getMessage());
-        ServletUtil.logServerAccess(1000, 0); // dunno what error code to log
+        log.info("returnFile(): ClientAbortException while sending file: " + filename + " " + e.getMessage());
+        log.info( UsageLog.closingMessageForRequestContext(1000, 0)); // dunno what error code to log
         return;
       }
 
-      UsageLog.log.error("returnFile(): IOException (" + e.getClass().getName() + ") sending file ", e);
-      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
+      log.error("returnFile(): IOException (" + e.getClass().getName() + ") sending file ", e);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND, "Problem sending file: " + e.getMessage());
     }
   }
@@ -664,11 +626,11 @@ public class ServletUtil {
     try {
       ServletOutputStream out = res.getOutputStream();
       IO.copy(new ByteArrayInputStream(contents.getBytes()), out);
-      ServletUtil.logServerAccess(HttpServletResponse.SC_OK, contents.length());
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, contents.length()));
     }
     catch (IOException e) {
-      UsageLog.log.error(" IOException sending string: ", e);
-      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
+      log.error(" IOException sending string: ", e);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND, "Problem sending string: " + e.getMessage());
     }
   }
@@ -698,7 +660,7 @@ public class ServletUtil {
     String query = req.getQueryString();
     if (query != null)
       reqs = reqs + "&" + query;
-    UsageLog.log.info("forwardToCatalogServices(): request string = \"/catalog.html?" + reqs + "\"");
+    log.info("forwardToCatalogServices(): request string = \"/catalog.html?" + reqs + "\"");
 
     // dispatch to CatalogHtml servlet
     // "The pathname specified may be relative, although it cannot extend outside the current servlet context.
@@ -708,7 +670,7 @@ public class ServletUtil {
       dispatch.forward(req, res);
     else
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
-    ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
+    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
   }
 
 
@@ -717,7 +679,7 @@ public class ServletUtil {
 
     // @todo Need to use logServerAccess() below here.
     boolean debugRequest = Debug.isSet("SaveFile");
-    if (debugRequest) UsageLog.log.debug(" saveFile(): path= " + path);
+    if (debugRequest) log.debug(" saveFile(): path= " + path);
 
     String filename = contentPath + path; // absolute path
     File want = new File(filename);
@@ -730,7 +692,7 @@ public class ServletUtil {
       try {
         IO.copyFile(filename, fileSave);
       } catch (IOException e) {
-        UsageLog.log.error("saveFile(): Unable to save copy of file " + filename + " to " + fileSave + "\n" + e.getMessage());
+        log.error("saveFile(): Unable to save copy of file " + filename + " to " + fileSave + "\n" + e.getMessage());
         return false;
       }
     }
@@ -740,12 +702,12 @@ public class ServletUtil {
       OutputStream out = new BufferedOutputStream(new FileOutputStream(filename));
       IO.copy(req.getInputStream(), out);
       out.close();
-      if (debugRequest) UsageLog.log.debug("saveFile(): ok= " + filename);
+      if (debugRequest) log.debug("saveFile(): ok= " + filename);
       res.setStatus(HttpServletResponse.SC_CREATED);
-      ServletUtil.logServerAccess(HttpServletResponse.SC_CREATED, -1);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_CREATED, -1));
       return true;
     } catch (IOException e) {
-      UsageLog.log.error("saveFile(): Unable to PUT file " + filename + " to " + fileSave + "\n" + e.getMessage());
+      log.error("saveFile(): Unable to PUT file " + filename + " to " + fileSave + "\n" + e.getMessage());
       return false;
     }
 
@@ -770,7 +732,7 @@ public class ServletUtil {
       try {
         n = Integer.parseInt(ver);
       } catch (NumberFormatException e) {
-        UsageLog.log.error("Format Integer error on backup filename= " + ver);
+        log.error("Format Integer error on backup filename= " + ver);
       }
       maxN = Math.max(n, maxN);
     }
@@ -804,13 +766,13 @@ public class ServletUtil {
         t.printStackTrace(ps);
         message = new String(bs.toByteArray());
       }
-      ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, message.length());
-      UsageLog.log.error("handleException", t);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, message.length()));
+      log.error("handleException", t);
       t.printStackTrace(); // debugging - log.error not showing stack trace !!   
       if ( ! res.isCommitted() )
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, message);
     } catch (IOException e) {
-      UsageLog.log.error("handleException(): IOException", e);
+      log.error("handleException(): IOException", e);
       t.printStackTrace();
     }
   }

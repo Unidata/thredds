@@ -46,6 +46,7 @@ import thredds.catalog.*;
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import thredds.catalog.query.*;
 import thredds.servlet.ServletUtil;
+import thredds.servlet.UsageLog;
 import thredds.dqc.server.DqcHandler;
 import ucar.nc2.constants.FeatureType;
 
@@ -97,7 +98,7 @@ public class LatestDqcHandler extends DqcHandler
       res.setContentType( "text/xml" );
       res.setStatus( HttpServletResponse.SC_OK );
       out.print( dqcAsString );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_OK, dqcAsString.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, dqcAsString.length() ));
       return;
     }
 
@@ -107,7 +108,7 @@ public class LatestDqcHandler extends DqcHandler
       String tmpMsg = "Extra path information <" + extraPath + "> not understood.";
       log.error( "handleRequest(): " + tmpMsg );
       res.sendError( HttpServletResponse.SC_BAD_REQUEST, tmpMsg );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, 0 );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, 0 ));
       return;
     }
 
@@ -120,7 +121,7 @@ public class LatestDqcHandler extends DqcHandler
       log.error( "handleRequest(): " + tmpMsg );
       res.sendError( HttpServletResponse.SC_NOT_FOUND,
                      "LatestDqcHandler.handleRequest(): " + tmpMsg );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, 0 );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, 0 ));
       return;
     }
     log.debug( "Request for the latest \"" + reqItemId + "\"." );
@@ -133,7 +134,7 @@ public class LatestDqcHandler extends DqcHandler
       log.error( "handleRequest(): " + tmpMsg );
       res.sendError( HttpServletResponse.SC_NOT_FOUND,
                      "LatestDqcHandler.handleRequest(): " + tmpMsg );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, 0 );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, 0 ));
       return;
     }
 
@@ -150,7 +151,7 @@ public class LatestDqcHandler extends DqcHandler
                  "> is not a directory." );
       res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                      "Directory given by config item <id=" + reqItemId + "> is not a directory." );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 ));
       return;
     }
 
@@ -169,7 +170,7 @@ public class LatestDqcHandler extends DqcHandler
         log.error( "handleRequest(): " + tmpMsg );
         res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                        tmpMsg );
-        ServletUtil.logServerAccess( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 );
+        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 ));
         return;
       }
 
@@ -178,7 +179,7 @@ public class LatestDqcHandler extends DqcHandler
       res.setContentType( "text/xml" );
       res.setStatus( HttpServletResponse.SC_OK );
       out.print( catalogAsString );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_OK, catalogAsString.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, catalogAsString.length() ));
       return;
     }
     else
@@ -187,7 +188,7 @@ public class LatestDqcHandler extends DqcHandler
       String tmpMsg = "No latest dataset found for request<" + reqItemId + ">.";
       log.error( "handleRequest(): " + tmpMsg );
       res.sendError( HttpServletResponse.SC_NOT_FOUND, tmpMsg );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, 0 );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, 0 ));
       return;
     }
   }

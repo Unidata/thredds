@@ -35,6 +35,7 @@ package thredds.servlet.filter;
 import thredds.util.StringValidateEncodeUtils;
 import thredds.util.TdsPathUtils;
 import thredds.servlet.ServletUtil;
+import thredds.servlet.UsageLog;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -95,7 +96,7 @@ public class RequestPathFilter
       {
         String msg = "Invalid request path [" + StringValidateEncodeUtils.encodeLogMessages( request.getPathInfo() ) + "].";
         log.error( "doFilter(): " + msg );
-        ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, msg.length() );
+        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, msg.length() ));
         response.sendError( HttpServletResponse.SC_NOT_FOUND, msg );
         return;
       }

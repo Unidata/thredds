@@ -121,7 +121,7 @@ public class CoordSysValidatorServlet extends AbstractServlet {
 
     String urlString = req.getParameter("URL");
     if (urlString == null) {
-      ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
       res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Must have a URL parameter");
       return;
     }
@@ -131,7 +131,7 @@ public class CoordSysValidatorServlet extends AbstractServlet {
       URI uri = new URI(urlString);
       urlString = uri.toASCIIString(); // LOOK do we want just toString() ? Is this useful "input validation" ?
     } catch (URISyntaxException e) {
-       ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
+       log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "URISyntaxException on URU parameter");
        return;
     }
@@ -142,11 +142,11 @@ public class CoordSysValidatorServlet extends AbstractServlet {
     try {
       int len = showValidatorResults(res, urlString, wantXml);
       log.info( "URL = " + urlString);
-      ServletUtil.logServerAccess(HttpServletResponse.SC_OK, len);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, len));
 
     } catch (Exception e) {
       log.error("Validator internal error", e);
-      ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Validator internal error");
     }
 
@@ -172,7 +172,7 @@ public class CoordSysValidatorServlet extends AbstractServlet {
     // Check that we have a file upload request
     boolean isMultipart = ServletFileUpload.isMultipartContent(req);
     if (!isMultipart) {
-      ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
       res.sendError(HttpServletResponse.SC_BAD_REQUEST);
       return;
     }
@@ -187,7 +187,7 @@ public class CoordSysValidatorServlet extends AbstractServlet {
     }
     catch (FileUploadException e) {
       log.info("Validator FileUploadException", e);
-      ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
       res.sendError(HttpServletResponse.SC_BAD_REQUEST);
       return;
     }
@@ -211,7 +211,7 @@ public class CoordSysValidatorServlet extends AbstractServlet {
           return;
         } catch (Exception e) {
           log.info("Validator processUploadedFile", e);
-          ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
+          log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
           res.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         }
       }
@@ -249,7 +249,7 @@ public class CoordSysValidatorServlet extends AbstractServlet {
     }
 
     log.info( "Uploaded File = " + item.getName() + " sent to " + uploadedFile.getPath() + " size= " + uploadedFile.length());
-    ServletUtil.logServerAccess(HttpServletResponse.SC_OK, len);
+    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, len));
   }
 
   private int showValidatorResults(HttpServletResponse res, String location, boolean wantXml) throws Exception {

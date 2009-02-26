@@ -49,6 +49,8 @@ import thredds.servlet.UsageLog;
  * @author caron
  */
 public class TomcatAuthorizer implements Authorizer {
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+
 
   private boolean useSSL = false;
   private String sslPort = "8443";
@@ -90,7 +92,7 @@ public class TomcatAuthorizer implements Authorizer {
   }
 
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-    UsageLog.log.info( UsageLog.setupRequestContext(req));
+    log.info( UsageLog.setupRequestContext(req));
 
     HttpSession session = req.getSession();
     if (session != null) {
@@ -104,16 +106,19 @@ public class TomcatAuthorizer implements Authorizer {
           res.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
           String frag = (origURI.indexOf("?") > 0) ? "&auth" : "?auth";
           res.addHeader("Location", origURI+frag);
+          log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_TEMPORARY_REDIRECT, -1 ) );
           return;
 
         } else {
           res.setStatus(HttpServletResponse.SC_OK); // someone came directly to this page
+          log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
           return;
         }
       }
     }
 
     res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Not authorized to access this dataset.");
+    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_UNAUTHORIZED, -1 ) );
   }
 
 }

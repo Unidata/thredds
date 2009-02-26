@@ -575,7 +575,7 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res, Pr
 
         } catch ( Exception e ) {
             log.error("radarServer processQuery error" );
-            ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
+            log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
             pw.println( "<documentation>\n" );
             pw.println( "Query can't be satisfied :"+ qp.toString() +"\n" );
             pw.println( "</documentation>\n" );

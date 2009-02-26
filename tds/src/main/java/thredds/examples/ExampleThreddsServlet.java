@@ -168,7 +168,7 @@ public class ExampleThreddsServlet extends HttpServlet
           throws ServletException, IOException
   {
     // Setup logging for this request.
-    UsageLog.log.info( UsageLog.setupRequestContext(req));
+    log.info( UsageLog.setupRequestContext(req));
 
     // Get the request path.
     String path = req.getPathInfo(); // ServletUtil.getRequestPath( req );

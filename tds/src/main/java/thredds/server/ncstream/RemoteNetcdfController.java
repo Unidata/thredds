@@ -89,7 +89,7 @@ public class RemoteNetcdfController extends AbstractController implements LastMo
       ncfile = DatasetHandler.getNetcdfFile(req, res, pathInfo);
       if (ncfile == null) {
         res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, -1);
+        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
       }
 
       OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
@@ -109,15 +109,15 @@ public class RemoteNetcdfController extends AbstractController implements LastMo
 
       out.flush();
       res.flushBuffer();
-      ServletUtil.logServerAccess(HttpServletResponse.SC_OK, -1);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
 
     } catch (FileNotFoundException e) {
-      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
 
     } catch (Throwable e) {
       e.printStackTrace();
-      ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
 
     } finally {

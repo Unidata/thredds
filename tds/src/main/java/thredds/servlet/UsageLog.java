@@ -58,7 +58,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @see org.slf4j.MDC
  */
 public class UsageLog {
-  public static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( UsageLog.class);
+  //public static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( UsageLog.class);
   private static AtomicLong logServerAccessId = new AtomicLong(0);
 
   /**

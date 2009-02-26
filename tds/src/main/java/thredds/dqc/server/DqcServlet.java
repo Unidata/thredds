@@ -238,7 +238,7 @@ public class DqcServlet extends AbstractServlet
     if ( reqPath == null )
     {
       res.sendRedirect( res.encodeRedirectURL( req.getContextPath() + req.getServletPath() + "/" ) );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_MOVED_PERMANENTLY, 0 );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_MOVED_PERMANENTLY, 0 ));
       return;
     }
     // Handle root request: create HTML page that lists each available DQC described dataset.
@@ -249,7 +249,7 @@ public class DqcServlet extends AbstractServlet
       String resString = this.htmlOfConfig( req.getContextPath() + req.getServletPath() );
       res.setStatus( HttpServletResponse.SC_OK );
       out.print( resString);
-      ServletUtil.logServerAccess( HttpServletResponse.SC_OK, resString.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, resString.length() ));
       return;
     }
     // Handle requests for documentation files.
@@ -278,7 +278,7 @@ public class DqcServlet extends AbstractServlet
       res.setContentType( "text/xml");
       res.setStatus( HttpServletResponse.SC_OK );
       out.print( catalogAsString );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_OK, catalogAsString.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, catalogAsString.length() ));
       return;
     }
     else
@@ -310,7 +310,7 @@ public class DqcServlet extends AbstractServlet
         tmpMsg = "No DQC Handler available for path <" + reqPath + ">.";
         log.warn( "doGet(): " + tmpMsg );
         res.sendError( HttpServletResponse.SC_BAD_REQUEST, tmpMsg );
-        ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, 0 );
+        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, 0 ));
         return;
         // @todo Loop through all config items checking if path starts with name.
       }
@@ -327,7 +327,7 @@ public class DqcServlet extends AbstractServlet
         tmpMsg = "Handler could not be constructed for " + reqHandlerInfo.getHandlerClassName() + ": " + e.getMessage();
         log.error( "doGet(): " + tmpMsg, e );
         res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, tmpMsg );
-        ServletUtil.logServerAccess( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 );
+        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 ));
         return;
       }
       
@@ -346,7 +346,7 @@ public class DqcServlet extends AbstractServlet
         tmpMsg = "No handler for " + reqHandlerInfo.getHandlerClassName();
         log.error( "doGet(): " + tmpMsg );
         res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, tmpMsg );
-        ServletUtil.logServerAccess( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 );
+        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 ));
         return;
       }
     }

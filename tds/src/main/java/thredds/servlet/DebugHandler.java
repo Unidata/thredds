@@ -39,6 +39,8 @@ import javax.servlet.http.*;
 
 public class DebugHandler {
 
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( DebugHandler.class );
+  
   static private List<DebugHandler> dhList = new ArrayList<DebugHandler>();
 
   static public DebugHandler get( String name) {
@@ -113,7 +115,7 @@ public class DebugHandler {
     PrintStream responsePS = new PrintStream(response.getOutputStream());
     responsePS.write(result);
     responsePS.flush();
-    ServletUtil.logServerAccess( HttpServletResponse.SC_OK, result.length );
+    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, result.length ));
   }
 
   static private void showDebugActions(HttpServletRequest req, HttpServletResponse res, PrintStream pw) {
