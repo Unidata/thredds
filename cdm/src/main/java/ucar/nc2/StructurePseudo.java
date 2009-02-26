@@ -96,6 +96,21 @@ public class StructurePseudo extends Structure {
     calcElementSize();
   }
 
+  @Override
+  public boolean removeMemberVariable( Variable v) {
+    if (super.removeMemberVariable(v)) {
+      java.util.Iterator<Variable> iter = orgVariables.iterator();
+      while (iter.hasNext()) {
+        Variable mv =  iter.next();
+        if (mv.getShortName().equals(v.getShortName())) {
+          iter.remove();
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   /** Make a Structure out of named Variables, each has the same named outermost dimension.
    *
    * @param ncfile part of this file

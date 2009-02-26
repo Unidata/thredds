@@ -36,6 +36,7 @@ package ucar.nc2.ft.point.standard.plug;
 import ucar.nc2.ft.point.standard.*;
 import ucar.nc2.ft.point.standard.CoordSysEvaluator;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.AxisType;
@@ -121,6 +122,7 @@ public class CFpointObs extends TableConfigurerImpl {
   }
 
   protected TableConfig getStationConfig(NetcdfDataset ds, Formatter errlog) throws IOException {
+    boolean needFinish = false;
 
     // find lat coord
     Variable lat = CoordSysEvaluator.findCoordByType(ds, AxisType.Lat);
@@ -201,11 +203,12 @@ public class CFpointObs extends TableConfigurerImpl {
       obsTableType = Table.Type.Contiguous;
 
     // multidim case with Structure (GEMPAK IOSP)
+    Structure multidimStruct = null;
     if (obsTableType == null) {
       // Structure(station, time)
-      Structure s = Evaluator.getStructureWithDimensions(ds, stationDim, obsDim);
-      if (s != null) {
-        obsTableType = Table.Type.MultiDimOuter;
+      multidimStruct = Evaluator.getStructureWithDimensions(ds, stationDim, obsDim);
+      if (multidimStruct != null) {
+        obsTableType = Table.Type.MultiDimStructure;
       }
     }
 
@@ -227,11 +230,24 @@ public class CFpointObs extends TableConfigurerImpl {
     }
 
     TableConfig obs = new TableConfig(obsTableType, obsDim.getName());
-    obs.structName = hasStruct ? "record" : obsDim.getName();
-    obs.isPsuedoStructure = !hasStruct;
     obs.dim = obsDim;
     obs.time = time.getName();
     stnTable.addChild(obs);
+
+    if ((obsTableType == Table.Type.Structure) || (obsTableType == Table.Type.Contiguous) ||
+      (obsTableType == Table.Type.ParentIndex)) {
+      obs.structName = hasStruct ? "record" : obsDim.getName();
+      obs.isPsuedoStructure = !hasStruct;
+    }
+
+    if (obsTableType == Table.Type.MultiDimStructure) {
+      obs.structName = multidimStruct.getName();
+      obs.isPsuedoStructure = false;
+      // if time is not in this structure, need to join it
+      if (multidimStruct.findVariable( time.getShortName()) == null) {
+        obs.extraJoin = new JoinArray( time);
+      }
+    }
 
     if (obsTableType == Table.Type.MultiDimInner) {
       obs.dim = obsDim;
@@ -239,6 +255,29 @@ public class CFpointObs extends TableConfigurerImpl {
 
     if (obsTableType == Table.Type.Contiguous) {
       obs.numRecords = ragged_rowSize;
+      obs.start = "raggedStartVar";
+
+      // construct the start variable
+      Variable v = ds.findVariable(ragged_rowSize);
+      if (!v.getDimension(0).equals(stationDim)) {
+        errlog.format("Station - contiguous numRecords must use station dimension");
+        return null;
+      }
+
+      Array numRecords = v.read();
+      Array startRecord = Array.factory(v.getDataType(), v.getShape());
+      int i = 0;
+      long count = 0;
+      while (numRecords.hasNext()) {
+        startRecord.setLong(i++, count);
+        count += numRecords.nextLong();
+      }
+
+      VariableDS startV = new VariableDS(ds,  v.getParentGroup(), v.getParentStructure(), obs.start, v.getDataType(),
+          v.getDimensionsString(), null, "starting record number for station");
+      startV.setCachedData(startRecord, false);
+      ds.addVariable(v.getParentGroup(), startV);
+      needFinish = true;
     }
 
     if (obsTableType == Table.Type.ParentIndex) {
@@ -262,6 +301,7 @@ public class CFpointObs extends TableConfigurerImpl {
       obs.indexMap = map;
     }
 
+    if (needFinish) ds.finish();
     return stnTable;
   }
 

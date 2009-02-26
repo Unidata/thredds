@@ -66,16 +66,17 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
 
     // LOOK can we defer StationHelper ?
     stationHelper = new StationHelper();
+    int count = 0;
     StructureDataIterator siter = ft.getStationDataIterator(-1);
     while (siter.hasNext()) {
       StructureData stationData = siter.next();
-      stationHelper.addStation( makeStation(stationData));
+      stationHelper.addStation( makeStation(stationData, count++));
     }
   }
 
-  private Station makeStation(StructureData stationData) {
+  private Station makeStation(StructureData stationData, int recnum) {
     Station s = ft.makeStation(stationData);
-    return new StandardStationFeatureImpl(s, timeUnit, stationData);
+    return new StandardStationFeatureImpl(s, timeUnit, stationData, recnum);
   }
 
   public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
@@ -96,17 +97,22 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
   }
 
   private class StandardStationFeatureImpl extends StationFeatureImpl {
-    Cursor cursor;
+      int recnum;
+      StructureData stationData;
 
-    StandardStationFeatureImpl(Station s, DateUnit dateUnit, StructureData stationData) {
+    StandardStationFeatureImpl(Station s, DateUnit dateUnit, StructureData stationData, int recnum) {
       super(s, dateUnit, -1);
-      cursor = new Cursor(2);
-      cursor.tableData[1] = stationData;
+      this.recnum = recnum;
+      this.stationData = stationData;
     }
 
-    // an iterator over Features of type PointFeature
+    // an iterator over the observations for this station
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      StructureDataIterator obsIter = ft.getStationObsDataIterator(cursor.tableData[1], bufferSize);
+      Cursor cursor = new Cursor(ft.getNumberOfLevels());
+      cursor.recnum[1] = recnum;
+      cursor.tableData[1] = stationData;
+      cursor.parentIndex = 1; // LOOK ?
+      StructureDataIterator obsIter = ft.getStationObsDataIterator(cursor, bufferSize);
       return new StandardStationPointIterator((size() < 0) ? this : null, obsIter, cursor);
     }
 

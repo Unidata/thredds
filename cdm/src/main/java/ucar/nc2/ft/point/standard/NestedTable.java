@@ -388,9 +388,8 @@ public class NestedTable {
   // not clear these methods should be here
 
   // Point
-
-  public StructureDataIterator getObsDataIterator(int bufferSize) throws IOException {
-    return root.getStructureDataIterator(null, bufferSize);
+  public StructureDataIterator getObsDataIterator(Cursor cursor, int bufferSize) throws IOException {
+    return root.getStructureDataIterator(cursor, bufferSize);
   }
 
   // Station or Station_Profile
@@ -427,8 +426,8 @@ public class NestedTable {
     return siter;
   }
 
-  public StructureDataIterator getStationObsDataIterator(StructureData stationData, int bufferSize) throws IOException {
-    return leaf.getStructureDataIterator(stationData, bufferSize);
+  public StructureDataIterator getStationObsDataIterator(Cursor cursor, int bufferSize) throws IOException {
+    return leaf.getStructureDataIterator(cursor, bufferSize);
   }
 
   // Trajectory, Profile
@@ -436,8 +435,8 @@ public class NestedTable {
     return root.getStructureDataIterator(null, bufferSize);
   }
 
-  public StructureDataIterator getFeatureObsDataIterator(StructureData trajData, int bufferSize) throws IOException {
-    return leaf.getStructureDataIterator(trajData, bufferSize);
+  public StructureDataIterator getFeatureObsDataIterator(Cursor cursor, int bufferSize) throws IOException {
+    return leaf.getStructureDataIterator(cursor, bufferSize);
   }
 
   // Station Profile
@@ -446,16 +445,14 @@ public class NestedTable {
       StationConstruct sc = (StationConstruct) cursor.what;
       return sc.getStructureDataIterator(bufferSize);
     }
-
-    return root.getStructureDataIterator(cursor.tableData[2], bufferSize);
+    return root.getStructureDataIterator(cursor, bufferSize);
   }
 
   public StructureDataIterator getStationProfileObsDataIterator(Cursor cursor, int bufferSize) throws IOException {
     if (getFeatureType() != FeatureType.STATION_PROFILE)
       throw new UnsupportedOperationException("Not a StationProfileFeatureCollection");
 
-    StructureData profileData = cursor.tableData[1];
-    return leaf.getStructureDataIterator(profileData, bufferSize);
+    return leaf.getStructureDataIterator(cursor, bufferSize);
   }
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -544,9 +541,8 @@ public class NestedTable {
 
   public void addParentJoin(Cursor cursor) throws IOException {
     if (leaf.extraJoin != null) {
-      StructureData obsdata = cursor.tableData[0];
-      StructureData extra = leaf.extraJoin.getJoinData(obsdata);
-      cursor.tableData[0] = StructureDataFactory.make(obsdata, extra);
+      StructureData extra = leaf.extraJoin.getJoinData(cursor);
+      cursor.tableData[0] = StructureDataFactory.make(cursor.tableData[0], extra);
     }
   }
 

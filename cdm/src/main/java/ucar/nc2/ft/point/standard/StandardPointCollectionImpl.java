@@ -58,7 +58,7 @@ public class StandardPointCollectionImpl extends PointCollectionImpl {
     Cursor tableData = new Cursor(ft.getNumberOfLevels());
     boolean calcBB = (boundingBox == null) || (dateRange == null);
 
-    return new TableIterator( ft.getObsDataIterator(bufferSize), tableData, calcBB);
+    return new TableIterator( ft.getObsDataIterator(tableData, bufferSize), tableData, calcBB);
   }
 
   // the iterator over the observations

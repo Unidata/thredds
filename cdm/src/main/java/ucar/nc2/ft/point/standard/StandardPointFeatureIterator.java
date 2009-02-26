@@ -60,6 +60,7 @@ public class StandardPointFeatureIterator extends PointIteratorImpl {
   }
 
   protected PointFeature makeFeature(int recnum, StructureData sdata) throws IOException {
+    cursor.recnum[0] = recnum;
     cursor.tableData[0] = sdata; // always in the first position
     ft.addParentJoin(cursor); // there may be parent joins LOOK
     

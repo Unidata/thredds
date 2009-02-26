@@ -6,6 +6,11 @@ Changes in version 4.0
 
  Release Details:
   35:
+    CFpointObs improved, handles gempak structures.
+    JoinArray added, Join interface clarified
+    Table.getStructureDataIterator(Cursor cursor, ...)
+    add _CoordinateSystemFor to allow wholesale assignment of coord systems to variables.
+    Gempak IOSP now standard
     cleanup NetcdfFile.isClosed(). Make sure you get error if you call read() after close, even in cache/
   34:
     Fmrc.makeDatasets must clear coordinate system.

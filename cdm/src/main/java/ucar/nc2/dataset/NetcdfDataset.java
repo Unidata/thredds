@@ -1453,32 +1453,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   /**
-   * Debugging
-   *
-   * @param arg arguments
-   */
-  public static void main2(String arg[]) {
-    //String urls = "file:///C:/data/buoy/cwindRM.xml";
-    //String urls = "C:/data/conventions/wrf/wrf_masscore.nc";
-    //String urls = "http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/dods/model/2004050712_eta_211.nc";
-    //String defaultUrl = "R:/testdata/grid/netcdf/atd-radar/rgg.20020411.000000.lel.ll.nc";
-    //String defaultUrl = "R:/testdata/grid/grib/grib2/test/NAM_CONUS_12km_20060604_1800.grib2";
-    String defaultUrl = "C:/data/grib/nam/conus12/NAM_CONUS_12km_20060604_1800.grib2";
-
-    String filename = (arg.length > 0) ? arg[0] : defaultUrl;
-
-    try {
-      NetcdfDataset ncDataset = NetcdfDataset.openDataset(filename, true, null);
-
-      System.out.println("NetcdfDataset = " + filename + "\n" + ncDataset);
-      debugDump(System.out, ncDataset);
-    } catch (Exception ioe) {
-      System.out.println("error = " + filename);
-      ioe.printStackTrace();
-    }
-  }
-
-  /**
    * Main program - cover to ucar.nc2.FileWriter, for all files that can be read by NetcdfDataset.openFile()
    * <p><strong>ucar.nc2.dataset.NetcdfDataset -in fileIn -out fileOut
    * <p>where: <ul>

@@ -1,9 +1,9 @@
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
- *
- * Portions of this software were developed by the Unidata Program at the
+ * 
+ * Portions of this software were developed by the Unidata Program at the 
  * University Corporation for Atmospheric Research.
- *
+ * 
  * Access and use of this software shall impose the following obligations
  * and understandings on the user. The user is granted the right, without
  * any fee or cost, to use, copy, modify, alter, enhance and distribute
@@ -20,7 +20,7 @@
  * any support, consulting, training or assistance of any kind with regard
  * to the use, operation and performance of this software nor to provide
  * the user with any updates, revisions, new versions or "bug fixes."
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -30,53 +30,22 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+package ucar.nc2.ft;
 
-package ucar.nc2.ft.point.standard;
-
-import ucar.ma2.ArrayStructure;
-import ucar.ma2.StructureData;
-import ucar.nc2.Structure;
-import ucar.nc2.Variable;
-
-import java.io.IOException;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 /**
- * Join data from a row of a a Structure, whose index is passed in as the value of a member variable of the
- * leaf StructureData (cursor.table[0]).
- *
  * @author caron
- * @since Jan 22, 2009
+ * @since Feb 25, 2009
  */
-public class JoinParentIndex implements Join {
-  private Structure parentStructure;
-  private ArrayStructure parentData;
-  private String parentIndex;
+public class TestFeatureDatasets {
 
-  /**
-   * Constructor.
-   * @param parentStructure  get data from this Structure
-   * @param parentIndex name of member variable in leaf StructureData
-   */
-  public JoinParentIndex(Structure parentStructure, String parentIndex) {
-    this.parentStructure = parentStructure;
-    this.parentIndex = parentIndex;
+  public static Test suite ( ) {
+    TestSuite suite= new TestSuite();
 
-    try {
-      parentData = (ArrayStructure) parentStructure.read(); // cache entire ArrayStructure  LOOK
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    suite.addTestSuite( TestPointFeatureTypes.class);
+
+    return suite;
   }
-
-  public StructureData getJoinData(Cursor cursor) {
-    StructureData sdata = cursor.tableData[0]; // LOOK ??
-    int index = sdata.getScalarInt(parentIndex);
-    return parentData.getStructureData(index);
-  }
-
-  public Variable findVariable(String axisName) {
-    return parentStructure.findVariable(axisName);
-  }
-
-
 }

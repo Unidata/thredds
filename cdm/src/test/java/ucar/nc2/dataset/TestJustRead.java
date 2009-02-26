@@ -70,6 +70,11 @@ public class TestJustRead extends TestCase {
 
   }
 
+  public void testProblem() throws Exception {
+    show = true;
+    doOne( "http://dods.ndbc.noaa.gov/thredds/dodsC/data/stdmet/31201/31201h2005.nc");
+  }
+
   private void doOne(String filename) throws Exception {
     System.out.println("  read dataset with convention parsing= "+filename);
     NetcdfDataset ncDataset = NetcdfDataset.openDataset( filename, true, null);

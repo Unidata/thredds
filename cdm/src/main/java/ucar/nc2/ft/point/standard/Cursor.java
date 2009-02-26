@@ -42,15 +42,28 @@ import ucar.ma2.StructureData;
 public class Cursor {
   Object what; // used by StationConstruct
   StructureData[] tableData;
+  int[] recnum;
+  int parentIndex;
 
   Cursor(int nlevels) {
     tableData = new StructureData[nlevels];
+    recnum = new int[nlevels];
+  }
+
+  StructureData getParentStructure() {
+    return tableData[parentIndex];
+  }
+
+  int getParentRecnum() {
+    return recnum[parentIndex];
   }
 
   Cursor copy() {
     Cursor clone = new Cursor(tableData.length);
-    clone.what = what;
+    clone.what = what; // not a copy !!
+    clone.parentIndex = parentIndex;
     System.arraycopy(this.tableData, 0, clone.tableData, 0, tableData.length);
+    System.arraycopy(this.recnum, 0, clone.recnum, 0, tableData.length);
     return clone;
   }
 }

@@ -37,8 +37,24 @@ import ucar.nc2.Variable;
 
 import java.io.IOException;
 
+/**
+ * An abstract way to 'join' more cols to a row
+ */
 public interface Join {
-  public StructureData getJoinData(StructureData obsdata) throws IOException;
-  public Variable findVariable(String axisName);
+
+  /**
+   * Get 'join' data to be added to the row.
+   * @param cursor the state of the iteration
+   * @return extra data to be added to the row
+   * @throws IOException on read error
+   */
+  public StructureData getJoinData(Cursor cursor) throws IOException;
+
+  /**
+   * Find the Variable of the given name.
+   * @param varName find this Variable
+   * @return the named Variable, or null
+   */
+  public Variable findVariable(String varName);
 }
 

@@ -56,8 +56,8 @@ public abstract class Table {
   }
 
   public enum Type {
-    ArrayStructure, Construct, Contiguous, LinkedList, MultiDimInner, MultiDimOuter, NestedStructure,
-    ParentIndex, Singleton, Structure, Top
+    ArrayStructure, Construct, Contiguous, LinkedList, MultiDimInner, MultiDimOuter, MultiDimStructure,
+    NestedStructure, ParentIndex, Singleton, Structure, Top
   }
 
   public static Table factory(NetcdfDataset ds, TableConfig config) {
@@ -81,6 +81,9 @@ public abstract class Table {
 
       case MultiDimOuter: // outer struct of a multdim
         return new TableMultiDimOuter(ds, config);
+
+      case MultiDimStructure: // obs is a Structure
+        return new TableMultiDimStructure(ds, config);
 
       case NestedStructure: // Structure or Sequence is nested in the parent
         return new TableNestedStructure(ds, config);
@@ -139,7 +142,14 @@ public abstract class Table {
     this.extraJoin = config.extraJoin;
   }
 
-  abstract public StructureDataIterator getStructureDataIterator(StructureData parent, int bufferSize) throws IOException;
+  /**
+   * Iterate over the rows of this table. Subclasses must implement this.
+   * @param cursor state of comlpete iteration. Table implementations may not modify.
+   * @param bufferSize hit on how much memory (in bytes) can be used to buffer.
+   * @return iterater over the rows of this table.
+   * @throws IOException on read error
+   */
+  abstract public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException;
 
   String findCoordinateVariableName(CoordName coordName) {
     switch (coordName) {
@@ -189,8 +199,15 @@ public abstract class Table {
         dim = struct.getDimension(0);
       }
 
-      for (Variable v : struct.getVariables())
-        this.cols.add(v);
+      for (Variable v : struct.getVariables()) {
+        // remove substructures
+        if (v.getDataType() == DataType.STRUCTURE) {
+          if (config.isPsuedoStructure)
+            struct.removeMemberVariable( v);
+        } else {
+          this.cols.add(v);
+        }
+      }
     }
 
     @Override
@@ -203,7 +220,7 @@ public abstract class Table {
       return dim.getName();
     }
 
-    public StructureDataIterator getStructureDataIterator(StructureData parent, int bufferSize) throws IOException {
+    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
       return struct.getStructureIterator(bufferSize);
     }
   }
@@ -228,7 +245,7 @@ public abstract class Table {
       return dim.getName();
     }
 
-    public StructureDataIterator getStructureDataIterator(StructureData parent, int bufferSize) throws IOException {
+    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
       return as.getStructureDataIterator();
     }
   }
@@ -248,7 +265,7 @@ public abstract class Table {
       return struct.findVariable(axisName);
     }
 
-    public StructureDataIterator getStructureDataIterator(StructureData parentStruct, int bufferSize) throws IOException {
+    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
       return struct.getStructureIterator(bufferSize);
     }
   }
@@ -264,7 +281,8 @@ public abstract class Table {
       this.numRecords = config.numRecords;
     }
 
-    public StructureDataIterator getStructureDataIterator(StructureData parentStruct, int bufferSize) throws IOException {
+    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+      StructureData parentStruct = cursor.getParentStructure();
       int firstRecno = parentStruct.getScalarInt(start);
       int n = parentStruct.getScalarInt(numRecords);
       return new StructureDataIteratorLinked(struct, firstRecno, n, null);
@@ -282,7 +300,8 @@ public abstract class Table {
       this.parentIndexName = config.parentIndex;
     }
 
-    public StructureDataIterator getStructureDataIterator(StructureData parentStruct, int bufferSize) throws IOException {
+    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+      StructureData parentStruct = cursor.getParentStructure();
       int parentIndex = parentStruct.getScalarInt( parentIndexName);
       List<Integer> index = indexMap.get( parentIndex);
       return new StructureDataIteratorIndexed(struct, index);
@@ -300,21 +319,22 @@ public abstract class Table {
       this.next = config.next;
     }
 
-    public StructureDataIterator getStructureDataIterator(StructureData parentStruct, int bufferSize) throws IOException {
+    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+      StructureData parentStruct = cursor.getParentStructure();
       int firstRecno = parentStruct.getScalarInt(start);
       return new StructureDataIteratorLinked(struct, firstRecno, -1, next);
     }
   }
 
   ///////////////////////////////////////////////////////
-  public static class TableMultiDimOuter extends Table.TableStructure {
+   public static class TableMultiDimOuter extends Table.TableStructure {
 
-    TableMultiDimOuter(NetcdfDataset ds, TableConfig config) {
-      super(ds, config);
-    }
-  }
+     TableMultiDimOuter(NetcdfDataset ds, TableConfig config) {
+       super(ds, config);
+     }
+   }
 
-  ///////////////////////////////////////////////////////
+   ///////////////////////////////////////////////////////
   public static class TableMultiDimInner extends Table {
     StructureMembers sm; // MultiDim
     Dimension dim;
@@ -350,7 +370,8 @@ public abstract class Table {
       return ds.findVariable(axisName);
     }
 
-    public StructureDataIterator getStructureDataIterator(StructureData parentStruct, int bufferSize) throws IOException {
+    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+      StructureData parentStruct = cursor.getParentStructure();
       ArrayStructureMA asma = new ArrayStructureMA(sm, new int[]{dim.getLength()});
       for (VariableSimpleIF v : cols) {
         Array data = parentStruct.getArray(v.getShortName());
@@ -361,6 +382,26 @@ public abstract class Table {
     }
 
   }
+
+  ///////////////////////////////////////////////////////
+   public static class TableMultiDimStructure extends Table.TableStructure {
+
+     TableMultiDimStructure(NetcdfDataset ds, TableConfig config) {
+       super(ds, config);
+     }
+
+    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+      int recnum = cursor.getParentRecnum();
+      try {
+        Section section = new Section().appendRange(recnum, recnum).appendRange(null);
+        ArrayStructure data = (ArrayStructure) struct.read(section);
+        return data.getStructureDataIterator();
+      } catch (InvalidRangeException e) {
+        throw new IllegalStateException(e);
+      }
+    }
+
+   }
 
   ///////////////////////////////////////////////////////
   public static class TableNestedStructure extends Table {
@@ -377,7 +418,8 @@ public abstract class Table {
       return struct.findVariable(axisName);
     }
 
-    public StructureDataIterator getStructureDataIterator(StructureData parentStruct, int bufferSize) throws IOException {
+    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+      StructureData parentStruct = cursor.getParentStructure();
 
       StructureMembers members = parentStruct.getStructureMembers();
       StructureMembers.Member m = members.findMember(nestedTableName);
@@ -404,7 +446,7 @@ public abstract class Table {
       assert (this.sdata != null);
     }
 
-    public StructureDataIterator getStructureDataIterator(StructureData parent, int bufferSize) throws IOException {
+    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
       return new SingletonStructureDataIterator(sdata);
     }
   }
@@ -417,7 +459,7 @@ public abstract class Table {
       this.ds = ds;
     }
 
-    public StructureDataIterator getStructureDataIterator(StructureData parent, int bufferSize) throws IOException {
+    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
       return new SingletonStructureDataIterator(null);
     }
   }

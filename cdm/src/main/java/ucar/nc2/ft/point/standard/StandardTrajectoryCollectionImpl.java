@@ -77,6 +77,7 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
 
   private class TrajIterator implements PointFeatureCollectionIterator {
     StructureDataIterator structIter;
+    int count = 0;
 
     TrajIterator(ucar.ma2.StructureDataIterator structIter) throws IOException {
       this.structIter = structIter;
@@ -87,7 +88,7 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
     }
 
     public TrajectoryFeature next() throws IOException {
-      return new StandardTrajectoryFeature(structIter.next());
+      return new StandardTrajectoryFeature(structIter.next(), count++);
     }
 
     public void setBufferSize(int bytes) { }
@@ -95,15 +96,20 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
 
   private class StandardTrajectoryFeature extends TrajectoryFeatureImpl {
     StructureData trajData;
-    StandardTrajectoryFeature(StructureData trajData) {
+    int recno;
+
+    StandardTrajectoryFeature(StructureData trajData, int recno) {
       super(ft.getFeatureName(trajData), -1);
       this.trajData = trajData;
+      this.recno = recno;
     }
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       Cursor cursor = new Cursor(ft.getNumberOfLevels());
+      cursor.recnum[1] = recno;
       cursor.tableData[1] = trajData;
-      StructureDataIterator siter = ft.getFeatureObsDataIterator( trajData, bufferSize);
+      cursor.parentIndex = 1; // LOOK ?
+      StructureDataIterator siter = ft.getFeatureObsDataIterator( cursor, bufferSize);
       return new StandardPointFeatureIterator(ft, timeUnit, siter, cursor, false);
     }
   }

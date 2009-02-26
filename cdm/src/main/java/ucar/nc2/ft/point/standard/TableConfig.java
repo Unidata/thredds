@@ -36,7 +36,6 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.Dimension;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.StructureData;
-import ucar.ma2.Array;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -96,6 +95,7 @@ public class TableConfig {
   public TableConfig(Table.Type type, String name) {
     this.type = type;
     this.name = name;
+    this.structName = name;
   }
 
   public void addChild(TableConfig t) {

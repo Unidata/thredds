@@ -53,27 +53,41 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.EarthLocation;
 
 /**
- * Class Description.
+ * Test PointFeatureTypes.
  *
  * @author caron
  * @since Dec 16, 2008
  */
 public class TestPointFeatureTypes  extends TestCase {
-  String topDir = ucar.nc2.TestAll.upcShareTestDataDir+ "station/";
+  //String topDir = ucar.nc2.TestAll.upcShareTestDataDir+ "station/";
   public TestPointFeatureTypes( String name) {
     super(name);
   }
 
   public void testCF() throws IOException {
-    testPointDataset(TestAll.upcShareTestDataDir+"point/netcdf/filtered_apriori_super_calibrated_binned1.nc", FeatureType.POINT, true);
+    String topdir = "C:/data/ft/"; // TestAll.upcShareTestDataDir;
 
-    // CF 1.0 multidim with dimensions reversed 
-    testPointDataset(TestAll.upcShareTestDataDir+"point/netcdf/solrad_point_pearson.ncml", FeatureType.STATION, true);
+    /////// POINT
+    // CF 1.1 psuedo-structure
+    testPointDataset(topdir+"cfPoint/point/filtered_apriori_super_calibrated_binned1.nc", FeatureType.POINT, true);
+
+    // CF 1.5 psuedo-structure
+    testPointDataset("C:/data/gempak/nmcbob.shp.nc", FeatureType.POINT, true);
+
+    /////// STATION
+    // CF 1.3 ragged contiguous
+    testPointDataset(topdir+"cfPoint/station/rig_tower.2009-02-01.ncml", FeatureType.STATION, true);
+
+    // CF 1.5 (GEMPAK IOSP) stn = psuedoSTruct, obs = multidim Structure, time(time) as extraJoin
+    testPointDataset("C:/data/gempak/19330101_sao.gem", FeatureType.STATION, true);
+
+    // CF 1.0 multidim with dimensions reversed
+    //testPointDataset(topdir+"cfPoint/station/solrad_point_pearson.ncml", FeatureType.STATION, true);
 
   }
 
-  public void testReadAll() throws IOException {
-    readAllDir(topDir, new MyFileFilter() , FeatureType.ANY_POINT);
+  public void utestReadAll() throws IOException {
+    readAllDir(ucar.nc2.TestAll.upcShareTestDataDir+ "station/", new MyFileFilter() , FeatureType.ANY_POINT);
   }
 
   class MyFileFilter implements FileFilter {
@@ -84,7 +98,7 @@ public class TestPointFeatureTypes  extends TestCase {
     }
   }
 
-  public void testProblem() throws IOException {
+  public void utestProblem() throws IOException {
     //testPointDataset(topDir+"noZ/41001h2007.nc", FeatureType.ANY_POINT, true);
     testPointDataset("R:/testdata/point/netcdf/madis.nc", FeatureType.POINT, true);
   }
@@ -200,8 +214,10 @@ public class TestPointFeatureTypes  extends TestCase {
 
 
     bb = pfc.getBoundingBox();
-    if (needBB) assert bb != null;
-    System.out.println("bb= "+bb.toString2());
+    if (needBB) {
+      assert bb != null;
+      System.out.println("bb= "+bb.toString2());
+    }
 
     int count2 = 0;
     PointFeatureIterator iter = pfc.getPointFeatureIterator(-1);
@@ -217,28 +233,30 @@ public class TestPointFeatureTypes  extends TestCase {
     }
     assert count == count2;
 
-    // try a subset
-    LatLonRect bb2 = new LatLonRect(bb.getLowerLeftPoint(), bb.getHeight()/2, bb.getWidth()/2);
-    PointFeatureCollection subset = pfc.subset(bb2, null);
-    System.out.println("subset= "+bb2.toString2());
+    if (bb != null) {
+      // try a subset
+      LatLonRect bb2 = new LatLonRect(bb.getLowerLeftPoint(), bb.getHeight()/2, bb.getWidth()/2);
+      PointFeatureCollection subset = pfc.subset(bb2, null);
+      System.out.println("subset= "+bb2.toString2());
 
-    start = System.currentTimeMillis();
-    int counts = 0;
-    PointFeatureIterator iters = subset.getPointFeatureIterator(-1);
-    while (iters.hasNext()) {
-      PointFeature pf = iters.next();
+      start = System.currentTimeMillis();
+      int counts = 0;
+      PointFeatureIterator iters = subset.getPointFeatureIterator(-1);
+      while (iters.hasNext()) {
+        PointFeature pf = iters.next();
 
-      if (needBB) {
-        assert bb2.contains( pf.getLocation().getLatLon()) : bb2.toString2() + " does not contains point "+pf.getLocation().getLatLon();
+        if (needBB) {
+          assert bb2.contains( pf.getLocation().getLatLon()) : bb2.toString2() + " does not contains point "+pf.getLocation().getLatLon();
+        }
+        //System.out.printf(" contains point %s%n",pf.getLocation().getLatLon());
+
+        testPointFeature( pf);
+        counts++;
       }
-      //System.out.printf(" contains point %s%n",pf.getLocation().getLatLon());      
-
-      testPointFeature( pf);
-      counts++;
+      System.out.println("subset count= "+counts);
+      took = System.currentTimeMillis() - start;
+      System.out.println(" subset iter took= "+took+" msec");
     }
-    System.out.println("subset count= "+counts);
-    took = System.currentTimeMillis() - start;
-    System.out.println(" subset iter took= "+took+" msec");
 
     return count;
   }

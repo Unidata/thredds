@@ -72,9 +72,10 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     stationHelper = new StationHelper();
 
     try {
+      int count = 0;
       List<Station> stnList = ft.makeStations(-1);
       for (Station s : stnList) {
-        stationHelper.addStation(new StandardStationProfileFeature(s, null));
+        stationHelper.addStation(new StandardStationProfileFeature(s, null, count++));
       }
     } catch (IOException ioe) {
       throw new RuntimeException("Failed to init stations", ioe);
@@ -100,18 +101,22 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
   private class StandardStationProfileFeature extends StationProfileFeatureImpl {
     Station s;
     StructureData stationData;
+    int recnum;
 
-    StandardStationProfileFeature(Station s, StructureData stationData) {
+    StandardStationProfileFeature(Station s, StructureData stationData, int recnum) {
       super(s, StandardStationProfileCollectionImpl.this.timeUnit, -1);
       this.s = s;
       this.stationData = stationData;
+      this.recnum = recnum;
     }
 
-    // iterate over series of profiles
+    // iterate over series of profiles at a given station
     public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
       Cursor cursor = new Cursor(ft.getNumberOfLevels());
       cursor.what = s;
+      cursor.recnum[2] = recnum;
       cursor.tableData[2] = stationData; // obs(leaf) = 0, profile=1, station(root)=2
+      cursor.parentIndex = 2; // LOOK ??
       return new StandardStationProfileFeatureIterator(cursor);
     }
 
@@ -129,15 +134,17 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
         boolean r = iter.hasNext();
         if (!r)
           timeSeriesNpts = count; // field in StationProfileFeatureImpl
-        count++;
         return r;
       }
 
       public PointFeatureCollection next() throws IOException {
-        cursor.tableData[1] = iter.next();
+        Cursor cursorIter = cursor.copy();
+        cursorIter.recnum[1] = count++;
+        cursorIter.tableData[1] = iter.next();
+        cursorIter.parentIndex = 1; // LOOK ??
 
-        double time = ft.getObsTime(cursor);
-        return new StandardProfileFeature(s, timeUnit.makeDate(time), cursor);
+        double time = ft.getObsTime(cursorIter);
+        return new StandardProfileFeature(s, timeUnit.makeDate(time), cursorIter);
       }
 
       public void setBufferSize(int bytes) {
@@ -172,7 +179,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       StationFeatureImpl station;
 
       StandardStationProfilePointIterator(StructureDataIterator structIter, Cursor cursor) throws IOException {
-        super(ft, timeUnit, structIter, cursor, false);
+        super(ft, timeUnit, structIter, cursor.copy(), false);
       }
 
       // decorate to capture npts
