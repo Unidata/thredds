@@ -251,8 +251,6 @@ public class GridIndexToNC {
       System.out.println(" number of products = " + records.size());
     }
     for (int i = 0; i < records.size(); i++) {
-      if( i == 50 )
-        System.out.println( "stop");
       GridRecord gribRecord = (GridRecord) records.get(i);
       if (firstRecord == null) {
         firstRecord = gribRecord;
