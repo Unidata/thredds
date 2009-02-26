@@ -208,13 +208,12 @@ public class GribGridServiceProvider extends GridServiceProvider {
         // need to write it some where
         //index = new GribReadIndex().open(indexLocation, ios);
         log.debug("opened HTTP index = " + indexLocation);
-        return index;
 
       } else { // otherwise write it to / get it from the cache
         indexFile = DiskCache.getCacheFile(indexLocation);
         log.debug("HTTP index = " + indexFile.getPath());
       }
-
+      return index;
     } else {
       // always check first if the index file lives in the same dir as the regular file, and use it
       indexFile = new File(indexLocation);
