@@ -167,7 +167,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
 
   // encapsolates a Grid and its vertical coordinate, which may be time-dependent
   public static class Grid implements Comparable {
-    private String name; // , searchName;
+    public String name; // , searchName;
     private VertTimeCoord vtc = null;
 
     Grid (String name) {
@@ -223,7 +223,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     private boolean isAll = false;    // true if they all use the same OffsetHours
     private ForecastModelRunInventory.TimeCoord allUseOffset; // they all use this one
     private List<Run> runs = new ArrayList<Run>(); // list of Run
-    private List<Grid> vars = new ArrayList<Grid>(); // list of Grid
+    public List<Grid> vars = new ArrayList<Grid>(); // list of Grid
     private int num = 0;
 
     RunSeq(String id) {
