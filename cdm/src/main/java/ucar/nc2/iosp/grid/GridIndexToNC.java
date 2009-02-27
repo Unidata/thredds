@@ -748,16 +748,16 @@ public class GridIndexToNC {
   private String findVariableName(NetcdfFile ncfile, GridRecord gr,
     GridTableLookup lookup, FmrcCoordSys fmr) {
 
-    FmrcDefinition  fdrs = (FmrcDefinition) fmr;
-    List<FmrcDefinition.RunSeq> rs =  fdrs.getRunSequences();
-    System.out.println( "Sequence vars" );
-    for (FmrcDefinition.RunSeq runSeq : rs) {
-      System.out.println( runSeq.getName() );
-      for (FmrcDefinition.Grid grid : runSeq.vars) {
-        System.out.println( grid.name );
-      }
-
-    }
+//    FmrcDefinition  fdrs = (FmrcDefinition) fmr;
+//    List<FmrcDefinition.RunSeq> rs =  fdrs.getRunSequences();
+//    System.out.println( "Sequence vars" );
+//    for (FmrcDefinition.RunSeq runSeq : rs) {
+//      System.out.println( runSeq.getName() );
+//      for (FmrcDefinition.Grid grid : runSeq.vars) {
+//        System.out.println( grid.name );
+//      }
+//
+//    }
     // first lookup with name & vert name
     String name = makeVariableName(gr, lookup);
     System.out.println( "name ="+ name );
