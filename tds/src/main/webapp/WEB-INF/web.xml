@@ -274,21 +274,21 @@
   <servlet>
     <servlet-name>root</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
+    <load-on-startup>0</load-on-startup>
   </servlet>
 
   <!-- Setup for catalog services. (Catalog subsetting, validation, and translation into HTML.) -->
   <servlet>
     <servlet-name>catalogService</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <load-on-startup>2</load-on-startup>
+    <load-on-startup>1</load-on-startup>
   </servlet>
 
   <!-- Setup for the CatalogGen servlet. (Allows scheduling of CatalogGen tasks) -->
   <servlet>
     <servlet-name>catalogGen</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <load-on-startup>4</load-on-startup>
+    <load-on-startup>1</load-on-startup>
   </servlet>
 
   <servlet>
@@ -315,6 +315,7 @@
   <servlet>
     <servlet-name>dqc</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
   </servlet>
 
 
@@ -415,7 +416,7 @@
   <servlet>
     <servlet-name>WCS</servlet-name>
     <servlet-class>thredds.server.wcs.WCSServlet</servlet-class>
-    <load-on-startup>3</load-on-startup>
+    <load-on-startup>1</load-on-startup>
   </servlet>
 
   <servlet>

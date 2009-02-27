@@ -271,7 +271,7 @@ public class DqcServlet extends AbstractServlet
     {
       // Get the catalog as a string.
       InvCatalogFactory catFactory = new InvCatalogFactory( "default", true );
-      String catalogAsString = catFactory.writeXML_1_0( (InvCatalogImpl) this.mainConfig.createCatalogRepresentation( req.getContextPath() + req.getServletPath() ) );
+      String catalogAsString = catFactory.writeXML_1_0( (InvCatalogImpl) this.mainConfig.createCatalogRepresentation( req.getContextPath() + req.getServletPath() + "/" ) );
 
       // Write the catalog out.
       out = res.getWriter();

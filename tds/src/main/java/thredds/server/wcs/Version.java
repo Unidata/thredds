@@ -57,7 +57,8 @@ public class Version
    */
   public Version( String versionString )
   {
-    if ( versionString == null ) throw new IllegalArgumentException( "Version string must not be null.");
+    if ( versionString == null )
+      throw new IllegalArgumentException( "Version string must not be null.");
     this.versionString = versionString;
 
     String[] tmpVerSegs = versionString.split( "\\.");

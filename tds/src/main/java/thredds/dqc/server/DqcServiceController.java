@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * _more_
@@ -87,7 +89,7 @@ public class DqcServiceController extends AbstractController
     }
 
     // Locate or create DqcConfig document.
-    this.dqcConfigFile = new File( this.dqcConfigFileName );
+    this.dqcConfigFile = new File( this.dqcConfigDir, this.dqcConfigFileName );
     if ( ! this.dqcConfigFile.exists() )
     {
       this.dqcConfigFile = createDqcConfigFile();
@@ -161,6 +163,12 @@ public class DqcServiceController extends AbstractController
       model.put( "contextPath", request.getContextPath() );
       model.put( "servletPath", request.getServletPath() );
       model.put( "dqcConfigItems", items );
+
+      this.tdsContext.getTdsConfigHtml().addHostInstitutionInfoToMap( model );
+      this.tdsContext.getTdsConfigHtml().addInstallationInfoToMap( model );
+      this.tdsContext.getTdsConfigHtml().addWebappInfoToMap( model );
+
+      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
       return new ModelAndView( "/thredds/server/dqc/dqcConfig", model);
     }
     else if ( reqPath.equals( "/catalog.xml" ))
@@ -172,21 +180,99 @@ public class DqcServiceController extends AbstractController
     {
       InvCatalog catalog = this.createCatalogRepresentation( request.getContextPath(), request.getServletPath() );
       int i = HtmlWriter.getInstance().writeCatalog( response, (InvCatalogImpl) catalog, true );
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, i ) );
+      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, i ) );
 
       return null;
     }
-    
-    return null;
+    else
+    {
+      // Determine which handler to use for this request.
+      reqPath = reqPath.substring( 1 ); // Remove leading slash ('/').
+
+      // Check whether full path is the handler name
+      String handlerName = reqPath;
+      log.debug( "handleRequestInternal(): Attempt to find \"" + handlerName + "\" handler (1)." );
+      DqcServletConfigItem reqHandlerInfo = this.dqcConfig.findItem( handlerName );
+
+      // Check if DQC document is being requested, i.e., <handler name>.xml
+      if ( reqHandlerInfo == null && reqPath.endsWith( ".xml" ) )
+      {
+        handlerName = reqPath.substring( 0, reqPath.length() - 4 );
+        log.debug( "handleRequestInternal(): Attempt to find \"" + handlerName + "\" handler (2)." );
+        reqHandlerInfo = this.dqcConfig.findItem( handlerName );
+      }
+      // Check if handler name is first part of path before slash ('/').
+      if ( reqHandlerInfo == null && reqPath.indexOf( '/' ) != -1 )
+      {
+        handlerName = reqPath.substring( 0, reqPath.indexOf( '/' ) );
+        log.debug( "handleRequestInternal(): Attempt to find \"" + handlerName + "\" handler. (3)" );
+        reqHandlerInfo = this.dqcConfig.findItem( handlerName );
+      }
+      if ( reqHandlerInfo == null )
+      {
+        String tmpMsg = "No DQC Handler available for path <" + reqPath + ">.";
+        log.warn( "handleRequestInternal(): " + tmpMsg );
+        response.sendError( HttpServletResponse.SC_BAD_REQUEST, tmpMsg );
+        log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ) );
+        return null;
+        // @todo Loop through all config items checking if path starts with name.
+      }
+
+      // Try to create the requested DqcHandler.
+      log.debug( "handleRequestInternal(): creating handler for " + reqHandlerInfo.getHandlerClassName() );
+
+      DqcHandler reqHandler;
+      try
+      {
+        // ToDo LOOK Should hand in FileSource rather than path.
+        reqHandler = DqcHandler.factory( reqHandlerInfo, this.dqcConfigDir.getAbsolutePath() );
+      }
+      catch ( DqcHandlerInstantiationException e )
+      {
+        String tmpMsg = "Handler could not be constructed for " + reqHandlerInfo.getHandlerClassName() + ": " + e.getMessage();
+        log.error( "handleRequestInternal(): " + tmpMsg, e );
+        response.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, tmpMsg );
+        log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1 ) );
+        return null;
+      }
+
+      // Was the requested DqcHandler created?
+      if ( reqHandler != null )
+      {
+        // Hand the request to the just created DqcHandler.
+        log.debug( "handleRequestInternal(): handing query to handler" );
+        reqHandler.handleRequest( request, response );
+
+        return null;
+      }
+      else
+      {
+        // No handler available, throw ServletException.
+        String tmpMsg = "No handler for " + reqHandlerInfo.getHandlerClassName();
+        log.error( "handleRequestInternal(): " + tmpMsg );
+        response.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, tmpMsg );
+        log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 ) );
+        return null;
+      }
+    }
   }
 
   public InvCatalog createCatalogRepresentation( String contextPath, String servletPath )
   {
     String serviceName = "myDqcServlet";
+    URI baseUri;
+    try
+    {
+      baseUri = new URI( contextPath + servletPath + "/catalog.xml");
+    }
+    catch ( URISyntaxException e )
+    {
+      baseUri = null;
+    }
 
     // Create the catalog, service, and top-level dataset.
-    InvCatalogImpl catalog = new InvCatalogImpl( null, null, null );
-    InvService myService = new InvService( serviceName, ServiceType.RESOLVER.toString(), contextPath + servletPath, null, null );
+    InvCatalogImpl catalog = new InvCatalogImpl( null, null, baseUri );
+    InvService myService = new InvService( serviceName, ServiceType.RESOLVER.toString(), contextPath + servletPath +"/", null, null );
     InvDatasetImpl topDs = new InvDatasetImpl( null, "DqcServlet Available Datasets" );
     // OR ( null, this.mainConfig.getDqcServletTitle() );
     // Add service and top-level dataset to the catalog.
@@ -237,7 +323,7 @@ public class DqcServiceController extends AbstractController
       return null;
     }
 
-    if ( ! this.dqcConfigDir.mkdirs() )
+    if ( ! dqcConfigDir.mkdirs() )
     {
       log.error( "createDqcConfigDirectory(): Failed to create DqcConfig directory." );
       return null;
@@ -332,7 +418,7 @@ public class DqcServiceController extends AbstractController
             .append( "<preferences EXTERNAL_XML_VERSION='1.0'>\n" )
             .append( "  <root type='user'>\n" )
             .append( "    <map>\n" )
-            .append( "      <beanCollection key='config' class='thredds.cataloggen.servlet.CatGenTimerTask'>\n" )
+            .append( "      <beanCollection key='config' class='thredds.dqc.server.DqcServletConfigItem'>\n" )
             .append( "      </beanCollection>\n" )
             .append( "    </map>\n" )
             .append( "  </root>\n" )
