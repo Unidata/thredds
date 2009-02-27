@@ -43,8 +43,7 @@
       <dataset name="Latest NCEP NAM Alaska 11km" ID="Latest_NAM_Alaska_11km"
                urlPath="model/NCEP/NAM/Alaska_11km/latest.xml" />
     </dataset>
-    <dataset name="NCEP Rapid Update Cycle Model" ID="RUC">
-    </dataset>
+    <!-- dataset name="NCEP Rapid Update Cycle Model" ID="RUC" -->
     <dataset name="NWS National Digital Forecast Database" ID="NDFD">
       <dataset name="Latest NWS NDFD CONUS 5km" ID="model/NCEP/NDFD/CONUS_5km"
                urlPath="model/NCEP/NDFD/CONUS_5km/latest.xml" />

@@ -562,7 +562,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
 
   public boolean readDefinitionXML(String xmlLocation) throws IOException {
     File xml = new File(xmlLocation);
-    if (!xml.exists()) return false;
+    if (!xml.exists()) throw new FileNotFoundException(xmlLocation);
 
     InputStream is = new BufferedInputStream( new FileInputStream( xmlLocation));
     org.jdom.Document doc;
@@ -971,41 +971,43 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     }
   }
 
+
+  public static String fmrcDefinitionDir = "C:\\dev\\tds\\thredds\\tds\\src\\main\\webapp\\WEB-INF\\altContent\\idd\\thredds\\modelInventory/";
   public static String[] fmrcDefinitionFiles = {
-   "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-Alaska_191km.fmrcDefinition.xml",
-   "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-CONUS_80km.fmrcDefinition.xml",
-   "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-CONUS_191km.fmrcDefinition.xml",
-   "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-CONUS_95km.fmrcDefinition.xml", // */
-   "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-Global_2p5deg.fmrcDefinition.xml",
-   "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-Global_onedeg.fmrcDefinition.xml",
-   "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-Hawaii_160km.fmrcDefinition.xml",
-   "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-N_Hemisphere_381km.fmrcDefinition.xml",
-   "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-Puerto_Rico_191km.fmrcDefinition.xml",
+   fmrcDefinitionDir+"NCEP-GFS-Alaska_191km.fmrcDefinition.xml",
+   fmrcDefinitionDir+"NCEP-GFS-CONUS_80km.fmrcDefinition.xml",
+   fmrcDefinitionDir+"NCEP-GFS-CONUS_191km.fmrcDefinition.xml",
+   fmrcDefinitionDir+"NCEP-GFS-CONUS_95km.fmrcDefinition.xml", // */
+   fmrcDefinitionDir+"NCEP-GFS-Global_2p5deg.fmrcDefinition.xml",
+   fmrcDefinitionDir+"NCEP-GFS-Global_onedeg.fmrcDefinition.xml",
+   fmrcDefinitionDir+"NCEP-GFS-Hawaii_160km.fmrcDefinition.xml",
+   fmrcDefinitionDir+"NCEP-GFS-N_Hemisphere_381km.fmrcDefinition.xml",
+   fmrcDefinitionDir+"NCEP-GFS-Puerto_Rico_191km.fmrcDefinition.xml",
 
-    "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-Alaska_22km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-Alaska_45km-conduit.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-Alaska_45km-noaaport.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-Alaska_95km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-CONUS_20km-noaaport.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-CONUS_20km-selectsurface.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-CONUS_20km-surface.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-CONUS_40km-conduit.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-CONUS_40km-noaaport.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-CONUS_80km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-Polar_90km.fmrcDefinition.xml",
+    fmrcDefinitionDir+"NCEP-NAM-Alaska_22km.fmrcDefinition.xml",
+    fmrcDefinitionDir+"NCEP-NAM-Alaska_45km-conduit.fmrcDefinition.xml",
+    fmrcDefinitionDir+"NCEP-NAM-Alaska_45km-noaaport.fmrcDefinition.xml",
+    fmrcDefinitionDir+"NCEP-NAM-Alaska_95km.fmrcDefinition.xml",
+    fmrcDefinitionDir+"NCEP-NAM-CONUS_20km-noaaport.fmrcDefinition.xml",
+    fmrcDefinitionDir+"NCEP-NAM-CONUS_20km-selectsurface.fmrcDefinition.xml",
+    fmrcDefinitionDir+"NCEP-NAM-CONUS_20km-surface.fmrcDefinition.xml",
+    fmrcDefinitionDir+"NCEP-NAM-CONUS_40km-conduit.fmrcDefinition.xml",
+    fmrcDefinitionDir+"NCEP-NAM-CONUS_40km-noaaport.fmrcDefinition.xml",
+    fmrcDefinitionDir+"NCEP-NAM-CONUS_80km.fmrcDefinition.xml",
+    fmrcDefinitionDir+"NCEP-NAM-Polar_90km.fmrcDefinition.xml",
 
-    "R:/testdata/motherlode/grid/modelDefs/NCEP-RUC2-CONUS_20km-hybrid.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/modelDefs/NCEP-RUC2-CONUS_20km-pressure.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/modelDefs/NCEP-RUC2-CONUS_20km-surface.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/modelDefs/NCEP-RUC-CONUS_40km.fmrcDefinition.xml", //
-    "R:/testdata/motherlode/grid/modelDefs/NCEP-RUC-CONUS_80km.fmrcDefinition.xml",
+    fmrcDefinitionDir+"NCEP-RUC2-CONUS_20km-hybrid.fmrcDefinition.xml",
+    fmrcDefinitionDir+"NCEP-RUC2-CONUS_20km-pressure.fmrcDefinition.xml",
+    fmrcDefinitionDir+"NCEP-RUC2-CONUS_20km-surface.fmrcDefinition.xml",
+    fmrcDefinitionDir+"NCEP-RUC-CONUS_40km.fmrcDefinition.xml", //
+    fmrcDefinitionDir+"NCEP-RUC-CONUS_80km.fmrcDefinition.xml",
 
-    "R:/testdata/motherlode/grid/modelDefs/NCEP-DGEX-Alaska_12km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/modelDefs/NCEP-DGEX-CONUS_12km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-Global_0p5deg.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-Alaska_11km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-CONUS_12km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/modelDefs/NCEP-NDFD-CONUS_5km.fmrcDefinition.xml",
+    fmrcDefinitionDir+"NCEP-DGEX-Alaska_12km.fmrcDefinition.xml",
+    fmrcDefinitionDir+"NCEP-DGEX-CONUS_12km.fmrcDefinition.xml",
+    fmrcDefinitionDir+"NCEP-GFS-Global_0p5deg.fmrcDefinition.xml",
+    fmrcDefinitionDir+"NCEP-NAM-Alaska_11km.fmrcDefinition.xml",
+    fmrcDefinitionDir+"NCEP-NAM-CONUS_12km.fmrcDefinition.xml",
+    fmrcDefinitionDir+"NCEP-NDFD-CONUS_5km.fmrcDefinition.xml",
   };
 
   private static String[] exampleFiles = {

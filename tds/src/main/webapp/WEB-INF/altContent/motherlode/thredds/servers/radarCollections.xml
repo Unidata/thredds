@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="THREDDS Radar Server" version="1.0.1">
-
-  <service name="radarServer" serviceType="DQC" base="/thredds/radarServer/" />
+  <service name="radarServer" serviceType="QueryCapability" base="/thredds/radarServer/" />
   <dataset name="Radar Data">
-    <service name="radarServer" serviceType="DQC" base="/thredds/radarServer/" />
-
     <datasetScan name="NEXRAD Level II Radar from IDD" collectionType="TimeSeries" ID="nexrad/level2/IDD" path="nexrad/level2/IDD" location="/data/ldm/pub/native/radar/level2">
       <metadata inherited="true">
         <dataType>Radial</dataType>
@@ -179,7 +176,7 @@
     <datasetScan name="TDWR Level III Radar from IDD" collectionType="TimeSeries" ID="terminal/level3/IDD" path="terminal/level3/IDD" location="/data/ldm/pub/native/radar/level3/">
       <metadata inherited="true">
         <dataType>Radial</dataType>
-        <dataFormat>TDWR</dataFormat>
+        <dataFormat>NIDS</dataFormat>
         <serviceName>radarServer</serviceName>
       <documentation type="summary">The TDWR data feed provides roughly 20 radar products sent every 5-10 minutes from 154 sites over NOAAPORT broadcast. These "derived" products include base reflectivity and velocity</documentation>
       <documentation xlink:href="http://www.unidata.ucar.edu/data/radar.html" xlink:title="Unidata description of NOAAPORT radar data" />

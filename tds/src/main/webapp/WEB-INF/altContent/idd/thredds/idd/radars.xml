@@ -147,7 +147,7 @@
       <metadata inherited="true">
         <serviceName>radial</serviceName>
         <dataType>Radial</dataType>
-        <dataFormat>TDWR</dataFormat>
+        <dataFormat>NIDS</dataFormat>
       </metadata>
       <filter>
         <include wildcard="Level3*.nids" atomic="true" collection="false" />
@@ -314,7 +314,7 @@
             <documentation type="summary">Aggregation of all available data into a single TimeSeries Dataset</documentation>
           </metadata>
           <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
-            <aggregation dimName="time" type="joinExistingOne" recheckEvery="2 min">
+            <aggregation dimName="time" type="forecastModelRunSingleCollection" recheckEvery="2 min">
               <scan dateFormatMark="Level3_Composite_N0R_#yyyyMMdd_HHmm" location="/data/ldm/pub/native/radar/composite/grib2/N0R/" suffix=".grib2" subdirs="true" />
             </aggregation>
           </netcdf>

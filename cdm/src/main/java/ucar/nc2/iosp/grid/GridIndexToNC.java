@@ -47,6 +47,9 @@ import ucar.nc2.util.CancelTask;
 import ucar.grid.*;
 import ucar.grib.grib2.Grib2GridTableLookup;
 import ucar.grib.grib1.Grib1GridTableLookup;
+import ucar.grib.Index;
+import ucar.grib.TableLookup;
+import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 
@@ -714,7 +717,7 @@ public class GridIndexToNC {
    * @param lookup lookup table
    * @param fmr    FmrcCoordSys
    * @return name for the grid
-   */
+   *
   private String findVariableName(NetcdfFile ncfile, GridRecord gr,
                                   GridTableLookup lookup,
                                   FmrcCoordSys fmr) {
@@ -738,7 +741,34 @@ public class GridIndexToNC {
             + name + " or " + pname + " for file " + ncfile.getLocation());
 
     return null;
+  } */
+
+  private String findVariableName(NetcdfFile ncfile, GridRecord gr, GridTableLookup lookup, FmrcCoordSys fmr) {
+    // first lookup with name & vert name
+    String name = makeVariableName(gr, lookup);
+    if (fmr.hasVariable( name))
+      return name;
+
+    // now try just the name
+    String pname = lookup.getParameter(gr).getDescription();
+    if (fmr.hasVariable( pname))
+      return pname;
+
+    // try replacing the blanks
+    String nameWunder = StringUtil.replace(name, ' ', "_");
+    if (fmr.hasVariable( nameWunder))
+      return nameWunder;
+
+    String pnameWunder = StringUtil.replace(pname, ' ', "_");
+    if (fmr.hasVariable( pnameWunder))
+      return pnameWunder;
+
+    logger.warn("GridIndexToNC: FmrcCoordSys does not have the variable named ="+name+" or "+pname+" or "+
+            nameWunder+" or "+pnameWunder+" for file "+ncfile.getLocation());
+
+    return null;
   }
+
 
   /**
    * Comparable object for grid variable

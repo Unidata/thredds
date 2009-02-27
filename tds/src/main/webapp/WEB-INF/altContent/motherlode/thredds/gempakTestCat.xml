@@ -16,7 +16,7 @@
     <metadata inherited="true">
       <serviceName>fileServices</serviceName>
       <dataType>Grid</dataType>
-      <dataFormat>GEMPAK-1</dataFormat>
+      <dataFormat>GEMPAK</dataFormat>
     </metadata>
 
     <datasetScan name="GEMPAK Model Data" ID="GEMPAK/model"

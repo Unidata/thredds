@@ -306,6 +306,7 @@
         <xsd:extension base="DatasetType">
           <xsd:sequence>
             <xsd:element ref="fmrcInventory" minOccurs="0"/>
+            <xsd:element ref="addTimeCoverage" minOccurs="0"/>
           </xsd:sequence>
           <xsd:attribute name="path" type="xsd:string" use="required"/>
           <xsd:attribute name="runsOnly" type="xsd:boolean" />

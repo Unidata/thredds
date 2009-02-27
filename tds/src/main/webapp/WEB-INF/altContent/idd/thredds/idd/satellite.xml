@@ -15,6 +15,7 @@
         <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu" />
       </publisher>
     </metadata>
+
     <dataset name="NESDIS GOES Satellite Data">
       <metadata inherited="true">
         <dataType>Grid</dataType>
@@ -31,8 +32,14 @@
           <duration>7 days</duration>
         </timeCoverage>
       </metadata>
+
       <dataset name="3.9">
-        <datasetScan name="WEST-CONUS_4km" ID="SSEC/IDD-Satellite/3.9/WEST-CONUS_4km" path="satellite/3.9/WEST-CONUS_4km" dirLocation="/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/" filter=".*\.gini$" addDatasetSize="true" />
+        <datasetScan name="WEST-CONUS_4km" ID="SSEC/IDD-Satellite/3.9/WEST-CONUS_4km" path="satellite/3.9/WEST-CONUS_4km" location="/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/">
+          <filter>
+            <include wildcard="*.gini"/>
+          </filter>
+          <addDatasetSize/>
+        </datasetScan>
         <dataset name="WEST-CONUS_4km Aggregation" ID="SSEC/IDD-Satellite/3.9/WEST-CONUS_4km-Agg" urlPath="satellite/3.9/WEST-CONUS_4km">
           <serviceName>ncdods</serviceName>
           <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
@@ -42,14 +49,47 @@
             </aggregation>
           </netcdf>
         </dataset>
-        <datasetScan name="PR-REGIONAL_4km" ID="SSEC/IDD-Satellite/3.9/PR-REGIONAL_4km" path="satellite/3.9/PR-REGIONAL_4km" dirLocation="/data/ldm/pub/native/satellite/3.9/PR-REGIONAL_4km/" filter=".*\.gini$" addDatasetSize="true" />
-        <datasetScan name="HI-REGIONAL_4km" ID="SSEC/IDD-Satellite/3.9/HI-REGIONAL_4km" path="satellite/3.9/HI-REGIONAL_4km" dirLocation="/data/ldm/pub/native/satellite/3.9/HI-REGIONAL_4km/" filter=".*\.gini$" addDatasetSize="true" />
-        <datasetScan name="EAST-CONUS_4km" ID="SSEC/IDD-Satellite/3.9/EAST-CONUS_4km" path="satellite/3.9/EAST-CONUS_4km" dirLocation="/data/ldm/pub/native/satellite/3.9/EAST-CONUS_4km/" filter=".*\.gini$" addDatasetSize="true" />
-        <datasetScan name="AK-REGIONAL_8km" ID="SSEC/IDD-Satellite/3.9/AK-REGIONAL_8km" path="satellite/3.9/AK-REGIONAL_8km" dirLocation="/data/ldm/pub/native/satellite/3.9/AK-REGIONAL_8km/" filter=".*\.gini$" addDatasetSize="true" />
+        <datasetScan name="PR-REGIONAL_4km" ID="SSEC/IDD-Satellite/3.9/PR-REGIONAL_4km" path="satellite/3.9/PR-REGIONAL_4km" location="/data/ldm/pub/native/satellite/3.9/PR-REGIONAL_4km/">
+           <filter>
+            <include wildcard="*.gini"/>
+          </filter>
+          <addDatasetSize/>
+        </datasetScan>
+        <datasetScan name="HI-REGIONAL_4km" ID="SSEC/IDD-Satellite/3.9/HI-REGIONAL_4km" path="satellite/3.9/HI-REGIONAL_4km" location="/data/ldm/pub/native/satellite/3.9/HI-REGIONAL_4km/">
+           <filter>
+            <include wildcard="*.gini"/>
+          </filter>
+          <addDatasetSize/>
+        </datasetScan>
+        <datasetScan name="EAST-CONUS_4km" ID="SSEC/IDD-Satellite/3.9/EAST-CONUS_4km" path="satellite/3.9/EAST-CONUS_4km" location="/data/ldm/pub/native/satellite/3.9/EAST-CONUS_4km/" >
+          <filter>
+            <include wildcard="*.gini"/>
+          </filter>
+          <addDatasetSize/>
+        </datasetScan>
+        <datasetScan name="AK-REGIONAL_8km" ID="SSEC/IDD-Satellite/3.9/AK-REGIONAL_8km" path="satellite/3.9/AK-REGIONAL_8km" location="/data/ldm/pub/native/satellite/3.9/AK-REGIONAL_8km/">
+          <filter>
+            <include wildcard="*.gini"/>
+          </filter>
+          <addDatasetSize/>
+        </datasetScan>
       </dataset>
-      <datasetScan name="12.0" ID="SSEC/IDD-Satellite/12.0" path="satellite/12.0" dirLocation="/data/ldm/pub/native/satellite/12.0/" filter=".*\.gini$" addDatasetSize="true" />
-      <datasetScan name="13.3" ID="SSEC/IDD-Satellite/13.3" path="satellite/13.3" dirLocation="/data/ldm/pub/native/satellite/13.3/" filter=".*\.gini$" addDatasetSize="true" />
-      <datasetScan name="Cloud Top Pressure" ID="SSEC/IDD-Satellite/CTP" path="satellite/CTP" dirLocation="/data/ldm/pub/native/satellite/CTP/" filter=".*\.gini$" addDatasetSize="true">
+
+      <datasetScan name="12.0" ID="SSEC/IDD-Satellite/12.0" path="satellite/12.0" location="/data/ldm/pub/native/satellite/12.0/" >
+          <filter>
+            <include wildcard="*.gini"/>
+          </filter>
+          <addDatasetSize/>
+      </datasetScan>
+
+      <datasetScan name="13.3" ID="SSEC/IDD-Satellite/13.3" path="satellite/13.3" location="/data/ldm/pub/native/satellite/13.3/" >
+         <filter>
+            <include wildcard="*.gini"/>
+          </filter>
+          <addDatasetSize/>
+      </datasetScan>
+
+      <datasetScan name="Cloud Top Pressure" ID="SSEC/IDD-Satellite/CTP" path="satellite/CTP" location="/data/ldm/pub/native/satellite/CTP/">
         <metadata inherited="true">
           <geospatialCoverage>
             <northsouth>
@@ -72,8 +112,13 @@
             <variable name="CTP" vocabulary_name="" units="N/A">Cloud Top Pressure or Height</variable>
           </variables>
         </metadata>
-      </datasetScan>
-      <datasetScan name="Infrared" ID="SSEC/IDD-Satellite/IR" path="satellite/IR" dirLocation="/data/ldm/pub/native/satellite/IR/" filter=".*\.gini$" addDatasetSize="true">
+        <filter>
+           <include wildcard="*.gini"/>
+         </filter>
+         <addDatasetSize/>
+       </datasetScan>
+
+      <datasetScan name="Infrared" ID="SSEC/IDD-Satellite/IR" path="satellite/IR" location="/data/ldm/pub/native/satellite/IR/">
         <timeCoverage>
           <end>present</end>
           <duration>7 days</duration>
@@ -100,8 +145,14 @@
             <variable name="IR" vocabulary_name="" units="N/A">Imager 11 micron IR</variable>
           </variables>
         </metadata>
-      </datasetScan>
-      <datasetScan name="Lifted Index" ID="SSEC/IDD-Satellite/LI" path="satellite/LI" dirLocation="/data/ldm/pub/native/satellite/LI/" filter=".*\.gini$" addDatasetSize="true">
+        <filter>
+           <include wildcard="*.gini"/>
+         </filter>
+         <addDatasetSize/>
+
+       </datasetScan>
+
+      <datasetScan name="Lifted Index" ID="SSEC/IDD-Satellite/LI" path="satellite/LI" location="/data/ldm/pub/native/satellite/LI/">
         <metadata inherited="true">
           <geospatialCoverage>
             <northsouth>
@@ -124,8 +175,13 @@
             <variable name="LI" vocabulary_name="" units="N/A">Lifted Index LI</variable>
           </variables>
         </metadata>
-      </datasetScan>
-      <datasetScan name="Precipitable Water" ID="SSEC/IDD-Satellite/PW" path="satellite/PW" dirLocation="/data/ldm/pub/native/satellite/PW/" filter=".*\.gini$" addDatasetSize="true">
+        <filter>
+           <include wildcard="*.gini"/>
+         </filter>
+         <addDatasetSize/>
+       </datasetScan>
+
+      <datasetScan name="Precipitable Water" ID="SSEC/IDD-Satellite/PW" path="satellite/PW" location="/data/ldm/pub/native/satellite/PW/" >
         <metadata inherited="true">
           <geospatialCoverage>
             <northsouth>
@@ -148,16 +204,62 @@
             <variable name="PW" vocabulary_name="" units="N/A">Precipitable Water PW</variable>
           </variables>
         </metadata>
-      </datasetScan>
-      <datasetScan name="SOUND-3.98" ID="SSEC/IDD-Satellite/SOUND-3.98" path="satellite/SOUND-3.98" dirLocation="/data/ldm/pub/native/satellite/SOUND-3.98/" filter=".*\.gini$" addDatasetSize="true" />
-      <datasetScan name="SOUND-4.45" ID="SSEC/IDD-Satellite/SOUND-4.45" path="satellite/SOUND-4.45" dirLocation="/data/ldm/pub/native/satellite/SOUND-4.45/" filter=".*\.gini$" addDatasetSize="true" />
-      <datasetScan name="SOUND-6.51" ID="SSEC/IDD-Satellite/SOUND-6.51" path="satellite/SOUND-6.51" dirLocation="/data/ldm/pub/native/satellite/SOUND-6.51/" filter=".*\.gini$" addDatasetSize="true" />
-      <datasetScan name="SOUND-7.02" ID="SSEC/IDD-Satellite/SOUND-7.02" path="satellite/SOUND-7.02" dirLocation="/data/ldm/pub/native/satellite/SOUND-7.02/" filter=".*\.gini$" addDatasetSize="true" />
-      <datasetScan name="SOUND-7.43" ID="SSEC/IDD-Satellite/SOUND-7.43" path="satellite/SOUND-7.43" dirLocation="/data/ldm/pub/native/satellite/SOUND-7.43/" filter=".*\.gini$" addDatasetSize="true" />
-      <datasetScan name="SOUND-11.03" ID="SSEC/IDD-Satellite/SOUND-11.03" path="satellite/SOUND-11.03" dirLocation="/data/ldm/pub/native/satellite/SOUND-11.03/" filter=".*\.gini$" addDatasetSize="true" />
-      <datasetScan name="SOUND-14.06" ID="SSEC/IDD-Satellite/SOUND-14.06" path="satellite/SOUND-14.06" dirLocation="/data/ldm/pub/native/satellite/SOUND-14.06/" filter=".*\.gini$" addDatasetSize="true" />
-      <datasetScan name="SOUND-VIS" ID="SSEC/IDD-Satellite/SOUND-VIS" path="satellite/SOUND-VIS" dirLocation="/data/ldm/pub/native/satellite/SOUND-VIS/" filter=".*\.gini$" addDatasetSize="true" />
-      <dataset name="Surface Skin Temperature">
+        <filter>
+           <include wildcard="*.gini"/>
+         </filter>
+         <addDatasetSize/>
+       </datasetScan>
+
+      <datasetScan name="SOUND-3.98" ID="SSEC/IDD-Satellite/SOUND-3.98" path="satellite/SOUND-3.98" location="/data/ldm/pub/native/satellite/SOUND-3.98/" >
+        <filter>
+           <include wildcard="*.gini"/>
+         </filter>
+         <addDatasetSize/>
+       </datasetScan>
+      <datasetScan name="SOUND-4.45" ID="SSEC/IDD-Satellite/SOUND-4.45" path="satellite/SOUND-4.45" location="/data/ldm/pub/native/satellite/SOUND-4.45/" >
+        <filter>
+           <include wildcard="*.gini"/>
+         </filter>
+         <addDatasetSize/>
+       </datasetScan>
+       <datasetScan name="SOUND-6.51" ID="SSEC/IDD-Satellite/SOUND-6.51" path="satellite/SOUND-6.51" location="/data/ldm/pub/native/satellite/SOUND-6.51/" >
+        <filter>
+           <include wildcard="*.gini"/>
+         </filter>
+         <addDatasetSize/>
+       </datasetScan>
+       <datasetScan name="SOUND-7.02" ID="SSEC/IDD-Satellite/SOUND-7.02" path="satellite/SOUND-7.02" location="/data/ldm/pub/native/satellite/SOUND-7.02/" >
+         <filter>
+           <include wildcard="*.gini"/>
+         </filter>
+         <addDatasetSize/>
+       </datasetScan>
+       <datasetScan name="SOUND-7.43" ID="SSEC/IDD-Satellite/SOUND-7.43" path="satellite/SOUND-7.43" location="/data/ldm/pub/native/satellite/SOUND-7.43/" >
+        <filter>
+           <include wildcard="*.gini"/>
+         </filter>
+         <addDatasetSize/>
+       </datasetScan>
+       <datasetScan name="SOUND-11.03" ID="SSEC/IDD-Satellite/SOUND-11.03" path="satellite/SOUND-11.03" location="/data/ldm/pub/native/satellite/SOUND-11.03/" >
+        <filter>
+           <include wildcard="*.gini"/>
+         </filter>
+         <addDatasetSize/>
+       </datasetScan>
+       <datasetScan name="SOUND-14.06" ID="SSEC/IDD-Satellite/SOUND-14.06" path="satellite/SOUND-14.06" location="/data/ldm/pub/native/satellite/SOUND-14.06/" >
+        <filter>
+           <include wildcard="*.gini"/>
+         </filter>
+         <addDatasetSize/>
+       </datasetScan>
+       <datasetScan name="SOUND-VIS" ID="SSEC/IDD-Satellite/SOUND-VIS" path="satellite/SOUND-VIS" location="/data/ldm/pub/native/satellite/SOUND-VIS/" >
+         <filter>
+           <include wildcard="*.gini"/>
+         </filter>
+         <addDatasetSize/>
+       </datasetScan>
+
+       <dataset name="Surface Skin Temperature">
         <metadata inherited="true">
           <geospatialCoverage>
             <northsouth>
@@ -180,7 +282,13 @@
             <variable name="SFC_T" vocabulary_name="" units="N/A">Surface Skin Temperature</variable>
           </variables>
         </metadata>
-        <datasetScan name="SUPER-NATIONAL_1km" ID="SSEC/IDD-Satellite/SFC-T/SUPER-NATIONAL_1km" path="satellite/SFC-T/SUPER-NATIONAL_1km" dirLocation="/data/ldm/pub/native/satellite/SFC-T/SUPER-NATIONAL_1km/" filter=".*\.gini$" addDatasetSize="true" />
+        <datasetScan name="SUPER-NATIONAL_1km" ID="SSEC/IDD-Satellite/SFC-T/SUPER-NATIONAL_1km" path="satellite/SFC-T/SUPER-NATIONAL_1km" location="/data/ldm/pub/native/satellite/SFC-T/SUPER-NATIONAL_1km/" >
+          <filter>
+           <include wildcard="*.gini"/>
+          </filter>
+          <addDatasetSize/>
+        </datasetScan>
+
         <dataset name="SUPER-NATIONAL_1km Aggregation" ID="SSEC/IDD-Satellite/SFC-T/SUPER-NATIONAL_1km-Agg" urlPath="satellite/SFC-T/SUPER-NATIONAL_1km">
           <serviceName>ncdods</serviceName>
           <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
@@ -190,8 +298,10 @@
             </aggregation>
           </netcdf>
         </dataset>
+
       </dataset>
-      <datasetScan name="Visible" ID="SSEC/IDD-Satellite/VIS" path="satellite/VIS" dirLocation="/data/ldm/pub/native/satellite/VIS/" filter=".*\.gini$" addDatasetSize="true">
+
+      <datasetScan name="Visible" ID="SSEC/IDD-Satellite/VIS" path="satellite/VIS" location="/data/ldm/pub/native/satellite/VIS/">
         <metadata inherited="true">
           <geospatialCoverage>
             <northsouth>
@@ -214,8 +324,13 @@
             <variable name="VIS" vocabulary_name="" units="N/A">Imager Visible</variable>
           </variables>
         </metadata>
+        <filter>
+           <include wildcard="*.gini"/>
+        </filter>
+        <addDatasetSize/>
       </datasetScan>
-      <datasetScan name="Water Vapor" ID="SSEC/IDD-Satellite/WV" path="satellite/WV" dirLocation="/data/ldm/pub/native/satellite/WV/" filter=".*\.gini$" addDatasetSize="true">
+
+      <datasetScan name="Water Vapor" ID="SSEC/IDD-Satellite/WV" path="satellite/WV" location="/data/ldm/pub/native/satellite/WV/">
         <metadata inherited="true">
           <geospatialCoverage>
             <northsouth>
@@ -238,7 +353,12 @@
             <variable name="IR_WV" vocabulary_name="" units="N/A">Imager 6.7/6.5 micron IR (WV)</variable>
           </variables>
         </metadata>
+         <filter>
+           <include wildcard="*.gini"/>
+        </filter>
+        <addDatasetSize/>
       </datasetScan>
+      
     </dataset>
   </dataset>
 </catalog>
