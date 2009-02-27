@@ -74,8 +74,8 @@
    char ProjectionCoordinateSystem;<br>     ProjectionCoordinateSystem:_CoordinateAxes = &quot;time depth_below_surface y x&quot;;
      ProjectionCoordinateSystem:_CoordinateTransforms = &quot;Lambert_Conformal_Projection&quot;;
 </strong></pre>
-<h3><strong></strong><strong>_CoordinateSystemFor </strong></h3>
-<p>This is the way to assign an explicit Coordinate System to variables. The value of the attribute is a list of dimensions. A data variable that does not have an explicit _CoordinateSystem or CoordinateAxes attribute will be assigned this CoordinateSystem, if it contains exactly the listed dimensions.</p>
+<h3><strong></strong><strong>_CoordinateSystemFor<a name="_CoordinateSystemFor"></a> </strong></h3>
+<p>This is a way to assign explicit Coordinate System to a set of variables, without having to name each variable. The value of the attribute is a list of dimensions. A data variable that does not have an explicit _CoordinateSystem or CoordinateAxes attribute will be assigned this CoordinateSystem, if it contains exactly the listed dimensions.</p>
 <pre><strong>  &lt;variable name=&quot;coordSysVar4D&quot; type=&quot;int&quot; shape=&quot;&quot;&gt;
     &lt;attribute name=&quot;_CoordinateAxes&quot; value=&quot;x y zpos time&quot;/&gt;
     &lt;attribute name=&quot;_CoordinateTransforms&quot; value=&quot;zpos&quot;/&gt;

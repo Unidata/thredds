@@ -222,6 +222,11 @@ public abstract class Aggregation implements ProxyReader {
     datasetManager.addDirectoryScan(d);
   }
 
+  private Element mergeNcml = null;
+  public void setModifications(Element ncmlMods) {
+    this.mergeNcml = ncmlMods;
+  }
+
   /**
    * Get type of aggregation
    *
@@ -560,11 +565,26 @@ public abstract class Aggregation implements ProxyReader {
       long start = System.currentTimeMillis();
 
       NetcdfFile ncfile;
-      if (enhance == null || (enhance.isEmpty())) {
-        ncfile = NetcdfDataset.acquireFile(reader, null, cacheLocation, -1, cancelTask, spiObject);
+      // no enhance
+      if (enhance == null || enhance.isEmpty()) {
+        if (mergeNcml == null)
+          ncfile = NetcdfDataset.acquireFile(reader, null, cacheLocation, -1, cancelTask, spiObject);
+        else {
+          ncfile = NetcdfDataset.acquireDataset(reader, cacheLocation, enhance, -1, cancelTask, spiObject);
+          new NcMLReader().merge((NetcdfDataset) ncfile, mergeNcml);
+        }
 
+        // yes enhance
       } else {
-        ncfile = NetcdfDataset.acquireDataset(reader, cacheLocation, enhance, -1, cancelTask, spiObject);
+        if (mergeNcml == null) {
+          ncfile = NetcdfDataset.acquireDataset(reader, cacheLocation, enhance, -1, cancelTask, spiObject);
+        } else {
+          // wait till merge to enhance
+          NetcdfDataset ncd = NetcdfDataset.acquireDataset(reader, cacheLocation, null, -1, cancelTask, spiObject);
+          new NcMLReader().merge(ncd, mergeNcml);
+          ncd.enhance( enhance);
+          ncfile = ncd;
+        }
       }
 
       if (debugOpenFile) System.out.println(" acquire " + cacheLocation + " took " + (System.currentTimeMillis() - start));

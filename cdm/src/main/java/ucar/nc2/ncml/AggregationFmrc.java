@@ -91,6 +91,14 @@ public class AggregationFmrc extends AggregationOuterDimension {
   }
 
   @Override
+  protected void makeDatasets(CancelTask cancelTask) throws IOException {
+    super.makeDatasets(cancelTask);
+    for (Dataset ds : datasets) {
+      ds.enhance = EnumSet.of(NetcdfDataset.Enhance.CoordSystems); // ?? LOOK
+    }
+  }
+
+  @Override
   public void getDetailInfo(Formatter f) {
     super.getDetailInfo(f);
     if (fmrcDefinition != null)
@@ -462,7 +470,6 @@ public class AggregationFmrc extends AggregationOuterDimension {
     long size = section.computeSize();
     if (size == mainv.getSize())
       return read(mainv, cancelTask);
-
 
     Object spObj = mainv.getSPobject();
     if (spObj != null && spObj instanceof CacheVar) {

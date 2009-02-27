@@ -149,6 +149,15 @@
     <xsd:complexType>
       <xsd:sequence>
 
+        <!-- experimental - modify each dataset in aggregation  -->
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+          <xsd:element ref="group"/>
+          <xsd:element ref="dimension"/>
+          <xsd:element ref="variable"/>
+          <xsd:element ref="attribute"/>
+          <xsd:element ref="remove"/>
+        </xsd:choice>
+
         <xsd:element name="variableAgg" minOccurs="0" maxOccurs="unbounded">
           <xsd:complexType>
             <xsd:attribute name="name" type="xsd:string" use="required"/>

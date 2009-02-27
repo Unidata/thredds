@@ -36,6 +36,25 @@
 <blockquote>
   <p wrap="">The way that the cache is designed to work is that you get back a NetcdfFile object, which should then be used only in a single thread so that you dont need synchronization (&quot;thread-confinement&quot;), eg to answer a single request in a server. Until you release that NetcdfFile object, no one else can get it from the cache. If another request is made for that same NetcdfFile while its locked, a new NetcdfFile is opened.     And of course, the cache itself is thread-safe. So if you use it properly, you never have to do synchronization yourself.</p>
 </blockquote>
+<h3>NcML</h3>
+<p><strong>Q<a name="ncml" id="ncml"></a>: The NcML in my TDS is not working. What should I do?</strong></p>
+<blockquote>
+  <p>Generally its much easier to debug NcML outside of the TDS. Here are some guidelines on how to do that.</p>
+  <ol>
+      <li>Go to the TDS configuration catalog and extract the NcML:
+        <ol>
+          <li>Find the problem dataset. Inside the &lt;dataset&gt; element will be a &lt;netcdf&gt; element, that is the NcML aggregation. Cut and paste into a file, say its called <strong>test.ncml</strong> (it must have suffix <strong>ncml</strong> or <strong>xml</strong>).</li>
+          <li>Add the XML header to the top of it: &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</li>
+          <li>Remove the <strong>recheckEvery</strong> attribute if present on the &lt;scan&gt; element.</li>
+          <li>Make sure the datasets are available. If its an aggregation, a simple thing to do is to copy two or more of the files and put them in the same directory as test.ncml. Use a scan element or explicitly list them in a &lt;netcdf&gt; element, with the location attribute being the reletive path name.</li>
+        </ol>
+    </li>
+      <li>Open test.ncml in the viewer tab of ToolsUI, to check for NcML errors. You  now see directly what the modified dataset looks like. Modify test.ncml and ropen it until you get it right.</li>
+      <li>If its a grid dataset,open it in FeatureTypes/Grid tab to make sure you see grids, to check for complete coordinate system. If you dont see the grids you expect, the CoordSys tab might be helpful. It takes some expertise to understand <a href="../CDM/index.html">how Coordinate systems work</a>. When all else fails, follow the <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/">CF specification</a>.</li>
+      <li>Now put your changes back into TDS catalog and restart the server </li>
+      <li>Open your TDS catalog in ToolsUI/Thredds. Navigate to the dataset, and &quot;open as file&quot; or &quot;open as dataset&quot; (at bottom). You should see the same results as in steps 2 or 3, except with all of the files.</li>
+  </ol>
+</blockquote>
 <h3>Writing</h3>
 <p><strong>Q: Ok, so you read a lot of files, what about writing?</strong></p>
 <blockquote>

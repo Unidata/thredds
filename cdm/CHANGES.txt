@@ -6,6 +6,9 @@ Changes in version 4.0
 
  Release Details:
   35:
+    NcML: <aggregation> allows elements to modify each dataset in the aggregation, before it is aggregated.
+      this allows datasets to be made into grids for fmrc, for example.
+    Some improvements in NcML error messages.
     CFpointObs improved, handles gempak structures.
     JoinArray added, Join interface clarified
     Table.getStructureDataIterator(Cursor cursor, ...)

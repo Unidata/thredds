@@ -53,7 +53,7 @@ public class Evaluator {
    * @param ds look in this datset
    * @param key if starts with ":", replace with value of global attribute
    * @param errlog error messages here
-   * @return
+   * @return featureType, or null
    */
   static public FeatureType getFeatureType(NetcdfDataset ds, String key, Formatter errlog) {
     FeatureType ft = null;

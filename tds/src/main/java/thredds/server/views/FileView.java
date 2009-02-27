@@ -124,14 +124,14 @@ public class FileView extends AbstractView
         contentType = "text/html; charset=utf-8";
       else if ( filename.endsWith( ".xml" ) )
         contentType = "application/xml; charset=utf-8";
-      else if ( filename.endsWith( ".txt" ) || ( filename.endsWith( ".log" ) ) )
+      else if ( filename.endsWith( ".txt" ) || filename.endsWith( ".log" ) || filename.endsWith( ".out" ) )
         contentType = "text/plain; charset=utf-8";
       else if ( filename.indexOf( ".log." ) > 0 )
         contentType = "text/plain; charset=utf-8";
       else if ( filename.endsWith( ".nc" ) )
         contentType = "application/x-netcdf";
-      else
-        contentType = this.getServletContext().getMimeType( filename );
+      //else
+      //  contentType = this.getServletContext().getMimeType( filename );
 
       if ( contentType == null )
         contentType = "application/octet-stream";

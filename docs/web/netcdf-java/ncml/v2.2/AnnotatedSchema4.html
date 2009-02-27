@@ -184,15 +184,19 @@ files.</p>
 <h3><a name="aggregation"></a>aggregation Element</h3>
 <p>The aggregation element allows multiple datasets to be combined into a single logical dataset. There can only be one aggregation element in a netcdf element. </p>
 <pre>
-&lt;xsd:element name=&quot;aggregation&quot;&gt;<br>   &lt;xsd:complexType&gt;<br>    &lt;xsd:sequence&gt;
+&lt;xsd:element name=&quot;aggregation&quot;&gt;
+  &lt;xsd:complexType&gt;
+    &lt;xsd:sequence&gt;
+<strong>(1)</strong>  &lt;xsd:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
+      &lt;xsd:element ref=&quot;group&quot;/&gt;<br>      &lt;xsd:element ref=&quot;dimension&quot;/&gt;<br>      &lt;xsd:element ref=&quot;variable&quot;/&gt;<br>      &lt;xsd:element ref=&quot;attribute&quot;/&gt;<br>      &lt;xsd:element ref=&quot;remove&quot;/&gt;<br>     &lt;/xsd:choice&gt;
 
-<strong>(1)</strong>  &lt;xsd:element name=&quot;variableAgg&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
+<strong>(2)</strong>  &lt;xsd:element name=&quot;variableAgg&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
       &lt;xsd:complexType&gt;
        &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
       &lt;/xsd:complexType&gt;
      &lt;/xsd:element&gt;</pre>
-<pre><strong>(2)  </strong>&lt;xsd:element ref=&quot;promoteGlobalAttribute&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;<br><strong>(3)</strong>  &lt;xsd:element ref=&quot;cacheVariable&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;<strong><br>(4)</strong>  &lt;xsd:element ref=&quot;netcdf&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;</pre>
-<pre><strong>(5)</strong>  &lt;xsd:element name=&quot;scan&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
+<pre><strong>(3)  </strong>&lt;xsd:element ref=&quot;promoteGlobalAttribute&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;<br><strong>(4)</strong>  &lt;xsd:element ref=&quot;cacheVariable&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;<strong><br>(5)</strong>  &lt;xsd:element ref=&quot;netcdf&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;</pre>
+<pre><strong>(6)</strong>  &lt;xsd:element name=&quot;scan&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
       &lt;xsd:complexType&gt;
 <strong>(7)</strong>    &lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
 <strong>(8)</strong>    &lt;xsd:attribute name=&quot;regExp&quot; type=&quot;xsd:string&quot; /&gt;
@@ -229,12 +233,12 @@ files.</p>
 &lt;/xsd:element&gt;
 </pre>
 <ol>
+  <li>Elements <em><strong>inside</strong></em> the &lt;aggregation&gt; get  applied to each dataset in the aggregation, before it is aggregated.  Elements <em><strong>outside</strong></em> the &lt;aggregation&gt; gets apples to the aggregated  dataset.</li>
   <li>For <em><strong>joinNew</strong></em> aggregation types, each  variable to be aggregated must be explicitly listed in a <em><strong>variableAgg</strong></em> element. </li>
   <li>Optionally specify  global attributes to promote to a variable (outer aggregations only) with a <a href="#promoteGlobalAttribute">promoteGlobalAttribute</a> element. </li>
   <li>Specify which variables should be cached (outer aggregation only) with a <a href="#cacheVariable">cacheVariable</a> element. </li>
   <li>Nested <strong>netcdf</strong> datasets can be explicitly listed.</li>
   <li>Nested netcdf datasets can be implictly specified with a <strong>scan</strong> element.</li>
-  <li>n/a</li>
   <li>The scan directory <strong>location</strong>. </li>
   <li>If you specify a <strong>regExp</strong>, only files with whose full pathnames match the <a href="#regexp">regular expression</a> will be included.</li>
   <li>If you specify a <strong>suffix</strong>, only files with that ending will be included. You must not specify a <strong>regExp</strong> attribute. </li>
@@ -270,7 +274,7 @@ forecastOffsetMatcher:                     HHH#.grb#</pre>
    &lt;xsd:enumeration value=&quot;forecastModelRunCollection&quot;/&gt;<br>   &lt;xsd:enumeration value=&quot;forecastModelRunSingleCollection&quot;/&gt;
    &lt;xsd:enumeration value=&quot;joinExisting&quot;/&gt;
    &lt;xsd:enumeration value=&quot;joinNew&quot;/&gt;
-   <strong>&lt;xsd:enumeration value=&quot;tiled&quot;/&gt;</strong>
+   &lt;xsd:enumeration value=&quot;tiled&quot;/&gt;
    &lt;xsd:enumeration value=&quot;union&quot;/&gt;
   &lt;/xsd:restriction&gt;
  &lt;/xsd:simpleType&gt;</pre>
@@ -526,7 +530,7 @@ forecastOffsetMatcher:                     HHH#.grb#</pre>
 <hr WIDTH="100%">
 <p>&nbsp;</p>
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 20, 2008 
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Feb 27, 2009
 </address>
 <p>&nbsp;</p>
 </BODY>

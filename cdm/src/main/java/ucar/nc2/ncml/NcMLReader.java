@@ -460,6 +460,14 @@ public class NcMLReader {
 
   }
 
+  public void merge(NetcdfDataset targetDS, Element parentElem) throws IOException {
+    // the root group
+    readGroup(targetDS, targetDS, null, null, parentElem);
+    // transfer from groups to global containers
+    targetDS.finish();
+  }
+
+
   ////////////////////////////////////////////////////////////////////////
 
   /**
@@ -896,9 +904,13 @@ public class NcMLReader {
     }
 
     String type = varElem.getAttributeValue("type");
-    String shape = varElem.getAttributeValue("shape");
-
+    if (type == null)
+      throw new IllegalArgumentException("New variable ("+name+") must have datatype attribute");
     DataType dtype = DataType.getType(type);
+
+    String shape = varElem.getAttributeValue("shape");
+    if (shape == null)
+      throw new IllegalArgumentException("New variable("+name+")  must have shape attribute");
 
     Variable v;
 
@@ -1221,6 +1233,10 @@ public class NcMLReader {
         return null;
       if (debugAggDetail) System.out.println(" debugAgg: nested dirLocation = " + dirLocation);
     }
+
+    java.util.List<Element> attList = aggElem.getChildren("attribute", ncNS);
+    if (attList != null)
+      agg.setModifications(aggElem);
 
     return agg;
   }

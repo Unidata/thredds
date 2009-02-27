@@ -37,8 +37,14 @@ package ucar.nc2.ncml;
 import junit.framework.TestCase;
 
 import ucar.nc2.*;
+import ucar.nc2.dt.grid.GeoGrid;
+import ucar.nc2.dt.grid.GridDataset;
+import ucar.ma2.Range;
+import ucar.ma2.Section;
+import ucar.ma2.InvalidRangeException;
 
 import java.io.StringReader;
+import java.io.IOException;
 
 public class TestOffAggFmrcScan2 extends TestCase {
 
@@ -82,6 +88,17 @@ public class TestOffAggFmrcScan2 extends TestCase {
     System.out.println("file="+ncfile);
 
     ncfile.close();
+  }
+
+  public void testMargolis() throws IOException, InvalidRangeException {
+    GridDataset gridDataset = GridDataset.open( "D:/AStest/margolis/grib2ncdf.ncml" );
+    GeoGrid grid = gridDataset.findGridByName( "Turbulence_SIGMET_AIRMET" );
+    System.out.println("Grid= "+grid+" section="+ new Section(grid.getShape()));
+    System.out.println("CoordSys= "+grid.getCoordinateSystem());
+
+    GeoGrid subset = grid.subset(new Range(0, 0), new Range(1,1), null, null);
+
+    gridDataset.close();
   }
 
 

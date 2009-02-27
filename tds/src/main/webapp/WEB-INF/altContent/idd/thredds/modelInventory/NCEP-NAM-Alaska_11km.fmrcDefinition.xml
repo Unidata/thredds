@@ -29,7 +29,7 @@
     <variable name="Geopotential_height" vertCoord="4" />
     <variable name="Geopotential_height_zeroDegC_isotherm" />
     <variable name="MSLP_Eta_Reduction" />
-    <variable name="Maximum/Composite_radar_reflectivity" />
+    <variable name="MaximumComposite_radar_reflectivity" />
     <variable name="Maximum_temperature" vertCoord="3" />
     <variable name="Minimum_temperature" vertCoord="3" />
     <variable name="Parcel_lifted_index_to_500_hPa" vertCoord="5" />

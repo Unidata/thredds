@@ -59,7 +59,7 @@ import org.jdom.Element;
  * @author caron
  */
 public class AggregationExisting extends AggregationOuterDimension {
-  static private boolean debugPersist = true, debugPersistDetail = true;
+  static private boolean debugPersist = false, debugPersistDetail = false;
 
   public AggregationExisting(NetcdfDataset ncd, String dimName, String recheckS) {
     super(ncd, dimName, Aggregation.Type.joinExisting, recheckS);
@@ -77,6 +77,9 @@ public class AggregationExisting extends AggregationOuterDimension {
     // a little tricky to get the coord var cached if we have to read through the datasets on the buildCoords()
     String dimName = getDimensionName();
     Variable tcv = typical.findVariable(dimName);
+    if (tcv == null)
+      throw new IllegalArgumentException("AggregationExisting: no coordinate variable for agg dimension= "+dimName);
+
     CacheVar coordCacheVar = new CoordValueVar(dimName, tcv.getDataType(), tcv.getUnitsString());
     cacheList.add(coordCacheVar);  // coordinate variable is always cached
 
