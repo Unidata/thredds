@@ -3333,6 +3333,7 @@ public class ToolsUI extends JPanel {
         sbuff.append(" ");
       }
       String arguments = sbuff.toString();
+      System.out.println("ToolsUI arguments= '" + arguments);
 
       // LOOK - why does it have to start with http ??
       if (arguments.startsWith("http:")) {

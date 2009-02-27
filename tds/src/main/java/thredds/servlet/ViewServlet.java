@@ -41,10 +41,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -64,7 +61,7 @@ public class ViewServlet extends AbstractServlet {
   static {
     viewerList = new ArrayList<Viewer>();
     registerViewer( new IDV());
-    registerViewer( new Nj22ToolsUI());
+    registerViewer( new ToolsUI());
     registerViewer( new StaticView());
   }
 
@@ -192,7 +189,7 @@ public class ViewServlet extends AbstractServlet {
   protected String getPath() { return "view/";  }
   protected void makeDebugActions() { }
 
-  private static class Nj22ToolsUI implements Viewer {
+  private static class ToolsUI implements Viewer {
 
     public  boolean isViewable( InvDatasetImpl ds) {
       String id = ds.getID();
@@ -200,7 +197,14 @@ public class ViewServlet extends AbstractServlet {
     }
 
     public String  getViewerLinkHtml( InvDatasetImpl ds, HttpServletRequest req) {
-      return "<a href='" + req.getContextPath() + "/view/ToolsUI.jnlp?" + ds.getSubsetUrl()+"'>NetCDF-Java Tools (webstart)</a>";
+      String base = ds.getParentCatalog().getUriString();
+      if (base.endsWith(".html"))
+        base = base.substring(0, base.length()-5)+".xml";
+      Formatter query = new Formatter();
+      query.format("<a href='%s/view/ToolsUI.jnlp?", req.getContextPath());
+      query.format("catalog=http://%s:%s%s&amp;dataset=%s'>NetCDF-Java ToolsUI (webstart)</a>",
+        req.getServerName(), req.getServerPort(), base, ds.getID());
+      return query.toString();
     }
   }
 
