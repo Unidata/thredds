@@ -189,7 +189,7 @@ public class UnidataPointObs extends TableConfigurerImpl {
     // station table
     TableConfig stationTable = new TableConfig(Table.Type.Structure, "station");
     stationTable.isPsuedoStructure = true;
-    stationTable.featureType = ft;
+    stationTable.featureType = FeatureType.STATION;
     stationTable.dim = stationDim;
     stationTable.limit = Evaluator.getVariableName(ds, "number_stations", null);
 
@@ -210,7 +210,9 @@ public class UnidataPointObs extends TableConfigurerImpl {
 
     } else {
 
-      obsTable = new TableConfig(Table.Type.Structure, isPsuedo? obsDim.getName() : "record");
+      Table.Type obsType =  isForwardLinkedList || isBackwardLinkedList ? Table.Type.LinkedList : Table.Type.Contiguous;
+
+      obsTable = new TableConfig(obsType, isPsuedo? obsDim.getName() : "record");
       obsTable.isPsuedoStructure = isPsuedo;
       obsTable.structName = "record";
 
@@ -222,7 +224,7 @@ public class UnidataPointObs extends TableConfigurerImpl {
         obsTable.start = lastVar;
         obsTable.next = prevVar;
 
-      } else {
+      } else if (isContiguousList) {
         obsTable.start = firstVar;
       }
 
@@ -233,7 +235,6 @@ public class UnidataPointObs extends TableConfigurerImpl {
     obsTable.dim = obsDim;
     obsTable.time = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Time);
     obsTable.timeNominal = Evaluator.getVariableName(ds, "time_nominal", null);
-    obsTable.featureType = FeatureType.STATION;
 
     stationTable.addChild(obsTable);
     return stationTable;

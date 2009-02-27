@@ -138,6 +138,9 @@ public class DatasetHandler {
     if (log.isDebugEnabled()) log.debug("DatasetHandler wants " + reqPath);
     if (debugResourceControl) System.out.println("getNetcdfFile = " + ServletUtil.getRequest(req));
 
+    if (reqPath == null)
+      return null;
+    
     if (reqPath.startsWith("/"))
       reqPath = reqPath.substring(1);
 

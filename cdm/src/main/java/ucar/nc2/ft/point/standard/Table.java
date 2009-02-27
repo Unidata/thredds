@@ -211,6 +211,13 @@ public abstract class Table {
     }
 
     @Override
+    protected void showExtra(Formatter f) {
+      f.format("    struct=%s, dim=%s pseudo=%s%n", struct.getNameAndDimensions(), dim.getName(),
+              (struct instanceof StructurePseudo));
+    }
+
+
+    @Override
     public Variable findVariable(String axisName) {
       return struct.findVariable(axisName);
     }
@@ -241,6 +248,11 @@ public abstract class Table {
     }
 
     @Override
+    protected void showExtra(Formatter f) {
+      f.format("    ArrayStruct=%s, dim=%s%n", new Section(as.getShape()), dim.getName());
+    }
+
+    @Override
     public String showDimension() {
       return dim.getName();
     }
@@ -259,6 +271,11 @@ public abstract class Table {
       struct = (Structure) ds.findVariable(config.structName);
       if (struct == null)
         throw new IllegalStateException("Cant find Structure " + config.structName);
+    }
+
+    @Override
+    protected void showExtra(Formatter f) {
+      f.format("    ArrayStruct=%s%n", struct.getNameAndDimensions());
     }
 
     public Variable findVariable(String axisName) {
@@ -281,6 +298,11 @@ public abstract class Table {
       this.numRecords = config.numRecords;
     }
 
+    @Override
+    protected void showExtra(Formatter f) {
+      f.format("    start=%s, numRecords=%s%n", start, numRecords);
+    }
+
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
       StructureData parentStruct = cursor.getParentStructure();
       int firstRecno = parentStruct.getScalarInt(start);
@@ -298,6 +320,11 @@ public abstract class Table {
       super(ds, config);
       this.indexMap = config.indexMap;
       this.parentIndexName = config.parentIndex;
+    }
+
+    @Override
+    protected void showExtra(Formatter f) {
+      f.format("    parentIndexName=%s, indexMap.size=%d%n", parentIndexName, indexMap.size());
     }
 
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
@@ -361,6 +388,11 @@ public abstract class Table {
     }
 
     @Override
+    protected void showExtra(Formatter f) {
+      f.format("    StructureMembers=%s, dim=%s%n", sm.getName(), dim.getName());
+    }
+
+    @Override
     public String showDimension() {
       return dim.getName();
     }
@@ -414,6 +446,11 @@ public abstract class Table {
       struct = (Structure) ds.findVariable(config.structName);
     }
 
+    @Override
+    protected void showExtra(Formatter f) {
+      f.format("    struct=%s, nestedTableName=%s%n", struct.getNameAndDimensions(), nestedTableName);
+    }
+
     public Variable findVariable(String axisName) {
       return struct.findVariable(axisName);
     }
@@ -446,6 +483,11 @@ public abstract class Table {
       assert (this.sdata != null);
     }
 
+    @Override
+    protected void showExtra(Formatter f) {
+      f.format("    StructureData=%s%n", sdata.getName());
+    }
+
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
       return new SingletonStructureDataIterator(sdata);
     }
@@ -457,6 +499,10 @@ public abstract class Table {
     TableTop(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
       this.ds = ds;
+    }
+
+    @Override
+    protected void showExtra(Formatter f) {
     }
 
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
@@ -537,9 +583,8 @@ public abstract class Table {
 
     String s = indent(indent);
     String ftDesc = (featureType == null) ? "" : "featureType=" + featureType.toString();
-    //String joinDesc = (join2parent == null) ? "" : "joinType=" + join2parent.getClass().toString();
-//String dimDesc = (config.dim == null) ? "*" : config.dim.getName() + "=" + config.dim.getLength() + (config.dim.isUnlimited() ? " unlim" : "");
-    f.format("\n%sTable %s: type=%s %s\n", s, getName(), getClass().toString(), ftDesc);
+    f.format("%n%sTable %s: type=%s %s%n", s, getName(), getClass().toString(), ftDesc);
+    showExtra(f);
     showCoords(f, s);
     for (VariableSimpleIF v : cols) {
       f.format("%s  %s %s\n", s, v.getName(), getKind(v.getShortName()));
@@ -552,6 +597,8 @@ public abstract class Table {
     for (int i = 0; i < n; i++) sbuff.append(' ');
     return sbuff.toString();
   }
+
+  protected abstract void showExtra(Formatter f);
 
   private String getKind(String v) {
     if (v.equals(lat)) return "[Lat]";
