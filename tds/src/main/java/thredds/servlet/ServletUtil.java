@@ -465,7 +465,7 @@ public class ServletUtil
 
   static private FileCacheRaf fileCacheRaf;
   static public void setFileCache( FileCacheRaf fileCache) { fileCacheRaf = fileCache; }
-  static FileCacheRaf getFileCache( ) { return fileCacheRaf; }
+  static public FileCacheRaf getFileCache( ) { return fileCacheRaf; }
 
   /**
    * Write a file to the response stream.

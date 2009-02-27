@@ -46,11 +46,8 @@ import thredds.servlet.ThreddsConfig;
 import thredds.servlet.UsageLog;
 import thredds.server.config.TdsContext;
 import thredds.server.config.TdsConfigHtml;
-import thredds.server.views.InvCatalogXmlView;
 import thredds.catalog.*;
 
-import java.util.Map;
-import java.util.HashMap;
 import java.util.List;
 import java.net.URI;
 
@@ -229,7 +226,7 @@ public class RemoteCatalogServiceController extends AbstractController
       else
       {
         catalog.subset( dataset ); // subset the catalog
-        return new ModelAndView( new InvCatalogXmlView(), "catalog", catalog );
+        return new ModelAndView( "threddsInvCatXmlView", "catalog", catalog );
       }
     }
     else if ( catalogServiceRequest.getCommand().equals( Command.VALIDATE ) )

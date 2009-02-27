@@ -40,15 +40,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletContext;
 
-import thredds.servlet.ServletUtil;
 import thredds.servlet.HtmlWriter;
 import thredds.servlet.UsageLog;
 import thredds.server.config.TdsContext;
-import thredds.server.views.FileView;
-import thredds.catalog.InvCatalogImpl;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Handle /admin/content/
@@ -102,7 +98,7 @@ public class DirDisplayController extends AbstractController {
       return null;
     }
 
-    return new ModelAndView(new FileView(), "file", file);
+    return new ModelAndView( "threddsFileView", "file", file);
   }
 
 }

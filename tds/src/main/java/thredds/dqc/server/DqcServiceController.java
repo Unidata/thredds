@@ -3,7 +3,6 @@ package thredds.dqc.server;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.ModelAndView;
 import thredds.server.config.TdsContext;
-import thredds.server.views.InvCatalogXmlView;
 import thredds.servlet.UsageLog;
 import thredds.servlet.ThreddsConfig;
 import thredds.servlet.HtmlWriter;
@@ -174,7 +173,7 @@ public class DqcServiceController extends AbstractController
     else if ( reqPath.equals( "/catalog.xml" ))
     {
       InvCatalog catalog = this.createCatalogRepresentation( request.getContextPath(), request.getServletPath() );
-      return new ModelAndView( new InvCatalogXmlView(), "catalog", catalog );
+      return new ModelAndView( "threddsInvCatXmlView", "catalog", catalog );
     }
     else if ( reqPath.equals( "/catalog.html" ) )
     {

@@ -44,12 +44,9 @@ import javax.servlet.ServletContext;
 
 import thredds.servlet.ServletUtil;
 import thredds.server.config.TdsContext;
-import thredds.server.views.FileView;
 
 import java.io.File;
 import java.io.IOException;
-
-import ucar.nc2.ncml.AggregationFmrc;
 
 /**
  * _more_
@@ -119,7 +116,7 @@ public class RootController extends AbstractController implements LastModified
       tdsContext.getDefaultRequestDispatcher().forward( req, res );
       return null;
     }
-    return new ModelAndView( new FileView(), "file", file );
+    return new ModelAndView( "threddsFileView", "file", file );
   }
 
   public long getLastModified( HttpServletRequest req )

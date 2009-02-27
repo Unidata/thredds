@@ -46,8 +46,6 @@ import thredds.servlet.DataRootHandler;
 import thredds.servlet.HtmlWriter;
 import thredds.servlet.UsageLog;
 import thredds.server.config.TdsContext;
-import thredds.server.views.FileView;
-import thredds.server.views.InvCatalogXmlView;
 import thredds.catalog.InvCatalog;
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvDatasetImpl;
@@ -55,8 +53,6 @@ import thredds.catalog.InvDataset;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.List;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -215,7 +211,7 @@ public class LocalCatalogServiceController extends AbstractController
         // return constructModelForCatalogView( catalog, this.htmlView );
       }
       else
-        return new ModelAndView( new InvCatalogXmlView(), "catalog", catalog );
+        return new ModelAndView( "threddsInvCatXmlView", "catalog", catalog );
     }
     else if ( catalogServiceRequest.getCommand().equals( Command.SUBSET ))
     {
@@ -239,7 +235,7 @@ public class LocalCatalogServiceController extends AbstractController
       else
       {
         catalog.subset( dataset ); // subset the catalog
-        return new ModelAndView( new InvCatalogXmlView(), "catalog", catalog );
+        return new ModelAndView( "threddsInvCatXmlView", "catalog", catalog );
       }
     }
     else
@@ -268,7 +264,7 @@ public class LocalCatalogServiceController extends AbstractController
     // If request doesn't match a known catalog, look for a public document.
     File publicFile = tdsContext.getPublicDocFileSource().getFile( path );
     if ( publicFile != null )
-      return new ModelAndView( new FileView(), "file", publicFile );
+      return new ModelAndView( "threddsFileView", "file", publicFile );
 
     // If request doesn't match a public document, hand to default.
     tdsContext.getDefaultRequestDispatcher().forward( request, response );

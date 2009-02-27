@@ -46,6 +46,7 @@ import java.io.IOException;
 
 import thredds.servlet.Debug;
 import thredds.servlet.UsageLog;
+import thredds.servlet.ServletUtil;
 import ucar.nc2.util.cache.FileCacheRaf;
 import ucar.nc2.util.IO;
 
@@ -75,6 +76,14 @@ public class FileView extends AbstractView
 
   private FileCacheRaf fileCacheRaf;
   public void setFileCacheRaf( FileCacheRaf fileCacheRaf) { this.fileCacheRaf = fileCacheRaf; }
+
+  public void init()
+  {
+    if ( this.fileCacheRaf == null )
+      this.fileCacheRaf = ServletUtil.getFileCache();
+    if ( this.fileCacheRaf == null )
+      throw new IllegalStateException( "FileCacheRaf not configured.");
+  }
 
   protected void renderMergedOutputModel( Map model, HttpServletRequest req, HttpServletResponse res )
           throws Exception
@@ -130,8 +139,8 @@ public class FileView extends AbstractView
         contentType = "text/plain; charset=utf-8";
       else if ( filename.endsWith( ".nc" ) )
         contentType = "application/x-netcdf";
-      //else
-      //  contentType = this.getServletContext().getMimeType( filename );
+      else
+        contentType = this.getServletContext().getMimeType( filename );
 
       if ( contentType == null )
         contentType = "application/octet-stream";
