@@ -118,6 +118,9 @@ public class WcsRequestParser
       else if ( operation.equals( Request.Operation.DescribeCoverage ) )
       {
         String coverageIdListParam = ServletUtil.getParameterIgnoreCase( req, "Coverage" );
+        if ( coverageIdListParam == null )
+          throw new WcsException( WcsException.Code.MissingParameterValue, "Coverage", "GetCapabilities request requires \"Coverage\" parameter." );
+
         List<String> coverageIdList = splitCommaSeperatedList( coverageIdListParam );
 
         return new DescribeCoverage( operation, version, wcsDataset, coverageIdList);
