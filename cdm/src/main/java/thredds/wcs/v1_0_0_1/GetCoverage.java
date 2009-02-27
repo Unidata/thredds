@@ -130,14 +130,14 @@ public class GetCoverage extends WcsRequest
     // Assign and validate FORMAT parameter.
     if ( format == null )
     {
-      log.error( "GetCoverage(): FORMAT parameter required.");
+      log.debug( "GetCoverage(): FORMAT parameter required.");
       throw new WcsException( WcsException.Code.InvalidParameterValue, "FORMAT", "FORMAT parameter required.");
     }
 
     if ( ! this.coverage.isSupportedCoverageFormat( format ))
     {
       String msg = "Unsupported format value [" + format + "].";
-      log.error( "GetCoverage(): " + msg );
+      log.debug( "GetCoverage(): " + msg );
       throw new WcsException( WcsException.Code.InvalidParameterValue, "FORMAT", msg );
     }
     this.format = format;
@@ -156,7 +156,7 @@ public class GetCoverage extends WcsRequest
           msgB.append( verticalRange );
         msgB.append( "].");
 
-        log.error( "GetCoverage(): " + msgB );
+        log.debug( "GetCoverage(): " + msgB );
         throw new WcsException( WcsException.Code.InvalidParameterValue, "FORMAT", msgB.toString() );
       }
     }

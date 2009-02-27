@@ -78,7 +78,7 @@ public class WcsRequestParser
       gridDataset = openDataset( req, res );
       if ( gridDataset == null )
       {
-        log.error( "parseRequest(): Failed to open dataset (???).");
+        log.debug( "parseRequest(): Failed to open dataset (???).");
         throw new WcsException( WcsException.Code.CoverageNotDefined, "", "Failed to open dataset.");
       }
       WcsDataset wcsDataset = new WcsDataset( gridDataset, datasetPath);
@@ -91,7 +91,8 @@ public class WcsRequestParser
       }
       catch ( IllegalArgumentException e )
       {
-        throw new WcsException( WcsException.Code.InvalidParameterValue, "Request", "Unsupported operation request <" + requestParam + ">." );
+        log.debug( "parseRequest(): Unsupported operation request [" + requestParam + "].");
+        throw new WcsException( WcsException.Code.InvalidParameterValue, "Request", "Unsupported operation request [" + requestParam + "]." );
       }
 
       // Handle "GetCapabilities" request.
@@ -109,7 +110,8 @@ public class WcsRequestParser
         }
         catch ( IllegalArgumentException e )
         {
-          throw new WcsException( WcsException.Code.InvalidParameterValue, "Section", "Unsupported GetCapabilities section requested <" + sectionParam + ">." );
+          log.debug( "parseRequest(): Unsupported GetCapabilities section requested [" + sectionParam + "]." );
+          throw new WcsException( WcsException.Code.InvalidParameterValue, "Section", "Unsupported GetCapabilities section requested [" + sectionParam + "]." );
         }
 
         return new GetCapabilities( operation, version, wcsDataset, serverURI, section, updateSequenceParam, null);
@@ -119,11 +121,12 @@ public class WcsRequestParser
       {
         String coverageIdListParam = ServletUtil.getParameterIgnoreCase( req, "Coverage" );
         if ( coverageIdListParam == null )
+        {
+          log.debug( "parseRequest(): GetCapabilities request requires \"Coverage\" parameter." );
           throw new WcsException( WcsException.Code.MissingParameterValue, "Coverage", "GetCapabilities request requires \"Coverage\" parameter." );
+        }
 
-        List<String> coverageIdList = splitCommaSeperatedList( coverageIdListParam );
-
-        return new DescribeCoverage( operation, version, wcsDataset, coverageIdList);
+        return new DescribeCoverage( operation, version, wcsDataset, splitCommaSeperatedList( coverageIdListParam ));
       }
       // Handle "GetCoverage" request.
       else if ( operation.equals( Request.Operation.GetCoverage ) )
@@ -148,8 +151,11 @@ public class WcsRequestParser
                                 format);
       }
       else
-        throw new WcsException( WcsException.Code.InvalidParameterValue, "Request", "Invalid requested operation <" + requestParam + ">." );
-    }
+      {
+        log.debug( "parseRequest(): Invalid request operation [" + requestParam + "].");
+      }
+        throw new WcsException( WcsException.Code.InvalidParameterValue, "Request", "Invalid requested operation [" + requestParam + "]." );
+      }
     catch ( WcsException e )
     {
       gridDataset.close();
@@ -166,7 +172,7 @@ public class WcsRequestParser
     String[] bboxSplit = bboxString.split( "," );
     if ( bboxSplit.length != 4 )
     {
-      log.error( "parseBoundingBox(): BBOX <" + bboxString + "> not limited to X and Y." );
+      log.debug( "parseBoundingBox(): BBOX <" + bboxString + "> not limited to X and Y." );
       throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", "BBOX <" + bboxString + "> has more values <" + bboxSplit.length + "> than expected <4>." );
     }
     double minx = Double.parseDouble( bboxSplit[0] );
@@ -199,7 +205,7 @@ public class WcsRequestParser
     {
       if ( time.indexOf( "," ) != -1 )
       {
-        log.error( "parseTime(): Unsupported time parameter (list) <" + time + ">." );
+        log.debug( "parseTime(): Unsupported time parameter (list) <" + time + ">." );
         throw new WcsException( WcsException.Code.InvalidParameterValue, "TIME",
                                 "Not currently supporting time list." );
         //String[] timeList = time.split( "," );
@@ -210,7 +216,7 @@ public class WcsRequestParser
         String[] timeRange = time.split( "/" );
         if ( timeRange.length != 2 )
         {
-          log.error( "parseTime(): Unsupported time parameter (time range with resolution) <" + time + ">." );
+          log.debug( "parseTime(): Unsupported time parameter (time range with resolution) <" + time + ">." );
           throw new WcsException( WcsException.Code.InvalidParameterValue, "TIME", "Not currently supporting time range with resolution." );
         }
         dateRange = new DateRange( new DateType( timeRange[0], null, null ),
@@ -224,8 +230,7 @@ public class WcsRequestParser
     }
     catch ( ParseException e )
     {
-      log.error( "parseTime(): Failed to parse time parameter <" + time + ">: " + e.getMessage() );
-
+      log.debug( "parseTime(): Failed to parse time parameter <" + time + ">: " + e.getMessage() );
       throw new WcsException( WcsException.Code.InvalidParameterValue, "TIME",
                               "Invalid time format <" + time + ">." );
     }
@@ -243,7 +248,7 @@ public class WcsRequestParser
 
     if ( rangeSetAxisSelectionString.indexOf( "," ) != -1 )
     {
-      log.error( "parseRangeSetAxisValues(): Vertical value list not supported <" + rangeSetAxisSelectionString + ">." );
+      log.debug( "parseRangeSetAxisValues(): Vertical value list not supported <" + rangeSetAxisSelectionString + ">." );
       throw new WcsException( WcsException.Code.InvalidParameterValue, "Vertical", "Not currently supporting list of Vertical values (just range, i.e., \"min/max\")." );
     }
     else if ( rangeSetAxisSelectionString.indexOf( "/" ) != -1 )
@@ -251,7 +256,7 @@ public class WcsRequestParser
       String[] rangeSplit = rangeSetAxisSelectionString.split( "/" );
       if ( rangeSplit.length != 2 )
       {
-        log.error( "parseRangeSetAxisValues(): Unsupported Vertical value (range with resolution) <" + rangeSetAxisSelectionString + ">." );
+        log.debug( "parseRangeSetAxisValues(): Unsupported Vertical value (range with resolution) <" + rangeSetAxisSelectionString + ">." );
         throw new WcsException( WcsException.Code.InvalidParameterValue, "Vertical", "Not currently supporting vertical range with resolution." );
       }
       double minValue = 0;
@@ -263,12 +268,12 @@ public class WcsRequestParser
       }
       catch ( NumberFormatException e )
       {
-        log.error( "parseRangeSetAxisValues(): Failed to parse Vertical range min or max <" + rangeSetAxisSelectionString + ">: " + e.getMessage() );
+        log.debug( "parseRangeSetAxisValues(): Failed to parse Vertical range min or max <" + rangeSetAxisSelectionString + ">: " + e.getMessage() );
         throw new WcsException( WcsException.Code.InvalidParameterValue, "Vertical", "Failed to parse Vertical range min or max." );
       }
       if ( minValue > maxValue )
       {
-        log.error( "parseRangeSetAxisValues(): Vertical range must be \"min/max\" <" + rangeSetAxisSelectionString + ">." );
+        log.debug( "parseRangeSetAxisValues(): Vertical range must be \"min/max\" <" + rangeSetAxisSelectionString + ">." );
         throw new WcsException( WcsException.Code.InvalidParameterValue, "Vertical", "Vertical range must be \"min/max\"." );
       }
       range = new WcsCoverage.VerticalRange( minValue, maxValue, 1 );
@@ -282,7 +287,7 @@ public class WcsRequestParser
       }
       catch ( NumberFormatException e )
       {
-        log.error( "parseRangeSetAxisValues(): Failed to parse Vertical value <" + rangeSetAxisSelectionString + ">: " + e.getMessage() );
+        log.debug( "parseRangeSetAxisValues(): Failed to parse Vertical value <" + rangeSetAxisSelectionString + ">: " + e.getMessage() );
         throw new WcsException( WcsException.Code.InvalidParameterValue, "Vertical", "Failed to parse Vertical value." );
       }
       range = new WcsCoverage.VerticalRange( value, 1 );
@@ -290,7 +295,7 @@ public class WcsRequestParser
 
     if ( range == null )
     {
-      log.error( "parseRangeSetAxisValues(): Invalid Vertical range requested <" + rangeSetAxisSelectionString + ">." );
+      log.debug( "parseRangeSetAxisValues(): Invalid Vertical range requested <" + rangeSetAxisSelectionString + ">." );
       throw new WcsException( WcsException.Code.InvalidParameterValue, "Vertical", "Invalid Vertical range requested." );
     }
 
@@ -303,7 +308,7 @@ public class WcsRequestParser
     // Assign and validate FORMAT parameter.
     if ( formatString == null )
     {
-      log.error( "GetCoverage(): FORMAT parameter required." );
+      log.debug( "parseFormat(): FORMAT parameter required." );
       throw new WcsException( WcsException.Code.InvalidParameterValue, "FORMAT", "FORMAT parameter required." );
     }
     Request.Format format;
@@ -314,7 +319,7 @@ public class WcsRequestParser
     catch ( IllegalArgumentException e )
     {
       String msg = "Unknown format value [" + formatString + "].";
-      log.error( "GetCoverage(): " + msg );
+      log.debug( "parseFormat(): " + msg );
       throw new WcsException( WcsException.Code.InvalidParameterValue, "FORMAT", msg );
     }
     return format;
@@ -345,7 +350,7 @@ public class WcsRequestParser
     }
     catch ( IOException e )
     {
-      log.warn( "WcsRequestParser(): Failed to open dataset <" + datasetPath + ">: " + e.getMessage() );
+      log.debug( "WcsRequestParser(): Failed to open dataset <" + datasetPath + ">: " + e.getMessage() );
       throw new WcsException( "Failed to open dataset, \"" + datasetPath + "\"." );
     }
     if ( dataset == null )
