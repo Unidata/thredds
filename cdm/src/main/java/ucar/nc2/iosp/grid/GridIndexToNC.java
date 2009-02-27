@@ -42,6 +42,8 @@ import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.fmr.FmrcCoordSys;
+import ucar.nc2.dt.fmrc.FmrcDefinition;
+import ucar.nc2.dt.fmrc.FmrcInventory;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
 import ucar.grid.*;
@@ -262,7 +264,8 @@ public class GridIndexToNC {
       GridHorizCoordSys hcs = (GridHorizCoordSys) hcsHash.get(
           gribRecord.getGridDefRecordId());
       String name = makeVariableName(gribRecord, lookup);
-      GridVariable pv = (GridVariable) hcs.varHash.get(name);  // combo gds, param name and level name
+      // combo gds, param name and level name
+      GridVariable pv = (GridVariable) hcs.varHash.get(name);
       if (null == pv) {
         String pname =
             lookup.getParameter(gribRecord).getDescription();
@@ -385,8 +388,7 @@ public class GridIndexToNC {
    * @throws IOException problem reading file
    */
   private void makeDenseCoordSys(NetcdfFile ncfile, GridTableLookup lookup,
-                                 CancelTask cancelTask)
-      throws IOException {
+    CancelTask cancelTask) throws IOException {
 
     ArrayList timeCoords = new ArrayList();
     ArrayList vertCoords = new ArrayList();
@@ -576,7 +578,7 @@ public class GridIndexToNC {
    * @throws IOException problem reading from file
    */
   private void makeDefinedCoordSys(NetcdfFile ncfile,
-                                   GridTableLookup lookup, FmrcCoordSys fmr) throws IOException {
+    GridTableLookup lookup, FmrcCoordSys fmr) throws IOException {
 
     ArrayList timeCoords = new ArrayList();
     ArrayList vertCoords = new ArrayList();
@@ -743,23 +745,39 @@ public class GridIndexToNC {
     return null;
   } */
 
-  private String findVariableName(NetcdfFile ncfile, GridRecord gr, GridTableLookup lookup, FmrcCoordSys fmr) {
+  private String findVariableName(NetcdfFile ncfile, GridRecord gr,
+    GridTableLookup lookup, FmrcCoordSys fmr) {
+
+    FmrcDefinition  fdrs = (FmrcDefinition) fmr;
+    List<FmrcDefinition.RunSeq> rs =  fdrs.getRunSequences();
+    System.out.println( "Sequence vars" );
+    for (FmrcDefinition.RunSeq runSeq : rs) {
+      System.out.println( runSeq.getName() );
+      for (FmrcDefinition.Grid grid : runSeq.vars) {
+        System.out.println( grid.name );
+      }
+
+    }
     // first lookup with name & vert name
     String name = makeVariableName(gr, lookup);
+    System.out.println( "name ="+ name );
     if (fmr.hasVariable( name))
       return name;
 
     // now try just the name
     String pname = lookup.getParameter(gr).getDescription();
+    System.out.println( "pname ="+ pname );
     if (fmr.hasVariable( pname))
       return pname;
 
     // try replacing the blanks
     String nameWunder = StringUtil.replace(name, ' ', "_");
+    System.out.println( "nameWunder ="+ nameWunder );
     if (fmr.hasVariable( nameWunder))
       return nameWunder;
 
     String pnameWunder = StringUtil.replace(pname, ' ', "_");
+    System.out.println( "pnameWunder ="+ pnameWunder );
     if (fmr.hasVariable( pnameWunder))
       return pnameWunder;
 
