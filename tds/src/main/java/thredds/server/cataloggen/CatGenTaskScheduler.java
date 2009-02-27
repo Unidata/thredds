@@ -65,14 +65,14 @@ public class CatGenTaskScheduler
     this.resultDir = resultDir;
   }
   
-  void start()
+  void start( File altResultsDir )
   {
     for ( CatGenTaskConfig curTask : config.getTaskInfoList())
     {
       if ( curTask.getPeriodInMinutes() > 0
            && ! scheduler.isShutdown() )
       {
-        CatGenTaskRunner catGenTaskRunner = new CatGenTaskRunner( curTask, configDir, resultDir );
+        CatGenTaskRunner catGenTaskRunner = new CatGenTaskRunner( curTask, configDir, resultDir, altResultsDir );
         scheduledTasks.add(
                 scheduler.scheduleAtFixedRate( catGenTaskRunner,
                                                curTask.getDelayInMinutes() * 60,

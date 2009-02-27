@@ -58,11 +58,15 @@ public class CatGenTaskRunner implements Runnable
   private final File resultFile;
 
 
-  CatGenTaskRunner( CatGenTaskConfig taskConfig, File configDir, File resultDir )
+  CatGenTaskRunner( CatGenTaskConfig taskConfig, File configDir, File resultDir, File altResultsDir )
   {
     this.taskConfig = taskConfig;
     this.configFile = new File( configDir, taskConfig.getConfigDocName());
-    this.resultFile = new File( resultDir, taskConfig.getResultFileName());
+    String resultFileName = taskConfig.getResultFileName();
+    if ( resultFileName.startsWith( "/" ))
+      this.resultFile = new File( altResultsDir, resultFileName.substring( 1 ));
+    else
+      this.resultFile = new File( resultDir, resultFileName);
   }
 
   /**

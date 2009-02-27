@@ -11,11 +11,11 @@
         class="thredds.server.cataloggen.CatGenController"
           init-method="init" destroy-method="destroy" >
     <property name="tdsContext" ref="tdsContext"/>
-    <property name="catGenContext" ref="catGenContext"/>
-  </bean>
+    <property name="catGenConfigDirName" value="cataloggen/config"/>
+    <property name="catGenConfigFileName" value="config.xml"/>
+    <property name="catGenResultsDirName" value="cataloggen/catalogs"/>
 
-  <bean id="tdsContext" class="thredds.server.config.TdsContext"/>
-  <bean id="catGenContext" class="thredds.server.cataloggen.CatGenContext"/>
+  </bean>
 
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">

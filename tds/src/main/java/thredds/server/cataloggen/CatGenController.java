@@ -34,12 +34,13 @@ package thredds.server.cataloggen;
 
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.context.WebApplicationContext;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 
 import thredds.server.config.TdsContext;
 import thredds.servlet.UsageLog;
@@ -56,84 +57,118 @@ public class CatGenController extends AbstractController
   private static org.slf4j.Logger log =
           org.slf4j.LoggerFactory.getLogger( CatGenController.class );
 
+  private TdsContext tdsContext;
   private boolean allow;
-  private String servletName = "cataloggen";
-  private String catGenConfigDirName = "config";
-  private String catGenConfigFileName = "config.xml";
-  private String catGenResultCatalogsDirName = "catalogs";
 
-  private CatGenConfig config;
-  private CatGenConfigParser configParser;
+  private String catGenConfigDirName;
+  private File catGenConfigDir;
+  private String catGenConfigFileName;
+  private File catGenConfigFile;
+  private String catGenResultsDirName;
+  private File catGenResultsDir;
+
+  private CatGenConfig catGenConfig;
+  private CatGenConfigParser catGenConfigParser;
 
   private CatGenTaskScheduler scheduler;
 
-  private TdsContext tdsContext;
-  private CatGenContext catGenContext;
-
   public void setTdsContext( TdsContext tdsContext ) { this.tdsContext = tdsContext; }
-  public void setCatGenContext( CatGenContext catGenContext ) { this.catGenContext = catGenContext; }
+  public void setCatGenConfigDirName( String catGenConfigDirName ) { this.catGenConfigDirName = catGenConfigDirName; }
+  public void setCatGenConfigFileName( String catGenConfigFileName ) { this.catGenConfigFileName = catGenConfigFileName; }
+  public void setCatGenResultsDirName( String catGenResultsDirName ) { this.catGenResultsDirName = catGenResultsDirName; }
 
   public void init()
   {
     log.info( "init(): " + UsageLog.setupNonRequestContext() );
+
+    // Check that CatalogGen is enabled.
     this.allow = ThreddsConfig.getBoolean( "CatalogGen.allow", false );
     if ( ! this.allow )
     {
-      String msg = "CatalogGen not enabled in threddsConfig.xml.";
-      log.info( "init(): " + msg );
-      log.info( "init(): " + UsageLog.closingMessageNonRequestContext() );
+      log.info( "init(): CatalogGen not enabled in threddsConfig.xml - " + UsageLog.closingMessageNonRequestContext() );
       return;
     }
 
-    WebApplicationContext webAppContext = this.getWebApplicationContext();
-    ServletContext sc = webAppContext.getServletContext();
-    catGenContext.init( tdsContext, servletName, catGenConfigDirName, catGenConfigFileName, catGenResultCatalogsDirName);
-
-    // Some debug info.
-    log.debug( "init(): CatGen content path = " + this.catGenContext.getContentDirectory() );
-    log.debug( "init(): CatGen config path = " + this.catGenContext.getConfigDirectory() );
-    log.debug( "init(): CatGen config file = " + this.catGenContext.getConfigFile() );
-    log.debug( "init(): CatGen result path = " + this.catGenContext.getResultDirectory() );
-
-    this.configParser = new CatGenConfigParser();
-    if ( catGenContext.getConfigFile().exists())
+    // Check that have TdsContext.
+    if ( this.tdsContext == null )
     {
-      try
+      this.allow = false;
+      log.error( "init(): Disabling DqcService - null TdsContext - " + UsageLog.closingMessageNonRequestContext() );
+      return;
+    }
+
+    // Locate or create CatGen config directory.
+    this.catGenConfigDir = this.tdsContext.getConfigFileSource().getFile( this.catGenConfigDirName );
+    if ( this.catGenConfigDir == null )
+    {
+      this.catGenConfigDir = createCatGenConfigDirectory();
+      if ( this.catGenConfigDir == null )
       {
-        this.config = configParser.parseXML( catGenContext.getConfigFile() );
-      }
-      catch ( IOException e )
-      {
-        log.error( "init(): Failed to parse config file (disabling CatalogGen): " + e.getMessage() );
         this.allow = false;
+        log.error( "init(): Disabling catGenService - could not locate or create CatGenConfig directory - " + UsageLog.closingMessageNonRequestContext() );
         return;
       }
     }
-    else
+
+    // Locate or create CatalogGen config document.
+    this.catGenConfigFile = new File( this.catGenConfigDir, this.catGenConfigFileName );
+    if ( ! this.catGenConfigFile.exists() )
     {
-      log.error( "init(): Config file does not exist (disabling CatalogGen)." );
+      this.catGenConfigFile = createCatGenConfigFile();
+      if ( this.catGenConfigFile == null )
+      {
+        this.allow = false;
+        log.error( "init(): Disabling DqcService - could not locate or create CatGenConfig file - " + UsageLog.closingMessageNonRequestContext() );
+        return;
+      }
+    }
+
+    // Locate or create CatGen results directory.
+    this.catGenResultsDir = this.tdsContext.getConfigFileSource().getFile( this.catGenResultsDirName );
+    if ( this.catGenResultsDir == null )
+    {
+      this.catGenResultsDir = createCatGenResultsDirectory();
+      if ( this.catGenResultsDir == null )
+      {
+        log.warn( "init(): Could not locate or create CatGenResults directory - MAY cause problems when writing results."  );
+      }
+    }
+
+    // Some debug info.
+    log.debug( "init(): CatGen config directory  = " + this.catGenConfigDir.toString() );
+    log.debug( "init(): CatGen config file       = " + this.catGenConfigFile.toString() );
+    log.debug( "init(): CatGen results directory = " + this.catGenResultsDir.toString() );
+
+    this.catGenConfigParser = new CatGenConfigParser();
+    try
+    {
+      this.catGenConfig = catGenConfigParser.parseXML( this.catGenConfigFile );
+    }
+    catch ( IOException e )
+    {
+      log.error( "init(): Disabling DqcService - failed to parse CatGenConfig file - "
+                 + UsageLog.closingMessageNonRequestContext()
+                 + " - " + e.getMessage());
       this.allow = false;
       return;
     }
 
-    if ( catGenContext.getConfigDirectory().exists()
-         && catGenContext.getResultDirectory().exists()
-         && ! this.config.getTaskInfoList().isEmpty() )
+    if ( ! this.catGenConfig.getTaskInfoList().isEmpty() )
     {
-      this.scheduler = new CatGenTaskScheduler( this.config,
-                                                catGenContext.getConfigDirectory(),
-                                                catGenContext.getResultDirectory() );
-      this.scheduler.start();
+      this.scheduler = new CatGenTaskScheduler( this.catGenConfig,
+                                                this.catGenConfigDir,
+                                                this.catGenResultsDir );
+      this.scheduler.start( this.tdsContext.getContentDirectory() );
     }
     log.info( "init(): " + UsageLog.closingMessageNonRequestContext() );
   }
 
   public void destroy()
   {
-    log.info( "destroy(): " + UsageLog.setupNonRequestContext() );
+    log.info( "destroy(): start - " + UsageLog.setupNonRequestContext() );
     if ( this.scheduler != null)
       this.scheduler.stop();
-    log.info( "destroy()" + UsageLog.closingMessageNonRequestContext() );
+    log.info( "destroy(): done - " + UsageLog.closingMessageNonRequestContext() );
   }
 
   protected ModelAndView handleRequestInternal( HttpServletRequest req, HttpServletResponse res ) throws Exception
@@ -150,4 +185,160 @@ public class CatGenController extends AbstractController
     return new ModelAndView( "editTask", "config", "junk" );
     //return new ModelAndView( "thredds/server/cataloggen/index", "config", this.config );
   }
+
+  /**
+   * Return newly created CatGenConfig directory. If it already exists, return null.
+   * <p/>
+   * <p>This method should only be called if CatGenConfig directory was not found
+   * in TdsContext ConfigFileSource. I.e., the following
+   * <code>this.tdsContext.getConfigFileSource().getFile( this.catGenConfigDirName )</code>
+   * returned null.
+   *
+   * @return the CatGenConfig directory
+   */
+  private File createCatGenConfigDirectory()
+  {
+    File configDir = new File( this.tdsContext.getContentDirectory(), this.catGenConfigDirName );
+    if ( configDir.exists() )
+    {
+      log.error( "createCatGenConfigDirectory(): Existing CatGenConfigDir [" + configDir + "] not found in TdsContext ConfigFileSource, check TdsContext config." );
+      return null;
+    }
+
+    if ( ! configDir.mkdirs() )
+    {
+      log.error( "createCatGenConfigDirectory(): Failed to create CatGenConfig directory." );
+      return null;
+    }
+
+    if ( !configDir.equals( this.tdsContext.getConfigFileSource().getFile( this.catGenConfigDirName ) ) )
+    {
+      log.error( "createCatGenConfigDirectory(): Newly created CatGenConfig directory not found by TdsContext ConfigFileSource." );
+      return null;
+    }
+    return configDir;
+  }
+
+  /**
+   * Return newly created CatGenResults directory. If it already exists, return null.
+   * <p/>
+   * <p>This method should only be called if CatGenResults directory was not found
+   * in TdsContext ConfigFileSource. I.e., the following
+   * <code>this.tdsContext.getConfigFileSource().getFile( this.catGenResultsDirName )</code>
+   * returned null.
+   *
+   * @return the CatGenResults directory
+   */
+  private File createCatGenResultsDirectory()
+  {
+    File dir = new File( this.tdsContext.getContentDirectory(), this.catGenResultsDirName );
+    if ( dir.exists() )
+    {
+      log.error( "createCatGenResultsDirectory(): Existing CatGenResultsDir [" + dir + "] not found in TdsContext ConfigFileSource, check TdsContext config." );
+      return null;
+    }
+
+    if ( ! dir.mkdirs() )
+    {
+      log.error( "createCatGenResultsDirectory(): Failed to create CatGenResults directory." );
+      return null;
+    }
+
+    if ( ! dir.equals( this.tdsContext.getConfigFileSource().getFile( this.catGenResultsDirName ) ) )
+    {
+      log.error( "createCatGenResultsDirectory(): Newly created CatGenResults directory not found by TdsContext ConfigFileSource." );
+      return null;
+    }
+    return dir;
+  }
+
+  /**
+   * Return newly created CatGenConfig File or null if failed to create new file.
+   * If it already exists, return null.
+   *
+   * @return the CatGenConfig File.
+   */
+  private File createCatGenConfigFile()
+  {
+    File configFile = new File( this.catGenConfigDir, this.catGenConfigFileName );
+    if ( configFile.exists() )
+    {
+      log.error( "createCatGenConfigFile(): Existing catGenConfigFile [" + configFile + "] not found in TdsContext ConfigFileSource, check TdsContext config." );
+      return null;
+    }
+
+    boolean created = false;
+    try
+    {
+      created = configFile.createNewFile();
+    }
+    catch ( IOException e )
+    {
+      log.error( "createCatGenConfigFile(): I/O error while creating CatGenConfig file." );
+      return null;
+    }
+    if ( !created )
+    {
+      log.error( "createCatGenConfigFile(): Failed to create CatGEnConfig file." );
+      return null;
+    }
+
+    // Write blank config file. Yuck!!!
+    if ( !this.writeEmptyConfigDocToFile( configFile ) )
+    {
+      log.error( "createCatGenConfigFile(): Failed to write empty config file [" + configFile + "]." );
+      return null;
+    }
+    return configFile;
+  }
+
+  private boolean writeEmptyConfigDocToFile( File configFile )
+  {
+    FileOutputStream fos = null;
+    OutputStreamWriter writer = null;
+    try
+    {
+      fos = new FileOutputStream( configFile );
+      writer = new OutputStreamWriter( fos, "UTF-8" );
+      writer.append( this.genEmptyConfigDocAsString() );
+      writer.flush();
+    }
+    catch ( IOException e )
+    {
+      log.debug( "writeEmptyConfigDocToFile(): IO error writing blank config file: " + e.getMessage() );
+      return false;
+    }
+    finally
+    {
+      try
+      {
+        if ( writer != null )
+          writer.close();
+        if ( fos != null )
+          fos.close();
+      }
+      catch ( IOException e )
+      {
+        log.debug( "writeEmptyConfigDocToFile(): IO error closing just written blank config file: " + e.getMessage() );
+        return true;
+      }
+    }
+    return true;
+  }
+
+  private String genEmptyConfigDocAsString()
+  {
+    StringBuilder sb = new StringBuilder()
+            .append( "<?xml version='1.0' encoding='UTF-8'?>\n" )
+            .append( "<preferences EXTERNAL_XML_VERSION='1.0'>\n" )
+            .append( "  <root type='user'>\n" )
+            .append( "    <map>\n" )
+            .append( "      <beanCollection key='config' class='thredds.cataloggen.servlet.CatGenTimerTask'>\n" )
+            .append( "      </beanCollection>\n" )
+            .append( "    </map>\n" )
+            .append( "  </root>\n" )
+            .append( "</preferences>" );
+    return sb.toString();
+  }
+
 }
