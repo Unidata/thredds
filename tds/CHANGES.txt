@@ -4,28 +4,38 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.0
  Features
-  * Configuration in threddsConfig.xml required to enable the following
-    services:
+  * WMS service
+  * Configuration in threddsConfig.xml required to enable the following services:
       * CatalogGen, DLwriter, and DqcService: <allow>true</allow>; and
       * CatalogServices, DLwriter, and WCS: <allowRemote>false<allowRemote>.
-  * Use Stax for metars ncss xml writing - for now rely on using 1.6
+  * Spring configuration
+  * chained "content roots"
  Libraries
   * commons-fileUpload 1.2.1
   * commons-io 1.4
+  * log4j-1.2.15 (remove nlog4j)
+  * netcdf-java 4.0
 
-  Release Details:
-   05:
-    CdmInit for initializing CDM propoerly
-   04:
-    WMS uses DatasetCloser to close datasets.
-   03:
-    synch altContent/motherlode with live motherlode config files - start to use on modev
-    Get <contentPath> to work
-    Show Tomcat /TDS logs
-    Show static catalog filenames
-    All debug now through /admin
-   02:
-    Debug commands now implemented in DebugServlet
-    JMX: NetcdfFileCacheMonitor
-    UsageLog : handling messages to ThreddsServlet.log
-    NcDODSServlet : set "dataset" session attribute
+Release Details:
+ 05:
+  DQCServlet now works
+  WCS working
+  WMS logging switched to slf4j
+  ToolsUI.jnlp was wrong
+  clean up catalog warning messages
+  new FMRC definition files - correct for now
+  CdmInit for initializing CDM propoerly
+ 04:
+  WMS uses DatasetCloser to close datasets.
+ 03:
+  synch altContent/motherlode with live motherlode config files - start to use on modev
+  Get <contentPath> to work
+  Show Tomcat /TDS logs
+  Show static catalog filenames
+  All debug now through /admin
+ 02:
+  Debug commands now implemented in DebugServlet
+  JMX: NetcdfFileCacheMonitor
+  UsageLog : handling messages to ThreddsServlet.log
+  NcDODSServlet : set "dataset" session attribute
+  Use Stax for metars ncss xml writing - for now rely on using 1.6

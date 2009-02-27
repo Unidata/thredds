@@ -200,7 +200,7 @@ public class ViewServlet extends AbstractServlet {
     }
 
     public String  getViewerLinkHtml( InvDatasetImpl ds, HttpServletRequest req) {
-      return "<a href='" + req.getContextPath() + "/view/nj22UI.jnlp?" + ds.getSubsetUrl()+"'>NetCDF-Java Tools (webstart)</a>";
+      return "<a href='" + req.getContextPath() + "/view/ToolsUI.jnlp?" + ds.getSubsetUrl()+"'>NetCDF-Java Tools (webstart)</a>";
     }
   }
 

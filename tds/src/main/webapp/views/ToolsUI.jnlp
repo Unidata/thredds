@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/netcdf-java/v4.0/webstart-dev">
-
+<jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/netcdf-java/v4.0/webstart">
   <information>
-    <title>NetCDF Tools UI</title>
+    <title>NetCDF Tools UI 4</title>
     <vendor>Unidata</vendor>
     <homepage href="http://www.unidata.ucar.edu/software/netcdf-java/"/>
-    <description kind="short">GUI interface to netCDF / Common Data Model</description>
+    <description kind="short">GUI interface to netCDF-Java / Common Data Model</description>
     <icon href="nc.gif"/>
     <offline-allowed/>
   </information>
@@ -15,11 +14,10 @@
   </security>
 
   <resources>
-    <j2se version="1.5+" max-heap-size="512m"/>
+    <j2se version="1.5+" max-heap-size="1024m"/>
     <jar href="netcdfUI.jar"/>
-    <jar href="bufr.jar"/>
+    <jar href="bufrTables.jar"/>
     <jar href="codec.jar"/>
-    <jar href="gnu-regexp.jar"/>
     <jar href="grib.jar"/>
     <jar href="httpclient.jar"/>
     <jar href="httplogging.jar"/>
@@ -33,7 +31,6 @@
     <jar href="spring.jar"/>
     <jar href="visadNoDods.jar"/>
   </resources>
-
 
   <application-desc main-class="ucar.nc2.ui.ToolsUI">
     <argument>{catalog}#{dataset}</argument>
