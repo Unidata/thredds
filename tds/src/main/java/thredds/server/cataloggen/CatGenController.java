@@ -41,6 +41,8 @@ import java.io.IOException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.util.Map;
+import java.util.HashMap;
 
 import thredds.server.config.TdsContext;
 import thredds.servlet.UsageLog;
@@ -171,18 +173,35 @@ public class CatGenController extends AbstractController
     log.info( "destroy(): done - " + UsageLog.closingMessageNonRequestContext() );
   }
 
-  protected ModelAndView handleRequestInternal( HttpServletRequest req, HttpServletResponse res ) throws Exception
+  protected ModelAndView handleRequestInternal( HttpServletRequest request, HttpServletResponse response )
+          throws Exception
   {
-    log.info( "handleRequestInternal(): " + UsageLog.setupRequestContext( req ) );
+    log.info( "handleRequestInternal(): " + UsageLog.setupRequestContext( request ) );
 
     if ( ! this.allow )
     {
       String msg = "CatalogGen service not supported.";
       log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, msg.length() ) );
-      res.sendError( HttpServletResponse.SC_FORBIDDEN, msg );
+      response.sendError( HttpServletResponse.SC_FORBIDDEN, msg );
       return null;
     }
-    return new ModelAndView( "editTask", "config", "junk" );
+
+    String reqPath = request.getPathInfo();
+    if ( reqPath.equals( "/" ) )
+    {
+      Map<String, Object> model = new HashMap<String, Object>();
+      model.put( "contextPath", request.getContextPath() );
+      model.put( "servletPath", request.getServletPath() );
+      model.put( "catGenConfig", this.catGenConfig );
+
+      this.tdsContext.getTdsConfigHtml().addHostInstitutionInfoToMap( model );
+      this.tdsContext.getTdsConfigHtml().addInstallationInfoToMap( model );
+      this.tdsContext.getTdsConfigHtml().addWebappInfoToMap( model );
+
+      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
+      return new ModelAndView( "/thredds/server/cataloggen/catGenConfig", model );
+    }
+      return new ModelAndView( "editTask", "config", "junk" );
     //return new ModelAndView( "thredds/server/cataloggen/index", "config", this.config );
   }
 
