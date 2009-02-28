@@ -40,6 +40,16 @@ package ucar.ma2;
  */
 public class StructureDataFactory {
 
+  /* static public StructureData make(String name, String value) {
+    StructureMembers members = new StructureMembers("");
+    StructureMembers.Member m = members.addMember(name, null, null, DataType.STRING, new int[]{1});
+    StructureDataW sw = new StructureDataW(members);
+    Array dataArray = Array.factory(DataType.STRING, new int[]{1});
+    dataArray.setObject(dataArray.getIndex(), value);
+    sw.setMemberData(m, dataArray);
+    return sw;
+  } */
+
   static public StructureData make(String name, Object value) {
     StructureMembers members = new StructureMembers("");
     DataType dtype = DataType.getType(value.getClass());

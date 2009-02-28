@@ -117,7 +117,7 @@ public class ImageViewPanel extends JPanel {
               long time = System.currentTimeMillis();
               long took = time - start;
               start = time;
-              //System.out.printf(" delay=%d; took=%d%n ",delayMsecs, took);
+              System.out.printf(" delay=%d; took=%d%n ",delayMsecs, took);
             }
           });
           timer.start();

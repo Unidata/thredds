@@ -46,6 +46,7 @@ import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.TestOffAggForecastModel;
+import ucar.nc2.ft.TestFeatureDatasets;
 
 /**
  * TestSuite that runs all nj22 unit tests.
@@ -177,7 +178,8 @@ public class TestAll {
     suite.addTest( ucar.nc2.ncml.TestNcMLoffsite.suite()); // */
 
     suite.addTest( ucar.nc2.dt.grid.TestGrid.suite()); //
-    suite.addTest( ucar.nc2.dt.TestTypedDatasets.suite());
+    suite.addTest( ucar.nc2.ft.TestFeatureDatasets.suite());
+    suite.addTest( ucar.nc2.dt.TestTypedDatasets.suite()); // deprecated, but backwards compatible
 
     suite.addTest( ucar.unidata.geoloc.TestGeoloc.suite());  //
     suite.addTest( ucar.nc2.dods.TestDODS.suite()); // 
