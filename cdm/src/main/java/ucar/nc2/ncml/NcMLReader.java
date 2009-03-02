@@ -1234,8 +1234,20 @@ public class NcMLReader {
       if (debugAggDetail) System.out.println(" debugAgg: nested dirLocation = " + dirLocation);
     }
 
-    java.util.List<Element> attList = aggElem.getChildren("attribute", ncNS);
-    if (attList != null)
+    /* <!-- experimental - modify each dataset in aggregation  -->
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+          <xsd:element ref="group"/>
+          <xsd:element ref="dimension"/>
+          <xsd:element ref="variable"/>
+          <xsd:element ref="attribute"/>
+          <xsd:element ref="remove"/>
+        </xsd:choice> */
+    boolean needMerge = aggElem.getChildren("attribute", ncNS).size() > 0;
+    if (!needMerge ) needMerge = aggElem.getChildren("variable", ncNS).size() > 0;
+    if (!needMerge ) needMerge = aggElem.getChildren("dimension", ncNS).size() > 0;
+    if (!needMerge ) needMerge = aggElem.getChildren("group", ncNS).size() > 0;
+    if (!needMerge ) needMerge = aggElem.getChildren("remove", ncNS).size() > 0;
+    if (needMerge)
       agg.setModifications(aggElem);
 
     return agg;
