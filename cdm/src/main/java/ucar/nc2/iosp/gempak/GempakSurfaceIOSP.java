@@ -32,7 +32,6 @@
  */
 
 
-
 package ucar.nc2.iosp.gempak;
 
 
@@ -93,6 +92,9 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
 
     /** static for shared dimension of length 2 */
     private final static Dimension DIM_LEN2 = new Dimension("len2", 2, true);
+
+    /** name for the time variable */
+    private final static String TIME_VAR = "time";
 
     /** station variable names */
     private static String[] stnVarNames = {
@@ -317,8 +319,9 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
     }
 
     /**
-     * Read in the data for the variable.  In this case, it should be
-     * a Structure.  The section should be rank 2 (station, time).
+     * Read in the data for the record variable.  In this case, it should be
+     * a Structure of record dimension.  We can handle a subset of the
+     * variables in a structure.
      *
      * @param v2  variable to read
      * @param section  section of the variable
@@ -339,17 +342,15 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
             List<StructureMembers.Member> mbers     = members.getMembers();
             int                           ssize     = 0;
             int                           stnVarNum = 0;
-            boolean                       timeSet   = false;
             List<String> stnKeyNames = gemreader.getStationKeyNames();
             for (StructureMembers.Member member : mbers) {
                 if (stnKeyNames.contains(member.getName())) {
                     int varSize = getStnVarSize(member.getName());
                     member.setDataParam(ssize);
                     ssize += varSize;
-                } else if ( !timeSet) {
+                } else if (member.getName().equals(TIME_VAR)) {
                     member.setDataParam(ssize);
-                    ssize   += 8;
-                    timeSet = true;
+                    ssize += 8;
                 } else {
                     member.setDataParam(ssize);
                     ssize += 4;
@@ -374,28 +375,37 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
             byte[]     bytes = new byte[ssize * size];
             ByteBuffer buf   = ByteBuffer.wrap(bytes);
             array = new ArrayStructureBB(members, new int[] { size }, buf, 0);
-            List<GempakStation> stationList = gemreader.getStations();
-            List<Date>          dateList    = gemreader.getDates();
+            List<GempakStation> stationList    = gemreader.getStations();
+            List<Date>          dateList       = gemreader.getDates();
+            boolean             needToReadData = !pdata.isSubset();
+            if ( !needToReadData) {  // subset, see if we need some param data
+                for (GempakParameter param : params) {
+                    if (members.findMember(param.getName()) != null) {
+                        needToReadData = true;
+                        break;
+                    }
+                }
+            }
+            boolean hasTime = (members.findMember(TIME_VAR) != null);
 
             // fill out the station information
             for (int x = recordRange.first(); x <= recordRange.last();
                     x += recordRange.stride()) {
                 GempakStation stn = stationList.get(x);
                 for (String varname : stnKeyNames) {
+                    if (members.findMember(varname) == null) {
+                        continue;
+                    }
                     String temp = null;
                     if (varname.equals(GempakStation.STID)) {
                         temp = StringUtil.padRight(stn.getSTID(), 4);
                     } else if (varname.equals(GempakStation.STNM)) {
-                        //System.out.println("STNM = " + stn.getSTNM());
                         buf.putInt(stn.getSTNM());
                     } else if (varname.equals(GempakStation.SLAT)) {
-                        //System.out.println("SLAT = " + stn.getLatitude());
                         buf.putFloat((float) stn.getLatitude());
                     } else if (varname.equals(GempakStation.SLON)) {
-                        //System.out.println("SLON = " + stn.getLongitude());
                         buf.putFloat((float) stn.getLongitude());
                     } else if (varname.equals(GempakStation.SELV)) {
-                        //System.out.println("SELV = " + stn.getAltitude());
                         buf.putFloat((float) stn.getAltitude());
                     } else if (varname.equals(GempakStation.STAT)) {
                         temp = StringUtil.padRight(stn.getSTAT(), 2);
@@ -411,29 +421,33 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                         temp = StringUtil.padRight(stn.getWFO2(), 4);
                     }
                     if (temp != null) {
-                        //System.out.println(varname + " = " + temp);
                         buf.put(temp.getBytes());
                     }
                 }
-                // put in the time
-                Date time = dateList.get(x);
-                buf.putDouble(time.getTime() / 1000.d);
+                if (members.findMember(TIME_VAR) != null) {
+                    // put in the time
+                    Date time = dateList.get(x);
+                    buf.putDouble(time.getTime() / 1000.d);
+                }
 
-                // now get the obs
-                GempakFileReader.RData vals = gemreader.DM_RDTR(1, x + 1,
-                                                  gemreader.SFDT);
-                if (vals == null) {
-                    for (int k = 0; k < mbers.size(); k++) {
-                        buf.putFloat(GempakConstants.RMISSD);
-                    }
-                } else {
-                    float[] reals = vals.data;
-                    int     var   = 0;
-                    for (GempakParameter param : params) {
-                        if (members.findMember(param.getName()) != null) {
-                            buf.putFloat(reals[var]);
+                if (needToReadData) {
+
+                    // now get the obs
+                    GempakFileReader.RData vals = gemreader.DM_RDTR(1, x + 1,
+                                                      gemreader.SFDT);
+                    if (vals == null) {
+                        for (int k = 0; k < mbers.size(); k++) {
+                            buf.putFloat(GempakConstants.RMISSD);
                         }
-                        var++;
+                    } else {
+                        float[] reals = vals.data;
+                        int     var   = 0;
+                        for (GempakParameter param : params) {
+                            if (members.findMember(param.getName()) != null) {
+                                buf.putFloat(reals[var]);
+                            }
+                            var++;
+                        }
                     }
                 }
             }
@@ -520,14 +534,14 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         // time
         List<Date> timeList = gemreader.getDates();
         int        numTimes = timeList.size();
-        Dimension  times    = new Dimension("time", numTimes, true);
+        Dimension  times    = new Dimension(TIME_VAR, numTimes, true);
         ncfile.addDimension(null, times);
         Array varArray = null;
-        Variable timeVar = new Variable(ncfile, null, null, "time",
-                                        DataType.DOUBLE, "time");
+        Variable timeVar = new Variable(ncfile, null, null, TIME_VAR,
+                                        DataType.DOUBLE, TIME_VAR);
         timeVar.addAttribute(
             new Attribute("units", "seconds since 1970-01-01 00:00:00"));
-        timeVar.addAttribute(new Attribute("long_name", "time"));
+        timeVar.addAttribute(new Attribute("long_name", TIME_VAR));
         varArray = new ArrayDouble.D1(numTimes);
         int i = 0;
         for (Date date : timeList) {
@@ -631,11 +645,11 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         records.add(record);
 
         // time
-        Variable timeVar = new Variable(ncfile, null, null, "time",
+        Variable timeVar = new Variable(ncfile, null, null, TIME_VAR,
                                         DataType.DOUBLE, null);
         timeVar.addAttribute(
             new Attribute("units", "seconds since 1970-01-01 00:00:00"));
-        timeVar.addAttribute(new Attribute("long_name", "time"));
+        timeVar.addAttribute(new Attribute("long_name", TIME_VAR));
 
         ncfile.addDimension(null, DIM_LEN4);
         ncfile.addDimension(null, DIM_LEN2);
@@ -659,7 +673,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
             sVar.addMemberVariable(var);
         }
         sVar.addAttribute(new Attribute("coordinates",
-                                        "time SLAT SLON SELV"));
+                                        "Obs.time Obs.SLAT Obs.SLON Obs.SELV"));
         ncfile.addVariable(null, sVar);
         ncfile.addAttribute(null,
                             new Attribute("CF:featureType",
@@ -677,7 +691,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
      */
     private void addGlobalAttributes() {
         // global stuff
-        ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.5"));
+        ncfile.addAttribute(null, new Attribute("Conventions", "GEMPAK/CDM"));
         // dataset discovery
         /*
         ncfile.addAttribute(
