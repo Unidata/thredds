@@ -48,6 +48,7 @@ import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.util.StringUtil;
 
 import java.io.IOException;
 
@@ -87,6 +88,27 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
     /** Integer missing attribute */
     private final static Number IMISS = new Integer(GempakConstants.IMISSD);
 
+    /** static for shared dimension of length 4 */
+    private final static Dimension DIM_LEN4 = new Dimension("len4", 4, true);
+
+    /** static for shared dimension of length 2 */
+    private final static Dimension DIM_LEN2 = new Dimension("len2", 2, true);
+
+    /** station variable names */
+    private static String[] stnVarNames = {
+        GempakStation.STID, GempakStation.STNM, GempakStation.SLAT,
+        GempakStation.SLON, GempakStation.SELV, GempakStation.STAT,
+        GempakStation.COUN, GempakStation.STD2, GempakStation.SPRI,
+        GempakStation.SWFO, GempakStation.WFO2
+    };
+
+
+    /** lengths of station variable */
+    private static int[] stnVarSizes = {
+        4, 4, 4, 4, 4, 2, 2, 4, 4, 4, 4
+    };
+
+
     /**
      * Is this a valid file?
      *
@@ -104,7 +126,8 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
             return false;
         }
         // TODO:  handle other types of surface files 
-        return gemreader.getSurfaceFileType().equals(gemreader.STANDARD);
+        return gemreader.getSurfaceFileType().equals(gemreader.STANDARD)
+               || gemreader.getSurfaceFileType().equals(gemreader.SHIP);
     }
 
     /**
@@ -208,7 +231,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         long  start = System.currentTimeMillis();
         Array array = null;
         if (gemreader.getSurfaceFileType().equals(gemreader.SHIP)) {
-            //array = readShipData(v2, section);
+            array = readShipData(v2, section);
         } else if (gemreader.getSurfaceFileType().equals(
                 gemreader.STANDARD)) {
             array = readStandardData(v2, section);
@@ -274,7 +297,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                     GempakFileReader.RData vals = gemreader.DM_RDTR(x + 1,
                                                       y + 1, gemreader.SFDT);
                     if (vals == null) {
-                        for (int k = 0; i < mbers.size(); k++) {
+                        for (int k = 0; k < mbers.size(); k++) {
                             buf.putFloat(missing[k]);
                         }
                     } else {
@@ -286,6 +309,131 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                             }
                             var++;
                         }
+                    }
+                }
+            }
+        }
+        return array;
+    }
+
+    /**
+     * Read in the data for the variable.  In this case, it should be
+     * a Structure.  The section should be rank 2 (station, time).
+     *
+     * @param v2  variable to read
+     * @param section  section of the variable
+     *
+     * @return the array of data
+     *
+     * @throws IOException  problem reading the file
+     */
+    private Array readShipData(Variable v2, Section section)
+            throws IOException {
+
+        Array array = null;
+        if (v2 instanceof Structure) {
+            List<GempakParameter> params =
+                gemreader.getParameters(gemreader.SFDT);
+            Structure                     pdata     = (Structure) v2;
+            StructureMembers members = pdata.makeStructureMembers();
+            List<StructureMembers.Member> mbers     = members.getMembers();
+            int                           ssize     = 0;
+            int                           stnVarNum = 0;
+            boolean                       timeSet   = false;
+            List<String> stnKeyNames = gemreader.getStationKeyNames();
+            for (StructureMembers.Member member : mbers) {
+                if (stnKeyNames.contains(member.getName())) {
+                    int varSize = getStnVarSize(member.getName());
+                    member.setDataParam(varSize);
+                    ssize += varSize;
+                } else if ( !timeSet) {
+                    member.setDataParam(8);
+                    ssize   += 8;
+                    timeSet = true;
+                } else {
+                    member.setDataParam(ssize);
+                    ssize += 4;
+                }
+            }
+            members.setStructureSize(ssize);
+
+            // TODO:  figure out how to get the missing value for data
+            //float[] missing = new float[mbers.size()];
+            //int     missnum = 0;
+            //for (Variable v : pdata.getVariables()) {
+            //    Attribute att = v.findAttribute("missing_value");
+            //    missing[missnum++] = (att == null)
+            //                         ? GempakConstants.RMISSD
+            //                         : att.getNumericValue().floatValue();
+            //}
+
+
+            Range recordRange = section.getRange(0);
+            int   size        = recordRange.length();
+            // Create a ByteBuffer using a byte array
+            byte[]     bytes = new byte[ssize * size];
+            ByteBuffer buf   = ByteBuffer.wrap(bytes);
+            array = new ArrayStructureBB(members, new int[] { size }, buf, 0);
+            List<GempakStation> stationList = gemreader.getStations();
+            List<Date>          dateList    = gemreader.getDates();
+
+            // fill out the station information
+            for (int x = recordRange.first(); x <= recordRange.last();
+                    x += recordRange.stride()) {
+                GempakStation stn = stationList.get(x);
+                for (String varname : stnKeyNames) {
+                    String temp = null;
+                    if (varname.equals(GempakStation.STID)) {
+                        temp = StringUtil.padRight(stn.getSTID(), 4);
+                    } else if (varname.equals(GempakStation.STNM)) {
+                        //System.out.println("STNM = " + stn.getSTNM());
+                        buf.putInt(stn.getSTNM());
+                    } else if (varname.equals(GempakStation.SLAT)) {
+                        //System.out.println("SLAT = " + stn.getLatitude());
+                        buf.putFloat((float) stn.getLatitude());
+                    } else if (varname.equals(GempakStation.SLON)) {
+                        //System.out.println("SLON = " + stn.getLongitude());
+                        buf.putFloat((float) stn.getLongitude());
+                    } else if (varname.equals(GempakStation.SELV)) {
+                        //System.out.println("SELV = " + stn.getAltitude());
+                        buf.putFloat((float) stn.getAltitude());
+                    } else if (varname.equals(GempakStation.STAT)) {
+                        temp = StringUtil.padRight(stn.getSTAT(), 2);
+                    } else if (varname.equals(GempakStation.COUN)) {
+                        temp = StringUtil.padRight(stn.getCOUN(), 2);
+                    } else if (varname.equals(GempakStation.STD2)) {
+                        temp = StringUtil.padRight(stn.getSTD2(), 4);
+                    } else if (varname.equals(GempakStation.SPRI)) {
+                        buf.putInt(stn.getSPRI());
+                    } else if (varname.equals(GempakStation.SWFO)) {
+                        temp = StringUtil.padRight(stn.getSWFO(), 4);
+                    } else if (varname.equals(GempakStation.WFO2)) {
+                        temp = StringUtil.padRight(stn.getWFO2(), 4);
+                    }
+                    if (temp != null) {
+                        //System.out.println(varname + " = " + temp);
+                        buf.put(temp.getBytes());
+                    }
+                }
+                // put in the time
+                Date time = dateList.get(x);
+                buf.putDouble(time.getTime() / 1000.d);
+
+                // now get the obs
+                GempakFileReader.RData vals = gemreader.DM_RDTR(1, x + 1,
+                                                  gemreader.SFDT);
+                if (vals == null) {
+                    for (int k = 0; k < mbers.size(); k++) {
+                        buf.putFloat(GempakConstants.RMISSD);
+                    }
+                } else {
+                    float[] reals = vals.data;
+                    int     var   = 0;
+                    for (GempakParameter param : params) {
+                        if (members.findMember(param.getName()) != null) {
+                            buf.putFloat(reals[var]);
+                        }
+                        var++;
                     }
                 }
             }
@@ -359,6 +507,8 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         List<GempakStation> stations = gemreader.getStations();
         Dimension station = new Dimension("station", stations.size(), true);
         ncfile.addDimension(null, station);
+        ncfile.addDimension(null, DIM_LEN4);
+        ncfile.addDimension(null, DIM_LEN2);
         List<Variable> stationVars = makeStationVars(stations, station);
         // loop through and add to ncfile
         for (Variable stnVar : stationVars) {
@@ -481,44 +631,36 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         records.add(record);
 
         // time
-        List<Date> timeList = gemreader.getDates();
-        Array      varArray = null;
         Variable timeVar = new Variable(ncfile, null, null, "time",
-                                        DataType.DOUBLE, "record");
+                                        DataType.DOUBLE, null);
         timeVar.addAttribute(
             new Attribute("units", "seconds since 1970-01-01 00:00:00"));
         timeVar.addAttribute(new Attribute("long_name", "time"));
-        varArray = new ArrayDouble.D1(numObs);
-        int i = 0;
-        for (Date date : timeList) {
-            ((ArrayDouble.D1) varArray).set(i, date.getTime() / 1000.d);
-            i++;
-        }
-        timeVar.setCachedData(varArray, false);
-        ncfile.addVariable(null, timeVar);
 
-        List<Variable> stationVars = makeStationVars(stations, record);
-        // loop through and add to ncfile
-        for (Variable stnVar : stationVars) {
-            ncfile.addVariable(null, stnVar);
-        }
+        ncfile.addDimension(null, DIM_LEN4);
+        ncfile.addDimension(null, DIM_LEN2);
+        List<Variable>        stationVars = makeStationVars(stations, null);
 
-        /*
-        List<GempakParameter> params = gemreader.getParameters(gemreader.SFDT);
-        if (params == null) return;
-        for (GempakParameter param : params) {
-            Variable var = makeParamVariable(param, records);
-            var.addAttribute(new Attribute("coordinates", "time SLAT SLON SELV"));
-            ncfile.addVariable(null, var);
-        }
-        */
-        Structure sfData = makeStructure(gemreader.SFDT, records);
-        if (sfData == null) {
+        List<GempakParameter> params =
+            gemreader.getParameters(gemreader.SFDT);
+        if (params == null) {
             return;
         }
-        sfData.addAttribute(new Attribute("coordinates",
-                                          "time SLAT SLON SELV"));
-        ncfile.addVariable(null, sfData);
+        Structure sVar = new Structure(ncfile, null, null, "Obs");
+        sVar.setDimensions(records);
+        // loop through and add to ncfile
+        for (Variable stnVar : stationVars) {
+            sVar.addMemberVariable(stnVar);
+        }
+        sVar.addMemberVariable(timeVar);
+
+        for (GempakParameter param : params) {
+            Variable var = makeParamVariable(param, null);
+            sVar.addMemberVariable(var);
+        }
+        sVar.addAttribute(new Attribute("coordinates",
+                                        "time SLAT SLON SELV"));
+        ncfile.addVariable(null, sVar);
         ncfile.addAttribute(null,
                             new Attribute("CF:featureType",
                                           CF.FeatureType.point.toString()));
@@ -552,13 +694,23 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                 + dateFormat.toDateTimeStringISO(new Date())));
     }
 
-    /** station variable names */
-    private static String[] stnVarNames = {
-        GempakStation.STID, GempakStation.STNM, GempakStation.SLAT,
-        GempakStation.SLON, GempakStation.SELV, GempakStation.STAT,
-        GempakStation.COUN, GempakStation.STD2, GempakStation.SPRI,
-        //GempakStation.SWFO, GempakStation.WFO2
-    };
+    /**
+     * Get the size of a particular station variable
+     *
+     * @param name name of the variable (key)
+     *
+     * @return  size or -1
+     */
+    private int getStnVarSize(String name) {
+        int size = -1;
+        for (int i = 0; i < stnVarNames.length; i++) {
+            if (name.equals(stnVarNames[i])) {
+                size = stnVarSizes[i];
+                break;
+            }
+        }
+        return size;
+    }
 
 
     /**
@@ -580,9 +732,9 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                 break;
             }
         }
-        List<Variable> vars = new ArrayList<Variable>();
-        for (int i = 0; i < stnVarNames.length; i++) {
-            String    varName  = stnVarNames[i];
+        List<Variable> vars        = new ArrayList<Variable>();
+        List<String>   stnKeyNames = gemreader.getStationKeyNames();
+        for (String varName : stnKeyNames) {
             Variable  v        = makeStationVariable(varName, dim);
             Attribute stIDAttr = new Attribute("standard_name", "station_id");
             if (varName.equals(GempakStation.STID) && useSTID) {
@@ -591,51 +743,55 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
             if (varName.equals(GempakStation.STNM) && !useSTID) {
                 v.addAttribute(stIDAttr);
             }
-            Array varArray;
-            if (v.getDataType().equals(DataType.CHAR)) {
-                int[] shape = v.getShape();
-                //System.out.println("shape = " + shape[0] + "x" + shape[1]);
-                varArray = new ArrayChar.D2(shape[0], shape[1]);
-            } else {
-                varArray = get1DArray(v.getDataType(), numStations);
-            }
-            int    index   = 0;
-            String varname = v.getName();
-            for (GempakStation stn : stations) {
-                String test = "";
-                if (varname.equals(GempakStation.STID)) {
-                    test = stn.getSTID();
-                } else if (varname.equals(GempakStation.STNM)) {
-                    ((ArrayInt.D1) varArray).set(index, stn.getSTNM());
-                } else if (varname.equals(GempakStation.SLAT)) {
-                    ((ArrayFloat.D1) varArray).set(index,
-                            (float) stn.getLatitude());
-                } else if (varname.equals(GempakStation.SLON)) {
-                    ((ArrayFloat.D1) varArray).set(index,
-                            (float) stn.getLongitude());
-                } else if (varname.equals(GempakStation.SELV)) {
-                    ((ArrayFloat.D1) varArray).set(index,
-                            (float) stn.getAltitude());
-                } else if (varname.equals(GempakStation.STAT)) {
-                    test = stn.getSTAT();
-                } else if (varname.equals(GempakStation.COUN)) {
-                    test = stn.getCOUN();
-                } else if (varname.equals(GempakStation.STD2)) {
-                    test = stn.getSTD2();
-                } else if (varname.equals(GempakStation.SPRI)) {
-                    ((ArrayInt.D1) varArray).set(index, stn.getSPRI());
-                } else if (varname.equals(GempakStation.SWFO)) {
-                    test = stn.getSWFO();
-                } else if (varname.equals(GempakStation.WFO2)) {
-                    test = stn.getWFO2();
-                }
-                if ( !test.equals("")) {
-                    ((ArrayChar.D2) varArray).setString(index, test);
-                }
-                index++;
-            }
-            v.setCachedData(varArray, false);
             vars.add(v);
+        }
+        // see if we fill these in completely now
+        if (dim != null) {
+            for (Variable v : vars) {
+                Array varArray;
+                if (v.getDataType().equals(DataType.CHAR)) {
+                    int[] shape = v.getShape();
+                    varArray = new ArrayChar.D2(shape[0], shape[1]);
+                } else {
+                    varArray = get1DArray(v.getDataType(), numStations);
+                }
+                int    index   = 0;
+                String varname = v.getName();
+                for (GempakStation stn : stations) {
+                    String test = "";
+                    if (varname.equals(GempakStation.STID)) {
+                        test = stn.getSTID();
+                    } else if (varname.equals(GempakStation.STNM)) {
+                        ((ArrayInt.D1) varArray).set(index, stn.getSTNM());
+                    } else if (varname.equals(GempakStation.SLAT)) {
+                        ((ArrayFloat.D1) varArray).set(index,
+                                (float) stn.getLatitude());
+                    } else if (varname.equals(GempakStation.SLON)) {
+                        ((ArrayFloat.D1) varArray).set(index,
+                                (float) stn.getLongitude());
+                    } else if (varname.equals(GempakStation.SELV)) {
+                        ((ArrayFloat.D1) varArray).set(index,
+                                (float) stn.getAltitude());
+                    } else if (varname.equals(GempakStation.STAT)) {
+                        test = stn.getSTAT();
+                    } else if (varname.equals(GempakStation.COUN)) {
+                        test = stn.getCOUN();
+                    } else if (varname.equals(GempakStation.STD2)) {
+                        test = stn.getSTD2();
+                    } else if (varname.equals(GempakStation.SPRI)) {
+                        ((ArrayInt.D1) varArray).set(index, stn.getSPRI());
+                    } else if (varname.equals(GempakStation.SWFO)) {
+                        test = stn.getSWFO();
+                    } else if (varname.equals(GempakStation.WFO2)) {
+                        test = stn.getWFO2();
+                    }
+                    if ( !test.equals("")) {
+                        ((ArrayChar.D2) varArray).setString(index, test);
+                    }
+                    index++;
+                }
+                v.setCachedData(varArray, false);
+            }
         }
         return vars;
     }
@@ -675,13 +831,13 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         DataType        type     = DataType.CHAR;
         List<Dimension> dims     = new ArrayList<Dimension>();
         List<Attribute> attrs    = new ArrayList<Attribute>();
-        dims.add(firstDim);
+        if (firstDim != null) {
+            dims.add(firstDim);
+        }
 
         if (varname.equals(GempakStation.STID)) {
             longName = "Station identifier";
-            Dimension stid_len = new Dimension("stid_len", 4);
-            ncfile.addDimension(null, stid_len);
-            dims.add(stid_len);
+            dims.add(DIM_LEN4);
         } else if (varname.equals(GempakStation.STNM)) {
             longName = "WMO number";
             type     = DataType.INT;
@@ -702,32 +858,22 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
             attrs.add(new Attribute("positive", "up"));
         } else if (varname.equals(GempakStation.STAT)) {
             longName = "state or province";
-            Dimension stat_len = new Dimension("stat_len", 2);
-            ncfile.addDimension(null, stat_len);
-            dims.add(stat_len);
+            dims.add(DIM_LEN2);
         } else if (varname.equals(GempakStation.COUN)) {
             longName = "country code";
-            Dimension coun_len = new Dimension("coun_len", 2);
-            ncfile.addDimension(null, coun_len);
-            dims.add(coun_len);
+            dims.add(DIM_LEN2);
         } else if (varname.equals(GempakStation.STD2)) {
             longName = "Extended station id";
-            Dimension std2_len = new Dimension("std2_len", 4);
-            ncfile.addDimension(null, std2_len);
-            dims.add(std2_len);
+            dims.add(DIM_LEN4);
         } else if (varname.equals(GempakStation.SPRI)) {
             longName = "Station priority";
             type     = DataType.INT;
         } else if (varname.equals(GempakStation.SWFO)) {
             longName = "WFO code";
-            Dimension wfo_len = new Dimension("wfo_len", 4);
-            ncfile.addDimension(null, wfo_len);
-            dims.add(wfo_len);
+            dims.add(DIM_LEN4);
         } else if (varname.equals(GempakStation.WFO2)) {
             longName = "Second WFO code";
-            Dimension wfo2_len = new Dimension("wfo2_len", 4);
-            ncfile.addDimension(null, wfo2_len);
-            dims.add(wfo2_len);
+            dims.add(DIM_LEN4);
         }
         Variable v = new Variable(ncfile, null, null, varname);
         v.setDataType(type);
@@ -745,7 +891,11 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                 v.addAttribute(attr);
             }
         }
-        v.setDimensions(dims);
+        if ( !dims.isEmpty()) {
+            v.setDimensions(dims);
+        } else {
+            v.setDimensions((String) null);
+        }
         return v;
     }
 

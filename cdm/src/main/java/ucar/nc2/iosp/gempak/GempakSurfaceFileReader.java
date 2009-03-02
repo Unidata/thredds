@@ -34,6 +34,7 @@
  */
 
 
+
 package ucar.nc2.iosp.gempak;
 
 
@@ -203,7 +204,7 @@ public class GempakSurfaceFileReader extends GempakFileReader {
         }
 
         // get the station info
-        stationKeys = getStationKeys();
+        stationKeys = findStationKeys();
         if ((stationKeys == null) || stationKeys.isEmpty()) {
             return false;
         }
@@ -389,11 +390,26 @@ public class GempakSurfaceFileReader extends GempakFileReader {
     }
 
     /**
+     * Get the station key names
+     *
+     * @return the list of station key names
+     */
+    public List<String> getStationKeyNames() {
+        List<String> keys = new ArrayList<String>();
+        if ((stationKeys != null) && !stationKeys.isEmpty()) {
+            for (Key key : stationKeys) {
+                keys.add(key.name);
+            }
+        }
+        return keys;
+    }
+
+    /**
      * Get the station keys
      *
      * @return the list of station keys
      */
-    private List<Key> getStationKeys() {
+    private List<Key> findStationKeys() {
         Key stid = findKey(GempakStation.STID);
         Key stnm = findKey(GempakStation.STNM);
         Key slat = findKey(GempakStation.SLAT);
@@ -472,8 +488,8 @@ public class GempakSurfaceFileReader extends GempakFileReader {
     }
 
     /**
-     * Get the list of stations in this file.
-     * @return list of stations.
+     * Get the list of dates in this file.
+     * @return list of dates.
      */
     public List<Date> getDates() {
         if ((dates == null) || (dates.isEmpty() && !dateList.isEmpty())) {
@@ -505,7 +521,7 @@ public class GempakSurfaceFileReader extends GempakFileReader {
     /**
      * Print the list of dates in the file
      *
-     * @param row ob row	
+     * @param row ob row
      * @param col ob column
      */
     public void printOb(int row, int col) {
