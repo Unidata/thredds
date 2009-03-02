@@ -49,6 +49,7 @@ import ucar.nc2.units.DateType;
  * so that it can be run by a <tt>Timer</tt>. It is also a Bean
  * so that it can be stored using the ucar.util.prefs package.
  *
+ * @deprecated Instead see {@link thredds.server.cataloggen.CatGenTaskScheduler} which is used by {@link thredds.server.cataloggen.CatGenController}.
  */
 class CatGenTimerTask
 {

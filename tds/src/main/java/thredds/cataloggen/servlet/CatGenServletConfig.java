@@ -45,6 +45,7 @@ import java.util.*;
  * of this Catalog Generator. The configuration is made up of all
  * the tasks being handled by this Catalog Generator.
  *
+ * @deprecated Instead see {@link thredds.server.cataloggen.CatGenConfig} which is used by {@link thredds.server.cataloggen.CatGenController}.
  */
 class CatGenServletConfig
 {

@@ -51,6 +51,8 @@ import java.io.PrintWriter;
  * In the TDS, this is mapped to "/thredds/cataloggen/*" and access to these
  * URLs requires user authentication.
  *
+ * @deprecated Instead see {@link thredds.server.cataloggen.CatGenController}
+ *
  * @author Ethan Davis
  */
 public class CatGenServlet extends AbstractServlet
