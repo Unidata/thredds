@@ -748,36 +748,26 @@ public class GridIndexToNC {
   private String findVariableName(NetcdfFile ncfile, GridRecord gr,
     GridTableLookup lookup, FmrcCoordSys fmr) {
 
-//    FmrcDefinition  fdrs = (FmrcDefinition) fmr;
-//    List<FmrcDefinition.RunSeq> rs =  fdrs.getRunSequences();
-//    System.out.println( "Sequence vars" );
-//    for (FmrcDefinition.RunSeq runSeq : rs) {
-//      System.out.println( runSeq.getName() );
-//      for (FmrcDefinition.Grid grid : runSeq.vars) {
-//        System.out.println( grid.name );
-//      }
-//
-//    }
     // first lookup with name & vert name
     String name = makeVariableName(gr, lookup);
-    System.out.println( "name ="+ name );
+    //System.out.println( "name ="+ name );
     if (fmr.hasVariable( name))
       return name;
 
     // now try just the name
     String pname = lookup.getParameter(gr).getDescription();
-    System.out.println( "pname ="+ pname );
+    //System.out.println( "pname ="+ pname );
     if (fmr.hasVariable( pname))
       return pname;
 
     // try replacing the blanks
     String nameWunder = StringUtil.replace(name, ' ', "_");
-    System.out.println( "nameWunder ="+ nameWunder );
+    //System.out.println( "nameWunder ="+ nameWunder );
     if (fmr.hasVariable( nameWunder))
       return nameWunder;
 
     String pnameWunder = StringUtil.replace(pname, ' ', "_");
-    System.out.println( "pnameWunder ="+ pnameWunder );
+    //System.out.println( "pnameWunder ="+ pnameWunder );
     if (fmr.hasVariable( pnameWunder))
       return pnameWunder;
 
