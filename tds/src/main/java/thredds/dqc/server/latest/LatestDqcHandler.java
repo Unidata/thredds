@@ -30,7 +30,6 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-// $Id: LatestDqcHandler.java 51 2006-07-12 17:13:13Z caron $
 package thredds.dqc.server.latest;
 
 import javax.servlet.http.HttpServletRequest;
@@ -459,18 +458,3 @@ public class LatestDqcHandler extends DqcHandler
     return ( buf.toString() );
   }
 }
-/*
- * $Log: LatestDqcHandler.java,v $
- * Revision 1.3  2006/01/20 20:42:04  caron
- * convert logging
- * use nj22 libs
- *
- * Revision 1.2  2005/10/03 22:35:41  edavis
- * Minor fixes for LatestDqcHandler.
- *
- * Revision 1.1  2005/09/30 21:51:37  edavis
- * Improve "Latest" DqcHandler so it can deal with new IDD naming conventions:
- * new configuration file format; add LatestDqcHandler which handles new and old
- * config file formats; use LatestDqcHandler as a proxy for LatestModel.
- *
- */

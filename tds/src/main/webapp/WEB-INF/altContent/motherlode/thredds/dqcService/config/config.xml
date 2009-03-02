@@ -7,17 +7,12 @@
         <bean name='latestModel'
           description='Provide Access to Latest Model Runs.'
           handlerClassName='thredds.dqc.server.latest.LatestDqcHandler'
-          handlerConfigFileName='configDqcHandler.latestModel-InvCat0.6.xml' />
+          handlerConfigFileName='configDqcHandler.latestModel-InvCat1.0.xml' />
 
         <bean name='latestModelNew'
           description='Provide Access to Latest Model Runs.'
           handlerClassName='thredds.dqc.server.latest.LatestDqcHandler'
-          handlerConfigFileName='configDqcHandler.latestModel-InvCat0.6.xml' />
-
-        <bean name='latestModel-InvCat0.6'
-          description='Provide Access to Latest Model Runs.'
-          handlerClassName='thredds.dqc.server.latest.LatestDqcHandler'
-          handlerConfigFileName='configDqcHandler.latestModel-InvCat0.6.xml' />
+          handlerConfigFileName='configDqcHandler.latestModel-InvCat1.0.xml' />
 
         <bean name='latestModel-InvCat1.0'
           description='Provide Access to Latest Model Runs.'
@@ -27,12 +22,7 @@
         <bean name='latestModel-InvCat1.0.TDS-nc'
           description='Provide Access to Latest Model Runs.'
           handlerClassName='thredds.dqc.server.latest.LatestDqcHandler'
-          handlerConfigFileName='configDqcHandler.latestModel-InvCat1.0.TDS-nc.xml' />
-
-        <!--bean name='latestModel'
-          description='Provide Access to Latest Model Runs - Test setup of DQC servlet.'
-          handlerClassName='thredds.dqc.server.LatestModel'
-          handlerConfigFileName='configDqcHandler.latestModel.xml' /-->
+          handlerConfigFileName='configDqcHandler.latestModel-InvCat1.0.xml' />
 
       </beanCollection>
     </map>

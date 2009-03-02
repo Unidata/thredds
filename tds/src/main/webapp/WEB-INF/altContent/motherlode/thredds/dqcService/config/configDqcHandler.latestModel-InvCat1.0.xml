@@ -39,15 +39,6 @@
   <latestItem id="nam_211" refid="NAM_CONUS_80km"/>
   <latestItem id="eta_211" refid="NAM_CONUS_80km"/>
 
-  <!-- NGM 80km CONUS (was ngm_211) -->
-  <!--latestItem id="NGM_CONUS_80km" name="NGM 80km CONUS"
-              dirLocation="/data/ldm/pub/decoded/netcdf/grid/NCEP/NGM/CONUS_80km"
-              datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nc$"
-              datasetTimeSubstitutionPattern="$1-$2-$3T$4:$5:00"
-              serviceBaseURL="/thredds/dodsC/modelsNc/NCEP/NGM/CONUS_80km/"
-              invCatSpecVersion="1.0" dqcSpecVersion="0.3"/>
-  <latestItem id="ngm_211" refid="NGM_CONUS_80km"/-->
-
   <!-- RUC 80km CONUS (was ruc_211) -->
   <latestItem id="RUC_CONUS_80km" name="RUC 80km CONUS"
               dirLocation="/data/ldm/pub/decoded/netcdf/grid/NCEP/RUC/CONUS_80km"
@@ -92,9 +83,5 @@
               serviceBaseURL="/thredds/dodsC/modelsNc/NCEP/OCEAN/Global_5x2p5deg/"
               invCatSpecVersion="1.0" dqcSpecVersion="0.3"/>
   <latestItem id="ocean_21-24" refid="OCEAN_Global_5x2p5deg"/>
-
-  <!-- WSETA ??? (was wseta) -->
-  <!--latestItem id="WSETA_255" name="Workstation Eta (locally run)" ... /-->
-  <!--latestItem id="wseta" refid="WSETA_255" /-->
 
 </latestConfig>
