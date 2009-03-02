@@ -153,7 +153,7 @@ public class LocalCatalogServiceController extends AbstractController
           throws Exception
   {
     // Gather diagnostics for logging request.
-    log.info( UsageLog.setupRequestContext( request ));
+    log.info( "handleRequestInternal(): " + UsageLog.setupRequestContext( request ));
 
     // Bind HTTP request to a LocalCatalogRequest.
     BindingResult bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( request, this.htmlView );
@@ -165,8 +165,8 @@ public class LocalCatalogServiceController extends AbstractController
       List<ObjectError> oeList = bindingResult.getAllErrors();
       for ( ObjectError e : oeList )
         msg.append( ": " ).append( e.toString() );
-      log.error( "handleRequestInternal(): " + msg );
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ) );
+      log.info( "handleRequestInternal(): " + msg );
+      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ) );
       response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
       return null;
     }
@@ -191,7 +191,7 @@ public class LocalCatalogServiceController extends AbstractController
     {
       String msg = "Bad URI syntax [" + baseUriString + "]: " + e.getMessage();
       log.error( "handleRequestInternal(): " + msg );
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ) );
+      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ) );
       response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
       return null;
     }
@@ -206,7 +206,7 @@ public class LocalCatalogServiceController extends AbstractController
       if ( this.htmlView )
       {
         int i = HtmlWriter.getInstance().writeCatalog( response, (InvCatalogImpl) catalog, true );
-        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, i ) );
+        log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, i ) );
         return null;
         // return constructModelForCatalogView( catalog, this.htmlView );
       }
@@ -220,8 +220,8 @@ public class LocalCatalogServiceController extends AbstractController
       if ( dataset == null )
       {
         String msg = "Did not find dataset [" + datasetId + "] in catalog [" + baseUriString + "].";
-        log.error( "handleRequestInternal(): " + msg );
-        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ) );
+        log.info( "handleRequestInternal(): " + msg );
+        log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ) );
         response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
         return null;
       }
@@ -229,7 +229,7 @@ public class LocalCatalogServiceController extends AbstractController
       if ( this.htmlView)
       {
         int i = HtmlWriter.getInstance().showDataset( baseUriString, (InvDatasetImpl) dataset, request, response, true );
-        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, i ) );
+        log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, i ) );
         return null;
       }
       else
@@ -242,7 +242,7 @@ public class LocalCatalogServiceController extends AbstractController
     {
       String msg = "Unsupported request command [" + catalogServiceRequest.getCommand() + "].";
       log.error( "handleRequestInternal(): " + msg + " -- NOTE: Should have been caught on input validation." );
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length()));
+      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length()));
       response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
       return null;
     }
@@ -256,7 +256,7 @@ public class LocalCatalogServiceController extends AbstractController
     // If not supporting access to public document files, send not found response.
     if ( this.catalogSupportOnly )
     {
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, 0 ) );
+      log.info( "handlePublicDocumentRequest(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, 0 ) );
       response.sendError( HttpServletResponse.SC_NOT_FOUND );
       return null;
     }
@@ -268,7 +268,7 @@ public class LocalCatalogServiceController extends AbstractController
 
     // If request doesn't match a public document, hand to default.
     tdsContext.getDefaultRequestDispatcher().forward( request, response );
-    log.info( UsageLog.closingMessageForRequestContext( -1, -1 ) );
+    log.info( "handlePublicDocumentRequest(): " + UsageLog.closingMessageForRequestContext( -1, -1 ) );
     return null;
   }
 }
