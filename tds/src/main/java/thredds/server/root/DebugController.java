@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import thredds.servlet.DebugHandler;
+import thredds.servlet.UsageLog;
 import thredds.server.config.TdsContext;
 
 /**
@@ -48,6 +49,8 @@ import thredds.server.config.TdsContext;
  * @since 4.0
  */
 public class DebugController extends AbstractController {
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+
   private TdsContext tdsContext;
 
   public void setTdsContext(TdsContext tdsContext) {
@@ -55,6 +58,8 @@ public class DebugController extends AbstractController {
   }
 
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    log.info( "handleRequestInternal(): " + UsageLog.setupRequestContext( req ) );
+
     String path = req.getPathInfo();
     if (path == null) path = "";
 

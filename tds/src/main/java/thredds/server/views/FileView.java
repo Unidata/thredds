@@ -102,7 +102,7 @@ public class FileView extends AbstractView
     {
       // ToDo Send error or throw exception to be handled by Spring exception handling stuff.
 //      throw new IllegalArgumentException( "File must exist and not be a directory." );
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, 0 ) );
+      log.info( "renderMergedOutputModel(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, 0 ) );
       res.sendError( HttpServletResponse.SC_BAD_REQUEST );
       return;
     }

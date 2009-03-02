@@ -64,6 +64,7 @@ public class DirDisplayController extends AbstractController {
   }
 
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    log.info( "handleRequestInternal(): " + UsageLog.setupRequestContext( req ) );
 
     String path = req.getPathInfo();
     if (path == null) path = "";
