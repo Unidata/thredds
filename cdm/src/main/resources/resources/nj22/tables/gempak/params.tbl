@@ -38,15 +38,15 @@
 001 Minimum 6 hour temperature        F                    T6NF             0  -9999.00        0         0
 001 Daily weather map maximum temp    F                    DMAX             0  -9999.00        0         0
 001 Daily weather map minimum temp    F                    DMIN             0  -9999.00        0         0
-001 Sea Surface Temperature           C                    SSTC             0  -9999.00        0         0
-001 Sea Surface Temperature           C                    SSTM             0  -9999.00        0         0
+001 Sea Surface Temperature           degC                 SSTC             0  -9999.00        0         0
+001 Sea Surface Temperature           degC                 SSTM             0  -9999.00        0         0
 001 Sea Surface Temperature           F                    SSTF             0  -9999.00        0         0
-001 Temperature of lifted surface air C                    LTMP             0  -9999.00        0         0
+001 Temperature of lifted surface air degC                 LTMP             0  -9999.00        0         0
 ! Moisture
-002 Dew-point temperature             C                    DWPC             0  -9999.00        0         0
+002 Dew-point temperature             degC                 DWPC             0  -9999.00        0         0
 002 Dew-point temperature             F                    DWPF             0  -9999.00        0         0
 002 Dew-point temperature             K                    DWPK             0  -9999.00        0         0
-002 Dew-point depression(or deficit)  C                    DPDC             0  -9999.00        0         0
+002 Dew-point depression(or deficit)  degC                 DPDC             0  -9999.00        0         0
 002 Dew-point depression(or deficit)  F                    DPDF             0  -9999.00        0         0
 002 Dew-point depression(or deficit)  K                    DPDK             0  -9999.00        0         0
 002 Mixing ratio                      g/kg                 MIXR             0  -9999.00        0         0
@@ -55,7 +55,7 @@
 002 Saturated surface mixing ratio    g/kg                 SMXS             0  -9999.00        0         0
 002 Relative humidity                 %                    RELH             0  -9999.00        0         0
 002 Wet bulb temperature              K                    TMWK             0  -9999.00        0         0
-002 Wet bulb temperature              C                    TMWC             0  -9999.00        0         0
+002 Wet bulb temperature              degC                 TMWC             0  -9999.00        0         0
 002 Wet bulb temperature              F                    TMWF             0  -9999.00        0         0
 002 Vapor pressure                    millibar             VAPR             0  -9999.00        0         0
 002 Saturation Vapor pressure         millibar             VAPS             0  -9999.00        0         0
