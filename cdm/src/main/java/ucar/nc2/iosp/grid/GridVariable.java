@@ -44,6 +44,7 @@ import ucar.nc2.units.DateFormatter;
 import ucar.grid.GridRecord;
 import ucar.grid.GridTableLookup;
 import ucar.grid.GridParameter;
+import ucar.unidata.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -331,6 +332,7 @@ public class GridVariable {
         }
 
         //vname = StringUtil.replace(vname, '-', "_"); // Done in dods server now
+        vname = StringUtil.replace(vname, ' ', "_");  
         Variable v = new Variable(ncfile, g, null, vname);
         v.setDataType(DataType.FLOAT);
 
