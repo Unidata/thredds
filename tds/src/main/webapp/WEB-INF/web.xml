@@ -326,11 +326,11 @@
     <load-on-startup>3</load-on-startup>
   </servlet>
 
-  <servlet>
+  <!-- servlet>
     <servlet-name>MetarSubsetService</servlet-name>
     <servlet-class>thredds.server.ncSubset.StationObsServlet</servlet-class>
     <load-on-startup>5</load-on-startup>
-  </servlet>
+  </servlet -->
 
   <servlet>
     <servlet-name>GridSubsetService</servlet-name>
@@ -498,7 +498,7 @@
   </servlet-mapping>
 
   <!-- data services -->
-  <servlet-mapping>
+  <!-- servlet-mapping>
     <servlet-name>MetarSubsetService</servlet-name>
     <url-pattern>/ncss/metars</url-pattern>
   </servlet-mapping>
@@ -506,7 +506,7 @@
   <servlet-mapping>
     <servlet-name>MetarSubsetService</servlet-name>
     <url-pattern>/ncss/metars/*</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping -->
 
   <servlet-mapping>
     <servlet-name>GridSubsetService</servlet-name>

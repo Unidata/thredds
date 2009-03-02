@@ -5,6 +5,9 @@ Build Date = @BUILDTIME@
 Changes in version 4.0
 
  Release Details:
+  36:
+   FileCache now has name and nicer log messages; log to 'cacheLogger'
+   NetcdfFile.isClosed didnt work for cache
   35:
     NcML: <aggregation> allows elements to modify each dataset in the aggregation, before it is aggregated.
       this allows datasets to be made into grids for fmrc, for example.

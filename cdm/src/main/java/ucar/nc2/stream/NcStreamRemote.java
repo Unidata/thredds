@@ -126,8 +126,8 @@ public class NcStreamRemote extends ucar.nc2.NetcdfFile {
 
   @Override
   protected Array readData(ucar.nc2.Variable v, Section section) throws IOException, InvalidRangeException {
-    if (isClosed)
-      throw new IllegalStateException("File is closed");
+    if (unlocked)
+      throw new IllegalStateException("File is unlocked - cannot use");
     
     StringBuilder sbuff = new StringBuilder(remoteURI);
     sbuff.append("?");

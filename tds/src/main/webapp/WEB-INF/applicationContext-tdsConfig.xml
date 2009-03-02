@@ -53,7 +53,7 @@
 
   <!-- A Singleton class to initialize the CDM -->
   <bean name="cdmInit" class="thredds.server.config.CdmInit" destroy-method="destroy">
-    <property name="fmrcDefinitionDirectory" value="WEB-INF/altContent/idd/thredds/modelInventory" />
+    <property name="fmrcDefinitionDirectory" value="WEB-INF/altContent/idd/thredds/modelInventory/" />
   </bean>
 
     <!-- JMX -->

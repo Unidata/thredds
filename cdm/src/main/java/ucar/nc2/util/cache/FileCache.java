@@ -79,7 +79,7 @@ import ucar.nc2.util.CancelTask;
 
 @ThreadSafe
 public class FileCache {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCache.class);
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger("cacheLogger");
   static private ScheduledExecutorService exec;
   static private boolean debugPrint = false;
   static private boolean debugCleanup = false;
@@ -95,6 +95,7 @@ public class FileCache {
 
    /////////////////////////////////////////////////////////////////////////////////////////
 
+  private String name;
   private final int softLimit, minElements, hardLimit;
 
   private final ConcurrentHashMap<Object, CacheElement> cache;
@@ -116,7 +117,7 @@ public class FileCache {
    * @param period              (secs) do periodic cleanups every this number of seconds.
    */
   public FileCache(int minElementsInMemory, int maxElementsInMemory, int period) {
-    this( minElementsInMemory, maxElementsInMemory, -1, period);
+    this( "", minElementsInMemory, maxElementsInMemory, -1, period);
   }
 
   /**
@@ -128,6 +129,20 @@ public class FileCache {
    * @param period    if > 0, do periodic cleanups every this number of seconds.
    */
   public FileCache(int minElementsInMemory, int softLimit, int hardLimit, int period) {
+    this("", minElementsInMemory, softLimit, hardLimit, period);
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param name of file cache
+   * @param minElementsInMemory keep this number in the cache
+   * @param softLimit trigger a cleanup if it goes over this number.
+   * @param hardLimit if > 0, never allow more than this many elements. This causes a cleanup to be done in the calling thread.
+   * @param period    if > 0, do periodic cleanups every this number of seconds.
+   */
+  public FileCache(String name, int minElementsInMemory, int softLimit, int hardLimit, int period) {
+    this.name = name;
     this.minElements = minElementsInMemory;
     this.softLimit = softLimit;
     this.hardLimit = hardLimit;
@@ -139,6 +154,7 @@ public class FileCache {
       if (exec == null)
         exec = Executors.newSingleThreadScheduledExecutor();
       exec.scheduleAtFixedRate(new CleanupTask(), period, period, TimeUnit.SECONDS);
+      log.debug("FileCache "+name+" cleanup every "+period+" secs");
     }
   }
 
@@ -203,8 +219,8 @@ public class FileCache {
 
     // open the file
     ncfile = factory.open(location, buffer_size, cancelTask, spiObject);
-    if (log.isDebugEnabled()) log.debug("FileCache.acquire " + hashKey+" "+ncfile.getLocation());
-    if (debugPrint) System.out.println("  FileCache.acquire " + hashKey+" "+ncfile.getLocation());
+    if (log.isDebugEnabled()) log.debug("FileCache "+name+" acquire " + hashKey+" "+ncfile.getLocation());
+    if (debugPrint) System.out.println("  FileCache "+name+" acquire " + hashKey+" "+ncfile.getLocation());
 
     // user may have canceled
     if ((cancelTask != null) && (cancelTask.isCancel())) {
@@ -274,10 +290,10 @@ public class FileCache {
     if (ncfile != null) {
       try {
         ncfile.sync();
-        if (log.isDebugEnabled()) log.debug("FileCache.aquire from cache " + hashKey+" "+ncfile.getLocation());
-        if (debugPrint) System.out.println("  FileCache.aquire from cache " + hashKey+" "+ncfile.getLocation());
+        if (log.isDebugEnabled()) log.debug("FileCache "+name+" aquire from cache " + hashKey+" "+ncfile.getLocation());
+        if (debugPrint) System.out.println("  FileCache "+name+" aquire from cache " + hashKey+" "+ncfile.getLocation());
       } catch (IOException e) {
-        log.error("FileCache.synch failed on " + ncfile.getLocation() + " " + e.getMessage());
+        log.error("FileCache "+name+" synch failed on " + ncfile.getLocation() + " " + e.getMessage());
       }
     }
 
@@ -304,15 +320,15 @@ public class FileCache {
     CacheElement.CacheFile file = files.get(ncfile);
     if (file != null) {
       if (!file.isLocked.get())
-        log.warn("FileCache.release " + ncfile.getLocation() + " not locked");
+        log.warn("FileCache "+name+" release " + ncfile.getLocation() + " not locked");
       file.lastAccessed = System.currentTimeMillis();
       file.countAccessed++;
       file.isLocked.set(false);
-      if (log.isDebugEnabled()) log.debug("FileCache.release " + ncfile.getLocation());
-      if (debugPrint) System.out.println("  FileCache.release " + ncfile.getLocation());
+      if (log.isDebugEnabled()) log.debug("FileCache "+name+" release " + ncfile.getLocation());
+      if (debugPrint) System.out.println("  FileCache "+name+" release " + ncfile.getLocation());
       return;
     }
-    throw new IOException("FileCache.release does not have file in cache = " + ncfile.getLocation());
+    throw new IOException("FileCache "+name+" release does not have file in cache = " + ncfile.getLocation());
   }
 
   /**
@@ -363,7 +379,7 @@ public class FileCache {
     // close all files in deleteList
     for (CacheElement.CacheFile file : deleteList) {
       if (force && file.isLocked.get())
-        log.warn("FileCache force close locked file= " + file);
+        log.warn("FileCache "+name+" force close locked file= " + file);
       counter.decrementAndGet();
 
       try {
@@ -371,10 +387,10 @@ public class FileCache {
         file.ncfile.close();
         file.ncfile = null; // help the gc
       } catch (IOException e) {
-        log.error("FileCache.close failed on " + file);
+        log.error("FileCache "+name+" close failed on " + file);
       }
     }
-    log.debug("*FileCache.clearCache force= " + force + " deleted= " + deleteList.size() + " left=" + counter.get());
+    log.debug("*FileCache "+name+" clearCache force= " + force + " deleted= " + deleteList.size() + " left=" + counter.get());
     //System.out.println("\n*NetcdfFileCache.clearCache force= " + force + " deleted= " + deleteList.size() + " left=" + counter.get());
   }
 
@@ -391,8 +407,9 @@ public class FileCache {
     }
     Collections.sort(allFiles); // sort so oldest are on top
 
+    format.format("FileCache %s (%d):%n", name, allFiles.size());
     for (CacheElement.CacheFile file : allFiles) {
-      format.format("  %s\n", file);
+      format.format("  %s%n", file);
     }
   }
 
@@ -435,8 +452,8 @@ public class FileCache {
     int size = counter.get();
     if (size <= minElements) return;
 
-    log.debug("FileCache.cleanup started at "+new Date()+" for cleanup maxElements="+maxElements);
-    if (debugCleanup) System.out.println("FileCache.cleanup started at "+new Date().getTime()+" for cleanup maxElements="+maxElements);
+    log.debug("FileCache "+name+" cleanup started at "+new Date()+" for cleanup maxElements="+maxElements);
+    if (debugCleanup) System.out.println("FileCache "+name+"cleanup started at "+new Date().getTime()+" for cleanup maxElements="+maxElements);
 
     cleanups.incrementAndGet();
 
@@ -463,8 +480,8 @@ public class FileCache {
       }
     }
     if (count < minDelete) {
-      log.warn("FileCache.cleanup couldnt removed enough to keep under the maximum= " + maxElements + " due to locked files; currently at = " + (size - count));
-      if (debugCleanup) System.out.println("FileCache.cleanup couldnt removed enough to keep under the maximum= " + maxElements + " due to locked files; currently at = " + (size - count));
+      log.warn("FileCache "+name+" cleanup couldnt removed enough to keep under the maximum= " + maxElements + " due to locked files; currently at = " + (size - count));
+      if (debugCleanup) System.out.println("FileCache "+name+"cleanup couldnt removed enough to keep under the maximum= " + maxElements + " due to locked files; currently at = " + (size - count));
     }
 
     // remove empty cache elements
@@ -487,13 +504,13 @@ public class FileCache {
         file.ncfile.close();
         file.ncfile = null; // help the gc
       } catch (IOException e) {
-        log.error("FileCache.close failed on " + file.getCacheName());
+        log.error("FileCache "+name+" close failed on " + file.getCacheName());
       }
     }
 
     long took = System.currentTimeMillis() - start;
-    log.debug("FileCache.cleanup had= " + size + " removed= " + deleteList.size() + " took=" + took + " msec");
-    if (debugCleanup) System.out.println("FileCache.cleanup had= " + size + " removed= " + deleteList.size() + " took=" + took + " msec");
+    log.debug("FileCache "+name+" cleanup had= " + size + " removed= " + deleteList.size() + " took=" + took + " msec");
+    if (debugCleanup) System.out.println("FileCache "+name+"cleanup had= " + size + " removed= " + deleteList.size() + " took=" + took + " msec");
 
     // allow scheduling again
     hasScheduled.set(false);
@@ -508,7 +525,7 @@ public class FileCache {
       CacheFile file = new CacheFile(ncfile);
       list.add(file);
       files.put(ncfile, file);
-      if (log.isDebugEnabled()) log.debug("CacheElement add to cache " + hashKey);
+      if (log.isDebugEnabled()) log.debug("CacheElement add to cache " + hashKey+" "+name);
     }
 
     CacheFile addFile(FileCacheable ncfile) {
@@ -536,8 +553,8 @@ public class FileCache {
 
         ncfile.setFileCache( FileCache.this);
 
-        if (log.isDebugEnabled()) log.debug("FileCache add to cache " + hashKey);
-        if (debugPrint) System.out.println("  FileCache add to cache " + hashKey);
+        if (log.isDebugEnabled()) log.debug("FileCache "+name+" add to cache " + hashKey);
+        if (debugPrint) System.out.println("  FileCache "+name+" add to cache " + hashKey);
       }
 
       String getCacheName() { return ncfile.getLocation(); }
@@ -546,8 +563,8 @@ public class FileCache {
         synchronized (CacheElement.this) {
           list.remove(this);
         }
-        if (log.isDebugEnabled()) log.debug("FileCache.remove " + ncfile.getLocation());
-        if (debugPrint) System.out.println("  FileCache.remove " + ncfile.getLocation());
+        if (log.isDebugEnabled()) log.debug("FileCache "+name+" remove " + ncfile.getLocation());
+        if (debugPrint) System.out.println("  FileCache "+name+" remove " + ncfile.getLocation());
       }
 
       public String toString() {

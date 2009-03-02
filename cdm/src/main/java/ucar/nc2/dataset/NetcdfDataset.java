@@ -294,7 +294,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param period              (secs) do periodic cleanups every this number of seconds.
    */
   static public void initNetcdfFileCache(int minElementsInMemory, int maxElementsInMemory, int period) {
-    fileCache = new ucar.nc2.util.cache.FileCache(minElementsInMemory, maxElementsInMemory, period);
+    fileCache = new ucar.nc2.util.cache.FileCache("NetcdfFileCache ", minElementsInMemory, maxElementsInMemory, -1, period);
     defaultNetcdfFileFactory = new MyNetcdfFileFactory();
   }
 
@@ -308,7 +308,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param period              (secs) do periodic cleanups every this number of seconds.
    */
   static public void initNetcdfFileCache(int minElementsInMemory, int maxElementsInMemory, int hardLimit, int period) {
-    fileCache = new ucar.nc2.util.cache.FileCache(minElementsInMemory, maxElementsInMemory, hardLimit, period);
+    fileCache = new ucar.nc2.util.cache.FileCache("NetcdfFileCache ", minElementsInMemory, maxElementsInMemory, hardLimit, period);
     defaultNetcdfFileFactory = new MyNetcdfFileFactory();
   }
 
@@ -930,11 +930,11 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    */
   @Override
   public synchronized void close() throws java.io.IOException {
-    if (isClosed) return;
     if (agg != null) agg.persistWrite(); // LOOK  maybe only on real close ??
 
     if (cache != null) {
       cache.release(this);
+      unlocked = true;
 
     } else {
       if (agg != null) agg.close();
@@ -943,7 +943,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       orgFile = null;
     }
 
-    isClosed = true;
   }
 
   /*
@@ -970,7 +969,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @throws IOException
    */
   public boolean sync() throws IOException {
-    isClosed = false;
+    unlocked = false;
 
     if (agg != null)
       return agg.sync();
@@ -982,7 +981,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   public boolean syncExtend() throws IOException {
-    isClosed = false;
+    unlocked = false;
 
     if (agg != null)
       return agg.syncExtend(false);

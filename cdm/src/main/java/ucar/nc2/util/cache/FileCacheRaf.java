@@ -64,12 +64,11 @@ import java.io.IOException;
  * @author jcaron
  */
 public class FileCacheRaf {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCacheRaf.class);
   private FileCache cache;
   private FileFactory factory;
 
   public FileCacheRaf(int minElementsInMemory, int maxElementsInMemory, int period) {
-    cache = new FileCache(minElementsInMemory, maxElementsInMemory, period);
+    cache = new FileCache("FileCacheRaf", minElementsInMemory, maxElementsInMemory, -1, period);
     factory = new RafFactory();
   }
 

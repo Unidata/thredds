@@ -680,7 +680,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   ////////////////////////////////////////////////////////////////////////////////////////////////
   protected String location, id, title, cacheName;
   protected Group rootGroup = makeRootGroup();
-  protected boolean isClosed = false; // raf is closed OR in the cache but not locked
+  protected boolean unlocked = false; // in the cache but not locked
   private boolean immutable = false;
 
   protected ucar.nc2.util.cache.FileCache cache;
@@ -695,8 +695,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * Is the dataset closed, and not available for use.
    * @return true if closed
    */
-  public synchronized boolean isClosed() {
-    return isClosed;
+  public synchronized boolean isUnlocked() {
+    return unlocked;
   }
 
   /**
@@ -706,10 +706,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @throws java.io.IOException if error when closing
    */
   public synchronized void close() throws java.io.IOException {
-    if (isClosed) return;
-
     if (cache != null) {
       cache.release(this);
+      unlocked = true;
 
     } else {
       try {
@@ -718,8 +717,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
         spi = null;
       }
     }
-
-    isClosed = true;
   }
 
   /**
@@ -1087,7 +1084,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @throws IOException if error
    */
   public boolean syncExtend() throws IOException {
-    isClosed = false;
+    unlocked = false;
     return (spi != null) && spi.syncExtend();
   }
 
@@ -1100,7 +1097,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @throws IOException if error
    */
   public boolean sync() throws IOException {
-    isClosed = false;
+    unlocked = false;
     return (spi != null) && spi.sync();
   }
 
@@ -1617,8 +1614,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   protected Array readData(ucar.nc2.Variable v, Section ranges) throws IOException, InvalidRangeException {
     if (showRequest)
       System.out.println("Data request for variable: "+v.getName()+" section= "+ranges);
-    if (isClosed)
-      throw new IllegalStateException("File is closed");
+    if (unlocked)
+      throw new IllegalStateException("File is unlocked - cannot use");
 
     Array result = spi.readData(v, ranges);
     result.setUnsigned(v.isUnsigned());
@@ -1641,8 +1638,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   public long readToByteChannel(ucar.nc2.Variable v, Section section, WritableByteChannel wbc)
        throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
-    if (isClosed)
-      throw new IllegalStateException("File is closed");
+    if (unlocked)
+      throw new IllegalStateException("File is unlocked - cannot use");
 
     // LOOK: should go through Variable for caching ??
     return spi.readToByteChannel(v, section, wbc);
@@ -1719,8 +1716,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
    */
   public Array readSection(String variableSection) throws IOException, InvalidRangeException {
-    if (isClosed)
-      throw new IllegalStateException("File is closed");
+    if (unlocked)
+      throw new IllegalStateException("File is unlocked - cannot use");
 
     ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
     if (cer.child == null) {
