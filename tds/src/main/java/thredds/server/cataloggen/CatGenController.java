@@ -155,12 +155,29 @@ public class CatGenController extends AbstractController
       return;
     }
 
+    // Make sure we can write the results files.
+    for ( CatGenTaskConfig curTask : this.catGenConfig.getTaskInfoList() )
+    {
+      if ( curTask.getResultFileName().startsWith( "/" ))
+      {
+        File curResultFileParentDir = new File( this.tdsContext.getContentDirectory(),
+                                                curTask.getResultFileName() ).getParentFile();
+        // Try to create the parent directory if it doesn't exist.
+        if ( ! curResultFileParentDir.exists()
+             && ! curResultFileParentDir.mkdirs() )
+        {
+          log.warn( "init(): CatGenConfig Task [" + curTask.getName() + "]: Results directory doesn't exist and its creation failed." );
+          return;
+        }
+      }
+    }
     if ( ! this.catGenConfig.getTaskInfoList().isEmpty() )
     {
       this.scheduler = new CatGenTaskScheduler( this.catGenConfig,
                                                 this.catGenConfigDir,
-                                                this.catGenResultsDir );
-      this.scheduler.start( this.tdsContext.getContentDirectory() );
+                                                this.catGenResultsDir,
+                                                this.tdsContext.getContentDirectory() );
+      this.scheduler.start();
     }
     log.info( "init(): " + UsageLog.closingMessageNonRequestContext() );
   }

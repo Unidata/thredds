@@ -57,15 +57,17 @@ public class CatGenTaskScheduler
   private final CatGenConfig config;
   private final File configDir;
   private final File resultDir;
+  private final File altResultsDir;
 
-  CatGenTaskScheduler( CatGenConfig config, File configDir, File resultDir)
+  CatGenTaskScheduler( CatGenConfig config, File configDir, File resultDir, File altResultsDir )
   {
     this.config = config;
     this.configDir = configDir;
     this.resultDir = resultDir;
+    this.altResultsDir = altResultsDir;
   }
   
-  void start( File altResultsDir )
+  void start()
   {
     for ( CatGenTaskConfig curTask : config.getTaskInfoList())
     {
