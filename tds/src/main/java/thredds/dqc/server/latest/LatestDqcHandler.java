@@ -367,7 +367,8 @@ public class LatestDqcHandler extends DqcHandler
     String catalogAsString = null;
     if ( reqItem.getInvCatSpecVersion().equals( "0.6" ) )
     {
-      catalogAsString = fac.writeXML_0_6( catalog );
+      log.warn( "createCatalog(): LatestDqcHandler configured to generate \"0.6\" InvCatalogs. Version \"0.6\" no longer supported." );
+      //catalogAsString = fac.writeXML_0_6( catalog );
     }
     else if ( reqItem.getInvCatSpecVersion().startsWith( "1.0" ) )
     {
