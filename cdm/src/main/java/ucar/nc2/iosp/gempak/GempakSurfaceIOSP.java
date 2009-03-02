@@ -344,10 +344,10 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
             for (StructureMembers.Member member : mbers) {
                 if (stnKeyNames.contains(member.getName())) {
                     int varSize = getStnVarSize(member.getName());
-                    member.setDataParam(varSize);
+                    member.setDataParam(ssize);
                     ssize += varSize;
                 } else if ( !timeSet) {
-                    member.setDataParam(8);
+                    member.setDataParam(ssize);
                     ssize   += 8;
                     timeSet = true;
                 } else {
