@@ -199,16 +199,16 @@ public class DebugCommands {
         e.pw.println(ServletUtil.showRequestDetail(ThreddsDefaultServlet.this, e.req));
       }
     };
-    debugHandler.addAction(act);
+    debugHandler.addAction(act);  */
 
-    act = new DebugHandler.Action("showServerInfo", "Show Server info") {
+    act = new DebugHandler.Action("showSystemProperties", "Show Server info") {
       public void doAction(DebugHandler.Event e) {
-        ServletUtil.showServerInfo(ThreddsDefaultServlet.this, e.pw);
+        ServletUtil.showServerInfo(e.pw);
       }
     };
     debugHandler.addAction(act);
 
-    act = new DebugHandler.Action("showServletInfo", "Show Servlet info") {
+    /* act = new DebugHandler.Action("showServletInfo", "Show Servlet info") {
       public void doAction(DebugHandler.Event e) {
         ServletUtil.showServletInfo(ThreddsDefaultServlet.this, e.pw);
       }

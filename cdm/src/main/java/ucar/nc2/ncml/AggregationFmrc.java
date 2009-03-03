@@ -495,6 +495,9 @@ public class AggregationFmrc extends AggregationOuterDimension {
 
     // LOOK: could make this concurrent
     List<Dataset> nestedDatasets = getDatasets();
+    if ((nestedDatasets == null) || (nestedDatasets.size() == 0)) {
+      System.out.printf("HEY!!!");
+    }
     for (Dataset nested : nestedDatasets) {
       DatasetOuterDimension dod = (DatasetOuterDimension) nested;
       if (!dod.isNeeded(joinRange))

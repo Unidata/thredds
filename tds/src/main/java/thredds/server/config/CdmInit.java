@@ -35,6 +35,7 @@ package thredds.server.config;
 
 import thredds.servlet.ThreddsConfig;
 import thredds.servlet.ServletUtil;
+import thredds.servlet.FmrcInventoryServlet;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.cache.FileCacheRaf;
 import ucar.nc2.util.DiskCache2;
@@ -64,6 +65,7 @@ public class CdmInit {
 
   void init(TdsContext tdsContext) {
     AggregationFmrc.setDefinitionDirectory(new File(tdsContext.getRootDirectory(), fmrcDefinitionDirectory));
+    FmrcInventoryServlet.setDefinitionDirectory(new File(tdsContext.getRootDirectory(), fmrcDefinitionDirectory));
 
     // NetcdfFileCache : default is allow 200 - 400 open files, cleanup every 10 minutes
     int min = ThreddsConfig.getInt("NetcdfFileCache.minFiles", 200);

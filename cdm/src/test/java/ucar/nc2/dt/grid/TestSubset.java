@@ -35,6 +35,7 @@ package ucar.nc2.dt.grid;
 import junit.framework.TestCase;
 import ucar.ma2.*;
 import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.NCdump;
@@ -676,6 +677,21 @@ public class TestSubset extends TestCase {
     assert shape[1] == 559;
     assert shape[2] == 399;
 
+
+    dataset.close();
+  }
+
+  public void testProblem() throws Exception {
+    String filename = "dods://motherlode.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/NAM/Alaska_11km/NCEP-NAM-Alaska_11km_best.ncd";
+    GridDataset dataset = GridDataset.open(filename);
+    GeoGrid grid = dataset.findGridByName("Geopotential_height");
+    assert null != grid;
+
+    GridCoordSystem gcs = grid.getCoordinateSystem();
+    CoordinateAxis1D zaxis = gcs.getVerticalAxis();
+    float zCoord = 10000;
+    int zidx = zaxis.findCoordElement( zCoord);
+    assert zidx == 28 : zidx;
 
     dataset.close();
   }

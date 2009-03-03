@@ -562,7 +562,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
 
   public boolean readDefinitionXML(String xmlLocation) throws IOException {
     File xml = new File(xmlLocation);
-    if (!xml.exists()) throw new FileNotFoundException(xmlLocation);
+    if (!xml.exists()) return false;
 
     InputStream is = new BufferedInputStream( new FileInputStream( xmlLocation));
     org.jdom.Document doc;

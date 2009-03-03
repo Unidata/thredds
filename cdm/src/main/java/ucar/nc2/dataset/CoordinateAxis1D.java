@@ -549,7 +549,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
         else low = mid;
       }
 
-      return high;
+      return high-1;
     }
   }
 

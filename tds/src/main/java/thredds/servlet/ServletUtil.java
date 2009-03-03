@@ -777,7 +777,7 @@ public class ServletUtil
     }
   }
 
-  static public void showServerInfo(HttpServlet servlet, PrintStream out) {
+  static public void showServerInfo(PrintStream out) {
     out.println("Server Info");
     out.println(" getDocumentBuilderFactoryVersion(): " + XMLEntityResolver.getDocumentBuilderFactoryVersion());
     out.println();

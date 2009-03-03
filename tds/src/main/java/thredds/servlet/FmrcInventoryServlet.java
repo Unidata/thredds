@@ -57,24 +57,11 @@ import thredds.catalog.InvDatasetFmrc;
 public class FmrcInventoryServlet extends AbstractServlet {
   private ucar.nc2.util.DiskCache2 fmrCache = null;
   private boolean debug = false;
-  private String defPath; // default path where definition files are kept
-  // private HashMap paramHash = new HashMap();  // key=path value=FmrcInventoryParams
-
-  public void init() throws ServletException {
-    super.init();
-
-    defPath = ServletUtil.getRootPath()+"WEB-INF/altContent/idd/thredds/modelInventory";
-
-    // remove caching in favor of creating these files when the grib indexer is run, externally as ldm user
-    // cache the fmr inventory xml: keep for 10 days, scour once a day */
-    //fmrCache = new ucar.nc2.util.DiskCache2(contentPath+"/cache", false, 60 * 24 * 10, 60 * 24);
-    //fmrCache.setCachePathPolicy( DiskCache2.CACHEPATH_POLICY_NESTED_TRUNCATE, "grid/");
+  private static String defPath; // default path where definition files are kept
+  
+  static public void setDefinitionDirectory(File defDir) {
+    defPath = defDir.getPath() + '/';
   }
-
-  /* public void destroy() {
-    if (fmrCache != null)
-      fmrCache.exit();
-  } */
 
   protected String getPath() { return "modelInventory/"; }
   protected void makeDebugActions() { }

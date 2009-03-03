@@ -700,7 +700,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
 
     act = new DebugHandler.Action("showServerInfo", "Show Server info") {
       public void doAction(DebugHandler.Event e) {
-        ServletUtil.showServerInfo(ThreddsDefaultServlet.this, e.pw);
+        ServletUtil.showServerInfo(e.pw);
       }
     };
     debugHandler.addAction(act);

@@ -91,6 +91,9 @@ public class DiskCache2 {
       if (home == null)
         home = ".";
 
+      if (!home.endsWith("/"))
+        home = home + "/";
+
       root = home + root;
     }
     setRootDirectory(root);

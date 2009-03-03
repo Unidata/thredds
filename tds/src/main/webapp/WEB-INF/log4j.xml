@@ -71,7 +71,7 @@
 
   <!-- special loggers -->
   <logger name="cacheLogger" additivity="false">
-    <level value="ALL"/>
+    <level value="WARN"/>
     <appender-ref ref="cacheLog"/>
   </logger>
 

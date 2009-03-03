@@ -1397,11 +1397,15 @@ public class FmrcInventory {
     */
    public static FmrcInventory makeFromCatalog(String catURL, String collectionName, int maxDatasets, int mode) throws Exception {
 
+    DiskCache2 cache =  new DiskCache2("fmrcInventory/", true, 0, -1); // dont scour - messes up the TDS!
+    String fmrcDefinitionPath = cache.getRootDirectory()+"/defs/";
+
      System.out.println("***makeFromCatalog "+catURL);
      long startTime = System.currentTimeMillis();
      FmrcInventory fmrCollection = new FmrcInventory(fmrcDefinitionPath, collectionName);
 
-     CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.USE_ALL_DIRECT, false, new MyListener(fmrCollection, maxDatasets, mode));
+     CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.USE_ALL_DIRECT, false,
+             new MyListener(fmrCollection, maxDatasets, mode, cache));
      crawler.crawl(catURL, null, System.out);
      fmrCollection.finish();
 
@@ -1414,15 +1418,17 @@ public class FmrcInventory {
 
   private static class MyListener implements CatalogCrawler.Listener {
     FmrcInventory fmrCollection;
+    DiskCache2 cache;
     int maxDatasets;
     int mode, count;
     boolean first = true;
 
-    MyListener(FmrcInventory fmrCollection, int maxDatasets, int mode) {
+    MyListener(FmrcInventory fmrCollection, int maxDatasets, int mode, DiskCache2 cache) {
       this.fmrCollection = fmrCollection;
       this.maxDatasets = maxDatasets;
       this.mode = mode;
       this.count = 0;
+      this.cache = cache;
     }
 
     public void getDataset(InvDataset dd) {
@@ -1459,10 +1465,6 @@ public class FmrcInventory {
     public boolean getCatalogRef(InvCatalogRef dd) { return true; }
 
   }
-
-  private static DiskCache2 cache =  new DiskCache2("fmrcInventory/", true, 0, -1); // dont scour - messes up the TDS!
-  private static String fmrcDefinitionPath = cache.getRootDirectory()+"/defs/";
-
 
   public static void main4(String args[]) throws Exception {
     /* String work = "R:/testdata/motherlode/grid2/";
