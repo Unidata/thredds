@@ -9,6 +9,9 @@
 
   <bean id="rootController" class="thredds.server.root.RootController" >
     <property name="tdsContext" ref="tdsContext"/>
+
+    <property name="supportedMethods" value="GET" />
+    <property name="cacheSeconds" value="600" />
   </bean>
 
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">

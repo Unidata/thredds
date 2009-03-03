@@ -7,10 +7,14 @@
 
   <bean id="debugController" class="thredds.server.root.DebugController">
     <property name="tdsContext" ref="tdsContext"/>
+
+    <property name="supportedMethods" value="GET"/>
   </bean>
 
   <bean id="dirDisplayController" class="thredds.server.root.DirDisplayController" >
     <property name="tdsContext" ref="tdsContext"/>
+
+    <property name="supportedMethods" value="GET"/>
   </bean>
 
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">

@@ -24,15 +24,23 @@
   </tr>
 
   <c:forEach var="curItem" items="${catGenConfig.taskInfoList}">
+    <c:choose>
+      <c:when test="${fn:startsWith(curItem.resultFileName, '/')}">
+        <c:url var="curResultUrl" value="${curItem.resultFileName}" />
+      </c:when>
+      <c:otherwise>
+        <c:url var="curResultUrl" value="/${catGenResultsDirName}/${curItem.resultFileName}" />
+      </c:otherwise>
+    </c:choose>
+
     <tr>
       <td>${curItem.name}</td>
-      <td><a href="${contextPath}${servletPath}/${curItem.configDocName}">${curItem.configDocName}</a></td>
-      <td><a href="${contextPath}${servletPath}/${curItem.resultFileName}">${curItem.resultFileName}</a></td>
+      <td>${curItem.configDocName}</td>
+      <td><a href="<c:out value='${curResultUrl}' />">${curItem.resultFileName}</a></td>
       <td>${curItem.periodInMinutes}</td>
       <td>${curItem.delayInMinutes}</td>
     </tr>
   </c:forEach>
-
 </tbody>
 </table>
 

@@ -15,6 +15,7 @@
     <property name="catGenConfigFileName" value="config.xml"/>
     <property name="catGenResultsDirName" value="cataloggen/catalogs"/>
 
+    <property name="supportedMethods" value="GET" />
   </bean>
 
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">

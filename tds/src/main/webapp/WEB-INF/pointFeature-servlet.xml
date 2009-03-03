@@ -8,6 +8,8 @@
   <bean id="pointStreamController" class="thredds.server.ncstream.PointStreamController" >
     <property name="tdsContext" ref="tdsContext"/>
     <property name="allow" value="true"/>
+
+    <property name="supportedMethods" value="GET"/>
   </bean>
 
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">

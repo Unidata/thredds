@@ -12,6 +12,8 @@
     <property name="tdsContext" ref="tdsContext"/>
     <property name="dqcConfigDirName" value="dqcService/config" />
     <property name="dqcConfigFileName" value="config.xml" />
+
+    <property name="supportedMethods" value="GET"/>
   </bean>
 
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">

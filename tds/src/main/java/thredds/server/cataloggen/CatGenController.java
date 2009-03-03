@@ -37,6 +37,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.RequestDispatcher;
 import java.io.IOException;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -158,15 +159,17 @@ public class CatGenController extends AbstractController
     // Make sure we can write the results files.
     for ( CatGenTaskConfig curTask : this.catGenConfig.getTaskInfoList() )
     {
-      if ( curTask.getResultFileName().startsWith( "/" ))
+      String curTaskResultFileName = curTask.getResultFileName();
+      if ( curTaskResultFileName.startsWith( "/" ))
       {
+        curTaskResultFileName.substring( 1 );
         File curResultFileParentDir = new File( this.tdsContext.getContentDirectory(),
-                                                curTask.getResultFileName() ).getParentFile();
+                                                curTaskResultFileName ).getParentFile();
         // Try to create the parent directory if it doesn't exist.
         if ( ! curResultFileParentDir.exists()
              && ! curResultFileParentDir.mkdirs() )
         {
-          log.warn( "init(): CatGenConfig Task [" + curTask.getName() + "]: Results directory doesn't exist and its creation failed." );
+          log.warn( "init(): CatGenConfig Task [" + curTask.getName() + "]: Non-existent results directory [" + curResultFileParentDir + "] couldn't be created." );
           return;
         }
       }
@@ -210,6 +213,7 @@ public class CatGenController extends AbstractController
       model.put( "contextPath", request.getContextPath() );
       model.put( "servletPath", request.getServletPath() );
       model.put( "catGenConfig", this.catGenConfig );
+      model.put( "catGenResultsDirName", this.catGenResultsDirName );
 
       this.tdsContext.getTdsConfigHtml().addHostInstitutionInfoToMap( model );
       this.tdsContext.getTdsConfigHtml().addInstallationInfoToMap( model );
@@ -217,6 +221,17 @@ public class CatGenController extends AbstractController
 
       log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
       return new ModelAndView( "/thredds/server/cataloggen/catGenConfig", model );
+    }
+    else
+    {
+      String extendedPath = request.getServletPath() + reqPath;
+      if ( extendedPath.startsWith( "/" + this.catGenResultsDirName + "/") )
+      {
+        RequestDispatcher rd = request.getRequestDispatcher( "/catalog" + extendedPath );
+        rd.forward( request, response );
+        return null;
+      }
+
     }
       return new ModelAndView( "editTask", "config", "junk" );
     //return new ModelAndView( "thredds/server/cataloggen/index", "config", this.config );

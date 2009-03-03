@@ -11,28 +11,38 @@
     <property name="tdsContext" ref="tdsContext"/>
     <property name="catalogSupportOnly" value="false"/>
     <property name="htmlView" value="false"/>
+
+    <property name="supportedMethods" value="GET"/>
   </bean>
 
   <bean id="anyHtmlController" class="thredds.server.catalogservice.LocalCatalogServiceController">
     <property name="tdsContext" ref="tdsContext"/>
     <property name="catalogSupportOnly" value="false"/>
     <property name="htmlView" value="true"/>
+
+    <property name="supportedMethods" value="GET"/>
   </bean>
 
   <bean id="catalogXmlController" class="thredds.server.catalogservice.LocalCatalogServiceController">
     <property name="tdsContext" ref="tdsContext"/>
     <property name="catalogSupportOnly" value="true"/>
     <property name="htmlView" value="false"/>
+
+    <property name="supportedMethods" value="GET"/>
   </bean>
 
   <bean id="catalogHtmlController" class="thredds.server.catalogservice.LocalCatalogServiceController">
     <property name="tdsContext" ref="tdsContext"/>
     <property name="catalogSupportOnly" value="true"/>
     <property name="htmlView" value="true"/>
+
+    <property name="supportedMethods" value="GET"/>
   </bean>
 
   <bean id="remoteCatalogController" class="thredds.server.catalogservice.RemoteCatalogServiceController">
     <property name="tdsContext" ref="tdsContext"/>
+
+    <property name="supportedMethods" value="GET"/>
   </bean>
 
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">

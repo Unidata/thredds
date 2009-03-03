@@ -190,21 +190,36 @@ public class DqcServiceController extends AbstractController
 
       // Check whether full path is the handler name
       String handlerName = reqPath;
-      log.debug( "handleRequestInternal(): Attempt to find \"" + handlerName + "\" handler (1)." );
+      log.debug( "handleRequestInternal(): Attempt to find \"" + handlerName + "\" handler." );
       DqcServletConfigItem reqHandlerInfo = this.dqcConfig.findItem( handlerName );
 
       // Check if DQC document is being requested, i.e., <handler name>.xml
       if ( reqHandlerInfo == null && reqPath.endsWith( ".xml" ) )
       {
         handlerName = reqPath.substring( 0, reqPath.length() - 4 );
-        log.debug( "handleRequestInternal(): Attempt to find \"" + handlerName + "\" handler (2)." );
+        log.debug( "handleRequestInternal(): Attempt to find \"" + handlerName + "\" handler ('.xml')." );
         reqHandlerInfo = this.dqcConfig.findItem( handlerName );
+      }
+      // Check if DQC document is being requested, i.e., <handler name>.html
+      if ( reqHandlerInfo == null && reqPath.endsWith( ".html" ) )
+      {
+        handlerName = reqPath.substring( 0, reqPath.length() - 5 );
+        log.debug( "handleRequestInternal(): Attempt to find \"" + handlerName + "\" handler ('.html')." );
+        reqHandlerInfo = this.dqcConfig.findItem( handlerName );
+        if ( reqHandlerInfo != null )
+        {
+          String msg = "Not currently handling HTML views of DQC documents.";
+          log.info( "handleRequestInternal(): " + msg + " - "
+                    + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ) );
+          response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg );
+          return null;
+        }
       }
       // Check if handler name is first part of path before slash ('/').
       if ( reqHandlerInfo == null && reqPath.indexOf( '/' ) != -1 )
       {
         handlerName = reqPath.substring( 0, reqPath.indexOf( '/' ) );
-        log.debug( "handleRequestInternal(): Attempt to find \"" + handlerName + "\" handler. (3)" );
+        log.debug( "handleRequestInternal(): Attempt to find \"" + handlerName + "\" handler. ('/')" );
         reqHandlerInfo = this.dqcConfig.findItem( handlerName );
       }
       if ( reqHandlerInfo == null )

@@ -44,6 +44,7 @@ import javax.servlet.ServletContext;
 
 import thredds.servlet.ServletUtil;
 import thredds.server.config.TdsContext;
+import thredds.util.TdsPathUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -102,7 +103,7 @@ public class RootController extends AbstractController implements LastModified
   protected ModelAndView handleRequestInternal( HttpServletRequest req, HttpServletResponse res )
           throws Exception
   {
-    String path = getPath( req );
+    String path = TdsPathUtils.extractPath( req );
     if ( path.equals( "/" ))
     {
       String newPath = tdsContext.getContextPath() + "/catalog.html";
@@ -121,7 +122,7 @@ public class RootController extends AbstractController implements LastModified
 
   public long getLastModified( HttpServletRequest req )
   {
-    String path = getPath( req );
+    String path = TdsPathUtils.extractPath( req );
     File file = tdsContext.getPublicDocFileSource().getFile( path );
     if ( file == null )
       return -1;
@@ -129,20 +130,5 @@ public class RootController extends AbstractController implements LastModified
     if ( lastModTime == 0L )
       return -1;
     return lastModTime;
-  }
-
-  private String getPath( HttpServletRequest req )
-  {
-    String path = req.getPathInfo();
-    if ( path == null || path.equals( "" ) )
-      path = req.getServletPath();
-
-    if ( path == null )
-      return null;
-
-    if ( ! path.equals( "/" ) )
-      path = StringUtils.trimLeadingCharacter( path, '/' );
-
-    return path;
   }
 }

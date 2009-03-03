@@ -106,10 +106,10 @@
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>admin</servlet-name>
   </filter-mapping>
-  <!-- filter-mapping>
+  <!--filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>MetarSubsetService</servlet-name>
-  </filter-mapping -->
+  </filter-mapping-->
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>GridSubsetService</servlet-name>
@@ -192,7 +192,7 @@
     <servlet-name>catalogGen</servlet-name>
   </filter-mapping>
 
-  <filter-mapping>
+  <!--filter-mapping>
     <filter-name>Cache10dayFilter</filter-name>
     <url-pattern>/folder.gif</url-pattern>
   </filter-mapping>
@@ -210,7 +210,7 @@
   <filter-mapping>
     <filter-name>Cache10dayFilter</filter-name>
     <url-pattern>/upc.css</url-pattern>
-  </filter-mapping>
+  </filter-mapping-->
 
   <!--
      Location of the Log4J config file, for initialization.
