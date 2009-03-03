@@ -237,7 +237,9 @@ public abstract class BaseQuantity implements Base, Comparable<BaseQuantity>,
 	 */
 	@Override
 	public int hashCode() {
-		return getName().toLowerCase().hashCode() ^ getSymbol().hashCode();
+		return getName().toLowerCase().hashCode() ^ (getSymbol() == null
+				? 0
+				: getSymbol().hashCode());
 	}
 
 	/**
