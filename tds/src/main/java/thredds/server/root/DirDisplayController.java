@@ -80,9 +80,12 @@ public class DirDisplayController extends AbstractController {
     }
 
     File file = null;
-    if (path.startsWith("/content/")) {
+    if (path.startsWith("/content/"))
+    {
+      // Check in content/thredds directory (which includes content/thredds/public).
       file = new File(tdsContext.getContentDirectory(), path.substring(9));
-      if ( file == null )
+      // If not found, check in content/thredds and altContent (but not content/thredds/public).
+      if ( ! file.exists() )
         file = tdsContext.getConfigFileSource().getFile( path.substring(9));
     } else if (path.startsWith("/logs/")) {
       file = new File(tdsContext.getTomcatLogDirectory(), path.substring(6));
