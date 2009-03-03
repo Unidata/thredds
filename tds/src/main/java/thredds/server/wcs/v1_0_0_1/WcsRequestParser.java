@@ -167,11 +167,12 @@ public class WcsRequestParser
       {
         log.debug( "parseRequest(): Invalid request operation [" + requestParam + "].");
       }
-        throw new WcsException( WcsException.Code.InvalidParameterValue, "Request", "Invalid requested operation [" + requestParam + "]." );
-      }
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "Request", "Invalid requested operation [" + requestParam + "]." );
+    }
     catch ( WcsException e )
     {
-      gridDataset.close();
+      if ( gridDataset != null )
+        gridDataset.close();
       throw e;
     }
   }
