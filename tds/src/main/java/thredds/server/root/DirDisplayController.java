@@ -82,7 +82,8 @@ public class DirDisplayController extends AbstractController {
     File file = null;
     if (path.startsWith("/content/")) {
       file = new File(tdsContext.getContentDirectory(), path.substring(9));
-
+      if ( file == null )
+        file = tdsContext.getConfigFileSource().getFile( path.substring(9));
     } else if (path.startsWith("/logs/")) {
       file = new File(tdsContext.getTomcatLogDirectory(), path.substring(6));
     }
