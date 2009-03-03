@@ -34,24 +34,23 @@
 package ucar.units;
 
 /**
- * Provides support for prefix database access failures.  This is not used
- * in the default implementation but could be used for remote database
- * implementations, for example.
- *
+ * Provides support for prefix database access failures. This is not used in the
+ * default implementation but could be used for remote database implementations,
+ * for example.
+ * 
  * @author Steven R. Emmerson
  * @version $Id: PrefixDBAccessException.java 64 2006-07-12 22:30:50Z edavis $
  */
-public class
-PrefixDBAccessException
-    extends	PrefixDBException
-{
-    /**
-     * Constructs from an error message.
-     * @param reason		The reason the database couldn't be accessed.
-     */
-    public
-    PrefixDBAccessException(String reason)
-    {
-	super("Couldn't access unit-prefix database: " + reason);
-    }
+public class PrefixDBAccessException extends PrefixDBException {
+	private static final long	serialVersionUID	= 1L;
+
+	/**
+	 * Constructs from an error message.
+	 * 
+	 * @param reason
+	 *            The reason the database couldn't be accessed.
+	 */
+	public PrefixDBAccessException(final String reason) {
+		super("Couldn't access unit-prefix database: " + reason);
+	}
 }

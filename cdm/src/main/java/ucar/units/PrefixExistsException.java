@@ -35,23 +35,23 @@ package ucar.units;
 
 /**
  * Provides support for prefix database failures.
- *
+ * 
  * @author Steven R. Emmerson
  * @version $Id: PrefixExistsException.java 64 2006-07-12 22:30:50Z edavis $
  */
-public class
-PrefixExistsException
-    extends	PrefixDBException
-{
-    /**
-     * Constructs from an old prefix and a new prefix.
-     * @param oldPrefix		The previously-existing prefix.
-     * @param newPrefix		The replacement prefix.
-     */
-    public
-    PrefixExistsException(Prefix oldPrefix, Prefix newPrefix)
-    {
-	super("Attempt to replace \"" + oldPrefix + "\" with \"" +
-	    newPrefix + "\" in prefix database");
-    }
+public class PrefixExistsException extends PrefixDBException {
+	private static final long	serialVersionUID	= 1L;
+
+	/**
+	 * Constructs from an old prefix and a new prefix.
+	 * 
+	 * @param oldPrefix
+	 *            The previously-existing prefix.
+	 * @param newPrefix
+	 *            The replacement prefix.
+	 */
+	public PrefixExistsException(final Prefix oldPrefix, final Prefix newPrefix) {
+		super("Attempt to replace \"" + oldPrefix + "\" with \"" + newPrefix
+				+ "\" in prefix database");
+	}
 }

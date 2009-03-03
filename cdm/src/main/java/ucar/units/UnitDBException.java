@@ -35,39 +35,38 @@ package ucar.units;
 
 /**
  * Provides support for general unit database failures.
- *
+ * 
  * @author Steven R. Emmerson
  * @version $Id: UnitDBException.java 64 2006-07-12 22:30:50Z edavis $
  */
-public class
-UnitDBException
-    extends	UnitException
-{
-    /**
-     * Constructs from nothing.
-     */
-    protected
-    UnitDBException()
-    {}
+public class UnitDBException extends UnitException {
+	private static final long	serialVersionUID	= 1L;
 
-    /**
-     * Constructs from an error message.
-     * @param message		The error message.
-     */
-    public
-    UnitDBException(String message)
-    {
-	super(message);
-    }
+	/**
+	 * Constructs from nothing.
+	 */
+	protected UnitDBException() {
+	}
 
-    /**
-     * Constructs from a message and the exception that caused the failure.
-     * @param message		The message.
-     * @param e			The exeception that cause the the failure.
-     */
-    public
-    UnitDBException(String message, Exception e)
-    {
-	super(message, e);
-    }
+	/**
+	 * Constructs from an error message.
+	 * 
+	 * @param message
+	 *            The error message.
+	 */
+	public UnitDBException(final String message) {
+		super(message);
+	}
+
+	/**
+	 * Constructs from a message and the exception that caused the failure.
+	 * 
+	 * @param message
+	 *            The message.
+	 * @param e
+	 *            The exeception that cause the the failure.
+	 */
+	public UnitDBException(final String message, final Exception e) {
+		super(message, e);
+	}
 }

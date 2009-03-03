@@ -35,32 +35,33 @@ package ucar.units;
 
 /**
  * Provides support for unit division failures.
+ * 
  * @author Steven R. Emmerson
  * @version $Id: DivideException.java 64 2006-07-12 22:30:50Z edavis $
  */
-public final class
-DivideException
-    extends	OperationException
-{
-    /**
-     * Constructs from a unit that can't be divided.
-     * @param unit		The unit that can't be divided.
-     */
-    public
-    DivideException(Unit unit)
-    {
-	super("Can't divide unit \"" + unit + "\"");
-    }
+public final class DivideException extends OperationException {
+	private static final long	serialVersionUID	= 1L;
 
-    /**
-     * Constructs from dividend and divisor units.
-     * @param numerator		The unit attempting to be divided.
-     * @param denominator	The unit attempting to divide.
-     */
-    public
-    DivideException(Unit numerator, Unit denominator)
-    {
-	super("Can't divide unit \"" + numerator + "\" by unit \"" + 
-	    denominator + "\"");
-    }
+	/**
+	 * Constructs from a unit that can't be divided.
+	 * 
+	 * @param unit
+	 *            The unit that can't be divided.
+	 */
+	public DivideException(final Unit unit) {
+		super("Can't divide unit \"" + unit + "\"");
+	}
+
+	/**
+	 * Constructs from dividend and divisor units.
+	 * 
+	 * @param numerator
+	 *            The unit attempting to be divided.
+	 * @param denominator
+	 *            The unit attempting to divide.
+	 */
+	public DivideException(final Unit numerator, final Unit denominator) {
+		super("Can't divide unit \"" + numerator + "\" by unit \""
+				+ denominator + "\"");
+	}
 }

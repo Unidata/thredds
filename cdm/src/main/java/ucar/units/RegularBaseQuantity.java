@@ -35,48 +35,50 @@ package ucar.units;
 
 /**
  * Provides support for a base quantity that is dimensionfull.
- *
+ * 
  * Instances of this class are immutable.
- *
+ * 
  * @author Steven R. Emmerson
  * @version $Id: RegularBaseQuantity.java 64 2006-07-12 22:30:50Z edavis $
  */
-public final class
-RegularBaseQuantity
-    extends	BaseQuantity
-{
-    /**
-     * Constructs from a name and symbol.
-     * @param name		The name of the base unit.
-     * @param symbol		The symbol of the base unit.
-     */
-    public
-    RegularBaseQuantity(String name, String symbol)
-	throws NameException
-    {
-	super(name, symbol);
-    }
+public final class RegularBaseQuantity extends BaseQuantity {
+	private static final long	serialVersionUID	= 1L;
 
-    /**
-     * Constructs from a name and a symbol.  This is a trusted constructor
-     * for use by the parent class only.
-     * @param name		The name of the base unit.
-     * @param symbol		The symbol of the base unit.
-     */
-    protected
-    RegularBaseQuantity(String name, String symbol, boolean trusted)
-    {
-	super(name, symbol, trusted);
-    }
+	/**
+	 * Constructs from a name and symbol.
+	 * 
+	 * @param name
+	 *            The name of the base unit.
+	 * @param symbol
+	 *            The symbol of the base unit.
+	 */
+	public RegularBaseQuantity(final String name, final String symbol)
+			throws NameException {
+		super(name, symbol);
+	}
 
-    /**
-     * Indicates if this base quantity is dimensionless.  Regular base
-     * quantities are always dimensionfull.
-     * @return			<code>false</code>.
-     */
-    public boolean
-    isDimensionless()
-    {
-	return false;
-    }
+	/**
+	 * Constructs from a name and a symbol. This is a trusted constructor for
+	 * use by the parent class only.
+	 * 
+	 * @param name
+	 *            The name of the base unit.
+	 * @param symbol
+	 *            The symbol of the base unit.
+	 */
+	protected RegularBaseQuantity(final String name, final String symbol,
+			final boolean trusted) {
+		super(name, symbol, trusted);
+	}
+
+	/**
+	 * Indicates if this base quantity is dimensionless. Regular base quantities
+	 * are always dimensionfull.
+	 * 
+	 * @return <code>false</code>.
+	 */
+	@Override
+	public boolean isDimensionless() {
+		return false;
+	}
 }

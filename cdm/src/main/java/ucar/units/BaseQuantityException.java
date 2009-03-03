@@ -37,27 +37,24 @@ import java.io.Serializable;
 
 /**
  * Provides support for base quantity exceptions.
+ * 
  * @author Steven R. Emmerson
  * @version $Id: BaseQuantityException.java 64 2006-07-12 22:30:50Z edavis $
  */
-public abstract class
-BaseQuantityException
-    extends	UnitException
-    implements	Serializable
-{
-    /**
-     * Constructs from nothing.
-     */
-    public
-    BaseQuantityException()
-    {}
+public abstract class BaseQuantityException extends UnitException implements
+		Serializable {
+	private static final long	serialVersionUID	= 1L;
 
-    /**
-     * Constructs from a message.
-     */
-    public
-    BaseQuantityException(String message)
-    {
-	super(message);
-    }
+	/**
+	 * Constructs from nothing.
+	 */
+	public BaseQuantityException() {
+	}
+
+	/**
+	 * Constructs from a message.
+	 */
+	public BaseQuantityException(final String message) {
+		super(message);
+	}
 }

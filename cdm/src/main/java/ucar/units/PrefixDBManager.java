@@ -37,49 +37,42 @@ import java.io.Serializable;
 
 /**
  * Provides support for managing a database of unit prefixes.
- *
+ * 
  * @author Steven R. Emmerson
  * @version $Id: PrefixDBManager.java 64 2006-07-12 22:30:50Z edavis $
  */
-public final class
-PrefixDBManager
-    implements	Serializable
-{
-    /**
-     * @serial
-     */
-    private static PrefixDB	instance;
+public final class PrefixDBManager implements Serializable {
+	private static final long	serialVersionUID	= 1L;
+	/**
+	 * @serial
+	 */
+	private static PrefixDB		instance;
 
-    /**
-     * Gets the current prefix database.
-     * @return			The current prefix database.
-     * @throws PrefixDBException	The current prefix database couldn't 
-     *					be created.
-     */
-    public static final PrefixDB
-    instance()
-	throws PrefixDBException
-    {
-	if (instance == null)
-	{
-	    synchronized(PrefixDBManager.class)
-	    {
-		if (instance == null)
-		{
-		    instance = StandardPrefixDB.instance();
+	/**
+	 * Gets the current prefix database.
+	 * 
+	 * @return The current prefix database.
+	 * @throws PrefixDBException
+	 *             The current prefix database couldn't be created.
+	 */
+	public static final PrefixDB instance() throws PrefixDBException {
+		if (instance == null) {
+			synchronized (PrefixDBManager.class) {
+				if (instance == null) {
+					instance = StandardPrefixDB.instance();
+				}
+			}
 		}
-	    }
+		return instance;
 	}
-	return instance;
-    }
 
-    /**
-     * Sets the current prefix database.
-     * @param instance		The prefix database to be made the current one.
-     */
-    public static final synchronized void
-    setInstance(PrefixDB instance)
-    {
-	PrefixDBManager.instance = instance;
-    }
+	/**
+	 * Sets the current prefix database.
+	 * 
+	 * @param instance
+	 *            The prefix database to be made the current one.
+	 */
+	public static final synchronized void setInstance(final PrefixDB instance) {
+		PrefixDBManager.instance = instance;
+	}
 }

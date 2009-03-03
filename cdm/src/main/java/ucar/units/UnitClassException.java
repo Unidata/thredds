@@ -35,31 +35,30 @@ package ucar.units;
 
 /**
  * Provides support for a Unit that is an instance of an unknown class.
- *
+ * 
  * @author Steven R. Emmerson
  * @version $Id: UnitClassException.java 64 2006-07-12 22:30:50Z edavis $
  */
-public final class
-UnitClassException
-    extends	UnitFormatException
-{
-    /**
-     * Constructs from an error message.
-     * @param msg		The error message.
-     */
-    private
-    UnitClassException(String msg)
-    {
-	super(msg);
-    }
+public final class UnitClassException extends UnitFormatException {
+	private static final long	serialVersionUID	= 1L;
 
-    /**
-     * Constructs from the unit that's an instance of an unknown class.
-     * @param unit		The unknown unit.
-     */
-    public
-    UnitClassException(Unit unit)
-    {
-	this("\"" + unit.getClass().getName() + "\" is an unknown unit class");
-    }
+	/**
+	 * Constructs from an error message.
+	 * 
+	 * @param msg
+	 *            The error message.
+	 */
+	private UnitClassException(final String msg) {
+		super(msg);
+	}
+
+	/**
+	 * Constructs from the unit that's an instance of an unknown class.
+	 * 
+	 * @param unit
+	 *            The unknown unit.
+	 */
+	public UnitClassException(final Unit unit) {
+		this("\"" + unit.getClass().getName() + "\" is an unknown unit class");
+	}
 }

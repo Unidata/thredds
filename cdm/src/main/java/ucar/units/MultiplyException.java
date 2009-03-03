@@ -35,32 +35,32 @@ package ucar.units;
 
 /**
  * Provides support for unit multiplication failures.
- *
+ * 
  * @author Steven R. Emmerson
  * @version $Id: MultiplyException.java 64 2006-07-12 22:30:50Z edavis $
  */
-public final class
-MultiplyException
-    extends	OperationException
-{
-    /**
-     * Constructs from a unit that can't be multiplied.
-     * @param unit		The unit that can't be multiplied.
-     */
-    public
-    MultiplyException(Unit unit)
-    {
-	super("Can't multiply unit \"" + unit + '"');
-    }
+public final class MultiplyException extends OperationException {
+	private static final long	serialVersionUID	= 1L;
 
-    /**
-     * Constructs from two units.
-     * @param A			A unit attempting to be multiplied.
-     * @param B			The other unit attempting to be multiplied.
-     */
-    public
-    MultiplyException(Unit A, Unit B)
-    {
-	super("Can't multiply unit \"" + A + "\" by unit \"" + B + '"');
-    }
+	/**
+	 * Constructs from a unit that can't be multiplied.
+	 * 
+	 * @param unit
+	 *            The unit that can't be multiplied.
+	 */
+	public MultiplyException(final Unit unit) {
+		super("Can't multiply unit \"" + unit + '"');
+	}
+
+	/**
+	 * Constructs from two units.
+	 * 
+	 * @param A
+	 *            A unit attempting to be multiplied.
+	 * @param B
+	 *            The other unit attempting to be multiplied.
+	 */
+	public MultiplyException(final Unit A, final Unit B) {
+		super("Can't multiply unit \"" + A + "\" by unit \"" + B + '"');
+	}
 }

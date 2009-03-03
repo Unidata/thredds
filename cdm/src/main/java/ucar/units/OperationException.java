@@ -35,39 +35,39 @@ package ucar.units;
 
 /**
  * Provides support for unit operation failures (ex: multiplication).
+ * 
  * @author Steven R. Emmerson
  * @version $Id: OperationException.java 64 2006-07-12 22:30:50Z edavis $
  */
-public abstract class
-OperationException
-    extends	UnitException
-{
-    /**
-     * Constructs from nothing.
-     */
-    public
-    OperationException()
-    {}
+public abstract class OperationException extends UnitException {
+	private static final long	serialVersionUID	= 1L;
 
-    /**
-     * Constructs from an error message.
-     * @param message		The error message.
-     */
-    protected
-    OperationException(String message)
-    {
-	super(message);
-    }
+	/**
+	 * Constructs from nothing.
+	 */
+	public OperationException() {
+	}
 
-    /**
-     * Constructs from an error message and the exception that caused the
-     * problem.
-     * @param message		The error message.
-     * @param e			The exception that caused the problem.
-     */
-    protected
-    OperationException(String message, Exception e)
-    {
-	super(message, e);
-    }
+	/**
+	 * Constructs from an error message.
+	 * 
+	 * @param message
+	 *            The error message.
+	 */
+	protected OperationException(final String message) {
+		super(message);
+	}
+
+	/**
+	 * Constructs from an error message and the exception that caused the
+	 * problem.
+	 * 
+	 * @param message
+	 *            The error message.
+	 * @param e
+	 *            The exception that caused the problem.
+	 */
+	protected OperationException(final String message, final Exception e) {
+		super(message, e);
+	}
 }

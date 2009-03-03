@@ -37,103 +37,105 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 /**
- * Provides support for unknown base units.  This can be used, for example,
- * to accomodate an unknown unit (e.g. "foo").  Values in such a unit will
- * only be convertible with units derived from "foo" (e.g. "20 foo").
- *
+ * Provides support for unknown base units. This can be used, for example, to
+ * accomodate an unknown unit (e.g. "foo"). Values in such a unit will only be
+ * convertible with units derived from "foo" (e.g. "20 foo").
+ * 
  * @author Steven R. Emmerson
  * @version $Id: UnknownUnit.java 64 2006-07-12 22:30:50Z edavis $
  */
-public final class
-UnknownUnit
-    extends	BaseUnit
-{
-    /**
-     * The name-to-unit map.
-     * @serial
-     */
-    private static final SortedMap	map = new TreeMap();
+public final class UnknownUnit extends BaseUnit {
+	private static final long							serialVersionUID	= 1L;
+	/**
+	 * The name-to-unit map.
+	 * 
+	 * @serial
+	 */
+	private static final SortedMap<String, UnknownUnit>	map					= new TreeMap<String, UnknownUnit>();
 
-    /**
-     * Constructs from a name.
-     * @param name		The name of the unit.
-     */
-    private
-    UnknownUnit(String name)
-	throws NameException
-    {
-	super(UnitName.newUnitName(name, null, name), BaseQuantity.UNKNOWN);
-    }
-
-    /**
-     * Factory method for constructing an unknown unit from a name.
-     * @param name		The name of the unit.
-     * @return			The unknown unit.
-     * @throws NameException	<code>name == null</code>.
-     */
-    public static UnknownUnit
-    create(String name)
-	throws NameException
-    {
-	UnknownUnit	unit;
-	name = name.toLowerCase();
-	synchronized(map)
-	{
-	    unit = (UnknownUnit)map.get(name);
-	    if (unit == null)
-	    {
-		unit = new UnknownUnit(name);
-		map.put(unit.getName(), unit);
-		map.put(unit.getPlural(), unit);
-	    }
+	/**
+	 * Constructs from a name.
+	 * 
+	 * @param name
+	 *            The name of the unit.
+	 */
+	private UnknownUnit(final String name) throws NameException {
+		super(UnitName.newUnitName(name, null, name), BaseQuantity.UNKNOWN);
 	}
-	return unit;
-    }
 
-    /*
-     * From Unit:
-     */
+	/**
+	 * Factory method for constructing an unknown unit from a name.
+	 * 
+	 * @param name
+	 *            The name of the unit.
+	 * @return The unknown unit.
+	 * @throws NameException
+	 *             <code>name == null</code>.
+	 */
+	public static UnknownUnit create(String name) throws NameException {
+		UnknownUnit unit;
+		name = name.toLowerCase();
+		synchronized (map) {
+			unit = map.get(name);
+			if (unit == null) {
+				unit = new UnknownUnit(name);
+				map.put(unit.getName(), unit);
+				map.put(unit.getPlural(), unit);
+			}
+		}
+		return unit;
+	}
 
-    /**
-     * Indicates if this unit is semantically identical to an object.
-     * @param object		The object.
-     * @return			<code>true</code> if and ony if the object
-     *				<em>is</em> this unit.
-     */
-    public boolean
-    equals(Object object)
-    {
-	return
-	    object instanceof UnknownUnit
-		? getName().equalsIgnoreCase(((UnknownUnit)object).getName())
-		: object.equals(this);
-    }
+	/*
+	 * From Unit:
+	 */
 
-    /**
-     * Indicates if this unit is dimensionless.  An unknown unit is never
-     * dimensionless.
-     * @return			<code>false</code> always.
-     */
-    public boolean
-    isDimensionless()
-    {
-	return false;
-    }
+	/**
+	 * Indicates if this unit is semantically identical to an object.
+	 * 
+	 * @param object
+	 *            The object.
+	 * @return <code>true</code> if and ony if the object <em>is</em> this unit.
+	 */
+	@Override
+	public boolean equals(final Object object) {
+		return object instanceof UnknownUnit
+				? getName().equalsIgnoreCase(((UnknownUnit) object).getName())
+				: object.equals(this);
+	}
 
-    /**
-     * Tests this class.
-     */
-    public static void
-    main(String[] args)
-	throws Exception
-    {
-    	UnknownUnit	unit1 = UnknownUnit.create("a");
-	System.out.println("unit_a.equals(unit_a)=" + unit1.equals(unit1));
-	System.out.println("unit_a.isDimensionless()=" + 
-	    unit1.isDimensionless());
-    	UnknownUnit	unit2 = UnknownUnit.create("b");
-	System.out.println("unit_a.equals(unit_b)=" + unit1.equals(unit2));
-    	unit2 = UnknownUnit.create("A");
-	System.out.println("unit_a.equals(unit_A)=" + unit1.equals(unit2));
-    }
+	/**
+	 * Returns the hash code of this instance.
+	 * 
+	 * @return The hash code of this instance.
+	 */
+	@Override
+	public int hashCode() {
+		return getName().toLowerCase().hashCode();
+	}
+
+	/**
+	 * Indicates if this unit is dimensionless. An unknown unit is never
+	 * dimensionless.
+	 * 
+	 * @return <code>false</code> always.
+	 */
+	@Override
+	public boolean isDimensionless() {
+		return false;
+	}
+
+	/**
+	 * Tests this class.
+	 */
+	public static void main(final String[] args) throws Exception {
+		final UnknownUnit unit1 = UnknownUnit.create("a");
+		System.out.println("unit_a.equals(unit_a)=" + unit1.equals(unit1));
+		System.out.println("unit_a.isDimensionless()="
+				+ unit1.isDimensionless());
+		UnknownUnit unit2 = UnknownUnit.create("b");
+		System.out.println("unit_a.equals(unit_b)=" + unit1.equals(unit2));
+		unit2 = UnknownUnit.create("A");
+		System.out.println("unit_a.equals(unit_A)=" + unit1.equals(unit2));
+	}
 }

@@ -34,23 +34,22 @@
 package ucar.units;
 
 /**
- * Provides support for failures due to attempts to redefine an existing
- * unit in a unit database.
- *
+ * Provides support for failures due to attempts to redefine an existing unit in
+ * a unit database.
+ * 
  * @author Steven R. Emmerson
  * @version $Id: BadUnitException.java 64 2006-07-12 22:30:50Z edavis $
  */
-public final class
-BadUnitException
-    extends	UnitDBException
-{
-    /**
-     * Constructs from an error message.
-     * @param msg		The error message.
-     */
-    public
-    BadUnitException(String msg)
-    {
-	super(msg);
-    }
+public final class BadUnitException extends UnitDBException {
+	private static final long	serialVersionUID	= 1L;
+
+	/**
+	 * Constructs from an error message.
+	 * 
+	 * @param msg
+	 *            The error message.
+	 */
+	public BadUnitException(final String msg) {
+		super(msg);
+	}
 }

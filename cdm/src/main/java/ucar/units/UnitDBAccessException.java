@@ -34,23 +34,21 @@
 package ucar.units;
 
 /**
- * Provides support for failure to access unit database (e.g. RMI
- * failure).
- *
+ * Provides support for failure to access unit database (e.g. RMI failure).
+ * 
  * @author Steven R. Emmerson
  * @version $Id: UnitDBAccessException.java 64 2006-07-12 22:30:50Z edavis $
  */
-public class
-UnitDBAccessException
-    extends	UnitDBException
-{
-    /**
-     * Constructs from a string.
-     * @param reason		The reason for the failure.
-     */
-    public
-    UnitDBAccessException(String reason)
-    {
-	super("Couldn't access unit database: " + reason);
-    }
+public class UnitDBAccessException extends UnitDBException {
+	private static final long	serialVersionUID	= 1L;
+
+	/**
+	 * Constructs from a string.
+	 * 
+	 * @param reason
+	 *            The reason for the failure.
+	 */
+	public UnitDBAccessException(final String reason) {
+		super("Couldn't access unit database: " + reason);
+	}
 }

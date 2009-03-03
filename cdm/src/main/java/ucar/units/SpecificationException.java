@@ -35,35 +35,32 @@ package ucar.units;
 
 /**
  * Provides support for errors in unit string specifications.
- *
+ * 
  * @author Steven R. Emmerson
  * @version $Id: SpecificationException.java 64 2006-07-12 22:30:50Z edavis $
  */
-public class
-SpecificationException
-    extends	UnitException
-{
-    /**
-     * Constructs from an error message.
-     * @param reason		The error message.
-     */
-    public
-    SpecificationException(String reason)
-    {
-	super("Specification error: " + reason);
-    }
+public class SpecificationException extends UnitException {
+	private static final long	serialVersionUID	= 1L;
 
+	/**
+	 * Constructs from an error message.
+	 * 
+	 * @param reason
+	 *            The error message.
+	 */
+	public SpecificationException(final String reason) {
+		super("Specification error: " + reason);
+	}
 
-    /**
-     * Constructs from the string to be parsed and an error message.
-     * @param spec		The string to be parsed.
-     * @param reason		The error message.
-     */
-    public
-    SpecificationException(String spec, String reason)
-    {
-	super("Specification error in \"" + spec + "\": " + reason);
-    }
+	/**
+	 * Constructs from the string to be parsed and an error message.
+	 * 
+	 * @param spec
+	 *            The string to be parsed.
+	 * @param reason
+	 *            The error message.
+	 */
+	public SpecificationException(final String spec, final String reason) {
+		super("Specification error in \"" + spec + "\": " + reason);
+	}
 }
-
-

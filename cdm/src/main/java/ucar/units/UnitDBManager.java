@@ -37,51 +37,45 @@ import java.io.Serializable;
 
 /**
  * Provides support for managing a default unit database.
- *
+ * 
  * @author Steven R. Emmerson
  * @version $Id: UnitDBManager.java 64 2006-07-12 22:30:50Z edavis $
  */
-public final class
-UnitDBManager
-    implements	Serializable
-{
-    /**
-     * The singleton instance of the default unit database.
-     * @serial
-     */
-    private static UnitDB	instance;
+public final class UnitDBManager implements Serializable {
+	private static final long	serialVersionUID	= 1L;
+	/**
+	 * The singleton instance of the default unit database.
+	 * 
+	 * @serial
+	 */
+	private static UnitDB		instance;
 
-    /**
-     * Gets the default unit database.
-     * @return			The default unit database.
-     * @throws UnitDBException	The default unit database couldn't be
-     *				created.
-     */
-    public static final UnitDB
-    instance()
-	throws UnitDBException
-    {
-	if (instance == null)
-	{
-	    synchronized(UnitDBManager.class)
-	    {
-		if (instance == null)
-		{
-		    instance = StandardUnitDB.instance();
+	/**
+	 * Gets the default unit database.
+	 * 
+	 * @return The default unit database.
+	 * @throws UnitDBException
+	 *             The default unit database couldn't be created.
+	 */
+	public static final UnitDB instance() throws UnitDBException {
+		if (instance == null) {
+			synchronized (UnitDBManager.class) {
+				if (instance == null) {
+					instance = StandardUnitDB.instance();
+				}
+			}
 		}
-	    }
+		return instance;
 	}
-	return instance;
-    }
 
-    /**
-     * Sets the default unit database.  You'd better know what you're doing
-     * if you call this method!
-     * @param instance		The unit database to be made the default one.
-     */
-    public static final synchronized void
-    setInstance(UnitDB instance)
-    {
-	UnitDBManager.instance = instance;
-    }
+	/**
+	 * Sets the default unit database. You'd better know what you're doing if
+	 * you call this method!
+	 * 
+	 * @param instance
+	 *            The unit database to be made the default one.
+	 */
+	public static final synchronized void setInstance(final UnitDB instance) {
+		UnitDBManager.instance = instance;
+	}
 }

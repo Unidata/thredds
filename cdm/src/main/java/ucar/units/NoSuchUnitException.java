@@ -35,32 +35,30 @@ package ucar.units;
 
 /**
  * Provides support for failure to find a unit.
+ * 
  * @author Steven R. Emmerson
  * @version $Id: NoSuchUnitException.java 64 2006-07-12 22:30:50Z edavis $
  */
-public class
-NoSuchUnitException
-    extends	SpecificationException
-{
-    /**
-     * Constructs from a unit identifier.
-     * @param id		The identifier of the unit that couldn't be
-     *				found.
-     */
-    public
-    NoSuchUnitException(UnitID id)
-    {
-	this(id.toString());
-    }
+public class NoSuchUnitException extends SpecificationException {
+	private static final long	serialVersionUID	= 1L;
 
-    /**
-     * Constructs from a unit identifier.
-     * @param id		The identifier of the unit that couldn't be
-     *				found.
-     */
-    public
-    NoSuchUnitException(String id)
-    {
-	super("Unit \"" + id + "\" not in database");
-    }
+	/**
+	 * Constructs from a unit identifier.
+	 * 
+	 * @param id
+	 *            The identifier of the unit that couldn't be found.
+	 */
+	public NoSuchUnitException(final UnitID id) {
+		this(id.toString());
+	}
+
+	/**
+	 * Constructs from a unit identifier.
+	 * 
+	 * @param id
+	 *            The identifier of the unit that couldn't be found.
+	 */
+	public NoSuchUnitException(final String id) {
+		super("Unit \"" + id + "\" not in database");
+	}
 }

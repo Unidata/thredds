@@ -35,21 +35,20 @@ package ucar.units;
 
 /**
  * Provides support for failure to raise a unit to a power.
- *
+ * 
  * @author Steven R. Emmerson
  * @version $Id: RaiseException.java 64 2006-07-12 22:30:50Z edavis $
  */
-public final class
-RaiseException
-    extends	OperationException
-{
-    /**
-     * Constructs from the unit that couldn't be raised to a power.
-     * @param unit		The unit that couldn't be raised to a power.
-     */
-    public
-    RaiseException(Unit unit)
-    {
-	super("Can't exponentiate unit \"" + unit + "\"");
-    }
+public final class RaiseException extends OperationException {
+	private static final long	serialVersionUID	= 1L;
+
+	/**
+	 * Constructs from the unit that couldn't be raised to a power.
+	 * 
+	 * @param unit
+	 *            The unit that couldn't be raised to a power.
+	 */
+	public RaiseException(final Unit unit) {
+		super("Can't exponentiate unit \"" + unit + "\"");
+	}
 }

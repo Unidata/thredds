@@ -34,32 +34,28 @@
 package ucar.units;
 
 /**
- * Provides support for attempting to redefine a base quantity in a
- * database.
- *
+ * Provides support for attempting to redefine a base quantity in a database.
+ * 
  * @author Steven R. Emmerson
  * @version $Id: QuantityExistsException.java 64 2006-07-12 22:30:50Z edavis $
  */
-public class
-QuantityExistsException
-    extends	UnitException
-{
-    /**
-     * Constructs from the base quantity being redefined.
-     */
-    public
-    QuantityExistsException(BaseQuantity quantity)
-    {
-	this("Base quantity \"" + quantity + " already exists");
-    }
+public class QuantityExistsException extends UnitException {
+	private static final long	serialVersionUID	= 1L;
 
-    /**
-     * Constructs from an error message.
-     * @param msg		The error message.
-     */
-    private
-    QuantityExistsException(String msg)
-    {
-	super(msg);
-    }
+	/**
+	 * Constructs from the base quantity being redefined.
+	 */
+	public QuantityExistsException(final BaseQuantity quantity) {
+		this("Base quantity \"" + quantity + " already exists");
+	}
+
+	/**
+	 * Constructs from an error message.
+	 * 
+	 * @param msg
+	 *            The error message.
+	 */
+	private QuantityExistsException(final String msg) {
+		super(msg);
+	}
 }

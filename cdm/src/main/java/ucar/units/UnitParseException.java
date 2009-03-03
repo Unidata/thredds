@@ -35,33 +35,32 @@ package ucar.units;
 
 /**
  * Provides support for errors in unit specifications.
- *
+ * 
  * @author Steven R. Emmerson
  * @version $Id: UnitParseException.java 64 2006-07-12 22:30:50Z edavis $
  */
-public class
-UnitParseException
-    extends	SpecificationException
-{
-    /**
-     * Constructs from a reason.
-     * @param reason		The reason for the failure.
-     */
-    public
-    UnitParseException(String reason)
-    {
-	super("Parse error: " + reason);
-    }
+public class UnitParseException extends SpecificationException {
+	private static final long	serialVersionUID	= 1L;
 
+	/**
+	 * Constructs from a reason.
+	 * 
+	 * @param reason
+	 *            The reason for the failure.
+	 */
+	public UnitParseException(final String reason) {
+		super("Parse error: " + reason);
+	}
 
-    /**
-     * Constructs from the string to be parsed and a reason.
-     * @param spec		The string to be parsed.
-     * @param reason		The reason for the failure.
-     */
-    public
-    UnitParseException(String spec, String reason)
-    {
-	super("Couldn't parse \"" + spec + "\": " + reason);
-    }
+	/**
+	 * Constructs from the string to be parsed and a reason.
+	 * 
+	 * @param spec
+	 *            The string to be parsed.
+	 * @param reason
+	 *            The reason for the failure.
+	 */
+	public UnitParseException(final String spec, final String reason) {
+		super("Couldn't parse \"" + spec + "\": " + reason);
+	}
 }

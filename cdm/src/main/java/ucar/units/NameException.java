@@ -35,20 +35,20 @@ package ucar.units;
 
 /**
  * Provides support for bad unit names.
+ * 
  * @author Steven R. Emmerson
  * @version $Id: NameException.java 64 2006-07-12 22:30:50Z edavis $
  */
-public final class
-NameException
-    extends	UnitException
-{
-    /**
-     * Constructs from a message.
-     * @param msg		The message.
-     */
-    public
-    NameException(String msg)
-    {
-	super(msg);
-    }
+public final class NameException extends UnitException {
+	private static final long	serialVersionUID	= 1L;
+
+	/**
+	 * Constructs from a message.
+	 * 
+	 * @param msg
+	 *            The message.
+	 */
+	public NameException(final String msg) {
+		super(msg);
+	}
 }

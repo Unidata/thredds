@@ -37,40 +37,40 @@ import java.io.Serializable;
 
 /**
  * Provides support for unit conversion exceptions.
+ * 
  * @author Steven R. Emmerson
  * @version $Id: ConversionException.java 64 2006-07-12 22:30:50Z edavis $
  */
-public final class
-ConversionException
-    extends	UnitException
-    implements	Serializable
-{
-    /**
-     * Constructs from nothing.
-     */
-    public
-    ConversionException()
-    {}
+public final class ConversionException extends UnitException implements
+		Serializable {
+	private static final long	serialVersionUID	= 1L;
 
-    /**
-     * Constructs from a message.
-     * @param message		The error message.
-     */
-    private
-    ConversionException(String message)
-    {
-	super(message);
-    }
+	/**
+	 * Constructs from nothing.
+	 */
+	public ConversionException() {
+	}
 
-    /**
-     * Constructs from a "from" unit and and "to" unit.
-     * @param fromUnit		The unit from which a conversion was attempted.
-     * @param toUnit		The unit to which a conversion was attempted.
-     */
-    public
-    ConversionException(Unit fromUnit, Unit toUnit)
-    {
-	this("Can't convert from unit \"" +
-	    fromUnit + "\" to unit \"" + toUnit + "\"");
-    }
+	/**
+	 * Constructs from a message.
+	 * 
+	 * @param message
+	 *            The error message.
+	 */
+	private ConversionException(final String message) {
+		super(message);
+	}
+
+	/**
+	 * Constructs from a "from" unit and and "to" unit.
+	 * 
+	 * @param fromUnit
+	 *            The unit from which a conversion was attempted.
+	 * @param toUnit
+	 *            The unit to which a conversion was attempted.
+	 */
+	public ConversionException(final Unit fromUnit, final Unit toUnit) {
+		this("Can't convert from unit \"" + fromUnit + "\" to unit \"" + toUnit
+				+ "\"");
+	}
 }
