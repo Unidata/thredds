@@ -44,6 +44,7 @@ import thredds.server.wms.responses.*;
 import thredds.servlet.ThreddsConfig;
 import thredds.servlet.DatasetHandler;
 import thredds.servlet.UsageLog;
+import thredds.servlet.DataRootHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -145,7 +146,7 @@ public class WMSController extends AbstractController {
       log.info( "handleRequestInternal(): " + UsageLog.setupRequestContext(req));
 
       System.out.println("WMS query=" + req.getQueryString());
-
+        
       try {
         String request = params.getMandatoryString("request");
         dataset = openDataset(req, res);
@@ -154,8 +155,10 @@ public class WMSController extends AbstractController {
 
         if (request.equalsIgnoreCase("GetCapabilities")) {
           errMessage = "Error encountered while processing GetCapabilities request";
+          long startupDate =   this.getApplicationContext().getStartupDate();
           GetCapabilities getCap = new GetCapabilities(params, dataset, usageLogEntry);
           getCap.setConfig(config);
+          getCap.setStartupDate(startupDate);
           result = getCap.processRequest(res, req);
 
         } else if (request.equalsIgnoreCase("GetMap")) {
@@ -247,7 +250,7 @@ public class WMSController extends AbstractController {
       log.debug("WMSController: Unknown dataset <" + datasetPath + ">.");
       throw new WmsException("Unknown dataset, \"" + datasetPath + "\".");
     }
-
+  
     log.debug("leave openDataset");
     return dataset;
   }

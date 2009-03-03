@@ -144,7 +144,7 @@ public class WmsGetMap extends LayerBasedResponse
             String tValue = "";
             if (layer.isTaxisPresent() && tIndices.size() > 1)
             {
-                tValue = WmsUtils.dateToISO8601(layer.getTimesteps().get(tIndex).getDate());
+                tValue = WmsUtils.dateTimeToISO8601(layer.getTimesteps().get(tIndex).getDateTime());
             }
             tValues.add(tValue);
             imageProducer.addFrame(picData, tValue); // the tValue is the label for the image

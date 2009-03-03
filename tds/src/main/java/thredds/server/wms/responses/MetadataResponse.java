@@ -41,6 +41,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import uk.ac.rdg.resc.ncwms.config.Config;
 import uk.ac.rdg.resc.ncwms.exceptions.MetadataException;
 import uk.ac.rdg.resc.ncwms.datareader.HorizontalGrid;
@@ -225,62 +227,65 @@ public class MetadataResponse extends FileBasedResponse
         // Find the time the user has requested (this is the time that is
         // currently displayed on the Godiva2 site).  If not time has been
         // specified we use the current time
-        long targetTimeMs = System.currentTimeMillis();
+        DateTime targetDateTime = new DateTime();
         String targetDateIso = request.getParameter("time");
         if (targetDateIso != null && !targetDateIso.trim().equals(""))
         {
-            targetTimeMs = WmsUtils.iso8601ToDate(targetDateIso).getTime();
+            targetDateTime = WmsUtils.iso8601ToDateTime(targetDateIso);
         }
         
         Map<Integer, Map<Integer, List<Integer>>> datesWithData =
             new HashMap<Integer, Map<Integer, List<Integer>>>();
-        long nearestTimeMs = layer.isTaxisPresent() && layer.getTvalues().length > 0 
-            ? layer.getTvalues()[0] : 0;
+        DateTime nearestDateTime = layer.isTaxisPresent() && layer.getTvalues().size() > 0
+            ? layer.getTvalues().get(0) : new DateTime(0);
         
         // Takes an array of time values for a layer and turns it into a Map of
         // year numbers to month numbers to day numbers, for use in
         // showVariableDetails.jsp.  This is used to provide a list of days for
         // which we have data.  Also calculates the nearest value on the time axis
         // to the time we're currently displaying on the web interface.
-        for (long ms : layer.getTvalues())
+        for (DateTime dateTime : layer.getTvalues())
         {
-            if (Math.abs(ms - targetTimeMs) < Math.abs(nearestTimeMs - targetTimeMs))
-            {
-                nearestTimeMs = ms;
-            }
-            Calendar cal = getGMTCalendar(ms);
-            int year = cal.get(Calendar.YEAR);
+            // See whether this dateTime is closer to the target dateTime than
+            // the current closest value
+            long d1 = new Duration(dateTime, targetDateTime).getMillis();
+            long d2 = new Duration(nearestDateTime, targetDateTime).getMillis();
+            if (Math.abs(d1) < Math.abs(d2)) nearestDateTime = dateTime;
+
+            int year = dateTime.getYear();
             Map<Integer, List<Integer>> months = datesWithData.get(year);
             if (months == null)
             {
                 months = new HashMap<Integer, List<Integer>>();
                 datesWithData.put(year, months);
             }
-            int month = cal.get(Calendar.MONTH); // zero-based
+            // We need to subtract 1 from the month number as Javascript months
+            // are 0-based (Joda-time months are 1-based).  This retains
+            // compatibility with previous behaviour.
+            int month = dateTime.getMonthOfYear() - 1;
             List<Integer> days = months.get(month);
             if (days == null)
             {
                 days = new ArrayList<Integer>();
                 months.put(month, days);
             }
-            int day = cal.get(Calendar.DAY_OF_MONTH); // one-based
-            if (!days.contains(day))
-            {
-                days.add(day);
-            }
+            int day = dateTime.getDayOfMonth();
+            if (!days.contains(day)) days.add(day);
         }
-        
+
         Map<String, Object> models = new HashMap<String, Object>();
         models.put("layer", layer);
         models.put("datesWithData", datesWithData);
-        models.put("nearestTimeIso", WmsUtils.millisecondsToISO8601(nearestTimeMs));
+        models.put("nearestTimeIso", WmsUtils.dateTimeToISO8601(nearestDateTime));
         // The names of the palettes supported by this layer.  Actually this
         // will be the same for all layers, but we can't put this in the menu
         // because there might be several menu JSPs.
         models.put("paletteNames", ColorPalette.getAvailablePaletteNames());
         return new ModelAndView("showLayerDetails", models);
     }
-    
+
+
+
     /**
      * @return the Layer that the user is requesting, throwing an
      * Exception if it doesn't exist or if there was a problem reading from the
@@ -304,20 +309,6 @@ public class MetadataResponse extends FileBasedResponse
     }
     
     /**
-     * @return a new Calendar object, set to the given time (in milliseconds
-     * since the epoch), using the GMT timezone.
-     */
-    private static Calendar getGMTCalendar(long millisecondsSinceEpoch)
-    {
-        Date date = new Date(millisecondsSinceEpoch);
-        Calendar cal = Calendar.getInstance();
-        // Must set the time zone to avoid problems with daylight saving
-        cal.setTimeZone(WmsUtils.GMT);
-        cal.setTime(date);
-        return cal;
-    }
-    
-    /**
      * Finds all the timesteps that occur on the given date, which will be provided
      * in the form "2007-10-18".
      */
@@ -330,45 +321,34 @@ public class MetadataResponse extends FileBasedResponse
         {
             throw new Exception("Must provide a value for the day parameter");
         }
-        Date date = WmsUtils.iso8601ToDate(dayStr);
+        DateTime date = WmsUtils.iso8601ToDateTime(dayStr);
         if (!layer.isTaxisPresent()) return null; // return no data if no time axis present
         
         // List of times (in milliseconds since the epoch) that fall on this day
-        List<Long> timesteps = new ArrayList<Long>();
+        List<DateTime> timesteps = new ArrayList<DateTime>();
         // Search exhaustively through the time values
         // TODO: inefficient: should stop once last day has been found.
-        for (long tVal : layer.getTvalues())
+        for (DateTime tVal : layer.getTvalues())
         {
-            if (onSameDay(tVal, date.getTime()))
+            if (onSameDay(tVal, date))
             {
                 timesteps.add(tVal);
             }
         }
-        
+
         return new ModelAndView("showTimesteps", "timesteps", timesteps);
     }
     
-    /**
-     * @return true if the two given dates (in milliseconds since the epoch) fall on
-     * the same day
+/**
+     * @return true if the two given DateTimes fall on the same day.
      */
-    private static boolean onSameDay(long s1, long s2)
+    private static boolean onSameDay(DateTime dt1, DateTime dt2)
     {
-        Calendar cal1 = getGMTCalendar(s1);
-        Calendar cal2 = getGMTCalendar(s2);
-        // Set hours, minutes, seconds and milliseconds to zero for both
-        // calendars
-        cal1.set(Calendar.HOUR_OF_DAY, 0);
-        cal1.set(Calendar.MINUTE, 0);
-        cal1.set(Calendar.SECOND, 0);
-        cal1.set(Calendar.MILLISECOND, 0);
-        cal2.set(Calendar.HOUR_OF_DAY, 0);
-        cal2.set(Calendar.MINUTE, 0);
-        cal2.set(Calendar.SECOND, 0);
-        cal2.set(Calendar.MILLISECOND, 0);
-        // Now we know that any differences are due to the day, month or year
-        return cal1.compareTo(cal2) == 0;
+        return dt1.getYear() == dt2.getYear()
+            && dt1.getMonthOfYear() == dt2.getMonthOfYear()
+            && dt1.getDayOfMonth() == dt2.getDayOfMonth();
     }
+        
     
     /**
      * Shows an XML document containing the minimum and maximum values for the

@@ -351,7 +351,7 @@ public class ExampleThreddsServlet extends HttpServlet
     {
       public void doAction( DebugHandler.Event e )
       {
-        ServletUtil.showServerInfo( ExampleThreddsServlet.this, e.pw );
+        ServletUtil.showServerInfo( e.pw );
       }
     };
     debugHandler.addAction( act );

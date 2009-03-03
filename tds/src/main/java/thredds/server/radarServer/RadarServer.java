@@ -221,8 +221,10 @@ public class RadarServer extends AbstractServlet {
         return;
       }
 
-    } catch (Throwable t) {
-      ServletUtil.handleException(t, res);
+    } catch (Throwable e) {
+      log.error("RadarServer.doGet", e);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
+      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
   } // end doGet
 

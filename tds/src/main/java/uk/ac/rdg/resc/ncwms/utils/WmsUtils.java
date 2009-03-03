@@ -29,15 +29,16 @@
 package uk.ac.rdg.resc.ncwms.utils;
 
 import java.io.File;
-import java.text.DateFormat;
+import java.io.FilenameFilter;
 import java.text.ParseException;
-import java.util.Date;
-import ucar.nc2.units.DateFormatter;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.TimeZone;
-
+import java.util.List;
+import org.apache.oro.io.GlobFilenameFilter;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import uk.ac.rdg.resc.ncwms.exceptions.WmsException;
 
 /**
@@ -61,63 +62,49 @@ public class WmsUtils
      * The versions of the WMS standard that this server supports
      */
     public static final Collection<String> SUPPORTED_VERSIONS = new ArrayList<String>();
+
+    private static DateTimeFormatter ISO_DATE_TIME_FORMATTER =
+        ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);
+
+    private static DateTimeFormatter ISO_DATE_TIME_PARSER =
+        ISODateTimeFormat.dateTimeParser().withZone(DateTimeZone.UTC);
+
+    private static DateTimeFormatter ISO_TIME_FORMATTER =
+        ISODateTimeFormat.time().withZone(DateTimeZone.UTC);
     
     static
     {
         SUPPORTED_VERSIONS.add("1.1.1");
         SUPPORTED_VERSIONS.add("1.3.0");
     }
-    
-    /**
-     * Time zone representing Greenwich Mean Time
-     */
-    public static final TimeZone GMT = TimeZone.getTimeZone("GMT+0");
+
+    /** Private constructor to prevent direct instantiation */
+    private WmsUtils() { throw new AssertionError(); }
 
     /**
-     * Converts a number of milliseconds since the epoch into an ISO8601-formatted
-     * String.
+     * Converts a {@link DateTime} object into an ISO8601-formatted String.
      */
-    public static String millisecondsToISO8601(long millisecondsSinceEpoch)
+    public static String dateTimeToISO8601(DateTime dateTime)
     {
-        return dateToISO8601(new Date(millisecondsSinceEpoch));
+        return ISO_DATE_TIME_FORMATTER.print(dateTime);
     }
 
     /**
-     * Converts a Date object into an ISO8601-formatted String.
+     * Converts an ISO8601-formatted String into a {@link DateTime} object
+     * @throws IllegalArgumentException if the string is not a valid ISO date-time
      */
-    public static String dateToISO8601(Date date)
+    public static DateTime iso8601ToDateTime(String isoDateTime)
     {
-        return new DateFormatter().toDateTimeStringISO(date);
-    }
-
-    /**
-     * Converts an ISO8601-formatted String into a Date
-     */
-    public static Date iso8601ToDate(String isoDateTime)
-    {
-        return new DateFormatter().getISODate(isoDateTime);
+        return ISO_DATE_TIME_PARSER.parseDateTime(isoDateTime);
     }
     
     /**
-     * Converts an ISO8601-formatted time into a number of milliseconds since the
-     * epoch
-     * @todo shouldn't this throw a parse error?
-     */
-    public static long iso8601ToMilliseconds(String isoDateTime)
-    {
-        return iso8601ToDate(isoDateTime).getTime();
-    }
-    
-    /**
-     * Formats a date (in milliseconds since the epoch) as the time only
+     * Formats a DateTime as the time only
      * in the format "HH:mm:ss", e.g. "14:53:03".  Time zone offset is zero (UTC).
      */
-    public static String formatUTCTimeOnly(long millisecondsSinceEpoch)
+    public static String formatUTCTimeOnly(DateTime dateTime)
     {
-        DateFormat df = new SimpleDateFormat("HH:mm:ss");
-        // Must set the time zone to avoid problems with daylight saving
-        df.setTimeZone(GMT);
-        return df.format(new Date(millisecondsSinceEpoch));
+        return ISO_TIME_FORMATTER.print(dateTime);
     }
     
     /**
@@ -190,7 +177,7 @@ public class WmsUtils
     /**
      * Converts a string of the form "x1,y1,x2,y2" into a bounding box of four
      * doubles.
-     * @throws if the format of the bounding box is invalid
+     * @throws WmsException if the format of the bounding box is invalid
      */
     public static double[] parseBbox(String bboxStr) throws WmsException
     {
@@ -237,6 +224,92 @@ public class WmsUtils
     public static boolean isNcmlAggregation(String location)
     {
         return location.endsWith(".xml") || location.endsWith(".ncml");
+    }
+
+    /**
+     * Finds all files matching
+     * a glob pattern.  This method recursively searches directories, allowing
+     * for glob expressions like {@code "c:\\data\\200[6-7]\\*\\1*\\A*.nc"}.
+     * @param globExpression The glob expression
+     * @return List of File objects matching the glob pattern.  This will never
+     * be null but might be empty
+     * @throws Exception if the glob expression does not represent an absolute
+     * path
+     * @author Mike Grant, Plymouth Marine Labs; Jon Blower
+     */
+    public static List<File> globFiles(String globExpression) throws Exception
+    {
+        // Check that the glob expression is an absolute path.  Relative paths
+        // would cause unpredictable and platform-dependent behaviour so
+        // we disallow them.
+        // If ds.getLocation() is a glob expression this test will still work
+        // because we are not attempting to resolve the string to a real path.
+        File globFile = new File(globExpression);
+        if (!globFile.isAbsolute())
+        {
+            throw new Exception("Dataset location " + globExpression +
+                " must be an absolute path");
+        }
+
+        // Break glob pattern into path components.  To do this in a reliable
+        // and platform-independent way we use methods of the File class, rather
+        // than String.split().
+        List<String> pathComponents = new ArrayList<String>();
+        while (globFile != null)
+        {
+            // We "pop off" the last component of the glob pattern and place
+            // it in the first component of the pathComponents List.  We therefore
+            // ensure that the pathComponents end up in the right order.
+            File parent = globFile.getParentFile();
+            // For a top-level directory, getName() returns an empty string,
+            // hence we use getPath() in this case
+            String pathComponent = parent == null ? globFile.getPath() : globFile.getName();
+            pathComponents.add(0, pathComponent);
+            globFile = parent;
+        }
+
+        // We must have at least two path components: one directory and one
+        // filename or glob expression
+        List<File> searchPaths = new ArrayList<File>();
+        searchPaths.add(new File(pathComponents.get(0)));
+        int i = 1; // Index of the glob path component
+
+        while(i < pathComponents.size())
+        {
+            FilenameFilter globFilter = new GlobFilenameFilter(pathComponents.get(i));
+            List<File> newSearchPaths = new ArrayList<File>();
+            // Look for matches in all the current search paths
+            for (File dir : searchPaths)
+            {
+                if (dir.isDirectory())
+                {
+                    // Workaround for automounters that don't make filesystems
+                    // appear unless they're poked
+                    // do a listing on searchpath/pathcomponent whether or not
+                    // it exists, then discard the results
+                    new File(dir, pathComponents.get(i)).list();
+
+                    for (File match : dir.listFiles(globFilter))
+                    {
+                        newSearchPaths.add(match);
+                    }
+                }
+            }
+            // Next time we'll search based on these new matches and will use
+            // the next globComponent
+            searchPaths = newSearchPaths;
+            i++;
+        }
+
+        // Now we've done all our searching, we'll only retain the files from
+        // the list of search paths
+        List<File> filesToReturn = new ArrayList<File>();
+        for (File path : searchPaths)
+        {
+            if (path.isFile()) filesToReturn.add(path);
+        }
+
+        return filesToReturn;
     }
     
 }

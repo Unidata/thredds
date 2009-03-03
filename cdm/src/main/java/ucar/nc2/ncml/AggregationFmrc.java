@@ -205,7 +205,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
     ncDataset.enhance();
 
     typicalDataset.close( typical);
-    typicalGds.close();
+    // typicalGds.close();
   }
 
   // we assume the variables are complete, but the time dimensions and values have to be recomputed

@@ -57,6 +57,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.springframework.web.servlet.ModelAndView;
+import org.joda.time.DateTime;
 import thredds.server.wms.util.LayerOps;
 
 /**
@@ -118,10 +119,10 @@ public class GetFeatureInfo extends LayerBasedResponse
 
         // Now read the data, mapping date-times to data values
         // The map is sorted in order of ascending time
-        SortedMap<Date, Float> featureData = new TreeMap<Date, Float>();
+        SortedMap<DateTime, Float> featureData = new TreeMap<DateTime, Float>();
         for (int tIndex : tIndices)
         {
-            Date date = tIndex < 0 ? null : layer.getTimesteps().get(tIndex).getDate();
+            DateTime date = tIndex < 0 ? null : layer.getTimesteps().get(tIndex).getDateTime();
 
             // Create a trivial Grid for reading a single point of data.
             // We use the same coordinate reference system as the original request
@@ -161,9 +162,9 @@ public class GetFeatureInfo extends LayerBasedResponse
             // Must be PNG format: prepare and output the JFreeChart
             // TODO: this is nasty: we're mixing presentation code in the controller
             TimeSeries ts = new TimeSeries("Data", Millisecond.class);
-            for (Date date : featureData.keySet())
+            for (DateTime dateTime : featureData.keySet())
             {
-                ts.add(new Millisecond(date), featureData.get(date));
+                ts.add(new Millisecond(dateTime.toDate()), featureData.get(dateTime));
             }
             TimeSeriesCollection xydataset = new TimeSeriesCollection();
             xydataset.addSeries(ts);

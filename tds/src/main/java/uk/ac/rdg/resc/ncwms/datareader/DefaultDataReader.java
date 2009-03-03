@@ -48,6 +48,7 @@ import uk.ac.rdg.resc.ncwms.metadata.Layer;
 import uk.ac.rdg.resc.ncwms.metadata.LayerImpl;
 import uk.ac.rdg.resc.ncwms.metadata.TimestepInfo;
 import uk.ac.rdg.resc.ncwms.metadata.projection.HorizontalProjection;
+import org.joda.time.DateTime;
 
 /**
  * Default data reading class for CF-compliant NetCDF datasets.
@@ -417,7 +418,8 @@ public class DefaultDataReader extends DataReader
             Date[] dates = coordSys.getTimeAxis1D().getTimeDates();
             for (int i = 0; i < dates.length; i++)
             {
-                TimestepInfo tInfo = new TimestepInfo(dates[i], filename, i);
+                DateTime dt = new DateTime(dates[i]);
+                TimestepInfo tInfo = new TimestepInfo(dt, filename, i);
                 timesteps.add(tInfo);
             }
         }

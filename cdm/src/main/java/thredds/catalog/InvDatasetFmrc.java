@@ -52,6 +52,8 @@ import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.thredds.MetadataExtractor;
+import ucar.nc2.util.cache.FileCache;
+import ucar.nc2.util.cache.FileCacheNOP;
 import ucar.unidata.util.StringUtil;
 
 /**
@@ -76,6 +78,9 @@ public class InvDatasetFmrc extends InvCatalogRef {
   static private final String TITLE_FORECAST = "Constant Forecast Date";
 
   static private final String SCAN = "files";
+
+  // this prevents 2d dataset from being closed. see makeFmrc
+  static private FileCache fileCache = new FileCacheNOP();
 
   //////////////////////////////////////////////
 
@@ -457,7 +462,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
     Element ncml = getNcmlElement();
     NetcdfDataset ncd = NcMLReader.readNcML(path, ncml, null);
-    // ncd.setCacheState(3); // LOOK: this dataset never gets closed
+    ncd.setFileCache( fileCache); // LOOK: this dataset never gets closed
 
     fmrc = new FmrcImpl( ncd);
     madeFmrc = true;

@@ -162,7 +162,7 @@ public class TestBabu {
       });
 
       //create a checkpoint for faster start-ups
-      //database.checkpoint();
+      database.checkpoint();
 
     /* } catch (BabuDBException ex) {
       ex.printStackTrace();  */

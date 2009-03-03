@@ -971,44 +971,60 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     }
   }
 
+  public static String[] fmrcDatasets = {
+    "NCEP/GFS/Alaska_191km",
+    "NCEP/GFS/CONUS_80km",
+    "NCEP/GFS/CONUS_95km",
+    "NCEP/GFS/CONUS_191km",
+    "NCEP/GFS/Global_0p5deg",
+    "NCEP/GFS/Global_onedeg",
+    "NCEP/GFS/Global_2p5deg",
+    "NCEP/GFS/Hawaii_160km",
+    "NCEP/GFS/N_Hemisphere_381km",
+    "NCEP/GFS/Puerto_Rico_191km",
 
-  public static String fmrcDefinitionDir = "C:\\dev\\tds\\thredds\\tds\\src\\main\\webapp\\WEB-INF\\altContent\\idd\\thredds\\modelInventory/";
-  public static String[] fmrcDefinitionFiles = {
-   fmrcDefinitionDir+"NCEP-GFS-Alaska_191km.fmrcDefinition.xml",
-   fmrcDefinitionDir+"NCEP-GFS-CONUS_80km.fmrcDefinition.xml",
-   fmrcDefinitionDir+"NCEP-GFS-CONUS_191km.fmrcDefinition.xml",
-   fmrcDefinitionDir+"NCEP-GFS-CONUS_95km.fmrcDefinition.xml", // */
-   fmrcDefinitionDir+"NCEP-GFS-Global_2p5deg.fmrcDefinition.xml",
-   fmrcDefinitionDir+"NCEP-GFS-Global_onedeg.fmrcDefinition.xml",
-   fmrcDefinitionDir+"NCEP-GFS-Hawaii_160km.fmrcDefinition.xml",
-   fmrcDefinitionDir+"NCEP-GFS-N_Hemisphere_381km.fmrcDefinition.xml",
-   fmrcDefinitionDir+"NCEP-GFS-Puerto_Rico_191km.fmrcDefinition.xml",
+    "NCEP/NAM/Alaska_11km",
+    "NCEP/NAM/Alaska_22km",
+    "NCEP/NAM/Alaska_45km/noaaport",
+    "NCEP/NAM/Alaska_45km/conduit",
+    "NCEP/NAM/Alaska_95km",
+    "NCEP/NAM/CONUS_12km",
+    "NCEP/NAM/CONUS_20km/surface",
+    "NCEP/NAM/CONUS_20km/selectsurface",
+    "NCEP/NAM/CONUS_20km/noaaport",
+    "NCEP/NAM/CONUS_40km/conduit",
+    "NCEP/NAM/CONUS_80km",
+    "NCEP/NAM/Polar_90km",
 
-    fmrcDefinitionDir+"NCEP-NAM-Alaska_22km.fmrcDefinition.xml",
-    fmrcDefinitionDir+"NCEP-NAM-Alaska_45km-conduit.fmrcDefinition.xml",
-    fmrcDefinitionDir+"NCEP-NAM-Alaska_45km-noaaport.fmrcDefinition.xml",
-    fmrcDefinitionDir+"NCEP-NAM-Alaska_95km.fmrcDefinition.xml",
-    fmrcDefinitionDir+"NCEP-NAM-CONUS_20km-noaaport.fmrcDefinition.xml",
-    fmrcDefinitionDir+"NCEP-NAM-CONUS_20km-selectsurface.fmrcDefinition.xml",
-    fmrcDefinitionDir+"NCEP-NAM-CONUS_20km-surface.fmrcDefinition.xml",
-    fmrcDefinitionDir+"NCEP-NAM-CONUS_40km-conduit.fmrcDefinition.xml",
-    fmrcDefinitionDir+"NCEP-NAM-CONUS_40km-noaaport.fmrcDefinition.xml",
-    fmrcDefinitionDir+"NCEP-NAM-CONUS_80km.fmrcDefinition.xml",
-    fmrcDefinitionDir+"NCEP-NAM-Polar_90km.fmrcDefinition.xml",
+    "NCEP/RUC2/CONUS_20km/surface",
+    "NCEP/RUC2/CONUS_20km/pressure",
+    "NCEP/RUC2/CONUS_20km/hybrid",
+    "NCEP/RUC2/CONUS_40km",
+    "NCEP/RUC/CONUS_80km",
 
-    fmrcDefinitionDir+"NCEP-RUC2-CONUS_20km-hybrid.fmrcDefinition.xml",
-    fmrcDefinitionDir+"NCEP-RUC2-CONUS_20km-pressure.fmrcDefinition.xml",
-    fmrcDefinitionDir+"NCEP-RUC2-CONUS_20km-surface.fmrcDefinition.xml",
-    fmrcDefinitionDir+"NCEP-RUC-CONUS_40km.fmrcDefinition.xml", //
-    fmrcDefinitionDir+"NCEP-RUC-CONUS_80km.fmrcDefinition.xml",
+    "NCEP/DGEX/CONUS_12km",
+    "NCEP/DGEX/Alaska_12km",
 
-    fmrcDefinitionDir+"NCEP-DGEX-Alaska_12km.fmrcDefinition.xml",
-    fmrcDefinitionDir+"NCEP-DGEX-CONUS_12km.fmrcDefinition.xml",
-    fmrcDefinitionDir+"NCEP-GFS-Global_0p5deg.fmrcDefinition.xml",
-    fmrcDefinitionDir+"NCEP-NAM-Alaska_11km.fmrcDefinition.xml",
-    fmrcDefinitionDir+"NCEP-NAM-CONUS_12km.fmrcDefinition.xml",
-    fmrcDefinitionDir+"NCEP-NDFD-CONUS_5km.fmrcDefinition.xml",
+    "NCEP/NDFD/CONUS_5km",
   };
+
+
+  private static String fmrcDefinitionDir = "C:/dev/tds/thredds/tds/src/main/webapp/WEB-INF/altContent/idd/thredds/modelInventory/";
+  private static String[] fmrcDefinitionFiles;
+
+  public static String[] getDefinitionFiles() {
+   if (fmrcDefinitionFiles == null) {
+     fmrcDefinitionFiles = new String[ fmrcDatasets.length];
+     int count = 0;
+     for (String ds : fmrcDatasets) {
+       fmrcDefinitionFiles[count++] = fmrcDefinitionDir + StringUtil.replace(ds, '/', "-") + ".fmrcDefinition.xml";
+     }
+   }
+    return fmrcDefinitionFiles;
+  }
+
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   private static String[] exampleFiles = {
     /* "R:/testdata/motherlode/grid/GFS_Alaska_191km_20060802_1200.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-Alaska_191km.fmrcDefinition.xml",

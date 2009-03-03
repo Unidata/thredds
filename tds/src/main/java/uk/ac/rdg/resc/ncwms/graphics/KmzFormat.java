@@ -37,6 +37,7 @@ import java.util.zip.ZipOutputStream;
 import javax.imageio.ImageIO;
 import uk.ac.rdg.resc.ncwms.metadata.Layer;
 import uk.ac.rdg.resc.ncwms.utils.WmsUtils;
+import org.joda.time.DateTime;
 
 /**
  * Creates KMZ files for importing into Google Earth.  Only one instance of this class
@@ -114,8 +115,8 @@ public class KmzFormat extends ImageFormat
                 // We must make sure the ISO8601 timestamp is full and includes
                 // seconds, otherwise Google Earth gets confused.  This is why we
                 // convert to a long and back again.
-                long millisecondsSinceEpoch = WmsUtils.iso8601ToMilliseconds(tValues.get(frameIndex));
-                timestamp = WmsUtils.millisecondsToISO8601(millisecondsSinceEpoch);
+                DateTime dt = WmsUtils.iso8601ToDateTime(tValues.get(frameIndex));
+                timestamp = WmsUtils.dateTimeToISO8601(dt);
                 kml.append("<TimeStamp><when>" + timestamp + "</when></TimeStamp>");
             }
             if (zValue != null && !zValue.equals("") && layer.getZvalues() != null)

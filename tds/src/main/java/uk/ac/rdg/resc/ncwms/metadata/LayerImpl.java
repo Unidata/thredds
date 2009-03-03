@@ -39,6 +39,7 @@ import uk.ac.rdg.resc.ncwms.metadata.projection.HorizontalProjection;
 import uk.ac.rdg.resc.ncwms.styles.Style;
 import uk.ac.rdg.resc.ncwms.utils.WmsUtils;
 import ucar.nc2.dt.GridDataset;
+import org.joda.time.DateTime;
 
 /**
  * Concrete implementation of the Layer interface.  Stores the metadata for
@@ -53,6 +54,8 @@ import ucar.nc2.dt.GridDataset;
 public class LayerImpl implements Layer
 {
 
+        private static org.slf4j.Logger logger =
+          org.slf4j.LoggerFactory.getLogger( LayerImpl.class );
     protected String id;
     protected String title = null;
     protected String abstr = null; // "abstract" is a reserved word
@@ -124,14 +127,12 @@ public class LayerImpl implements Layer
     /**
      * @return array of timestep values in milliseconds since the epoch
      */
-    public synchronized long[] getTvalues()
+    public synchronized List<DateTime> getTvalues()
     {
-        long[] tVals = new long[this.timesteps.size()];
-        int i = 0;
+        List<DateTime> tVals = new ArrayList<DateTime>(this.timesteps.size());
         for (TimestepInfo tInfo : timesteps)
         {
-            tVals[i] = tInfo.getDate().getTime();
-            i++;
+            tVals.add(tInfo.getDateTime());
         }
         return tVals;
     }
@@ -240,7 +241,7 @@ public class LayerImpl implements Layer
     public synchronized void addTimestepInfo(TimestepInfo tInfo)
     {
         // See if we already have a TimestepInfo object for this date
-        int tIndex = this.findTIndex(tInfo.getDate());
+        int tIndex = this.findTIndex(tInfo.getDateTime());
         if (tIndex < 0)
         {
             // We don't have an info for this date, so we add the new info
@@ -268,33 +269,25 @@ public class LayerImpl implements Layer
      * given date.  Uses binary search for efficiency.
      * @todo replace with Arrays.binarySearch()?
      */
-    private int findTIndex(Date target)
+    private int findTIndex(DateTime target)
     {
-        if (this.timesteps.size() == 0) return -1;
-        // Check that the point is within range
-        if (target.before(this.timesteps.get(0).getDate()) ||
-            target.after(this.timesteps.get(this.timesteps.size()  - 1).getDate()))
-        {
-            return -1;
-        }
-        
-        // do a binary search to find the nearest index
+        logger.debug("Looking for {} in layer {}", target, this.id);
+
+        // Adapted from Collections.binarySearch()
         int low = 0;
         int high = this.timesteps.size() - 1;
+
         while (low <= high)
         {
-            int mid = (low + high) >> 1;
-            Date midVal = this.timesteps.get(mid).getDate();
-            if (midVal.equals(target)) return mid;
-            else if (midVal.before(target)) low = mid + 1;
-            else high = mid - 1;
+            int mid = (low + high) >>> 1;
+            DateTime midVal = this.timesteps.get(mid).getDateTime();
+            if (midVal.isBefore(target)) low = mid + 1;
+            else if (midVal.isAfter(target)) high = mid - 1;
+            else return mid; // key found
         }
-        
-        // If we've got this far we have to decide between values[low]
-        // and values[high]
-        if (this.timesteps.get(low).getDate().equals(target)) return low;
-        else if (this.timesteps.get(high).getDate().equals(target)) return high;
+
         // The given time doesn't match any axis value
+        logger.debug("{} not found", target);
         return -1;
     }
     
@@ -302,7 +295,7 @@ public class LayerImpl implements Layer
      * @return the index of the TimestepInfo object corresponding with the given
      * ISO8601 time string. Uses binary search for efficiency.
      * @throws InvalidDimensionValueException if there is no corresponding
-     * TimestepInfo object, or if the given ISO8601 string is not valid.  
+     * TimestepInfo object, or if the given ISO8601 string is not valid.
      */
     public int findTIndex(String isoDateTime) throws InvalidDimensionValueException
     {
@@ -312,7 +305,7 @@ public class LayerImpl implements Layer
             // TODO: should be the index of the timestep closest to now
             return this.getLastTIndex();
         }
-        Date target = WmsUtils.iso8601ToDate(isoDateTime);
+        DateTime target = WmsUtils.iso8601ToDateTime(isoDateTime);
         if (target == null)
         {
             throw new InvalidDimensionValueException("time", isoDateTime);
@@ -470,9 +463,9 @@ public class LayerImpl implements Layer
      * in milliseconds since the epoch.  This currently returns the last value along
      * the time axis, but should probably return the value closest to now.
      */
-    public final long getDefaultTValue()
+    public final DateTime getDefaultTValue()
     {
-        return this.getTvalues()[this.getLastTIndex()];
+        return this.getTvalues().get(this.getLastTIndex());
     }
     
     /**

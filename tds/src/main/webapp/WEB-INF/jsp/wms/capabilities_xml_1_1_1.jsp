@@ -120,11 +120,11 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
                              not strings. --%>
                         <c:forEach var="zval" items="${layer.zvalues}" varStatus="status"><c:if test="${status.index > 0}">,</c:if>${zval}</c:forEach>
                     </Extent>
-                    </c:if>
+                    </c:if>                                                              
                     <c:set var="tvalues" value="${layer.tvalues}"/>
                     <c:if test="${layer.taxisPresent}">
-                    <Extent name="time" multipleValues="1" current="1" default="${utils:millisecondsToISO8601(layer.defaultTValue)}">
-                        <c:forEach var="tval" items="${tvalues}" varStatus="status"><c:if test="${status.index > 0}">,</c:if>${utils:millisecondsToISO8601(tval)}</c:forEach>
+                    <Extent name="time" multipleValues="1" current="1" default="${utils:dateTimeToISO8601(layer.defaultTValue)}">
+                        <c:forEach var="tval" items="${tvalues}" varStatus="status"><c:if test="${status.index > 0}">,</c:if>${utils:dateTimeToISO8601(tval)}</c:forEach>
                     </Extent>
                     </c:if>
                     <c:forEach var="style" items="${layer.supportedStyles}">

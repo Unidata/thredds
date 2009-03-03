@@ -33,6 +33,7 @@ import uk.ac.rdg.resc.ncwms.exceptions.InvalidDimensionValueException;
 import uk.ac.rdg.resc.ncwms.metadata.projection.HorizontalProjection;
 import uk.ac.rdg.resc.ncwms.styles.Style;
 import ucar.nc2.dt.GridDataset;
+import org.joda.time.DateTime;
 
 /**
  * Interface describing the methods that must be implemented by a  displayable
@@ -97,7 +98,7 @@ public interface Layer
      * in milliseconds since the epoch.  This currently returns the last value along
      * the time axis, but should probably return the value closest to now.
      */
-    long getDefaultTValue();
+    DateTime getDefaultTValue();
 
     /**
      * @return the index of the default value on the z axis (i.e. the index of
@@ -140,7 +141,7 @@ public interface Layer
     /**
      * @return array of timestep values in milliseconds since the epoch
      */
-    long[] getTvalues();
+    List<DateTime> getTvalues();
 
     String getUnits();
 

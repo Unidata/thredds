@@ -1497,7 +1497,7 @@ public class ToolsUI extends JPanel {
       defAction.putValue(BAMutil.STATE, new Boolean(useDefinition));
       defButt = BAMutil.addActionToContainer(buttPanel, defAction);
 
-      defComboBox = new JComboBox(FmrcDefinition.fmrcDefinitionFiles);
+      defComboBox = new JComboBox(FmrcDefinition.getDefinitionFiles());
       defWindow = new IndependentWindow("GRIB Definition File", null, defComboBox);
       defWindow.setLocationRelativeTo(defButt);
 
@@ -1834,11 +1834,6 @@ public class ToolsUI extends JPanel {
     private AbstractButton defButt;
     private JSpinner catSpinner;
 
-    private String[] catalogURLS = {
-        "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/NAM/CONUS_12km/files/catalog.xml",
-        "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/NAM/CONUS_12km_conduit/files/catalog.xml",
-    };
-
     FmrcPanel(PreferencesExt p) {
       super(p, "ForecastModelRun:", true, false);
 
@@ -1851,7 +1846,7 @@ public class ToolsUI extends JPanel {
           defButt.setToolTipText(tooltip);
           if (useDefinition) {
             if (null == defComboBox) {
-              defComboBox = new JComboBox(FmrcDefinition.fmrcDefinitionFiles);
+              defComboBox = new JComboBox(FmrcDefinition.getDefinitionFiles());
               defComboBox.setEditable(true);
               defWindow = new IndependentWindow("GRIB Definition File", null, defComboBox);
               defWindow.setLocationRelativeTo(defButt);
@@ -1872,6 +1867,7 @@ public class ToolsUI extends JPanel {
           if (null == catComboBox) {
             catComboBox = new JComboBox();
             catComboBox.setEditable(true);
+            makeCatalogDefaults( catComboBox);
             catSpinner = new JSpinner();
             JButton accept = new JButton("Accept");
             JPanel catPanel = new JPanel(new BorderLayout());
@@ -1947,17 +1943,18 @@ public class ToolsUI extends JPanel {
       BAMutil.addActionToContainer(buttPanel, deleteAction);
     }
 
-    /* private void makeCatalogPanel() {
-      PrefPanel catPP = new PrefPanel("cat", null);
-      int row = 0;
-      catPP.addTextComboField( DSCAN_ADDSIZE, "Add File Size", false, 0, row++);
+    private String[] catalogURLS = {
+        "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/NAM/CONUS_12km/files/catalog.xml",
+        "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/NAM/CONUS_12km_conduit/files/catalog.xml",
+        "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/GFS/Global_0p5deg/files/catalog.xml"
+    };
 
-      catPP.finish(false);
 
-      catWindow = new IndependentWindow( "Catalog options", BAMutil.getImage( "thredds"), catPP);
-      catWindow.setBounds(new Rectangle(150, 50, 700, 300));
-    } */
-
+   private void makeCatalogDefaults(JComboBox cb) {
+     String server = "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/";
+     for (String ds : FmrcDefinition.fmrcDatasets)
+      cb.addItem(server+ds+"/files/catalog.xml");
+    }
 
     boolean process(Object o) {
       String command = (String) o;
