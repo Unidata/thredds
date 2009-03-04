@@ -5,6 +5,9 @@ Build Date = @BUILDTIME@
 Changes in version 4.0
 
  Release Details:
+  37:
+   grib now does filtering on variable names to keep them consistent with nj22.
+   joinExisting timeUnitsChange - time variable must be Double, else fractional values get lost.
   36:
    NcMLReader was mistakenly throwing exception when there was no variable shape attribute.
      That is allowed, but deprecated. NcMLWriter now always adds that attribute.

@@ -238,7 +238,7 @@ public class WMSController extends AbstractController {
     String datasetPath = req.getPathInfo();
     try {
       dataset = DatasetHandler.openGridDataset(req, res, datasetPath);
-      System.out.println("**openGridDataset "+dataset.getLocationURI());      
+      //System.out.println("**openGridDataset "+dataset.getLocationURI());      
     }
     catch (IOException e) {
       log.warn("WMSController: Failed to open dataset <" + datasetPath + ">: " + e.getMessage());

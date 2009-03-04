@@ -170,7 +170,7 @@ public class AggregationExisting extends AggregationOuterDimension {
   // must be able to be made into a CoordinateAxis1DTime
   protected void readTimeCoordinates(VariableDS timeAxis, CancelTask cancelTask) throws IOException {
     List<Date> dateList = new ArrayList<Date>();
-    String units = null;
+    String timeUnits = null;
 
     // make concurrent
     for (Dataset dataset : getDatasets()) {
@@ -187,8 +187,8 @@ public class AggregationExisting extends AggregationOuterDimension {
         java.util.Date[] dates = timeCoordVar.getTimeDates();
         dateList.addAll(Arrays.asList(dates));
 
-        if (units == null)
-          units = v.getUnitsString();
+        if (timeUnits == null)
+          timeUnits = v.getUnitsString();
 
       } finally {
         dataset.close( ncfile);
@@ -200,9 +200,9 @@ public class AggregationExisting extends AggregationOuterDimension {
     int ntimes = shape[0];
     assert (ntimes == dateList.size());
 
-    Array timeCoordVals = Array.factory(timeAxis.getDataType(), shape);
+    DataType coordType = (timeAxis.getDataType() == DataType.STRING) ? DataType.STRING : DataType.DOUBLE;
+    Array timeCoordVals = Array.factory(coordType, shape);
     IndexIterator ii = timeCoordVals.getIndexIterator();
-    timeAxis.setCachedData(timeCoordVals, false);
 
     // check if its a String or a udunit
     if (timeAxis.getDataType() == DataType.STRING) {
@@ -211,21 +211,24 @@ public class AggregationExisting extends AggregationOuterDimension {
         ii.setObjectNext(dateFormatter.toDateTimeStringISO(date));
       }
 
-    } else {
+    } else {      
+      timeAxis.setDataType(DataType.DOUBLE); // otherwise fractional values get lost
 
       DateUnit du;
       try {
-        du = new DateUnit(units);
+        du = new DateUnit(timeUnits);
       } catch (Exception e) {
         throw new IOException(e.getMessage());
       }
-      timeAxis.addAttribute(new Attribute("units", units));
+      timeAxis.addAttribute(new Attribute("units", timeUnits));
 
       for (Date date : dateList) {
         double val = du.makeValue(date);
         ii.setDoubleNext(val);
       }
     }
+
+    timeAxis.setCachedData(timeCoordVals, false);
   }
 
   /**
