@@ -685,7 +685,7 @@ public class GridIndexToNC {
         Group g = hcs.getGroup() == null ? ncfile.getRootGroup() : hcs.getGroup();
         Variable v = pv.makeVariable(ncfile, g, true);
         if (g.findVariable(v.getShortName()) != null) { // already got. can happen when a new vert level is added
-          logger.warn("GribServiceProvider.Index2NC: FmrcCoordSys has 2 variables mapped to =" + v.getShortName() +
+          logger.warn("GridServiceProvider.GridIndexToNC: FmrcCoordSys has 2 variables mapped to =" + v.getShortName() +
               " for file " + ncfile.getLocation());
         } else
           g.addVariable(v);
