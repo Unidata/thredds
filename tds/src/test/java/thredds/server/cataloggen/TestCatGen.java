@@ -33,7 +33,7 @@
 package thredds.server.cataloggen;
 
 import junit.framework.*;
-import thredds.server.cataloggen.TestCatGenServletConfig;
+import thredds.server.cataloggen.TestCatGenConfig;
 
 /**
  * A description
@@ -41,12 +41,12 @@ import thredds.server.cataloggen.TestCatGenServletConfig;
  * @author edavis
  * @since Mar 30, 2005T4:26:37 PM
  */
-public class TestAllCatGen extends TestCase
+public class TestCatGen extends TestCase
 {
 //  private static org.slf4j.Logger log =
-//          org.slf4j.LoggerFactory.getLogger( TestAllCatGen.class );
+//          org.slf4j.LoggerFactory.getLogger( TestCatGen.class );
 
-  public TestAllCatGen( String name )
+  public TestCatGen( String name )
   {
     super( name );
   }
@@ -55,7 +55,7 @@ public class TestAllCatGen extends TestCase
   {
     TestSuite suite = new TestSuite();
 
-    suite.addTestSuite( TestCatGenServletConfig.class );
+    suite.addTestSuite( TestCatGenConfig.class );
 
     return suite;
   }

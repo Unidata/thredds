@@ -40,7 +40,7 @@ import java.io.IOException;
 /**
  *
  */
-public class TestCatGenServletConfig extends TestCase
+public class TestCatGenConfig extends TestCase
 {
 
   private String configPath = "src/test/data/thredds/cataloggen/servlet";
@@ -64,7 +64,7 @@ public class TestCatGenServletConfig extends TestCase
   private CatGenConfigParser catGenConfigParser;
   private CatGenConfig catGenConfig;
 
-  public TestCatGenServletConfig( String name)
+  public TestCatGenConfig( String name)
   {
     super( name);
   }
