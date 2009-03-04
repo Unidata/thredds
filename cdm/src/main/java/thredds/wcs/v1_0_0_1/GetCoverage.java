@@ -85,7 +85,8 @@ public class GetCoverage extends WcsRequest
     // Assign and validate request and response CRS parameters.
 
     if ( crs == null )
-      throw new WcsException( WcsException.Code.MissingParameterValue, "CRS", "Request CRS required.");
+      crs = this.coverage.getDefaultRequestCrs(); // The WCS 1.0.0 spec requires CRS.
+      //throw new WcsException( WcsException.Code.MissingParameterValue, "CRS", "Request CRS required.");
     if ( ! crs.equalsIgnoreCase( this.coverage.getDefaultRequestCrs() ) )
       throw new WcsException( WcsException.Code.InvalidParameterValue, "CRS", "Request CRS <" + crs + "> not allowed <" + this.coverage.getDefaultRequestCrs() + ">." );
 
@@ -96,11 +97,12 @@ public class GetCoverage extends WcsRequest
     // Response CRS not required if data is in latLon ("OGC:CRS84"). Default is request CRS.
     if ( responseCRS == null )
     {
-      if ( ! nativeCRS.equalsIgnoreCase( this.coverage.getDefaultRequestCrs()))
-        throw new WcsException( WcsException.Code.MissingParameterValue, "Response_CRS", "Response CRS required." );
+      responseCRS = this.coverage.getNativeCrs();
+//      if ( ! nativeCRS.equalsIgnoreCase( this.coverage.getDefaultRequestCrs()))
+//        throw new WcsException( WcsException.Code.MissingParameterValue, "Response_CRS", "Response CRS required." );
     }
     else if ( ! responseCRS.equalsIgnoreCase( nativeCRS))
-        throw new WcsException( WcsException.Code.InvalidParameterValue, "response_CRS", "Respnse CRS <" + responseCRS + "> not allowed <" + nativeCRS + ">." );
+        throw new WcsException( WcsException.Code.InvalidParameterValue, "response_CRS", "Response CRS [" + responseCRS + "] not the supported CRS [" + nativeCRS + "]." );
 
     // Assign and validate BBOX and TIME parameters.
 // -----
@@ -115,7 +117,10 @@ public class GetCoverage extends WcsRequest
       bboxLatLonRect = convertBoundingBox( bbox, coverage.getCoordinateSystem());
 
     this.timeRange = timeRange;
-    this.isSingleTimeRequest = timeRange.isPoint();
+    if ( timeRange != null )
+      this.isSingleTimeRequest = timeRange.isPoint();
+    else
+      this.isSingleTimeRequest = ( null == this.coverage.getCoordinateSystem().getTimeAxis());
 
     // WIDTH, HEIGHT, DEPTH parameters not needed since the only interpolation method is "NONE".
     // RESX, RESY, RESZ parameters not needed since the only interpolation method is "NONE".
