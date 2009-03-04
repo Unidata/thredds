@@ -910,7 +910,7 @@ public class NcMLReader {
 
     String shape = varElem.getAttributeValue("shape");
     if (shape == null)
-      throw new IllegalArgumentException("New variable("+name+")  must have shape attribute");
+      shape = ""; // deprecated, prefer explicit ""
 
     Variable v;
 

@@ -6,7 +6,10 @@ Changes in version 4.0
 
  Release Details:
   36:
-   Gempak IOSP now uses its own Convention, not CF. Add PointFeature procesing.
+   NcMLReader was mistakenly throwing exception when there was no variable shape attribute.
+     That is allowed, but deprecated. NcMLWriter now always adds that attribute.
+   ucar.units hashCode consistent with equals()
+   Gempak IOSP now uses its own Convention, not CF. Add PointFeature processing.
    InvDatasetFmrc prevents FmrcImpl from being closed, with FileCacheNOP
    CoordAxis1D.findIndex() off-by-one bug for irregular descending case.
    FileCache now has name and nicer log messages; log to 'cacheLogger'

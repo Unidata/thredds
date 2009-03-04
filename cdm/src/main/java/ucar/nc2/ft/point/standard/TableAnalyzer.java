@@ -66,6 +66,7 @@ public class TableAnalyzer {
       }
     });
     registerAnalyzer("BUFR/CDM", BufrCdm.class, null);
+    registerAnalyzer("GEMPAK/CDM", GempakCdm.class, null);
     registerAnalyzer("Unidata Observation Dataset v1.0", UnidataPointObs.class, null);
 
     registerAnalyzer("Cosmic", Cosmic.class, null);

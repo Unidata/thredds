@@ -248,7 +248,7 @@ public class TestOffAggFmrcGrib extends TestCase {
     assert v.getRank() == 4;
     int[] shape = v.getShape();
     assert shape[0] == nagg;
-    assert shape[1] == 28 : new Section(shape).toString();
+    assert shape[1] == 29 : new Section(shape).toString();
     assert shape[2] == 257 : new Section(shape).toString();
     assert shape[3] == 369 : new Section(shape).toString();
     assert v.getDataType() == DataType.FLOAT;

@@ -419,8 +419,8 @@ public class NcMLWriter {
       else
         buff.append(dim.getLength());
     }
-    if (buff.length() > 0)
-      varElem.setAttribute("shape", buff.toString());
+    //if (buff.length() > 0)
+    varElem.setAttribute("shape", buff.toString());
 
     DataType dt = var.getDataType();
     if (dt != null)

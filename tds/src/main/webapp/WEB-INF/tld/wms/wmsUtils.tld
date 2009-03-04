@@ -3,7 +3,7 @@
 <taglib version="2.0" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee web-jsptaglibrary_2_0.xsd">
   <tlib-version>1.0</tlib-version>
   <short-name>wmsutils</short-name>
-  <uri>/WEB-INF/taglib/wmsUtils</uri>
+  <uri>/WEB-INF/tld/wms/wmsUtils</uri>
   <function>
       <description>Converts a joda-time DateTime object to an ISO8601-formatted String</description>
       <name>dateTimeToISO8601</name>

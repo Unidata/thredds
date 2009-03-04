@@ -14,6 +14,7 @@
   <service name="fmrcServices" serviceType="Compound" base="">
     <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
+    <service name="wms" serviceType="WMS" base="/thredds/wms/" />
     <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" />
   </service>
 

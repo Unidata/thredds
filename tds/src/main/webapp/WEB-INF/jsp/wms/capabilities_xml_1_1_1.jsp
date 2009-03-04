@@ -1,4 +1,4 @@
-<%@page contentType="application/vnd.ogc.wms_xml"%><%@page pageEncoding="UTF-8"%><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<%@page contentType="text/xml"%><%@page pageEncoding="UTF-8"%><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib uri="/WEB-INF/tld/wms/wmsUtils" prefix="utils"%> <%-- tag library for useful utility functions --%>
 <%
@@ -21,15 +21,17 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
 <!DOCTYPE WMT_MS_Capabilities SYSTEM "http://schemas.opengis.net/wms/1.1.1/capabilities_1_1_1.dtd">
 <WMT_MS_Capabilities
         version="1.1.1"
-        xmlns:xlink="http://www.w3.org/1999/xlink"><%-- TODO: do UpdateSequence properly --%>
+        updateSequence="${utils:dateTimeToISO8601(lastUpdate)}"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        xmlns:xlink="http://www.w3.org/1999/xlink">
     <!-- Service Metadata -->
     <Service>
         <!-- The WMT-defined name for this type of service -->
         <Name>OGC:WMS</Name>
         <!-- Human-readable title for pick lists -->
-        <Title>${config.server.title}</Title>
+        <Title><c:out value="${config.server.title}"/></Title>
         <!-- Narrative description providing additional information -->
-        <Abstract>${config.server.abstract}</Abstract>
+        <Abstract><c:out value="${config.server.abstract}"/></Abstract>
         <KeywordList>
             <%-- forEach recognizes that keywords is a comma-delimited String --%>
             <c:forEach var="keyword" items="${config.server.keywords}">
@@ -38,15 +40,15 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
         </KeywordList>
         <!-- Top-level web address of service or service provider. See also OnlineResource
         elements under <DCPType>. -->
-        <OnlineResource xlink:type="simple" xlink:href="${config.server.url}" />
+        <OnlineResource xlink:type="simple" xlink:href="<c:out value="${config.server.url}"/>"/>
         <!-- Contact information -->
         <ContactInformation>
             <ContactPersonPrimary>
-                <ContactPerson>${config.contact.name}</ContactPerson>
-                <ContactOrganization>${config.contact.org}</ContactOrganization>
+                <ContactPerson><c:out value="${config.contact.name}"/></ContactPerson>
+                <ContactOrganization><c:out value="${config.contact.org}"/></ContactOrganization>
             </ContactPersonPrimary>
             <ContactVoiceTelephone>${config.contact.tel}</ContactVoiceTelephone>
-            <ContactElectronicMailAddress>${config.contact.email}</ContactElectronicMailAddress>
+            <ContactElectronicMailAddress><c:out value="${config.contact.email}"/></ContactElectronicMailAddress>
         </ContactInformation>
         <!-- Fees or access constraints imposed. -->
         <Fees>none</Fees>
@@ -59,7 +61,7 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
                 <DCPType>
                     <HTTP>
                         <Get>
-                            <OnlineResource xlink:type="simple" xlink:href="${wmsBaseUrl}" />
+                            <OnlineResource xlink:type="simple" xlink:href="<c:out value="${wmsBaseUrl}"/>" />
                         </Get>
                     </HTTP>
                 </DCPType>
@@ -71,7 +73,7 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
                 <DCPType>
                     <HTTP>
                         <Get>
-                            <OnlineResource xlink:type="simple" xlink:href="${wmsBaseUrl}" />
+                            <OnlineResource xlink:type="simple" xlink:href="<c:out value="${wmsBaseUrl}"/>" />
                         </Get>
                     </HTTP>
                 </DCPType>
@@ -83,7 +85,7 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
                 <DCPType>
                     <HTTP>
                         <Get>
-                            <OnlineResource xlink:type="simple" xlink:href="${wmsBaseUrl}" />
+                            <OnlineResource xlink:type="simple" xlink:href="<c:out value="${wmsBaseUrl}"/>" />
                         </Get>
                     </HTTP>
                 </DCPType>
@@ -96,7 +98,7 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
         </Exception>
         
         <Layer>
-            <Title>${config.server.title}</Title>
+            <Title><c:out value="${config.server.title}"/></Title><%-- Use of c:out escapes XML --%>
             <c:forEach var="crsCode" items="${supportedCrsCodes}">
             <SRS>${crsCode}</SRS>
             </c:forEach>
@@ -105,8 +107,8 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
                 <c:forEach var="layer" items="${layers}">
                 <Layer<c:if test="${config.server.allowFeatureInfo} and ${layer.queryable}"> queryable="1"</c:if>>
                     <Name>${layer.layerName}</Name>
-                    <Title>${layer.title}</Title>
-                    <Abstract>${layer.abstract}</Abstract>
+                    <Title><c:out value="${layer.title}"/></Title>
+                    <Abstract><c:out value="${layer.abstract}"/></Abstract>
                     <c:set var="bbox" value="${layer.bbox}"/>
                     <LatLonBoundingBox minx="${bbox[0]}" maxx="${bbox[2]}" miny="${bbox[1]}" maxy="${bbox[3]}"/>
                     <BoundingBox SRS="EPSG:4326" minx="${bbox[0]}" maxx="${bbox[2]}" miny="${bbox[1]}" maxy="${bbox[3]}"/>
@@ -120,11 +122,11 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
                              not strings. --%>
                         <c:forEach var="zval" items="${layer.zvalues}" varStatus="status"><c:if test="${status.index > 0}">,</c:if>${zval}</c:forEach>
                     </Extent>
-                    </c:if>                                                              
+                    </c:if>
                     <c:set var="tvalues" value="${layer.tvalues}"/>
                     <c:if test="${layer.taxisPresent}">
                     <Extent name="time" multipleValues="1" current="1" default="${utils:dateTimeToISO8601(layer.defaultTValue)}">
-                        <c:forEach var="tval" items="${tvalues}" varStatus="status"><c:if test="${status.index > 0}">,</c:if>${utils:dateTimeToISO8601(tval)}</c:forEach>
+                        <c:forEach var="tval" items="${tvalues}" varStatus="status"><c:if test="${status.index > 0}">,</c:if>${utils:dateTimeToISO8601(tval)}</c:forEach> 
                     </Extent>
                     </c:if>
                     <c:forEach var="style" items="${layer.supportedStyles}">

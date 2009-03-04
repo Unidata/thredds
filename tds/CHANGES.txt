@@ -18,6 +18,7 @@ Changes in version 4.0
 
 Release Details:
  05:
+  DQC, Catgen fixes
   ToolsUI viewer now works
   DQCServlet now works
   WCS working

@@ -28,22 +28,22 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
         
     <Service>
         <Name>WMS</Name>
-        <Title>${config.server.title}</Title>
-        <Abstract>${config.server.abstract}</Abstract>
+        <Title><c:out value="${config.server.title}"/></Title>
+        <Abstract><c:out value="${config.server.abstract}"/></Abstract>
         <KeywordList>
             <%-- forEach recognizes that keywords is a comma-delimited String --%>
             <c:forEach var="keyword" items="${config.server.keywords}">
             <Keyword>${keyword}</Keyword>
             </c:forEach>
         </KeywordList>
-        <OnlineResource xlink:type="simple" xlink:href="${config.server.url}"/>
+        <OnlineResource xlink:type="simple" xlink:href="<c:out value="${config.server.url}"/>"/> 
         <ContactInformation>
             <ContactPersonPrimary>
-                <ContactPerson>${config.contact.name}</ContactPerson>
-                <ContactOrganization>${config.contact.org}</ContactOrganization>
+                <ContactPerson><c:out value="${config.contact.name}"/></ContactPerson> 
+                <ContactOrganization><c:out value="${config.contact.org}"/></ContactOrganization> 
             </ContactPersonPrimary>
-            <ContactVoiceTelephone>${config.contact.tel}</ContactVoiceTelephone>
-            <ContactElectronicMailAddress>${config.contact.email}</ContactElectronicMailAddress>
+            <ContactVoiceTelephone><c:out value="${config.contact.tel}"/></ContactVoiceTelephone>
+            <ContactElectronicMailAddress><c:out value="${config.contact.email}"/></ContactElectronicMailAddress> 
         </ContactInformation>
         <Fees>none</Fees>
         <AccessConstraints>none</AccessConstraints>
@@ -55,20 +55,20 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
         <Request>
             <GetCapabilities>
                 <Format>text/xml</Format>
-                <DCPType><HTTP><Get><OnlineResource xlink:type="simple" xlink:href="${wmsBaseUrl}"/></Get></HTTP></DCPType>
+                <DCPType><HTTP><Get><OnlineResource xlink:type="simple" xlink:href="<c:out value="${wmsBaseUrl}"/>"/></Get></HTTP></DCPType> 
             </GetCapabilities>
             <GetMap>
                 <c:forEach var="mimeType" items="${supportedImageFormats}">
                 <Format>${mimeType}</Format>
                 </c:forEach>
-                <DCPType><HTTP><Get><OnlineResource xlink:type="simple" xlink:href="${wmsBaseUrl}"/></Get></HTTP></DCPType>
+                <DCPType><HTTP><Get><OnlineResource xlink:type="simple" xlink:href="<c:out value="${wmsBaseUrl}"/>"/></Get></HTTP></DCPType> 
             </GetMap>
             <c:if test="${config.server.allowFeatureInfo}">
             <GetFeatureInfo>
                 <c:forEach var="mimeType" items="${featureInfoFormats}">
                 <Format>${mimeType}</Format>
                 </c:forEach>
-                <DCPType><HTTP><Get><OnlineResource xlink:type="simple" xlink:href="${wmsBaseUrl}"/></Get></HTTP></DCPType>
+                <DCPType><HTTP><Get><OnlineResource xlink:type="simple" xlink:href="<c:out value="${wmsBaseUrl}"/>"/></Get></HTTP></DCPType>
             </GetFeatureInfo>
             </c:if>
         </Request>

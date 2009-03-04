@@ -61,6 +61,7 @@ public class ReadTdsLogs {
   ArrayBlockingQueue<Future<SendRequestTask>> completionQ;
   Thread resultProcessingThread;
 
+  AtomicLong regProcess = new AtomicLong();
   AtomicLong total_requests = new AtomicLong();
   AtomicLong total_sendRequest_time = new AtomicLong();
   AtomicLong total_expected_time = new AtomicLong();
@@ -72,12 +73,12 @@ public class ReadTdsLogs {
   ReadTdsLogs(String server) throws FileNotFoundException {
     this.server = server;
 
-    executor = Executors.newFixedThreadPool(2); // number of threads
+    executor = Executors.newFixedThreadPool(1); // number of threads
     completionQ = new ArrayBlockingQueue<Future<SendRequestTask>>(10); // bounded, threadsafe
     completionService = new ExecutorCompletionService<SendRequestTask>(executor, completionQ);
 
-    out = new Formatter(new FileOutputStream("C:/TEMP/readTDSnew1.csv"));
-    out.format("url, size, org, new, speedup, fail %n");
+    out = new Formatter(new FileOutputStream("C:/TEMP/readTDSnew2.csv"));
+    out.format("n, url, size, org, new, speedup, fail %n");
 
     resultProcessingThread = new Thread(new ResultProcessor());
     resultProcessingThread.start();
@@ -131,10 +132,11 @@ public class ReadTdsLogs {
             f = completionService.take(); // block until ready
           }
 
+          long reqno = total_requests.getAndIncrement();
           SendRequestTask itask = f.get();
           Log log = itask.log;
           String urlString = server + log.path;
-          out.format("\"%s\",%d,%d",urlString,log.sizeBytes ,log.msecs);
+          out.format("%d,\"%s\",%d,%d",reqno,urlString,log.sizeBytes ,log.msecs);
           if (dump) System.out.printf("\"%s\",%d,%d",urlString,log.sizeBytes ,log.msecs);
           float speedup = (itask.msecs > 0) ? ((float) log.msecs) / itask.msecs : 0;
 

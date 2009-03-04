@@ -104,7 +104,7 @@ public class RootController extends AbstractController implements LastModified
           throws Exception
   {
     String path = TdsPathUtils.extractPath( req );
-    if ( path.equals( "/" ) || path.equals( ""))
+    if (( null == path) || path.equals( "/" ) || path.equals( ""))
     {
       String newPath = tdsContext.getContextPath() + "/catalog.html";
       res.sendRedirect( newPath );
