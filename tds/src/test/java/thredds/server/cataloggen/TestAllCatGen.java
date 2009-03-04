@@ -30,9 +30,10 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.cataloggen;
+package thredds.server.cataloggen;
 
 import junit.framework.*;
+import thredds.server.cataloggen.TestCatGenServletConfig;
 
 /**
  * A description
@@ -54,7 +55,7 @@ public class TestAllCatGen extends TestCase
   {
     TestSuite suite = new TestSuite();
 
-    suite.addTestSuite( thredds.cataloggen.servlet.TestCatGenServletConfig.class );
+    suite.addTestSuite( TestCatGenServletConfig.class );
 
     return suite;
   }

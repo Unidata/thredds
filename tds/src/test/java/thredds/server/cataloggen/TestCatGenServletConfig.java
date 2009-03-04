@@ -30,16 +30,12 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.cataloggen.servlet;
+package thredds.server.cataloggen;
 
 import junit.framework.TestCase;
 
 import java.io.File;
 import java.io.IOException;
-
-import thredds.server.cataloggen.CatGenConfigParser;
-import thredds.server.cataloggen.CatGenConfig;
-import thredds.server.cataloggen.CatGenTaskConfig;
 
 /**
  *
@@ -54,16 +50,16 @@ public class TestCatGenServletConfig extends TestCase
   private String testCGSC_readOneItem_FileName = "testCatGenServletConfig.readOneItem.xml";
 
   private String taskOneName = "Task1";
-  private String taskOneConfigDocName = "testCatGenServletConfig.exampleTaskConfig1.xml";
-  private String taskOneResultsFileName = "testCatGenServletConfig.resultCatalog1.xml";
-  private int taskOneDelayInMinutes = 1;
-  private int taskOnePeriodInMinutes = 0;
-
-  private String taskTwoName = "Task2";
-  private String taskTwoConfigDocName = "testCatGenServletConfig.exampleTaskConfig2.xml";
-  private String taskTwoResultsFileName = "testCatGenServletConfig.resultCatalog2.xml";
-  private int taskTwoDelayInMinutes = 2;
-  private int taskTwoPeriodInMinutes = 60;
+//  private String taskOneConfigDocName = "testCatGenServletConfig.exampleTaskConfig1.xml";
+//  private String taskOneResultsFileName = "testCatGenServletConfig.resultCatalog1.xml";
+//  private int taskOneDelayInMinutes = 1;
+//  private int taskOnePeriodInMinutes = 0;
+//
+//  private String taskTwoName = "Task2";
+//  private String taskTwoConfigDocName = "testCatGenServletConfig.exampleTaskConfig2.xml";
+//  private String taskTwoResultsFileName = "testCatGenServletConfig.resultCatalog2.xml";
+//  private int taskTwoDelayInMinutes = 2;
+//  private int taskTwoPeriodInMinutes = 60;
 
   private CatGenConfigParser catGenConfigParser;
   private CatGenConfig catGenConfig;
