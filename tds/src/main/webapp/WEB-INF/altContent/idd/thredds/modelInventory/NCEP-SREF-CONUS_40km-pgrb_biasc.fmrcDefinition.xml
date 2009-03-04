@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmrcDefinition dataset="http://motherlode.ucar.edu:8081/thredds/catalog/fmrc/NCEP/S
+REF/CONUS_40km/pgrb_biasc/files/catalog.xml">
+  <vertCoord id="4" name="height_above_ground" units="m">10.0</vertCoord>
+  <vertCoord id="2" name="height_above_ground1" units="m">2.0</vertCoord>
+  <vertCoord id="0" name="pressure" units="Pa">25000.0 50000.0 70000.0 85000.0 100000.0</vertCoord>
+  <vertCoord id="3" name="pressure1" units="Pa">25000.0 50000.0 85000.0</vertCoord>
+  <vertCoord id="1" name="pressure2" units="Pa">70000.0 85000.0</vertCoord>
+  <offsetHours id="0">3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0 87.0</offsetHours>
+  <runSequence allUseSeq="0">
+    <variable name="Geopotential_height" vertCoord="0" />
+    <variable name="Pressure_reduced_to_MSL" />
+    <variable name="Relative_humidity" vertCoord="1" />
+    <variable name="Temperature" vertCoord="1" />
+    <variable name="Temperature_height_above_ground" vertCoord="2" />
+    <variable name="U-component_of_wind" vertCoord="3" />
+    <variable name="U-component_of_wind_height_above_ground" vertCoord="4" />
+    <variable name="V-component_of_wind" vertCoord="3" />
+    <variable name="V-component_of_wind_height_above_ground" vertCoord="4" />
+  </runSequence>
+</fmrcDefinition>
