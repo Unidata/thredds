@@ -57,18 +57,18 @@ public class ServletUtil
   static private String rootPath = null;
   static private String contentPath = null;
 
-  /**
-   *
-   * @param context the Servlet context.
-   * @deprecated Now handled in TdsContext.init().
-   */
-  static public void initContext(ServletContext context)
-  {
+//  /**
+//   *
+//   * @param context the Servlet context.
+//   * @deprecated Now handled in TdsContext.init().
+//   */
+//  static public void initContext(ServletContext context)
+//  {
 //    setContextPath(context);
 //    setRootPath(context);
 //    setContentPath();
 //    initDebugging(context);
-  }
+//  }
 
   static public void setContextPath( String newContextPath )
   {
