@@ -414,10 +414,10 @@ public final class OffsetUnit extends UnitImpl implements DerivableUnit {
 	 */
 	@Override
 	public int hashCode() {
-		return this instanceof OffsetUnit
-				? super.hashCode() ^ Double.valueOf(getOffset()).hashCode()
-						^ getUnit().hashCode()
-				: Double.valueOf(getOffset()).hashCode() ^ getUnit().hashCode();
+		return super.hashCode() ^ (getOffset() == 0
+				? 0
+				: Double.valueOf(getOffset()).hashCode())
+				^ getUnit().hashCode();
 	}
 
 	/**

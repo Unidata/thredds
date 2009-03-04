@@ -391,10 +391,9 @@ public final class ScaledUnit extends UnitImpl implements DerivableUnit {
 	 */
 	@Override
 	public int hashCode() {
-		return this instanceof ScaledUnit
-				? super.hashCode() ^ Double.valueOf(getScale()).hashCode()
-						^ getUnit().hashCode()
-				: Double.valueOf(getScale()).hashCode() ^ getUnit().hashCode();
+		return super.hashCode() ^ (getScale() == 1
+				? 0
+				: Double.valueOf(getScale()).hashCode()) ^ getUnit().hashCode();
 	}
 
 	/**

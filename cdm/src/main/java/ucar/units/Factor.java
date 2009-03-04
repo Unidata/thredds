@@ -182,7 +182,7 @@ public final class Factor implements Serializable {
 	public int hashCode() {
 		return getExponent() == 0
 				? getClass().hashCode()
-				: getBase().hashCode();
+				: getExponent() ^ getBase().hashCode();
 	}
 
 	/**

@@ -424,8 +424,13 @@ public abstract class UnitImpl implements Unit, Serializable {
 	 */
 	@Override
 	public int hashCode() {
-		return getName().toLowerCase().hashCode()
-				^ getPlural().toLowerCase().hashCode() ^ getSymbol().hashCode();
+		return (getName() == null
+				? 0
+				: getName().toLowerCase().hashCode()) ^ (getPlural() == null
+				? 0
+				: getPlural().toLowerCase().hashCode()) ^ (getSymbol() == null
+				? 0
+				: getSymbol().hashCode());
 	}
 
 	/**
