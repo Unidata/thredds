@@ -30,7 +30,6 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-// $Id: TestAllCatGen.java 62 2006-07-12 21:41:46Z edavis $
 package thredds.cataloggen;
 
 import junit.framework.*;
@@ -43,8 +42,8 @@ import junit.framework.*;
  */
 public class TestAllCatGen extends TestCase
 {
-  private static org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger( TestAllCatGen.class );
+//  private static org.slf4j.Logger log =
+//          org.slf4j.LoggerFactory.getLogger( TestAllCatGen.class );
 
   public TestAllCatGen( String name )
   {
@@ -55,26 +54,8 @@ public class TestAllCatGen extends TestCase
   {
     TestSuite suite = new TestSuite();
 
-    suite.addTestSuite( thredds.cataloggen.servlet.TestCatGenTimerTask.class );
     suite.addTestSuite( thredds.cataloggen.servlet.TestCatGenServletConfig.class );
 
     return suite;
   }
 }
-
-/*
- * $Log: TestAllCatGen.java,v $
- * Revision 1.4  2006/01/20 20:42:06  caron
- * convert logging
- * use nj22 libs
- *
- * Revision 1.3  2005/12/16 23:19:38  edavis
- * Convert InvDatasetScan to use CrawlableDataset and DatasetScanCatalogBuilder.
- *
- * Revision 1.2  2005/08/16 21:47:51  edavis
- * Switch from Log4j to commons logging.
- *
- * Revision 1.1  2005/03/30 23:56:07  edavis
- * Fix tests.
- *
- */

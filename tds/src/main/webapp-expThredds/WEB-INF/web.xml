@@ -50,9 +50,9 @@
   </listener>
 
   <!-- TDS listener to handle configuration needed by all/most TDS servlets. -->
-  <listener>
+  <!--listener>
     <listener-class>thredds.servlet.ServletListener</listener-class>
-  </listener>
+  </listener-->
 
   <!-- Default Servlet -->
   <servlet>

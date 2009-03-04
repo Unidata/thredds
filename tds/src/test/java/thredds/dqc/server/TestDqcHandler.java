@@ -30,13 +30,11 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-// $Id: TestDqcHandler.java 51 2006-07-12 17:13:13Z caron $
 package thredds.dqc.server;
 
 import junit.framework.*;
 
 import java.io.IOException;
-import java.io.File;
 
 /**
  * A description
@@ -180,29 +178,3 @@ public class TestDqcHandler extends TestCase
   }
 
 }
-
-/*
- * $Log: TestDqcHandler.java,v $
- * Revision 1.2  2006/01/23 22:11:14  edavis
- * Switch from log4j to SLF4J logging.
- *
- * Revision 1.1  2005/03/30 05:41:20  edavis
- * Simplify build process: 1) combine all build scripts into one,
- * thredds/build.xml; 2) combine contents of all resources/ directories into
- * one, thredds/resources; 3) move all test source code and test data into
- * thredds/test/src and thredds/test/data; and 3) move all schemas (.xsd and .dtd)
- * into thredds/resources/resources/thredds/schemas.
- *
- * Revision 1.4  2004/08/24 23:46:09  edavis
- * Update for DqcServlet version 0.3.
- *
- * Revision 1.3  2004/08/23 16:45:18  edavis
- * Update DqcServlet to work with DQC spec v0.3 and InvCatalog v1.0. Folded DqcServlet into the THREDDS server framework/build/distribution. Updated documentation (DqcServlet and THREDDS server).
- *
- * Revision 1.2  2004/04/05 18:37:33  edavis
- * Added to and updated existing DqcServlet test suite.
- *
- * Revision 1.1  2004/01/15 19:43:07  edavis
- * Some additions to the tests.
- *
- */

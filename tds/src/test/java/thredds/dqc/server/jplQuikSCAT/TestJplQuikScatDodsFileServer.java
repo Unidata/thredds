@@ -30,22 +30,11 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-// $Id: TestJplQuikScatDodsFileServer.java 51 2006-07-12 17:13:13Z caron $
 package thredds.dqc.server.jplQuikSCAT;
 
 import junit.framework.*;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
-
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
-
-import ucar.nc2.dods.DODSStructure;
-import ucar.nc2.dods.DODSVariable;
 
 /**
  * A description
@@ -335,23 +324,3 @@ public class TestJplQuikScatDodsFileServer extends TestCase
     }
   }
 }
-
-/*
- * $Log: TestJplQuikScatDodsFileServer.java,v $
- * Revision 1.2  2006/01/23 22:11:14  edavis
- * Switch from log4j to SLF4J logging.
- *
- * Revision 1.1  2005/03/30 05:41:20  edavis
- * Simplify build process: 1) combine all build scripts into one,
- * thredds/build.xml; 2) combine contents of all resources/ directories into
- * one, thredds/resources; 3) move all test source code and test data into
- * thredds/test/src and thredds/test/data; and 3) move all schemas (.xsd and .dtd)
- * into thredds/resources/resources/thredds/schemas.
- *
- * Revision 1.2  2004/11/30 22:50:54  edavis
- * Minor change.
- *
- * Revision 1.1  2004/04/05 18:37:33  edavis
- * Added to and updated existing DqcServlet test suite.
- *
- */

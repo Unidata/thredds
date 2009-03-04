@@ -41,6 +41,7 @@ import java.util.Date;
 
 /**
  * Listen for lifecycle events
+ * @deprecated TDS now using {@link thredds.server.config.TdsConfigContextListener}.
  */
 public class ServletListener implements javax.servlet.ServletContextListener {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ServletListener.class);

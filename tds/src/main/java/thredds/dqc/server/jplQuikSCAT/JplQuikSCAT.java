@@ -30,14 +30,12 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-// $Id: JplQuikSCAT.java 51 2006-07-12 17:13:13Z caron $
 package thredds.dqc.server.jplQuikSCAT;
 
 import thredds.dqc.SelectFromRange;
 import thredds.dqc.server.DqcHandler;
 import thredds.catalog.*;
 import thredds.catalog.query.*;
-import thredds.servlet.ServletUtil;
 import thredds.servlet.UsageLog;
 
 import javax.servlet.ServletException;
@@ -46,8 +44,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.*;
 
@@ -647,52 +643,3 @@ public class JplQuikSCAT extends DqcHandler
   }
 
 }
-
-/*
- * $Log: JplQuikSCAT.java,v $
- * Revision 1.9  2006/05/22 17:29:25  caron
- * cleanup enums for 1.5
- * cleanup initContent
- *
- * Revision 1.8  2006/01/20 20:42:03  caron
- * convert logging
- * use nj22 libs
- *
- * Revision 1.7  2005/09/30 21:51:37  edavis
- * Improve "Latest" DqcHandler so it can deal with new IDD naming conventions:
- * new configuration file format; add LatestDqcHandler which handles new and old
- * config file formats; use LatestDqcHandler as a proxy for LatestModel.
- *
- * Revision 1.6  2005/07/13 22:48:07  edavis
- * Improve server logging, includes adding a final log message
- * containing the response time for each request.
- *
- * Revision 1.5  2005/04/05 22:37:02  edavis
- * Convert from Log4j to Jakarta Commons Logging.
- *
- * Revision 1.4  2004/10/15 21:18:54  edavis
- * Handle change in DQC doc and requests from using seconds since epoch for the date range selection to using ISO8601. Fixes so THREDDS UI can handle the DQC properly.
- *
- * Revision 1.3  2004/08/23 16:45:20  edavis
- * Update DqcServlet to work with DQC spec v0.3 and InvCatalog v1.0. Folded DqcServlet into the THREDDS server framework/build/distribution. Updated documentation (DqcServlet and THREDDS server).
- *
- * Revision 1.2  2004/04/03 00:44:57  edavis
- * DqcServlet:
- * - Start adding a service that returns a catalog listing all the DQC docs
- *   available from a particular DqcServlet installation (i.e., DqcServlet
- *   config to catalog)
- * JplQuikSCAT:
- * - fix how the modulo nature of longitude selection is handled
- * - improve some log messages, remove some that drastically increase
- *   the size of the log file; fix some 
- * - fix some template strings
- *
- * Revision 1.1  2004/03/05 06:32:02  edavis
- * Add DqcHandler and backend storage classes for the JPL QuikSCAT
- * DODS File Server.
- *
- * Revision 1.1  2004/01/15 19:45:31  edavis
- * Changes made while adding support for the JPL QuikSCAT
- * DODS File Server catalog.
- *
- */

@@ -30,13 +30,11 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-// $Id: JplQuikScatDodsFileServer.java 51 2006-07-12 17:13:13Z caron $
 package thredds.dqc.server.jplQuikSCAT;
 
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.dods.DODSStructure;
 import ucar.nc2.Attribute;
-import ucar.nc2.Structure;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 
@@ -590,41 +588,3 @@ public class JplQuikScatDodsFileServer
 
   }
 }
-
-/*
- * $Log: JplQuikScatDodsFileServer.java,v $
- * Revision 1.8  2006/03/01 23:14:02  edavis
- * Minor fix.
- *
- * Revision 1.7  2006/01/20 20:42:03  caron
- * convert logging
- * use nj22 libs
- *
- * Revision 1.6  2005/07/22 17:31:57  caron
- * no message
- *
- * Revision 1.5  2005/05/20 01:16:43  caron
- * propagate StructureData, DataType changes
- *
- * Revision 1.4  2005/04/05 22:37:02  edavis
- * Convert from Log4j to Jakarta Commons Logging.
- *
- * Revision 1.3  2004/11/19 23:41:53  edavis
- * Fixes to use netCDF-java 2.2 instead of 2.1.
- *
- * Revision 1.2  2004/04/03 00:44:57  edavis
- * DqcServlet:
- * - Start adding a service that returns a catalog listing all the DQC docs
- *   available from a particular DqcServlet installation (i.e., DqcServlet
- *   config to catalog)
- * JplQuikSCAT:
- * - fix how the modulo nature of longitude selection is handled
- * - improve some log messages, remove some that drastically increase
- *   the size of the log file; fix some 
- * - fix some template strings
- *
- * Revision 1.1  2004/03/05 06:32:02  edavis
- * Add DqcHandler and backend storage classes for the JPL QuikSCAT
- * DODS File Server.
- *
- */

@@ -44,6 +44,7 @@ import java.util.Collections;
 
 import thredds.util.filesource.*;
 import thredds.servlet.ThreddsConfig;
+import thredds.servlet.ServletUtil;
 import thredds.catalog.InvDatasetScan;
 import ucar.nc2.util.IO;
 
@@ -143,6 +144,9 @@ public class TdsContext
     if ( servletContext == null )
       throw new IllegalArgumentException( "ServletContext must not be null.");
 
+    // ToDo LOOK - Are we still using this.
+    ServletUtil.initDebugging( servletContext );
+
     // Set the webapp name.
     this.webappName = servletContext.getServletContextName();
 
@@ -152,6 +156,8 @@ public class TdsContext
     String tmpContextPath = servletContext.getInitParameter( "ContextPath" );  // cannot be overridden in the ThreddsConfig file
     if ( tmpContextPath == null ) tmpContextPath = "thredds";
     contextPath = "/" + tmpContextPath;
+    // ToDo LOOK - Get rid of need for setting contextPath in ServletUtil.
+    ServletUtil.setContextPath( contextPath );
 
     // Check the version.
     if ( this.webappVersion != null
@@ -165,6 +171,8 @@ public class TdsContext
     this.rootDirectory = new File( rootPath );
     this.rootDirSource = new BasicDescendantFileSource( this.rootDirectory );
     this.rootDirectory = this.rootDirSource.getRootDirectory();
+    // ToDo LOOK - Get rid of need for setting rootPath in ServletUtil.
+    ServletUtil.setRootPath( this.rootDirSource.getRootDirectoryPath());
 
     // Set the startup (initial install) content directory and source.
     this.startupContentDirectory = new File( this.rootDirectory, this.startupContentPath );
@@ -225,6 +233,7 @@ public class TdsContext
       System.out.println( "ERROR - TdsContext.init(): " + tmpMsg + " [" + this.contentDirectory.getAbsolutePath() + "]." );
       throw new IllegalStateException( tmpMsg );
     }
+    ServletUtil.setContentPath( this.contentDirSource.getRootDirectoryPath());
 
     // read in persistent user-defined params from threddsConfig.xml
     File tdsConfigFile = this.contentDirSource.getFile( this.getTdsConfigFileName() );

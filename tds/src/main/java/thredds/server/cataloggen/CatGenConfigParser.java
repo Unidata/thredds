@@ -85,7 +85,7 @@ public class CatGenConfigParser
    * @return a CatGenConfig object representing the config file.
    * @throws java.io.IOException if could not read File.
    */
-  CatGenConfig parseXML( File inFile )
+  public CatGenConfig parseXML( File inFile )
           throws IOException
   {
     if ( inFile == null )
@@ -119,7 +119,7 @@ public class CatGenConfigParser
    * @return a CatGenConfig representing the document being parsed.
    * @throws IOException if could not read InputStream.
    */
-  CatGenConfig parseXML( InputStream inStream, String docId )
+  public CatGenConfig parseXML( InputStream inStream, String docId )
           throws IOException
   {
     if ( inStream == null )
@@ -214,7 +214,7 @@ public class CatGenConfigParser
     return new CatGenConfig( configList);
   }
 
-  void writeXML( File outFile, CatGenConfig config )
+  public void writeXML( File outFile, CatGenConfig config )
           throws IOException
   {
     FileOutputStream outStream = new FileOutputStream( outFile );
@@ -222,7 +222,7 @@ public class CatGenConfigParser
     outStream.close();
   }
 
-  void writeXML( OutputStream outStream, CatGenConfig config )
+  public void writeXML( OutputStream outStream, CatGenConfig config )
           throws IOException
   {
     Element rootElem = new Element( rootElemName );

@@ -4,7 +4,7 @@
 
   <!--
     Example:
-    2005-04-18T11:33:43 -0600 [    359843 -        395] DEBUG - thredds.servlet.CatGenServlet - doGet():
+    2005-04-18T11:33:43 -0600 [    359843 -        395] DEBUG - thredds.util.TdsPathUtils - extractPath():
   -->
   <appender name="dqcServletRedirect" class="org.apache.log4j.RollingFileAppender">
     <param name="File" value="${logdir}/dqcServletRedirect.log"/>

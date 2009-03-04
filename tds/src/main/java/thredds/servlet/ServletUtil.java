@@ -57,38 +57,53 @@ public class ServletUtil
   static private String rootPath = null;
   static private String contentPath = null;
 
-  static public void initContext(ServletContext context) {
-    setContextPath(context);
-    setRootPath(context);
-    setContentPath();
-    initDebugging(context);
+  /**
+   *
+   * @param context the Servlet context.
+   * @deprecated Now handled in TdsContext.init().
+   */
+  static public void initContext(ServletContext context)
+  {
+//    setContextPath(context);
+//    setRootPath(context);
+//    setContentPath();
+//    initDebugging(context);
   }
 
-  static private void setContextPath(ServletContext servletContext) {
-    // Servlet 2.5 allows the following.
-    //contextPath = servletContext.getContextPath();
-    String tmpContextPath = servletContext.getInitParameter( "ContextPath" );  // cannot be overridden in the ThreddsConfig file
-    if ( tmpContextPath == null ) tmpContextPath = "thredds";
-    contextPath = "/" + tmpContextPath;
+  static public void setContextPath( String newContextPath )
+  {
+//  static private void setContextPath( ServletContext sc ) {
+//    // Servlet 2.5 allows the following.
+//    //contextPath = servletContext.getContextPath();
+//    String tmpContextPath = servletContext.getInitParameter( "ContextPath" );  // cannot be overridden in the ThreddsConfig file
+//    if ( tmpContextPath == null ) tmpContextPath = "thredds";
+//    contextPath = "/" + tmpContextPath;
+    contextPath = newContextPath;
   }
 
-  static private void setRootPath(ServletContext sc) {
-    rootPath = sc.getRealPath("/");
-    rootPath = rootPath.replace('\\', '/');
+  static public void setRootPath( String newRootPath )
+  {
+//  static private void setRootPath( ServletContext sc ) {
+//    rootPath = sc.getRealPath("/");
+//    rootPath = rootPath.replace('\\', '/');
+    rootPath = newRootPath;
   }
 
-  static private void setContentPath() {
-    String tmpContentPath = "../../content" + getContextPath() + "/";
-    File cf = new File(getRootPath() + tmpContentPath);
-    try {
-      contentPath = cf.getCanonicalPath() + "/";
-      contentPath = contentPath.replace('\\', '/');
-    } catch (IOException e) {
-      throw new RuntimeException(e.getMessage());
-    }
+  static public void setContentPath( String newContentPath)
+  {
+//  static private void setContentPath() {
+//    String tmpContentPath = "../../content" + getContextPath() + "/";
+//    File cf = new File(getRootPath() + tmpContentPath);
+//    try {
+//      contentPath = cf.getCanonicalPath() + "/";
+//      contentPath = contentPath.replace('\\', '/');
+//    } catch (IOException e) {
+//      throw new RuntimeException(e.getMessage());
+//    }
+    contentPath = newContentPath;
   }
 
-  static private void initDebugging(ServletContext webapp) {
+  static public void initDebugging(ServletContext webapp) {
     if (isDebugInit) return;
     isDebugInit = true;
 
