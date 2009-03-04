@@ -131,12 +131,23 @@ public class GridServlet extends AbstractServlet {
       GridDataset gds = null;
       try {
         gds = DatasetHandler.openGridDataset(req, res, pathInfo);
-        if (null == gds) return;
+        if (null == gds) {
+          log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
+          res.sendError(HttpServletResponse.SC_NOT_FOUND);
+          return;
+        }
         showForm(res, gds, pathInfo, wantXML, showPointForm);
+        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, 0));
+
+      } catch (java.io.FileNotFoundException ioe) {
+        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
+        res.sendError(HttpServletResponse.SC_NOT_FOUND);
+
       } catch (Exception e) {
         log.error("GridServlet.showForm", e);
         log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
         res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        
       } finally {
         if (null != gds)
           try {
@@ -145,6 +156,7 @@ public class GridServlet extends AbstractServlet {
             log.error("Failed to close = " + pathInfo);
           }
       }
+
       return;
     }
 
@@ -172,10 +184,16 @@ public class GridServlet extends AbstractServlet {
 
       try {
         gds = DatasetHandler.openGridDataset(req, res, pathInfo);
-        if (null == gds) return;
-      } catch (Exception e) {
+        if (null == gds) {
+          log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
+          res.sendError(HttpServletResponse.SC_NOT_FOUND);
+          return;
+        }
+
+      } catch (FileNotFoundException e) {
         log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
         res.sendError(HttpServletResponse.SC_NOT_FOUND, "Cant find " + pathInfo);
+        return;
       }
 
       // make sure some variables requested
@@ -250,7 +268,7 @@ public class GridServlet extends AbstractServlet {
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Lat/Lon or Time Range");
       }
 
-    } catch (Exception e) {
+    } catch (Throwable e) {
       log.error("GridServlet.processGridAsPoint", e);
       log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -320,10 +338,16 @@ public class GridServlet extends AbstractServlet {
 
       try {
         gds = DatasetHandler.openGridDataset(req, res, pathInfo);
-        if (null == gds) return;
-      } catch (Exception e) {
+        if (null == gds) {
+          log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
+          res.sendError(HttpServletResponse.SC_NOT_FOUND, "Cant find " + pathInfo);
+          return;
+        }
+
+      } catch (FileNotFoundException e) {
         log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
         res.sendError(HttpServletResponse.SC_NOT_FOUND, "Cant find " + pathInfo);
+        return;
       }
 
       // make sure some variables requested
@@ -376,7 +400,7 @@ public class GridServlet extends AbstractServlet {
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Lat/Lon or Time Range");
       }
 
-    } catch (Exception e) {
+    } catch (Throwable e) {
       log.error("GridServlet.processGrid", e);
       log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -390,9 +414,9 @@ public class GridServlet extends AbstractServlet {
         }
     }
 
-    if (debug) {
-    long took = System.currentTimeMillis() - start;
-    System.out.println("\ntotal response took = " + took + " msecs");
+    if (log.isDebugEnabled()) {
+      long took = System.currentTimeMillis() - start;
+      log.debug(" total response took = " + took + " msecs");
     }
   }
 

@@ -786,8 +786,9 @@ public class ServletUtil
       t.printStackTrace(); // debugging - log.error not showing stack trace !!   
       if ( ! res.isCommitted() )
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, message);
-    } catch (IOException e) {
-      log.error("handleException(): IOException", e);
+
+    } catch (Throwable e) {
+      log.error("handleException() had problem reporting Exception", e);
       t.printStackTrace();
     }
   }

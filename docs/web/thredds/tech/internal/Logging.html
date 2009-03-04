@@ -10,11 +10,11 @@
 <h1 align="left"><img src="../images/unidataLogo.png" alt="" width="86" height="77" align="middle"><strong>Logging</strong></h1>
 <hr>
 <h2> Overview</h2>
-<p><em>last updated Sep 22, 2008</em></p>
-<h2>Tomcat access logging </h2>
+<p><em>last updated Mar 04, 2009</em></p>
+<h2>Tomcat Access Logs </h2>
+<p>Files are  <strong>{tomcat_home}/logs/access.YYYY-MM-DD.log</strong> or use <a href="https://motherlode.ucar.edu:9443/thredds/admin/logs/">admin</a> interface</p>
 <p>Rolls over each day</p>
 <p>&lt;how to turn on?&gt;</p>
-<p>File is in {tomcat_home}/logs/access.YYYY-MM-DD.log</p>
 <p>Example:</p>
 <p>76.106.9.7 - - [18/Sep/2008:04:51:23 -0600] &quot;GET /thredds/radarServer/nexrad/level2/IDD?&amp;stn=KMLB&amp;time_start=1998-09-21T10:51:20&amp;time_end=2008-09-19T10:51:20 HTTP/1.1&quot; 200 408606 &quot;null&quot; &quot;Java/1.6.0_07&quot; 1719<br>
 </p>
@@ -64,7 +64,7 @@
     <td>1719</td>
   </tr>
 </table>
-<h3>setting tomcat log levels in catalina .out</h3>
+<h3>Setting tomcat log levels in catalina.out</h3>
 <p>To disable this message you need to modify logging properties file.<br>
 If you have logging.properties in your tomcat/conf folder then make changes there. Otherwise modify jre&rsquo;s file.</p>
 <p>Add to the end of /usr/local/java/jre/lib/logging.properties this line:</p>
@@ -73,7 +73,7 @@ If you have logging.properties in your tomcat/conf folder then make changes ther
 <p>&nbsp;</p>
 <hr>
 <h2>TDS Logging</h2>
-<p>TDS uses the <a href="http://logging.apache.org/log4j/docs/">log4j</a> library embedded in the <a href="http://www.slf4j.org/nlog4j/">NLOG4J</a> library. The NLOG4J library also implements the SLF4J logging facade, which the nj22 library needs. Users of the TDS can ignore the SLF4J facade, and need only deal with  log4j. </p>
+<p>TDS uses the <a href="http://logging.apache.org/log4j/docs/">log4j</a> library through the <a href="http://www.slf4j.org/">slf4j</a> facade. All TDS use should go through the facade.</p>
 <p>The default log4j configuration file  is shipped inside the TDS war file. Once the thredds.war file is expanded, you can find it at <strong>${tomcat_home}/webapps/thredds/WEB-INF/log4j.xml. </strong>You can modify this if you want and restart the TDS to have it take efffect. However, it will be overwritten when you install an updated thredds.war file.</p>
 <p>You can change the location of the  log4j configuration file with the <em>log4j-init-file</em> context parameter in the thredds configuration file <strong>${tomcat_home}/webapps/thredds/WEB-INF/web.xml.</strong> file. For example:</p>
 <pre> &lt;context-param&gt;
@@ -81,56 +81,72 @@ If you have logging.properties in your tomcat/conf folder then make changes ther
    &lt;param-value&gt;<strong>/data/mylog4j.xml</strong>&lt;/param-value&gt;
  &lt;/context-param&gt; 
 </pre>
-<p>The value should be the absolute path to the log4j configuration file. Note that web.xml also gets overwritten when the thredds.war file is updated.<br>
+<p>The value should be the absolute path to the log4j configuration file. <br>
 </p>
-<h2>ThreddsAccess logfile</h2>
-<p>Supposed to roll over once a month. </p>
-<pre>  &lt;appender name=&quot;threddsAccess&quot; class=&quot;org.apache.log4j.DailyRollingFileAppender&quot;&gt;<br>    &lt;param name=&quot;File&quot; value=&quot;${logdir}/threddsAccess.log&quot;/&gt;<br>    &lt;param name=&quot;DatePattern&quot; value=&quot;.yyyy-MM&quot;/&gt;<br>    &lt;layout class=&quot;org.apache.log4j.PatternLayout&quot;&gt;<br>      &lt;param name=&quot;ConversionPattern&quot; value=&quot;%X{host} %X{ident} %X{userid} [%d{dd/MMM/yyyy:HH:mm:ss}] %X{request} %m%n<br>    &lt;/layout&gt;<br>  &lt;/appender&gt;
+<p>Each request processor should do the following.</p>
+<ol>
+  <li>Begin request: 
+    <pre><strong>log.info( UsageLog.setupRequestContext(req));</strong></pre>
+  </li>
+  <li>Optional information</li>
+  <li>End request. Make sure all return paths have a log message
+  <pre><strong>log.info( UsageLog.closingMessageForRequestContext(statusReturn, returnSizeInBytes));</strong></pre></li>
+  <li>Error processing. Each return path should have its own log message  
+    <ol>
+      <li>
+        A <strong>FileNotFoundException</strong> should not usually generate a Exception message in the log file
+        </pre>  
+        </li>
+  </ol>
+</ol>
+<p>where:</p>
+<ul>
+  <li><strong>req:</strong> HttpServletRequest</li>
+  <li><strong>statusReturn</strong>: one of <strong>HttpServletResponse.SC_XXX</strong></li>
+  <li><strong>returnSizeInBytes</strong>: number of bytes returned, or -1 if unknown</li>
+</ul>
+<p>Example:</p>
+<pre>
+    log.info( UsageLog.setupRequestContext(req));
+
+    GridDataset gds = null;
+    try {
+      gds = DatasetHandler.openGridDataset(req, res, pathInfo);
+      if (null == gds) {
+        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
+        res.sendError(HttpServletResponse.SC_NOT_FOUND);
+        return;
+      }
+      showForm(res, gds, pathInfo, wantXML, showPointForm);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, 0));
 
 
+    } catch (java.io.FileNotFoundException ioe) {
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
+      res.sendError(HttpServletResponse.SC_NOT_FOUND);
 
-&quot;%X{host} %X{ident} %X{userid} [%d{dd/MMM/yyyy:HH:mm:ss}] %X{request} %m%n&quot;
+        
+    } catch (Exception e) {
+      log.error("GridServlet.showForm", e);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
+      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      
 
-128.117.140.172 - caron [17/Feb/2006:15:32:57] "GET /thredds/content/logs/threddsAccess.log HTTP/1.1" 200 6191584 1278</pre>
-<table width="802" border="1">
-  <tr>
-    <td width="157"><strong>Field</strong></td>
-    <td width="253"><strong>log4j pattern </strong></td>
-    <td width="370"><strong>example</strong></td>
-  </tr>
-  <tr>
-    <td>host</td>
-    <td>%X{host}</td>
-    <td>128.117.140.172</td>
-  </tr>
-  <tr>
-    <td>session id </td>
-    <td>%X{ident}</td>
-    <td>-</td>
-  </tr>
-  <tr>
-    <td>userid</td>
-    <td>%X{userid}</td>
-    <td>caron</td>
-  </tr>
-  <tr>
-    <td>Date</td>
-    <td>[%d{dd/MMM/yyyy:HH:mm:ss}]</td>
-    <td>[17/Feb/2006:15:31:01]</td>
-  </tr>
-  <tr>
-    <td>Request</td>
-    <td>%X{request}</td>
-    <td>GET /thredds/fileServer/model/GFS/Global_0p5deg/GFS_Global_0p5deg_20060216_1800.grib2 HTTP/1.1"</td>
-  </tr>
-  <tr>
-    <td>message</td>
-    <td>%m: status, size, msec </td>
-    <td>200 6191584 1278</td>
-  </tr>
-</table>
-<p>&nbsp;</p><h2>ThreddsServlet logfile</h2>
-<p>Supposed to roll over every 20MB, keep 5 files.</p>
+    } finally {
+      if (null != gds)
+        try {
+          gds.close();
+        } catch (IOException ioe) {
+          log.error("Failed to close = " + pathInfo);
+        }
+    }
+       
+    return;
+
+</pre>
+<h2>ThreddsServlet logfile</h2>
+<p>Files are <strong>{tomcat_home}/content/thredds/logs/threddsServlet.log.</strong></p>
+<p>Currently rolls over every 10 Mb, keeping 10 files.</p>
 <pre>  &lt;appender name=&quot;threddsServlet&quot; class=&quot;org.apache.log4j.RollingFileAppender&quot;&gt;<br>    &lt;param name=&quot;File&quot; value=&quot;${logdir}/threddsServlet.log&quot;/&gt;<br>    &lt;param name=&quot;MaxFileSize&quot; value=&quot;20MB&quot;/&gt;<br>    &lt;param name=&quot;MaxBackupIndex&quot; value=&quot;5&quot;/&gt;<br>    &lt;layout class=&quot;org.apache.log4j.PatternLayout&quot;&gt;<br>      &lt;param name=&quot;ConversionPattern&quot; value=&quot;%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n&quot;/&gt;<br>      &lt;!--param name=&quot;ConversionPattern&quot; value=&quot;%d{ISO8601} [%10r - %10X{ID}] %-5p - %c - %m%n&quot;/--&gt;<br>    &lt;/layout&gt;<br>  &lt;/appender&gt;
 
 

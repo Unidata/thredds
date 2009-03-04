@@ -71,8 +71,7 @@ import uk.ac.rdg.resc.ncwms.config.Config;
  * To change this template use File | Settings | File Templates.
  */
 public class WMSController extends AbstractController {
-  private static org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger(WMSController.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(WMSController.class);
 
   private boolean allow;
 
@@ -145,7 +144,7 @@ public class WMSController extends AbstractController {
 
       log.info( "handleRequestInternal(): " + UsageLog.setupRequestContext(req));
 
-      System.out.println("WMS query=" + req.getQueryString());
+      // System.out.println("WMS query=" + req.getQueryString());
         
       try {
         String request = params.getMandatoryString("request");

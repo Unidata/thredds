@@ -18,6 +18,8 @@ Changes in version 4.0
 
 Release Details:
  05:
+  catalog.xml cleanup, fixes. change to version=1.0.2
+  Error handling in RadarServer, GridServlet, ServletUtil.handleExcception
   DQC, Catgen fixes
   ToolsUI viewer now works
   DQCServlet now works

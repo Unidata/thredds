@@ -147,9 +147,10 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     if (args.length > 0)
       server = args[0];
 
+    String catalog = "/catalog.xml";
     String problemCat = // "/catalog/fmrc/NCEP/RUC2/CONUS_20km/surface/catalog.xml";
                         "/catalog/fmrc/NCEP/RUC2/CONUS_20km/hybrid/catalog.xml";
-    String catalog = "/idd/models.xml";
+    String models = "/idd/models.xml";
     String chizModels = "/idd/rtmodel.xml";
     String gribtonc = "/idd/allModels.TDS-nc.xml";
 

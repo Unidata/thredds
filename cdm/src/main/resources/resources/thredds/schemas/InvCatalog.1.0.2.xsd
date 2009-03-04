@@ -710,7 +710,10 @@
           <xsd:enumeration value="FTP"/>
           <xsd:enumeration value="GridFTP"/>
           <xsd:enumeration value="File"/>
-          <xsd:enumeration value="NetcdfServer"/> <!-- deprecated -->
+          
+          <xsd:enumeration value="NetcdfSubset"/>
+          <xsd:enumeration value="NetcdfStream"/>
+          <xsd:enumeration value="RemotePointFeature"/>
 
           <!-- web services -->
           <xsd:enumeration value="LAS"/>
@@ -718,7 +721,6 @@
           <xsd:enumeration value="WFS"/>
           <xsd:enumeration value="WCS"/>
           <xsd:enumeration value="WSDL"/>
-          <xsd:enumeration value="NetcdfSubset"/>
 
           <!--offline -->
           <xsd:enumeration value="WebForm"/>
