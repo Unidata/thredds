@@ -39,6 +39,6 @@
   <runSequence>
     <run runHour="12.0" offsetHourSeq="4" />
     <run runHour="18.0" offsetHourSeq="9" />
-    <variable name="Probablity_of_1_tenth_inch_Precipipation_POP" />
+    <variable name="Probability_of_1_tenth_inch_Precipitation" />
   </runSequence>
 </fmrcDefinition>
