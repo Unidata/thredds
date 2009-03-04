@@ -6,7 +6,7 @@
   <!--service name="latest" serviceType="Resolver"
            base="/thredds/idd/model"/-->
   <property name="CatalogGenConfigOrigURL" value="/thredds/cataloggen/config/catGenConfig.ModelsInvCat1.0-IDV.xml"/>
-  <dataset name="Unidata IDD Model Data" collectionType="TimeSeries" ID="ucar.unidata.idd.model">
+  <dataset name="Unidata IDD Model Data" collectionType="TimeSeries" ID="ucar.unidata.idd.idv.model">
     <authority>unidata.ucar.edu:</authority>
     <documentation type="summary">NCEP Model output</documentation>
     <documentation type="rights">Freely available</documentation>
@@ -32,7 +32,8 @@
       </updown>
       <name>global</name>
     </geospatialCoverage>
-    <dataset name="NCEP NAM 80km CONUS model data (real and near time)" harvest="true" ID="idd.model.nam_211">
+    <dataset name="NCEP NAM 80km CONUS model data (real and near time)" harvest="true"
+             ID="ucar.unidata.idd.idv.model.nam_211">
       <authority>unidata.ucar.edu:</authority>
       <documentation type="summary">NAM model data is available at 12Z and 00Z, with analysis and 60 hour forecasts
         included in each file. Forecast variables are available at 12 hour intervals. Vertical levels include isobaric
@@ -89,7 +90,7 @@
       </dataset>
     </dataset>
     <dataset name="NCEP GFS 80km CONUS model data" collectionType="TimeSeries" harvest="true"
-             ID="ucar.unidata.idd.model.gfs_211">
+             ID="ucar.unidata.idd.idv.model.gfs_211">
       <dataFormat>NetCDF</dataFormat>
       <documentation type="summary">GFS model data is available at 00Z, 06Z, 12Z, and 18Z with analysis and 120 hour
         forecasts included in each file named YYYYMMDDHH_AVN.grb. 240 hour forecasts are also included at 00Z in the
@@ -143,7 +144,7 @@
       </dataset>
     </dataset>
     <dataset name="NCEP GFS Global 5.0 x 2.5 degree model data (thin grid)" collectionType="TimeSeries" harvest="true"
-             ID="ucar.unidata.idd.model.gfs_37-44">
+             ID="ucar.unidata.idd.idv.model.gfs_37-44">
       <authority>ucar.unidata.edu:</authority>
       <dataFormat>NetCDF</dataFormat>
       <documentation type="summary">GFS model data is available at 00Z, 06Z, 12Z, and 18Z with analysis and 120 hour
@@ -200,7 +201,7 @@
       </dataset>
     </dataset>
     <!--dataset name="NCEP GFS Global 5.0 x 2.5 degree model data" collectionType="TimeSeries" harvest="true"
-             ID="ucar.unidata.idd.model.gfs_21-24">
+             ID="ucar.unidata.idd.idv.model.gfs_21-24">
       <authority>ucar.unidata.edu:</authority>
       <dataFormat>NetCDF</dataFormat>
       <documentation type="summary">GFS model data is available at 00Z, 06Z, 12Z, and 18Z with analysis and 120 hour
@@ -258,7 +259,7 @@
       </dataset>
     </dataset-->
     <dataset name="NCEP GFS Extended Global 5.0 x 5.0 degree model data" collectionType="TimeSeries" harvest="true"
-             ID="ucar.unidata.idd.model.gfs_25-26">
+             ID="ucar.unidata.idd.idv.model.gfs_25-26">
       <authority>unidata.ucar.edu:</authority>
       <dataFormat>NetCDF</dataFormat>
       <documentation type="summary">GFS model data is available at 00Z, 06Z, 12Z, and 18Z with analysis and 120 hour
@@ -316,7 +317,7 @@
       </dataset>
     </dataset>
     <!--dataset name="NCEP NGM 80km CONUS model data" collectionType="TimeSeries" harvest="true"
-             ID="ucar.unidata.idd.model.ngm_211">
+             ID="ucar.unidata.idd.idv.model.ngm_211">
       <dataFormat>NetCDF</dataFormat>
       <documentation type="summary">The NGM is a 16-layer model with 80 km resolution. It generates 48-hour forecasts
         twice a day and is used for model output statistics guidance. Development has been frozen on the NGM since 1990
@@ -370,7 +371,7 @@
       </dataset>
     </dataset-->
     <dataset name="NCEP RUC 80km CONUS model data" collectionType="TimeSeries" harvest="true"
-             ID="ucar.unidata.idd.model.ruc_211">
+             ID="ucar.unidata.idd.idv.model.ruc_211">
       <authority>unidata.ucar.edu:</authority>
       <dataFormat>NetCDF</dataFormat>
       <documentation type="summary">The MSAS and RSAS systems exploit the resolution of surface data by providing timely
@@ -426,7 +427,7 @@
       </dataset>
     </dataset>
     <dataset name="NCEP RUC2 40km CONUS model data" collectionType="TimeSeries" harvest="true"
-             ID="ucar.unidata.idd.model.ruc2_236">
+             ID="ucar.unidata.idd.idv.model.ruc2_236">
       <authority>unidata.ucar.edu:</authority>
       <dataFormat>NetCDF</dataFormat>
       <documentation type="summary">The key features of RUC include: high-frequency (every 1h) short-range weather model
@@ -485,7 +486,7 @@
       </dataset>
     </dataset>
     <dataset name="NCEP SST Global 5.0 x 2.5 degree model data" collectionType="TimeSeries" harvest="true"
-             ID="ucar.unidata.idd.model.sst_21-24">
+             ID="ucar.unidata.idd.idv.model.sst_21-24">
       <authority>unidata.ucar.edu:</authority>
       <dataFormat>NetCDF</dataFormat>
       <documentation type="summary">NCEP SST Model Output</documentation>
@@ -538,7 +539,7 @@
       </dataset>
     </dataset>
     <dataset name="NCEP SST Global 2.0 x 2.0 degree model data" collectionType="TimeSeries" harvest="true"
-             ID="ucar.unidata.idd.model.sst_61-64">
+             ID="ucar.unidata.idd.idv.model.sst_61-64">
       <authority>unidata.ucar.edu:</authority>
       <dataFormat>NetCDF</dataFormat>
       <documentation type="summary">NCEP SST Model Output 2 x 2 degree grid</documentation>
@@ -591,7 +592,7 @@
       </dataset>
     </dataset>
     <dataset name="NCEP Wind-Wave Global 5.0 x 2.5 degree model data" collectionType="TimeSeries" harvest="true"
-             ID="ucar.unidata.idd.model.ocean_21-24">
+             ID="ucar.unidata.idd.idv.model.ocean_21-24">
       <authority>unidata.ucar.edu:</authority>
       <dataFormat>NetCDF</dataFormat>
       <documentation type="summary">Global wind and wave model ouput</documentation>
@@ -644,7 +645,7 @@
       </dataset>
     </dataset>
     <!--dataset name="Locally Run Workstation Eta model data" collectionType="TimeSeries" harvest="true"
-             ID="ucar.unidata.idd.model.wseta_255">
+             ID="ucar.unidata.idd.idv.model.wseta_255">
       <authority>unidata.ucar.edu:</authority>
       <dataFormat>NetCDF</dataFormat>
       <documentation type="summary">Work Station ETA 4 Km resolution</documentation>
