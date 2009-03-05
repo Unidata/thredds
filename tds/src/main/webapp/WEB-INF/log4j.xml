@@ -128,7 +128,7 @@
   </logger>
 
   <logger name="thredds.server.wms">
-    <level value="WARN"/>
+    <level value="INFO"/>
     <appender-ref ref="threddsServlet"/>
   </logger>
 

@@ -612,7 +612,7 @@ public class ReadTdsLogs {
 
     long startElapsed = System.nanoTime();
 
-    read("d:/motherlode/logs/", new MClosure() {
+    read("d:/motherlode/logs/one", new MClosure() {
       public void run(String filename) throws IOException {
         reader.sendRequests(filename, -1);
       }

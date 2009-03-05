@@ -81,10 +81,12 @@ public class GempakCdm extends TableConfigurerImpl {
     String ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt, null);
     CF.FeatureType ftype = (ftypeS == null) ? CF.FeatureType.point : CF.FeatureType.valueOf(ftypeS);
     switch (ftype) {
+      case point:
+        return null; // use default handler
       case stationTimeSeries:
         return getStationConfig(ds, errlog);
       default:
-        throw new IllegalStateException("inimplemented feature ftype= " + ftype);
+        throw new IllegalStateException("unimplemented feature ftype= " + ftype);
     }
   }
 

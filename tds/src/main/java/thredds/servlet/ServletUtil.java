@@ -102,6 +102,8 @@ public class ServletUtil
   static public void setContentPath( String newContentPath)
   {
     contentPath = newContentPath;
+    if (!contentPath.endsWith("/"))
+      contentPath = contentPath + "/";
   }
 
   static public void initDebugging(ServletContext webapp) {

@@ -63,12 +63,11 @@ import uk.ac.rdg.resc.ncwms.exceptions.MetadataException;
 import uk.ac.rdg.resc.ncwms.config.Config;
 
 /**
- * Created by IntelliJ IDEA.
+ * Controller for WMS service
  * User: pmak
  * Date: Aug 3, 2008
  * Time: 2:04:38 PM
  * <p/>
- * To change this template use File | Settings | File Templates.
  */
 public class WMSController extends AbstractController {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(WMSController.class);
@@ -142,7 +141,8 @@ public class WMSController extends AbstractController {
         version = "1.1.1";
       }
 
-      log.info( "handleRequestInternal(): " + UsageLog.setupRequestContext(req));
+
+      log.info( UsageLog.setupRequestContext(req));
 
       // System.out.println("WMS query=" + req.getQueryString());
         
@@ -163,7 +163,8 @@ public class WMSController extends AbstractController {
         } else if (request.equalsIgnoreCase("GetMap")) {
           errMessage = "Error encountered while processing GetMap request ";
           WmsGetMap getMapHandler = new WmsGetMap(params, dataset, usageLogEntry);
-          log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
+          // LOOK how do we close the log messages ?
+          log.info( "GetMap: " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
           result =  getMapHandler.processRequest(res, req);
 
         } else if (request.equalsIgnoreCase("GetLegendGraphic")) {

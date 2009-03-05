@@ -357,6 +357,10 @@ public class TableAnalyzer {
       TableConfig config = tc.getConfig(wantFeatureType, ds, errlog);
       if (config != null)
         addTableRecurse( config); // kinda stupid
+      else { // use default
+        makeTablesDefault(structAdded);
+        makeNestedTables();
+      }
     }
 
     makeLeaves();
