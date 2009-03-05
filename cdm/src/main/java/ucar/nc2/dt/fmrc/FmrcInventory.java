@@ -1353,9 +1353,7 @@ public class FmrcInventory {
 
   };
 
-  public static void main(String args[]) throws Exception {
-    //doOne("NCEP/NAM/CONUS_12km", 8);
-    
+  public static void main(String args[]) throws Exception {  
     for (String cat : catalogs) doOne( cat, 12);
     for (String cat : catalog24hours) doOne( cat, 72);
   }
@@ -1364,7 +1362,7 @@ public class FmrcInventory {
     String server = "http://motherlode.ucar.edu:9080/thredds/catalog/fmrc/";
     String writeDir = "C:/temp/modelDef/";
     String catName = server + cat + "/files/catalog.xml";
-    FmrcInventory fmrCollection = makeFromCatalog(catName, catName, n, ForecastModelRunInventory.OPEN_NORMAL);
+    FmrcInventory fmrCollection = makeFromCatalog(null, catName, catName, n, ForecastModelRunInventory.OPEN_FORCE_NEW);
 
     String writeFile = writeDir + StringUtil.replace(cat, "/","-") + ".fmrcDefinition.xml";
     System.out.println("write definition to " + writeFile);
@@ -1395,10 +1393,14 @@ public class FmrcInventory {
     * @param catURL  scan this catalog
     * @throws Exception on bad
     */
-   public static FmrcInventory makeFromCatalog(String catURL, String collectionName, int maxDatasets, int mode) throws Exception {
-
+  public static FmrcInventory makeFromCatalog(String catURL, String collectionName, int maxDatasets, int mode) throws Exception {
     DiskCache2 cache =  new DiskCache2("fmrcInventory/", true, 0, -1); // dont scour - messes up the TDS!
-    String fmrcDefinitionPath = cache.getRootDirectory()+"/defs/";
+
+    return makeFromCatalog(cache, catURL, collectionName, maxDatasets,  mode);
+  }
+
+  public static FmrcInventory makeFromCatalog(DiskCache2 cache, String catURL, String collectionName, int maxDatasets, int mode) throws Exception {
+     String fmrcDefinitionPath = (cache == null)? null : cache.getRootDirectory()+"/defs/";
 
      System.out.println("***makeFromCatalog "+catURL);
      long startTime = System.currentTimeMillis();
@@ -1406,6 +1408,7 @@ public class FmrcInventory {
 
      CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.USE_ALL_DIRECT, false,
              new MyListener(fmrCollection, maxDatasets, mode, cache));
+
      crawler.crawl(catURL, null, System.out);
      fmrCollection.finish();
 

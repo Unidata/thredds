@@ -152,4 +152,20 @@ public class TestOddTypes extends TestCase {
     NetcdfFile ncfile = TestH5.openH5("support/bitop.h5");
     System.out.println( "\n"+ncfile);
   }
+
+  public void testMisc() {
+    byte[] heapId = new byte[] { 0, 22, 32, 0, 0, 0, -19, 5};
+    int offset = makeIntFromBytes(heapId, 1, 5);
+    System.out.printf("%d%n", offset);
+  }
+
+  private int makeIntFromBytes(byte[] bb, int start, int n) {
+    int result = 0;
+    for (int i = start + n - 1; i >= start; i--) {
+      result <<= 8;
+      byte b = bb[i];
+      result += (b < 0) ? b + 256 : b;
+    }
+    return result;
+  }
 }

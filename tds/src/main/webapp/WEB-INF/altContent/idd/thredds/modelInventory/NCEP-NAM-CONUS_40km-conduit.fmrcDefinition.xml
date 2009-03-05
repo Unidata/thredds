@@ -70,7 +70,7 @@
     <variable name="Horizontal_Moisture_Divergence_pressure_difference_layer" vertCoord="6" />
     <variable name="Humidity_parameter_in_canopy_conductance" />
     <variable name="Ice_cover_Proportion" />
-    <variable name="Land_cover_1=land,_2=sea" />
+    <variable name="Land_cover_1land_2sea" />
     <variable name="Large_scale_precipitation_non-convective" />
     <variable name="Latent_heat_net_flux" />
     <variable name="Liquid_Volumetric_Soil_Moisture_non_frozen" vertCoord="8" />
@@ -80,8 +80,8 @@
     <variable name="Medium_cloud_cover" />
     <variable name="Minimal_Stomatal_Resistance" />
     <variable name="Moisture_Availability" vertCoord="9" />
-    <variable name="Momentum_flux,_u_component" />
-    <variable name="Momentum_flux,_v_component" />
+    <variable name="Momentum_flux_u_component" />
+    <variable name="Momentum_flux_v_component" />
     <variable name="Number_of_Soil_Layers_in_Root_Zone" />
     <variable name="Parcel_lifted_index_to_500_hPa" vertCoord="6" />
     <variable name="Planetary_Boundary_Layer_Height" />
@@ -110,7 +110,7 @@
     <variable name="Pressure_shallow_convective_cloud_top" />
     <variable name="Pressure_surface" />
     <variable name="Pressure_tropopause" />
-    <variable name="Probablity_of_frozen_precipipation" />
+    <variable name="Probability_of_frozen_Precipitation" />
     <variable name="Rain_mixing_ratio" />
     <variable name="Relative_humidity" vertCoord="2" />
     <variable name="Relative_humidity_height_above_ground" vertCoord="5" />
@@ -203,8 +203,8 @@
     <variable name="Dew_point_temperature_height_above_ground" vertCoord="5" />
     <variable name="Maximum_temperature" vertCoord="5" />
     <variable name="Minimum_temperature" vertCoord="5" />
-    <variable name="Probablity_of_1_tenth_inch_Precipipation_POP" />
-    <variable name="Probablity_of_freezing_precipipation" />
+    <variable name="Probability_of_1_tenth_inch_Precipitation" />
+    <variable name="Probability_of_freezing_Precipitation" />
     <variable name="Thunderstorm_probability" />
     <variable name="Wind_direction_from_which_blowing" vertCoord="10" />
     <variable name="Wind_speed" vertCoord="10" />

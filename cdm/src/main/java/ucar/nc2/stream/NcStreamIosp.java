@@ -24,11 +24,9 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
   }
 
   //////////////////////////////////////////////////////////////////////
-  private RandomAccessFile raf;
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     this.raf = raf;
-
     raf.seek(0);
     assert readAndTest(raf, NcStream.MAGIC_START);
 
@@ -101,10 +99,6 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
 
     Array dataArray = Array.factory( v.getDataType(), v.getShape(), ByteBuffer.wrap( data));
     return dataArray.section( section.getRanges());
-  }
-
-  public void close() throws IOException {
-    raf.close();
   }
 
   private int readVInt(RandomAccessFile raf) throws IOException {

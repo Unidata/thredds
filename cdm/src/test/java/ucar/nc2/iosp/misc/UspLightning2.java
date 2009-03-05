@@ -68,7 +68,6 @@ public class UspLightning2  extends AbstractIOServiceProvider {
     return got.equals(MAGIC);
   }
 
-  private RandomAccessFile raf;
   private long[] offsets;
   private double lat_min, lat_max;
   private double lon_min, lon_max;
@@ -296,14 +295,6 @@ public class UspLightning2  extends AbstractIOServiceProvider {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  public Array readNestedData(Variable v2, List section) throws IOException, InvalidRangeException {
-    return null;
-  }
-
-  public void close() throws IOException {
-    raf.close();
-  }
 
   public static void main(String args[]) throws IOException, IllegalAccessException, InstantiationException, InvalidRangeException {
     NetcdfFile.registerIOProvider(UspLightning2.class);

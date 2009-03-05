@@ -59,8 +59,4 @@ public class AddeServiceProvider extends AbstractIOServiceProvider {
     return null;  //To change body of implemented methods use File | Settings | File Templates.
   }
 
-  public void close() throws IOException {
-    //To change body of implemented methods use File | Settings | File Templates.
-  }
-
 }

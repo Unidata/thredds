@@ -138,7 +138,6 @@ these are long-range detections.
   private static final String AMP = "strikeAmplitude";
   private static final String NSTROKES = "strokeCount";
 
-  private RandomAccessFile raf;
   private long[] offsets;
   private double lat_min, lat_max;
   private double lon_min, lon_max;
@@ -421,9 +420,4 @@ these are long-range detections.
 
     return structData;
   }
-
-  public void close() throws IOException {
-    raf.close();
-  }
-
 }

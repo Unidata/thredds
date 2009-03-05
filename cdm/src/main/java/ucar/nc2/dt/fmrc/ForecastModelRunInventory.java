@@ -110,10 +110,6 @@ public class ForecastModelRunInventory {
   private ForecastModelRunInventory() {
   }
 
-  private ForecastModelRunInventory(String ncfileLocation) throws IOException {
-    this(ucar.nc2.dt.grid.GridDataset.open(ncfileLocation), null);
-  }
-
   private ForecastModelRunInventory(ucar.nc2.dt.GridDataset gds, Date runDate) {
 
     this.gds = gds;
@@ -922,15 +918,21 @@ public class ForecastModelRunInventory {
     boolean xml_only = (mode == OPEN_XML_ONLY);
 
     String summaryFileLocation = ncfileLocation + ".fmrInv.xml";
-    File summaryFile;
+    File summaryFile = null;
     if (null != cache) {
       summaryFile = cache.getCacheFile(summaryFileLocation);
       summaryFileLocation = summaryFile.getPath();
     } else {
-      summaryFile = new File(summaryFileLocation);
+      try {
+        summaryFile = new File(summaryFileLocation);
+        if (!summaryFile.canWrite())
+          summaryFileLocation = null;
+      } catch (Throwable t) {
+         summaryFileLocation = null;
+      }
     }
 
-    if (!force) {
+    if (!force && (summaryFile != null)) {
       if (summaryFile.exists()) {
 
         if (isFile) { // see if its changed
@@ -963,8 +965,18 @@ public class ForecastModelRunInventory {
 
     // otherwise, make it
     if (debug) System.out.println(" read from dataset " + ncfileLocation + " write to XML " + summaryFileLocation);
-    ForecastModelRunInventory fmr = new ForecastModelRunInventory(ncfileLocation);
-    fmr.writeXML(summaryFileLocation);
+    ucar.nc2.dt.grid.GridDataset gds = null;
+    ForecastModelRunInventory fmr = null;
+    try {
+      gds = ucar.nc2.dt.grid.GridDataset.open(ncfileLocation);
+      fmr = new ForecastModelRunInventory(gds, null);
+
+    }  finally {
+      if (gds != null) gds.close();
+    }
+
+    if (summaryFileLocation != null)
+      fmr.writeXML(summaryFileLocation);
     fmr.releaseDataset();
 
     if (showXML)

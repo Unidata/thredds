@@ -43,11 +43,18 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.channels.Channels;
 
 public abstract class AbstractIOServiceProvider implements IOServiceProvider {
-  // protected StringBuilder parseInfo;
 
   // a no-op but leave it in in case we change our minds
   static public String createValidNetcdfObjectName(String name) {
     return name;
+  }
+
+  protected ucar.unidata.io.RandomAccessFile raf;
+
+  public void close() throws java.io.IOException {
+    if (raf != null)
+      raf.close();
+    raf = null;
   }
 
   // default implementation, reads into an Array, then writes to WritableByteChannel

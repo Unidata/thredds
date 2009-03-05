@@ -45,13 +45,13 @@
     <variable name="Geopotential_height_zeroDegC_isotherm" />
     <variable name="Ground_Heat_Flux" />
     <variable name="Ice_cover_Proportion" />
-    <variable name="Land_cover_1=land,_2=sea" />
+    <variable name="Land_cover_1land_2sea" />
     <variable name="Latent_heat_net_flux" />
     <variable name="Maximum_temperature" vertCoord="6" />
     <variable name="Meridional_Flux_of_Gravity_Wave_Stress" />
     <variable name="Minimum_temperature" vertCoord="6" />
-    <variable name="Momentum_flux,_u_component" />
-    <variable name="Momentum_flux,_v_component" />
+    <variable name="Momentum_flux_u_component" />
+    <variable name="Momentum_flux_v_component" />
     <variable name="Ozone_Mixing_Ratio" vertCoord="7" />
     <variable name="Planetary_Boundary_Layer_Height" />
     <variable name="Potential_Evaporation_Rate" />

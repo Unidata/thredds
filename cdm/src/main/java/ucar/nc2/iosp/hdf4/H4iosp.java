@@ -57,7 +57,6 @@ public class H4iosp extends AbstractIOServiceProvider {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4iosp.class);
   static private boolean showLayoutTypes = false;
 
-  private RandomAccessFile raf;
   private H4header header = new H4header();
 
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
@@ -201,10 +200,6 @@ public class H4iosp extends AbstractIOServiceProvider {
     }
 
     return structureArray;
-  }
-
-  public void close() throws IOException {
-    raf.close();
   }
 
   public String toStringDebug(Object o) {

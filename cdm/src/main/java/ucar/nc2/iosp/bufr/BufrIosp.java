@@ -66,7 +66,6 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  private RandomAccessFile raf;
   private Formatter parseInfo;
   private ConstructNC construct;
   private Message protoMessage;
@@ -80,13 +79,13 @@ public class BufrIosp extends AbstractIOServiceProvider {
   }
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
-    this.raf = raf;
-
     long start = System.nanoTime();
     if (debugOpen) {
       parseInfo = new Formatter();
       parseInfo.format("\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
     }
+
+    this.raf = raf;
 
     // assume theres no index for now
     MessageScanner scan = new MessageScanner(raf);
@@ -588,10 +587,6 @@ public class BufrIosp extends AbstractIOServiceProvider {
       siter = null;
       return this;
     }
-  }
-
-  public void close() throws IOException {
-    raf.close();
   }
 
   public String getDetailInfo() {

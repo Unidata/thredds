@@ -264,7 +264,6 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
   protected ucar.nc2.NetcdfFile ncfile;
   protected boolean readonly;
 
-  protected ucar.unidata.io.RandomAccessFile raf;
   protected N3header headerParser;
   protected int numrecs;
   protected long recsize;

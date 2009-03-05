@@ -73,7 +73,7 @@ public class ReadTdsLogs {
   ReadTdsLogs(String server) throws FileNotFoundException {
     this.server = server;
 
-    executor = Executors.newFixedThreadPool(3); // number of threads
+    executor = Executors.newFixedThreadPool(10); // number of threads
     completionQ = new ArrayBlockingQueue<Future<SendRequestTask>>(10); // bounded, threadsafe
     completionService = new ExecutorCompletionService<SendRequestTask>(executor, completionQ);
 
@@ -99,8 +99,8 @@ public class ReadTdsLogs {
 
       int rnum = reqno.incrementAndGet();
       if (rnum % 100 == 0)
-        System.out.println(rnum+" request= "+log);
-      
+        System.out.println(rnum + " request= " + log);
+
       try {
         IO.copyUrlB(server + log.path, null, 10 * 1000); // read data and throw away
 
@@ -136,8 +136,8 @@ public class ReadTdsLogs {
           SendRequestTask itask = f.get();
           Log log = itask.log;
           String urlString = server + log.path;
-          out.format("%d,\"%s\",%d,%d",reqno,urlString,log.sizeBytes ,log.msecs);
-          if (dump) System.out.printf("\"%s\",%d,%d",urlString,log.sizeBytes ,log.msecs);
+          out.format("%d,\"%s\",%d,%d", reqno, urlString, log.sizeBytes, log.msecs);
+          if (dump) System.out.printf("\"%s\",%d,%d", urlString, log.sizeBytes, log.msecs);
           float speedup = (itask.msecs > 0) ? ((float) log.msecs) / itask.msecs : 0;
 
           out.format(",%d,%f,%s%n", itask.msecs, speedup, itask.failed);
@@ -163,7 +163,7 @@ public class ReadTdsLogs {
         executor.shutdownNow(); // Cancel currently executing tasks
         // Wait a while for tasks to respond to being cancelled
         if (!executor.awaitTermination(secs, TimeUnit.SECONDS))
-            System.err.println("Pool did not terminate");
+          System.err.println("Pool did not terminate");
       }
     } catch (InterruptedException ie) {
       System.out.println("exit interrupted");
@@ -196,30 +196,34 @@ public class ReadTdsLogs {
   private int maxLines = -1;
 
   Log parseLine(Pattern p, String line) {
-    //System.out.println("\n"+line);
-    Matcher m = p.matcher(line);
-    int groupno = 1;
-    if (m.matches()) {
-      Log log = new Log();
-      log.ip = m.group(1);
-      log.date = m.group(3);
-      log.request = m.group(4);
-      log.returnCode = parse(m.group(5));
-      log.sizeBytes = parse(m.group(6));
-      log.referrer = m.group(7);
-      log.client = m.group(8);
-      log.msecs = parse(m.group(9));
+    try {
+      //System.out.println("\n"+line);
+      Matcher m = p.matcher(line);
+      int groupno = 1;
+      if (m.matches()) {
+        Log log = new Log();
+        log.ip = m.group(1);
+        log.date = m.group(3);
+        log.request = m.group(4);
+        log.returnCode = parse(m.group(5));
+        log.sizeBytes = parseLong(m.group(6));
+        log.referrer = m.group(7);
+        log.client = m.group(8);
+        log.msecs = parseLong(m.group(9));
 
-      String[] reqss = log.request.split(" ");
-      if (reqss.length == 3) {
-        log.verb = reqss[0];
-        log.path = reqss[1];
-        log.http = reqss[2];
+        String[] reqss = log.request.split(" ");
+        if (reqss.length == 3) {
+          log.verb = reqss[0];
+          log.path = reqss[1];
+          log.http = reqss[2];
+        }
+
+        return log;
       }
-
-      return log;
+    } catch (Exception e) {
+      e.printStackTrace();
+      System.out.println("Cant parse " + line);
     }
-    System.out.println("Cant parse " + line);
     return null;
   }
 
@@ -228,9 +232,15 @@ public class ReadTdsLogs {
     return Integer.parseInt(s);
   }
 
+  private long parseLong(String s) {
+    if (s.equals("-")) return 0;
+    return Long.parseLong(s);
+  }
+
   private class Log {
     String ip, date, request, referrer, client;
-    int returnCode, sizeBytes, msecs;
+    int returnCode;
+    long msecs, sizeBytes;
     String verb, path, http;
 
     public String toCSV() {
@@ -291,6 +301,7 @@ public class ReadTdsLogs {
 
 
   static private int total_submit = 0;
+
   void sendRequests(String filename, int max) throws IOException {
     int submit = 0;
     long skip = 0;
@@ -317,7 +328,7 @@ public class ReadTdsLogs {
         continue;
       } */
 
-      if (log.path.indexOf("fileServer") > 0)  {
+      if (log.path.indexOf("fileServer") > 0) {
         // System.out.println(" *** skip fmrc " + log);
         skip++;
         continue;
@@ -339,7 +350,7 @@ public class ReadTdsLogs {
       submit++;
     }
     ios.close();
-    System.out.println("total requests= " +total+ " skip= "+skip + " submit = "+submit);
+    System.out.println("total requests= " + total + " skip= " + skip + " submit = " + submit);
     total_submit += submit;
   }
 
@@ -612,16 +623,16 @@ public class ReadTdsLogs {
 
     long startElapsed = System.nanoTime();
 
-    read("d:/motherlode/logs/one", new MClosure() {
+    read("d:/motherlode/logs/", new MClosure() {
       public void run(String filename) throws IOException {
         reader.sendRequests(filename, -1);
       }
     });
-    System.out.println("total_submit= "+total_submit);
+    System.out.println("total_submit= " + total_submit);
     reader.exit(10 * 3600);
 
     long elapsedTime = System.nanoTime() - startElapsed;
-    System.out.println("elapsed= "+elapsedTime/(1000 * 1000 * 1000)+ "secs");
+    System.out.println("elapsed= " + elapsedTime / (1000 * 1000 * 1000) + "secs");
 
 
   }

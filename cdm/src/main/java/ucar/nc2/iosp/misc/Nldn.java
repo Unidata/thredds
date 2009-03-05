@@ -86,7 +86,6 @@ The specifics for the binary NLDN data record contained in the IDD is:
    */
 
   private static final String MAGIC = "NLDN";
-  private RandomAccessFile raf;
   private Structure seq;
   private StructureMembers sm;
 
@@ -385,7 +384,4 @@ The specifics for the binary NLDN data record contained in the IDD is:
     }
   } */
 
-  public void close() throws IOException {
-    raf.close();
-  }
 }

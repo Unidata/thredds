@@ -1161,9 +1161,21 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     try {
       this.spi.open(raf, this, cancelTask);
       finish();
+
     } catch (IOException e) {
+      this.spi.close();
       raf.close();
       throw e;
+
+    } catch (RuntimeException e) {
+      this.spi.close();
+      raf.close();
+      throw e;
+
+    } catch (Throwable t) {
+      this.spi.close();
+      raf.close();
+      throw new RuntimeException(t);
     }
 
     if (id == null)
@@ -1190,9 +1202,21 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
     try {
       spi.open(raf, this, cancelTask);
+
     } catch (IOException e) {
+      spi.close();
       raf.close();
       throw e;
+
+    } catch (RuntimeException e) {
+      spi.close();
+      raf.close();
+      throw e;
+
+    } catch (Throwable t) {
+      spi.close();
+      raf.close();
+      throw new RuntimeException(t);
     }
 
     if (id == null)
@@ -1770,20 +1794,18 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     return spi;
   }
 
-  /* "safety net" use of finalize cf Bloch p 22
-  // this will not be called if the file is in the cache, since it wont get GC'd
+  // "safety net" use of finalize cf Bloch p 22
   protected void finalize() throws Throwable {
-    if (!isClosed) {
-      try {
+    try {
+      if (null != spi) {
         log.warn("NetcdfFile.finalizer called on "+location);
-        if (null != spi) spi.close();
-        spi = null;
-      } finally {
-        super.finalize();
+        spi.close();
       }
-      isClosed = true;
+      spi = null;
+    } finally {
+      super.finalize();
     }
-  } */
+  }
 
   //////////////////////////////////////////////////////////
 
