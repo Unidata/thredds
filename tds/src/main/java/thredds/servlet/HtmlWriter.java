@@ -270,6 +270,49 @@ public class HtmlWriter {
         .toString();
   }
 
+  public void appendOldStyleHeader( StringBuilder sb )
+  {
+    appendOldStyleHeader( sb,
+                          this.tdsHtmlConfig.getWebappName(), this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getWebappUrl() ),
+                          this.tdsHtmlConfig.getInstallLogoAlt(), this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getInstallLogoUrl() ),
+                          this.tdsHtmlConfig.getInstallName(), this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getInstallUrl() ),
+                          this.tdsHtmlConfig.getHostInstName(), this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getHostInstUrl() ) );
+  }
+
+  public void appendOldStyleHeader( StringBuilder sb,
+                                    String webappName, String webappUrl,
+                                    String logoAlt, String logoUrl,
+                                    String installName, String installUrl,
+                                    String hostName, String hostUrl)
+  {
+    // Table setup.
+    sb.append( "<table width=\"100%\">\n" )
+            .append( "<tr><td>\n" );
+    // Logo
+    sb.append( "<img src='" ).append( logoUrl )
+            .append( "' alt='" ).append( logoAlt )
+            .append( "' align='left' valign='top'" )
+            .append( " hspace='10' vspace='2'" )
+            .append( ">\n" );
+
+    // Installation name.
+    sb.append( "<h3><strong>" )
+            .append( "<a href='" ).append( installUrl ).append( "'>" )
+            .append( installName ).append( "</a>" )
+            .append( "</strong>");
+    if ( false ) sb.append( " at ").append( hostName);
+    sb.append( "</h3>\n" );
+
+    // Webapp Name.
+    sb.append( "<h3><strong>" )
+            .append( "<a href='" ).append( webappUrl ).append( "'>" )
+            .append( webappName ).append( "</a>" )
+            .append( "</strong></h3>\n" );
+
+    sb.append( "</td></tr>\n" )
+            .append( "</table>\n" );
+  }
+
   public String getTableHeader( boolean includeInstall,
                                 boolean includeWebapp,
                                 boolean includeLogos)
@@ -828,7 +871,8 @@ public class HtmlWriter {
     sb.append( this.getTdsPageCssLink() );
     sb.append( "</head>\r\n" );
     sb.append( "<body>\r\n" );
-    this.appendTableHeader( sb, true, true, true );
+    this.appendOldStyleHeader( sb );
+    //this.appendTableHeader( sb, true, true, true );
 
     sb.append( "<h2> Catalog " ).append( catURL ).append( "</h2>\r\n" );
 
