@@ -73,6 +73,10 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
   private String latestServiceId, latestServiceTitle;
   private int maxNetcdfFilesCached = 100;
 
+  private String odapVersionString;
+  private String odapSpecVersionString = "opendap/3.7";
+  private String odapImplVersionString = null;
+
   private URI baseURI = null;
 
   public void init() throws javax.servlet.ServletException {
@@ -83,6 +87,12 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
     try {
       // init logging
       log = org.slf4j.LoggerFactory.getLogger( getClass());
+
+      // Configure OPeNDAP spec and impl version numbers
+      this.odapImplVersionString = ThreddsConfig.get( "odapImplVersion", null );
+      this.odapVersionString = this.odapSpecVersionString
+                               + ( this.odapImplVersionString != null
+                                   ? " \r\n" + this.odapImplVersionString : "");
 
       debugInit |= Debug.isSet("ncdods/init");
       if (debugInit || Debug.isSet("ncdods/showServerInfo")) {
@@ -128,7 +138,7 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
 
   // LOOK can we automate getting the version number ??
   public String getServerVersion() {
-    return "opendap/3.7";
+    return this.odapVersionString;
   }
 
   // Servlets that support HTTP GET requests and can quickly determine their last modification time should
