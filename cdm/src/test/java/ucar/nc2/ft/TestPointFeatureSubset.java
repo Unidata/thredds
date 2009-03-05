@@ -34,17 +34,16 @@
 package ucar.nc2.ft;
 
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.units.DateType;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.RadialDatasetSweep;
 
 import java.io.IOException;
 import java.io.FileFilter;
 import java.io.File;
 import java.util.Formatter;
-import java.util.Date;
-import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -62,7 +61,7 @@ public class TestPointFeatureSubset extends TestCase {
 
   public void testProblem() throws IOException {
     //testPointDataset(topDir+"noZ/41001h2007.nc", FeatureType.ANY_POINT, true);
-    testPointDataset("R:/testdata/point/gempak/nmcbob.shp", FeatureType.POINT, true);
+    testFeatureDataset("R:/testdata/point/gempak/nmcbob.shp", FeatureType.POINT, true);
   }
 
   int readAllDir(String dirName, FileFilter ff, FeatureType type) throws IOException {
@@ -82,7 +81,7 @@ public class TestPointFeatureSubset extends TestCase {
         continue;
       if (((ff == null) || ff.accept(f)) && !name.endsWith(".exclude")) {
         try {
-          testPointDataset(name, type, false);
+          testFeatureDataset(name, type, false);
         } catch (Throwable t) {
           t.printStackTrace();
         }
@@ -98,30 +97,54 @@ public class TestPointFeatureSubset extends TestCase {
     return count;
   }
 
-  private void testPointDataset(String location, FeatureType wantType, boolean show) throws IOException {
+  private void testFeatureDataset(String location, FeatureType wantType, boolean show) throws IOException {
     System.out.printf("----------- Read %s %n", location);
     long start = System.currentTimeMillis();
 
-    Formatter out = new Formatter();
-    FeatureDataset fdataset = FeatureDatasetFactoryManager.open(wantType, location, null, out);
-    if (fdataset == null) {
-      System.out.printf("**failed on %s %n --> %s %n", location, out);
-      return;
+    FeatureDataset fdataset = null;
+    try {
+      Formatter out = new Formatter();
+      fdataset = FeatureDatasetFactoryManager.open(wantType, location, null, out);
+      if (fdataset == null) {
+        System.out.printf("**failed on %s %n --> %s %n", location, out);
+        return;
+      }
+
+      FeatureType ftype = fdataset.getFeatureType();
+      assert FeatureDatasetFactoryManager.featureTypeOk(wantType, ftype);
+
+      if (ftype == FeatureType.GRID) {
+        assert (fdataset instanceof GridDataset);
+        GridDataset griddedDataset = (GridDataset) fdataset;
+
+      } else if (ftype == FeatureType.RADIAL) {
+        assert (fdataset instanceof RadialDatasetSweep);
+        RadialDatasetSweep radialDataset = (RadialDatasetSweep) fdataset;
+
+      } else if (ftype.isPointFeatureType()) {
+        assert fdataset instanceof FeatureDatasetPoint;
+        FeatureDatasetPoint pointDataset = (FeatureDatasetPoint) fdataset;
+        testPointFeatureDataset(pointDataset);
+      }
+
+
+    } finally {
+      if (fdataset != null) fdataset.close();
     }
+    long took = System.currentTimeMillis() - start;
+    System.out.println(" took= " + took + " msec");
+  }
 
-    // FeatureDatasetPoint
-    assert fdataset instanceof FeatureDatasetPoint;
-    FeatureDatasetPoint fdpoint = (FeatureDatasetPoint) fdataset;
 
-    FeatureType ftype = fdataset.getFeatureType();
-    assert FeatureDatasetFactoryManager.featureTypeOk(wantType, ftype);
+  void testPointFeatureDataset(FeatureDatasetPoint fdpoint) {
+    FeatureType ftype = fdpoint.getFeatureType();
 
     for (FeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
       assert (ftype == fc.getCollectionFeatureType());
-      
+
       if (ftype == FeatureType.POINT) {
         assert (fc instanceof PointFeatureCollection);
-        testPointSubset( fdataset, (PointFeatureCollection) fc);
+        testPointSubset(fdpoint, (PointFeatureCollection) fc);
 
       } else if (ftype == FeatureType.STATION) {
         assert (fc instanceof StationTimeSeriesFeatureCollection);
@@ -134,21 +157,17 @@ public class TestPointFeatureSubset extends TestCase {
 
       } else if (ftype == FeatureType.TRAJECTORY) {
         assert (fc instanceof TrajectoryFeatureCollection);
-        
+
       } else if (ftype == FeatureType.SECTION) {
         assert (fc instanceof SectionFeatureCollection);
       }
     }
 
-    fdataset.close();
-    long took = System.currentTimeMillis() - start;
-    System.out.println(" took= " + took + " msec");
   }
 
-  private void testPointSubset( FeatureDataset fd, PointFeatureCollection fc) {
+  private void testPointSubset(FeatureDataset fd, PointFeatureCollection fc) {
     DateRange dr = makeTimeSubset(fd);
   }
-
 
   DateRange makeTimeSubset(FeatureDataset fd) {
     DateRange dr = fd.getDateRange();
@@ -157,11 +176,11 @@ public class TestPointFeatureSubset extends TestCase {
 
     TimeDuration td = dr.getDuration();
     double secs = td.getValueInSeconds();
-    td.setValueInSeconds(secs/4);
+    td.setValueInSeconds(secs / 4);
     DateType start = dr.getStart();
     start.add(td);
-    td.setValueInSeconds(secs/2);
-    DateRange result = new DateRange(start, null, td, null );
+    td.setValueInSeconds(secs / 2);
+    DateRange result = new DateRange(start, null, td, null);
     System.out.printf(" subset date range=%s %n", result);
     return result;
   }

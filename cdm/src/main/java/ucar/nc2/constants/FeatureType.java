@@ -41,21 +41,34 @@ package ucar.nc2.constants;
  */
 
 public enum FeatureType {
+  /** No specific type */
   NONE,
+  /** Gridded Data */
   GRID,
-  IMAGE,
-  POINT,
-  PROFILE,
+  /** Radial data */
   RADIAL,
-  SECTION,
-  STATION,
+  /** Swath Data */
   SWATH,
+  /** Image data */
+  IMAGE,
+
+  /** Any of the point types */
+  ANY_POINT,
+  /** Point data */
+  POINT,
+  /** Profile data */
+  PROFILE,
+  /** Section data */
+  SECTION,
+  /** Station data */
+  STATION,
+  /** Stations of profiles */
+  STATION_PROFILE,
+  /** Trajectory data */
   TRAJECTORY,
 
-  // experimental
-  STATION_PROFILE,
-  STATION_RADIAL,
-  ANY_POINT;
+  /** experimental */
+  STATION_RADIAL;
 
   /**
    * Find the FeatureType that matches this name.
@@ -71,6 +84,10 @@ public enum FeatureType {
     }
   }
 
+  /**
+   * Is this a Point feature type?
+   * @return
+   */
   public boolean isPointFeatureType() {
     return (this == FeatureType.POINT) || (this == FeatureType.STATION) || (this == FeatureType.TRAJECTORY) ||
           (this == FeatureType.PROFILE) || (this == FeatureType.STATION_PROFILE) || (this == FeatureType.SECTION);

@@ -41,7 +41,6 @@ import ucar.nc2.Dimension;
 import ucar.nc2.Attribute;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.FeatureDataset;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.ma2.DataType;
 
@@ -54,7 +53,7 @@ import java.io.IOException;
  * @author yuan
  */
 
-public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl implements RadialDatasetSweep, FeatureDataset {
+public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl implements RadialDatasetSweep {
   protected ucar.unidata.geoloc.EarthLocation origin;
   protected HashMap csHash = new HashMap();
   protected ucar.nc2.units.DateUnit dateUnits;
@@ -111,15 +110,14 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
   protected void setBoundingBox() {
     LatLonRect largestBB = null;
     // look through all the coord systems
-    Iterator iter = csHash.values().iterator();
-    while (iter.hasNext()) {
-      RadialCoordSys sys = (RadialCoordSys) iter.next();
-      sys.setOrigin( origin);
+    for (Object o : csHash.values()) {
+      RadialCoordSys sys = (RadialCoordSys) o;
+      sys.setOrigin(origin);
       LatLonRect bb = sys.getBoundingBox();
       if (largestBB == null)
         largestBB = bb;
       else
-        largestBB.extend( bb);
+        largestBB.extend(bb);
     }
     boundingBox = largestBB;
   }
@@ -130,9 +128,9 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
     private int[] shape;
     private String name;
     private String desp;
-    private List attributes;
+    private List<Attribute> attributes;
 
-    public MyRadialVariableAdapter( String vName, List atts )
+    public MyRadialVariableAdapter( String vName, List<Attribute> atts )
     {
       super();
       rank = 1;

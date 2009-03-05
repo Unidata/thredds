@@ -33,14 +33,14 @@
 <h2>Point Features</h2>
 <p><img src="PF1.png" width="412" height="210" /></p>
 <p>A <strong>PointFeature </strong>is a collection of data (usually observational) taken at a single time and a single place:</p>
-<pre>  public interface <strong>ucar.nc2.ft.PointFeature</strong> {<br />    ucar.nc2.ft.EarthLocation <strong>getLocation</strong>();
+<pre>  public interface <strong>ucar.nc2.ft.PointFeature</strong> {<br />    ucar.unidata.geoloc.EarthLocation <strong>getLocation</strong>();
 <br />    double <strong>getObservationTime</strong>();<br />    Date <strong>getObservationTimeAsDate</strong>();<br />    double <strong>getNominalTime</strong>();<br />    Date <strong>getNominalTimeAsDate</strong>();
     DateUnit <strong>getTimeUnit</strong>();
 <br />    ucar.ma2.StructureData <strong>getData</strong>() throws java.io.IOException;<br />  }
 </pre>
 <p>The time can be retrieved as a Date or as a double<span class="style2">.</span> The actual time of the data sample is the <strong>observation time</strong>. It is common in some observational systems to bin data into standard intervals, in which case there is also a <strong> nominal time</strong>. When the nominal time is not given in the data, it is usually set to the observational time, which must always  be present. </p>
 <p>The location is represented by: </p>
-<pre>  public interface ucar.nc2.ft.<strong>EarthLocation</strong> {<br />    double <strong>getLatitude</strong>();<br />    double <strong>getLongitude</strong>();<br />    double <strong>getAltitude</strong>();<br />    ucar.unidata.geoloc.LatLonPoint <strong>getLatLon</strong>();<br />  }
+<pre>  public interface ucar.unidata.geoloc.<strong>EarthLocation</strong> {<br />    double <strong>getLatitude</strong>();<br />    double <strong>getLongitude</strong>();<br />    double <strong>getAltitude</strong>();<br />    ucar.unidata.geoloc.LatLonPoint <strong>getLatLon</strong>();<br />  }
 </pre>
 <p>The <em>latitude</em> and <em>longitude</em> are required, while the <em>altitude</em> may be missing and if so, is set to <em>Double.NaN</em>. <span class="style2">altitude units and datum ?? </span></p>
 <p>The actual data of the observation is contained in a <strong><a href="../StructureData.html#StructureData">ucar.ma2.StructureData</a></strong>, which has a collection of <strong>StructureMembers </strong>which describe the individual data members<strong>, </strong>along with   many convenience routines for extracting the data. </p>
@@ -60,13 +60,13 @@
     ...
   }</pre>
 <p>Note that calling <em>hasNext</em>() is required before calling <em>next</em>(), and the order in which the PointFeatures are returned is arbitrary. Since an iterator always runs through the data exactly once, its a good idea to call <em>resetIteration</em>() first, to make sure that the iterator is in the correct state. </p>
-<p>Equivilent to the internal iterator, you can explictly get a <strong>PointFeatureIterator</strong> to iterate over the PointFeatures: </p>
+<p>Equivalent to the internal iterator, you can explictly get a <strong>PointFeatureIterator</strong> to iterate over the PointFeatures: </p>
 <pre><strong>  PointFeatureIterator</strong> iter = pointFeatureCollection.<strong>getPointFeatureIterator</strong>(<strong>100 * 1000</strong>); // 100Kb buffer
   while(iter.<strong>hasNext</strong>()) {
     ucar.nc2.ft.PointFeature pf = iter.<strong>next</strong>()
     ...
   }</pre>
-<p>The <em>buffersize</em> parameter allows you to specify how many bytes can be used to buffer data, which may increase performance. Setting this to -1 allows the implementation to choose its own buffer sizes.</p>
+<p>The <em>buffersize</em> parameter allows you to specify how many bytes can be used to buffer data, which may increase performance. Setting this to -1 tells the implementation to choose its own buffer sizes. The implementation is free to ignore the buffersize parameter. </p>
 <p>You may  subset a PointFeatureCollection with a lat/lon bounding box, and/or a dateRange:</p>
 <pre>  ucar.nc2.units.DateFormatter dformat = new ucar.nc2.units.DateFormatter()
   PointFeatureCollection subset<strong> = pointFeatureCollection.subset</strong>(new LatLonRect(&quot;40,-105,2,2&quot;), 
@@ -78,7 +78,6 @@
     ...
   } 
 </pre>
-<p>&nbsp;</p>
 <h2><strong>Profile Features</strong></h2>
 <p><img src="ProfileFeature.png" width="725" height="351" /></p>
 <p>A<strong> ProfileFeature </strong>is a set of PointFeatures along a vertical line.</p>
@@ -140,7 +139,7 @@
   }  
 
 </pre>
-<p>Equivilent to the internal iterator, you can explictly get a <strong>PointFeatureCollectionIterator</strong> to iterate over the ProfileFeatures. TThe <em>PointFeature<strong>Collection</strong>Iterator</em> is identical to a <em>PointFeatureIterator</em>, except that it returns <em>PointFeatureCollections</em> instead of <em>PointFeature</em>s. The main reason to use this is probably to explicitly set the buffer size. </p>
+<p>Equivalent to the internal iterator, you can explictly get a <strong>PointFeatureCollectionIterator</strong> to iterate over the ProfileFeatures. TThe <em>PointFeature<strong>Collection</strong>Iterator</em> is identical to a <em>PointFeatureIterator</em>, except that it returns <em>PointFeatureCollections</em> instead of <em>PointFeature</em>s. The main reason to use this is probably to explicitly set the buffer size. </p>
 <pre>  public interface <strong>ucar.nc2.ft.PointFeatureCollectionIterator </strong>{<br />    boolean <strong>hasNext</strong>();<br />    ucar.nc2.ft.PointFeatureCollection <strong>nextFeature</strong>();<br />    void <strong>setBufferSize</strong>(int bufferSize);<br />  }</pre>
 <h2>Trajectory Features</h2>
 <p><img src="TrajectoryFeature.png" width="725" height="345" /></p>
@@ -162,7 +161,7 @@
 <br />    ucar.nc2.ft.PointFeatureIterator <strong>getPointFeatureIterator</strong>(int buffersize);<br />    ucar.nc2.ft.PointFeatureCollection <strong>subset</strong>(ucar.unidata.geoloc.LatLonRect, ucar.nc2.units.DateRange);
 <br />    ucar.nc2.ft.StationTimeSeriesFeature <strong>subset</strong>(ucar.nc2.units.DateRange);<br />  }</pre>
 <p>Note that a StationTimeSeriesFeature  is a collection of PointFeatures, extending <strong>PointFeatureCollection</strong>. In this case, the iteration will return PointFeatures that all belong to the same station. </p>
-<p>Note that the <strong>subset(LatLonRect, DateRange) </strong>method, inherited from the <em>PointFeatureCollection</em> interface, is not normally useful here, since the lat/lon values are identical. Subsetting on just the DateRange is useful, however, and returns another <strong>StationTimeSeriesFeature</strong> whose PointFeatures lie within the specified range of dates. </p>
+<p>Note that the <strong>subset(LatLonRect, DateRange) </strong>method, inherited from the <em>PointFeatureCollection</em> interface, is not normally useful here, since the lat/lon values at all points are identical. Subsetting on just the DateRange is useful, however, and returns another <strong>StationTimeSeriesFeature</strong> whose PointFeatures lie within the specified range of dates. </p>
 <h3>StationTimeSeriesFeatureCollection</h3>
 <p>A <strong>StationTimeSeriesFeatureCollection</strong> is a collection of StationTimeSeriesFeatures: </p>
 <pre>  public interface <strong>ucar.nc2.ft.StationTimeSeriesFeatureCollection</strong> extends <strong>StationCollection</strong>, <strong>NestedPointFeatureCollection</strong> {<br />    String <strong>getName</strong>();
@@ -271,7 +270,7 @@
 <p>As usual, you can <strong>flatten</strong> the collection, throwing away the station and profile information, and making it into a collection of PointFeatures. The flattening may include subsetting by lat/lon bounding box, and/or a dateRange. </p>
 <hr width="100%" />
 <address>
-<img src="../../nc.gif" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on May 05, 2008
+<img src="../../nc.gif" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on March 5, 2009
 </address>
 </body>
 </html>
