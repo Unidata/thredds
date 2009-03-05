@@ -34,10 +34,8 @@
  */
 
 
+
 package ucar.nc2.iosp.gempak;
-
-
-import edu.wisc.ssec.mcidas.McIDASUtil;
 
 import ucar.unidata.util.StringUtil;
 
@@ -316,7 +314,12 @@ public final class GempakUtil {
      * @return  string representation
      */
     public static String ST_ITOC(int value) {
-        return McIDASUtil.intBitsToString(value);
+        byte[] bval = new byte[4];
+        bval[0] = (byte) ((value & 0xff000000) >>> 24);
+        bval[1] = (byte) ((value & 0x00ff0000) >>> 16);
+        bval[2] = (byte) ((value & 0x0000ff00) >>> 8);
+        bval[3] = (byte) ((value & 0x000000ff) >>> 0);
+        return new String(bval);
     }
 
     /**
@@ -327,7 +330,11 @@ public final class GempakUtil {
      * @return  string representation
      */
     public static String ST_ITOC(int[] values) {
-        return McIDASUtil.intBitsToString(values);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < values.length; i++) {
+            sb.append(ST_ITOC(values[i]));
+        }
+        return sb.toString();
     }
 
     /**
@@ -385,9 +392,7 @@ public final class GempakUtil {
      * @return swapped value
      */
     public static int swp4(int value) {
-        int[] vals = new int[] { value };
-        swp4(vals, 0, 1);
-        return vals[0];
+        return Integer.reverseBytes(value);
     }
 
     /**
@@ -398,7 +403,9 @@ public final class GempakUtil {
      * @return input array with values swapped
      */
     public static int[] swp4(int[] values, int startIndex, int number) {
-        McIDASUtil.swbyt4(values, startIndex, number);
+        for (int i = startIndex; i < startIndex + number; i++) {
+            values[i] = Integer.reverseBytes(values[i]);
+        }
         return values;
     }
 

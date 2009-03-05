@@ -33,8 +33,6 @@
  */
 
 
-
-
 package ucar.nc2.iosp.gempak;
 
 
@@ -395,7 +393,11 @@ public class GempakStation implements Station {
      * @return the WMO id
      */
     public String getWmoId() {
-        return String.valueOf(stnm);
+        String wmoID = "";
+        if ( !(stnm == GempakConstants.IMISSD)) {
+            wmoID = String.valueOf((int) (stnm / 10));
+        }
+        return wmoID;
     }
 
     /**

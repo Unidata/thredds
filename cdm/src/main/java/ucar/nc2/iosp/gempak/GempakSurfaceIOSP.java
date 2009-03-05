@@ -49,6 +49,8 @@ import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil;
 
+import visad.util.Trace;
+
 import java.io.IOException;
 
 import java.nio.ByteBuffer;
@@ -149,9 +151,15 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         if (gemreader == null) {
             gemreader = new GempakSurfaceFileReader();
         }
+        Trace.call1("GEMPAK: open:initTables");
         initTables();
+        Trace.call2("GEMPAK: open:initTables");
+        Trace.call1("GEMPAK: reader.init");
         gemreader.init(raf, true);
+        Trace.call2("GEMPAK: reader.init");
+        Trace.call1("GEMPAK: buildNCFile");
         buildNCFile();
+        Trace.call2("GEMPAK: buildNCFile");
     }
 
     /**
@@ -230,7 +238,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         }
         //System.out.println("looking for " + v2);
         //System.out.println("Section = " + section);
-        long  start = System.currentTimeMillis();
+        Trace.call1("GEMPAK: readData");
         Array array = null;
         if (gemreader.getSurfaceFileType().equals(gemreader.SHIP)) {
             array = readShipData(v2, section);
@@ -240,8 +248,9 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         } else {  // climate data
             //array = readClimateData(v2, section);
         }
-        //    long took = System.currentTimeMillis() - start;
-        //    System.out.println("  read data took=" + took + " msec ");
+        //  long took = System.currentTimeMillis() - start;
+        //  System.out.println("  read data took=" + took + " msec ");
+        Trace.call2("GEMPAK: readData");
         return array;
     }
 
@@ -292,6 +301,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
             ByteBuffer buf   = ByteBuffer.wrap(bytes);
             array = new ArrayStructureBB(members, new int[] { size }, buf, 0);
 
+            Trace.call1("GEMPAK: readStandardData", section.toString());
             for (int y = stationRange.first(); y <= stationRange.last();
                     y += stationRange.stride()) {
                 for (int x = timeRange.first(); x <= timeRange.last();
@@ -314,6 +324,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                     }
                 }
             }
+            Trace.call2("GEMPAK: readStandardData");
         }
         return array;
     }
@@ -388,6 +399,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
             }
             boolean hasTime = (members.findMember(TIME_VAR) != null);
 
+            Trace.call1("GEMPAK: readShipData", section.toString());
             // fill out the station information
             for (int x = recordRange.first(); x <= recordRange.last();
                     x += recordRange.stride()) {
@@ -400,7 +412,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                     if (varname.equals(GempakStation.STID)) {
                         temp = StringUtil.padRight(stn.getSTID(), 4);
                     } else if (varname.equals(GempakStation.STNM)) {
-                        buf.putInt(stn.getSTNM());
+                        buf.putInt((int) (stn.getSTNM() / 10));
                     } else if (varname.equals(GempakStation.SLAT)) {
                         buf.putFloat((float) stn.getLatitude());
                     } else if (varname.equals(GempakStation.SLON)) {
@@ -451,6 +463,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                     }
                 }
             }
+            Trace.call2("GEMPAK: readShipData");
         }
         return array;
     }
@@ -672,8 +685,9 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
             Variable var = makeParamVariable(param, null);
             sVar.addMemberVariable(var);
         }
-        sVar.addAttribute(new Attribute("coordinates",
-                                        "Obs.time Obs.SLAT Obs.SLON Obs.SELV"));
+        sVar.addAttribute(
+            new Attribute(
+                "coordinates", "Obs.time Obs.SLAT Obs.SLON Obs.SELV"));
         ncfile.addVariable(null, sVar);
         ncfile.addAttribute(null,
                             new Attribute("CF:featureType",
@@ -692,14 +706,6 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
     private void addGlobalAttributes() {
         // global stuff
         ncfile.addAttribute(null, new Attribute("Conventions", "GEMPAK/CDM"));
-        // dataset discovery
-        /*
-        ncfile.addAttribute(
-            null,
-            new Attribute(
-                "CF:featureType",
-                CF.FeatureType.stationTimeSeries.toString()));
-        */
         String fileType = "GEMPAK Surface (" + gemreader.getSurfaceFileType()
                           + ")";
         ncfile.addAttribute(null, new Attribute("file_format", fileType));
@@ -776,7 +782,8 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                     if (varname.equals(GempakStation.STID)) {
                         test = stn.getSTID();
                     } else if (varname.equals(GempakStation.STNM)) {
-                        ((ArrayInt.D1) varArray).set(index, stn.getSTNM());
+                        ((ArrayInt.D1) varArray).set(index,
+                                (int) (stn.getSTNM() / 10));
                     } else if (varname.equals(GempakStation.SLAT)) {
                         ((ArrayFloat.D1) varArray).set(index,
                                 (float) stn.getLatitude());
@@ -853,7 +860,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
             longName = "Station identifier";
             dims.add(DIM_LEN4);
         } else if (varname.equals(GempakStation.STNM)) {
-            longName = "WMO number";
+            longName = "WMO station id";
             type     = DataType.INT;
         } else if (varname.equals(GempakStation.SLAT)) {
             longName = "latitude";

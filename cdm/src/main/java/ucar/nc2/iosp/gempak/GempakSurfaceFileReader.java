@@ -34,13 +34,14 @@
  */
 
 
-
 package ucar.nc2.iosp.gempak;
 
 
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
 import ucar.unidata.util.StringUtil;
+
+import visad.util.Trace;
 
 import java.io.*;
 
@@ -192,10 +193,12 @@ public class GempakSurfaceFileReader extends GempakFileReader {
             numParams = part.kparms;
         }
 
+        Trace.call1("GEMPAK: making params");
         for (DMPart apart : parts) {
             List<GempakParameter> params = makeParams(apart);
             partParamMap.put(apart.kprtnm, params);
         }
+        Trace.call2("GEMPAK: making params");
 
         // get the date/time keys
         dateTimeKeys = getDateTimeKeys();
@@ -221,8 +224,12 @@ public class GempakSurfaceFileReader extends GempakFileReader {
             fileType = SHIP;
         }
 
+        Trace.call1("GEMPAK: get date list");
         dateList = getDateList(fileType != SHIP);
+        Trace.call2("GEMPAK: get date list");
+        Trace.call1("GEMPAK: get station list");
         stations = getStationList();
+        Trace.call2("GEMPAK: get station list");
 
         return true;
 
