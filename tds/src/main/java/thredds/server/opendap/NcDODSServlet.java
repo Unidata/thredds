@@ -92,7 +92,7 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
       this.odapImplVersionString = ThreddsConfig.get( "odapImplVersion", null );
       this.odapVersionString = this.odapSpecVersionString
                                + ( this.odapImplVersionString != null
-                                   ? " \r\n" + this.odapImplVersionString : "");
+                                   ? " \r\n " + this.odapImplVersionString : "");
 
       debugInit |= Debug.isSet("ncdods/init");
       if (debugInit || Debug.isSet("ncdods/showServerInfo")) {
