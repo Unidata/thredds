@@ -365,28 +365,30 @@ public class TdsConfigHtml
     return this.tdsContext.getContextPath() + "/" + url;
   }
 
-  public void addHostInstitutionInfoToMap( Map<String, Object> model )
+  public void addHtmlConfigInfoToModel( Map<String, Object> model )
   {
+    model.put( "catalogCssUrl", this.getCatalogCssUrl());
+    model.put( "standardCssUrl", this.getPageCssUrl());
+    model.put( "datasetIconAlt", this.getDatasetIconAlt());
+    model.put( "datasetIconUrl", this.getDatasetIconUrl());
+    model.put( "folderIconAlt", this.getFolderIconAlt());
+    model.put( "folderIconUrl", this.getFolderIconUrl());
+
     model.put( "hostInstName", this.getHostInstName() );
     model.put( "hostInstUrl", this.prepareUrlStringForHtml( this.getHostInstUrl() ) );
     model.put( "hostInstLogoUrl", this.prepareUrlStringForHtml( this.getHostInstLogoUrl() ) );
     model.put( "hostInstLogoAlt", this.getHostInstLogoAlt() );
-  }
 
-  public void addInstallationInfoToMap( Map<String, Object> model )
-  {
     model.put( "installationName", this.getInstallName() );
     model.put( "installationUrl", this.prepareUrlStringForHtml( this.getInstallUrl() ) );
     model.put( "installationLogoUrl", this.prepareUrlStringForHtml( this.getInstallLogoUrl() ) );
     model.put( "installationLogoAlt", this.getInstallLogoAlt() );
-  }
-  public void addWebappInfoToMap( Map<String, Object> model)
-  {
+
     model.put( "webappName", this.getWebappName() );
     model.put( "webappVersion", this.tdsContext.getWebappVersion() );
     model.put( "webappVersionBuildDate", this.tdsContext.getWebappVersionBuildDate() );
     model.put( "webappUrl", this.prepareUrlStringForHtml( this.getWebappUrl() ) );
-    model.put( "webappDocsUrl", this.prepareUrlStringForHtml( this.getWebappDocsUrl() ));
+    model.put( "webappDocsUrl", this.prepareUrlStringForHtml( this.getWebappDocsUrl() ) );
     model.put( "webappLogoUrl", this.prepareUrlStringForHtml( this.getWebappLogoUrl() ) );
     model.put( "webappLogoAlt", this.getWebappLogoAlt() );
   }

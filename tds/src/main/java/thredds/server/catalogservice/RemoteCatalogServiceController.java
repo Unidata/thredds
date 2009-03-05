@@ -34,7 +34,6 @@ package thredds.server.catalogservice;
 
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.util.HtmlUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 
@@ -49,6 +48,8 @@ import thredds.server.config.TdsConfigHtml;
 import thredds.catalog.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.net.URI;
 
 /**
@@ -130,10 +131,22 @@ public class RemoteCatalogServiceController extends AbstractController
     boolean allowRemote = ThreddsConfig.getBoolean( "CatalogServices.allowRemote", false );
     if ( ! allowRemote )
     {
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ) );
+      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ) );
       response.sendError( HttpServletResponse.SC_FORBIDDEN, "Catalog services not supported for remote catalogs." );
       return null;
     }
+
+    //
+    if ( request.getServletPath().equals( "/remoteCatalogValidation.html" ))
+    {
+      Map<String, Object> model = new HashMap<String, Object>();
+
+      tdsHtmlConfig.addHtmlConfigInfoToModel( model );
+
+      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
+      return new ModelAndView( "/thredds/server/catalogservice/validationForm", model );
+    }
+
     // Bind HTTP request to a LocalCatalogRequest.
     BindingResult bindingResult = CatalogServiceUtils.bindAndValidateRemoteCatalogRequest( request );
 

@@ -215,9 +215,7 @@ public class CatGenController extends AbstractController
       model.put( "catGenConfig", this.catGenConfig );
       model.put( "catGenResultsDirName", this.catGenResultsDirName );
 
-      this.tdsContext.getTdsConfigHtml().addHostInstitutionInfoToMap( model );
-      this.tdsContext.getTdsConfigHtml().addInstallationInfoToMap( model );
-      this.tdsContext.getTdsConfigHtml().addWebappInfoToMap( model );
+      this.tdsContext.getTdsConfigHtml().addHtmlConfigInfoToModel( model );
 
       log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
       return new ModelAndView( "/thredds/server/cataloggen/catGenConfig", model );

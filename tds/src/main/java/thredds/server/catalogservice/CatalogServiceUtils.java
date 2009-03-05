@@ -115,7 +115,7 @@ public class CatalogServiceUtils
     model.put( "catalogName", HtmlUtils.htmlEscape( catName ) );
     model.put( "catalogUri", HtmlUtils.htmlEscape( catUri ) );
 
-    htmlConfig.addWebappInfoToMap( model );
+    htmlConfig.addHtmlConfigInfoToModel( model );
 
     return new ModelAndView( "thredds/server/catalog/catalog", model );
   }
@@ -128,9 +128,7 @@ public class CatalogServiceUtils
     model.put( "catalogUrl", uri );
     model.put( "message", validationMessage );
 
-    htmlConfig.addHostInstitutionInfoToMap( model );
-    htmlConfig.addInstallationInfoToMap( model );
-    htmlConfig.addWebappInfoToMap( model );
+    htmlConfig.addHtmlConfigInfoToModel( model );
 
     log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
     return new ModelAndView( "/thredds/server/catalogservice/validationMessage", model );
@@ -144,9 +142,7 @@ public class CatalogServiceUtils
     model.put( "catalogUrl", uri );
     model.put( "message", validationMessage );
 
-    htmlConfig.addHostInstitutionInfoToMap( model );
-    htmlConfig.addInstallationInfoToMap( model );
-    htmlConfig.addWebappInfoToMap( model );
+    htmlConfig.addHtmlConfigInfoToModel( model );
 
     log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
     return new ModelAndView( "/thredds/server/catalogservice/validationError", model );

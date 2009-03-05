@@ -4,28 +4,17 @@
 <table width="100%">
   <tr>
     <td>
-      <c:if test="${not empty installationUrl}">
-        <a href="${installationUrl}">
-      </c:if>
+      <c:if test="${not empty installationLogoUrl}">
       <img src="${installationLogoUrl}" alt="${installationLogoAlt}"
            align="left" valign="top" hspace="10" vspace="2">
-      <h1>${installationName}</h1>
-      <c:if test="${not empty installationUrl}">
-        </a>
       </c:if>
-    </td>
-    <td>
-      <c:if test="${not empty hostInstUrl}">
-        <a href="${hostInstUrl}">
-      </c:if>
-      <img src="${hostInstLogoUrl}" alt="${hostInstLogoAlt}"
-           align="top" valign="top" hspace="10" vspace="2">
-      <c:if test="${not empty hostInstName}">
-      ${hostInstName}
-      </c:if>
-      <c:if test="${not empty hostInstUrl}">
-        </a>
-      </c:if>
+
+      <h3><strong><c:if test="${not empty installationUrl}"><a href="${installationUrl}"></c:if>
+      ${installationName}
+      <c:if test="${not empty installationUrl}"></a></c:if></strong></h3>
+      <h3><strong><c:if test="${not empty webappUrl}"><a href="${webappUrl}"></c:if>
+      ${webappName}
+        <c:if test="${not empty webappUrl}"></a></c:if></strong></h3>
     </td>
   </tr>
 </table>

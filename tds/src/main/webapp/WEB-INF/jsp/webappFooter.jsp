@@ -7,7 +7,7 @@ Powered by
 <c:if test="${not empty webappUrl}">
   <a href="${webappUrl}">
 </c:if>
-<img src="${webappLogoUrl}" alt="${webappLogoAlt}" align="left">
+<%--<img src="${webappLogoUrl}" alt="${webappLogoAlt}" align="left">--%>
 ${webappName}
 <c:if test="${not empty webappUrl}">
   </a>

@@ -53,6 +53,7 @@
         /catalog/**/*.xml=catalogXmlController
         /catalog/**/*.html=catalogHtmlController
         /remoteCatalogService=remoteCatalogController
+        /remoteCatalogValidation.html=remoteCatalogController
       </value>
     </property>
   </bean>
