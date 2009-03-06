@@ -61,7 +61,6 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
   }
 
   protected NetcdfFile ncfile;
-  protected RandomAccessFile raf;
   protected FmrcCoordSys fmrcCoordSys;
 
   // keep this info to reopen index when extending or syncing
@@ -444,10 +443,6 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
   }
 
   protected abstract float[] _readData(long offset1, long offset2, int decimalScale, boolean bmsExists) throws IOException;
-
-  public void close() throws IOException {
-    raf.close();
-  }
 
   public Object sendIospMessage(Object special) {
     if (special instanceof FmrcCoordSys)

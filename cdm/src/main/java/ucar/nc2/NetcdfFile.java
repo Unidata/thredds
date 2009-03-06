@@ -53,6 +53,7 @@ import java.net.URL;
 import java.net.URI;
 import java.io.*;
 import java.nio.channels.WritableByteChannel;
+import java.nio.channels.FileLock;
 
 /**
  * Read-only scientific datasets that are accessible through the netCDF API.
@@ -506,6 +507,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   }
 
   static private String makeUncompressed(String filename) throws Exception {
+    // see if its a compressed file
     int pos = filename.lastIndexOf(".");
     if (pos < 0) return null;
 
@@ -518,11 +520,22 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
     // see if already decompressed, look in cache if need be
     File uncompressedFile = DiskCache.getFileStandardPolicy(uncompressedFilename);
-    if (uncompressedFile.exists() && uncompressedFile.length() > 0) {
-      if (debugCompress) System.out.println("found uncompressed " + uncompressedFile + " for " + filename);
-      return uncompressedFile.getPath();
+    if (uncompressedFile.exists()) {
+      // see if its locked - another thread is writing it
+      FileOutputStream fout = null;
+      FileLock lock = null;
+      try {
+        fout = new FileOutputStream(uncompressedFile);
+        lock = fout.getChannel().lock(); // wait till its unlocked
+        if (debugCompress) System.out.println("found uncompressed " + uncompressedFile + " for " + filename);
+        return uncompressedFile.getPath();
+      } finally {
+        if (lock != null) lock.release();
+        if (fout != null) fout.close();
+      }
     }
 
+    // ok gonna write it
     // make sure compressed file exists
     File file = new File(filename);
     if (!file.exists())
@@ -531,6 +544,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     InputStream in = null;
     FileOutputStream fout = new FileOutputStream(uncompressedFile);
 
+    // obtain the lock
+    FileLock lock = fout.getChannel().lock();
     try {
       if (suffix.equalsIgnoreCase("Z")) {
         in = new UncompressInputStream(  new FileInputStream(filename));
@@ -568,6 +583,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       throw e;
 
     } finally {
+      if (lock != null) lock.release();
       if (in != null) in.close();
       if (fout != null) fout.close();
     }

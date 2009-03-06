@@ -6,6 +6,7 @@ Changes in version 4.0
 
  Release Details:
   37:
+   Netxrad2, NetcdfFile.makeCompressed - use FileLock to prevent clobbering between threads
    FileCache cleanup scheduling - make sure only one at a time
    make sure NetcdfFile closes raf on Exception in spi.open()
    reinstate NetcdfFile.finalize()

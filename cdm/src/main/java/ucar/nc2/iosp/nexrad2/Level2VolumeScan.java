@@ -41,6 +41,8 @@ import ucar.nc2.NetcdfFile;
 
 import java.io.*;
 import java.util.*;
+import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
 
 import ucar.unidata.io.bzip2.CBZip2InputStream;
 import ucar.unidata.io.bzip2.BZip2ReadException;
@@ -66,7 +68,7 @@ public class Level2VolumeScan {
   static public final String AR2V0001 = "AR2V0001";
   static public final String AR2V0002 = "AR2V0002";
   static public final String AR2V0003 = "AR2V0003";
-  static public final String AR2V0004 = "AR2V0004";   
+  static public final String AR2V0004 = "AR2V0004";
 
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Level2VolumeScan.class);
   ////////////////////////////////////////////////////////////////////////////////////
@@ -97,7 +99,7 @@ public class Level2VolumeScan {
   private boolean hasHighResolutionPHI;
   private boolean hasHighResolutionRHO;
   // List of List of Level2Record
-  private List<List<Level2Record>>  reflectivityGroups, dopplerGroups;
+  private List<List<Level2Record>> reflectivityGroups, dopplerGroups;
 
   //private ArrayList reflectivityGroups, dopplerGroups;
 
@@ -108,7 +110,7 @@ public class Level2VolumeScan {
   private ArrayList diffPhaseHighResGroups;
   private ArrayList coefficientHighResGroups;
 
-  private boolean showMessages = false, showData = false, debugScans = false, debugGroups2 = false, debugRadials = false, debugStats =  false;
+  private boolean showMessages = false, showData = false, debugScans = false, debugGroups2 = false, debugRadials = false, debugStats = false;
   private boolean runCheck = false;
 
   Level2VolumeScan(RandomAccessFile orgRaf, CancelTask cancelTask) throws IOException {
@@ -137,11 +139,10 @@ public class Level2VolumeScan {
 
     // try to find the station
     if (stationId != null) {
-      if( !stationId.startsWith("K") && stationId.length()==4) {
-         String _stationId = "K" + stationId;
-         station = NexradStationDB.get(_stationId);
-      }
-      else
+      if (!stationId.startsWith("K") && stationId.length() == 4) {
+        String _stationId = "K" + stationId;
+        station = NexradStationDB.get(_stationId);
+      } else
         station = NexradStationDB.get(stationId);
     }
 
@@ -152,14 +153,39 @@ public class Level2VolumeScan {
       if (BZ.equals("BZ")) {
         RandomAccessFile uraf;
         File uncompressedFile = DiskCache.getFileStandardPolicy(raf.getLocation() + ".uncompress");
+
         if (uncompressedFile.exists()) {
+          // see if its locked - another thread is writing it
+          FileOutputStream fout = null;
+          FileLock lock = null;
+          try {
+            fout = new FileOutputStream(uncompressedFile);
+
+            while (true) { // loop waiting for the lock
+              try {
+                lock = fout.getChannel().lock(); // wait till its unlocked
+                break;
+
+              } catch (OverlappingFileLockException oe) { // not sure why lock() doesnt block
+                try {
+                  Thread.sleep(100); // msecs
+                } catch (InterruptedException e1) {
+                }
+              }
+            }
+
+          } finally {
+            if (lock != null) lock.release();
+            if (fout != null) fout.close();
+          }
           uraf = new ucar.unidata.io.RandomAccessFile(uncompressedFile.getPath(), "r");
+
         } else {
           // nope, gotta uncompress it
           uraf = uncompress(raf, uncompressedFile.getPath());
-          uraf.flush();
-          if (log.isDebugEnabled()) log.debug("flushed uncompressed file= " + uncompressedFile.getPath());
+          if (log.isDebugEnabled()) log.debug("made uncompressed file= " + uncompressedFile.getPath());
         }
+
         // switch to uncompressed file
         raf.close();
         raf = uraf;
@@ -186,16 +212,16 @@ public class Level2VolumeScan {
       if (r == null) break;
       if (showData) r.dump2(System.out);
       // skip non-data messages
-       if (r.message_type == 31) {
-          message_offset31 = message_offset31 + (r.message_size*2 + 12 - 2432);
-       }
+      if (r.message_type == 31) {
+        message_offset31 = message_offset31 + (r.message_size * 2 + 12 - 2432);
+      }
 
       if (r.message_type != 1 && r.message_type != 31) {
         if (showMessages) r.dumpMessage(System.out);
         continue;
       }
 
-    //  if (showData) r.dump2(System.out);
+      //  if (showData) r.dump2(System.out);
 
       /* skip bad
       if (!r.checkOk()) {
@@ -208,7 +234,7 @@ public class Level2VolumeScan {
       if (first == null) first = r;
       last = r;
 
-      if ( runCheck && !r.checkOk()) {
+      if (runCheck && !r.checkOk()) {
         continue;
       }
 
@@ -218,47 +244,47 @@ public class Level2VolumeScan {
         doppler.add(r);
 
 
-      if(r.message_type == 31) {
-         if (r.hasHighResREFData)
-            highReflectivity.add(r);
-         if (r.hasHighResVELData)
-            highVelocity.add(r);
-         if (r.hasHighResSWData)
-            highSpectrum.add(r);
-         if (r.hasHighResZDRData)
-            highDiffReflectivity.add(r);
-         if (r.hasHighResPHIData)
-            highDiffPhase.add(r);
-         if (r.hasHighResRHOData)
-            highCorreCoefficient.add(r);
+      if (r.message_type == 31) {
+        if (r.hasHighResREFData)
+          highReflectivity.add(r);
+        if (r.hasHighResVELData)
+          highVelocity.add(r);
+        if (r.hasHighResSWData)
+          highSpectrum.add(r);
+        if (r.hasHighResZDRData)
+          highDiffReflectivity.add(r);
+        if (r.hasHighResPHIData)
+          highDiffPhase.add(r);
+        if (r.hasHighResRHOData)
+          highCorreCoefficient.add(r);
       }
 
       if ((cancelTask != null) && cancelTask.isCancel()) return;
     }
     if (debugRadials) System.out.println(" reflect ok= " + reflectivity.size() + " doppler ok= " + doppler.size());
-    if(highReflectivity.size() == 0) {
-        reflectivityGroups = sortScans("reflect", reflectivity, 600);
-        dopplerGroups = sortScans("doppler", doppler, 600);
+    if (highReflectivity.size() == 0) {
+      reflectivityGroups = sortScans("reflect", reflectivity, 600);
+      dopplerGroups = sortScans("doppler", doppler, 600);
     }
-    if(highReflectivity.size() > 0)
-        reflectivityHighResGroups = sortScans("reflect_HR", highReflectivity, 720);
-    if(highVelocity.size() > 0)
-        velocityHighResGroups = sortScans("velocity_HR", highVelocity, 720);
-    if(highSpectrum.size() > 0)
-        spectrumHighResGroups = sortScans("spectrum_HR", highSpectrum, 720);
-    if(highDiffReflectivity.size() > 0)
-        diffReflectHighResGroups = sortScans("diffReflect_HR", highDiffReflectivity, 720);
-    if(highDiffPhase.size() > 0)
-        diffPhaseHighResGroups = sortScans("diffPhase_HR", highDiffPhase, 720);
-    if(highCorreCoefficient.size() > 0)
-        coefficientHighResGroups = sortScans("coefficient_HR", highCorreCoefficient, 720);
+    if (highReflectivity.size() > 0)
+      reflectivityHighResGroups = sortScans("reflect_HR", highReflectivity, 720);
+    if (highVelocity.size() > 0)
+      velocityHighResGroups = sortScans("velocity_HR", highVelocity, 720);
+    if (highSpectrum.size() > 0)
+      spectrumHighResGroups = sortScans("spectrum_HR", highSpectrum, 720);
+    if (highDiffReflectivity.size() > 0)
+      diffReflectHighResGroups = sortScans("diffReflect_HR", highDiffReflectivity, 720);
+    if (highDiffPhase.size() > 0)
+      diffPhaseHighResGroups = sortScans("diffPhase_HR", highDiffPhase, 720);
+    if (highCorreCoefficient.size() > 0)
+      coefficientHighResGroups = sortScans("coefficient_HR", highCorreCoefficient, 720);
 
   }
 
   private ArrayList sortScans(String name, List<Level2Record> scans, int siz) {
 
     // now group by elevation_num
-    Map<Short,List<Level2Record>> groupHash = new HashMap<Short,List<Level2Record>>(siz);
+    Map<Short, List<Level2Record>> groupHash = new HashMap<Short, List<Level2Record>>(siz);
     for (Level2Record record : scans) {
       List<Level2Record> group = groupHash.get(record.elevation_num);
       if (null == group) {
@@ -276,8 +302,8 @@ public class Level2VolumeScan {
     for (int i = 0; i < groups.size(); i++) {
       ArrayList group = (ArrayList) groups.get(i);
       int size = group.size();
-      if(runCheck) testScan(name, group);
-      if(size < 600) {
+      if (runCheck) testScan(name, group);
+      if (size < 600) {
         max_radials = Math.max(max_radials, group.size());
         min_radials = Math.min(min_radials, group.size());
       } else {
@@ -307,21 +333,21 @@ public class Level2VolumeScan {
   }
 
   public int getMaxRadials(int r) {
-      if(r == 0)
-        return max_radials;
-      else if (r== 1)
-        return max_radials_hr;
-      else
-        return 0;
+    if (r == 0)
+      return max_radials;
+    else if (r == 1)
+      return max_radials_hr;
+    else
+      return 0;
   }
 
   public int getMinRadials(int r) {
-      if(r == 0)
-        return min_radials;
-      else if (r== 1)
-        return min_radials_hr;
-      else
-        return 0;
+    if (r == 0)
+      return min_radials;
+    else if (r == 1)
+      return min_radials_hr;
+    else
+      return 0;
   }
 
   public int getDopplarResolution() {
@@ -333,22 +359,22 @@ public class Level2VolumeScan {
   }
 
   public boolean hasHighResolutions(int dt) {
-    if(dt == 0)
-        return hasHighResolutionData;
-    else if(dt == 1)
-        return hasHighResolutionREF;
-    else if(dt == 2)
-        return hasHighResolutionVEL;
-    else if(dt == 3)
-        return hasHighResolutionSW;
-    else if(dt == 4)
-        return hasHighResolutionZDR;
-    else if(dt == 5)
-        return hasHighResolutionPHI;
-    else if(dt == 6)
-        return hasHighResolutionRHO;
+    if (dt == 0)
+      return hasHighResolutionData;
+    else if (dt == 1)
+      return hasHighResolutionREF;
+    else if (dt == 2)
+      return hasHighResolutionVEL;
+    else if (dt == 3)
+      return hasHighResolutionSW;
+    else if (dt == 4)
+      return hasHighResolutionZDR;
+    else if (dt == 5)
+      return hasHighResolutionPHI;
+    else if (dt == 6)
+      return hasHighResolutionRHO;
     else
-        return false;
+      return false;
   }
 
   // do we have same characteristics for all records in a scan?
@@ -448,8 +474,7 @@ public class Level2VolumeScan {
       List scan = (List) scans.get(i);
       Level2Record record = (Level2Record) scan.get(0);
 
-      if ((datatype == Level2Record.VELOCITY_HI) && (record.resolution != firstRecord.resolution))
-      { // do all velocity resolutions match ??
+      if ((datatype == Level2Record.VELOCITY_HI) && (record.resolution != firstRecord.resolution)) { // do all velocity resolutions match ??
         log.warn(name + " scan " + i + " diff resolutions = " + record.resolution + ", " + firstRecord.resolution +
                 " elev= " + record.elevation_num + " " + record.getElevation());
         ok = false;
@@ -472,20 +497,20 @@ public class Level2VolumeScan {
       } else if (debugGroups2)
         System.out.println(" ok gates start elev= " + record.elevation_num + " " + record.getElevation());
 
-      if (record.message_type == 31 ) {
+      if (record.message_type == 31) {
         hasHighResolutionData = true;
         //each data type
-        if(record.hasHighResREFData)
+        if (record.hasHighResREFData)
           hasHighResolutionREF = true;
-        if(record.hasHighResVELData)
+        if (record.hasHighResVELData)
           hasHighResolutionVEL = true;
-        if(record.hasHighResSWData)
+        if (record.hasHighResSWData)
           hasHighResolutionSW = true;
-        if(record.hasHighResZDRData)
+        if (record.hasHighResZDRData)
           hasHighResolutionZDR = true;
-        if(record.hasHighResPHIData)
+        if (record.hasHighResPHIData)
           hasHighResolutionPHI = true;
-        if(record.hasHighResRHOData)
+        if (record.hasHighResRHOData)
           hasHighResolutionRHO = true;
 
       }
@@ -529,8 +554,8 @@ public class Level2VolumeScan {
   private class GroupComparator implements Comparator<List<Level2Record>> {
 
     public int compare(List<Level2Record> group1, List<Level2Record> group2) {
-      Level2Record record1 =  group1.get(0);
-      Level2Record record2 =  group2.get(0);
+      Level2Record record1 = group1.get(0);
+      Level2Record record2 = group2.get(0);
 
       //if (record1.elevation_num != record2.elevation_num)
       return record1.elevation_num - record2.elevation_num;
@@ -540,6 +565,7 @@ public class Level2VolumeScan {
 
   /**
    * Get data format (ARCHIVE2, AR2V0001) for this file.
+   *
    * @return data format (ARCHIVE2, AR2V0001) for this file.
    */
   public String getDataFormat() {
@@ -611,89 +637,109 @@ public class Level2VolumeScan {
   /**
    * Write equivilent uncompressed version of the file.
    *
-   * @param raf2      file to uncompress
+   * @param inputRaf      file to uncompress
    * @param ufilename write to this file
    * @return raf of uncompressed file
    * @throws IOException on read error
    */
-  private RandomAccessFile uncompress(RandomAccessFile raf2, String ufilename) throws IOException {
-    raf2.seek(0);
-    byte[] header = new byte[Level2Record.FILE_HEADER_SIZE];
-    raf2.read(header);
-    RandomAccessFile dout2 = new RandomAccessFile(ufilename, "rw");
-    dout2.write(header);
+  private RandomAccessFile uncompress(RandomAccessFile inputRaf, String ufilename) throws IOException {
+    RandomAccessFile outputRaf = new RandomAccessFile(ufilename, "rw");
+    FileLock lock = outputRaf.getRandomAccessFile().getChannel().lock();
 
-    boolean eof = false;
-    int numCompBytes;
-    byte[] ubuff = new byte[40000];
-    byte[] obuff = new byte[40000];
     try {
-      CBZip2InputStream cbzip2 = new CBZip2InputStream();
-      while (!eof) {
+      inputRaf.seek(0);
+      byte[] header = new byte[Level2Record.FILE_HEADER_SIZE];
+      inputRaf.read(header);
+      outputRaf.write(header);
 
-        try {
-          numCompBytes = raf2.readInt();
-          if (numCompBytes == -1) {
-            if (log.isDebugEnabled()) log.debug("  done: numCompBytes=-1 ");
-            break;
-          }
-        } catch (EOFException ee) {
-          log.warn("  got EOFException ");
-          break; // assume this is ok
-        }
-
-        if (log.isDebugEnabled()) {
-          log.debug("reading compressed bytes " + numCompBytes + " input starts at " + raf2.getFilePointer() + "; output starts at " + dout2.getFilePointer());
-        }
-        /*
-        * For some stupid reason, the last block seems to
-        * have the number of bytes negated.  So, we just
-        * assume that any negative number (other than -1)
-        * is the last block and go on our merry little way.
-        */
-        if (numCompBytes < 0) {
-          if (log.isDebugEnabled()) log.debug("last block?" + numCompBytes);
-          numCompBytes = -numCompBytes;
-          eof = true;
-        }
-        byte[] buf = new byte[numCompBytes];
-        raf2.readFully(buf);
-        ByteArrayInputStream bis = new ByteArrayInputStream(buf, 2, numCompBytes - 2);
-
-        //CBZip2InputStream cbzip2 = new CBZip2InputStream(bis);
-        cbzip2.setStream(bis);
-        int total = 0;
-        int nread;
-        /*
-        while ((nread = cbzip2.read(ubuff)) != -1) {
-          dout2.write(ubuff, 0, nread);
-          total += nread;
-        }
-        */
-        try {
-          while ((nread = cbzip2.read(ubuff)) != -1) {
-            if (total + nread > obuff.length) {
-              byte[] temp = obuff;
-              obuff = new byte[temp.length * 2];
-              System.arraycopy(temp, 0, obuff, 0, temp.length);
+      boolean eof = false;
+      int numCompBytes;
+      byte[] ubuff = new byte[40000];
+      byte[] obuff = new byte[40000];
+      try {
+        CBZip2InputStream cbzip2 = new CBZip2InputStream();
+        while (!eof) {
+          try {
+            numCompBytes = inputRaf.readInt();
+            if (numCompBytes == -1) {
+              if (log.isDebugEnabled()) log.debug("  done: numCompBytes=-1 ");
+              break;
             }
-            System.arraycopy(ubuff, 0, obuff, total, nread);
+          } catch (EOFException ee) {
+            log.warn("  got EOFException ");
+            break; // assume this is ok
+          }
+
+          if (log.isDebugEnabled()) {
+            log.debug("reading compressed bytes " + numCompBytes + " input starts at " + inputRaf.getFilePointer() + "; output starts at " + outputRaf.getFilePointer());
+          }
+          /*
+          * For some stupid reason, the last block seems to
+          * have the number of bytes negated.  So, we just
+          * assume that any negative number (other than -1)
+          * is the last block and go on our merry little way.
+          */
+          if (numCompBytes < 0) {
+            if (log.isDebugEnabled()) log.debug("last block?" + numCompBytes);
+            numCompBytes = -numCompBytes;
+            eof = true;
+          }
+          byte[] buf = new byte[numCompBytes];
+          inputRaf.readFully(buf);
+          ByteArrayInputStream bis = new ByteArrayInputStream(buf, 2, numCompBytes - 2);
+
+          //CBZip2InputStream cbzip2 = new CBZip2InputStream(bis);
+          cbzip2.setStream(bis);
+          int total = 0;
+          int nread;
+          /*
+          while ((nread = cbzip2.read(ubuff)) != -1) {
+            dout2.write(ubuff, 0, nread);
             total += nread;
           }
-          if (obuff.length >= 0) dout2.write(obuff, 0, total);
-        } catch (BZip2ReadException ioe) {
-          log.warn("Nexrad2IOSP.uncompress ", ioe);
+          */
+          try {
+            while ((nread = cbzip2.read(ubuff)) != -1) {
+              if (total + nread > obuff.length) {
+                byte[] temp = obuff;
+                obuff = new byte[temp.length * 2];
+                System.arraycopy(temp, 0, obuff, 0, temp.length);
+              }
+              System.arraycopy(ubuff, 0, obuff, total, nread);
+              total += nread;
+            }
+            if (obuff.length >= 0) outputRaf.write(obuff, 0, total);
+          } catch (BZip2ReadException ioe) {
+            log.warn("Nexrad2IOSP.uncompress ", ioe);
+          }
+          float nrecords = (float) (total / 2432.0);
+          if (log.isDebugEnabled())
+            log.debug("  unpacked " + total + " num bytes " + nrecords + " records; ouput ends at " + outputRaf.getFilePointer());
         }
-        float nrecords = (float) (total / 2432.0);
-        if (log.isDebugEnabled())
-          log.debug("  unpacked " + total + " num bytes " + nrecords + " records; ouput ends at " + dout2.getFilePointer());
+
+      } catch (Exception e) {
+        if (outputRaf != null) outputRaf.close();
+        outputRaf = null;
+        
+        // dont leave bad files around
+        File ufile = new File(ufilename);
+        if (ufile.exists()) {
+          if (!ufile.delete())
+            log.warn("failed to delete uncompressed file (IOException)"+ufilename);
+        }
+
+        if (e instanceof IOException)
+          throw (IOException) e;
+        else
+          throw new RuntimeException(e);
       }
-    } catch (EOFException e) {
-      e.printStackTrace();
+
+    } finally {
+      if (null != outputRaf) outputRaf.flush();
+      if (lock != null) lock.release();
     }
 
-    dout2.flush();
-    return dout2;
+    return outputRaf;
   }
 
 // debugging
@@ -816,7 +862,7 @@ public class Level2VolumeScan {
     NexradStationDB.init();
 
     RandomAccessFile raf = new RandomAccessFile("/upc/share/testdata/radar/nexrad/level2/Level2_KFTG_20060818_1814.ar2v.uncompress.missingradials", "r");
-   // RandomAccessFile raf = new RandomAccessFile("R:/testdata/radar/nexrad/level2/problem/KCCX_20060627_1701", "r");
+    // RandomAccessFile raf = new RandomAccessFile("R:/testdata/radar/nexrad/level2/problem/KCCX_20060627_1701", "r");
     new Level2VolumeScan(raf, null);
   }
 

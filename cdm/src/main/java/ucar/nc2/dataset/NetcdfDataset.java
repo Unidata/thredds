@@ -1069,6 +1069,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     super(ncfile);
 
     this.orgFile = ncfile;
+    this.spi = null; // has a orgFile, not an iosp
     convertGroup(getRootGroup(), ncfile.getRootGroup());
     finish(); // build global lists
 

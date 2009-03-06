@@ -42,7 +42,7 @@ import java.net.URLDecoder;
  * This is a general purpose utility for determining a place to write files and cache them, eg for
  * uncompressing files. This class does not scour itself.
  * <p/>
- * <p> The nj22 library sometimes needs to write files, eg
+ * <p> The cdm library sometimes needs to write files, eg
  * to uncompress them, or for grib index files, etc. The first choice is to write these files
  * in the same directory that the original file lives in. However, that directory may not be
  * writeable, so we need to find a place to write them to.

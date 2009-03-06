@@ -735,13 +735,14 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * close the file.
    * @throws IOException if I/O error
    */
+  @Override
   public synchronized void close() throws java.io.IOException {
     if (spiw != null) {
       flush();
       spiw.close();
       spiw = null;
     }
-    //isClosed = true;
+    spi = null;
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////
