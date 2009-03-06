@@ -39,12 +39,15 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 
 import ucar.nc2.*;
+import ucar.nc2.constants._Coordinate;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.units.DateFormatter;
 import ucar.grid.GridRecord;
 import ucar.grid.GridTableLookup;
 import ucar.grid.GridParameter;
 import ucar.unidata.util.StringUtil;
+import ucar.grib.grib1.Grib1GridTableLookup;
+import ucar.grib.grib2.Grib2GridTableLookup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,9 +78,6 @@ public class GridVariable {
     /** lookup table */
     private GridTableLookup lookup;
 
-    /** flag for grib1*/
-    private boolean isGrib1;
-
     /** horizontal coord system */
     private GridHorizCoordSys hcs;
 
@@ -102,9 +102,6 @@ public class GridVariable {
     /** record tracker */
     private GridRecord[] recordTracker;
 
-    /** decimal scale */
-    private int decimalScale = 0;
-
     /** flag for having a vertical coordinate */
     private boolean hasVert = false;
 
@@ -128,9 +125,6 @@ public class GridVariable {
         this.desc   = desc;
         this.hcs    = hcs;
         this.lookup = lookup;
-        // TODO: what to do?
-        //isGrib1 = (lookup instanceof Grib1Lookup);
-        isGrib1 = false;
     }
 
     /**
@@ -322,8 +316,6 @@ public class GridVariable {
 
         nlevels = getVertNlevels();
         ntimes  = tcs.getNTimes();
-        // TODO:  this is not used ?
-        decimalScale = firstRecord.getDecimalScale();
 
         if (vname == null) {
             vname = AbstractIOServiceProvider.createValidNetcdfObjectName(useDesc
@@ -332,7 +324,9 @@ public class GridVariable {
         }
 
         //vname = StringUtil.replace(vname, '-', "_"); // Done in dods server now
-        vname = StringUtil.replace(vname, ' ', "_");  
+        // TODO: check if this can now be deleted
+        vname = StringUtil.replace(vname, ' ', "_");
+
         Variable v = new Variable(ncfile, g, null, vname);
         v.setDataType(DataType.FLOAT);
 
@@ -351,8 +345,6 @@ public class GridVariable {
         v.setDimensions(dims);
         GridParameter param = lookup.getParameter(firstRecord);
 
-        //TODO:  handle null units?
-        //v.addAttribute(new Attribute("units", param.getUnit()));
         String unit = param.getUnit();
         if (unit == null) {
             unit = "";
@@ -371,33 +363,46 @@ public class GridVariable {
         }
 
         /*
-         * TODO: figure out what to do with this - perhaps have a subclass
          * GribVariable that adds in the specific attributes.
          *
-         if (lookup instanceof Grib1Lookup) {
-          int[] paramId = lookup.getParameterId(firstRecord);
-          if (paramId[0] == 1) {
-          v.addAttribute(new Attribute("GRIB_param_name", param.getDescription()));
-          v.addAttribute(new Attribute("GRIB_center_id", new Integer(paramId[1])));
-          v.addAttribute(new Attribute("GRIB_table_id", new Integer(paramId[2])));
-          v.addAttribute(new Attribute("GRIB_param_number", new Integer(paramId[3])));
-         } else {
-          v.addAttribute(new Attribute("GRIB_param_discipline", lookup.getDisciplineName(firstRecord)));
-          v.addAttribute(new Attribute("GRIB_param_category", lookup.getCategoryName(firstRecord)));
-          v.addAttribute(new Attribute("GRIB_param_name", param.getName()));
+         */
+         if (lookup.getGridType().startsWith( "GRIB")) {
+          Grib2GridTableLookup g2lookup = null;
+          Grib1GridTableLookup g1lookup = null;
+          int[] paramId;
+          if (lookup instanceof Grib2GridTableLookup) {
+            g2lookup = (Grib2GridTableLookup) lookup;
+            paramId = g2lookup.getParameterId(firstRecord);
+          } else {
+            g1lookup = (Grib1GridTableLookup) lookup;
+            paramId = g1lookup.getParameterId(firstRecord);
+          }
+          if (paramId[0] == 1) { // Grib1
+            v.addAttribute(new Attribute("GRIB_param_name", param.getDescription()));
+            v.addAttribute(new Attribute("GRIB_center_id", new Integer(paramId[1])));
+            v.addAttribute(new Attribute("GRIB_table_id", new Integer(paramId[2])));
+            v.addAttribute(new Attribute("GRIB_param_number", new Integer(paramId[3])));
+          } else { // Grib2
+            v.addAttribute(new Attribute("GRIB_param_discipline", lookup.getDisciplineName(firstRecord)));
+            v.addAttribute(new Attribute("GRIB_param_category", lookup.getCategoryName(firstRecord)));
+            v.addAttribute(new Attribute("GRIB_param_name", param.getName()));
           }
           v.addAttribute(new Attribute("GRIB_param_id", Array.factory(int.class, new int[]{paramId.length}, paramId)));
-          v.addAttribute(new Attribute("GRIB_product_definition_type", lookup.getProductDefinitionName(firstRecord)));
-          v.addAttribute(new Attribute("GRIB_level_type", new Integer(firstRecord.getLevelType1())));
-         }
-         */
+          if (lookup instanceof Grib2GridTableLookup) {
+            v.addAttribute(new Attribute("GRIB_product_definition_type", g2lookup.getProductDefinitionName(firstRecord)));
+            v.addAttribute(new Attribute("GRIB_level_type", new Integer(firstRecord.getLevelType1())));
+            if( firstRecord.getLevelType2() != 255)
+               v.addAttribute( new Attribute("GRIB2_level_type2", new Integer(firstRecord.getLevelType2())));
+          } else {
+            v.addAttribute(new Attribute("GRIB_product_definition_type", g1lookup.getProductDefinitionName(firstRecord)));
+            v.addAttribute(new Attribute("GRIB_level_type", new Integer(firstRecord.getLevelType1())));
+          }
 
-        //if (pds.getTypeSecondFixedSurface() != 255 )
-        //  v.addAttribute( new Attribute("GRIB2_type_of_second_fixed_surface", pds.getTypeSecondFixedSurfaceName()));
-
-        /* String coordSysName = getVertIsUsed() ? getVertName() :
+          String coordSysName = getVertIsUsed() ? getVertName() :
             (hcs.isLatLon() ? "latLonCoordSys" : "projectionCoordSys");
-        v.addAttribute( new Attribute(_Coordinate.Systems", coordSysName)); */
+          v.addAttribute( new Attribute(_Coordinate.Systems, coordSysName));
+         }
+
 
         v.setSPobject(this);
 
@@ -417,11 +422,6 @@ public class GridVariable {
                 //+" # genProcess="+p.typeGenProcess);
                 );
             }
-            /* TODO:  figure out what to do here
-            if (showGen && !isGrib1 && !p.typeGenProcess.equals("2"))
-              System.out.println(" "+getName()+ " genProcess="+p.typeGenProcess);
-            */
-
             int level = getVertIndex(p);
             if ( !getVertIsUsed() && (level > 0)) {
                 log.warn("inconsistent level encoding=" + level);
@@ -457,15 +457,6 @@ public class GridVariable {
                 recordTracker[recno] = p;
             } else {
                 GridRecord q = recordTracker[recno];
-                /* TODO:  huh?
-                if (!p.typeGenProcess.equals(q.typeGenProcess)) {
-                  log.warn("Duplicate record; level="+level+" time= "+time+" for "+getName()+" file="+ncfile.getLocation()+"\n"
-                        +"   "+getVertLevelName()+" (type="+p.getLevelType1() + ","+p.getLevelType2()+")  value="+p.getLevel1() + ","+p.getLevel2()+"\n"
-                        +"   already got (type="+q.getLevelType1() + ","+q.getLevelType2()+")  value="+q.getLevel1() + ","+q.getLevel2()+"\n"
-                        //+"   gen="+p.typeGenProcess+"   "+q.typeGenProcess);
-                        );
-                }
-                */
                 recordTracker[recno] = p;  // replace it with latest one
                 // System.out.println("   gen="+p.typeGenProcess+" "+q.typeGenProcess+"=="+lookup.getTypeGenProcessName(p));
             }
@@ -561,15 +552,6 @@ public class GridVariable {
      */
     public String getParamName() {
         return desc;
-    }
-
-    /**
-     * Get the decimal scale
-     *
-     * @return  decimal scale
-     */
-    public int getDecimalScale() {
-        return decimalScale;
     }
 
     /**

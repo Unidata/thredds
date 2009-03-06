@@ -144,7 +144,7 @@ public class GridVertCoord implements Comparable {
         this.levelName     = levelName;
         this.lookup        = lookup;
 
-        dontUseVertical    = !lookup.isVerticalCoordinate(record);
+        //dontUseVertical    = !lookup.isVerticalCoordinate(record);
         positive           = lookup.isPositiveUp(record)
                              ? "up"
                              : "down";
@@ -162,6 +162,7 @@ public class GridVertCoord implements Comparable {
         if (positive.equals("down")) {
             Collections.reverse(levels);
         }
+        dontUseVertical = ( levels.size() == 1 );
     }
 
     /**

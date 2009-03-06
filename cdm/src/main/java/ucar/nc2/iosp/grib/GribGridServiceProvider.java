@@ -56,7 +56,6 @@ import ucar.unidata.io.RandomAccessFile;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
-import java.net.URL;
 
 public class GribGridServiceProvider extends GridServiceProvider {
   private static org.slf4j.Logger log =
@@ -64,11 +63,11 @@ public class GribGridServiceProvider extends GridServiceProvider {
   private static boolean alwaysInCache = false;
 
   // keep this info to reopen index when extending or syncing
-  private long rafLength;    // length of the file when opened - used for syncing
-  private long rafLastModified; 
+  //private long rafLength;    // length of the file when opened - used for syncing
+  //private long rafLastModified;
   private int edition = 0;
-  private String saveLocation;
-   
+  //private String saveLocation;
+
   /**
    * returns Grib data
    */
@@ -93,7 +92,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     this.raf = raf;
     this.ncfile = ncfile;
-    this.rafLength = raf.length();
+    //this.rafLength = raf.length();
 
     long start = System.currentTimeMillis();
     if (GridServiceProvider.debugOpen)
@@ -176,7 +175,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
 
     } catch (NotSupportedException noSupport) {
       System.err.println("NotSupportedException : " + noSupport);
-    } catch (NoValidGribException noValid ) {
+    } catch (NoValidGribException noValid) {
       System.err.println("NoValidGribException : " + noValid);
     }
 
@@ -196,33 +195,26 @@ public class GribGridServiceProvider extends GridServiceProvider {
    */
   protected GridIndex getIndex(String location) throws IOException {
     // get an Index
-    saveLocation = location;
     String indexLocation = location + ".gbx";
 
     GridIndex index = null;
     File indexFile;
 
-    if (indexLocation.startsWith("http:")) { // direct access through http
-      index = new GribReadIndex().open(indexLocation);
-      if (index == null) {
-        // need to write it some where
-        //index = new GribReadIndex().open(indexLocation, ios);
-        log.debug("opened HTTP index = " + indexLocation);
-
-      } else { // otherwise write it to / get it from the cache
-        indexFile = DiskCache.getCacheFile(indexLocation);
-        log.debug("HTTP index = " + indexFile.getPath());
-      }
-      return index;
-    } else {
-      // always check first if the index file lives in the same dir as the regular file, and use it
-      indexFile = new File(indexLocation);
-      if (!indexFile.exists()) { // look in cache if need be
+    // always check first if the index file lives in the same dir as the regular file, and use it
+    indexFile = new File(indexLocation);
+    if (!indexFile.exists()) { // look in cache if need be
+      if ( indexFile.createNewFile()) {
+        indexFile.delete();
+      } else {
         log.debug("saveIndexFile not exist " + indexFile.getPath() + " ++ " + indexLocation);
-        indexFile = DiskCache.getFile(indexLocation, alwaysInCache);
-        log.debug("GribServiceProvider: use " + indexFile.getPath());
+        indexFile = DiskCache.getCacheFile(indexLocation);
+        //saveLocation = indexFile.getPath();
+        log.debug("GridServiceProvider: use " + indexFile.getPath());
       }
     }
+    // once index determined, if sync the write it
+    if( syncExtend )
+      return writeIndex(indexLocation, indexFile, raf);
 
     // if index exist already, read it
     if (indexFile.exists()) {
@@ -235,19 +227,18 @@ public class GribGridServiceProvider extends GridServiceProvider {
         log.debug("  opened index = " + indexFile.getPath());
       } else {  // rewrite if fail to open
         log.debug("  write index = " + indexFile.getPath());
-        index = writeIndex( indexFile, raf);
+        index = writeIndex(indexLocation, indexFile, raf);
       }
 
     } else {
-      // doesnt exist (or is being forced), create it and write it
+      // doesnt exist
       log.debug("  write index = " + indexFile.getPath());
-      index = writeIndex( indexFile, raf);
+      index = writeIndex(indexLocation, indexFile, raf);
     }
-
     return index;
   }
 
-  private GridIndex writeIndex( File indexFile, RandomAccessFile raf) throws IOException {
+  private GridIndex writeIndex(String indexLocation, File indexFile, RandomAccessFile raf) throws IOException {
     GridIndex index = null;
     DataOutputStream out = null;
     try {
@@ -260,28 +251,23 @@ public class GribGridServiceProvider extends GridServiceProvider {
       raf.seek(0);
       Grib2Input g2i = new Grib2Input(raf);
       int edition = g2i.getEdition();
-      File grib = new File( raf.getLocation());
+      File grib = new File(raf.getLocation());
 
-      if( grib.canWrite()) {
-        out = new DataOutputStream(new BufferedOutputStream(
-                new FileOutputStream(indexFile.getPath(), false)));
-      } else {
-        System.out.println( "need to write some where");
-      }
+      out = new DataOutputStream(new BufferedOutputStream(
+          new FileOutputStream(indexFile.getPath(), false)));
       if (edition == 1) {
         index = new Grib1WriteIndex().writeGribIndex(raf,
             grib.lastModified(), out, true);
       } else if (edition == 2) {
-        index = new Grib2WriteIndex().writeGribIndex( raf,
+        index = new Grib2WriteIndex().writeGribIndex(raf,
             grib.lastModified(), out, true);
       }
-
       return index;
 
     } catch (NotSupportedException noSupport) {
       System.err.println("NotSupportedException : " + noSupport);
     } finally {
-      if ( out != null)
+      if (out != null)
         out.close();
     }
     return index;
@@ -293,7 +279,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
     GribGridRecord ggr = (GribGridRecord) gr;
     if (edition == 2) {
       return dataReaderGrib2.getData(ggr.offset1, ggr.offset2);
-    } else {   
+    } else {
       return dataReaderGrib1.getData(ggr.offset1, ggr.decimalScale, ggr.bmsExists);
     }
   }
