@@ -23,16 +23,17 @@
     <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
   </listener>
 
-  <!-- Spring listener to bootstrap Spring WebApplicationContext. Used to
-       handle Spring bean configuration outside of SpringMVC configuration.
-  -->
-  <!--context-param>
+  <!--
+   * Spring listener to bootstrap Spring WebApplicationContext. Used to
+   * handle Spring bean configuration outside of SpringMVC configuration.
+   * -->
+  <context-param>
     <param-name>contextConfigLocation</param-name>
-    <param-value>/WEB-INF/applicationContext-tdsConfig.xml</param-value>
+    <param-value>/WEB-INF/applicationContext-cdmValidatorConfig.xml</param-value>
   </context-param>
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-  </listener-->
+  </listener>
 
   <servlet>
     <servlet-name>CdmValidator</servlet-name>

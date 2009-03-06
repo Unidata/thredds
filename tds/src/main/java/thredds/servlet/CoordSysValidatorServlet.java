@@ -65,19 +65,11 @@ public class CoordSysValidatorServlet extends AbstractServlet {
   private DiskFileItemFactory factory;
   private File cacheDir;
   private long maxFileUploadSize;
-  private boolean allow = false, deleteImmediately = true;
+  private boolean deleteImmediately = true;
 
   public void init() throws ServletException {
     super.init();
 
-    /*   <CdmValidatorService>
-    <allow>true</allow>
-    <dir>/temp/vcache/</dir>
-    <maxFileUploadSize>1 Gb</maxFileUploadSize>
-  </CdmValidatorService>
-  */
-
-    allow = ThreddsConfig.getBoolean("CdmValidatorService.allow", false);
     maxFileUploadSize = ThreddsConfig.getBytes("CdmValidatorService.maxFileUploadSize", (long) 1000 * 1000 * 1000);
     String cache = ThreddsConfig.get("CdmValidatorService.dir", contentPath);
 
@@ -112,12 +104,7 @@ public class CoordSysValidatorServlet extends AbstractServlet {
   public void doGet(HttpServletRequest req, HttpServletResponse res)
           throws ServletException, IOException {
 
-    if (!allow) {
-      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
-      return;
-    }
-
-    log.info( UsageLog.setupRequestContext(req));
+    log.info( "doGet(): " + UsageLog.setupRequestContext( req ) );
 
     String urlString = req.getParameter("URL");
     if (urlString == null) {
@@ -162,12 +149,7 @@ public class CoordSysValidatorServlet extends AbstractServlet {
   public void doPost(HttpServletRequest req, HttpServletResponse res)
           throws ServletException, IOException {
 
-    if (!allow) {
-      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
-      return;
-    }
-
-    log.info( UsageLog.setupRequestContext(req));
+    log.info( "doPost(): " + UsageLog.setupRequestContext(req));
 
     // Check that we have a file upload request
     boolean isMultipart = ServletFileUpload.isMultipartContent(req);
