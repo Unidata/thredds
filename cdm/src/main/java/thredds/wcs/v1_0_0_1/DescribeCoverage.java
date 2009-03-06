@@ -75,7 +75,7 @@ public class DescribeCoverage extends WcsRequest
     if ( this.coverages == null )
       throw new IllegalArgumentException( "Non-null coverage list required." );
     if ( this.coverages.size() < 1 )
-      throw new IllegalArgumentException( "Coverage list must contain at least one ID <" + this.coverages.size() + ">." );
+      throw new IllegalArgumentException( "Coverage list must contain at least one ID [" + this.coverages.size() + "]." );
     String badCovIds = "";
     for ( String curCov : coverages )
     {
@@ -83,7 +83,7 @@ public class DescribeCoverage extends WcsRequest
         badCovIds += (badCovIds.length() > 0 ? ", " : "") + curCov;
     }
     if ( badCovIds.length() > 0 )
-      throw new WcsException("Coverage ID list contains one or more unknown IDs <" + badCovIds + ">." );
+      throw new WcsException("Coverage ID list contains one or more unknown IDs [" + badCovIds + "]." );
   }
 
   public Document getDescribeCoverageDoc()

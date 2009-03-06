@@ -98,11 +98,8 @@ public class WcsRequestParser
 
       // Determine the request operation.
       String requestParam = ServletUtil.getParameterIgnoreCase( req, "Request" );
-      try
-    {
-      operation = Request.Operation.valueOf( requestParam );
-      }
-      catch ( IllegalArgumentException e )
+      operation = parseOperation( requestParam );
+      if ( operation == null )
       {
         log.debug( "parseRequest(): Unsupported operation request [" + requestParam + "].");
         throw new WcsException( WcsException.Code.InvalidParameterValue, "Request", "Unsupported operation request [" + requestParam + "]." );
@@ -116,12 +113,8 @@ public class WcsRequestParser
 
         if ( sectionParam == null)
           sectionParam = "";
-        GetCapabilities.Section section = null;
-        try
-        {
-          section = GetCapabilities.Section.getSection( sectionParam);
-        }
-        catch ( IllegalArgumentException e )
+        GetCapabilities.Section section = parseGetCapabilitiesSection( sectionParam );
+        if ( section == null )
         {
           log.debug( "parseRequest(): Unsupported GetCapabilities section requested [" + sectionParam + "]." );
           throw new WcsException( WcsException.Code.InvalidParameterValue, "Section", "Unsupported GetCapabilities section requested [" + sectionParam + "]." );
@@ -132,14 +125,20 @@ public class WcsRequestParser
       // Handle "DescribeCoverage" request.
       else if ( operation.equals( Request.Operation.DescribeCoverage ) )
       {
+
+        // Parse the "coverage" parameter (null, or csv String).
         String coverageIdListParam = ServletUtil.getParameterIgnoreCase( req, "Coverage" );
-        if ( coverageIdListParam == null )
+        List<String> coverageIdList = null;
+        if ( coverageIdListParam != null )
+          coverageIdList = splitCommaSeperatedList( coverageIdListParam );
+        else
         {
-          log.debug( "parseRequest(): GetCapabilities request requires \"Coverage\" parameter." );
-          throw new WcsException( WcsException.Code.MissingParameterValue, "Coverage", "GetCapabilities request requires \"Coverage\" parameter." );
+          coverageIdList = new ArrayList<String>();
+          for ( WcsCoverage curCov : wcsDataset.getAvailableCoverageCollection())
+            coverageIdList.add( curCov.getName() );
         }
 
-        return new DescribeCoverage( operation, version, wcsDataset, splitCommaSeperatedList( coverageIdListParam ));
+        return new DescribeCoverage( operation, version, wcsDataset, coverageIdList );
       }
       // Handle "GetCoverage" request.
       else if ( operation.equals( Request.Operation.GetCoverage ) )
@@ -155,8 +154,22 @@ public class WcsRequestParser
 
         // Assign and validate PARAMETER ("Vertical") parameter.
         WcsCoverage.VerticalRange verticalRange = parseRangeSetAxisValues( parameter );
-        Request.Format format = parseFormat( formatString );
 
+        // Assign and validate FORMAT parameter.
+        if ( formatString == null )
+        {
+          log.debug( "parseRequest(): FORMAT parameter required." );
+          throw new WcsException( WcsException.Code.InvalidParameterValue, "FORMAT", "FORMAT parameter required." );
+        }
+        Request.Format format = parseFormat( formatString );
+        if ( format == null )
+        {
+          String msg = "Unrecognized FORMAT parameter value [" + formatString + "].";
+          log.debug( "parseRequest(): " + msg );
+          throw new WcsException( WcsException.Code.InvalidParameterValue, "FORMAT", msg );
+        }
+
+        // Return GetCoverage request.
         return new GetCoverage( operation, version, wcsDataset, coverageId,
                                 crs, responseCRS, parseBoundingBox( bbox),
                                 parseTime( time ),
@@ -175,6 +188,37 @@ public class WcsRequestParser
         gridDataset.close();
       throw e;
     }
+  }
+
+  private static Request.Operation parseOperation( String operationString )
+  {
+    Request.Operation[] ops = Request.Operation.values();
+    for ( Request.Operation curOp : ops )
+      if ( curOp.toString().equalsIgnoreCase( operationString) )
+        return curOp;
+
+    return null;
+  }
+
+  private static GetCapabilities.Section parseGetCapabilitiesSection( String sectionString )
+  {
+    GetCapabilities.Section[] sections = GetCapabilities.Section.values();
+    for ( GetCapabilities.Section curSection : sections )
+      if ( curSection.toString().equalsIgnoreCase( sectionString) )
+        return curSection;
+
+    return null;
+  }
+
+  private static Request.Format parseFormat( String formatString )
+          throws WcsException
+  {
+    Request.Format[] formats = Request.Format.values();
+    for ( Request.Format curFormat : formats )
+      if ( curFormat.toString().equalsIgnoreCase( formatString ) )
+        return curFormat;
+
+    return null;
   }
 
   private static Request.BoundingBox parseBoundingBox( String bboxString )
@@ -314,29 +358,6 @@ public class WcsRequestParser
     }
 
     return range;
-  }
-
-  private static Request.Format parseFormat( String formatString )
-          throws WcsException
-  {
-    // Assign and validate FORMAT parameter.
-    if ( formatString == null )
-    {
-      log.debug( "parseFormat(): FORMAT parameter required." );
-      throw new WcsException( WcsException.Code.InvalidParameterValue, "FORMAT", "FORMAT parameter required." );
-    }
-    Request.Format format;
-    try
-    {
-      format = Request.Format.valueOf( formatString.trim() );
-    }
-    catch ( IllegalArgumentException e )
-    {
-      String msg = "Unknown format value [" + formatString + "].";
-      log.debug( "parseFormat(): " + msg );
-      throw new WcsException( WcsException.Code.InvalidParameterValue, "FORMAT", msg );
-    }
-    return format;
   }
 
   private static List<String> splitCommaSeperatedList( String identifiers )

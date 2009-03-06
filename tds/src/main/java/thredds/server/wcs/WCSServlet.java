@@ -161,7 +161,7 @@ public class WCSServlet extends AbstractServlet {
     String versionParam = ServletUtil.getParameterIgnoreCase( req, "Version" );
 
     // Make sure this is a WCS KVP request.
-    if ( serviceParam == null || ! serviceParam.equals( "WCS"))
+    if ( serviceParam == null || ! serviceParam.equalsIgnoreCase( "WCS"))
     {
       res.sendError( HttpServletResponse.SC_BAD_REQUEST, "GET request not a WCS KVP requestParam (missing or bad SERVICE parameter).");
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ));
@@ -175,7 +175,7 @@ public class WCSServlet extends AbstractServlet {
       this.latestSupportedVersion.handleExceptionReport( res, "MissingParameterValue", "Request", "" );
       return;
     }
-    else if ( requestParam.equals( Operation.GetCapabilities.toString()))
+    else if ( requestParam.equalsIgnoreCase( Operation.GetCapabilities.toString() ))
     {
       if ( acceptVersionsParam == null && versionParam == null )
         targetHandler = this.latestSupportedVersion;
@@ -214,10 +214,10 @@ public class WCSServlet extends AbstractServlet {
     else
     {
       // Find requested version (no negotiation for "DescribeCoverage" and "GetCoverage" requests).
-      if ( ! requestParam.equals( Operation.DescribeCoverage.toString()) &&
-           ! requestParam.equals( Operation.GetCoverage.toString()) )
+      if ( ! requestParam.equalsIgnoreCase( Operation.DescribeCoverage.toString()) &&
+           ! requestParam.equalsIgnoreCase( Operation.GetCoverage.toString()) )
       {
-        this.latestSupportedVersion.handleExceptionReport( res, "InvalidParameterValue", "Request", "Invalid \"Operation\" parameter value <" + requestParam + ">." );
+        this.latestSupportedVersion.handleExceptionReport( res, "InvalidParameterValue", "Request", "Invalid \"Operation\" parameter value [" + requestParam + "]." );
         return;
       }
       if ( versionParam == null )

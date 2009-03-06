@@ -76,11 +76,11 @@ public class GetCoverage extends WcsRequest
     // Validate coverage ID parameter.
     if ( coverageId == null )
       throw new WcsException( WcsException.Code.MissingParameterValue, "coverage", "Coverage identifier required." );
-    if ( !this.getDataset().isAvailableCoverageName( coverageId ) )
-      throw new WcsException( WcsException.Code.InvalidParameterValue, "coverage", "Unknown coverage identifier <" + coverageId + ">." );
+    if ( ! this.getDataset().isAvailableCoverageName( coverageId ) )
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "coverage", "Unknown coverage identifier [" + coverageId + "]." );
     this.coverage = this.getDataset().getAvailableCoverage( coverageId );
     if ( this.coverage == null ) // Double check just in case.
-      throw new WcsException( WcsException.Code.InvalidParameterValue, "coverage", "Unknown coverage identifier <" + coverageId + ">." );
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "coverage", "Unknown coverage identifier [" + coverageId + "]." );
 
     // Assign and validate request and response CRS parameters.
 
@@ -88,21 +88,15 @@ public class GetCoverage extends WcsRequest
       crs = this.coverage.getDefaultRequestCrs(); // The WCS 1.0.0 spec requires CRS.
       //throw new WcsException( WcsException.Code.MissingParameterValue, "CRS", "Request CRS required.");
     if ( ! crs.equalsIgnoreCase( this.coverage.getDefaultRequestCrs() ) )
-      throw new WcsException( WcsException.Code.InvalidParameterValue, "CRS", "Request CRS <" + crs + "> not allowed <" + this.coverage.getDefaultRequestCrs() + ">." );
-
-    String nativeCRS = EPSG_OGC_CF_Helper.getWcs1_0CrsId( coverage.getCoordinateSystem().getProjection() );
-    if ( nativeCRS == null )
-      throw new WcsException( WcsException.Code.CoverageNotDefined, "", "Coverage not in recognized CRS. (???)");
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "CRS", "Request CRS [" + crs + "] not allowed [" + this.coverage.getDefaultRequestCrs() + "]." );
 
     // Response CRS not required if data is in latLon ("OGC:CRS84"). Default is request CRS.
     if ( responseCRS == null )
     {
       responseCRS = this.coverage.getNativeCrs();
-//      if ( ! nativeCRS.equalsIgnoreCase( this.coverage.getDefaultRequestCrs()))
-//        throw new WcsException( WcsException.Code.MissingParameterValue, "Response_CRS", "Response CRS required." );
     }
-    else if ( ! responseCRS.equalsIgnoreCase( nativeCRS))
-        throw new WcsException( WcsException.Code.InvalidParameterValue, "response_CRS", "Response CRS [" + responseCRS + "] not the supported CRS [" + nativeCRS + "]." );
+    else if ( ! responseCRS.equalsIgnoreCase( this.coverage.getNativeCrs()))
+        throw new WcsException( WcsException.Code.InvalidParameterValue, "response_CRS", "Response CRS [" + responseCRS + "] not the supported CRS [" + this.coverage.getNativeCrs() + "]." );
 
     // Assign and validate BBOX and TIME parameters.
 // -----
@@ -191,8 +185,8 @@ public class GetCoverage extends WcsRequest
 
 //    if ( ! bboxLatLonRect.containedIn( covLatLonRect))
 //    {
-//      log.error( "convertBoundingBox(): BBOX <" + bbox + "> not contained in coverage BBOX <"+ covLatLonRect.toString2()+">.");
-//      throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", "BBOX <" + bbox + "> not contained in coverage.");
+//      log.error( "convertBoundingBox(): BBOX [" + bbox + "] not contained in coverage BBOX ["+ covLatLonRect.toString2()+"].");
+//      throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", "BBOX [" + bbox + "] not contained in coverage.");
 //    }
 
     return bboxLatLonRect;

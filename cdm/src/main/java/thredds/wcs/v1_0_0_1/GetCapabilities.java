@@ -74,7 +74,7 @@ public class GetCapabilities extends WcsRequest
         if ( curSection.altId.equals( altId))
           return curSection;
       }
-      throw new IllegalArgumentException( "No such instance <" + altId + ">.");
+      throw new IllegalArgumentException( "No such instance [" + altId + "].");
     }
   }
 

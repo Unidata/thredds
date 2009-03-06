@@ -214,7 +214,7 @@ public class WcsHandler implements VersionHandler
     catch ( IllegalArgumentException e )
     {
       exception = new WcsException( message );
-      log.debug( "handleExceptionReport(): bad code given <" + code + ">.");
+      log.debug( "handleExceptionReport(): bad code given [" + code + "].");
     }
 
     handleExceptionReport( res, exception);
