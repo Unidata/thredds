@@ -639,7 +639,7 @@ class H5header {
 
   // read attribute values without creating a Variable
   private Array readAttributeData(H5header.MessageAttribute matt, H5header.Vinfo vinfo, DataType dataType) throws IOException, InvalidRangeException {
-    boolean debugStructure = true;
+    boolean debugStructure = false;
     int[] shape = matt.mds.dimLength;
 
     // Structures

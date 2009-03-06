@@ -712,7 +712,10 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
     } else {
       try {
-        if (null != spi) spi.close();
+        if (null != spi) {
+          // log.warn("NetcdfFile.close called for ncfile="+this.hashCode()+" for iosp="+spi.hashCode());
+          spi.close();
+        }
       } finally {
         spi = null;
       }
@@ -1165,16 +1168,19 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     } catch (IOException e) {
       try { spi.close(); } catch (Throwable t1 ) {}
       try { raf.close(); } catch (Throwable t2 ) {}
+      spi = null;
       throw e;
 
     } catch (RuntimeException e) {
       try { spi.close(); } catch (Throwable t1 ) {}
       try { raf.close(); } catch (Throwable t2 ) {}
+      spi = null;
       throw e;
 
     } catch (Throwable t) {
       try { spi.close(); } catch (Throwable t1 ) {}
       try { raf.close(); } catch (Throwable t2 ) {}
+      spi = null;
       throw new RuntimeException(t);
     }
 
@@ -1195,13 +1201,13 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    */
   protected NetcdfFile(IOServiceProvider spi, ucar.unidata.io.RandomAccessFile raf, String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
 
-    this.spi = spi;
     this.location = location;
 
     if (debugSPI) System.out.println("NetcdfFile uses iosp = " + spi.getClass().getName());
 
     try {
       spi.open(raf, this, cancelTask);
+      this.spi = spi;
 
     } catch (IOException e) {
       try { spi.close(); } catch (Throwable t1 ) {}
@@ -1798,7 +1804,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   protected void finalize() throws Throwable {
     try {
       if (null != spi) {
-        log.warn("NetcdfFile.finalizer called on "+location);
+        log.warn("NetcdfFile.finalizer called on "+location+" for ncfile="+this.hashCode());
         spi.close();
       }
       spi = null;

@@ -86,6 +86,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
   private RandomAccessFile myRaf;
   private H5header headerParser;
+  private ucar.nc2.NetcdfFile ncfile; // debug
 
   /////////////////////////////////////////////////////////////////////////////
   // reading
@@ -94,6 +95,7 @@ public class H5iosp extends AbstractIOServiceProvider {
                    ucar.nc2.util.CancelTask cancelTask) throws IOException {
 
     this.myRaf = raf;
+    this.ncfile = ncfile;
     headerParser = new H5header(myRaf, ncfile, this);
     headerParser.read(null);
 
@@ -387,8 +389,11 @@ public class H5iosp extends AbstractIOServiceProvider {
    * @throws IOException on io error
    */
   public void close() throws IOException {
-    if (myRaf != null)
+    if (myRaf != null) {
       myRaf.close();
+      // log.warn("H5iosp.close called on "+myRaf.getLocation()+" for ncfile="+ncfile.hashCode()+" for iosp="+this.hashCode());
+    }
+    myRaf = null;
     headerParser.close();
   }
 

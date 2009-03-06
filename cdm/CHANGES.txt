@@ -6,6 +6,7 @@ Changes in version 4.0
 
  Release Details:
   37:
+   FileCache cleanup scheduling - make sure only one at a time
    make sure NetcdfFile closes raf on Exception in spi.open()
    reinstate NetcdfFile.finalize()
    grib now does filtering on variable names to keep them consistent with nj22.

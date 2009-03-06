@@ -58,7 +58,7 @@ public class TestFileCacheConcurrent extends TestCase {
   FileFactory factory = new MyFileFactory();
 
   protected void setUp() throws java.lang.Exception {
-    cache = new FileCache(50, 100, 20);
+    cache = new FileCache(50, 100, 30);
   }
 
   class MyFileFactory implements FileFactory {
@@ -68,12 +68,12 @@ public class TestFileCacheConcurrent extends TestCase {
   }
 
 
-  void loadFiles(File dir, List<String> result) {
+  void loadFiles(File dir, String suffix, List<String> result) {
     for (File f : dir.listFiles()) {
       if (f.isDirectory())
-        loadFiles(f, result);
+        loadFiles(f, suffix, result);
 
-      else if (f.getPath().endsWith(".nc") && f.length() > 0) {
+      else if (f.getPath().endsWith(suffix) && f.length() > 0) {
         //System.out.println(" open "+f.getPath());
         String want = StringUtil.replace(f.getPath(), '\\', "/");
         result.add(want);
@@ -83,32 +83,48 @@ public class TestFileCacheConcurrent extends TestCase {
 
   ///////////////////////////////////////////////////////////////////////////////////////////
 
-  int N = 100000;
-  int SKIP = 10000;
-  int CLIENT_THREADS = 100;
+  int PRINT_EVERY = 1000;
+  int CLIENT_THREADS = 50;
   int WAIT_MAX = 25; // msecs
+  int MAX_TASKS = 1000; // bounded queue
+  int NSAME = 3; // sub\bmit same file n consecutive
 
   public void testConcurrentAccess() throws InterruptedException {
     cache.debugCleanup = true;
 
     // load some files into the cache
     List<String> fileList = new ArrayList<String>(100);
-    loadFiles(new File("D:/AStest/aggManyFiles/"), fileList);
+    loadFiles(new File("C:/data/"), "nc", fileList);
     int nfiles = fileList.size();
     System.out.println(" loaded " + nfiles + " files");
 
     Random r = new Random();
-    ExecutorService pool = Executors.newFixedThreadPool(CLIENT_THREADS);
-    for (int i = 0; i < N; i++) {
-      // pick a file at random
-      int findex = r.nextInt(nfiles);
-      int wait = r.nextInt(WAIT_MAX);
-      String location = fileList.get(findex);
-      pool.submit(new CallAcquire(location, wait));
-      if (i % SKIP == 0) System.out.printf(" submit %d%n", i);
+    ArrayBlockingQueue q = new ArrayBlockingQueue(MAX_TASKS);
+    ThreadPoolExecutor pool = new ThreadPoolExecutor(CLIENT_THREADS, CLIENT_THREADS,
+        100, TimeUnit.SECONDS, q);
+
+    int count = 0;
+    while (true) {
+      if (q.remainingCapacity() > NSAME) {
+        // pick a file at random
+        String location = fileList.get(r.nextInt(nfiles));
+
+        for (int i = 0; i < NSAME; i++) {
+          count++;
+          pool.submit(new CallAcquire(location, r.nextInt(WAIT_MAX)));
+
+          if (count % PRINT_EVERY == 0) {
+            Formatter f = new Formatter();
+            cache.showStats(f);
+            System.out.printf(" submit %d queue= %d cache= %s%n", count, q.size(), f);
+          }
+        }
+      } else {
+        Thread.sleep(100);        
+      }
     }
 
-    pool.shutdown(); // Disable new tasks from being submitted
+    /* pool.shutdown(); // Disable new tasks from being submitted
     try {
       // Wait a while for existing tasks to terminate
       if (!pool.awaitTermination(600, TimeUnit.SECONDS)) {
@@ -122,7 +138,7 @@ public class TestFileCacheConcurrent extends TestCase {
       pool.shutdownNow();
       // Preserve interrupt status
       Thread.currentThread().interrupt();
-    }
+    } */
 
 
   }
@@ -146,15 +162,17 @@ public class TestFileCacheConcurrent extends TestCase {
         NetcdfFile ncfile = (NetcdfFile) fc;
         assert !ncfile.isUnlocked();
         assert (null != ncfile.getIosp());
-        Thread.sleep( wait);
+        Thread.sleep(wait);
         ncfile.close();
         int d = done.incrementAndGet();
-        if (d % SKIP == 0) System.out.printf(" done %d%n", d);
+        if (d % PRINT_EVERY == 0) System.out.printf(" done %d%n", d);
 
-      } catch (IOException e) {
-        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
       } catch (InterruptedException e) {
         return;
+
+      } catch (Throwable e) {
+        System.out.println(" fail="+e.getMessage());
+        assert false;
       }
 
     }
