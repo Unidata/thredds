@@ -101,7 +101,7 @@ public interface Request
       boolean minMaxOk = true;
       StringBuilder minPSB = new StringBuilder("[");
       StringBuilder maxPSB = new StringBuilder("[");
-      for ( int i = 0; i < this.dimensionLength; i++ )
+      for ( int i = 0; i < minPoint.length; i++ )
       {
         minPSB.append( minPoint[ i] ).append( ",");
         maxPSB.append( maxPoint[ i] ).append( "," );
