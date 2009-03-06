@@ -81,8 +81,8 @@ import ucar.nc2.util.CancelTask;
 public class FileCache {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger("cacheLogger");
   static private ScheduledExecutorService exec;
-  static private boolean debugPrint = false;
-  static private boolean debugCleanup = false;
+  static boolean debugPrint = false;
+  static boolean debugCleanup = false;
 
   /**
     * You must call shutdown() to shut down the background threads in order to get a clean process shutdown.
@@ -255,7 +255,7 @@ public class FileCache {
     } else if ((count > softLimit)) { // && (softLimit > 0)) {
       if (hasScheduled.compareAndSet(false, true)) {
         exec.schedule(new CleanupTask(), 100, TimeUnit.MILLISECONDS); // immediate cleanup in 100 msec
-        if (debugCleanup) System.out.println("CleanupTask scheduled due to soft limit time=" + new Date().getTime());
+        if (debugCleanup) System.out.println("CleanupTask scheduled due to soft limit time=" + new Date());
       }
     }
 
@@ -453,7 +453,7 @@ public class FileCache {
     if (size <= minElements) return;
 
     log.debug("FileCache "+name+" cleanup started at "+new Date()+" for cleanup maxElements="+maxElements);
-    if (debugCleanup) System.out.println("FileCache "+name+"cleanup started at "+new Date().getTime()+" for cleanup maxElements="+maxElements);
+    if (debugCleanup) System.out.println("FileCache "+name+"cleanup started at "+new Date()+" for cleanup maxElements="+maxElements);
 
     cleanups.incrementAndGet();
 
@@ -480,8 +480,8 @@ public class FileCache {
       }
     }
     if (count < minDelete) {
-      log.warn("FileCache "+name+" cleanup couldnt removed enough to keep under the maximum= " + maxElements + " due to locked files; currently at = " + (size - count));
-      if (debugCleanup) System.out.println("FileCache "+name+"cleanup couldnt removed enough to keep under the maximum= " + maxElements + " due to locked files; currently at = " + (size - count));
+      log.warn("FileCache "+name+" cleanup couldnt remove enough to keep under the maximum= " + maxElements + " due to locked files; currently at = " + (size - count));
+      if (debugCleanup) System.out.println("FileCache "+name+"cleanup couldnt remove enough to keep under the maximum= " + maxElements + " due to locked files; currently at = " + (size - count));
     }
 
     // remove empty cache elements

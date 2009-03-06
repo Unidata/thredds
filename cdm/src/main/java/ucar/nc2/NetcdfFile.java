@@ -1151,7 +1151,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
           throws IOException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 
     Class iospClass = getClass().getClassLoader().loadClass(iospClassName);
-    this.spi = (IOServiceProvider) iospClass.newInstance();
+    spi = (IOServiceProvider) iospClass.newInstance();
     if (debugSPI) System.out.println("NetcdfFile uses iosp = " + spi.getClass().getName());
     spi.sendIospMessage(iospParam);
 
@@ -1163,18 +1163,18 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       finish();
 
     } catch (IOException e) {
-      this.spi.close();
-      raf.close();
+      try { spi.close(); } catch (Throwable t1 ) {}
+      try { raf.close(); } catch (Throwable t2 ) {}
       throw e;
 
     } catch (RuntimeException e) {
-      this.spi.close();
-      raf.close();
+      try { spi.close(); } catch (Throwable t1 ) {}
+      try { raf.close(); } catch (Throwable t2 ) {}
       throw e;
 
     } catch (Throwable t) {
-      this.spi.close();
-      raf.close();
+      try { spi.close(); } catch (Throwable t1 ) {}
+      try { raf.close(); } catch (Throwable t2 ) {}
       throw new RuntimeException(t);
     }
 
@@ -1204,18 +1204,18 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       spi.open(raf, this, cancelTask);
 
     } catch (IOException e) {
-      spi.close();
-      raf.close();
+      try { spi.close(); } catch (Throwable t1 ) {}
+      try { raf.close(); } catch (Throwable t2 ) {}
       throw e;
 
     } catch (RuntimeException e) {
-      spi.close();
-      raf.close();
+      try { spi.close(); } catch (Throwable t1 ) {}
+      try { raf.close(); } catch (Throwable t2 ) {}
       throw e;
 
     } catch (Throwable t) {
-      spi.close();
-      raf.close();
+      try { spi.close(); } catch (Throwable t1 ) {}
+      try { raf.close(); } catch (Throwable t2 ) {}
       throw new RuntimeException(t);
     }
 
