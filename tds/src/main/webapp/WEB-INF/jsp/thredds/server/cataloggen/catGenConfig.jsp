@@ -46,6 +46,5 @@
 
 <c:import url="/WEB-INF/jsp/webappFooter.jsp" />
 
-
 </body>
 </html>
