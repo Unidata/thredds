@@ -77,9 +77,9 @@ public class CatGenTaskScheduler
         CatGenTaskRunner catGenTaskRunner = new CatGenTaskRunner( curTask, configDir, resultDir, altResultsDir );
         scheduledTasks.add(
                 scheduler.scheduleAtFixedRate( catGenTaskRunner,
-                                               curTask.getDelayInMinutes() * 60,
-                                               curTask.getPeriodInMinutes() * 60,
-                                               TimeUnit.SECONDS ) );
+                                               curTask.getDelayInMinutes(),
+                                               curTask.getPeriodInMinutes(),
+                                               TimeUnit.MINUTES ) );
       }
     }
   }

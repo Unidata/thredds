@@ -13,57 +13,23 @@
                 http://www.springframework.org/schema/util
                 http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
-  <bean id="cdmValidatorContext" class="thredds.server.config.TdsContext">
-    <property name="webappVersion" value="${tds.version}"/>
-    <property name="webappVersionBrief" value="${tds.version.brief}"/>
-    <property name="webappVersionBuildDate" value="${tds.version.builddate}"/>
+  <bean id="cdmValidatorContext" class="thredds.server.cdmvalidator.CdmValidatorContext">
+    <property name="webappVersion" value="${cdmvalidator.version}"/>
+    <property name="webappVersionBrief" value="${cdmvalidator.version.brief}"/>
+    <property name="webappVersionBuildDate" value="${cdmvalidator.version.builddate}"/>
 
-    <property name="contentRootPath" value="${tds.content.root.path}"/>
+    <property name="contentRootPath" value="${cdmvalidator.content.root.path}"/>
     
-    <property name="contentPath" value="${tds.content.path}"/>
-    <property name="startupContentPath" value="${tds.content.startup.path}"/>
-    <property name="iddContentPath" value="${tds.content.idd.path}"/>
-    <property name="motherlodeContentPath" value="${tds.content.motherlode.path}"/>
-
-    <property name="tdsConfigFileName" value="${tds.config.file}"/>
-
-    <property name="tdsConfigHtml" ref="tdsConfigHtml"/>
-  </bean>
-
-  <bean id="tdsConfigHtml" class="thredds.server.config.TdsConfigHtml">
-    <property name="webappUrl" value="${tds.url}" />
-    <property name="webappDocsUrl" value="${tds.documentation.url}" />
-    <property name="webappLogoUrl" value="${tds.logo.url}" />
-    <property name="webappLogoAlt" value="${tds.logo.alt}" />
-
-    <property name="installUrl" value="${tds.install.url}" />
+    <property name="contentPath" value="${cdmvalidator.content.path}"/>
+    <property name="configFileName" value="${cdmvalidator.config.file}"/>
   </bean>
 
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="locations">
       <list>
-        <value>classpath:thredds/server/tds.properties</value>
+        <value>classpath:thredds/server/cdmvalidator.properties</value>
       </list>
     </property>
   </bean>
-
-  <!-- A Singleton class to initialize the CDM -->
-  <bean name="cdmInit" class="thredds.server.config.CdmInit" destroy-method="destroy">
-    <property name="fmrcDefinitionDirectory" value="WEB-INF/altContent/idd/thredds/modelInventory/" />
-  </bean>
-
-    <!-- JMX -->
-  <bean id="openRAFMonitor" class="thredds.monitor.OpenRAFMonitorImpl"/>
-  <bean id="netcdfFileCacheMonitor" class="thredds.monitor.NetcdfFileCacheMonitorImpl"/>
-
-	<!-- Configuration for JMX exposure in the application -->
-	<bean id="mbeanExporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">
-		<property name="beans">
-			<util:map>
-				<entry key="thredds:name=OpenRAF" value-ref="openRAFMonitor"/>
-				<entry key="thredds:name=netcdfFileCache" value-ref="netcdfFileCacheMonitor"/>
-			</util:map>
-		</property>
-	</bean>
 
 </beans>

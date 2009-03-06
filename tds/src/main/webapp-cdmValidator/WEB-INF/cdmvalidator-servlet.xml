@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	- DispatcherServlet application context for TDS root servlet.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+  <bean id="cdmValidatorController" class="thredds.server.cdmvalidator.CdmValidatorController">
+    <property name="cdmValidatorContext" ref="cdmValidatorContext"/>
+
+    <property name="supportedMethods" value="GET, POST"/>
+  </bean>
+
+  <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="mappings">
+      <value>
+        /cdmValidate=cdmValidatorController
+        /cdmValidate.html=cdmValidatorController
+        /cdmValidateHelp.html=cdmValidatorController
+      </value>
+    </property>
+  </bean>
+
+  <!--bean id="xmlViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
+    <property name="cache" value="true"/>
+    <property name="order" value="1"/>
+    <property name="location" value="/WEB-INF/view.xml"/>
+  </bean-->
+
+  <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+    <property name="prefix" value="/WEB-INF/jsp/"/>
+    <property name="suffix" value=".jsp"/>
+  </bean>
+
+</beans>

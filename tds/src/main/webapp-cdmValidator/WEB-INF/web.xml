@@ -7,6 +7,13 @@
   <display-name>CDM Validator</display-name>
   <description>CDM Validator</description>
 
+  <!-- Provide the context path at init time (otherwise, not available till a request is made). -->
+  <!-- Servlet 2.5 spec provides ServletContext.getContextPath().-->
+  <context-param>
+    <param-name>ContextPath</param-name>
+    <param-value>cdmvalidator</param-value>
+  </context-param>
+
   <!--
     Location of the Log4J config file, for initialization.
     Applied by Log4jConfigListener (currently our listener calls Log4jWebConfigurer.
@@ -36,16 +43,16 @@
   </listener>
 
   <servlet>
-    <servlet-name>CdmValidator</servlet-name>
-    <!--servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class-->
-    <servlet-class>thredds.servlet.CoordSysValidatorServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
+    <servlet-name>cdmvalidator</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <!--servlet-class>thredds.servlet.CoordSysValidatorServlet</servlet-class-->
+    <load-on-startup>0</load-on-startup>
   </servlet>
 
-  <!--servlet-mapping>
-    <servlet-name>CdmValidator</servlet-name>
+  <servlet-mapping>
+    <servlet-name>cdmvalidator</servlet-name>
     <url-pattern>/cdmValidate</url-pattern>
-  </servlet-mapping-->
+  </servlet-mapping>
 
   <jsp-config>
     <taglib>
