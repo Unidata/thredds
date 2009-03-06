@@ -52,43 +52,48 @@ import thredds.catalog.InvDatasetFmrc;
 
 /**
  * Servlet shows Forecast Model Run Collection Inventory.
+ *
  * @author caron
  */
 public class FmrcInventoryServlet extends AbstractServlet {
   private ucar.nc2.util.DiskCache2 fmrCache = null;
   private boolean debug = false;
   private static String defPath; // default path where definition files are kept
-  
+
   static public void setDefinitionDirectory(File defDir) {
     defPath = defDir.getPath() + '/';
   }
 
-  protected String getPath() { return "modelInventory/"; }
-  protected void makeDebugActions() { }
+  protected String getPath() {
+    return "modelInventory/";
+  }
+
+  protected void makeDebugActions() {
+  }
 
   public void doGet(HttpServletRequest req, HttpServletResponse res)
-          throws ServletException, IOException {
+      throws ServletException, IOException {
 
-    log.info( UsageLog.setupRequestContext(req));
+    log.info(UsageLog.setupRequestContext(req));
 
     String path = req.getPathInfo();
     String query = req.getQueryString();
 
     debug = Debug.isSet("FmrcInventoryServlet");
-    if (debug) System.out.println("path="+path+" query="+query);
+    if (debug) System.out.println("path=" + path + " query=" + query);
 
     String varName;
     DataRootHandler h = DataRootHandler.getInstance();
-    DataRootHandler.DataRootMatch match = h.findDataRootMatch( req );
+    DataRootHandler.DataRootMatch match = h.findDataRootMatch(req);
     if ((match == null) || (match.dataRoot.fmrc == null)) {
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
       return;
     }
 
     InvDatasetFmrc.InventoryParams params = match.dataRoot.fmrc.getFmrcInventoryParams();
     if (params == null) {
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
       return;
     }
@@ -96,54 +101,55 @@ public class FmrcInventoryServlet extends AbstractServlet {
     FmrcInventory fmr;
     try {
 
-      if (debug) System.out.println("  FmrcInventoryParams="+params+" for path="+match.rootPath);
+      if (debug) System.out.println("  FmrcInventoryParams=" + params + " for path=" + match.rootPath);
       String fmrcDefinitionPath = defPath;
       String collectionName = params.def;
       File file = new File(params.def);
       if (file.isAbsolute()) { // allow absolute path of definition files
         int pos = params.def.lastIndexOf("/");
         if (pos > 0) {
-          fmrcDefinitionPath = params.def.substring(0,pos+1);
-          collectionName = params.def.substring(pos+1);
+          fmrcDefinitionPath = params.def.substring(0, pos + 1);
+          collectionName = params.def.substring(pos + 1);
         }
       }
 
       String fmrInvOpenType = ThreddsConfig.get("FmrcInventory.openType", "");
       int mode = fmrInvOpenType.equalsIgnoreCase("XML_ONLY") ? ForecastModelRunInventory.OPEN_XML_ONLY : ForecastModelRunInventory.OPEN_NORMAL;
-      if (debug) System.out.println("  FmrcInventory.make path="+fmrcDefinitionPath+" name= "+collectionName+" location= "+params.location
-        +" suffix= "+params.suffix+" mode= "+mode);
+      if (debug)
+        System.out.println("  FmrcInventory.make path=" + fmrcDefinitionPath + " name= " + collectionName + " location= " + params.location
+            + " suffix= " + params.suffix + " mode= " + mode);
 
       fmr = FmrcInventory.makeFromDirectory(fmrcDefinitionPath, collectionName, fmrCache, params.location, params.suffix, mode);
 
     } catch (Exception e) {
       e.printStackTrace();
       log.error("ForecastModelRunCollection.make", e);
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
       return;
     }
 
     if (fmr == null) {
       log.warn("ForecastModelRunCollection.make");
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
       return;
     }
 
     String define = req.getParameter("define");
     if (define != null) {
-      showDefinition( res, fmr, define);
+      showDefinition(res, fmr, define);
       return;
     }
 
     String report = req.getParameter("report");
     if (report != null) {
       try {
-        report( fmr, res, report.equals("missing"));
+        report(fmr, res, report.equals("missing"));
       } catch (Exception e) {
         e.printStackTrace();
         log.error("report", e);
-        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
+        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
         res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       }
       return;
@@ -153,17 +159,17 @@ public class FmrcInventoryServlet extends AbstractServlet {
     if (varName.startsWith("/"))
       varName = varName.substring(1);
     if (varName.endsWith("/"))
-      varName = varName.substring(0, varName.length()-1);
+      varName = varName.substring(0, varName.length() - 1);
 
     String offsetHour = req.getParameter("offsetHour");
     if (offsetHour != null) {
-      showOffsetHour( res, fmr, varName, offsetHour);
+      showOffsetHour(res, fmr, varName, offsetHour);
       return;
     }
 
     boolean wantXML = req.getParameter("wantXML") != null;
 
-    showInventory( res, fmr, varName, query, wantXML);
+    showInventory(res, fmr, varName, query, wantXML);
   }
 
   private void showOffsetHour(HttpServletResponse res, FmrcInventory fmrc, String varName, String offsetHour) throws IOException {
@@ -173,25 +179,25 @@ public class FmrcInventoryServlet extends AbstractServlet {
     OutputStream out = res.getOutputStream();
     out.write(contents.getBytes());
     out.flush();
-    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, contents.length()));
+    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, contents.length()));
   }
 
   private void report(FmrcInventory fmrc, HttpServletResponse res, boolean showMissing) throws Exception {
     res.setContentType("text/plain; charset=iso-8859-1");
     OutputStream out = res.getOutputStream();
-    PrintStream ps = new PrintStream( out);
+    PrintStream ps = new PrintStream(out);
 
     FmrcReport report = new FmrcReport();
-    report.report( fmrc, ps, showMissing);
+    report.report(fmrc, ps, showMissing);
     ps.flush();
 
-    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
+    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
   }
 
   private void reportAll(HttpServletResponse res, boolean showMissing) throws Exception {
     res.setContentType("text/plain; charset=iso-8859-1");
     OutputStream out = res.getOutputStream();
-    PrintStream ps = new PrintStream( out);
+    PrintStream ps = new PrintStream(out);
 
     String[] paths = getDatasetPaths();
     for (String path1 : paths) {
@@ -217,7 +223,7 @@ public class FmrcInventoryServlet extends AbstractServlet {
       ps.flush();
     }
 
-    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
+    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
   }
 
   private void showDefinition(HttpServletResponse res, FmrcInventory fmrc, String define) throws IOException {
@@ -225,17 +231,17 @@ public class FmrcInventoryServlet extends AbstractServlet {
     FmrcDefinition def = fmrc.getDefinition();
 
     if (define.equals("write")) {
-      FileOutputStream fos = new FileOutputStream( fmrc.getDefinitionPath());
+      FileOutputStream fos = new FileOutputStream(fmrc.getDefinitionPath());
       def = new FmrcDefinition();
       def.makeFromCollectionInventory(fmrc);
-      def.writeDefinitionXML( fos);
-      System.out.println(" write to "+fmrc.getDefinitionPath());
+      def.writeDefinitionXML(fos);
+      System.out.println(" write to " + fmrc.getDefinitionPath());
 
     } else if ((def != null) && (define.equals("addVert"))) {
-      FileOutputStream fos = new FileOutputStream( fmrc.getDefinitionPath());
+      FileOutputStream fos = new FileOutputStream(fmrc.getDefinitionPath());
       def.addVertCoordsFromCollectionInventory(fmrc);
-      def.writeDefinitionXML( fos);
-      System.out.println(" write to "+fmrc.getDefinitionPath());
+      def.writeDefinitionXML(fos);
+      System.out.println(" write to " + fmrc.getDefinitionPath());
     }
 
     if (def == null) {
@@ -247,44 +253,45 @@ public class FmrcInventoryServlet extends AbstractServlet {
     OutputStream out = res.getOutputStream();
     out.write(xmlString.getBytes());
     out.flush();
-    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, xmlString.length()));
+    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, xmlString.length()));
   }
 
   private void showInventory(HttpServletResponse res, FmrcInventory fmr, String varName, String type, boolean wantXml) throws IOException {
-
-    String infoString;
-
     if (varName.length() == 0)
       varName = null;
-
     boolean matrix = (type != null) && (type.equalsIgnoreCase("Matrix"));
 
-    if (wantXml) {
-      infoString = fmr.writeMatrixXML( varName);
+    String infoString;
+    try {
+      if (wantXml) {
+        infoString = fmr.writeMatrixXML(varName);
 
-    } else {
-      Document doc;
-      InputStream xslt;
-      if (varName == null) {
-        xslt = matrix ? getXSLT("fmrMatrix.xsl") : getXSLT("fmrOffset.xsl");
-        doc = fmr.makeMatrixDocument();
       } else {
-        xslt = matrix ? getXSLT("fmrMatrixVariable.xsl") : getXSLT("fmrOffsetVariable.xsl");
-        doc = fmr.makeMatrixDocument( varName);
-      }
+        Document doc;
+        InputStream xslt;
+        if (varName == null) {
+          xslt = matrix ? getXSLT("fmrMatrix.xsl") : getXSLT("fmrOffset.xsl");
+          doc = fmr.makeMatrixDocument();
+        } else {
+          xslt = matrix ? getXSLT("fmrMatrixVariable.xsl") : getXSLT("fmrOffsetVariable.xsl");
+          doc = fmr.makeMatrixDocument(varName);
+        }
 
-      try {
         XSLTransformer transformer = new XSLTransformer(xslt);
         Document html = transformer.transform(doc);
         XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
         infoString = fmt.outputString(html);
-
-      } catch (Exception e) {
-        log.error("ForecastModelRunServlet internal error", e);
-        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
-        res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ForecastModelRunServlet internal error");
-        return;
       }
+
+    } catch (IllegalArgumentException e) {
+      res.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+      return;
+
+    } catch (Exception e) {
+      log.error("ForecastModelRunServlet internal error", e);
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
+      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ForecastModelRunServlet internal error");
+      return;
     }
 
     res.setContentLength(infoString.length());
@@ -297,7 +304,7 @@ public class FmrcInventoryServlet extends AbstractServlet {
     out.write(infoString.getBytes());
     out.flush();
 
-    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, infoString.length()));
+    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, infoString.length()));
   }
 
   static private InputStream getXSLT(String xslName) {
@@ -307,41 +314,41 @@ public class FmrcInventoryServlet extends AbstractServlet {
 
   private String[] getDatasetPaths() {
     String[] all = {
-      "/thredds/modelInventory/fmrc/NCEP/DGEX/CONUS_12km/",
-      "/thredds/modelInventory/fmrc/NCEP/DGEX/Alaska_12km/",
+        "/thredds/modelInventory/fmrc/NCEP/DGEX/CONUS_12km/",
+        "/thredds/modelInventory/fmrc/NCEP/DGEX/Alaska_12km/",
 
-      "/thredds/modelInventory/fmrc/NCEP/GFS/Alaska_191km/",
-      "/thredds/modelInventory/fmrc/NCEP/GFS/CONUS_80km/",
-      "/thredds/modelInventory/fmrc/NCEP/GFS/CONUS_95km/",
-      "/thredds/modelInventory/fmrc/NCEP/GFS/CONUS_191km/",
-      "/thredds/modelInventory/fmrc/NCEP/GFS/Global_0p5deg/",
-      "/thredds/modelInventory/fmrc/NCEP/GFS/Global_onedeg/",
-      "/thredds/modelInventory/fmrc/NCEP/GFS/Global_2p5deg/",
-      "/thredds/modelInventory/fmrc/NCEP/GFS/Hawaii_160km/",
-      "/thredds/modelInventory/fmrc/NCEP/GFS/N_Hemisphere_381km/",
-      "/thredds/modelInventory/fmrc/NCEP/GFS/Puerto_Rico_191km/",
+        "/thredds/modelInventory/fmrc/NCEP/GFS/Alaska_191km/",
+        "/thredds/modelInventory/fmrc/NCEP/GFS/CONUS_80km/",
+        "/thredds/modelInventory/fmrc/NCEP/GFS/CONUS_95km/",
+        "/thredds/modelInventory/fmrc/NCEP/GFS/CONUS_191km/",
+        "/thredds/modelInventory/fmrc/NCEP/GFS/Global_0p5deg/",
+        "/thredds/modelInventory/fmrc/NCEP/GFS/Global_onedeg/",
+        "/thredds/modelInventory/fmrc/NCEP/GFS/Global_2p5deg/",
+        "/thredds/modelInventory/fmrc/NCEP/GFS/Hawaii_160km/",
+        "/thredds/modelInventory/fmrc/NCEP/GFS/N_Hemisphere_381km/",
+        "/thredds/modelInventory/fmrc/NCEP/GFS/Puerto_Rico_191km/",
 
-      "/thredds/modelInventory/fmrc/NCEP/NAM/Alaska_11km/",
-      "/thredds/modelInventory/fmrc/NCEP/NAM/Alaska_22km/",
-      "/thredds/modelInventory/fmrc/NCEP/NAM/Alaska_45km/noaaport/",
-      "/thredds/modelInventory/fmrc/NCEP/NAM/Alaska_45km/conduit/",
-      "/thredds/modelInventory/fmrc/NCEP/NAM/Alaska_95km/",
-      "/thredds/modelInventory/fmrc/NCEP/NAM/CONUS_12km/",
-      "/thredds/modelInventory/fmrc/NCEP/NAM/CONUS_20km/surface/",
-      "/thredds/modelInventory/fmrc/NCEP/NAM/CONUS_20km/selectsurface/",
-      "/thredds/modelInventory/fmrc/NCEP/NAM/CONUS_20km/noaaport/",
-      "/thredds/modelInventory/fmrc/NCEP/NAM/CONUS_40km/noaaport/",
-      "/thredds/modelInventory/fmrc/NCEP/NAM/CONUS_40km/conduit/",
-      "/thredds/modelInventory/fmrc/NCEP/NAM/CONUS_80km/",
-      "/thredds/modelInventory/fmrc/NCEP/NAM/Polar_90km/",
+        "/thredds/modelInventory/fmrc/NCEP/NAM/Alaska_11km/",
+        "/thredds/modelInventory/fmrc/NCEP/NAM/Alaska_22km/",
+        "/thredds/modelInventory/fmrc/NCEP/NAM/Alaska_45km/noaaport/",
+        "/thredds/modelInventory/fmrc/NCEP/NAM/Alaska_45km/conduit/",
+        "/thredds/modelInventory/fmrc/NCEP/NAM/Alaska_95km/",
+        "/thredds/modelInventory/fmrc/NCEP/NAM/CONUS_12km/",
+        "/thredds/modelInventory/fmrc/NCEP/NAM/CONUS_20km/surface/",
+        "/thredds/modelInventory/fmrc/NCEP/NAM/CONUS_20km/selectsurface/",
+        "/thredds/modelInventory/fmrc/NCEP/NAM/CONUS_20km/noaaport/",
+        "/thredds/modelInventory/fmrc/NCEP/NAM/CONUS_40km/noaaport/",
+        "/thredds/modelInventory/fmrc/NCEP/NAM/CONUS_40km/conduit/",
+        "/thredds/modelInventory/fmrc/NCEP/NAM/CONUS_80km/",
+        "/thredds/modelInventory/fmrc/NCEP/NAM/Polar_90km/",
 
-      "/thredds/modelInventory/fmrc/NCEP/RUC2/CONUS_20km/surface/",
-      "/thredds/modelInventory/fmrc/NCEP/RUC2/CONUS_20km/pressure/",
-      "/thredds/modelInventory/fmrc/NCEP/RUC2/CONUS_20km/hybrid/",
-      "/thredds/modelInventory/fmrc/NCEP/RUC2/CONUS_40km/",
-      "/thredds/modelInventory/fmrc/NCEP/RUC/CONUS_80km/",
+        "/thredds/modelInventory/fmrc/NCEP/RUC2/CONUS_20km/surface/",
+        "/thredds/modelInventory/fmrc/NCEP/RUC2/CONUS_20km/pressure/",
+        "/thredds/modelInventory/fmrc/NCEP/RUC2/CONUS_20km/hybrid/",
+        "/thredds/modelInventory/fmrc/NCEP/RUC2/CONUS_40km/",
+        "/thredds/modelInventory/fmrc/NCEP/RUC/CONUS_80km/",
 
-      "/thredds/modelInventory/fmrc/NCEP/NDFD/CONUS_5km/",
+        "/thredds/modelInventory/fmrc/NCEP/NDFD/CONUS_5km/",
     };
 
     return all;

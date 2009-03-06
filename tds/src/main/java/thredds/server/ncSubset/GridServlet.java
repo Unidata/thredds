@@ -141,12 +141,12 @@ public class GridServlet extends AbstractServlet {
 
       } catch (java.io.FileNotFoundException ioe) {
         log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
-        res.sendError(HttpServletResponse.SC_NOT_FOUND);
+        if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_NOT_FOUND);
 
       } catch (Exception e) {
         log.error("GridServlet.showForm", e);
         log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
-        res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         
       } finally {
         if (null != gds)
