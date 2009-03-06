@@ -600,7 +600,7 @@ public class GridIndexToNC {
         // we dont know the name for sure yet, so have to try several
         String searchName = findVariableName(ncfile, record, lookup,
             fmr);
-        System.out.println("Search name = " + searchName);
+        //System.out.println("Search name = " + searchName);
         if (searchName == null) {  // cant find - just remove
           System.out.println("removing " + searchName);
           removeVariables.add(key);  // cant remove (concurrentModException) so save for later
