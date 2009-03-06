@@ -41,6 +41,7 @@ import ucar.nc2.units.DateFormatter;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
 import ucar.unidata.util.StringUtil;
+import ucar.grid.GridParameter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -183,7 +184,7 @@ public class GribVariable {
       dims = dims + " y x";
 
     v.setDimensions(dims);
-    Parameter param = lookup.getParameter(firstRecord);
+    GridParameter param = lookup.getParameter(firstRecord);
 
     v.addAttribute(new Attribute("units", param.getUnit()));
     v.addAttribute(new Attribute("long_name", Index2NC.makeLongName(firstRecord, lookup)));

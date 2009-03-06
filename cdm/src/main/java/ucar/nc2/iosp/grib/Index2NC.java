@@ -41,6 +41,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.util.StringUtil;
+import ucar.grid.GridParameter;
 
 import java.io.*;
 import java.util.*;
@@ -86,13 +87,13 @@ public class Index2NC  {
   }
 
   static public String makeVariableName(Index.GribRecord gr, TableLookup lookup) {
-    Parameter param = lookup.getParameter(gr);
+    GridParameter param = lookup.getParameter(gr);
     String levelName = makeLevelName( gr, lookup);
     return (levelName.length() == 0) ? param.getDescription() : param.getDescription() + "_" + levelName;
   }
 
   static public String makeLongName(Index.GribRecord gr, TableLookup lookup) {
-    Parameter param = lookup.getParameter(gr);
+    GridParameter param = lookup.getParameter(gr);
     String levelName = makeLevelName( gr, lookup);
     return (levelName.length() == 0) ? param.getDescription() : param.getDescription() + " @ " + makeLevelName( gr, lookup);
   }
