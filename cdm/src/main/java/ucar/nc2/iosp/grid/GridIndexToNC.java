@@ -49,8 +49,6 @@ import ucar.nc2.util.CancelTask;
 import ucar.grid.*;
 import ucar.grib.grib2.Grib2GridTableLookup;
 import ucar.grib.grib1.Grib1GridTableLookup;
-import ucar.grib.Index;
-import ucar.grib.TableLookup;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
@@ -101,10 +99,8 @@ public class GridIndexToNC {
    */
   public static String makeLevelName(GridRecord gr, GridTableLookup lookup) {
 
-    if (lookup.getGridType().equals("GRIB2")
-        || lookup.getGridType().equals("GRIB1")) {
+    if (lookup.getGridType().equals("GRIB2")) {
       String vname = lookup.getLevelName(gr);
-      // doesn't this apply to grib1 too
       // for grib2, we need to add the layer to disambiguate
       return lookup.isLayer(gr)
           ? vname + "_layer"
@@ -600,7 +596,8 @@ public class GridIndexToNC {
         // we dont know the name for sure yet, so have to try several
         String searchName = findVariableName(ncfile, record, lookup,
             fmr);
-        //System.out.println("Search name = " + searchName);
+        if (debug )
+          System.out.println("GridIndexToNC.Search name = " + searchName);
         if (searchName == null) {  // cant find - just remove
           System.out.println("removing " + searchName);
           removeVariables.add(key);  // cant remove (concurrentModException) so save for later
@@ -750,24 +747,28 @@ public class GridIndexToNC {
 
     // first lookup with name & vert name
     String name = makeVariableName(gr, lookup);
-    //System.out.println( "name ="+ name );
+    if (debug)
+      System.out.println( "name ="+ name );
     if (fmr.hasVariable( name))
       return name;
 
     // now try just the name
     String pname = lookup.getParameter(gr).getDescription();
-    //System.out.println( "pname ="+ pname );
+    if (debug)
+      System.out.println( "pname ="+ pname );
     if (fmr.hasVariable( pname))
       return pname;
 
     // try replacing the blanks
     String nameWunder = StringUtil.replace(name, ' ', "_");
-    //System.out.println( "nameWunder ="+ nameWunder );
+    if (debug)
+      System.out.println( "nameWunder ="+ nameWunder );
     if (fmr.hasVariable( nameWunder))
       return nameWunder;
 
     String pnameWunder = StringUtil.replace(pname, ' ', "_");
-    //System.out.println( "pnameWunder ="+ pnameWunder );
+    if (debug)
+      System.out.println( "pnameWunder ="+ pnameWunder );
     if (fmr.hasVariable( pnameWunder))
       return pnameWunder;
 
