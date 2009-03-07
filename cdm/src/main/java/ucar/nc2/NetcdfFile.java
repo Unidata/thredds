@@ -54,6 +54,7 @@ import java.net.URI;
 import java.io.*;
 import java.nio.channels.WritableByteChannel;
 import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
 
 /**
  * Read-only scientific datasets that are accessible through the netCDF API.
@@ -377,7 +378,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * Find out if the file can be opened, but dont actually open it.
    * @param location same as open
    * @return true if can be opened
-   * @throws IOException
+   * @throws IOException on read error
    */
   static public boolean canOpen(String location) throws IOException {
     ucar.unidata.io.RandomAccessFile raf = null;
@@ -522,16 +523,29 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     File uncompressedFile = DiskCache.getFileStandardPolicy(uncompressedFilename);
     if (uncompressedFile.exists()) {
       // see if its locked - another thread is writing it
-      FileOutputStream fout = null;
+      FileInputStream stream = null;
       FileLock lock = null;
       try {
-        fout = new FileOutputStream(uncompressedFile);
-        lock = fout.getChannel().lock(); // wait till its unlocked
+        stream = new FileInputStream(uncompressedFile);
+        // obtain the lock
+        while (true) { // loop waiting for the lock
+          try {
+            lock = stream.getChannel().lock(0, 1, true); // wait till its unlocked
+            break;
+
+          } catch (OverlappingFileLockException oe) { // not sure why lock() doesnt block
+            try {
+              Thread.sleep(100); // msecs
+            } catch (InterruptedException e1) {
+            }
+          }
+        }
+
         if (debugCompress) System.out.println("found uncompressed " + uncompressedFile + " for " + filename);
         return uncompressedFile.getPath();
       } finally {
         if (lock != null) lock.release();
-        if (fout != null) fout.close();
+        if (stream != null) stream.close();
       }
     }
 
@@ -545,7 +559,20 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     FileOutputStream fout = new FileOutputStream(uncompressedFile);
 
     // obtain the lock
-    FileLock lock = fout.getChannel().lock();
+    FileLock lock = null;
+    while (true) { // loop waiting for the lock
+      try {
+        lock = fout.getChannel().lock(0, 1, false);
+        break;
+
+      } catch (OverlappingFileLockException oe) { // not sure why lock() doesnt block
+        try {
+          Thread.sleep(100); // msecs
+        } catch (InterruptedException e1) {
+        }
+      }
+    }
+
     try {
       if (suffix.equalsIgnoreCase("Z")) {
         in = new UncompressInputStream(  new FileInputStream(filename));
@@ -1217,27 +1244,30 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    */
   protected NetcdfFile(IOServiceProvider spi, ucar.unidata.io.RandomAccessFile raf, String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
 
+    this.spi = spi;
     this.location = location;
 
     if (debugSPI) System.out.println("NetcdfFile uses iosp = " + spi.getClass().getName());
 
     try {
       spi.open(raf, this, cancelTask);
-      this.spi = spi;
 
     } catch (IOException e) {
       try { spi.close(); } catch (Throwable t1 ) {}
       try { raf.close(); } catch (Throwable t2 ) {}
+      this.spi = null;
       throw e;
 
     } catch (RuntimeException e) {
       try { spi.close(); } catch (Throwable t1 ) {}
       try { raf.close(); } catch (Throwable t2 ) {}
+      this.spi = null;
       throw e;
 
     } catch (Throwable t) {
       try { spi.close(); } catch (Throwable t1 ) {}
       try { raf.close(); } catch (Throwable t2 ) {}
+      this.spi = null;
       throw new RuntimeException(t);
     }
 
@@ -1836,9 +1866,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     //NetcdfFile.registerIOProvider( ucar.nc2.grib.GribServiceProvider.class);
 
     try {
-      String filename = "D:/data/grib/nam/conus80/NAM_CONUS_80km_20060811_0000.grib1";
+      String filename = "R:/testdata/hdf5/npoess/ExampleFiles/AVAFO_NPP_d2003125_t10109_e101038_b9_c2005829155458_devl_Tst.h5";
       NetcdfFile ncfile = NetcdfFile.open(filename);
-      Thread.currentThread().sleep( 60 * 60 * 1000); // pause to examine in profiler
+      //Thread.currentThread().sleep( 60 * 60 * 1000); // pause to examine in profiler
 
       ncfile.close();
 

@@ -73,7 +73,7 @@ public class ReadTdsLogs {
   ReadTdsLogs(String server) throws FileNotFoundException {
     this.server = server;
 
-    executor = Executors.newFixedThreadPool(3); // number of threads
+    executor = Executors.newFixedThreadPool(5); // number of threads
     completionQ = new ArrayBlockingQueue<Future<SendRequestTask>>(10); // bounded, threadsafe
     completionService = new ExecutorCompletionService<SendRequestTask>(executor, completionQ);
 
@@ -301,7 +301,8 @@ public class ReadTdsLogs {
 
 
   static private int total_submit = 0;
-  static private int max_submit = 10;
+  static private int min_submit = -1;
+  static private int max_submit = Integer.MAX_VALUE;
 
   void sendRequests(String filename, int max) throws IOException {
     int submit = 0;
@@ -317,6 +318,11 @@ public class ReadTdsLogs {
       if (log == null) continue;
       total++;
 
+      if ((total < min_submit) || (total > max_submit)) {
+        skip++;
+        continue;
+      }
+
       if (log.verb.equals("POST")) {
         skip++;
         // System.out.println(" *** skip POST " + log);
@@ -327,13 +333,13 @@ public class ReadTdsLogs {
         // System.out.println(" *** skip fmrc " + log);
         skip++;
         continue;
-      } 
+      } */
 
       if (log.path.indexOf("fileServer") > 0) {
         // System.out.println(" *** skip fmrc " + log);
         skip++;
         continue;
-      } */
+      }
 
       /* if (log.path.indexOf("fmrc") > 0)  {
         // System.out.println(" *** skip fmrc " + log);

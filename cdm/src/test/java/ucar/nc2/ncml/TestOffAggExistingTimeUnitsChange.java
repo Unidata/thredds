@@ -69,7 +69,7 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
 
     Variable v = ncfile.findVariable("time");
     assert v != null;
-    assert v.getDataType() == DataType.INT;
+    assert v.getDataType() == DataType.DOUBLE;
 
     String units = v.getUnitsString();
     assert units != null;
@@ -103,7 +103,7 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
 
     Variable v = ncfile.findVariable("time");
     assert v != null;
-    assert v.getDataType() == DataType.INT;
+    assert v.getDataType() == DataType.DOUBLE;
 
     String units = v.getUnitsString();
     assert units != null;

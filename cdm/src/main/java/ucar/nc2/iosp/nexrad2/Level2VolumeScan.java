@@ -156,14 +156,15 @@ public class Level2VolumeScan {
 
         if (uncompressedFile.exists()) {
           // see if its locked - another thread is writing it
-          FileOutputStream fout = null;
+          FileInputStream fstream = null;
           FileLock lock = null;
           try {
-            fout = new FileOutputStream(uncompressedFile);
+            fstream = new FileInputStream(uncompressedFile);
+            //lock = fstream.getChannel().lock(0, 1, true); // wait till its unlocked
 
             while (true) { // loop waiting for the lock
               try {
-                lock = fout.getChannel().lock(); // wait till its unlocked
+                lock = fstream.getChannel().lock(0, 1, true); // wait till its unlocked
                 break;
 
               } catch (OverlappingFileLockException oe) { // not sure why lock() doesnt block
@@ -176,7 +177,7 @@ public class Level2VolumeScan {
 
           } finally {
             if (lock != null) lock.release();
-            if (fout != null) fout.close();
+            if (fstream != null) fstream.close();
           }
           uraf = new ucar.unidata.io.RandomAccessFile(uncompressedFile.getPath(), "r");
 
@@ -637,14 +638,27 @@ public class Level2VolumeScan {
   /**
    * Write equivilent uncompressed version of the file.
    *
-   * @param inputRaf      file to uncompress
+   * @param inputRaf  file to uncompress
    * @param ufilename write to this file
    * @return raf of uncompressed file
    * @throws IOException on read error
    */
   private RandomAccessFile uncompress(RandomAccessFile inputRaf, String ufilename) throws IOException {
     RandomAccessFile outputRaf = new RandomAccessFile(ufilename, "rw");
-    FileLock lock = outputRaf.getRandomAccessFile().getChannel().lock();
+    FileLock lock = null;
+
+    while (true) { // loop waiting for the lock
+      try {
+        lock = outputRaf.getRandomAccessFile().getChannel().lock(0, 1, false);
+        break;
+
+      } catch (OverlappingFileLockException oe) { // not sure why lock() doesnt block
+        try {
+          Thread.sleep(100); // msecs
+        } catch (InterruptedException e1) {
+        }
+      }
+    }
 
     try {
       inputRaf.seek(0);
@@ -720,12 +734,12 @@ public class Level2VolumeScan {
       } catch (Exception e) {
         if (outputRaf != null) outputRaf.close();
         outputRaf = null;
-        
+
         // dont leave bad files around
         File ufile = new File(ufilename);
         if (ufile.exists()) {
           if (!ufile.delete())
-            log.warn("failed to delete uncompressed file (IOException)"+ufilename);
+            log.warn("failed to delete uncompressed file (IOException)" + ufilename);
         }
 
         if (e instanceof IOException)
