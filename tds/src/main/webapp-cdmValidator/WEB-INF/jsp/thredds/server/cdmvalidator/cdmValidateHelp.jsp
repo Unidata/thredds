@@ -1,39 +1,23 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<%@ include file="/WEB-INF/jsp/includes.jsp" %>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title>Validation Help</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <link rel="stylesheet" href="<c:url value="${standardCssUrl}"/>" type="text/css"/>
+
 <style type="text/css">
 <!--
 .style1 {color: #990000}
 -->
 </style>
-</head>
-<html>
-  <head>
-    <title>CdmValidation</title>
-  </head>
-  <body bgcolor="#FFFFFF">
-    <LINK TYPE="text/css" HREF="/thredds/upc.css" REL="StyleSheet" />
-    <table width="100%">
-      <tr>
 
-        <td align="left" height="95" width="95">
-          <img height="93" width="95" src="unidataLogo.giftaLogo.gif" />
-        </td>
-        <td valign="top" align="left" width="701">
-          <table width="303">
-            <tr>
-              <td valign="top" align="left" height="22" width="295">
-                <h3>
-                <strong>Thredds Data Server </strong></h3>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
+  <title>CDM Validation Help</title>
+</head>
+
+<body>
+<c:import url="/WEB-INF/jsp/siteHeader.jsp" />
+
     <hr />
     <h1>Common Data Model Coordinate System Validation Help </h1>
     <p><em>last updated Feb 07, 2006 </em></p>
@@ -334,6 +318,9 @@
       <p class="style1">This is supposed to be CF-1.0, but no grid variables are being found. The problem is a bit subtle, but is indicated by the fact that the <em>lat</em> and <em>lon</em> Coordinate Axes do not have an assigned AxisType. The units look good, dont, they? On closer inspection, one sees that &quot;degrees north&quot; should be &quot;degrees_north&quot;, and &quot;degrees east&quot; should be &quot;degrees east&quot;, according to CF-1.0 sections 4.1 and 4.2. Fixing that will make this dataset correctly conform to the <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/index.html">CF-1.0 specification</a>. </p>
       <p class="style1">The other problem here is that &quot;degrees C&quot; is being misinterpeted as a unit of Radian - Coulombs (Ampere-second)! The correct udunit for this is <strong><em>Celsius</em></strong>. </p>
     </blockquote>
+
+<c:import url="/WEB-INF/jsp/webappFooter.jsp" />
+
   </body>
 </html>
 

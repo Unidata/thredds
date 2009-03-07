@@ -94,7 +94,7 @@ public class CdmInit {
     ucar.nc2.NetcdfFile.setProperty("syncExtendOnly", "true");
 
     // persist joinNew aggregations. default every 24 hours, delete stuff older than 30 days
-    String dir = ThreddsConfig.get("AggregationCache.dir", tdsContext.getContentDirectory().getPath() + "cacheAged/");
+    String dir = ThreddsConfig.get("AggregationCache.dir", new File( tdsContext.getContentDirectory().getPath(), "cacheAged").getPath());
     int scourSecs = ThreddsConfig.getSeconds("AggregationCache.scour", 24 * 60 * 60);
     int maxAgeSecs = ThreddsConfig.getSeconds("AggregationCache.maxAge", 30 * 24 * 60 * 60);
     aggCache = new DiskCache2(dir, false, maxAgeSecs / 60, scourSecs / 60);
@@ -106,7 +106,7 @@ public class CdmInit {
       Aggregation.setTypicalDatasetMode(typicalDataset);
 
     // Nj22 disk cache
-    dir = ThreddsConfig.get("DiskCache.dir", tdsContext.getContentDirectory().getPath() + "cache/");
+    dir = ThreddsConfig.get("DiskCache.dir", new File( tdsContext.getContentDirectory(), "cache" ).getPath());
     boolean alwaysUse = ThreddsConfig.getBoolean("DiskCache.alwaysUse", false);
     scourSecs = ThreddsConfig.getSeconds("DiskCache.scour", 60 * 60);
     long maxSize = ThreddsConfig.getBytes("DiskCache.maxSize", (long) 1000 * 1000 * 1000);
