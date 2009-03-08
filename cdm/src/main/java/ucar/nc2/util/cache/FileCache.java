@@ -98,9 +98,9 @@ public class FileCache {
   private String name;
   private final int softLimit, minElements, hardLimit;
 
-  private final ConcurrentHashMap<Object, CacheElement> cache;
-  private final ConcurrentHashMap<Object, CacheElement.CacheFile> files;
-  private final AtomicInteger counter = new AtomicInteger(); // how many elements
+  private final ConcurrentHashMap<Object, CacheElement> cache; // unique files
+  private final ConcurrentHashMap<Object, CacheElement.CacheFile> files; // same file may be in cache multiple times
+  private final AtomicInteger counter = new AtomicInteger(); // how many files in the cache
   private final AtomicBoolean hasScheduled = new AtomicBoolean(false); // a cleanup is scheduled
   private final AtomicBoolean disabled = new AtomicBoolean(false);  // cache is disabled
 
@@ -245,12 +245,14 @@ public class FileCache {
       }
     }
 
+    // increment the number of files in the cache
+    int count = counter.incrementAndGet();
+
     // do we need a cleanup ??
     boolean needHard = false;
     boolean needSoft = false;
     synchronized (hasScheduled) {
       if (!hasScheduled.get()) {
-        int count = counter.incrementAndGet();
         if ((count > hardLimit) && (hardLimit > 0)) {
           needHard = true;
           hasScheduled.getAndSet(true); // tell other threads not to schedule another cleanup
@@ -466,6 +468,10 @@ public class FileCache {
 
     try {
       int size = counter.get();
+      int fsize = files.size();
+      if (size != fsize)
+        log.warn("FileCache " + name + " counter " + size + " doesnt match files().size" + fsize);
+
       if (size <= minElements) return;
 
       log.debug("FileCache " + name + " cleanup started at " + new Date() + " for cleanup maxElements=" + maxElements);
@@ -585,7 +591,8 @@ public class FileCache {
 
       void remove() {
         synchronized (CacheElement.this) {
-          list.remove(this);
+          if (!list.remove(this))
+            log.warn("FileCache " + name + " could not remove " + ncfile.getLocation());
         }
         if (log.isDebugEnabled()) log.debug("FileCache " + name + " remove " + ncfile.getLocation());
         if (debugPrint) System.out.println("  FileCache " + name + " remove " + ncfile.getLocation());

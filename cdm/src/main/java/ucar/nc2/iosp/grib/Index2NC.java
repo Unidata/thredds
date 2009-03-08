@@ -88,8 +88,9 @@ public class Index2NC  {
 
   static public String makeVariableName(Index.GribRecord gr, TableLookup lookup) {
     GridParameter param = lookup.getParameter(gr);
+    if (param == null) return null;
     String levelName = makeLevelName( gr, lookup);
-    return (levelName.length() == 0) ? param.getDescription() : param.getDescription() + "_" + levelName;
+    return ((levelName == null) || (levelName.length() == 0)) ? param.getDescription() : param.getDescription() + "_" + levelName;
   }
 
   static public String makeLongName(Index.GribRecord gr, TableLookup lookup) {
@@ -133,6 +134,8 @@ public class Index2NC  {
 
       GribHorizCoordSys hcs = hcsHash.get(gribRecord.gdsKey);
       String name = makeVariableName(gribRecord, lookup);
+      if (name == null) continue; // LOOK: message should get logged from grib layer
+
       GribVariable pv = hcs.varHash.get(name); // combo gds, param name and level name
       if (null == pv) {
         String pname = lookup.getParameter(gribRecord).getDescription();

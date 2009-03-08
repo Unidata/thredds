@@ -537,6 +537,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
             try {
               Thread.sleep(100); // msecs
             } catch (InterruptedException e1) {
+              break;
             }
           }
         }

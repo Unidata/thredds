@@ -171,6 +171,7 @@ public class Level2VolumeScan {
                 try {
                   Thread.sleep(100); // msecs
                 } catch (InterruptedException e1) {
+                  break;
                 }
               }
             }

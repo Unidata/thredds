@@ -11,6 +11,15 @@
 <hr>
 <h2> Overview</h2>
 <p><em>last updated Mar 04, 2009</em></p>
+<p><strong>Also see:</strong></p>
+<ul>
+  <li><a href="http://wiki.apache.org/tomcat/FAQ/Logging">http://wiki.apache.org/tomcat/FAQ/Logging</a></li>
+  <li>can get rid of catalina.out with swallowOutput=&quot;turu&quot; on &lt;Context&gt;</li>
+  <li>Suppress message WARNING: Parameters: Invalid chunk ignored:
+    <p>org.apache.tomcat.util.http.<strong>Parameters</strong>.level = SEVERE</p>
+    <p> in TOMCAT_HOME/conf/logging.properties or JAVA_HOME/jre/lib/logging.properties</p>
+  </li>
+</ul>
 <h2>Tomcat Access Logs </h2>
 <p>Files are  <strong>{tomcat_home}/logs/access.YYYY-MM-DD.log</strong> or use <a href="https://motherlode.ucar.edu:9443/thredds/admin/logs/">admin</a> interface</p>
 <p>Rolls over each day</p>

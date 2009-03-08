@@ -301,7 +301,7 @@ public class ReadTdsLogs {
 
 
   static private int total_submit = 0;
-  static private int min_submit = -1;
+  static private int min_submit = 3000;
   static private int max_submit = Integer.MAX_VALUE;
 
   void sendRequests(String filename, int max) throws IOException {
@@ -329,7 +329,7 @@ public class ReadTdsLogs {
         continue;
       }
 
-      /* if (!(log.path.indexOf("wcs") > 0))  {    // wcs only
+      /* if (!(log.path.indexOf("modelInventory") > 0))  {    // fmrc only
         // System.out.println(" *** skip fmrc " + log);
         skip++;
         continue;

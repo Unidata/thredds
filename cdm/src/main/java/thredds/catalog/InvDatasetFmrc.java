@@ -593,13 +593,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
         DateFormatter formatter = new DateFormatter();
         Date date = formatter.getISODate(id);
-        if (date == null)
-         logger.warn("Cant parse date "+id+" for dataset= "+path);
-       else {
-          result = fmrc.getForecastTimeDataset(date);
-          if (result == null)
-            logger.warn("Dont have forecast date "+id+" for dataset= "+path);
-        }
+        result = fmrc.getForecastTimeDataset(date);
       }
     }
 

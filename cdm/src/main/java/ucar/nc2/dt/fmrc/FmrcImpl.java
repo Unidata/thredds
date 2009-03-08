@@ -466,6 +466,7 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
   }
 
   public NetcdfDataset getRunTimeDataset(Date wantRuntime) {
+    if (wantRuntime == null) return null;
     if (!runtimes.contains(wantRuntime)) return null;
     NetcdfDataset ncd = createDataset(new RuntimeInvGetter(wantRuntime), RUN);
 
@@ -481,6 +482,7 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
   }
 
   public NetcdfDataset getForecastTimeDataset(Date forecastTime) {
+    if (forecastTime == null) return null;
     if (!forecasts.contains(forecastTime)) return null;
     return createDataset(new ForecastInvGetter(forecastTime), FORECAST);
   }

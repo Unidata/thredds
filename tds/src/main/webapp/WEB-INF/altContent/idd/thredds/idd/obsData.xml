@@ -11,9 +11,8 @@
   </service>
 
 
-  <service name="all3" serviceType="Compound" base="">
+  <service name="forBufr" serviceType="Compound" base="">
     <service name="ncstream" serviceType="NetcdfStream" base="/thredds/ncstream/"/>
-    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
     <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
   </service>
 
@@ -243,7 +242,7 @@
                  path="station/soundings" location="/data/ldm/pub/native/profiler/bufr/profiler3/">
 
       <metadata inherited="true">
-        <serviceName>all3</serviceName>
+        <serviceName>forBufr</serviceName>
         <documentation type="summary">Vertical Soundings from a station</documentation>
         <documentation xlink:href="http://metar.noaa.gov/" xlink:title="NWS/NOAA information"/>
         <documentation>Vertical Soundings</documentation>

@@ -521,8 +521,8 @@ public class DatasetViewer extends JPanel {
       //  setCoordSys( csAtt.getStringValue());
 
       // collect dimensions
-      StringBuffer lens = new StringBuffer();
-      StringBuffer names = new StringBuffer();
+      StringBuilder lens = new StringBuilder();
+      StringBuilder names = new StringBuilder();
       java.util.List dims = vs.getDimensions();
       for (int j=0; j<dims.size(); j++) {
         ucar.nc2.Dimension dim = (ucar.nc2.Dimension) dims.get(j);

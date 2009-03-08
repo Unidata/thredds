@@ -906,7 +906,7 @@ public class ForecastModelRunInventory {
    * Open a GridDataset and construct a ForecastModelRun.
    * The information is serialized into am XML file at ncfileLocation.fmrInv.xml, and used if it exists.
    *
-   * @param cache          use this cache (may be null)
+   * @param cache          use this cache to look for fmrInv.xml files (may be null)
    * @param ncfileLocation location of the grid dataset.
    * @param mode           one of OPEN_NORMAL, OPEN_FORCE_NEW, OPEN_XML_ONLY constants
    * @param isFile         if its a file: new File( ncfileLocation) makes sense, so we can check if its changed
@@ -914,16 +914,17 @@ public class ForecastModelRunInventory {
    * @throws IOException on io error
    */
   public static ForecastModelRunInventory open(ucar.nc2.util.DiskCache2 cache, String ncfileLocation, int mode, boolean isFile) throws IOException {
-    boolean force = (mode == OPEN_FORCE_NEW);
-    boolean xml_only = (mode == OPEN_XML_ONLY);
+    boolean force = (mode == OPEN_FORCE_NEW); // always write a new one
+    boolean xml_only = (mode == OPEN_XML_ONLY); // never write a new one
 
+    // do we already have a fmrInv file?
     String summaryFileLocation = ncfileLocation + ".fmrInv.xml";
     File summaryFile = null;
-    if (null != cache) {
-      summaryFile = cache.getCacheFile(summaryFileLocation);
-      summaryFileLocation = summaryFile.getPath();
-    } else {
-      try {
+    try {
+      if (null != cache) {
+        summaryFile = cache.getCacheFile(summaryFileLocation);
+        summaryFileLocation = summaryFile.getPath();
+      } else {
         summaryFile = new File(summaryFileLocation);
         if ( summaryFile.createNewFile()) {
           summaryFile.delete();
@@ -934,26 +935,19 @@ public class ForecastModelRunInventory {
          summaryFileLocation = null;
       }
     }
+    boolean haveOne = (summaryFile != null) && (summaryFile.exists());
 
-    if (!force && (summaryFile != null)) {
-      if (summaryFile.exists()) {
+    if (xml_only && !haveOne) return null;
 
-        if (isFile) { // see if its changed
-          File ncdFile = new File(ncfileLocation);
-          if (!ncdFile.exists())
-            throw new IllegalArgumentException("File must exist = " + ncfileLocation);
+    // try to use the existing one
+    if (!force && haveOne) {
 
-          if (xml_only || (summaryFile.lastModified() >= ncdFile.lastModified())) {
-            try {
-              return readXML(summaryFileLocation);
-            } catch (Exception ee) {
-              log.error("Failed to read FmrcInventory " + summaryFileLocation, ee);
-              // fall through to recreating it
-            }
-          }
+      if (isFile) { // see if its changed
+        File ncdFile = new File(ncfileLocation);
+        if (!ncdFile.exists())
+          throw new IllegalArgumentException("File must exist = " + ncfileLocation);
 
-        } else {  // not a file, just use it
-
+        if (xml_only || (summaryFile.lastModified() >= ncdFile.lastModified())) {
           try {
             return readXML(summaryFileLocation);
           } catch (Exception ee) {
@@ -961,9 +955,17 @@ public class ForecastModelRunInventory {
             // fall through to recreating it
           }
         }
-      }
+        // fall through to recreating it
 
-      if (xml_only) return null;
+      } else {  // not a file, just use it
+
+        try {
+          return readXML(summaryFileLocation);
+        } catch (Exception ee) {
+          log.error("Failed to read FmrcInventory " + summaryFileLocation, ee);
+          // fall through to recreating it
+        }
+      }
     }
 
     // otherwise, make it
