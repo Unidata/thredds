@@ -925,8 +925,11 @@ public class ForecastModelRunInventory {
     } else {
       try {
         summaryFile = new File(summaryFileLocation);
-        if (!summaryFile.canWrite())
+        if ( summaryFile.createNewFile()) {
+          summaryFile.delete();
+        } else {
           summaryFileLocation = null;
+        }
       } catch (Throwable t) {
          summaryFileLocation = null;
       }

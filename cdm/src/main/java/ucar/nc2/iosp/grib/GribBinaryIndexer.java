@@ -252,6 +252,11 @@ public final class GribBinaryIndexer {
       if (gbx.exists()) {
         // gbx older than grib, no need to check
         if (grib.lastModified() < gbx.lastModified()) {
+          File invFile = new File( args[ 0 ] +".fmrInv.xml");
+          // sometimes an index without inventory file
+          if( invFile.exists() )
+            return;
+          ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
           return;
         }
         System.out.println("IndexExtending " + grib.getName() + " " +
@@ -275,6 +280,17 @@ public final class GribBinaryIndexer {
 
   }
 
+  static public boolean test() throws IOException {
+    GribBinaryIndexer gi = new GribBinaryIndexer();
+    String[] args = new String[ 2 ];
+    args[ 0 ] = "C:/data/gefs/GFS_Global_1p0deg_Ensemble_20090303_0000.grib2";
+    args[ 1 ] = args[ 0 ] +".gbx";
+    File grib = new File( args[ 0 ]);
+    File gbx = new File( args[ 1 ]);
+    gi.grib2check( grib, gbx, args);
+    return true;
+  }
+
   /**
    * main.
    *
@@ -283,6 +299,9 @@ public final class GribBinaryIndexer {
    */
   // process command line switches
   static public void main(String[] args) throws IOException {
+    //if( test() )
+    //  return;
+    
     GribBinaryIndexer gi = new GribBinaryIndexer();
 
     boolean clear = false;
