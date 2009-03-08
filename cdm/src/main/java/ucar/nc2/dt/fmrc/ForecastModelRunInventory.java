@@ -926,14 +926,14 @@ public class ForecastModelRunInventory {
         summaryFileLocation = summaryFile.getPath();
       } else {
         summaryFile = new File(summaryFileLocation);
-        if ( summaryFile.createNewFile()) {
+        if (summaryFile.createNewFile()) {
           summaryFile.delete();
         } else {
-          summaryFileLocation = null;
+          summaryFile = null;
         }
-      } catch (Throwable t) {
-         summaryFileLocation = null;
       }
+    } catch (Throwable t) {
+      summaryFileLocation = null;
     }
     boolean haveOne = (summaryFile != null) && (summaryFile.exists());
 
