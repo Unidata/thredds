@@ -30,7 +30,6 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-// $Id: DqcServletRedirect.java 51 2006-07-12 17:13:13Z caron $
 
 package thredds.dqc.server;
 
@@ -79,6 +78,8 @@ public class DqcServletRedirect extends HttpServlet
     // Initialize logging.
     ServletUtil.initContext( this.getServletContext() );
 
+    log.info( "init(): start - " + UsageLog.setupNonRequestContext());
+
     // Get various paths and file names.
     this.rootPath = new File( ServletUtil.getRootPath( ) );
     this.dqcRootPath = new File( this.rootPath,  this.servletName);
@@ -108,7 +109,7 @@ public class DqcServletRedirect extends HttpServlet
       throw new ServletException( tmpMsg, ioe );
     }
 
-    log.debug( "init() done" );
+    log.debug( "init(): done - " + UsageLog.closingMessageNonRequestContext() );
   }
 
   /**
@@ -123,7 +124,7 @@ public class DqcServletRedirect extends HttpServlet
   public void doGet(HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException
   {
-    log.info( UsageLog.setupRequestContext( req ) );
+    log.info( "doGet(): " + UsageLog.setupRequestContext( req ) );
 
     // Get the request path and query information.
     String reqPath = req.getPathInfo();
@@ -151,7 +152,7 @@ public class DqcServletRedirect extends HttpServlet
   public void doPut( HttpServletRequest req, HttpServletResponse res )
           throws IOException, ServletException
   {
-    log.info( UsageLog.setupRequestContext( req ) );
+    log.info( "doPut(): " + UsageLog.setupRequestContext( req ) );
 
     doDispatch( req, res, false );
 
@@ -231,7 +232,7 @@ public class DqcServletRedirect extends HttpServlet
       String tmpMsg = "Null ServletContext for \"" + ( useTestContext ? this.testTargetContextPath : this.targetContextPath ) + "\".";
       log.warn( "doDispatch(): " + tmpMsg );
       res.sendError( HttpServletResponse.SC_NOT_FOUND, tmpMsg );
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, tmpMsg.length() ));
+      log.info( "doDispatch(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, tmpMsg.length() ));
       return;
     }
     RequestDispatcher dispatcher =
@@ -241,12 +242,12 @@ public class DqcServletRedirect extends HttpServlet
       String tmpMsg = "Null RequestDispatcher for \"" + targetURIPath + "\".";
       log.warn( "doDispatch(): " + tmpMsg );
       res.sendError( HttpServletResponse.SC_NOT_FOUND, tmpMsg );
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, tmpMsg.length() ));
+      log.info( "doDispatch(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, tmpMsg.length() ));
       return;
     }
 
     dispatcher.forward( req, res );
-    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ));
+    log.info( "doDispatch(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ));
 
     return;
   }
@@ -263,8 +264,8 @@ public class DqcServletRedirect extends HttpServlet
       if ( queryString == null )
       {
         log.warn( "handleGetRequestForRedirectTest(): request not understood <" + reqPath + ">." );
+        log.info( "handleGetRequestForRedirectTest(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, 0 ) );
         res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
-        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, 0 ));
       }
       else if ( queryString.equals( "301" ) )
         this.doRedirect301( req, res, true );
@@ -277,8 +278,8 @@ public class DqcServletRedirect extends HttpServlet
       else
       {
         log.warn( "handleGetRequestForRedirectTest(): request not understood <" + reqPath + " -- " + queryString + ">." );
+        log.info( "handleGetRequestForRedirectTest(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, 0 ) );
         res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
-        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, 0 ));
       }
     }
     else if ( reqPath.equals( testRedirectPath + "/" ) )
@@ -291,8 +292,8 @@ public class DqcServletRedirect extends HttpServlet
       else
       {
         log.warn( "handleGetRequestForRedirectTest(): request not understood <" + reqPath + " -- " + queryString + ">." );
+        log.info( "handleGetRequestForRedirectTest(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, 0 ) );
         res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
-        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, 0 ));
       }
     }
     else if ( reqPath.equals( testRedirectPath + "/301" ) && queryString == null )
@@ -306,8 +307,8 @@ public class DqcServletRedirect extends HttpServlet
     else
     {
       log.warn( "handleGetRequestForRedirectTest(): request not understood <" + reqPath + " -- " + queryString + ">." );
+      log.info( "handleGetRequestForRedirectTest(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, 0 ) );
       res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, 0 ));
     }
     return;
   }
@@ -338,7 +339,7 @@ public class DqcServletRedirect extends HttpServlet
     res.setContentType( "text/html" );
     res.setStatus( HttpServletResponse.SC_OK );
     out.print( htmlResp );
-    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, htmlResp.length() ));
+    log.info( "handleGetRequestForRedirectStopTest(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, htmlResp.length() ));
 
     return;
   }
@@ -395,7 +396,7 @@ public class DqcServletRedirect extends HttpServlet
     res.setContentType( "text/html" );
     out.print( htmlResp );
 
-    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_MOVED_PERMANENTLY, 0 ));
+    log.info( "doRedirect301(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_MOVED_PERMANENTLY, 0 ));
     return;
   }
 
@@ -455,7 +456,7 @@ public class DqcServletRedirect extends HttpServlet
     //res.setStatus( HttpServletResponse.SC_MOVED_TEMPORARILY );
     //res.addHeader( "Location", targetURIPath );
 
-    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_MOVED_TEMPORARILY, 0 ));
+    log.info( "doRedirect302(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_MOVED_TEMPORARILY, 0 ));
     return;
   }
 
@@ -495,7 +496,7 @@ public class DqcServletRedirect extends HttpServlet
     res.setContentType( "text/html" );
     res.setStatus( HttpServletResponse.SC_USE_PROXY );
     out.print( htmlResp );
-    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_USE_PROXY, 0 ));
+    log.info( "doRedirect305(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_USE_PROXY, 0 ));
     return;
   }
 
@@ -537,48 +538,3 @@ public class DqcServletRedirect extends HttpServlet
   }
 
 }
-/*
-* $Log: DqcServletRedirect.java,v $
-* Revision 1.10  2006/03/30 23:22:09  edavis
-* Refactor THREDDS servlet framework, especially CatalogRootHandler and ServletUtil.
-*
-* Revision 1.9  2006/01/20 20:42:04  caron
-* convert logging
-* use nj22 libs
-*
-* Revision 1.8  2005/10/11 19:44:29  caron
-* release 3.3
-*
-* Revision 1.7  2005/09/27 21:48:49  edavis
-* Clean up logging in DqcServletRedirect.
-*
-* Revision 1.6  2005/08/31 17:10:56  edavis
-* Update DqcServletRedirect for release as dqcServlet.war. It forwards
-* /dqcServlet/*, /dqcServlet/dqc/*, and /dqcServlet/dqcServlet/* requests
-* to /thredds/dqc/*. It also provides some URLs for testing various HTTP
-*  redirections (301, 302, 305) and forwarding (i.e.,
-* javax.servlet.RequestDispatcher.forward()) at /dqcServlet/redirect-test/.
-*
-* Revision 1.5  2005/08/22 19:39:12  edavis
-* Changes to switch /thredds/dqcServlet URLs to /thredds/dqc.
-* Expand testing for server installations: TestServerSiteFirstInstall
-* and TestServerSite. Fix problem with compound services breaking
-* the filtering of datasets.
-*
-* Revision 1.4  2005/07/13 22:48:07  edavis
-* Improve server logging, includes adding a final log message
-* containing the response time for each request.
-*
-* Revision 1.3  2005/04/12 20:52:36  edavis
-* Setup to handle logging of the response status for each
-* servlet request handled (logging similar to Apache web
-* server access_log).
-*
-* Revision 1.2  2005/04/05 22:37:03  edavis
-* Convert from Log4j to Jakarta Commons Logging.
-*
-* Revision 1.1  2004/08/30 23:09:49  edavis
-* Added DqcServletRedirect servlet to redirect /dqcServlet/dqc/* and /dqcServlet/dqcServlet/* to /thredds/dqcServlet/*.
-*
-*
-*/

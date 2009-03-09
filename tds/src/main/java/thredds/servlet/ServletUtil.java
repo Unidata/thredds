@@ -458,14 +458,14 @@ public class ServletUtil
     log.debug("returnFile(): returning file <" + filename + ">.");
     // No file, nothing to view
     if (filename == null) {
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
+      log.info( "returnFile(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
       return;
     }
 
     // dontallow ..
     if (filename.indexOf("..") != -1) {
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, 0));
+      log.info( "returnFile(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, 0));
       res.sendError(HttpServletResponse.SC_FORBIDDEN);
       return;
     }
@@ -473,7 +473,7 @@ public class ServletUtil
     // dont allow access to WEB-INF or META-INF
     String upper = filename.toUpperCase();
     if (upper.indexOf("WEB-INF") != -1 || upper.indexOf("META-INF") != -1) {
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, 0));
+      log.info( "returnFile(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, 0));
       res.sendError(HttpServletResponse.SC_FORBIDDEN);
       return;
     }
@@ -499,21 +499,21 @@ public class ServletUtil
       throws IOException {
     // No file, nothing to view
     if (file == null) {
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
+      log.info( "returnFile(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
       return;
     }
 
     // check that it exists
     if (!file.exists()) {
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
+      log.info( "returnFile(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
       return;
     }
 
     // not a directory
     if (!file.isFile()) {
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
+      log.info( "returnFile(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
       res.sendError(HttpServletResponse.SC_BAD_REQUEST);
       return;
     }
@@ -574,7 +574,7 @@ public class ServletUtil
     res.addHeader("Accept-Ranges", "bytes");
 
     if (req.getMethod().equals("HEAD")) {
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, 0));
+      log.info( "returnFile(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, 0));
       return;
     }
 
@@ -589,7 +589,7 @@ public class ServletUtil
         try {
           craf = fileCacheRaf.acquire(filename);
           IO.copyRafB(craf.getRaf(), startPos, contentLength, res.getOutputStream(), new byte[60000]);
-          log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_PARTIAL_CONTENT, contentLength));
+          log.info( "returnFile(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_PARTIAL_CONTENT, contentLength));
           return;
         } finally {
           if (craf != null) fileCacheRaf.release(craf);
@@ -602,30 +602,30 @@ public class ServletUtil
       res.flushBuffer();
       out.close();
       if (debugRequest) log.debug("returnFile(): returnFile ok = " + filename);
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, contentLength));
+      log.info( "returnFile(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, contentLength));
     }
     // @todo Split up this exception handling: those from file access vs those from dealing with response
     //       File access: catch and res.sendError()
     //       response: don't catch (let bubble up out of doGet() etc)
     catch (FileNotFoundException e) {
       log.error("returnFile(): FileNotFoundException= " + filename);
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
+      log.info( "returnFile(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
     catch (java.net.SocketException e) {
       log.info("returnFile(): SocketException sending file: " + filename + " " + e.getMessage());
-      log.info( UsageLog.closingMessageForRequestContext(1000, 0)); // dunno what error code to log
+      log.info( "returnFile(): " + UsageLog.closingMessageForRequestContext(1000, 0)); // dunno what error code to log
     }
     catch (IOException e) {
       String eName = e.getClass().getName(); // dont want compile time dependency on ClientAbortException
       if (eName.equals("org.apache.catalina.connector.ClientAbortException")) {
         log.info("returnFile(): ClientAbortException while sending file: " + filename + " " + e.getMessage());
-        log.info( UsageLog.closingMessageForRequestContext(1000, 0)); // dunno what error code to log
+        log.info( "returnFile(): " + UsageLog.closingMessageForRequestContext(1000, 0)); // dunno what error code to log
         return;
       }
 
       log.error("returnFile(): IOException (" + e.getClass().getName() + ") sending file ", e);
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
+      log.info( "returnFile(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND, "Problem sending file: " + e.getMessage());
     }
   }
