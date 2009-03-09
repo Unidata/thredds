@@ -75,12 +75,12 @@
     <appender-ref ref="cacheLog"/>
   </logger>
 
-  <logger name="thredds.cataloggen.config" additivity="false">
+  <logger name="thredds.server.cataloggen" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="catalogGen"/>
   </logger>
 
-  <logger name="thredds.cataloggen.servlet" additivity="false">
+  <logger name="thredds.cataloggen.config" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="catalogGen"/>
   </logger>

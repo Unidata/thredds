@@ -33,6 +33,7 @@
 package thredds.server.cataloggen;
 
 import thredds.cataloggen.CatalogGen;
+import thredds.servlet.UsageLog;
 
 import java.io.File;
 import java.io.IOException;
@@ -74,7 +75,9 @@ public class CatGenTaskRunner implements Runnable
    */
   public void run()
   {
-    log.info( "run(): generating catalog <" + this.resultFile.toString() + "> from config doc, " + this.taskConfig.getConfigDocName() );
+    log.info( "run(): generating catalog [" + this.resultFile.toString()
+              + "] from config doc [" + this.taskConfig.getConfigDocName() + "] - "
+              + UsageLog.setupNonRequestContext() );
     URL configFileURL = null;
     try
     {
@@ -82,7 +85,8 @@ public class CatGenTaskRunner implements Runnable
     }
     catch ( MalformedURLException e )
     {
-      log.error( "runTask(): Config file path <" + this.configFile + "> gives malformed URL: " + e.getMessage());
+      log.error( "run(): Config file path [" + this.configFile + "] gives malformed URL: " + e.getMessage());
+      log.info( "run(): done -" + UsageLog.closingMessageNonRequestContext() );
       return;
     }
     CatalogGen catGen = new CatalogGen( configFileURL );
@@ -106,6 +110,7 @@ public class CatGenTaskRunner implements Runnable
       catch ( IOException e )
       {
         log.error( "run(): couldn't write catalog: " + e.getMessage() );
+        log.info( "run(): done -" + UsageLog.closingMessageNonRequestContext() );
         return;
       }
 
@@ -117,7 +122,7 @@ public class CatGenTaskRunner implements Runnable
       log.error( "run(): Tried running CatalogGen with invalid config doc, " + taskConfig.getConfigDocName() +
                     "\n" + messages.toString() );
     }
-
+    log.info( "run(): done -" + UsageLog.closingMessageNonRequestContext() );
     return;
   }
 }
