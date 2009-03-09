@@ -270,6 +270,13 @@ public class HtmlWriter {
         .toString();
   }
 
+  public String getOldStyleHeader()
+  {
+    StringBuilder sb = new StringBuilder();
+    appendOldStyleHeader( sb );
+    return sb.toString();
+  }
+
   public void appendOldStyleHeader( StringBuilder sb )
   {
     appendOldStyleHeader( sb,
@@ -311,15 +318,6 @@ public class HtmlWriter {
 
     sb.append( "</td></tr>\n" )
             .append( "</table>\n" );
-  }
-
-  public String getTableHeader( boolean includeInstall,
-                                boolean includeWebapp,
-                                boolean includeLogos)
-  {
-    StringBuilder sb = new StringBuilder();
-    this.appendTableHeader( sb, includeInstall, includeWebapp, includeLogos );
-    return sb.toString();
   }
 
   public void appendTableHeader( StringBuilder stringBuilder,

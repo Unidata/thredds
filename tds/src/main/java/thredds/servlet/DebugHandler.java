@@ -63,7 +63,7 @@ public class DebugHandler {
     pw.println(HtmlWriter.getInstance().getTdsPageCssLink());
     pw.println("</head>");
     pw.println("<body>");
-    pw.println(HtmlWriter.getInstance().getTableHeader( true, true, true ));
+    pw.println(HtmlWriter.getInstance().getOldStyleHeader());
     pw.println("<br><a href='content/logs/'>Show TDS Logs</a>");
     pw.println("<br><a href='logs/'>Show Tomcat Logs</a>");
     pw.println("<h2>Debug Actions</h2>");
