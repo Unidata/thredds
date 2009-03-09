@@ -391,16 +391,12 @@ public class GridVariable {
           if (lookup instanceof Grib2GridTableLookup) {
             v.addAttribute(new Attribute("GRIB_product_definition_type", g2lookup.getProductDefinitionName(firstRecord)));
             v.addAttribute(new Attribute("GRIB_level_type", new Integer(firstRecord.getLevelType1())));
-            if( firstRecord.getLevelType2() != 255)
-               v.addAttribute( new Attribute("GRIB2_level_type2", new Integer(firstRecord.getLevelType2())));
+            //if( firstRecord.getLevelType2() != 255)
+            //   v.addAttribute( new Attribute("GRIB2_level_type2", new Integer(firstRecord.getLevelType2())));
           } else {
             v.addAttribute(new Attribute("GRIB_product_definition_type", g1lookup.getProductDefinitionName(firstRecord)));
             v.addAttribute(new Attribute("GRIB_level_type", new Integer(firstRecord.getLevelType1())));
           }
-
-          String coordSysName = getVertIsUsed() ? getVertName() :
-            (hcs.isLatLon() ? "latLonCoordSys" : "projectionCoordSys");
-          v.addAttribute( new Attribute(_Coordinate.Systems, coordSysName));
          }
 
 
