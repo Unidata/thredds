@@ -36,7 +36,7 @@ package thredds.examples;
 import thredds.servlet.*;
 import thredds.catalog.InvDatasetScan;
 import thredds.server.config.TdsContext;
-import thredds.server.config.TdsConfigHtml;
+import thredds.server.config.HtmlConfig;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -141,12 +141,12 @@ public class ExampleThreddsServlet extends HttpServlet
     dataRootHandler.makeDebugActions();
     DatasetHandler.makeDebugActions();
 
-    TdsConfigHtml tdsHtmlConfig = new TdsConfigHtml();
-    tdsHtmlConfig.setWebappUrl( "http://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html" );
-    tdsHtmlConfig.setWebappDocsUrl( "http://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html" );
-    tdsHtmlConfig.setWebappLogoUrl( "thredds.jpg" );
-    tdsHtmlConfig.setWebappLogoAlt( "THREDDS" );
-    tdsHtmlConfig.setInstallUrl( "catalog.html" );
+    HtmlConfig htmlConfig = new HtmlConfig();
+    htmlConfig.setWebappUrl( "http://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html" );
+    htmlConfig.setWebappDocsUrl( "http://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html" );
+    htmlConfig.setWebappLogoUrl( "thredds.jpg" );
+    htmlConfig.setWebappLogoAlt( "THREDDS" );
+    htmlConfig.setInstallUrl( "catalog.html" );
 
     TdsContext tdsContext = new TdsContext();
     tdsContext.setWebappVersion( "0.1" );
@@ -157,7 +157,7 @@ public class ExampleThreddsServlet extends HttpServlet
     tdsContext.setIddContentPath( "WEB-INF/altContent/idd" );
     tdsContext.setMotherlodeContentPath( "WEB-INF/altContent/motherlode" );
     tdsContext.setTdsConfigFileName( "threddsConfig.xml" );
-    tdsContext.setTdsConfigHtml( tdsHtmlConfig );
+    tdsContext.setTdsConfigHtml( htmlConfig );
     
     HtmlWriter.init( tdsContext );
 

@@ -96,7 +96,7 @@ public class TdsContext
   private RequestDispatcher jspRequestDispatcher;
 
   private String tdsConfigFileName;
-  private TdsConfigHtml tdsConfigHtml;
+  private HtmlConfig htmlConfig;
 
   public TdsContext() {}
 
@@ -114,8 +114,8 @@ public class TdsContext
   public void setTdsConfigFileName( String filename ) { this.tdsConfigFileName = filename; }
   public String getTdsConfigFileName() { return this.tdsConfigFileName; }
 
-  public void setTdsConfigHtml( TdsConfigHtml tdsConfigHtml ) { this.tdsConfigHtml = tdsConfigHtml; }
-  public TdsConfigHtml getTdsConfigHtml() { return this.tdsConfigHtml; }
+  public void setTdsConfigHtml( HtmlConfig htmlConfig ) { this.htmlConfig = htmlConfig; }
+  public HtmlConfig getTdsConfigHtml() { return this.htmlConfig; }
 
 //  /**
 //   * Constructor.
@@ -292,8 +292,8 @@ public class TdsContext
     jspRequestDispatcher = servletContext.getNamedDispatcher( "jsp" );
     defaultRequestDispatcher = servletContext.getNamedDispatcher( "default" );
 
-    if ( this.tdsConfigHtml != null )
-      this.tdsConfigHtml.init( this.getWebappName(),
+    if ( this.htmlConfig != null )
+      this.htmlConfig.init( this.getWebappName(),
                                this.getWebappVersion(),
                                this.getWebappVersionBrief(),
                                this.getWebappVersionBuildDate(),

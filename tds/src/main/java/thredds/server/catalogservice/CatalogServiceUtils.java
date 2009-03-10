@@ -43,7 +43,7 @@ import javax.servlet.http.HttpServletResponse;
 import thredds.catalog.InvCatalog;
 import thredds.catalog.InvDatasetImpl;
 import thredds.servlet.UsageLog;
-import thredds.server.config.TdsConfigHtml;
+import thredds.server.config.HtmlConfig;
 
 import java.util.List;
 import java.util.Map;
@@ -93,7 +93,7 @@ public class CatalogServiceUtils
     return bindingResult;
   }
 
-  public static ModelAndView constructModelForCatalogView( InvCatalog cat, TdsConfigHtml htmlConfig )
+  public static ModelAndView constructModelForCatalogView( InvCatalog cat, HtmlConfig htmlConfig )
   {
     // Hand to catalog view.
     String catName = cat.getName();
@@ -122,7 +122,7 @@ public class CatalogServiceUtils
 
   public static ModelAndView constructValidationMessageModelAndView( URI uri,
                                                                      String validationMessage,
-                                                                     TdsConfigHtml htmlConfig )
+                                                                     HtmlConfig htmlConfig )
   {
     Map<String, Object> model = new HashMap<String, Object>();
     model.put( "catalogUrl", uri );
@@ -136,7 +136,7 @@ public class CatalogServiceUtils
 
   public static ModelAndView constructValidationErrorModelAndView( URI uri,
                                                                    String validationMessage,
-                                                                   TdsConfigHtml htmlConfig )
+                                                                   HtmlConfig htmlConfig )
   {
     Map<String, Object> model = new HashMap<String, Object>();
     model.put( "catalogUrl", uri );

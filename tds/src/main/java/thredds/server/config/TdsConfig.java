@@ -46,20 +46,20 @@ public class TdsConfig
   private static org.slf4j.Logger log =
           org.slf4j.LoggerFactory.getLogger( TdsConfig.class );
 
-  private TdsConfigHtml tdsConfigHtml;
+  private HtmlConfig htmlConfig;
   private TdsCatConfig tdsCatConfig;
   private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
   private final Lock r = rwl.readLock();
   private final Lock w = rwl.writeLock();
 
-  public void setTdsConfigHtml( TdsConfigHtml tdsConfigHtml)
+  public void setTdsConfigHtml( HtmlConfig htmlConfig )
   {
-    this.tdsConfigHtml = tdsConfigHtml;
+    this.htmlConfig = htmlConfig;
   }
 
-  public TdsConfigHtml getTdsConfigHtml()
+  public HtmlConfig getTdsConfigHtml()
   {
-    return this.tdsConfigHtml;
+    return this.htmlConfig;
   }
 
   public void setTdsCatConfig( TdsCatConfig tdsCatConfig )

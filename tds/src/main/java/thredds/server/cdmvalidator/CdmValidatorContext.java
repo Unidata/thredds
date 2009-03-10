@@ -44,7 +44,7 @@ import thredds.util.filesource.*;
 import thredds.servlet.ThreddsConfig;
 import thredds.servlet.ServletUtil;
 import thredds.server.config.TdsContext;
-import thredds.server.config.TdsConfigHtml;
+import thredds.server.config.HtmlConfig;
 
 /**
  * _more_
@@ -79,7 +79,7 @@ public class CdmValidatorContext
 
   private String configFileName;
 
-  private TdsConfigHtml htmlConfig;
+  private HtmlConfig htmlConfig;
 
   public CdmValidatorContext() {}
 
@@ -94,8 +94,8 @@ public class CdmValidatorContext
   public void setConfigFileName( String filename ) { this.configFileName = filename; }
   public String getConfigFileName() { return this.configFileName; }
 
-  public void setHtmlConfig( TdsConfigHtml htmlConfig ) { this.htmlConfig = htmlConfig; }
-  public TdsConfigHtml getHtmlConfig() { return this.htmlConfig; }
+  public void setHtmlConfig( HtmlConfig htmlConfig ) { this.htmlConfig = htmlConfig; }
+  public HtmlConfig getHtmlConfig() { return this.htmlConfig; }
 
   public void init( ServletContext servletContext )
   {

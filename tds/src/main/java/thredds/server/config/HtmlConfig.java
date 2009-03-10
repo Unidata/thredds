@@ -44,10 +44,10 @@ import java.util.Map;
  * @author edavis
  * @since 4.0
  */
-public class TdsConfigHtml
+public class HtmlConfig
 {
 //  private static org.slf4j.Logger log =
-//          org.slf4j.LoggerFactory.getLogger( TdsConfigHtml.class );
+//          org.slf4j.LoggerFactory.getLogger( HtmlConfig.class );
 
   private String webappName;
   private String webappVersion;

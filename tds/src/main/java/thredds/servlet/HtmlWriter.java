@@ -34,7 +34,7 @@ package thredds.servlet;
 
 import thredds.catalog.*;
 import thredds.server.config.TdsContext;
-import thredds.server.config.TdsConfigHtml;
+import thredds.server.config.HtmlConfig;
 import ucar.nc2.units.DateType;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.Format;
@@ -69,7 +69,7 @@ public class HtmlWriter {
   private static HtmlWriter singleton;
 
   private TdsContext tdsContext;
-  private TdsConfigHtml tdsHtmlConfig;
+  private HtmlConfig htmlConfig;
 
   private String contextPath;
   private String contextName;
@@ -172,24 +172,24 @@ public class HtmlWriter {
   private HtmlWriter( TdsContext tdsContext )
   {
     if ( tdsContext == null )
-      throw new IllegalArgumentException( "Null value not allowed for TdsContext or TdsConfigHtml.");
+      throw new IllegalArgumentException( "Null value not allowed for TdsContext or HtmlConfig.");
 
     this.tdsContext = tdsContext;
-    this.tdsHtmlConfig = this.tdsContext.getTdsConfigHtml();
+    this.htmlConfig = this.tdsContext.getTdsConfigHtml();
 
     this.contextPath = this.tdsContext.getContextPath();
     this.contextName = this.tdsContext.getWebappName();
     this.contextVersion = this.tdsContext.getWebappVersion();
 
-    this.docsPath = this.tdsHtmlConfig.getWebappDocsUrl();
-    this.tdsPageCssPath = this.tdsHtmlConfig.getPageCssUrl();
-    this.tdsCatalogCssPath = this.tdsHtmlConfig.getCatalogCssUrl();
-    this.contextLogoPath = this.tdsHtmlConfig.getWebappLogoUrl();
-    this.contextLogoAlt = this.tdsHtmlConfig.getWebappLogoAlt();
-    this.instituteLogoPath = this.tdsHtmlConfig.getHostInstLogoUrl();
-    this.instituteLogoAlt = this.tdsHtmlConfig.getHostInstLogoAlt();
-    this.folderIconPath = this.tdsHtmlConfig.getFolderIconUrl();
-    this.folderIconAlt = this.tdsHtmlConfig.getFolderIconAlt();
+    this.docsPath = this.htmlConfig.getWebappDocsUrl();
+    this.tdsPageCssPath = this.htmlConfig.getPageCssUrl();
+    this.tdsCatalogCssPath = this.htmlConfig.getCatalogCssUrl();
+    this.contextLogoPath = this.htmlConfig.getWebappLogoUrl();
+    this.contextLogoAlt = this.htmlConfig.getWebappLogoAlt();
+    this.instituteLogoPath = this.htmlConfig.getHostInstLogoUrl();
+    this.instituteLogoAlt = this.htmlConfig.getHostInstLogoAlt();
+    this.folderIconPath = this.htmlConfig.getFolderIconUrl();
+    this.folderIconAlt = this.htmlConfig.getFolderIconAlt();
   }
 
   public String getContextPath() {
@@ -280,10 +280,10 @@ public class HtmlWriter {
   public void appendOldStyleHeader( StringBuilder sb )
   {
     appendOldStyleHeader( sb,
-                          this.tdsHtmlConfig.getWebappName(), this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getWebappUrl() ),
-                          this.tdsHtmlConfig.getInstallLogoAlt(), this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getInstallLogoUrl() ),
-                          this.tdsHtmlConfig.getInstallName(), this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getInstallUrl() ),
-                          this.tdsHtmlConfig.getHostInstName(), this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getHostInstUrl() ) );
+                          this.htmlConfig.getWebappName(), this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getWebappUrl() ),
+                          this.htmlConfig.getInstallLogoAlt(), this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getInstallLogoUrl() ),
+                          this.htmlConfig.getInstallName(), this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getInstallUrl() ),
+                          this.htmlConfig.getHostInstName(), this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getHostInstUrl() ) );
   }
 
   public void appendOldStyleHeader( StringBuilder sb,
@@ -351,12 +351,12 @@ public class HtmlWriter {
   private void appendWebappInfo( StringBuilder stringBuilder, boolean includeLogo )
   {
     // Include webapp info
-    String webappUrl = this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getWebappUrl() );
-    String webappLogoUrl = this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getWebappLogoUrl() );
+    String webappUrl = this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getWebappUrl() );
+    String webappLogoUrl = this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getWebappLogoUrl() );
     if ( includeLogo && webappLogoUrl != null )
       stringBuilder
               .append( "<img src='" ).append( webappLogoUrl )
-              .append( "' alt='" ).append( this.tdsHtmlConfig.getWebappLogoAlt() )
+              .append( "' alt='" ).append( this.htmlConfig.getWebappLogoAlt() )
               .append( "'> " );
     stringBuilder
             .append( "<a href='" ).append( webappUrl ).append( "'>" )
@@ -367,18 +367,18 @@ public class HtmlWriter {
   private void appendHostInstInfo( StringBuilder stringBuilder, boolean includeLogo )
   {
     // Include host institution information
-    if ( this.tdsHtmlConfig.getHostInstName() != null )
+    if ( this.htmlConfig.getHostInstName() != null )
     {
-      String hostInstUrl = this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getHostInstUrl() );
-      String hostInstLogoUrl = this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getHostInstLogoUrl() );
+      String hostInstUrl = this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getHostInstUrl() );
+      String hostInstLogoUrl = this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getHostInstLogoUrl() );
       if ( includeLogo && hostInstLogoUrl != null )
         stringBuilder
                 .append( "<img src='" ).append( hostInstLogoUrl )
-                .append( "' alt='" ).append( this.tdsHtmlConfig.getHostInstLogoAlt() )
+                .append( "' alt='" ).append( this.htmlConfig.getHostInstLogoAlt() )
                 .append( "'> " );
       if ( hostInstUrl != null )
         stringBuilder.append( "<a href='" ).append( hostInstUrl ).append( "'>" );
-      stringBuilder.append( this.tdsHtmlConfig.getHostInstName() );
+      stringBuilder.append( this.htmlConfig.getHostInstName() );
       if ( hostInstUrl != null )
         stringBuilder.append( "</a>" );
     }
@@ -389,18 +389,18 @@ public class HtmlWriter {
   private void appendInstallationInfo( StringBuilder stringBuilder, boolean includeLogo )
   {
     // Include information on this intsallation.
-    if ( this.tdsHtmlConfig.getInstallName() != null )
+    if ( this.htmlConfig.getInstallName() != null )
     {
-      String installUrl = this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getInstallUrl() );
-      String installLogoUrl = this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getInstallLogoUrl() );
+      String installUrl = this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getInstallUrl() );
+      String installLogoUrl = this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getInstallLogoUrl() );
       if ( includeLogo && installLogoUrl != null )
         stringBuilder
                 .append( "<img src='" ).append( installLogoUrl )
-                .append( "' alt='" ).append( this.tdsHtmlConfig.getInstallLogoAlt() )
+                .append( "' alt='" ).append( this.htmlConfig.getInstallLogoAlt() )
                 .append( "'> " );
       if ( installUrl != null )
         stringBuilder.append( "<a href='" ).append( installUrl ).append( "'>" );
-      stringBuilder.append( this.tdsHtmlConfig.getInstallName() );
+      stringBuilder.append( this.htmlConfig.getInstallName() );
       if ( installUrl != null )
         stringBuilder.append( "</a>" );
     }
@@ -414,22 +414,22 @@ public class HtmlWriter {
   private void appendSimpleFooter( StringBuilder sb )
   {
     sb.append( "<h3>" );
-    if ( this.tdsHtmlConfig.getInstallName() != null )
+    if ( this.htmlConfig.getInstallName() != null )
     {
-      String installUrl = this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getInstallUrl() );
+      String installUrl = this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getInstallUrl() );
       if ( installUrl != null )
         sb.append( "<a href='" ).append( installUrl ).append( "'>" );
-      sb.append( this.tdsHtmlConfig.getInstallName() );
+      sb.append( this.htmlConfig.getInstallName() );
       if ( installUrl != null )
         sb.append( "</a>" );
     }
-    if ( this.tdsHtmlConfig.getHostInstName() != null )
+    if ( this.htmlConfig.getHostInstName() != null )
     {
       sb.append( " at " );
-      String hostInstUrl = this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getHostInstUrl() );
+      String hostInstUrl = this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getHostInstUrl() );
       if ( hostInstUrl != null )
         sb.append( "<a href='" ).append( hostInstUrl ).append( "'>" );
-      sb.append( this.tdsHtmlConfig.getHostInstName() );
+      sb.append( this.htmlConfig.getHostInstName() );
       if ( hostInstUrl != null )
         sb.append( "</a>" );
       sb.append( "<br>\n" );
@@ -439,7 +439,7 @@ public class HtmlWriter {
     if ( this.tdsContext.getWebappVersionBuildDate() != null )
       sb.append( " - " ).append( this.tdsContext.getWebappVersionBuildDate() );
     sb.append( "] <a href='" )
-            .append( this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getWebappDocsUrl() ) )
+            .append( this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getWebappDocsUrl() ) )
             .append( "'> Documentation</a>" );
     sb.append( "</h3>\n" );
   }
@@ -452,7 +452,7 @@ public class HtmlWriter {
     if ( this.tdsContext.getWebappVersionBuildDate() != null )
       sb.append( " - " ).append( this.tdsContext.getWebappVersionBuildDate() );
     sb.append( "] <a href='" )
-            .append( this.tdsHtmlConfig.prepareUrlStringForHtml( this.tdsHtmlConfig.getWebappDocsUrl() ) )
+            .append( this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getWebappDocsUrl() ) )
             .append( "'> Documentation</a>" );
     sb.append( "</h3>\n" );
   }

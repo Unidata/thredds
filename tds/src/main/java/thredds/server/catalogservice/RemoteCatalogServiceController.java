@@ -44,7 +44,7 @@ import thredds.servlet.HtmlWriter;
 import thredds.servlet.ThreddsConfig;
 import thredds.servlet.UsageLog;
 import thredds.server.config.TdsContext;
-import thredds.server.config.TdsConfigHtml;
+import thredds.server.config.HtmlConfig;
 import thredds.catalog.*;
 
 import java.util.List;
@@ -110,13 +110,13 @@ public class RemoteCatalogServiceController extends AbstractController
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
   private TdsContext tdsContext;
-  private TdsConfigHtml tdsHtmlConfig;
+  private HtmlConfig htmlConfig;
 
   public void setTdsContext( TdsContext tdsContext )
   {
     this.tdsContext = tdsContext;
     if ( this.tdsContext != null )
-      this.tdsHtmlConfig = this.tdsContext.getTdsConfigHtml();
+      this.htmlConfig = this.tdsContext.getTdsConfigHtml();
   }
 
   protected ModelAndView handleRequestInternal( HttpServletRequest request,
@@ -141,7 +141,7 @@ public class RemoteCatalogServiceController extends AbstractController
     {
       Map<String, Object> model = new HashMap<String, Object>();
 
-      tdsHtmlConfig.addHtmlConfigInfoToModel( model );
+      htmlConfig.addHtmlConfigInfoToModel( model );
 
       log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
       return new ModelAndView( "/thredds/server/catalogservice/validationForm", model );
@@ -203,7 +203,7 @@ public class RemoteCatalogServiceController extends AbstractController
     {
       // ToDo LOOK - This "Validate" header was in CatalogServicesServlet so added here. Do we need it?
       response.setHeader( "Validate", "FAIL" );
-      return CatalogServiceUtils.constructValidationErrorModelAndView( uri, validateMess.toString(), this.tdsHtmlConfig );
+      return CatalogServiceUtils.constructValidationErrorModelAndView( uri, validateMess.toString(), this.htmlConfig );
     }
 
     // ToDo LOOK - This "Validate" header was in CatalogServicesServlet so added here. Do we need it?
@@ -244,7 +244,7 @@ public class RemoteCatalogServiceController extends AbstractController
     }
     else if ( catalogServiceRequest.getCommand().equals( Command.VALIDATE ) )
     {
-      return CatalogServiceUtils.constructValidationMessageModelAndView( uri, validateMess.toString(), this.tdsHtmlConfig );
+      return CatalogServiceUtils.constructValidationMessageModelAndView( uri, validateMess.toString(), this.htmlConfig );
     }
     else
     {
