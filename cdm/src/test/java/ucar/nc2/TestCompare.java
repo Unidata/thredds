@@ -51,6 +51,7 @@ public class TestCompare {
   static boolean showCompare = false;
   static boolean showEach = false;
   static boolean compareData = false;
+  static boolean skipLocation = true;
 
    static public void compareFiles(NetcdfFile org, NetcdfFile copy) {
      compareFiles( org,  copy, false, false, false);
@@ -173,9 +174,16 @@ public class TestCompare {
   }
 
   static public void checkEach(Object want1, List list1, List list2, List result) {
+    String status = null;
+    if( want1 instanceof Attribute ) {
+      Attribute a = (Attribute)want1;
+      status = "Checking "+ a.getName() +" "+ a.getStringValue();
+      if ( skipLocation && a.getName().contains( "location"))
+      return;
+    }
     int index2 = list2.indexOf( want1);
-    if (index2 < 0)
-      System.out.println(); // grab in debugger
+    if (index2 < 0) 
+      System.out.println( status ); // grab in debugger
 
     assert (index2 >= 0) : want1.getClass().getName() +" "+want1 + " not in list 2";
     Object want2 = list2.get( index2);

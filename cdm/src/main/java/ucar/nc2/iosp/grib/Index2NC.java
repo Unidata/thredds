@@ -171,8 +171,9 @@ public class Index2NC  {
     ncfile.addAttribute(null, new Attribute("creator_name", creator));
     ncfile.addAttribute(null, new Attribute("file_format", "GRIB-"+version));
     ncfile.addAttribute(null, new Attribute("location", ncfile.getLocation()));
-    ncfile.addAttribute(null, new Attribute("history", "Direct read of GRIB into NetCDF-Java 2.2 API"));
-
+    //ncfile.addAttribute(null, new Attribute("history", "Direct read of GRIB into NetCDF-Java 2.2 API"));
+    ncfile.addAttribute(null, new Attribute(
+            "history", "Direct read of GRIB-" + version + " into NetCDF-Java 4.0 API"));
     ncfile.addAttribute(null, new Attribute(_Coordinate.ModelRunDate, formatter.toDateTimeStringISO(lookup.getFirstBaseTime())));
 
     if (fmrcCoordSys != null)

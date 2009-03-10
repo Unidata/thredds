@@ -488,9 +488,12 @@ public class GridHorizCoordSys {
     java.util.Set keys = gds.getKeys();
     ArrayList<String> keyList = new ArrayList<String>(keys);
     Collections.sort(keyList);
+    String pre = (lookup.getGridType().startsWith( "GRIB")) ? "GRIB" : "GDS";
+
     for (String key : keyList) {
       String name =
-          AbstractIOServiceProvider.createValidNetcdfObjectName("GDS_param_" + key);
+          AbstractIOServiceProvider.createValidNetcdfObjectName(pre +"_param_" + key);
+          //AbstractIOServiceProvider.createValidNetcdfObjectName("GDS_param_" + key);
 
       String vals = gds.getParam(key);
       try {

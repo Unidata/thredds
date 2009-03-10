@@ -603,8 +603,9 @@ public class GridVariable {
      */
     private String makeLongName(GridRecord gr, GridTableLookup lookup) {
         GridParameter param = lookup.getParameter(gr);
-        //String        levelName = GridIndexToNC.makeLevelName(gr, lookup);
-        String levelName = lookup.getLevelDescription(gr);
+        String        levelName = GridIndexToNC.makeLevelName(gr, lookup);
+        //String levelName = lookup.getLevelDescription(gr);
+        //String levelName = lookup.getLevelName( gr );
         return (levelName.length() == 0)
                ? param.getDescription()
                : param.getDescription() + " @ " + levelName;

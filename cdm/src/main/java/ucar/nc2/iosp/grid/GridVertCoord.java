@@ -296,10 +296,7 @@ public class GridVertCoord implements Comparable {
         v.setDataType(DataType.DOUBLE);
 
         String desc = lookup.getLevelDescription(typicalRecord);
-        // TODO: figure this out
-        //boolean isGrib1 = lookup instanceof Grib1Lookup;
-        boolean isGrib1 = true;
-        if ( !isGrib1 && usesBounds) {
+        if ( lookup.getGridType().equals( "GRIB2") && usesBounds) {
             desc = "Layer between " + desc;
         }
 
@@ -322,10 +319,14 @@ public class GridVertCoord implements Comparable {
                 axisType = AxisType.GeoZ;
             }
 
-            v.addAttribute(
-                new Attribute(
-                    "level_type",
-                    Integer.toString(typicalRecord.getLevelType1())));
+            if( lookup.getGridType().startsWith( "GRIB")) {
+              v.addAttribute(new Attribute("GRIB_level_type",
+                Integer.toString(typicalRecord.getLevelType1())));
+            } else {
+              v.addAttribute(new Attribute("level_type",
+                Integer.toString(typicalRecord.getLevelType1())));
+            }
+
             v.addAttribute(new Attribute(_Coordinate.AxisType,
                                          axisType.toString()));
         }
