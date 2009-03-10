@@ -44,6 +44,7 @@ import thredds.util.filesource.*;
 import thredds.servlet.ThreddsConfig;
 import thredds.servlet.ServletUtil;
 import thredds.server.config.TdsContext;
+import thredds.server.config.TdsConfigHtml;
 
 /**
  * _more_
@@ -77,7 +78,8 @@ public class CdmValidatorContext
   private RequestDispatcher jspRequestDispatcher;
 
   private String configFileName;
-  //private HtmlConfig htmlConfig;
+
+  private TdsConfigHtml htmlConfig;
 
   public CdmValidatorContext() {}
 
@@ -92,8 +94,8 @@ public class CdmValidatorContext
   public void setConfigFileName( String filename ) { this.configFileName = filename; }
   public String getConfigFileName() { return this.configFileName; }
 
-//  public void setHtmlConfig( HtmlConfig htmlConfig ) { this.configHtml = tdsConfigHtml; }
-//  public HtmlConfig getHtmlConfig() { return this.configHtml; }
+  public void setHtmlConfig( TdsConfigHtml htmlConfig ) { this.htmlConfig = htmlConfig; }
+  public TdsConfigHtml getHtmlConfig() { return this.htmlConfig; }
 
   public void init( ServletContext servletContext )
   {
@@ -195,8 +197,8 @@ public class CdmValidatorContext
     ServletUtil.setContentPath( contentDirSource.getRootDirectoryPath());
 
     // read in persistent user-defined params from threddsConfig.xml
-    String tdsConfigFilename = configFile != null ? configFile.getPath() : "";
-    ThreddsConfig.init( servletContext, tdsConfigFilename, log );
+    String configFilename = configFile != null ? configFile.getPath() : "";
+    ThreddsConfig.init( servletContext, configFilename, log );
 
     File publicContentDirectory = new File( this.contentDirectory, "public" );
     DescendantFileSource publicContentDirSource = new BasicDescendantFileSource( publicContentDirectory );
@@ -211,6 +213,12 @@ public class CdmValidatorContext
 
 //    if ( this.htmlConfig != null )
 //      this.htmlConfig.init( this);
+    if ( this.htmlConfig != null )
+      this.htmlConfig.init( this.getWebappName(),
+                               this.getWebappVersion(),
+                               this.getWebappVersionBrief(),
+                               this.getWebappVersionBuildDate(),
+                               this.getWebappContextPath() );
   }
 
   public void destroy()
@@ -232,7 +240,7 @@ public class CdmValidatorContext
    *
    * @return the context path.
    */
-  public String getContextPath()
+  public String getWebappContextPath()
   {
     return contextPath;
   }

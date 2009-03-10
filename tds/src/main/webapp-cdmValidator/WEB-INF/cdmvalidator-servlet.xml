@@ -7,7 +7,8 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-  <bean id="cdmValidatorController" class="thredds.server.cdmvalidator.CdmValidatorController">
+  <bean id="cdmValidatorController" class="thredds.server.cdmvalidator.CdmValidatorController"
+        init-method="init" destroy-method="destroy">
     <property name="cdmValidatorContext" ref="cdmValidatorContext"/>
 
     <property name="supportedMethods" value="GET, POST"/>

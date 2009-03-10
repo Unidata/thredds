@@ -42,6 +42,10 @@
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
 
+  <listener>
+    <listener-class>thredds.server.cdmvalidator.CdmValidatorConfigContextListener</listener-class>
+  </listener>
+
   <servlet>
     <servlet-name>cdmvalidator</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>

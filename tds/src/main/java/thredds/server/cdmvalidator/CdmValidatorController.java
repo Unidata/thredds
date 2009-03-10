@@ -153,7 +153,7 @@ public class CdmValidatorController extends AbstractController
         model.put( "contextPath", request.getContextPath() );
         model.put( "servletPath", request.getServletPath() );
 
-        //this.cdmValidatorContext.getHtmlConfig().addHtmlConfigInfoToModel( model );
+        this.cdmValidatorContext.getHtmlConfig().addHtmlConfigInfoToModel( model );
 
         log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
         return new ModelAndView( "/thredds/server/cdmvalidator/cdmValidate", model );
@@ -164,7 +164,7 @@ public class CdmValidatorController extends AbstractController
         model.put( "contextPath", request.getContextPath() );
         model.put( "servletPath", request.getServletPath() );
 
-        //this.cdmValidatorContext.getHtmlConfig().addHtmlConfigInfoToModel( model );
+        this.cdmValidatorContext.getHtmlConfig().addHtmlConfigInfoToModel( model );
 
         log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
         return new ModelAndView( "/thredds/server/cdmvalidator/cdmValidate", model );

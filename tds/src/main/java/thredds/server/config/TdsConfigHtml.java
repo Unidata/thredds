@@ -49,7 +49,11 @@ public class TdsConfigHtml
 //  private static org.slf4j.Logger log =
 //          org.slf4j.LoggerFactory.getLogger( TdsConfigHtml.class );
 
-  private TdsContext tdsContext;
+  private String webappName;
+  private String webappVersion;
+  private String webappVersionBrief;
+  private String webappVersionBuildDate;
+  private String webappContextPath;
 
   private String webappUrl;
   private String webappDocsUrl;
@@ -74,10 +78,22 @@ public class TdsConfigHtml
   private String hostInstLogoUrl;
   private String hostInstLogoAlt;
 
-  public void init( TdsContext tdsContext )
+  public void init( String webappName,
+                    String webappVersion, String webappVersionBrief,
+                    String webappVersionBuildDate,
+                    String webappContextPath )
   {
-    this.tdsContext = tdsContext;
+    this.webappName = webappName;
+    this.webappVersion = webappVersion;
+    this.webappVersionBrief = webappVersionBrief;
+    this.webappVersionBuildDate = webappVersionBuildDate;
+    this.webappContextPath = webappContextPath;
 
+    initFromConfig();
+  }
+
+  private void initFromConfig()
+  {
     this.pageCssUrl    = ThreddsConfig.get( "htmlSetup.standardCssUrl", "" );
     this.catalogCssUrl = ThreddsConfig.get( "htmlSetup.catalogCssUrl", "");
 
@@ -103,7 +119,52 @@ public class TdsConfigHtml
    */
   public String getWebappName()
   {
-    return this.tdsContext.getWebappName();
+    return this.webappName;
+  }
+
+  public void setWebappName( String webappName)
+  {
+    this.webappName = webappName;
+  }
+
+  public String getWebappVersion()
+  {
+    return webappVersion;
+  }
+
+  public void setWebappVersion( String webappVersion )
+  {
+    this.webappVersion = webappVersion;
+  }
+
+  public String getWebappVersionBrief()
+  {
+    return webappVersionBrief;
+  }
+
+  public void setWebappVersionBrief( String webappVersionBrief )
+  {
+    this.webappVersionBrief = webappVersionBrief;
+  }
+
+  public String getWebappVersionBuildDate()
+  {
+    return webappVersionBuildDate;
+  }
+
+  public void setWebappVersionBuildDate( String webappVersionBuildDate )
+  {
+    this.webappVersionBuildDate = webappVersionBuildDate;
+  }
+
+  public String getWebappContextPath()
+  {
+    return webappContextPath;
+  }
+
+  public void setWebappContextPath( String webappContextPath )
+  {
+    this.webappContextPath = webappContextPath;
   }
 
   /**
@@ -362,7 +423,7 @@ public class TdsConfigHtml
       return uri.toString();
     if ( url.startsWith( "/" ) )
       return url;
-    return this.tdsContext.getContextPath() + "/" + url;
+    return this.getWebappContextPath() + "/" + url;
   }
 
   public void addHtmlConfigInfoToModel( Map<String, Object> model )
@@ -385,8 +446,8 @@ public class TdsConfigHtml
     model.put( "installationLogoAlt", this.getInstallLogoAlt() );
 
     model.put( "webappName", this.getWebappName() );
-    model.put( "webappVersion", this.tdsContext.getWebappVersion() );
-    model.put( "webappVersionBuildDate", this.tdsContext.getWebappVersionBuildDate() );
+    model.put( "webappVersion", this.getWebappVersion() );
+    model.put( "webappVersionBuildDate", this.getWebappVersionBuildDate() );
     model.put( "webappUrl", this.prepareUrlStringForHtml( this.getWebappUrl() ) );
     model.put( "webappDocsUrl", this.prepareUrlStringForHtml( this.getWebappDocsUrl() ) );
     model.put( "webappLogoUrl", this.prepareUrlStringForHtml( this.getWebappLogoUrl() ) );

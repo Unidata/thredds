@@ -293,7 +293,11 @@ public class TdsContext
     defaultRequestDispatcher = servletContext.getNamedDispatcher( "default" );
 
     if ( this.tdsConfigHtml != null )
-      this.tdsConfigHtml.init( this);
+      this.tdsConfigHtml.init( this.getWebappName(),
+                               this.getWebappVersion(),
+                               this.getWebappVersionBrief(),
+                               this.getWebappVersionBuildDate(),
+                               this.getContextPath());
   }
 
   /**
