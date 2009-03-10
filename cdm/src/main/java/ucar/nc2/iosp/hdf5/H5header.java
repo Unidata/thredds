@@ -973,7 +973,7 @@ public class H5header {
 
     // find fill value
     Attribute fillAttribute = null;
-    for (Message mess : facade.dobj.messages) {
+    for (HeaderMessage mess : facade.dobj.messages) {
       if (mess.mtype == MessageType.FillValue) {
         MessageFillValue fvm = (MessageFillValue) mess.messData;
         if (fvm.hasFillValue)
@@ -1143,8 +1143,8 @@ public class H5header {
     return v;
   }
 
-  private void processSystemAttributes(List<Message> messages, List<Attribute> attributes) {
-    for (Message mess : messages) {
+  private void processSystemAttributes(List<HeaderMessage> messages, List<Attribute> attributes) {
+    for (HeaderMessage mess : messages) {
       if (mess.mtype == MessageType.LastModified) {
         MessageLastModified m = (MessageLastModified) mess.messData;
         Date d = new Date((long) m.secs * 1000);
@@ -1665,7 +1665,7 @@ public class H5header {
 
     // or a variable
     String dimList;
-    List<Message> dimMessages = new ArrayList<Message>();
+    List<HeaderMessage> dimMessages = new ArrayList<HeaderMessage>();
 
     // or a link
     String linkName = null;
@@ -1716,7 +1716,7 @@ public class H5header {
       } else {
         sbuff.append(" id= ").append(dobj.address);
         sbuff.append(" messages= ");
-        for (Message message : dobj.messages)
+        for (HeaderMessage message : dobj.messages)
           sbuff.append("\n  ").append(message);
       }
 
@@ -1787,23 +1787,23 @@ public class H5header {
   //////////////////////////////////////////////////////////////
   // Level 2A "data object header"
 
-  public class DataObject {
+  public class DataObject implements Named {
     // debugging
     public long getAddress() {
       return address;
     }
 
-    public String getWho() {
+    public String getName() {
       return who;
     }
 
-    public List<Message> getMessages() {
+    public List<HeaderMessage> getMessages() {
       return messages;
     }
 
     long address; // aka object id : obviously unique
     String who;   // may be null, may not be unique
-    List<Message> messages = new ArrayList<Message>();
+    List<HeaderMessage> messages = new ArrayList<HeaderMessage>();
     List<MessageAttribute> attributes = new ArrayList<MessageAttribute>();
 
     // need to look for these
@@ -1888,7 +1888,7 @@ public class H5header {
       }
 
       // look for group or a datatype/dataspace/layout message
-      for (Message mess : messages) {
+      for (HeaderMessage mess : messages) {
         if (debugTracker) memTracker.addByLen("Message (" + who + ") " + mess.mtype, mess.start, mess.size + 8);
 
         if (mess.mtype == MessageType.Group)
@@ -1937,11 +1937,13 @@ public class H5header {
 
         // the heapId points to a Attribute Message in the fractal Heap
         long pos = fractalHeap.getPos(heapId);
-        raf.seek(pos);
-        MessageAttribute attMessage = new MessageAttribute();
-        attMessage.read();
-        list.add(attMessage);
-        if (debugBtree2) System.out.println("    attMessage=" + attMessage);
+        if (pos > 0) {
+          raf.seek(pos);
+          MessageAttribute attMessage = new MessageAttribute();
+          attMessage.read();
+          list.add(attMessage);
+          if (debugBtree2) System.out.println("    attMessage=" + attMessage);
+        }
       }
     }
 
@@ -1959,7 +1961,7 @@ public class H5header {
         if (posMess >= actualSize)
           break; */
 
-        Message mess = new Message();
+        HeaderMessage mess = new HeaderMessage();
         //messages.add( mess);
         int n = mess.read(pos, 1, false, objectName);
         pos += n;
@@ -1992,7 +1994,7 @@ public class H5header {
       int bytesRead = 0;
       while (bytesRead < maxBytes) {
 
-        Message mess = new Message();
+        HeaderMessage mess = new HeaderMessage();
         //messages.add( mess);
         int n = mess.read(filePos, 2, creationOrderPresent, objectName);
         filePos += n;
@@ -2117,14 +2119,18 @@ public class H5header {
   }
 
   // Header Message: Level 2A1 and 2A2 (part of Data Object)
-  public class Message implements Comparable {
+  public class HeaderMessage implements Comparable {
     long start;
     byte headerMessageFlags;
     short type, size, header_length;
-    Object messData; // header message data
+    Named messData; // header message data
 
     public MessageType getMtype() {
       return mtype;
+    }
+
+    public String getName() {
+      return messData.getName();
     }
 
     public short getSize() {
@@ -2287,7 +2293,7 @@ public class H5header {
     }
 
     public int compareTo(Object o) {
-      return type - ((Message) o).type;
+      return type - ((HeaderMessage) o).type;
     }
 
     public String toString() {
@@ -2321,11 +2327,23 @@ public class H5header {
     }
   }
 
+  abstract interface Named {
+    String getName();
+  }
+
   // Message Type 1 : "Simple Dataspace" = dimension list / shape
-  class MessageDataspace {
+  class MessageDataspace implements Named {
     byte ndims, flags, type;
     int[] dimLength, maxLength, permute;
     boolean isPermuted;
+
+    public String getName() {
+      StringBuilder sbuff = new StringBuilder();
+      sbuff.append("(");
+      for (int size : dimLength) sbuff.append(size).append(",");
+      sbuff.append(")");
+      return sbuff.toString();
+    }
 
     public String toString() {
       StringBuilder sbuff = new StringBuilder();
@@ -2389,7 +2407,7 @@ public class H5header {
   }
 
   // Message Type 17/0x11 "Old Group" or "Symbol Table"
-  private class MessageGroup {
+  private class MessageGroup implements Named {
     long btreeAddress, nameHeapAddress;
 
     void read() throws IOException {
@@ -2405,10 +2423,14 @@ public class H5header {
       return sbuff.toString();
     }
 
+    public String getName() {
+      return Long.toString(btreeAddress);
+    }
+
   }
 
   // Message Type 2 "New Group" or "Link Info" (version 2)
-  private class MessageGroupNew {
+  private class MessageGroupNew implements Named {
     byte version, flags;
     long maxCreationIndex = -2, fractalHeapAddress, v2BtreeAddress, v2BtreeAddressCreationOrder = -2;
 
@@ -2439,10 +2461,15 @@ public class H5header {
 
       if (debug1) debugOut.println("   MessageGroupNew version= " + version + " flags = " + flags + this);
     }
+
+    public String getName() {
+      return Long.toString(fractalHeapAddress);
+    }
+
   }
 
   // Message Type 10/0xA "Group Info" (version 2)
-  private class MessageGroupInfo {
+  private class MessageGroupInfo implements Named {
     byte flags;
     short maxCompactValue = -1, minDenseValue = -1, estNumEntries = -1, estLengthEntryName = -1;
 
@@ -2473,10 +2500,14 @@ public class H5header {
 
       if (debug1) debugOut.println("   MessageGroupInfo version= " + version + " flags = " + flags + this);
     }
+
+    public String getName() {
+      return "";
+    }
   }
 
   // Message Type 6 "Link" (version 2)
-  private class MessageLink {
+  private class MessageLink implements Named {
     byte version, flags, encoding;
     byte linkType; // 0=hard, 1=soft, 64 = external
     long creationOrder;
@@ -2531,10 +2562,14 @@ public class H5header {
       if (debug1)
         debugOut.println("   MessageLink version= " + version + " flags = " + Integer.toBinaryString(flags) + this);
     }
+
+    public String getName() {
+      return linkName;
+    }
   }
 
   // Message Type 3 : "Datatype"
-  class MessageDatatype {
+  class MessageDatatype implements Named {
     int type, version;
     byte[] flags = new byte[3];
     int byteSize, byteOrder;
@@ -2582,6 +2617,11 @@ public class H5header {
       else if ((type == 9) || (type == 10))
         sbuff.append(" parent= ").append(base);
       return sbuff.toString();
+    }
+
+    public String getName() {
+      DataType dtype = getNCtype(type, byteSize);
+      return dtype.toString() + "size= "+byteSize;
     }
 
     void read(String objectName) throws IOException {
@@ -2784,7 +2824,7 @@ public class H5header {
   }
 
   // Message Type 4 "Fill Value Old" : fill value is stored in the message
-  private class MessageFillValueOld {
+  private class MessageFillValueOld implements Named {
     byte[] value;
     int size;
 
@@ -2802,10 +2842,16 @@ public class H5header {
       for (int i = 0; i < size; i++) sbuff.append(" ").append(value[i]);
       return sbuff.toString();
     }
+
+    public String getName() {
+      StringBuilder sbuff = new StringBuilder();
+      for (int i = 0; i < size; i++) sbuff.append(" ").append(value[i]);
+      return sbuff.toString();
+    }
   }
 
   // Message Type 5 "Fill Value New" : fill value is stored in the message, with extra metadata
-  private class MessageFillValue {
+  private class MessageFillValue implements Named {
     byte version; // 1,2,3
     byte spaceAllocateTime; // 1= early, 2=late, 3=incremental
     byte fillWriteTime;
@@ -2852,10 +2898,16 @@ public class H5header {
       return sbuff.toString();
     }
 
+     public String getName() {
+      StringBuilder sbuff = new StringBuilder();
+      for (int i = 0; i < size; i++) sbuff.append(" ").append(value[i]);
+      return sbuff.toString();
+    }
+
   }
 
   // Message Type 8 "Data Storage Layout" : regular (contiguous), chunked, or compact (stored with the message)
-  private class MessageLayout {
+  private class MessageLayout implements Named {
     byte type; // 0 = Compact, 1 = Contiguous, 2 = Chunked
     long dataAddress = -1; // -1 means "not allocated"
     long contiguousSize; // size of data allocated contiguous
@@ -2893,6 +2945,34 @@ public class H5header {
       sbuff.append(" dataAddress=").append(dataAddress);
       return sbuff.toString();
     }
+
+    public String getName() {
+      StringBuilder sbuff = new StringBuilder();
+      switch (type) {
+        case 0:
+          sbuff.append("compact");
+          break;
+        case 1:
+          sbuff.append("contiguous");
+          break;
+        case 2:
+          sbuff.append("chunked");
+          break;
+        default:
+          sbuff.append("unknown type= ").append(type);
+      }
+
+      if (chunkSize != null) {
+        sbuff.append(" chunk = (");
+        for (int i = 0; i < chunkSize.length; i++) {
+          if (i > 0) sbuff.append(",");
+          sbuff.append(chunkSize[i]);
+        }
+        sbuff.append(")");
+      }
+
+     return sbuff.toString();
+   }
 
     void read() throws IOException {
       int ndims;
@@ -2939,7 +3019,7 @@ public class H5header {
   }
 
   // Message Type 11/0xB "Filter Pipeline" : apply a filter to the "data stream"
-  class MessageFilter {
+  class MessageFilter implements Named {
     Filter[] filters;
 
     void read() throws IOException {
@@ -2961,6 +3041,13 @@ public class H5header {
     public String toString() {
       StringBuilder sbuff = new StringBuilder();
       sbuff.append("   MessageFilter filters=\n");
+      for (Filter f : filters)
+        sbuff.append(" ").append(f).append("\n");
+      return sbuff.toString();
+    }
+
+    public String getName() {
+      StringBuilder sbuff = new StringBuilder();
       for (Filter f : filters)
         sbuff.append(" ").append(f).append("\n");
       return sbuff.toString();
@@ -3004,7 +3091,7 @@ public class H5header {
   }
 
   // Message Type 12/0xC "Attribute" : define an Atribute
-  private class MessageAttribute {
+  private class MessageAttribute implements Named {
     byte version;
     //short typeSize, spaceSize;
     String name;
@@ -3013,7 +3100,22 @@ public class H5header {
     long dataPos; // pointer to the attribute data section, must be absolute file position
 
     public String toString() {
-      return "name= " + name + " dataPos= " + dataPos;
+      StringBuilder sbuff = new StringBuilder();
+      sbuff.append("   Name= ").append(name);
+      sbuff.append(" dataPos = ").append(dataPos);
+      if (mdt != null) {
+        sbuff.append("\n mdt=");
+        sbuff.append(mdt.toString());
+      }
+      if (mds != null) {
+        sbuff.append("\n mds=");
+        sbuff.append(mds.toString());
+      }
+      return sbuff.toString();
+    }
+
+    public String getName() {
+      return name;
     }
 
     void read() throws IOException {
@@ -3076,10 +3178,14 @@ public class H5header {
   }
 
   // Message Type 21/0x15 "Attribute Info" (version 2)
-  private class MessageAttributeInfo {
+  private class MessageAttributeInfo implements Named {
     byte version, flags;
     short maxCreationIndex = -1;
     long fractalHeapAddress = -2, v2BtreeAddress = -2, v2BtreeAddressCreationOrder = -2;
+
+    public String getName() {
+      return Long.toString(v2BtreeAddress);
+    }
 
     public String toString() {
       StringBuilder sbuff = new StringBuilder();
@@ -3110,7 +3216,7 @@ public class H5header {
   }
 
   // Message Type 13/0xD ("Object Comment" : "short description of an Object"
-  private class MessageComment {
+  private class MessageComment implements Named {
     String comment;
 
     void read() throws IOException {
@@ -3120,10 +3226,15 @@ public class H5header {
     public String toString() {
       return comment;
     }
+
+    public String getName() {
+      return comment;
+    }
+
   }
 
   // Message Type 18/0x12 "Last Modified" : last modified date represented as secs since 1970
-  private class MessageLastModified {
+  private class MessageLastModified implements Named {
     byte version;
     int secs;
 
@@ -3136,10 +3247,14 @@ public class H5header {
     public String toString() {
       return new Date(secs * 1000).toString();
     }
+
+    public String getName() {
+      return toString();
+    }
   }
 
   // Message Type 14/0xE ("Last Modified (old)" : last modified date represented as a String YYMM etc. use message type 18 instead
-  private class MessageLastModifiedOld {
+  private class MessageLastModifiedOld implements Named {
     String datemod;
 
     void read() throws IOException {
@@ -3152,10 +3267,14 @@ public class H5header {
     public String toString() {
       return datemod;
     }
+
+    public String getName() {
+      return toString();
+    }
   }
 
   // Message Type 16/0x10 "Continue" : point to more messages
-  private class MessageContinue {
+  private class MessageContinue implements Named {
     long offset, length;
 
     void read() throws IOException {
@@ -3163,16 +3282,24 @@ public class H5header {
       length = readLength();
       if (debug1) debugOut.println("   Continue offset=" + offset + " length=" + length);
     }
+
+    public String getName() {
+      return "";
+    }
   }
 
   // Message Type 22/0x11 Object Reference COunt
-  private class MessageObjectReferenceCount {
+  private class MessageObjectReferenceCount implements Named {
     int refCount;
 
     void read() throws IOException {
       int version = raf.readByte();
       refCount = raf.readInt();
       if (debug1) debugOut.println("   ObjectReferenceCount=" + refCount);
+    }
+
+    public String getName() {
+      return Integer.toString(refCount);
     }
   }
 
@@ -3216,7 +3343,7 @@ public class H5header {
 
     } else {
       // look for link messages
-      for (Message mess : dobj.messages) {
+      for (HeaderMessage mess : dobj.messages) {
         if (mess.mtype == MessageType.Link) {
           MessageLink linkMessage = (MessageLink) mess.messData;
           if (linkMessage.linkType == 0) {
@@ -4585,7 +4712,9 @@ There is _no_ datatype information stored for these sort of selections currently
           }
           block++;
         }
-        throw new IllegalStateException("offset=" + offset);
+        log.error("DoublingTable: illegal offset=" + offset);
+        return -1; // LOOK temporary fix
+        // throw new IllegalStateException("offset=" + offset);
       }
 
     }

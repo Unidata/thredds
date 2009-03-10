@@ -36,15 +36,9 @@ package ucar.nc2.ui;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
-import ucar.nc2.Structure;
-import ucar.nc2.Attribute;
 import ucar.nc2.iosp.hdf5.H5iosp;
 import ucar.nc2.iosp.hdf5.H5header;
-import ucar.ma2.StructureDataIterator;
-import ucar.ma2.StructureData;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -53,13 +47,10 @@ import javax.swing.event.ListSelectionEvent;
 import thredds.ui.TextHistoryPane;
 import thredds.ui.IndependentWindow;
 import thredds.ui.BAMutil;
-import thredds.ui.FileManager;
 
-import java.awt.event.ActionEvent;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
-import java.util.List;
 
 /**
  * ToolsUI/Iosp/Hdf5
@@ -73,10 +64,7 @@ public class Hdf5Table extends JPanel {
   private JSplitPane split, split2;
 
   private TextHistoryPane dumpTA;
-  private IndependentWindow infoWindow;
-
-  private StructureTable dataTable;
-  private IndependentWindow dataWindow;
+  //private IndependentWindow infoWindow;
 
   public Hdf5Table(PreferencesExt prefs) {
     this.prefs = prefs;
@@ -88,7 +76,7 @@ public class Hdf5Table extends JPanel {
 
         ArrayList beans = new ArrayList();
         ObjectBean ob = (ObjectBean) objectTable.getSelectedBean();
-        for ( H5header.Message m : ob.m.getMessages()) {
+        for ( H5header.HeaderMessage m : ob.m.getMessages()) {
           beans.add( new MessageBean(m));
         }
         messTable.setBeans(beans);
@@ -140,16 +128,10 @@ public class Hdf5Table extends JPanel {
     add(split, BorderLayout.CENTER);
   }
 
-  private void makeDataTable() {
-    // the data Table
-    dataTable = new StructureTable((PreferencesExt) prefs.node("structTable"));
-    dataWindow = new IndependentWindow("Data Table", BAMutil.getImage("netcdfUI"), dataTable);
-    dataWindow.setBounds((Rectangle) prefs.getBean("dataWindow", new Rectangle(50, 300, 1000, 600)));
-  }
-
   public void save() {
     objectTable.saveState(false);
-    prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
+    messTable.saveState(false);
+    // prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     prefs.putInt("splitPos", split.getDividerLocation());
     prefs.putInt("splitPos2", split2.getDividerLocation());
   }
@@ -163,7 +145,14 @@ public class Hdf5Table extends JPanel {
 
     NetcdfFile ncfile = new MyNetcdfFile();
     H5iosp iosp = new H5iosp();
-    iosp.open(raf, ncfile, null);
+    try {
+      iosp.open(raf, ncfile, null);
+    } catch (Throwable t) {
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(20000);
+      PrintStream s = new PrintStream(bos);
+      t.printStackTrace(s);
+      dumpTA.setText( bos.toString());      
+    }
 
     H5header header = (H5header) iosp.sendIospMessage("header");
     for (H5header.DataObject dataObj : header.getDataObjects()) {
@@ -193,25 +182,29 @@ public class Hdf5Table extends JPanel {
       return m.getAddress();
     }
 
-    public String getWho() {
-      return m.getWho();
+    public String getName() {
+      return m.getName();
     }
   }
 
   public class MessageBean {
-    H5header.Message m;
+    H5header.HeaderMessage m;
 
     // no-arg constructor
     public MessageBean() {
     }
 
     // create from a dataset
-    public MessageBean(H5header.Message m) {
+    public MessageBean(H5header.HeaderMessage m) {
       this.m = m;
     }
 
     public String getMessageType(){
       return m.getMtype().toString();
+    }
+
+    public String getName(){
+      return m.getName();
     }
 
     public short getSize() {

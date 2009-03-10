@@ -301,7 +301,7 @@ public class ReadTdsLogs {
 
 
   static private int total_submit = 0;
-  static private int skip_submit =10000;
+  static private int skip_submit = -1;
   static private int max_submit = Integer.MAX_VALUE;
 
   void sendRequests(String filename, int max) throws IOException {
@@ -630,7 +630,7 @@ public class ReadTdsLogs {
 
     long startElapsed = System.nanoTime();
 
-    read("c:/data/motherlode/", new MClosure() {
+    read("d:/motherlode/logs/", new MClosure() {
       public void run(String filename) throws IOException {
         reader.sendRequests(filename, -1);
       }
