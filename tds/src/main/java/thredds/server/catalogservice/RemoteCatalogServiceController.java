@@ -116,7 +116,7 @@ public class RemoteCatalogServiceController extends AbstractController
   {
     this.tdsContext = tdsContext;
     if ( this.tdsContext != null )
-      this.htmlConfig = this.tdsContext.getTdsConfigHtml();
+      this.htmlConfig = this.tdsContext.getHtmlConfig();
   }
 
   protected ModelAndView handleRequestInternal( HttpServletRequest request,

@@ -157,7 +157,7 @@ public class ExampleThreddsServlet extends HttpServlet
     tdsContext.setIddContentPath( "WEB-INF/altContent/idd" );
     tdsContext.setMotherlodeContentPath( "WEB-INF/altContent/motherlode" );
     tdsContext.setTdsConfigFileName( "threddsConfig.xml" );
-    tdsContext.setTdsConfigHtml( htmlConfig );
+    tdsContext.setHtmlConfig( htmlConfig );
     
     HtmlWriter.init( tdsContext );
 

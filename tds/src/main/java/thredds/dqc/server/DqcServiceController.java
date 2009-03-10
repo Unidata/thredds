@@ -163,7 +163,7 @@ public class DqcServiceController extends AbstractController
       model.put( "servletPath", request.getServletPath() );
       model.put( "dqcConfigItems", items );
 
-      this.tdsContext.getTdsConfigHtml().addHtmlConfigInfoToModel( model );
+      this.tdsContext.getHtmlConfig().addHtmlConfigInfoToModel( model );
 
       log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
       return new ModelAndView( "/thredds/server/dqc/dqcConfig", model);

@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Timer;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -77,11 +76,12 @@ public class CdmValidatorController extends AbstractController
 
     // Configure CdmValidator: max upload size; cache dir and scheme.
     maxFileUploadSize = ThreddsConfig.getBytes( "CdmValidatorService.maxFileUploadSize", (long) 1000 * 1000 * 1000 );
-    String cacheDirPath = ThreddsConfig.get( "CdmValidatorService.dir", new File( this.cdmValidatorContext.getContentDirectory(), "cache").getPath() );
 
-    int scourSecs = ThreddsConfig.getSeconds( "CdmValidatorService.scour", -1 );
-    int maxAgeSecs = ThreddsConfig.getSeconds( "CdmValidatorService.maxAge", -1 );
-    final long maxSize = ThreddsConfig.getBytes( "CdmValidatorService.maxSize",
+    String cacheDirPath = ThreddsConfig.get( "CdmValidatorService.cache.dir", new File( this.cdmValidatorContext.getContentDirectory(), "cache").getPath() );
+
+    int scourSecs = ThreddsConfig.getSeconds( "CdmValidatorService.cache.scour", -1 );
+    int maxAgeSecs = ThreddsConfig.getSeconds( "CdmValidatorService.cache.maxAge", -1 );
+    final long maxSize = ThreddsConfig.getBytes( "CdmValidatorService.cache.maxSize",
                                                  (long) 1000 * 1000 * 1000 ); // 1 Gbyte
     if ( maxAgeSecs > 0 )
     {

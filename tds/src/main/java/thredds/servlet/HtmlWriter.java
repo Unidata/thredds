@@ -175,7 +175,7 @@ public class HtmlWriter {
       throw new IllegalArgumentException( "Null value not allowed for TdsContext or HtmlConfig.");
 
     this.tdsContext = tdsContext;
-    this.htmlConfig = this.tdsContext.getTdsConfigHtml();
+    this.htmlConfig = this.tdsContext.getHtmlConfig();
 
     this.contextPath = this.tdsContext.getContextPath();
     this.contextName = this.tdsContext.getWebappName();

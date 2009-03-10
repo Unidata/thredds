@@ -114,8 +114,8 @@ public class TdsContext
   public void setTdsConfigFileName( String filename ) { this.tdsConfigFileName = filename; }
   public String getTdsConfigFileName() { return this.tdsConfigFileName; }
 
-  public void setTdsConfigHtml( HtmlConfig htmlConfig ) { this.htmlConfig = htmlConfig; }
-  public HtmlConfig getTdsConfigHtml() { return this.htmlConfig; }
+  public void setHtmlConfig( HtmlConfig htmlConfig ) { this.htmlConfig = htmlConfig; }
+  public HtmlConfig getHtmlConfig() { return this.htmlConfig; }
 
 //  /**
 //   * Constructor.
@@ -238,7 +238,7 @@ public class TdsContext
     // read in persistent user-defined params from threddsConfig.xml
     File tdsConfigFile = this.contentDirSource.getFile( this.getTdsConfigFileName() );
     String tdsConfigFilename = tdsConfigFile != null ? tdsConfigFile.getPath() : "";
-    ThreddsConfig.init( servletContext, tdsConfigFilename, log );
+    ThreddsConfig.init( servletContext, tdsConfigFilename );
 
     File logDir = new File( this.contentDirectory, "logs");
     if ( ! logDir.exists())

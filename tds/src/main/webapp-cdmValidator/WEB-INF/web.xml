@@ -16,11 +16,21 @@
 
   <!--
     Location of the Log4J config file, for initialization.
-    Applied by Log4jConfigListener (currently our listener calls Log4jWebConfigurer.
+    Applied by Log4jConfigListener.
   -->
   <context-param>
     <param-name>log4jConfigLocation</param-name>
     <param-value>/WEB-INF/log4j.xml</param-value>
+  </context-param>
+
+  <!--
+    Tell Log4jConfigListener what key to use for the webapp root directory.
+    In log4j.xml can use "${cdmValidator.root}/WEB-INF/logs/cdmValidator.log"
+    to indicate the location of log files.
+  -->
+  <context-param>
+    <param-name>webAppRootKey</param-name>
+    <param-value>cdmValidator.root</param-value>
   </context-param>
 
   <!-- Spring Listener to setup Log4j configuration.
@@ -55,7 +65,7 @@
 
   <servlet-mapping>
     <servlet-name>cdmvalidator</servlet-name>
-    <url-pattern>/cdmValidate</url-pattern>
+    <url-pattern>/cdmValidate/*</url-pattern>
   </servlet-mapping>
 
   <jsp-config>

@@ -38,7 +38,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.RequestDispatcher;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 
 import thredds.util.filesource.*;
 import thredds.servlet.ThreddsConfig;
@@ -72,7 +71,6 @@ public class CdmValidatorContext
   private File contentDirectory;
 
   private FileSource configSource;
-  private FileSource publicDocSource;
 
   private RequestDispatcher defaultRequestDispatcher;
   private RequestDispatcher jspRequestDispatcher;
@@ -83,19 +81,12 @@ public class CdmValidatorContext
 
   public CdmValidatorContext() {}
 
-  public void setWebappVersion( String verFull ) { this.webappVersion = verFull; }
-  public void setWebappVersionBrief( String ver) { this.webappVersionBrief = ver; }
-  public void setWebappVersionBuildDate( String buildDateString) { this.webappVersionBuildDate = buildDateString; }
-
   public void setContentRootPath( String contentRootPath) {this.contentRootPath = contentRootPath; }
 
   public void setContentPath( String contentPath) {this.contentPath = contentPath; }
 
   public void setConfigFileName( String filename ) { this.configFileName = filename; }
   public String getConfigFileName() { return this.configFileName; }
-
-  public void setHtmlConfig( HtmlConfig htmlConfig ) { this.htmlConfig = htmlConfig; }
-  public HtmlConfig getHtmlConfig() { return this.htmlConfig; }
 
   public void init( ServletContext servletContext )
   {
@@ -144,8 +135,8 @@ public class CdmValidatorContext
       else
         throw new IllegalStateException( "Content root directory [" + this.contentRootPath + "] not a directory.");
     }
-    // If the content directory doesn't exist, try to create it and config file.
-    File configFile = new File( this.contentDirectory, this.configFileName );
+
+    // If the content directory doesn't exist, try to create it.
     if ( ! this.contentDirectory.exists() )
     {
       if ( ! this.contentDirectory.mkdirs())
@@ -154,34 +145,9 @@ public class CdmValidatorContext
         log.error( "init(): " + tmpMsg + " [" + this.contentDirectory.getAbsolutePath() + "]" );
         throw new IllegalStateException( tmpMsg );
       }
-      else
-      {
-        boolean success = false;
-        try
-        {
-          success = configFile.createNewFile();
-        }
-        catch ( IOException e )
-        {
-          String tmpMsg = "Configuration file doesn't exist and could not be created";
-          log.error( "init(): " + tmpMsg + " [" + configFile.getAbsolutePath() + "]", e );
-          throw new IllegalStateException( tmpMsg, e );
-        }
-        if ( ! success )
-        {
-          String tmpMsg = "Configuration file doesn't exist and could not be created";
-          log.error( "init(): " + tmpMsg + " [" + configFile.getAbsolutePath() + "]" );
-          throw new IllegalStateException( tmpMsg );
-        }
-        else
-        {
-          log.error( "init(): Empty configuration file [" + configFile + "].");
-          throw new IllegalStateException( "Empty configuration file." );
-        }
-      }
     }
 
-    // If content directory exists, make sure it is a directory.
+    // Make sure content directory is a directory.
     DescendantFileSource contentDirSource;
     if ( this.contentDirectory.isDirectory() )
     {
@@ -196,23 +162,43 @@ public class CdmValidatorContext
     }
     ServletUtil.setContentPath( contentDirSource.getRootDirectoryPath());
 
+    // If config file doesn't exist, try to create.
+    File configFile = contentDirSource.getFile( this.configFileName );
+    if ( configFile == null )
+    {
+      configFile = new File( this.contentDirectory, this.configFileName);
+      boolean success = false;
+      try
+      {
+        success = configFile.createNewFile();
+      }
+      catch ( IOException e )
+      {
+        String tmpMsg = "Configuration file doesn't exist and could not be created";
+        log.error( "init(): " + tmpMsg + " [" + configFile.getAbsolutePath() + "]", e );
+        throw new IllegalStateException( tmpMsg, e );
+      }
+      if ( !success )
+      {
+        String tmpMsg = "Configuration file doesn't exist and could not be created";
+        log.error( "init(): " + tmpMsg + " [" + configFile.getAbsolutePath() + "]" );
+        throw new IllegalStateException( tmpMsg );
+      }
+      else
+      {
+        log.error( "init(): Empty configuration file [" + configFile + "]." );
+        throw new IllegalStateException( "Empty configuration file." );
+      }
+    }
+
     // read in persistent user-defined params from threddsConfig.xml
-    String configFilename = configFile != null ? configFile.getPath() : "";
-    ThreddsConfig.init( servletContext, configFilename, log );
+    ThreddsConfig.init( servletContext, configFile.getPath() );
 
-    File publicContentDirectory = new File( this.contentDirectory, "public" );
-    DescendantFileSource publicContentDirSource = new BasicDescendantFileSource( publicContentDirectory );
-
-    this.configSource =
-            new BasicWithExclusionsDescendantFileSource( this.contentDirectory,
-                                                         Collections.singletonList( "public" ) );
-    this.publicDocSource = publicContentDirSource;
+    this.configSource = contentDirSource;
 
     jspRequestDispatcher = servletContext.getNamedDispatcher( "jsp" );
     defaultRequestDispatcher = servletContext.getNamedDispatcher( "default" );
 
-//    if ( this.htmlConfig != null )
-//      this.htmlConfig.init( this);
     if ( this.htmlConfig != null )
       this.htmlConfig.init( this.getWebappName(),
                                this.getWebappVersion(),
@@ -256,6 +242,11 @@ public class CdmValidatorContext
     return this.webappVersion;
   }
 
+  public void setWebappVersion( String verFull )
+  {
+    this.webappVersion = verFull;
+  }
+
   /**
    * Return the version string (<major>.<minor>) for this web application.
    *
@@ -266,9 +257,34 @@ public class CdmValidatorContext
     return this.webappVersionBrief;
   }
 
+  public void setWebappVersionBrief( String ver)
+  {
+    this.webappVersionBrief = ver;
+  }
+
   public String getWebappVersionBuildDate()
   {
     return this.webappVersionBuildDate;
+  }
+
+   public void setWebappVersionBuildDate( String buildDateString)
+   {
+     this.webappVersionBuildDate = buildDateString;
+   }
+
+  public void setHtmlConfig( HtmlConfig htmlConfig )
+  {
+    this.htmlConfig = htmlConfig;
+  }
+
+  /**
+   * Return the HtmlConfig object for this context.
+   *
+   * @return the HtmlConfig
+   */
+  public HtmlConfig getHtmlConfig()
+  {
+    return this.htmlConfig;
   }
 
   /**
@@ -294,11 +310,6 @@ public class CdmValidatorContext
   public FileSource getConfigFileSource()
   {
     return this.configSource;
-  }
-
-  public FileSource getPublicDocFileSource()
-  {
-    return this.publicDocSource;
   }
 
   public RequestDispatcher getDefaultRequestDispatcher()

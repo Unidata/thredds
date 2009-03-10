@@ -53,23 +53,25 @@ import ucar.nc2.util.xml.RuntimeConfigParser;
  * Read and process the threddsConfig.xml file
  */
 public class ThreddsConfig {
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( ThreddsConfig.class );
+
+
   private static javax.servlet.ServletContext _context;
   private static String _filename;
-  private static org.slf4j.Logger log;
   private static Element rootElem;
 
   //private static HashMap paramHash;
   private static List<String> catalogRoots;
   private static List<String> contentRootList;
 
-  public static void init(javax.servlet.ServletContext context, String filename, org.slf4j.Logger log) {
+  public static void init(javax.servlet.ServletContext context, String filename) {
     _context = context;
     _filename = filename;
 
-    readConfig( log);
+    readConfig();
   }
 
-  static void readConfig(org.slf4j.Logger log) {
+  static void readConfig() {
     //paramHash = new HashMap();
     catalogRoots = new ArrayList<String>();
     contentRootList = new ArrayList<String>();

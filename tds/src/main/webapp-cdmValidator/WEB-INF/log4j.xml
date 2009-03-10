@@ -20,8 +20,8 @@
     Example:
     2005-04-18T11:33:43 -0600 [    359843 -        395] DEBUG - thredds.util.TdsPathUtils - extractPath():
   -->
-  <appender name="threddsServlet" class="org.apache.log4j.RollingFileAppender">
-    <param name="File" value="${tds.log.dir}/threddsServlet.log"/>
+  <appender name="cdmValidator" class="org.apache.log4j.RollingFileAppender">
+    <param name="File" value="${cdmValidator.root}/WEB-INF/logs/cdmValidator.log"/>
     <param name="MaxFileSize" value="10MB"/>
     <param name="MaxBackupIndex" value="10"/>
     <layout class="org.apache.log4j.PatternLayout">
@@ -32,40 +32,12 @@
 
   <!-- keep track of Cache messages in a seperate file. -->
   <appender name="cacheLog" class="org.apache.log4j.RollingFileAppender">
-    <param name="File" value="${tds.log.dir}/cache.log"/>
+    <param name="File" value="${cdmValidator.root}/WEB-INF/logs/cache.log"/>
     <param name="MaxFileSize" value="100KB"/>
     <param name="MaxBackupIndex" value="2"/>
     <param name="Append" value="false"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="[%d{dd/MMM/yyyy:HH:mm:ss}] %m%n"/>
-    </layout>
-  </appender>
-
-  <!-- catalogErrors.log is recreated each time Tomcat is started -->
-  <appender name="catalogErrors" class="org.apache.log4j.FileAppender">
-    <param name="File" value="${tds.log.dir}/catalogErrors.log"/>
-    <param name="Append" value="false"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%m%n"/>
-    </layout>
-  </appender>
-
-  <!-- cataloggen.log is recreated each time Tomcat is started -->
-  <appender name="catalogGen" class="org.apache.log4j.FileAppender">
-    <param name="File" value="${tds.log.dir}/cataloggen.log"/>
-    <param name="Append" value="false"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"/>
-    </layout>
-  </appender>
-
-  <!-- special log for FMRC -->
-  <appender name="modelLog" class="org.apache.log4j.RollingFileAppender">
-    <param name="File" value="${tds.log.dir}/models.log"/>
-    <param name="MaxFileSize" value="5MB"/>
-    <param name="MaxBackupIndex" value="5"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="[%d{dd/MMM/yyyy:HH:mm:ss}] %-5p %c : %m%n"/>
     </layout>
   </appender>
 
@@ -75,61 +47,15 @@
     <appender-ref ref="cacheLog"/>
   </logger>
 
-  <logger name="thredds.cataloggen.config" additivity="false">
-    <level value="INFO"/>
-    <appender-ref ref="catalogGen"/>
-  </logger>
-
-  <logger name="thredds.cataloggen.servlet" additivity="false">
-    <level value="INFO"/>
-    <appender-ref ref="catalogGen"/>
-  </logger>
-
-  <logger name="thredds.servlet.DataRootHandler.catalogInit" additivity="false">
-    <level value="INFO"/>
-    <appender-ref ref="catalogErrors"/>
-  </logger>
-
-  <logger name="ucar.nc2.iosp.grib" additivity="false">
-    <level value="INFO"/>
-    <appender-ref ref="modelLog"/>
-  </logger>
-
-  <logger name="ucar.nc2.dt.fmrc" additivity="false">
-    <level value="INFO"/>
-    <appender-ref ref="modelLog"/>
-  </logger>
-
-  <logger name="thredds.catalog.InvDatasetFmrc" >
-    <level value="INFO"/>
-    <appender-ref ref="modelLog"/>
-  </logger>
-
   <!-- All normal logging messages go to threddsServlet.log -->
-  <logger name="dods">
-    <level value="INFO"/>
-    <appender-ref ref="threddsServlet"/>
-  </logger>
-
   <logger name="thredds">
     <level value="INFO"/>
-    <appender-ref ref="threddsServlet"/>
+    <appender-ref ref="cdmValidator"/>
   </logger>
 
   <logger name="ucar">
     <level value="INFO"/>
-    <appender-ref ref="threddsServlet"/>
-  </logger>
-
-  <!-- WMS stuff has routine higher level of messages -->
-  <logger name="uk.ac.rdg.resc.ncwms">
-    <level value="WARN"/>
-    <appender-ref ref="threddsServlet"/>
-  </logger>
-
-  <logger name="thredds.server.wms">
-    <level value="INFO"/>
-    <appender-ref ref="threddsServlet"/>
+    <appender-ref ref="cdmValidator"/>
   </logger>
 
   <logger name="org.springframework">

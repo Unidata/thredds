@@ -67,7 +67,7 @@ public class CdmValidatorConfigContextListener
     WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext( servletContext );
 
     // Initialize the TDS context.
-    CdmValidatorContext cdmValidatorContext = (CdmValidatorContext) wac.getBean( "cdmValidatorController", CdmValidatorContext.class );
+    CdmValidatorContext cdmValidatorContext = (CdmValidatorContext) wac.getBean( "cdmValidatorContext", CdmValidatorContext.class );
     cdmValidatorContext.init( servletContext );
 
     logger.debug( "contextInitialized(): done - " + UsageLog.closingMessageNonRequestContext() );
