@@ -933,8 +933,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (agg != null) agg.persistWrite(); // LOOK  maybe only on real close ??
 
     if (cache != null) {
-      cache.release(this);
       unlocked = true;
+      cache.release(this);
 
     } else {
       if (agg != null) agg.close();

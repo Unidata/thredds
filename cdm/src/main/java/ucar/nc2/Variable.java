@@ -1414,7 +1414,8 @@ public class Variable implements VariableIF {
           int len = Integer.parseInt(dimName);
           d = new Dimension("", len, false, false, false);
         } catch (Exception e)  {
-          throw new IllegalArgumentException("Variable " + getName() + " setDimensions = " + dimString + " FAILED, dim doesnt exist=" + dimName);
+          throw new IllegalArgumentException("Variable " + getName() + " setDimensions = " + dimString +
+              " FAILED, dim doesnt exist=" + dimName+ " file = "+ncfile.getLocation());
         }
       }
       newDimensions.add(d);

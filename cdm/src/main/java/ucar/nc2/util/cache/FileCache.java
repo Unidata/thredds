@@ -81,6 +81,7 @@ import ucar.nc2.util.CancelTask;
 public class FileCache {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger("cacheLogger");
   static private ScheduledExecutorService exec;
+  static boolean debug = true;
   static boolean debugPrint = false;
   static boolean debugCleanup = false;
 
@@ -98,9 +99,9 @@ public class FileCache {
   private String name;
   private final int softLimit, minElements, hardLimit;
 
-  private final ConcurrentHashMap<Object, CacheElement> cache; // unique files
-  private final ConcurrentHashMap<Object, CacheElement.CacheFile> files; // same file may be in cache multiple times
-  private final AtomicInteger counter = new AtomicInteger(); // how many files in the cache
+  private final ConcurrentHashMap<Object, CacheElement> cache; // unique files (by key, often = filename)
+  private final ConcurrentHashMap<Object, CacheElement.CacheFile> files; // list of all files in the cache
+  //private final AtomicInteger counter = new AtomicInteger(); // how many files in the cache
   private final AtomicBoolean hasScheduled = new AtomicBoolean(false); // a cleanup is scheduled
   private final AtomicBoolean disabled = new AtomicBoolean(false);  // cache is disabled
 
@@ -246,13 +247,14 @@ public class FileCache {
     }
 
     // increment the number of files in the cache
-    int count = counter.incrementAndGet();
+    //int count = counter.incrementAndGet();
 
     // do we need a cleanup ??
     boolean needHard = false;
     boolean needSoft = false;
     synchronized (hasScheduled) {
       if (!hasScheduled.get()) {
+        int count = files.size();
         if ((count > hardLimit) && (hardLimit > 0)) {
           needHard = true;
           hasScheduled.getAndSet(true); // tell other threads not to schedule another cleanup
@@ -265,7 +267,7 @@ public class FileCache {
     }
 
     if (needHard) {
-      if (debugCleanup) System.out.println("CleanupTask due to hard limit time=" + new Date().getTime());
+      if (debugCleanup) System.out.println("CleanupTask due to hard limit time=" + new Date().getTime()); // +" Thread="+Thread.currentThread().hashCode()
       cleanup(hardLimit);
 
     } else if (needSoft) {
@@ -333,7 +335,7 @@ public class FileCache {
     }
 
     // find it in the file cache
-    CacheElement.CacheFile file = files.get(ncfile);
+    CacheElement.CacheFile file = files.get(ncfile); // using hashCode of the FileCacheable
     if (file != null) {
       if (!file.isLocked.get())
         log.warn("FileCache " + name + " release " + ncfile.getLocation() + " not locked");
@@ -347,9 +349,19 @@ public class FileCache {
     throw new IOException("FileCache " + name + " release does not have file in cache = " + ncfile.getLocation());
   }
 
-  /**
-   * debug only, do not use
-   */
+  // debug
+  public String getInfo(FileCacheable ncfile) throws IOException {
+    if (ncfile == null) return "";
+
+    // find it in the file cache
+    CacheElement.CacheFile file = files.get(ncfile);
+    if (file != null) {
+      return "File is in cache= "+file;
+    }
+    return "File not in cache";
+  }
+
+  // debug
   Map<Object, CacheElement> getCache() {
     return cache;
   }
@@ -396,7 +408,7 @@ public class FileCache {
     for (CacheElement.CacheFile file : deleteList) {
       if (force && file.isLocked.get())
         log.warn("FileCache " + name + " force close locked file= " + file);
-      counter.decrementAndGet();
+      //counter.decrementAndGet();
 
       try {
         file.ncfile.setFileCache(null);
@@ -406,7 +418,7 @@ public class FileCache {
         log.error("FileCache " + name + " close failed on " + file);
       }
     }
-    log.debug("*FileCache " + name + " clearCache force= " + force + " deleted= " + deleteList.size() + " left=" + counter.get());
+    log.debug("*FileCache " + name + " clearCache force= " + force + " deleted= " + deleteList.size() + " left=" + files.size());
     //System.out.println("\n*NetcdfFileCache.clearCache force= " + force + " deleted= " + deleteList.size() + " left=" + counter.get());
   }
 
@@ -416,7 +428,7 @@ public class FileCache {
    * @param format add to this
    */
   public void showCache(Formatter format) {
-    ArrayList<CacheElement.CacheFile> allFiles = new ArrayList<CacheElement.CacheFile>(counter.get());
+    ArrayList<CacheElement.CacheFile> allFiles = new ArrayList<CacheElement.CacheFile>(files.size());
     for (CacheElement elem : cache.values()) {
       synchronized (elem) {
         allFiles.addAll(elem.list);
@@ -431,7 +443,7 @@ public class FileCache {
   }
 
   public List<String> showCache() {
-    ArrayList<CacheElement.CacheFile> allFiles = new ArrayList<CacheElement.CacheFile>(counter.get());
+    ArrayList<CacheElement.CacheFile> allFiles = new ArrayList<CacheElement.CacheFile>(files.size());
     for (CacheElement elem : cache.values()) {
       synchronized (elem) {
         allFiles.addAll(elem.list);
@@ -453,7 +465,7 @@ public class FileCache {
    * @param format add to this
    */
   public void showStats(Formatter format) {
-    format.format("  hits= %d miss= %d nfiles= %d elems= %d\n", hits.get(), miss.get(), counter.get(), cache.values().size());
+    format.format("  hits= %d miss= %d nfiles= %d elems= %d\n", hits.get(), miss.get(), files.size(), cache.values().size());
   }
 
   /**
@@ -467,21 +479,23 @@ public class FileCache {
     if (disabled.get()) return;
 
     try {
-      int size = counter.get();
+      /* int size = counter.get();
       int fsize = files.size();
-      if (size != fsize)
-        log.warn("FileCache " + name + " counter " + size + " doesnt match files().size" + fsize);
+      if (debug && (size != fsize)) {
+        log.warn("FileCache " + name + " counter " + size + " doesnt match files().size=" + fsize);
+      } */
 
+      int size = files.size();
       if (size <= minElements) return;
 
-      log.debug("FileCache " + name + " cleanup started at " + new Date() + " for cleanup maxElements=" + maxElements);
+      log.debug(" FileCache " + name + " cleanup started at " + new Date() + " for cleanup maxElements=" + maxElements);
       if (debugCleanup)
-        System.out.println("FileCache " + name + "cleanup started at " + new Date() + " for cleanup maxElements=" + maxElements);
+        System.out.println(" FileCache " + name + "cleanup started at " + new Date() + " for cleanup maxElements=" + maxElements);
 
       cleanups.incrementAndGet();
 
       // add unlocked files to the all list
-      ArrayList<CacheElement.CacheFile> allFiles = new ArrayList<CacheElement.CacheFile>(counter.get());
+      ArrayList<CacheElement.CacheFile> allFiles = new ArrayList<CacheElement.CacheFile>(size + 10);
       for (CacheElement.CacheFile file : files.values()) {
         if (!file.isLocked.get()) allFiles.add(file);
       }
@@ -521,7 +535,7 @@ public class FileCache {
       // now actually close the files
       long start = System.currentTimeMillis();
       for (CacheElement.CacheFile file : deleteList) {
-        counter.decrementAndGet();
+        //counter.decrementAndGet();
         files.remove(file.ncfile);
         try {
           file.ncfile.setFileCache(null);
@@ -533,9 +547,9 @@ public class FileCache {
       }
 
       long took = System.currentTimeMillis() - start;
-      log.debug("FileCache " + name + " cleanup had= " + size + " removed= " + deleteList.size() + " took=" + took + " msec");
+      log.debug(" FileCache " + name + " cleanup had= " + size + " removed= " + deleteList.size() + " took=" + took + " msec");
       if (debugCleanup)
-        System.out.println("FileCache " + name + "cleanup had= " + size + " removed= " + deleteList.size() + " took=" + took + " msec");
+        System.out.println(" FileCache " + name + "cleanup had= " + size + " removed= " + deleteList.size() + " took=" + took + " msec");
 
     } finally {
       // allow scheduling again
@@ -552,6 +566,10 @@ public class FileCache {
       this.hashKey = hashKey;
       CacheFile file = new CacheFile(ncfile);
       list.add(file);
+      if (debug) {
+        if (files.get(ncfile) != null)
+          log.error("files already has " + hashKey + " " + name);
+      }
       files.put(ncfile, file);
       if (log.isDebugEnabled()) log.debug("CacheElement add to cache " + hashKey + " " + name);
     }
@@ -560,6 +578,10 @@ public class FileCache {
       CacheFile file = new CacheFile(ncfile);
       synchronized (this) {
         list.add(file);
+      }
+      if (debug) {
+        if (files.get(ncfile) != null)
+          log.error("files (2) already has " + hashKey + " " + name);   
       }
       files.put(ncfile, file);
       return file;

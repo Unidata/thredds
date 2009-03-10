@@ -121,6 +121,7 @@ public class ToolsUI extends JPanel {
   private FeatureScanPanel ftPanel;
   private FmrcPanel fmrcPanel;
   private GeoGridPanel gridPanel;
+  private Hdf5Panel hdf5Panel;
   private ImagePanel imagePanel;
   private NCdumpPanel ncdumpPanel;
   private OpPanel ncmlPanel, geotiffPanel;
@@ -215,6 +216,7 @@ public class ToolsUI extends JPanel {
         }
       }
     });
+    iospTabPane.addTab("HDF5", new JLabel("HDF5"));
 
     // nested tab - features
     gridPanel = new GeoGridPanel((PreferencesExt) mainPrefs.node("grid"));
@@ -283,6 +285,10 @@ public class ToolsUI extends JPanel {
     } else if (title.equals("Grids")) {
       gridPanel = new GeoGridPanel((PreferencesExt) mainPrefs.node("grid"));
       c = gridPanel;
+
+    } else if (title.equals("HDF5")) {
+      hdf5Panel = new Hdf5Panel((PreferencesExt) mainPrefs.node("hdf5"));
+      c = hdf5Panel;
 
     } else if (title.equals("Fmrc")) {
       fmrcPanel = new FmrcPanel((PreferencesExt) mainPrefs.node("fmrc"));
@@ -715,6 +721,7 @@ public class ToolsUI extends JPanel {
     if (fmrcPanel != null) fmrcPanel.save();
     if (geotiffPanel != null) geotiffPanel.save();
     if (gridPanel != null) gridPanel.save();
+    if (hdf5Panel != null) hdf5Panel.save();
     if (imagePanel != null) imagePanel.save();
     if (ncdumpPanel != null) ncdumpPanel.save();
     if (ncmlPanel != null) ncmlPanel.save();
@@ -1646,6 +1653,56 @@ public class ToolsUI extends JPanel {
 
     void save() {
       bufrTable.save();
+      super.save();
+    }
+
+  }
+
+  /////////////////////////////////////////////////////////////////////
+  private class Hdf5Panel extends OpPanel {
+    ucar.unidata.io.RandomAccessFile raf = null;
+    Hdf5Table hdf5Table;
+
+    boolean useDefinition = false;
+    JComboBox defComboBox;
+    IndependentWindow defWindow;
+    AbstractButton defButt;
+
+    Hdf5Panel(PreferencesExt p) {
+      super(p, "file:", true, false);
+      hdf5Table = new Hdf5Table(prefs);
+      add(hdf5Table, BorderLayout.CENTER);
+    }
+
+    boolean process(Object o) {
+      String command = (String) o;
+      boolean err = false;
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        if (raf != null)
+          raf.close();
+        raf = new ucar.unidata.io.RandomAccessFile(command, "r");
+
+        hdf5Table.setHdf5File(raf);
+
+      } catch (FileNotFoundException ioe) {
+        JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
+        ta.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
+        err = true;
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        e.printStackTrace(new PrintStream(bos));
+        ta.setText(bos.toString());
+        err = true;
+      }
+
+      return !err;
+    }
+
+    void save() {
+      hdf5Table.save();
       super.save();
     }
 

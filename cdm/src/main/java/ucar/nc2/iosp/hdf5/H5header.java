@@ -60,7 +60,7 @@ import java.nio.charset.Charset;
  * any field called address is actually reletive to the base address.
  * any field called filePos or dataPos is a byte offset within the file.
  */
-class H5header {
+public class H5header {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5header.class);
   static private String utf8CharsetName = "UTF-8";
   static private Charset utf8Charset = Charset.forName(utf8CharsetName); // cant use until 1.6
@@ -1787,7 +1787,20 @@ class H5header {
   //////////////////////////////////////////////////////////////
   // Level 2A "data object header"
 
-  private class DataObject {
+  public class DataObject {
+    // debugging
+    public long getAddress() {
+      return address;
+    }
+
+    public String getWho() {
+      return who;
+    }
+
+    public List<Message> getMessages() {
+      return messages;
+    }
+
     long address; // aka object id : obviously unique
     String who;   // may be null, may not be unique
     List<Message> messages = new ArrayList<Message>();
@@ -1809,6 +1822,7 @@ class H5header {
     // "Data Object Header" Level 2A
     // read a Data Object Header
     // no side effects, can be called multiple time for debugging
+
 
     private DataObject(long address, String who) throws IOException {
       this.address = address;
@@ -2028,7 +2042,7 @@ class H5header {
   } // DataObject
 
   // type safe enum
-  static private class MessageType {
+  static public class MessageType {
     private static int MAX_MESSAGE = 23;
     private static java.util.Map<String, MessageType> hash = new java.util.HashMap<String, MessageType>(10);
     private static MessageType[] mess = new MessageType[MAX_MESSAGE];
@@ -2103,11 +2117,32 @@ class H5header {
   }
 
   // Header Message: Level 2A1 and 2A2 (part of Data Object)
-  private class Message implements Comparable {
+  public class Message implements Comparable {
     long start;
     byte headerMessageFlags;
     short type, size, header_length;
     Object messData; // header message data
+
+    public MessageType getMtype() {
+      return mtype;
+    }
+
+    public short getSize() {
+      return size;
+    }
+
+    public short getType() {
+      return type;
+    }
+
+    public byte getFlags() {
+      return headerMessageFlags;
+    }
+
+    public long getStart() {
+      return start;
+    }
+
     MessageType mtype;
 
     short creationOrder = -1;
@@ -2362,6 +2397,14 @@ class H5header {
       nameHeapAddress = readOffset();
       if (debug1) debugOut.println("   Group btreeAddress=" + btreeAddress + " nameHeapAddress=" + nameHeapAddress);
     }
+
+    public String toString() {
+      StringBuilder sbuff = new StringBuilder();
+      sbuff.append(" btreeAddress=").append(btreeAddress);
+      sbuff.append(" nameHeapAddress=").append(nameHeapAddress);
+      return sbuff.toString();
+    }
+
   }
 
   // Message Type 2 "New Group" or "Link Info" (version 2)
@@ -2524,6 +2567,8 @@ class H5header {
     public String toString() {
       StringBuilder sbuff = new StringBuilder();
       sbuff.append(" datatype= ").append(type);
+      DataType dtype = getNCtype(type, byteSize);
+      sbuff.append(" ").append(dtype.toString());
       if ((type == 0) || (type == 1))
         sbuff.append(" byteSize= ").append(byteSize);
       else if (type == 2)
@@ -4116,6 +4161,17 @@ class H5header {
     H5header.GlobalHeap.HeapObject ho = heapId.getHeapObject();
     raf.seek(ho.dataPos);
     return readStringFixedLength((int) ho.dataSize);
+  }
+
+  // debug - hdf5Table
+  public List<DataObject> getDataObjects() {
+    ArrayList<DataObject> result = new ArrayList<DataObject>(addressMap.values());
+    Collections.sort( result, new java.util.Comparator<DataObject>() {
+      public int compare(DataObject o1, DataObject o2) {
+        return (int) (o1.address - o2.address);
+      }
+    });
+    return result;
   }
 
   /**

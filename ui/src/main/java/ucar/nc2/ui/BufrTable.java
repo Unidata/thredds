@@ -65,7 +65,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
 /**
- * Class Description.
+ * ToolsUI/Iosp/Bufr
  *
  * @author caron
  * @since Aug 15, 2008

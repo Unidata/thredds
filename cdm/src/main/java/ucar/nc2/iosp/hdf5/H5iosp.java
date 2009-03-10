@@ -424,5 +424,11 @@ public class H5iosp extends AbstractIOServiceProvider {
   static private class FakeNetcdfFile extends NetcdfFile {
   }
 
+  // debug
+  public Object sendIospMessage(Object message) {
+    if (message.toString().equals("header"))
+      return headerParser;
+    return null;
+  }
 
 }

@@ -121,7 +121,8 @@ public class NcDAS extends opendap.dap.DAS {
     List dims = v.getDimensions();
     for (int i = 0; i < dims.size(); i++) {
       Dimension dim = (Dimension) dims.get(i);
-      usedDims.put( dim.getName(), dim);
+      if (dim.isShared())
+        usedDims.put( dim.getName(), dim);
     }
 
     //if (v.getAttributes().size() == 0) return; // LOOK DAP 2 say must have empty
@@ -198,7 +199,7 @@ public class NcDAS extends opendap.dap.DAS {
       try {
         opendap.dap.AttributeTable dodsTable = table.appendContainer("DODS");
         dodsTable.appendAttribute("strlen", opendap.dap.Attribute.INT32, Integer.toString(strlen));
-        if (dim != null)
+        if ((dim != null) && dim.isShared())
           dodsTable.appendAttribute("dimName", opendap.dap.Attribute.STRING, dim.getName());
         count++;
       } catch (Exception e) {

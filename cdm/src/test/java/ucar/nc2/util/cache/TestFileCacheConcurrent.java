@@ -70,7 +70,7 @@ public class TestFileCacheConcurrent extends TestCase {
 
   void loadFiles(File dir, String suffix, List<String> result) {
     for (File f : dir.listFiles()) {
-      if (f.isDirectory())
+      if (f.isDirectory() && !f.getName().equals("exclude"))
         loadFiles(f, suffix, result);
 
       else if (f.getPath().endsWith(suffix) && f.length() > 0) {
@@ -87,10 +87,10 @@ public class TestFileCacheConcurrent extends TestCase {
   int CLIENT_THREADS = 50;
   int WAIT_MAX = 25; // msecs
   int MAX_TASKS = 1000; // bounded queue
-  int NSAME = 3; // sub\bmit same file n consecutive
+  int NSAME = 3; // submit same file n consecutive
 
   public void testConcurrentAccess() throws InterruptedException {
-    cache.debugCleanup = true;
+    cache.debugCleanup = false;
 
     // load some files into the cache
     List<String> fileList = new ArrayList<String>(100);
@@ -172,6 +172,7 @@ public class TestFileCacheConcurrent extends TestCase {
 
       } catch (Throwable e) {
         System.out.println(" fail="+e.getMessage());
+        e.printStackTrace();
         assert false;
       }
 

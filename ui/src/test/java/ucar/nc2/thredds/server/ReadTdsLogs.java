@@ -73,7 +73,7 @@ public class ReadTdsLogs {
   ReadTdsLogs(String server) throws FileNotFoundException {
     this.server = server;
 
-    executor = Executors.newFixedThreadPool(5); // number of threads
+    executor = Executors.newFixedThreadPool(1); // number of threads
     completionQ = new ArrayBlockingQueue<Future<SendRequestTask>>(10); // bounded, threadsafe
     completionService = new ExecutorCompletionService<SendRequestTask>(executor, completionQ);
 
@@ -301,7 +301,7 @@ public class ReadTdsLogs {
 
 
   static private int total_submit = 0;
-  static private int min_submit = 3000;
+  static private int skip_submit =10000;
   static private int max_submit = Integer.MAX_VALUE;
 
   void sendRequests(String filename, int max) throws IOException {
@@ -318,7 +318,7 @@ public class ReadTdsLogs {
       if (log == null) continue;
       total++;
 
-      if ((total < min_submit) || (total > max_submit)) {
+      if ((total + total_submit < skip_submit) || (total + total_submit > max_submit)) {
         skip++;
         continue;
       }
@@ -630,7 +630,7 @@ public class ReadTdsLogs {
 
     long startElapsed = System.nanoTime();
 
-    read("d:/motherlode/logs/one/", new MClosure() {
+    read("c:/data/motherlode/", new MClosure() {
       public void run(String filename) throws IOException {
         reader.sendRequests(filename, -1);
       }

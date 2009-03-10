@@ -751,8 +751,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    */
   public synchronized void close() throws java.io.IOException {
     if (cache != null) {
-      cache.release(this);
       unlocked = true;
+      cache.release(this);
 
     } else {
       try {
@@ -1691,8 +1691,10 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   protected Array readData(ucar.nc2.Variable v, Section ranges) throws IOException, InvalidRangeException {
     if (showRequest)
       System.out.println("Data request for variable: "+v.getName()+" section= "+ranges);
-    if (unlocked)
-      throw new IllegalStateException("File is unlocked - cannot use");
+    if (unlocked) {
+      String info = cache.getInfo(this);
+      throw new IllegalStateException("File is unlocked - cannot use\n"+info);
+    }
 
     Array result = spi.readData(v, ranges);
     result.setUnsigned(v.isUnsigned());

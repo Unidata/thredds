@@ -17,6 +17,13 @@ Changes in version 4.0
   * netcdf-java 4.0
 
 Release Details:
+ 06:
+  cdmValidator in separate servlet
+  opendap version string can be set in threddsConfig
+  NcDods: tolerate anonymous dimensions
+  various multithreading bugs
+  clean up cache handling, netcdfFile object lifecycle
+  clean up logging messages
  05:
   catalog.xml cleanup, fixes. change to version=1.0.2
   Error handling in RadarServer, GridServlet, ServletUtil.handleExcception
