@@ -36,10 +36,10 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.NetcdfCFWriter;
 import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
 import ucar.nc2.geotiff.GeotiffWriter;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.ogc.EPSG_OGC_CF_Helper;
@@ -208,15 +208,28 @@ public class WcsCoverage
     if ( timeRange != null )
     {
       CoordinateAxis1DTime timeAxis = this.coordSys.getTimeAxis1D();
-      int startIndex = timeAxis.findTimeIndexFromDate( timeRange.getStart().getDate() );
-      int endIndex = timeAxis.findTimeIndexFromDate( timeRange.getEnd().getDate() );
+      DateType requestStartTime = timeRange.getStart();
+      DateType requestEndTime = timeRange.getEnd();
+      int startIndex = timeAxis.findTimeIndexFromDate( requestStartTime.getDate() );
+      int endIndex = timeAxis.findTimeIndexFromDate( requestEndTime.getDate() );
+      if ( startIndex < 0 || startIndex > timeAxis.getSize() -1
+           || endIndex < 0 || endIndex > timeAxis.getSize() - 1 )
+      {
+        String availStart = timeAxis.getDateRange().getStart().toDateTimeStringISO();
+        String availEnd = timeAxis.getDateRange().getEnd().toDateTimeStringISO();
+        String msg = "Requested temporal range [" + requestStartTime.toDateTimeStringISO()
+                     + " - " + requestEndTime.toDateTimeStringISO()
+                     + "] not in available range [" + availStart + " - " + availEnd + "].";
+        log.debug( "writeCoverageDataToFile(): " + msg );
+        throw new WcsException( WcsException.Code.CoverageNotDefined, "Time", msg );
+      }
       try
       {
         tRange = new Range( startIndex, endIndex );
       }
       catch ( InvalidRangeException e )
       {
-        log.error( "writeCoverageDataToFile(): Failed to subset coverage <" + this.coverage.getName() + "> along time axis <" + timeRange + ">: " + e.getMessage() );
+        log.error( "writeCoverageDataToFile(): Failed to subset coverage [" + this.coverage.getName() + "] along time axis [" + timeRange + "]: " + e.getMessage() );
         throw new WcsException( WcsException.Code.CoverageNotDefined, "Time", "Failed to subset coverage [" + this.coverage.getName() + "] along time axis [" + timeRange + "]." );
       }
     }
