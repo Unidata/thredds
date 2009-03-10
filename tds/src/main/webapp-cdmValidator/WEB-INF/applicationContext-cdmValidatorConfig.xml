@@ -22,6 +22,17 @@
     
     <property name="contentPath" value="${cdmvalidator.content.path}"/>
     <property name="configFileName" value="${cdmvalidator.config.file}"/>
+
+    <property name="htmlConfig" ref="cdmValidatorHtmlConfig" />
+  </bean>
+
+  <bean id="cdmValidatorHtmlConfig" class="thredds.server.config.HtmlConfig">
+    <property name="webappUrl" value="${cdmvalidator.url}"/>
+    <property name="webappDocsUrl" value="${cdmvalidator.documentation.url}"/>
+    <property name="webappLogoUrl" value="${cdmvalidator.logo.url}"/>
+    <property name="webappLogoAlt" value="${cdmvalidator.logo.alt}"/>
+
+    <property name="installUrl" value="${cdmvalidator.install.url}"/>
   </bean>
 
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">

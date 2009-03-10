@@ -65,7 +65,11 @@
 
   <servlet-mapping>
     <servlet-name>cdmvalidator</servlet-name>
-    <url-pattern>/cdmValidate/*</url-pattern>
+    <url-pattern>*.html</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>cdmvalidator</servlet-name>
+    <url-pattern>/cdmValidate</url-pattern>
   </servlet-mapping>
 
   <jsp-config>

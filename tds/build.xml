@@ -277,7 +277,7 @@
         <filter token="VERSION" value="${release.version}"/>
         <filter token="VERSION.MINOR" value="${release.version.minor}"/>
         <filter token="BUILDTIME" value="${buildtime.number}"/>
-        <filter token="HEADER" value="${tds.properties.header}" />
+        <filter token="HEADER" value="${cdmvalidator.properties.header}" />
       </filterset>
     </copy>
 

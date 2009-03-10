@@ -12,3 +12,5 @@ cdmvalidator.content.root.path=../../content
 cdmvalidator.content.path=cdmvalidator
 
 cdmvalidator.config.file=threddsConfig.xml
+
+cdmvalidator.install.url=cdmValidate.html

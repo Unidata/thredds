@@ -78,6 +78,9 @@ public class HtmlConfig
   private String hostInstLogoUrl;
   private String hostInstLogoAlt;
 
+  public HtmlConfig()
+  {}
+
   public void init( String webappName,
                     String webappVersion, String webappVersionBrief,
                     String webappVersionBuildDate,
