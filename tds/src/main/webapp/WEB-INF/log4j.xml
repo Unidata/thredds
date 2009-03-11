@@ -2,20 +2,6 @@
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
 
-  <appender name="ThreddsStdout" class="org.apache.log4j.ConsoleAppender">
-    <param name="Threshold" value="WARN" />
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"/>
-      <!--param name="ConversionPattern" value="%d{ISO8601} [%10r - %10X{ID}] %-5p - %c - %m%n"/-->
-    </layout>
-  </appender>
-
-  <appender name="stdout" class="org.apache.log4j.ConsoleAppender">
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"/>
-    </layout>
-  </appender>
-
   <!--
     Example:
     2005-04-18T11:33:43 -0600 [    359843 -        395] DEBUG - thredds.util.TdsPathUtils - extractPath():
@@ -100,13 +86,13 @@
     <appender-ref ref="modelLog"/>
   </logger>
 
-  <logger name="thredds.catalog.InvDatasetFmrc" >
+  <logger name="thredds.catalog.InvDatasetFmrc" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="modelLog"/>
   </logger>
 
   <!-- All normal logging messages go to threddsServlet.log -->
-  <logger name="dods">
+  <logger name="opendap">
     <level value="INFO"/>
     <appender-ref ref="threddsServlet"/>
   </logger>
@@ -133,7 +119,8 @@
   </logger>
 
   <logger name="org.springframework">
-    <level value="ALL"/>
+    <level value="WARN"/>
+    <appender-ref ref="threddsServlet"/>
   </logger>
 
   <!-- Initialize a few loggers to make the servlet debug web interface more convenient. -->
@@ -142,8 +129,8 @@
   <logger name="thredds.servlet"/>
 
   <root>
-    <level value="INFO"/>
-    <appender-ref ref="ThreddsStdout"/>
+    <level value="WARN"/>
+    <appender-ref ref="threddsServlet"/>
   </root>
 
 </log4j:configuration>

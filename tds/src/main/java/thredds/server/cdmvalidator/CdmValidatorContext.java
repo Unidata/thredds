@@ -33,17 +33,26 @@
 package thredds.server.cdmvalidator;
 
 import org.springframework.util.StringUtils;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.slf4j.Logger;
 
 import javax.servlet.ServletContext;
 import javax.servlet.RequestDispatcher;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import thredds.util.filesource.*;
 import thredds.servlet.ThreddsConfig;
 import thredds.servlet.ServletUtil;
+import thredds.servlet.UsageLog;
 import thredds.server.config.TdsContext;
 import thredds.server.config.HtmlConfig;
+import ucar.nc2.util.DiskCache2;
+import ucar.nc2.util.DiskCache;
 
 /**
  * _more_
@@ -72,12 +81,22 @@ public class CdmValidatorContext
 
   private FileSource configSource;
 
-  private RequestDispatcher defaultRequestDispatcher;
-  private RequestDispatcher jspRequestDispatcher;
-
   private String configFileName;
 
   private HtmlConfig htmlConfig;
+
+  private RequestDispatcher defaultRequestDispatcher;
+  private RequestDispatcher jspRequestDispatcher;
+
+  private DiskCache2 cdmValidateCache = null;
+  private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool( 1 );
+
+
+  private DiskFileItemFactory fileuploadFileItemFactory;
+  private File cacheDir;
+  private long maxFileUploadSize;
+  private boolean deleteImmediately = true;
+
 
   public CdmValidatorContext() {}
 
@@ -205,10 +224,63 @@ public class CdmValidatorContext
                                this.getWebappVersionBrief(),
                                this.getWebappVersionBuildDate(),
                                this.getWebappContextPath() );
+    this.initCaching();
+  }
+
+  private void initCaching()
+  {
+    // Configure CdmValidator: max upload size; cache dir and scheme.
+    maxFileUploadSize = ThreddsConfig.getBytes( "CdmValidatorService.maxFileUploadSize", (long) 1000 * 1000 * 1000 );
+
+    String cacheDirPath = ThreddsConfig.get( "CdmValidatorService.cache.dir", new File( this.getContentDirectory(), "cache" ).getPath() );
+
+    int scourSecs = ThreddsConfig.getSeconds( "CdmValidatorService.cache.scour", -1 );
+    int maxAgeSecs = ThreddsConfig.getSeconds( "CdmValidatorService.cache.maxAge", -1 );
+    final long maxSize = ThreddsConfig.getBytes( "CdmValidatorService.cache.maxSize",
+                                                 (long) 1000 * 1000 * 1000 ); // 1 Gbyte
+    if ( maxAgeSecs > 0 )
+    {
+      // Setup cache used by CDM stack (uses DiskCache which is an older static disk cache impl).
+      DiskCache.setRootDirectory( cacheDirPath );
+      DiskCache.setCachePolicy( true );
+      if ( !scheduler.isShutdown() )
+      {
+        Runnable command = new Runnable()
+        {
+          public void run()
+          {
+            StringBuilder sb = new StringBuilder();
+            DiskCache.cleanCache( maxSize, sb ); // 1 Gbyte
+            sb.append( "----------------------\n" );
+            log.debug( "init():Runnable:run(): Scour on ucar.nc2.util.DiskCache:\n" + sb );
+          }
+        };
+        scheduler.scheduleAtFixedRate( command, scourSecs / 2, scourSecs, TimeUnit.SECONDS );
+      }
+
+      // Setup cache for file upload (uses DiskCache2 which is a newer disk cache impl).
+      deleteImmediately = false;
+      cdmValidateCache = new DiskCache2( cacheDirPath, false, maxAgeSecs / 60, scourSecs / 60 );
+    }
+
+    // Setup file upload factory.
+    cacheDir = new File( cacheDirPath );
+    if ( !cacheDir.exists() && !cacheDir.mkdirs() )
+    {
+      String msg = "File upload cache directory [" + cacheDir + "] doesn't exist and couldn't be created.";
+      log.error( "init(): " + msg + " - " + UsageLog.closingMessageNonRequestContext() );
+      throw new IllegalStateException( msg );
+    }
+    fileuploadFileItemFactory = new DiskFileItemFactory( 0, cacheDir ); // LOOK can also do in-memory
   }
 
   public void destroy()
   {
+    if ( this.cdmValidateCache != null )
+      this.cdmValidateCache.exit();
+
+    if ( this.scheduler != null )
+      this.scheduler.shutdown();
   }
 
   /**
@@ -319,5 +391,30 @@ public class CdmValidatorContext
   public RequestDispatcher getJspRequestDispatcher()
   {
     return this.jspRequestDispatcher;
+  }
+
+  public static Logger getLog()
+  {
+    return log;
+  }
+
+  public File getCacheDir()
+  {
+    return cacheDir;
+  }
+
+  public long getMaxFileUploadSize()
+  {
+    return maxFileUploadSize;
+  }
+
+  public boolean isDeleteImmediately()
+  {
+    return deleteImmediately;
+  }
+
+  public FileItemFactory getFileuploadFileItemFactory()
+  {
+    return this.fileuploadFileItemFactory;
   }
 }
