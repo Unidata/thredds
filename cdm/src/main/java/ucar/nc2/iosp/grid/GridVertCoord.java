@@ -296,7 +296,7 @@ public class GridVertCoord implements Comparable {
         v.setDataType(DataType.DOUBLE);
 
         String desc = lookup.getLevelDescription(typicalRecord);
-        if ( lookup.getGridType().equals( "GRIB2") && usesBounds) {
+        if ( lookup.getGridType().equals( "GRIB-2") && usesBounds) {
             desc = "Layer between " + desc;
         }
 

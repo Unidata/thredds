@@ -116,7 +116,7 @@ public class GridHorizCoordSys {
    * startx, starty
    */
   private double startx, starty;
-
+  private double dx, dy;
   /**
    * projection
    */
@@ -134,9 +134,10 @@ public class GridHorizCoordSys {
    * @param lookup lookup table for names
    * @param g      Group for this coord system
    */
-  GridHorizCoordSys(GridDefRecord gds, GridTableLookup lookup,
-                    Group g) {
+  GridHorizCoordSys(GridDefRecord gds, GridTableLookup lookup, Group g) {
     this.gds = gds;
+    this.dx = gds.getDouble(GridDefRecord.DX) * .001;
+    this.dy = gds.getDouble(GridDefRecord.DY) * .001;
     this.lookup = lookup;
     this.g = g;
 
@@ -221,7 +222,8 @@ public class GridHorizCoordSys {
    * @return the X spacing in kilometers
    */
   private double getDxInKm() {
-    return gds.getDouble(GridDefRecord.DX) * .001;
+    //return gds.getDouble(GridDefRecord.DX) * .001;
+    return dx;
   }
 
   /**
@@ -230,7 +232,8 @@ public class GridHorizCoordSys {
    * @return the Y spacing in kilometers
    */
   private double getDyInKm() {
-    return gds.getDouble(GridDefRecord.DY) * .001;
+    //return gds.getDouble(GridDefRecord.DY) * .001;
+    return dy;
   }
 
   /**
@@ -621,6 +624,8 @@ public class GridHorizCoordSys {
     attributes.add(new Attribute("grid_mapping_name", "polar_stereographic"));
     attributes.add(new Attribute("longitude_of_projection_origin",
             new Double(gds.getDouble(GridDefRecord.LOV))));
+    attributes.add(new Attribute("straight_vertical_longitude_from_pole",
+            new Double(gds.getDouble(GridDefRecord.LOV))));
     attributes.add(new Attribute("scale_factor_at_projection_origin",
         new Double(scale)));
     attributes.add(new Attribute("latitude_of_projection_origin",
@@ -746,10 +751,11 @@ public class GridHorizCoordSys {
     // app diameter kmeters / app diameter grid lengths = m per grid length
     double gridLengthX = major_axis * apparentDiameter / dx;
     double gridLengthY = minor_axis * apparentDiameter / dy;
-
+    // have to add to both for consistency
     gds.addParam(GridDefRecord.DX, String.valueOf(1000 * gridLengthX));  // meters
+    gds.addParam(GridDefRecord.DX, new Double(1000 * gridLengthX));
     gds.addParam(GridDefRecord.DY, String.valueOf(1000 * gridLengthY));  // meters
-
+    gds.addParam(GridDefRecord.DY, new Double(1000 * gridLengthY));
     startx = -gridLengthX * xp;  // km
     starty = -gridLengthY * yp;
 

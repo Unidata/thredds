@@ -45,13 +45,23 @@ import ucar.nc2.iosp.IOServiceProvider;
 
 import java.io.IOException;
 
-public class TestGridGribNetcdfFile {
+public class TestGridGribIosp {
 
     static public void main(String args[]) throws IOException, InvalidRangeException {
 
-    long start = System.currentTimeMillis();
-    String fileBinary = "C:/data/GFS_Global_2p5deg_20090305_0000.grib2";
-    String fileText = "C:/data/text/GFS_Global_2p5deg_20090305_0000.grib2";
+    long start = System.currentTimeMillis() ;
+    //String fileBinary = "C:/data/GFS_Global_2p5deg_20090305_0000.grib2";
+    //String fileBinary = "C:/data/GFS_Alaska_191km_20090307_1200.grib1";
+    //String fileBinary = "C:/data/rotatedlatlon.grb";
+    //String fileBinary = "C:/data/NDFD.grib2";
+    //String fileBinary = "C:/data/ds.sky.bin";
+    String fileBinary = "C:/data/MPE_M7_57.grb";
+    //String fileText = "C:/data/text/GFS_Global_2p5deg_20090305_0000.grib2";
+    //String fileText = "C:/data/text/GFS_Alaska_191km_20090307_1200.grib1";
+    //String fileText = "C:/data/text/rotatedlatlon.grb";
+    //String fileText = "C:/data/text/NDFD.grib2";
+    //String fileText = "C:/data/text/ds.sky.bin";
+    String fileText = "C:/data/text/MPE_M7_57.grb";
 
     Class c = ucar.nc2.iosp.grib.GribGridServiceProvider.class;
     IOServiceProvider spiB = null;
@@ -65,21 +75,43 @@ public class TestGridGribNetcdfFile {
     ucar.unidata.io.RandomAccessFile rafB = new ucar.unidata.io.RandomAccessFile(fileBinary, "r");
     rafB.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
     NetcdfFile ncfileBinary = new NetcdfFile(spiB, rafB, fileBinary, null);
+    //System.out.println( "Time to create Netcdf object using GridGrib Iosp "+
+    //  (System.currentTimeMillis() - start) );
 
-    Class cT = ucar.nc2.iosp.grib.Grib2ServiceProvider.class;
+    start = System.currentTimeMillis();
+
+    Class cT1 = ucar.nc2.iosp.grib.Grib1ServiceProvider.class;
+    Class cT2 = ucar.nc2.iosp.grib.Grib2ServiceProvider.class;
     IOServiceProvider spiT = null;
     try {
-      spiT = (IOServiceProvider) cT.newInstance();
+      spiT = (IOServiceProvider) cT2.newInstance();
     } catch (InstantiationException e) {
-      throw new IOException("IOServiceProvider " + cT.getName() + "must have no-arg constructor.");
+      throw new IOException("IOServiceProvider " + cT2.getName() + "must have no-arg constructor.");
     } catch (IllegalAccessException e) {
-      throw new IOException("IOServiceProvider " + cT.getName() + " IllegalAccessException: " + e.getMessage());
+      throw new IOException("IOServiceProvider " + cT2.getName() + " IllegalAccessException: " + e.getMessage());
     }
     ucar.unidata.io.RandomAccessFile rafT = new ucar.unidata.io.RandomAccessFile(fileText, "r");
     rafT.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
-    NetcdfFile ncfileText = new NetcdfFile(spiT, rafT, fileText, null);
+    NetcdfFile ncfileText;
+    if( spiT.isValidFile( rafT )) {
+      rafT.seek( 0L );
+      ncfileText = new NetcdfFile(spiT, rafT, fileText, null);
+    } else {
+      rafT.seek( 0L );
+      try {
+        spiT = (IOServiceProvider) cT1.newInstance();
+      } catch (InstantiationException e) {
+        throw new IOException("IOServiceProvider " + cT1.getName() + "must have no-arg constructor.");
+      } catch (IllegalAccessException e) {
+        throw new IOException("IOServiceProvider " + cT1.getName() + " IllegalAccessException: " + e.getMessage());
+      }
+      ncfileText = new NetcdfFile(spiT, rafT, fileText, null);
+    }
 
+
+      //System.out.println( "Time to create Netcdf object using Grid1 Grib2 Iosp "+
+    //  (System.currentTimeMillis() - start) );
     //ucar.nc2.TestCompare.compareFiles(ncfileBinary, ncfileText, true, true, true);
-    ucar.nc2.TestCompare.compareFiles(ncfileBinary, ncfileText, false, true, true);
+    TestCompare.compareFiles(ncfileBinary, ncfileText, false, true, true);
   }
 }

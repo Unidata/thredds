@@ -179,7 +179,10 @@ public class TestCompare {
       Attribute a = (Attribute)want1;
       status = "Checking "+ a.getName() +" "+ a.getStringValue();
       if ( skipLocation && a.getName().contains( "location"))
-      return;
+        return;
+      // not used, why test for it
+      if ( a.getName().contains( "ScanningMode"))
+        return;
     }
     int index2 = list2.indexOf( want1);
     if (index2 < 0) 

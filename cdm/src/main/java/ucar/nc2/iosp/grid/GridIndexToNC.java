@@ -99,7 +99,7 @@ public class GridIndexToNC {
    */
   public static String makeLevelName(GridRecord gr, GridTableLookup lookup) {
 
-    if (lookup.getGridType().equals("GRIB2")) {
+    if (lookup.getGridType().equals("GRIB-2")) {
       String vname = lookup.getLevelName(gr);
       // for grib2, we need to add the layer to disambiguate
       return lookup.isLayer(gr)
@@ -118,7 +118,7 @@ public class GridIndexToNC {
    * @return name for the level
    */
   public static String makeEnsembleName(GridRecord gr, GridTableLookup lookup) {
-    if (!lookup.getGridType().equals("GRIB2"))
+    if (!lookup.getGridType().equals("GRIB-2"))
       return "";
 
     Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
@@ -282,7 +282,7 @@ public class GridIndexToNC {
     // global stuff
     ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.0"));
     String creator = null;
-    if (lookup.getGridType().equals("GRIB2")) {
+    if (lookup.getGridType().equals("GRIB-2")) {
       Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
       creator = g2lookup.getFirstCenterName()
           + " subcenter = " + g2lookup.getFirstSubcenterId();
@@ -295,7 +295,7 @@ public class GridIndexToNC {
         ncfile.addAttribute(null, new Attribute("Product_Status", g2lookup.getFirstProductStatusName()));
       ncfile.addAttribute(null, new Attribute("Product_Type", g2lookup.getFirstProductTypeName()));
 
-    } else if (lookup.getGridType().equals("GRIB1")) {
+    } else if (lookup.getGridType().equals("GRIB-1")) {
       Grib1GridTableLookup g1lookup = (Grib1GridTableLookup) lookup;
       creator = g1lookup.getFirstCenterName()
           + " subcenter = " + g1lookup.getFirstSubcenterId();
@@ -311,14 +311,12 @@ public class GridIndexToNC {
 
     // dataset discovery
     ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.GRID.toString()));
-    String gridType = lookup.getGridType();
-    gridType = gridType.replaceAll( "\\d", "");
     ncfile.addAttribute(null, new Attribute("creator_name", creator));
-    ncfile.addAttribute(null, new Attribute("file_format", gridType + "-" + version));
+    ncfile.addAttribute(null, new Attribute("file_format", lookup.getGridType()));
     ncfile.addAttribute(null,
         new Attribute("location", ncfile.getLocation()));
     ncfile.addAttribute(null, new Attribute(
-            "history", "Direct read of "+ gridType +"-" + version +" into NetCDF-Java 4.0 API"));
+            "history", "Direct read of "+ lookup.getGridType() +" into NetCDF-Java 4.0 API"));
 
     ncfile.addAttribute(
         null,

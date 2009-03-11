@@ -595,7 +595,12 @@ public class GribHorizCoordSys {
     double dy = gdsIndex.readDouble("Dy");
 
     double major_axis = gdsIndex.readDouble("major_axis_earth"); // km
+    if ( Double.isNaN( major_axis  ))
+       major_axis  = gdsIndex.readDouble("grid_major_axis_earth");
+
     double minor_axis = gdsIndex.readDouble("minor_axis_earth"); // km
+    if ( Double.isNaN( minor_axis ))
+       minor_axis = gdsIndex.readDouble("grid_minor_axis_earth");
 
     // Nr = altitude of camera from center, in units of radius
     double nr = gdsIndex.readDouble("Nr") * 1e-6;
@@ -606,7 +611,9 @@ public class GribHorizCoordSys {
     double gridLengthY = minor_axis * apparentDiameter / dy;
 
     gdsIndex.dx = 1000 * gridLengthX; // meters
+    gdsIndex.addParam( "Dx", String.valueOf(1000 * gridLengthX));
     gdsIndex.dy = 1000 * gridLengthY;
+    gdsIndex.addParam( "Dy", String.valueOf(1000 * gridLengthY));
 
     startx = -gridLengthX * xp;  // km
     starty = -gridLengthY * yp;

@@ -46,6 +46,7 @@ import ucar.nc2.units.DateUnit;
 import ucar.grid.GridTableLookup;
 import ucar.grid.GridRecord;
 import ucar.grib.grib2.Grib2GridTableLookup;
+import ucar.grib.grib1.Grib1GridTableLookup;
 
 import java.util.*;
 
@@ -250,10 +251,14 @@ public class GridTimeCoord {
                                      timeUnit + " since " + refDate));
         if ( lookup.getGridType().startsWith( "GRIB")) {
           v.addAttribute( new Attribute("GRIB_orgReferenceTime", formatter.toDateTimeStringISO( d )));
-          if (lookup.getGridType().equals("GRIB2")) {
+          if (lookup.getGridType().equals("GRIB-2")) {
             Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
             v.addAttribute( new Attribute("GRIB2_significanceOfRTName",
                 g2lookup.getFirstSignificanceOfRTName()));
+          } else {
+            Grib1GridTableLookup g1lookup = (Grib1GridTableLookup) lookup;
+            v.addAttribute( new Attribute("GRIB2_significanceOfRTName",
+                g1lookup.getFirstSignificanceOfRTName()));
           }
         }
         v.addAttribute(new Attribute(_Coordinate.AxisType,
