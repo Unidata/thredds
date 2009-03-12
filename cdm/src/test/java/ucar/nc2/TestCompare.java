@@ -51,7 +51,9 @@ public class TestCompare {
   static boolean showCompare = false;
   static boolean showEach = false;
   static boolean compareData = false;
+
   static boolean skipLocation = true;
+  static boolean skipUnknownVar = true;
 
    static public void compareFiles(NetcdfFile org, NetcdfFile copy) {
      compareFiles( org,  copy, false, false, false);
@@ -114,6 +116,11 @@ public class TestCompare {
 
 
   static void compareVariables(Variable org, Variable copy) {
+    if( skipUnknownVar && org.getName().contains( "Unknown")) {
+      System.out.println( "skipping"+ org.getName() );
+      return;
+    }
+
     if (showCompare) System.out.println("compareVariables  "+org.getName()+" "+copy.getName());
     assert org.getName().equals( copy.getName());
 

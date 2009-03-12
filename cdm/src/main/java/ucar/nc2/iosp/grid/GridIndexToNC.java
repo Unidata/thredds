@@ -477,7 +477,7 @@ public class GridIndexToNC {
       }
       makeVerticalDimensions(vertCoords.subList(start, vcIndex),
           ncfile, hcs.getGroup());
-
+      /*
       // create a variable for each entry, but check for other products with same desc
       // to disambiguate by vertical coord
       ArrayList products = new ArrayList(hcs.productHash.values());
@@ -494,22 +494,11 @@ public class GridIndexToNC {
         } else {
 
           Collections.sort(plist, new CompareGridVariableByNumberVertLevels());
-          /* find the one with the most vertical levels
-         int maxLevels = 0;
-         GridVariable maxV = null;
-         for (int j = 0; j < plist.size(); j++) {
-           GridVariable pv = (GridVariable) plist.get(j);
-           if (pv.getVertCoord().getNLevels() > maxLevels) {
-             maxLevels = pv.getVertCoord().getNLevels();
-             maxV = pv;
-           }
-         } */
           // finally, add the variables
           for (int k = 0; k < plist.size(); k++) {
             GridVariable pv = (GridVariable) plist.get(k);
-            //int nlevels = pv.getVertNlevels();
-            //boolean useDesc = (k == 0) && (nlevels > 1); // keep using the level name if theres only one level
-            // TODO: is there a better way to do this?
+            if( pv.getName().contains("Temperature"))
+                System.out.println( pv.getName());
             boolean useDesc = (k == 0 && useDescriptionForVariableName);
             ncfile.addVariable(hcs.getGroup(),
                 pv.makeVariable(ncfile, hcs.getGroup(), useDesc));
@@ -517,6 +506,31 @@ public class GridIndexToNC {
         }  // multipe vertical levels
 
       }      // create variable
+      */
+      // create a variable for each entry, but check for other products with same desc
+      // to disambiguate by vertical coord
+      List<List<GridVariable>> products = new ArrayList<List<GridVariable>>(hcs.productHash.values());
+      Collections.sort( products, new CompareGridVariableListByName());
+      for (List<GridVariable> plist : products) {
+        if ((cancelTask != null) && cancelTask.isCancel()) break;
+
+        if (plist.size() == 1) {
+          GridVariable pv = plist.get(0);
+          Variable v = pv.makeVariable(ncfile, hcs.getGroup(), true);
+          ncfile.addVariable(hcs.getGroup(), v);
+
+        } else {
+
+          Collections.sort(plist, new CompareGridVariableByNumberVertLevels());
+          // finally, add the variables
+          for (int k = 0; k < plist.size(); k++) {
+            GridVariable pv = plist.get(k);
+            ncfile.addVariable(hcs.getGroup(), pv.makeVariable(ncfile, hcs.getGroup(), (k == 0)));
+          }
+        } // multipe vertical levels
+
+      } // create variable
+
 
       // add coordinate variables at the end
       for (int i = 0; i < timeCoords.size(); i++) {

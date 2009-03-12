@@ -44,10 +44,14 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.iosp.IOServiceProvider;
 
 import java.io.IOException;
+import java.io.File;
 
 public class TestGridGribIosp {
 
-    static public void main(String args[]) throws IOException, InvalidRangeException {
+    static public void compareNC(String fileBinary, String fileText)
+        throws IOException {
+
+   // }, InvalidRangeException {
 
     long start = System.currentTimeMillis() ;
     //String fileBinary = "C:/data/GFS_Global_2p5deg_20090305_0000.grib2";
@@ -55,13 +59,15 @@ public class TestGridGribIosp {
     //String fileBinary = "C:/data/rotatedlatlon.grb";
     //String fileBinary = "C:/data/NDFD.grib2";
     //String fileBinary = "C:/data/ds.sky.bin";
-    String fileBinary = "C:/data/MPE_M7_57.grb";
+    //String fileBinary = "C:/data/MPE_M7_57.grb";
+    //fileBinary = "/local/robb/data/grib/idd/binary/RUC2_CONUS_20km_pressure_20090220_1900.grib2";
     //String fileText = "C:/data/text/GFS_Global_2p5deg_20090305_0000.grib2";
     //String fileText = "C:/data/text/GFS_Alaska_191km_20090307_1200.grib1";
     //String fileText = "C:/data/text/rotatedlatlon.grb";
     //String fileText = "C:/data/text/NDFD.grib2";
     //String fileText = "C:/data/text/ds.sky.bin";
-    String fileText = "C:/data/text/MPE_M7_57.grb";
+    //String fileText = "C:/data/text/MPE_M7_57.grb";
+    //fileText = "/local/robb/data/grib/idd/text/RUC2_CONUS_20km_pressure_20090220_1900.grib2";
 
     Class c = ucar.nc2.iosp.grib.GribGridServiceProvider.class;
     IOServiceProvider spiB = null;
@@ -77,6 +83,7 @@ public class TestGridGribIosp {
     NetcdfFile ncfileBinary = new NetcdfFile(spiB, rafB, fileBinary, null);
     //System.out.println( "Time to create Netcdf object using GridGrib Iosp "+
     //  (System.currentTimeMillis() - start) );
+    System.out.println( "Binary Netcdf created" );
 
     start = System.currentTimeMillis();
 
@@ -107,11 +114,47 @@ public class TestGridGribIosp {
       }
       ncfileText = new NetcdfFile(spiT, rafT, fileText, null);
     }
-
+    System.out.println( "Text Netcdf created" );
 
       //System.out.println( "Time to create Netcdf object using Grid1 Grib2 Iosp "+
     //  (System.currentTimeMillis() - start) );
+    // org,  copy,  _compareData,  _showCompare,  _showEach
     //ucar.nc2.TestCompare.compareFiles(ncfileBinary, ncfileText, true, true, true);
-    TestCompare.compareFiles(ncfileBinary, ncfileText, false, true, true);
+     TestCompare.compareFiles(ncfileBinary, ncfileText, false, true, false);
+     ncfileBinary.close();
+     ncfileText.close();
+  }
+
+  static public void main(String args[]) throws IOException {
+    TestGridGribIosp ggi = new TestGridGribIosp();
+    String dirB = "/local/robb/data/grib/idd/binary";
+    String dirT = "/local/robb/data/grib/idd/text";
+
+    File dir = new File( dirB );
+    if (dir.isDirectory()) {
+      System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
+      String[] children = dir.list();
+      for (String child : children) {
+        //System.out.println( "children i ="+ children[ i ]);
+        File aChild = new File(dir, child);
+        //System.out.println( "child ="+ child.getName() );
+        if (aChild.isDirectory()) {
+          continue;
+          // skip index *gbx and inventory *xml files
+        } else if (
+            // can't be displayed by Grib(1|2) iosp
+            child.contains( "GFS_Global_1p0deg_Ensemble") ||
+            child.contains( "SREF") ||    
+            child.endsWith("gbx") ||
+            child.endsWith("xml") ||
+            child.endsWith("tmp") || //index in creation process
+            child.length() == 0) { // zero length file, ugh...
+        } else {
+          System.out.println( "\n\nComparing File "+ child );
+          compareNC( dirB +"/"+ child, dirT +"/"+ child);
+        }
+      }
+    } else {
+    }
   }
 }
