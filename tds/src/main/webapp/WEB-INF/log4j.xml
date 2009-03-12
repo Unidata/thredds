@@ -92,33 +92,33 @@
   </logger>
 
   <!-- All normal logging messages go to threddsServlet.log -->
-  <logger name="opendap">
+  <logger name="opendap" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="threddsServlet"/>
   </logger>
 
-  <logger name="thredds">
+  <logger name="thredds" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="threddsServlet"/>
   </logger>
 
-  <logger name="ucar">
+  <logger name="ucar" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="threddsServlet"/>
   </logger>
 
   <!-- WMS stuff has routine higher level of messages -->
-  <logger name="uk.ac.rdg.resc.ncwms">
+  <logger name="uk.ac.rdg.resc.ncwms" additivity="false">
     <level value="WARN"/>
     <appender-ref ref="threddsServlet"/>
   </logger>
 
-  <logger name="thredds.server.wms">
+  <logger name="thredds.server.wms" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="threddsServlet"/>
   </logger>
 
-  <logger name="org.springframework">
+  <logger name="org.springframework" additivity="false">
     <level value="WARN"/>
     <appender-ref ref="threddsServlet"/>
   </logger>
