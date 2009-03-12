@@ -154,7 +154,7 @@ public class Level2VolumeScan {
         RandomAccessFile uraf;
         File uncompressedFile = DiskCache.getFileStandardPolicy(raf.getLocation() + ".uncompress");
 
-        if (uncompressedFile.exists()) {
+        if (uncompressedFile.exists() && uncompressedFile.length() > 0) {
           // see if its locked - another thread is writing it
           FileInputStream fstream = null;
           FileLock lock = null;

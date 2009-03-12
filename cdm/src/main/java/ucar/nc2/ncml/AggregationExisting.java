@@ -351,8 +351,9 @@ public class AggregationExisting extends AggregationOuterDimension {
       DatasetOuterDimension dod = (DatasetOuterDimension) map.get(id);
 
       if (null == dod) {
+        // this should mean that the dataset has been deleted. so not a problem
         if (debugPersist) System.out.println(" have cache but no dataset= " + id);
-        logger.warn(" have cache but no dataset= " + id);
+        // logger.warn(" have cache but no dataset= " + id);
 
       } else {
 

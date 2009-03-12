@@ -93,6 +93,7 @@ public class TestNexrad2HiResolution extends TestCase {
             NetcdfFile ncfile = NetcdfDataset.openFile(path, null);
             testRead(ncfile);
             testCoordSystem(ncfile);
+            ncfile.close();
           }
 
         }

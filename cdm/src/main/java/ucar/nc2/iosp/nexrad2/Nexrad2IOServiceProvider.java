@@ -85,7 +85,6 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     if (volScan.hasDifferentDopplarResolutions())
       throw new IllegalStateException("volScan.hasDifferentDopplarResolutions");
 
-
     if( volScan.hasHighResolutions(0)) {
 
         if(volScan.getHighResReflectivityGroups() != null)
@@ -223,7 +222,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     int nscans = groups.size();
 
     if (nscans == 0) {
-      throw new IllegalStateException("No data for "+shortName);
+      throw new IllegalStateException("No data for "+shortName+" file= "+ncfile.getLocation());
     }
 
     // get representative record

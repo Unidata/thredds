@@ -65,7 +65,7 @@ public class TestPointFeatureTypes  extends TestCase {
   }
 
   public void testCF() throws IOException {
-    String topdir = "C:/data/ft/"; // TestAll.upcShareTestDataDir;
+    String topdir = TestAll.upcShareTestDataDir;
 
     /////// POINT
     // CF 1.1 psuedo-structure

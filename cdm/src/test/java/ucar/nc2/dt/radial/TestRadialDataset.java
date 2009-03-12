@@ -65,8 +65,8 @@ public class TestRadialDataset extends TestCase {
   public void testReadDirectory() throws IOException {
     long start = System.currentTimeMillis();
     // doDirectory(TestAll.testdataDir + "radar/nexrad/level2/VCP11", false);
-    DiskCache.setCachePolicy( true);
-    DiskCache.setRootDirectory( System.getProperty( "java.io.tmpdir" ) + "/cache/");
+    //DiskCache.setCachePolicy( true);
+    //DiskCache.setRootDirectory( System.getProperty( "java.io.tmpdir" ) + "/cache/");
     doDirectory(TestAll.upcShareTestDataDir + "radar/nexrad/level2/", false, 10, ".raw");
     long took = System.currentTimeMillis() - start;
     System.out.println("that took = "+took+" msec");
