@@ -33,6 +33,8 @@
 
 package ucar.nc2.util;
 
+import java.util.Formatter;
+
 /**
  * Miscellaneous static routines.
  *
@@ -98,16 +100,14 @@ public class Misc {
 
   /** test */
   public static void main(String args[]) {
-    /* double val = 1.0e-10;
-    while (closeEnough(1.0+val, 1.0))
-      val = val*10; */
+    long val1 = -1;
+    long val2 = 234872309;
+    int val3 = 2348;
+    int val4 = 32;
+    Formatter f = new Formatter(System.out);
+    f.format("  address            dataPos            offset size\n");
+    f.format("  %#-18x %#-18x %5d  %4d%n", val1, val2, val3, val4);
 
-    double val = -1.9531250532132835E-30;
-    double val2 = 1.953125E-30;
-    closeEnough(val, val2, 1.0e-5);
-
-    /* while (closeEnough(val+diff, val))
-      val = val/10;  */
   }
 
 

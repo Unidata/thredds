@@ -49,6 +49,7 @@ import thredds.ui.IndependentWindow;
 import thredds.ui.BAMutil;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.*;
 
@@ -60,11 +61,11 @@ import java.util.*;
 public class Hdf5Table extends JPanel {
   private PreferencesExt prefs;
 
-  private BeanTableSorted objectTable, messTable;
-  private JSplitPane split, split2;
+  private ucar.util.prefs.ui.BeanTableSorted objectTable, messTable, attTable;
+  private JSplitPane splitH, split, split2;
 
-  private TextHistoryPane dumpTA;
-  //private IndependentWindow infoWindow;
+  private TextHistoryPane dumpTA, infoTA;
+  private IndependentWindow infoWindow;
 
   public Hdf5Table(PreferencesExt prefs) {
     this.prefs = prefs;
@@ -80,32 +81,14 @@ public class Hdf5Table extends JPanel {
           beans.add( new MessageBean(m));
         }
         messTable.setBeans(beans);
+
+        ArrayList attBeans = new ArrayList();
+        for ( H5header.MessageAttribute m : ob.m.getAttributes()) {
+          attBeans.add( new AttributeBean(m));
+        }
+        attTable.setBeans(attBeans);
       }
     });
-
-    thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(objectTable.getJTable(), "Options");
-    /* varPopup.addAction("Show DDS", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        ObjectBean vb = (ObjectBean) objectTable.getSelectedBean();
-        infoTA.clear();
-        Formatter f = new Formatter();
-        try {
-          if (!vb.m.isTablesComplete()) {
-            f.format(" MISSING DATA DESCRIPTORS= ");
-            vb.m.showMissingFields(f);
-            f.format("%n%n");
-          }
-
-          vb.m.dump(f);
-        } catch (IOException e1) {
-          JOptionPane.showMessageDialog(Hdf5Table.this, e1.getMessage());
-          e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        infoTA.appendLine(f.toString());
-        infoTA.gotoTop();
-        infoWindow.showIfNotIconified();
-      }
-    });  */
 
     messTable = new BeanTableSorted(MessageBean.class, (PreferencesExt) prefs.node("MessBean"), false);
     messTable.addListSelectionListener(new ListSelectionListener() {
@@ -115,25 +98,58 @@ public class Hdf5Table extends JPanel {
       }
     });
 
+    thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(messTable.getJTable(), "Options");
+    varPopup.addAction("Show FractalHeap", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        MessageBean mb = (MessageBean) messTable.getSelectedBean();
+
+        if (infoTA == null) {
+          infoTA = new TextHistoryPane();
+          infoWindow = new IndependentWindow("Extra", BAMutil.getImage("netcdfUI"), infoTA);
+          infoWindow.setBounds(new Rectangle(300, 300, 500, 800));
+        }
+        infoTA.clear();
+        Formatter f = new Formatter();
+        mb.m.showFractalHeap(f);
+
+        infoTA.appendLine(f.toString());
+        infoTA.gotoTop();
+        infoWindow.showIfNotIconified();
+      }
+    });
+
+    attTable = new BeanTableSorted(AttributeBean.class, (PreferencesExt) prefs.node("AttBean"), false);
+    attTable.addListSelectionListener(new ListSelectionListener() {
+      public void valueChanged(ListSelectionEvent e) {
+        AttributeBean mb = (AttributeBean) attTable.getSelectedBean();
+        dumpTA.setText( mb.att.toString());
+      }
+    });
+
     // the info window
     dumpTA = new TextHistoryPane();
 
-    split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, objectTable, messTable);
-    split2.setDividerLocation(prefs.getInt("splitPos2", 800));
+    splitH = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, objectTable, dumpTA);
+    splitH.setDividerLocation(prefs.getInt("splitPosH", 600));
 
-    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split2, dumpTA);
+    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, splitH, messTable);
     split.setDividerLocation(prefs.getInt("splitPos", 500));
 
+    split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split, attTable);
+    split2.setDividerLocation(prefs.getInt("splitPos2", 500));
+
     setLayout(new BorderLayout());
-    add(split, BorderLayout.CENTER);
+    add(split2, BorderLayout.CENTER);
   }
 
   public void save() {
     objectTable.saveState(false);
     messTable.saveState(false);
+    attTable.saveState(false);
     // prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     prefs.putInt("splitPos", split.getDividerLocation());
     prefs.putInt("splitPos2", split2.getDividerLocation());
+    prefs.putInt("splitPosH", splitH.getDividerLocation());
   }
 
   private String location;
@@ -217,6 +233,40 @@ public class Hdf5Table extends JPanel {
 
     public long getStart() {
       return m.getStart();
+    }
+
+  }
+
+  public class AttributeBean {
+    H5header.MessageAttribute att;
+
+    // no-arg constructor
+    public AttributeBean() {
+    }
+
+    // create from a dataset
+    public AttributeBean(H5header.MessageAttribute att) {
+      this.att = att;
+    }
+
+    public byte getVersion() {
+      return att.getVersion();
+    }
+
+    public String getName() {
+      return att.getName();
+    }
+
+    public String getMdt() {
+      return att.getMdt().toString();
+    }
+
+    public String getMds() {
+      return att.getMds().toString();
+    }
+
+    public long getDataPos() {
+      return att.getDataPos();
     }
 
   }
