@@ -1,14 +1,18 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html><head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title>TDS</title>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <title>TDS</title>
 </head>
-
 <body>
-    <h1 align="left"> <img src="images/unidataLogo.png" align="middle" height="75" width="75"><strong>THREDDS Data Server</strong></h1>
+    <h1 align="left"> <img src="images/unidataLogo.png" alt="Unidata" align="middle" height="75" width="75"><strong>THREDDS Data Server</strong></h1>
     <hr>
 <h2> Overview</h2>
-<p>The THREDDS Data Server (TDS) is a web server that provides metadata and data access for scientific datasets, using OPeNDAP, OGC WMS and WCS, HTTP, and other data access protocols. The TDS is developed and supported by Unidata, a division  of the University Corporation for Atmospheric Research (<a href="http://www.ucar.edu/">UCAR</a>), and is sponsored by the National Science Foundation.</p>
+<p>The THREDDS Data Server (TDS) is a web server that provides metadata
+and data access for scientific datasets, using OPeNDAP, OGC WMS and
+WCS, HTTP, and other data access protocols. The TDS is developed and
+supported by Unidata, a division of the University Corporation for
+Atmospheric Research (<a href="http://www.ucar.edu/">UCAR</a>), and is sponsored by the National Science Foundation.</p>
 <p>Some of the technology in the TDS:</p>
 <ol>
   <li>THREDDS <a href="#Catalogs">Dataset Inventory Catalogs</a>
@@ -24,7 +28,10 @@ read through the Netcdf-Java library are called <em>CDM datasets</em>.</li>
   <li>An integrated server provides <a href="http://www.opendap.org/">OPeNDAP</a> access to any CDM dataset. OPeNDAP is a widely used, subsetting data access method extending the HTTP protocol. </li>
   <li>An integrated server provides bulk file access through the HTTP protocol. </li>
   <li>An integrated server provides data access through the <a href="http://www.opengeospatial.org/standards/wcs">OpenGIS Consortium (OGC) Web Coverage Service (WCS</a>) protocol, for any "gridded" dataset whose coordinate system information is complete. </li>
-  <li>An integrated server provides data access through the <a href="http://www.opengeospatial.org/standards/wms">OpenGIS Consortium (OGC) Web Map Service (WMS</a>) protocol, for any "gridded" dataset whose coordinate system information is complete. This software was developed by Jon Blower (University of Reading (UK) E-Science Center) as part of the <a href="http://behemoth.nerc-essc.ac.uk/ncWMS/godiva2.html">ESSC Web Map Service for environmental data</a> (aka Godiva2).</li>
+  <li>An integrated server provides data access through the <a href="http://www.opengeospatial.org/standards/wms">OpenGIS Consortium (OGC) Web Map Service (WMS</a>)
+protocol, for any "gridded" dataset whose coordinate system information
+is complete. This software was developed by Jon Blower (University of
+Reading (UK) E-Science Center) as part of the <a href="http://behemoth.nerc-essc.ac.uk/ncWMS/godiva2.html">ESSC Web Map Service for environmental data</a> (aka Godiva2).</li>
   <li>An integrated <a href="interfaceSpec/NetcdfSubsetService.html">NetCDF Subset Service</a>
 allows subsetting of THREDDS datasets, using earth coordinates (such as
 lat/lon bounding boxes and date ranges) and returns netCDF binary
@@ -37,7 +44,9 @@ web server. Configuration is made as simple and as automatic as
 possible, and we have made the server as secure as possible. The
 library is freely available and the source code is released under the
 under the (MIT-style)  netCDF library <a href="http://www.unidata.ucar.edu/software/netcdf/copyright.html">license</a>. </p>
-<p>Much of the realtime data available over the Unidata <a href="http://www.unidata.ucar.edu/software/idd/index.html">Internet Data Distribution</a> (IDD) is available through a THREDDS Data Server hosted at Unidata on <a href="http://motherlode.ucar.edu:8080/thredds/">motherlode.ucar.edu</a>. You are welcome to browse and access these meteorological datasets. If you need regular access to large amounts of data, please contact <a href="mailto:support-idd@unidata.ucar.edu.">support-idd@unidata.ucar.edu.</a></p>
+<p>Much of the realtime data available over the Unidata <a href="http://www.unidata.ucar.edu/software/idd/index.html">Internet Data Distribution</a> (IDD) is available through a THREDDS Data Server hosted at Unidata on <a href="http://motherlode.ucar.edu:8080/thredds/">motherlode.ucar.edu</a>.
+You are welcome to browse and access these meteorological datasets. If
+you need regular access to large amounts of data, please contact <a href="mailto:support-idd@unidata.ucar.edu.">support-idd@unidata.ucar.edu.</a></p>
 <h2>System Requirements</h2>
 <ul>
   <li><a href="http://java.sun.com/">Java</a> 1.5 or above.</li>
@@ -52,7 +61,7 @@ under the (MIT-style)  netCDF library <a href="http://www.unidata.ucar.edu/softw
 <h2>Documentation</h2>
 <ul>
   <li><a href="tds4.0/UpgradingTo4.0.html">Upgrading to TDS 4.0</a></li>
-  <li><a href="tds4.0/UpgradingTo4.0.html">TDS Installation and Administration Tutorial</a></li>
+  <li><a href="tutorial/index.html">TDS Installation and Administration Tutorial</a></li>
   <li><a href="reference/index.html">TDS Reference Documentation</a></li>
   <li><a href="interfaceSpec/NetcdfSubsetService.html">Netcdf Subset Service</a> (experimental)
     <ul>
@@ -107,6 +116,6 @@ use them for its own configuration. In this mode they are called <em><strong>TDS
 <p>&nbsp;</p>
 <hr width="100%">
 <address>
-<img src="images/thread.png" width="110" height="108">This document is maintained by John Caron and was last updated on Feb 19, 2009
+<img src="images/thread.png" height="108" width="110">This document is maintained by John Caron and was last updated on Feb 19, 2009
 </address>
 </body></html>
