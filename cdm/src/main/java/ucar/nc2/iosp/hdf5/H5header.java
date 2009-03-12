@@ -34,6 +34,7 @@ package ucar.nc2.iosp.hdf5;
 
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
+import ucar.unidata.util.SpecialMathFunction;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.*;
 import ucar.nc2.EnumTypedef;
@@ -4656,6 +4657,7 @@ There is _no_ datatype information stored for these sort of selections currently
     long startingBlockSize;
 
     long rootBlockAddress;
+    IndirectBlock rootBlock;
 
     // filters
     short ioFilterLen;
@@ -4735,22 +4737,25 @@ There is _no_ datatype information stored for these sort of selections currently
       doublingTable = new DoublingTable(tableWidth, startingBlockSize, allocatedManagedSpace, maxDirectBlockSize);
 
       // data
+      rootBlock = new IndirectBlock(currentNumRows, startingBlockSize);
+
       if (currentNumRows == 0) {
         DataBlock dblock = new DataBlock();
         doublingTable.blockList.add(dblock);
         readDirectBlock(getFileOffset(rootBlockAddress), address, dblock);
-        doublingTable.assignSizes();
+        dblock.size = startingBlockSize - dblock.extraBytes;
+        rootBlock.add( dblock);
 
       } else {
-        //int nrows = SpecialMathFunction.log2(iblock_size) - SpecialMathFunction.log2(startingBlockSize*tableWidth)+1;
-        //int maxrows_directBlocks = (int) (SpecialMathFunction.log2(maxDirectBlockSize) - SpecialMathFunction.log2(startingBlockSize)) + 2;
 
-        readIndirectBlock(getFileOffset(rootBlockAddress), address, hasFilters, currentNumRows);
+        readIndirectBlock(rootBlock, getFileOffset(rootBlockAddress), address, hasFilters);
 
         // read in the direct blocks
         for (DataBlock dblock : doublingTable.blockList) {
-          if (dblock.address > 0)
+          if (dblock.address > 0) {
             readDirectBlock(getFileOffset(dblock.address), address, dblock);
+            dblock.size -= dblock.extraBytes;
+          }
         }
       }
 
@@ -4763,7 +4768,8 @@ There is _no_ datatype information stored for these sort of selections currently
       f.format(" nManagedObjects=" + nManagedObjects + " nHugeObjects= " + nHugeObjects + " nTinyObjects=" + nTinyObjects +
           " maxDirectBlockSize=" + maxDirectBlockSize + " maxHeapSize= 2^" + maxHeapSize+"\n");
       f.format(" rootBlockAddress=" + rootBlockAddress + " startingNumRows=" + startingNumRows + " currentNumRows=" + currentNumRows+"\n\n");
-      doublingTable.showDetails(f);
+      rootBlock.showDetails(f);
+      // doublingTable.showDetails(f);
   }
 
 
@@ -4862,8 +4868,8 @@ There is _no_ datatype information stored for these sort of selections currently
       }
 
     void showDetails(Formatter f) {
-      f.format(" DoublingTable: tableWidth=" + tableWidth + " startingBlockSize=" + startingBlockSize+ " managedSpace=" + managedSpace
-          + " maxDirectBlockSize=" + maxDirectBlockSize+"\n");
+      f.format(" DoublingTable: tableWidth= %d startingBlockSize = %d managedSpace=%d maxDirectBlockSize=%d%n",
+              tableWidth ,startingBlockSize, managedSpace, maxDirectBlockSize);
       //sbuff.append(" nrows=" + nrows + " nDirectRows=" + nDirectRows + " nIndirectRows=" + nIndirectRows+"\n");
       f.format(" DataBlocks:\n");
       f.format("  address            dataPos            offset size\n");
@@ -4873,6 +4879,61 @@ There is _no_ datatype information stored for these sort of selections currently
     }
   }
 
+    private class IndirectBlock {
+      long size;
+      int nrows, directRows, indirectRows;
+      List<DataBlock> directBlocks;
+      List<IndirectBlock> indirectBlocks;
+
+      IndirectBlock(int nrows, long iblock_size ) {
+        this.nrows = nrows;
+        this.size = iblock_size;
+
+        if (nrows < 0) {
+          double n = SpecialMathFunction.log2(iblock_size) - SpecialMathFunction.log2(startingBlockSize*tableWidth) + 1;
+          nrows = (int) n;
+        }
+
+        int maxrows_directBlocks = (int) (SpecialMathFunction.log2(maxDirectBlockSize) - SpecialMathFunction.log2(startingBlockSize)) + 2;
+        if (nrows < maxrows_directBlocks) {
+          directRows = nrows;
+          indirectRows = 0;
+        } else {
+          directRows = maxrows_directBlocks;
+          indirectRows = (nrows - maxrows_directBlocks);
+        }
+        if (debugFractalHeap)
+          debugOut.println("  readIndirectBlock directChildren" + directRows + " indirectChildren= " + indirectRows);
+      }
+
+      void add(DataBlock dblock) {
+        if (directBlocks == null)
+          directBlocks = new ArrayList<DataBlock>();
+        directBlocks.add(dblock);
+      }
+
+      void add(IndirectBlock iblock) {
+        if (indirectBlocks == null)
+          indirectBlocks = new ArrayList<IndirectBlock>();
+        indirectBlocks.add(iblock);
+      }
+
+      void showDetails(Formatter f) {
+        f.format("%n IndirectBlock: nrows= %d directRows = %d indirectRows=%d startingSize=%d%n", 
+                nrows, directRows, indirectRows, size);
+        //sbuff.append(" nrows=" + nrows + " nDirectRows=" + nDirectRows + " nIndirectRows=" + nIndirectRows+"\n");
+        f.format(" DataBlocks:\n");
+        f.format("  address            dataPos            offset size end\n");
+        if (directBlocks != null)
+          for (DataBlock dblock : directBlocks)
+            f.format("  %#-18x %#-18x %5d  %4d %5d %n", dblock.address, dblock.dataPos, dblock.offset, dblock.size,
+                    (dblock.offset + dblock.size));
+        if (indirectBlocks != null)
+          for (IndirectBlock iblock : indirectBlocks)
+            iblock.showDetails(f);
+      }
+    }
+
     private class DataBlock {
       long address;
       long sizeFilteredDirectBlock;
@@ -4881,9 +4942,10 @@ There is _no_ datatype information stored for these sort of selections currently
       long dataPos;
       long offset;
       long size;
+      int extraBytes;
     }
 
-    void readIndirectBlock(long pos, long heapAddress, boolean hasFilter, int nrows) throws IOException {
+    void readIndirectBlock(IndirectBlock iblock, long pos, long heapAddress, boolean hasFilter) throws IOException {
       raf.seek(pos);
 
       // header
@@ -4910,37 +4972,44 @@ There is _no_ datatype information stored for these sort of selections currently
       if (debugPos) debugOut.println("    *now at position=" + npos);
 
       // child direct blocks
-      //int nDirectChildren = doublingTable.tableWidth * doublingTable.nDirectRows;
-      //int nDirectChildren = doublingTable.tableWidth * nrows;
-      long blockSize = startingBlockSize;
-      for (int row=0; row < nrows; row++) {
-        if (row > 1) blockSize *= 2;
+      long blockSize = iblock.size;
+      for (int row=0; row < iblock.directRows; row++) {
+
+        if (row > 1)
+          blockSize *= 2;
+
         for (int i = 0; i < doublingTable.tableWidth; i++) {
-          DataBlock directChild = new DataBlock();
-          directChild.address = readOffset();
+          DataBlock directBlock = new DataBlock();
+          iblock.add(directBlock);
+
+          directBlock.address = readOffset();
           if (hasFilter) {
-            directChild.sizeFilteredDirectBlock = readLength();
-            directChild.filterMask = raf.readInt();
+            directBlock.sizeFilteredDirectBlock = readLength();
+            directBlock.filterMask = raf.readInt();
           }
           if (debugDetail || debugFractalHeap)
-            debugOut.println("  DirectChild " + i + " address= " + directChild.address);
+            debugOut.println("  DirectChild " + i + " address= " + directBlock.address);
 
-          directChild.size = blockSize;
+          directBlock.size = blockSize;
 
           //if (directChild.address >= 0)
-            doublingTable.blockList.add(directChild);
+            doublingTable.blockList.add(directBlock);
         }
       }
 
-      // child indirect blocks LOOK not sure if order is correct, this is depth first...
-      //int nIndirectChildren = doublingTable.tableWidth * doublingTable.nIndirectRows;
-      int nIndirectChildren = 0;
-      for (int i = 0; i < nIndirectChildren; i++) {
-        long childIndirectAddress = readOffset();
-        if (debugDetail || debugFractalHeap)
-          debugOut.println("  InDirectChild " + i + " address= " + childIndirectAddress);
-        if (childIndirectAddress >= 0)
-          readIndirectBlock(childIndirectAddress, heapAddress, hasFilter, -1);
+      // child indirect blocks
+      for (int row = 0; row < iblock.indirectRows; row++) {
+        blockSize *= 2;
+        for (int i = 0; i < doublingTable.tableWidth; i++) {
+          IndirectBlock iblock2 = new IndirectBlock(-1, blockSize);
+          iblock.add(iblock2);
+
+          long childIndirectAddress = readOffset();
+          if (debugDetail || debugFractalHeap)
+            debugOut.println("  InDirectChild " + row + " address= " + childIndirectAddress);
+          if (childIndirectAddress >= 0)
+            readIndirectBlock(iblock2, childIndirectAddress, heapAddress, hasFilter);
+        }
       }
 
     }
@@ -4960,10 +5029,17 @@ There is _no_ datatype information stored for these sort of selections currently
       if (heapAddress != heapHeaderAddress)
         throw new IllegalStateException();
 
+      dblock.extraBytes = 5; // keep track of how much room is taken out of blocak size
+      dblock.extraBytes += isOffsetLong ? 8 : 4;
+
       int nbytes = maxHeapSize / 8;
       if (maxHeapSize % 8 != 0) nbytes++;
       dblock.offset = readVariableSizeUnsigned(nbytes);
       dblock.dataPos = pos; // raf.getFilePointer();  // offsets are from the start of the block
+
+      dblock.extraBytes += nbytes;
+      if ((flags & 2) != 0) dblock.extraBytes += 4; // ?? size of checksum
+      //dblock.size -= size; // subtract space used by other fields
 
       if (debugDetail || debugFractalHeap)
         debugOut.println("  DirectBlock offset= " + dblock.offset + " dataPos = " + dblock.dataPos);
