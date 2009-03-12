@@ -4972,7 +4972,7 @@ There is _no_ datatype information stored for these sort of selections currently
       if (debugPos) debugOut.println("    *now at position=" + npos);
 
       // child direct blocks
-      long blockSize = iblock.size;
+      long blockSize = startingBlockSize;
       for (int row=0; row < iblock.directRows; row++) {
 
         if (row > 1)
