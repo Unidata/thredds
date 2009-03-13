@@ -50,6 +50,8 @@ import ucar.unidata.util.GaussianLatitudes;
 import ucar.unidata.util.StringUtil;
 import ucar.grid.GridTableLookup;
 import ucar.grid.GridDefRecord;
+import ucar.grib.grib2.Grib2GridTableLookup;
+import ucar.grib.grib1.Grib1GridTableLookup;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -491,7 +493,9 @@ public class GridHorizCoordSys {
     java.util.Set keys = gds.getKeys();
     ArrayList<String> keyList = new ArrayList<String>(keys);
     Collections.sort(keyList);
-    String pre = (lookup.getGridType().startsWith( "GRIB")) ? "GRIB" : "GDS";
+    String pre =
+        (( lookup instanceof Grib2GridTableLookup) ||
+            ( lookup instanceof Grib1GridTableLookup) ) ? "GRIB" : "GDS";
 
     for (String key : keyList) {
       String name =

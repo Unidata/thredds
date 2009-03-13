@@ -44,6 +44,8 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.units.SimpleUnit;
 import ucar.grid.GridRecord;
 import ucar.grid.GridTableLookup;
+import ucar.grib.grib2.Grib2GridTableLookup;
+import ucar.grib.grib1.Grib1GridTableLookup;
 
 import java.util.*;
 
@@ -296,7 +298,7 @@ public class GridVertCoord implements Comparable {
         v.setDataType(DataType.DOUBLE);
 
         String desc = lookup.getLevelDescription(typicalRecord);
-        if ( lookup.getGridType().equals( "GRIB-2") && usesBounds) {
+        if ( lookup instanceof Grib2GridTableLookup  && usesBounds) {
             desc = "Layer between " + desc;
         }
 
@@ -319,14 +321,14 @@ public class GridVertCoord implements Comparable {
                 axisType = AxisType.GeoZ;
             }
 
-            if( lookup.getGridType().startsWith( "GRIB")) {
+            if( lookup instanceof Grib2GridTableLookup  ||
+              lookup instanceof Grib1GridTableLookup) {
               v.addAttribute(new Attribute("GRIB_level_type",
                 Integer.toString(typicalRecord.getLevelType1())));
             } else {
               v.addAttribute(new Attribute("level_type",
                 Integer.toString(typicalRecord.getLevelType1())));
             }
-
             v.addAttribute(new Attribute(_Coordinate.AxisType,
                                          axisType.toString()));
         }

@@ -249,17 +249,16 @@ public class GridTimeCoord {
 
         v.addAttribute(new Attribute("units",
                                      timeUnit + " since " + refDate));
-        if ( lookup.getGridType().startsWith( "GRIB")) {
+        if ( lookup instanceof Grib2GridTableLookup) {
+          Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
           v.addAttribute( new Attribute("GRIB_orgReferenceTime", formatter.toDateTimeStringISO( d )));
-          if (lookup.getGridType().equals("GRIB-2")) {
-            Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
-            v.addAttribute( new Attribute("GRIB2_significanceOfRTName",
-                g2lookup.getFirstSignificanceOfRTName()));
-          } else {
-            Grib1GridTableLookup g1lookup = (Grib1GridTableLookup) lookup;
-            v.addAttribute( new Attribute("GRIB2_significanceOfRTName",
-                g1lookup.getFirstSignificanceOfRTName()));
-          }
+          v.addAttribute( new Attribute("GRIB2_significanceOfRTName",
+              g2lookup.getFirstSignificanceOfRTName()));
+        } else if ( lookup instanceof Grib1GridTableLookup) {
+          Grib1GridTableLookup g1lookup = (Grib1GridTableLookup) lookup;
+          v.addAttribute( new Attribute("GRIB_orgReferenceTime", formatter.toDateTimeStringISO( d )));
+          v.addAttribute( new Attribute("GRIB2_significanceOfRTName",
+              g1lookup.getFirstSignificanceOfRTName()));
         }
         v.addAttribute(new Attribute(_Coordinate.AxisType,
                                      AxisType.Time.toString()));

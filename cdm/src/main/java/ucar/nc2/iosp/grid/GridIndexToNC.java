@@ -98,10 +98,9 @@ public class GridIndexToNC {
    * @return name for the level
    */
   public static String makeLevelName(GridRecord gr, GridTableLookup lookup) {
-
-    if (lookup.getGridType().equals("GRIB-2")) {
+    // for grib2, we need to add the layer to disambiguate
+    if ( lookup instanceof Grib2GridTableLookup ) {
       String vname = lookup.getLevelName(gr);
-      // for grib2, we need to add the layer to disambiguate
       return lookup.isLayer(gr)
           ? vname + "_layer"
           : vname;
@@ -118,9 +117,8 @@ public class GridIndexToNC {
    * @return name for the level
    */
   public static String makeEnsembleName(GridRecord gr, GridTableLookup lookup) {
-    if (!lookup.getGridType().equals("GRIB-2"))
+    if ( ! (lookup instanceof Grib2GridTableLookup) )
       return "";
-
     Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
     if (!g2lookup.isEnsemble(gr)) {
       return "";
@@ -282,7 +280,7 @@ public class GridIndexToNC {
     // global stuff
     ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.0"));
     String creator = null;
-    if (lookup.getGridType().equals("GRIB-2")) {
+    if ( lookup instanceof Grib2GridTableLookup ) {
       Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
       creator = g2lookup.getFirstCenterName()
           + " subcenter = " + g2lookup.getFirstSubcenterId();
@@ -295,7 +293,7 @@ public class GridIndexToNC {
         ncfile.addAttribute(null, new Attribute("Product_Status", g2lookup.getFirstProductStatusName()));
       ncfile.addAttribute(null, new Attribute("Product_Type", g2lookup.getFirstProductTypeName()));
 
-    } else if (lookup.getGridType().equals("GRIB-1")) {
+    } else if ( lookup instanceof Grib1GridTableLookup ) {
       Grib1GridTableLookup g1lookup = (Grib1GridTableLookup) lookup;
       creator = g1lookup.getFirstCenterName()
           + " subcenter = " + g1lookup.getFirstSubcenterId();
@@ -311,7 +309,8 @@ public class GridIndexToNC {
 
     // dataset discovery
     ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.GRID.toString()));
-    ncfile.addAttribute(null, new Attribute("creator_name", creator));
+    if ( creator != null)
+      ncfile.addAttribute(null, new Attribute("creator_name", creator));
     ncfile.addAttribute(null, new Attribute("file_format", lookup.getGridType()));
     ncfile.addAttribute(null,
         new Attribute("location", ncfile.getLocation()));
