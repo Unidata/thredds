@@ -366,41 +366,6 @@ public class GridVariable {
          * GribVariable that adds in the specific attributes.
          *
          */
-      /*   TODO: delete after testing
-         if (lookup.getGridType().startsWith( "GRIB")) {
-          Grib2GridTableLookup g2lookup = null;
-          Grib1GridTableLookup g1lookup = null;
-          int[] paramId;
-          if (lookup instanceof Grib2GridTableLookup) {
-            g2lookup = (Grib2GridTableLookup) lookup;
-            paramId = g2lookup.getParameterId(firstRecord);
-          } else {
-            g1lookup = (Grib1GridTableLookup) lookup;
-            paramId = g1lookup.getParameterId(firstRecord);
-          }
-          if (paramId[0] == 1) { // Grib1
-            v.addAttribute(new Attribute("GRIB_param_name", param.getDescription()));
-            v.addAttribute(new Attribute("GRIB_center_id", new Integer(paramId[1])));
-            v.addAttribute(new Attribute("GRIB_table_id", new Integer(paramId[2])));
-            v.addAttribute(new Attribute("GRIB_param_number", new Integer(paramId[3])));
-          } else { // Grib2
-            v.addAttribute(new Attribute("GRIB_param_discipline", lookup.getDisciplineName(firstRecord)));
-            v.addAttribute(new Attribute("GRIB_param_category", lookup.getCategoryName(firstRecord)));
-            v.addAttribute(new Attribute("GRIB_param_name", param.getName()));
-          }
-          v.addAttribute(new Attribute("GRIB_param_id", Array.factory(int.class, new int[]{paramId.length}, paramId)));
-          if (lookup instanceof Grib2GridTableLookup) {
-            v.addAttribute(new Attribute("GRIB_product_definition_type", g2lookup.getProductDefinitionName(firstRecord)));
-            v.addAttribute(new Attribute("GRIB_level_type", new Integer(firstRecord.getLevelType1())));
-            //if( firstRecord.getLevelType2() != 255)
-            //   v.addAttribute( new Attribute("GRIB2_level_type2", new Integer(firstRecord.getLevelType2())));
-          } else {
-            v.addAttribute(new Attribute("GRIB_product_definition_type", g1lookup.getProductDefinitionName(firstRecord)));
-            v.addAttribute(new Attribute("GRIB_level_type", new Integer(firstRecord.getLevelType1())));
-          }
-         }
-        */
-
          if (lookup instanceof Grib2GridTableLookup) {
            Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
            int[] paramId = g2lookup.getParameterId(firstRecord);
