@@ -246,10 +246,6 @@
     <listener-class>thredds.server.config.TdsConfigContextListener</listener-class>
   </listener>
 
-  <!-- TDS listener to handle configuration needed by all/most TDS servlets. -->
-  <!--listener>
-    <listener-class>thredds.servlet.ServletListener</listener-class>
-  </listener-->
   <!-- listener>
     <listener-class>dods.servers.netcdf.NcDODSSessionAttributeListener</listener-class>
   </listener> -->

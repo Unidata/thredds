@@ -18,19 +18,11 @@
 
   <logger name="thredds">
     <level value="INFO"/>
-    <appender-ref ref="dqcServletRedirect"/>
   </logger>
 
   <logger name="ucar">
     <level value="INFO"/>
-    <appender-ref ref="dqcServletRedirect"/>
   </logger>
-
-  <!-- Initialize a few loggers to make the servlet debug web interface more convenient. -->
-  <logger name="thredds.catalog"/>
-  <logger name="thredds.cataloggen"/>
-  <logger name="thredds.dqc"/>
-  <logger name="thredds.servlet"/>
 
   <logger name="thredds.dqc.server.DqcServletRedirect">
     <level value="INFO"/>
@@ -38,6 +30,7 @@
 
   <root>
     <level value="WARN"/>
+    <appender-ref ref="dqcServletRedirect"/>
   </root>
 
 </log4j:configuration>

@@ -50,7 +50,7 @@ public class ServletListener implements javax.servlet.ServletContextListener {
   public void contextInitialized(ServletContextEvent event) {
     System.out.println("+++ Thredds webapp contextInitialized");
     javax.servlet.ServletContext context = event.getServletContext();
-    ServletUtil.initContext(context);
+    // ServletUtil.init Context(context);
   }
 
   public void contextDestroyed(ServletContextEvent event) {

@@ -65,24 +65,33 @@ public class ServletUtil
   static public void initContext(ServletContext context)
   {
 //    setContextPath(context);
-    // Servlet 2.5 allows the following.
-    //contextPath = servletContext.getContextPath();
-    String tmpContextPath = context.getInitParameter( "ContextPath" );  // cannot be overridden in the ThreddsConfig file
-    if ( tmpContextPath == null ) tmpContextPath = "thredds";
-    contextPath = "/" + tmpContextPath;
-
+    if ( contextPath == null )
+    {
+      // Servlet 2.5 allows the following.
+      //contextPath = servletContext.getContextPath();
+      String tmpContextPath = context.getInitParameter( "ContextPath" );  // cannot be overridden in the ThreddsConfig file
+      if ( tmpContextPath == null )
+        tmpContextPath = "thredds";
+      contextPath = "/" + tmpContextPath;
+    }
 //    setRootPath(context);
-    rootPath = context.getRealPath("/");
-    rootPath = rootPath.replace('\\', '/');
+    if ( rootPath == null )
+    {
+      rootPath = context.getRealPath("/");
+      rootPath = rootPath.replace('\\', '/');
+    }
 
 //    setContentPath();
-    String tmpContentPath = "../../content" + getContextPath() + "/";
-    File cf = new File(getRootPath() + tmpContentPath);
-    try {
-      contentPath = cf.getCanonicalPath() + "/";
-      contentPath = contentPath.replace('\\', '/');
-    } catch (IOException e) {
-      throw new RuntimeException(e.getMessage());
+    if ( contentPath == null )
+    {
+      String tmpContentPath = "../../content" + getContextPath() + "/";
+      File cf = new File(getRootPath() + tmpContentPath);
+      try {
+        contentPath = cf.getCanonicalPath() + "/";
+        contentPath = contentPath.replace('\\', '/');
+      } catch (IOException e) {
+        throw new RuntimeException(e.getMessage());
+      }
     }
 
 //    initDebugging(context);

@@ -67,39 +67,6 @@ public class RootController extends AbstractController implements LastModified
     this.tdsContext = tdsContext;
   }
 
-  public void init()
-  {
-    WebApplicationContext webAppContext = this.getWebApplicationContext();
-    ServletContext sc = webAppContext.getServletContext();
-    initContent();
-  }
-
-  private void initContent()
-          //throws javax.servlet.ServletException
-  {
-
-    // first time, create content directory
-    File initialContentDirectory = tdsContext.getStartupContentDirectory();
-    if ( initialContentDirectory.exists() )
-    {
-      try
-      {
-        if ( ServletUtil.copyDir( initialContentDirectory.toString(),
-                                  tdsContext.getContentDirectory().toString() ) );
-          //log.info( "copyDir " + initialContentPath + " to " + contentPath );
-      }
-      catch ( IOException ioe )
-      {
-        //log.error( "failed to copyDir " + initialContentPath + " to " + contentPath, ioe );
-      }
-    }
-
-  }
-
-  public void destroy()
-  {
-  }
-
   protected ModelAndView handleRequestInternal( HttpServletRequest req, HttpServletResponse res )
           throws Exception
   {

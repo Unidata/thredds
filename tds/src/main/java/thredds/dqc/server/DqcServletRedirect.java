@@ -33,7 +33,6 @@
 
 package thredds.dqc.server;
 
-import thredds.servlet.ServletUtil;
 import thredds.servlet.UsageLog;
 
 import javax.servlet.ServletException;
@@ -42,7 +41,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -56,61 +54,16 @@ public class DqcServletRedirect extends HttpServlet
 {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( DqcServletRedirect.class);
 
-  private File rootPath, dqcRootPath;
-  private File contentPath, dqcContentPath;
-
-  private String servletName = "dqcServlet";
+//  private String servletName = "dqcServlet";
 
   private String targetContextPath = "/thredds";
   private String targetServletPath = "/dqc";
 
   private String testTargetContextPath = "/dqcServlet";
-  private String testTargetServletPath = "/dqc";
+//  private String testTargetServletPath = "/dqc";
 
   private String testRedirectPath = "/redirect-test";
   private String testRedirectStopPath = "/redirect-stop-test";
-
-
-  /** Initialize the servlet. */
-  public void init()
-    throws ServletException
-  {
-    // Initialize logging.
-    ServletUtil.initContext( this.getServletContext() );
-
-    log.info( "init(): start - " + UsageLog.setupNonRequestContext());
-
-    // Get various paths and file names.
-    this.rootPath = new File( ServletUtil.getRootPath( ) );
-    this.dqcRootPath = new File( this.rootPath,  this.servletName);
-
-    // @todo Do we want this seperate from content/thredds?
-    this.contentPath = new File( ServletUtil.getContentPath( ) );
-    this.dqcContentPath = new File( this.contentPath, this.servletName );
-
-    // Some debug info.
-    log.debug( "init(): root path        = " + this.rootPath.toString() );
-    log.debug( "init(): dqc root path    = " + this.dqcRootPath.toString() );
-    log.debug( "init(): content path     = " + this.contentPath.toString() );
-    log.debug( "init(): dqc content path = " + this.dqcContentPath.toString() );
-
-    // Copy initial content into content directory.
-    String initialContentPath = ServletUtil.getInitialContentPath( );
-    try
-    {
-      ServletUtil.copyDir( initialContentPath, this.contentPath.getAbsolutePath() );
-      log.debug( "init(): copied initial content directory <" + initialContentPath +
-                 "> to the content directory <" + this.contentPath + ">." );
-    }
-    catch ( IOException ioe )
-    {
-      String tmpMsg = "Failed to copy " + initialContentPath + " to " + this.contentPath + ":" + ioe.getMessage();
-      log.error( "init(): " + tmpMsg, ioe );
-      throw new ServletException( tmpMsg, ioe );
-    }
-
-    log.debug( "init(): done - " + UsageLog.closingMessageNonRequestContext() );
-  }
 
   /**
    * Redirect all GET requests.
@@ -125,6 +78,7 @@ public class DqcServletRedirect extends HttpServlet
     throws ServletException, IOException
   {
     log.info( "doGet(): " + UsageLog.setupRequestContext( req ) );
+    boolean enableTestRedirect = false;
 
     // Get the request path and query information.
     String reqPath = req.getPathInfo();
@@ -133,11 +87,11 @@ public class DqcServletRedirect extends HttpServlet
     {
       doDispatch( req, res, false );
     }
-    else if ( reqPath.startsWith( testRedirectPath ) )
+    else if ( reqPath.startsWith( testRedirectPath ) && enableTestRedirect )
     {
       this.handleGetRequestForRedirectTest( res, req );
     }
-    else if ( reqPath.startsWith( testRedirectStopPath ) )
+    else if ( reqPath.startsWith( testRedirectStopPath ) && enableTestRedirect )
     {
       this.handleGetRequestForRedirectStopTest( res, req );
     }
@@ -162,8 +116,11 @@ public class DqcServletRedirect extends HttpServlet
   /**
    * Dispatch the request to the target context and servlet.
    *
-   * @param req
-   * @param res
+   * @param req the HttpServletRequest
+   * @param res the HttpServletResponse
+   * @param useTestContext j
+   * @throws IOException if IO problems
+   * @throws ServletException if any internal errors
    */
   private void doDispatch( HttpServletRequest req, HttpServletResponse res, boolean useTestContext )
           throws IOException, ServletException
@@ -284,17 +241,9 @@ public class DqcServletRedirect extends HttpServlet
     }
     else if ( reqPath.equals( testRedirectPath + "/" ) )
     {
-      if ( queryString == null )
-      {
-        log.debug( "handleGetRequestForRedirectTest(): redirect \"" + reqPath + "\") to index.html." );
-        ServletUtil.returnFile( this, this.rootPath.getAbsolutePath(), "index.html", req, res, null );
-      }
-      else
-      {
-        log.warn( "handleGetRequestForRedirectTest(): request not understood <" + reqPath + " -- " + queryString + ">." );
-        log.info( "handleGetRequestForRedirectTest(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, 0 ) );
-        res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
-      }
+      log.warn( "handleGetRequestForRedirectTest(): request not understood <" + reqPath + " -- " + queryString + ">." );
+      log.info( "handleGetRequestForRedirectTest(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, 0 ) );
+      res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
     }
     else if ( reqPath.equals( testRedirectPath + "/301" ) && queryString == null )
       this.doRedirect301( req, res, true );
@@ -353,9 +302,9 @@ public class DqcServletRedirect extends HttpServlet
             .append( req.getPathInfo() )
             .toString();
     String targetURIPath = convertRequestURLToResponseURL( requestURIPath, req, useTestContext );
-    String targetURIPathNoContext = targetURIPath.substring( useTestContext
-                                                             ? this.testTargetContextPath.length()
-                                                             : this.targetContextPath.length() );
+//    String targetURIPathNoContext = targetURIPath.substring( useTestContext
+//                                                             ? this.testTargetContextPath.length()
+//                                                             : this.targetContextPath.length() );
 //    String targetURIPathNoContext = new StringBuffer()
 //            .append( useTestContext ? this.testTargetServletPath : this.targetServletPath )
 //            .append( this.testRedirectStopPath )
@@ -409,9 +358,9 @@ public class DqcServletRedirect extends HttpServlet
             .append( req.getPathInfo() )
             .toString();
     String targetURIPath = convertRequestURLToResponseURL( requestURIPath, req, useTestContext );
-    String targetURIPathNoContext = targetURIPath.substring( useTestContext
-                                                             ? this.testTargetContextPath.length()
-                                                             : this.targetContextPath.length() );
+//    String targetURIPathNoContext = targetURIPath.substring( useTestContext
+//                                                             ? this.testTargetContextPath.length()
+//                                                             : this.targetContextPath.length() );
 
 //    String targetURIPathNoContext = new StringBuffer()
 //            .append( useTestContext ? this.testTargetServletPath : this.targetServletPath )
@@ -527,14 +476,14 @@ public class DqcServletRedirect extends HttpServlet
             .toString();
   }
 
-  private String getXHtmlDoctypeAndOpenTag()
-  {
-    return new StringBuffer()
-            // .append( "<?xml version=\"1.0\" encoding=\"utf-8\"?>")
-            .append( "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n" )
-            .append( "        \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n" )
-            .append( "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">" )
-            .toString();
-  }
+//  private String getXHtmlDoctypeAndOpenTag()
+//  {
+//    return new StringBuffer()
+//            // .append( "<?xml version=\"1.0\" encoding=\"utf-8\"?>")
+//            .append( "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n" )
+//            .append( "        \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n" )
+//            .append( "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">" )
+//            .toString();
+//  }
 
 }

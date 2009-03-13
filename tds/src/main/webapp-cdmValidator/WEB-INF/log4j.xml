@@ -36,17 +36,14 @@
   <!-- All normal logging messages go to threddsServlet.log -->
   <logger name="thredds">
     <level value="INFO"/>
-    <appender-ref ref="cdmValidator"/>
   </logger>
 
   <logger name="ucar">
     <level value="INFO"/>
-    <appender-ref ref="cdmValidator"/>
   </logger>
 
   <logger name="org.springframework">
     <level value="INFO"/>
-    <appender-ref ref="cdmValidator"/>
   </logger>
 
   <root>
