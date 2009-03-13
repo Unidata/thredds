@@ -36,6 +36,8 @@ import java.util.zip.DataFormatException;
 /**
  * IOServiceProvider implementation abstract base class to read/write "version 3" netcdf files.
  *  AKA "file format version 1" files.
+ *  FY satellite data stored in AWX format include both original observation and the derived dataset
+ *  no online document available for the details
  *
  *  see   concrete class
  */
