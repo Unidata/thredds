@@ -141,11 +141,11 @@ public final class Range {
    */
   public Range(String name, int first, int last, int stride) throws InvalidRangeException {
     if (first < 0)
-      throw new InvalidRangeException("first must be >= 0");
+      throw new InvalidRangeException("first ("+first+") must be >= 0");
     if (last < first)
-      throw new InvalidRangeException("last must be >= first");
+      throw new InvalidRangeException("last ("+last+") must be >= first ("+first+")");
     if (stride < 1)
-      throw new InvalidRangeException("stride must be > 0");
+      throw new InvalidRangeException("stride ("+stride+") must be > 0");
 
     this.name = name;
     this.first = first;

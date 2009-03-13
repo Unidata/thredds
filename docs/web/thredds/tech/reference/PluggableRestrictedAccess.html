@@ -119,7 +119,20 @@
 <pre>  &lt;load-on-startup&gt;2&lt;/load-on-startup&gt;
  &lt;/servlet&gt; </pre>
 <p>  and comment out the default security constraint on /restrictedAccess/* : </p>
-<pre>  &lt;!-- default restricted access uses DIGEST, but not HTTPS --&gt;<br>  &lt;security-constraint&gt;<br>    &lt;web-resource-collection&gt;<br>      &lt;web-resource-name&gt;restricted access datasets&lt;/web-resource-name&gt;<br>      &lt;url-pattern&gt;<strong>/restrictedAccess/*</strong>&lt;/url-pattern&gt;<br>      &lt;http-method&gt;GET&lt;/http-method&gt;<br>    &lt;/web-resource-collection&gt;<br>    &lt;auth-constraint&gt;<br>      &lt;role-name&gt;restrictedDatasetUser&lt;/role-name&gt;<br>    &lt;/auth-constraint&gt;<br>  &lt;/security-constraint&gt;</pre>
+<pre>  &lt;!-- default restricted access uses DIGEST, but not HTTPS --&gt;<br>  &lt;security-constraint&gt;<br>    &lt;web-resource-collection&gt;<br>      &lt;web-resource-name&gt;restricted access datasets&lt;/web-resource-name&gt;<br>      &lt;url-pattern&gt;<strong>/restrictedAccess/*</strong>&lt;/url-pattern&gt;<br>      &lt;http-method&gt;GET&lt;/http-method&gt;<br>    &lt;/web-resource-collection&gt;<br>    &lt;auth-constraint&gt;<br>      &lt;role-name&gt;restrictedDatasetUser&lt;/role-name&gt;<br>    &lt;/auth-constraint&gt;<br>  &lt;/security-constraint&gt;
+
+
+</pre>
+<h2><br>
+  Notes on using Jetty and Shibboleth (Pauline Mak)<br>
+</h2>
+<p wrap="">I've managed to install THREDDS with Jetty, Apache and Shibboleth.  If  anyone is interested, I have some documentation here:  </p>
+<pre wrap="">  <a href="http://projects.arcs.org.au/trac/systems/wiki/DataServices/OPeNDAP-TDS-Install">http://projects.arcs.org.au/trac/systems/wiki/DataServices/OPeNDAP-TDS-Install</a>  </pre>
+<p><br>
+    <br>
+</p>
+<pre>&nbsp;
+</pre>
 <hr>
 <address>
 <img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 06, 2007

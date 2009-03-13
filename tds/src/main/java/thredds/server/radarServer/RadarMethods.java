@@ -234,7 +234,7 @@ public class RadarMethods {
 
       // check Query Params
       if( ! checkQueryParms( radarType, qp, level2 ) ) {
-        qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+        qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
         return;
       }
       // what type of output wanted XML html

@@ -240,7 +240,7 @@ public class QueryParams {
     hasVerticalCoord = !Double.isNaN(vertCoord);
 
     if (fatal) {
-      writeErr(res, errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+      writeErr(req, res, errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
       return false;
     }
 
@@ -489,12 +489,13 @@ public class QueryParams {
       return hasDateRange ? new DateRange(time_start, time_end, time_duration, null) : null;
   }
 
-  public void writeErr(HttpServletResponse res, String s, int code) throws IOException {
+  public void writeErr(HttpServletRequest req, HttpServletResponse res, String s, int code) throws IOException {
     log.info( "writeErr(): " + UsageLog.closingMessageForRequestContext(code, 0));
     res.setStatus(code);
     if (s.length() > 0) {
       PrintWriter pw = res.getWriter();
       pw.print(s);
+      pw.print("Request= "+req.getRequestURI()+"?"+req.getQueryString());
       pw.close();
     }
   }

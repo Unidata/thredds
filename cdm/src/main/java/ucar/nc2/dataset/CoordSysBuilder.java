@@ -1248,7 +1248,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
           String vname = stoker.nextToken();
           VarProcess ap = findVarProcess(vname); // LOOK: full vs short name
           if (ap != null) {
-            CoordinateAxis axis = ap.makeIntoCoordinateAxis();
+            CoordinateAxis axis = ap.makeIntoCoordinateAxis(); // LOOK check if its legal
             if (!axesList.contains(axis)) axesList.add(axis);
           }
         }

@@ -140,14 +140,14 @@ public class StationObsServlet extends AbstractServlet {
       qp.stns = soc.getStationNames(qp.getBB());
       if (qp.stns.size() == 0) {
         qp.errs.append("ERROR: Bounding Box contains no stations\n");
-        qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+        qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
         return;
       }
     }
 
     if (qp.hasStns && soc.isStationListEmpty(qp.stns)) {
       qp.errs.append("ERROR: No valid stations specified\n");
-      qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+      qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
       return;
     }
 
@@ -156,7 +156,7 @@ public class StationObsServlet extends AbstractServlet {
       qp.stns.add(soc.findClosestStation(qp.lat, qp.lon));
     } else if (qp.fatal) {
       qp.errs.append("ERROR: No valid stations specified\n");
-      qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+      qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
       return;
     }
 
@@ -166,7 +166,7 @@ public class StationObsServlet extends AbstractServlet {
 
     if (qp.hasTimePoint && (soc.filterDataset(qp.time) == null)) {
       qp.errs.append("ERROR: This dataset does not contain the time point= " + qp.time + " \n");
-      qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+      qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
       return;
     }
 
@@ -174,7 +174,7 @@ public class StationObsServlet extends AbstractServlet {
       DateRange dr = qp.getDateRange();
       if (!soc.intersect(dr)) {
         qp.errs.append("ERROR: This dataset does not contain the time range= " + qp.time + " \n");
-        qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+        qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
         return;
       }
       if (debug) System.out.println(" date range= "+dr);
@@ -183,7 +183,7 @@ public class StationObsServlet extends AbstractServlet {
     boolean useAllTimes = (!qp.hasTimePoint && !qp.hasDateRange);
     if (useAllStations && useAllTimes) {
       qp.errs.append("ERROR: You must subset by space or time\n");
-      qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+      qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
       return;
     }
 

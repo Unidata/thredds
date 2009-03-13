@@ -199,7 +199,7 @@ public class GridServlet extends AbstractServlet {
       // make sure some variables requested
       if ((qp.vars == null) || (qp.vars.size() == 0)){
           qp.errs.append("No Grid variables selected\n");
-          qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+          qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
           return;
       }
 
@@ -216,12 +216,12 @@ public class GridServlet extends AbstractServlet {
         }
         if (buff.length() != 0) {
           qp.errs.append("Grid variable(s) not found in dataset=" + buff + "\n");
-          qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+          qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
           return;
         }
       } else {
         qp.errs.append("You must specify at least one variable\n");
-        qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+        qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
         return;
       }
 
@@ -232,12 +232,12 @@ public class GridServlet extends AbstractServlet {
         if (!bb.contains(pt)) {
           qp.errs.append("Requested Lat/Lon Point (+" + pt + ") is not contained in the Data\n" +
                   "Data Bounding Box = " + bb.toString2() + "\n");
-          qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+          qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
           return;
         }
       } else {
         qp.errs.append("Must specify a Lat/Lon Point\n");
-        qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+        qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
         return;
       }
 
@@ -353,7 +353,7 @@ public class GridServlet extends AbstractServlet {
       // make sure some variables requested
       if ((qp.vars == null) || (qp.vars.size() == 0)){
           qp.errs.append("No Grid variables selected\n");
-          qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+          qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
           return;
       }
 
@@ -370,7 +370,7 @@ public class GridServlet extends AbstractServlet {
         }
         if (buff.length() != 0) {
           qp.errs.append("Grid variable(s) not found in dataset=" + buff + "\n");
-          qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+          qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
           return;
         }
       }
@@ -386,7 +386,7 @@ public class GridServlet extends AbstractServlet {
         if (maxBB.intersect(qp.getBB()) == null) {
           qp.errs.append("Request Bounding Box does not intersect the Data\n" +
                   "Data Bounding Box = " + maxBB.toString2() + "\n");
-          qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+          qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
           return;
         }
       }
@@ -397,7 +397,7 @@ public class GridServlet extends AbstractServlet {
         sendFile(req, res, gds, qp, hasBB, addLatLon);
       } catch (InvalidRangeException e) {
         log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
-        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Lat/Lon or Time Range");
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Lat/Lon or Time Range: "+e.getMessage());
       }
 
     } catch (Throwable e) {

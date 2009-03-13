@@ -4642,6 +4642,50 @@ There is _no_ datatype information stored for these sort of selections currently
   } // LocalHeap
 
   // level 1E "Fractal Heap" used for both Global and Local heaps in 1.8.0+
+  /*
+  1) the root indirect block knows how many rows it has from the header, which i can divide into
+direct and indirect using:
+
+ int maxrows_directBlocks = (log2(maxDirectBlockSize) - log2(startingBlockSize)) + 2;
+
+in the example file i have, maxDirectBlockSize = 216, startingBlockSize = 2^10, tableWidth = 4, so
+maxrows = 8. So I will see 8 rows, with direct sizes:
+	2^10, 2^10, 2^11, 2^12, 2^13, 2^14, 2^15, 2^16
+
+So if nrows > 8, I will see indirect rows of size
+	2^17, 2^18, .....
+
+this value is the <indirect block size>.
+
+2) now read a 1st level indirect block of size 217:
+
+<iblock_nrows> = lg2(<indirect block size>) - lg2(<starting block size) - lg2(<doubling_table_width>)) + 1
+
+<iblock_nrows> = 17 - 10 - 2 + 1 = 6.
+
+ All indirect blocks of "size" 2^17 will have: (for the parameters above)
+        row 0: (direct blocks): 4 x 2^10 = 2^12
+        row 1: (direct blocks): 4 x 2^10 = 2^12
+        row 2: (direct blocks): 4 x 2^11 = 2^13
+        row 3: (direct blocks): 4 x 2^12 = 2^14
+        row 4: (direct blocks): 4 x 2^13 = 2^15
+        row 5: (direct blocks): 4 x 2^14 = 2^16
+                    ===============
+                       Total size: 2^17
+
+Then there are 7 rows for indirect block of size 218, 8 rows for indirect block of size 219, etc.
+An indirect block of size 2^20 will have nine rows, the last one of which are indirect blocks that are size 2^17,
+an indirect block of size 2^21 will have ten rows, the last two rows of which are indirect blocks that are size
+2^17 & 2^18, etc.
+
+One still uses
+
+ int maxrows_directBlocks = (log2(maxDirectBlockSize) - log2(startingBlockSize)) + 2
+
+Where startingBlockSize is from the header, ie the same for all indirect blocks.
+
+
+*/
   private class FractalHeap {
     int version;
     short heapIdLen;

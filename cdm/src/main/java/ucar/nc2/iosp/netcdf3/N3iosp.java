@@ -130,23 +130,104 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
       syncExtendOnly = value.equalsIgnoreCase("true");
   }
 
+/*
+ * LOOK do we need to implement this ??
+ *
+ * Verify that a name string is valid syntax.  The allowed name
+ * syntax (in RE form) is:
+ *
+ * ([a-zA-Z0-9_]|{UTF8})([^\x00-\x1F\x7F/]|{UTF8})*
+ *
+ * where UTF8 represents a multibyte UTF-8 encoding.  Also, no
+ * trailing spaces are permitted in names.  This definition
+ * must be consistent with the one in ncgen.l.  We do not allow '/'
+ * because HDF5 does not permit slashes in names as slash is used as a
+ * group separator.  If UTF-8 is supported, then a multi-byte UTF-8
+ * character can occur anywhere within an identifier.  We later
+ * normalize UTF-8 strings to NFC to facilitate matching and queries.
+ *
+public String NC_check_name(String name) {
+	int skip;
+	int ch;
+	const char *cp = name;
+	ssize_t utf8_stat;
+
+	assert(name != NULL);
+
+	if(*name == 0		// empty names disallowed
+	   || strchr(cp, '/'))	// '/' can't be in a name
+		return NC_EBADNAME;
+
+	/* check validity of any UTF-8
+	utf8_stat = utf8proc_check((const unsigned char *)name);
+	if (utf8_stat < 0)
+	    return NC_EBADNAME;
+
+	/* First char must be [a-z][A-Z][0-9]_ | UTF8
+	ch = (uchar)*cp;
+	if(ch <= 0x7f) {
+	    if(   !('A' <= ch && ch <= 'Z')
+	       && !('a' <= ch && ch <= 'z')
+	       && !('0' <= ch && ch <= '9')
+	       && ch != '_' )
+		return NC_EBADNAME;
+	    cp++;
+	} else {
+	    if((skip = nextUTF8(cp)) < 0)
+		return NC_EBADNAME;
+	    cp += skip;
+	}
+
+	while(*cp != 0) {
+	    ch = (uchar)*cp;
+	    /* handle simple 0x00-0x7f characters here
+	    if(ch <= 0x7f) {
+                if( ch < ' ' || ch > 0x7E) /* control char or DEL
+		  return NC_EBADNAME;
+		cp++;
+	    } else {
+		if((skip = nextUTF8(cp)) < 0) return NC_EBADNAME;
+		cp += skip;
+	    }
+	    if(cp - name > NC_MAX_NAME)
+		return NC_EMAXNAME;
+	}
+	if(ch <= 0x7f && isspace(ch)) // trailing spaces disallowed
+	    return NC_EBADNAME;
+	return NC_NOERR;
+} */
+
   /**
    * Convert a name to a legal netcdf-3 name.
-   * From the user manual:
-   * "The names of dimensions, variables and attributes consist of arbitrary sequences of
-   * alphanumeric characters (as well as underscore '_' and hyphen '-'), beginning with a letter
-   * or underscore. (However names commencing with underscore are reserved for system use.)
-   * Case is significant in netCDF names."
-   * <p/>
-   * Algorithm:
-   * <ol>
-   * <li>leading character: if alpha or underscore, ok; if digit, prepend "N"; otherwise discard
-   * <li>other characters: if space, change to underscore; otherwise delete.
-   * </ol>
+   * ([a-zA-Z0-9_]|{UTF8})([^\x00-\x1F\x7F/]|{UTF8})*
    * @param name convert this name
    * @return converted name
    */
   static public String makeValidNetcdfObjectName(String name) {
+    StringBuilder sb = new StringBuilder(name.trim()); // remove starting and trailing blanks
+
+    while (sb.length() > 0) {
+      char c = sb.charAt(0);
+      if (Character.isLetter(c) || Character.isDigit(c) || (c == '_')) break;
+      sb.deleteCharAt(0);
+    }
+
+    int pos = 1;
+    while (pos < sb.length()) {
+      int c = sb.codePointAt(pos);
+      if (((c >= 0) && (c < 0x20)) || (c == 0x7f)) {
+        sb.delete(pos, pos + 1);
+        pos--;
+      }
+      pos++;
+    }
+
+    if (sb.length() == 0)
+      throw new IllegalArgumentException("Illegal name");
+    return sb.toString();
+  }
+
+  static public String makeValidNetcdfObjectNameOld(String name) {
     StringBuilder sb = new StringBuilder(name);
 
     while (sb.length() > 0) {

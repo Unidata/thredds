@@ -93,7 +93,7 @@ public class NetcdfCFWriter {
           DateRange range, int stride_time,
           boolean addLatLon)
           throws IOException, InvalidRangeException {
-    
+
     FileWriter writer = new FileWriter(location, false);
     NetcdfDataset ncd = (NetcdfDataset) gds.getNetcdfFile();
 
@@ -126,6 +126,10 @@ public class NetcdfCFWriter {
         CoordinateAxis1DTime timeAxis = gcsOrg.getTimeAxis1D();
         int startIndex = timeAxis.findTimeIndexFromDate(range.getStart().getDate());
         int endIndex = timeAxis.findTimeIndexFromDate(range.getEnd().getDate());
+        if (startIndex < 0)
+          throw new InvalidRangeException("start time=" + range.getStart().getDate() + " must be >= " + timeAxis.getTimeDate(0));
+        if (endIndex < 0)
+          throw new InvalidRangeException("end time=" + range.getEnd().getDate() + " must be >= " + timeAxis.getTimeDate(0));
         timeRange = new Range(startIndex, endIndex);
       }
 
@@ -172,6 +176,10 @@ public class NetcdfCFWriter {
     for (String gridName : gridList) {
       GridDatatype grid = gds.findGridDatatype(gridName);
       Variable newV = root.findVariable(gridName);
+      if (newV == null) {
+        log.warn("NetcdfCFWriter cant find "+gridName+" in gds "+gds.getLocationURI());
+        continue;
+      }
 
       // annotate Variable for CF
       StringBuilder sbuff = new StringBuilder();

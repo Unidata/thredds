@@ -70,7 +70,7 @@ public class GridPointWriter {
     int matches;
   }
 
-  public File write(QueryParams qp, java.io.PrintWriter pw) throws IOException, InvalidRangeException {
+  public File write(QueryParams qp, java.io.PrintWriter pw) throws IOException { //, InvalidRangeException {
     long starting = System.currentTimeMillis();
     Limit counter = new Limit();
 

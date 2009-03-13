@@ -245,8 +245,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
   // for section and slice
   @Override
-  protected Variable copy
-      () {
+  protected Variable copy() {
     return new CoordinateAxis1DTime(this.ncd, this, getTimeDates());
   }
 
@@ -255,19 +254,15 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
    *
    * @return array of java.util.Date, or null.
    */
-  public java.util.Date[] getTimeDates
-      () {
+  public java.util.Date[] getTimeDates() {
     return timeDates;
   }
 
-  public java.util.Date getTimeDate
-      (
-          int idx) {
+  public java.util.Date getTimeDate (int idx) {
     return timeDates[idx];
   }
 
-  public DateRange getDateRange
-      () {
+  public DateRange getDateRange() {
     return new DateRange(timeDates[0], timeDates[timeDates.length - 1]);
   }
 
@@ -277,8 +272,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
    * @return time unit
    * @throws Exception on bad unit string
    */
-  public TimeUnit getTimeResolution
-      () throws Exception {
+  public TimeUnit getTimeResolution() throws Exception {
     String tUnits = getUnitsString();
     StringTokenizer stoker = new StringTokenizer(tUnits);
     double tResolution = getIncrement();
@@ -291,7 +285,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
    * This will return
    * <ul>
    * <li> i, if time(i) <= d < time(i+1).
-   * <li> -1, if d < time(0)
+   * <li> 0, if d < time(0)
    * <li> n-1, if d > time(n-1),  where n is length of time coordinates
    * </ul>
    *
@@ -299,9 +293,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
    * @return corresponding time index on the time coordinate axis
    * @throws UnsupportedOperationException is no time axis or isDate() false
    */
-  public int findTimeIndexFromDate
-      (java.util.Date
-          d) {
+  public int findTimeIndexFromDate(java.util.Date d) {
     int n = timeDates.length;
     long m = d.getTime();
     int index = 0;
@@ -310,7 +302,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
         break;
       index++;
     }
-    return index - 1;
+    return Math.max(0, index - 1);
   }
 
   /**
@@ -319,9 +311,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
    * @param date test this
    * @return true if equals a coordinate
    */
-  public boolean hasTime
-      (Date
-          date) {
+  public boolean hasTime(Date date) {
     for (Date timeDate : timeDates) {
       if (date.equals(timeDate))
         return true;
