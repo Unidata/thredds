@@ -53,9 +53,7 @@ import ucar.grid.GridDefRecord;
 import ucar.grib.grib2.Grib2GridTableLookup;
 import ucar.grib.grib1.Grib1GridTableLookup;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.*;
 
 
 /**
@@ -101,18 +99,17 @@ public class GridHorizCoordSys {
 
   /**
    * GridVariables that have this GridHorizCoordSys
-   */  //TODO: generics
-  HashMap varHash = new HashMap(200);
+   */
+  Map<String,GridVariable> varHash = new HashMap<String,GridVariable>(200); // GribVariables that have this GribHorizCoordSys
 
   /**
    * List of GridVariable, sorted by product desc
-   */  //TODO: generics
-  HashMap productHash = new HashMap(100);
-
+   */
+  Map<String, List<GridVariable>> productHash = new HashMap<String, List<GridVariable>>(100); // List of GribVariable, sorted by product desc
   /**
    * GridVertCoordSys
-   */  //TODO: generics
-  //HashMap vcsHash = new HashMap(30);
+   */
+  //HashMap vcsHash = new HashMap(30); // GridVertCoordSys
 
   /**
    * startx, starty
