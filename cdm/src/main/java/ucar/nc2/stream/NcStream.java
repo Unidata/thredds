@@ -265,7 +265,7 @@ public class NcStream {
       ByteBuffer bb = ByteBuffer.wrap( var.getData().toByteArray());
       Array data = Array.factory( varType, ncvar.getShape(), bb);
       ncvar.setCachedData(data, false);
-      System.out.println(" read cached data for "+ncvar.getName()+" nbytes= "+bb.limit());
+      // if (debug) System.out.println(" read cached data for "+ncvar.getName()+" nbytes= "+bb.limit());
     }
 
     return ncvar;

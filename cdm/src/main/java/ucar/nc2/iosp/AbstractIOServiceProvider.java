@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.io.DataOutputStream;
 import java.nio.channels.WritableByteChannel;
 import java.nio.channels.Channels;
+import java.nio.ByteBuffer;
 
 public abstract class AbstractIOServiceProvider implements IOServiceProvider {
 
@@ -59,16 +60,27 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
 
   // default implementation, reads into an Array, then writes to WritableByteChannel
   // subclasses should override if possible
+  // LOOK DataOutputStream uses big-endian
   public long readToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
       throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
-    Array result = readData(v2, section);
+    Array data = readData(v2, section);
+
+    // ArrayStructureBB can be optimised
+    // LOOK not actually right until we define the on-the-wire protocol
+    if (data instanceof ArrayStructureBB) {
+      ArrayStructureBB dataBB = (ArrayStructureBB) data;
+      ByteBuffer bb = dataBB.getByteBuffer();
+      bb.rewind();
+      channel.write(bb);
+      return bb.limit();
+    }
 
     // LOOK should we buffer ?? 
     DataOutputStream outStream = new DataOutputStream( Channels.newOutputStream( channel));
 
-    IndexIterator iterA = result.getIndexIterator();
-    Class classType = result.getElementType();
+    IndexIterator iterA = data.getIndexIterator();
+    Class classType = data.getElementType();
 
     if (classType == double.class) {
       while (iterA.hasNext())
@@ -105,7 +117,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
     } else
       throw new UnsupportedOperationException("Class type = " + classType.getName());
 
-    return 0;
+    return data.getSizeBytes();
   }
 
   public ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException {

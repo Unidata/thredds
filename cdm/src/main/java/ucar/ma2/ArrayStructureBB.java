@@ -61,6 +61,28 @@ import java.util.ArrayList;
  * @see Array
  */
 public class ArrayStructureBB extends ArrayStructure {
+
+  /**
+   * Set the offsets, based on m.getSizeBytes()
+   * @param members
+   * @return
+   */
+  public static int setOffsets(StructureMembers members) {
+    int offset = 0;
+    for (StructureMembers.Member m : members.getMembers()) {
+      m.setDataParam(offset);
+      offset += m.getSizeBytes();
+
+      // set inner offsets
+      if (m.getDataType() == DataType.STRUCTURE) {
+        setOffsets(m.getStructureMembers());
+      }
+    }
+    return offset;
+  }
+
+  /////////////////////////////////////////////////////
+
   protected ByteBuffer bbuffer;
   protected int bb_offset = 0;
 

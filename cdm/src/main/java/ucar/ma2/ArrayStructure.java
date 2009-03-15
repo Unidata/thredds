@@ -162,6 +162,12 @@ public abstract class ArrayStructure extends Array {
     return members.findMember(memberName);
   }
 
+  @Override
+  public long getSizeBytes() {
+    return indexCalc.getSize() * members.getStructureSize();
+  }
+
+
   /**
    * Get the index-th StructureData of this ArrayStructure.
    *

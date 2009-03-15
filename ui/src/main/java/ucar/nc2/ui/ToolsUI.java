@@ -806,7 +806,7 @@ public class ToolsUI extends JPanel {
 
   }
 
-  // jump to the appropriate tab based on datatype of InvDataset
+  // jump to the appropriate tab based on datatype of InvAccess
   private void setThreddsDatatype(thredds.catalog.InvAccess invAccess) {
     if (invAccess == null) return;
 
@@ -818,6 +818,17 @@ public class ToolsUI extends JPanel {
 
     if (s.getServiceType() == thredds.catalog.ServiceType.WMS) {
       openWMSDataset(invAccess.getStandardUrlName());
+      return;
+    }
+
+    thredds.catalog.InvDataset ds = invAccess.getDataset();
+    if (ds.getDataType() == null) {
+      // if no feature type, just open as a NetcdfDataset
+      try {
+        showInViewer(threddsDataFactory.openDataset(invAccess, true, null, null));
+      } catch (IOException ioe) {
+        JOptionPane.showMessageDialog(null, "Error on setThreddsDataset = " + ioe.getMessage());
+      }
       return;
     }
 

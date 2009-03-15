@@ -141,7 +141,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
     // allocate ArrayStructureBB for outer structure
     StructureMembers members = s.makeStructureMembers();
-    setOffsets(members);
+    ArrayStructureBB.setOffsets(members);
 
     ArrayStructureBB abb = new ArrayStructureBB(members, section.getShape());
     ByteBuffer bb = abb.getByteBuffer();
@@ -177,20 +177,6 @@ public class BufrIosp extends AbstractIOServiceProvider {
     }
 
     return abb;
-  }
-
-  private int setOffsets(StructureMembers members) {
-    int offset = 0;
-    for (StructureMembers.Member m : members.getMembers()) {
-      m.setDataParam(offset);
-      offset += m.getSizeBytes();
-
-      // set inner offsets
-      if (m.getDataType() == DataType.STRUCTURE) {
-        setOffsets(m.getStructureMembers());
-      }
-    }
-    return offset;
   }
 
   // sequentially scan through messages to find the correct observation

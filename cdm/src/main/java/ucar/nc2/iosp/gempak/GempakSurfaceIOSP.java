@@ -710,8 +710,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                           + ")";
         ncfile.addAttribute(null, new Attribute("file_format", fileType));
         ncfile.addAttribute(null, new Attribute("history", "Direct read of "
-                + fileType + " into NetCDF-Java 4.0 API at "
-                + dateFormat.toDateTimeStringISO(new Date())));
+                + fileType + " into NetCDF-Java 4.0 API")); //  at " + dateFormat.toDateTimeStringISO(new Date())));
     }
 
     /**

@@ -263,7 +263,7 @@ public class ThreddsDataFactory {
   }
 
   /**
-   * Open a TypedDataset from an InvAccess object.
+   * Open a FeatureDataset from an InvAccess object.
    *
    * @param access use this InvAccess.
    * @param task   may be null
@@ -272,11 +272,17 @@ public class ThreddsDataFactory {
    */
   public ThreddsDataFactory.Result openFeatureDataset(InvAccess access, ucar.nc2.util.CancelTask task) throws IOException {
     InvDataset invDataset = access.getDataset();
-    return openFeatureDataset(invDataset.getDataType(), access, task, new Result());
+    ThreddsDataFactory.Result result = new Result();
+    if (invDataset.getDataType() == null) {
+      result.errLog.format("InvDatasert must specify a FeatureType%n");
+      result.fatalError = true;
+      return result;
+    }
+
+    return openFeatureDataset(invDataset.getDataType(), access, task, result);
   }
 
   private ThreddsDataFactory.Result openFeatureDataset(FeatureType wantFeatureType, InvAccess access, ucar.nc2.util.CancelTask task, Result result) throws IOException {
-
     result.featureType = wantFeatureType;
     result.accessUsed = access;
 

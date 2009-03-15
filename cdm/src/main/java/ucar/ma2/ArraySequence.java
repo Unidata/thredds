@@ -75,6 +75,11 @@ public class ArraySequence extends ArrayStructure {
     return count;
   }
 
+    @Override
+  public long getSizeBytes() {
+    return count * members.getStructureSize(); // LOOK we may not know the count ???
+  }
+
   @Override
   protected StructureData makeStructureData(ArrayStructure as, int index) {
     throw new UnsupportedOperationException("Cannot subset a Sequence");

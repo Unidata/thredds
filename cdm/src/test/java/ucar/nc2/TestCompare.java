@@ -66,6 +66,8 @@ public class TestCompare {
     showEach = _showEach;
     compareData = _compareData;
 
+    long start = System.currentTimeMillis();
+
     //System.out.println("Original= "+org);
     //System.out.println("Copy= "+copy);
 
@@ -77,6 +79,10 @@ public class TestCompare {
     // assert org.getLocation().equals( ncml.getLocation());
 
     compareGroups( org.getRootGroup(), copy.getRootGroup());
+
+    long took = System.currentTimeMillis() - start;
+    System.out.println(" Time= "+took+" msecs");
+
   }
 
   static private void compareGroups(Group org, Group copy) {

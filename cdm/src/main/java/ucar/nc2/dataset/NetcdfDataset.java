@@ -638,7 +638,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         return acquireDODS(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject); // try as a dods file
       else if (stype == ServiceType.NetcdfStream)
         return acquireRemote(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through netcdf remote
-      // fall through for HttpService
+      // else fall through for HttpService
     }
 
     if (cache != null) {

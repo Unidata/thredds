@@ -34,9 +34,8 @@ package ucar.nc2.stream;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Group;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.Section;
+import ucar.nc2.Structure;
+import ucar.ma2.*;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -52,6 +51,8 @@ import com.google.protobuf.InvalidProtocolBufferException;
  */
 public class NcStreamReader {
 
+  private static final boolean debug = false;
+
   private NcStreamProto.Header proto;
 
   public NetcdfFile readStream(InputStream is, NetcdfFile ncfile) throws IOException {
@@ -59,7 +60,7 @@ public class NcStreamReader {
     assert readAndTest(is, NcStream.MAGIC_HEADER);
 
     int msize = readVInt(is);
-    System.out.println("READ header len= " + msize);
+    if (debug) System.out.println("READ header len= " + msize);
 
     byte[] m = new byte[msize];
     NcStream.readFully(is, m);
@@ -72,7 +73,7 @@ public class NcStreamReader {
     //NcStreamProto.Stream proto = NcStreamProto.Stream.parseFrom(cis);
 
     while (is.available() > 0) {
-      readData(is);
+      readData(is, ncfile);
     }
 
     return ncfile;
@@ -91,27 +92,36 @@ public class NcStreamReader {
     }
   }
 
-  public DataResult readData(InputStream is) throws IOException {
+  public DataResult readData(InputStream is, NetcdfFile ncfile) throws IOException {
     assert readAndTest(is, NcStream.MAGIC_DATA);
 
     int psize = readVInt(is);
-    System.out.println(" readData len= " + psize);
+    if (debug) System.out.println(" readData len= " + psize);
     byte[] dp = new byte[psize];
     NcStream.readFully(is, dp);
     NcStreamProto.Data dproto = NcStreamProto.Data.parseFrom(dp);
-    System.out.println(" readData proto = " + dproto);
+    if (debug) System.out.println(" readData proto = " + dproto);
 
     int dsize = readVInt(is);
-    System.out.println(" readData len= " + dsize);
+    if (debug) System.out.println(" readData len= " + dsize);
     byte[] datab = new byte[dsize];
-    NcStream.readFully( is, datab);
+    NcStream.readFully(is, datab);
 
     ByteBuffer dataBB = ByteBuffer.wrap(datab);
     DataType dataType = NcStream.decodeDataType(dproto.getDataType());
     Section section = NcStream.decodeSection(dproto.getSection());
 
-    Array data = Array.factory( dataType, section.getShape(), dataBB);
-    return new DataResult(dproto.getVarName(), section, data);
+    if (dataType == DataType.STRUCTURE) {
+      Structure s = (Structure) ncfile.findVariable(dproto.getVarName());
+      StructureMembers members = s.makeStructureMembers();
+      ArrayStructureBB data = new ArrayStructureBB(members, section.getShape(), ByteBuffer.wrap(datab), 0);
+      ArrayStructureBB.setOffsets(members);
+      return new DataResult(dproto.getVarName(), section, data);
+
+    } else {
+      Array data = Array.factory(dataType, section.getShape(), dataBB);
+      return new DataResult(dproto.getVarName(), section, data);
+    }
   }
 
   private int readVInt(InputStream is) throws IOException {

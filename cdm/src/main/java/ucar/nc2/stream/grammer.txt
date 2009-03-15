@@ -1,15 +1,20 @@
 stream = {message}
 message = headerMessage | dataMessage
-headerMessage = MAGIC_HEADER, vlen, NcStreamProto.Stream
+headerMessage = MAGIC_HEADER, vlen, NcStreamProto.Header
 dataMessage = MAGIC_DATA, vlen, NcStreamProto.Data, vlen, data
 
+vlen is the length of the message that follows it
 
+data is sequence of primitive types described by NcStreamProto.Data. Big-endian for now.
+  for type = structure, layout is ArrayBB.
+
+----------------------------------------------------------------
 Remote URLS
 
 THREDDS ServiceType = NetcdfStream
 http://localhost:8080/thredds/ncstream/stream/temperature.nc
 
-client needs protocol ncstream
+client may use protocol ncstream to disambiguate
 ncstream://localhost:8080/thredds/ncstream/stream/temperature.nc
 
 HEADER: http://localhost:8080/thredds/ncstream/stream/temperature.nc

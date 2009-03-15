@@ -437,6 +437,16 @@ public abstract class Array {
   }
 
   /**
+   * Get the total number of bytes in the array.
+   *
+   * @return total number of bytes in the array
+   */
+  public long getSizeBytes() {
+    DataType dtype = DataType.getType( getElementType());
+    return indexCalc.getSize() * dtype.getSize();
+  }
+
+  /**
    * Get an index iterator for traversing a section of the array in canonical order.
    * This is equivalent to Array.section(ranges).getIterator();
    *
