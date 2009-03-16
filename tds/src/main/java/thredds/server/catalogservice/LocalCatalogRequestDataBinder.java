@@ -92,7 +92,7 @@ public class LocalCatalogRequestDataBinder extends DataBinder
     // Don't allow null catalog path values.
     if ( catPath == null )
       catPath = FieldInfo.CATALOG.getDefaultValue();
-    else if ( catPath.endsWith( "/" ))
+    else if ( catPath.endsWith( "/" ) || catPath.equals( "" ))
       // Append suffix for all directory paths.
       catPath += this.suffixForDirPath;
 
