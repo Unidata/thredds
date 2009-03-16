@@ -58,8 +58,8 @@ public final class FysatHeader {
   private boolean debugHeaderSize = false;
   private RandomAccessFile raf;
   private ucar.nc2.NetcdfFile ncfile;
-  private PrintStream out = System.out;
-
+  //private PrintStream out = System.out;
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FysatHeader.class);
   int numrecs = 0; // number of records written
   int recsize = 0; // size of each record (padded)
   
@@ -180,7 +180,7 @@ public final class FysatHeader {
     
   }
 
-  void read(RandomAccessFile raf, NetcdfFile ncfile, PrintStream out) throws IOException {
+  void read(RandomAccessFile raf, NetcdfFile ncfile) throws IOException {
     this.raf = raf;
     this.ncfile = ncfile;
     
@@ -190,7 +190,7 @@ public final class FysatHeader {
     	readPIB(raf );
     }
     
-    if (out != null) this.out = out;
+   // if (out != null) this.out = out;
     actualSize = raf.length();
 
  
@@ -403,7 +403,7 @@ public final class FysatHeader {
     	      // size and beginning data position in file
     	    int vsize = velems;
     	    long begin = this.firstHeader.recordsOfHeader * this.firstHeader.recoderLength ;
-    	    if (debug) out.println(" name= "+vname+" vsize="+vsize+" velems="+velems+" begin= "+begin+" isRecord="+isRecord+"\n");
+    	    if (debug) log.warn(" name= "+vname+" vsize="+vsize+" velems="+velems+" begin= "+begin+" isRecord="+isRecord+"\n");
     	    var.setSPobject( new Vinfo (vsize, begin, isRecord, nx, ny, dataType, this.firstHeader.byteOrder));
     	    String coordinates ;
             if(proj != 4) {
@@ -736,7 +736,7 @@ public final class FysatHeader {
 	    	      // size and beginning data position in file
 	    	    int vsize = velems;
 	    	    long begin = this.firstHeader.recordsOfHeader * this.firstHeader.recoderLength ;
-	    	    if (debug) out.println(" name= "+vname+" vsize="+vsize+" velems="+velems+" begin= "+begin+" isRecord="+isRecord+"\n");
+	    	    if (debug) log.warn(" name= "+vname+" vsize="+vsize+" velems="+velems+" begin= "+begin+" isRecord="+isRecord+"\n");
 	    	    var.setSPobject( new Vinfo (vsize, begin, isRecord, nx, ny, dataType, this.firstHeader.byteOrder));
 	    	    String coordinates = "lon lat time";
 	    	    var.addAttribute( new Attribute(_Coordinate.Axes, coordinates));
