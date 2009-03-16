@@ -3398,7 +3398,7 @@ public class ToolsUI extends JPanel {
         sbuff.append(" ");
       }
       String arguments = sbuff.toString();
-      System.out.println("ToolsUI arguments= '" + arguments);
+      System.out.println("ToolsUI arguments=" + arguments);
 
       // LOOK - why does it have to start with http ??
       if (arguments.startsWith("http:")) {
@@ -3411,21 +3411,23 @@ public class ToolsUI extends JPanel {
           System.exit(0);
         }
       }
-    }
 
-    // look for messages from another ToolsUI
-    sm = new SocketMessage(14444, null);
-    if (sm.isAlreadyRunning()) {
-      System.out.println("ToolsUI already running - start up another copy");
-      sm = null;
-    } else {
-      sm.addEventListener(new SocketMessage.EventListener() {
-        public void setMessage(SocketMessage.Event event) {
-          wantDataset = event.getMessage();
-          if (debugListen) System.out.println(" got message= '" + wantDataset);
-          setDataset();
-        }
-      });
+    } else { // no arguments were passed
+
+      // look for messages from another ToolsUI
+      sm = new SocketMessage(14444, null);
+      if (sm.isAlreadyRunning()) {
+        System.out.println("ToolsUI already running - start up another copy");
+        sm = null;
+      } else {
+        sm.addEventListener(new SocketMessage.EventListener() {
+          public void setMessage(SocketMessage.Event event) {
+            wantDataset = event.getMessage();
+            if (debugListen) System.out.println(" got message= '" + wantDataset);
+            setDataset();
+          }
+        });
+      }
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
 

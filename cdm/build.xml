@@ -649,7 +649,8 @@
       </filterset>
     </copy>
 
-    <jar jarfile="${build.dir}/${jarUI}" index="true" duplicate="preserve">
+    <!-- Ant jar task with index="true" will create JARs hiding any Class-Path: ... entries ! -->
+    <jar jarfile="${build.dir}/${jarUI}" duplicate="preserve">
       <fileset dir="${build.dir}" includes="README"/>
       <fileset dir="${build.dir}" includes="CHANGES"/>
       <fileset dir="${build.classes.dir}"/>

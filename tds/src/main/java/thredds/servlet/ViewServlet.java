@@ -120,9 +120,9 @@ public class ViewServlet extends AbstractServlet {
     String filename = "views/" + path.substring(pos + 1);
     log.debug("**ViewManager req= "+path+" look for "+ServletUtil.getRootPath() + filename);
 
-    String template = getTemplate( ServletUtil.getRootPath() + filename);
+    String template = getTemplate( ServletUtil.getRootPath() + "/" +filename);
     if (template == null)
-      template = getTemplate( contentPath + filename);
+      template = getTemplate( contentPath  + "/" +filename);
     if (template == null) {
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, 0 ));
       res.sendError(HttpServletResponse.SC_NOT_FOUND);

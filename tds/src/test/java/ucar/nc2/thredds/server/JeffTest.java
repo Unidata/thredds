@@ -53,7 +53,7 @@ public class JeffTest {
 
   static int current_dataset = 0;
   static String nextDataset() {
-    return "20090114_0000";
+    return "20090115_0000";
   }
 
   static AtomicInteger current_field = new AtomicInteger(0);
@@ -89,6 +89,7 @@ public class JeffTest {
     return urlStart + nextDataset() + ".grib2.dods?" + nextField() + "["+t+"]["+v+"][0:1:360][0:1:719]";
   }
 
+  static boolean show = true;
   static int counter = 0;
 
   public static void main(String[] args) throws Exception {
@@ -96,15 +97,15 @@ public class JeffTest {
     //        final String urlToFetch = ramaddaUrl;
     final int[] threadsRunning = {0};
 
-    final int numReads = 1;
-    //for (int threadCnt = 1; threadCnt < 10; threadCnt++) {
-    int threadCnt = 1;
+    final int numReads = 2;
+    for (int threadCnt = 1; threadCnt <= 2; threadCnt++) {
+    //int threadCnt = 10;
 
     ArrayList<Thread> threads = new ArrayList<Thread>();
 
     for (int i = 0; i < threadCnt; i++) {
       final int threadId = i;
-      System.err.println("   thread  #" + threadId + " created ");
+      // System.err.println("   thread  #" + threadId + " created ");
 
       threads.add(new Thread(new Runnable() {
         final int who = counter++;
@@ -115,16 +116,15 @@ public class JeffTest {
               String urls = nextUrl();
               URL url = new URL(urls);
 
-              //System.out.printf(who + " start= %d%n", System.currentTimeMillis());
-              System.out.printf("%d Send %s%n", who, urls);
+              if (show) System.out.printf("%d %d Send %s%n", who, i, urls);
               InputStream inputStream = url.openConnection().getInputStream();
               long size = IO.copy2null(inputStream, 10 * 1000);
 
-              System.out.printf(" data size= %d%n",size);
+              if (show) System.out.printf(" data size= %d%n",size);
               //System.out.printf(who + "end= %d%n", System.currentTimeMillis());
             }
 
-            System.err.println("   thread  #" + threadId + " done");
+            //System.err.println("   thread  #" + threadId + " done");
           } catch (Exception exc) {
             exc.printStackTrace();
           } finally {
@@ -159,8 +159,8 @@ public class JeffTest {
         }
       }
       long t2 = System.currentTimeMillis();
-      System.err.println("     total time: " + (t2 - t1) + " # threads:" + threadCnt);
+      System.err.println("#threads, total time : " + threadCnt+", "+(t2 - t1));
     }
-
+  }
 
 }
