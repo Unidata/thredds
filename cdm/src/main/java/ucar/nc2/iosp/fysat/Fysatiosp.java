@@ -83,7 +83,7 @@ public class Fysatiosp  extends AbstractIOServiceProvider {
     myRaf = raf;
 
     headerParser = new FysatHeader();
-    headerParser.read(myRaf, ncfile, null);
+    headerParser.read(myRaf, ncfile);
 
     ncfile.finish();
 
