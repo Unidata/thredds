@@ -243,7 +243,7 @@ class Nidsheader{
 
     private ucar.unidata.io.RandomAccessFile raf;
     private ucar.nc2.NetcdfFile ncfile;
-    private PrintStream out = System.out;
+    //private PrintStream out = System.out;
     //private Vinfo myInfo;
     private String   cmemo, ctilt, ctitle, cunit, cname;
     public void setProperty( String name, String value) { }
@@ -288,7 +288,7 @@ class Nidsheader{
         rc = raf.read(b);
         if ( rc != readLen )
         {
-            out.println(" error reading nids product header");
+            log.warn(" error reading nids product header "+raf.getLocation());
         }
 
         if( !noHeader ) {
@@ -313,7 +313,7 @@ class Nidsheader{
             if ( zlibed == 0){
                 encrypt = IsEncrypt( b2 );
                 if(encrypt == 1){
-                    out.println( "error reading encryted product " );
+                    log.error( "error reading encryted product "+raf.getLocation());
                     throw new IOException("unable to handle the product with encrypt code " + encrypt);
                 }
             }
@@ -323,7 +323,7 @@ class Nidsheader{
 
             switch ( type ) {
               case 0:
-                out.println( "ReadNexrInfo:: Unable to seek to ID ");
+                log.warn( "ReadNexrInfo:: Unable to seek to ID "+raf.getLocation());
                 break;
               case 1:
               case 2:
@@ -338,7 +338,7 @@ class Nidsheader{
                     stationName = station.name;
                   }
                 } catch (IOException ioe) {
-                  log.error("NexradStationDB.init", ioe);
+                  log.error("NexradStationDB.init "+raf.getLocation(), ioe);
                 }
                 break;
 
@@ -351,7 +351,7 @@ class Nidsheader{
               uncompdata = GetZlibedNexr( b, readLen,  hoff );
               //uncompdata = Nidsiosp.readCompData(hoff, 160) ;
               if ( uncompdata == null ) {
-                out.println( "ReadNexrInfo:: error uncompressing image" );
+                log.warn( "ReadNexrInfo: error uncompressing image " +raf.getLocation());
               }
         }
         else {
@@ -435,7 +435,7 @@ class Nidsheader{
       Sinfo sinfo = read_dividlen( bos, hedsiz );
       if( rc == 0 || pinfo.divider != -1 )
       {
-          out.println( "error in product symbology header" );
+          log.warn( "error in product symbology header "+raf.getLocation());
       }
 
       if(sinfo.id != 1)
@@ -459,7 +459,7 @@ class Nidsheader{
           hedsiz += 4;
 
           if ( Divlen_divider != -1 ) {
-            out.println( "error reading length divider" );
+            log.warn( "error reading length divider "+raf.getLocation());
           }
 
           int icount = 0;
@@ -654,7 +654,7 @@ class Nidsheader{
                                  pcode25Number++;
                                  break;
                              default:
-                                out.println( "error reading pcode equals " + pcode);
+                                log.error( "error reading pcode= " + pcode+" "+raf.getLocation());
                                 throw new IOException("error reading pcode, unable to handle the product with code " + pcode);
                           }
                           poff = poff + len + 4;
@@ -677,7 +677,7 @@ class Nidsheader{
                       }
                       else
                       {
-                          out.println( "error reading pkcode equals " + pkcode);
+                          log.error( "error reading pkcode equals " + pkcode+" "+raf.getLocation());
                           throw new IOException("error reading pkcode, unable to handle the product with code " + pkcode);
                       }
 
@@ -732,7 +732,7 @@ class Nidsheader{
           pcode_12n13n14( pkcode20Doff, pkcode20Dlen, hoff, pcode20Number, isZ, "mesocyclone", 20);
       }
     } else {
-      out.println ( "GetNexrDirs:: no product symbology block found (no image data)" );
+      log.warn ( "GetNexrDirs:: no product symbology block found (no image data) " +raf.getLocation());
 
     }
 
@@ -743,7 +743,7 @@ class Nidsheader{
 
              short tab_divider = bos.getShort();
              if ( tab_divider != -1) {
-                 out.println ( "Block divider not found" );
+                 log.error ( "Block divider not found "+raf.getLocation());
                  throw new IOException("error reading graphic alphanumeric block" );
              }
              short tab_bid = bos.getShort();
@@ -755,7 +755,7 @@ class Nidsheader{
 
              tab_divider = bos.getShort();
              if ( tab_divider != -1) {
-                 out.println ( "tab divider not found" );
+                 log.error ( "tab divider not found "+raf.getLocation());
                  throw new IOException("error reading graphic alphanumeric block" );
              }
              int npage = bos.getShort();
@@ -794,7 +794,7 @@ class Nidsheader{
          short graphic_divider = bos.getShort();
          short graphic_bid = bos.getShort();
          if(graphic_divider!=-1 || graphic_bid != 2) {
-               out.println( "error reading graphic alphanumeric block");
+               log.error( "error reading graphic alphanumeric block "+raf.getLocation());
                throw new IOException("error reading graphic alphanumeric block" );
          }
          int blen = bos.getInt();
@@ -1121,7 +1121,7 @@ class Nidsheader{
         rc = raf.read(b);
         if ( rc != readLen )
         {
-            out.println(" error reading nids product header");
+            log.warn(" error reading nids product header "+raf.getLocation());
         }
         ByteBuffer bos = ByteBuffer.wrap(b);
         return read_msghead( bos, 0 );
@@ -2168,7 +2168,7 @@ class Nidsheader{
             if (obuff.length >= 0)
               System.arraycopy(obuff, 0, out, offset, total);
           } catch (BZip2ReadException ioe) {
-            log.warn("Nexrad2IOSP.uncompress ", ioe);
+            log.warn("Nexrad2IOSP.uncompress "+raf.getLocation(), ioe);
         }
 
         return out;
@@ -2263,8 +2263,7 @@ class Nidsheader{
           tShort = (Short)convert(b2, DataType.SHORT, -1);
           B_divider  = tShort.shortValue();
           if(B_divider != -1){
-             out.println( "error reading stand alone tab message");
-
+             log.warn( "error reading stand alone tab message "+raf.getLocation());
           }
           buf.get(b2, 0, 2);
           numPages = (Short)convert(b2, DataType.SHORT, -1);
@@ -2329,7 +2328,7 @@ class Nidsheader{
                 stationName = station.name;
               }
             } catch (IOException ioe) {
-              log.error("NexradStationDB.init", ioe);
+              log.error("NexradStationDB.init "+raf.getLocation(), ioe);
             }
         }
         buf.get(b2, 0, 2);
@@ -2510,7 +2509,7 @@ class Nidsheader{
             stationName = station.name;
           }
         } catch (IOException ioe) {
-          log.error("NexradStationDB.init", ioe);
+          log.error("NexradStationDB.init "+raf.getLocation(), ioe);
         }
         }
 
@@ -2802,7 +2801,7 @@ class Nidsheader{
 
       if( numin <= 0 )
       {
-        out.println(" No compressed data to inflate ");
+        log.warn(" No compressed data to inflate "+raf.getLocation());
         return null;
       }
       //byte[]  compr = new byte[numin-4];  /* compressed portion */
@@ -3033,7 +3032,7 @@ class Nidsheader{
 
     }
 
-    /**
+    /*
      * product id table
      * @param code
      * @param elevation
@@ -3132,7 +3131,7 @@ class Nidsheader{
 
     }
 
-    /**
+    /*
      * product resolution
      * @param code
      * @return
@@ -3174,7 +3173,7 @@ class Nidsheader{
 
     }
 
-    /**
+    /*
      * product level tabel
      * @param code
      * @return

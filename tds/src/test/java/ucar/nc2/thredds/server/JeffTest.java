@@ -33,30 +33,72 @@
 
 package ucar.nc2.thredds.server;
 
+import ucar.nc2.util.IO;
+
 import java.io.InputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class JeffTest {
+
+  // GFS_Global_0p5deg_20090114_0000.grib2 - GFS_Global_0p5deg_20090315_1800.grib2
+  static String urlStart = "http://motherlode.ucar.edu:8081/thredds/dodsC/fmrc/NCEP/GFS/Global_0p5deg/files/GFS_Global_0p5deg_";
+
+  //   float Absolute_vorticity(time=61, pressure=26, lat=361, lon=720);
+  static String[] flds = new String[] {"Absolute_vorticity", "Temperature", "Geopotential_height", "U-component_of_wind",
+    "V-component_of_wind"};
+
+  static int current_dataset = 0;
+  static String nextDataset() {
+    return "20090114_0000";
+  }
+
+  static AtomicInteger current_field = new AtomicInteger(0);
+  static String nextField() {
+    if (current_field.get() >= flds.length) {
+      current_field.set(0);
+      current_dataset++;
+    }
+    return flds[current_field.get()];
+  }
+
+  static AtomicInteger current_level = new AtomicInteger();
+  static int nextLevel() {
+    if (current_level.get() >= 26) {
+      current_level.set(0);
+      current_field.incrementAndGet();
+    }
+    return current_level.get();
+  }
+
+  static AtomicInteger current_time = new AtomicInteger();
+  static int nextTime() {
+    if (current_time.get() >= 61) {
+      current_time.set(0);
+      current_level.incrementAndGet();
+    }
+    return current_time.getAndIncrement();
+  }
+
+  static String nextUrl() {
+    int t = nextTime();
+    int v = nextLevel();
+    return urlStart + nextDataset() + ".grib2.dods?" + nextField() + "["+t+"]["+v+"][0:1:360][0:1:719]";
+  }
 
   static int counter = 0;
 
   public static void main(String[] args) throws Exception {
-    final String ramaddaUrl =
-            "http://motherlode.ucar.edu/repository/entry/show/output:data.opendap/entryid:733e04b2-1669-4b6e-8867-92aec1fbd286/dodsC/entry.das.dods?Temperature%5B0:1:0%5D%5B0:1:0%5D%5B0:1:64%5D%5B0:1:92%5D";
 
-    String tdsVolumeUrl =
-            "http://motherlode.ucar.edu:8081/thredds/dodsC/model/NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20090313_1200.grib1.dods?Temperature%5B0:1:0%5D%5B0:1:18%5D%5B0:1:64%5D%5B0:1:92%5D";
-
-
-    final String urlToFetch = tdsVolumeUrl;
     //        final String urlToFetch = ramaddaUrl;
     final int[] threadsRunning = {0};
 
-    final int numReads = 100;
+    final int numReads = 1;
     //for (int threadCnt = 1; threadCnt < 10; threadCnt++) {
-    int threadCnt = 10;
+    int threadCnt = 1;
 
     ArrayList<Thread> threads = new ArrayList<Thread>();
 
@@ -69,19 +111,18 @@ public class JeffTest {
 
         public void run() {
           try {
-            //for (int i = 0; i < numReads; i++) {
-            URL url = new URL(urlToFetch);
+            for (int i = 0; i < numReads; i++) {
+              String urls = nextUrl();
+              URL url = new URL(urls);
 
-            System.out.printf(who + " start= %d%n", System.currentTimeMillis());
-            InputStream inputStream = url.openConnection().getInputStream();
-            byte[] buffer = new byte[10000];
-            int totalRead = 0;
-            int read = 0;
-            while ((read = inputStream.read(buffer)) > 0) {
-              totalRead += read;
+              //System.out.printf(who + " start= %d%n", System.currentTimeMillis());
+              System.out.printf("%d Send %s%n", who, urls);
+              InputStream inputStream = url.openConnection().getInputStream();
+              long size = IO.copy2null(inputStream, 10 * 1000);
+
+              System.out.printf(" data size= %d%n",size);
+              //System.out.printf(who + "end= %d%n", System.currentTimeMillis());
             }
-            System.out.printf(who + "end= %d%n", System.currentTimeMillis());
-            //}
 
             System.err.println("   thread  #" + threadId + " done");
           } catch (Exception exc) {
