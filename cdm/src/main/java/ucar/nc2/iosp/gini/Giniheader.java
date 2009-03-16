@@ -66,8 +66,8 @@ class Giniheader {
     private boolean debug = false, debugPos = false, debugString = false, debugHeaderSize = false;
     private ucar.unidata.io.RandomAccessFile raf;
     private ucar.nc2.NetcdfFile ncfile;
-    private PrintStream out = System.out;
-
+   // private PrintStream out = System.out;
+    static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Giniheader.class);
     int numrecs = 0; // number of records written
     int recsize = 0; // size of each record (padded)
     int dataStart = 0; // where the data starts
@@ -182,7 +182,7 @@ class Giniheader {
             resultLength = inflater.inflate(buf, 0, GINI_HED_LEN);
        }
        catch (DataFormatException ex) {
-          System.out.println("ERROR on inflation "+ex.getMessage());
+          log.warn("ERROR on inflation "+ex.getMessage());
           ex.printStackTrace();
           throw new IOException( ex.getMessage());
        }
@@ -248,7 +248,7 @@ class Giniheader {
     // long pos = GINI_PIB_LEN;
     byte [] head = readPIB(raf );
     ByteBuffer bos = ByteBuffer.wrap(head);
-    if (out != null) this.out = out;
+    //if (out != null) this.out = out;
     actualSize = raf.length();
 
     Attribute att = new Attribute( "Conventions", "GRIB");
@@ -624,7 +624,7 @@ class Giniheader {
     // size and beginning data position in file
     int vsize = velems;
     long begin = dataStart ;
-    if (debug) out.println(" name= "+vname+" vsize="+vsize+" velems="+velems+" begin= "+begin+" isRecord="+isRecord+"\n");
+    if (debug) log.warn(" name= "+vname+" vsize="+vsize+" velems="+velems+" begin= "+begin+" isRecord="+isRecord+"\n");
     if( navcal == 128) {
         var.setDataType( DataType.FLOAT);
         var.setSPobject( new Vinfo (vsize, begin, isRecord, nx, ny, calcods));
@@ -655,7 +655,7 @@ class Giniheader {
 
     // we have to project in order to find the origin
     ProjectionPointImpl start = (ProjectionPointImpl) projection.latLonToProj( new LatLonPointImpl( lat1, lon1));
-    if (debug) System.out.println("start at proj coord "+start);
+    if (debug) log.warn("start at proj coord "+start);
 
     double startx = start.getX();
     double starty = start.getY();
