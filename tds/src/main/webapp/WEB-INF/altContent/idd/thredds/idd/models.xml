@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="Unidata THREDDS Data Server" version="1.0.1">
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="Unidata THREDDS Data Server" version="1.0.2">
 
   <service name="latest" serviceType="Resolver" base=""/>
 
@@ -7,16 +7,19 @@
     <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
     <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
+    <service name="wms" serviceType="WMS" base="/thredds/wms/" />
     <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" />
+    <service name="ncstream" serviceType="NetcdfStream" base="/thredds/ncstream/" />
   </service>
 
   <service name="fmrcServices" serviceType="Compound" base="">
     <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
+    <service name="wms" serviceType="WMS" base="/thredds/wms/" />
     <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" />
   </service>
 
-  <dataset name="NCEP Model Data">
+  <dataset ID="NCEP" name="NCEP Model Data">
 
     <metadata inherited="true">
       <serviceName>fmrcServices</serviceName>
@@ -49,7 +52,7 @@
       </timeCoverage>
     </metadata>
 
-    <dataset name="Global Forecast System (GFS) Model">
+    <dataset ID="NCEP/GFS" name="Global Forecast System (GFS) Model">
       <metadata inherited="true">
         <documentation type="summary">NCEP Global Forecast System Model, previously called AVN/MRF (Medium Range Forecast)</documentation>
         <documentation xlink:href="http://meted.ucar.edu/nwp/pcu2/avintro.htm" xlink:title="COMET MetEd (Meteorology Education and Training) documentation" />
@@ -279,7 +282,7 @@
 
     </dataset>
 
-    <dataset name="North American Model (NAM) ">
+    <dataset ID="NCEP/NAM" name="North American Model (NAM) ">
        <metadata inherited="true">
         <documentation type="summary">NCEP Nonhydrostatic Mesoscale Model (NMM) and Gridpoint Statistical Interpolation (GSI) analysis, running in the Weather Research and Forecasting (WRF) infrastructure.</documentation>
         <documentation xlink:href="http://meted.ucar.edu/nwp/pcu2/NAMWRFjun2006.htm" xlink:title="COMET MetEd (Meteorology Education and Training) documentation" />
@@ -325,7 +328,7 @@
                          startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="60 hours"/>
       </datasetFmrc>
 
-      <dataset name="NCEP-NAM-Alaska_45km">
+      <dataset ID="NCEP/NAM/Alaska_45km" name="NCEP-NAM-Alaska_45km">
 
         <datasetFmrc name="NCEP-NAM-Alaska_45km-noaaport" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/NAM/Alaska_45km/noaaport">
           <metadata inherited="true">
@@ -387,7 +390,7 @@
                          startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="60 hours"/>
       </datasetFmrc>
 
-      <dataset name="NCEP-NAM-CONUS_12km">
+      <dataset ID="NCEP/NAM/CONUS_12km" name="NCEP-NAM-CONUS_12km">
 
         <datasetFmrc name="NCEP-NAM-CONUS_12km-noaaport" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/NAM/CONUS_12km">
           <metadata inherited="true">
@@ -431,7 +434,7 @@
 
      </dataset>
 
-      <dataset name="NCEP-NAM-CONUS_20km">
+      <dataset ID="NCEP/NAM/CONUS_20km" name="NCEP-NAM-CONUS_20km">
         <documentation type="summary">NCEP North American Model : AWIPS 215(U) grid over the continental United States - Quadruple Resolution.
           Horizontal = 369 by 257 points, resolution 20.31 km, LambertConformal projection.
         </documentation>
@@ -493,7 +496,7 @@
         </datasetFmrc>
       </dataset>
 
-      <dataset name="NCEP-NAM-CONUS_40km">
+      <dataset ID="NCEP/NAM/CONUS_40km" name="NCEP-NAM-CONUS_40km">
         <metadata inherited="true">
           <documentation type="summary">NCEP North American Model : AWIPS 212 (R) Regional - CONUS - Double Resolution.
             Horizontal = 185 by 129 points, resolution 40.63 km; LambertConformal projection.
@@ -559,14 +562,14 @@
       </datasetFmrc>
     </dataset>
 
-    <dataset name="Rapid Update Cycle (RUC) Model">
+    <dataset ID="NCEP/RUC" name="Rapid Update Cycle (RUC) Model">
       <metadata inherited="true">
         <documentation type="summary">NCEP Rapid Update Cycle (RUC) Model: frequently updated short-range weather forecasts.</documentation>
         <documentation xlink:href="http://meted.ucar.edu/nwp/pcu2/rucintro.htm" xlink:title="COMET MetEd (Meteorology Education and Training) documentation" />
         <dataFormat>GRIB-2</dataFormat>
       </metadata>
 
-      <dataset name="NCEP-RUC2-CONUS_20km">
+      <dataset ID="NCEP/RUC2" name="NCEP-RUC2-CONUS_20km">
         <metadata inherited="true">
           <documentation type="summary">NCEP Rapid Update Cycle 2 (RUC2).
             Horizontal = 301 by 225 points, resolution 20.31 km, Lambert Conformal projection.
@@ -668,7 +671,7 @@
       </datasetFmrc>
     </dataset>
 
-    <dataset name="Downscaled GFS with Eta Extension (DGEX)">
+    <dataset ID="NCEP/DGEX" name="Downscaled GFS with Eta Extension (DGEX)">
       <metadata inherited="true">
         <documentation type="summary">
           The NCEP DGEX Model is the Eta model extended to 8 days over smaller domains using the operational Eta model 78 hour forecast and GFS boundary conditions.
@@ -719,10 +722,11 @@
 
     </dataset>
 
-    <dataset name="NCEP Short Range Ensemble Forecast">
+    <dataset ID="NWS/SREF" name="NWS Short Range Ensemble Forecasting">
         <metadata inherited="true">
           <documentation type="summary">NCEP Short Range Ensemble Forecast (SREF): NOAA's National Weather Service Storm Prediction Center. </documentation>
           <documentation xlink:href="http://w1.spc.woc.noaa.gov/exper/sref/" xlink:title="NCEP/SREF Website" />
+          <documentation xlink:href="http://www.emc.ncep.noaa.gov/mmb/SREF/SREF.html" xlink:title="NWS/SREF Website" />
         </metadata>
 
       <datasetFmrc name="SREF-CONUS_40km-ensprod_biasc" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/SREF/CONUS_40km/ensprod_biasc">
@@ -765,7 +769,7 @@
 
     </dataset>
 
-    <dataset name="NWS National Digital Forecast Database">
+    <dataset ID="NWS/NDFD" name="NWS National Digital Forecast Database">
         <metadata inherited="true">
           <documentation type="summary">National Digital Forecast Database (NDFD): US National Weather Service gridded forecasts of sensible weather elements. </documentation>
           <documentation xlink:href="http://www.weather.gov/ndfd/" xlink:title="NWS/NDFD Website" />
