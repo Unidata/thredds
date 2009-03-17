@@ -57,22 +57,30 @@ public class TestJustRead extends TestCase {
     readAllDir( TestAll.upcShareTestDataDir+ "motherlode/grid", "grib2");
   }
 
+  public void testReadFiles() throws Exception {
+    long start = System.currentTimeMillis();
+    readAllDir( "D:\\data\\grib\\nam\\c20s", "");
+    long end = System.currentTimeMillis();
+    System.out.printf(" that took %d msecs%n", (end-start));
+  }
+
   void readAllDir(String dirName, String suffix) throws Exception {
     System.out.println("---------------Reading directory "+dirName);
     File allDir = new File( dirName);
     File[] allFiles = allDir.listFiles();
 
     for (int i = 0; i < allFiles.length; i++) {
-      String name = allFiles[i].getAbsolutePath();
-      if (name.endsWith(suffix))
+      File f = allFiles[i];
+      String name = f.getAbsolutePath();
+      if (!f.isDirectory() && name.endsWith(suffix) && !name.endsWith(".gbx"))
         doOne(name);
     }
 
-    for (int i = 0; i < allFiles.length; i++) {
+    /* for (int i = 0; i < allFiles.length; i++) {
       File f = allFiles[i];
       if (f.isDirectory())
         readAllDir(allFiles[i].getAbsolutePath(), suffix);
-    }
+    } */
 
   }
 
