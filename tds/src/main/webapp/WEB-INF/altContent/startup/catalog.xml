@@ -7,7 +7,7 @@
     <service name="dapService" serviceType="OpenDAP" base="/thredds/dodsC/" />
     <service name="httpService" serviceType="HTTPServer" base="/thredds/fileServer/" />
     <!--service name="wcsService" serviceType="WCS" base="/thredds/wcs/" /-->
-    <!--service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" suffix="/dataset.html" /-->
+    <!--service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" /-->
   </service>
 
   <datasetRoot path="test" location="content/testdata/" />
