@@ -495,7 +495,10 @@ public class GribHorizCoordSys {
      * @param lon0 longitude of origin (degrees)
      * @param par standard parallel (degrees). cylinder cuts earth at this latitude.
      */
-    double Latin = gdsIndex.readDouble("Latin");
+    double Latin = gdsIndex.readDouble("LaD");
+    // name depends on Grib version 1 or 2
+    if (Double.isNaN(Latin) )
+       Latin = gdsIndex.readDouble("Latin");
     double Lo1 = gdsIndex.Lo1;
     double La1 = gdsIndex.La1;
 
