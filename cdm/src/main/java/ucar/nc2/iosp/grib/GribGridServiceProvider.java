@@ -203,18 +203,21 @@ public class GribGridServiceProvider extends GridServiceProvider {
     // always check first if the index file lives in the same dir as the regular file, and use it
     indexFile = new File(indexLocation);
     if (!indexFile.exists()) { // look in cache if need be
-      if ( indexFile.createNewFile()) {
-        indexFile.delete();
-      } else {
-        log.debug("saveIndexFile not exist " + indexFile.getPath() + " ++ " + indexLocation);
-        indexFile = DiskCache.getCacheFile(indexLocation);
-        //saveLocation = indexFile.getPath();
-        log.debug("GridServiceProvider: use " + indexFile.getPath());
+      indexFile = DiskCache.getCacheFile(indexLocation);
+      if (!indexFile.exists()) { //cache doesn't exist
+          indexFile = new File(indexLocation);
+          // check write permission in the same dir as the regular file
+          if ( indexFile.createNewFile()) {
+            indexFile.delete();
+          } else {
+            indexFile = DiskCache.getCacheFile(indexLocation);
+          }
       }
     }
-    // once index determined, if sync the write it
+    log.debug("GribGridServiceProvider: using index " + indexFile.getPath());
+    // once index determined, if sync then write it
     if( syncExtend )
-      return writeIndex(indexLocation, indexFile, raf);
+      return writeIndex( indexFile, raf);
 
     // if index exist already, read it
     if (indexFile.exists()) {
@@ -226,26 +229,26 @@ public class GribGridServiceProvider extends GridServiceProvider {
       if (index != null) {
         log.debug("  opened index = " + indexFile.getPath());
       } else {  // rewrite if fail to open
-        log.debug("  write index = " + indexFile.getPath());
-        index = writeIndex(indexLocation, indexFile, raf);
+        log.debug("  index open failed, write index = " + indexFile.getPath());
+        index = writeIndex( indexFile, raf);
       }
 
     } else {
       // doesnt exist
-      log.debug("  write index = " + indexFile.getPath());
-      index = writeIndex(indexLocation, indexFile, raf);
+      log.debug("  creating index = " + indexFile.getPath());
+      index = writeIndex( indexFile, raf);
     }
     return index;
   }
 
-  private GridIndex writeIndex(String indexLocation, File indexFile, RandomAccessFile raf) throws IOException {
+  private GridIndex writeIndex( File indexFile, RandomAccessFile raf) throws IOException {
     GridIndex index = null;
     DataOutputStream out = null;
     try {
 
       if (indexFile.exists()) {
         indexFile.delete();
-        log.debug("Delete old index " + indexFile);
+        log.debug("Delete old index " + indexFile.getPath());
       }
 
       raf.seek(0);
