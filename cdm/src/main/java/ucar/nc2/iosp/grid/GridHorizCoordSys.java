@@ -100,12 +100,13 @@ public class GridHorizCoordSys {
   /**
    * GridVariables that have this GridHorizCoordSys
    */
-  Map<String,GridVariable> varHash = new HashMap<String,GridVariable>(200); // GribVariables that have this GribHorizCoordSys
+  Map<String,GridVariable> varHash = new HashMap<String,GridVariable>(200);
 
   /**
    * List of GridVariable, sorted by product desc
    */
-  Map<String, List<GridVariable>> productHash = new HashMap<String, List<GridVariable>>(100); // List of GribVariable, sorted by product desc
+  Map<String, List<GridVariable>> productHash = new HashMap<String, List<GridVariable>>(100);
+
   /**
    * GridVertCoordSys
    */
@@ -642,7 +643,10 @@ public class GridHorizCoordSys {
      * @param lon0 longitude of origin (degrees)
      * @param par standard parallel (degrees). cylinder cuts earth at this latitude.
      */
-    double Latin = gds.getDouble(GridDefRecord.LATIN);
+    double Latin = gds.getDouble(GridDefRecord.LAD);
+    // name depends on Grib version 1 or 2
+    if (Double.isNaN(Latin) )
+       Latin = gds.getDouble(GridDefRecord.LATIN);
     double Lo1 = gds.getDouble(GridDefRecord.LO1); //gds.Lo1;
     double La1 = gds.getDouble(GridDefRecord.LA1); //gds.La1;
 
@@ -824,7 +828,10 @@ public class GridHorizCoordSys {
         / (gds.getInt(GridDefRecord.NX) - 1);
     double dy = 1000 * Math.abs(end.getY() - starty)
         / (gds.getInt(GridDefRecord.NY) - 1);
+    // have to change both String/Double values for consistency
     gds.addParam(GridDefRecord.DX, String.valueOf(dx));
+    gds.addParam(GridDefRecord.DX, new Double (dx));
     gds.addParam(GridDefRecord.DY, String.valueOf(dy));
+    gds.addParam(GridDefRecord.DY, new Double(dy));
   }
 }
