@@ -51,8 +51,6 @@ public class TestGridGribIosp {
     static public void compareNC(String fileBinary, String fileText)
         throws IOException {
 
-   // }, InvalidRangeException {
-
     long start = System.currentTimeMillis() ;
     //String fileBinary = "C:/data/GFS_Global_2p5deg_20090305_0000.grib2";
     //String fileBinary = "C:/data/GFS_Alaska_191km_20090307_1200.grib1";
@@ -127,9 +125,15 @@ public class TestGridGribIosp {
 
   static public void main(String args[]) throws IOException {
     TestGridGribIosp ggi = new TestGridGribIosp();
-    String dirB = "/local/robb/data/grib/idd/binary";
-    String dirT = "/local/robb/data/grib/idd/text";
 
+    String dirB, dirT;
+    if (args.length < 1 ) {
+      dirB = TestAll.upcShareTestDataDir +"test/motherlode/grid/grib/binary";
+      dirT = TestAll.upcShareTestDataDir +"test/motherlode/grid/grib/text";
+    } else {
+      dirB = args[ 0 ] +"/binary"; // "/local/robb/data/grib/idd/binary";
+      dirT = args[ 0 ] +"/text"; // "/local/robb/data/grib/idd/text";
+    }
     File dir = new File( dirB );
     if (dir.isDirectory()) {
       System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
