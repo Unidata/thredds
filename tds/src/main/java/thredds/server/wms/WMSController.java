@@ -44,7 +44,7 @@ import thredds.server.wms.responses.*;
 import thredds.servlet.ThreddsConfig;
 import thredds.servlet.DatasetHandler;
 import thredds.servlet.UsageLog;
-import thredds.servlet.DataRootHandler;
+import thredds.util.Version;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,6 +60,7 @@ import uk.ac.rdg.resc.ncwms.controller.RequestParams;
 import uk.ac.rdg.resc.ncwms.controller.ColorScaleRange;
 import uk.ac.rdg.resc.ncwms.exceptions.WmsException;
 import uk.ac.rdg.resc.ncwms.exceptions.MetadataException;
+import uk.ac.rdg.resc.ncwms.exceptions.Wms1_1_1Exception;
 import uk.ac.rdg.resc.ncwms.config.Config;
 
 /**
@@ -71,6 +72,9 @@ import uk.ac.rdg.resc.ncwms.config.Config;
  */
 public class WMSController extends AbstractController {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(WMSController.class);
+
+  public static final Version WMS_VER_1_1_1 = new Version( "1.1.1");
+  public static final Version WMS_VER_1_3_0 = new Version( "1.3.0");
 
   private boolean allow;
 
@@ -123,9 +127,11 @@ public class WMSController extends AbstractController {
   }
 
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res)
-          throws ServletException, IOException, Exception {
+          throws ServletException, IOException {
     String jspPage = "";
     ModelAndView result = null;
+
+    log.info( UsageLog.setupRequestContext( req ) );
 
     if (allow) {
       Map<String, Object> model = new HashMap<String, Object>();
@@ -134,23 +140,25 @@ public class WMSController extends AbstractController {
       String errMessage = "";
 
       RequestParams params = new RequestParams(req.getParameterMap());
-      String version = params.getWmsVersion();
+      String versionString = params.getWmsVersion();
 
-      if (version == null) {
-        //for Google!
-        version = "1.1.1";
-      }
+      try
+      {
+        if ( versionString == null) {
+          //for Google!
+          versionString = "1.1.1";
+        }
 
-
-      log.info( UsageLog.setupRequestContext(req));
-
-      // System.out.println("WMS query=" + req.getQueryString());
+        String service = params.getMandatoryString( "service" );
+        if ( ! service.equalsIgnoreCase( "WMS" ) )
+        {
+          throw new WmsException( "The SERVICE parameter must be WMS" );
+        }
         
-      try {
         String request = params.getMandatoryString("request");
         dataset = openDataset(req, res);
 
-        log.debug("Processing request: (version): " + version);
+        log.debug("Processing request: (version): " + versionString );
 
         if (request.equalsIgnoreCase("GetCapabilities")) {
           errMessage = "Error encountered while processing GetCapabilities request";
@@ -168,41 +176,53 @@ public class WMSController extends AbstractController {
           result =  getMapHandler.processRequest(res, req);
 
         } else if (request.equalsIgnoreCase("GetLegendGraphic")) {
-          errMessage = "Error encountered while processing GetMap request ";
+          errMessage = "Error encountered while processing GetLegendGraphic request ";
           GetLegendGraphic legendGraphic = new GetLegendGraphic(params, dataset, usageLogEntry);
           result =  legendGraphic.processRequest(res, req);
 
         } else if (request.equalsIgnoreCase("GetFeatureInfo")) {
-          errMessage = "Error encountered while processing GetMap request ";
+          errMessage = "Error encountered while processing GetFeatureInfo request ";
           GetFeatureInfo featureInfoHandler = new GetFeatureInfo(params, dataset, usageLogEntry);
           result =  featureInfoHandler.processRequest(res, req);
 
         } else if (request.equals("GetMetadata")) {
+          errMessage = "Error encountered while processing GetMetadata request ";
           MetadataResponse metaController = new MetadataResponse(params, dataset, usageLogEntry);
           metaController.setConfig(config);
           result =  metaController.processRequest(res, req);
 
-        } else if (request.equals("GetKML")) {
-
-        } else if (request.equals("GetKMLRegion")) {
-
         }
-
+//        else if (request.equals("GetKML")) {
+//
+//        } else if (request.equals("GetKMLRegion")) {
+//
+//        }
+        else
+          throw new WmsException( "Unsupported REQUEST parameter" );
+        
         return result;
       }
       catch (MetadataException me) {
         log.debug("MetadataException: " + me.toString());
       }
       catch (WmsException e) {
-        model.put("exception", e);
-        log.debug("WMS Exception!~!!! " + errMessage);
-        if (version.equals("1.1.1")) {
+        log.debug("WMS Exception! " + errMessage);
+        if ( versionString.equals("1.1.1"))
+        {
+          model.put( "exception", new Wms1_1_1Exception( e));
           jspPage = "displayWms1_1_1Exception";
-        } else if (version.equals("1.3.0")) {
+        }
+        else if ( versionString.equals("1.3.0"))
+        {
+          model.put( "exception", e );
+          jspPage = "displayWmsException";
+        }
+        else
+        {
+          model.put( "exception", e );
           jspPage = "displayWmsException";
         }
 
-        model.put("exception", e);
         return new ModelAndView(jspPage, model);
       }
       catch (java.net.SocketException se) { // Google Earth does thius a lot for some reason

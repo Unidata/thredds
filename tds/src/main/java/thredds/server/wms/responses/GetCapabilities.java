@@ -54,6 +54,8 @@ import java.util.HashMap;
 import java.io.File;
 
 import thredds.servlet.DataRootHandler;
+import thredds.util.Version;
+import thredds.server.wms.WMSController;
 
 /**
  * Created by IntelliJ IDEA.
@@ -101,15 +103,21 @@ public class GetCapabilities extends FileBasedResponse
         //else
         //    use last startupDate's value
 
-
-        if(params.getWmsVersion().equals("1.1.1"))
-        {
-            jspPage = "capabilities_xml_1_1_1";
-        }
-        else if(params.getWmsVersion().equals("1.3.0"))
-        {
-            jspPage = "capabilities_xml";
-        }
+      // Do WMS version negotiation.  From the WMS 1.3.0 spec:
+      // * If a version unknown to the server and higher than the lowest
+      //   supported version is requested, the server shall send the highest
+      //   version it supports that is less than the requested version.
+      // * If a version lower than any of those known to the server is requested,
+      //   then the server shall send the lowest version it supports.
+      // We take the version to be 1.3.0 if not specified
+      String versionString = params.getWmsVersion();
+      Version wmsVersion = versionString == null
+                           ? WMSController.WMS_VER_1_3_0
+                           : new Version( versionString );
+      if ( wmsVersion.compareTo( WMSController.WMS_VER_1_3_0 ) >= 0 )
+        jspPage = "capabilities_xml";
+      else
+        jspPage = "capabilities_xml_1_1_1";
 
         //check updateSequence
         String updateSeqStr = params.getString("updatesequence");

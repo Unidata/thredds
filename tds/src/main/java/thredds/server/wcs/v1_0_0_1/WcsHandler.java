@@ -35,7 +35,7 @@ package thredds.server.wcs.v1_0_0_1;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.UsageLog;
 import thredds.server.wcs.VersionHandler;
-import thredds.server.wcs.Version;
+import thredds.util.Version;
 import thredds.wcs.v1_0_0_1.*;
 import thredds.wcs.Request;
 

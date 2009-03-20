@@ -32,6 +32,7 @@
  */
 package thredds.server.wcs;
 
+import thredds.util.Version;
 import thredds.servlet.*;
 import thredds.server.wcs.v1_0_0_1.WcsHandler;
 
@@ -291,10 +292,11 @@ public class WCSServlet extends AbstractServlet {
     VersionHandler prevVh = null;
     for ( VersionHandler curVh: this.versionHandlers)
     {
-      if ( reqVersion.equals( curVh.getVersion()) )
+      int reqCompareCur = reqVersion.compareTo( curVh.getVersion() );
+      if ( reqCompareCur == 0 )
         // Use matching version handler.
         return curVh;
-      else if ( reqVersion.lessThan( curVh.getVersion()))
+      else if ( reqCompareCur < 0 )
       {
         if ( prevVh == null)
           // Requested version lower than lowest supported version,
@@ -305,7 +307,7 @@ public class WCSServlet extends AbstractServlet {
           // so use previous version.
           return prevVh;
       }
-      else if ( reqVersion.greaterThan( curVh.getVersion()))
+      else if ( reqCompareCur > 0)
       {
         // Requested version greater than current version,
         // so keep current version around in case it is needed.
