@@ -77,7 +77,7 @@ public class ReadTdsLogs {
     completionQ = new ArrayBlockingQueue<Future<SendRequestTask>>(10); // bounded, threadsafe
     completionService = new ExecutorCompletionService<SendRequestTask>(executor, completionQ);
 
-    out = new Formatter(new FileOutputStream("C:/TEMP/readTDSnew2.csv"));
+    out = new Formatter(new FileOutputStream("C:/TEMP/readTDSnew3.csv"));
     out.format("n, url, size, org, new, speedup, fail %n");
 
     resultProcessingThread = new Thread(new ResultProcessor());

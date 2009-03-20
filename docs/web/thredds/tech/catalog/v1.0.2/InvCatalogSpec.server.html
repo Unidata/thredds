@@ -7,13 +7,14 @@
 
   
   
-  <meta name="Author" content="John Caron"><title>Server-side InvCatalog Spec v1.0.2</title></head>
+  <meta name="Author" content="John Caron"><title>Server-side InvCatalog Spec v1.0.2</title>
+</head>
 <body>
 <div class="head"> 
   <h1> <img alt="THREDDS" src="../../images/THREDDSlogo.jpg" height="54" width="67"> Server-side InvCatalog Specification, Version 1.0.2<br>
 </h1>
   <address>
-  last update: 10 October 2006<br>
+  last update: 03/20/2009<br>
   Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS
   mailgroup</a>
   </address>
@@ -31,9 +32,11 @@ allow for this server-side usage. </p>
 <li><a href="#Server-side_Elements">Server-side Elements</a></li>
   <ul>
     <li><a href="#datasetScan_Element">datasetScan</a></li>
-    <li><a href="#datasetRoot_Element">datasetRoot</a><br>
+    <li><a href="#datasetRoot_Element">datasetRoot</a></li>
+    <li><a href="#datasetFmrc_Element">datasetFmrc</a><br>
     </li>
-  </ul><li><a href="#index">Index</a></li>
+  </ul>
+  <li><a href="#index">Index</a></li>
   <li><a href="Changes.html">Change History</a> </li>
 </ol>
 
@@ -358,9 +361,42 @@ from the datasetRoot location.<br>
 
 
 <hr style="width: 100%; height: 2px;">
-<pre><br></pre>
+<h3><a name="datasetFmrc_Element"></a>datasetFmrc Element<br>
+</h3>
+<pre>
 
-
+&lt;!-- Define a Forecast Model Run Collection dataset --&gt;
+&lt;xsd:element name=&quot;datasetFmrc&quot; substitutionGroup=&quot;dataset&quot;&gt;
+  &lt;xsd:complexType&gt;
+    &lt;xsd:complexContent&gt;
+      &lt;xsd:extension base=&quot;DatasetType&quot;&gt;
+         &lt;xsd:sequence&gt;
+          &lt;xsd:element ref=&quot;fmrcInventory&quot; minOccurs=&quot;0&quot;/&gt;
+          &lt;xsd:element ref=&quot;addTimeCoverage&quot; minOccurs=&quot;0&quot;/&gt;
+        &lt;/xsd:sequence&gt;
+        &lt;xsd:attribute name=&quot;path&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
+        &lt;xsd:attribute name=&quot;runsOnly&quot; type=&quot;xsd:boolean&quot; /&gt;
+      &lt;/xsd:extension&gt;
+    &lt;/xsd:complexContent&gt;
+  &lt;/xsd:complexType&gt;
+&lt;/xsd:element&gt;</pre>
+<pre>&lt;xsd:element name=&quot;fmrcInventory&quot;&gt;
+  &lt;xsd:complexType&gt;
+    &lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
+    &lt;xsd:attribute name=&quot;suffix&quot; type=&quot;xsd:string&quot;/&gt;
+    &lt;xsd:attribute name=&quot;fmrcDefinition&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
+    &lt;xsd:attribute name=&quot;olderThan&quot; type=&quot;xsd:string&quot; /&gt;
+  &lt;/xsd:complexType&gt;
+&lt;/xsd:element&gt;</pre>
+<p>A <strong>datasetFmrc</strong> is a kind of dataset, and so allows all of the attributes and child elements of the dataset element. </p>
+<h4>Example<br>
+</h4>
+<pre>  &lt;datasetFmrc name=&quot;SABGOM Forecast Model Run Collection&quot; <strong>path</strong>=&quot;fmrc/sabgom&quot;&gt;
+<br>    &lt;metadata inherited=&quot;true&quot;&gt;<br>      &lt;serviceName&gt;dapService&lt;/serviceName&gt;<br>    &lt;/metadata&gt;
+<br>	 &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br>      &lt;aggregation dimName=&quot;runtime&quot; type=&quot;<strong>forecastModelRunCollection</strong>&quot; recheckEvery=&quot;10min&quot;&gt;<br>        &lt;scan location=&quot;D:/test/signell/big/&quot; suffix=&quot;.nc&quot; dateFormatMark=&quot;his_#yyyyMMdd&quot; olderThan=&quot;5 min&quot;/&gt;<br>      &lt;/aggregation&gt;<br>    &lt;/netcdf&gt;
+<br>  &lt;/datasetFmrc&gt;<br></pre>
+<p><br>
+  Like <em>datasetScan</em>, the <i>path</i> attribute is used to define the URL path that will map to to a given datasetFmrc. </p>
 <hr>
 <h2>Index<a name="index"></a> </h2>
 

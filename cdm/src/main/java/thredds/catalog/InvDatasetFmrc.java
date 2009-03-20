@@ -86,13 +86,16 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
   private volatile boolean madeDatasets = false, madeFmrc = false;
 
-  private String path;
+  private final String path;
+  private final boolean runsOnly;
+
+  // effectively final
+  private InventoryParams params;
+  private String dodsService;
+
   private ForecastModelRunCollection fmrc;
   private InvCatalogImpl catalog, catalogRuns, catalogOffsets, catalogForecasts;
-  private InventoryParams params;
   private InvDatasetScan scan;
-  private String dodsService;
-  private boolean runsOnly;
 
   public InvDatasetFmrc(InvDatasetImpl parent, String name, String path, boolean runsOnly) {
     super(parent, name, "/thredds/catalog/"+path+"/catalog.xml");
@@ -102,8 +105,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
   public String getPath() { return path; }
   public boolean isRunsOnly() { return runsOnly; }
-  public InvDatasetScan getRawFileScan()
-  {
+  public InvDatasetScan getRawFileScan() {
     if ( ! madeDatasets )
       getDatasets();
     return scan;
@@ -204,7 +206,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
         ds.setID(id+"/"+name);
         ThreddsMetadata tm = ds.getLocalMetadata();
         tm.addDocumentation("summary", "Forecast Model Run Collection (2D time coordinates).");
-        ds.getLocalMetadataInheritable().setServiceName(dodsService);
+        ds.getLocalMetadataInheritable().setServiceName(dodsService); // LOOK why ??
         ds.finish();
         datasets.add( ds);
 
@@ -543,6 +545,16 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
 
   /////////////////////////////////////////////////////////////////////////
+
+  // this is calledd in a multithreaded enviro.
+  // fmrc has state that can change.
+
+  /**
+   *
+   * @param path
+   * @return
+   * @throws IOException
+   */
   public NetcdfDataset getDataset(String path) throws IOException {
     int pos = path.indexOf("/");
     String type = (pos > -1) ? path.substring(0, pos) : path;
