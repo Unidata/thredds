@@ -6,6 +6,8 @@ Changes in version 4.0
 
  Release Details:
   38:
+   new visad.jar (3/20/09)
+   GeoGrid.subset() deal with 6 dimensions, 2D time dimension.
    refactor grib iosp: GribGridServiceProvider. binary indexes.
    ToolsUI: added Fmrc/Inventory, NcML/Aggregation Tabs
   37:
@@ -129,7 +131,7 @@ Changes in version 4.0
     JNI interface to netcdf4 C library, for testing
   26: ucar.nc2.ft.point.writer.CFPointObWriter, WriterCFPointObsDataset for writig point obs data in proposed CF format.
     EnhancedScaleMissingImpl: deal with unsigned data and missing values
-    Universal Formal Radar IOSP
+    Universal Format Radar IOSP
     NetcdfDatasetInfo must reopen dataset, capture CoordSysBuilder info, so that normal case doesnt retain unneeded objects
   25: opendap parsing bug with signed bytes
     ncml agg fixes

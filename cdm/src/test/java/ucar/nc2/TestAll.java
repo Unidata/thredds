@@ -137,7 +137,7 @@ public class TestAll {
     file = new File( upcShareThreddsDataDir );
     if ( ! file.exists() )
     {
-      System.out.println( "**WARN: Non-existence if Level 2 test data directory <" + file.getAbsolutePath() + ">." );
+      System.out.println( "**WARN: Non-existence of Level 2 test data directory <" + file.getAbsolutePath() + ">." );
     }
   }
 

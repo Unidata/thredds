@@ -55,7 +55,7 @@ public class TestNcMLoffsite {
     suite.addTest(new TestSuite(TestOffAggDirDateFormat.class));  // */
     suite.addTest(new TestSuite(TestOffAggReadGridDataset.class)); // */
 
-    suite.addTest(new TestSuite(TestOffAggNewSync.class));  // */
+    //suite.addTest(new TestSuite(TestOffAggNewSync.class));  // */
 
     suite.addTest(new TestSuite(TestOffAggFmrcNetcdf.class));  //
     suite.addTest(new TestSuite(TestOffAggFmrcGrib.class));  //

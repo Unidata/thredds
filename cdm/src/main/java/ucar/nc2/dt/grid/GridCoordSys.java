@@ -389,8 +389,22 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * @throws InvalidRangeException if any of the ranges are illegal
    */
   public GridCoordSys(GridCoordSys from, Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException {
+    this(from, null, null, t_range, z_range, y_range, x_range);
+  }
+
+  /**
+   * Create a GridCoordSys as a section of an existing GridCoordSys.
+   * This will create sections of the corresponding CoordinateAxes.
+   *
+   * @param from    copy this GridCoordSys
+   * @param t_range subset the time dimension, or null if you want all of it
+   * @param z_range subset the vertical dimension, or null if you want all of it
+   * @param y_range subset the y dimension, or null if you want all of it
+   * @param x_range subset the x dimension, or null if you want all of it
+   * @throws InvalidRangeException if any of the ranges are illegal
+   */
+  public GridCoordSys(GridCoordSys from, Range rt_range, Range e_range, Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException {
     super();
-    // this.cs = from.cs;
 
     CoordinateAxis xaxis = from.getXHorizAxis();
     CoordinateAxis yaxis = from.getYHorizAxis();
@@ -434,7 +448,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     if (zaxis != null) {
       vertZaxis = (z_range == null) ? zaxis : zaxis.section(z_range);
       coordAxes.add(vertZaxis);
-      // LOOK assign hAxis, pAxis or zAxis
+      // LOOK assign hAxis, pAxis or zAxis ??
     }
 
     if (from.getVerticalCT() != null) {
@@ -446,12 +460,28 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       vCT.setVerticalTransform(vt);
     }
 
-    CoordinateAxis taxis = from.getTimeAxis(); // LOOK!!
+    CoordinateAxis1DTime rtaxis = from.getRunTimeAxis();
+    if (rtaxis != null) {
+      runTimeAxis = (rt_range == null) ? rtaxis : (CoordinateAxis1DTime) rtaxis.section(rt_range);
+      coordAxes.add(runTimeAxis);
+    }
+
+    CoordinateAxis taxis = from.getTimeAxis();
     if (taxis != null) {
-      CoordinateAxis1DTime taxis1D = (CoordinateAxis1DTime) taxis;
-      tAxis = timeTaxis = (t_range == null) ? taxis1D : (CoordinateAxis1DTime) taxis1D.section(t_range);
-      coordAxes.add(timeTaxis);
-      timeDim = timeTaxis.getDimension(0);
+      if (taxis instanceof CoordinateAxis1DTime) {
+        CoordinateAxis1DTime taxis1D = (CoordinateAxis1DTime) taxis;
+        tAxis = timeTaxis = (t_range == null) ? taxis1D : (CoordinateAxis1DTime) taxis1D.section(t_range);
+        coordAxes.add(timeTaxis);
+        timeDim = timeTaxis.getDimension(0);
+      } else {
+        if ((rt_range == null) && (t_range == null))
+          tAxis = taxis;
+        else {
+          Section timeSection = new Section().appendRange(rt_range).appendRange(t_range);
+          tAxis = (CoordinateAxis) taxis.section(timeSection);
+        }
+        coordAxes.add(tAxis);
+      }
     }
 
     // make name based on coordinate
@@ -529,25 +559,6 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       if (parseInfo != null) parseInfo.format("  - VerticalTransform = %s\n", vCT.getVerticalTransformType());
     }
   }
-
-  /** Create a GridCoordSys from an existing Coordinate System and explcitly set
-   *  which axes are the x, y, z, and time axes.
-   *
-   public GridCoordSys( CoordinateSystem cs, CoordinateAxis xaxis, CoordinateAxis yaxis,
-   CoordinateAxis1D zaxis, CoordinateAxis1D taxis) {
-   super( cs.getCoordinateAxes(), cs.getCoordinateTransforms());
-
-   if (!isGeoReferencing())
-   throw new IllegalArgumentException("CoordinateSystem is not geoReferencing");
-
-   this.xaxis = xaxis;
-   this.yaxis = yaxis;
-   this.zaxis = zaxis;
-   this.taxis = taxis;
-
-   makeLevels();
-   makeTimes();
-   } */
 
   /**
    * get the X Horizontal axis (either GeoX or Lon)
@@ -1228,13 +1239,15 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     buff.setLength(0);
     buff.append("(").append(getName()).append(") ");
 
-    /* if (xdim >= 0) buff.append("x="+xaxis.getName()+",");
-    if (ydim >= 0) buff.append("y="+yaxis.getName()+",");
-    if (zdim >= 0) buff.append("z="+zaxis.getName()+",");
-    if (tdim >= 0) buff.append("t="+taxis.getName()); */
+    if (runTimeAxis != null) buff.append("rt="+runTimeAxis.getName()+",");
+    if (ensembleAxis != null) buff.append("ens="+ensembleAxis.getName()+",");
+    if (timeTaxis != null) buff.append("t="+timeTaxis.getName()+",");
+    if (vertZaxis != null) buff.append("z="+vertZaxis.getName()+",");
+    if (horizYaxis != null) buff.append("y="+horizYaxis.getName()+",");
+    if (horizXaxis != null) buff.append("x="+horizXaxis.getName()+",");
 
-    //if (proj != null)
-    // buff.append("  Projection:" + proj.getName() + " " + proj.getClassName());
+    if (proj != null)
+      buff.append("  Projection:" + proj.getName() + " " + proj.getClassName());
     return buff.toString();
   }
 

@@ -94,9 +94,11 @@ public class TestOffAggFmrcScan2 extends TestCase {
     GridDataset gridDataset = GridDataset.open( "D:/AStest/margolis/grib2ncdf.ncml" );
     GeoGrid grid = gridDataset.findGridByName( "Turbulence_SIGMET_AIRMET" );
     System.out.println("Grid= "+grid+" section="+ new Section(grid.getShape()));
-    System.out.println("CoordSys= "+grid.getCoordinateSystem());
+    System.out.println(" coordSys= "+grid.getCoordinateSystem());
 
-    GeoGrid subset = grid.subset(new Range(0, 0), new Range(1,1), null, null);
+    GeoGrid subset = (GeoGrid) grid.makeSubset(new Range(0, 0), null, new Range(1,1), null, null, null);
+    System.out.println("subset= "+subset+" section="+ new Section(subset.getShape()));
+    System.out.println(" coordSys= "+subset.getCoordinateSystem());
 
     gridDataset.close();
   }

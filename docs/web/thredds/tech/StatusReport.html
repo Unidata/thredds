@@ -9,6 +9,61 @@
 <body>
 <h1 align="left"><img src="images/unidataLogo.png" width="75" height="75" align="middle"><strong>THREDDS Technical Status </strong></h1>
 <hr>
+<h3><a name="20090320" id="200809242"></a>Status update 03/20/2009 </h3>
+<ol>
+  <li> <strong>THREDDS Data Server (TDS)</strong></li>
+  <li><strong>Common Data Model</strong>
+      <ol>
+        <li>Netcdf-Java library version 4.0 is now the stable release.
+        This means that we are committed to the public API, and will keep  future changes to the API backwards compatible. Much work has gone into fixing bugs and stabilizing  the core code, to make it suitable in production code both as standalone library and as part of the TDS.</li>
+        <li>FeatureDataset
+          <ol>
+            <li>FeatureDataset management extended to Grids, RadialDataset.</li>
+            <li> PointDataset implementation of the &quot;Nested Table&quot; point data model is mostly complete, with some optimisation still to be done. </li>
+            <li>Writing datasets into CF specification is started, but still needs lots of work. This will be the output format for several TDS subsetting services, including possibly a WCS point service.</li>
+          </ol>
+        </li>
+        <li>Coordinate Systems
+          <ol>
+            <li>Rotated Lat/Lon Projection</li>
+            <li> add _CoordinateSystemFor to allow wholesale assignment of coord systems to variables.</li>
+            <li>Modis Satellite CoordSysBuilder<br>
+            </li>
+          </ol>
+        </li>
+        <li>IOSP
+          <ol>
+            <li>GEMPAK Point data (Don Murray)</li>
+            <li>GRIB IOSP refactored (Robb Kambic). Now uses binary indexes for 2X faster reading.</li>
+            <li>HDF5 IOSP now correctly reads fractal heap structure, allows fletcher32 filter.</li>
+            <li>NIDS IOSP can handle TDWR. (Yuan Ho)</li>
+            <li> Universal Format Radar IOSP (Yuan Ho)<br>
+            </li>
+          </ol>
+        </li>
+        <li>General
+          <ol>
+            <li>FileCache refactored for additional thread safety and diagnostics.</li>
+            <li>Detection of NetcdfFile object cycle mismanagement, and file handle leaks.</li>
+          </ol>
+        </li>
+        <li>ToolsUI
+          <ol>
+            <li>New Tabs for debugging BUFR and HDF5 IOSPS, Aggregated datasets, and FMRC Datasets.</li>
+            <li>FeatureDataset scanner tries to guess what feature type a file is.</li>
+          </ol>
+        </li>
+        <li>NcML
+          <ol>
+            <li>Aggregation now allows elements to modify each dataset in the aggregation, before it is aggregated.<br>
+              this allows datasets to be made into grids for fmrc, for example.</li>
+            <li>Rudimentary WMS client for testing TDS WMS</li>
+          </ol>
+        </li>
+      </ol>
+  </li>
+</ol>
+<h3>&nbsp;</h3>
 <h3><a name="20080924" id="20080924"></a>Status update 09/24/2008 </h3>
 <ol>
   <li> <strong>THREDDS Data Server (TDS)</strong>

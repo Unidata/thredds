@@ -739,6 +739,10 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
    * @throws InvalidRangeException if any of the ranges are invalid
    */
   public GeoGrid subset(Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException {
+    return (GeoGrid) makeSubset( null, null, t_range, z_range, y_range, x_range);
+  }
+
+  public GridDatatype makeSubset(Range rt_range, Range e_range, Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException {
     // get the ranges list
     int rank = getRank();
     Range[] ranges = new Range[rank];
@@ -750,6 +754,10 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
       ranges[zDimOrgIndex] = z_range;
     if (null != getTimeDimension())
       ranges[tDimOrgIndex] = t_range;
+    if (null != getRunTimeDimension())
+      ranges[rtDimOrgIndex] = rt_range;
+    if (null != getEnsembleDimension())
+      ranges[eDimOrgIndex] = e_range;
     List<Range> rangesList = Arrays.asList(ranges);
 
     // subset the variable
@@ -760,14 +768,10 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     }
 
     // subset the axes in the GridCoordSys
-    GridCoordSys gcs_section = new GridCoordSys(gcs, t_range, z_range, y_range, x_range);
+    GridCoordSys gcs_section = new GridCoordSys(gcs, rt_range, e_range, t_range, z_range, y_range, x_range);
 
     // now we can make the geogrid
     return new GeoGrid(dataset, v_section, gcs_section);
-  }
-
-  public GridDatatype makeSubset(Range rt_range, Range e_range, Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException {
-    return subset(t_range, z_range, y_range, x_range);
   }
 
   /**
