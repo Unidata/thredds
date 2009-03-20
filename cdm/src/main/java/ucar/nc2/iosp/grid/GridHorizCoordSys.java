@@ -245,8 +245,7 @@ public class GridHorizCoordSys {
   private double getGridSpacingInKm(String type) {
     double value = gds.getDouble(type);
     if (Double.isNaN(value)) return value;
-    //String gridUnit = gds.getParam(GridDefRecord.GRID_UNITS);
-    String gridUnit = gds.getParam("grid_units");
+    String gridUnit = gds.getParam(GridDefRecord.GRID_UNITS);
     SimpleUnit unit = null;
 
     if (gridUnit == null || gridUnit.equals("")) {
@@ -857,12 +856,8 @@ public class GridHorizCoordSys {
         / (gds.getInt(GridDefRecord.NX) - 1);
     double dy = Math.abs(end.getY() - starty)
         / (gds.getInt(GridDefRecord.NY) - 1);
-    // have to change both String/Double values for consistency
     gds.addParam(GridDefRecord.DX, String.valueOf(dx));
-    //gds.addParam(GridDefRecord.DX, new Double (dx));
     gds.addParam(GridDefRecord.DY, String.valueOf(dy));
-    //gds.addParam(GridDefRecord.DY, new Double(dy));
-    //gds.addParam(GridDefRecord.GRID_UNITS, "km");
-    gds.addParam("grid_units", "km");
+    gds.addParam(GridDefRecord.GRID_UNITS, "km");
   }
 }
