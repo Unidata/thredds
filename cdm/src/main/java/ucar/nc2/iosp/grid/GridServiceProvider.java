@@ -73,6 +73,9 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
     /** should file be synced or extended */
     protected boolean syncExtend = false;
 
+    /* to use or not to use cache first */
+    protected static boolean alwaysInCache = false;
+
     /** place to store debug stuff */
     protected StringBuilder parseInfo = new StringBuilder();
 
@@ -165,6 +168,25 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
     public void setSyncExtend( boolean se ) {
         syncExtend = se;
     }
+
+    /**
+     * alwaysInCache
+     *
+     * @return alwaysInCache
+     */
+    public boolean alwaysInCache() {
+        return alwaysInCache;
+    }
+
+    /**
+     * alwaysInCache
+     *
+     * @param aic
+     */
+    public void setAlwaysInCache( boolean aic ) {
+        alwaysInCache = aic;
+    }
+
     /**
      * Get the detail information
      *

@@ -60,13 +60,8 @@ import java.util.Map;
 public class GribGridServiceProvider extends GridServiceProvider {
   private static org.slf4j.Logger log =
       org.slf4j.LoggerFactory.getLogger(GribGridServiceProvider.class);
-  private static boolean alwaysInCache = false;
 
-  // keep this info to reopen index when extending or syncing
-  //private long rafLength;    // length of the file when opened - used for syncing
-  //private long rafLastModified;
   private int edition = 0;
-  //private String saveLocation;
 
   /**
    * returns Grib data
@@ -200,19 +195,24 @@ public class GribGridServiceProvider extends GridServiceProvider {
     GridIndex index = null;
     File indexFile;
 
-    // always check first if the index file lives in the same dir as the regular file, and use it
-    indexFile = new File(indexLocation);
-    if (!indexFile.exists()) { // look in cache if need be
-      indexFile = DiskCache.getCacheFile(indexLocation);
-      if (!indexFile.exists()) { //cache doesn't exist
-          indexFile = new File(indexLocation);
-          // check write permission in the same dir as the regular file
-          if ( indexFile.createNewFile()) {
-            indexFile.delete();
-          } else {
-            indexFile = DiskCache.getCacheFile(indexLocation);
+    // just use the cache
+    if ( alwaysInCache ) {
+       indexFile = DiskCache.getCacheFile(indexLocation);
+    } else {
+        // check first if the index file lives in the same dir as the regular file, and use it
+        indexFile = new File(indexLocation);
+        if (!indexFile.exists()) { // look in cache if need be
+          indexFile = DiskCache.getCacheFile(indexLocation);
+          if (!indexFile.exists()) { //cache doesn't exist
+              indexFile = new File(indexLocation);
+              // check write permission in the same dir as the regular file
+              if ( indexFile.createNewFile()) {
+                indexFile.delete();
+              } else {
+                indexFile = DiskCache.getCacheFile(indexLocation);
+              }
           }
-      }
+        }
     }
     log.debug("GribGridServiceProvider: using index " + indexFile.getPath());
     // once index determined, if sync then write it
@@ -253,7 +253,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
 
       raf.seek(0);
       Grib2Input g2i = new Grib2Input(raf);
-      int edition = g2i.getEdition();
+      edition = g2i.getEdition();
       File grib = new File(raf.getLocation());
 
       out = new DataOutputStream(new BufferedOutputStream(
