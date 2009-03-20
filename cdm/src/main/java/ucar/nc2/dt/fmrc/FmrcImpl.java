@@ -324,60 +324,61 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
       Collections.sort(bestList);
     }
 
-    void dump() throws IOException {
+    void dump(Formatter f) throws IOException {
+
       DateFormatter df = new DateFormatter();
-      System.out.println("Gridset timeDimName= " + timeDimName+"\n grids= ");
+      f.format("Gridset timeDimName= %s%n grids= %n", timeDimName);
       for (GridDatatype grid : gridList) {
-        System.out.println("  "+grid.getName());
+        f.format("  %s%n", grid.getName());
       }
 
-      System.out.println("\nRun Dates= " + runtimes.size());
+      f.format("%nRun Dates= %s%n", runtimes.size());
       for (Date date : runtimes) {
-        System.out.print(" " + df.toDateTimeString(date) + " (");
+        f.format(" %s (", df.toDateTimeString(date));
         List<Inventory> list = runMap.get(date);
         if (list == null)
-          System.out.print(" none");
+          f.format(" none");
         else {
           for (Inventory inv : list) {
-            System.out.print(" " + inv.hourOffset);
+            f.format(" %s", inv.hourOffset);
           }
         }
-        System.out.println(")");
+        f.format(") %n");
       }
 
-      System.out.println("\nForecast Dates= " + forecasts.size());
+      f.format("%nForecast Dates= %d %n",forecasts.size());
       for (Date date : forecasts) {
-        System.out.print(" " + df.toDateTimeString(date) + " (");
+        f.format(" %s(", df.toDateTimeString(date));
         List<Inventory> list = timeMap.get(date);
         if (list == null)
-          System.out.print(" none");
+          f.format(" none");
         else {
           for (Inventory inv : list) {
-            System.out.print(" " + inv.run + "/" + inv.hourOffset);
+            f.format(" %d/%f", inv.run, inv.hourOffset);
           }
         }
-        System.out.println(")");
+        f.format(")%n");
       }
 
-      System.out.println("\nForecast Hours= " + offsets.size());
+      f.format("\nForecast Hours= %d%n", offsets.size());
       for (Double hour : offsets) {
         List<Inventory> offsetList = offsetMap.get(hour);
-        System.out.print(" " + hour + ": (");
+        f.format(" %s: (", hour);
         if (offsetList == null)
-          System.out.print(" none");
+          f.format(" none");
         else {
           for (int j = 0; j < offsetList.size(); j++) {
             Inventory inv = offsetList.get(j);
             if (j > 0) System.out.print(", ");
-            System.out.print(inv.run + "/" + df.toDateTimeStringISO(inv.runTime));
+            f.format("%d/%s", inv.run, df.toDateTimeStringISO(inv.runTime));
           }
         }
-        System.out.println(")");
+        f.format(")%n");
       }
 
-      System.out.println("\nBest Forecast = " + bestList.size());
+      f.format("\nBest Forecast = %d%n", bestList.size());
       for (Inventory inv : bestList) {
-        System.out.println(" " + df.toDateTimeStringISO(inv.forecastTime) + " (run=" + inv.run + "/" + df.toDateTimeStringISO(inv.runTime) + ") offset=" + inv.hourOffset);
+        f.format(" %s (run=%s) offset=%f%n", df.toDateTimeStringISO(inv.forecastTime), df.toDateTimeStringISO(inv.runTime), inv.hourOffset);
       }
 
     }
@@ -796,6 +797,13 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
     }
   } // subsetter
 
+  public void dump(Formatter f) throws IOException {
+      for (Gridset gridset : gridsets) {
+        f.format("===========================%n");
+        gridset.dump(f);
+      }
+  }
+
   /////////////////////////////
 
   static void test(String location, String timeVarName) throws IOException {
@@ -808,10 +816,7 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
     Array data = time.read();
     NCdumpW.printArray(data, "2D time", new PrintWriter( System.out), null);
 
-    for (Gridset gridset : fmrc.gridsets) {
-      System.out.println("===========================");
-      gridset.dump();
-    }
+    fmrc.dump(new Formatter(System.out));
   }
 
   static void testSync(String location, String timeVarName) throws IOException, InterruptedException {
@@ -823,10 +828,7 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
     Array data = time.read();
     NCdumpW.printArray(data, "2D time", new PrintWriter( System.out), null);
 
-    for (Gridset gridset : fmrc.gridsets) {
-      System.out.println("===========================");
-      gridset.dump();
-    }
+    fmrc.dump(new Formatter(System.out));
 
     boolean changed = fmrc.sync();
 
@@ -834,20 +836,17 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
       System.out.println("========== Sync =================");
       data = time.read();
       NCdumpW.printArray(data, "2D time", new PrintWriter( System.out), null);
-      for (Gridset gridset : fmrc.gridsets) {
-        System.out.println("===========================");
-        gridset.dump();
-      }
+      fmrc.dump(new Formatter(System.out));
     }
   }
 
   public static void main(String args[]) throws Exception {
-    //test("R:/testdata/fmrc/NAMfmrc.nc", "valtime");
+    test("D:/test/signell/test.ncml", "ocean_time");
 
     //test("C:/dev/thredds/cdm/src/test/data/ncml/AggFmrcGrib.xml", "time");
     //test("C:/dev/thredds/cdm/src/test/data/ncml/aggFmrcGribRunseq.xml", "time");
     //test("C:/dev/thredds/cdm/src/test/data/ncml/aggFmrcNomads.xml", "time");
-    testSync("D:/data/ral/fmrc.ncml", "time");
+    //testSync("D:/data/ral/fmrc.ncml", "time");
     //test("C:/data/grib/gfs/puerto/fmrc.ncml", "time");
   }
 

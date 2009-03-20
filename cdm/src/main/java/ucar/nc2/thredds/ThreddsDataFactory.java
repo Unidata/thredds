@@ -205,7 +205,7 @@ public class ThreddsDataFactory {
       result.featureType = wantFeatureType;
 
     // look for remote FeatureDataset
-    if (result.featureType.isPointFeatureType()) {
+    if ((result.featureType != null) && result.featureType.isPointFeatureType()) {
       InvAccess access = findAccessByServiceType(invDataset.getAccess(), ServiceType.RemotePointFeature);
       if (access != null)
         return openFeatureDataset(result.featureType, access, task, result);
@@ -213,7 +213,6 @@ public class ThreddsDataFactory {
 
     // special handling for images
     if (result.featureType == FeatureType.IMAGE) {
-
       InvAccess access = getImageAccess(invDataset, task, result);
       if (access != null) {
         return openFeatureDataset(result.featureType, access, task, result);

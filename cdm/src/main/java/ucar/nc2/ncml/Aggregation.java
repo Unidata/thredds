@@ -296,7 +296,7 @@ public abstract class Aggregation implements ProxyReader {
     //ucar.unidata.io.RandomAccessFile.setDebugAccess( false);
   }
 
-  protected List<Dataset> getDatasets() {
+  public List<Dataset> getDatasets() {
     return datasets;
   }
 
@@ -500,7 +500,7 @@ public abstract class Aggregation implements ProxyReader {
   /**
    * Encapsolates a NetcdfFile that is a component of the aggregation.
    */
-  class Dataset implements Comparable {
+  public class Dataset implements Comparable {
     protected String location; // location attribute on the netcdf element
     protected String id; // id attribute on the netcdf element
 
@@ -552,6 +552,10 @@ public abstract class Aggregation implements ProxyReader {
      */
     public String getLocation() {
       return location;
+    }
+
+    public String getCacheLocation() {
+      return cacheLocation;
     }
 
     public String getId() {

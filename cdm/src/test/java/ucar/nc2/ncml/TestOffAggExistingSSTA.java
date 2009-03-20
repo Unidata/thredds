@@ -83,7 +83,7 @@ public class TestOffAggExistingSSTA extends TestCase {
 
     int count2 = RandomAccessFile.getOpenFiles().size();
     System.out.println("count files after close="+count2);
-    assert count == count2 : "openFile count "+count +"!="+ count2;
+    assert count1 == count2 : "openFile count "+count +"!="+ count2;
 
   }
 }

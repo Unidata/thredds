@@ -5,6 +5,9 @@ Build Date = @BUILDTIME@
 Changes in version 4.0
 
  Release Details:
+  38:
+   refactor grib iosp: GribGridServiceProvider. binary indexes.
+   ToolsUI: added Fmrc/Inventory, NcML/Aggregation Tabs
   37:
    CoordinateTimeAxis1D.findTimeIndexFromDate() now returns 0 when date < first.
    N3iosp.createValidNetcdf3ObjectName() change to new allowable names

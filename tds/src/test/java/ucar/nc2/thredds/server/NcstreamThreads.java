@@ -53,7 +53,7 @@ public class NcstreamThreads {
 
   static int current_dataset = 0;
   static String nextDataset() {
-    return "20090303_0000";
+    return "20090305_0000";
   }
 
   static AtomicInteger current_field = new AtomicInteger(0);

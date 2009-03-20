@@ -93,7 +93,7 @@ public class FeatureScan extends JPanel {
       public void actionPerformed(ActionEvent e) {
         FeatureDatasetBean ftb = (FeatureDatasetBean) ftTable.getSelectedBean();
         if (ftb == null) return;
-        FeatureScan.this.firePropertyChange("openNetcdfDataset", null, ftb.f.getPath());
+        FeatureScan.this.firePropertyChange("openCoordSystems", null, ftb.f.getPath());
       }
     });
 
