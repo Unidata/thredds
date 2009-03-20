@@ -34,12 +34,8 @@ import java.util.zip.DataFormatException;
 //import java.awt.image.BufferedImage;
 
 /**
- * IOServiceProvider implementation abstract base class to read/write "version 3" netcdf files.
- *  AKA "file format version 1" files.
  *  FY satellite data stored in AWX format include both original observation and the derived dataset
  *  no online document available for the details
- *
- *  see   concrete class
  */
 
 public class Fysatiosp  extends AbstractIOServiceProvider {
@@ -58,14 +54,6 @@ public class Fysatiosp  extends AbstractIOServiceProvider {
 
   protected boolean debug = false, debugSize = false, debugSPIO = false;
   protected boolean showHeaderBytes = false;
-
-  public void setSpecial( Object special) {}
-
-  public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, java.util.List section)
-         throws java.io.IOException, ucar.ma2.InvalidRangeException {
-
-    throw new UnsupportedOperationException("Fysat IOSP does not support nested variables");
-  }
 
   public boolean isValidFile( ucar.unidata.io.RandomAccessFile raf )
   {

@@ -95,7 +95,7 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
   <li><a href="http://weather.unisys.com/wxp/Appendices/Formats/GINI.html">GINI</a> (GOES Ingest and NOAAPORT Interface ) image format</li>
   <li><a href="http://www.unidata.ucar.edu/software/gempak/">GEMPAK</a> gridded data (as of version 2.23) </li>
   <li><a href="http://dmsp.ngdc.noaa.gov/">DMSP</a> (Defense Meteorological Satellite Program)</li>
-  <li><a href="http://www.ncdc.noaa.gov/oa/radar/radarresources.html">NEXRAD</a> Radar <a href="http://www.ncdc.noaa.gov/oa/radar/leveliidoc.html">level 2</a> and <a href="http://lwf.ncdc.noaa.gov/oa/radar/radarproducts.html">level 3.</a></li>
+  <li><a href="http://www.ncdc.noaa.gov/oa/radar/radarresources.html">NEXRAD</a> Radar <a href="http://www.ncdc.noaa.gov/oa/radar/leveliidoc.html">level 2</a> and <a href="http://lwf.ncdc.noaa.gov/oa/radar/radarproducts.html">level 3</a></li>
   <li>ATD's <a href="http://www.atd.ucar.edu/rsf/UserGuides/ELDORA/DataAnalysis/DataAnalysis.html#DORADE">DORADE</a> radar file <a href="http://www.atd.ucar.edu/rsf/UserGuides/ELDORA/DoradeFormat/DoradeFormat.html">format</a> </li>
   <li><a href="http://www.ssec.wisc.edu/mcidas/">ADDE</a> client/server protocol (limited) </li>
 </ul>
@@ -105,17 +105,18 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
   <li> <a href="http://hdf.ncsa.uiuc.edu/products/hdf4/index.html">HDF4</a> (complete)</li>
   <li><a href="http://www.hdfeos.net/">HDF-EOS and HDF5-EOS</a> (parsing HDF-EOS metadata is ongoing)</li>
   <li><a href="http://dss.ucar.edu/docs/formats/bufr/">BUFR</a> (ongoing work on tables)</li>
+  <li><a href="http://www.unidata.ucar.edu/software/gempak/">GEMPAK</a> point data (as of version 4.0.38) </li>
   <li><a href="http://edc.usgs.gov/products/elevation/gtopo30/gtopo30.html">GTOPO</a> 30-sec elevation dataset (USGS) </li>
   <li>CINRAD level II (Chinese Radar format) </li>
   <li><a href="http://www.ssec.wisc.edu/mcidas/doc/misc_doc/area2.html">McIDAS AREA</a> </li>
+  <li><a href="http://www.tsc.com/SETS/_3TDWR.htm">Terminal Dopplar Weather Radar</a> (TDWR)</li>
   <li><a href="ftp://ftp.sigmet.com/outgoing/manuals/program/cuf.pdf">Universal Radar Format</a></li>
   <li><a href="http://www.uspln.com/">USPLN</a> and <a href="http://www.unidata.ucar.edu/data/lightning.html">NLDN</a> lightning data</li>
 </ul>
-<h3><strong>Features and not-so-stable APIs</strong>:</h3>
+<h3><strong>Caveats and not-so-stable APIs</strong>:</h3>
 <ul>
   <li><strong>Writing</strong> to netCDF-3 format is supported, but new features in the CDM, e.g. groups, structures,  long data types are not  yet supported. </li>
   <li>The feasibility of writing to the NetCDF-4 format is being evaluated. Currently, only read access is supported. </li>
-  <li>The scientific feature types interfaces are evolving</li>
   <li>The catalog API will be redone, however the current API will remain supported.</li>
 </ul>
 <h3><strong>Related Documents:</strong></h3>
@@ -135,7 +136,7 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
   <li><a href="CoordinateSystemsNeeded.htm">Why we need Coordinate Systems</a></li>
   <li>_Coordinate Attribute Conventions (<a href="tutorial/CoordinateAttributes.html">examples</a>) (<a href="reference/CoordinateAttributes.html">reference</a>) </li>
 </ul>
-<h3>Data Types </h3>
+<h3>Feature Types </h3>
 <p>Working notes and documents on the <em><strong>scientific feature type</strong></em> layer of the CDM</p>
 <ul>
   <li><a href="http://cf-pcmdi.llnl.gov/trac/wiki/PointObservationConventions">Proposed CF Convention for Point Observation Data</a></li>
@@ -153,8 +154,8 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
   <li><a href="http://www.jdom.org/">JDOM</a>  for parsing XML.</li>
   <li><a href="http://www.jgoodies.com/">JGoodies</a> for UI stuff </li>
   <li><a href="http://www.jpeg.org/jpeg2000/">JPEG2000</a> library for decoding GRIB2 files.</li>
-  <li><a href="http://logging.apache.org/log4j/docs/index.html">Log4J</a> and its companion <a href="http://www.slf4j.org/">Simple Logging Facade for Java</a> (SLF4J) for logging </li>
-  <li><a href="http://www.springframework.org/">Spring</a> lightweight application framework</li>
+  <li><a href="http://www.slf4j.org/">Simple Logging Facade for Java</a> (SLF4J) for logging </li>
+  <li><a href="http://www.springframework.org/">Spring</a> lightweight application framework. Used in ToolsUI application.</li>
   <li><a href="http://www.ssec.wisc.edu/%7Ebillh/visad.html">VisAD</a> for reading McIDAS AREA files.</li>
   <li><a href="http://xerces.apache.org/xerces2-j/">Xerces</a> for parsing XML (pre jdk 1.5) </li>
 </ul>
@@ -181,7 +182,7 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
 <hr WIDTH="100%">
 <address>
 <a href="NetcdfUsers.htm"><img src="nc.gif" width="64" height="64" border="0"></a> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> 
-and was last updated on Feb 19, 2009
+and was last updated on Mar 20, 2009
 </address>
 
 </body>
