@@ -17,6 +17,8 @@ Changes in version 4.0
   * netcdf-java 4.0
 
 Release Details:
+ 0?:
+  Port improved WMS version negotiation from ncWMS.
  06:
   cdmValidator in separate servlet
   opendap version string can be set in threddsConfig
