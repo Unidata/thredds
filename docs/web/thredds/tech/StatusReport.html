@@ -1,26 +1,53 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title>THREDDS Technical Status</title>
-</head>
+<title>THREDDS Technical Status</title></head>
 
 <body>
-<h1 align="left"><img src="images/unidataLogo.png" width="75" height="75" align="middle"><strong>THREDDS Technical Status </strong></h1>
+<h1 align="left"><img src="images/unidataLogo.png" align="middle" height="75" width="75"><strong>THREDDS Technical Status </strong></h1>
 <hr>
-<h3><a name="20090320" id="200809242"></a>Status update 03/20/2009 </h3>
+<h3><a name="20090320" id="20090320"></a>Status update 03/20/2009 </h3>
 <ol>
-  <li> <strong>THREDDS Data Server (TDS)</strong></li>
+  <li> <strong>THREDDS Data Server (TDS)</strong>
+  </li>
+  <ol>
+    <li>Stable release is 3.17.3.1, mainly in maintenance mode.</li>
+    <ol>
+      <li>Security enhancements.</li>
+      <li>GINI polar stereographic bug fix.</li>
+      <li>Various other&nbsp;bug fixes.</li>
+    </ol>
+    <li>Development release 4.0.6;&nbsp;alpha release, available for testing</li>
+    <ol>
+      <li>Main focus for 4.0 release:</li>
+      <ol>
+        <li>Use of CDM/netCDF-Java 4.0</li>
+        <li>Improvement to performance, memory use, and stability.</li>
+        <li>Addition of OGC WMS service [based on&nbsp;<a href="http://www.resc.rdg.ac.uk/trac/ncWMS/">ncWMS</a> code, with thanks&nbsp;to Jon Blower (Univ of Reading) and Pauline Mak (Univ of Tasmania)]</li>
+      </ol>
+      <li>Support for&nbsp;ensemble&nbsp;GRIB data added.</li>
+      <li>Security enhancements, from 3.17 and more.</li>
+      <li>Using <a href="http://www.springframework.org/">Spring Framework</a> for improved modularity and support for other industry best practices.</li>
+    </ol>
+  </ol>
   <li><strong>Common Data Model</strong>
       <ol>
-        <li>Netcdf-Java library version 4.0 is now the stable release.
-        This means that we are committed to the public API, and will keep  future changes to the API backwards compatible. Much work has gone into fixing bugs and stabilizing  the core code, to make it suitable in production code both as standalone library and as part of the TDS.</li>
+        <li>Netcdf-Java
+library version 4.0 is now the stable release. This means that we are
+committed to the public API, and will keep future changes to the API
+backwards compatible. Much work has gone into fixing bugs and
+stabilizing the core code, to make it suitable in production code both
+as standalone library and as part of the TDS.</li>
         <li>FeatureDataset
           <ol>
             <li>FeatureDataset management extended to Grids, RadialDataset.</li>
-            <li> PointDataset implementation of the &quot;Nested Table&quot; point data model is mostly complete, with some optimisation still to be done. </li>
-            <li>Writing datasets into CF specification is started, but still needs lots of work. This will be the output format for several TDS subsetting services, including possibly a WCS point service.</li>
+            <li>
+PointDataset implementation of the "Nested Table" point data model is
+mostly complete, with some optimisation still to be done. </li>
+            <li>Writing
+datasets into CF specification is started, but still needs lots of
+work. This will be the output format for several TDS subsetting
+services, including possibly a WCS point service.</li>
           </ol>
         </li>
         <li>Coordinate Systems
@@ -211,8 +238,13 @@
         <li>Current work is on a 4.0 release.
 A pre-alpha early access version is available.    
           <ol>
-            <li>This will read netCDF-4 file formats, and hopefully allow complete access to HDF5, including HDF5-EOS. Writing netCDF-4 format may not be feasible, however. </li>
-            <li>The entire library is extensively refactored, and the APIs are being stabilized  based on the new features of the netCDF-4 file format.</li>
+            <li>This
+will read netCDF-4 file formats, and hopefully allow complete access to
+HDF5, including HDF5-EOS. Writing netCDF-4 format may not be feasible,
+however. </li>
+            <li>The entire library is extensively
+refactored, and the APIs are being stabilized based on the new features
+of the netCDF-4 file format.</li>
             <li>NcML is extensively refactored, in order to add new features (like tiled aggreagtion).</li>
           </ol>
       </li>
@@ -226,7 +258,10 @@ A pre-alpha early access version is available.
       <ol>
         <li><strong>Open Geospatial Consortium (OGC) </strong>fall meeing hosted by UCAR.          One of the days was <b>OGC Interoperability Day</b> <strong>at Unidata</strong>: <em>Standards-based Web Services Interfaces to
       Existing Atmospheric/Oceanographic Data Systems, </em>where 50+ participants explored connections bewteen ISO/OGC standards and Unidata and related technologies. </li>
-        <li>Working with an international group (British Atmospheric Data Center, British Met, and others) to define WCS 1.0 extentions, and help drive further version of WCS.</li>
+        <li>Working
+with an international group (British Atmospheric Data Center, British
+Met, and others) to define WCS 1.0 extentions, and help drive further
+version of WCS.</li>
       </ol>
   </li>
 </ol>
@@ -234,7 +269,12 @@ A pre-alpha early access version is available.
 <ol>
   <li> <strong>THREDDS Data Server (TDS)</strong>: Current release is 3.16.
       <ol>
-        <li>The <a href="interfaceSpec/NetcdfSubsetService.html"><strong>NetCDF Subset Service</strong></a> is an experimental <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer">REST</a> web service for subsetting CDM scientific datasets. The subsetting is specified using earth coordinates, such as lat/lon bounding boxes and date ranges, rather than index ranges that refer to the underlying data arrays. The data arrays are subsetted but not resampled or reprojected, and preserve the resolution and accuracy of the original dataset.</li>
+        <li>The <a href="interfaceSpec/NetcdfSubsetService.html"><strong>NetCDF Subset Service</strong></a> is an experimental <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer">REST</a>
+web service for subsetting CDM scientific datasets. The subsetting is
+specified using earth coordinates, such as lat/lon bounding boxes and
+date ranges, rather than index ranges that refer to the underlying data
+arrays. The data arrays are subsetted but not resampled or reprojected,
+and preserve the resolution and accuracy of the original dataset.</li>
         <li>New authorization/authentication capabilities allow servers to be configured with <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/reference/RestrictedAccess.html"><strong>restricted dataset access</strong></a>. </li>
         <ul>
           <li>Can use CAS, CAMS or other <strong><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/reference/PluggableRestrictedAccess.html">pluggable authorization</a></strong> </li>
@@ -277,15 +317,17 @@ A pre-alpha early access version is available.
   <br>
   <li><strong>International Standards</strong>:
       <ul>
-        <li><strong>FeatureType Meeting</strong> in Abingdon, UK (CCLRC Rutherford Appleton Laboratory, British Atmospheric Data Center) to look at harmonizing the data models used in CDM, CSML, and OGC/ISO standards.</li>
+        <li><strong>FeatureType Meeting</strong>
+in Abingdon, UK (CCLRC Rutherford Appleton Laboratory, British
+Atmospheric Data Center) to look at harmonizing the data models used in
+CDM, CSML, and OGC/ISO standards.</li>
       </ul>
   </li>
 </ol>
-<hr WIDTH="100%">
+<hr width="100%">
 <address>
-<img src="images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> 
+<img src="images/thread.png" height="108" width="110">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> 
 </address>
 <p><br>
 </p>
-</body>
-</html>
+</body></html>
