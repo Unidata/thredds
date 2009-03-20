@@ -43,6 +43,7 @@ import ucar.nc2.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
+import ucar.nc2.units.SimpleUnit;
 
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
@@ -136,8 +137,8 @@ public class GridHorizCoordSys {
    */
   GridHorizCoordSys(GridDefRecord gds, GridTableLookup lookup, Group g) {
     this.gds = gds;
-    this.dx = gds.getDouble(GridDefRecord.DX) * .001;
-    this.dy = gds.getDouble(GridDefRecord.DY) * .001;
+    //this.dx = gds.getDouble(GridDefRecord.DX) * .001;
+    //this.dy = gds.getDouble(GridDefRecord.DY) * .001;
     this.lookup = lookup;
     this.g = g;
 
@@ -222,8 +223,8 @@ public class GridHorizCoordSys {
    * @return the X spacing in kilometers
    */
   private double getDxInKm() {
-    //return gds.getDouble(GridDefRecord.DX) * .001;
-    return dx;
+    return getGridSpacingInKm(GridDefRecord.DX);
+    //return dx;
   }
 
   /**
@@ -232,8 +233,32 @@ public class GridHorizCoordSys {
    * @return the Y spacing in kilometers
    */
   private double getDyInKm() {
-    //return gds.getDouble(GridDefRecord.DY) * .001;
-    return dy;
+    return getGridSpacingInKm(GridDefRecord.DY);
+    //return dy;
+  }
+
+  /**
+   * Get the grid spacing in kilometers
+   *
+   * @return the grid spacing in kilometers
+   */
+  private double getGridSpacingInKm(String type) {
+    double value = gds.getDouble(type);
+    if (Double.isNaN(value)) return value;
+    //String gridUnit = gds.getParam(GridDefRecord.GRID_UNITS);
+    String gridUnit = gds.getParam("grid_units");
+    SimpleUnit unit = null;
+
+    if (gridUnit == null || gridUnit.equals("")) {
+      unit = SimpleUnit.meterUnit;
+    } else {
+      unit = SimpleUnit.factory(gridUnit);
+    }
+    if (unit != null && SimpleUnit.isCompatible(unit.getUnitString(), "km")) {
+      value =  unit.convertTo(value, SimpleUnit.kmUnit);
+    }
+    return value;
+
   }
 
   /**
@@ -659,6 +684,10 @@ public class GridHorizCoordSys {
     startx = startP.getX();
     starty = startP.getY();
 
+    if (Double.isNaN(getDxInKm())) {
+      setDxDy(startx, starty, proj);
+    }
+
     attributes.add(new Attribute("grid_mapping_name", "mercator"));
     attributes.add(new Attribute("standard_parallel", Latin));
     attributes.add(new Attribute("longitude_of_projection_origin", Lo1));
@@ -824,14 +853,16 @@ public class GridHorizCoordSys {
     LatLonPointImpl endLL = new LatLonPointImpl(La2, Lo2);
     ProjectionPointImpl end =
         (ProjectionPointImpl) proj.latLonToProj(endLL);
-    double dx = 1000 * Math.abs(end.getX() - startx)
+    double dx = Math.abs(end.getX() - startx)
         / (gds.getInt(GridDefRecord.NX) - 1);
-    double dy = 1000 * Math.abs(end.getY() - starty)
+    double dy = Math.abs(end.getY() - starty)
         / (gds.getInt(GridDefRecord.NY) - 1);
     // have to change both String/Double values for consistency
     gds.addParam(GridDefRecord.DX, String.valueOf(dx));
-    gds.addParam(GridDefRecord.DX, new Double (dx));
+    //gds.addParam(GridDefRecord.DX, new Double (dx));
     gds.addParam(GridDefRecord.DY, String.valueOf(dy));
-    gds.addParam(GridDefRecord.DY, new Double(dy));
+    //gds.addParam(GridDefRecord.DY, new Double(dy));
+    //gds.addParam(GridDefRecord.GRID_UNITS, "km");
+    gds.addParam("grid_units", "km");
   }
 }
