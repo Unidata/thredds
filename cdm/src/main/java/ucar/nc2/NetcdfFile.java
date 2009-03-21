@@ -1720,7 +1720,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @throws ucar.ma2.InvalidRangeException if invalid section
    */
 
-  public long readToByteChannel(ucar.nc2.Variable v, Section section, WritableByteChannel wbc)
+  protected long readToByteChannel(ucar.nc2.Variable v, Section section, WritableByteChannel wbc)
        throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
     if (unlocked)

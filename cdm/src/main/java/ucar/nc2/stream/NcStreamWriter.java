@@ -96,7 +96,7 @@ public class NcStreamWriter {
 
     long readCount = 0;
     try {
-      readCount = ncfile.readToByteChannel(v, section, wbc);
+      readCount = v.readToByteChannel(section, wbc);
     } catch (InvalidRangeException e) {
       // cant happen - haha
     }

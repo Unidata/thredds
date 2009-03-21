@@ -36,6 +36,7 @@ import ucar.ma2.*;
 
 import java.util.*;
 import java.io.IOException;
+import java.nio.channels.WritableByteChannel;
 
 /**
  * A Variable is a logical container for data. It has a dataType, a set of Dimensions that define its array shape,
@@ -907,20 +908,11 @@ public class Variable implements VariableIF {
       return preReader.read(this, null);
 
     if (isMemberOfStructure()) {
-      // throw new UnsupportedOperationException("Cannot directly read Member Variable="+getName());
-
       List<Variable> memList = new ArrayList<Variable>();
       memList.add(this);
       Structure s = parent.select(memList);
       ArrayStructure as = (ArrayStructure) s.read();
       return as.extractMemberArray( as.findMember( shortName));
-
-    /* try {
-        return readMemberOfStructureFlatten(null);
-      } catch (InvalidRangeException e) {
-        log.error("VariableStructureMember.read got InvalidRangeException", e);
-        throw new IllegalStateException("VariableStructureMember.read got InvalidRangeException");
-      } */
     }
 
     // already cached
@@ -968,7 +960,7 @@ public class Variable implements VariableIF {
       return preReader.read(this, section, null);
 
     if (isMemberOfStructure()) {
-      throw new UnsupportedOperationException("Cannot directly read Member Variable="+getName());
+      throw new UnsupportedOperationException("Cannot directly read section of Member Variable="+getName());
       //return readMemberOfStructureFlatten(section);
     }
 
@@ -993,6 +985,10 @@ public class Variable implements VariableIF {
     NetcdfFile useFile = (ncfileIO != null) ? ncfileIO : ncfile;
     return useFile.readMemberData(useVar, section, flatten);
   } */
+
+  public long readToByteChannel(Section section, WritableByteChannel wbc) throws IOException, InvalidRangeException {
+    return ncfile.readToByteChannel(this,  section, wbc);
+  }
 
   /*******************************************/
   /* nicely formatted string representation */

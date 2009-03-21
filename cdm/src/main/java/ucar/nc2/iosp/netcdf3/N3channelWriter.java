@@ -66,7 +66,7 @@ public class N3channelWriter extends N3streamWriter {
         Variable v = vinfo.v;
         assert filePos == vinfo.offset;
         if (debugPos) System.out.println(" writing at "+filePos+" should be "+vinfo.offset+" "+v.getName());
-        int nbytes = (int) ncfile.readToByteChannel(v, v.getShapeAsSection(), channel);
+        int nbytes = (int) v.readToByteChannel(v.getShapeAsSection(), channel);
         filePos += nbytes;
         filePos += pad(channel, nbytes);
         if (debugPos) System.out.println(" vinfo="+vinfo);
@@ -93,7 +93,7 @@ public class N3channelWriter extends N3streamWriter {
 
         section.setRange(0, new Range(count, count+need-1));
         try {
-          bytesDone += ncfile.readToByteChannel(recordVar, section, channel);
+          bytesDone += recordVar.readToByteChannel( section, channel);
           done += need;
         } catch (InvalidRangeException e) {
           e.printStackTrace();

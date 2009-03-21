@@ -165,7 +165,7 @@ public class TimeSocket {
     StringTokenizer stoke = new StringTokenizer(want, ",");
     while (stoke.hasMoreTokens()) {
       ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());
-      done += ncfile.readToByteChannel(cer.v, cer.section, sc);
+      done += cer.v.readToByteChannel(cer.section, sc);
     }
     sc.close();
     return ((double) done) / (1000 * 1000);
