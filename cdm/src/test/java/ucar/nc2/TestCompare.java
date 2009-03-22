@@ -193,8 +193,8 @@ public class TestCompare {
       status = "Checking "+ a.getName() +" "+ a.getStringValue();
       if ( skipLocation && a.getName().contains( "location"))
         return;
-      // not used, why test for it
-      if ( a.getName().contains( "ScanningMode"))
+      // not used or not in Grib1, why test for it 
+      if ( a.getName().contains( "ScanningMode") || a.getName().contains( "grid_spacing"))
         return;
     }
     int index2 = list2.indexOf( want1);
