@@ -117,7 +117,6 @@ public class GridHorizCoordSys {
    * startx, starty
    */
   private double startx, starty;
-  private double dx, dy;
   /**
    * projection
    */
@@ -526,7 +525,6 @@ public class GridHorizCoordSys {
     for (String key : keyList) {
       String name =
           AbstractIOServiceProvider.createValidNetcdfObjectName(pre +"_param_" + key);
-          //AbstractIOServiceProvider.createValidNetcdfObjectName("GDS_param_" + key);
 
       String vals = gds.getParam(key);
       try {
