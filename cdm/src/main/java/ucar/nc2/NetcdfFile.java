@@ -527,7 +527,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
     // see if already decompressed, look in cache if need be
     File uncompressedFile = DiskCache.getFileStandardPolicy(uncompressedFilename);
-    if (uncompressedFile.exists()) {
+    if (uncompressedFile.exists() && uncompressedFile.length() > 0) {
       // see if its locked - another thread is writing it
       FileInputStream stream = null;
       FileLock lock = null;

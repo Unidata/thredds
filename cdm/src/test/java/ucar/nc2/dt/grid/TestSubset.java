@@ -57,7 +57,7 @@ public class TestSubset extends TestCase {
   }
 
   public void testRegular() throws Exception {
-    ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestAll.upcShareDir + "metapps/test/data/grids/03061219_ruc.nc");
+    ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestAll.upcShareTestDataDir + "cdmTest/grid/03061219_ruc.nc");
 
     GeoGrid grid = dataset.findGridByName("T");
     assert null != grid;

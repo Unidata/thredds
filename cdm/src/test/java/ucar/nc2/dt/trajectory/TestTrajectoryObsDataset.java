@@ -80,7 +80,7 @@ public class TestTrajectoryObsDataset extends TestCase
 
   public static Test suite ( ) {
     TestSuite suite= new TestSuite();
-    suite.addTestSuite( TestRafTrajectoryObsDataset.class );
+    // suite.addTestSuite( TestRafTrajectoryObsDataset.class );
     suite.addTestSuite( TestSimpleTrajectoryObsDataset.class );
     suite.addTestSuite( TestFloat10TrajectoryObsDataset.class );
     suite.addTestSuite( TestARMTrajectoryObsDataset.class );
