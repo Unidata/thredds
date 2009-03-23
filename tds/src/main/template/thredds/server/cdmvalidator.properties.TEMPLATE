@@ -11,6 +11,6 @@ cdmvalidator.logo.alt=THREDDS
 cdmvalidator.content.root.path=../../content
 cdmvalidator.content.path=cdmvalidator
 
-cdmvalidator.config.file=threddsConfig.xml
+cdmvalidator.config.file=cdmValidatorConfig.xml
 
 cdmvalidator.install.url=validate.html

@@ -185,28 +185,28 @@ public class CdmValidatorContext
     File configFile = contentDirSource.getFile( this.configFileName );
     if ( configFile == null )
     {
-      configFile = new File( this.contentDirectory, this.configFileName);
-      boolean success = false;
+      // Get target File.
+      configFile = new File( this.contentDirectory, this.configFileName );
+
+      // Find template configuration file.
+      // ToDo LOOK - Move WEB-INF/altContent path to cdmvalidator.properties.TEMPLAT file.
+      String templateConfigFilePath = "WEB-INF/altContent/" + this.configFileName;
+      File templateConfigFile = rootDirSource.getFile( templateConfigFilePath );
+      if ( templateConfigFile == null )
+      {
+        String tmpMsg = "Non-existent template configuration file";
+        log.error( "init(): " + tmpMsg + " [" + templateConfigFilePath + "]" );
+        throw new IllegalStateException( tmpMsg );
+      }
       try
       {
-        success = configFile.createNewFile();
+        ucar.nc2.util.IO.copyFile( templateConfigFile, configFile );
       }
       catch ( IOException e )
       {
         String tmpMsg = "Configuration file doesn't exist and could not be created";
         log.error( "init(): " + tmpMsg + " [" + configFile.getAbsolutePath() + "]", e );
         throw new IllegalStateException( tmpMsg, e );
-      }
-      if ( !success )
-      {
-        String tmpMsg = "Configuration file doesn't exist and could not be created";
-        log.error( "init(): " + tmpMsg + " [" + configFile.getAbsolutePath() + "]" );
-        throw new IllegalStateException( tmpMsg );
-      }
-      else
-      {
-        log.error( "init(): Empty configuration file [" + configFile + "]." );
-        throw new IllegalStateException( "Empty configuration file." );
       }
     }
 

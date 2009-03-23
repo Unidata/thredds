@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<threddsConfig>
+
+  <!--
+   * CDM (& Coordinate System) Validator Service.
+   * -->
+  <CdmValidatorService>
+    <maxFileUploadSize>1 Gb</maxFileUploadSize>
+    <cache>
+      <!--dir>\tmp\thredds\cdmValidateCache\</dir-->
+      <scour>10 minutes</scour>
+      <maxAge>1 days</maxAge>
+      <maxSize>1 Gb</maxSize>
+    </cache>
+  </CdmValidatorService>
+
+  <!--
+   * Setup for generated HTML pages.
+   *
+   * NOTE: URLs may be absolute or relative, relative URLs must be relative
+   * to the webapp URL, i.e., http://server:port/thredds/.
+   * -->
+  <htmlSetup>
+    <!--
+     * CSS document used in generated HTML pages.
+     * -->
+    <standardCssUrl>tds.css</standardCssUrl>
+
+    <!--
+     * Name and logo for this installation.
+     * -->
+    <installName>Your CDM Validator</installName>
+    <installLogoUrl>yourLogo.gif</installLogoUrl>
+    <installLogoAlt>Your CDM Validator</installLogoAlt>
+
+    <!--
+     * Name, URL, and logo for the institution hosting this installation.
+     * -->
+    <hostInstName>My Group</hostInstName>
+    <hostInstUrl>http://www.my.site/</hostInstUrl>
+    <hostInstLogoUrl>myGroup.gif</hostInstLogoUrl>
+    <hostInstLogoAlt>My Group</hostInstLogoAlt>
+
+  </htmlSetup>
+
+</threddsConfig>

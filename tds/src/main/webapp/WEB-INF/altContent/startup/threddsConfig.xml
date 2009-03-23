@@ -40,17 +40,14 @@
     <datasetIconAlt>Dataset</datasetIconAlt>
 
     <!--
-     * The URL and alternate text for this TDS installations logo.
+     * Name and logo for this installation.
      * -->
     <installName>Initial Installation</installName>
     <installLogoUrl>yourLogo.gif</installLogoUrl>
     <installLogoAlt>Initial Install</installLogoAlt>
 
     <!--
-     * Information for the institution hosting this TDS installation:
-     * - a URL for the institution;
-     * - a URL to the institution logo; and
-     * - alternate text for the institution logo.
+     * Name, URL, and logo for the institution hosting this installation.
      * -->
     <hostInstName>My Group</hostInstName>
     <hostInstUrl>http://www.my.site/</hostInstUrl>
