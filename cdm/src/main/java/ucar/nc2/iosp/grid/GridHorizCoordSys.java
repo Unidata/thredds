@@ -497,9 +497,13 @@ public class GridHorizCoordSys {
 
     v.addAttribute(new Attribute("earth_shape", shape_name));
     if (gds.getInt(GridDefRecord.GRID_SHAPE_CODE) == 1) {
-      v.addAttribute(
-          new Attribute("spherical_earth_radius_meters",
-              new Double(gds.getDouble(GridDefRecord.RADIUS_SPHERICAL_EARTH))));
+      // have to check both because Grib1 and Grib2 used different names
+      double radius_spherical_earth = gds.getDouble(GridDefRecord.RADIUS_SPHERICAL_EARTH);
+      if (Double.isNaN( radius_spherical_earth ))
+         radius_spherical_earth = gds.getDouble( "radius_spherical_earth" );
+
+      v.addAttribute(new Attribute("spherical_earth_radius_meters",
+              new Double(radius_spherical_earth)));
     }
     addGDSparams(v);
     ncfile.addVariable(g, v);
@@ -773,10 +777,14 @@ public class GridHorizCoordSys {
 
     double dx = gds.getDouble(GridDefRecord.DX);  // apparent diameter in units of grid lengths
     double dy = gds.getDouble(GridDefRecord.DY);
-
+    // have to check both names because Grib1 and Grib2 used different names
     double major_axis = gds.getDouble(GridDefRecord.MAJOR_AXIS_EARTH);  // km
-    double minor_axis = gds.getDouble(GridDefRecord.MINOR_AXIS_EARTH);  // km
+    if (Double.isNaN(major_axis) )
+       major_axis = gds.getDouble("major_axis_earth");
 
+    double minor_axis = gds.getDouble(GridDefRecord.MINOR_AXIS_EARTH);  // km
+    if (Double.isNaN(minor_axis) )
+       minor_axis = gds.getDouble("minor_axis_earth");
     // Nr = altitude of camera from center, in units of radius
     double nr = gds.getDouble(GridDefRecord.NR) * 1e-6;
     double apparentDiameter = 2 * Math.sqrt((nr - 1) / (nr + 1));  // apparent diameter, units of radius (see Snyder p 173)
