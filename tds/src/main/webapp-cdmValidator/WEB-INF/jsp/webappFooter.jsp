@@ -14,4 +14,4 @@ ${webappName}
 </c:if>
 
 [Version ${webappVersion} - ${webappVersionBuildDate}]
-<a href="${webappDocsPath}">Documentation</a>
+<a href="${webappDocsUrl}">Documentation</a>

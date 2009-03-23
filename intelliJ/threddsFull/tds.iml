@@ -1432,12 +1432,12 @@
             <url>jar://$MODULE_DIR$/../../lib/release/prefsAll.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
+            <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/classes" />
             <url>file://$MODULE_DIR$/../../../grib/resources</url>
           </containerElement>
           <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
+            <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/classes" />
             <url>file://$MODULE_DIR$/../../cdm/src/main/resources</url>
           </containerElement>

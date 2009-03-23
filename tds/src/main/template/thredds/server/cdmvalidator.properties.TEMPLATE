@@ -6,11 +6,11 @@ cdmvalidator.version.builddate=@BUILDTIME@
 cdmvalidator.url=http://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html
 cdmvalidator.documentation.url=http://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html
 cdmvalidator.logo.url=threddsIcon.gif
-cdmvalidator.logo.alt=TDS
+cdmvalidator.logo.alt=THREDDS
 
 cdmvalidator.content.root.path=../../content
 cdmvalidator.content.path=cdmvalidator
 
 cdmvalidator.config.file=threddsConfig.xml
 
-cdmvalidator.install.url=cdmValidate.html
+cdmvalidator.install.url=validate.html

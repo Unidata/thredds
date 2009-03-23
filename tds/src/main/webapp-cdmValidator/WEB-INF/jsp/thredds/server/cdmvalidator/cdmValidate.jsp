@@ -29,7 +29,7 @@
 </p>
 
 <hr>
-<FORM ENCTYPE='multipart/form-data' method='POST' action='<c:url value="cdmValidate"/>'>
+<FORM ENCTYPE='multipart/form-data' method='POST' action='<c:url value="validate"/>'>
 <p>
   <strong>Your Name: </strong>
   <input type="text" name="username">
@@ -42,7 +42,7 @@
     return XML </p>
 </FORM>
 
-<form method="GET" action='<c:url value="cdmValidate"/>'>
+<form method="GET" action='<c:url value="validate"/>'>
 <p>OR enter the URL of a file accessible through an HTTP Server or OPeNDAP:</p>
 <p><strong>URL: </strong>
   <INPUT NAME='URL' TYPE='text' id="URL" size="80">
@@ -54,7 +54,7 @@ return XML
 <hr>
 <h3>Useful links: </h3>
 <ul>
-  <li><a href="<c:url value='cdmValidateHelp.html'/>">CDM validation output help</a> </li>
+  <li><a href="<c:url value='validateHelp.html'/>">CDM validation output help</a> </li>
   <li><a href="http://titania.badc.rl.ac.uk/cgi-bin/cf-checker.pl">CF-1.0 Compliance checker</a> </li>
 </ul>
 

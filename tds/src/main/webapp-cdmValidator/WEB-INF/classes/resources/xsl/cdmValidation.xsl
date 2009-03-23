@@ -4,26 +4,20 @@
   <xsl:template match="/">
     <html>
       <head>
-        <title>CdmValidation</title>
+        <LINK REL="StyleSheet" HREF="/cdmvalidator/tds.css" TYPE="text/css"/>
+        <title>CDM Validation</title>
       </head>
       <body bgcolor="#FFFFFF">
 
-        <LINK REL="StyleSheet" HREF="/thredds/upc.css" TYPE="text/css"/>
         <table width="100%">
           <tr>
-            <td width="95" height="95" align="left">
-              <img src="unidataLogo.gif" width="95" height="93"/>
-            </td>
-            <td width="701" align="left" valign="top">
-              <table width="303">
-                <tr>
-                  <td width="295" height="22" align="left" valign="top">
-                    <h3>
-                      <strong>Thredds Data Server</strong>
-                    </h3>
-                  </td>
-                </tr>
-              </table>
+            <td>
+              <img src="/cdmvalidator/unidataLogo.gif" alt="Unidata" align="left" valign="top" />
+              <h3>
+                <strong>
+                  <a href="/cdmvalidator/validate.html">CDM Validator</a>
+                </strong>
+              </h3>
             </td>
           </tr>
         </table>
@@ -183,7 +177,7 @@
         </table>
 
         <hr/>
-        <a href="cdmValidateHelp.html">Validation Help</a>
+        <a href="validateHelp.html">Validation Help</a>
 
       </body>
     </html>

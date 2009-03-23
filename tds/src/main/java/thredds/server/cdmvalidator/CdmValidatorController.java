@@ -84,7 +84,7 @@ public class CdmValidatorController extends AbstractController
         this.cdmValidatorContext.getHtmlConfig().addHtmlConfigInfoToModel( model );
 
         log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
-        return new ModelAndView( "/thredds/server/cdmvalidator/cdmValidate", model );
+        return new ModelAndView( "/thredds/server/cdmvalidator/cdmValidateHelp", model );
       }
       else if ( reqPath.equals( "/validate"))
       {
@@ -337,7 +337,8 @@ public class CdmValidatorController extends AbstractController
   private InputStream getXSLT()
   {
     Class c = CdmValidatorController.class;
-    String resource = "/WEB-INF/classes/resources/xsl/cdmValidation.xsl";
+    //String resource = "/WEB-INF/classes/resources/xsl/cdmValidation.xsl";
+    String resource = "/resources/xsl/cdmValidation.xsl";
     InputStream is = c.getResourceAsStream( resource );
     if ( null == is )
       log.error( "getXSLT(): Cant load XSLT resource = " + resource );

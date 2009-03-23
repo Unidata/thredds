@@ -10,7 +10,7 @@
   <bean id="cdmValidatorController" class="thredds.server.cdmvalidator.CdmValidatorController">
     <property name="cdmValidatorContext" ref="cdmValidatorContext"/>
 
-    <property name="supportedMethods" value="GET, POST"/>
+    <property name="supportedMethods" value="GET,POST"/>
   </bean>
 
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
