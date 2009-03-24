@@ -187,6 +187,7 @@ public class TestAll {
     suite.addTest( thredds.catalog.TestCatalogAll.suite()); //
 
     suite.addTest( ucar.nc2.TestIosp.suite());   //
+    //suite.addTest( new TestSuite(TestGridGribIosp.class));  //
     suite.addTest( ucar.nc2.iosp.hdf5.TestH5.suite()); // */
     suite.addTest( ucar.nc2.iosp.hdf4.TestH4.suite()); //
 

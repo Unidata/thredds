@@ -46,10 +46,22 @@ import ucar.nc2.iosp.IOServiceProvider;
 import java.io.IOException;
 import java.io.File;
 
-public class TestGridGribIosp {
+import junit.framework.TestCase;
 
-    static public void compareNC(String fileBinary, String fileText)
-        throws IOException {
+public class TestGridGribIosp extends TestCase {
+
+    public TestGridGribIosp(String name) {
+      super(name);
+    }
+
+    public void testCompare() throws IOException {
+      //doAll( null );
+      String[] args = new String[ 1 ];
+      args[ 0 ] = "C:/data";
+      doAll( args );
+    }
+
+    void compareNC(String fileBinary, String fileText) throws IOException {
 
     long start = System.currentTimeMillis() ;
     //String fileBinary = "C:/data/GFS_Global_2p5deg_20090305_0000.grib2";
@@ -123,11 +135,10 @@ public class TestGridGribIosp {
      ncfileText.close();
   }
 
-  static public void main(String args[]) throws IOException {
-    TestGridGribIosp ggi = new TestGridGribIosp();
+  void doAll(String args[]) throws IOException {
 
     String dirB, dirT;
-    if (args.length < 1 ) {
+    if ( args == null || args.length < 1 ) {
       dirB = TestAll.upcShareTestDataDir +"test/motherlode/grid/grib/binary";
       dirT = TestAll.upcShareTestDataDir +"test/motherlode/grid/grib/text";
     } else {
@@ -160,5 +171,13 @@ public class TestGridGribIosp {
       }
     } else {
     }
+  }
+
+  static public void main2(String args[]) throws IOException {
+      TestGridGribIosp ggi = new TestGridGribIosp( "" );
+      if ( args.length < 1 ) {
+        args[ 0 ] = "C:/data";
+        ggi.doAll( args );
+      }
   }
 }
