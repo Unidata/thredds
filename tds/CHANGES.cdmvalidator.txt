@@ -1,0 +1,8 @@
+CHANGES for CDM Validator
+Version @VERSION.MINOR@
+Build Date = @BUILDTIME@
+
+Version 4.0
+- Initial release as a separate web application.
+- Distributed as cdmvalidator.war file.
+- Main web page: http://server:port/cdmvalidator/validate.html
