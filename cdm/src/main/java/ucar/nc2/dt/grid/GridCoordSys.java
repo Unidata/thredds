@@ -361,7 +361,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     Collections.sort(coordAxes, new CoordinateAxis.AxisComparator()); // canonical ordering of axes
     this.name = makeName(coordAxes);
 
-    // copy all coordfinate transforms into here
+    // copy all coordinate transforms into here
     this.coordTrans = new ArrayList<CoordinateTransform>(cs.getCoordinateTransforms());
 
     // collect dimensions

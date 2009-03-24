@@ -259,7 +259,7 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
   // all grids in a gridset have same time coordinate
   private class Gridset {
     List<GridDatatype> gridList = new ArrayList<GridDatatype>();
-    ucar.nc2.dt.GridCoordSystem gcs; // keep this so we can call gcs.getTimeAxisForRun( run)
+    ucar.nc2.dt.GridCoordSystem gcs; // keep this so we can call gcs.getTimeAxisForRun( run) Dont use for nothin else!
     CoordinateAxis timeAxis;
     String timeDimName;
 
@@ -553,7 +553,9 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
         v.setProxyReader(subs);
         v.remove(v.findAttribute(_Coordinate.Axes));
         v.remove(v.findAttribute("coordinates"));
-        //v.addAttribute(new Attribute("coordinates", grid.getGridCoordSystem().getName()));
+        v.remove(v.findAttribute("_CoordinateAxes"));
+        String coords = makeCoordinatesAttribute(grid.getCoordinateSystem(), gridset.timeDimName);
+        v.addAttribute(new Attribute("coordinates", coords));
         target.addVariable(v); // reparent
       }
     }
@@ -563,6 +565,8 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
       if ((null == gridHash.get(v.getName()) && !coordSet.contains(v.getName()))) {
         VariableDS vds = new VariableDS(newds.getRootGroup(), v, false); // reparent LOOK fishy !!!!
         vds.clearCoordinateSystems();
+        vds.remove(vds.findAttribute("coordinates"));
+        vds.remove(v.findAttribute("_CoordinateAxes"));
         target.addVariable(vds);
       }
     }
@@ -570,6 +574,20 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
     newds.finish();
     // newds.setCached(3); // dont allow a normal close
     return newds;
+  }
+
+  // make the 'coordinates' attribute to identify the coordinate system for this gridset
+  private String makeCoordinatesAttribute(GridCoordSystem gcs, String timeDimName) {
+    Formatter sb = new Formatter();
+    if (gcs.getXHorizAxis() != null)
+      sb.format("%s ", gcs.getXHorizAxis().getName());
+    if (gcs.getYHorizAxis() != null)
+      sb.format("%s ", gcs.getYHorizAxis().getName());
+    if (gcs.getVerticalAxis() != null)
+      sb.format("%s ", gcs.getVerticalAxis().getName());
+    sb.format("%s ", timeDimName);
+
+    return sb.toString();
   }
 
   private void addTime3Coordinates(NetcdfDataset newds, Gridset gridset, List<Inventory> invList, String type) {

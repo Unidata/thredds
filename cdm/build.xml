@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="cdm" default="makeMain" basedir=".">
   <property name="release.version" value="4.0"/>
-  <property name="minor" value="37" />
+  <property name="minor" value="38" />
   <!-- "build.number" is already set for TeamCity builds. -->
   <tstamp>
     <format property="build.time.number" pattern="yyyyMMdd.HHmm" timezone="GMT"/>

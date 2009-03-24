@@ -83,9 +83,14 @@ public class TestFileSystem {
           root = args[i].substring(pos+1);
           System.out.printf("root=%s ",root);
         }
+
+        if (args[i].equals("usage")) {
+          System.out.printf("java -classpath {jar} ucar.nc2.util.cache.TestFileSystem root={rootDir} [readLastModified] -%n");
+          System.exit(0);
+        }
       }
 
-      if (args[i].equals("readLast")) {
+      if (args[i].equals("readLastModified")) {
         readLast = true;
         System.out.printf(" readLastModified ");
       }
