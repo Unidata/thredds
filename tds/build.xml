@@ -52,7 +52,6 @@
    </fileset>
 
   <patternset id="sources">
-    <include name="thredds/cataloggen/servlet/*.java"/>
     <include name="thredds/dqc/server/**/*.java"/>
     <exclude name="thredds/examples/*.java"/>
     <include name="thredds/monitor/**/*.java"/>
@@ -140,7 +139,6 @@
       <include name="${jdom.jar}"/>
       <include name="${joda.jar}"/>
       <include name="${slf4jAPI.jar}"/>
-      <include name="${log4j.jar}"/>
       <include name="${spring.jar}"/>
       <include name="${spring-webmvc.jar}"/>
     </patternset>
@@ -151,6 +149,7 @@
       <include name="${http-codec.jar}"/>
       <include name="${http-logging.jar}"/>
       <include name="${slf4jImpl.jar}"/>
+      <include name="${log4j.jar}"/>
       <include name="${jpeg2000.jar}"/>
       <include name="${jstl.jar}"/>
       <include name="${jstl-standard.jar}"/>
