@@ -87,9 +87,6 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
                    debugTiming         = false,
                    debugVert           = false;
 
-    /** TODO: flag for whether  to add lat/lon coordinates */
-    static public boolean addLatLon = false;  // add lat/lon coordinates for striuct CF compliance
-
     /** flag for using maximal coordinate system */
     static public boolean useMaximalCoordSys = false;
 
@@ -195,23 +192,6 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
     public String getDetailInfo() {
         return parseInfo.toString();
     }
-
-    /**
-     * Read nested data
-     *
-     * @param v2  Variable to read
-     * @param section  section info
-     *
-     * @return Array of data
-     *
-     * @throws IOException  problem reading file
-     * @throws InvalidRangeException  invalid range
-    public Array readNestedData(Variable v2, List section)
-            throws IOException, InvalidRangeException {
-        throw new UnsupportedOperationException(
-            "GEMPAK IOSP does not support nested variables");
-    }
-     */
 
     /**
      * Send an IOSP message
@@ -332,12 +312,12 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
 
         // otherwise read it
         float[] data;
-        try {
+    //try {
             data = _readData(record);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
+    //} catch (Exception e) {
+    //  e.printStackTrace();
+    //  return;
+    //}
 
         for (int y = yRange.first(); y <= yRange.last();
                 y += yRange.stride()) {
@@ -384,4 +364,5 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
      */
     protected abstract float[] _readData(GridRecord gr) throws IOException;
 
-}
+
+} // end GribServiceProvider
