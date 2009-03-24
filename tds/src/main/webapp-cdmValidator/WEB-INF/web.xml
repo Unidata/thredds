@@ -14,6 +14,16 @@
     <param-value>cdmvalidator</param-value>
   </context-param>
 
+  <filter>
+    <filter-name>RequestQueryFilter</filter-name>
+    <filter-class>thredds.servlet.filter.RequestQueryFilter</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
+    <url-pattern>/validate</url-pattern>
+  </filter-mapping>
+
   <!--
     Location of the Log4J config file, for initialization.
     Applied by Log4jConfigListener.

@@ -3,8 +3,8 @@ cdmvalidator.version=@VERSION.MINOR@
 cdmvalidator.version.brief=@VERSION@
 cdmvalidator.version.builddate=@BUILDTIME@
 
-cdmvalidator.url=http://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html
-cdmvalidator.documentation.url=http://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html
+cdmvalidator.url=http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.0/cdmValidator.html
+cdmvalidator.documentation.url=http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.0/cdmValidator.html
 cdmvalidator.logo.url=threddsIcon.gif
 cdmvalidator.logo.alt=THREDDS
 
