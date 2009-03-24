@@ -486,6 +486,10 @@
     <servlet-name>catalogService</servlet-name>
     <url-pattern>/remoteCatalogService</url-pattern>
   </servlet-mapping>
+  <servlet-mapping> <!-- For backwards compatibility -->
+    <servlet-name>catalogService</servlet-name>
+    <url-pattern>/catalogServices</url-pattern>
+  </servlet-mapping>
   <servlet-mapping>
     <servlet-name>catalogService</servlet-name>
     <url-pattern>/remoteCatalogValidation.html</url-pattern>

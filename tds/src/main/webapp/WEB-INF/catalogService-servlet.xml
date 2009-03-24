@@ -54,6 +54,7 @@
         /catalog/**/*.xml=catalogXmlController
         /catalog/**/*.html=catalogHtmlController
         /remoteCatalogService=remoteCatalogController
+        /catalogServices=remoteCatalogController <!-- For backwards compatibility only. -->
         /remoteCatalogValidation.html=remoteCatalogController
       </value>
     </property>
