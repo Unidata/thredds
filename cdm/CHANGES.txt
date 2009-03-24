@@ -6,6 +6,7 @@ Changes in version 4.0
 
  Release Details:
   38:
+   GridServiceProvider.readXY() : dont catch Exception
    Fmrc: put "coordinates" attribute back on grid variables.
    new visad.jar (3/20/09)
    GeoGrid.subset() deal with 6 dimensions, 2D time dimension.

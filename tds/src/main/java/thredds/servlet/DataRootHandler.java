@@ -1611,8 +1611,7 @@ public class DataRootHandler {
 
     act = new DebugHandler.Action("showRoots", "Show data roots") {
       public void doAction(DebugHandler.Event e) {
-        synchronized ( DataRootHandler.this )
-        {
+        synchronized ( DataRootHandler.this ) {
           Iterator iter = pathMatcher.iterator();
           while (iter.hasNext()) {
             DataRoot ds = (DataRoot) iter.next();
@@ -1630,6 +1629,21 @@ public class DataRootHandler {
               }
             }
           }
+        }
+      }
+    };
+    debugHandler.addAction( act);
+
+    act = new DebugHandler.Action("getRoots", "Get data roots") {
+      public void doAction(DebugHandler.Event e) {
+        synchronized ( DataRootHandler.this ) {
+          e.pw.print("<pre>\n");
+          Iterator iter = pathMatcher.iterator();
+          while (iter.hasNext()) {
+            DataRoot ds = (DataRoot) iter.next();
+            e.pw.print(ds.path+","+ds.dirLocation+"\n");
+          }
+          e.pw.print("</pre>\n");
         }
       }
     };

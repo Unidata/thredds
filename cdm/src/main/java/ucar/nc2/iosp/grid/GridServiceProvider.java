@@ -311,13 +311,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
         }
 
         // otherwise read it
-        float[] data;
-    //try {
-            data = _readData(record);
-    //} catch (Exception e) {
-    //  e.printStackTrace();
-    //  return;
-    //}
+        float[] data= _readData(record);
 
         for (int y = yRange.first(); y <= yRange.last();
                 y += yRange.stride()) {
