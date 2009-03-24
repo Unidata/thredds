@@ -1200,9 +1200,9 @@
           <root url="file://$MODULE_DIR$/../../tds/src/main/webapp-cdmValidator" relative="/" />
         </webroots>
         <building>
-          <setting name="EXPLODED_URL" value="file://$MODULE_DIR$/../../tds/target/CdmValidator" />
+          <setting name="EXPLODED_URL" value="file://$MODULE_DIR$/../../tds/target/cdmvalidator" />
           <setting name="EXPLODED_ENABLED" value="true" />
-          <setting name="JAR_URL" value="file://$MODULE_DIR$/../../tds/target/CdmValidator.war" />
+          <setting name="JAR_URL" value="file://$MODULE_DIR$/../../tds/target/cdmvalidator.war" />
           <setting name="JAR_ENABLED" value="false" />
           <setting name="BUILD_MODULE_ON_FRAME_DEACTIVATION" value="false" />
           <setting name="BUILD_EXTERNAL_DEPENDENCIES" value="false" />

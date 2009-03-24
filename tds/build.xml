@@ -69,6 +69,7 @@
     <include name="thredds/server/cdmvalidator/*.java"/>
     <include name="thredds/server/config/*.java"/>
     <include name="thredds/servlet/**/*.java"/>
+    <exclude name="thredds/servlet/idd/**"/>
     <exclude name="thredds/servlet/restrict/**"/>
     <exclude name="thredds/servlet/tomcat/**"/>
     <include name="thredds/util/**/*.java"/>
@@ -115,7 +116,6 @@
 
   <!-- Some extra project and third-party libraries. -->
   <property name="resourcesOptional.jar" value="release/resourcesOptional.jar"/>
-  <property name="threddsResources.jar" value="release/threddsResources-3.10.jar"/>
 
   <!-- Libraries needed for tests. -->
   <property name="spring-test.jar" value="external/spring-test-2.5.jar"/>
@@ -148,7 +148,6 @@
 
   <fileset id="runtime.libraries" dir="${lib.dir}">
     <patternset id="runtime.libs">
-      <include name="${threddsResources.jar}" />
       <include name="${http-codec.jar}"/>
       <include name="${http-logging.jar}"/>
       <include name="${slf4jImpl.jar}"/>
@@ -366,7 +365,7 @@
   </target>
 
   <!--
-   * Target to setup web app directory.
+   * Target to setup cdmvalidator web app directory.
    * -->
   <target name="war-setup-cdmvalidator" depends="clean, compile-cdmvalidator, compile-war-extra-cdmvalidator"
           description="Setup for cdmvalidator.war generation.">
@@ -381,7 +380,7 @@
       </filterset>
     </copy>
 
-    <copy file="CHANGES.cdmvalidator.txt" tofile="${war.dir}/CHANGES.txt" overwrite="true">
+    <copy file="CHANGES.cdmvalidator.txt" tofile="${cdmvalidator.war.dir}/CHANGES.txt" overwrite="true">
       <filterset>
         <filter token="BUILDTIME" value="${buildtime}"/>
         <filter token="VERSION" value="${release.version}"/>
@@ -444,7 +443,8 @@
   </target>
 
   <!--
-   * Target for building example THREDDS server.
+   * Targets for building example THREDDS server:
+   * - "makeWar-ExampleThredds" -
    * -->
   <target name="makeWar-ExampleThredds" depends="war-setup" description="create a war file from the distribution directory">
     <!-- Copy web.xml into war dir. -->
