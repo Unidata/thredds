@@ -556,6 +556,7 @@
         <include name="intelliJ/**" />
         <include name="tds/**" />
 
+        <exclude name="common/target/**" />
         <exclude name="cdm/doc/**" />
         <exclude name="cdm/target/**" />
         <exclude name="tds/doc/**" />
