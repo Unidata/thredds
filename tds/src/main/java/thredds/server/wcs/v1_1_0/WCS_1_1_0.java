@@ -137,7 +137,7 @@ public class WCS_1_1_0 implements VersionHandler
           String resultFilename = request.getDatasetName(); // this is name browser will show
           if ( !resultFilename.endsWith( suffix ) )
             resultFilename = resultFilename + suffix;
-          res.setHeader( "Content-Disposition", "attachment; filename=" + resultFilename );
+          res.setHeader( "Content-Disposition", "attachment; filename=\"" + resultFilename + "\"" );
 
           ServletUtil.returnFile( servlet, "", covFile.getPath(), req, res, "application/netcdf" );
           if ( deleteImmediately ) covFile.delete();

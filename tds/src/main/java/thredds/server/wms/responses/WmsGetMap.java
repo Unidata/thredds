@@ -165,8 +165,8 @@ public class WmsGetMap extends LayerBasedResponse
         // If this is a KMZ file give it a sensible filename
         if (imageFormat instanceof KmzFormat)
         {
-            res.setHeader("Content-Disposition", "inline; filename=" +
-                layer.getDataset().getTitle() + "_" + layer.getId() + ".kmz");
+            res.setHeader("Content-Disposition", "inline; filename=\"" +
+                layer.getDataset().getTitle() + "_" + layer.getId() + ".kmz\"");
         }
 
         log.debug("Set mime type: " + mimeType + " and about to write image");

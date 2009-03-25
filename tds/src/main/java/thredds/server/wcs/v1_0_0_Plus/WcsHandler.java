@@ -125,7 +125,7 @@ public class WcsHandler implements VersionHandler
           String resultFilename = request.getDataset().getDatasetName(); // this is name browser will show
           if ( !resultFilename.endsWith( suffix ) )
             resultFilename = resultFilename + suffix;
-          res.setHeader( "Content-Disposition", "attachment; filename=" + resultFilename );
+          res.setHeader( "Content-Disposition", "attachment; filename=\"" + resultFilename + "\"" );
 
           ServletUtil.returnFile( servlet, "", covFile.getPath(), req, res, ((GetCoverage) request).getFormat().getMimeType() );
           if ( deleteImmediately ) covFile.delete();

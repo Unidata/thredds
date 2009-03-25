@@ -318,7 +318,7 @@ public class GridServlet extends AbstractServlet {
     }
 
     res.addHeader("Content-Location", url);
-    res.setHeader("Content-Disposition", "attachment; filename=" + filename);
+    res.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 
     ServletUtil.returnFile(this, req, res, result, "application/x-netcdf");
   }
@@ -454,7 +454,7 @@ public class GridServlet extends AbstractServlet {
     }
 
     res.addHeader("Content-Location", url);
-    res.setHeader("Content-Disposition", "attachment; filename=" + filename);
+    res.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 
     ServletUtil.returnFile(this, req, res, new File(cacheFilename), "application/x-netcdf");
   }
