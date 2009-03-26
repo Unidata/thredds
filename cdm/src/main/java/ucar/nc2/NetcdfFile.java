@@ -1855,7 +1855,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     return spi;
   }
 
-  // "safety net" use of finalize cf Bloch p 22
+  /* "safety net" use of finalize cf Bloch p 22
   protected void finalize() throws Throwable {
     try {
       if (null != spi) {
@@ -1866,7 +1866,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     } finally {
       super.finalize();
     }
-  }
+  } */
 
   //////////////////////////////////////////////////////////
 

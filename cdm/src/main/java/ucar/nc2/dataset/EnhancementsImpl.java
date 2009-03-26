@@ -44,7 +44,7 @@ import java.util.*;
 class EnhancementsImpl implements Enhancements {
   private Variable forVar;
   private String desc, units;
-  private List<CoordinateSystem> coordSys = new ArrayList<CoordinateSystem>();
+  private List<CoordinateSystem> coordSys; // dont allocate unless its used
 
   /**
    * Constructor when there's no underlying, existing Variable.
@@ -73,15 +73,19 @@ class EnhancementsImpl implements Enhancements {
    * Normally this is empty unless you use ucar.nc2.dataset.NetcdfDataset.
    * @return list of type ucar.nc2.dataset.CoordinateSystem; may be empty not null.
    */
-  public List<CoordinateSystem> getCoordinateSystems() {return coordSys; }
+  public List<CoordinateSystem> getCoordinateSystems() {
+    return (coordSys == null) ? new ArrayList<CoordinateSystem>(0) : coordSys;
+  }
 
   /** Add a CoordinateSystem to the dataset. */
   public void addCoordinateSystem( CoordinateSystem cs){
+    if (coordSys == null) coordSys = new ArrayList<CoordinateSystem>(5);
     coordSys.add(cs);
   }
 
   public void removeCoordinateSystem(ucar.nc2.dataset.CoordinateSystem p0) {
-    coordSys.remove( p0);
+    if (coordSys != null)
+      coordSys.remove( p0);
   }
 
   /** Set the Description for this Variable.
@@ -90,7 +94,7 @@ class EnhancementsImpl implements Enhancements {
   public void setDescription(String desc) { this.desc = desc; }
 
   /** Get the description of the Variable.
-   *  Default is to look for attriutes in this order: "long_name", "description", "title", "standard_name".
+   *  Default is to look for attributes in this order: "long_name", "description", "title", "standard_name".
    */
   public String getDescription() {
     if ((desc == null) && (forVar != null)) {

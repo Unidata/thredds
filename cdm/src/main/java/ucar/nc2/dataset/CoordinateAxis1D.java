@@ -61,7 +61,6 @@ import java.util.List;
 public class CoordinateAxis1D extends CoordinateAxis {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis1D.class);
 
-
   /**
    * Create a 1D coordinate axis from an existing Variable
    *
@@ -665,8 +664,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
     }
   }
 
+  // only used if String
   private String[] names = null;
-
   private void readStringValues() {
     int count = 0;
     Array data;
@@ -830,14 +829,14 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   ////////////////////////////////////////////////////////////////////
-  protected ArrayList<NamedObject> named;
+  // protected ArrayList<NamedObject> named;
 
-  private void makeNames() {
+  /* private void makeNames() {
     named = new ArrayList<NamedObject>();
     int n = (int) getSize();
     for (int i = 0; i < n; i++)
       named.add(new NamedAnything(getCoordName(i), getUnitsString()));
-  }
+  } */
 
   /**
    * Get the list of names, to be used for user selection.
@@ -846,16 +845,19 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * @return List of ucar.nc2.util.NamedObject, or empty list.
    */
   public List<NamedObject> getNames() {
-    if (named == null) makeNames();
-    return named;
+    int n = (int) getSize();
+    List<NamedObject> names = new ArrayList<NamedObject>(n);
+    for (int i = 0; i < n; i++)
+      names.add(new NamedAnything(getCoordName(i), getUnitsString()));
+    return names;
   }
 
-  /**
+  /*
    * Get the index corresponding to the name. Reverse of getCoordName(i)
    *
    * @param name getCoordName(i)
    * @return index, or -1 if not found
-   */
+   *
   public int getIndex(String name) {
     if (named == null) makeNames();
     for (int i = 0; i < named.size(); i++) {
@@ -863,7 +865,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       if (level.getName().trim().equals(name)) return i;
     }
     return -1;
-  }
+  } */
 
   protected static class NamedAnything implements NamedObject {
     private String name, desc;

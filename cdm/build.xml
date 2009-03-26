@@ -56,6 +56,7 @@
   <!-- property name="bzip2.jar" value="bzip2.jar"/ -->
   <!-- property name="gnu-regexp.jar" value="gnu-regexp-1.1.4.jar"/ -->
   <property name="bufrTables.jar" value="bufrTables-1.5.jar"/>
+  <property name="ehcache.jar" value="ehcache-1.6.0-beta3.jar"/>
   <property name="grib.jar" value="grib-6.0.jar"/>
   <property name="httpclient.jar" value="commons-httpclient-3.1.jar"/>
   <property name="http-logging.jar" value="commons-logging-1.1.jar"/>
@@ -83,7 +84,7 @@
 
   <!-- Libraries -->
   <fileset id="compile.libraries" dir="${lib.dir}">
-    <!-- include name="release/${bufr.jar}"/ -->
+    <include name="external/${ehcache.jar}"/>
     <include name="release/${grib.jar}"/>
     <include name="release/${opendap.jar}"/>
     <include name="external/${httpclient.jar}"/>
@@ -94,7 +95,7 @@
   </fileset>
 
   <fileset id="compileFromSrc.libraries" dir="${root.dir}">
-    <!-- include name="lib/${bufr.jar}"/ -->
+    <include name="lib/${ehcache.jar}"/>
     <include name="lib/${grib.jar}"/>
     <include name="lib/${opendap.jar}"/>
     <include name="lib/${httpclient.jar}"/>
@@ -237,6 +238,7 @@
     <include name="thredds/catalog/*.java"/>
     <include name="thredds/catalog/parser/jdom/*.java"/>
     <include name="thredds/catalog2/**/*.java"/>
+    <include name="thredds/filesystem/**/*.java"/>
     <include name="thredds/util/**/*.java"/>
     <!-- The following includes, to ***, are needed by TDS. -->
     <include name="thredds/catalog/crawl/*.java"/>
@@ -344,6 +346,36 @@
         <attribute name="Built-By" value="${user.name}"/>
         <attribute name="Built-On" value="${buildtime}"/>
         <attribute name="Implementation-Title" value="NetCDF-Java-Library Complete"/>
+        <attribute name="Implementation-Version" value="${release.version.minor}"/>
+        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <property name="testJar.dir" value="${build.dir}/testJar"/>
+  <target name="makeTestJar" description="make test jar">
+    <delete dir="${testJar.dir}" failonerror="false"/>
+    <mkdir dir="${testJar.dir}"/>
+    <unzip dest="${testJar.dir}">
+      <fileset dir="${lib.dir}">
+        <include name="external/${ehcache.jar}"/>
+        <include name="external/${loggingAPI.jar}"/>
+        <include name="external/${logging-minimal.jar}"/>
+      </fileset>
+    </unzip>
+    <unzip dest="${testJar.dir}">
+      <fileset dir="${build.dir}">
+        <include name="${jarMain}"/>
+      </fileset>
+    </unzip>
+
+    <jar jarfile="${build.dir}/test.jar" index="true" duplicate="preserve">
+      <fileset dir="${testJar.dir}"/>
+
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Implementation-Title" value="test Jar"/>
         <attribute name="Implementation-Version" value="${release.version.minor}"/>
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
       </manifest>

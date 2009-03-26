@@ -103,7 +103,8 @@ public class TestFileSystem {
     long start = System.nanoTime();
     int total = test.timeDir(new File(root));
     long end = System.nanoTime();
-    System.out.printf("%n%-20s, %8d, %f%n", root, total, (end - start) / 1000 / 1000.0);
+
+    System.out.printf("%n%-20s, %8d, %f usecs%n", root, total, (end - start) / 1000 / 1000.0);
     System.out.printf("%n %d %n", touch);
   }
 

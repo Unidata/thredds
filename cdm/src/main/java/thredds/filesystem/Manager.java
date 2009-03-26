@@ -50,6 +50,7 @@ import java.util.Iterator;
  */
 @ThreadSafe
 public class Manager {
+  public boolean debug = false;
 
   private CacheManager cacheManager;
   private Cache cache;
@@ -57,7 +58,7 @@ public class Manager {
   private AtomicLong hits = new AtomicLong();
   private AtomicLong requests = new AtomicLong();
 
-  // no cache
+  // no cache - just pass through to OS
   public Manager() {
   }
 
@@ -84,11 +85,11 @@ public class Manager {
     if (cache != null) {
       Element e = cache.get(path);
       if (e != null) {
-        System.out.printf(" InCache %s%n", path);
+        if (debug) System.out.printf(" InCache %s%n", path);
 
         MDirectory m = (MDirectory) e.getValue();
         if (m.notModified()) {
-          //System.out.printf(" Hit %s%n", path);
+          if (debug) System.out.printf(" Hit %s%n", path);
           hits.incrementAndGet();
           return m;
         }
@@ -100,14 +101,16 @@ public class Manager {
     File p = new File(path);
     if (!p.exists()) return null;
 
-    System.out.printf(" Read %s%n", path);
+    if (debug) System.out.printf(" Read file system %s%n", path);
     MDirectory m = new MDirectory(p);
     add(path, m);
     return m;
   }
 
   public void close() {
-    cacheManager.shutdown();
+    if (cacheManager != null)
+      cacheManager.shutdown();
+    cacheManager = null;
   }
 
   public void show() {
@@ -130,15 +133,16 @@ public class Manager {
 
   public void stats() {
     System.out.printf(" dirs added= %s%n", addDir.get());
-    //System.out.printf(" files added= %s%n", MFile.total);
     System.out.printf(" reqs= %d%n", requests.get());
     System.out.printf(" hits= %d%n", hits.get());
 
-    System.out.printf(" cache= %s%n", cache.toString());
-    System.out.printf(" cache.size= %d%n", cache.getSize());
-    System.out.printf(" cache.memorySize= %d%n", cache.getMemoryStoreSize());
-    Statistics stats = cache.getStatistics();
-    System.out.printf(" stats= %s%n", stats.toString());
+    if (cache != null) {
+      System.out.printf(" cache= %s%n", cache.toString());
+      System.out.printf(" cache.size= %d%n", cache.getSize());
+      System.out.printf(" cache.memorySize= %d%n", cache.getMemoryStoreSize());
+      Statistics stats = cache.getStatistics();
+      System.out.printf(" stats= %s%n", stats.toString());
+    }
   }
 
   static public void main( String args[]) throws IOException {

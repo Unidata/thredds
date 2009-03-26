@@ -6,6 +6,9 @@ Changes in version 4.0
 
  Release Details:
   38:
+   CoordinatetAxis1DTime.NamedObjecct - do not retain, used only by UI.
+   NetcdfFile.finalize() makes TDS run out of memory when heavily loaded
+   SimpleUnit gets new UnitFormatManager each time, rather than using a static that becomes threading bottleneck
    GridServiceProvider.readXY() : dont catch Exception
    Fmrc: put "coordinates" attribute back on grid variables.
    new visad.jar (3/20/09)

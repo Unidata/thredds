@@ -51,13 +51,13 @@ public class SimpleUnit {
   public static SimpleUnit kmUnit;
   public static SimpleUnit meterUnit;
 
-  static protected UnitFormat format;
+  //static protected UnitFormat format;
   static protected Unit secsUnit, dateUnit;
   static protected boolean debugParse = false;
 
   static {
     try {
-      format = UnitFormatManager.instance();
+      UnitFormat format = UnitFormatManager.instance();
       secsUnit = format.parse("sec");
       dateUnit = format.parse("secs since 1970-01-01 00:00:00");
 
@@ -101,6 +101,7 @@ public class SimpleUnit {
    * @see ucar.units.UnitFormat#parse
    */
   static public SimpleUnit factoryWithExceptions(String name) throws Exception {
+    UnitFormat format = UnitFormatManager.instance();
     Unit uu = format.parse(name);
     //if (isDateUnit(uu)) return new DateUnit(name);
     if (isTimeUnit(uu)) return new TimeUnit(name);
@@ -109,6 +110,7 @@ public class SimpleUnit {
 
   // need subclass access
   static protected Unit makeUnit(String name) throws Exception {
+    UnitFormat format = UnitFormatManager.instance();
     return format.parse(name);
   }
 
@@ -123,6 +125,7 @@ public class SimpleUnit {
   static public boolean isCompatible(String unitString1, String unitString2) {
     Unit uu1, uu2;
     try {
+      UnitFormat format = UnitFormatManager.instance();
       uu1 = format.parse(unitString1);
     } catch (Exception e) {
       if (debugParse) System.out.println("Parse " + unitString1 + " got Exception1 " + e);
@@ -130,6 +133,7 @@ public class SimpleUnit {
     }
 
     try {
+      UnitFormat format = UnitFormatManager.instance();
       uu2 = format.parse(unitString2);
     } catch (Exception e) {
       if (debugParse) System.out.println("Parse " + unitString2 + " got Exception2 " + e);
@@ -149,6 +153,7 @@ public class SimpleUnit {
    * @throws Exception if units parsing fails
    */
   static public boolean isCompatibleWithExceptions(String unitString1, String unitString2) throws Exception {
+    UnitFormat format = UnitFormatManager.instance();
     Unit uu1 = format.parse(unitString1);
     Unit uu2 = format.parse(unitString2);
     return uu1.isCompatible(uu2);
@@ -284,6 +289,7 @@ public class SimpleUnit {
   public boolean isCompatible(String unitString) {
     Unit uuWant;
     try {
+      UnitFormat format = UnitFormatManager.instance();
       uuWant = format.parse(unitString);
     } catch (Exception e) {
       if (debugParse) System.out.println("Parse " + unitString + " got Exception1 " + e);

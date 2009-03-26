@@ -134,7 +134,6 @@
       <include name="${fileupload.jar}"/>
       <include name="${commons-lang.jar}"/>
       <include name="${commons-io.jar}"/>
-      <!-- include name="${gnu-regexp.jar}"/ -->
       <include name="${httpclient.jar}"/>
       <include name="${jdom.jar}"/>
       <include name="${joda.jar}"/>
@@ -168,18 +167,6 @@
   </path>
 
   <!-- targets -->
-  <target name="mytest">
-    <echo>nj22.exists=${nj22.exists}</echo>
-    <echo>nj22.root.dir=${nj22.root.dir}</echo>
-    <echo>nj22.lib.dir=${nj22.lib.dir}</echo>
-    <echo>nj22_resources.dir=${nj22_resources.dir}</echo>
-    <echo>nj22.src.dir=${nj22.src.dir}</echo>
-    <pathconvert property="nj22.compile.libraries.prop" refid="nj22.compile.libraries" targetos="windows"/>
-    <pathconvert property="nj22.runtime.libraries.prop" refid="nj22.runtime.libraries" targetos="windows"/>
-    <echo>nj22.compile.libraries=${nj22.compile.libraries.prop}</echo>
-    <echo>nj22.runtime.libraries=${nj22.runtime.libraries.prop}</echo>
-  </target>
-
   <target name="cleanCompile" depends="clean, compile"/>
   <target name="cleanDist" depends="clean, compile, makeWar"/>
   <target name="cleanTestSetup" depends="clean, compile, test-setup"/>

@@ -88,7 +88,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
       addAttribute(att);
     }
 
-    named = new ArrayList<NamedObject>(); // declared in CoordinateAxis1D superclass
+    //named = new ArrayList<NamedObject>(); // declared in CoordinateAxis1D superclass
 
     int ncoords = (int) org.getSize();
     int rank = org.getRank();
@@ -101,7 +101,6 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     ArrayChar.StringIterator ii = data.getStringIterator();
     ArrayObject.D1 sdata = new ArrayObject.D1(String.class, ncoords);
 
-    DateFormatter formatter = new DateFormatter();
     for (int i = 0; i < ncoords; i++) {
       String coordValue = ii.next();
       Date d = DateUnit.getStandardOrISO(coordValue);
@@ -114,7 +113,6 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
         throw new IllegalArgumentException();
       } else {
         sdata.set(i, coordValue);
-        named.add(new NamedAnything(formatter.toDateTimeString(d), "date/time"));
         timeDates[i] = d;
       }
     }
@@ -124,7 +122,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   private CoordinateAxis1DTime(NetcdfDataset ncd, VariableDS org, Formatter errMessages) throws IOException {
     super(ncd, org);
 
-    named = new ArrayList<NamedObject>(); // declared in CoordinateAxis1D superclass
+    // named = new ArrayList<NamedObject>(); // declared in CoordinateAxis1D superclass
 
     int ncoords = (int) org.getSize();
     timeDates = new Date[ncoords];
@@ -139,13 +137,10 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
         Array data = org.read();
         int count = 0;
         IndexIterator ii = data.getIndexIterator();
-        DateFormatter formatter = new DateFormatter();
         for (int i = 0; i < ncoords; i++) {
           double val = ii.getDoubleNext();
           if (Double.isNaN(val)) continue;
           Date d = dateUnit.makeDate(val);
-          String name = formatter.toDateTimeString(d);
-          named.add(new NamedAnything(name, "date/time"));
           timeDates[count++] = d;
         }
 
@@ -186,7 +181,6 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     if (org.getDataType() == DataType.STRING) {
       ArrayObject data = (ArrayObject) org.read();
       IndexIterator ii = data.getIndexIterator();
-      DateFormatter formatter = new DateFormatter();
       for (int i = 0; i < ncoords; i++) {
         String coordValue = (String) ii.getObjectNext();
         Date d = DateUnit.getStandardOrISO(coordValue);
@@ -198,7 +192,6 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
           throw new IllegalArgumentException();
         } else {
-          named.add(new NamedAnything(formatter.toDateTimeString(d), "date/time"));
           timeDates[i] = d;
         }
       }
@@ -225,19 +218,14 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
     Array data = org.read();
     IndexIterator ii = data.getIndexIterator();
-    DateFormatter formatter = new DateFormatter();
     for (int i = 0; i < ncoords; i++) {
       double val = ii.getDoubleNext();
       Date d = dateUnit.makeDate(val);
-      String name = formatter.toDateTimeString(d);
-      named.add(new NamedAnything(name, "date/time"));
       timeDates[i] = d;
     }
   }
 
-  private CoordinateAxis1DTime(NetcdfDataset
-      ncd, CoordinateAxis1DTime
-      org, Date[] timeDates) {
+  private CoordinateAxis1DTime(NetcdfDataset ncd, CoordinateAxis1DTime org, Date[] timeDates) {
     super(ncd, org);
     this.timeDates = timeDates;
     this.dateUnit = org.dateUnit;
@@ -264,6 +252,17 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
   public DateRange getDateRange() {
     return new DateRange(timeDates[0], timeDates[timeDates.length - 1]);
+  }
+
+  @Override
+  public List<NamedObject> getNames() {
+    DateFormatter formatter = new DateFormatter();
+    int n = (int) getSize();
+    List<NamedObject> names = new ArrayList<NamedObject>(n);
+    for (int i = 0; i < n; i++) {
+      names.add(new NamedAnything(formatter.toDateTimeString(getTimeDate(i)), "date/time"));
+    }
+    return names;
   }
 
   /**
