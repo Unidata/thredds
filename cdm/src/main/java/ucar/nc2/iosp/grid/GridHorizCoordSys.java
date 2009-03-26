@@ -71,6 +71,7 @@ import java.util.*;
  * @version $Revision: 70 $ $Date: 2006-07-13 15:16:05Z $
  */
 public class GridHorizCoordSys {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridHorizCoordSys.class);
 
   /**
    * lookup table
@@ -124,8 +125,8 @@ public class GridHorizCoordSys {
 
   /**
    * list of attributes
-   */ //TODO: generics
-  private ArrayList attributes = new ArrayList();
+   */
+  private List<Attribute> attributes = new ArrayList<Attribute>();
 
   /**
    * Create a new GridHorizCoordSys with the grid definition and lookup
@@ -136,8 +137,6 @@ public class GridHorizCoordSys {
    */
   GridHorizCoordSys(GridDefRecord gds, GridTableLookup lookup, Group g) {
     this.gds = gds;
-    //this.dx = gds.getDouble(GridDefRecord.DX) * .001;
-    //this.dy = gds.getDouble(GridDefRecord.DY) * .001;
     this.lookup = lookup;
     this.g = g;
 
@@ -322,6 +321,13 @@ public class GridHorizCoordSys {
     }
   }
 
+  // release memory after init
+  void empty() {
+    gds = null;
+    varHash = null;
+    productHash = null;
+    //vcsHash= null;
+  }
   /**
    * Add a coordinate axis
    *
@@ -380,6 +386,8 @@ public class GridHorizCoordSys {
     String units, String desc, String standard_name, AxisType axis) {
 
     double np = gds.getDouble( GridDefRecord.NUMBERPARALLELS );
+    if (Double.isNaN(np))
+      np = gds.getDouble("Np");
     if (Double.isNaN(np)) {
       throw new IllegalArgumentException(
           "Gaussian LAt/Lon grid must have NumberParallels parameter");
@@ -484,13 +492,12 @@ public class GridHorizCoordSys {
 
     Variable v = new Variable(ncfile, g, null, grid_name);
     v.setDataType(DataType.CHAR);
-    v.setDimensions(new ArrayList());  // scalar
+    v.setDimensions(""); // scalar
     char[] data = new char[]{'d'};
     Array dataArray = Array.factory(DataType.CHAR, new int[0], data);
     v.setCachedData(dataArray, false);
 
-    for (int i = 0; i < attributes.size(); i++) {
-      Attribute att = (Attribute) attributes.get(i);
+    for (Attribute att : attributes) {
       v.addAttribute(att);
     }
 
@@ -516,7 +523,7 @@ public class GridHorizCoordSys {
   private void addGDSparams(Variable v) {
     // add all the gds parameters
     java.util.Set keys = gds.getKeys();
-    ArrayList<String> keyList = new ArrayList<String>(keys);
+    List<String> keyList = new ArrayList<String>(keys);
     Collections.sort(keyList);
     String pre =
         (( lookup instanceof Grib2GridTableLookup) ||
@@ -552,7 +559,7 @@ public class GridHorizCoordSys {
                                       String dims) {
     Variable v = new Variable(ncfile, g, null, name);
     v.setDataType(DataType.CHAR);
-    v.setDimensions(new ArrayList());  // scalar
+    v.setDimensions(""); // scalar
     Array dataArray = Array.factory(DataType.CHAR, new int[0], new char[]{'0'});
     v.setCachedData(dataArray, false);
     v.addAttribute(new Attribute(_Coordinate.Axes, dims));

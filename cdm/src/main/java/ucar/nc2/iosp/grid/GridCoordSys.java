@@ -66,7 +66,7 @@ public class GridCoordSys {
     private GridTableLookup lookup;
 
     /** list of levels */
-    private List levels;
+    private List<Double> levels;
 
     /** flag for not using the vertical */
     boolean dontUseVertical = false;
@@ -91,7 +91,7 @@ public class GridCoordSys {
         this.record       = record;
         this.verticalName = name;
         this.lookup       = lookup;
-        this.levels       = new ArrayList();
+        this.levels       = new ArrayList<Double>();
 
         dontUseVertical   = !lookup.isVerticalCoordinate(record);
         positive          = lookup.isPositiveUp(record)
@@ -100,7 +100,7 @@ public class GridCoordSys {
         units             = lookup.getLevelUnit(record);
 
         if (GridServiceProvider.debugVert) {
-            System.out.println("GribCoordSys: " + getVerticalDesc()
+            System.out.println("GridCoordSys: " + getVerticalDesc()
                                + " useVertical= " + ( !dontUseVertical)
                                + " positive=" + positive + " units=" + units);
         }
@@ -149,9 +149,8 @@ public class GridCoordSys {
      *
      * @param records  the records
      */
-    void addLevels(List records) {
-        for (int i = 0; i < records.size(); i++) {
-            GridRecord record = (GridRecord) records.get(i);
+    void addLevels(List<GridRecord> records) {
+        for (GridRecord record : records) {
             Double     d      = new Double(record.getLevel1());
             if ( !levels.contains(d)) {
                 levels.add(d);
@@ -168,6 +167,7 @@ public class GridCoordSys {
         Collections.sort(levels);
         if (positive.equals("down")) {
             Collections.reverse(levels);
+            // TODO: delete
             /* for( int i = 0; i < (levels.size()/2); i++ ){
                 Double tmp = (Double) levels.get( i );
                 levels.set( i, levels.get(levels.size() -i -1));
@@ -183,12 +183,11 @@ public class GridCoordSys {
      *
      * @return true if they match
      */
-    boolean matchLevels(List records) {
+    boolean matchLevels(List<GridRecord> records) {
 
         // first create a new list
-        ArrayList levelList = new ArrayList(records.size());
-        for (int i = 0; i < records.size(); i++) {
-            GridRecord record = (GridRecord) records.get(i);
+    List<Double> levelList = new ArrayList<Double>( records.size());
+    for ( GridRecord record : records) {
             Double     d      = new Double(record.getLevel1());
             if ( !levelList.contains(d)) {
                 levelList.add(d);
@@ -312,9 +311,8 @@ public class GridCoordSys {
     void findCoordinateTransform(Group g, String nameStartsWith,
                                  int levelType) {
         // look for variable that uses this coordinate
-        List vars = g.getVariables();
-        for (int i = 0; i < vars.size(); i++) {
-            Variable v = (Variable) vars.get(i);
+    List<Variable> vars = g.getVariables();
+    for (Variable v : vars) {
             if (v.getName().equals(nameStartsWith)) {
                 Attribute att = v.findAttribute("grid_level_type");
                 if ((att == null)

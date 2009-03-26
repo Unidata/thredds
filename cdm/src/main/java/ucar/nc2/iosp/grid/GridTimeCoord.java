@@ -31,8 +31,6 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-// $Id:GridTimeCoord.java 63 2006-07-12 21:50:51Z edavis $
-
 package ucar.nc2.iosp.grid;
 
 
@@ -77,7 +75,7 @@ public class GridTimeCoord {
     private GridTableLookup lookup;
 
     /** list of times */
-    private ArrayList times = new ArrayList();  //  Date
+    private List<Date> times = new ArrayList<Date>();  //  Date
     //private double[] offsetHours;
 
     /** sequence # */
@@ -98,7 +96,7 @@ public class GridTimeCoord {
      * @param records  records to use
      * @param lookup   lookup table
      */
-    GridTimeCoord(List records, GridTableLookup lookup) {
+    GridTimeCoord(List<GridRecord> records, GridTableLookup lookup) {
         this();
         this.lookup = lookup;
         addTimes(records);
@@ -126,13 +124,13 @@ public class GridTimeCoord {
         try {
             convertUnit = new DateUnit("hours since " + refDate);
         } catch (Exception e) {
-            e.printStackTrace();
+          log.error("TimeCoord not added, cant make DateUnit from String 'hours since "+ refDate+"'",e);
+          return;
         }
 
         // now create a list of valid dates
-        times = new ArrayList(offsetHours.length);
-        for (int i = 0; i < offsetHours.length; i++) {
-            double offsetHour = offsetHours[i];
+        times = new ArrayList<Date>(offsetHours.length);
+    for (double offsetHour : offsetHours) {
             times.add(convertUnit.makeDate(offsetHour));
         }
     }
@@ -142,9 +140,8 @@ public class GridTimeCoord {
      *
      * @param records   list of records
      */
-    void addTimes(List records) {
-        for (int i = 0; i < records.size(); i++) {
-            GridRecord record    = (GridRecord) records.get(i);
+    void addTimes(List<GridRecord> records) {
+    for (GridRecord record : records) {
             Date       validTime = getValidTime(record, lookup);
             if ( !times.contains(validTime)) {
                 times.add(validTime);
@@ -159,12 +156,11 @@ public class GridTimeCoord {
      *
      * @return true if they are the same as this
      */
-    boolean matchLevels(List records) {
+    boolean matchLevels(List<GridRecord> records) {
 
         // first create a new list
-        ArrayList timeList = new ArrayList(records.size());
-        for (int i = 0; i < records.size(); i++) {
-            GridRecord record    = (GridRecord) records.get(i);
+    List<Date> timeList = new ArrayList<Date>( records.size());
+    for ( GridRecord record : records) {
             Date       validTime = getValidTime(record, lookup);
             if ( !timeList.contains(validTime)) {
                 timeList.add(validTime);
@@ -231,7 +227,8 @@ public class GridTimeCoord {
         try {
             dateUnit = new DateUnit(timeUnit + " since " + refDate);
         } catch (Exception e) {
-            e.printStackTrace();
+      log.error("TimeCoord not added, cant make DateUnit from String '"+timeUnit+" since "+ refDate+"'",e);
+      return;
         }
 
         // convert the date into the time unit.
@@ -352,7 +349,6 @@ public class GridTimeCoord {
         } else if (timeUnit.equalsIgnoreCase("6hours")) {
             factor = 6;
         } else if (timeUnit.equalsIgnoreCase("12hours")) {
-            // TODO: fix this in GRIB world
             factor = 12;
         }
 
@@ -366,4 +362,3 @@ public class GridTimeCoord {
     }
 
 }
-

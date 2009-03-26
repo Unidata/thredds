@@ -233,7 +233,7 @@ public class GribTimeCoord {
     } else if (timeUnit.equalsIgnoreCase("6hours")) {
       factor = 6;
     } else if (timeUnit.equalsIgnoreCase("12hours")) {
-      factor = 6;
+      factor = 12;
     }
 
     calendar.setTime(validTime);
