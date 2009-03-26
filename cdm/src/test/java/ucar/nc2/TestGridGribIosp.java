@@ -55,10 +55,14 @@ public class TestGridGribIosp extends TestCase {
     }
 
     public void testCompare() throws IOException {
-      doAll( null );
-      //String[] args = new String[ 1 ];
-      //args[ 0 ] = "C:/data";
-      //doAll( args );
+      File where = new File("C:/data/grib/idd");
+      if( where.exists() ) {
+        String[] args = new String[ 1 ];
+        args[ 0 ] = "C:/data/grib/idd";
+        doAll( args );
+      } else {
+        doAll( null );
+      }
     }
 
     void compareNC(String fileBinary, String fileText) throws IOException {
