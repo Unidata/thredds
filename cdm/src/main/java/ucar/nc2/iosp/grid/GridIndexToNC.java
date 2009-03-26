@@ -86,7 +86,7 @@ public class GridIndexToNC {
   /**
    * flag for using GridParameter description for variable names
    */
-  private boolean useDescriptionForVariableName = true;
+  protected static boolean useDescriptionForVariableName = true;
 
   /**
    * Make the level name
@@ -482,10 +482,19 @@ public class GridIndexToNC {
         } else {
 
           Collections.sort(plist, new CompareGridVariableByNumberVertLevels());
+          boolean isEnsemble = false;
+          if ( (lookup instanceof Grib2GridTableLookup) ) {
+            Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
+            isEnsemble = g2lookup.isEnsemble();
+          }
           // finally, add the variables
           for (int k = 0; k < plist.size(); k++) {
             GridVariable pv = plist.get(k);
-            ncfile.addVariable(hcs.getGroup(), pv.makeVariable(ncfile, hcs.getGroup(), (k == 0)));
+            if (isEnsemble ) {
+              ncfile.addVariable(hcs.getGroup(), pv.makeVariable(ncfile, hcs.getGroup(), false));
+            } else {
+              ncfile.addVariable(hcs.getGroup(), pv.makeVariable(ncfile, hcs.getGroup(), (k == 0)));
+            }
           }
         } // multipe vertical levels
 
