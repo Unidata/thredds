@@ -624,6 +624,7 @@ public class GridVariable {
    * @return long variable name
    */
   private String makeLongName(GridRecord gr, GridTableLookup lookup) {
+    /* // TODO: check / delete
     GridParameter param = lookup.getParameter(gr);
     String levelName = GridIndexToNC.makeLevelName(gr, lookup);
     //String levelName = lookup.getLevelDescription(gr);
@@ -631,6 +632,20 @@ public class GridVariable {
     return (levelName.length() == 0)
         ? param.getDescription()
         : param.getDescription() + " @ " + levelName;
+    */
+    GridParameter param = lookup.getParameter(gr);
+    String levelName = GridIndexToNC.makeLevelName(gr, lookup);
+    String ensembleName = GridIndexToNC.makeEnsembleName(gr, lookup);
+    String paramName = (GridIndexToNC.useDescriptionForVariableName)
+        ? param.getDescription()
+        : param.getName();
+    paramName = (ensembleName.length() == 0)
+        ? paramName : paramName + "_" + ensembleName;
+
+    paramName = (levelName.length() == 0)
+        ? paramName : paramName + " @ " + levelName;
+
+    return paramName;
   }
 
 }
