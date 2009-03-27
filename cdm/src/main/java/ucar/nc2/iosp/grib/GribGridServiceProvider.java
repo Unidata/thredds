@@ -56,6 +56,7 @@ import ucar.unidata.io.RandomAccessFile;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
+import java.net.URL;
 
 public class GribGridServiceProvider extends GridServiceProvider {
   private static org.slf4j.Logger log =
@@ -190,14 +191,26 @@ public class GribGridServiceProvider extends GridServiceProvider {
    */
   protected GridIndex getIndex(String location) throws IOException {
     // get an Index
+    //http test location = "http://motherlode.ucar.edu:8081//thredds/fileServer/fmrc/NCEP/RUC2/CONUS_20km/pressure/files/RUC2_CONUS_20km_pressure_20090220_1900.grib2";
     String indexLocation = location + ".gbx";
 
     GridIndex index = null;
-    File indexFile;
+    File indexFile = null;
 
     // just use the cache
     if ( alwaysInCache ) {
        indexFile = DiskCache.getCacheFile(indexLocation);
+    } else if (indexLocation.startsWith("http:")) { // direct access through http
+      InputStream ios = indexExistsAsURL(indexLocation);
+      if (ios != null) {
+        index = new GribReadIndex().open(indexLocation, ios);
+        log.debug("opened HTTP index = " + indexLocation);
+        return index;
+
+      } else { // otherwise write it to / get it from the cache
+        indexFile = DiskCache.getCacheFile(indexLocation);
+        log.debug("HTTP index = " + indexFile.getPath());
+      }
     } else {
         // check first if the index file lives in the same dir as the regular file, and use it
         indexFile = new File(indexLocation);
@@ -215,7 +228,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
         }
     }
     log.debug("GribGridServiceProvider: using index " + indexFile.getPath());
-    // once index determined, if sync then write it
+    // once index determined, if sync then write it. very expensive
     if( syncExtend )
       return writeIndex( indexFile, raf);
 
@@ -248,7 +261,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
 
       if (indexFile.exists()) {
         indexFile.delete();
-        log.debug("Delete old index " + indexFile.getPath());
+        log.debug("Deleting old index " + indexFile.getPath());
       }
 
       raf.seek(0);
@@ -276,6 +289,15 @@ public class GribGridServiceProvider extends GridServiceProvider {
     return index;
   }
 
+  // if exists, return input stream, otherwise null
+  private InputStream indexExistsAsURL(String indexLocation) {
+    try {
+      URL url = new URL(indexLocation);
+      return url.openStream();
+    } catch (IOException e) {
+      return null;
+    }
+  }
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
   protected float[] _readData(GridRecord gr) throws IOException {
