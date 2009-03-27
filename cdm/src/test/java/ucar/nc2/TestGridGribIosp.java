@@ -177,11 +177,8 @@ public class TestGridGribIosp extends TestCase {
     }
   }
 
-  static public void main2(String args[]) throws IOException {
-      TestGridGribIosp ggi = new TestGridGribIosp( "" );
-      if ( args.length < 1 ) {
-        args[ 0 ] = "C:/data";
-        ggi.doAll( args );
-      }
+  static public void main(String args[]) throws IOException {
+    TestGridGribIosp ggi = new TestGridGribIosp( "" );
+    ggi.testCompare();
   }
 }
