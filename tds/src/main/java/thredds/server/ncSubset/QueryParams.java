@@ -57,7 +57,7 @@ import ucar.nc2.units.DateType;
  * @author caron
  */
 public class QueryParams {
-  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( QueryParams.class );
 
   static public final String RAW = "text/plain";
   static public final String XML = "application/xml";

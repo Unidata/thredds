@@ -50,6 +50,10 @@ import java.io.*;
 import java.util.*;
 import java.text.ParseException;
 
+import thredds.servlet.UsageLog;
+
+import javax.servlet.http.HttpServletResponse;
+
 public class GridPointWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridPointWriter.class);
 
@@ -185,6 +189,8 @@ public class GridPointWriter {
 
     } else {
       log.error("Unknown writer type = " + qp.acceptType);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1));
+
       return null;
     }
 

@@ -44,6 +44,8 @@ import ucar.nc2.dt.grid.GridDataset;
 import java.util.Map;
 import java.util.HashMap;
 
+import thredds.servlet.UsageLog;
+
 /**
  * HandlerInterceptor to close datasets.
  *
@@ -51,6 +53,8 @@ import java.util.HashMap;
  * @since Feb 18, 2009
  */
 public class DatasetCloser extends HandlerInterceptorAdapter {
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(WMSController.class);
+
   private Map<HttpServletRequest, GridDataset> map = new HashMap<HttpServletRequest, GridDataset>(20);
 
   public void postHandle(
@@ -74,5 +78,6 @@ public class DatasetCloser extends HandlerInterceptorAdapter {
       dataset.close();
     }
     map.remove(request);
+    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
   }
 }

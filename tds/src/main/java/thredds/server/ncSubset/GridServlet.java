@@ -254,9 +254,11 @@ public class GridServlet extends AbstractServlet {
         if (!qp.acceptType.equals(QueryParams.NETCDF)) {
           writer.write(qp, res.getWriter());
           if (debug) {
-          long took = System.currentTimeMillis() - start;
-          System.out.println("\ntotal response took = " + took + " msecs");
+            long took = System.currentTimeMillis() - start;
+            System.out.println("\ntotal response took = " + took + " msecs");
           }
+          
+          log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
           return;
         }
 
