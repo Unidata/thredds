@@ -11,8 +11,10 @@
       </configuration>
     </facet>
   </component>
-  <component name="NewModuleRootManager" inherit-compiler-output="true">
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/../../ldm/target/classes" />
     <exclude-output />
+    <output-test url="file://$MODULE_DIR$/../../ldm/target/test/classes" />
     <content url="file://$MODULE_DIR$/../../ldm">
       <sourceFolder url="file://$MODULE_DIR$/../../ldm/src/main" isTestSource="false" />
     </content>

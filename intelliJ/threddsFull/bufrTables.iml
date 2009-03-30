@@ -189,7 +189,7 @@
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/../../bufrTables/target/WEB-INF/classes" />
     <exclude-output />
-    <output-test url="file://$MODULE_DIR$/../../../target/classes/test/bufrTables" />
+    <output-test url="file://$MODULE_DIR$/../../bufrTables/target/test/classes" />
     <content url="file://$MODULE_DIR$/../../bufrTables">
       <sourceFolder url="file://$MODULE_DIR$/../../bufrTables/src/main/java" isTestSource="false" />
     </content>
