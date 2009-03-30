@@ -76,6 +76,9 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
     /* to use or not to use cache first */
     protected static boolean alwaysInCache = false;
 
+    /* to extend the index */
+    public static boolean extendMode = false;
+
     /** place to store debug stuff */
     protected StringBuilder parseInfo = new StringBuilder();
 
@@ -182,6 +185,24 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
      */
     public void setAlwaysInCache( boolean aic ) {
         alwaysInCache = aic;
+    }
+
+     /**
+     * extendMode
+     *
+     * @return extendMode
+     */
+    public boolean extendMode() {
+        return extendMode;
+    }
+
+    /**
+     * extendMode
+     *
+     * @param em
+     */
+    public void setExtendMode( boolean em ) {
+        extendMode = em;
     }
 
     /**
