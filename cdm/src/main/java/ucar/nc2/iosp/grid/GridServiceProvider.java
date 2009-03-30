@@ -174,7 +174,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
      *
      * @return alwaysInCache
      */
-    public boolean alwaysInCache() {
+    public static boolean alwaysInCache() {
         return alwaysInCache;
     }
 
@@ -183,7 +183,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
      *
      * @param aic
      */
-    public void setAlwaysInCache( boolean aic ) {
+    public static void setAlwaysInCache( boolean aic ) {
         alwaysInCache = aic;
     }
 
@@ -192,7 +192,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
      *
      * @return extendMode
      */
-    public boolean extendMode() {
+    public static boolean extendMode() {
         return extendMode;
     }
 
@@ -201,7 +201,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
      *
      * @param em
      */
-    public void setExtendMode( boolean em ) {
+    public static void setExtendMode( boolean em ) {
         extendMode = em;
     }
 
