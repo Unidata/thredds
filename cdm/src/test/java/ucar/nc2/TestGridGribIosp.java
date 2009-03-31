@@ -162,7 +162,7 @@ public class TestGridGribIosp extends TestCase {
           // skip index *gbx and inventory *xml files
         } else if (
             // can't be displayed by Grib(1|2) iosp
-            child.contains( "GFS_Global_1p0deg_Ensemble") ||
+            child.contains( "Ensemble") ||
             child.contains( "SREF") ||    
             child.endsWith("gbx") ||
             child.endsWith("xml") ||

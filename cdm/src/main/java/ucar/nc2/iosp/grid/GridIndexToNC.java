@@ -247,8 +247,7 @@ public class GridIndexToNC {
         firstRecord = gribRecord;
       }
 
-      GridHorizCoordSys hcs = (GridHorizCoordSys) hcsHash.get(
-          gribRecord.getGridDefRecordId());
+      GridHorizCoordSys hcs =   hcsHash.get(gribRecord.getGridDefRecordId());
       String name = makeVariableName(gribRecord, lookup);
       // combo gds, param name and level name
       GridVariable pv = (GridVariable) hcs.varHash.get(name);
@@ -259,9 +258,9 @@ public class GridIndexToNC {
         hcs.varHash.put(name, pv);
 
         // keep track of all products with same parameter name
-        ArrayList plist = (ArrayList) hcs.productHash.get(pname);
+        List<GridVariable> plist = hcs.productHash.get(pname);
         if (null == plist) {
-          plist = new ArrayList();
+          plist = new ArrayList<GridVariable>();
           hcs.productHash.put(pname, plist);
         }
         plist.add(pv);
@@ -323,12 +322,10 @@ public class GridIndexToNC {
 
     if (GridServiceProvider.debugMissing) {
       int count = 0;
-      Iterator iterHcs = hcsHash.values().iterator();
-      while (iterHcs.hasNext()) {
-        GridHorizCoordSys hcs = (GridHorizCoordSys) iterHcs.next();
-        ArrayList gribvars = new ArrayList(hcs.varHash.values());
-        for (int i = 0; i < gribvars.size(); i++) {
-          GridVariable gv = (GridVariable) gribvars.get(i);
+      Collection<GridHorizCoordSys> hcset = hcsHash.values();
+      for (GridHorizCoordSys hcs : hcset) {
+        List<GridVariable> gribvars = new ArrayList<GridVariable>(hcs.varHash.values());
+        for (GridVariable gv : gribvars) {
           count += gv.dumpMissingSummary();
         }
       }
@@ -336,17 +333,15 @@ public class GridIndexToNC {
     }
 
     if (GridServiceProvider.debugMissingDetails) {
-      Iterator iterHcs = hcsHash.values().iterator();
-      while (iterHcs.hasNext()) {  // loop over HorizCoordSys
-        GridHorizCoordSys hcs = (GridHorizCoordSys) iterHcs.next();
+      Collection<GridHorizCoordSys> hcset = hcsHash.values();
+      for (GridHorizCoordSys hcs : hcset) {
         System.out.println("******** Horiz Coordinate= " + hcs.getGridName());
 
         String lastVertDesc = null;
-        ArrayList gribvars = new ArrayList(hcs.varHash.values());
+        List<GridVariable> gribvars = new ArrayList<GridVariable>(hcs.varHash.values());
         Collections.sort(gribvars, new CompareGridVariableByVertName());
 
-        for (int i = 0; i < gribvars.size(); i++) {
-          GridVariable gv = (GridVariable) gribvars.get(i);
+        for (GridVariable gv : gribvars) {
           String vertDesc = gv.getVertName();
           if (!vertDesc.equals(lastVertDesc)) {
             System.out.println("---Vertical Coordinate= " + vertDesc);
@@ -357,6 +352,10 @@ public class GridIndexToNC {
       }
     }
 
+    // clean out stuff we dont need anymore
+    //for (GridHorizCoordSys ghcs : hcsHash.values()) {
+    //  ghcs.empty();
+    //}
   }
 
   /**
@@ -369,30 +368,28 @@ public class GridIndexToNC {
    * @param cancelTask cancel task
    * @throws IOException problem reading file
    */
-  private void makeDenseCoordSys(NetcdfFile ncfile, GridTableLookup lookup,
-    CancelTask cancelTask) throws IOException {
-
-    ArrayList timeCoords = new ArrayList();
-    ArrayList vertCoords = new ArrayList();
+  private void makeDenseCoordSys(NetcdfFile ncfile, GridTableLookup lookup, CancelTask cancelTask) throws IOException {
+    List<GridTimeCoord> timeCoords = new ArrayList<GridTimeCoord>();
+    List<GridVertCoord> vertCoords = new ArrayList<GridVertCoord>();
 
     // loop over HorizCoordSys
-    Iterator iterHcs = hcsHash.values().iterator();
-    while (iterHcs.hasNext()) {
-      GridHorizCoordSys hcs = (GridHorizCoordSys) iterHcs.next();
+    Collection<GridHorizCoordSys> hcset = hcsHash.values();
+    for (GridHorizCoordSys hcs : hcset) {
+      if ((cancelTask != null) && cancelTask.isCancel()) break;
 
       // loop over GridVariables in the HorizCoordSys
       // create the time and vertical coordinates
-      Iterator iter = hcs.varHash.values().iterator();
-      while (iter.hasNext()) {
-        GridVariable pv = (GridVariable) iter.next();
-        List recordList = pv.getRecords();
-        GridRecord record = (GridRecord) recordList.get(0);
+      List<GridVariable> gribvars = new ArrayList<GridVariable>(hcs.varHash.values());
+      for (GridVariable pv : gribvars) {
+        if ((cancelTask != null) && cancelTask.isCancel()) break;
+
+        List<GridRecord> recordList = pv.getRecords();
+        GridRecord record = recordList.get(0);
         String vname = makeLevelName(record, lookup);
 
         // look to see if vertical already exists
         GridVertCoord useVertCoord = null;
-        for (int i = 0; i < vertCoords.size(); i++) {
-          GridVertCoord gvcs = (GridVertCoord) vertCoords.get(i);
+        for (GridVertCoord gvcs : vertCoords) {
           if (vname.equals(gvcs.getLevelName())) {
             if (gvcs.matchLevels(recordList)) {  // must have the same levels
               useVertCoord = gvcs;
@@ -407,8 +404,7 @@ public class GridIndexToNC {
 
         // look to see if time coord already exists
         GridTimeCoord useTimeCoord = null;
-        for (int i = 0; i < timeCoords.size(); i++) {
-          GridTimeCoord gtc = (GridTimeCoord) timeCoords.get(i);
+        for (GridTimeCoord gtc : timeCoords) {
           if (gtc.matchLevels(recordList)) {  // must have the same levels
             useTimeCoord = gtc;
           }
@@ -424,8 +420,7 @@ public class GridIndexToNC {
       // find time dimensions with largest length
       GridTimeCoord tcs0 = null;
       int maxTimes = 0;
-      for (int i = 0; i < timeCoords.size(); i++) {
-        GridTimeCoord tcs = (GridTimeCoord) timeCoords.get(i);
+      for (GridTimeCoord tcs : timeCoords) {
         if (tcs.getNTimes() > maxTimes) {
           tcs0 = tcs;
           maxTimes = tcs.getNTimes();
@@ -434,8 +429,7 @@ public class GridIndexToNC {
 
       // add time dimensions, give time dimensions unique names
       int seqno = 1;
-      for (int i = 0; i < timeCoords.size(); i++) {
-        GridTimeCoord tcs = (GridTimeCoord) timeCoords.get(i);
+      for (GridTimeCoord tcs : timeCoords) {
         if (tcs != tcs0) {
           tcs.setSequence(seqno++);
         }
@@ -458,14 +452,12 @@ public class GridIndexToNC {
         }
 
         if (!vname.equals(listName)) {
-          makeVerticalDimensions(vertCoords.subList(start,
-              vcIndex), ncfile, hcs.getGroup());
+          makeVerticalDimensions(vertCoords.subList(start, vcIndex), ncfile, hcs.getGroup());
           listName = vname;
           start = vcIndex;
         }
       }
-      makeVerticalDimensions(vertCoords.subList(start, vcIndex),
-          ncfile, hcs.getGroup());
+      makeVerticalDimensions(vertCoords.subList(start, vcIndex), ncfile, hcs.getGroup());
 
       // create a variable for each entry, but check for other products with same desc
       // to disambiguate by vertical coord
@@ -482,6 +474,7 @@ public class GridIndexToNC {
         } else {
 
           Collections.sort(plist, new CompareGridVariableByNumberVertLevels());
+          // TODO: check other coord system routine for same problem
           boolean isEnsemble = false;
           if ( (lookup instanceof Grib2GridTableLookup) ) {
             Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
@@ -501,18 +494,22 @@ public class GridIndexToNC {
       } // create variable
 
       // add coordinate variables at the end
-      for (int i = 0; i < timeCoords.size(); i++) {
-        GridTimeCoord tcs = (GridTimeCoord) timeCoords.get(i);
+      for (GridTimeCoord tcs : timeCoords) {
         tcs.addToNetcdfFile(ncfile, hcs.getGroup());
       }
       hcs.addToNetcdfFile(ncfile);
-      for (int i = 0; i < vertCoords.size(); i++) {
-        GridVertCoord gvcs = (GridVertCoord) vertCoords.get(i);
+
+      for (GridVertCoord gvcs : vertCoords) {
         gvcs.addToNetcdfFile(ncfile, hcs.getGroup());
       }
-    }          // loop over hcs
-  }
 
+    } // loop over hcs
+
+    for (GridVertCoord gvcs : vertCoords) {
+      gvcs.empty();
+    }
+
+  }
 
   /**
    * Make a vertical dimensions
@@ -521,13 +518,11 @@ public class GridIndexToNC {
    * @param ncfile        netCDF file to add to
    * @param group         group in ncfile
    */
-  private void makeVerticalDimensions(List vertCoordList,
-                                      NetcdfFile ncfile, Group group) {
+  private void makeVerticalDimensions(List<GridVertCoord> vertCoordList, NetcdfFile ncfile, Group group) {
     // find biggest vert coord
     GridVertCoord gvcs0 = null;
     int maxLevels = 0;
-    for (int i = 0; i < vertCoordList.size(); i++) {
-      GridVertCoord gvcs = (GridVertCoord) vertCoordList.get(i);
+    for (GridVertCoord gvcs : vertCoordList) {
       if (gvcs.getNLevels() > maxLevels) {
         gvcs0 = gvcs;
         maxLevels = gvcs.getNLevels();
@@ -535,8 +530,7 @@ public class GridIndexToNC {
     }
 
     int seqno = 1;
-    for (int i = 0; i < vertCoordList.size(); i++) {
-      GridVertCoord gvcs = (GridVertCoord) vertCoordList.get(i);
+    for (GridVertCoord gvcs : vertCoordList) {
       if (gvcs != gvcs0) {
         gvcs.setSequence(seqno++);
       }
@@ -557,6 +551,7 @@ public class GridIndexToNC {
  
     List<GridTimeCoord> timeCoords = new ArrayList<GridTimeCoord>();
     List<GridVertCoord> vertCoords = new ArrayList<GridVertCoord>();
+
     List<String> removeVariables = new ArrayList<String>();
 
     // loop over HorizCoordSys
@@ -662,33 +657,26 @@ public class GridIndexToNC {
    * @param fmr    FmrcCoordSys
    * @return name for the grid
    *
-  private String findVariableName(NetcdfFile ncfile, GridRecord gr,
-                                  GridTableLookup lookup,
-                                  FmrcCoordSys fmr) {
+  private String findVariableName(NetcdfFile ncfile, GridRecord gr, GridTableLookup lookup, FmrcCoordSys fmr) {
     // first lookup with name & vert name
-    String name =
-        AbstractIOServiceProvider.createValidNetcdfObjectName(makeVariableName(gr,
-            lookup));
+    String name = AbstractIOServiceProvider.createValidNetcdfObjectName(makeVariableName(gr, lookup));
     if (fmr.hasVariable(name)) {
       return name;
     }
 
     // now try just the name
-    String pname = AbstractIOServiceProvider.createValidNetcdfObjectName(
-        lookup.getParameter(gr).getDescription());
+    String pname = AbstractIOServiceProvider.createValidNetcdfObjectName( lookup.getParameter(gr).getDescription());
     if (fmr.hasVariable(pname)) {
       return pname;
     }
 
-    logger.warn(
-        "GridIndexToNC: FmrcCoordSys does not have the variable named ="
+    logger.warn( "GridIndexToNC: FmrcCoordSys does not have the variable named ="
             + name + " or " + pname + " for file " + ncfile.getLocation());
 
     return null;
   } */
 
-  private String findVariableName(NetcdfFile ncfile, GridRecord gr,
-    GridTableLookup lookup, FmrcCoordSys fmr) {
+  private String findVariableName(NetcdfFile ncfile, GridRecord gr, GridTableLookup lookup, FmrcCoordSys fmr) {
 
     // first lookup with name & vert name
     String name = makeVariableName(gr, lookup);
@@ -717,7 +705,7 @@ public class GridIndexToNC {
     if (fmr.hasVariable( pnameWunder))
       return pnameWunder;
 
-    logger.warn("GridIndexToNC: FmrcCoordSys does not have the variable named ="+name+" or "+pname+" or "+
+    logger.warn("GridServiceProvider.GridIndexToNC: FmrcCoordSys does not have the variable named ="+name+" or "+pname+" or "+
             nameWunder+" or "+pnameWunder+" for file "+ncfile.getLocation());
 
     return null;

@@ -123,7 +123,7 @@ public class TestCompare {
 
   static void compareVariables(Variable org, Variable copy) {
     if( skipUnknownVar && org.getName().contains( "Unknown")) {
-      System.out.println( "skipping"+ org.getName() );
+      System.out.println( "skipping "+ org.getName() );
       return;
     }
 
@@ -194,7 +194,8 @@ public class TestCompare {
       if ( skipLocation && a.getName().contains( "location"))
         return;
       // not used or not in Grib1, why test for it 
-      if ( a.getName().contains( "ScanningMode") || a.getName().contains( "grid_spacing"))
+      if ( a.getName().contains( "ScanningMode") || a.getName().contains( "grid_spacing")
+          || a.getName().contains( "grid_units"))
         return;
     }
     int index2 = list2.indexOf( want1);
