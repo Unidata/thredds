@@ -195,12 +195,10 @@ public class GribGridServiceProvider extends GridServiceProvider {
 
     GridIndex index = null;
     File indexFile = null;
-    boolean canWriteIndex = false;
 
     // just use the cache
     if ( alwaysInCache ) {
        indexFile = DiskCache.getCacheFile(indexLocation);
-       canWriteIndex = true;
     // direct access through http
     } else if (indexLocation.startsWith("http:")) {
       InputStream ios = indexExistsAsURL(indexLocation);
@@ -209,14 +207,13 @@ public class GribGridServiceProvider extends GridServiceProvider {
         log.debug("opened HTTP index = " + indexLocation);
         return index;
 
-      } else { // otherwise write it to / get it from the cache
+      } else { // otherwise write it to cache
         indexFile = DiskCache.getCacheFile(indexLocation);
-        canWriteIndex = true;
         log.debug("HTTP index = " + indexFile.getPath());
       }
     } else {
     // check first if the index file lives in the same dir as the regular file, and use it
-        indexFile = new File(indexLocation);
+        indexFile = new File(indexLocation); // don't know about write permission
         if (!indexFile.exists()) { // look in cache if need be
           indexFile = DiskCache.getCacheFile(indexLocation);
           if (!indexFile.exists()) { //cache doesn't exist
@@ -224,10 +221,8 @@ public class GribGridServiceProvider extends GridServiceProvider {
               // check write permission in the same dir as the regular file
               if ( indexFile.createNewFile()) {
                 indexFile.delete();
-                canWriteIndex = true;
               } else {
                 indexFile = DiskCache.getCacheFile(indexLocation);
-                canWriteIndex = true;
               }
           }
         }
@@ -235,43 +230,56 @@ public class GribGridServiceProvider extends GridServiceProvider {
     log.debug("GribGridServiceProvider: using index " + indexFile.getPath());
 
     // once index determined, if sync then write it. very expensive
-    if( syncExtend )
-      return writeIndex( indexFile, gribLocation, indexLocation, raf);
-
+    if( syncExtend ) { // up to caller to make sure write permission exist
+      if( indexFile.exists() && indexFile.canWrite()) {
+        return writeIndex( indexFile, gribLocation, indexLocation, raf);
+      } else if( ! indexFile.exists() ) {
+        return writeIndex( indexFile, gribLocation, indexLocation, raf);
+      } else {
+        log.error("GribGridServiceProvider: cannot sync index, no write permission " + indexFile.getPath());
+        return null;
+      }
+    }
     // if index exist already and extendMode, check/read it
-    if ( ! extendMode && indexFile.exists() ) {
+    if ( extendMode && indexFile.exists() ) {
       try {
-        File gribFile = new File( gribLocation );
-        if( gribFile.lastModified() < indexFile.lastModified() ) {
-          index = new GribReadIndex().open(indexFile.getPath());
-        } else {
-          index = extendIndex( gribFile, indexFile, gribLocation, indexLocation, raf );
+        if (indexFile.canWrite() ) {
+          File gribFile = new File( gribLocation );
+          // index later then grib, so just read it else extend it
+          if( gribFile.lastModified() < indexFile.lastModified() ) {
+             index = new GribReadIndex().open(indexFile.getPath());
+          } else {
+             index = extendIndex( gribFile, indexFile, gribLocation, indexLocation, raf );
+          }
+        } else { // no index write permission, just read it but set warning
+           index = new GribReadIndex().open(indexFile.getPath());
+           log.warn("GribGridServiceProvider: cannot extend index, no write permission " + indexFile.getPath());
         }
       } catch (Exception e) {
       }
 
       if (index != null) {
-        log.debug("  opened index = " + indexFile.getPath());
-      } else {  // rewrite if fail to open
-        log.debug("  index open failed, write index = " + indexFile.getPath());
-        index = writeIndex( indexFile, gribLocation, indexLocation, raf);
+        log.debug("GribGridServiceProvider: opened index = " + indexFile.getPath());
+      } else {
+        log.error("GribGridServiceProvider: index open failed, extend index = " + indexFile.getPath());
+        //index = writeIndex( indexFile, gribLocation, indexLocation, raf);
       }
 
-    } else if (indexFile.exists()) {
+    } else if (indexFile.exists() ) {
       try {
         index = new GribReadIndex().open(indexFile.getPath());
       } catch (Exception e) {
       }
-
       if (index != null) {
-        log.debug("  opened index = " + indexFile.getPath());
-      } else {  // rewrite if fail to open
-        log.debug("  index open failed, write index = " + indexFile.getPath());
-        index = writeIndex( indexFile, gribLocation, indexLocation, raf);
+        log.debug("GribGridServiceProvider: opened index = " + indexFile.getPath());
+      } else {  // rewrite if possible, failed to open
+        log.error("GribGridServiceProvider: index open failed, try write index = " + indexFile.getPath());
+        if (indexFile.canWrite() )
+          index = writeIndex( indexFile, gribLocation, indexLocation, raf);
       }
 
-    } else { // doesnt exist
-      log.debug("  creating index = " + indexFile.getPath());
+    } else { // index doesn't exist
+      log.debug("GribGridServiceProvider: creating index = " + indexFile.getPath());
       index = writeIndex( indexFile, gribLocation, indexLocation, raf);
     }
     return index;

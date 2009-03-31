@@ -85,10 +85,14 @@ public class CdmInit {
 
     // turn off Grib extend indexing; indexes are automatically done every 10 minutes externally
     boolean extendIndex = ThreddsConfig.getBoolean("GribIndexing.setExtendIndex", false);
+    // TODO: delete after deprecation
     ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( extendIndex);
+    ucar.nc2.iosp.grid.GridServiceProvider.setExtendMode( extendIndex);
 
     boolean alwaysUseCache = ThreddsConfig.getBoolean("GribIndexing.alwaysUseCache", false);
-    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( alwaysUseCache);
+    // TODO: delete after deprecation
+    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( alwaysUseCache );
+    ucar.nc2.iosp.grid.GridServiceProvider.setAlwaysInCache( alwaysUseCache );
 
     // optimization: netcdf-3 files can only grow, not have metadata changes
     ucar.nc2.NetcdfFile.setProperty("syncExtendOnly", "true");
