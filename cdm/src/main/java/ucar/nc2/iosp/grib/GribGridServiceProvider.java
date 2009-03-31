@@ -304,9 +304,9 @@ public class GribGridServiceProvider extends GridServiceProvider {
       File gribFile = new File(raf.getLocation());
 
       if (edition == 1) {
-          index = new Grib1WriteIndex().writeGribIndex( gribFile, gribName, indexFile.toString(), raf, true);
+          index = new Grib1WriteIndex().writeGribIndex( gribFile, indexFile.toString(), raf, true);
       } else if (edition == 2) {
-        index = new Grib2WriteIndex().writeGribIndex( gribFile, gribName,  indexFile.toString(), raf, true);
+        index = new Grib2WriteIndex().writeGribIndex( gribFile, indexFile.toString(), raf, true);
       }
       return index;
 
@@ -326,9 +326,9 @@ public class GribGridServiceProvider extends GridServiceProvider {
       edition = g2i.getEdition();
 
       if (edition == 1) {
-          index = new Grib1WriteIndex().extendGribIndex(gribFile, indexFile, gribName, indexFile.toString(), raf, true);
+          index = new Grib1WriteIndex().extendGribIndex(gribFile, indexFile, indexFile.toString(), raf, true);
       } else if (edition == 2) {
-          index = new Grib2WriteIndex().extendGribIndex(gribFile, indexFile, gribName, indexFile.toString(), raf, true);
+          index = new Grib2WriteIndex().extendGribIndex(gribFile, indexFile, indexFile.toString(), raf, true);
       }
       return index;
 
