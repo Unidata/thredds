@@ -116,6 +116,9 @@ public class AreaServiceProvider extends AbstractIOServiceProvider {
         return array;
     }
 
+  public boolean syncExtend() throws IOException {
+    return false;
+  }
 
     /**
      * Sync and extend

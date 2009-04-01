@@ -120,6 +120,46 @@ public class GribGridServiceProvider extends GridServiceProvider {
   public void open(GridIndex index, CancelTask cancelTask) {
   }
 
+  public boolean syncExtend() throws IOException {
+    return false;
+  }
+
+  public boolean sync() throws IOException
+  {
+    return false;
+//    if ( syncMode == IndexExtendMode.none ) return false;
+//
+//    // has the file chenged?
+//    if ( rafLength != raf.length() )
+//    {
+//      File indexFile = getIndexFile( saveLocation );
+//      Index index;
+//
+//      if ( ( syncMode == IndexExtendMode.extend ) && ( rafLength < raf.length() ) )
+//      {
+//        log.debug( "  sync extend Index = " + indexFile.getPath() );
+//        extendIndex( saveEdition, raf, indexFile, null );
+//        index = new Index();
+//        index.open( indexFile.getPath() );
+//
+//      }
+//      else
+//      {
+//        // write new index
+//        log.debug( "  sync rewrite index = " + indexFile.getPath() );
+//        index = writeIndex( saveEdition, indexFile, raf );
+//      }
+//
+//      // reconstruct the ncfile objects
+//      ncfile.empty();
+//      open( index, null );
+//
+//      return true;
+//    }
+//
+//    return false;
+  }
+
   protected GridTableLookup getLookup2() throws IOException {
 
     Grib2Record firstRecord = null;
@@ -234,7 +274,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
 
 
     // once index determined, if sync then write it. very expensive
-    if( syncExtend ) { // up to caller to make sure write permission exist
+    if( extendMode ) { // up to caller to make sure write permission exist
       if( indexFile.exists() && indexFile.canWrite()) {
         return writeIndex( indexFile, gribLocation,  raf);
       } else if( ! indexFile.exists() ) {

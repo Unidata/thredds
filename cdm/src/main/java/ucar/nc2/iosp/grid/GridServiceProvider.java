@@ -70,9 +70,6 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
     /** the file we are reading */
     protected RandomAccessFile raf;
 
-    /** should file be synced or extended */
-    protected boolean syncExtend = false;
-
     /* to use or not to use cache first */
     protected static boolean alwaysInCache = false;
 
@@ -149,24 +146,6 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
      */
     public void close() throws IOException {
         raf.close();
-    }
-
-    /**
-     * Sync and extend
-     *
-     * @return syncExtend
-     */
-    public boolean syncExtend() {
-        return syncExtend;
-    }
-
-    /**
-     * Sync and extend
-     *
-     * @return syncExtend
-     */
-    public void setSyncExtend( boolean se ) {
-        syncExtend = se;
     }
 
     /**
