@@ -76,6 +76,9 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
     /* to extend the index */
     public static boolean extendMode = false;
 
+    // force that a new index file is written
+    public static boolean forceNewIndex = false;  
+
     /** place to store debug stuff */
     protected StringBuilder parseInfo = new StringBuilder();
 
