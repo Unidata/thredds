@@ -237,8 +237,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
     log.debug("GribGridServiceProvider: using index " + indexFile.getPath());
 
     // once index determined, if sync then write it. very expensive
-    // TODO: this is now wrong   this is index sync  or force
-    if( false && extendMode ) { // up to caller to make sure write permission exist
+    if( forceNewIndex ) { // up to caller to make sure write permission exist
       if( indexFile.exists() && indexFile.canWrite()) {
         return writeIndex( indexFile, raf);
       } else if( ! indexFile.exists() ) {
