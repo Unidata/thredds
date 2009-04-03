@@ -208,7 +208,8 @@ public class GribGridServiceProvider extends GridServiceProvider {
    * @throws IOException on io error
    */
   protected GridIndex getIndex(String gribLocation) throws IOException {
-    //http test gribLocation = "http://motherlode.ucar.edu:8081//thredds/fileServer/fmrc/NCEP/RUC2/CONUS_20km/pressure/files/RUC2_CONUS_20km_pressure_20090220_1900.grib2";
+    //http test
+    //gribLocation = "http://motherlode.ucar.edu:9080/thredds/fileServer/fmrc/NCEP/NAM/Polar_90km/files/NAM_Polar_90km_20090403_1200.grib2";
     String indexLocation = gribLocation + ".gbx";
 
     GridIndex index = null;
@@ -220,6 +221,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
       if (ios != null) {
         index = new GribReadIndex().open(indexLocation, ios);
         saveIndexLocation = indexLocation;
+        indexLastModified = System.currentTimeMillis(); // used in sync
         log.debug("opened HTTP index = " + indexLocation);
         return index;
 
@@ -327,22 +329,22 @@ public class GribGridServiceProvider extends GridServiceProvider {
 
     // could be an url, possible reread index
     if (saveIndexLocation.startsWith("http:")) {
-      /* TODO: don't know what to do here could reread
-      if ( indexLastModified < indexFile.lastModified() ) {
-        log.debug("  sync reread index = " + indexFile.getPath());
-        index = new GribReadIndex().open(indexFile.getPath());
-        indexLastModified = indexFile.lastModified();
+      if ( (System.currentTimeMillis() - indexLastModified) > 30000 ) {
+        log.debug("  sync reread http index = " + saveIndexLocation );
+        index = new GribReadIndex().open(saveIndexLocation);
+        indexLastModified = System.currentTimeMillis();
          ncfile.empty();
          open(index, null);
          return true;
       }
-      */
       return false;
     }
 
     // regular or cache file
     File gribFile = new File( raf.getLocation() );
-    File indexFile = getIndexFile(saveIndexLocation);
+    // caused to look in cache wrongly
+    //File indexFile = getIndexFile(saveIndexLocation);
+    File indexFile = new File( saveIndexLocation );
 
     // write or extend
     if(  extendMode && (gribLastModified < gribFile.lastModified() ||

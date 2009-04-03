@@ -504,10 +504,10 @@ public class GridIndexToNC {
       }
 
     } // loop over hcs
-
-    for (GridVertCoord gvcs : vertCoords) {
-      gvcs.empty();
-    }
+    // TODO: caused problems
+    //for (GridVertCoord gvcs : vertCoords) {
+    //  gvcs.empty();
+    //}
 
   }
 
