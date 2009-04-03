@@ -64,6 +64,8 @@ public class GribGridServiceProvider extends GridServiceProvider {
   //private long rafLength;    // length of the file when opened - used for syncing
   private int saveEdition = 0;
   private String saveIndexLocation;
+  private long gribLastModified = 0;
+  private long indexLastModified = 0;
 
   /**
    * returns Grib data
@@ -235,8 +237,14 @@ public class GribGridServiceProvider extends GridServiceProvider {
     }
     log.debug("GribGridServiceProvider: using index " + indexFile.getPath());
 
+    // get GribLastModified and IndexLastModified for sync, IndexLastModified
+    // will be updated in extendIndex and writeIndex.
+    File gribFile = new File( gribLocation );
+    gribLastModified = gribFile.lastModified();
+    indexLastModified = indexFile.lastModified();
+
     // once index determined, if forceNewIndex then write it. very expensive
-    if( forceNewIndex ) { // up to caller to make sure write permission exist
+    if( forceNewIndex && extendMode ) { // up to caller to make sure write permission exist
       if( indexFile.exists() && indexFile.canWrite()) {
         return writeIndex( indexFile, raf);
       } else if( ! indexFile.exists() ) {
@@ -250,7 +258,6 @@ public class GribGridServiceProvider extends GridServiceProvider {
     if ( extendMode && indexFile.exists() ) {
       try {
         if (indexFile.canWrite() ) {
-          File gribFile = new File( gribLocation );
           // index later then grib, so just read it else extend it
           if( gribFile.lastModified() < indexFile.lastModified() ) {
              index = new GribReadIndex().open(indexFile.getPath());
@@ -315,31 +322,54 @@ public class GribGridServiceProvider extends GridServiceProvider {
   }
 
   public boolean sync() throws IOException {
-    if (!extendMode) return false;
 
+    GridIndex index = null;
+
+    // could be an url, possible reread index
+    if (saveIndexLocation.startsWith("http:")) {
+      /* TODO: don't know what to do here could reread
+      if ( indexLastModified < indexFile.lastModified() ) {
+        log.debug("  sync reread index = " + indexFile.getPath());
+        index = new GribReadIndex().open(indexFile.getPath());
+        indexLastModified = indexFile.lastModified();
+         ncfile.empty();
+         open(index, null);
+         return true;
+      }
+      */
+      return false;
+    }
+
+    // regular or cache file
     File gribFile = new File( raf.getLocation() );
     File indexFile = getIndexFile(saveIndexLocation);
 
-    if(  gribFile.lastModified() > indexFile.lastModified() ) {
-      GridIndex index;
+    // write or extend
+    if(  extendMode && (gribLastModified < gribFile.lastModified() ||
+      indexLastModified < indexFile.lastModified() )) {
 
       if ( extendMode && indexFile.exists() ) {
         log.debug("  sync extend Index = " + indexFile.getPath());
         index = extendIndex( gribFile, indexFile, raf );
-        //index = new Index();
-        //index.open(indexFile.getPath());
-        //index = getIndex(raf.getLocation());
 
       } else {
         // write new index
         log.debug("  sync rewrite index = " + indexFile.getPath());
         index = writeIndex( indexFile, raf);
       }
+      gribLastModified = gribFile.lastModified();
+      indexLastModified = indexFile.lastModified();
 
+    // just read Index, it's been updated
+    } else if ( indexLastModified < indexFile.lastModified() ) {
+      log.debug("  sync reread index = " + indexFile.getPath());
+      index = new GribReadIndex().open(indexFile.getPath());
+      indexLastModified = indexFile.lastModified();
+    }
+    if ( index != null ) {
       // reconstruct the ncfile objects
       ncfile.empty();
       open(index, null);
-
       return true;
     }
     return false;
@@ -371,6 +401,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
     } catch (NotSupportedException noSupport) {
       System.err.println("NotSupportedException : " + noSupport);
     }
+    indexLastModified = indexFile.lastModified();
     return index;
   }
 
@@ -390,6 +421,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
       } else if (saveEdition == 2) {
           index = new Grib2WriteIndex().extendGribIndex(gribFile, indexFile, indexFile.getPath(), raf, true);
       }
+      indexLastModified = indexFile.lastModified();
       return index;
 
     } catch (NotSupportedException noSupport) {
