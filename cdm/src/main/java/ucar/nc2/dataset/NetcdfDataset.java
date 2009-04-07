@@ -971,11 +971,27 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   public boolean sync() throws IOException {
     unlocked = false;
 
-    if (agg != null)
+    if ( agg != null )
       return agg.sync();
 
-    if (orgFile != null)
-      return orgFile.sync();
+    if ( orgFile != null ) {
+      if ( orgFile.sync() ) {
+        // start over again
+        this.location = orgFile.getLocation();
+        this.id = orgFile.getId();
+        this.title = orgFile.getTitle();
+
+        // build global lists
+        empty();
+        convertGroup( getRootGroup(), orgFile.getRootGroup() );
+        finish();
+
+        // redo enhance
+        EnumSet<Enhance> saveMode = this.enhanceMode;
+        this.enhanceMode = EnumSet.noneOf( Enhance.class );
+        enhance( this, saveMode, null );
+      }
+    }
 
     return false;
   }
