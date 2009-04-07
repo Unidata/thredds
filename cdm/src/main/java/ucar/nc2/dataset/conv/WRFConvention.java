@@ -203,6 +203,11 @@ orientation of the grid). This should be set equal to the center longitude in mo
 
       ProjectionImpl proj = null;
       switch (projType) {
+        case 0: // for diagnostic runs with no georeferencing
+          proj = new FlatEarth();
+          projCT = new ProjectionCT("flat_earth", "FGDC", proj);
+          // System.out.println(" using LC "+proj.paramsToString());
+          break;
         case 1:
           proj = new LambertConformal(standardLat, standardLon, lat1, lat2);
           projCT = new ProjectionCT("Lambert", "FGDC", proj);
