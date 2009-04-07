@@ -88,7 +88,9 @@ public class GribGridServiceProvider extends GridServiceProvider {
     }
   }
 
-  public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
+  public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask)
+          throws IOException
+  {
     this.raf = raf;
     this.ncfile = ncfile;
     //this.rafLength = raf.length();
@@ -207,7 +209,9 @@ public class GribGridServiceProvider extends GridServiceProvider {
    * @return ucar.grid.GridIndex
    * @throws IOException on io error
    */
-  protected GridIndex getIndex(String gribLocation) throws IOException {
+  protected GridIndex getIndex(String gribLocation)
+          throws IOException
+  {
     //http test
     //gribLocation = "http://motherlode.ucar.edu:9080/thredds/fileServer/fmrc/NCEP/NAM/Polar_90km/files/NAM_Polar_90km_20090403_1200.grib2";
     String indexLocation = gribLocation + ".gbx";
@@ -272,7 +276,12 @@ public class GribGridServiceProvider extends GridServiceProvider {
            saveIndexLocation = indexFile.getPath();
            log.warn("GribGridServiceProvider: cannot extend index, no write permission " + indexFile.getPath());
         }
-      } catch (Exception e) {
+      }
+      catch ( Exception e)
+      {
+        String msg = "Problem reading or extending index file";
+        log.error( "getIndex(): " + msg + "[" + indexLocation + "].");
+        throw new IOException( msg, e);
       }
 
       if (index != null) {
@@ -286,7 +295,12 @@ public class GribGridServiceProvider extends GridServiceProvider {
       try {
         index = new GribReadIndex().open(indexFile.getPath());
         saveIndexLocation = indexFile.getPath();
-      } catch (Exception e) {
+      }
+      catch (Exception e)
+      {
+        String msg = "Problem reading index file";
+        log.error( "getIndex(): " + msg + "[" + indexLocation + "]." );
+        throw new IOException( msg, e );
       }
       if (index != null) {
         log.debug("GribGridServiceProvider: opened index = " + indexFile.getPath());

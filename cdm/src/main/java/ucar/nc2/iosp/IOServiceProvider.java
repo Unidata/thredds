@@ -132,16 +132,21 @@ public interface IOServiceProvider {
    */
   public void close() throws IOException;
 
-  /** Extend the file if needed in a way that is compatible with the current metadata.
-   *  For example, if the unlimited dimension has grown.
-   * @return true if file was extended.
-   * @throws IOException if read error
+  /**
+   * Extend the NetcdfFile if the underlying dataset has changed
+   * in a way that is compatible with the current metadata.
+   * For example, if the unlimited dimension has grown.
+   *
+   * @return true if the NetcdfFile was extended.
+   * @throws IOException if a read error occured when accessing the underlying dataset.
    */
   public boolean syncExtend() throws IOException;
 
-  /** Check if file has changed, and reread metadata if needed.
-   * @return true if file was changed.
-   * @throws IOException if read error
+  /**
+   * Update the metadata in the NetcdfFile if the underlying dataset has changed.
+   *
+   * @return true if the NetcdfFile was changed.
+   * @throws IOException if a read error occured when accessing the underlying dataset.
    */
   public boolean sync() throws IOException;
 

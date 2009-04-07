@@ -50,8 +50,6 @@ import ucar.grid.GridRecord;
 
 import java.io.IOException;
 
-import java.util.List;
-
 
 /**
  * An IOSP for Gempak Grid data
@@ -117,8 +115,8 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
     }
 
     /**
-     * Open the index and create the netCDF file from that
-     *
+     * Use the given index to fill the NetcdfFile object with attributes and variables.
+     * 
      * @param index   GridIndex to use
      * @param cancelTask  cancel task
      *
