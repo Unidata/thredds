@@ -357,8 +357,8 @@ public class GribGridServiceProvider extends GridServiceProvider {
     // regular or cache file
     File gribFile = new File( raf.getLocation() );
     // caused to look in cache wrongly
-    //File indexFile = getIndexFile(saveIndexLocation);
-    File indexFile = new File( saveIndexLocation );
+    File indexFile = getIndexFile(saveIndexLocation);
+    //File indexFile = new File( saveIndexLocation );
 
     // write or extend
     if(  extendMode && (gribLastModified < gribFile.lastModified() ||
