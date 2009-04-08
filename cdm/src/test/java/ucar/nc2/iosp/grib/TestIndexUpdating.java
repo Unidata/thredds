@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 
 import ucar.nc2.util.IO;
+import ucar.nc2.util.DiskCache;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Dimension;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -38,6 +39,12 @@ public class TestIndexUpdating extends TestCase
   public TestIndexUpdating( String name )
   {
     super( name );
+  }
+
+  @Override
+  protected void tearDown() throws Exception
+  {
+    indexFile.delete();
   }
 
   /**
@@ -180,6 +187,91 @@ public class TestIndexUpdating extends TestCase
     fail( "Expected IOException not thrown.");
   }
 
+  public void testNoIndex()
+  {
+    ucar.nc2.iosp.grid.GridServiceProvider.setAlwaysInCache( false );
+    ucar.nc2.iosp.grid.GridServiceProvider.setExtendMode( false );
+
+    // Setup dataset to use partial GRIB index file.
+    if ( ! setupGrib() )
+      return;
+
+    // Initial opening of the data file.
+    NetcdfFile ncf = null;
+    try { ncf = NetcdfFile.open( dataFile.getPath() ); }
+    catch ( IOException e )
+    {
+      fail( "exception opening");
+    }
+
+    Dimension timeComplete = ncf.findDimension( "time" );
+
+    assertTrue( "Time dimension ["+ timeComplete.getLength()+"] not as expected [21].", timeComplete.getLength() == 21 );
+
+    if ( ! switchToPartialGribIndex0() )
+      return;
+
+    // sync() the dataset with new index.
+    try
+    {
+      ncf.sync();
+    }
+    catch ( IOException e )
+    {
+      fail( "Failed to sync() data file [" + dataFile.getPath() + "]: " + e.getMessage() );
+      return;
+    }
+
+    Dimension timeNew = ncf.findDimension( "time" );
+
+    assertTrue( "Time dimension [" + timeNew.getLength() + "] not as expected [4].", timeNew.getLength() == 4 );
+
+  }
+  public void testExtendModeTrue()
+  {
+    ucar.nc2.iosp.grid.GridServiceProvider.setAlwaysInCache( false );
+    ucar.nc2.iosp.grid.GridServiceProvider.setExtendMode( true );
+
+    // Setup dataset to use partial GRIB index file.
+    if ( ! setupGribAndPartialIndex0() )
+      return;
+
+    DiskCache.simulateUnwritableDir = true;
+
+    // Initial opening of the data file.
+    NetcdfFile ncf = null;
+    try { ncf = NetcdfFile.open( dataFile.getPath() ); }
+    catch ( IOException e )
+    {
+      fail( "exception opening");
+    }
+
+    Dimension timeComplete = ncf.findDimension( "time" );
+
+    assertTrue( "Time dimension ["+ timeComplete.getLength()+"] not as expected [4].",
+                timeComplete.getLength() == 4 );
+
+    dataFile.setLastModified( System.currentTimeMillis() + 1000 );
+
+    // sync() the dataset with new index.
+    try
+    {
+      ncf.sync();
+    }
+    catch ( IOException e )
+    {
+      fail( "Failed to sync() data file [" + dataFile.getPath() + "]: " + e.getMessage() );
+      return;
+    }
+
+    Dimension timeNew = ncf.findDimension( "time" );
+
+    assertTrue( "Time dimension [" + timeNew.getLength() + "] not as expected [21].", timeNew.getLength() == 21 );
+
+    DiskCache.simulateUnwritableDir = false;
+
+  }
+
   private boolean setupGribAndPartialIndex0()
   {
     // Check that the data directory exists and is writable.
@@ -238,6 +330,46 @@ public class TestIndexUpdating extends TestCase
       fail( "Failed to copy partial index file [" + indexFilePartial.getPath() + "] to index file [" + indexFile.getPath() + "]: " + e.getMessage());
       return false;
     }
+    return true;
+  }
+
+  private boolean setupGrib()
+  {
+    // Check that the data directory exists and is writable.
+    dataDir = new File( ucar.nc2.TestAll.cdmTestDataDir, "ucar/nc2/iosp/grib/indexUpdating");
+    if ( ! dataDir.exists())
+    {
+      fail( "Non-existent data directory [" + dataDir.getPath() + "].");
+      return false;
+    }
+    if ( ! dataDir.canWrite())
+    {
+      fail( "Cannot write to data directory [" + dataDir.getPath() + "].");
+      return false;
+    }
+
+    // Check that the GRIB data file exists and is readable.
+    dataFile = new File( dataDir, dataFileName);
+    if ( ! dataFile.exists() )
+    {
+      fail( "Non-existent data file [" + dataFile.getPath() + "].");
+      return false;
+    }
+    if ( ! dataFile.canRead() )
+    {
+      fail( "Cannot read data file [" + dataFile.getPath() + "]." );
+      return false;
+    }
+
+    // Check that index file doesn't exist and is writable.
+    indexFile = new File( dataDir, dataFileName + ".gbx" );
+    if ( indexFile.exists() && ! indexFile.canWrite())
+    {
+      fail( "Cannot write index file [" + indexFile.getPath() + "].");
+      return false;
+    }
+    indexFile.deleteOnExit();
+
     return true;
   }
 

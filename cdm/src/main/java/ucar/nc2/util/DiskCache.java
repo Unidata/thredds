@@ -92,6 +92,7 @@ import java.net.URLDecoder;
 public class DiskCache {
   static private String root = null;
   static private boolean standardPolicy = false;
+  static public boolean simulateUnwritableDir = false;
 
   static {
     root = System.getProperty("nj22.cache");
@@ -197,7 +198,7 @@ public class DiskCache {
 
       // now comes the tricky part to make sure we can open and write to it
       try {
-        if (f.createNewFile()) {
+        if ( ! simulateUnwritableDir && f.createNewFile()) {
           f.delete();
           return f;
         }
@@ -222,8 +223,8 @@ public class DiskCache {
     if (f.exists())
       f.setLastModified(System.currentTimeMillis());
 
-    //File dir = f.getParentFile();
-    //dir.mkdirs();
+    File dir = f.getParentFile();
+    dir.mkdirs();
     return f;
   }
 
