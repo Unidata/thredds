@@ -196,6 +196,8 @@ public class TestIndexUpdating extends TestCase
     if ( ! setupGrib() )
       return;
 
+    DiskCache.simulateUnwritableDir = true;    
+
     // Initial opening of the data file.
     NetcdfFile ncf = null;
     try { ncf = NetcdfFile.open( dataFile.getPath() ); }
@@ -225,8 +227,9 @@ public class TestIndexUpdating extends TestCase
     Dimension timeNew = ncf.findDimension( "time" );
 
     assertTrue( "Time dimension [" + timeNew.getLength() + "] not as expected [4].", timeNew.getLength() == 4 );
-
+    DiskCache.simulateUnwritableDir = false;
   }
+
   public void testExtendModeTrue()
   {
     ucar.nc2.iosp.grid.GridServiceProvider.setAlwaysInCache( false );
@@ -235,8 +238,6 @@ public class TestIndexUpdating extends TestCase
     // Setup dataset to use partial GRIB index file.
     if ( ! setupGribAndPartialIndex0() )
       return;
-
-    DiskCache.simulateUnwritableDir = true;
 
     // Initial opening of the data file.
     NetcdfFile ncf = null;
@@ -267,9 +268,6 @@ public class TestIndexUpdating extends TestCase
     Dimension timeNew = ncf.findDimension( "time" );
 
     assertTrue( "Time dimension [" + timeNew.getLength() + "] not as expected [21].", timeNew.getLength() == 21 );
-
-    DiskCache.simulateUnwritableDir = false;
-
   }
 
   private boolean setupGribAndPartialIndex0()
