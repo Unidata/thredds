@@ -99,6 +99,8 @@ public class TestCompare {
     //List vars = checkAll( org.getVariables(), copy.getVariables());
     List<Variable> varsOrg = org.getVariables();
     for (Variable orgV : varsOrg) {
+      if (skipUnknownVar && orgV.getShortName().contains( "Unknown"))
+         continue;
       Variable copyVar = copy.findVariable(orgV.getShortName());
       assert copyVar != null : orgV.getShortName();
       compareVariables(orgV, copyVar);
