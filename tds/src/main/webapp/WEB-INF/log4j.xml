@@ -113,6 +113,11 @@
     <appender-ref ref="threddsServlet"/>
   </logger>
 
+  <logger name="thredds.server.wms.responses" additivity="false">
+    <level value="WARN"/>
+    <appender-ref ref="threddsServlet"/>
+  </logger>
+
   <logger name="thredds.server.wms" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="threddsServlet"/>
