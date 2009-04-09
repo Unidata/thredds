@@ -1,5 +1,5 @@
 /*
- * Copyright 1999 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1999, 2009 University Corporation for Atmospheric Research/Unidata
  * See file LICENSE for legal details.
  */
 
@@ -17,24 +17,21 @@ PARSER_BEGIN(StandardUnitFormat)
     package ucar.units;
 
     import java.io.InputStreamReader;
-    import java.io.IOException;
     import java.io.LineNumberReader;
-    import java.io.Serializable;
     import java.io.StringReader;
     import java.text.DateFormat;
-    import java.text.DecimalFormat;
-    import java.text.NumberFormat;
     import java.text.SimpleDateFormat;
     import java.util.Arrays;
     import java.util.Calendar;
     import java.util.Comparator;
     import java.util.Date;
     import java.util.Locale;
-    import java.util.StringTokenizer;
     import java.util.TimeZone;
 
     /**
      * Standard formatter/parser for unit specifications.
+     *
+     * Instances of this class are thread-compatible but not thread-safe.
      *
      * @author Steven R. Emmerson
      */
@@ -42,20 +39,14 @@ PARSER_BEGIN(StandardUnitFormat)
     StandardUnitFormat
         extends UnitFormatImpl
     {
-	private boolean				isTimeUnit;
+        private static final long   serialVersionUID    = 2L;
+        private boolean             isTimeUnit;
 
         /**
          * The singleton instance of this class.
          * @serial
          */
         private static StandardUnitFormat       _instance;
-
-        /**
-         * The Julian day number of the (artificial) time origin.
-         * @serial
-         */
-        private static final long               julianDayOrigin = 
-            StandardUnitFormat.julianDay(2001, 1, 1);
 
         /**
          * The date formatter.
@@ -68,13 +59,11 @@ PARSER_BEGIN(StandardUnitFormat)
          * Factor-s by decreasing exponent (major) and lexically (minor).
          * @serial
          */
-        private static final Comparator         factorComparator =
-            new Comparator()
+        private static final Comparator<Factor>         factorComparator =
+            new Comparator<Factor>()
             {
-                public int compare(Object o1, Object o2)
+                public int compare(Factor f1, Factor f2)
                 {
-                    Factor      f1 = ((Factor)o1);
-                    Factor      f2 = ((Factor)o2);
                     int comp = f2.getExponent() - f1.getExponent();
                     if (comp == 0)
                         comp = f1.getID().compareTo(f2.getID());
@@ -283,7 +272,6 @@ PARSER_BEGIN(StandardUnitFormat)
         format(ScaledUnit unit, StringBuffer buf, boolean normalize)
             throws UnitClassException
         {
-            String      result;
             double      scale = unit.getScale();
             if (scale != 0.0)
             {
@@ -325,53 +313,6 @@ PARSER_BEGIN(StandardUnitFormat)
             return buf;
         }
 
-        private boolean
-        contains(StringBuffer buf, int start, char[] chars)
-        {
-            int n = buf.length();
-            for (int i = start; i < n; i++)
-            {
-                char    c = buf.charAt(i);
-                for (int j = 0; j < chars.length; j++)
-                {
-                    if (c == chars[j])
-                        return true;
-                }
-            }
-            return false;
-        }
-
-
-        private StringBuffer
-        formatBinaryUnit(Unit first, Unit second, char separator, 
-                StringBuffer buf, boolean normalize)
-            throws UnitClassException
-        {
-            int start = buf.length();
-            group(first, buf, normalize);
-            if (start < buf.length())
-                buf.append(separator);
-            group(second, buf, normalize);
-            if (buf.charAt(buf.length()-1) == separator)
-                buf.setLength(buf.length()-1);
-            return buf;
-        }
-
-
-        private StringBuffer
-        group(Unit unit, StringBuffer buf, boolean normalize)
-            throws UnitClassException
-        {
-            int start = buf.length();
-            format(unit, buf, normalize);
-            if (!isBlackSpace(buf, start))
-            {
-                buf.insert(start, '(');
-                buf.append(')');
-            }
-            return buf;
-        }
-
 
         private static boolean
         isBlackSpace(StringBuffer buf, int start)
@@ -386,81 +327,6 @@ PARSER_BEGIN(StandardUnitFormat)
         {
             return format(unit.getUnit(), buf, normalize).
                 append(dateFormat.format(unit.getOrigin()));
-        }
-
-
-        /**
-         * Compute the Julian day number of a date.
-         */
-        private static long
-        julianDay(int year, int month, int day)
-        {
-            long        igreg = 15 + 31 * (10 + (12 * 1582));
-            int         iy;     // signed, origin-0 year
-            int         ja;     // Julian century
-            int         jm;     // Julian month
-            int         jy;     // Julian year
-            long        julday; // returned Julian day number
-
-            /*
-             * Because there is no 0 BC or 0 AD, assume the user wants
-             * the start of the common era if they specify year 0.
-             */
-            if (year == 0)
-                year = 1;
-
-            iy = year;
-            if (year < 0)
-                iy++;
-            if (month > 2)
-            {
-                jy = iy;
-                jm = month + 1;
-            }
-            else
-            {
-                jy = iy - 1;
-                jm = month + 13;
-
-            }
-
-            julday = day + (int)(30.6001 * jm);
-            if (jy >= 0)
-            {
-                julday += 365 * jy;
-                julday += 0.25 * jy;
-            }
-            else
-            {
-                double  xi = 365.25 * jy;
-
-                if ((int)xi != xi)
-                    xi -= 1;
-                julday += (int)xi;
-            }
-            julday += 1720995;
-
-            if (day + (31* (month + (12 * iy))) >= igreg)
-            {
-                ja = jy/100;
-                julday -= ja;
-                julday += 2;
-                julday += ja/4;
-            }
-
-            return julday;
-        }
-
-
-        /**
-         * Convert broken-out time into a double.
-         */
-        private static double
-        toDouble(int year, int month, int day,
-            int hour, int minute, float second, int zone)
-        {
-            return (julianDay(year, month, day) - julianDayOrigin) *
-                86400.0 + (hour*60 + minute - zone)*60 + second;
         }
 
 
@@ -488,6 +354,22 @@ PARSER_BEGIN(StandardUnitFormat)
                 prefix = prefixDB.getPrefixBySymbol(string);
             return prefix;
         }
+        
+        
+        private static void myAssert(StandardUnitFormat parser, final String spec,
+                final String expect) throws NoSuchUnitException,
+                UnitParseException, SpecificationException, UnitDBException,
+                PrefixDBException, UnitSystemException
+        {
+            String have = parser.parse(spec).toString();
+            if (!have.equals(expect)) {
+                throw new AssertionError(have + " != " + expect);
+            }
+            have = parser.parse(have).toString();
+            if (!have.equals(expect)) {
+                throw new AssertionError(have + " != " + expect);
+            }
+        }
 
 
         /**
@@ -500,6 +382,26 @@ PARSER_BEGIN(StandardUnitFormat)
                 StandardUnitFormat.instance();
             LineNumberReader    lineInput = new LineNumberReader(
                                     new InputStreamReader(System.in));
+            myAssert(parser, "m/s/s", "m.s-2");
+            myAssert(parser, "m2", "m2");
+            myAssert(parser, "m2.s", "m2.s");
+            myAssert(parser, "m2/s", "m2.s-1");
+            myAssert(parser, "m^2/s", "m2.s-1");
+            myAssert(parser, "m s @ 5", "(m.s) @ 5.0");
+            myAssert(parser, "m2 s @ 5", "(m2.s) @ 5.0");
+            myAssert(parser, "m2 s-1 @ 5", "(m2.s-1) @ 5.0");
+            myAssert(parser, "m s from 5", "(m.s) @ 5.0");
+            myAssert(parser, "m s kg @ 5", "(kg.m.s) @ 5.0");
+            myAssert(parser, "s@19700101T000000",
+                "s since 1970-01-01 00:00:00.000 UTC");
+            myAssert(parser, "s@19700101T000000.00",
+                "s since 1970-01-01 00:00:00.000 UTC");
+            myAssert(parser, "s @ 1970-01-01T00:00:00.00",
+                "s since 1970-01-01 00:00:00.000 UTC");
+            myAssert(parser, "s @ 1970-01-01T00:00:00.00 -12",
+                "s since 1970-01-01 12:00:00.000 UTC");
+            myAssert(parser, "lg(re: 1)", "lg(re 1)");
+            myAssert(parser, "0.1 lg(re 1 mW)", "0.1 lg(re 0.001 W)");
 
             for (;;)
             {
@@ -526,19 +428,28 @@ PARSER_END(StandardUnitFormat)
 
 TOKEN [IGNORE_CASE] :
 {
-	< UINT:		(["0"-"9"])+ >
-    |	< SINCE:	(<WHITESPACE>)? ("since"|"from") (<WHITESPACE>)? >
-    |   < WHITESPACE:   (" " | "\t" | "\n" | "\r")+ >
-    |   < #PER:   	"per" >
-    |   < DIVIDE:       (<WHITESPACE>)? ("/" | <PER>) (<WHITESPACE>)? >
-    |   < SHIFT:        (<WHITESPACE>)? "@" (<WHITESPACE>)? >
-    |	< E:		"e" >
-    |	< Z:		"z" >
-    |	< #LETTER:	["a"-"z","_"] >
-    |	< UTC:		"utc" | "gmt" | "zulu" >
-    |   < SYMBOL:	"'" | "\"" | "%" >
-    |	< T:		"t" >
-    |   < NAME:        (<LETTER>)+ ((<UINT>) (<LETTER>)+)* >
+        < SP:       ([" ","\t","\n","\r"])+ >
+    |   < PLUS:     "+" >
+    |   < MINUS:    "-" >
+    |   < COLON:    ":" >
+    |   < UINT:     (["0"-"9"])+ >
+    |   <#SIGN:     <PLUS> | <MINUS> >
+    |   <#LETTER:   ["a"-"z","_"] >
+    |   < OPEN:     "(" >
+    |   < CLOSE:    ")" >
+    |   < REAL_EXP: "e" (<SIGN>)? <UINT> >
+    |   < RAISE:    "^" >
+    |   < PERIOD:   "." >
+    |   < STAR:     "*" >
+    |   < DIVIDE:   "/" | (<SP>) "per" (<SP>) >
+    |   < SHIFT:    (<SP>)? "@" (<SP>)? | (<SP>) ("since" | "from") (<SP>) >
+    |   < SYMBOL:   "'" | "\"" | "%" >
+    |   < T:        "t" >
+    |   < NAME:     (<LETTER>)+ (<UINT> (<LETTER>)+)? >
+    |   < LB:       "lb(re" (":")? (<SP>)? >
+    |   < LN:       "ln(re" (":")? (<SP>)? >
+    |   < LG:       "lg(re" (":")? (<SP>)? >
+    |   < UTC:      "utc" | "gmt" | "zulu" >
 }
 
 
@@ -550,159 +461,202 @@ Unit unitSpec(UnitDB unitDB)
         UnitDBException :
 {
     Unit        unit = DerivedUnitImpl.DIMENSIONLESS;
-    Unit	unit2;
-    Date        timestamp;
-    double      origin;
-    int		exponent;
 }
 {
     [
-	unit=unitTerm(unitDB) 
+        unit=shiftExpr(unitDB) 
     ]
     <EOF>
     {
-	return unit;
-    }
-}
-
-
-Unit unitTerm(UnitDB unitDB)
-    throws
-        OperationException,
-        UnitSystemException,
-        PrefixDBException,
-        UnitDBException :
-{
-    Unit        unit;
-    Unit	unit2;
-    Date        timestamp;
-    double      origin;
-}
-{
-    unit=unitFactor(unitDB) 
-    (
-	    [
-		    LOOKAHEAD(2)
-		    <WHITESPACE>
-		|
-		    "."
-		|
-		    "*"
-	    ]
-	    unit2=unitFactor(unitDB) 
-	    {
-		unit = unit.multiplyBy(unit2);
-	    }
-	|
-	    <DIVIDE>
-	    (
-		unit2=unitFactor(unitDB)
-	    )
-	    {
-		unit = unit.divideBy(unit2);
-	    }
-	|
-	    LOOKAHEAD({isTimeUnit})
-	    timestamp=timeOriginExpression()
-	    {
-		unit = new TimeScaleUnit(unit, timestamp);
-	    }
-	|
-	    origin=numericalOriginExpression()
-	    {
-		unit = new OffsetUnit(unit, origin);
-	    }
-    )*
-    {
-	return unit;
-    }
-}
-
-
-Unit unitFactor(UnitDB unitDB)
-    throws
-        OperationException,
-        UnitSystemException,
-        PrefixDBException,
-        UnitDBException :
-{
-    Unit        unit;
-    int		exponent;
-    double	scale;
-}
-{
-    (
-	    scale=number()
-	    {
-		unit = new ScaledUnit(scale);
-	    }
-	|
-	    (
-		    unit=unitIdentifier(unitDB)
-		|
-		    "(" unit=unitTerm(unitDB) ")"
-	    )
-	    [
-		LOOKAHEAD(2)
-		exponent=powerExpression()
-		{
-		    unit = unit.raiseTo(exponent);
-		}
-	    ]
-    )
-    {
-	isTimeUnit = unit.isCompatible(UnitSystemManager.instance().
-	    getBaseUnit(BaseQuantity.TIME));
         return unit;
     }
 }
 
 
-double numericalOriginExpression() :
+Unit shiftExpr(UnitDB unitDB)
+    throws
+        OperationException,
+        UnitSystemException,
+        PrefixDBException,
+        UnitDBException :
 {
-    double      origin = 0;
+    Unit        unit;
+    Date        timestamp;
+    double      origin;
 }
 {
-    <SHIFT> origin=number()
+    unit=productExpr(unitDB) 
+    [
+        LOOKAHEAD(2)
+        <SHIFT>
+        (
+                LOOKAHEAD({isTimeUnit})
+                timestamp=timeOriginExpr()
+                {
+                    unit = new TimeScaleUnit(unit, timestamp);
+                }
+            |
+                origin=number()
+                {
+                    unit = new OffsetUnit(unit, origin);
+                }
+        )
+    ]
     {
-	return origin;
+        return unit;
+    }
+}
+
+
+Unit productExpr(UnitDB unitDB)
+    throws
+        OperationException,
+        UnitSystemException,
+        PrefixDBException,
+        UnitDBException :
+{
+    Unit        unit;
+    Unit        unit2;
+}
+{
+    unit=powerExpr(unitDB)
+    (
+            LOOKAHEAD(2)
+            <DIVIDE>
+            unit2 = powerExpr(unitDB)
+            {
+                unit = unit.divideBy(unit2);
+            }
+        |       
+            ( <PERIOD> | <STAR> | <SP> )
+            unit2=powerExpr(unitDB) 
+            {
+                unit = unit.multiplyBy(unit2);
+            }
+    )*
+    {
+        isTimeUnit = unit.isCompatible(UnitSystemManager.instance().
+            getBaseUnit(BaseQuantity.TIME));
+        return unit;
+    }
+}
+
+
+Unit powerExpr(UnitDB unitDB)
+    throws
+        OperationException,
+        UnitSystemException,
+        PrefixDBException,
+        UnitDBException :
+{
+    Unit    unit;
+    int     exponent;
+}
+{
+    unit=basicExpr(unitDB)
+    [
+        [ <RAISE> ]
+        exponent=integer()
+        {
+            unit = unit.raiseTo(exponent);
+        }
+    ]
+    {
+        return unit;
+    }
+}
+
+
+Unit basicExpr(UnitDB unitDB)
+    throws
+        OperationException,
+        UnitSystemException,
+        PrefixDBException,
+        UnitDBException :
+{
+    Unit    unit;
+    double  number;
+}
+{
+    (
+            number = number()
+            {
+                unit = number == 1
+                    ? DerivedUnitImpl.DIMENSIONLESS
+                    : new ScaledUnit(number);
+            }
+        |                           
+            unit=unitIdentifier(unitDB)
+        |
+            unit=logExpr(unitDB)
+        |
+            <OPEN> (<SP>)? unit=shiftExpr(unitDB) (<SP>)? <CLOSE>
+    )
+    {
+        return unit;
+    }
+}
+
+Unit logExpr(UnitDB unitDB)
+    throws
+        OperationException,
+        UnitSystemException,
+        PrefixDBException,
+        UnitDBException :
+{
+    double base;
+    Unit   ref;
+}
+{
+    (
+            <LB> {base = 2;}
+        |
+            <LN> {base = Math.E;}
+        |
+            <LG> {base = 10;}
+    )
+    ref = productExpr(unitDB) [<SP>] <CLOSE>
+    {
+        return new LogarithmicUnit(ref, base);
     }
 }
 
 
 double number() :
 {
-    int		sign = 1;
-    int		exponent;
-    double	number;
+    double  number;
 }
 {
-    [sign=sign()]
-    number=unsignedDecimal()
-    [
-	LOOKAHEAD(2)
-	<E>
-	exponent=integer()
-	{
-	    number = number * Math.pow(10, exponent);
-	}
-    ]
+    (
+            LOOKAHEAD(3)
+            number = real()
+        |
+            number = integer()
+    )
     {
-	return sign == 1 ? number : -number;
+        return number;
     }
 }
 
 
-int integer() :
+double real() :
 {
-    int		sign = 1;
-    int		integer;
+    int    sign = 1;
+    double tenFactor = 1;
+    double udecimal;
 }
 {
-    [sign=sign()]
-    integer=unsignedInteger()
+    [sign = sign()]
+    (
+            LOOKAHEAD(2)
+            udecimal = unsignedDecimal()
+            [ tenFactor = tenFactor() ]
+        |
+            udecimal = unsignedInteger()
+            tenFactor = tenFactor()
+    )
     {
-	return sign == 1 ? integer : -integer;
+        return sign * udecimal * tenFactor;
     }
 }
 
@@ -710,66 +664,71 @@ int integer() :
 int sign() :
 {}
 {
-	"+" { return 1; }
+        <PLUS> { return 1; }
     |
-	"-" { return -1; }
-}
-
-
-int unsignedInteger() :
-{
-    Token       t;
-}
-{
-    t=<UINT>
-    {
-	return Integer.parseInt(t.image);
-    }
+        <MINUS> { return -1; }
 }
 
 
 double unsignedDecimal() :
 {
-    int		integer = 0;
-    double	fraction = 0;
-    Token	t;
+    int     integer = 0;
+    Token   token;
+    double  fraction = 0;
 }
 {
     (
-	    integer=unsignedInteger()
-	    [
-		LOOKAHEAD(2)
-		"."
-		[
-		    LOOKAHEAD(2)
-		    t=<UINT>
-		    {
-			fraction = new Double("." + t.image).doubleValue();
-		    }
-		]
-	    ]
-	|
-	    "."
-	    t=<UINT>
-	    {
-		fraction = new Double("." + t.image).doubleValue();
-	    }
+            LOOKAHEAD(3)
+            [integer=unsignedInteger()]
+            <PERIOD>
+            token = <UINT>
+            {
+                fraction = Double.valueOf("." + token.image);
+            }
+        |
+            integer=unsignedInteger()
+            <PERIOD>
     )
     {
-	return integer + fraction;
+        return integer + fraction;
     }
 }
 
 
-int powerExpression() :
+double tenFactor() :
 {
-    int		exponent;
+    Token  token;
 }
 {
-    ["^"]
-    exponent=integer()
+    token = <REAL_EXP>
     {
-        return exponent;
+        return Double.valueOf("1" + token.image);
+    }
+}
+
+
+int integer() :
+{
+    int     magnitude;
+    int     sign = 1;
+}
+{
+    [ sign = sign() ]
+    magnitude = unsignedInteger()
+    {
+        return sign * magnitude;
+    }
+}
+
+
+int unsignedInteger() :
+{
+    Token       token;
+}
+{
+    token=<UINT>
+    {
+        return Integer.valueOf(token.image);
     }
 }
 
@@ -777,25 +736,19 @@ int powerExpression() :
 Unit unitIdentifier(UnitDB unitDB) 
     throws UnitDBException, UnitSystemException, PrefixDBException:
 {
-    Token	t;
-    Unit        unit;
+    Token   token;
+    Unit    unit;
 }
 {
     (
-	    t=<E>
-	|
-	    t=<Z>
-	|
-	    t=<UTC>
-	|
-	    t=<SYMBOL>
-	|
-	    t=<T>
-	|
-	    t=<NAME>
+            token=<T>
+        |
+            token=<NAME>
+        |
+            token=<SYMBOL>
     )
     {
-	String	string = t.image;
+    String  string = token.image;
         double  scale = 1;
 
         for (unit = getUnit(unitDB, string);
@@ -829,107 +782,169 @@ Unit unitIdentifier(UnitDB unitDB)
 
 
 /*
- * See <http://www.cl.cam.ac.uk/~mgk25/iso-time.html> for
- * a discussion of the relevant timestamp format or google "ISO 8601".
+ * See <http://www.cl.cam.ac.uk/~mgk25/iso-time.html> for a discussion of the
+ * relevant timestamp format or lookup "ISO 8601".
  */
-Date timeOriginExpression() :
+Date timeOriginExpr() :
 {
-    int         year = 0;
-    int         month = 1;
-    int         day = 1;
-    int         hour = 0;
-    int         minute = 0;
-    int         second = 0;
-    int         millisecond = 0;
-    double	sec;
-    double      when = 0;
-    Token       t;
-    int		sign = 1;
-    int         zoneHour;
-    int         zoneMinute = 0;
-    int         zone = 0;       // time zone in minutes
+    Calendar   calendar;
 }
 {
-    ( <SINCE> | <SHIFT> )
-    year=integer()
+    calendar = dateExpr()
     [
-	LOOKAHEAD(2)
-	"-" month=unsignedInteger() "-" day=unsignedInteger()
-	[
-	    LOOKAHEAD(2)
-	    ( <T> | (<WHITESPACE>)?)
-	    hour=unsignedInteger()
-	    [
-		":" minute=unsignedInteger()
-		[
-		    ":" sec=unsignedDecimal()
-		    {
-			second = (int)sec;
-			millisecond = (int)Math.round((sec - second) * 1000);
-		    }
-		]
-	    ]
-	    [
-		LOOKAHEAD(2)
-		[<WHITESPACE>]
-		(
-			[sign=sign()]
-			zoneHour=unsignedInteger()
-			[":" zoneMinute=unsignedInteger()]
-			{
-			    if (zoneHour >= 100)
-			    {
-				zoneMinute += zoneHour % 100;
-				zoneHour /= 100;
-			    }
-
-			    zone = sign * (zoneHour * 60 + zoneMinute);
-			}
-		    |
-			<UTC>
-		    |
-			<Z>
-		)
-	    ]
-	]
+        LOOKAHEAD(2)
+        (<T> | <SP>)
+        clockExpr(calendar)
+        [
+            LOOKAHEAD(2)
+            [<SP>]
+            zoneExpr(calendar)
+        ]
     ]
     {
-        if (month < 1 || month > 12 ||
-            day < 1 || day > 31 ||
-            hour < 0 || hour > 23 ||
-            minute < 0 || minute > 59 ||
-            second < 0 || second > 61 ||
-            zone < -1440 || zone > 1440)
-        {
-            throw new ParseException("invalid timestamp");
-        }
-
-	StringBuffer	zoneId = new StringBuffer(12);
-
-	zoneId.append("GMT");
-	if (zone >= 0)
-	{
-	    zoneId.append('+');
-	}
-	else
-	{
-	    zoneId.append('-');
-	    zone = -zone;
-	}
-	zoneId.append(zone/60);
-	zoneId.append(':');
-	zone %= 60;
-	if (zone < 10)
-	    zoneId.append('0');
-	zoneId.append(zone);
-
-        Calendar        calendar =
-	    Calendar.getInstance(TimeZone.getTimeZone(zoneId.toString()));
-
-        calendar.clear();
-        calendar.set(year, month-1, day, hour, minute, second);
-        calendar.set(Calendar.MILLISECOND, millisecond);
-
         return calendar.getTime();
+    }
+}
+
+
+Calendar dateExpr() :
+{
+    int        sign = 1;
+    int        year;
+    int        month = 1;
+    int        day = 1;
+    boolean    packed = true;
+}
+{
+    [sign = sign() ]
+    year = unsignedInteger()
+    [
+        <MINUS>
+        month = unsignedInteger()
+        {
+            packed = false;
+        }
+        [
+            <MINUS>
+            day = unsignedInteger()
+        ]       
+    ]
+    {
+        if (packed) {
+            if (year >= 10000101) {
+                day = year % 100;
+                year /= 100;
+            }
+            if (year >= 100001) {
+                month = year % 100;
+                year /= 100;
+            }
+            if (sign < 0)
+                year = -year;
+        }
+        if (month < 1 || month > 12)
+            throw new ParseException("invalid month in timestamp");
+        if (day < 1 || day > 31)
+            throw new ParseException("invalid day in timestamp");
+        Calendar    calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        calendar.clear();
+        calendar.set(year, month-1, day);
+        return calendar;
+    }
+}
+
+
+Calendar clockExpr(Calendar calendar) :
+{
+    double     hour;
+    int        minute = 0;
+    double     seconds = 0;
+    boolean    packed = true;
+}
+{
+    (
+            LOOKAHEAD(2)
+            hour = unsignedDecimal()
+        |
+            hour = unsignedInteger()
+    )
+    [
+        <COLON>
+        minute = unsignedInteger()
+        {
+            packed = false;
+        }
+        [
+            <COLON>
+            (
+                    LOOKAHEAD(2)
+                    seconds = unsignedDecimal()
+                |
+                    seconds = unsignedInteger()
+            )
+        ]       
+    ]
+    {
+        if (packed) {
+            if (hour >= 100000) {
+                seconds = hour % 100;
+                hour /= 100;
+            }
+            if (hour >= 1000) {
+                minute = (int)(hour % 100);
+                hour /= 100;
+            }
+        }
+        if (hour < 0 || hour > 23)
+            throw new ParseException("invalid hour in timestamp");
+        if (minute < 0 || minute > 59)
+            throw new ParseException("invalid minute in timestamp");
+        if (seconds < 0 || seconds > 61)
+            throw new ParseException("invalid seconds in timestamp");
+        calendar.set(Calendar.HOUR_OF_DAY, (int)Math.round(hour));
+        calendar.set(Calendar.MINUTE, minute);
+        int s = (int)seconds;
+        calendar.set(Calendar.SECOND, s);
+        int ms = (int)((seconds - s) * 1000);
+        calendar.set(Calendar.MILLISECOND, ms);
+        return calendar;
+    }
+}
+
+Calendar zoneExpr(Calendar calendar) :
+{
+    int         sign = 1;
+    int         zoneHour;
+    int         zoneMinute = 0;
+    Token       token;
+    TimeZone    timeZone;
+}
+{
+    (
+            [sign=sign()]
+            zoneHour=unsignedInteger()
+            [[<COLON>] zoneMinute=unsignedInteger()]
+            {
+                if (zoneHour >= 100)
+                {
+                    zoneMinute += zoneHour % 100;
+                    zoneHour /= 100;
+                }
+                if (zoneHour > 23 || zoneMinute > 59)
+                {
+                    throw new ParseException("invalid time-zone in timestamp");
+                }
+                timeZone = TimeZone.getDefault();
+                timeZone.setRawOffset(sign*(zoneHour*60 + zoneMinute)*60*1000);
+            }
+        |
+            token = <NAME>
+            {
+                timeZone = TimeZone.getTimeZone(token.image);
+            }
+    )
+    {
+        calendar.setTimeZone(timeZone);
+        return calendar;
     }
 }

@@ -71,7 +71,7 @@ public class DerivedUnitImpl extends UnitImpl implements DerivedUnit,
 	private static UnitName dimensionlessID() {
 		UnitName id;
 		try {
-			id = UnitName.newUnitName("", "", "");
+			id = UnitName.newUnitName("1", "1", "1");
 		}
 		catch (final NameException e) {
 			id = null;

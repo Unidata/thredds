@@ -33,7 +33,6 @@
  */
 package ucar.units;
 
-import java.io.Serializable;
 
 /**
  * Provides support for classes that parse and format unit specifications.
@@ -41,7 +40,7 @@ import java.io.Serializable;
  * @author Steven R. Emmerson
  * @version $Id: UnitFormatImpl.java 64 2006-07-12 22:30:50Z edavis $
  */
-public abstract class UnitFormatImpl implements UnitFormat, Serializable {
+public abstract class UnitFormatImpl implements UnitFormat {
 
 	private static final long	serialVersionUID	= 1L;
 	private static Object		MUTEX				= new Object();
