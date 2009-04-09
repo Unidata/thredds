@@ -308,7 +308,7 @@
             <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu" />
           </creator>
         </metadata>
-        <dataset name="TimeSeries Aggregation" collectionType="TimeSeries" ID="NWS/NEXRAD/NationalComposite/Unidata/1km/agg" urlPath="nexrad/composite/1km/agg">
+        <!-- dataset name="TimeSeries Aggregation" collectionType="TimeSeries" ID="NWS/NEXRAD/NationalComposite/Unidata/1km/agg" urlPath="nexrad/composite/1km/agg">
           <metadata inherited="true">
             <serviceName>grids</serviceName>
             <documentation type="summary">Aggregation of all available data into a single TimeSeries Dataset</documentation>
@@ -318,7 +318,7 @@
               <scan dateFormatMark="Level3_Composite_N0R_#yyyyMMdd_HHmm" location="/data/ldm/pub/native/radar/composite/grib2/N0R/" suffix=".grib2" subdirs="true" />
             </aggregation>
           </netcdf>
-        </dataset>
+        </dataset -->
         <datasetScan name="Access to individual files" ID="NWS/NEXRAD/NationalComposite/Unidata/1km/files" path="nexrad/composite/1km/files" location="/data/ldm/pub/native/radar/composite/grib2/">
           <metadata inherited="true">
             <serviceName>radial</serviceName>
