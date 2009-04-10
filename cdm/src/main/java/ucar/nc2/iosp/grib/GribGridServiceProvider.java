@@ -269,8 +269,8 @@ public class GribGridServiceProvider extends GridServiceProvider {
         }
       } catch (Exception e) {
         String msg = "Problem reading or extending index file";
-        log.error("getIndex(): " + msg + "[" + indexLocation + "].");
-        throw new IOException(msg, e);
+        log.error("getIndex(): " + msg + "[" + indexLocation + "].", e);
+        throw new IOException(msg + ": " + e.getMessage());
       }
 
       if (index != null) {
@@ -286,8 +286,8 @@ public class GribGridServiceProvider extends GridServiceProvider {
         //saveIndexLocation = indexFile.getPath();
       } catch (Exception e) {
         String msg = "Problem reading index file";
-        log.error("getIndex(): " + msg + "[" + indexLocation + "].");
-        throw new IOException(msg, e);
+        log.error("getIndex(): " + msg + "[" + indexLocation + "].", e);
+        throw new IOException( msg + ": " + e.getMessage() );
       }
 
       if (index != null) {
