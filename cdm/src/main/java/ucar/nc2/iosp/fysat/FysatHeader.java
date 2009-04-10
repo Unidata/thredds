@@ -959,6 +959,7 @@ public final class FysatHeader {
         }
       return vname;
     }
+
     String   getPhysElemUnits(int feature) {
         String unit;
 
@@ -967,22 +968,22 @@ public final class FysatHeader {
                 unit = "K";
                 break;
             case 2:
-                unit = " ";
+                unit = "";
                 break;
             case 3:
-                unit = " ";
+                unit = "";
                 break;
             case 4:
                 unit = "W/m2";
                 break;
             case 5:
-                unit = " ";
+                unit = "";
                 break;
             case 6:
-                unit = " ";
+                unit = "";
                 break;
             case 7:
-                unit = " ";
+                unit = "";
                 break;
             case 8:
                 unit = "kg/m3";
@@ -997,10 +998,10 @@ public final class FysatHeader {
                 unit = "K";
                 break;
             case 12:
-                unit = " ";
+                unit = "";
                 break;
             case 13:
-                unit = " ";
+                unit = "";
                 break;
             case 14:
                 unit = "mm/hour";
@@ -1015,13 +1016,13 @@ public final class FysatHeader {
                 unit = "mm/(24 hour)";
                 break;
             case 18:
-                unit = " ";
+                unit = "";
                 break;
             case 19:
                 unit = "K";
                 break;
             case 501:
-                unit = " ";
+                unit = "";
                 break;
             case 502:
                 unit = "mm";
@@ -1039,7 +1040,7 @@ public final class FysatHeader {
                 unit = "K";
                 break;
             case 507:
-                unit = " ";
+                unit = "";
                 break;
             default: {
                 System.out.println("Unsupported Satellite Grid Procuct Dataset!");
