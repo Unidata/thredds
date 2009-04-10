@@ -671,7 +671,7 @@ public final class FysatHeader {
 			    Variable var = new Variable( ncfile, ncfile.getRootGroup(), null, vname);
 			    
 			    var.addAttribute( new Attribute("long_name", vname)); // getPhysElemLongName(phys_elem, ent_id)));
-	//		    var.addAttribute( new Attribute("units", getPhysElemUnits(phys_elem, ent_id)));
+			    var.addAttribute( new Attribute("units", getPhysElemUnits(gridprocuctSecondHeader.gridFeature)));
 	// 		    var.addAttribute( new Attribute("missing_value", new Byte((byte) 0))); // ??
 		
 			      // get dimensions
@@ -721,16 +721,18 @@ public final class FysatHeader {
 			    
 			    var .addAttribute(new Attribute("coordinates", "lon lat"));
 			    
-			    var.addAttribute(new Attribute("_unsigned", "false"));
-			    var.addAttribute(new Attribute("units", "percent"));
+			    var.addAttribute(new Attribute("_Unsigned", "true"));
+			    //var.addAttribute(new Attribute("units", "percent"));
 
 
 	            if(var.getDataType() == DataType.BYTE) {
                     var.addAttribute(new Attribute("_missing_value", new Byte((byte)-1)));
-                    var.addAttribute( new Attribute("add_offset", new Byte((byte)(0))));
+                    var.addAttribute( new Attribute("add_offset", (short)gridprocuctSecondHeader.dataBaseValue));
+                    var.addAttribute( new Attribute("scale_factor", (short)gridprocuctSecondHeader.dataBaseValue));
                  } else {
                     var.addAttribute(new Attribute("_missing_value", new Short((short)-1)));
-                    var.addAttribute( new Attribute("add_offset", new Short((short)(0))));
+                    var.addAttribute( new Attribute("add_offset",(short)gridprocuctSecondHeader.dataBaseValue));
+                    var.addAttribute( new Attribute("scale_factor", (short)gridprocuctSecondHeader.dataScale));
                 }
 			    
 	    	      // size and beginning data position in file
@@ -926,6 +928,9 @@ public final class FysatHeader {
             case 18:
                 vname = "waterVapor";
                 break;
+            case 19:
+                vname = "cloudTemp";
+                break;
             case 501:
                 vname = "TOVS";
                 break;
@@ -953,13 +958,102 @@ public final class FysatHeader {
             }
         }
       return vname;
-  }
+    }
+    String   getPhysElemUnits(int feature) {
+        String unit;
 
+        switch( feature) {
+            case 1:
+                unit = "K";
+                break;
+            case 2:
+                unit = " ";
+                break;
+            case 3:
+                unit = " ";
+                break;
+            case 4:
+                unit = "W/m2";
+                break;
+            case 5:
+                unit = " ";
+                break;
+            case 6:
+                unit = " ";
+                break;
+            case 7:
+                unit = " ";
+                break;
+            case 8:
+                unit = "kg/m3";
+                break;
+            case 9:
+                unit = "hour";
+                break;
+            case 10:
+                unit = "hPa";
+                break;
+            case 11:
+                unit = "K";
+                break;
+            case 12:
+                unit = " ";
+                break;
+            case 13:
+                unit = " ";
+                break;
+            case 14:
+                unit = "mm/hour";
+                break;
+            case 15:
+                unit = "mm/(6 hour)";
+                break;
+            case 16:
+                unit = "mm/(12 hour)";
+                break;
+            case 17:
+                unit = "mm/(24 hour)";
+                break;
+            case 18:
+                unit = " ";
+                break;
+            case 19:
+                unit = "K";
+                break;
+            case 501:
+                unit = " ";
+                break;
+            case 502:
+                unit = "mm";
+                break;
+            case 503:
+                unit = "Db";
+                break;
+            case 504:
+                unit = "W/m2";
+                break;
+            case 505:
+                unit = "hPa";
+                break;
+            case 506:
+                unit = "K";
+                break;
+            case 507:
+                unit = " ";
+                break;
+            default: {
+                System.out.println("Unsupported Satellite Grid Procuct Dataset!");
+                return null;
+            }
 
-  int getCompressType( )
-  {
+        }
+        return unit;
+    }
+
+    int getCompressType( )
+    {
        return Z_type;
-  }
+    }
 
   // Return the string of entity ID for the GINI image file
 
