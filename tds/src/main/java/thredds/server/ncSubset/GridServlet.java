@@ -137,7 +137,7 @@ public class GridServlet extends AbstractServlet {
           return;
         }
         showForm(res, gds, pathInfo, wantXML, showPointForm);
-        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, 0));
+        //log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, 0));
 
       } catch (java.io.FileNotFoundException ioe) {
         log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));

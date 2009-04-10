@@ -56,12 +56,12 @@ public abstract class AbstractServlet extends HttpServlet {
 
     // init logging
     log = org.slf4j.LoggerFactory.getLogger(getClass());
-    log.info( "init(): " + UsageLog.setupNonRequestContext());
+    log.debug( "init(): " + UsageLog.setupNonRequestContext());
 
     // debug actions
     makeDebugActions();
 
-    log.info("--- initialized " + getClass().getName());
+    log.debug("--- initialized " + getClass().getName());
   }
 
   protected void initContent() throws javax.servlet.ServletException {

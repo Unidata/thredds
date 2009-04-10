@@ -13,9 +13,12 @@
 
 <body>
 <h1><img src="../netcdfBig.gif" width="100" height="55">Writing an IOSP for Netdf-Java version 4</h1>
-<p>Version 4.0 of Netcdf-Java has two new methods (in red), and one method has been removed. It also uses <strong>Section</strong> objects instead of <strong>List&lt;Range&gt;</strong>. </p>
-<pre>public interface <strong>ucar.nc2.IOServiceProvider</strong> {</pre>
-<pre>  // Check if this is a valid file for this IOServiceProvider.
+<p>Version 4.0 of Netcdf-Java refactors the<strong> IOServiceProvider</strong> interface, and provides an abstract superclass to help ease the burden of writing. </p>
+<p><strong>IOServiceProvider</strong> is now in the package <strong>ucar.nc2.iosp,</strong> and has two new methods (in red), and one method has been removed. It also uses <strong>Section</strong> objects instead of <strong>List&lt;Range&gt;</strong>. </p>
+<pre>public interface <strong>ucar.nc2.iosp.IOServiceProvider</strong> {</pre>
+<pre>  // Check if this is a valid file for this IOServiceProvider
+
+  // Required if you are registering your IOSP with NetcdfFile.registerIOProvider()
   public boolean <strong>isValidFile</strong>( ucar.unidata.io.RandomAccessFile raf) throws IOException;</pre>
 <pre>  // Open existing file, and populate ncfile with it.
   public void <strong>open</strong>(ucar.unidata.io.RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException;</pre>
@@ -29,9 +32,6 @@
   public long <strong>readToByteChannel</strong>(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)<br>         throws java.io.IOException, ucar.ma2.InvalidRangeException;</span></pre>
 <pre>  // Allows reading sections of nested variables<span class="style3">
   </span>// Only implement if you have Structures<span class="style3"><br>  public ucar.ma2.Array <strong>readSection</strong>(ParsedSectionSpec cer) throws IOException, InvalidRangeException;
-
-
-
 </span>
 
   // Close the file.
@@ -58,7 +58,7 @@
  }
 </pre>
 <p>Your implementataion class should extend <strong>ucar.nc2.iosp.AbstractIOServiceProvider. </strong>This provides default implementation of some of the methods, so minimally, you only have to implement 4 methods.</p>
-<pre>public class Example <strong>extends</strong> <strong>AbstractIOServiceProvider</strong> {
+<pre>public class MyIosp <strong>extends</strong> <strong>AbstractIOServiceProvider</strong> {
 <br>  public boolean <strong>isValidFile</strong>(RandomAccessFile raf) throws IOException {}</pre>
 <pre>  public void <strong>open</strong>(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {}</pre>
 <pre>  public Array <strong>readData</strong>(Variable v2, Section wantSection) throws IOException, InvalidRangeException {}</pre>

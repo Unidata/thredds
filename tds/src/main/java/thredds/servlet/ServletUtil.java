@@ -613,6 +613,7 @@ public class ServletUtil
       if (debugRequest) log.debug("returnFile(): returnFile ok = " + filename);
       log.info( "returnFile(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, contentLength));
     }
+
     // @todo Split up this exception handling: those from file access vs those from dealing with response
     //       File access: catch and res.sendError()
     //       response: don't catch (let bubble up out of doGet() etc)

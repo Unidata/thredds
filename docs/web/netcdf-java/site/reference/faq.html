@@ -12,12 +12,33 @@
 <p><strong>Q: How do I use NetcdfFile object caching</strong>?</p>
 <blockquote>
   <p>Initialize the object cache by calling <strong>NetcdfDataset.initNetcdfFileCache()</strong>, then open files through <strong>NetcdfDataset.acquireFile() </strong>and<strong> NetcdfDataset.acquireDataset()</strong>. Note that you always close a file in the normal way, ie through <strong>NetcdfFile.close()</strong>. See the javadoc for those methods for more details. </p>
+  <p>The main reason to use object caching is in a high performance server application.</p>
 </blockquote>
 <p><strong>Q: How do I control where temporary files are placed (Disk Caching)</strong>?</p>
 <blockquote>
   <p>See <a href="Caching.html">Disk Caching</a>.</p>
 </blockquote>
+</blockquote> 
+<h3>I/O Service Provider<a name="IOSP" id="IOSP"></a></h3>
+<p><strong>Q: I have lots of data in a proprietary format. How do I  read it into the CDM?</strong></p>
+<blockquote>
+  <p>You write a class that implements the IO Service Provider interface. See section 4 of the <a href="http://www.unidata.ucar.edu/software/netcdf-java/tutorial/index.html">tutorial</a>.</p>
 </blockquote>
+<p><strong>Q: I want to create a NetcdfFile  from some other source than a file. But an IOSP is designed to get data from a RandomAccessFile. So what do I do?</strong></p>
+<blockquote>
+  <p>An IOSP just has to satisfy the contract of IOServiceProvider. It doesnt matter how it gets satisfied. You can create an IOSP any way you want - its an interface. If you don't need the RandomAccessFile, you can ignore it. Use memory-resident data, a random-number generator, or any other way to satisfy a data request.</p>
+  <p>You can create a NetcdfFile with the protected constructor, and pass in your IOSP:</p>
+  <pre>  <strong>protected NetcdfFile(IOServiceProvider spi, RandomAccessFile raf, String location, CancelTask cancelTask)</strong>;</pre>
+  <pre> // need access to protected constructor
+ class <strong>MyNetcdfFile</strong> extends NetcdfFile {
+   MyNetcdfFile (IOServiceProvider spi, String name) {
+     <strong>super(spi, null, name, null)</strong>;
+   }
+ }</pre>
+  <p>Once you have a NetcdfFile, you can wrap it with a NetcdfDataset,  a GridDataset, a PointFeatureDataset, etc, and use all the mechanism of subsetting already in those classes. Ultimately those call your IOSP for data, and you must return the data correctly, according to the interface contract.<br />
+  </p>
+</blockquote>
+<p>&nbsp; </p>
 <h3>Logging</h3>
 <p><strong>Q: How do I get rid of the message &quot;log4j:WARN No appenders could be found for logger (ucar.nc2.NetcdfFile).  log4j:WARN Please initialize the log4j system properly&quot; ?</strong></p>
 <blockquote>
@@ -63,7 +84,7 @@
 </blockquote>
 <p><strong>Q: What about writing Netcdf-4 format?</strong></p>
 <blockquote>
-  <p>NetCDF-4 format is built on top of the <a href="http://www.hdfgroup.org/HDF5/">HDF5 file format</a>. It adds shared dimensions, so it is unfortunately not a strict subset of HDF5. HDF5 is a very complicated format, and at this time we do not have resources to write a 100% Java version for wweiting (we do have a 100% Java version for reading). We are considering a <a href="http://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a> interface to the NetCDF-4 C library, but there is no current timeline for that. </p>
+  <p>NetCDF-4 format is built on top of the <a href="http://www.hdfgroup.org/HDF5/">HDF5 file format</a>. It adds shared dimensions, so it is unfortunately not a strict subset of HDF5. HDF5 is a very complicated format, and at this time we do not have resources to write a 100% Java version for writing (we do have a 100% Java version for reading). We are considering a <a href="http://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a> interface to the NetCDF-4 C library, but there is no current timeline for that. </p>
 </blockquote>
 <p><strong>Q: <a name="writeGuide" id="writeGuide"></a>What kind of information should I put into my netCDF file to help others read it? </strong></p>
 <blockquote>
