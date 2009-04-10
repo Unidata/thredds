@@ -163,7 +163,9 @@ public class TestGridGribIosp extends TestCase {
         } else if (
             // can't be displayed by Grib(1|2) iosp
             child.contains( "Ensemble") ||
-            child.contains( "SREF") ||    
+            child.contains( "SREF") ||
+            child.contains( "GFS_Spectral") || //uses >1 parameter tables
+            child.contains( "SPECTRAL") || //uses >1 parameter tables    
             child.endsWith("gbx") ||
             child.endsWith("xml") ||
             child.endsWith("tmp") || //index in creation process
