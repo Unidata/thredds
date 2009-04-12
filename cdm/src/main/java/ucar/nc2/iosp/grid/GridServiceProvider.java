@@ -59,6 +59,9 @@ import java.io.IOException;
  */
 public abstract class GridServiceProvider extends AbstractIOServiceProvider {
 
+  public enum IndexExtendMode {
+    extend, rewrite, none
+  }
     /** FMRC coordinate system */
     protected FmrcCoordSys fmrcCoordSys;
 
@@ -71,11 +74,12 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
     /* to use or not to use cache first */
     protected static boolean alwaysInCache = false;
 
-    /* to extend the index */
-    public static boolean extendMode = false;
+    static public boolean addLatLon = false; // add lat/lon coordinates for striuct CF compliance
 
-    // force that a new index file is written
-    public static boolean forceNewIndex = false;  
+    static public boolean forceNewIndex = false; // force that a new index file is written
+    static public IndexExtendMode extendMode = IndexExtendMode.rewrite; // default is to rewrite
+    static public IndexExtendMode syncMode = IndexExtendMode.extend; // default is to extend
+
 
     /** place to store debug stuff */
     protected StringBuilder parseInfo = new StringBuilder();
@@ -112,6 +116,44 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
         debugProj           = debugFlag.isSet("Grid/projection");
         debugVert           = debugFlag.isSet("Grid/vertical");
         debugTiming         = debugFlag.isSet("Grid/timing");
+    }
+
+  /**
+     * This controls the case where the GRIB file has changed, which is detected by comparing the GRIB
+     *   file length with the file length recorded in the index file. If there is no index, one will be created.
+     *   Default is IndexExtendMode.rewrite.
+     * <ol>
+     * <li>IndexExtendMode.extend: when GRIB file length increases, extend the index. This is the case when the file
+     *   is being appended to, as new data arrives.
+     * <li>IndexExtendMode.rewrite: when GRIB file length changes, rewrite the index. This is the safest thing to do,
+     *   at the expense of performance.
+     * <li>IndexExtendMode.none: never modify an existing index. If there is no index, one will be created.
+     * </ol>
+     * @param mode IndexExtendMode when file is opened
+     */
+    static public void setIndexExtendMode(IndexExtendMode mode) {
+      extendMode = mode;
+    }
+
+    /**
+     * This controls what happens when sync() is called on a GRIB file. The main use of sync() is when you are using
+     * NetcdfFile object caching. Before NetcdfFile is returned from a cache hit, sync() is called on it.
+     * Default is IndexExtendMode.extend.
+     *
+     * @param mode IndexExtendMode when sync() is called. Same meaning as setIndexExtendMode(IndexExtendMode mode)
+     */
+    static public void setIndexSyncMode(IndexExtendMode mode) {
+      syncMode = mode;
+    }
+
+    // backwards compatible with old API
+    /**
+     * Set how indexes are used
+     * @param b if true, same as setIndexExtendMode(IndexExtendMode.extend), if false, same as
+     * setIndexExtendMode(IndexExtendMode.none)
+     */
+    static public void setExtendIndex(boolean b) {
+      extendMode = b ? IndexExtendMode.extend : IndexExtendMode.none;
     }
 
     /**
@@ -169,20 +211,25 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
 
      /**
      * extendMode
-     *
+     * this is left in for IDV folks, this is how they use it
      * @return extendMode
      */
     public static boolean extendMode() {
-        return extendMode;
+        return extendMode == IndexExtendMode.extend;
     }
 
     /**
      * extendMode
      *
+     * this is left in for IDV folks, this is how they use it
      * @param em
      */
     public static void setExtendMode( boolean em ) {
-        extendMode = em;
+      if( em ) {
+        extendMode = IndexExtendMode.extend;
+      } else { // set to default
+        extendMode = IndexExtendMode.rewrite;
+      }
     }
 
     /**

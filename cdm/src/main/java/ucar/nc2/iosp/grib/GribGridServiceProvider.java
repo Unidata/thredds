@@ -206,14 +206,11 @@ public class GribGridServiceProvider extends GridServiceProvider {
     GridIndex index = null;
     File indexFile = null;
 
-    //http test
-    //gribLocation = "http://motherlode.ucar.edu:9080/thredds/fileServer/fmrc/NCEP/NAM/Polar_90km/files/NAM_Polar_90km_20090403_1200.grib2";
     // is this a remote grib file ?
     if (indexLocation.startsWith("http:")) {
       InputStream ios = indexExistsAsURL(indexLocation);
       if (ios != null) {  // try to read a remote index
         index = new GribReadIndex().open(indexLocation, ios);
-        //saveIndexLocation = indexLocation;
         indexLastModified = System.currentTimeMillis(); // used in sync
         log.debug("opened HTTP index = " + indexLocation);
         return index;
@@ -239,72 +236,51 @@ public class GribGridServiceProvider extends GridServiceProvider {
     gribLastModified = gribFile.lastModified();
     indexLastModified = indexFile.lastModified();
 
-    // once index determined, if forceNewIndex then write it. very expensive
-    if (forceNewIndex && extendMode) { // up to caller to make sure write permission exist
-      if (indexFile.exists() && indexFile.canWrite()) {
-        return writeIndex(indexFile, raf);
-      } else if (!indexFile.exists()) {
-        return writeIndex(indexFile, raf);
-      } else {
-        log.error("GribGridServiceProvider: cannot sync index, no write permission " + indexFile.getPath());
-        return null;
-      }
-    }
-
-    // if index exist already and extendMode, check/read it
-    if (extendMode && indexFile.exists()) {
-      try {
-        if (indexFile.canWrite()) {
-          // index later then grib, so just read it else extend it
-          if (gribFile.lastModified() < indexFile.lastModified()) {
-            index = new GribReadIndex().open(indexFile.getPath());
-            //saveIndexLocation = indexFile.getPath();
-          } else {
-            index = extendIndex(gribFile, indexFile, raf);
-          }
-        } else { // no index write permission, just read it but set warning
+    // if index exist already, read it
+      if (!forceNewIndex && indexFile.exists()) {
+        boolean ok = true;
+        try {
           index = new GribReadIndex().open(indexFile.getPath());
-          //aveIndexLocation = indexFile.getPath();
-          log.warn("GribGridServiceProvider: cannot extend index, no write permission " + indexFile.getPath());
+        } catch (Exception e) {
+          ok = false;
         }
-      } catch (Exception e) {
-        String msg = "Problem reading or extending index file";
-        log.error("getIndex(): " + msg + "[" + indexLocation + "].", e);
-        throw new IOException(msg + ": " + e.getMessage());
-      }
+        if (ok) {
+          log.debug("  opened index = " + indexFile.getPath());
 
-      if (index != null) {
-        log.debug("GribGridServiceProvider: opened index = " + indexFile.getPath());
-      } else {
-        log.error("GribGridServiceProvider: index open failed, extend index = " + indexFile.getPath());
-        //index = writeIndex( indexFile, raf);
-      }
+          // deal with possiblity that the grib file has changed, and the index should be extended or rewritten.
+          // action depends on extendMode
+          //String lengthS = index.getGlobalAttribute("length");
+         // long indexRafLength = (lengthS == null) ? 0 : Long.parseLong(lengthS);
+          //if (indexRafLength != rafLength) {
+          if (gribLastModified < gribFile.lastModified() || indexLastModified < indexFile.lastModified()) {
 
-    } else if (indexFile.exists()) {
-      try {
-        index = new GribReadIndex().open(indexFile.getPath());
-        //saveIndexLocation = indexFile.getPath();
-      } catch (Exception e) {
-        String msg = "Problem reading index file";
-        log.error("getIndex(): " + msg + "[" + indexLocation + "].", e);
-        throw new IOException( msg + ": " + e.getMessage() );
-      }
+            //if ((extendMode == IndexExtendMode.extend) && (indexRafLength < rafLength)) {
+            if ((extendMode == IndexExtendMode.extend)  ) {
+              log.debug("  extend Index = " + indexFile.getPath());
+              index = extendIndex(gribFile, indexFile, raf);
 
-      if (index != null) {
-        log.debug("GribGridServiceProvider: opened index = " + indexFile.getPath());
-      } else {  // rewrite if possible, failed to open
-        log.error("GribGridServiceProvider: index open failed, try write index = " + indexFile.getPath());
-        if (indexFile.canWrite())
+            } else if (extendMode == IndexExtendMode.rewrite) {
+              // write new index
+              log.debug("  rewrite index = " + indexFile.getPath());
+              index = writeIndex(indexFile, raf);
+
+            } else {
+              log.debug("  index had new length, ignore ");
+            }
+          }
+     } else {  // rewrite if fail to open
+          log.debug("  write index = " + indexFile.getPath());
           index = writeIndex(indexFile, raf);
+        }
+
+      } else {
+        // doesnt exist (or is being forced), create it and write it
+        log.debug("  write index = " + indexFile.getPath());
+        index = writeIndex(indexFile, raf);
       }
 
-    } else { // index doesn't exist
-      log.debug("GribGridServiceProvider: creating index = " + indexFile.getPath());
-      index = writeIndex(indexFile, raf);
+      return index;
     }
-
-    return index;
-  }
 
   private File getIndexFile(String indexLocation) throws IOException {
     File indexFile = null;
@@ -327,31 +303,19 @@ public class GribGridServiceProvider extends GridServiceProvider {
   }
 
   public boolean sync() throws IOException {
+    if (syncMode == IndexExtendMode.none) return false;
 
     GridIndex index = null;
-
-    /* could be an url, possible reread index
-    if (saveIndexLocation.startsWith("http:")) {
-      if ( (System.currentTimeMillis() - indexLastModified) > 30000 ) {
-        log.debug("  sync reread http index = " + saveIndexLocation );
-        index = new GribReadIndex().open(saveIndexLocation);
-        indexLastModified = System.currentTimeMillis();
-         ncfile.empty();
-         open(index, null);
-         return true;
-      }
-      return false;
-    } */
-
     File gribFile = new File(raf.getLocation());
     File indexFile = getIndexFile(saveIndexLocation);
-
     long gribModified = gribFile.lastModified();
     long indexModified = indexFile.lastModified();
 
-    if (extendMode && (gribLastModified < gribModified || indexLastModified < indexModified)) {
+    // has the file chenged?
+    if (gribLastModified < gribModified || indexLastModified < indexModified) {
 
-      if (extendMode && indexFile.exists()) {
+      //if ((syncMode == IndexExtendMode.extend) && indexFile.exists() && indexFile.canWrite() ) {
+      if (syncMode == IndexExtendMode.extend) {
         log.debug("  sync extend Index = " + indexFile.getPath());
         index = extendIndex(gribFile, indexFile, raf);
 
@@ -363,18 +327,13 @@ public class GribGridServiceProvider extends GridServiceProvider {
       gribLastModified = gribModified;
       indexLastModified = indexModified;
 
-      // just read Index, it's been updated
-    } else if (indexLastModified < indexModified) {
-      log.debug("  sync reread index = " + indexFile.getPath() + " indexModified at " + indexModified);
-      index = new GribReadIndex().open(indexFile.getPath());
-      indexLastModified = indexModified;
-    }
-    if (index != null) {
       // reconstruct the ncfile objects
       ncfile.empty();
       open(index, null);
+
       return true;
     }
+
     return false;
   }
 
