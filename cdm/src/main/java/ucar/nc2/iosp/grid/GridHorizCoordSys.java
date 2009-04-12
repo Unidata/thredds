@@ -318,6 +318,7 @@ public class GridHorizCoordSys {
             startx, getDxInKm(), "km", "x coordinate of projection",
             "projection_x_coordinate", AxisType.GeoX);
       }
+      if (GridServiceProvider.addLatLon) addLatLon2D(ncfile, xData, yData);
     }
   }
 
@@ -455,6 +456,50 @@ public class GridHorizCoordSys {
     ncfile.addVariable(g, v);
 
     return data;
+  }
+
+  private void addLatLon2D(NetcdfFile ncfile, double[] xData, double[] yData) {
+
+    Variable latVar = new Variable(ncfile, g, null, "lat");
+    latVar.setDataType(DataType.DOUBLE);
+    latVar.setDimensions("y x");
+    latVar.addAttribute(new Attribute("units", "degrees_north"));
+    latVar.addAttribute(new Attribute("long_name", "latitude coordinate"));
+    latVar.addAttribute(new Attribute("standard_name", "latitude"));
+    latVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
+
+    Variable lonVar = new Variable(ncfile, g, null, "lon");
+    lonVar.setDataType(DataType.DOUBLE);
+    lonVar.setDimensions("y x");
+    lonVar.addAttribute(new Attribute("units", "degrees_east"));
+    lonVar.addAttribute(new Attribute("long_name", "longitude coordinate"));
+    lonVar.addAttribute(new Attribute("standard_name", "longitude"));
+    lonVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
+
+    int nx = xData.length;
+    int ny = yData.length;
+
+    // create the data
+    ProjectionPointImpl projPoint = new ProjectionPointImpl();
+    LatLonPointImpl latlonPoint = new LatLonPointImpl();
+    double[] latData = new double[nx * ny];
+    double[] lonData = new double[nx * ny];
+    for (int i = 0; i < ny; i++) {
+      for (int j = 0; j < nx; j++) {
+        projPoint.setLocation(xData[j], yData[i]);
+        proj.projToLatLon(projPoint, latlonPoint);
+        latData[i * nx + j] = latlonPoint.getLatitude();
+        lonData[i * nx + j] = latlonPoint.getLongitude();
+      }
+    }
+    Array latDataArray = Array.factory(DataType.DOUBLE, new int[]{ny, nx}, latData);
+    latVar.setCachedData(latDataArray, false);
+
+    Array lonDataArray = Array.factory(DataType.DOUBLE, new int[]{ny, nx}, lonData);
+    lonVar.setCachedData(lonDataArray, false);
+
+    ncfile.addVariable(g, latVar);
+    ncfile.addVariable(g, lonVar);
   }
 
   /**
