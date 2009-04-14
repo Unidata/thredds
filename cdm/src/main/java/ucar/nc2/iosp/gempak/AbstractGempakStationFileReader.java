@@ -33,6 +33,7 @@
 
 
 
+
 package ucar.nc2.iosp.gempak;
 
 
@@ -454,6 +455,17 @@ public abstract class AbstractGempakStationFileReader extends GempakFileReader {
             }
         }
         return dates;
+    }
+
+    /**
+     * Get the date string at the index
+     *
+     * @param index index (row or column)
+     *
+     * @return the date at that index
+     */
+    protected String getDateString(int index) {
+        return dateList.get(index);
     }
 
     /**

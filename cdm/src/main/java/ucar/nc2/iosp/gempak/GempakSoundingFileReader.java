@@ -33,7 +33,6 @@
 
 
 
-
 package ucar.nc2.iosp.gempak;
 
 
@@ -94,8 +93,41 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
     /** number of parameters */
     private int ivert = -1;
 
-    /** flag for standard file */
-    private String soundingFileType = null;
+    /** list of unmerged parts */
+    private List<String> unmergedParts;
+
+    /** array of manadatory parameters */
+    private final String[] mandpp = {
+        "PRES", "TEMP", "DWPT", "DRCT", "SPED", "HGHT"
+    };
+
+    /** array of significant temperature parameters */
+    private final String[] sigtpp = { "PRES", "TEMP", "DWPT" };
+
+    /** array of significant wind parameters */
+    private final String[] sigwpp = { "HGHT", "DRCT", "SPED" };
+
+    /** array of tropopause parameters */
+    private final String[] troppp = { "PRES", "TEMP", "DWPT", "DRCT",
+                                      "SPED" };
+
+    /** array of maximum wind parameters */
+    private final String[] maxwpp = { "PRES", "DRCT", "SPED" };
+
+    /** array of groups below 100 mb */
+    private final String[] belowGroups = {
+        "TTAA", "TRPA", "MXWA", "PPAA", "TTBB", "PPBB"
+    };
+
+    /** array of groups above 100 mb */
+    private final String[] aboveGroups = {
+        "TTCC", "TRPC", "MXWC", "PPCC", "TTDD", "PPDD"
+    };
+
+    /** list of valid params for each group */
+    private final String[][] parmLists = {
+        mandpp, troppp, maxwpp, maxwpp, sigtpp, sigwpp
+    };
 
     /**
      * Default ctor
@@ -168,8 +200,8 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
             }
 
         } else {
-            List<String> groups       = SN_CKUA();
-            boolean      haveUnMerged = !groups.isEmpty();
+            unmergedParts = SN_CKUA();
+            boolean haveUnMerged = !unmergedParts.isEmpty();
             if ( !haveUnMerged) {
                 logError("unknown sounding file type - not merged/unmerged");
                 return false;
@@ -200,31 +232,48 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
      */
     public void printOb(int row, int col) {
         GempakStation station = getStations().get(col - 1);
-        StringBuilder builder = new StringBuilder();
-        builder.append("\nStation:\n");
-        builder.append(station.toString());
-        builder.append("\nObs\n\t");
-        String part = SNDT;
-        if (getFileSubType().equals(UNMERGED)) {
-            part = "TTAA";
-        }
-        List<GempakParameter> params = getParameters(part);
-        for (GempakParameter parm : params) {
-            builder.append(StringUtil.padLeft(parm.getName(), 7));
-            builder.append("\t");
-        }
+        String        time    = getDateString(row - 1);
+        StringBuilder builder = new StringBuilder("\n");
+        builder.append(makeHeader(station, time));
         builder.append("\n");
-        RData rd = null;
-        try {
-            rd = DM_RDTR(row, col, part);
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-            rd = null;
-        }
-        if (rd == null) {
-            builder.append("No Data Available");
+        boolean      merge = getFileSubType().equals(MERGED);
+        List<String> parts;
+        if (merge) {
+            parts = new ArrayList<String>();
+            parts.add(SNDT);
         } else {
-            builder.append("\t");
+            parts = unmergedParts;
+        }
+        for (String part : parts) {
+            RData rd = null;
+            try {
+                rd = DM_RDTR(row, col, part);
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+                rd = null;
+            }
+            if (rd == null) {
+                continue;
+            }
+            if ( !merge) {
+                builder.append("    ");
+                builder.append(part);
+                builder.append("    ");
+                builder.append(time.substring(time.indexOf("/") + 1));
+            }
+            builder.append("\n");
+            if ( !merge) {
+                builder.append("\t");
+            }
+            List<GempakParameter> params = getParameters(part);
+            for (GempakParameter parm : params) {
+                builder.append(StringUtil.padLeft(parm.getName(), 7));
+                builder.append("\t");
+            }
+            builder.append("\n");
+            if ( !merge) {
+                builder.append("\t");
+            }
             float[] data      = rd.data;
             int     numParams = params.size();
             int     numLevels = data.length / numParams;
@@ -236,10 +285,47 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
                                 data[j * numParams + i], 7, 1), 7));
                     builder.append("\t");
                 }
-                builder.append("\n\t");
+                builder.append("\n");
+                if ( !merge) {
+                    builder.append("\t");
+                }
             }
+            builder.append("\n");
         }
+        builder.append("\n");
         System.out.println(builder.toString());
+    }
+
+    /**
+     * _more_
+     *
+     * @param stn _more_
+     * @param date _more_
+     *
+     * @return _more_
+     */
+    private String makeHeader(GempakStation stn, String date) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("STID = ");
+        builder.append(StringUtil.padRight((stn.getSTID().trim()
+                                            + stn.getSTD2().trim()), 8));
+        builder.append("\t");
+        builder.append("STNM = ");
+        builder.append(Format.i(stn.getSTNM(), 6));
+        builder.append("\t");
+        builder.append("TIME = ");
+        builder.append(date);
+        builder.append("\n");
+        builder.append("SLAT = ");
+        builder.append(Format.d(stn.getLatitude(), 5));
+        builder.append("\t");
+        builder.append("SLON = ");
+        builder.append(Format.d(stn.getLongitude(), 5));
+        builder.append("\t");
+        builder.append("SELV = ");
+        builder.append(Format.d(stn.getAltitude(), 5));
+        builder.append("\n");
+        return builder.toString();
     }
 
     /**
@@ -264,6 +350,7 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
         }
 
         GempakSoundingFileReader gsfr = getInstance(getFile(args[0]), true);
+        /*
         System.out.println("Type = " + gsfr.getFileType());
         gsfr.printFileLabel();
         gsfr.printKeys();
@@ -271,6 +358,7 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
         gsfr.printParts();
         gsfr.printDates();
         gsfr.printStations(false);
+        */
         int row = 1;
         int col = 1;
         if (args.length > 1) {
@@ -289,39 +377,6 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
         }
         gsfr.printOb(row, col);
     }
-
-    /** array of manadatory parameters */
-    private final String[] mandpp = {
-        "PRES", "TEMP", "DWPT", "DRCT", "SPED", "HGHT"
-    };
-
-    /** array of significant temperature parameters */
-    private final String[] sigtpp = { "PRES", "TEMP", "DWPT" };
-
-    /** array of significant wind parameters */
-    private final String[] sigwpp = { "HGHT", "DRCT", "SPED" };
-
-    /** array of tropopause parameters */
-    private final String[] troppp = { "PRES", "TEMP", "DWPT", "DRCT",
-                                      "SPED" };
-
-    /** array of maximum wind parameters */
-    private final String[] maxwpp = { "PRES", "DRCT", "SPED" };
-
-    /** array of groups below 100 mb */
-    private final String[] belowGroups = {
-        "TTAA", "TRPA", "MXWA", "PPAA", "TTBB", "PPBB"
-    };
-
-    /** array of groups above 100 mb*/
-    private final String[] aboveGroups = {
-        "TTCC", "TRPC", "MXWC", "PPCC", "TTDD", "PPDD"
-    };
-
-    /** list of valid params for each group */
-    private final String[][] parmLists = {
-        mandpp, troppp, maxwpp, maxwpp, sigtpp, sigwpp
-    };
 
     /**
      * This subroutine checks the parts in a sounding data set for the
