@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.io.FileFilter;
 
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.util.TestDiskCacheUtils;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -183,6 +184,16 @@ public class TestAll {
         System.out.println( "**ERROR: Could not create temporary data dir <" + tmpDataDir.getAbsolutePath() + ">." );
       }
     }
+  }
+
+  // Configure disk caching for
+  static {
+    // Setup for DiskCache
+    TestDiskCacheUtils.setupDiskCacheInTmpDir( true );
+    TestDiskCacheUtils.emptyDiskCache( null );
+
+    // Setup for DiskCache2.
+    TestDiskCacheUtils.setupDiskCache2WithTmpRootDir();
   }
 
   public static junit.framework.Test suite ( ) {
