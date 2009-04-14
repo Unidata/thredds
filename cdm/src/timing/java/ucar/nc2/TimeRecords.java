@@ -132,7 +132,7 @@ public class TimeRecords {
   static public void main(String[] args) throws IOException {
     doOne("C:/data/trajectory/135_ordrd.nc", true);
     doOne("C:/data/trajectory/135_raw.nc", true);
-    //doOne(TestAll.upcShareTestDataDir +"station/ldm/20050520_metar.nc", false);
+    //doOne(TestAll.testdataDir +"station/ldm/20050520_metar.nc", false);
   }
 
 }

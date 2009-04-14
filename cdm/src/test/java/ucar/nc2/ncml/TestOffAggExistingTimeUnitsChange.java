@@ -44,7 +44,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringBufferInputStream;
 import java.io.StringReader;
 
 import junit.framework.TestCase;
@@ -62,7 +61,7 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
   //String location = "file:R:/testdata/ncml/nc/narr/narr.ncml";
 
   public void testNamExtract() throws IOException, InvalidRangeException {
-    String location = "file:"+ TestAll.upcShareTestDataDir + "ncml/nc/namExtract/test_agg.ncml";
+    String location = "file:"+ TestAll.testdataDir + "ncml/nc/namExtract/test_agg.ncml";
     System.out.println(" TestOffAggExistingTimeUnitsChange.open "+ location);
 
     NetcdfFile ncfile = NetcdfDataset.openFile(location, null);
@@ -97,7 +96,7 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
                     " </aggregation>\n" +
                     "</netcdf>";
 
-    String location = "file:"+ TestAll.upcShareTestDataDir + "ncml/nc/narr/";
+    String location = "file:"+ TestAll.testdataDir + "ncml/nc/narr/";
     System.out.println(" TestOffAggExistingTimeUnitsChange.testNarrGrib=\n"+ ncml);
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), location, null);
 

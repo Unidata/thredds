@@ -44,7 +44,7 @@ import java.util.Random;
  * @author edavis
  * @since Apr 19, 2007 10:11:24 PM
  */
-public class TestUtils
+public class TestFileDirUtils
 {
   /**
    * Creates a new temporary directory in the specified directory. The name

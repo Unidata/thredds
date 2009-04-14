@@ -59,7 +59,7 @@ public class TestTransforms extends TestCase {
   }
 
   public void testHybridSigmaPressure() throws IOException, InvalidRangeException {
-    String filename = TestAll.upcShareTestDataDir + "grid/transforms/HybridSigmaPressure.nc";
+    String filename = TestAll.testdataDir + "grid/transforms/HybridSigmaPressure.nc";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     VariableDS lev = (VariableDS) ncd.findVariable("lev");
     assert lev != null;
@@ -102,7 +102,7 @@ public class TestTransforms extends TestCase {
   }
 
   public void testHybridSigmaPressure2() throws IOException, InvalidRangeException {
-    String filename = TestAll.upcShareTestDataDir + "grid/netcdf/cf/climo.cam2.h0.0000-09.nc";
+    String filename = TestAll.testdataDir + "grid/netcdf/cf/climo.cam2.h0.0000-09.nc";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     VariableDS lev = (VariableDS) ncd.findVariable("lev");
     assert lev != null;
@@ -149,7 +149,7 @@ public class TestTransforms extends TestCase {
   }
 
   public void testOceanS() throws IOException, InvalidRangeException {
-    String filename = TestAll.upcShareTestDataDir + "grid/transforms/OceanS.nc";
+    String filename = TestAll.testdataDir + "grid/transforms/OceanS.nc";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     VariableDS lev = (VariableDS) ncd.findVariable("s_rho");
     assert lev != null;
@@ -193,7 +193,7 @@ public class TestTransforms extends TestCase {
   }
 
   public void testOceanS2() throws IOException, InvalidRangeException {
-    String filename = TestAll.upcShareTestDataDir + "grid/transforms/OceanS2.nc";
+    String filename = TestAll.testdataDir + "grid/transforms/OceanS2.nc";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     VariableDS lev = (VariableDS) ncd.findVariable("s_rho");
     assert lev != null;
@@ -238,7 +238,7 @@ public class TestTransforms extends TestCase {
 
 
   public void testOceanSigma() throws IOException, InvalidRangeException {
-    String filename = TestAll.upcShareTestDataDir + "grid/transforms/OceanSigma.nc";
+    String filename = TestAll.testdataDir + "grid/transforms/OceanSigma.nc";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     VariableDS lev = (VariableDS) ncd.findVariable("zpos");
     assert lev != null;
@@ -281,7 +281,7 @@ public class TestTransforms extends TestCase {
   }
 
   public void testSigma() throws IOException, InvalidRangeException {
-    String filename = TestAll.upcShareTestDataDir + "grid/transforms/Sigma_LC.nc";
+    String filename = TestAll.testdataDir + "grid/transforms/Sigma_LC.nc";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     VariableDS lev = (VariableDS) ncd.findVariable("level");
     assert lev != null;
@@ -327,7 +327,7 @@ public class TestTransforms extends TestCase {
   }
 
   public void testExisting() throws IOException, InvalidRangeException {
-    String filename = TestAll.upcShareTestDataDir + "grid/transforms/VExisting3D_NUWG.nc";
+    String filename = TestAll.testdataDir + "grid/transforms/VExisting3D_NUWG.nc";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     VariableDS lev = (VariableDS) ncd.findVariable("VerticalTransform");
     assert lev != null;
@@ -370,7 +370,7 @@ public class TestTransforms extends TestCase {
   }
 
   public void testLC() throws IOException, InvalidRangeException {
-    String filename = TestAll.upcShareTestDataDir + "grid/transforms/Sigma_LC.nc";
+    String filename = TestAll.testdataDir + "grid/transforms/Sigma_LC.nc";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     VariableDS lev = (VariableDS) ncd.findVariable("Lambert_Conformal");
     assert lev != null;
@@ -409,7 +409,7 @@ public class TestTransforms extends TestCase {
   }
 
   public void testLA() throws IOException, InvalidRangeException {
-    String filename = TestAll.upcShareTestDataDir + "grid/transforms/LambertAzimuth.nc";
+    String filename = TestAll.testdataDir + "grid/transforms/LambertAzimuth.nc";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     VariableDS lev = (VariableDS) ncd.findVariable("grid_mapping0");
     assert lev != null;
@@ -448,7 +448,7 @@ public class TestTransforms extends TestCase {
   }
 
   public void testPS() throws IOException, InvalidRangeException {
-    String filename = TestAll.upcShareTestDataDir + "grid/transforms/PolarStereographic.nc";
+    String filename = TestAll.testdataDir + "grid/transforms/PolarStereographic.nc";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     VariableDS lev = (VariableDS) ncd.findVariable("Polar_Stereographic");
     assert lev != null;
@@ -487,7 +487,7 @@ public class TestTransforms extends TestCase {
   }
 
   public void testPS2() throws IOException, InvalidRangeException {
-    String filename = TestAll.upcShareTestDataDir + "grid/transforms/Polar_Stereographic2.nc";
+    String filename = TestAll.testdataDir + "grid/transforms/Polar_Stereographic2.nc";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
 
     VariableDS v = (VariableDS) ncd.findVariable("dpd-Surface0");
@@ -523,7 +523,7 @@ public class TestTransforms extends TestCase {
   }
 
   public void testPS3() throws IOException, InvalidRangeException {
-    String filename = TestAll.upcShareTestDataDir + "grid/netcdf/cf/Base_month.nc";
+    String filename = TestAll.testdataDir + "grid/netcdf/cf/Base_month.nc";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
 
     VariableDS v = (VariableDS) ncd.findVariable("D2_SO4");
@@ -559,7 +559,7 @@ public class TestTransforms extends TestCase {
   }
 
   public void testMercator() throws IOException, InvalidRangeException {
-    String filename = TestAll.upcShareTestDataDir + "grid/transforms/Mercator.grib1";
+    String filename = TestAll.testdataDir + "grid/transforms/Mercator.grib1";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     VariableDS lev = (VariableDS) ncd.findVariable("Mercator_Projection_Grid");
     assert lev != null;
@@ -598,7 +598,7 @@ public class TestTransforms extends TestCase {
   }
 
   public void testVerticalPerspective() throws IOException, InvalidRangeException {
-    String filename = TestAll.upcShareTestDataDir + "grid/transforms/Eumetsat.VerticalPerspective.grb";
+    String filename = TestAll.testdataDir + "grid/transforms/Eumetsat.VerticalPerspective.grb";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     VariableDS lev = (VariableDS) ncd.findVariable("Space_View_Perspective_or_Orthographic");
     assert lev != null;

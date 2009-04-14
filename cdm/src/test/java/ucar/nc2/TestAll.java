@@ -46,7 +46,6 @@ import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.TestOffAggForecastModel;
-import ucar.nc2.ft.TestFeatureDatasets;
 
 /**
  * TestSuite that runs all nj22 unit tests.
@@ -56,17 +55,46 @@ public class TestAll {
 
   public static long startTime;
 
+  /**
+   * Unidata "/upc/share" directory (MAY NOT be used in Unidata nightly testing).
+   */
+  public static String upcShareDir;
+
+  /**
+   * Level 2 test data directory (MAY be used in Unidata nightly testing).
+   * Unidata "/upc/share/thredds/data" directory
+   */
+  public static String upcShareThreddsDataDir;
+
+  /**
+   * Level 3 test data directory (MAY NOT be used in Unidata nightly testing).
+   * Unidata "/upc/share/testdata" directory. For once off testing and debuging.
+   */
+  public static String testdataDir = null;
+
+  /** Property name for the path to the Unidata test data directory,
+   * i.e., newshemp:/data/testdata. */
+  private static String testdataDirPropName ="unidata.testdata.path";
+
+  /** Property name for the path to the Unidata shared directory,
+   * i.e., zero:/upc/share. */
+  private static String upcShareDirPropName ="unidata.upc.share.path";
+
+  /** Filename of the user property file read from the "user.home" directory
+   * if the "unidata.testdata.path" and "unidata.upc.share.path" are not
+   * available as system properties. */
+  private static String threddsPropFileName = "thredds.properties";
+
   // TODO all the static stuff below is also in thredds.unidata.testUtil.TestAll, can we unify?
 
   // Determine how Unidata "/upc/share" directory is mounted
   // on local machine by reading system or THREDDS property.
   static {
-    String upcSharePropName = "unidata.upc.share.path";
-    String threddsPropFileName = "thredds.properties";
+    // Check for system property
+    String sharePath = System.getProperty( upcShareDirPropName );
+    String testdataDirPath = System.getProperty( testdataDirPropName );
 
-    // Get system property
-    String path = System.getProperty( upcSharePropName );
-    if ( path == null )
+    if ( sharePath == null || testdataDirPath == null )
     {
       // Get user property.
       File userHomeDirFile = new File( System.getProperty( "user.home" ) );
@@ -84,60 +112,54 @@ public class TestAll {
         }
         if ( userThreddsProps != null && ! userThreddsProps.isEmpty() )
         {
-          path = userThreddsProps.getProperty( upcSharePropName );
+          if ( sharePath == null )
+            sharePath = userThreddsProps.getProperty( upcShareDirPropName );
+          if ( testdataDirPath == null )
+            testdataDirPath = userThreddsProps.getProperty( testdataDirPropName );
         }
       }
     }
 
-    if ( path == null )
+    // Use default paths if needed.
+    if ( sharePath == null )
     {
-      // Get default path.
       System.out.println( "**No \"unidata.upc.share.path\"property, defaulting to \"/upc/share/\"." );
-      path = "/upc/share/";
+      sharePath = "/upc/share/";
     }
-    // Make sure path ends with a slash.
-    if ((! path.endsWith( "/")) && ! path.endsWith( "\\"))
+    if ( testdataDirPath == null )
     {
-      path = path + "/";
+      System.out.println( "**No \"unidata.testdata.path\"property, defaulting to \"/data/testdata/\"." );
+      testdataDirPath = "/data/testdata/";
     }
-    upcShareDir = path;
+    // Make sure paths ends with a slash.
+    if ((! sharePath.endsWith( "/")) && ! sharePath.endsWith( "\\"))
+      sharePath = sharePath + "/";
+    if ((!testdataDirPath.endsWith( "/")) && !testdataDirPath.endsWith( "\\"))
+      testdataDirPath += "/";
+
+    testdataDir = testdataDirPath;
+    upcShareDir = sharePath;
+    upcShareThreddsDataDir = upcShareDir + "thredds/data/";
   }
 
-  /**
-   *  Unidata "/upc/share" directory (MAY NOT be used in Unidata nightly testing).
-   */
-  public static String upcShareDir;
-
-  /**
-   * Level 3 test data directory (MAY NOT be used in Unidata nightly testing).
-   * Unidata "/upc/share/testdata" directory. For once off testing and debuging.
-   */
-  public static String upcShareTestDataDir = upcShareDir + "testdata/";
-
-  /**
-   * Level 2 test data directory (MAY be used in Unidata nightly testing).
-   * Unidata "/upc/share/thredds/data" directory
-   */
-  public static String upcShareThreddsDataDir = upcShareDir + "thredds/data/";
-
-  // Make sure the temp data dir is created.
+  // Check that directories exist and are directories.
   static
   {
     File file = new File( upcShareDir );
-    if ( ! file.exists() )
+    if ( ! file.exists() || ! file.isDirectory() )
     {
-      System.out.println( "**WARN: Non-existence of \"/upc/share\" directory <" + file.getAbsolutePath() + ">." );
+      System.out.println( "**WARN: Non-existence of \"/upc/share\" directory [" + file.getAbsolutePath() + "]." );
     }
 
-    file = new File( upcShareTestDataDir);
-    if ( ! file.exists() )
+    file = new File( testdataDir );
+    if ( ! file.exists() || !file.isDirectory() )
     {
-      System.out.println( "**WARN: Non-existence of Level 3 test data directory <" + file.getAbsolutePath() + ">." );
+      System.out.println( "**WARN: Non-existence of Level 3 test data directory [" + file.getAbsolutePath() + "]." );
     }
     file = new File( upcShareThreddsDataDir );
-    if ( ! file.exists() )
+    if ( ! file.exists() || ! file.isDirectory() )
     {
-      System.out.println( "**WARN: Non-existence of Level 2 test data directory <" + file.getAbsolutePath() + ">." );
+      System.out.println( "**WARN: Non-existence of Level 2 test data directory [" + file.getAbsolutePath() + "]." );
     }
   }
 

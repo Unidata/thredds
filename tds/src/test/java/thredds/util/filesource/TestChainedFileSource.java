@@ -44,7 +44,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
-import ucar.unidata.util.TestUtils;
+import ucar.unidata.util.TestFileDirUtils;
 
 /**
  * _more_
@@ -68,31 +68,31 @@ public class TestChainedFileSource extends TestCase
   protected void setUp()
   {
     // Create a data directory and some data files.
-    tmpDir = TestUtils.addDirectory( new File( TestAll.temporaryDataDir ), "TestChainedFileSource" );
+    tmpDir = TestFileDirUtils.addDirectory( new File( TestAll.temporaryDataDir ), "TestChainedFileSource" );
 
-    contentDir = TestUtils.addDirectory( tmpDir, "content" );
-    TestUtils.addFile( contentDir, "myCat.xml" );
-    File myDir = TestUtils.addDirectory( contentDir, "myDir" );
-    TestUtils.addFile( myDir, "myCat.xml" );
-    publicDir = TestUtils.addDirectory( contentDir, "public" );
-    TestUtils.addFile( publicDir, "myCat.xml" );
-    TestUtils.addFile( publicDir, "myCatPublic.xml" );
+    contentDir = TestFileDirUtils.addDirectory( tmpDir, "content" );
+    TestFileDirUtils.addFile( contentDir, "myCat.xml" );
+    File myDir = TestFileDirUtils.addDirectory( contentDir, "myDir" );
+    TestFileDirUtils.addFile( myDir, "myCat.xml" );
+    publicDir = TestFileDirUtils.addDirectory( contentDir, "public" );
+    TestFileDirUtils.addFile( publicDir, "myCat.xml" );
+    TestFileDirUtils.addFile( publicDir, "myCatPublic.xml" );
 
-    iddDir = TestUtils.addDirectory( tmpDir, "web/alt/idd" );
-    TestUtils.addFile( iddDir, "iddCat.xml");
-    TestUtils.addFile( iddDir, "myCat.xml");
+    iddDir = TestFileDirUtils.addDirectory( tmpDir, "web/alt/idd" );
+    TestFileDirUtils.addFile( iddDir, "iddCat.xml");
+    TestFileDirUtils.addFile( iddDir, "myCat.xml");
 
-    mlodeDir = TestUtils.addDirectory( tmpDir, "web/alt/mlode" );
-    TestUtils.addFile( mlodeDir, "mlodeCat.xml" );
-    TestUtils.addFile( mlodeDir, "iddCat.xml" );
-    TestUtils.addFile( mlodeDir, "myCat.xml" );
+    mlodeDir = TestFileDirUtils.addDirectory( tmpDir, "web/alt/mlode" );
+    TestFileDirUtils.addFile( mlodeDir, "mlodeCat.xml" );
+    TestFileDirUtils.addFile( mlodeDir, "iddCat.xml" );
+    TestFileDirUtils.addFile( mlodeDir, "myCat.xml" );
 
   }
 
   protected void tearDown()
   {
     // Delete temp directory.
-    TestUtils.deleteDirectoryAndContent( tmpDir );
+    TestFileDirUtils.deleteDirectoryAndContent( tmpDir );
   }
 
   /**

@@ -52,14 +52,14 @@ import java.util.Iterator;
 /** Test StationObsDataset adapters in the JUnit framework. */
 
 public class TestStationDataset extends TestCase {
-  String topDir = ucar.nc2.TestAll.upcShareTestDataDir+ "station/";
+  String topDir = ucar.nc2.TestAll.testdataDir + "station/";
 
   public TestStationDataset( String name) {
     super(name);
   }
 
   public void testMadis() throws IOException {
-    String filename = ucar.nc2.TestAll.upcShareTestDataDir+"point/netcdf/madis.nc";
+    String filename = ucar.nc2.TestAll.testdataDir +"point/netcdf/madis.nc";
     StringBuilder sbuff = new StringBuilder();
     long start = System.currentTimeMillis();
     PointObsDataset pods = (PointObsDataset) TypedDatasetFactory.open( FeatureType.POINT, filename, null, sbuff);

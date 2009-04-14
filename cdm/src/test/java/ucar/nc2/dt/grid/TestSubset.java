@@ -57,7 +57,7 @@ public class TestSubset extends TestCase {
   }
 
   public void testRegular() throws Exception {
-    ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestAll.upcShareTestDataDir + "cdmTest/grid/03061219_ruc.nc");
+    ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestAll.testdataDir + "cdmTest/grid/03061219_ruc.nc");
 
     GeoGrid grid = dataset.findGridByName("T");
     assert null != grid;
@@ -92,7 +92,7 @@ public class TestSubset extends TestCase {
   }
 
   public void testGrib() throws Exception {
-    GridDataset dataset = GridDataset.open(TestAll.upcShareTestDataDir + "grid/grib/grib1/data/AVN.wmo");
+    GridDataset dataset = GridDataset.open(TestAll.testdataDir + "grid/grib/grib1/data/AVN.wmo");
 
     GeoGrid grid = dataset.findGridByName("Temperature");
     assert null != grid;
@@ -112,7 +112,7 @@ public class TestSubset extends TestCase {
   }
 
   public void testWRF() throws Exception {
-    GridDataset dataset = GridDataset.open(TestAll.upcShareTestDataDir + "grid/netcdf/wrf/wrfout_v2_Lambert.nc");
+    GridDataset dataset = GridDataset.open(TestAll.testdataDir + "grid/netcdf/wrf/wrfout_v2_Lambert.nc");
 
     GeoGrid grid = dataset.findGridByName("T");
     assert null != grid;
@@ -212,7 +212,7 @@ public class TestSubset extends TestCase {
   }
 
   public void test2D() throws Exception {
-    GridDataset dataset = GridDataset.open(TestAll.upcShareTestDataDir + "grid/netcdf/cf/mississippi.nc");
+    GridDataset dataset = GridDataset.open(TestAll.testdataDir + "grid/netcdf/cf/mississippi.nc");
 
     GeoGrid grid = dataset.findGridByName("salt");
     assert null != grid;
@@ -327,9 +327,9 @@ public class TestSubset extends TestCase {
 
 
   public void testLatLonSubset() throws Exception {
-    GridDataset dataset = GridDataset.open(TestAll.upcShareDir + "testdata/grid/netcdf/cf/SUPER-NATIONAL_latlon_IR_20070222_1600.nc");
+    GridDataset dataset = GridDataset.open(TestAll.testdataDir + "grid/netcdf/cf/SUPER-NATIONAL_latlon_IR_20070222_1600.nc");
     //GridDataset dataset = GridDataset.open("dods://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/NAM/CONUS_12km/NAM_CONUS_12km_20060305_1200.grib2");
-    // GridDataset dataset = GridDataset.open(TestAll.upcShareDir + "/testdata/grid/grib/grib2/test/NAM_CONUS_12km_20060305_1200.grib2");
+    // GridDataset dataset = GridDataset.open(TestAll.testdataDir + "grid/grib/grib2/test/NAM_CONUS_12km_20060305_1200.grib2");
     GeoGrid grid = dataset.findGridByName("micron11");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -352,7 +352,7 @@ public class TestSubset extends TestCase {
 
   // longitude subsetting (CoordAxis1D regular)
    public void testLatLonSubset2() throws Exception {
-    GridDataset dataset = GridDataset.open(TestAll.upcShareTestDataDir + "/grid/grib/grib2/data/GFS_Global_onedeg_20090105_0600.grib2");
+    GridDataset dataset = GridDataset.open(TestAll.testdataDir + "/grid/grib/grib2/data/GFS_Global_onedeg_20090105_0600.grib2");
     GeoGrid grid = dataset.findGridByName("Pressure_surface");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -386,7 +386,7 @@ public class TestSubset extends TestCase {
   }
 
   public void testGiniSubsetStride() throws Exception {
-    GridDataset dataset = GridDataset.open(TestAll.upcShareTestDataDir + "satellite/gini/WEST-CONUS_4km_IR_20070216_1500.gini");
+    GridDataset dataset = GridDataset.open(TestAll.testdataDir + "satellite/gini/WEST-CONUS_4km_IR_20070216_1500.gini");
     GeoGrid grid = dataset.findGridByName("IR");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -510,7 +510,7 @@ public class TestSubset extends TestCase {
   }
 
   public void testBBSubsetVP() throws Exception {
-    String filename = TestAll.upcShareTestDataDir + "grid/transforms/Eumetsat.VerticalPerspective.grb";
+    String filename = TestAll.testdataDir + "grid/transforms/Eumetsat.VerticalPerspective.grb";
     GridDataset dataset = GridDataset.open(filename);
     GeoGrid grid = dataset.findGridByName("Pixel_scene_type");
     assert null != grid;
@@ -539,7 +539,7 @@ public class TestSubset extends TestCase {
 
   // x,y in meters
   public void testBBSubsetUnits() throws Exception {
-    GridDataset dataset = GridDataset.open(TestAll.upcShareTestDataDir+"ncml/testBBSubsetUnits.ncml");
+    GridDataset dataset = GridDataset.open(TestAll.testdataDir +"ncml/testBBSubsetUnits.ncml");
     System.out.println("file= " + dataset.getLocation());
 
     GeoGrid grid = dataset.findGridByName("pr");
@@ -572,7 +572,7 @@ public class TestSubset extends TestCase {
   }
 
   public void testAggByteGiniSubsetStride() throws Exception {
-    GridDataset dataset = GridDataset.open(TestAll.upcShareTestDataDir+"satellite/gini/giniAggByte.ncml"); // R:\testdata\satellite\gini
+    GridDataset dataset = GridDataset.open(TestAll.testdataDir +"satellite/gini/giniAggByte.ncml"); // R:\testdata\satellite\gini
     GeoGrid grid = dataset.findGridByName("IR");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();

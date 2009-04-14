@@ -44,7 +44,7 @@ import thredds.catalog.InvService;
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
 import ucar.nc2.TestAll;
-import ucar.unidata.util.TestUtils;
+import ucar.unidata.util.TestFileDirUtils;
 
 /**
  * _more_
@@ -64,13 +64,13 @@ public class TestCatGenAndWrite extends TestCase
   protected void setUp()
   {
     // Create a data directory and some data files.
-    tmpDir = TestUtils.addDirectory( new File( TestAll.temporaryDataDir ), "TestCatGenAndWrite" );
+    tmpDir = TestFileDirUtils.addDirectory( new File( TestAll.temporaryDataDir ), "TestCatGenAndWrite" );
   }
 
   protected void tearDown()
   {
     // Delete temp directory.
-    TestUtils.deleteDirectoryAndContent( tmpDir );
+    TestFileDirUtils.deleteDirectoryAndContent( tmpDir );
   }
 
   /**
@@ -79,19 +79,19 @@ public class TestCatGenAndWrite extends TestCase
   public void testLocalDataFiles()
   {
     String startPath = "dataDir";
-    File dataDir = TestUtils.addDirectory( tmpDir, startPath );
+    File dataDir = TestFileDirUtils.addDirectory( tmpDir, startPath );
 
-    File eta211Dir = TestUtils.addDirectory( dataDir, "eta_211" );
-    TestUtils.addFile( eta211Dir, "2004050300_eta_211.nc" );
-    TestUtils.addFile( eta211Dir, "2004050312_eta_211.nc" );
-    TestUtils.addFile( eta211Dir, "2004050400_eta_211.nc" );
-    TestUtils.addFile( eta211Dir, "2004050412_eta_211.nc" );
+    File eta211Dir = TestFileDirUtils.addDirectory( dataDir, "eta_211" );
+    TestFileDirUtils.addFile( eta211Dir, "2004050300_eta_211.nc" );
+    TestFileDirUtils.addFile( eta211Dir, "2004050312_eta_211.nc" );
+    TestFileDirUtils.addFile( eta211Dir, "2004050400_eta_211.nc" );
+    TestFileDirUtils.addFile( eta211Dir, "2004050412_eta_211.nc" );
 
-    File gfs211Dir = TestUtils.addDirectory( dataDir, "gfs_211" );
-    TestUtils.addFile( gfs211Dir, "2004050300_gfs_211.nc" );
-    TestUtils.addFile( gfs211Dir, "2004050306_gfs_211.nc" );
-    TestUtils.addFile( gfs211Dir, "2004050312_gfs_211.nc" );
-    TestUtils.addFile( gfs211Dir, "2004050318_gfs_211.nc" );
+    File gfs211Dir = TestFileDirUtils.addDirectory( dataDir, "gfs_211" );
+    TestFileDirUtils.addFile( gfs211Dir, "2004050300_gfs_211.nc" );
+    TestFileDirUtils.addFile( gfs211Dir, "2004050306_gfs_211.nc" );
+    TestFileDirUtils.addFile( gfs211Dir, "2004050312_gfs_211.nc" );
+    TestFileDirUtils.addFile( gfs211Dir, "2004050318_gfs_211.nc" );
 
 
     File catWriteDir = new File( tmpDir, "catWriteDir");
@@ -128,19 +128,19 @@ public class TestCatGenAndWrite extends TestCase
   public void testLocalDataFilesOnTds()
   {
     String startPath = "dataDir";
-    File dataDir = TestUtils.addDirectory( tmpDir, startPath );
+    File dataDir = TestFileDirUtils.addDirectory( tmpDir, startPath );
 
-    File eta211Dir = TestUtils.addDirectory( dataDir, "eta_211" );
-    TestUtils.addFile( eta211Dir, "2004050300_eta_211.nc" );
-    TestUtils.addFile( eta211Dir, "2004050312_eta_211.nc" );
-    TestUtils.addFile( eta211Dir, "2004050400_eta_211.nc" );
-    TestUtils.addFile( eta211Dir, "2004050412_eta_211.nc" );
+    File eta211Dir = TestFileDirUtils.addDirectory( dataDir, "eta_211" );
+    TestFileDirUtils.addFile( eta211Dir, "2004050300_eta_211.nc" );
+    TestFileDirUtils.addFile( eta211Dir, "2004050312_eta_211.nc" );
+    TestFileDirUtils.addFile( eta211Dir, "2004050400_eta_211.nc" );
+    TestFileDirUtils.addFile( eta211Dir, "2004050412_eta_211.nc" );
 
-    File gfs211Dir = TestUtils.addDirectory( dataDir, "gfs_211" );
-    TestUtils.addFile( gfs211Dir, "2004050300_gfs_211.nc" );
-    TestUtils.addFile( gfs211Dir, "2004050306_gfs_211.nc" );
-    TestUtils.addFile( gfs211Dir, "2004050312_gfs_211.nc" );
-    TestUtils.addFile( gfs211Dir, "2004050318_gfs_211.nc" );
+    File gfs211Dir = TestFileDirUtils.addDirectory( dataDir, "gfs_211" );
+    TestFileDirUtils.addFile( gfs211Dir, "2004050300_gfs_211.nc" );
+    TestFileDirUtils.addFile( gfs211Dir, "2004050306_gfs_211.nc" );
+    TestFileDirUtils.addFile( gfs211Dir, "2004050312_gfs_211.nc" );
+    TestFileDirUtils.addFile( gfs211Dir, "2004050318_gfs_211.nc" );
 
 
     File catWriteDir = new File( tmpDir, "catWriteDir" );

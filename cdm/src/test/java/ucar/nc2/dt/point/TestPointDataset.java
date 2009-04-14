@@ -50,7 +50,7 @@ import java.util.Iterator;
 /** Test PointObsDataset adapters in the JUnit framework. */
 
 public class TestPointDataset extends TestCase {
-  String topDir = ucar.nc2.TestAll.upcShareTestDataDir+ "point/netcdf/";
+  String topDir = ucar.nc2.TestAll.testdataDir + "point/netcdf/";
   public TestPointDataset( String name) {
     super(name);
   }

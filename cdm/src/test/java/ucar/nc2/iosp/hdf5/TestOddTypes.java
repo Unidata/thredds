@@ -102,7 +102,7 @@ public class TestOddTypes extends TestCase {
 
   public void testTime() throws IOException {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    String filename = TestAll.upcShareTestDataDir + "hdf5/support/time.h5";
+    String filename = TestAll.testdataDir + "hdf5/support/time.h5";
     NetcdfFile ncfile = TestNC2.open( filename);
     Variable v = ncfile.findVariable("dset");
     Array data = v.read();
@@ -131,12 +131,12 @@ public class TestOddTypes extends TestCase {
 
   public void testCompoundString() throws InvalidRangeException, IOException {
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    TestH5read.readAllData(TestAll.upcShareTestDataDir + "hdf5/support/cstr.h5");
+    TestH5read.readAllData(TestAll.testdataDir + "hdf5/support/cstr.h5");
   }
 
   public void testCompoundEnum() throws IOException {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    String filename = TestAll.upcShareTestDataDir + "hdf5/support/cenum.h5";
+    String filename = TestAll.testdataDir + "hdf5/support/cenum.h5";
     NetcdfFile ncfile = TestNC2.open( filename);
     Variable v = ncfile.findVariable("enum");
     Array data = v.read();

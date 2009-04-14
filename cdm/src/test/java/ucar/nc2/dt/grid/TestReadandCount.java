@@ -35,7 +35,6 @@ package ucar.nc2.dt.grid;
 import junit.framework.*;
 import ucar.nc2.iosp.grib.GribServiceProvider;
 import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.grid.GridCoordSys;
@@ -53,7 +52,7 @@ public class TestReadandCount extends TestCase {
     super(name);
   }
 
-  private String griddir = TestAll.upcShareTestDataDir+"grid/netcdf/";
+  private String griddir = TestAll.testdataDir +"grid/netcdf/";
 
   /* protected void setUp() {
     NetcdfDataset.initNetcdfFileCache(10, 20, 60*60);
@@ -124,23 +123,23 @@ public class TestReadandCount extends TestCase {
     doOne(griddir+"ifps/","HUNGrids.netcdf", 26, 26, 29, 0); // *
 
     // our grib reader */
-    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib1/data/","AVN.wmo", 22, -1, -1, -1);
-    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib1/data/","RUC_W.wmo", 44,-1, -1, -1);
-    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib1/data/","NOGAPS-Temp-Regional.grib", 1, -1, -1, -1);
+    doOne(TestAll.testdataDir + "grid/grib/grib1/data/","AVN.wmo", 22, -1, -1, -1);
+    doOne(TestAll.testdataDir + "grid/grib/grib1/data/","RUC_W.wmo", 44,-1, -1, -1);
+    doOne(TestAll.testdataDir + "grid/grib/grib1/data/","NOGAPS-Temp-Regional.grib", 1, -1, -1, -1);
 
-    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib2/data/","eta2.wmo", 35, -1, -1, -1);
-    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib2/data/","ndfd.wmo", 1, -1, -1, -1);
+    doOne(TestAll.testdataDir + "grid/grib/grib2/data/","eta2.wmo", 35, -1, -1, -1);
+    doOne(TestAll.testdataDir + "grid/grib/grib2/data/","ndfd.wmo", 1, -1, -1, -1);
 
       // radar mosaic
-    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib1/data/","radar_national.grib", 1, 1, 3, 0);
-    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib1/data/","radar_regional.grib", 1, 1, 3, 0);
+    doOne(TestAll.testdataDir + "grid/grib/grib1/data/","radar_national.grib", 1, 1, 3, 0);
+    doOne(TestAll.testdataDir + "grid/grib/grib1/data/","radar_regional.grib", 1, 1, 3, 0);
 
     // redo grib files, forcing new index
     GribServiceProvider.forceNewIndex = true;
-    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib1/data/","AVN.wmo", 22, -1, -1, -1);
-    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib1/data/","RUC_W.wmo", 44, -1, -1, -1);
-    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib2/data/","eta2.wmo", 35, -1, -1, -1);
-    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib2/data/","ndfd.wmo", 1, -1, -1, -1);
+    doOne(TestAll.testdataDir + "grid/grib/grib1/data/","AVN.wmo", 22, -1, -1, -1);
+    doOne(TestAll.testdataDir + "grid/grib/grib1/data/","RUC_W.wmo", 44, -1, -1, -1);
+    doOne(TestAll.testdataDir + "grid/grib/grib2/data/","eta2.wmo", 35, -1, -1, -1);
+    doOne(TestAll.testdataDir + "grid/grib/grib2/data/","ndfd.wmo", 1, -1, -1, -1);
     GribServiceProvider.forceNewIndex = false;
   }
 
@@ -192,7 +191,7 @@ public class TestReadandCount extends TestCase {
    public static void main( String arg[]) throws Exception {
      // new TestReadandCount("dummy").doOne("C:/data/conventions/wrf/","wrf.nc", 33, 5, 7, 7);  // missing TSLB
      //new TestReadandCount("dummy").testRead();  // missing TSLB
-     doOne(TestAll.upcShareTestDataDir + "grid/grib/grib1/data/","radar_regional.grib", 1, -1, -1, -1);
+     doOne(TestAll.testdataDir + "grid/grib/grib1/data/","radar_regional.grib", 1, -1, -1, -1);
 
   }
 

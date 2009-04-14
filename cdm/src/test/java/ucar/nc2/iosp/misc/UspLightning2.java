@@ -44,7 +44,6 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.*;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.Date;
@@ -298,7 +297,7 @@ public class UspLightning2  extends AbstractIOServiceProvider {
 
   public static void main(String args[]) throws IOException, IllegalAccessException, InstantiationException, InvalidRangeException {
     NetcdfFile.registerIOProvider(UspLightning2.class);
-    NetcdfFile ncfile = NetcdfFile.open( TestAll.upcShareTestDataDir + "lightning/uspln/uspln_20061023.18");
+    NetcdfFile ncfile = NetcdfFile.open( TestAll.testdataDir + "lightning/uspln/uspln_20061023.18");
     System.out.println("ncfile = \n"+ncfile);
 
     Variable v = ncfile.findVariable("lat");

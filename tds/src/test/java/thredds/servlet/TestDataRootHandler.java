@@ -52,7 +52,7 @@ import java.util.Collections;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import ucar.unidata.util.TestUtils;
+import ucar.unidata.util.TestFileDirUtils;
 
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.core.io.FileSystemResourceLoader;
@@ -84,20 +84,20 @@ public class TestDataRootHandler extends TestCase
   protected void setUp()
   {
     // Create a data directory and some data files.
-    tmpDir = TestUtils.createTempDirectory( "TestDataRootHandler", new File( TestAll.temporaryDataDir ) );
-    contentDir = TestUtils.addDirectory( TestUtils.addDirectory( tmpDir, "content" ), "thredds");
-    publicContentDir = TestUtils.addDirectory( contentDir, "public");
+    tmpDir = TestFileDirUtils.createTempDirectory( "TestDataRootHandler", new File( TestAll.temporaryDataDir ) );
+    contentDir = TestFileDirUtils.addDirectory( TestFileDirUtils.addDirectory( tmpDir, "content" ), "thredds");
+    publicContentDir = TestFileDirUtils.addDirectory( contentDir, "public");
     
-    warRootDir = TestUtils.addDirectory( tmpDir, "dir/war" );
-    TestUtils.addDirectory( warRootDir, "startup");
-    TestUtils.addDirectory( warRootDir, "idd");
-    TestUtils.addDirectory( warRootDir, "motherlode");
+    warRootDir = TestFileDirUtils.addDirectory( tmpDir, "dir/war" );
+    TestFileDirUtils.addDirectory( warRootDir, "startup");
+    TestFileDirUtils.addDirectory( warRootDir, "idd");
+    TestFileDirUtils.addDirectory( warRootDir, "motherlode");
   }
 
   protected void tearDown()
   {
     // Delete temp directory.
-    TestUtils.deleteDirectoryAndContent( tmpDir );
+    TestFileDirUtils.deleteDirectoryAndContent( tmpDir );
   }
 
   private void buildTdsContextAndDataRootHandler()
@@ -404,10 +404,10 @@ public class TestDataRootHandler extends TestCase
    */
   public void testCatRefOutOfContentDirUsingDotDotDirs()
   {
-    File publicDataDir = TestUtils.addDirectory( publicContentDir, "dataDir" );
-    File dataFileNc = TestUtils.addFile( publicDataDir, "data.nc");
-    File dataFileGrib1 = TestUtils.addFile( publicDataDir, "data.grib1");
-    File dataFileGrib2 = TestUtils.addFile( publicDataDir, "data.grib2");
+    File publicDataDir = TestFileDirUtils.addDirectory( publicContentDir, "dataDir" );
+    File dataFileNc = TestFileDirUtils.addFile( publicDataDir, "data.nc");
+    File dataFileGrib1 = TestFileDirUtils.addFile( publicDataDir, "data.grib1");
+    File dataFileGrib2 = TestFileDirUtils.addFile( publicDataDir, "data.grib2");
 
     String mainCatFilename = "catalog.xml";
 
@@ -454,7 +454,7 @@ public class TestDataRootHandler extends TestCase
   public void testInitCatalogWithDotDotInPath()
   {
     String subDirName = "aSubDir";
-    File subDir = TestUtils.addDirectory( contentDir, subDirName );
+    File subDir = TestFileDirUtils.addDirectory( contentDir, subDirName );
 
     String cat1Filename = "catalog1.xml";
     String path1 = cat1Filename;

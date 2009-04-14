@@ -59,13 +59,13 @@ import ucar.unidata.geoloc.EarthLocation;
  * @since Dec 16, 2008
  */
 public class TestPointFeatureTypes  extends TestCase {
-  //String topDir = ucar.nc2.TestAll.upcShareTestDataDir+ "station/";
+  //String topDir = ucar.nc2.TestAll.testdataDir+ "station/";
   public TestPointFeatureTypes( String name) {
     super(name);
   }
 
   public void testCF() throws IOException {
-    String topdir = TestAll.upcShareTestDataDir;
+    String topdir = TestAll.testdataDir;
 
     /////// POINT
     // CF 1.1 psuedo-structure
@@ -87,7 +87,7 @@ public class TestPointFeatureTypes  extends TestCase {
   }
 
   public void utestReadAll() throws IOException {
-    readAllDir(ucar.nc2.TestAll.upcShareTestDataDir+ "station/", new MyFileFilter() , FeatureType.ANY_POINT);
+    readAllDir(ucar.nc2.TestAll.testdataDir + "station/", new MyFileFilter() , FeatureType.ANY_POINT);
   }
 
   class MyFileFilter implements FileFilter {

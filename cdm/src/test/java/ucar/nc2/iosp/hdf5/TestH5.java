@@ -43,7 +43,7 @@ import ucar.nc2.dataset.NetcdfDataset;
  */
 public class TestH5 {
   public static boolean dumpFile = false;
-  public static String testDir = TestAll.upcShareTestDataDir + "hdf5/";
+  public static String testDir = TestAll.testdataDir + "hdf5/";
 
  public static NetcdfFile open( String filename) {
     try {
@@ -62,8 +62,8 @@ public class TestH5 {
 
   public static NetcdfFile openH5( String filename) {
     try {
-      System.out.println("**** Open "+ TestAll.upcShareTestDataDir + "hdf5/"+filename);
-      NetcdfFile ncfile = NetcdfFile.open( TestAll.upcShareTestDataDir + "hdf5/"+filename);
+      System.out.println("**** Open "+ TestAll.testdataDir + "hdf5/"+filename);
+      NetcdfFile ncfile = NetcdfFile.open( TestAll.testdataDir + "hdf5/"+filename);
       if (TestH5.dumpFile) System.out.println("open H5 "+ncfile);
       return ncfile;
 
@@ -77,8 +77,8 @@ public class TestH5 {
 
   public static NetcdfDataset openH5dataset( String filename) {
     try {
-      System.out.println("**** Open "+ TestAll.upcShareTestDataDir + "hdf5/"+filename);
-      NetcdfDataset ncfile = NetcdfDataset.openDataset( TestAll.upcShareTestDataDir + "hdf5/"+filename);
+      System.out.println("**** Open "+ TestAll.testdataDir + "hdf5/"+filename);
+      NetcdfDataset ncfile = NetcdfDataset.openDataset( TestAll.testdataDir + "hdf5/"+filename);
       if (TestH5.dumpFile) System.out.println("open H5 "+ncfile);
       return ncfile;
 

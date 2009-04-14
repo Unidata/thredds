@@ -43,7 +43,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import ucar.unidata.util.TestUtils;
+import ucar.unidata.util.TestFileDirUtils;
 
 /**
  * _more_
@@ -63,24 +63,24 @@ public class TestBasicWithExclusionsDescendantFileSource extends TestCase
   protected void setUp()
   {
     // Create a data directory and some data files.
-    tmpDir = TestUtils.addDirectory( new File( TestAll.temporaryDataDir ), "TestBasicWithExclusionsDescendantFileSource" );
+    tmpDir = TestFileDirUtils.addDirectory( new File( TestAll.temporaryDataDir ), "TestBasicWithExclusionsDescendantFileSource" );
 
-    File dir1 = TestUtils.addDirectory( tmpDir, "dir1" );
-    TestUtils.addFile( dir1, "file1_1" );
-    File dir1_1 = TestUtils.addDirectory( dir1, "dir1_1" );
-    File dir1_2 = TestUtils.addDirectory( dir1, "dir1_2" );
-    File dir2 = TestUtils.addDirectory( tmpDir, "dir2" );
-    File dir2_1 = TestUtils.addDirectory( dir2, "dir2_1" );
-    File dir2_2 = TestUtils.addDirectory( dir2, "dir2_2" );
-    TestUtils.addFile( dir2_2, "file2_2_1" );
-    TestUtils.addDirectory( dir1_2, "dir1_2_1" );
+    File dir1 = TestFileDirUtils.addDirectory( tmpDir, "dir1" );
+    TestFileDirUtils.addFile( dir1, "file1_1" );
+    File dir1_1 = TestFileDirUtils.addDirectory( dir1, "dir1_1" );
+    File dir1_2 = TestFileDirUtils.addDirectory( dir1, "dir1_2" );
+    File dir2 = TestFileDirUtils.addDirectory( tmpDir, "dir2" );
+    File dir2_1 = TestFileDirUtils.addDirectory( dir2, "dir2_1" );
+    File dir2_2 = TestFileDirUtils.addDirectory( dir2, "dir2_2" );
+    TestFileDirUtils.addFile( dir2_2, "file2_2_1" );
+    TestFileDirUtils.addDirectory( dir1_2, "dir1_2_1" );
 
   }
 
   protected void tearDown()
   {
     // Delete temp directory.
-    TestUtils.deleteDirectoryAndContent( tmpDir );
+    TestFileDirUtils.deleteDirectoryAndContent( tmpDir );
   }
 
   /**

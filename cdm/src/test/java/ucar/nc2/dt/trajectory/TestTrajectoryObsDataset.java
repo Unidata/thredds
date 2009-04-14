@@ -64,7 +64,7 @@ public class TestTrajectoryObsDataset extends TestCase
 {
   // @todo Use properties or env vars to override default values.
   private static String testDataDir = TestAll.cdmTestDataDir;
-  private static String remoteTestDataDir = TestAll.upcShareTestDataDir;
+  private static String remoteTestDataDir = TestAll.testdataDir;
 
   public TestTrajectoryObsDataset( String name )
   {

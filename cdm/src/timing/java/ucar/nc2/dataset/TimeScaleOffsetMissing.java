@@ -94,7 +94,7 @@ public class TimeScaleOffsetMissing extends TestCase {
   public void openFile(Average avg) throws IOException, InvalidRangeException {
     long start = System.nanoTime();
 
-    NetcdfFile ncfile = NetcdfDataset.openFile(TestAll.upcShareTestDataDir +"grid/netcdf/AZ.000000000.nc", null);
+    NetcdfFile ncfile = NetcdfDataset.openFile(TestAll.testdataDir +"grid/netcdf/AZ.000000000.nc", null);
     Variable v = ncfile.findVariable("qc");
     assert null != v;
     assert v.getDataType() == DataType.BYTE;
@@ -114,7 +114,7 @@ public class TimeScaleOffsetMissing extends TestCase {
   public void openDataset(EnumSet<NetcdfDataset.Enhance> enhance, Average avg) throws IOException, InvalidRangeException {
     long start = System.nanoTime();
 
-    NetcdfDataset ncd = NetcdfDataset.openDataset(TestAll.upcShareTestDataDir +"grid/netcdf/AZ.000000000.nc", enhance, -1, null, null);
+    NetcdfDataset ncd = NetcdfDataset.openDataset(TestAll.testdataDir +"grid/netcdf/AZ.000000000.nc", enhance, -1, null, null);
     Variable v = ncd.findVariable("qc");
     assert null != v;
 
@@ -131,7 +131,7 @@ public class TimeScaleOffsetMissing extends TestCase {
 
   public void testNaNs() throws IOException, InvalidRangeException {
     NetcdfDataset.setUseNaNs(true);
-    NetcdfDataset ncd = NetcdfDataset.openDataset(TestAll.upcShareTestDataDir +"grid/netcdf/AZ.000000000.nc", true, null);
+    NetcdfDataset ncd = NetcdfDataset.openDataset(TestAll.testdataDir +"grid/netcdf/AZ.000000000.nc", true, null);
     VariableDS v = (VariableDS) ncd.findVariable("qc");
     assert null != v;
 

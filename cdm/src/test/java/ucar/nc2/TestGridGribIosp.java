@@ -40,7 +40,6 @@
 
 package ucar.nc2;
 
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.iosp.IOServiceProvider;
 
 import java.io.IOException;
@@ -143,8 +142,8 @@ public class TestGridGribIosp extends TestCase {
 
     String dirB, dirT;
     if ( args == null || args.length < 1 ) {
-      dirB = TestAll.upcShareTestDataDir +"test/motherlode/grid/grib/binary";
-      dirT = TestAll.upcShareTestDataDir +"test/motherlode/grid/grib/text";
+      dirB = TestAll.testdataDir +"test/motherlode/grid/grib/binary";
+      dirT = TestAll.testdataDir +"test/motherlode/grid/grib/text";
     } else {
       dirB = args[ 0 ] +"/binary"; // "/local/robb/data/grib/idd/binary";
       dirT = args[ 0 ] +"/text"; // "/local/robb/data/grib/idd/text";

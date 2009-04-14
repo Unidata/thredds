@@ -51,7 +51,7 @@ import ucar.ma2.*;
 public class TestReadIDD extends TestCase {
 
   public void testReadSamples() throws IOException {
-    String location = TestAll.upcShareTestDataDir + "bufr/sample.bufr";
+    String location = TestAll.testdataDir + "bufr/sample.bufr";
     RandomAccessFile raf = new RandomAccessFile(location, "r");
     MessageScanner scan = new MessageScanner(raf);
     int count = 0;

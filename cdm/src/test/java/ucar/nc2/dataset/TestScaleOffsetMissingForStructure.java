@@ -39,7 +39,7 @@ import ucar.nc2.*;
 import java.io.IOException;
 
 public class TestScaleOffsetMissingForStructure extends TestCase {
-  //String topDir = ucar.nc2.TestAll.upcShareTestDataDir+ "point/netcdf/";
+  //String topDir = ucar.nc2.TestAll.testdataDir+ "point/netcdf/";
   public TestScaleOffsetMissingForStructure( String name) {
     super(name);
   }

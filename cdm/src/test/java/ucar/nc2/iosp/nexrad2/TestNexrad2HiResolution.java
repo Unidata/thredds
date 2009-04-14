@@ -37,10 +37,8 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.VariableDS;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
-import ucar.ma2.InvalidRangeException;
 
 import java.io.IOException;
 import java.io.File;
@@ -62,7 +60,7 @@ public class TestNexrad2HiResolution extends TestCase {
 
     public void testRead() throws IOException {
         long start = System.currentTimeMillis();
-        doDirectory(TestAll.upcShareTestDataDir + "radar/nexrad/newLevel2/testfiles", false);
+        doDirectory(TestAll.testdataDir + "radar/nexrad/newLevel2/testfiles", false);
         //doDirectory("/upc/share/testdata/radar/nexrad/newLevel2/testfiles", false);
         long took = System.currentTimeMillis() - start;
         System.out.println("that took = "+took+" msec");

@@ -299,7 +299,7 @@ these are long-range detections.
 
   public static void main(String args[]) throws IOException, IllegalAccessException, InstantiationException {
     NetcdfFile.registerIOProvider(UspLightning1.class);
-    NetcdfFile ncfile = NetcdfFile.open( TestAll.upcShareTestDataDir + "lightning/uspln/uspln_20061023.18");
+    NetcdfFile ncfile = NetcdfFile.open( TestAll.testdataDir + "lightning/uspln/uspln_20061023.18");
     System.out.println("ncfile = \n"+ncfile);
   }
 

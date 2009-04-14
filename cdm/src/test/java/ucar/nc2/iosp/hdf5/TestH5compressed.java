@@ -121,7 +121,7 @@ public class TestH5compressed extends TestCase {
   }
 
   public void testEndian() throws IOException {
-    String testDir = TestAll.upcShareTestDataDir + "netcdf4/";
+    String testDir = TestAll.testdataDir + "netcdf4/";
     NetcdfFile ncfile = TestNC2.open(testDir+"endianTest.nc4");
     Variable v = ncfile.findVariable("TMP");
     assert v != null;

@@ -40,7 +40,6 @@ import java.io.FileFilter;
 import java.io.File;
 
 import ucar.nc2.*;
-import ucar.nc2.iosp.hdf4.H4header;
 import ucar.unidata.util.StringUtil;
 
 /**
@@ -49,7 +48,7 @@ import ucar.unidata.util.StringUtil;
  * @author caron
  */
 public class TestH5ReadAndCount extends TestCase {
-  static public String testDir = TestAll.upcShareTestDataDir + "hdf5/";
+  static public String testDir = TestAll.testdataDir + "hdf5/";
   //static public String testDir = "R:/testdata/hdf5/";
 
   public TestH5ReadAndCount(String name) {

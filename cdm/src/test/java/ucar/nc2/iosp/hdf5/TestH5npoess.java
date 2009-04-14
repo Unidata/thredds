@@ -51,7 +51,7 @@ public class TestH5npoess extends TestCase {
 
   public void test1() throws InvalidRangeException, IOException {
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    TestH5read.readAllData(TestAll.upcShareTestDataDir+"hdf5/npoess/ExampleFiles/AVAFO_NPP_d2003125_t10109_e101038_b9_c2005829155458_devl_Tst.h5");
+    TestH5read.readAllData(TestAll.testdataDir +"hdf5/npoess/ExampleFiles/AVAFO_NPP_d2003125_t10109_e101038_b9_c2005829155458_devl_Tst.h5");
   }
 
   public void test2() throws InvalidRangeException, IOException {

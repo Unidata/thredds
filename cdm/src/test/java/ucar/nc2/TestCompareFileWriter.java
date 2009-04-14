@@ -47,11 +47,11 @@ public class TestCompareFileWriter extends TestCase {
 
   public ArrayList files;
   public void testCompare() throws IOException {
-    doOne(TestAll.upcShareTestDataDir+"satellite/gini/n0r_20041013_1852-compress", TestAll.temporaryDataDir+"n0r_20041013_1852.nc");
+    doOne(TestAll.testdataDir +"satellite/gini/n0r_20041013_1852-compress", TestAll.temporaryDataDir+"n0r_20041013_1852.nc");
   }
 
   public void utestCompareAll() throws IOException {
-    readAllDir(TestAll.upcShareTestDataDir+"satellite/gini/");
+    readAllDir(TestAll.testdataDir +"satellite/gini/");
   }
 
   void readAllDir(String dirName) throws IOException {

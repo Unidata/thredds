@@ -34,12 +34,9 @@ package ucar.nc2.iosp.hdf5;
 
 import junit.framework.*;
 import ucar.nc2.*;
-import ucar.nc2.util.Misc;
-import ucar.ma2.Section;
 import ucar.ma2.Array;
 
 import java.io.*;
-import java.util.StringTokenizer;
 import java.util.Collections;
 import java.util.List;
 
@@ -48,7 +45,7 @@ import java.util.List;
  */
 
 public class TestN4 extends TestCase {
-  String testDir = TestAll.upcShareTestDataDir + "netcdf4/";
+  String testDir = TestAll.testdataDir + "netcdf4/";
   public TestN4(String name) {
     super(name);
   }
