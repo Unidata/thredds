@@ -34,6 +34,7 @@
  */
 
 
+
 package ucar.nc2.iosp.gempak;
 
 
@@ -65,7 +66,7 @@ import java.util.TreeSet;
  * @author IDV Development Team
  * @version $Revision: 1.3 $
  */
-public class GempakSurfaceFileReader extends GempakFileReader {
+public class GempakSurfaceFileReader extends AbstractGempakStationFileReader {
 
     /** Surface Text identifier */
     public static final String SFTX = "SFTX";
@@ -76,12 +77,6 @@ public class GempakSurfaceFileReader extends GempakFileReader {
     /** Surface Data identifier */
     public static final String SFSP = "SFSP";
 
-    /** date key identifier */
-    public static final String DATE = "DATE";
-
-    /** time key identifier */
-    public static final String TIME = "TIME";
-
     /** standard surface file id */
     public static final String STANDARD = "standard";
 
@@ -90,40 +85,6 @@ public class GempakSurfaceFileReader extends GempakFileReader {
 
     /** ship surface file id */
     public static final String SHIP = "ship";
-
-    /** Surface obs date format */
-    private static final String DATE_FORMAT = "yyMMdd'/'HHmm";
-
-    /** date/time keys */
-    private List<Key> dateTimeKeys;
-
-    /** station keys */
-    private List<Key> stationKeys;
-
-    /** unique list of dates as Strings */
-    private List<String> dateList;
-
-    /** unique list of dates as Dates */
-    private List<Date> dates;
-
-    /** list of stations */
-    private List<GempakStation> stations;
-
-    /** list of parameters */
-    private List<GempakParameter> params;
-
-    /** list of parameters */
-    private Map<String, List<GempakParameter>> partParamMap =
-        new HashMap<String, List<GempakParameter>>();
-
-    /** number of parameters */
-    private int numParams = 0;
-
-    /** flag for standard file */
-    private String fileType = null;
-
-    /** data formatter */
-    private SimpleDateFormat dateFmt = new SimpleDateFormat(DATE_FORMAT);
 
     /**
      * Default ctor
@@ -179,12 +140,12 @@ public class GempakSurfaceFileReader extends GempakFileReader {
         }
 
 
-        numParams = 0;
-        String partType = ((dmLabel.kfsrce == 100) && (dmLabel.kprt == 1))
-                          ? SFTX
-                          : SFDT;
+        int    numParams = 0;
+        String partType  = ((dmLabel.kfsrce == 100) && (dmLabel.kprt == 1))
+                           ? SFTX
+                           : SFDT;
 
-        DMPart part     = getPart(partType);
+        DMPart part      = getPart(partType);
 
         if (part == null) {
             logError("No part named " + partType + " found");
@@ -193,336 +154,40 @@ public class GempakSurfaceFileReader extends GempakFileReader {
             numParams = part.kparms;
         }
 
-        Trace.call1("GEMPAK: making params");
-        for (DMPart apart : parts) {
-            List<GempakParameter> params = makeParams(apart);
-            partParamMap.put(apart.kprtnm, params);
-        }
-        Trace.call2("GEMPAK: making params");
-
-        // get the date/time keys
-        dateTimeKeys = getDateTimeKeys();
-        if ((dateTimeKeys == null) || dateTimeKeys.isEmpty()) {
+        if ( !readStationsAndTimes(true)) {
+            logError("Unable to read stations and times");
             return false;
         }
-
-        // get the station info
-        stationKeys = findStationKeys();
-        if ((stationKeys == null) || stationKeys.isEmpty()) {
-            return false;
-        }
-
-        // determine file type
-        String latType = findKey(GempakStation.SLAT).type;
-        if ( !(findKey(DATE).type.equals(latType))) {
-            if (latType.equals(ROW)) {
-                fileType = CLIMATE;
-            } else {
-                fileType = STANDARD;
-            }
-        } else {
-            fileType = SHIP;
-        }
-
-        Trace.call1("GEMPAK: get date list");
-        dateList = getDateList(fileType != SHIP);
-        Trace.call2("GEMPAK: get date list");
-        Trace.call1("GEMPAK: get station list");
-        stations = getStationList();
-        Trace.call2("GEMPAK: get station list");
-
         return true;
 
     }
 
     /**
-     * Get the date/time information
+     * Make the list of dates.  Override superclass to make the
+     * value based on the subtype
+     * @param uniqueTimes  true to make a unique list
      *
-     * @return the list of date/time keys
+     * @return _more_
      */
-    private List<Key> getDateTimeKeys() {
-        Key date = findKey(DATE);
-        Key time = findKey(TIME);
-        if ((date == null) || (time == null)
-                || !date.type.equals(time.type)) {
-            return null;
-        }
-        List<Key> dt = new ArrayList<Key>(2);
-        dt.add(date);
-        dt.add(time);
-        return dt;
+    protected List<String> makeDateList(boolean uniqueTimes) {
+        return super.makeDateList( !getFileSubType().equals(SHIP));
     }
 
     /**
-     * Get the list of dates
-     *
-     * @param unique true for unique list
-     *
-     * @return the list of dates
+     * Set the file subType.
      */
-    private List<String> getDateList(boolean unique) {
-        Key         date = dateTimeKeys.get(0);
-        Key         time = dateTimeKeys.get(1);
-        List<int[]> toCheck;
-        if (date.type.equals(ROW)) {
-            toCheck = headers.rowHeaders;
+    protected void makeFileSubType() {
+        // determine file type
+        String latType = findKey(GempakStation.SLAT).type;
+        if ( !(findKey(DATE).type.equals(latType))) {
+            if (latType.equals(ROW)) {
+                subType = CLIMATE;
+            } else {
+                subType = STANDARD;
+            }
         } else {
-            toCheck = headers.colHeaders;
+            subType = SHIP;
         }
-        List<String> fileDates = new ArrayList<String>();
-        for (int[] header : toCheck) {
-            if (header[0] != IMISSD) {
-                // convert to GEMPAK date/time
-                int idate = header[date.loc + 1];
-                int itime = header[time.loc + 1];
-                // TODO: Add in the century
-                String dateTime = GempakUtil.TI_CDTM(idate, itime);
-                fileDates.add(dateTime);
-            }
-        }
-        if (unique && !fileDates.isEmpty()) {
-            SortedSet<String> uniqueTimes =
-                Collections.synchronizedSortedSet(new TreeSet<String>());
-            uniqueTimes.addAll(fileDates);
-            fileDates.clear();
-            fileDates.addAll(uniqueTimes);
-        }
-
-        return fileDates;
-    }
-
-    /**
-     * Make GempakParameters from the list of
-     *
-     * @param part  the part to use
-     *
-     * @return  parameters from the info in that part.
-     */
-    private List<GempakParameter> makeParams(DMPart part) {
-        List<GempakParameter> gemparms =
-            new ArrayList<GempakParameter>(part.kparms);
-        for (DMParam param : part.params) {
-            String          name = param.kprmnm;
-            GempakParameter parm = GempakParameters.getParameter(name);
-            if (parm == null) {
-                //System.out.println("couldn't find " + name
-                //                   + " in params table");
-                parm = new GempakParameter(1, name, name, "", 0);
-            }
-            gemparms.add(parm);
-        }
-        return gemparms;
-    }
-
-    /**
-     * Get the list of parameters for the part
-     *
-     * @param partName name of the part
-     * @return  list of parameters
-     */
-    public List<GempakParameter> getParameters(String partName) {
-        return partParamMap.get(partName);
-    }
-
-    /**
-     * Get the station list
-     *
-     * @return the list of stations
-     */
-    private List<GempakStation> getStationList() {
-        Key slat = findKey(GempakStation.SLAT);
-        if (slat == null) {
-            return null;
-        }
-        List<int[]> toCheck;
-        if (slat.type.equals(ROW)) {
-            toCheck = headers.rowHeaders;
-        } else {
-            toCheck = headers.colHeaders;
-        }
-        List<GempakStation> fileStations = new ArrayList<GempakStation>();
-        int                 i            = 0;
-        for (int[] header : toCheck) {
-            if (header[0] != IMISSD) {
-                GempakStation station = makeStation(header);
-                if (station != null) {
-                    station.setIndex(i);
-                    fileStations.add(station);
-                }
-            }
-            i++;
-        }
-        return fileStations;
-    }
-
-    /**
-     * Make a station from the header info
-     *
-     * @param header  the station header
-     *
-     * @return  the corresponding station
-     */
-    private GempakStation makeStation(int[] header) {
-        if ((stationKeys == null) || stationKeys.isEmpty()) {
-            return null;
-        }
-        GempakStation newStation = new GempakStation();
-        for (Key key : stationKeys) {
-            int loc = key.loc + 1;
-            if (key.name.equals(GempakStation.STID)) {
-                newStation.setSTID(GempakUtil.ST_ITOC(header[loc]).trim());
-            } else if (key.name.equals(GempakStation.STNM)) {
-                newStation.setSTNM(header[loc]);
-            } else if (key.name.equals(GempakStation.SLAT)) {
-                newStation.setSLAT(header[loc]);
-            } else if (key.name.equals(GempakStation.SLON)) {
-                newStation.setSLON(header[loc]);
-            } else if (key.name.equals(GempakStation.SELV)) {
-                newStation.setSELV(header[loc]);
-            } else if (key.name.equals(GempakStation.SPRI)) {
-                newStation.setSPRI(header[loc]);
-            } else if (key.name.equals(GempakStation.STAT)) {
-                newStation.setSTAT(GempakUtil.ST_ITOC(header[loc]).trim());
-            } else if (key.name.equals(GempakStation.COUN)) {
-                newStation.setCOUN(GempakUtil.ST_ITOC(header[loc]).trim());
-            } else if (key.name.equals(GempakStation.SWFO)) {
-                newStation.setSWFO(GempakUtil.ST_ITOC(header[loc]).trim());
-            } else if (key.name.equals(GempakStation.WFO2)) {
-                newStation.setWFO2(GempakUtil.ST_ITOC(header[loc]).trim());
-            } else if (key.name.equals(GempakStation.STD2)) {
-                newStation.setSTD2(GempakUtil.ST_ITOC(header[loc]).trim());
-            }
-        }
-        return newStation;
-    }
-
-    /**
-     * Get the station key names
-     *
-     * @return the list of station key names
-     */
-    public List<String> getStationKeyNames() {
-        List<String> keys = new ArrayList<String>();
-        if ((stationKeys != null) && !stationKeys.isEmpty()) {
-            for (Key key : stationKeys) {
-                keys.add(key.name);
-            }
-        }
-        return keys;
-    }
-
-    /**
-     * Get the station keys
-     *
-     * @return the list of station keys
-     */
-    private List<Key> findStationKeys() {
-        Key stid = findKey(GempakStation.STID);
-        Key stnm = findKey(GempakStation.STNM);
-        Key slat = findKey(GempakStation.SLAT);
-        Key slon = findKey(GempakStation.SLON);
-        Key selv = findKey(GempakStation.SELV);
-        Key stat = findKey(GempakStation.STAT);
-        Key coun = findKey(GempakStation.COUN);
-        Key std2 = findKey(GempakStation.STD2);
-        Key spri = findKey(GempakStation.SPRI);
-        Key swfo = findKey(GempakStation.SWFO);
-        Key wfo2 = findKey(GempakStation.WFO2);
-        if ((slat == null) || (slon == null)
-                || !slat.type.equals(slon.type)) {
-            return null;
-        }
-        String tslat = slat.type;
-        // check to make sure they are all in the same set of keys
-        List<Key> stKeys = new ArrayList<Key>();
-        stKeys.add(slat);
-        stKeys.add(slon);
-        if ((stid != null) && !stid.type.equals(tslat)) {
-            return null;
-        } else if ((stnm != null) && !stnm.type.equals(tslat)) {
-            return null;
-        } else if ((selv != null) && !selv.type.equals(tslat)) {
-            return null;
-        } else if ((stat != null) && !stat.type.equals(tslat)) {
-            return null;
-        } else if ((coun != null) && !coun.type.equals(tslat)) {
-            return null;
-        } else if ((std2 != null) && !std2.type.equals(tslat)) {
-            return null;
-        } else if ((spri != null) && !spri.type.equals(tslat)) {
-            return null;
-        } else if ((swfo != null) && !swfo.type.equals(tslat)) {
-            return null;
-        } else if ((wfo2 != null) && !wfo2.type.equals(tslat)) {
-            return null;
-        }
-        if (stid != null) {
-            stKeys.add(stid);
-        }
-        if (stnm != null) {
-            stKeys.add(stnm);
-        }
-        if (selv != null) {
-            stKeys.add(selv);
-        }
-        if (stat != null) {
-            stKeys.add(stat);
-        }
-        if (coun != null) {
-            stKeys.add(coun);
-        }
-        if (std2 != null) {
-            stKeys.add(std2);
-        }
-        if (spri != null) {
-            stKeys.add(spri);
-        }
-        if (swfo != null) {
-            stKeys.add(swfo);
-        }
-        if (wfo2 != null) {
-            stKeys.add(wfo2);
-        }
-        return stKeys;
-    }
-
-    /**
-     * Get the list of stations in this file.
-     * @return list of stations.
-     */
-    public List<GempakStation> getStations() {
-        return stations;
-    }
-
-    /**
-     * Get the list of dates in this file.
-     * @return list of dates.
-     */
-    public List<Date> getDates() {
-        if ((dates == null) || (dates.isEmpty() && !dateList.isEmpty())) {
-            dates = new ArrayList<Date>(dateList.size());
-            for (String dateString : dateList) {
-                Date d = dateFmt.parse(dateString, new ParsePosition(0));
-                //DateFromString.getDateUsingSimpleDateFormat(dateString,
-                //    DATE_FORMAT);
-                dates.add(d);
-            }
-        }
-        return dates;
-    }
-
-    /**
-     * Print the list of dates in the file
-     */
-    public void printDates() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("\nDates:\n");
-        for (String date : dateList) {
-            builder.append("\t");
-            builder.append(date);
-            builder.append("\n");
-        }
-        System.out.println(builder.toString());
     }
 
     /**
@@ -532,10 +197,10 @@ public class GempakSurfaceFileReader extends GempakFileReader {
      * @param col ob column
      */
     public void printOb(int row, int col) {
-        int           stnIndex = (fileType.equals(CLIMATE))
+        int           stnIndex = (getFileSubType().equals(CLIMATE))
                                  ? row
                                  : col;
-        GempakStation station  = stations.get(stnIndex - 1);
+        GempakStation station  = getStations().get(stnIndex - 1);
         StringBuilder builder  = new StringBuilder();
         builder.append("\nStation:\n");
         builder.append(station.toString());
@@ -568,31 +233,13 @@ public class GempakSurfaceFileReader extends GempakFileReader {
         System.out.println(builder.toString());
     }
 
-    /**
-     * Print the list of dates in the file
-     * @param list  true to list each station, false to list summary
-     */
-    public void printStations(boolean list) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("\nStations:\n");
-        if (list) {
-            for (GempakStation station : stations) {
-                builder.append(station);
-                builder.append("\n");
-            }
-        } else {
-            builder.append("\t");
-            builder.append(getStations().size());
-        }
-        System.out.println(builder.toString());
-    }
 
     /**
      * Get the type for this file
      * @return file type (CLIMATE, STANDARD, SHIP)
      */
     public String getSurfaceFileType() {
-        return fileType;
+        return getFileSubType();
     }
 
     /**

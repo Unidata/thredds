@@ -1511,7 +1511,7 @@ public class GempakFileReader implements GempakConstants {
         } else {  //  packed ints
             int[] idata = new int[nword];
             DM_RINT(isword, idata);
-            rdata = DP_UNPK(part, idata);
+            rdata = DM_UNPK(part, idata);
         }
         RData rd = null;
         if (rdata != null) {
@@ -1532,52 +1532,66 @@ public class GempakFileReader implements GempakConstants {
      *
      * @return unpacked ints as floats
      */
-    public float[] DP_UNPK(DMPart part, int[] ibitst) {
-        float[]     data  = new float[part.kparms];
-        PackingInfo pkinf = part.packInfo;
-        //
-        //  Move bitstring into internal words.  TODO: necessary?
-        //
-        int[] jdata = new int[ibitst.length];
-        for (int i = 0; i < ibitst.length; i++) {
-            jdata[i] = ibitst[i];
+    public float[] DM_UNPK(DMPart part, int[] ibitst) {
+        int nparms = part.kparms;
+        int nwordp = part.kwordp;
+        int npack = (int) (ibitst.length-1)/nwordp + 1;
+        if (npack*nwordp != ibitst.length) {
+            //logError("number of packed records not correct");
+            System.out.println("number of packed records not correct: " + npack*nwordp + " vs. " + ibitst.length);
+            return null;
         }
-
-        //
-        //  Extract each data value.
-        //
-        for (int idata = 0; idata < data.length; idata++) {
-
+        float[]     data  = new float[nparms*npack];
+        PackingInfo pkinf = part.packInfo;
+        int ir = 0;
+        int ii = 0;
+        for (int pack = 0; pack < npack; pack++) {
             //
-            //  Extract correct bits from words using shift and mask
-            //  operations.
+            //  Move bitstring into internal words.  TODO: necessary?
             //
-            int jbit   = pkinf.nbitsc[idata];
-            int jsbit  = pkinf.isbitc[idata];
-            int jshift = 1 - jsbit;
-            int jsword = pkinf.iswrdc[idata];
-            int jword  = jdata[jsword];
-            // use >>> to shift avoid carrying sign along
-            int mask   = mskpat >>> (32 - jbit);
-            int ifield = jword >>> Math.abs(jshift);
-            ifield = ifield & mask;
-            if ((jsbit + jbit - 1) > 32) {
-                jword  = jdata[jsword + 1];
-                jshift = jshift + 32;
-                int iword = jword << jshift;
-                iword  = iword & mask;
-                ifield = ifield | iword;
+            int[] jdata = new int[nwordp];
+            for (int i = 0; i < nwordp; i++) {
+                jdata[i] = ibitst[ii + i];
             }
+    
             //
-            //  The integer data is now in ifield.  Use the scaling and
-            //  offset terms to convert to REAL data.
+            //  Extract each data value.
             //
-            if (ifield == pkinf.imissc[idata]) {
-                data[idata] = RMISSD;
-            } else {
-                data[idata] = (ifield + pkinf.koffst[idata])
-                              * (float) pkinf.scalec[idata];
+            for (int idata = 0; idata < nparms; idata++) {
+    
+                //
+                //  Extract correct bits from words using shift and mask
+                //  operations.
+                //
+                int jbit   = pkinf.nbitsc[idata];
+                int jsbit  = pkinf.isbitc[idata];
+                int jshift = 1 - jsbit;
+                int jsword = pkinf.iswrdc[idata];
+                int jword  = jdata[jsword];
+                // use >>> to shift avoid carrying sign along
+                int mask   = mskpat >>> (32 - jbit);
+                int ifield = jword >>> Math.abs(jshift);
+                ifield = ifield & mask;
+                if ((jsbit + jbit - 1) > 32) {
+                    jword  = jdata[jsword + 1];
+                    jshift = jshift + 32;
+                    int iword = jword << jshift;
+                    iword  = iword & mask;
+                    ifield = ifield | iword;
+                }
+                //
+                //  The integer data is now in ifield.  Use the scaling and
+                //  offset terms to convert to REAL data.
+                //
+                if (ifield == pkinf.imissc[idata]) {
+                    data[ir+idata] = RMISSD;
+                } else {
+                    data[ir+idata] = (ifield + pkinf.koffst[idata])
+                                  * (float) pkinf.scalec[idata];
+                }
             }
+            ir += nparms;
+            ii += nwordp;
         }
         return data;
 
