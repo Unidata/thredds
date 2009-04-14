@@ -290,35 +290,35 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
         gsfr.printOb(row, col);
     }
 
-    /** _more_          */
+    /** array of manadatory parameters */
     private final String[] mandpp = {
         "PRES", "TEMP", "DWPT", "DRCT", "SPED", "HGHT"
     };
 
-    /** _more_          */
+    /** array of significant temperature parameters */
     private final String[] sigtpp = { "PRES", "TEMP", "DWPT" };
 
-    /** _more_          */
+    /** array of significant wind parameters */
     private final String[] sigwpp = { "HGHT", "DRCT", "SPED" };
 
-    /** _more_          */
+    /** array of tropopause parameters */
     private final String[] troppp = { "PRES", "TEMP", "DWPT", "DRCT",
                                       "SPED" };
 
-    /** _more_          */
+    /** array of maximum wind parameters */
     private final String[] maxwpp = { "PRES", "DRCT", "SPED" };
 
-    /** _more_          */
-    private final String[] belowParts = {
+    /** array of groups below 100 mb */
+    private final String[] belowGroups = {
         "TTAA", "TRPA", "MXWA", "PPAA", "TTBB", "PPBB"
     };
 
-    /** _more_          */
-    private final String[] aboveParts = {
+    /** array of groups above 100 mb*/
+    private final String[] aboveGroups = {
         "TTCC", "TRPC", "MXWC", "PPCC", "TTDD", "PPDD"
     };
 
-    /** _more_          */
+    /** list of valid params for each group */
     private final String[][] parmLists = {
         mandpp, troppp, maxwpp, maxwpp, sigtpp, sigwpp
     };
@@ -336,11 +336,11 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
         String       partToCheck = "";
         while ( !done) {
             // check for mandatory groups
-            for (int group = 0; group < belowParts.length; group++) {
+            for (int group = 0; group < belowGroups.length; group++) {
                 if (above) {
-                    partToCheck = aboveParts[group];
+                    partToCheck = aboveGroups[group];
                 } else {
-                    partToCheck = belowParts[group];
+                    partToCheck = belowGroups[group];
                 }
                 if (checkForValidGroup(partToCheck, parmLists[group])) {
                     types.add(partToCheck);
@@ -356,12 +356,12 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
     }
 
     /**
-     * _more_
+     * Check for valid groups
      *
-     * @param partToCheck _more_
-     * @param params _more_
+     * @param partToCheck  the part name
+     * @param params  the parameters that are supposed to be there
      *
-     * @return _more_
+     * @return true if the part is there and has the right params
      */
     private boolean checkForValidGroup(String partToCheck, String[] params) {
         DMPart part = getPart(partToCheck);

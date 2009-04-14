@@ -167,7 +167,7 @@ public class GempakSurfaceFileReader extends AbstractGempakStationFileReader {
      * value based on the subtype
      * @param uniqueTimes  true to make a unique list
      *
-     * @return _more_
+     * @return the list of times
      */
     protected List<String> makeDateList(boolean uniqueTimes) {
         return super.makeDateList( !getFileSubType().equals(SHIP));

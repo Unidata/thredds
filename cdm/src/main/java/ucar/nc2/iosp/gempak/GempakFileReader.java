@@ -35,6 +35,7 @@
 
 
 
+
 package ucar.nc2.iosp.gempak;
 
 
@@ -1535,16 +1536,17 @@ public class GempakFileReader implements GempakConstants {
     public float[] DM_UNPK(DMPart part, int[] ibitst) {
         int nparms = part.kparms;
         int nwordp = part.kwordp;
-        int npack = (int) (ibitst.length-1)/nwordp + 1;
-        if (npack*nwordp != ibitst.length) {
+        int npack  = (int) (ibitst.length - 1) / nwordp + 1;
+        if (npack * nwordp != ibitst.length) {
             //logError("number of packed records not correct");
-            System.out.println("number of packed records not correct: " + npack*nwordp + " vs. " + ibitst.length);
+            System.out.println("number of packed records not correct: "
+                               + npack * nwordp + " vs. " + ibitst.length);
             return null;
         }
-        float[]     data  = new float[nparms*npack];
+        float[]     data  = new float[nparms * npack];
         PackingInfo pkinf = part.packInfo;
-        int ir = 0;
-        int ii = 0;
+        int         ir    = 0;
+        int         ii    = 0;
         for (int pack = 0; pack < npack; pack++) {
             //
             //  Move bitstring into internal words.  TODO: necessary?
@@ -1553,12 +1555,12 @@ public class GempakFileReader implements GempakConstants {
             for (int i = 0; i < nwordp; i++) {
                 jdata[i] = ibitst[ii + i];
             }
-    
+
             //
             //  Extract each data value.
             //
             for (int idata = 0; idata < nparms; idata++) {
-    
+
                 //
                 //  Extract correct bits from words using shift and mask
                 //  operations.
@@ -1584,10 +1586,10 @@ public class GempakFileReader implements GempakConstants {
                 //  offset terms to convert to REAL data.
                 //
                 if (ifield == pkinf.imissc[idata]) {
-                    data[ir+idata] = RMISSD;
+                    data[ir + idata] = RMISSD;
                 } else {
-                    data[ir+idata] = (ifield + pkinf.koffst[idata])
-                                  * (float) pkinf.scalec[idata];
+                    data[ir + idata] = (ifield + pkinf.koffst[idata])
+                                       * (float) pkinf.scalec[idata];
                 }
             }
             ir += nparms;
