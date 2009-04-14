@@ -36,19 +36,53 @@ package thredds.filesystem.server;
 import java.io.BufferedReader;
 import java.io.*;
 import java.util.*;
-import java.util.regex.*;
 
 /**
- * Read TDS access logs
+ * Superclass to read TDS logs
  *
  * @author caron
  * @since Apr 10, 2008
  */
-public class TdsLogParser {
-  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TdsLogParser.class);
+public class LogReader {
 
-  class Log {
-    String ip, date, request, referrer, client;
+  public interface LogParser {
+    public Log nextLog(BufferedReader reader) throws IOException;
+  }
+
+  static public class Log {
+    public String getIp() {
+      return ip;
+    }
+
+    public String getDate() {
+      return date;
+    }
+
+    public String getReferrer() {
+      return referrer;
+    }
+
+    public String getClient() {
+      return client;
+    }
+
+    public int getStatus() {
+      return returnCode;
+    }
+
+    public long getMsecs() {
+      return msecs;
+    }
+
+    public long getBytes() {
+      return sizeBytes;
+    }
+
+    public String getPath() {
+      return path;
+    }
+
+    String ip, date, referrer, client;
     int returnCode;
     long msecs, sizeBytes;
     String verb, path, http;
@@ -61,6 +95,7 @@ public class TdsLogParser {
     public String toString() {
       return ip + " [" + date + "] " + verb + " " + path + " " + http + " " + returnCode + " " + sizeBytes + " " + referrer + " " + client + " " + msecs;
     }
+
   }
 
   public interface Closure {
@@ -72,68 +107,29 @@ public class TdsLogParser {
   }
 
   public static class Stats {
-    long total;
-    long passed;
-  }
-
-  ///////////////////////////////////////////////////////
-  // log reading
-
-  // sample
-  // 128.117.140.75 - - [02/May/2008:00:46:26 -0600] "HEAD /thredds/dodsC/model/NCEP/DGEX/CONUS_12km/DGEX_CONUS_12km_20080501_1800.grib2.dds HTTP/1.1" 200 - "null" "Java/1.6.0_05" 21
-  //
-
-  private static Pattern regPattern =
-          Pattern.compile("^(\\d+\\.\\d+\\.\\d+\\.\\d+) - (.*) \\[(.*)\\] \"(.*)\" (\\d+) ([\\-\\d]+) \"(.*)\" \"(.*)\" (\\d+)");
-
-  private int maxLines = -1;
-
-  Log parseLine(Pattern p, String line) {
-    try {
-      //System.out.println("\n"+line);
-      Matcher m = p.matcher(line);
-      int groupno = 1;
-      if (m.matches()) {
-        Log log = new Log();
-        log.ip = m.group(1);
-        log.date = m.group(3);
-        log.request = m.group(4);
-        log.returnCode = parse(m.group(5));
-        log.sizeBytes = parseLong(m.group(6));
-        log.referrer = m.group(7);
-        log.client = m.group(8);
-        log.msecs = parseLong(m.group(9));
-
-        String[] reqss = log.request.split(" ");
-        if (reqss.length == 3) {
-          log.verb = reqss[0];
-          log.path = reqss[1];
-          log.http = reqss[2];
-        }
-
-        return log;
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-      System.out.println("Cant parse " + line);
-    }
-    return null;
-  }
-
-  private int parse(String s) {
-    if (s.equals("-")) return 0;
-    return Integer.parseInt(s);
-  }
-
-  private long parseLong(String s) {
-    if (s.equals("-")) return 0;
-    return Long.parseLong(s);
+    public long total;
+    public long passed;
   }
 
   /////////////////////////////////////////////////////////////////////
 
+  private int maxLines = -1;
+  private LogParser parser;
 
-  void readAll(File dir, FileFilter ff, Closure closure, LogFilter logf, Stats stat) throws IOException {
+  public LogReader(LogParser parser)  {
+    this.parser = parser;
+  }
+
+  /**
+   * Read all the files in a directory and process them. Files are sorted by filename.
+   * @param dir read from this directory
+   * @param ff files must pass this filter (may be null)
+   * @param closure send each Log to this closure
+   * @param logf filter out these Logs (may be null)
+   * @param stat accumulate statitistics (may be null)
+   * @throws IOException on read error
+   */
+  public void readAll(File dir, FileFilter ff, Closure closure, LogFilter logf, Stats stat) throws IOException {
     File[] files = dir.listFiles();
     if (files == null) {
       System.out.printf("Dir has no files= %s%n", dir);
@@ -144,59 +140,52 @@ public class TdsLogParser {
 
     for (int i = 0; i < list.size(); i++) {
       File f = (File) list.get(i);
-      if (!ff.accept(f)) continue;
+      if ((ff != null) && !ff.accept(f)) continue;
 
       if (f.isDirectory())
         readAll(f, ff, closure, logf, stat);
       else
-        scanLogFile(f.getPath(), closure, logf, stat);
+        scanLogFile(f, closure, logf, stat);
     }
   }
 
-  void scanLogFile(String filename, Closure closure, LogFilter filter, Stats stat) throws IOException {
-    InputStream ios = new FileInputStream(filename);
+  /**
+   * Read a log file.
+   * @param file file to read
+   * @param closure send each Log to this closure
+   * @param logf filter out these Logs (may be null)
+   * @param stat accumulate statitistics (may be null)
+   * @throws IOException on read error
+   */
+  public void scanLogFile(File file, Closure closure, LogFilter logf, Stats stat) throws IOException {
+    InputStream ios = new FileInputStream(file);
+    System.out.printf("-----Reading %s %n", file.getPath());
 
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios), 40 * 1000);
     int total = 0;
     int count = 0;
     while ((maxLines < 0) || (count < maxLines)) {
-      String line = dataIS.readLine();
-      if (line == null) break;
+      Log log = parser.nextLog(dataIS);
+      if (log == null) break;
       total++;
 
-      Log log = parseLine(regPattern, line);
-      if (log == null) continue;
-      if ((filter != null) && !filter.pass(log)) continue;
+      if ((logf != null) && !logf.pass(log)) continue;
 
       closure.process( log);
       count++;
     }
-    stat.total += total;
-    stat.passed += count;
+
+    if (stat != null) {
+      stat.total += total;
+      stat.passed += count;
+    }
 
     ios.close();
-    System.out.printf("%s total requests=%d passed=%d %n", filename, total, count);
+    System.out.printf("----- %s total requests=%d passed=%d %n", file.getPath(), total, count);
   }
 
 
   ////////////////////////////////////////////////////////
-
-  private void test() {
-    String line = "128.117.140.75 - - [01/Mar/2008:00:47:08 -0700] \"HEAD /thredds/dodsC/model/NCEP/DGEX/CONUS_12km/DGEX_CONUS_12km_20080229_1800.grib2.dds HTTP/1.1\" 200 - \"null\" \"Java/1.6.0_01\" 23";
-    String line2 = "140.115.36.145 - - [01/Mar/2008:00:01:20 -0700] \"GET /thredds/dodsC/satellite/IR/NHEM-MULTICOMP_1km/20080229/NHEM-MULTICOMP_1km_IR_20080229_1500.gini.dods HTTP/1.0\" 200 134 \"null\" \"Wget/1.10.2 (Red Hat modified)\" 35";
-    String line3 = "82.141.193.194 - - [01/May/2008:09:29:06 -0600] \"GET /thredds/wcs/galeon/testdata/sst.nc?REQUEST=GetCoverage&SERVICE=WCS&VERSION=1.0.0&COVERAGE=tos&CRS=EPSG:4326&BBOX=1,-174,359,184&WIDTH=128&HEIGHT=128&FORMAT=GeoTIFF HTTP/1.1\" 200 32441 \"null\" \"null\" 497";
-
-    //Pattern p =
-    //Pattern.compile("^(\\d+\\.\\d+\\.\\d+\\.\\d+) - (.*) \\[(.*)\\] \"GET(.*)\" (\\d+) (\\d+) \"(.*)\" \"(.*)\" (\\d+)");
-    //         Pattern.compile("^(\\d+\\.\\d+\\.\\d+\\.\\d+) - (.*) \\[(.*)\\] \"(.*)\" (\\d+) ([\\-\\d]+) \"(.*)\" \"(.*)\" (\\d+)");
-
-    Log log = parseLine(regPattern, line3);
-    if (log != null)
-      System.out.println("test= " + log);
-
-    String what = "GET /thredds/wcs/galeon/testdata/sst.nc?REQUEST=GetCoverage&SERVICE=WCS&VERSION=1.0.0&COVERAGE=tos&CRS=EPSG:4326&BBOX=1,-174,359,184&WIDTH=128&HEIGHT=128&FORMAT=GeoTIFF HTTP/1.1";
-    String[] hell = what.split(" ");
-  }
 
   static class MyFilter implements LogFilter {
 
@@ -214,7 +203,7 @@ public class TdsLogParser {
 
   public static void main(String args[]) throws IOException {
     // test
-    final TdsLogParser reader = new TdsLogParser();
+    final LogReader reader = new LogReader( new AccessLogParser());
 
     long startElapsed = System.nanoTime();
     Stats stats = new Stats();

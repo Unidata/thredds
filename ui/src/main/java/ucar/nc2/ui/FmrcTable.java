@@ -118,7 +118,7 @@ public class FmrcTable extends JPanel {
       public void actionPerformed(ActionEvent e) {
         DatasetBean dsb = (DatasetBean) messageTable.getSelectedBean();
         if (dsb == null) return;
-        FmrcTable.this.firePropertyChange("openNetcdfFile", null, dsb.ds.getLocation());
+        FmrcTable.this.firePropertyChange("openNetcdfFile", null, dsb.ds);
       }
     });
 
@@ -126,7 +126,7 @@ public class FmrcTable extends JPanel {
       public void actionPerformed(ActionEvent e) {
         DatasetBean dsb = (DatasetBean) messageTable.getSelectedBean();
         if (dsb == null) return;
-        FmrcTable.this.firePropertyChange("openCoordSystems", null, dsb.ds.getLocation());
+        FmrcTable.this.firePropertyChange("openCoordSystems", null, dsb.ds);
       }
     });
 
@@ -134,7 +134,7 @@ public class FmrcTable extends JPanel {
       public void actionPerformed(ActionEvent e) {
         DatasetBean dsb = (DatasetBean) messageTable.getSelectedBean();
         if (dsb == null) return;
-        FmrcTable.this.firePropertyChange("openGridDataset", null, dsb.ds.getLocation());
+        FmrcTable.this.firePropertyChange("openGridDataset", null, dsb.ds);
       }
     });
 

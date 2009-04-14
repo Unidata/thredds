@@ -129,6 +129,12 @@ public class TextHistoryPane extends JPanel {
   public void gotoTop() { ta.setCaretPosition(0); }
   public void setText(String text) { ta.setText(text); }
 
+  public void setTextFromStackTrace(Throwable e) {
+    ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+    e.printStackTrace(new PrintStream(bos));
+    setText(bos.toString());
+  }
+
   /* public void getStream() {
     ByteArrayOutputStream bout = new ByteArrayOutputStream(20000);
   }  */

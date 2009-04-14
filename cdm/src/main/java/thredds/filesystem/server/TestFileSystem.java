@@ -49,7 +49,7 @@ import ucar.unidata.util.StringUtil;
 public class TestFileSystem {
   static String prefix = "/thredds/catalog/";
 
-  static String roots =
+  static private String roots =
           "terminal/level3/IDD,/data/ldm/pub/native/radar/level3/\n" +
                   "terminal/level3,/data/ldm/pub/native/radar/level3/\n" +
                   "station/soundings,/data/ldm/pub/native/profiler/bufr/profiler3/\n" +
@@ -178,9 +178,98 @@ public class TestFileSystem {
                   "casestudies/ccs034/acars,/data/ldm/pub/casestudies/ccs034/acars\n" +
                   "GEMPAK/model,/data/ldm/pub/decoded/gempak/model";
 
-  class MyLogFilter implements TdsLogParser.LogFilter {
+  public static String[] getRoots() {
+    String rootString = StringUtil.replace(roots, "\n", ",");
+    String[] root2 = rootString.split(",");
+    String[] result = new String[root2.length/2];
+    for (int i = 0; i < root2.length; i += 2) {
+      result[i/2] = root2[i];
+    }
+    return result;
+  }
 
-    public boolean pass(TdsLogParser.Log log) {
+
+  public static PathMatcher readRoots() {
+    PathMatcher pathMatcher = new PathMatcher();
+    String rootString = StringUtil.replace(roots, "\n", ",");
+    String[] roots = rootString.split(",");
+    for (int i = 0; i < roots.length; i += 2) {
+      if (showRoots) System.out.printf("  %-40s %-40s%n", roots[i], roots[i + 1]);
+      pathMatcher.put(roots[i], roots[i + 1]);
+    }
+
+    return pathMatcher;
+  }
+
+  static private PathMatcher pathMatcher = null;
+
+  static public String getDataroot(String path) {
+    if (pathMatcher == null)
+      pathMatcher = readRoots();
+
+    String dataRoot = null;
+    if (path.startsWith("/dqcServlet"))
+      dataRoot = "dqcServlet";
+    else if (!path.startsWith("/thredds/"))
+      dataRoot = "root";
+    else {
+      path = path.substring(9);
+      String service = findService(path);
+      if (service != null) {
+        if (service.equals("radarServer")) dataRoot = "radarServer";
+          //else if (service.equals("casestudies")) dataRoot = "casestudies";
+        else if (service.equals("dqc")) dataRoot = "dqc";
+        else if (path.length() > service.length()) {
+          path = path.substring(service.length() + 1);
+          PathMatcher.Match match = pathMatcher.match(path);
+          if (match != null) dataRoot = match.root;
+        }
+      }
+      if ((dataRoot == null) && (path.endsWith("xml") || path.endsWith("html")))
+        dataRoot = "catalog";
+      if (dataRoot == null)
+        dataRoot = "misc";
+    }
+    return dataRoot;
+  }
+
+  public static String getService(String path) {
+    String service = null;
+    if (path.startsWith("/thredds/")) {
+      path = path.substring(9);
+      service = findService(path);
+      if ((service == null) && (path.endsWith("xml") || path.endsWith("html")))
+        service = "catalog";
+
+      if (service == null) {
+        int pos = path.indexOf('?');
+        if (pos > 0) {
+          String req = path.substring(0, pos);
+          if (req.endsWith("xml") || req.endsWith("html"))
+            service = "catalog";
+        }
+      }
+    }
+
+    if (service == null) service = "unknown";
+    return service;
+  }
+
+  public static String[] services = new String[]{"catalog", "dodsC", "dqc", "fileServer", "ncss/grid", "ncss/metars",
+          "radarServer", "remoteCatalogService", "view", "wcs", "wms"};
+
+  public static String findService(String path) {
+    for (String service : services) {
+      if (path.startsWith(service)) return service;
+    }
+    return null;
+  }
+
+  //////////////////////////////////////////////////////////////////
+
+  class MyLogFilter implements LogReader.LogFilter {
+
+    public boolean pass(LogReader.Log log) {
       return (log.returnCode == 200) && log.path.startsWith(prefix);
     }
   }
@@ -197,9 +286,9 @@ public class TestFileSystem {
   int unknownReq = 0;
   int latestReq = 0;
 
-  class MyClosure implements TdsLogParser.Closure {
+  class MyClosure implements LogReader.Closure {
 
-    public void process(TdsLogParser.Log log) {
+    public void process(LogReader.Log log) {
       String path = log.path.substring(prefix.length());
 
       int len = 0;
@@ -247,8 +336,8 @@ public class TestFileSystem {
       MDirectory mdir = manager.get(dirName);
       if (mdir == null)
         if (show) System.out.printf("Dir %s from path %s doesnt exist%n", dirName, log.path);
-      else if (show)
-        System.out.printf("Dir %s from path %s ok%n", dirName, log.path);
+        else if (show)
+          System.out.printf("Dir %s from path %s ok%n", dirName, log.path);
     }
 
   }
@@ -284,31 +373,20 @@ public class TestFileSystem {
                   "</ehcache>";
 
   Manager manager;
-  PathMatcher pathMatcher;
 
   TestFileSystem() {
     manager = nocache ? new Manager() : new Manager(new StringBufferInputStream(config));
     System.out.printf(" Ehcache at %s%n", ehLocation);
 
-    pathMatcher = new PathMatcher();
-    readRoots(roots);
-    System.out.printf(" Roots initialized%n");
-  }
-
-  void readRoots(String rootString) {
-    rootString = StringUtil.replace(rootString, "\n", ",");
-    String[] roots = rootString.split(",");
-    for (int i = 0; i < roots.length; i += 2) {
-      if (showRoots) System.out.printf("  %-40s %-40s%n", roots[i], roots[i + 1]);
-      pathMatcher.put(roots[i], roots[i + 1]);
-    }
+    if (pathMatcher == null)
+      pathMatcher = readRoots();
   }
 
   void process(String logDir) throws IOException {
-    TdsLogParser reader = new TdsLogParser();
+    LogReader reader = new LogReader(new AccessLogParser());
 
     long startElapsed = System.nanoTime();
-    TdsLogParser.Stats stats = new TdsLogParser.Stats();
+    LogReader.Stats stats = new LogReader.Stats();
 
     reader.readAll(new File(logDir), new MyFF(), new MyClosure(), new MyLogFilter(), stats);
 

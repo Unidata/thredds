@@ -792,9 +792,21 @@ public class ToolsUI extends JPanel {
     tabbedPane.setSelectedComponent(viewerPanel);
   }
 
+  private void openNetcdfFile(NetcdfFile ncfile) {
+    makeComponent(tabbedPane, "Viewer");
+    viewerPanel.setDataset(ncfile);
+    tabbedPane.setSelectedComponent(viewerPanel);
+  }
+
   private void openCoordSystems(String datasetName) {
     makeComponent(tabbedPane, "CoordSys");
     coordSysPanel.doit(datasetName);
+    tabbedPane.setSelectedComponent(coordSysPanel);
+  }
+
+  private void openCoordSystems(NetcdfDataset dataset) {
+    makeComponent(tabbedPane, "CoordSys");
+    coordSysPanel.setDataset(dataset);
     tabbedPane.setSelectedComponent(coordSysPanel);
   }
 
@@ -808,6 +820,13 @@ public class ToolsUI extends JPanel {
   private void openGridDataset(String datasetName) {
     makeComponent(ftTabPane, "Grids");
     gridPanel.doit(datasetName);
+    tabbedPane.setSelectedComponent(ftTabPane);
+    ftTabPane.setSelectedComponent(gridPanel);
+  }
+
+  private void openGridDataset(NetcdfDataset dataset) {
+    makeComponent(ftTabPane, "Grids");
+    gridPanel.setDataset(dataset);
     tabbedPane.setSelectedComponent(ftTabPane);
     ftTabPane.setSelectedComponent(gridPanel);
   }
@@ -1658,6 +1677,19 @@ public class ToolsUI extends JPanel {
       return !err;
     }
 
+    void setDataset(NetcdfDataset ncd) {
+      try {
+        if (ds != null) ds.close();
+        ds = null;
+      } catch (IOException ioe) {
+      }
+      ds = ncd;
+
+      coordSysTable.setDataset(ds);
+      setSelectedItem(ds.getLocation());
+    }
+
+
     void save() {
       coordSysTable.save();
       super.save();
@@ -1678,6 +1710,36 @@ public class ToolsUI extends JPanel {
     AggPanel(PreferencesExt p) {
       super(p, "file:", true, false);
       aggTable = new AggTable(prefs);
+      aggTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+         public void propertyChange(java.beans.PropertyChangeEvent e) {
+           
+           if (e.getPropertyName().equals("openNetcdfFile")) {
+             NetcdfFile ncfile = (NetcdfFile) e.getNewValue();
+             if (ncfile != null) openNetcdfFile(ncfile);
+
+           } else if (e.getPropertyName().equals("openCoordSystems")) {
+             NetcdfFile ncfile = (NetcdfFile) e.getNewValue();
+             if (ncfile == null) return;
+             try {
+               NetcdfDataset ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getDefaultEnhanceMode());
+               openCoordSystems( ncd);
+             } catch (IOException e1) {
+               e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+             }
+
+           } else if (e.getPropertyName().equals("openGridDataset")) {
+             NetcdfFile ncfile = (NetcdfFile) e.getNewValue();
+             if (ncfile == null) return;
+             try {
+               NetcdfDataset ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getDefaultEnhanceMode());
+               openGridDataset( ncd);
+             } catch (IOException e1) {
+               e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+             }
+           }
+         }
+       });
+
       add(aggTable, BorderLayout.CENTER);
     }
 
@@ -1696,20 +1758,6 @@ public class ToolsUI extends JPanel {
 
         ncd = (NetcdfDataset) NetcdfDataset.openFile(command, null);
         aggTable.setAggDataset(ncd);
-        aggTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-          public void propertyChange(java.beans.PropertyChangeEvent e) {
-            if (e.getPropertyName().equals("openNetcdfFile")) {
-              String datasetName = (String) e.getNewValue();
-              openNetcdfFile(datasetName);
-            } else if (e.getPropertyName().equals("openCoordSystems")) {
-              String datasetName = (String) e.getNewValue();
-              openCoordSystems(datasetName);
-            } else if (e.getPropertyName().equals("openGridDataset")) {
-              String datasetName = (String) e.getNewValue();
-              openGridDataset(datasetName);
-            }
-          }
-        });
 
       } catch (FileNotFoundException ioe) {
         JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
@@ -2247,6 +2295,20 @@ public class ToolsUI extends JPanel {
     FmrcImplPanel(PreferencesExt dbPrefs) {
       super(dbPrefs, "dataset:", true, false);
       table = new FmrcTable(prefs);
+      table.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+         public void propertyChange(java.beans.PropertyChangeEvent e) {
+           if (e.getPropertyName().equals("openNetcdfFile")) {
+             NetcdfDataset dataset = (NetcdfDataset) e.getNewValue();
+             openNetcdfFile(dataset);
+           } else if (e.getPropertyName().equals("openCoordSystems")) {
+             NetcdfDataset dataset = (NetcdfDataset) e.getNewValue();
+             openCoordSystems(dataset);
+           } else if (e.getPropertyName().equals("openGridDataset")) {
+             NetcdfDataset dataset = (NetcdfDataset) e.getNewValue();
+             openGridDataset(dataset);
+           }
+         }
+       });
       add(table, BorderLayout.CENTER);
 
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
@@ -2288,12 +2350,13 @@ public class ToolsUI extends JPanel {
         table.setFmrc(fmrc);
         return true;
 
-      } catch (IOException ioe) {
+      } catch (Exception ioe) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
         ioe.printStackTrace();
         ioe.printStackTrace(new PrintStream(bos));
-        // ta.setText( datasetFactory.getErrorMessages());
-        ta.appendLine(bos.toString());
+        detailTA.setText(bos.toString());
+        detailTA.gotoTop();
+        detailWindow.show();
       }
 
       return false;
@@ -2390,7 +2453,6 @@ public class ToolsUI extends JPanel {
         }
       });
       buttPanel.add(wcsButton);
-
     }
 
     private void makeGridUI() {
@@ -2449,7 +2511,12 @@ public class ToolsUI extends JPanel {
       }
 
       this.ds = newds;
-      dsTable.setDataset(newds);
+      try {
+        dsTable.setDataset(newds);
+      } catch (IOException e) {
+        e.printStackTrace();
+        return;
+      }
       setSelectedItem(newds.getLocation());
     }
 

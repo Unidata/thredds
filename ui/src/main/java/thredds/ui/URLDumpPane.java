@@ -46,6 +46,8 @@ import java.net.*;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.Enumeration;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.InflaterInputStream;
 import javax.swing.*;
 
 import org.apache.commons.httpclient.*;
@@ -232,8 +234,35 @@ public class URLDumpPane extends TextHistoryPane {
       appendLine("Status Line = "+m.getStatusLine());
       printHeaders("Response Headers = ", m.getResponseHeaders());
       if (cmd == GET) {
-        appendLine("ResponseBody---------------");
-        appendLine(m.getResponseBodyAsString()); // should use getResponseBodyAsStream()
+        appendLine("\nResponseBody---------------");
+        byte[] body = m.getResponseBody();
+
+        String charset = m.getResponseCharSet();
+        if (charset == null) charset = "UTF-8";
+        String contents = null;       
+
+        // check for deflate and gzip compression
+        Header h = m.getResponseHeader("content-encoding");
+        String encoding = (h == null) ? null : h.getValue();
+
+        if (encoding != null && encoding.equals("deflate")) {
+          InputStream is = new BufferedInputStream(new InflaterInputStream( new ByteArrayInputStream(body)), 1000);
+          contents = IO.readContents(is, charset);
+          double ratio = (double) contents.length() / body.length;
+          appendLine("  deflate encoded="+body.length+" decoded="+contents.length()+" ratio= "+ratio);
+
+        } else if (encoding != null && encoding.equals("gzip")) {
+          InputStream is = new BufferedInputStream(new GZIPInputStream( new ByteArrayInputStream(body)),  1000);
+          contents = IO.readContents(is, charset);
+          double ratio = (double) contents.length() / body.length;
+          appendLine("  gzip encoded="+body.length+" decoded="+contents.length()+" ratio= "+ratio);
+
+        } else {
+          contents = new String(body, charset);
+        }
+
+        appendLine(contents);
+
       } else if (cmd == OPTIONS)
         printEnum("AllowedMethods = ", ((OptionsMethod)m).getAllowedMethods());
 

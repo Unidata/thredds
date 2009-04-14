@@ -38,7 +38,11 @@
   <p>Once you have a NetcdfFile, you can wrap it with a NetcdfDataset,  a GridDataset, a PointFeatureDataset, etc, and use all the mechanism of subsetting already in those classes. Ultimately those call your IOSP for data, and you must return the data correctly, according to the interface contract.<br />
   </p>
 </blockquote>
-<p>&nbsp; </p>
+<p><strong>Q: What about the &quot;O&quot; in IOServiceProvider? How does that work?</strong></p>
+<blockquote>
+  <p>If you look at <strong>ucar.nc2.iosp.IOServiceProviderWriter</strong>, you can see the start of a possible standard mechanism for writing to different file formats. But it isnt used anywhere that would likely be useful to you. You probably just want to write your own class that takes a NetcdfFile object, and writes it to your file format, in whatever way suits you best. You might find the code at <strong>ucar.nc2.FileWriter </strong>useful to look at.</p>
+  <p>&nbsp;</p>
+</blockquote>
 <h3>Logging</h3>
 <p><strong>Q: How do I get rid of the message &quot;log4j:WARN No appenders could be found for logger (ucar.nc2.NetcdfFile).  log4j:WARN Please initialize the log4j system properly&quot; ?</strong></p>
 <blockquote>

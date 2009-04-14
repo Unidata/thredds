@@ -77,7 +77,7 @@ public class AggTable extends JPanel {
   private BeanTableSorted messageTable, obsTable, ddsTable;
   private JSplitPane split, split2;
 
-  private TextHistoryPane infoTA;
+  private TextHistoryPane infoTA, aggTA;
   private IndependentWindow infoWindow;
 
   private StructureTable dataTable;
@@ -94,15 +94,6 @@ public class AggTable extends JPanel {
         obsTable.setBeans(new ArrayList());
 
         DatasetBean mb = (DatasetBean) messageTable.getSelectedBean();
-        /* java.util.List<DdsBean> beanList = new ArrayList<DdsBean>();
-        try {
-          setDataDescriptors(beanList, mb.m.getRootDataDescriptor(), 0);
-          setObs(mb.m);
-        } catch (IOException e1) {
-          JOptionPane.showMessageDialog(AggTable.this, e1.getMessage());
-          e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        ddsTable.setBeans(beanList); */
       }
     });
 
@@ -125,7 +116,7 @@ public class AggTable extends JPanel {
       public void actionPerformed(ActionEvent e) {
         DatasetBean dsb = (DatasetBean) messageTable.getSelectedBean();
         if (dsb == null) return;
-        AggTable.this.firePropertyChange("openNetcdfFile", null, dsb.ds.getLocation());
+        AggTable.this.firePropertyChange("openNetcdfFile", null, dsb.acquireFile());
       }
     });
 
@@ -133,7 +124,7 @@ public class AggTable extends JPanel {
       public void actionPerformed(ActionEvent e) {
         DatasetBean dsb = (DatasetBean) messageTable.getSelectedBean();
         if (dsb == null) return;
-        AggTable.this.firePropertyChange("openCoordSystems", null, dsb.ds.getLocation());
+        AggTable.this.firePropertyChange("openCoordSystems", null, dsb.acquireFile());
       }
     });
 
@@ -141,7 +132,7 @@ public class AggTable extends JPanel {
       public void actionPerformed(ActionEvent e) {
         DatasetBean dsb = (DatasetBean) messageTable.getSelectedBean();
         if (dsb == null) return;
-        AggTable.this.firePropertyChange("openGridDataset", null, dsb.ds.getLocation());
+        AggTable.this.firePropertyChange("openGridDataset", null, dsb.acquireFile());
       }
     });
 
@@ -154,7 +145,9 @@ public class AggTable extends JPanel {
     split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, ddsTable, obsTable);
     split2.setDividerLocation(prefs.getInt("splitPos2", 800));
 
-    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, messageTable, split2);
+    aggTA = new TextHistoryPane();
+
+    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, messageTable, aggTA);
     split.setDividerLocation(prefs.getInt("splitPos", 500));
 
     setLayout(new BorderLayout());
@@ -185,12 +178,23 @@ public class AggTable extends JPanel {
     }
 
     messageTable.setBeans(beanList);
-    obsTable.setBeans(new ArrayList());
-    ddsTable.setBeans(new ArrayList());
+
+    Formatter f = new Formatter();
+    agg.detail(f);
+    aggTA.setText( f.toString());
   }
 
   public class DatasetBean {
     Aggregation.Dataset ds;
+
+    protected NetcdfFile acquireFile() {
+      try {
+        return ds.acquireFile(null);
+      } catch (IOException e) {
+        e.printStackTrace();
+        return null;
+      }
+    }
 
     // no-arg constructor
     public DatasetBean() {
