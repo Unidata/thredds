@@ -157,6 +157,17 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
     }
 
     /**
+   * Set disk cache policy for index files.
+   * Default = false, meaning try to write index files in same directory as grib file.
+   * True means always use the DiskCache area. TDS sets this to true, so it wont interfere with external indexer.
+   *
+   * @param b set to this value
+   */
+    static public void setIndexAlwaysInCache(boolean b) {
+      alwaysInCache = b;
+    }
+
+    /**
      * Use the given index to fill the NetcdfFile object with attributes and variables.
      * 
      * @param index   GridIndex to use
