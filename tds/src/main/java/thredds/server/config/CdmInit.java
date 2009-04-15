@@ -92,7 +92,7 @@ public class CdmInit {
     boolean alwaysUseCache = ThreddsConfig.getBoolean("GribIndexing.alwaysUseCache", false);
     // TODO: delete after deprecation
     ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( alwaysUseCache );
-    ucar.nc2.iosp.grid.GridServiceProvider.setAlwaysInCache( alwaysUseCache );
+    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( alwaysUseCache );
 
     // optimization: netcdf-3 files can only grow, not have metadata changes
     ucar.nc2.NetcdfFile.setProperty("syncExtendOnly", "true");
