@@ -43,6 +43,7 @@ import java.util.List;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.TestAll;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -57,7 +58,7 @@ public class TestOffAggExistingSSTA extends TestCase {
     "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
     "    <aggregation dimName='time' type='joinExisting' recheckEvery='15 min'>\n" +
     "      <variableAgg name='ATssta' />\n" +
-    "      <scan dateFormatMark='AT#yyyyDDD_HHmmss' location='R:/testdata/ncml/nc/pfeg/' suffix='.nc' />\n" +
+    "      <scan dateFormatMark='AT#yyyyDDD_HHmmss' location='" + TestAll.testdataDir + "ncml/nc/pfeg/' suffix='.nc' />\n" +
     "    </aggregation>\n" +
     "</netcdf>";
 
