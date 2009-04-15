@@ -10,6 +10,7 @@ import ucar.nc2.util.DiskCache;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Dimension;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.io.RandomAccessFile;
 
 /**
  * Test that external updating of GRIB index files is handled correctly
@@ -22,6 +23,7 @@ public class TestIndexUpdating extends TestCase
 {
 
   private String dataFileName = "GFS_CONUS_191km_20090331_1800.grib1";
+  private String gribSuffix0 = ".part0";
   private String indexSuffix0 = ".part0.gbx";
   private String indexSuffix1 = ".part1.gbx";
   private String indexSuffix2 = ".part2.gbx";
@@ -44,7 +46,21 @@ public class TestIndexUpdating extends TestCase
   @Override
   protected void tearDown() throws Exception
   {
-    indexFile.delete();
+    // remove dataFile, created on setup
+    if ( dataFile.exists() )
+      dataFile.delete();
+
+    if ( indexFile.exists() )
+      indexFile.delete();
+
+    // always remove cache index if it exists
+    File cacheIndex = DiskCache.getFile(indexFile.getPath(), true);
+    if ( cacheIndex.exists() && ! cacheIndex.canWrite())
+    {
+      fail( "Cannot write/remove cache index file [" + cacheIndex.getPath() + "].");
+    } else if ( cacheIndex.exists() ) {
+      cacheIndex.delete();
+    }
   }
 
   /**
@@ -66,8 +82,10 @@ public class TestIndexUpdating extends TestCase
    */
   public void testNetcdfFileSync()
   {
-    ucar.nc2.iosp.grid.GridServiceProvider.setAlwaysInCache( false );
-    ucar.nc2.iosp.grid.GridServiceProvider.setExtendMode( false );
+    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
+    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
+    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false);
+    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
 
     // Setup dataset to use partial GRIB index file.
     if ( ! setupGribAndPartialIndex0() )
@@ -87,6 +105,10 @@ public class TestIndexUpdating extends TestCase
     Dimension timePartial = ncf.findDimension( "time" );
     assertTrue( "Length of time dimension [" + timePartial.getLength() + "] not as expected [4].",
                 timePartial.getLength() == 4 );
+
+    // Switch to use the complete GRIB file.
+    if ( ! switchToCompleteGrib() )
+      return;
 
     // Switch to use the complete GRIB index file.
     if ( ! switchToCompleteGribIndex() )
@@ -113,8 +135,10 @@ public class TestIndexUpdating extends TestCase
 
   public void testNetcdfDatasetSync()
   {
-    ucar.nc2.iosp.grid.GridServiceProvider.setAlwaysInCache( false );
-    ucar.nc2.iosp.grid.GridServiceProvider.setExtendMode( false );
+    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
+    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
+    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false);
+    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
 
     // Setup dataset to use partial GRIB index file.
     if ( ! setupGribAndPartialIndex0() )
@@ -134,6 +158,10 @@ public class TestIndexUpdating extends TestCase
     Dimension timePartial = ncd.findDimension( "time");
     assertTrue( "Length of time dimension [" + timePartial.getLength() + "] not as expected [4].",
                 timePartial.getLength() == 4 );
+
+    // Switch to use the complete GRIB file.
+    if ( ! switchToCompleteGrib() )
+      return;
 
     // Switch to use the complete GRIB index file.
     if ( ! switchToCompleteGribIndex() )
@@ -156,7 +184,7 @@ public class TestIndexUpdating extends TestCase
     assertTrue( "Length of time dimension [" + timeComplete.getLength() + "] not as expected [21].",
                 timeComplete.getLength() == 21 );
   }
-
+  /* //TODO: fix
   public void testBadIndexFileWithExtendModeFalse()
   {
     ucar.nc2.iosp.grid.GridServiceProvider.setAlwaysInCache( false );
@@ -186,16 +214,17 @@ public class TestIndexUpdating extends TestCase
 
     fail( "Expected IOException not thrown.");
   }
-
+  */
   /**
    * tests the TDS configuration : there is no index available on first access to the Grib file, so
-   * an index is created in the cache directory.  On a future accesses, there is an index
-   * available next to the Grib file, so use it instead of the cache index.
+   * an index is created in the cache directory.  
    */
   public void testNoIndex()
   {
-    ucar.nc2.iosp.grid.GridServiceProvider.setAlwaysInCache( false );
-    ucar.nc2.iosp.grid.GridServiceProvider.setExtendMode( false );
+    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
+    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
+    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false);
+    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
 
     // Setup dataset to use partial GRIB index file.
     if ( ! setupGrib() )
@@ -211,11 +240,15 @@ public class TestIndexUpdating extends TestCase
       fail( "exception opening");
     }
 
-    Dimension timeComplete = ncf.findDimension( "time" );
+    Dimension timePartial = ncf.findDimension( "time" );
 
-    assertTrue( "Time dimension ["+ timeComplete.getLength()+"] not as expected [21].", timeComplete.getLength() == 21 );
+    assertTrue( "Time dimension ["+ timePartial.getLength()+"] not as expected [4].", timePartial.getLength() == 4 );
 
-    if ( ! switchToPartialGribIndex0() )
+    // Switch to use the complete GRIB file.
+    if ( ! switchToCompleteGrib() )
+      return;
+
+    if ( ! switchToCompleteGribIndex() )
       return;
 
     // sync() the dataset with new index.
@@ -231,14 +264,61 @@ public class TestIndexUpdating extends TestCase
 
     Dimension timeNew = ncf.findDimension( "time" );
 
-    assertTrue( "Time dimension [" + timeNew.getLength() + "] not as expected [4].", timeNew.getLength() == 4 );
+    assertTrue( "Time dimension [" + timeNew.getLength() + "] not as expected [21].", timeNew.getLength() == 21 );
     DiskCache.simulateUnwritableDir = false;
   }
 
+
   public void testExtendModeTrue()
   {
-    ucar.nc2.iosp.grid.GridServiceProvider.setAlwaysInCache( false );
-    ucar.nc2.iosp.grid.GridServiceProvider.setExtendMode( true );
+    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
+    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
+    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( true);
+    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( true );
+
+    // Setup dataset to use partial GRIB index file.
+    if ( ! setupGribAndPartialIndex0() )
+      return;
+
+    // Switch to use the complete GRIB file.
+    if ( ! switchToCompleteGrib() )
+      return;
+
+    // Initial opening of the data file.
+    NetcdfFile ncf = null;
+    try { ncf = NetcdfFile.open( dataFile.getPath() ); }
+    catch ( IOException e )
+    {
+      fail( "exception opening");
+    }
+
+    Dimension timeComplete = ncf.findDimension( "time" );
+
+    assertTrue( "Time dimension ["+ timeComplete.getLength()+"] not as expected [21].", timeComplete.getLength() == 21 );
+
+    // sync() the dataset with  index.
+    try
+    {
+      ncf.sync();
+    }
+    catch ( IOException e )
+    {
+      fail( "Failed to sync() data file [" + dataFile.getPath() + "]: " + e.getMessage() );
+      return;
+    }
+
+    Dimension timeNew = ncf.findDimension( "time" );
+
+    assertTrue( "Time dimension [" + timeNew.getLength() + "] not as expected [21].", timeNew.getLength() == 21 );
+
+  }
+
+  public void testAlwaysInCacheAndExtendModeTrue()
+  {
+    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( true );
+    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( true );
+    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( true);
+    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( true );
 
     // Setup dataset to use partial GRIB index file.
     if ( ! setupGribAndPartialIndex0() )
@@ -257,49 +337,11 @@ public class TestIndexUpdating extends TestCase
     assertTrue( "Time dimension ["+ timeComplete.getLength()+"] not as expected [4].",
                 timeComplete.getLength() == 4 );
 
-    indexFile.setLastModified( System.currentTimeMillis() + 1000 );
-
-    // sync() the dataset with new index.
-    try
-    {
-      ncf.sync();
-    }
-    catch ( IOException e )
-    {
-      fail( "Failed to sync() data file [" + dataFile.getPath() + "]: " + e.getMessage() );
-      return;
-    }
-
-    Dimension timeNew = ncf.findDimension( "time" );
-
-    assertTrue( "Time dimension [" + timeNew.getLength() + "] not as expected [21].", timeNew.getLength() == 21 );
-  }
-
-  public void testAlwaysInCacheAndExtendModeTrue()
-  {
-    ucar.nc2.iosp.grid.GridServiceProvider.setAlwaysInCache( true );
-    ucar.nc2.iosp.grid.GridServiceProvider.setExtendMode( true );
-
-    // Setup dataset to use partial GRIB index file.
-    if ( ! setupGribAndPartialIndex0() )
+    // Switch to use the complete GRIB file.
+    if ( ! switchToCompleteGrib() )
       return;
 
-    // Initial opening of the data file.
-    NetcdfFile ncf = null;
-    try { ncf = NetcdfFile.open( dataFile.getPath() ); }
-    catch ( IOException e )
-    {
-      fail( "exception opening");
-    }
-
-    Dimension timeComplete = ncf.findDimension( "time" );
-
-    assertTrue( "Time dimension ["+ timeComplete.getLength()+"] not as expected [21].",
-                timeComplete.getLength() == 21 );
-
-    indexFile.setLastModified( System.currentTimeMillis() + 1000 );
-
-    // sync() the dataset with new index.
+    // sync() the dataset  .
     try
     {
       ncf.sync();
@@ -331,7 +373,16 @@ public class TestIndexUpdating extends TestCase
     }
 
     // Check that the GRIB data file exists and is readable.
+    // Copy partial grib file into place
+    File gribFilePartial = new File( dataDir, dataFileName + ".part0" );
     dataFile = new File( dataDir, dataFileName);
+    try
+    { IO.copyFile( gribFilePartial, dataFile ); }
+    catch ( IOException e )
+    {
+      fail( "Failed to copy partial grib file [" + gribFilePartial.getPath() + "] to grib file [" + dataFile.getPath() + "]: " + e.getMessage());
+      return false;
+    }
     if ( ! dataFile.exists() )
     {
       fail( "Non-existent data file [" + dataFile.getPath() + "].");
@@ -374,16 +425,6 @@ public class TestIndexUpdating extends TestCase
       return false;
     }
 
-    // always remove cache index
-    File cacheIndex = DiskCache.getFile(indexFile.getPath(), true);
-    if ( cacheIndex.exists() && ! cacheIndex.canWrite())
-    {
-      fail( "Cannot write/remove cache index file [" + cacheIndex.getPath() + "].");
-      return false;
-    } else if ( cacheIndex.exists() ) {
-      cacheIndex.delete();
-    }
-
     return true;
 
   }
@@ -404,7 +445,17 @@ public class TestIndexUpdating extends TestCase
     }
 
     // Check that the GRIB data file exists and is readable.
+    // Copy partial grib file into place
+    File gribFilePartial = new File( dataDir, dataFileName + ".part0" );
     dataFile = new File( dataDir, dataFileName);
+    try
+    { IO.copyFile( gribFilePartial, dataFile ); }
+    catch ( IOException e )
+    {
+      fail( "Failed to copy partial grib file [" + gribFilePartial.getPath() + "] to grib file [" + dataFile.getPath() + "]: " + e.getMessage());
+      return false;
+    }
+
     if ( ! dataFile.exists() )
     {
       fail( "Non-existent data file [" + dataFile.getPath() + "].");
@@ -424,15 +475,28 @@ public class TestIndexUpdating extends TestCase
       return false;
     }
     indexFile.deleteOnExit();
+ 
+    return true;
+  }
 
-    // always remove cache index
-    File cacheIndex = DiskCache.getFile(indexFile.getPath(), true);
-    if ( cacheIndex.exists() && ! cacheIndex.canWrite())
-    {
-      fail( "Cannot write/remove cache index file [" + cacheIndex.getPath() + "].");
+  private boolean switchToCompleteGrib()
+  {
+    RandomAccessFile input = null, output = null;
+    try {
+    // read in extra data
+    input = new RandomAccessFile(dataFile.getPath() +".extra", "r");
+    byte[] extra = new byte[ (int) input.length()];
+    input.read( extra );
+    input.close();
+
+    output = new RandomAccessFile(dataFile.getPath(), "rw");
+    output.seek( output.length());
+    output.write( extra );
+    output.close();
+
+    } catch (Exception e ) {
+      fail( "Failed to add file [" + input.getLocation() + "] to  file [" + dataFile.getPath() + "]: " + e.getMessage());
       return false;
-    } else if ( cacheIndex.exists() ) {
-      cacheIndex.delete();
     }
 
     return true;
