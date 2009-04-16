@@ -46,6 +46,7 @@ import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
 import ucar.grib.grib2.Grib2GridTableLookup;
 import ucar.grib.grib1.Grib1GridTableLookup;
+import ucar.grib.GribGridRecord;
 import ucar.unidata.util.StringUtil;
 import ucar.grid.*;
 
@@ -474,16 +475,17 @@ public class GridIndexToNC {
         } else {
 
           Collections.sort(plist, new CompareGridVariableByNumberVertLevels());
-          // TODO: check other coord system routine for same problem
-          boolean isEnsemble = false;
+          // TODO: check other coord system routines for same problem
+          boolean isGrib2 = false;
+          Grib2GridTableLookup g2lookup = null;
           if ( (lookup instanceof Grib2GridTableLookup) ) {
-            Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
-            isEnsemble = g2lookup.isEnsemble();
+            g2lookup = (Grib2GridTableLookup) lookup;
+            isGrib2 = true;
           }
           // finally, add the variables
           for (int k = 0; k < plist.size(); k++) {
             GridVariable pv = plist.get(k);
-            if (isEnsemble ) {
+            if (isGrib2 &&  g2lookup.isEnsemble( pv.getFirstRecord() )) {
               ncfile.addVariable(hcs.getGroup(), pv.makeVariable(ncfile, hcs.getGroup(), false));
             } else {
               ncfile.addVariable(hcs.getGroup(), pv.makeVariable(ncfile, hcs.getGroup(), (k == 0)));
@@ -504,7 +506,7 @@ public class GridIndexToNC {
       }
 
     } // loop over hcs
-    // TODO: caused problems
+    // TODO: check this,  in ToolsUI
     //for (GridVertCoord gvcs : vertCoords) {
     //  gvcs.empty();
     //}
