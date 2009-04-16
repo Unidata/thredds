@@ -42,7 +42,6 @@ import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.*;
 
 import java.io.FileNotFoundException;
-import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.WritableByteChannel;
@@ -84,6 +83,8 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
     _client = new HttpClient(connectionManager);
   }
+
+  ///////////////////////////////////////////////////////////////////////////////////
 
   private String url;
   private long total_length = 0;
@@ -204,6 +205,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
    * @return actual number of bytes read
    * @throws IOException on io error
    */
+  @Override
   protected int read_(long pos, byte[] buff, int offset, int len) throws IOException {
     long end = pos + len - 1;
     if (end >= total_length)
@@ -223,6 +225,9 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
         throw new IOException("Server does not support Range requests, code= " + code);
 
       String s = method.getResponseHeader("Content-Length").getValue();
+      if (s == null)
+        throw new IOException("Server does not send Content-Length header");
+
       int readLen = Integer.parseInt(s);
       readLen = Math.min(len, readLen);
 
@@ -246,6 +251,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     return done;
   }
 
+  @Override
   public long readToByteChannel(WritableByteChannel dest, long offset, long nbytes) throws IOException {
     int n = (int) nbytes;
     byte[] buff = new byte[n];
@@ -254,21 +260,14 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     return done;
   }
 
-  // override the rest of the RandomAccessFile public methods
+  // override selected RandomAccessFile public methods
+  @Override
   public long length() throws IOException {
     long fileLength = total_length;
     if (fileLength < dataEnd)
       return dataEnd;
     else
       return fileLength;
-  }
-
-  public void close() {
-    if (debugLeaks) openFiles.remove(location);
-  }
-
-  public FileDescriptor getFD() {
-    return null;
   }
 
 }

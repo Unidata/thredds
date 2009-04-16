@@ -53,7 +53,7 @@ import java.nio.channels.WritableByteChannel;
  * final. However, if it is necessary to use RandomAccessFile and
  * java.io.RandomAccessFile interchangeably, both classes implement the
  * DataInput and DataOutput interfaces.
- *
+ * <p/>
  * <p> By Russ Rew, based on
  * BufferedRandomAccessFile by Alex McManus, based on Sun's source code
  * for java.io.RandomAccessFile.  For Alex McManus version from which
@@ -79,6 +79,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
 
   /**
    * Debugging, do not use.
+   *
    * @return true if debugLeaks is on
    */
   static public boolean getDebugLeaks() {
@@ -87,6 +88,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
 
   /**
    * Debugging, do not use.
+   *
    * @param b set true to track java.io.RandomAccessFile
    */
   static public void setDebugLeaks(boolean b) {
@@ -95,6 +97,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
 
   /**
    * Debugging, do not use.
+   *
    * @param b to debug file reading
    */
   static public void setDebugAccess(boolean b) {
@@ -103,6 +106,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
 
   /**
    * Debugging, do not use.
+   *
    * @return list of open files.
    */
   static public List<String> getOpenFiles() {
@@ -118,6 +122,8 @@ public class RandomAccessFile implements DataInput, DataOutput {
    * The default buffer size, in bytes.
    */
   protected static final int defaultBufferSize = 8092;
+
+  /////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * File location
@@ -221,8 +227,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
    * @param bufferSize size of buffer to use.
    * @throws IOException on open error
    */
-  public RandomAccessFile(String location, String mode, int bufferSize)
-      throws IOException {
+  public RandomAccessFile(String location, String mode, int bufferSize) throws IOException {
     this.location = location;
     this.file = new java.io.RandomAccessFile(location, mode);
     this.readonly = mode.equals("r");
@@ -230,7 +235,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
     if (debugLeaks) {
       openFiles.add(location);
       if (showOpen)
-        System.out.println("  open "+location);
+        System.out.println("  open " + location);
     }
   }
 
@@ -244,11 +249,6 @@ public class RandomAccessFile implements DataInput, DataOutput {
     return this.file;
   }
 
-  /**
-   * _more_
-   *
-   * @param bufferSize _more_
-   */
   private void init(int bufferSize) {
     // Initialise the buffer
     bufferStart = 0;
@@ -260,6 +260,25 @@ public class RandomAccessFile implements DataInput, DataOutput {
   }
 
   /**
+   * Set the buffer size.
+   * If writing, call flush() first.
+   *
+   * @param bufferSize length in bytes
+   */
+  public void setBufferSize(int bufferSize) {
+    init(bufferSize);
+  }
+
+  /**
+   * Get the buffer size
+   *
+   * @return bufferSize length in bytes
+   */
+  public int getBufferSize() {
+    return buffer.length;
+  }
+
+  /**
    * Close the file, and release any associated system resources.
    *
    * @throws IOException if an I/O error occurrs.
@@ -267,7 +286,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
   public void close() throws IOException {
     if (debugLeaks) {
       openFiles.remove(location);
-      if (showOpen) System.out.println("  close "+location);
+      if (showOpen) System.out.println("  close " + location);
     }
 
     if (file == null)
@@ -302,25 +321,11 @@ public class RandomAccessFile implements DataInput, DataOutput {
   /**
    * Return true if file pointer is at end of file.
    *
-   * @return _more_
+   * @return true if file pointer is at end of file
    */
   public boolean isAtEndOfFile() {
     return endOfFile;
   }
-
-  /* Create channel from file
- public FileChannel getChannel() {
-     if (file == null) {
-         return null;
-     }
-
-     try {
-         file.seek(0);
-     } catch (IOException e) {
-         e.printStackTrace();
-     }
-     return file.getChannel();
- } */
 
   /**
    * Set the position in the file for the next read or write.
@@ -376,7 +381,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
   /**
    * Get the file location, or name.
    *
-   * @return _more_
+   * @return file location
    */
   public String getLocation() {
     return location;
@@ -417,9 +422,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
    * @throws IOException if an I/O error occurs.
    */
   public FileDescriptor getFD() throws IOException {
-    return (file == null)
-        ? null
-        : file.getFD();
+    return (file == null) ? null : file.getFD();
   }
 
   /**
@@ -435,10 +438,10 @@ public class RandomAccessFile implements DataInput, DataOutput {
       bufferModified = false;
     }
 
-      // check min length
-      if ( !readonly && (minLength != 0) && (minLength != file.length())) {
-          file.setLength(minLength);
-      }
+    // check min length
+    if (!readonly && (minLength != 0) && (minLength != file.length())) {
+      file.setLength(minLength);
+    }
   }
 
   /**
@@ -520,8 +523,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
     int copyLength = (bytesAvailable >= len)
         ? len
         : bytesAvailable;
-    System.arraycopy(buffer, (int) (filePosition - bufferStart), b, off,
-        copyLength);
+    System.arraycopy(buffer, (int) (filePosition - bufferStart), b, off, copyLength);
     filePosition += copyLength;
 
     // If there is more to copy...
@@ -531,8 +533,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
       // If the amount remaining is more than a buffer's length, read it
       // directly from the file.
       if (extraCopy > buffer.length) {
-        extraCopy = read_(filePosition, b, off + copyLength,
-            len - copyLength);
+        extraCopy = read_(filePosition, b, off + copyLength, len - copyLength);
 
         // ...or read a new buffer full, and copy as much as possible...
       } else {
@@ -541,8 +542,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
           extraCopy = (extraCopy > dataSize)
               ? dataSize
               : extraCopy;
-          System.arraycopy(buffer, 0, b, off + copyLength,
-              extraCopy);
+          System.arraycopy(buffer, 0, b, off + copyLength, extraCopy);
         } else {
           extraCopy = -1;
         }
@@ -565,7 +565,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
    * This will block until all bytes are read.
    * This uses the underlying file channel directly, bypassing all user buffers.
    *
-   * @param dest write to this WritableByteChannel.
+   * @param dest   write to this WritableByteChannel.
    * @param offset the offset in the file where copying will start.
    * @param nbytes the number of bytes to read.
    * @return the actual number of bytes read and transfered
@@ -574,7 +574,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
   public long readToByteChannel(WritableByteChannel dest, long offset, long nbytes) throws IOException {
 
     if (fileChannel == null)
-        fileChannel = file.getChannel();
+      fileChannel = file.getChannel();
 
     long need = nbytes;
     while (need > 0) {
@@ -585,7 +585,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
     }
     return nbytes - need;
   }
-  
+
 
   /**
    * Read directly from file, without going through the buffer.
@@ -598,8 +598,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
    * @return actual number of bytes read
    * @throws IOException on io error
    */
-  protected int read_(long pos, byte[] b, int offset, int len)
-      throws IOException {
+  protected int read_(long pos, byte[] b, int offset, int len) throws IOException {
 
     file.seek(pos);
     int n = file.read(b, offset, len);
@@ -642,7 +641,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
   }
 
   /**
-   * Read fully count bytes
+   * Read fully count number of bytes
    *
    * @param count how many bytes tp read
    * @return a byte array of length count, fully read in
@@ -682,8 +681,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
    *                      all the bytes.
    * @throws IOException  if an I/O error occurs.
    */
-  public final void readFully(byte b[], int off, int len)
-      throws IOException {
+  public final void readFully(byte b[], int off, int len) throws IOException {
     int n = 0;
     while (n < len) {
       int count = this.read(b, off + n, len - n);
@@ -966,8 +964,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
    * @param n     read this many elements
    * @throws IOException on read error
    */
-  public final void readShort(short[] pa, int start, int n)
-      throws IOException {
+  public final void readShort(short[] pa, int start, int n) throws IOException {
     for (int i = 0; i < n; i++) {
       pa[start + i] = readShort();
     }
@@ -1007,18 +1004,18 @@ public class RandomAccessFile implements DataInput, DataOutput {
 
 
   /*
-   * Reads a signed 24-bit integer from this file. This method reads 3
-   * bytes from the file. If the bytes read, in order, are <code>b1</code>,
-   * <code>b2</code>, and <code>b3</code>, where
-   * <code>0&nbsp;&lt;=&nbsp;b1, b2, b3&nbsp;&lt;=&nbsp;255</code>,
-   * then the result is equal to:
-   * <ul><code>
-   * (b1 &lt;&lt; 16) | (b2 &lt;&lt; 8) + (b3 &lt;&lt; 0)
-   * </code></ul>
-   * <p/>
-   * This method blocks until the three bytes are read, the end of the
-   * stream is detected, or an exception is thrown.
-   */
+  * Reads a signed 24-bit integer from this file. This method reads 3
+  * bytes from the file. If the bytes read, in order, are <code>b1</code>,
+  * <code>b2</code>, and <code>b3</code>, where
+  * <code>0&nbsp;&lt;=&nbsp;b1, b2, b3&nbsp;&lt;=&nbsp;255</code>,
+  * then the result is equal to:
+  * <ul><code>
+  * (b1 &lt;&lt; 16) | (b2 &lt;&lt; 8) + (b3 &lt;&lt; 0)
+  * </code></ul>
+  * <p/>
+  * This method blocks until the three bytes are read, the end of the
+  * stream is detected, or an exception is thrown.
+  */
 
   /**
    * Reads a Unicode character from this file. This method reads two
@@ -1157,7 +1154,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
     if (bigEndian) {
       return ((long) (readInt()) << 32) + (readInt() & 0xFFFFFFFFL);  // tested ok
     } else {
-      return ( (readInt() & 0xFFFFFFFFL) + ((long) readInt() << 32)); // not tested yet ??
+      return ((readInt() & 0xFFFFFFFFL) + ((long) readInt() << 32)); // not tested yet ??
     }
 
     /*     int ch1 = this.read();
@@ -1186,8 +1183,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
    * @param n     read this many elements
    * @throws IOException on read error
    */
-  public final void readLong(long[] pa, int start, int n)
-      throws IOException {
+  public final void readLong(long[] pa, int start, int n) throws IOException {
     for (int i = 0; i < n; i++) {
       pa[start + i] = readLong();
     }
@@ -1224,8 +1220,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
    * @param n     read this many elements
    * @throws IOException on read error
    */
-  public final void readFloat(float[] pa, int start, int n)
-      throws IOException {
+  public final void readFloat(float[] pa, int start, int n) throws IOException {
     for (int i = 0; i < n; i++) {
       pa[start + i] = Float.intBitsToFloat(readInt());
     }
@@ -1262,8 +1257,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
    * @param n     read this many elements
    * @throws IOException on read error
    */
-  public final void readDouble(double[] pa, int start, int n)
-      throws IOException {
+  public final void readDouble(double[] pa, int start, int n) throws IOException {
     for (int i = 0; i < n; i++) {
       pa[start + i] = Double.longBitsToDouble(readLong());
     }
@@ -1355,21 +1349,18 @@ public class RandomAccessFile implements DataInput, DataOutput {
    * @throws IOException if an I/O error occurs.
    */
   public final void writeBoolean(boolean v) throws IOException {
-    write(v
-        ? 1
-        : 0);
+    write(v ? 1 : 0);
   }
 
   /**
-   * _more_
+   * Write an array of booleans
    *
-   * @param pa    _more_
-   * @param start _more_
-   * @param n     _more_
-   * @throws IOException _more_
+   * @param pa    write from this array
+   * @param start starting with this element in the array
+   * @param n     write this number of elements
+   * @throws IOException on read error
    */
-  public final void writeBoolean(boolean[] pa, int start, int n)
-      throws IOException {
+  public final void writeBoolean(boolean[] pa, int start, int n) throws IOException {
     for (int i = 0; i < n; i++) {
       writeBoolean(pa[start + i]);
     }
@@ -1397,15 +1388,14 @@ public class RandomAccessFile implements DataInput, DataOutput {
   }
 
   /**
-   * _more_
+   * Write an array of shorts
    *
-   * @param pa    _more_
-   * @param start _more_
-   * @param n     _more_
-   * @throws IOException _more_
+   * @param pa    write from this array
+   * @param start starting with this element in the array
+   * @param n     this number of elements
+   * @throws IOException on read error
    */
-  public final void writeShort(short[] pa, int start, int n)
-      throws IOException {
+  public final void writeShort(short[] pa, int start, int n) throws IOException {
     for (int i = 0; i < n; i++) {
       writeShort(pa[start + i]);
     }
@@ -1424,15 +1414,14 @@ public class RandomAccessFile implements DataInput, DataOutput {
   }
 
   /**
-   * _more_
+   * Write an array of chars
    *
-   * @param pa    _more_
-   * @param start _more_
-   * @param n     _more_
-   * @throws IOException _more_
+   * @param pa    write from this array
+   * @param start starting with this element in the array
+   * @param n     this number of elements
+   * @throws IOException on read error
    */
-  public final void writeChar(char[] pa, int start, int n)
-      throws IOException {
+  public final void writeChar(char[] pa, int start, int n) throws IOException {
     for (int i = 0; i < n; i++) {
       writeChar(pa[start + i]);
     }
@@ -1453,12 +1442,12 @@ public class RandomAccessFile implements DataInput, DataOutput {
   }
 
   /**
-   * _more_
+   * Write an array of ints
    *
-   * @param pa    _more_
-   * @param start _more_
-   * @param n     _more_
-   * @throws IOException _more_
+   * @param pa    write from this array
+   * @param start starting with this element in the array
+   * @param n     write this number of elements
+   * @throws IOException on read error
    */
   public final void writeInt(int[] pa, int start, int n) throws IOException {
     for (int i = 0; i < n; i++) {
@@ -1484,15 +1473,14 @@ public class RandomAccessFile implements DataInput, DataOutput {
   }
 
   /**
-   * _more_
+   * Write an array of longs
    *
-   * @param pa    _more_
-   * @param start _more_
-   * @param n     _more_
-   * @throws IOException _more_
+   * @param pa    write from this array
+   * @param start starting with this element in the array
+   * @param n     write this number of elements
+   * @throws IOException on read error
    */
-  public final void writeLong(long[] pa, int start, int n)
-      throws IOException {
+  public final void writeLong(long[] pa, int start, int n) throws IOException {
     for (int i = 0; i < n; i++) {
       writeLong(pa[start + i]);
     }
@@ -1513,15 +1501,14 @@ public class RandomAccessFile implements DataInput, DataOutput {
   }
 
   /**
-   * _more_
+   * Write an array of floats
    *
-   * @param pa    _more_
-   * @param start _more_
-   * @param n     _more_
-   * @throws IOException _more_
+   * @param pa    write from this array
+   * @param start starting with this element in the array
+   * @param n     write this number of elements
+   * @throws IOException on read error
    */
-  public final void writeFloat(float[] pa, int start, int n)
-      throws IOException {
+  public final void writeFloat(float[] pa, int start, int n) throws IOException {
     for (int i = 0; i < n; i++) {
       writeFloat(pa[start + i]);
     }
@@ -1543,15 +1530,14 @@ public class RandomAccessFile implements DataInput, DataOutput {
   }
 
   /**
-   * _more_
+   * Write an array of doubles
    *
-   * @param pa    _more_
-   * @param start _more_
-   * @param n     _more_
-   * @throws IOException _more_
+   * @param pa    write from this array
+   * @param start starting with this element in the array
+   * @param n     write this number of elements
+   * @throws IOException on read error
    */
-  public final void writeDouble(double[] pa, int start, int n)
-      throws IOException {
+  public final void writeDouble(double[] pa, int start, int n) throws IOException {
     for (int i = 0; i < n; i++) {
       writeDouble(pa[start + i]);
     }
@@ -1582,8 +1568,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
    * @param len the number of characters to write.
    * @throws IOException if an I/O error occurs.
    */
-  public final void writeBytes(char b[], int off, int len)
-      throws IOException {
+  public final void writeBytes(char b[], int off, int len) throws IOException {
     for (int i = off; i < len; i++) {
       write((byte) b[i]);
     }
@@ -1672,14 +1657,14 @@ public class RandomAccessFile implements DataInput, DataOutput {
   /**
    * Search forward from the current pos, looking for a match.
    *
-   * @param match the match youre looking for.
+   * @param match    the match youre looking for.
    * @param maxBytes maximum number of bytes to search. use -1 for all
    * @return true if found, file position will be at the start of the match.
    * @throws IOException on read error
    */
   public boolean searchForward(KMPMatch match, int maxBytes) throws IOException {
     long start = getFilePointer();
-    long last = (maxBytes < 0) ? length() : Math.min( length(), start + maxBytes);
+    long last = (maxBytes < 0) ? length() : Math.min(length(), start + maxBytes);
     long needToScan = last - start;
 
     // check what ever is now in the buffer
@@ -1692,7 +1677,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
     int scanBytes = (int) Math.min(bytesAvailable, needToScan);
     int pos = match.indexOf(buffer, bufStart, scanBytes);
     if (pos >= 0) {
-      seek(bufferStart+pos);
+      seek(bufferStart + pos);
       return true;
     }
 
@@ -1700,12 +1685,12 @@ public class RandomAccessFile implements DataInput, DataOutput {
     needToScan -= scanBytes - matchLen;
 
     while (needToScan > matchLen) {
-      readBuffer(dataEnd-matchLen); // force new buffer
+      readBuffer(dataEnd - matchLen); // force new buffer
 
       scanBytes = (int) Math.min(buffer.length, needToScan);
       pos = match.indexOf(buffer, 0, scanBytes);
       if (pos > 0) {
-        seek(bufferStart+pos);
+        seek(bufferStart + pos);
         return true;
       }
 

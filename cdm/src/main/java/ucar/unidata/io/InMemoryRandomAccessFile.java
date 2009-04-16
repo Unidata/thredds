@@ -43,10 +43,10 @@ import java.io.IOException;
 public class InMemoryRandomAccessFile extends RandomAccessFile {
 
   /**
-   * Constructor for in-memory "files"
+   * A RandomAccessFile stored entirely in memory as a byte array.
    *
-   * @param name used as a name
-   * @param data     the complete file
+   * @param name used as the location
+   * @param data the complete data file
    */
   public InMemoryRandomAccessFile(String name, byte[] data) {
     super(1);
@@ -66,8 +66,14 @@ public class InMemoryRandomAccessFile extends RandomAccessFile {
       openFiles.add(location);
   }
 
+  @Override
   public long length() {
     return dataEnd;
+  }
+
+  @Override
+  public void setBufferSize(int bufferSize) {
+    // do nothing
   }
 
   @Override
@@ -78,18 +84,7 @@ public class InMemoryRandomAccessFile extends RandomAccessFile {
     return len;
   }
 
-  /**
-   * Read up to <code>nbytes</code> bytes, at a specified offset, send to a WritableByteChannel.
-   * This will block until all bytes are read.
-   * This uses the underlying file channel directly, bypassing all user buffers.
-   *
-   * @param dest   write to this WritableByteChannel.
-   * @param offset the offset in the file where copying will start.
-   * @param nbytes the number of bytes to read.
-   * @return the actual number of bytes read, or -1 if there is no
-   *         more data due to the end of the file being reached.
-   * @throws java.io.IOException if an I/O error occurs.
-   */
+  @Override
   public long readToByteChannel(WritableByteChannel dest, long offset, long nbytes) throws IOException {
     return dest.write(ByteBuffer.wrap(buffer, (int) offset, (int) nbytes));
   }
