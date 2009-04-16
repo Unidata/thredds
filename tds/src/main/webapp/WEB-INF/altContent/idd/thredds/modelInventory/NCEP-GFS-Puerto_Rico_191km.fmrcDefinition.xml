@@ -9,7 +9,7 @@
   <offsetHours id="0">0.0 12.0 24.0 36.0 48.0 60.0 72.0 84.0 96.0 108.0 120.0 132.0 144.0 156.0 168.0 180.0 192.0 204.0 216.0 228.0 240.0</offsetHours>
   <offsetHours id="1">12.0 24.0 36.0 48.0 60.0 72.0 84.0 96.0 108.0 120.0 132.0 144.0 156.0 168.0 180.0 192.0 204.0 216.0 228.0 240.0</offsetHours>
   <runSequence allUseSeq="0">
-    <variable name="5-wave_geopotential_height" vertCoord="0" />
+    <variable name="N5-wave_geopotential_height" vertCoord="0" />
     <variable name="Absolute_vorticity" vertCoord="1" />
     <variable name="Geopotential_height" vertCoord="2" />
     <variable name="Pressure_reduced_to_MSL" />

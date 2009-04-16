@@ -18,7 +18,7 @@
   <offsetHours id="9">12.0 24.0 36.0 48.0 60.0 72.0 84.0 90.0 96.0 120.0</offsetHours>
   <offsetHours id="10">0.0 6.0 12.0 18.0 24.0 30.0 36.0 42.0 48.0 60.0 72.0 84.0 96.0 108.0</offsetHours>
   <runSequence allUseSeq="0">
-    <variable name="5-wave_geopotential_height" vertCoord="0" />
+    <variable name="N5-wave_geopotential_height" vertCoord="0" />
     <variable name="Geopotential_height" vertCoord="1" />
   </runSequence>
   <runSequence allUseSeq="1">

@@ -14,8 +14,8 @@
   <vertCoord id="3" name="pressure_difference_layer1" units="Pa">0.0,18000.0</vertCoord>
   <offsetHours id="0">192.0 204.0 216.0 228.0 240.0 252.0 264.0 276.0 288.0 300.0 312.0 324.0 336.0 348.0 360.0 372.0 384.0</offsetHours>
   <runSequence allUseSeq="0">
-    <variable name="5-Wave_Geopotential_Height" vertCoord="0" />
-    <variable name="5-Wave_Geopotential_Height_Anomaly" vertCoord="0" />
+    <variable name="N5-Wave_Geopotential_Height" vertCoord="0" />
+    <variable name="N5-Wave_Geopotential_Height_Anomaly" vertCoord="0" />
     <variable name="Absolute_vorticity" vertCoord="1" />
     <variable name="Albedo" />
     <variable name="Best_Lifted_Index" />
