@@ -41,7 +41,7 @@ import java.nio.channels.WritableByteChannel;
 
 /**
  * This is really just an interface to Netcdf-3 file writing.
- * However, we will probably add Netcdf-4 writing, exen if its only through a JNI interface.
+ * However, we will probably add Netcdf-4 writing, even if its only through a JNI interface.
  * For now, other parties are discouraged from using this, as it will likely be refactored in 4.1.
  *
  * @author caron

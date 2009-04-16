@@ -66,9 +66,9 @@ public class AggregationFmrcSingle extends AggregationFmrc {
 
   private CoordinateAxis1D timeAxis = null;
   private int max_times = 0;
-  private Dataset typicalDataset = null;
-  private NetcdfFile typicalFile;
-  private GridDataset typicalGridDataset = null;
+  //private Dataset typicalDataset = null;
+  //private NetcdfFile typicalFile;
+  //private GridDataset typicalGridDataset = null;
   private boolean debug = false;
 
   private String runMatcher, forecastMatcher, offsetMatcher; // scanFmrc
@@ -86,7 +86,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     this.forecastMatcher = forecastMatcher;
     this.offsetMatcher = offsetMatcher;
 
-    this.enhance = NetcdfDataset.getDefaultEnhanceMode();
+    // this.enhance = NetcdfDataset.getDefaultEnhanceMode();
     isDate = true;
 
     DatasetScanner d = new DatasetScanner(null, dirName, suffix, regexpPatternString, subdirs, olderThan);
@@ -95,9 +95,9 @@ public class AggregationFmrcSingle extends AggregationFmrc {
 
   @Override
   protected void closeDatasets() throws IOException {
-    if (typicalGridDataset != null) {
+    /* if (typicalGridDataset != null) {
       typicalGridDataset.close();
-    }
+    }  */
 
     for (Dataset ds : datasets) {
       OpenDataset ods = (OpenDataset) ds;
@@ -117,10 +117,10 @@ public class AggregationFmrcSingle extends AggregationFmrc {
       f.format("  offsetMatcher=%s%n", offsetMatcher);
   }
 
-  @Override
+  /* @Override
   protected void buildNetcdfDataset(CancelTask cancelTask) throws IOException {
     buildNetcdfDataset(typicalDataset, typicalFile, typicalGridDataset, cancelTask);
-  }
+  }  */
 
   @Override
   protected void makeDatasets(CancelTask cancelTask) throws IOException {
@@ -128,9 +128,12 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     // find the runtime, forecast time coordinates, put in list
     runHash = new HashMap<Date, List<DatasetFmrcSingle>>();
 
+    Dataset typDataset = null;
     for (CrawlableDataset cd : datasetManager.getFiles()) {
       // create the dataset wrapping this file, each is 1 forecast time coordinate of the nested aggregation
       DatasetFmrcSingle ds = new DatasetFmrcSingle(cd);
+      if (typDataset == null) // grab the first one
+        typDataset = ds;
 
       // add to list for given run date
       List<DatasetFmrcSingle> runDatasets = runHash.get(ds.runDate);
@@ -143,21 +146,16 @@ public class AggregationFmrcSingle extends AggregationFmrc {
       if (debug)
         System.out.println("  adding " + cd.getPath() + " forecast date= " + ds.coordValue + "(" + ds.coordValueDate + ")"
             + " run date= " + dateFormatter.toDateTimeStringISO(ds.runDate));
-
-      if (typicalDataset == null)
-        typicalDataset = ds;
     }
 
     // LOOK - should cache the GridDataset directly    
     // open a "typical" dataset and make a GridDataset
-    typicalFile = typicalDataset.acquireFile(cancelTask);
-    NetcdfDataset typicalDS = (typicalFile instanceof NetcdfDataset) ? (NetcdfDataset) typicalFile : new NetcdfDataset(typicalFile);
-    //if (typicalDS.getEnhanceMode() == NetcdfDataset.EnhanceMode.None)  LOOK
-    //  typicalDS.enhance();
-    GridDataset gds = new ucar.nc2.dt.grid.GridDataset(typicalDS);
+    NetcdfFile typFile = typDataset.acquireFile(cancelTask);
+    NetcdfDataset typDS = NetcdfDataset.wrap(typFile, null);
+    GridDataset typGds = new ucar.nc2.dt.grid.GridDataset(typDS);
 
     // find the one time axis
-    for (GridDatatype grid : gds.getGrids()) {
+    for (GridDatatype grid : typGds.getGrids()) {
       GridCoordSystem gcc = grid.getCoordinateSystem();
       timeAxis = gcc.getTimeAxis1D();
       if (null != timeAxis)
@@ -200,11 +198,12 @@ public class AggregationFmrcSingle extends AggregationFmrc {
       }
       ncd.setAggregation(agg);
       agg.finish(cancelTask);
+      ncd.finish();
 
       datasets.add(new OpenDataset(ncd, runDate, runDateS));
     }
 
-    typicalGridDataset = gds;
+    typGds.close();
   }
 
   private Date addHour(Date d, double hour) {
@@ -217,11 +216,11 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     return cal.getTime();
   }
 
-  // used in buildDataset
+  /*  used in buildDataset
   @Override
   protected Dataset getTypicalDataset() throws IOException {
     return typicalDataset;
-  }
+  } */
 
   // for the case that we dont have a fmrcDefinition.
   @Override
@@ -317,8 +316,8 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     DatasetFmrcSingle(CrawlableDataset cd) {
       super(cd.getPath());
       this.cacheLocation = this.location;
-      this.enhance = AggregationFmrcSingle.this.enhance;
-      //this.enhance = NetcdfDataset.getDefaultEnhanceMode(); // LOOK needed ?
+      //this.enhance = AggregationFmrcSingle.this.enhance;
+      //this.enhance = NetcdfDataset.getDefaultEnhanceMode(); 
       this.ncoord = 1;
 
       // parse for rundate
@@ -375,7 +374,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     }
 
     @Override
-    protected NetcdfFile acquireFile(CancelTask cancelTask) throws IOException {
+    public NetcdfFile acquireFile(CancelTask cancelTask) throws IOException {
       return openFile;
     }
 

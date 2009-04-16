@@ -546,14 +546,14 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
   /////////////////////////////////////////////////////////////////////////
 
-  // this is calledd in a multithreaded enviro.
+  // this is called in a multithreaded enviro.
   // fmrc has state that can change.
 
   /**
-   *
-   * @param path
-   * @return
-   * @throws IOException
+   * Get the dataset namedd by the path
+   * @param path URL path
+   * @return requested dataset
+   * @throws IOException if read error
    */
   public NetcdfDataset getDataset(String path) throws IOException {
     int pos = path.indexOf("/");
@@ -565,7 +565,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
       String filename = new StringBuilder( params.location )
               .append( params.location.endsWith( "/" ) ? "" : "/" )
               .append( name ).toString();
-      return NetcdfDataset.acquireDataset( filename, null);
+      return NetcdfDataset.acquireDataset( null, filename, null, -1, null, null); // no enhancement
     }
 
     makeFmrc();

@@ -75,36 +75,41 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
   private Map<String, Gridset> gridsetHash = new HashMap<String, Gridset>();
 
   /**
-   * Open a netcdf dataset, parse Conventions, find all the geoGrids, return a GridDataset.
+   * Open a netcdf dataset, using NetcdfDataset.defaultEnhanceMode plus CoordSystems
+   * and turn into a GridDataset.
    *
-   * @param netcdfFileURI netcdf dataset to open. May have a dods:, http: or file: prefix,
-   *                      or just a local filename. If it ends with ".xml", its assumed to be a NetcdfDataset Definition XML file
+   * @param location netcdf dataset to open, using NetcdfDataset.acquireDataset().
    * @return GridDataset
    * @throws java.io.IOException on read error
-   * @see ucar.nc2.dataset.NetcdfDataset#open
+   * @see ucar.nc2.dataset.NetcdfDataset#acquireDataset
    */
-  static public GridDataset open(String netcdfFileURI) throws java.io.IOException {
-    NetcdfDataset ds = ucar.nc2.dataset.NetcdfDataset.acquireDataset(netcdfFileURI, null);
+  static public GridDataset open(String location) throws java.io.IOException {
+    Set<NetcdfDataset.Enhance> enhanceMode = NetcdfDataset.getCoordSysEnhanceMode();
+    NetcdfDataset ds = ucar.nc2.dataset.NetcdfDataset.acquireDataset(null, location, enhanceMode, -1, null, null);
     return new GridDataset(ds);
   }
 
   /**
    * Create a GridDataset from a NetcdfDataset.
    *
-   * @param ds underlying NetcdfDataset.
+   * @param ds underlying NetcdfDataset, will do Enhance.CoordSystems if not already done.
+   * @throws java.io.IOException on read error
    */
-  public GridDataset(NetcdfDataset ds) {
+  public GridDataset(NetcdfDataset ds) throws IOException {
     this(ds, null);
   }
 
   /**
    * Create a GridDataset from a NetcdfDataset.
    *
-   * @param ds underlying NetcdfDataset.
+   * @param ds underlying NetcdfDataset, will do Enhance.CoordSystems if not already done.
    * @param parseInfo put parse info here, may be null
+   * @throws java.io.IOException on read error
    */
-  public GridDataset(NetcdfDataset ds, Formatter parseInfo) {
+  public GridDataset(NetcdfDataset ds, Formatter parseInfo) throws IOException {
     this.ds = ds;
+    ds.enhance(EnumSet.of(NetcdfDataset.Enhance.CoordSystems));
+
     // look for geoGrids
     if (parseInfo != null) parseInfo.format("GridDataset look for GeoGrids\n");
     List<Variable> vars = ds.getVariables();
@@ -454,7 +459,6 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
 
     if (ncfile == null) return null;
 
-    // convert to NetcdfDataset with enhance
     NetcdfDataset ncd;
     if (ncfile instanceof NetcdfDataset) {
       ncd = (NetcdfDataset) ncfile;

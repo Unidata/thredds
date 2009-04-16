@@ -34,7 +34,7 @@ package ucar.nc2.dataset;
 
 import ucar.nc2.ProxyReader;
 
-import java.util.EnumSet;
+import java.util.Set;
 
 /**
  * Public interface to an "enhanced Variable", implemented by the ucar.nc2.dataset package.
@@ -58,5 +58,10 @@ public interface VariableEnhanced extends ucar.nc2.VariableIF, Enhancements {
   /**
    * Enhance using the given set of NetcdfDataset.Enhance
    */
-  public void enhance(EnumSet<NetcdfDataset.Enhance> mode);
+  public void enhance(Set<NetcdfDataset.Enhance> mode);
+
+  /**
+   *  clear previous coordinate systems. if any
+   */
+  public void clearCoordinateSystems();  
 }

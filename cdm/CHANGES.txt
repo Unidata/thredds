@@ -5,8 +5,26 @@ Build Date = @BUILDTIME@
 Changes in version 4.0
 
  Release Details:
+  39:
+   TdsMonitor application in UI
+   IO.readContents(InputStream is, String charset);
+   UI: DateFormatMArk in Units panel
+   AlbersEqualArea : falseEasting, falseNorthing (with help from R.Schmunk)
+   UI: URLDump handles compressed body (shows compressed ratio) and charset.
+   NetcdfDataset.sync() now actually works.
+   WRF sets MAP_PROJ=0 to flat earth for non-georeferencing runs
+   NetcdfDataset.wrap()
+   ToolsUI: Fmrc, Aggregation Panels improved
+   Fmrc : only use Grids with time coordinate
+   NetcdfDataset.enhance() uses Set<Enhance>, not EnumSet<Enhance> in order to get unmodifiable set. Not sure
+     if this breaks the API.
+   GridDataset always enhances NetcdfDataset with coordSystem, if not already done
+   NetcdfDataset.setEnhanceProcessed, isEnhanceProcessed, setCoordSysWereAdded removed
+   VariableDS, StuctureDS.clearCoordinateSystems() caleld from NetcdfDataset.clearCoordinateSystems()
+   NcML enhance attribute is deprecated - and is now ignored.
   38:
-   CoordinatetAxis1DTime.NamedObjecct - do not retain, used only by UI.
+   FmrcImpl - add coordinate systems to component datasets
+   CoordinateAxis1DTime.NamedObjecct - do not retain, used only by UI.
    NetcdfFile.finalize() makes TDS run out of memory when heavily loaded
    SimpleUnit gets new UnitFormatManager each time, rather than using a static that becomes threading bottleneck
    GridServiceProvider.readXY() : dont catch Exception

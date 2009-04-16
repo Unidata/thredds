@@ -193,7 +193,7 @@ public class DatasetHandler {
     // wrap with ncml if needed : for DatasetScan only
     org.jdom.Element netcdfElem = DataRootHandler.getInstance().getNcML(reqPath);
     if (netcdfElem != null) {
-      NetcdfDataset ncd = new NetcdfDataset(ncfile, false); // do not enhance !!
+      NetcdfDataset ncd = NetcdfDataset.wrap(ncfile, null); // do not enhance !!
       new NcMLReader().readNetcdf(reqPath, ncd, ncd, netcdfElem, null);
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found DataRoot NcML = " + ds);
       return ncd;
@@ -234,17 +234,8 @@ public class DatasetHandler {
     NetcdfFile ncfile = getNetcdfFile(req, res, reqPath);
     if (ncfile == null) return null;
 
-    // convert to NetcdfDataset with enhance
-    NetcdfDataset ncd;
-    if (ncfile instanceof NetcdfDataset) {
-      ncd = (NetcdfDataset) ncfile;
-      //if (ncd.getEnhanceMode() == NetcdfDataset.EnhanceMode.None) // LOOK
-      ncd.enhance();
-    } else {
-      ncd = new NetcdfDataset(ncfile, true);
-    }
-
-    // convert to a GridDataset
+    // convert to NetcdfDataset with defaultEnhanceMode
+    NetcdfDataset ncd = NetcdfDataset.wrap(ncfile, null); // do not enhance !!
     return new ucar.nc2.dt.grid.GridDataset(ncd);
   }
 

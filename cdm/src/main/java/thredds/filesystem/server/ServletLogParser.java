@@ -89,7 +89,7 @@ public class ServletLogParser implements LogReader.LogParser {
         f.format(" %d %d %d %n", returnCode, sizeBytes, msecs);
 
       if (extra != null)
-        f.format(" hasExtra=%s", extra);
+        f.format(" %s", extra);
 
       return f.toString();
     }

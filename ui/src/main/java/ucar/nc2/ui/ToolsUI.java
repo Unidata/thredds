@@ -1350,23 +1350,31 @@ public class ToolsUI extends JPanel {
 
   private class UnitsPanel extends JPanel {
     PreferencesExt prefs;
-    JSplitPane split;
+    JSplitPane split, split2;
     UnitDatasetCheck unitDataset;
     UnitConvert unitConvert;
+    DateFormatMark dateFormatMark;
 
     UnitsPanel(PreferencesExt prefs) {
       super();
       this.prefs = prefs;
       unitDataset = new UnitDatasetCheck((PreferencesExt) prefs.node("unitDataset"));
       unitConvert = new UnitConvert((PreferencesExt) prefs.node("unitConvert"));
-      split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(unitDataset), unitConvert);
+      dateFormatMark = new DateFormatMark((PreferencesExt) prefs.node("dateFormatMark"));
+
+      split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, unitConvert, dateFormatMark);
+      split2.setDividerLocation(prefs.getInt("splitPos2", 500));
+
+      split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(unitDataset), split2);
       split.setDividerLocation(prefs.getInt("splitPos", 500));
+
       setLayout(new BorderLayout());
       add(split, BorderLayout.CENTER);
     }
 
     void save() {
       prefs.putInt("splitPos", split.getDividerLocation());
+      prefs.putInt("splitPos2", split2.getDividerLocation());
       unitConvert.save();
       unitDataset.save();
     }
@@ -1547,6 +1555,46 @@ public class ToolsUI extends JPanel {
     }
 
   }
+
+  private class DateFormatMark extends OpPanel {
+    ComboBox testCB;
+    DateFormatter dateFormatter = new DateFormatter();
+
+    DateFormatMark(PreferencesExt prefs) {
+      super(prefs, "dateFormatMark:", false, false);
+
+      testCB = new ComboBox(prefs);
+      buttPanel.add(testCB);
+
+      JButton compareButton = new JButton("Apply");
+      compareButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          apply(cb.getSelectedItem(), testCB.getSelectedItem());
+        }
+      });
+      buttPanel.add(compareButton);
+    }
+
+    boolean process(Object o) {
+      return false;
+    }
+
+    void apply(Object mark, Object testo) {
+      String dateFormatMark = (String) mark;
+      String filename = (String) testo;
+      try {
+        Date coordValueDate = DateFromString.getDateUsingDemarkatedCount(filename, dateFormatMark, '#');
+        String coordValue = dateFormatter.toDateTimeStringISO( coordValueDate);
+        ta.setText("got date= "+coordValue);
+
+      } catch (Exception e) {
+          ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+          e.printStackTrace(new PrintStream(bos));
+          ta.setText(bos.toString());
+      }
+    }
+  }
+
 
   /////////////////////////////////////////////////////////////////////
   private class CoordSysPanel extends OpPanel {

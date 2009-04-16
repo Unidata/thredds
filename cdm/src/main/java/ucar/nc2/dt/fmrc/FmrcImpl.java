@@ -119,9 +119,6 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
 
   private void init(NetcdfDataset ncd) throws IOException {
     this.ncd_2dtime = ncd;
-    //if (ncd.getEnhanceMode() == NetcdfDataset.EnhanceNone) // LOOK
-    //  ncd.enhance();
-    // ncd.setCached(3); // dont allow a normal close LOOK why ?? who is managing ??
 
     gridHash = new HashMap<String, Gridset>();  // key = grid name, value = Gridset
     coordSet = new HashSet<String>();  // time coord names
@@ -466,15 +463,16 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
     return runtimes;
   }
 
-  public NetcdfDataset getRunTimeDataset(Date wantRuntime) {
+  public NetcdfDataset getRunTimeDataset(Date wantRuntime) throws IOException {
     if (wantRuntime == null) return null;
     if (!runtimes.contains(wantRuntime)) return null;
-    NetcdfDataset ncd = createDataset(new RuntimeInvGetter(wantRuntime), RUN);
 
     DateFormatter df = new DateFormatter();
-    ncd.addAttribute(null, new Attribute(_Coordinate.ModelRunDate, df.toDateTimeStringISO(wantRuntime)));
-    ncd.finish();
+    String runTimeString = df.toDateTimeStringISO(wantRuntime);
 
+    NetcdfDataset ncd = createDataset(new RuntimeInvGetter(wantRuntime), RUN, runTimeString);
+    ncd.addAttribute(null, new Attribute(_Coordinate.ModelRunDate, runTimeString));
+    ncd.finish();
     return ncd;
   }
 
@@ -482,37 +480,47 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
     return forecasts;
   }
 
-  public NetcdfDataset getForecastTimeDataset(Date forecastTime) {
+  public NetcdfDataset getForecastTimeDataset(Date forecastTime)  throws IOException {
     if (forecastTime == null) return null;
     if (!forecasts.contains(forecastTime)) return null;
-    return createDataset(new ForecastInvGetter(forecastTime), FORECAST);
+
+    DateFormatter df = new DateFormatter();
+    String name = df.toDateTimeStringISO(forecastTime);
+    return createDataset(new ForecastInvGetter(forecastTime), FORECAST, name);
   }
 
   public List<Double> getForecastOffsets() {
     return offsets;
   }
 
-  public NetcdfDataset getForecastOffsetDataset(double hours) {
+  public NetcdfDataset getForecastOffsetDataset(double hours)  throws IOException {
     if (!offsets.contains(new Double(hours))) return null;
-    return createDataset(new OffsetInvGetter(hours), OFFSET);
+    return createDataset(new OffsetInvGetter(hours), OFFSET, Double.toString(hours));
   }
 
-  public NetcdfDataset getBestTimeSeries() {
+  public NetcdfDataset getBestTimeSeries()  throws IOException {
     return createDataset(new InventoryGetter() {
       public List<Inventory> get(Gridset gridset) {
         //return (gridset == null) ? bestListAll : gridset.bestList;
         return gridset.bestList;
       }
-    }, BEST);
+    }, BEST, null);
   }
 
   public NetcdfDataset getFmrcDataset() {
     return ncd_2dtime;
   }
 
+  private String makeLocation(String type, String name) {
+    if (name != null)
+      return ncd_2dtime.getLocation()+"/"+type+"-"+name+".ncd";
+    return ncd_2dtime.getLocation()+"/"+type+".ncd";
+  }
+
   /////////////////////////
-  private NetcdfDataset createDataset(InventoryGetter invGetter, String type) {
+  private NetcdfDataset createDataset(InventoryGetter invGetter, String type, String name) throws IOException {
     NetcdfDataset newds = new NetcdfDataset();
+    newds.setLocation(makeLocation(type, name));
     //addRunTimeCoordinate( newds, invGetter.get( null));
 
     Group src = ncd_2dtime.getRootGroup();
@@ -572,6 +580,7 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
     }
 
     newds.finish();
+    newds.enhance(EnumSet.of(NetcdfDataset.Enhance.CoordSystems));
     // newds.setCached(3); // dont allow a normal close
     return newds;
   }

@@ -277,29 +277,6 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
   }
 
 
-  private Index writeIndex(int edition, File indexFile, RandomAccessFile raf) throws IOException {
-    if (indexFile.exists()) {
-      indexFile.delete();
-      log.debug("Delete old index " + indexFile);
-    }
-
-    Index index = null;
-    raf.seek(0);
-
-    if (edition == 1) {
-      ucar.grib.grib1.Grib1Indexer indexer = new ucar.grib.grib1.Grib1Indexer();
-      PrintStream ps = new PrintStream(new BufferedOutputStream(new FileOutputStream(indexFile)));
-      index = indexer.writeFileIndex(raf, ps, true);
-
-    } else if (edition == 2) {
-      ucar.grib.grib2.Grib2Indexer indexer2 = new ucar.grib.grib2.Grib2Indexer();
-      PrintStream ps = new PrintStream(new BufferedOutputStream(new FileOutputStream(indexFile)));
-      index = indexer2.writeFileIndex(raf, ps, true);
-    }
-
-    return index;
-  }
-
   public boolean sync() throws IOException {
     if (syncMode == IndexExtendMode.none) return false;
 
@@ -328,6 +305,29 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
     }
 
     return false;
+  }
+
+  private Index writeIndex(int edition, File indexFile, RandomAccessFile raf) throws IOException {
+    if (indexFile.exists()) {
+      indexFile.delete();
+      log.debug("Delete old index " + indexFile);
+    }
+
+    Index index = null;
+    raf.seek(0);
+
+    if (edition == 1) {
+      ucar.grib.grib1.Grib1Indexer indexer = new ucar.grib.grib1.Grib1Indexer();
+      PrintStream ps = new PrintStream(new BufferedOutputStream(new FileOutputStream(indexFile)));
+      index = indexer.writeFileIndex(raf, ps, true);
+
+    } else if (edition == 2) {
+      ucar.grib.grib2.Grib2Indexer indexer2 = new ucar.grib.grib2.Grib2Indexer();
+      PrintStream ps = new PrintStream(new BufferedOutputStream(new FileOutputStream(indexFile)));
+      index = indexer2.writeFileIndex(raf, ps, true);
+    }
+
+    return index;
   }
 
   /*

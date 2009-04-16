@@ -38,6 +38,7 @@ import ucar.nc2.*;
 
 import java.io.IOException;
 import java.util.EnumSet;
+import java.util.Set;
 
 /**
  * An wrapper around a Variable, creating an "enhanced" Variable.
@@ -140,7 +141,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     } else {
       this.enhanceProxy = new EnhancementsImpl( this);
       if (enhance) {
-        enhance(NetcdfDataset.defaultEnhanceMode);
+        enhance(NetcdfDataset.getDefaultEnhanceMode());
       } else {
         this.scaleMissingProxy = new EnhanceScaleMissingImpl();
       }
@@ -209,14 +210,14 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
    * Remove coordinate system info.
    */
   public void clearCoordinateSystems() {
-    this.enhanceProxy = new EnhancementsImpl( this);
+    this.enhanceProxy = new EnhancementsImpl( this, getDescription(), getUnitsString());
   }
 
   /**
    * DO NOT USE DIRECTLY. public by accident.
    * Calculate scale/offset/missing value info. This may change the DataType.
    */
-  public void enhance(EnumSet<NetcdfDataset.Enhance> mode) {
+  public void enhance(Set<NetcdfDataset.Enhance> mode) {
     this.enhanceMode = EnumSet.copyOf(mode);
     boolean alreadyScaleOffsetMissing = false;
     boolean alreadyEnumConversion = false;

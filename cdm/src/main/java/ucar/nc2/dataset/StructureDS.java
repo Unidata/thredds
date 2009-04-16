@@ -39,7 +39,7 @@ import ucar.ma2.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.EnumSet;
+import java.util.Set;
 
 /**
  * An "enhanced" Structure.
@@ -654,11 +654,15 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
    * DO NOT USE DIRECTLY. public by accident.
    * recalc any enhancement info
    */
-  public void enhance(EnumSet<NetcdfDataset.Enhance> mode) {
+  public void enhance(Set<NetcdfDataset.Enhance> mode) {
     for (Variable v : getVariables()) {
       VariableEnhanced ve = (VariableEnhanced) v;
       ve.enhance(mode);
     }
+  }
+
+  public void clearCoordinateSystems() {
+    this.proxy = new EnhancementsImpl( this, getDescription(), getUnitsString());
   }
 
   public void addCoordinateSystem(ucar.nc2.dataset.CoordinateSystem p0) {

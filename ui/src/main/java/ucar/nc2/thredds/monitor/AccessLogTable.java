@@ -35,6 +35,7 @@ package ucar.nc2.thredds.monitor;
 
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.nc2.units.TimeUnit;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -47,7 +48,6 @@ import thredds.ui.IndependentWindow;
 import thredds.ui.BAMutil;
 import thredds.filesystem.server.AccessLogParser;
 import thredds.filesystem.server.TestFileSystem;
-import thredds.filesystem.server.PathMatcher;
 import thredds.filesystem.server.LogReader;
 
 import java.util.ArrayList;
@@ -69,7 +69,6 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.Minute;
-import org.jfree.chart.ChartPanel;
 
 /**
  * Class Description.
@@ -83,7 +82,10 @@ public class AccessLogTable extends JPanel {
 
   private ucar.util.prefs.ui.BeanTableSorted logTable, userTable, datarootTable, serviceTable;
   private JPanel timeSeriesPanel;
+
   private ArrayList<LogReader.Log> completeLogs;
+  private ArrayList<LogReader.Log> restrictLogs;
+
   private boolean calcUser = true;
   private boolean calcRoot = true;
   private boolean calcService = true;
@@ -93,7 +95,9 @@ public class AccessLogTable extends JPanel {
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
 
-  public AccessLogTable(PreferencesExt prefs, JPanel buttPanel, Cache dnsCache) {
+  private JTextArea interval, startDate, endDate;
+
+  public AccessLogTable(PreferencesExt prefs, Cache dnsCache) {
     this.prefs = prefs;
     this.dnsCache = dnsCache;
 
@@ -177,12 +181,42 @@ public class AccessLogTable extends JPanel {
     });
 
     timeSeriesPanel = new JPanel();
-    timeSeriesPanel.setLayout(new GridLayout(2, 2));
+    //timeSeriesPanel.setLayout(new GridLayout(2, 2));
+    timeSeriesPanel.setLayout(new BorderLayout());
 
     // the info window
     infoTA = new TextHistoryPane();
     infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), infoTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 800, 100)));
+
+    // the date selectors
+    startDate = new JTextArea("                    ");
+    endDate = new JTextArea("                    ");
+    interval = new JTextArea("                    ");
+
+    JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+    topPanel.add(new JLabel("Start Date:"));
+    topPanel.add(startDate);
+    topPanel.add(new JLabel("End Date:"));
+    topPanel.add(endDate);
+    topPanel.add(new JLabel("Interval:"));
+    topPanel.add(interval);
+
+    AbstractAction restrictAction = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        restrictLogs(startDate.getText().trim(), endDate.getText().trim());
+      }
+    };
+    BAMutil.setActionProperties(restrictAction, "Select", "select by date", false, 'D', -1);
+    BAMutil.addActionToContainer(topPanel, restrictAction);
+
+    AbstractAction allAction = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        resetLogs();
+      }
+    };
+    BAMutil.setActionProperties(allAction, "Refresh", "show All Logs", false, 'A', -1);
+    BAMutil.addActionToContainer(topPanel, allAction);
 
     // the top UI
     tabbedPanel = new JTabbedPane(JTabbedPane.TOP);
@@ -195,16 +229,18 @@ public class AccessLogTable extends JPanel {
 
     tabbedPanel.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
+        java.util.ArrayList<LogReader.Log> useBeans = (java.util.ArrayList<LogReader.Log>) logTable.getBeans();
+
         int idx = tabbedPanel.getSelectedIndex();
         String title = tabbedPanel.getTitleAt(idx);
         if (title.equals("User"))
-          initUserLogs(completeLogs);
+          initUserLogs(useBeans);
         if (title.equals("DataRoot"))
-          initDatarootLogs(completeLogs);
+          initDatarootLogs(useBeans);
         if (title.equals("Service"))
-          initServiceLogs(completeLogs);
+          initServiceLogs(useBeans);
         if (title.equals("TimeSeries"))
-          showTimeSeries( (java.util.List<LogReader.Log>) logTable.getBeans());
+          showTimeSeriesAll( useBeans);
       }
     });
 
@@ -215,18 +251,10 @@ public class AccessLogTable extends JPanel {
       }
     };
     BAMutil.setActionProperties(dnsAction, "Dataset", "lookup DNS", false, 'D', -1);
-    BAMutil.addActionToContainer(buttPanel, dnsAction);
-
-    AbstractAction allAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        logTable.setBeans(completeLogs);
-        tabbedPanel.setSelectedIndex(0);
-      }
-    };
-    BAMutil.setActionProperties(allAction, "Refresh", "show All Logs", false, 'A', -1);
-    BAMutil.addActionToContainer(buttPanel, allAction);
+    BAMutil.addActionToContainer(topPanel, dnsAction);
 
     setLayout(new BorderLayout());
+    add(topPanel, BorderLayout.NORTH);
     add(tabbedPanel, BorderLayout.CENTER);
   }
 
@@ -276,12 +304,45 @@ public class AccessLogTable extends JPanel {
     completeLogs = new ArrayList<LogReader.Log>(30000);
     for (File f : accessLogFiles)
       reader.scanLogFile(f, new MyClosure(completeLogs), new MyLogFilter(), stats);
-    logTable.setBeans(completeLogs);
+
 
     long elapsedTime = System.nanoTime() - startElapsed;
     System.out.printf(" setLogFile total= %d passed=%d%n", stats.total, stats.passed);
     System.out.printf(" elapsed=%f msecs %n", elapsedTime / (1000 * 1000.0));
 
+    resetLogs();
+  }
+
+  private void resetLogs() {
+    logTable.setBeans(completeLogs);
+    tabbedPanel.setSelectedIndex(0);
+
+    userTable.setBeans(new ArrayList());
+    datarootTable.setBeans(new ArrayList());
+    calcUser = true;
+    calcRoot = true;
+    calcService = true;
+    restrictLogs = completeLogs;
+
+    int n = completeLogs.size();
+    if (n > 0) {
+      startDate.setText(completeLogs.get(0).getDate());
+      endDate.setText(completeLogs.get(n-1).getDate());
+    }
+  }
+
+  private void restrictLogs(String start, String end) {
+
+    restrictLogs = new ArrayList<LogReader.Log>(1000);
+    for (LogReader.Log log : completeLogs) {
+      String date = log.getDate();
+      if ((date.compareTo(start) >= 0) && (date.compareTo(end) <= 0))
+        restrictLogs.add(log);
+    }
+
+    logTable.setBeans(restrictLogs);
+    tabbedPanel.setSelectedIndex(0);
+    
     userTable.setBeans(new ArrayList());
     datarootTable.setBeans(new ArrayList());
     calcUser = true;
@@ -483,7 +544,7 @@ public class AccessLogTable extends JPanel {
 
   //////////////////
 
-  void showTimeSeries(java.util.List<LogReader.Log> logs) {
+  private void showTimeSeries(java.util.List<LogReader.Log> logs) {
     // 09/Apr/2009:16:38:28 -0600
     SimpleDateFormat df = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z");
     SimpleDateFormat dfo = new SimpleDateFormat("yyyy/MMM/dd HH:mm:ss");
@@ -531,14 +592,73 @@ public class AccessLogTable extends JPanel {
     timeSeriesPanel.add(c3);
 
   }
+  
+  private void showTimeSeriesAll(java.util.List<LogReader.Log> logs) {
+    // 09/Apr/2009:16:38:28 -0600
+    SimpleDateFormat df = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z");
+    SimpleDateFormat dfo = new SimpleDateFormat("yyyy/MMM/dd HH:mm:ss");
+
+    TimeSeries bytesSentData = new TimeSeries("Bytes Sent", Minute.class);
+    TimeSeries timeTookData = new TimeSeries("Average Latency", Minute.class);
+    TimeSeries nreqData = new TimeSeries("Number of Requests", Minute.class);
+
+    String intervalS = interval.getText().trim();
+    if (intervalS.length() == 0) intervalS = "5 minute";
+    long period = 1000 * 60 * 5;
+    try {
+      TimeUnit tu = new TimeUnit(intervalS);
+      period = (long) (1000 * tu.getValueInSeconds());
+    } catch (Exception e) {
+      System.out.printf("Illegal Time interval=%s %n", intervalS);
+    }
+
+    long current = 0;
+    long bytes = 0;
+    long timeTook = 0;
+    long count = 0;
+    try {
+      for (LogReader.Log log : logs) {
+        Date d = df.parse(log.getDate());
+        long msecs = d.getTime();
+        if (msecs - current > period) {
+          if (current > 0) {
+            addPoint(bytesSentData, timeTookData, nreqData, new Date(current), bytes, count, timeTook);
+          }
+          bytes = 0;
+          count = 0;
+          timeTook = 0;
+          current = msecs;
+        }
+        bytes += log.getBytes();
+        timeTook += log.getMsecs();
+        count++;
+      }
+      addPoint(bytesSentData, timeTookData, nreqData, new Date(current), bytes, count, timeTook);
+
+    } catch (ParseException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    }
+
+    MultipleAxisChart mc = new MultipleAxisChart("Access Logs", intervalS + " average", "Mbytes Sent", bytesSentData);
+    mc.addSeries("Number of Requests", nreqData);
+    mc.addSeries("Average Latency (secs)", timeTookData);
+    mc.finish(new java.awt.Dimension(1000, 1000));
+
+    //MultipleAxisChart mc = new MultipleAxisChart("Bytes Sent", "5 min average", "Mbytes/sec", bytesSentData);
+    //Chart c2 = new Chart("Average Latency", "5 min average", "Millisecs", timeTookData);
+    //Chart c3 = new Chart("Number of Requests/sec", "5 min average", "", nreqData);
+
+    timeSeriesPanel.removeAll();
+    timeSeriesPanel.add(mc);
+  }
 
   void addPoint(TimeSeries bytesSentData, TimeSeries timeTookData, TimeSeries nreqData,
           Date date, long bytes, long count, long timeTook) {
 
-    bytesSentData.add(new Minute(date), bytes / 1000. / 1000.  / 60. / 5.);
-    double latency = (double) timeTook / count;
+    bytesSentData.add(new Minute(date), bytes / 1000. / 1000.);
+    double latency = (double) timeTook / count / 1000.;
     timeTookData.add(new Minute(date), (latency > 10*1000) ? 0 : latency);
-    nreqData.add(new Minute(date), (double) count / 60. / 5.);
+    nreqData.add(new Minute(date), (double) count);
   }
 
 }

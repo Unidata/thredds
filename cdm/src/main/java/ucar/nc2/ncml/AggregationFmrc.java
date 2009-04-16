@@ -93,9 +93,6 @@ public class AggregationFmrc extends AggregationOuterDimension {
   @Override
   protected void makeDatasets(CancelTask cancelTask) throws IOException {
     super.makeDatasets(cancelTask);
-    for (Dataset ds : datasets) {
-      ds.enhance = EnumSet.of(NetcdfDataset.Enhance.CoordSystems); // ?? LOOK
-    }
   }
 
   @Override
@@ -107,23 +104,29 @@ public class AggregationFmrc extends AggregationOuterDimension {
 
   @Override
   protected void buildNetcdfDataset(CancelTask cancelTask) throws IOException {
-    // LOOK - should cache the GridDataset directly    
+    // LOOK - cache the GridDataset directly  ?? 
     // open a "typical"  nested dataset and copy it to newds
     Dataset typicalDataset = getTypicalDataset();
-    NetcdfFile typical = typicalDataset.acquireFile(cancelTask);
-    NetcdfDataset typicalDS = (typical instanceof NetcdfDataset) ? (NetcdfDataset) typical : new NetcdfDataset(typical);
-    //if (typicalDS.getEnhanceMode() == NetcdfDataset.EnhanceMode.None) LOOK
-    //  typicalDS.enhance();
+    NetcdfFile typicalFile = typicalDataset.acquireFile(cancelTask);
+    NetcdfDataset typicalDS = NetcdfDataset.wrap(typicalFile, null);
 
     // work with a GridDataset
     GridDataset typicalGds = new ucar.nc2.dt.grid.GridDataset(typicalDS);
 
     // finish the work
-    buildNetcdfDataset(typicalDataset, typical, typicalGds, cancelTask);
+    buildNetcdfDataset(typicalDataset, typicalFile, typicalGds, cancelTask);
   }
 
-  // split out so FmrcSingle can call seperately
-  protected void buildNetcdfDataset(Dataset typicalDataset, NetcdfFile typical, GridDataset typicalGds, CancelTask cancelTask) throws IOException {
+  /**
+   * Build the resulting dataset.
+   * Split out so FmrcSingle can call seperately
+   * @param typicalDataset prototype NetcdfDataset
+   * @param typicalFile here just so it  can be closed properly. may be null if it doesnt need closing
+   * @param typicalGds prototype GridDataset - built from typicalDataset
+   * @param cancelTask may be null
+   * @throws IOException on read error
+   */
+  protected void buildNetcdfDataset(Dataset typicalDataset, NetcdfFile typicalFile, GridDataset typicalGds, CancelTask cancelTask) throws IOException {
     buildCoords(cancelTask);
     DatasetConstructor.transferDataset(typicalGds.getNetcdfFile(), ncDataset, null);
 
@@ -179,6 +182,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
       Variable v = (Variable) grid.getVariable();
       if ((v instanceof CoordinateAxis) && !aggVarNames.contains(v.getName())) // skip coordinates unless explicit
           continue;
+      if (grid.getTimeDimension() == null) continue; // only agg vars with a time dimension
 
       // add new dimension
       String dims = dimName + " " + v.getDimensionsString();
@@ -204,7 +208,8 @@ public class AggregationFmrc extends AggregationOuterDimension {
     setDatasetAcquireProxy(typicalDataset, ncDataset);
     ncDataset.enhance();
 
-    typicalDataset.close( typical);
+    if (typicalFile != null)
+      typicalDataset.close( typicalFile);
     // typicalGds.close();
   }
 
@@ -554,7 +559,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
       NetcdfDataset ncd = null;
       try {
         NetcdfFile ncfile = dataset.acquireFile(cancelTask);
-        ncd = (ncfile instanceof NetcdfDataset) ? (NetcdfDataset) ncfile : new NetcdfDataset(ncfile);
+        ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getDefaultEnhanceMode());
 
         VariableDS v = (VariableDS) ncd.findVariable(timeAxis.getName());
         if (v == null) {
@@ -622,6 +627,11 @@ public class AggregationFmrc extends AggregationOuterDimension {
 
   }
 
+  @Override
+  public void detail(Formatter f) {
+    super.detail(f);
+    f.format(" fmrcDefinition = %s%n", fmrcDefinition);
+  }
 
   /**
    * testing

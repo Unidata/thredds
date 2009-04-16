@@ -70,7 +70,7 @@ public class AlbersEqualArea extends AbstractCoordTransBuilder {
     }
 
     ucar.unidata.geoloc.projection.AlbersEqualArea proj =
-            new ucar.unidata.geoloc.projection.AlbersEqualArea(lat0, lon0, pars[0], pars[1]);
+            new ucar.unidata.geoloc.projection.AlbersEqualArea(lat0, lon0, pars[0], pars[1], false_easting, false_northing);
     return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
   }
 }

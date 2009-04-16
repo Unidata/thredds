@@ -193,10 +193,10 @@ public class TdsMonitor extends JPanel {
     TextHistoryPane detailTA;
 
     OpPanel(PreferencesExt prefs, String command) {
-      this(prefs, command, true, true);
+      this(prefs, command, true);
     }
 
-    OpPanel(PreferencesExt prefs, String command, boolean addFileButton, boolean addCoordButton) {
+    OpPanel(PreferencesExt prefs, String command, boolean addFileButton) {
       this.prefs = prefs;
       ta = new TextHistoryPane(true);
 
@@ -222,23 +222,6 @@ public class TdsMonitor extends JPanel {
         };
         BAMutil.setActionProperties(fileAction, "FileChooser", "open Local dataset...", false, 'L', -1);
         BAMutil.addActionToContainer(buttPanel, fileAction);
-      }
-
-      if (addCoordButton) {
-        AbstractAction coordAction = new AbstractAction() {
-          public void actionPerformed(ActionEvent e) {
-            Boolean state = (Boolean) getValue(BAMutil.STATE);
-            addCoords = state.booleanValue();
-            String tooltip = addCoords ? "add Coordinates is ON" : "add Coordinates is OFF";
-            coordButt.setToolTipText(tooltip);
-            //doit( cb.getSelectedItem()); // called from cb action listener
-          }
-        };
-        addCoords = prefs.getBoolean("coordState", false);
-        String tooltip2 = addCoords ? "add Coordinates is ON" : "add Coordinates is OFF";
-        BAMutil.setActionProperties(coordAction, "addCoords", tooltip2, true, 'C', -1);
-        coordAction.putValue(BAMutil.STATE, new Boolean(addCoords));
-        coordButt = BAMutil.addActionToContainer(buttPanel, coordAction);
       }
 
       JPanel topPanel = new JPanel(new BorderLayout());
@@ -291,8 +274,8 @@ public class TdsMonitor extends JPanel {
     AccessLogTable logTable;
 
     AccessLogPanel(PreferencesExt p) {
-      super(p, "file:", true, false);
-      logTable = new AccessLogTable((PreferencesExt) mainPrefs.node("LogTable"), buttPanel, dnsCache);
+      super(p, "file:", true);
+      logTable = new AccessLogTable((PreferencesExt) mainPrefs.node("LogTable"), dnsCache);
       add(logTable, BorderLayout.CENTER);
     }
 
@@ -330,7 +313,7 @@ public class TdsMonitor extends JPanel {
     ServletLogTable logTable;
 
     ServletLogPanel(PreferencesExt p) {
-      super(p, "file:", true, false);
+      super(p, "file:", true);
       logTable = new ServletLogTable((PreferencesExt) mainPrefs.node("ServletLogTable"), buttPanel, dnsCache);
       add(logTable, BorderLayout.CENTER);
     }

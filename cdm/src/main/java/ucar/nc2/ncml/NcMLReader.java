@@ -349,7 +349,7 @@ public class NcMLReader {
       buffer_size = Integer.parseInt(bufferSizeS);
 
     // open the referenced dataset - do NOT use acquire, and dont enhance
-    // LOOK : shouldnt enhance be controlled by enhance attribute on the netccdf element ?
+    // LOOK : shouldnt enhance be controlled by enhance attribute on the netcdf element ?
     NetcdfDataset refds = null;
     if (referencedDatasetUri != null) {
       if (iospS != null) {
@@ -361,8 +361,11 @@ public class NcMLReader {
         }
         refds = new NetcdfDataset(ncfile, false);
       } else {
-        refds = NetcdfDataset.openDataset(referencedDatasetUri, false, buffer_size, cancelTask, iospParam);
-        refds.setEnhanceProcessed(false); // hasnt had enhance applied to it yet - wait till ncml mods have been applied
+        //  String location, boolean enhance,              int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+        // (String location, EnumSet<Enhance> enhanceMode, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+
+        refds = NetcdfDataset.openDataset(referencedDatasetUri, null, buffer_size, cancelTask, iospParam);
+        // refds.setEnhanceProcessed(false); // hasnt had enhance applied to it yet - wait till ncml mods have been applied
       }
     }
 
@@ -448,7 +451,7 @@ public class NcMLReader {
     targetDS.finish();
 
     // enhance means do scale/offset and/or add CoordSystems
-    EnumSet<NetcdfDataset.Enhance> mode = NetcdfDataset.parseEnhanceMode(netcdfElem.getAttributeValue("enhance"));
+    Set<NetcdfDataset.Enhance> mode = NetcdfDataset.parseEnhanceMode(netcdfElem.getAttributeValue("enhance"));
     //if (mode == null)
     //  mode = NetcdfDataset.getEnhanceDefault();
     targetDS.enhance(mode);
@@ -1219,7 +1222,7 @@ public class NcMLReader {
       String olderS = scanElem.getAttributeValue("olderThan");
 
       String dateFormatMark = scanElem.getAttributeValue("dateFormatMark");
-      EnumSet<NetcdfDataset.Enhance> mode = NetcdfDataset.parseEnhanceMode(scanElem.getAttributeValue("enhance"));
+      Set<NetcdfDataset.Enhance> mode = NetcdfDataset.parseEnhanceMode(scanElem.getAttributeValue("enhance"));
 
       // possible relative location
       dirLocation = URLnaming.resolve(ncmlLocation, dirLocation);

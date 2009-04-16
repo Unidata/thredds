@@ -237,7 +237,6 @@ public class Chart extends JPanel {
     plot.setForegroundAlpha(0.5f);
 
     return chart;
-
   }
 
   protected Day getDay(String date) {

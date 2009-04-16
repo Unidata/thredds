@@ -58,8 +58,9 @@ public interface ForecastModelRunCollection {
    * The runtime will be a global attribute called "_runTime" containing an ISO date string.
    * @param runTime names the run
    * @return the NetcdfDataset for that data.
+    * @throws java.io.IOException on read error
    */
-  public NetcdfDataset getRunTimeDataset( Date runTime);
+  public NetcdfDataset getRunTimeDataset( Date runTime) throws IOException;
 
   /**
    * Get the list of possible forecast dates, to be used in getForecastTimeDataset().
@@ -73,8 +74,9 @@ public interface ForecastModelRunCollection {
    * The forecast time will be a global attribute called "_forecastTime" containing an ISO date string.
    * @param forecastTime the forecast time to fix.
    * @return the NetcdfDataset for that data.
+   * @throws java.io.IOException on read error
    */
-  public NetcdfDataset getForecastTimeDataset( Date forecastTime);
+  public NetcdfDataset getForecastTimeDataset( Date forecastTime)  throws IOException;
 
   /**
    * Get the list of possible forecast offsets, to be used in getForecastOffsetDataset().
@@ -88,16 +90,18 @@ public interface ForecastModelRunCollection {
    * There will be a String-valued variable called "RunTime(time)" containing an array of ISO date strings.
    * @param hours the forecast offset time to fix, in hours.
    * @return the NetcdfDataset containing that data.
+   * @throws java.io.IOException on read error
    */
-  public NetcdfDataset getForecastOffsetDataset( double hours);
+  public NetcdfDataset getForecastOffsetDataset( double hours)  throws IOException;
 
   /**
    * Get a NetcdfDataset that has the "best" time series, across model runs.
    * The time coordinate will be the forecast time.
    * There will be a String-valued variable called "RunTime(time)" containing an array of ISO date strings.
    * @return the NetcdfDataset containing that data.
+   * @throws java.io.IOException on read error
    */
-  public NetcdfDataset getBestTimeSeries( );
+  public NetcdfDataset getBestTimeSeries( )  throws IOException;
 
 
   /**

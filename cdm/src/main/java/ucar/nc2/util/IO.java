@@ -184,7 +184,8 @@ public class IO {
 
   /**
    * Read the contents from the inputStream and place into a String,
-   * with any error messages  put in the return String.
+   * with any error messages put in the return String.
+   * Assume UTF-8 encoding.
    *
    * @param is the inputStream to read from.
    * @return String holding the contents, or an error message.
@@ -193,7 +194,21 @@ public class IO {
   static public String readContents(InputStream is) throws IOException {
     ByteArrayOutputStream bout = new ByteArrayOutputStream(10 * default_file_buffersize);
     IO.copy(is, bout);
-    return bout.toString();
+    return readContents(is, "UTF-8");
+  }
+
+   /**
+   * Read the contents from the inputStream and place into a String,
+   * with any error messages  put in the return String.
+   *
+   * @param is the inputStream to read from.
+   * @return String holding the contents, or an error message.
+   * @throws java.io.IOException on io error
+   */
+  static public String readContents(InputStream is, String charset) throws IOException {
+    ByteArrayOutputStream bout = new ByteArrayOutputStream(10 * default_file_buffersize);
+    IO.copy(is, bout);
+    return bout.toString(charset);
   }
 
   /**

@@ -152,7 +152,7 @@ public abstract class Aggregation implements ProxyReader {
 
   // experimental
   protected String dateFormatMark;
-  protected EnumSet<NetcdfDataset.Enhance> enhance = null; // default no enhancement
+  //protected EnumSet<NetcdfDataset.Enhance> enhance = null; // default no enhancement
   protected boolean isDate = false;
   protected DateFormatter dateFormatter = new DateFormatter();
 
@@ -209,9 +209,9 @@ public abstract class Aggregation implements ProxyReader {
    * @param olderThan           files must be older than this time (now - lastModified >= olderThan); must be a time unit, may ne bull
    */
   public void addDatasetScan(Element crawlableDatasetElement, String dirName, String suffix,
-          String regexpPatternString, String dateFormatMark, EnumSet<NetcdfDataset.Enhance> mode, String subdirs, String olderThan) {
+          String regexpPatternString, String dateFormatMark, Set<NetcdfDataset.Enhance> mode, String subdirs, String olderThan) {
     this.dateFormatMark = dateFormatMark;
-    this.enhance = mode;
+    //this.enhance = mode; // LOOK enhance
 
     if (dateFormatMark != null) {
       isDate = true;
@@ -351,6 +351,7 @@ public abstract class Aggregation implements ProxyReader {
 
     // add the explicit datasets - these need to be kept in order
     // LOOK - should they be before or after scanned? Does it make sense to mix scan and explicit?
+    // AggFmrcSingle sets explicit datasets - the scan is empty
     for (Aggregation.Dataset dataset : explicitDatasets) {
       datasets.add(dataset);
     }
@@ -507,7 +508,7 @@ public abstract class Aggregation implements ProxyReader {
     // deferred opening
     protected String cacheLocation;
     protected ucar.nc2.util.cache.FileFactory reader;
-    protected EnumSet<NetcdfDataset.Enhance> enhance;
+    // protected EnumSet<NetcdfDataset.Enhance> enhance;
 
     protected Object extraInfo;
 
@@ -523,7 +524,7 @@ public abstract class Aggregation implements ProxyReader {
     protected Dataset(CrawlableDataset cd) {
       this( cd.getPath());
       this.cacheLocation = location;
-      this.enhance = Aggregation.this.enhance;
+      //this.enhance = Aggregation.this.enhance;
     }
 
     /**
@@ -541,7 +542,7 @@ public abstract class Aggregation implements ProxyReader {
       this(location);
       this.cacheLocation = cacheLocation;
       this.id = id;
-      this.enhance = enhance;
+      //this.enhance = enhance;
       this.reader = reader;
     }
 
@@ -564,21 +565,21 @@ public abstract class Aggregation implements ProxyReader {
       return null;
     }
 
-    protected NetcdfFile acquireFile(CancelTask cancelTask) throws IOException {
+    public NetcdfFile acquireFile(CancelTask cancelTask) throws IOException {
       if (debugOpenFile) System.out.println(" try to acquire " + cacheLocation);
       long start = System.currentTimeMillis();
 
       NetcdfFile ncfile;
       // no enhance
-      if (enhance == null || enhance.isEmpty()) {
+      //if (enhance == null || enhance.isEmpty()) {
         if (mergeNcml == null)
           ncfile = NetcdfDataset.acquireFile(reader, null, cacheLocation, -1, cancelTask, spiObject);
         else {
-          ncfile = NetcdfDataset.acquireDataset(reader, cacheLocation, enhance, -1, cancelTask, spiObject);
+          ncfile = NetcdfDataset.acquireDataset(reader, cacheLocation, null, -1, cancelTask, spiObject);
           new NcMLReader().merge((NetcdfDataset) ncfile, mergeNcml);
         }
 
-        // yes enhance
+        /* yes enhance
       } else {
         if (mergeNcml == null) {
           ncfile = NetcdfDataset.acquireDataset(reader, cacheLocation, enhance, -1, cancelTask, spiObject);
@@ -589,7 +590,7 @@ public abstract class Aggregation implements ProxyReader {
           ncd.enhance( enhance);
           ncfile = ncd;
         }
-      }
+      } */
 
       if (debugOpenFile) System.out.println(" acquire " + cacheLocation + " took " + (System.currentTimeMillis() - start));
       return ncfile;
@@ -750,36 +751,11 @@ public abstract class Aggregation implements ProxyReader {
     return v;
   }
 
-  /*
-   * Argument to DatasetConstructor.transferDataset(ncfile, ncDataset, MyReplaceVariableCheck);
-   * Used only on a rescan.
-   * For JOIN_NEW, its replaced if its a listed aggregation variable
-   * For JOIN_EXISTING, its replaced if its NOT an aggregation variable (!!??)
-   *
-  protected class MyReplaceVariableCheck implements ReplaceVariableCheck {
-    public boolean replace(Variable v) {
-
-      if (getType() == Type.JOIN_NEW) {
-        return isAggVariable(v.getName());
-
-      } else { // needs to be replaced if its not an agg variable
-        if (v.getRank() < 1) return true;
-        Dimension d = v.getDimension(0);
-        return !getDimensionName().equals(d.getName());
-      }
-    }
+  // debug
+  public void detail(Formatter f) {
+    f.format("   Type = %s%n", type);
+    f.format("dimName = %s%n", dimName);
+    f.format(" isDate = %s%n", isDate);
   }
-
-   * Is the named variable an "aggregation variable" ?
-   *
-   * @param name variable name
-   * @return true if the named variable is an aggregation variable
-  private boolean isAggVariable(String name) {
-    for (String vname : aggVarNames) {
-      if (vname.equals(name))
-        return true;
-    }
-    return false;
-  } */
 
 }

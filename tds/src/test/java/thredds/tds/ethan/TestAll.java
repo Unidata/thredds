@@ -701,7 +701,13 @@ public class TestAll extends TestCase
           return;
         }
 
-        GridDataset gridDs = new ucar.nc2.dt.grid.GridDataset( ncd );
+        GridDataset gridDs = null;
+        try {
+          gridDs = new ucar.nc2.dt.grid.GridDataset( ncd );
+        } catch (IOException e) {
+          failureMsgs.put( ds.getName(), "Failed to open GridDataset: " + e.getMessage() );
+          return;
+        }
 
         boolean getVertCoordInfo = false;
         if ( getVertCoordInfo)

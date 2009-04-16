@@ -923,7 +923,7 @@ public class HtmlWriter {
 
   }
 
-  private String getCDM(NetcdfDataset ds) {
+  private String getCDM(NetcdfDataset ds) throws IOException {
     StringBuilder sb = new StringBuilder(10000);
 
     String name = StringUtil.quoteHtmlContent(ds.getLocation());

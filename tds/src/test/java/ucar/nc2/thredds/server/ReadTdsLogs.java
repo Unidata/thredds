@@ -73,7 +73,7 @@ public class ReadTdsLogs {
   ReadTdsLogs(String server) throws FileNotFoundException {
     this.server = server;
 
-    executor = Executors.newFixedThreadPool(5); // number of threads
+    executor = Executors.newFixedThreadPool(3); // number of threads
     completionQ = new ArrayBlockingQueue<Future<SendRequestTask>>(10); // bounded, threadsafe
     completionService = new ExecutorCompletionService<SendRequestTask>(executor, completionQ);
 
@@ -641,11 +641,11 @@ public class ReadTdsLogs {
     // */
 
     // sendRequests
-    final ReadTdsLogs reader = new ReadTdsLogs("http://motherlode.ucar.edu:8081");
+    final ReadTdsLogs reader = new ReadTdsLogs("http://motherlode.ucar.edu:9080");
 
     long startElapsed = System.nanoTime();
 
-    read("d:/motherlode/logs/", new MClosure() {
+    read("d:/motherlode/logs/access/", new MClosure() {
       public void run(String filename) throws IOException {
         reader.sendRequests(filename, -1);
       }

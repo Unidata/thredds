@@ -92,6 +92,9 @@ import java.net.URLDecoder;
 public class DiskCache {
   static private String root = null;
   static private boolean standardPolicy = false;
+  static private boolean checkExist = false;
+
+  /** debug only */
   static public boolean simulateUnwritableDir = false;
 
   static {
@@ -120,7 +123,6 @@ public class DiskCache {
    * @param cacheDir the cache directory
    */
   static public void setRootDirectory(String cacheDir) {
-    String oldRoot = root;
     if (!cacheDir.endsWith("/"))
       cacheDir = cacheDir + "/";
     root = StringUtil.replace(cacheDir, '\\', "/"); // no nasty backslash
@@ -136,6 +138,7 @@ public class DiskCache {
     if (!dir.exists())
       if (!dir.mkdirs())
         throw new IllegalStateException("DiskCache.setRootDirectory(): could not create root directory <" + root + ">.");
+    checkExist = true;
   }
 
   /**
@@ -223,8 +226,11 @@ public class DiskCache {
     if (f.exists())
       f.setLastModified(System.currentTimeMillis());
 
-    File dir = f.getParentFile();
-    dir.mkdirs();
+    if (!checkExist) {
+      File dir = f.getParentFile();
+      dir.mkdirs();
+      checkExist = true;
+    }
     return f;
   }
 

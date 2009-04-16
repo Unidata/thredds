@@ -683,7 +683,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       StringTokenizer stoker = new StringTokenizer(csVar.coordSysFor);
       while (stoker.hasMoreTokens()) {
         String dname = stoker.nextToken();
-        Dimension dim = ncDataset.findDimension(dname);
+        Dimension dim = ncDataset.getRootGroup().findDimension(dname);
         if (dim == null) {
           parseInfo.format("***Cant find Dimension %s referenced from CoordSys var= %s%n", dname, csVar.v.getName());
           userAdvice.format("***Cant find Dimension %s referenced from CoordSys var= %s%n", dname, csVar.v.getName());
@@ -926,7 +926,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
           VarProcess ap = findVarProcess(vname); // LOOK: full vs short name
           if (ap != null) {
             if (ap.ct != null) {
-              vp.cs.addCoordinateTransform(ap.ct);
+              vp.addCoordinateTransform(ap.ct);
               parseInfo.format(" assign explicit coordTransform %s to CoordSys= %s\n", ap.ct, vp.cs);
             } else {
               parseInfo.format("***Cant find coordTransform in %s referenced from var= %s\n", vname, vp.v.getName());
@@ -951,7 +951,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
             parseInfo.format("***Cant find coordSystem variable= %s referenced from var= %s\n", vname, vp.v.getName());
             userAdvice.format("***Cant find coordSystem variable= %s referenced from var= %s\n", vname, vp.v.getName());
           } else {
-            vcs.cs.addCoordinateTransform(vp.ct);
+            vcs.addCoordinateTransform(vp.ct);
             parseInfo.format("***assign explicit coordTransform %s to CoordSys=  %s\n", vp.ct, vp.cs);
           }
         }
@@ -1267,6 +1267,15 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
       return axesList;
     }
+
+   void addCoordinateTransform(CoordinateTransform ct) {
+     if (cs == null) {
+       parseInfo.format("  %s: no CoordinateSystem for CoordinateTransformVariable: %s\n", v.getName(), ct.getName());
+       return;
+     }
+     cs.addCoordinateTransform(ct);
+   }
+
   }
 
   protected VariableDS makeCoordinateTransformVariable(NetcdfDataset ds, CoordinateTransform ct) {

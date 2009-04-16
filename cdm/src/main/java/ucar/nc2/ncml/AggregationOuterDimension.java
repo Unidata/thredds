@@ -1121,6 +1121,23 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
   }
 
+
+  @Override
+  public void detail(Formatter f) {
+    super.detail(f);
+    f.format("AggVarNames:%n");
+    for (String name : aggVarNames)
+      f.format("   var = %s%n", name);
+    f.format("AggVars:%n");
+    for (VariableDS vars : aggVars)
+      f.format("   var = %s%n", vars.getNameAndDimensions());
+    f.format("CacheVars:%n");
+    for (CacheVar cv : cacheList)
+      f.format("  cvar = %s%n", cv);
+    f.format("totalCoords = %s%n", totalCoords);
+    f.format(" timeUnitsChange = %s%n", timeUnitsChange);
+  }
+
   public static void main(String args[]) throws IOException {
     String format = "%04d-%02d-%02dT%02d:%02d:%02.0f";
     Formatter f = new Formatter();

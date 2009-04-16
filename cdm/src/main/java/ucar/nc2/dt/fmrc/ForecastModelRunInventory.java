@@ -54,6 +54,7 @@ import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.iosp.IOServiceProvider;
+import ucar.nc2.iosp.grid.GridServiceProvider;
 import ucar.nc2.Variable;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;
@@ -61,7 +62,6 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.fmr.FmrcCoordSys;
-import ucar.nc2.iosp.grib.GribServiceProvider;
 
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -258,11 +258,11 @@ public class ForecastModelRunInventory {
     if (ncfile == null) return;
     IOServiceProvider iosp = ncfile.getIosp();
     if (iosp == null) return;
-    if (!(iosp instanceof GribServiceProvider)) return;
-    gribIosp = (GribServiceProvider) iosp;
+    if (!(iosp instanceof GridServiceProvider)) return;
+    gribIosp = (GridServiceProvider) iosp;
   }
 
-  private GribServiceProvider gribIosp;
+  private GridServiceProvider gribIosp;
 
   private void addMissing(Variable v, GridCoordSystem gcs, Grid grid) {
     if (gribIosp == null) return;

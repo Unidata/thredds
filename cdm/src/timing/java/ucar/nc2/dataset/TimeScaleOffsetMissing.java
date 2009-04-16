@@ -41,6 +41,7 @@ import ucar.nc2.NetcdfFile;
 
 import java.io.IOException;
 import java.util.EnumSet;
+import java.util.Set;
 
 import junit.framework.TestCase;
 import timing.Average;
@@ -111,7 +112,7 @@ public class TimeScaleOffsetMissing extends TestCase {
     if (avg != null) avg.add(took);
   }
 
-  public void openDataset(EnumSet<NetcdfDataset.Enhance> enhance, Average avg) throws IOException, InvalidRangeException {
+  public void openDataset(Set<NetcdfDataset.Enhance> enhance, Average avg) throws IOException, InvalidRangeException {
     long start = System.nanoTime();
 
     NetcdfDataset ncd = NetcdfDataset.openDataset(TestAll.testdataDir +"grid/netcdf/AZ.000000000.nc", enhance, -1, null, null);
