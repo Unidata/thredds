@@ -60,7 +60,7 @@ import java.io.IOException;
 public abstract class GridServiceProvider extends AbstractIOServiceProvider {
 
   public enum IndexExtendMode {
-    extend, rewrite, none
+    extend, rewrite, read, none
   }
     /** FMRC coordinate system */
     protected FmrcCoordSys fmrcCoordSys;
@@ -78,7 +78,8 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
 
     static public boolean forceNewIndex = false; // force that a new index file is written
     static public IndexExtendMode extendMode = IndexExtendMode.rewrite; // default is to rewrite
-    static public IndexExtendMode syncMode = IndexExtendMode.extend; // default is to extend
+    //static public IndexExtendMode syncMode = IndexExtendMode.extend; // default is to extend
+    static public IndexExtendMode syncMode = IndexExtendMode.read; // default is to read
 
 
     /** place to store debug stuff */
@@ -154,6 +155,8 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
      */
     static public void setExtendIndex(boolean b) {
       extendMode = b ? IndexExtendMode.extend : IndexExtendMode.none;
+      // use read since it's the default for false
+      syncMode = b ? IndexExtendMode.extend : IndexExtendMode.read;
     }
 
     /**
