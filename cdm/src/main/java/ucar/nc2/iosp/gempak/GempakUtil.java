@@ -52,7 +52,7 @@ public final class GempakUtil {
 
     /** day of month string */
     public static String[] vertCoords = new String[] {
-        "NONE", "PRES", "THTA", "HGHT", "SGMA", "DPTH"
+        "NONE", "PRES", "THTA", "HGHT", "SGMA", "DPTH", "HYBL"
     };
 
     /**
