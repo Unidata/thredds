@@ -345,8 +345,15 @@ public class GribGridServiceProvider extends GridServiceProvider {
       File indexFile = getIndexFile(saveLocation);
       //Index index;
       GridIndex index;
-
-      if ((syncMode == IndexExtendMode.extend) && (rafLength < raf.length())) {
+      if (syncMode == IndexExtendMode.read) {
+        log.debug("  sync read Index = " + indexFile.getPath());
+        try {
+           index = new GribReadIndex().open(indexFile.getPath());
+        } catch (Exception e) {
+          log.error("  sync read Index failed = " + indexFile.getPath());
+          return false;
+        }
+      } else if ((syncMode == IndexExtendMode.extend) && (rafLength < raf.length())) {
         log.debug("  sync extend Index = " + indexFile.getPath());
         //extendIndex(saveEdition, raf, indexFile, null);
         //index = new Index();
@@ -361,7 +368,8 @@ public class GribGridServiceProvider extends GridServiceProvider {
         //index = writeIndex(saveEdition, indexFile, raf);
         index = writeIndex(indexFile, raf);
       }
-
+      // update so next sync call doesn't reread unnecessary
+      rafLength = raf.length();
       // reconstruct the ncfile objects
       ncfile.empty();
       open(index, null);
