@@ -60,9 +60,6 @@ import java.net.URL;
 
 public class GribGridServiceProvider extends GridServiceProvider {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GribGridServiceProvider.class);
-  //private String saveIndexLocation;
-  //private long gribLastModified = 0;
- // private long indexLastModified = 0;
 
   private long rafLength;    // length of the file when opened - used for syncing
   private int saveEdition = 0;
@@ -97,12 +94,9 @@ public class GribGridServiceProvider extends GridServiceProvider {
     if (GridServiceProvider.debugOpen)
       System.out.println("GribGridServiceProvider open = " + ncfile.getLocation());
 
-    //String indexLocation = raf.getLocation() + ".gbx";
-    //GridIndex index = getIndex(raf.getLocation(), indexLocation);
     GridIndex index = getIndex( 0, raf.getLocation());
     Map<String, String> attr = index.getGlobalAttributes();
     saveEdition = attr.get("grid_edition").equals("2") ? 2 : 1;
-    //saveIndexLocation = indexLocation;
 
     GridTableLookup lookup;
     if (saveEdition == 2) {
@@ -198,11 +192,12 @@ public class GribGridServiceProvider extends GridServiceProvider {
   }
 
   /**
-   * Open the index file. If not already exist, then create it.
+   * Open the index file. If not exists, create it.
+   * When writing use DiskCache, to make sure location is writeable.
    *
-   * //@param gribLocation  location of data file.
-   * //@param indexLocation of the index file. The index file has ".gbx" appended.
-   * @return ucar.grid.GridIndex
+   * @param edition    which grib edition
+   * @param location   location of the file. The index file has ".gbx" appended.
+   * @return ucar.grib.Index
    * @throws IOException on io error
    */
    protected GridIndex getIndex(int edition, String location) throws IOException {
@@ -313,6 +308,35 @@ public class GribGridServiceProvider extends GridServiceProvider {
     return indexFile;
   }
 
+
+  private GridIndex writeIndex(File indexFile, RandomAccessFile raf) throws IOException {
+    GridIndex index = null;
+    try {
+      if (indexFile.exists()) {
+        indexFile.delete();
+        log.debug("Deleting old index " + indexFile.getPath());
+      }
+
+      if (saveEdition == 0) {
+        raf.seek(0);
+        Grib2Input g2i = new Grib2Input(raf);
+        saveEdition = g2i.getEdition();
+      }
+      File gribFile = new File(raf.getLocation());
+
+      if (saveEdition == 1) {
+        index = new Grib1WriteIndex().writeGribIndex(gribFile, indexFile.getPath(), raf, true);
+      } else if (saveEdition == 2) {
+        index = new Grib2WriteIndex().writeGribIndex(gribFile, indexFile.getPath(), raf, true);
+      }
+      return index;
+
+    } catch (NotSupportedException noSupport) {
+      System.err.println("NotSupportedException : " + noSupport);
+    }
+    return index;
+  }
+
   public boolean sync() throws IOException {
     if (syncMode == IndexExtendMode.none) return false;
 
@@ -349,41 +373,10 @@ public class GribGridServiceProvider extends GridServiceProvider {
 
   }
 
-  private GridIndex writeIndex(File indexFile, RandomAccessFile raf) throws IOException {
-    GridIndex index = null;
-    try {
-      //saveIndexLocation = indexFile.getPath();
-      if (indexFile.exists()) {
-        indexFile.delete();
-        log.debug("Deleting old index " + indexFile.getPath());
-      }
-
-      if (saveEdition == 0) {
-        raf.seek(0);
-        Grib2Input g2i = new Grib2Input(raf);
-        saveEdition = g2i.getEdition();
-      }
-      File gribFile = new File(raf.getLocation());
-
-      if (saveEdition == 1) {
-        index = new Grib1WriteIndex().writeGribIndex(gribFile, indexFile.getPath(), raf, true);
-      } else if (saveEdition == 2) {
-        index = new Grib2WriteIndex().writeGribIndex(gribFile, indexFile.getPath(), raf, true);
-      }
-      return index;
-
-    } catch (NotSupportedException noSupport) {
-      System.err.println("NotSupportedException : " + noSupport);
-    }
-    //indexLastModified = indexFile.lastModified();
-    return index;
-  }
-
   private GridIndex extendIndex(File gribFile, File indexFile, RandomAccessFile raf) throws IOException {
 
     GridIndex index = null;
     try {
-      //saveIndexLocation = indexFile.getPath();
       if (saveEdition == 0) {
         raf.seek(0);
         Grib2Input g2i = new Grib2Input(raf);
@@ -395,7 +388,6 @@ public class GribGridServiceProvider extends GridServiceProvider {
       } else if (saveEdition == 2) {
         index = new Grib2WriteIndex().extendGribIndex(gribFile, indexFile, indexFile.getPath(), raf, true);
       }
-      //indexLastModified = indexFile.lastModified();
       return index;
 
     } catch (NotSupportedException noSupport) {
