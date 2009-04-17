@@ -72,7 +72,7 @@ public class TestDatasetURL extends TestCase {
       "  <netcdf location='file:/D:/data/dir mit blank/20070301.nc' coord='2'/>\n" +
       " </aggregation>\n" +
       "</netcdf> ";
-    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), "D:/data/", null);
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), null);
 
     ncfile.close();
   }

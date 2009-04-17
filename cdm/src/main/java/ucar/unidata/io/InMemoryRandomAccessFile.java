@@ -40,7 +40,7 @@ import java.io.IOException;
  * A RandomAccessFile stored entirely in memory as a byte array.
  * @author john
  */
-public class InMemoryRandomAccessFile extends RandomAccessFile {
+public class InMemoryRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
   /**
    * A RandomAccessFile stored entirely in memory as a byte array.
@@ -71,9 +71,9 @@ public class InMemoryRandomAccessFile extends RandomAccessFile {
     return dataEnd;
   }
 
-  @Override
+  // @Override  LOOK weird error
   public void setBufferSize(int bufferSize) {
-    // do nothing
+    ; // do nothing
   }
 
   @Override
