@@ -23,13 +23,16 @@ public class TestIndexUpdating extends TestCase
 {
 
   private String dataFileName = "GFS_CONUS_191km_20090331_1800.grib1";
-  private String gribSuffix0 = ".part0";
-  private String indexSuffix0 = ".part0.gbx";
-  private String indexSuffix1 = ".part1.gbx";
-  private String indexSuffix2 = ".part2.gbx";
-  private String indexSuffix3 = ".part3.gbx";
-  private String indexSuffixFull = ".full.gbx";
-  private String indexSuffix = ".gbx";
+  private String dataSuffix1_8 = "times1-8";
+  private String dataSuffix9_12 = "times9-12";
+  private String dataSuffix13_18 = "times13-18";
+  private String dataSuffix19_21 = "times19-21";
+
+  private String indexFileName = dataFileName + ".gbx";
+  private String indexSuffix1_8 = "times1-8";
+  private String indexSuffix1_12 = "times1-12";
+  private String indexSuffix1_18 = "times1-18";
+  private String indexSuffix1_21 = "times1-21";
 
   private File dataDir;
   private File dataFile;
@@ -47,15 +50,17 @@ public class TestIndexUpdating extends TestCase
   protected void tearDown() throws Exception
   {
     // remove dataFile, created on setup
-    if ( dataFile.exists() )
+    if ( dataFile != null && dataFile.exists() )
       dataFile.delete();
 
-    if ( indexFile.exists() )
+    if ( indexFile != null && indexFile.exists() )
       indexFile.delete();
 
     // always remove cache index if it exists
-    File cacheIndex = DiskCache.getFile(indexFile.getPath(), true);
-    if ( cacheIndex.exists() && ! cacheIndex.canWrite())
+    File cacheIndex = null;
+    if ( indexFile != null )
+      cacheIndex = DiskCache.getFile(indexFile.getPath(), true);
+    if ( cacheIndex != null && cacheIndex.exists() && ! cacheIndex.canWrite())
     {
       fail( "Cannot write/remove cache index file [" + cacheIndex.getPath() + "].");
     } else if ( cacheIndex.exists() ) {
@@ -567,4 +572,145 @@ public class TestIndexUpdating extends TestCase
     return true;
   }
 
+
+  //===============
+  // New setup for times1-8, times9-12, etc
+  //===============
+
+  private boolean gribInit_1_8()
+  {
+    // Check that the data directory exists and is writable.
+    dataDir = new File( ucar.nc2.TestAll.cdmTestDataDir, "ucar/nc2/iosp/grib/indexUpdating" );
+    if ( ! dataDir.exists() )
+    {
+      fail( "Non-existent data directory [" + dataDir.getPath() + "]." );
+      return false;
+    }
+    if ( ! dataDir.canWrite() )
+    {
+      fail( "Cannot write to data directory [" + dataDir.getPath() + "]." );
+      return false;
+    }
+
+    // Check that the partial GRIB file exists and is readable.
+    File gribFilePartial = new File( dataDir, dataFileName + dataSuffix1_8 );
+    if ( ! gribFilePartial.exists())
+    {
+      fail( "Non-existent partial GRIB file [" + gribFilePartial.getPath() + "].");
+      return false;
+    }
+    if ( ! gribFilePartial.canRead())
+    {
+      fail( "Cannot read the partial GRIB file [" + gribFilePartial.getPath() + "].");
+      return false;
+    }
+
+    // Locate data file and setup for final deletion.
+    dataFile = new File( dataDir, dataFileName );
+    dataFile.deleteOnExit();
+
+    // Copy partial grib file into place
+    try
+    {
+      IO.copyFile( gribFilePartial, dataFile );
+    }
+    catch ( IOException e )
+    {
+      fail( "Failed to copy partial grib file [" + gribFilePartial.getPath() + "] to grib file [" + dataFile.getPath() + "]: " + e.getMessage() );
+      return false;
+    }
+
+    if ( ! dataFile.exists() )
+    {
+      fail( "Non-existent data file [" + dataFile.getPath() + "]." );
+      return false;
+    }
+    if ( ! dataFile.canRead() )
+    {
+      fail( "Cannot read data file [" + dataFile.getPath() + "]." );
+      return false;
+    }
+
+
+    return true;
+  }
+
+  private boolean gribAppend9_12() { return gribAppend( dataSuffix9_12); }
+  private boolean gribAppend13_18() { return gribAppend( dataSuffix13_18); }
+  private boolean gribAppend19_21() { return gribAppend( dataSuffix19_21); }
+
+  private boolean gribAppend( String suffix )
+  {
+    RandomAccessFile input = null, output = null;
+    try
+    {
+      // read in extra data
+      input = new RandomAccessFile( dataFile.getPath() + suffix, "r" );
+      byte[] extra = new byte[(int) input.length()];
+      input.read( extra );
+      input.close();
+
+      output = new RandomAccessFile( dataFile.getPath(), "rw" );
+      output.seek( output.length() );
+      output.write( extra );
+      output.close();
+
+    }
+    catch ( Exception e )
+    {
+      fail( "Failed to add file [" + input.getLocation() + "] to  file [" + dataFile.getPath() + "]: " + e.getMessage() );
+      return false;
+    }
+
+    return true;
+  }
+
+  private boolean indexSetup1_8() { return indexSetup( indexSuffix1_8); }
+  private boolean indexSetup1_12() { return indexSetup( indexSuffix1_12); }
+  private boolean indexSetup1_18() { return indexSetup( indexSuffix1_18); }
+  private boolean indexSetup1_21() { return indexSetup( indexSuffix1_21); }
+
+  private boolean indexSetup( String suffix)
+  {
+    // Check that the source index file exists and is readable.
+    File indexFileSource= new File( dataDir, indexFileName + suffix );
+    if ( ! indexFileSource.exists() )
+    {
+      fail( "Non-existent source index file [" + indexFileSource + "]." );
+      return false;
+    }
+    if ( ! indexFileSource.canRead() )
+    {
+      fail( "Cannot read source index file [" + indexFileSource.getPath() + "]." );
+      return false;
+    }
+
+    // Locate index file and setup for final deletion
+    indexFile = new File( dataDir, indexFileName );
+    indexFile.deleteOnExit();
+
+    // Copy source index file into place (".gbx").
+    try
+    {
+      IO.copyFile( indexFileSource, indexFile );
+    }
+    catch ( IOException e )
+    {
+      fail( "Failed to copy source index file [" + indexFileSource.getPath() + "] to index file [" + indexFile.getPath() + "]: " + e.getMessage() );
+      return false;
+    }
+
+    if ( ! indexFile.exists())
+    {
+      fail( "Non-existent index file [" + indexFile.getPath() + "].");
+      return false;
+    }
+    if ( ! indexFile.canRead())
+    {
+      fail( "Cannot read index file [" + indexFile.getPath() + "]." );
+      return false;
+    }
+
+    return true;
+  }
 }
