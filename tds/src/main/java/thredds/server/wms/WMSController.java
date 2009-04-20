@@ -154,9 +154,10 @@ public class WMSController extends AbstractController {
         {
           throw new WmsException( "The SERVICE parameter must be WMS" );
         }
-        
+
         String request = params.getMandatoryString("request");
         dataset = openDataset(req, res);
+        FileBasedResponse  response;
 
         log.debug("Processing request: (version): " + versionString );
 
@@ -166,31 +167,26 @@ public class WMSController extends AbstractController {
           GetCapabilities getCap = new GetCapabilities(params, dataset, usageLogEntry);
           getCap.setConfig(config);
           getCap.setStartupDate(startupDate);
-          result = getCap.processRequest(res, req);
+          response = getCap;
+
 
         } else if (request.equalsIgnoreCase("GetMap")) {
           errMessage = "Error encountered while processing GetMap request ";
           WmsGetMap getMapHandler = new WmsGetMap(params, dataset, usageLogEntry);
+          response = getMapHandler;
           // LOOK how do we close the log messages ?
           log.info( "GetMap: " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
-          result =  getMapHandler.processRequest(res, req);
-
         } else if (request.equalsIgnoreCase("GetLegendGraphic")) {
           errMessage = "Error encountered while processing GetLegendGraphic request ";
-          GetLegendGraphic legendGraphic = new GetLegendGraphic(params, dataset, usageLogEntry);
-          result =  legendGraphic.processRequest(res, req);
-
+          response = new GetLegendGraphic(params, dataset, usageLogEntry);
         } else if (request.equalsIgnoreCase("GetFeatureInfo")) {
           errMessage = "Error encountered while processing GetFeatureInfo request ";
-          GetFeatureInfo featureInfoHandler = new GetFeatureInfo(params, dataset, usageLogEntry);
-          result =  featureInfoHandler.processRequest(res, req);
-
+          response = new GetFeatureInfo(params, dataset, usageLogEntry);
         } else if (request.equals("GetMetadata")) {
           errMessage = "Error encountered while processing GetMetadata request ";
           MetadataResponse metaController = new MetadataResponse(params, dataset, usageLogEntry);
           metaController.setConfig(config);
-          result =  metaController.processRequest(res, req);
-
+          response = metaController;
         }
 //        else if (request.equals("GetKML")) {
 //
@@ -199,7 +195,11 @@ public class WMSController extends AbstractController {
 //        }
         else
           throw new WmsException( "Unsupported REQUEST parameter" );
-        
+
+
+        result = response.processRequest(res, req);
+        closeDataset(dataset);
+          
         return result;
       }
       catch (MetadataException me) {

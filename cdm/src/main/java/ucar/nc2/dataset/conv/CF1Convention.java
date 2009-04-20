@@ -73,7 +73,9 @@ public class CF1Convention extends CSMConvention {
           "ocean_sigma_coordinate",
           "ocean_s_coordinate",
           "ocean_sigma_z_coordinate",
-          "ocean_double_sigma_coordinate"};
+          "ocean_double_sigma_coordinate",
+          "ocean_s_coordinate_g1",          // -sachin 03/25/09
+          "ocean_s_coordinate_g2"};
 
   public CF1Convention() {
     this.conventionName = "CF-1.X";
@@ -280,7 +282,7 @@ public class CF1Convention extends CSMConvention {
    * }
    */
 
-  // run through all the variables in the formula, and get their domain (list of dimensions)
+  /* run through all the variables in the formula, and get their domain (list of dimensions)
   private List getFormulaDomain(NetcdfDataset ds, Variable v) {
     String formula = ds.findAttValueIgnoreCase(v, "formula_terms", null);
     if (null == formula) {
@@ -302,7 +304,7 @@ public class CF1Convention extends CSMConvention {
     }
 
     return domain;
-  }
+  } */
 
 }
 

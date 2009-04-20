@@ -34,6 +34,7 @@ package thredds.filesystem;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.HashMap;
 
 /**
  * Lightweight, serializable representation of a java.io.File
@@ -46,10 +47,17 @@ public class MFile implements Serializable {
   public long length;
   public boolean isDirectory;
 
+  public HashMap<String, Object> att;
+
   public MFile( File f) {
     this.name = f.getName();
     this.lastModified = f.lastModified();
     this.length = f.length();
     this.isDirectory = f.isDirectory();
+  }
+
+  public void setAttribute(String key, Object value) {
+    if (att == null) att = new HashMap<String, Object>(5);
+    att.put(key,value);
   }
 }

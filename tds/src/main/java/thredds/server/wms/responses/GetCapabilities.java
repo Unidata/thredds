@@ -160,7 +160,7 @@ public class GetCapabilities extends FileBasedResponse
         model.put("featureInfoFormats", new String[]{FEATURE_INFO_PNG_FORMAT,
                     FEATURE_INFO_XML_FORMAT});
         model.put("legendWidth", ColorPalette.LEGEND_WIDTH);
-        model.put("dataset", dataset);
+        model.put("datasetTitle", dataset.getTitle());
         model.put("layers", layers.values());
         
         log.info("Got layers: " + layers.size() + layers.keySet());

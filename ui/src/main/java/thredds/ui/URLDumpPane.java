@@ -1,4 +1,3 @@
-// $Id: URLDumpPane.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -43,9 +42,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.net.*;
-import java.util.Map;
-import java.util.Iterator;
-import java.util.Enumeration;
+import java.util.*;
+import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 import javax.swing.*;
@@ -57,9 +55,10 @@ import org.apache.commons.httpclient.methods.*;
 
 /**
  * A text widget to dump a web URL.
+ * Uses java.net.HttpURLConnection or org.apache.commons.httpclient.
  *
  * @author John Caron
- * @version $Id: URLDumpPane.java 50 2006-07-12 16:30:06Z caron $
+ * @see thredds.ui.UrlAuthenticatorDialog
  */
 
 public class URLDumpPane extends TextHistoryPane {
@@ -68,20 +67,65 @@ public class URLDumpPane extends TextHistoryPane {
   private static final int HEAD = 2;
   private static final int OPTIONS = 3;
 
-    private PreferencesExt prefs;
     private ComboBox cb;
     private GetContentsTask task;
     private HttpURLConnection currentConnection = null;
 
     public URLDumpPane(PreferencesExt prefs) {
       super(true);
-      this.prefs = prefs;
 
       // combo box holds a list of urls
       cb = new ComboBox( prefs);
 
+
+      JButton headButton2 = new JButton("Head");
+      headButton2.setToolTipText("Open URL connection, Headers only using HttpClient");
+      headButton2.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          String urlString = (String) cb.getSelectedItem();
+          openURL2( urlString, HEAD);
+          gotoTop();
+          cb.addItem( urlString);
+        }
+      });
+
+
+      JButton read2Button = new JButton("Get");
+      read2Button.setToolTipText("Open URL connection, Get content using HttpClient");
+      read2Button.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          String urlString = (String) cb.getSelectedItem();
+          openURL2( urlString, GET);
+          gotoTop();
+          cb.addItem( urlString);
+        }
+      });
+
+      JButton opt2Button = new JButton("Options");
+      opt2Button.setToolTipText("Server options using HttpClient");
+      opt2Button.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          String urlString = (String) cb.getSelectedItem();
+          openURL2( urlString, OPTIONS);
+          gotoTop();
+          cb.addItem( urlString);
+        }
+      });
+
+
+      JButton put2Button = new JButton("Put");
+      put2Button.setToolTipText("Put using HttpClient");
+      put2Button.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          String urlString = (String) cb.getSelectedItem();
+          openURL2( urlString, PUT);
+          gotoTop();
+          cb.addItem( urlString);
+        }
+      });
+
       JButton headButton = new JButton("HEAD");
-      headButton.setToolTipText("Open URL connection, HEADERS only");
+      headButton.setToolTipText("Open URL connection, HEADERS only using HttpURLConnection");
       headButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           String urlString = (String) cb.getSelectedItem();
@@ -91,16 +135,6 @@ public class URLDumpPane extends TextHistoryPane {
         }
       });
 
-      JButton headButton2 = new JButton("Head2");
-      headButton2.setToolTipText("Open URL connection, HEADERS only");
-      headButton2.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          String urlString = (String) cb.getSelectedItem();
-          openURL2( urlString, HEAD);
-          gotoTop();
-          cb.addItem( urlString);
-        }
-      });
 
       JButton readButton = new JButton("GET");
       readButton.setToolTipText("Open URL connection, show content using HttpURLConnection");
@@ -113,19 +147,9 @@ public class URLDumpPane extends TextHistoryPane {
         }
       });
 
-      JButton read2Button = new JButton("Get2");
-      read2Button.setToolTipText("Open URL connection, show content using HttpClient");
-      read2Button.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          String urlString = (String) cb.getSelectedItem();
-          openURL2( urlString, GET);
-          gotoTop();
-          cb.addItem( urlString);
-        }
-      });
 
-      JButton optButton = new JButton("Options");
-      optButton.setToolTipText("Get server options");
+      JButton optButton = new JButton("OPTIONS");
+      optButton.setToolTipText("Get server options using HttpURLConnection");
       optButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           String urlString = (String) cb.getSelectedItem();
@@ -135,19 +159,9 @@ public class URLDumpPane extends TextHistoryPane {
         }
       });
 
-      JButton opt2Button = new JButton("Options2");
-      opt2Button.setToolTipText("Get server options");
-      opt2Button.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          String urlString = (String) cb.getSelectedItem();
-          openURL2( urlString, OPTIONS);
-          gotoTop();
-          cb.addItem( urlString);
-        }
-      });
 
       JButton putButton = new JButton("PUT");
-      putButton.setToolTipText("Send PUT command");
+      putButton.setToolTipText("Send PUT command using HttpURLConnection");
       putButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           String urlString = (String) cb.getSelectedItem();
@@ -157,27 +171,16 @@ public class URLDumpPane extends TextHistoryPane {
         }
       });
 
-      JButton put2Button = new JButton("Put2");
-      put2Button.setToolTipText("Put (HttpCLient)");
-      put2Button.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          String urlString = (String) cb.getSelectedItem();
-          openURL2( urlString, PUT);
-          gotoTop();
-          cb.addItem( urlString);
-        }
-      });
-
-
       JPanel buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-      buttPanel.add( headButton);
       buttPanel.add( headButton2);
-      buttPanel.add( readButton);
       buttPanel.add( read2Button);
-      buttPanel.add( optButton);
       buttPanel.add( opt2Button);
       buttPanel.add( putButton);
       buttPanel.add( put2Button);
+      buttPanel.add( headButton);
+      buttPanel.add( readButton);
+      buttPanel.add( optButton);
+      buttPanel.add( putButton);
 
       JPanel topPanel = new JPanel( new BorderLayout());
       topPanel.add(new JLabel("URL:"), BorderLayout.WEST);
@@ -205,7 +208,14 @@ public class URLDumpPane extends TextHistoryPane {
       m = new OptionsMethod(urlString);
     else if (cmd == PUT) {
       PutMethod p = new PutMethod(urlString);
-      p.setRequestEntity( new StringRequestEntity( ta.getText()));
+      try {
+        p.setRequestEntity( new StringRequestEntity( ta.getText(), "application/text", "UTF-8"));
+      } catch (UnsupportedEncodingException e) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
+        e.printStackTrace(new PrintStream(bos));
+        appendLine(bos.toString());
+        return;
+      }
       m = p;
     }
 
@@ -235,7 +245,6 @@ public class URLDumpPane extends TextHistoryPane {
       printHeaders("Response Headers = ", m.getResponseHeaders());
       if (cmd == GET) {
         appendLine("\nResponseBody---------------");
-        byte[] body = m.getResponseBody();
 
         String charset = m.getResponseCharSet();
         if (charset == null) charset = "UTF-8";
@@ -246,18 +255,21 @@ public class URLDumpPane extends TextHistoryPane {
         String encoding = (h == null) ? null : h.getValue();
 
         if (encoding != null && encoding.equals("deflate")) {
-          InputStream is = new BufferedInputStream(new InflaterInputStream( new ByteArrayInputStream(body)), 1000);
+          byte[] body = m.getResponseBody();
+          InputStream is = new BufferedInputStream(new InflaterInputStream( new ByteArrayInputStream(body)), 10000);
           contents = IO.readContents(is, charset);
           double ratio = (double) contents.length() / body.length;
           appendLine("  deflate encoded="+body.length+" decoded="+contents.length()+" ratio= "+ratio);
 
         } else if (encoding != null && encoding.equals("gzip")) {
-          InputStream is = new BufferedInputStream(new GZIPInputStream( new ByteArrayInputStream(body)),  1000);
+          byte[] body = m.getResponseBody();
+          InputStream is = new BufferedInputStream(new GZIPInputStream( new ByteArrayInputStream(body)),  10000);
           contents = IO.readContents(is, charset);
           double ratio = (double) contents.length() / body.length;
           appendLine("  gzip encoded="+body.length+" decoded="+contents.length()+" ratio= "+ratio);
 
         } else {
+          byte[] body = m.getResponseBody(50 * 1000);
           contents = new String(body, charset);
         }
 
@@ -268,9 +280,10 @@ public class URLDumpPane extends TextHistoryPane {
 
       printHeaders("Response Footers = ", m.getResponseFooters());
 
-    } catch (IOException e) {
-      e.printStackTrace();
-      appendLine("IOException = "+e.getMessage());
+    } catch (Exception e) {
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
+      e.printStackTrace(new PrintStream(bos));
+      appendLine(bos.toString());
 
     } finally {
       m.releaseConnection();
@@ -310,20 +323,15 @@ public class URLDumpPane extends TextHistoryPane {
       appendLine(command+" request for "+urlString);
 
       // request headers
-      Map reqs = currentConnection.getRequestProperties();
-      Iterator reqIter = reqs.keySet().iterator();
-      while (reqIter.hasNext()) {
-        String key = (String) reqIter.next();
-        java.util.List values = (java.util.List) reqs.get( key);
-        append(" "+key + ": ");
-        for (int i = 0; i < values.size(); i++) {
-          String v =  (String) values.get(i);
-          append(v+" ");
-        }
+      Map<String, List<String>> reqs = currentConnection.getRequestProperties();
+      for (String key : reqs.keySet()) {
+        append(" " + key + ": ");
+        for (String v : reqs.get(key))
+          append(v + " ");
         appendLine("");
       }
       appendLine("");
-      appendLine("getFollowRedirects="+currentConnection.getFollowRedirects());
+      appendLine("getFollowRedirects="+HttpURLConnection.getFollowRedirects());
       appendLine("getInstanceFollowRedirects="+currentConnection.getInstanceFollowRedirects());
       appendLine("AllowUserInteraction="+currentConnection.getAllowUserInteraction());
       appendLine("");
@@ -338,7 +346,7 @@ public class URLDumpPane extends TextHistoryPane {
       appendLine(" content-type: " + currentConnection.getContentType());
       appendLine("\nHeaders: ");
 
-      for (int j = 1; ; j++) {
+      for (int j = 1; true; j++) {
         String header = currentConnection.getHeaderField(j);
         String key = currentConnection.getHeaderFieldKey(j);
         if (header == null || key == null) break;
@@ -377,16 +385,11 @@ public class URLDumpPane extends TextHistoryPane {
       appendLine("GET request for "+urlString);
 
       // request headers
-      Map reqs = currentConnection.getRequestProperties();
-      Iterator reqIter = reqs.keySet().iterator();
-      while (reqIter.hasNext()) {
-        String key = (String) reqIter.next();
-        java.util.List values = (java.util.List) reqs.get( key);
-        append(" "+key + ": ");
-        for (int i = 0; i < values.size(); i++) {
-          String v =  (String) values.get(i);
-          append(v+" ");
-        }
+      Map<String, List<String>> reqs = currentConnection.getRequestProperties();
+      for (String key : reqs.keySet()) {
+        append(" " + key + ": ");
+        for (String v : reqs.get(key))
+          append(v + " ");
         appendLine("");
       }
       appendLine("");
@@ -396,7 +399,7 @@ public class URLDumpPane extends TextHistoryPane {
 
       // result headers
       appendLine(" HTTP/1.x " + code + " " + response);
-      for (int j = 1; ; j++) {
+      for (int j = 1; true; j++) {
         String header = currentConnection.getHeaderField(j);
         String key = currentConnection.getHeaderFieldKey(j);
         if (header == null || key == null) break;

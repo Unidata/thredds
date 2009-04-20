@@ -1,4 +1,3 @@
-// $Id: UrlAuthenticatorDialog.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -51,7 +50,6 @@ import org.apache.commons.httpclient.auth.RFC2617Scheme;
  *    httpclient.getParams().setParameter( CredentialsProvider.PROVIDER, new UrlAuthenticatorDialog( null));
  *
  * @author John Caron
- * @version $Id: UrlAuthenticatorDialog.java 50 2006-07-12 16:30:06Z caron $
  */
 public class UrlAuthenticatorDialog extends Authenticator implements org.apache.commons.httpclient.auth.CredentialsProvider {
 

@@ -103,7 +103,7 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
             <SRS>${crsCode}</SRS>
             </c:forEach>
             <Layer>
-                <Title>${dataset.title}</Title>
+                <Title>${datasetTitle}</Title>
                 <c:forEach var="layer" items="${layers}">
                 <Layer<c:if test="${config.server.allowFeatureInfo} and ${layer.queryable}"> queryable="1"</c:if>>
                     <Name>${layer.layerName}</Name>

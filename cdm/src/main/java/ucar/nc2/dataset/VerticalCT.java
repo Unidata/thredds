@@ -43,7 +43,7 @@ import ucar.nc2.Dimension;
  * This class just records the transformation parameters. The mathematical transformation itself is
  * delegated to a class implementing ucar.unidata.geoloc.vertical.VerticalTransform;
  *
- * @author caron
+ * @author  caron
  */
 
 public class VerticalCT extends CoordinateTransform {
@@ -135,6 +135,10 @@ public class VerticalCT extends CoordinateTransform {
     // others
     public final static Type Existing3DField = new Type("Existing3DField");
     public final static Type WRFEta = new Type("WRFEta");
+
+    //-Sachin 03/25/09
+    public final static Type OceanSG1 = new Type("ocean_s_g1");
+    public final static Type OceanSG2 = new Type("ocean_s_g2"); 
 
     private String name;
 

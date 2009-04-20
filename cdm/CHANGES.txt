@@ -6,6 +6,7 @@ Changes in version 4.0
 
  Release Details:
   39:
+   vertical transforms OceanS modified, OceanSG1 and OceanSG2  added, thanks to Sachin Bhate and Rich Signell.
    TdsMonitor application in UI
    IO.readContents(InputStream is, String charset);
    UI: DateFormatMArk in Units panel

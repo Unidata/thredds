@@ -81,6 +81,10 @@ public class CoordTransBuilder {
     registerTransform("existing3DField", VExplicitField.class); // deprecate
     registerTransform("flat_earth", FlatEarth.class);
 
+    //-sachin 03/25/09
+    registerTransform("ocean_s_coordinate_g1", VOceanSG1.class);
+    registerTransform("ocean_s_coordinate_g2", VOceanSG2.class);   
+
     // further calls to registerTransform are by the user
     userMode = true;
   }

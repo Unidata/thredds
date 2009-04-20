@@ -39,8 +39,6 @@ import ucar.nc2.Dimension;
 import ucar.unidata.geoloc.vertical.OceanS;
 import ucar.unidata.util.Parameter;
 
-import java.util.StringTokenizer;
-
 /**
  * Create a ocean_s_coordinate Vertical Transform from the information in the Coordinate Transform Variable.
  *
@@ -75,7 +73,9 @@ public class VOceanS extends AbstractCoordTransBuilder {
     CoordinateTransform rs = new VerticalCT("OceanS_Transform_"+ctv.getShortName(), getTransformName(), VerticalCT.Type.OceanS, this);
     rs.addParameter(new Parameter("standard_name", getTransformName()));
     rs.addParameter(new Parameter("formula_terms", formula_terms));
-    rs.addParameter((new Parameter("height_formula", "height(x,y,z) = eta(x,y)*(1+s(z)) + depth_c*s(z) + (depth(x,y)-depth_c)*C(z)")));
+   // rs.addParameter((new Parameter("height_formula", "height(x,y,z) = eta(x,y)*(1+s(z)) + depth_c*s(z) + (depth(x,y)-depth_c)*C(z)")));
+     //-sachin 03/25/09 modify formula according to Hernan Arango
+    rs.addParameter((new Parameter("height_formula", "height(x,y,z) = depth_c*s(z) + (depth(x,y)-depth_c)*C(z) + eta(x,y) * (1 + (depth_c*s(z) + (depth(x,y)-depth_c)*C(z))/depth(x,y) ")));
     rs.addParameter((new Parameter("C_formula", "C(z) = (1-b)*sinh(a*s(z))/sinh(a) + b*(tanh(a*(s(z)+0.5))/(2*tanh(0.5*a))-0.5)")));
 
     if (!addParameter(rs, OceanS.ETA, ds, eta)) return null;
