@@ -49,10 +49,11 @@ public class TestIndexUpdating extends TestCase
   @Override
   protected void tearDown() throws Exception
   {
-    // remove dataFile, created on setup
+    // Remove dataFile, created on setup.
     if ( dataFile != null && dataFile.exists() )
       dataFile.delete();
 
+    // Remove index file, also created on setup.
     if ( indexFile != null && indexFile.exists() )
       indexFile.delete();
 
@@ -60,11 +61,12 @@ public class TestIndexUpdating extends TestCase
     File cacheIndex = null;
     if ( indexFile != null )
       cacheIndex = DiskCache.getFile(indexFile.getPath(), true);
-    if ( cacheIndex != null && cacheIndex.exists() && ! cacheIndex.canWrite())
+    if ( cacheIndex != null && cacheIndex.exists())
     {
-      fail( "Cannot write/remove cache index file [" + cacheIndex.getPath() + "].");
-    } else if ( cacheIndex.exists() ) {
-      cacheIndex.delete();
+      if ( ! cacheIndex.canWrite())
+        fail( "Cannot write/remove cache index file [" + cacheIndex.getPath() + "].");
+      else if ( cacheIndex.exists() )
+        cacheIndex.delete();
     }
   }
 
