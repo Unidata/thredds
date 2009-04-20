@@ -25,9 +25,9 @@ public interface StandardUnitFormatConstants {
   /** RegularExpression Id. */
   int LETTER = 7;
   /** RegularExpression Id. */
-  int OPEN = 8;
+  int LPAREN = 8;
   /** RegularExpression Id. */
-  int CLOSE = 9;
+  int RPAREN = 9;
   /** RegularExpression Id. */
   int REAL_EXP = 10;
   /** RegularExpression Id. */
@@ -52,8 +52,6 @@ public interface StandardUnitFormatConstants {
   int LN = 20;
   /** RegularExpression Id. */
   int LG = 21;
-  /** RegularExpression Id. */
-  int UTC = 22;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -82,7 +80,6 @@ public interface StandardUnitFormatConstants {
     "<LB>",
     "<LN>",
     "<LG>",
-    "<UTC>",
   };
 
 }

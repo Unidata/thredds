@@ -105,6 +105,16 @@ public final class ScaledUnit extends UnitImpl implements DerivableUnit {
 		}
 	}
 
+	static Unit getInstance(final double scale, final Unit unit)
+			throws MultiplyException {
+		if (scale == 0) {
+			throw new MultiplyException(scale, unit);
+		}
+		return scale == 1
+				? unit
+				: new ScaledUnit(scale, unit);
+	}
+
 	/**
 	 * Returns the multiplicative factor.
 	 * 
@@ -136,6 +146,11 @@ public final class ScaledUnit extends UnitImpl implements DerivableUnit {
 	 */
 	public Unit clone(final UnitName id) {
 		return new ScaledUnit(_scale, getUnit(), id);
+	}
+
+	@Override
+	public Unit multiplyBy(final double scale) throws MultiplyException {
+		return getInstance(scale * _scale, _unit);
 	}
 
 	/**

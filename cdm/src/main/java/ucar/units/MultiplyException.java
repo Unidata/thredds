@@ -63,4 +63,16 @@ public final class MultiplyException extends OperationException {
 	public MultiplyException(final Unit A, final Unit B) {
 		super("Can't multiply unit \"" + A + "\" by unit \"" + B + '"');
 	}
+
+	/**
+	 * Constructs from a scale factor and a unit.
+	 * 
+	 * @param scale
+	 *            The scale factor.
+	 * @param unit
+	 *            The unit.
+	 */
+	public MultiplyException(final double scale, final Unit unit) {
+		super("Can't multiply unit \"" + unit + "\" by " + scale);
+	}
 }

@@ -69,9 +69,7 @@ public abstract class UnitException extends Exception implements Serializable {
 	 *            The exception that caused the failure.
 	 */
 	public UnitException(final String message, final Exception e) {
-		super(message + ": "
-				+ (e.getMessage() == null || e.getMessage().equals("")
-						? ("Exception " + e.getClass().getName() + " thrown")
-						: e.getMessage()));
+		super(message);
+		initCause(e);
 	}
 }

@@ -24,7 +24,6 @@
     StandardUnitFormat
         extends UnitFormatImpl implements StandardUnitFormatConstants {
         private static final long   serialVersionUID    = 2L;
-        private boolean             isTimeUnit;
 
         /**
          * The singleton instance of this class.
@@ -94,6 +93,19 @@
 
 
         /**
+         * Indicates if a unit is a time unit.
+         *
+         * @param unit The unit in question.
+         * @return {@code true} if and only if {@code unit} is a time unit.
+         * @Throws UnitSystemException if the unit system can't be initialized.
+         */
+        private static boolean isTimeUnit(final Unit unit) throws UnitSystemException {
+                        return unit.isCompatible(UnitSystemManager.instance().getBaseUnit(
+                                        BaseQuantity.TIME));
+        }
+
+
+        /**
          * Decodes a unit specification.  An unrecognized unit is made into
          * an UnknownUnit.
          * @param spec          The unit specification to be decoded.
@@ -127,15 +139,15 @@
             }
             catch (TokenMgrError e)
             {
-                throw new UnitParseException(spec, e.getMessage());
+                throw new UnitParseException(spec, e);
             }
             catch (ParseException e)
             {
-                throw new UnitParseException(spec, e.getMessage());
+                throw new UnitParseException(spec, e);
             }
             catch (OperationException e)
             {
-                throw new SpecificationException(spec, e.getMessage());
+                throw new SpecificationException(spec, e);
             }
         }
 
@@ -341,18 +353,14 @@
 
 
         private static void myAssert(StandardUnitFormat parser, final String spec,
-                final String expect) throws NoSuchUnitException,
+                final Unit unit) throws NoSuchUnitException,
                 UnitParseException, SpecificationException, UnitDBException,
                 PrefixDBException, UnitSystemException
         {
-            String have = parser.parse(spec).toString();
-            if (!have.equals(expect)) {
-                throw new AssertionError(have + " != " + expect);
+            if (!parser.parse(spec).equals(unit)) {
+                throw new AssertionError(spec + " != " + unit);
             }
-            have = parser.parse(have).toString();
-            if (!have.equals(expect)) {
-                throw new AssertionError(have + " != " + expect);
-            }
+                        System.out.println(spec + " -> " + unit);
         }
 
 
@@ -364,28 +372,64 @@
         {
             StandardUnitFormat          parser =
                 StandardUnitFormat.instance();
+                        final Unit m = parser.parse("m");
+                        final Unit s = parser.parse("s");
+                        final Unit epoch = parser.parse("s @ 1970-01-01 00:00:00 UTC");
+                        class Test {
+                                String  spec;
+                                Unit    unit;
+
+                                Test(final String spec, final Unit unit) {
+                                        this.spec = spec;
+                                        this.unit = unit;
+                                }
+                        }
+                        final Test[] tests = {
+                    new Test("m m", m.multiplyBy(m)),
+                    new Test("m.m", m.multiplyBy(m)),
+                    new Test("(m)(m)", m.multiplyBy(m)),
+                    new Test("m/s/s", m.divideBy(s).divideBy(s)),
+                    new Test("m2", m.raiseTo(2)),
+                    new Test("m2.s", m.raiseTo(2).multiplyBy(s)),
+                    new Test("m2/s", m.raiseTo(2).divideBy(s)),
+                    new Test("m^2/s", m.raiseTo(2).divideBy(s)),
+                    new Test("m s @ 5", m.multiplyBy(s).shiftTo(5.0)),
+                    new Test("m2 s @ 5", m.raiseTo(2).multiplyBy(s).shiftTo(5)),
+                    new Test("m2 s-1 @ 5", m.raiseTo(2).multiplyBy(s.raiseTo(-1)).shiftTo(5)),
+                    new Test("m s from 5", m.multiplyBy(s).shiftTo(5)),
+                    new Test("s@19700101", epoch),
+                    new Test("s@19700101T000000", epoch),
+                    new Test("s@19700101T000000.00", epoch),
+                    new Test("s @ 1970-01-01T00:00:00.00", epoch),
+                    new Test("s @ 1970-01-01 00:00:00.00", epoch),
+                    new Test("s @ 1970-01-01T00:00:00.00 -12", epoch.shiftTo(new Date(12*60*60*1000))),
+                    new Test("lg(re: 1)", DerivedUnitImpl.DIMENSIONLESS.log(10)),
+                    new Test("0.1 lg(re 1 mm)", m.multiplyBy(1e-3).log(10).multiplyBy(0.1)),
+                                new Test("m", m),
+                                new Test("2 m s", m.multiplyBy(s).multiplyBy(2)),
+                                new Test("3.14 m.s", m.multiplyBy(s).multiplyBy(3.14)),
+                                new Test("1e9 (m)", m.multiplyBy(1e9)),
+                                new Test("(m s)2", m.multiplyBy(s).raiseTo(2)),
+                                new Test("m2.s-1", m.raiseTo(2).divideBy(s)),
+                                new Test("m2 s^-1", m.raiseTo(2).divideBy(s)),
+                                new Test("(m/s)2", m.divideBy(s).raiseTo(2)),
+                                new Test("m2/s-1", m.raiseTo(2).divideBy(s.raiseTo(-1))),
+                                new Test("m2/s^-1", m.raiseTo(2).divideBy(s.raiseTo(-1))),
+                                new Test(".5 m/(.25 s)2", m.multiplyBy(.5).divideBy(
+                                                s.multiplyBy(.25).raiseTo(2))),
+                                new Test("m.m-1.m", m.multiplyBy(m.raiseTo(-1)).multiplyBy(m)),
+                                new Test("2.0 m 1/2 s-1*(m/s^1)^-1 (1e9 m-1)(1e9 s-1)-1.m/s", m
+                                                .multiplyBy(2).multiplyBy(1. / 2.).multiplyBy(s.raiseTo(-1)).multiplyBy(
+                                                                m.divideBy(s.raiseTo(1)).raiseTo(-1)).multiplyBy(
+                                                                m.raiseTo(-1).multiplyBy(1e9)).multiplyBy(
+                                                                s.raiseTo(-1).multiplyBy(1e9).raiseTo(-1)).multiplyBy(m)
+                                                .divideBy(s)), new Test("m/km", m.divideBy(m.multiplyBy(1e3)))
+                        };
             LineNumberReader    lineInput = new LineNumberReader(
                                     new InputStreamReader(System.in));
-            myAssert(parser, "m/s/s", "m.s-2");
-            myAssert(parser, "m2", "m2");
-            myAssert(parser, "m2.s", "m2.s");
-            myAssert(parser, "m2/s", "m2.s-1");
-            myAssert(parser, "m^2/s", "m2.s-1");
-            myAssert(parser, "m s @ 5", "(m.s) @ 5.0");
-            myAssert(parser, "m2 s @ 5", "(m2.s) @ 5.0");
-            myAssert(parser, "m2 s-1 @ 5", "(m2.s-1) @ 5.0");
-            myAssert(parser, "m s from 5", "(m.s) @ 5.0");
-            myAssert(parser, "m s kg @ 5", "(kg.m.s) @ 5.0");
-            myAssert(parser, "s@19700101T000000",
-                "s since 1970-01-01 00:00:00.000 UTC");
-            myAssert(parser, "s@19700101T000000.00",
-                "s since 1970-01-01 00:00:00.000 UTC");
-            myAssert(parser, "s @ 1970-01-01T00:00:00.00",
-                "s since 1970-01-01 00:00:00.000 UTC");
-            myAssert(parser, "s @ 1970-01-01T00:00:00.00 -12",
-                "s since 1970-01-01 12:00:00.000 UTC");
-            myAssert(parser, "lg(re: 1)", "lg(re 1)");
-            myAssert(parser, "0.1 lg(re 1 mW)", "0.1 lg(re 0.001 W)");
+            for (Test test : tests) {
+                myAssert(parser, test.spec, test.unit);
+            }
 
             for (;;)
             {
@@ -413,7 +457,7 @@
     case PLUS:
     case MINUS:
     case UINT:
-    case OPEN:
+    case LPAREN:
     case PERIOD:
     case SYMBOL:
     case T:
@@ -437,11 +481,12 @@
     Date        timestamp;
     double      origin;
     unit = productExpr(unitDB);
-    if (jj_2_1(2)) {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case SHIFT:
       jj_consume_token(SHIFT);
-      if (isTimeUnit) {
+      if (isTimeUnit(unit)) {
         timestamp = timeOriginExpr();
-                    unit = new TimeScaleUnit(unit, timestamp);
+                           unit = unit.shiftTo(timestamp);
       } else {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case PLUS:
@@ -449,7 +494,7 @@
         case UINT:
         case PERIOD:
           origin = number();
-                    unit = new OffsetUnit(unit, origin);
+                           unit = unit.shiftTo(origin);
           break;
         default:
           jj_la1[1] = jj_gen;
@@ -457,7 +502,9 @@
           throw new ParseException();
         }
       }
-    } else {
+      break;
+    default:
+      jj_la1[2] = jj_gen;
       ;
     }
         {if (true) return unit;}
@@ -472,51 +519,66 @@
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case SP:
+      case PLUS:
+      case MINUS:
+      case UINT:
+      case LPAREN:
       case PERIOD:
       case STAR:
       case DIVIDE:
+      case SYMBOL:
+      case T:
+      case NAME:
+      case LB:
+      case LN:
+      case LG:
         ;
         break;
       default:
-        jj_la1[2] = jj_gen;
+        jj_la1[3] = jj_gen;
         break label_1;
       }
-      if (jj_2_2(2)) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case DIVIDE:
         jj_consume_token(DIVIDE);
         unit2 = powerExpr(unitDB);
                 unit = unit.divideBy(unit2);
-      } else {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case SP:
-        case PERIOD:
-        case STAR:
+        break;
+      default:
+        jj_la1[6] = jj_gen;
+        if (jj_2_1(2)) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-          case PERIOD:
-            jj_consume_token(PERIOD);
-            break;
-          case STAR:
-            jj_consume_token(STAR);
-            break;
           case SP:
-            jj_consume_token(SP);
+          case PERIOD:
+          case STAR:
+            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+            case PERIOD:
+              jj_consume_token(PERIOD);
+              break;
+            case STAR:
+              jj_consume_token(STAR);
+              break;
+            case SP:
+              jj_consume_token(SP);
+              break;
+            default:
+              jj_la1[4] = jj_gen;
+              jj_consume_token(-1);
+              throw new ParseException();
+            }
             break;
           default:
-            jj_la1[3] = jj_gen;
-            jj_consume_token(-1);
-            throw new ParseException();
+            jj_la1[5] = jj_gen;
+            ;
           }
           unit2 = powerExpr(unitDB);
                 unit = unit.multiplyBy(unit2);
-          break;
-        default:
-          jj_la1[4] = jj_gen;
+        } else {
           jj_consume_token(-1);
           throw new ParseException();
         }
       }
     }
-        isTimeUnit = unit.isCompatible(UnitSystemManager.instance().
-            getBaseUnit(BaseQuantity.TIME));
         {if (true) return unit;}
     throw new Error("Missing return statement in function");
   }
@@ -535,14 +597,14 @@
         jj_consume_token(RAISE);
         break;
       default:
-        jj_la1[5] = jj_gen;
+        jj_la1[7] = jj_gen;
         ;
       }
       exponent = integer();
             unit = unit.raiseTo(exponent);
       break;
     default:
-      jj_la1[6] = jj_gen;
+      jj_la1[8] = jj_gen;
       ;
     }
         {if (true) return unit;}
@@ -558,9 +620,7 @@
     case UINT:
     case PERIOD:
       number = number();
-                unit = number == 1
-                    ? DerivedUnitImpl.DIMENSIONLESS
-                    : new ScaledUnit(number);
+                unit =  DerivedUnitImpl.DIMENSIONLESS.multiplyBy(number);
       break;
     case SYMBOL:
     case T:
@@ -572,14 +632,14 @@
     case LG:
       unit = logExpr(unitDB);
       break;
-    case OPEN:
-      jj_consume_token(OPEN);
+    case LPAREN:
+      jj_consume_token(LPAREN);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case SP:
         jj_consume_token(SP);
         break;
       default:
-        jj_la1[7] = jj_gen;
+        jj_la1[9] = jj_gen;
         ;
       }
       unit = shiftExpr(unitDB);
@@ -588,13 +648,13 @@
         jj_consume_token(SP);
         break;
       default:
-        jj_la1[8] = jj_gen;
+        jj_la1[10] = jj_gen;
         ;
       }
-      jj_consume_token(CLOSE);
+      jj_consume_token(RPAREN);
       break;
     default:
-      jj_la1[9] = jj_gen;
+      jj_la1[11] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -619,7 +679,7 @@
                   base = 10;
       break;
     default:
-      jj_la1[10] = jj_gen;
+      jj_la1[12] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -629,17 +689,17 @@
       jj_consume_token(SP);
       break;
     default:
-      jj_la1[11] = jj_gen;
+      jj_la1[13] = jj_gen;
       ;
     }
-    jj_consume_token(CLOSE);
-        {if (true) return new LogarithmicUnit(ref, base);}
+    jj_consume_token(RPAREN);
+        {if (true) return ref.log(base);}
     throw new Error("Missing return statement in function");
   }
 
   final public double number() throws ParseException {
     double  number;
-    if (jj_2_3(3)) {
+    if (jj_2_2(2147483647)) {
       number = real();
     } else {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -649,7 +709,7 @@
         number = integer();
         break;
       default:
-        jj_la1[12] = jj_gen;
+        jj_la1[14] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -668,17 +728,17 @@
       sign = sign();
       break;
     default:
-      jj_la1[13] = jj_gen;
+      jj_la1[15] = jj_gen;
       ;
     }
-    if (jj_2_4(2)) {
+    if (jj_2_3(2)) {
       udecimal = unsignedDecimal();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case REAL_EXP:
         tenFactor = tenFactor();
         break;
       default:
-        jj_la1[14] = jj_gen;
+        jj_la1[16] = jj_gen;
         ;
       }
     } else {
@@ -688,7 +748,7 @@
         tenFactor = tenFactor();
         break;
       default:
-        jj_la1[15] = jj_gen;
+        jj_la1[17] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -708,7 +768,7 @@
                   {if (true) return -1;}
       break;
     default:
-      jj_la1[16] = jj_gen;
+      jj_la1[18] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -719,13 +779,13 @@
     int     integer = 0;
     Token   token;
     double  fraction = 0;
-    if (jj_2_5(3)) {
+    if (jj_2_4(3)) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case UINT:
         integer = unsignedInteger();
         break;
       default:
-        jj_la1[17] = jj_gen;
+        jj_la1[19] = jj_gen;
         ;
       }
       jj_consume_token(PERIOD);
@@ -738,7 +798,7 @@
         jj_consume_token(PERIOD);
         break;
       default:
-        jj_la1[18] = jj_gen;
+        jj_la1[20] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -763,7 +823,7 @@
       sign = sign();
       break;
     default:
-      jj_la1[19] = jj_gen;
+      jj_la1[21] = jj_gen;
       ;
     }
     magnitude = unsignedInteger();
@@ -778,7 +838,7 @@
     throw new Error("Missing return statement in function");
   }
 
-  final public Unit unitIdentifier(UnitDB unitDB) throws ParseException, UnitDBException, UnitSystemException, PrefixDBException {
+  final public Unit unitIdentifier(UnitDB unitDB) throws ParseException, UnitDBException, UnitSystemException, PrefixDBException, OperationException {
     Token   token;
     Unit    unit;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -792,11 +852,11 @@
       token = jj_consume_token(SYMBOL);
       break;
     default:
-      jj_la1[20] = jj_gen;
+      jj_la1[22] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
-    String  string = token.image;
+            String  string = token.image;
         double  scale = 1;
 
         for (unit = getUnit(unitDB, string);
@@ -818,10 +878,7 @@
             scale *= prefix.getValue();
             string = string.substring(prefix.length());
         }
-        if (scale != 1)
-        {
-            unit = new ScaledUnit(scale, unit);
-        }
+        unit = unit.multiplyBy(scale);
         {if (true) return unit;}
     throw new Error("Missing return statement in function");
   }
@@ -833,7 +890,7 @@
   final public Date timeOriginExpr() throws ParseException {
     Calendar   calendar;
     calendar = dateExpr();
-    if (jj_2_7(2)) {
+    if (jj_2_6(2)) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case T:
         jj_consume_token(T);
@@ -842,18 +899,18 @@
         jj_consume_token(SP);
         break;
       default:
-        jj_la1[21] = jj_gen;
+        jj_la1[23] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       clockExpr(calendar);
-      if (jj_2_6(2)) {
+      if (jj_2_5(2)) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case SP:
           jj_consume_token(SP);
           break;
         default:
-          jj_la1[22] = jj_gen;
+          jj_la1[24] = jj_gen;
           ;
         }
         zoneExpr(calendar);
@@ -879,7 +936,7 @@
       sign = sign();
       break;
     default:
-      jj_la1[23] = jj_gen;
+      jj_la1[25] = jj_gen;
       ;
     }
     year = unsignedInteger();
@@ -894,12 +951,12 @@
         day = unsignedInteger();
         break;
       default:
-        jj_la1[24] = jj_gen;
+        jj_la1[26] = jj_gen;
         ;
       }
       break;
     default:
-      jj_la1[25] = jj_gen;
+      jj_la1[27] = jj_gen;
       ;
     }
         if (packed) {
@@ -930,7 +987,7 @@
     int        minute = 0;
     double     seconds = 0;
     boolean    packed = true;
-    if (jj_2_8(2)) {
+    if (jj_2_7(2147483647)) {
       hour = unsignedDecimal();
     } else {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -938,7 +995,7 @@
         hour = unsignedInteger();
         break;
       default:
-        jj_la1[26] = jj_gen;
+        jj_la1[28] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -951,7 +1008,7 @@
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case COLON:
         jj_consume_token(COLON);
-        if (jj_2_9(2)) {
+        if (jj_2_8(2147483647)) {
           seconds = unsignedDecimal();
         } else {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -959,19 +1016,19 @@
             seconds = unsignedInteger();
             break;
           default:
-            jj_la1[27] = jj_gen;
+            jj_la1[29] = jj_gen;
             jj_consume_token(-1);
             throw new ParseException();
           }
         }
         break;
       default:
-        jj_la1[28] = jj_gen;
+        jj_la1[30] = jj_gen;
         ;
       }
       break;
     default:
-      jj_la1[29] = jj_gen;
+      jj_la1[31] = jj_gen;
       ;
     }
         if (packed) {
@@ -1016,7 +1073,7 @@
         sign = sign();
         break;
       default:
-        jj_la1[30] = jj_gen;
+        jj_la1[32] = jj_gen;
         ;
       }
       zoneHour = unsignedInteger();
@@ -1028,13 +1085,13 @@
           jj_consume_token(COLON);
           break;
         default:
-          jj_la1[31] = jj_gen;
+          jj_la1[33] = jj_gen;
           ;
         }
         zoneMinute = unsignedInteger();
         break;
       default:
-        jj_la1[32] = jj_gen;
+        jj_la1[34] = jj_gen;
         ;
       }
                 if (zoneHour >= 100)
@@ -1054,7 +1111,7 @@
                 timeZone = TimeZone.getTimeZone(token.image);
       break;
     default:
-      jj_la1[33] = jj_gen;
+      jj_la1[35] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1119,86 +1176,159 @@
     finally { jj_save(7, xla); }
   }
 
-  private boolean jj_2_9(int xla) {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return !jj_3_9(); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(8, xla); }
-  }
-
-  private boolean jj_3_4() {
-    if (jj_3R_6()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_27()) jj_scanpos = xsp;
+  private boolean jj_3R_41() {
+    if (jj_3R_3()) return true;
     return false;
   }
 
-  private boolean jj_3R_4() {
-    if (jj_3R_12()) return true;
+  private boolean jj_3R_23() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_33()) jj_scanpos = xsp;
+    if (jj_3R_14()) return true;
     return false;
   }
 
-  private boolean jj_3R_30() {
+  private boolean jj_3R_38() {
+    if (jj_scan_token(LB)) return true;
+    return false;
+  }
+
+  private boolean jj_3_8() {
+    if (jj_3R_5()) return true;
+    return false;
+  }
+
+  private boolean jj_3_5() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(4)) jj_scanpos = xsp;
-    if (jj_3R_16()) return true;
+    if (jj_scan_token(1)) jj_scanpos = xsp;
+    if (jj_3R_7()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_31() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_38()) {
+    jj_scanpos = xsp;
+    if (jj_3R_39()) {
+    jj_scanpos = xsp;
+    if (jj_3R_40()) return true;
+    }
+    }
+    if (jj_3R_41()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_26() {
+    if (jj_scan_token(REAL_EXP)) return true;
+    return false;
+  }
+
+  private boolean jj_3_6() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(17)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(1)) return true;
+    }
+    if (jj_3R_8()) return true;
     return false;
   }
 
   private boolean jj_3R_13() {
-    if (jj_3R_26()) return true;
+    if (jj_3R_14()) return true;
+    if (jj_scan_token(PERIOD)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_22() {
+    if (jj_scan_token(LPAREN)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(1)) jj_scanpos = xsp;
+    if (jj_3R_32()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_21() {
+    if (jj_3R_31()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_20() {
+    if (jj_3R_30()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_6() {
+    if (jj_3R_14()) return true;
+    return false;
+  }
+
+  private boolean jj_3_7() {
+    if (jj_3R_5()) return true;
+    return false;
+  }
+
+  private boolean jj_3_4() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_6()) jj_scanpos = xsp;
+    if (jj_scan_token(PERIOD)) return true;
+    if (jj_scan_token(UINT)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_19() {
+    if (jj_3R_29()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_18() {
+    if (jj_3R_14()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_32() {
+    if (jj_3R_41()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_17() {
+    if (jj_3R_5()) return true;
     return false;
   }
 
   private boolean jj_3R_5() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_13()) jj_scanpos = xsp;
-    xsp = jj_scanpos;
     if (jj_3_4()) {
     jj_scanpos = xsp;
-    if (jj_3R_14()) return true;
+    if (jj_3R_13()) return true;
     }
     return false;
   }
 
-  private boolean jj_3R_33() {
+  private boolean jj_3R_9() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(17)) {
+    if (jj_3R_19()) {
     jj_scanpos = xsp;
-    if (jj_scan_token(18)) {
+    if (jj_3R_20()) {
     jj_scanpos = xsp;
-    if (jj_scan_token(16)) return true;
+    if (jj_3R_21()) {
+    jj_scanpos = xsp;
+    if (jj_3R_22()) return true;
     }
     }
+    }
     return false;
   }
 
-  private boolean jj_3R_29() {
-    if (jj_3R_26()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_17() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_29()) jj_scanpos = xsp;
-    if (jj_3R_16()) return true;
-    xsp = jj_scanpos;
-    if (jj_3R_30()) jj_scanpos = xsp;
-    return false;
-  }
-
-  private boolean jj_3R_21() {
-    if (jj_3R_32()) return true;
-    return false;
-  }
-
-  private boolean jj_3_3() {
-    if (jj_3R_5()) return true;
+  private boolean jj_3R_35() {
+    if (jj_scan_token(MINUS)) return true;
     return false;
   }
 
@@ -1212,37 +1342,172 @@
     return false;
   }
 
-  private boolean jj_3R_16() {
-    if (jj_scan_token(UINT)) return true;
+  private boolean jj_3R_34() {
+    if (jj_scan_token(PLUS)) return true;
     return false;
   }
 
-  private boolean jj_3R_31() {
-    if (jj_3R_26()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_11() {
+  private boolean jj_3R_24() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3_3()) {
+    if (jj_3R_34()) {
     jj_scanpos = xsp;
-    if (jj_3R_21()) return true;
+    if (jj_3R_35()) return true;
     }
     return false;
   }
 
-  private boolean jj_3R_20() {
+  private boolean jj_3R_12() {
+    if (jj_3R_14()) return true;
+    if (jj_3R_26()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_25() {
+    if (jj_3R_26()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_16() {
+    if (jj_scan_token(NAME)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_10() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_31()) jj_scanpos = xsp;
-    if (jj_3R_16()) return true;
+    if (jj_scan_token(11)) jj_scanpos = xsp;
+    if (jj_3R_23()) return true;
+    return false;
+  }
+
+  private boolean jj_3_3() {
+    if (jj_3R_5()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_25()) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3R_3() {
+    if (jj_3R_9()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_10()) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3R_11() {
+    if (jj_3R_24()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_4() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_11()) jj_scanpos = xsp;
+    xsp = jj_scanpos;
+    if (jj_3_3()) {
+    jj_scanpos = xsp;
+    if (jj_3R_12()) return true;
+    }
     return false;
   }
 
   private boolean jj_3_2() {
-    if (jj_scan_token(DIVIDE)) return true;
     if (jj_3R_4()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_30() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(17)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(18)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(16)) return true;
+    }
+    }
+    return false;
+  }
+
+  private boolean jj_3R_28() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(4)) jj_scanpos = xsp;
+    if (jj_3R_14()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_27() {
+    if (jj_3R_24()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_15() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_27()) jj_scanpos = xsp;
+    if (jj_3R_14()) return true;
+    xsp = jj_scanpos;
+    if (jj_3R_28()) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3R_37() {
+    if (jj_3R_23()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_2() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(12)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(13)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(1)) return true;
+    }
+    }
+    return false;
+  }
+
+  private boolean jj_3R_36() {
+    if (jj_3R_4()) return true;
+    return false;
+  }
+
+  private boolean jj_3_1() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_2()) jj_scanpos = xsp;
+    if (jj_3R_3()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_7() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_15()) {
+    jj_scanpos = xsp;
+    if (jj_3R_16()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_14() {
+    if (jj_scan_token(UINT)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_29() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_36()) {
+    jj_scanpos = xsp;
+    if (jj_3R_37()) return true;
+    }
     return false;
   }
 
@@ -1251,219 +1516,13 @@
     return false;
   }
 
-  private boolean jj_3R_37() {
-    if (jj_3R_26()) return true;
+  private boolean jj_3R_33() {
+    if (jj_3R_24()) return true;
     return false;
   }
 
   private boolean jj_3R_39() {
     if (jj_scan_token(LN)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_32() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_37()) jj_scanpos = xsp;
-    if (jj_3R_16()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_38() {
-    if (jj_scan_token(LB)) return true;
-    return false;
-  }
-
-  private boolean jj_3_6() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(1)) jj_scanpos = xsp;
-    if (jj_3R_8()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_34() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_38()) {
-    jj_scanpos = xsp;
-    if (jj_3R_39()) {
-    jj_scanpos = xsp;
-    if (jj_3R_40()) return true;
-    }
-    }
-    return false;
-  }
-
-  private boolean jj_3_9() {
-    if (jj_3R_6()) return true;
-    return false;
-  }
-
-  private boolean jj_3_7() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(17)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(1)) return true;
-    }
-    if (jj_3R_9()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_28() {
-    if (jj_scan_token(REAL_EXP)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_3() {
-    if (jj_3R_11()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_10() {
-    if (jj_3R_20()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_15() {
-    if (jj_3R_16()) return true;
-    if (jj_scan_token(PERIOD)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_25() {
-    if (jj_scan_token(OPEN)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_2() {
-    if (jj_3R_10()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_24() {
-    if (jj_3R_34()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_23() {
-    if (jj_3R_33()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_7() {
-    if (jj_3R_16()) return true;
-    return false;
-  }
-
-  private boolean jj_3_5() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_7()) jj_scanpos = xsp;
-    if (jj_scan_token(PERIOD)) return true;
-    if (jj_scan_token(UINT)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_19() {
-    if (jj_3R_16()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_22() {
-    if (jj_3R_11()) return true;
-    return false;
-  }
-
-  private boolean jj_3_1() {
-    if (jj_scan_token(SHIFT)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    jj_lookingAhead = true;
-    jj_semLA = isTimeUnit;
-    jj_lookingAhead = false;
-    if (!jj_semLA || jj_3R_2()) {
-    jj_scanpos = xsp;
-    if (jj_3R_3()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3_8() {
-    if (jj_3R_6()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_6() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_5()) {
-    jj_scanpos = xsp;
-    if (jj_3R_15()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3R_12() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_22()) {
-    jj_scanpos = xsp;
-    if (jj_3R_23()) {
-    jj_scanpos = xsp;
-    if (jj_3R_24()) {
-    jj_scanpos = xsp;
-    if (jj_3R_25()) return true;
-    }
-    }
-    }
-    return false;
-  }
-
-  private boolean jj_3R_9() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_8()) {
-    jj_scanpos = xsp;
-    if (jj_3R_19()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3R_36() {
-    if (jj_scan_token(MINUS)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_35() {
-    if (jj_scan_token(PLUS)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_26() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_35()) {
-    jj_scanpos = xsp;
-    if (jj_3R_36()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3R_18() {
-    if (jj_scan_token(NAME)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_14() {
-    if (jj_3R_16()) return true;
-    if (jj_3R_28()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_27() {
-    if (jj_3R_28()) return true;
     return false;
   }
 
@@ -1477,19 +1536,16 @@
   private int jj_ntk;
   private Token jj_scanpos, jj_lastpos;
   private int jj_la;
-  /** Whether we are looking ahead. */
-  private boolean jj_lookingAhead = false;
-  private boolean jj_semLA;
   private int jj_gen;
-  final private int[] jj_la1 = new int[34];
+  final private int[] jj_la1 = new int[36];
   static private int[] jj_la1_0;
   static {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x3f112c,0x102c,0x7002,0x3002,0x3002,0x800,0x82c,0x2,0x2,0x3f112c,0x380000,0x2,0x2c,0xc,0x400,0x20,0xc,0x20,0x20,0xc,0x70000,0x20002,0x2,0xc,0x8,0x8,0x20,0x20,0x10,0x10,0xc,0x10,0x30,0x4002c,};
+      jj_la1_0 = new int[] {0x3f112c,0x102c,0x8000,0x3f712e,0x3002,0x3002,0x4000,0x800,0x82c,0x2,0x2,0x3f112c,0x380000,0x2,0x2c,0xc,0x400,0x20,0xc,0x20,0x20,0xc,0x70000,0x20002,0x2,0xc,0x8,0x8,0x20,0x20,0x10,0x10,0xc,0x10,0x30,0x4002c,};
    }
-  final private JJCalls[] jj_2_rtns = new JJCalls[9];
+  final private JJCalls[] jj_2_rtns = new JJCalls[8];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
@@ -1504,7 +1560,7 @@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 34; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 36; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1519,7 +1575,7 @@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 34; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 36; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1530,7 +1586,7 @@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 34; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 36; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1541,7 +1597,7 @@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 34; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 36; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1551,7 +1607,7 @@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 34; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 36; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1561,7 +1617,7 @@
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 34; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 36; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1624,7 +1680,7 @@
 
 /** Get the specific Token. */
   final public Token getToken(int index) {
-    Token t = jj_lookingAhead ? jj_scanpos : token;
+    Token t = token;
     for (int i = 0; i < index; i++) {
       if (t.next != null) t = t.next;
       else t = t.next = token_source.getNextToken();
@@ -1673,12 +1729,12 @@
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[23];
+    boolean[] la1tokens = new boolean[22];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 34; i++) {
+    for (int i = 0; i < 36; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -1687,7 +1743,7 @@
         }
       }
     }
-    for (int i = 0; i < 23; i++) {
+    for (int i = 0; i < 22; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
@@ -1714,7 +1770,7 @@
 
   private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < 8; i++) {
     try {
       JJCalls p = jj_2_rtns[i];
       do {
@@ -1729,7 +1785,6 @@
             case 5: jj_3_6(); break;
             case 6: jj_3_7(); break;
             case 7: jj_3_8(); break;
-            case 8: jj_3_9(); break;
           }
         }
         p = p.next;

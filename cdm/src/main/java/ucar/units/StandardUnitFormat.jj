@@ -40,7 +40,6 @@ PARSER_BEGIN(StandardUnitFormat)
         extends UnitFormatImpl
     {
         private static final long   serialVersionUID    = 2L;
-        private boolean             isTimeUnit;
 
         /**
          * The singleton instance of this class.
@@ -107,6 +106,19 @@ PARSER_BEGIN(StandardUnitFormat)
             }
             return _instance;
         }
+        
+        
+        /**
+         * Indicates if a unit is a time unit.
+         *
+         * @param unit The unit in question.
+         * @return {@code true} if and only if {@code unit} is a time unit.
+         * @Throws UnitSystemException if the unit system can't be initialized.
+         */
+        private static boolean isTimeUnit(final Unit unit) throws UnitSystemException {
+			return unit.isCompatible(UnitSystemManager.instance().getBaseUnit(
+					BaseQuantity.TIME));
+        }
 
 
         /**
@@ -143,15 +155,15 @@ PARSER_BEGIN(StandardUnitFormat)
             }
             catch (TokenMgrError e)
             {
-                throw new UnitParseException(spec, e.getMessage());
+                throw new UnitParseException(spec, e);
             }
             catch (ParseException e)
             {
-                throw new UnitParseException(spec, e.getMessage());
+                throw new UnitParseException(spec, e);
             }
             catch (OperationException e)
             {
-                throw new SpecificationException(spec, e.getMessage());
+                throw new SpecificationException(spec, e);
             }
         }
 
@@ -357,18 +369,14 @@ PARSER_BEGIN(StandardUnitFormat)
         
         
         private static void myAssert(StandardUnitFormat parser, final String spec,
-                final String expect) throws NoSuchUnitException,
+                final Unit unit) throws NoSuchUnitException,
                 UnitParseException, SpecificationException, UnitDBException,
                 PrefixDBException, UnitSystemException
         {
-            String have = parser.parse(spec).toString();
-            if (!have.equals(expect)) {
-                throw new AssertionError(have + " != " + expect);
+            if (!parser.parse(spec).equals(unit)) {
+                throw new AssertionError(spec + " != " + unit);
             }
-            have = parser.parse(have).toString();
-            if (!have.equals(expect)) {
-                throw new AssertionError(have + " != " + expect);
-            }
+			System.out.println(spec + " -> " + unit);
         }
 
 
@@ -380,28 +388,64 @@ PARSER_BEGIN(StandardUnitFormat)
         {
             StandardUnitFormat          parser =
                 StandardUnitFormat.instance();
+			final Unit m = parser.parse("m");
+			final Unit s = parser.parse("s");
+			final Unit epoch = parser.parse("s @ 1970-01-01 00:00:00 UTC");
+			class Test {
+				String	spec;
+				Unit	unit;
+	
+				Test(final String spec, final Unit unit) {
+					this.spec = spec;
+					this.unit = unit;
+				}
+			}
+			final Test[] tests = {
+	            new Test("m m", m.multiplyBy(m)),
+	            new Test("m.m", m.multiplyBy(m)),
+	            new Test("(m)(m)", m.multiplyBy(m)),
+	            new Test("m/s/s", m.divideBy(s).divideBy(s)),
+	            new Test("m2", m.raiseTo(2)),
+	            new Test("m2.s", m.raiseTo(2).multiplyBy(s)),
+	            new Test("m2/s", m.raiseTo(2).divideBy(s)),
+	            new Test("m^2/s", m.raiseTo(2).divideBy(s)),
+	            new Test("m s @ 5", m.multiplyBy(s).shiftTo(5.0)),
+	            new Test("m2 s @ 5", m.raiseTo(2).multiplyBy(s).shiftTo(5)),
+	            new Test("m2 s-1 @ 5", m.raiseTo(2).multiplyBy(s.raiseTo(-1)).shiftTo(5)),
+	            new Test("m s from 5", m.multiplyBy(s).shiftTo(5)),
+	            new Test("s@19700101", epoch),
+	            new Test("s@19700101T000000", epoch),
+	            new Test("s@19700101T000000.00", epoch),
+	            new Test("s @ 1970-01-01T00:00:00.00", epoch),
+	            new Test("s @ 1970-01-01 00:00:00.00", epoch),
+	            new Test("s @ 1970-01-01T00:00:00.00 -12", epoch.shiftTo(new Date(12*60*60*1000))),
+	            new Test("lg(re: 1)", DerivedUnitImpl.DIMENSIONLESS.log(10)),
+	            new Test("0.1 lg(re 1 mm)", m.multiplyBy(1e-3).log(10).multiplyBy(0.1)),
+				new Test("m", m),
+				new Test("2 m s", m.multiplyBy(s).multiplyBy(2)),
+				new Test("3.14 m.s", m.multiplyBy(s).multiplyBy(3.14)),
+				new Test("1e9 (m)", m.multiplyBy(1e9)),
+				new Test("(m s)2", m.multiplyBy(s).raiseTo(2)),
+				new Test("m2.s-1", m.raiseTo(2).divideBy(s)),
+				new Test("m2 s^-1", m.raiseTo(2).divideBy(s)),
+				new Test("(m/s)2", m.divideBy(s).raiseTo(2)),
+				new Test("m2/s-1", m.raiseTo(2).divideBy(s.raiseTo(-1))),
+				new Test("m2/s^-1", m.raiseTo(2).divideBy(s.raiseTo(-1))),
+				new Test(".5 m/(.25 s)2", m.multiplyBy(.5).divideBy(
+						s.multiplyBy(.25).raiseTo(2))),
+				new Test("m.m-1.m", m.multiplyBy(m.raiseTo(-1)).multiplyBy(m)),
+				new Test("2.0 m 1/2 s-1*(m/s^1)^-1 (1e9 m-1)(1e9 s-1)-1.m/s", m
+						.multiplyBy(2).multiplyBy(1. / 2.).multiplyBy(s.raiseTo(-1)).multiplyBy(
+								m.divideBy(s.raiseTo(1)).raiseTo(-1)).multiplyBy(
+								m.raiseTo(-1).multiplyBy(1e9)).multiplyBy(
+								s.raiseTo(-1).multiplyBy(1e9).raiseTo(-1)).multiplyBy(m)
+						.divideBy(s)), new Test("m/km", m.divideBy(m.multiplyBy(1e3)))
+			};
             LineNumberReader    lineInput = new LineNumberReader(
                                     new InputStreamReader(System.in));
-            myAssert(parser, "m/s/s", "m.s-2");
-            myAssert(parser, "m2", "m2");
-            myAssert(parser, "m2.s", "m2.s");
-            myAssert(parser, "m2/s", "m2.s-1");
-            myAssert(parser, "m^2/s", "m2.s-1");
-            myAssert(parser, "m s @ 5", "(m.s) @ 5.0");
-            myAssert(parser, "m2 s @ 5", "(m2.s) @ 5.0");
-            myAssert(parser, "m2 s-1 @ 5", "(m2.s-1) @ 5.0");
-            myAssert(parser, "m s from 5", "(m.s) @ 5.0");
-            myAssert(parser, "m s kg @ 5", "(kg.m.s) @ 5.0");
-            myAssert(parser, "s@19700101T000000",
-                "s since 1970-01-01 00:00:00.000 UTC");
-            myAssert(parser, "s@19700101T000000.00",
-                "s since 1970-01-01 00:00:00.000 UTC");
-            myAssert(parser, "s @ 1970-01-01T00:00:00.00",
-                "s since 1970-01-01 00:00:00.000 UTC");
-            myAssert(parser, "s @ 1970-01-01T00:00:00.00 -12",
-                "s since 1970-01-01 12:00:00.000 UTC");
-            myAssert(parser, "lg(re: 1)", "lg(re 1)");
-            myAssert(parser, "0.1 lg(re 1 mW)", "0.1 lg(re 0.001 W)");
+            for (Test test : tests) {
+            	myAssert(parser, test.spec, test.unit);
+            }
 
             for (;;)
             {
@@ -435,21 +479,20 @@ TOKEN [IGNORE_CASE] :
     |   < UINT:     (["0"-"9"])+ >
     |   <#SIGN:     <PLUS> | <MINUS> >
     |   <#LETTER:   ["a"-"z","_"] >
-    |   < OPEN:     "(" >
-    |   < CLOSE:    ")" >
+    |   < LPAREN:   "(" >
+    |   < RPAREN:   ")" >
     |   < REAL_EXP: "e" (<SIGN>)? <UINT> >
     |   < RAISE:    "^" >
     |   < PERIOD:   "." >
     |   < STAR:     "*" >
-    |   < DIVIDE:   "/" | (<SP>) "per" (<SP>) >
-    |   < SHIFT:    (<SP>)? "@" (<SP>)? | (<SP>) ("since" | "from") (<SP>) >
-    |   < SYMBOL:   "'" | "\"" | "%" >
+    |   < DIVIDE:   "/" | <SP> "per" <SP> >
+    |   < SHIFT:    (<SP>)? "@" (<SP>)? | <SP> ("since" | "from") <SP> >
+    |   < SYMBOL:   ["'","\"","%"] >
     |   < T:        "t" >
     |   < NAME:     (<LETTER>)+ (<UINT> (<LETTER>)+)? >
     |   < LB:       "lb(re" (":")? (<SP>)? >
     |   < LN:       "ln(re" (":")? (<SP>)? >
     |   < LG:       "lg(re" (":")? (<SP>)? >
-    |   < UTC:      "utc" | "gmt" | "zulu" >
 }
 
 
@@ -487,18 +530,17 @@ Unit shiftExpr(UnitDB unitDB)
 {
     unit=productExpr(unitDB) 
     [
-        LOOKAHEAD(2)
         <SHIFT>
         (
-                LOOKAHEAD({isTimeUnit})
+				LOOKAHEAD({isTimeUnit(unit)})
                 timestamp=timeOriginExpr()
                 {
-                    unit = new TimeScaleUnit(unit, timestamp);
+	        	   unit = unit.shiftTo(timestamp);
                 }
             |
                 origin=number()
                 {
-                    unit = new OffsetUnit(unit, origin);
+	        	   unit = unit.shiftTo(origin);
                 }
         )
     ]
@@ -521,22 +563,20 @@ Unit productExpr(UnitDB unitDB)
 {
     unit=powerExpr(unitDB)
     (
-            LOOKAHEAD(2)
             <DIVIDE>
             unit2 = powerExpr(unitDB)
             {
                 unit = unit.divideBy(unit2);
             }
         |       
-            ( <PERIOD> | <STAR> | <SP> )
+            LOOKAHEAD(2)
+            [ <PERIOD> | <STAR> | <SP> ]
             unit2=powerExpr(unitDB) 
             {
                 unit = unit.multiplyBy(unit2);
             }
     )*
     {
-        isTimeUnit = unit.isCompatible(UnitSystemManager.instance().
-            getBaseUnit(BaseQuantity.TIME));
         return unit;
     }
 }
@@ -581,16 +621,14 @@ Unit basicExpr(UnitDB unitDB)
     (
             number = number()
             {
-                unit = number == 1
-                    ? DerivedUnitImpl.DIMENSIONLESS
-                    : new ScaledUnit(number);
+                unit =  DerivedUnitImpl.DIMENSIONLESS.multiplyBy(number);
             }
         |                           
             unit=unitIdentifier(unitDB)
         |
             unit=logExpr(unitDB)
         |
-            <OPEN> (<SP>)? unit=shiftExpr(unitDB) (<SP>)? <CLOSE>
+            <LPAREN>  [<SP>] unit=shiftExpr(unitDB) [<SP>] <RPAREN>
     )
     {
         return unit;
@@ -615,9 +653,9 @@ Unit logExpr(UnitDB unitDB)
         |
             <LG> {base = 10;}
     )
-    ref = productExpr(unitDB) [<SP>] <CLOSE>
+    ref = productExpr(unitDB) [<SP>] <RPAREN>
     {
-        return new LogarithmicUnit(ref, base);
+        return ref.log(base);
     }
 }
 
@@ -628,7 +666,7 @@ double number() :
 }
 {
     (
-            LOOKAHEAD(3)
+            LOOKAHEAD(real())
             number = real()
         |
             number = integer()
@@ -734,7 +772,7 @@ int unsignedInteger() :
 
 
 Unit unitIdentifier(UnitDB unitDB) 
-    throws UnitDBException, UnitSystemException, PrefixDBException:
+    throws UnitDBException, UnitSystemException, PrefixDBException, OperationException:
 {
     Token   token;
     Unit    unit;
@@ -748,7 +786,7 @@ Unit unitIdentifier(UnitDB unitDB)
             token=<SYMBOL>
     )
     {
-    String  string = token.image;
+	    String  string = token.image;
         double  scale = 1;
 
         for (unit = getUnit(unitDB, string);
@@ -770,10 +808,7 @@ Unit unitIdentifier(UnitDB unitDB)
             scale *= prefix.getValue();
             string = string.substring(prefix.length());
         }
-        if (scale != 1)
-        {
-            unit = new ScaledUnit(scale, unit);
-        }
+        unit = unit.multiplyBy(scale);
     }
     {
         return unit;
@@ -863,7 +898,7 @@ Calendar clockExpr(Calendar calendar) :
 }
 {
     (
-            LOOKAHEAD(2)
+            LOOKAHEAD(unsignedDecimal())
             hour = unsignedDecimal()
         |
             hour = unsignedInteger()
@@ -877,7 +912,7 @@ Calendar clockExpr(Calendar calendar) :
         [
             <COLON>
             (
-                    LOOKAHEAD(2)
+                    LOOKAHEAD(unsignedDecimal())
                     seconds = unsignedDecimal()
                 |
                     seconds = unsignedInteger()

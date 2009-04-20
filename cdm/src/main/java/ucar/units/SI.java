@@ -769,16 +769,14 @@ public final class SI extends UnitSystemImpl {
 	 *             Couldn't create an instance of the SI system of units.
 	 */
 	public static SI instance() throws UnitSystemException {
-		if (si == null) {
-			synchronized (SI.class) {
-				if (si == null) {
-					try {
-						si = new SI();
-					}
-					catch (final UnitException e) {
-						throw new UnitSystemException(
-								"Couldn't initialize class SI", e);
-					}
+		synchronized (SI.class) {
+			if (si == null) {
+				try {
+					si = new SI();
+				}
+				catch (final UnitException e) {
+					throw new UnitSystemException(
+							"Couldn't initialize class SI", e);
 				}
 			}
 		}

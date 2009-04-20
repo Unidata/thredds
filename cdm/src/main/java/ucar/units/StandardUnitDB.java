@@ -33,7 +33,6 @@
  */
 package ucar.units;
 
-
 /**
  * Provides support for a database of standard units.
  * 
@@ -649,16 +648,14 @@ public final class StandardUnitDB extends UnitDBImpl {
 	 *             The instance couldn't be created.
 	 */
 	public static StandardUnitDB instance() throws UnitDBException {
-		if (instance == null) {
-			synchronized (StandardUnitDB.class) {
-				if (instance == null) {
-					try {
-						instance = new StandardUnitDB();
-					}
-					catch (final Exception e) {
-						throw new UnitDBException(
-								"Couldn't create standard unit-database", e);
-					}
+		synchronized (StandardUnitDB.class) {
+			if (instance == null) {
+				try {
+					instance = new StandardUnitDB();
+				}
+				catch (final Exception e) {
+					throw new UnitDBException(
+							"Couldn't create standard unit-database", e);
 				}
 			}
 		}

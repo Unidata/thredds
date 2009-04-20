@@ -33,6 +33,7 @@
  */
 package ucar.units;
 
+
 /**
  * Provides support for units that are offset from reference units (ex: as the
  * unit "degree Celsius" is offset from the reference unit "kelvin"). Instances
@@ -103,6 +104,12 @@ public final class OffsetUnit extends UnitImpl implements DerivableUnit {
 		}
 	}
 
+	static Unit getInstance(final Unit unit, final double origin) {
+		return (origin == 0)
+				? unit
+				: new OffsetUnit(unit, origin);
+	}
+
 	/**
 	 * Returns the reference unit.
 	 * 
@@ -135,6 +142,19 @@ public final class OffsetUnit extends UnitImpl implements DerivableUnit {
 	 */
 	public Unit clone(final UnitName id) {
 		return new OffsetUnit(getUnit(), getOffset(), id);
+	}
+
+	@Override
+	public Unit multiplyBy(final double scale) throws MultiplyException {
+		if (scale == 0) {
+			throw new MultiplyException(scale, this);
+		}
+		return getInstance(_unit.multiplyBy(scale), _offset / scale);
+	}
+
+	@Override
+	public Unit shiftTo(final double origin) {
+		return getInstance(_unit, origin + _offset);
 	}
 
 	/**

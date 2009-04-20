@@ -56,11 +56,9 @@ public final class UnitSystemManager implements Serializable {
 	 * @return An instance of the system of units.
 	 */
 	public static final UnitSystem instance() throws UnitSystemException {
-		if (instance == null) {
-			synchronized (UnitSystemManager.class) {
-				if (instance == null) {
-					instance = SI.instance();
-				}
+		synchronized (UnitSystemManager.class) {
+			if (instance == null) {
+				instance = SI.instance();
 			}
 		}
 		return instance;

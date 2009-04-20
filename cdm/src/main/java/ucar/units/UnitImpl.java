@@ -34,6 +34,7 @@
 package ucar.units;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Provides support for classes that implement units.
@@ -109,6 +110,14 @@ public abstract class UnitImpl implements Unit, Serializable {
 				: id.getSymbol();
 	}
 
+	public Unit shiftTo(final double origin) throws ShiftException {
+		return OffsetUnit.getInstance(this, origin);
+	}
+
+	public Unit shiftTo(final Date origin) throws ShiftException {
+		return TimeScaleUnit.getInstance(this, origin);
+	}
+
 	/**
 	 * Multiplies this unit by another.
 	 * 
@@ -120,6 +129,10 @@ public abstract class UnitImpl implements Unit, Serializable {
 	 */
 	public final Unit multiplyBy(final Unit that) throws MultiplyException {
 		return myMultiplyBy(that);
+	}
+
+	public Unit multiplyBy(final double scale) throws MultiplyException {
+		return ScaledUnit.getInstance(scale, this);
 	}
 
 	/**
@@ -204,6 +217,15 @@ public abstract class UnitImpl implements Unit, Serializable {
 	 *             Can't raise this unit to a power.
 	 */
 	protected abstract Unit myRaiseTo(int power) throws RaiseException;
+
+	/*
+	 * Default implementation.
+	 * 
+	 * @see ucar.units.Unit#log(double)
+	 */
+	public Unit log(final double base) {
+		return LogarithmicUnit.getInstance(this, base);
+	}
 
 	/**
 	 * Provides support for converting numeric values from this unit to another

@@ -33,6 +33,7 @@
  */
 package ucar.units;
 
+
 /**
  * Provides support for units that are based on a logarithm of the ratio of a
  * physical quantity to an underlying reference level.
@@ -116,6 +117,10 @@ public final class LogarithmicUnit extends UnitImpl implements DerivableUnit {
 				? 1
 				: Math.log(base);
 		derivedUnit = reference.getDerivedUnit();
+	}
+
+	static Unit getInstance(final Unit unit, final double base) {
+		return new LogarithmicUnit(unit, base);
 	}
 
 	/**

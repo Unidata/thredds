@@ -72,11 +72,24 @@ public final class TimeScaleUnit extends UnitImpl {
 	 */
 	private static final SimpleDateFormat	dateFormat;
 
+	/**
+	 * The second unit.
+	 */
+	private static final BaseUnit			SECOND;
+
 	static {
 		dateFormat = (SimpleDateFormat) DateFormat.getDateInstance(
 				DateFormat.SHORT, Locale.US);
 		dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 		dateFormat.applyPattern(" 'since' yyyy-MM-dd HH:mm:ss.SSS 'UTC'");
+		try {
+			SECOND = BaseUnit.getOrCreate(UnitName.newUnitName("second", null,
+					"s"), BaseQuantity.TIME);
+		}
+		catch (final Exception e) {
+			throw (ExceptionInInitializerError) new ExceptionInInitializerError()
+					.initCause(e);
+		}
 	}
 
 	/**
@@ -117,6 +130,19 @@ public final class TimeScaleUnit extends UnitImpl {
 		_origin = origin;
 	}
 
+	static Unit getInstance(final Unit unit, final Date origin)
+			throws ShiftException {
+		try {
+			return unit instanceof TimeScaleUnit
+					? new TimeScaleUnit(((TimeScaleUnit) unit)._unit, origin)
+					: new TimeScaleUnit(unit, origin);
+		}
+		catch (final Exception e) {
+			throw (ShiftException) new ShiftException(unit, origin)
+					.initCause(e);
+		}
+	}
+
 	/**
 	 * Returns the reference unit.
 	 * 
@@ -155,6 +181,34 @@ public final class TimeScaleUnit extends UnitImpl {
 			clone = null; // can't happen
 		}
 		return clone;
+	}
+
+	@Override
+	public Unit shiftTo(final double origin) throws ShiftException {
+		Date newOrigin;
+		try {
+			newOrigin = new Date(_origin.getTime()
+					+ (long) (_unit.convertTo(origin, SECOND) * 1000));
+		}
+		catch (final ConversionException e) {
+			throw (ShiftException) new ShiftException(this, origin)
+					.initCause(e);
+		}
+		try {
+			return new TimeScaleUnit(_unit, newOrigin);
+		}
+		catch (final BadUnitException e) {
+			throw new AssertionError();
+		}
+		catch (final UnitSystemException e) {
+			throw (ShiftException) new ShiftException(this, origin)
+					.initCause(e);
+		}
+	}
+
+	@Override
+	public Unit shiftTo(final Date origin) throws ShiftException {
+		return getInstance(_unit, origin);
 	}
 
 	/**
@@ -356,12 +410,10 @@ public final class TimeScaleUnit extends UnitImpl {
 	 * Tests this class.
 	 */
 	public static void main(final String[] args) throws Exception {
-		final BaseUnit second = BaseUnit.getOrCreate(UnitName.newUnitName(
-				"second", null, "s"), BaseQuantity.TIME);
 		final TimeZone tz = TimeZone.getTimeZone("UTC");
 		final Calendar calendar = Calendar.getInstance(tz);
 		calendar.clear();
 		calendar.set(1970, 0, 1);
-		new TimeScaleUnit(second, calendar.getTime());
+		new TimeScaleUnit(SECOND, calendar.getTime());
 	}
 }

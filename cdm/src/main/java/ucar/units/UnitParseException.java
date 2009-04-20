@@ -63,4 +63,9 @@ public class UnitParseException extends SpecificationException {
 	public UnitParseException(final String spec, final String reason) {
 		super("Couldn't parse \"" + spec + "\": " + reason);
 	}
+
+	public UnitParseException(final String message, final Throwable e) {
+		super(message);
+		initCause(e);
+	}
 }

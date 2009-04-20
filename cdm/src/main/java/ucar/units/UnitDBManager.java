@@ -58,11 +58,9 @@ public final class UnitDBManager implements Serializable {
 	 *             The default unit database couldn't be created.
 	 */
 	public static final UnitDB instance() throws UnitDBException {
-		if (instance == null) {
-			synchronized (UnitDBManager.class) {
-				if (instance == null) {
-					instance = StandardUnitDB.instance();
-				}
+		synchronized (UnitDBManager.class) {
+			if (instance == null) {
+				instance = StandardUnitDB.instance();
 			}
 		}
 		return instance;

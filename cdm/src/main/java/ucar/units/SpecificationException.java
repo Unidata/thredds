@@ -63,4 +63,9 @@ public class SpecificationException extends UnitException {
 	public SpecificationException(final String spec, final String reason) {
 		super("Specification error in \"" + spec + "\": " + reason);
 	}
+
+	public SpecificationException(final String message, final Throwable e) {
+		super(message);
+		initCause(e);
+	}
 }
