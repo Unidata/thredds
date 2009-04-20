@@ -60,7 +60,8 @@ import java.io.IOException;
 public abstract class GridServiceProvider extends AbstractIOServiceProvider {
 
   public enum IndexExtendMode {
-    extend, rewrite, read, none
+    //extend, rewrite, read, none
+    rewrite, extendwrite, readonly
   }
     /** FMRC coordinate system */
     protected FmrcCoordSys fmrcCoordSys;
@@ -76,9 +77,13 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
 
     static public boolean addLatLon = false; // add lat/lon coordinates for striuct CF compliance
 
+  /**
+   * these modes are set for the Default  client mode
+   */
     static public boolean forceNewIndex = false; // force that a new index file is written
     static public IndexExtendMode extendMode = IndexExtendMode.rewrite; // default is to rewrite
-    static public IndexExtendMode syncMode = IndexExtendMode.extend; // default is to extend
+    //static public IndexExtendMode syncMode = IndexExtendMode.extend; // default is to extend
+    static public IndexExtendMode syncMode = IndexExtendMode.rewrite; // default is to rewrite
 
 
     /** place to store debug stuff */
@@ -153,9 +158,9 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
      * setIndexExtendMode(IndexExtendMode.none)
      */
     static public void setExtendIndex(boolean b) {
-      extendMode = b ? IndexExtendMode.extend : IndexExtendMode.none;
-      // use read since it's the default for false
-      syncMode = b ? IndexExtendMode.extend : IndexExtendMode.read;
+      extendMode = b ? IndexExtendMode.rewrite : IndexExtendMode.readonly;
+      // use readonly since it's the default for false
+      syncMode = b ? IndexExtendMode.rewrite : IndexExtendMode.readonly;
     }
 
     /**
@@ -228,7 +233,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
      * @return extendMode
      */
     public static boolean extendMode() {
-        return extendMode == IndexExtendMode.extend;
+        return extendMode == IndexExtendMode.rewrite;
     }
 
     /**
@@ -239,9 +244,9 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
      */
     public static void setExtendMode( boolean em ) {
       if( em ) {
-        extendMode = IndexExtendMode.extend;
-      } else { // set to default
         extendMode = IndexExtendMode.rewrite;
+      } else { // set to default
+        extendMode = IndexExtendMode.readonly;
       }
     }
 

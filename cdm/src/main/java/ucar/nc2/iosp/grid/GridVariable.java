@@ -644,9 +644,6 @@ public class GridVariable {
     }
     String ensembleName = GridIndexToNC.makeEnsembleName(gr, lookup);
     String paramName = param.getDescription();
-    //String paramName = (GridIndexToNC.useDescriptionForVariableName)
-    //    ? param.getDescription()
-    //    : param.getName();
     paramName = (ensembleName.length() == 0)
         ? paramName : paramName + "_" + ensembleName;
 

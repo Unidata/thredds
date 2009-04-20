@@ -88,7 +88,7 @@ public class GridIndexToNC {
   /**
    * flag for using GridParameter description for variable names
    */
-  protected static boolean useDescriptionForVariableName = true;
+  private boolean useDescriptionForVariableName = true;
 
   /**
    * Make the level name

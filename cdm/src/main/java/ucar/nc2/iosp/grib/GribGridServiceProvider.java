@@ -255,7 +255,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
         long indexRafLength = (lengthS == null) ? 0 : Long.parseLong(lengthS);
         if (indexRafLength != rafLength) {
 
-          if ((extendMode == IndexExtendMode.extend) && (indexRafLength < rafLength)) {
+          if ((extendMode == IndexExtendMode.extendwrite) && (indexRafLength < rafLength)) {
             log.debug("  extend Index = " + indexFile.getPath());
             //index = extendIndex(edition, raf, indexFile, index);
             File gribFile = new File(raf.getLocation());
@@ -339,14 +339,14 @@ public class GribGridServiceProvider extends GridServiceProvider {
   }
 
   public boolean sync() throws IOException {
-    if (syncMode == IndexExtendMode.none) return false;
+    //if (syncMode == IndexExtendMode.none) return false;
 
     // has the file chenged?
     if (rafLength != raf.length()) {
       File indexFile = getIndexFile(saveLocation);
       //Index index;
       GridIndex index;
-      if (syncMode == IndexExtendMode.read) {
+      if (syncMode == IndexExtendMode.readonly) {
         log.debug("  sync read Index = " + indexFile.getPath());
         try {
            index = new GribReadIndex().open(indexFile.getPath());
@@ -354,7 +354,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
           log.error("  sync read Index failed = " + indexFile.getPath());
           return false;
         }
-      } else if ((syncMode == IndexExtendMode.extend) && (rafLength < raf.length())) {
+      } else if ((syncMode == IndexExtendMode.extendwrite) && (rafLength < raf.length())) {
         log.debug("  sync extend Index = " + indexFile.getPath());
         //extendIndex(saveEdition, raf, indexFile, null);
         //index = new Index();
