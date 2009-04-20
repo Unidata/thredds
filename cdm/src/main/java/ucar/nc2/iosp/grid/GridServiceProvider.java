@@ -78,8 +78,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
 
     static public boolean forceNewIndex = false; // force that a new index file is written
     static public IndexExtendMode extendMode = IndexExtendMode.rewrite; // default is to rewrite
-    //static public IndexExtendMode syncMode = IndexExtendMode.extend; // default is to extend
-    static public IndexExtendMode syncMode = IndexExtendMode.read; // default is to read
+    static public IndexExtendMode syncMode = IndexExtendMode.extend; // default is to extend
 
 
     /** place to store debug stuff */

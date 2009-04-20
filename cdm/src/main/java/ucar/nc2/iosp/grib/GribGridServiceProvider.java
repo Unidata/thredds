@@ -242,6 +242,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
         index = new GribReadIndex().open(indexFile.getPath());
       } catch (Exception e) {
         ok = false;
+        throw new IOException( e );
       }
 
       if (ok && index != null ) {
