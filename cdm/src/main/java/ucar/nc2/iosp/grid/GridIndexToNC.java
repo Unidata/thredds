@@ -39,6 +39,8 @@ package ucar.nc2.iosp.grid;
 
 import ucar.nc2.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
+import ucar.nc2.iosp.mcidas.McIDASLookup;
+import ucar.nc2.iosp.gempak.GempakLookup;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.fmr.FmrcCoordSys;
@@ -46,7 +48,6 @@ import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
 import ucar.grib.grib2.Grib2GridTableLookup;
 import ucar.grib.grib1.Grib1GridTableLookup;
-import ucar.grib.GribGridRecord;
 import ucar.unidata.util.StringUtil;
 import ucar.grid.*;
 
@@ -469,7 +470,12 @@ public class GridIndexToNC {
 
         if (plist.size() == 1) {
           GridVariable pv = plist.get(0);
-          Variable v = pv.makeVariable(ncfile, hcs.getGroup(), true);
+          Variable v;
+          if ( (lookup instanceof GempakLookup) || (lookup instanceof McIDASLookup )) {
+             v = pv.makeVariable(ncfile, hcs.getGroup(), false );
+          } else {
+             v = pv.makeVariable(ncfile, hcs.getGroup(), true);
+          }
           ncfile.addVariable(hcs.getGroup(), v);
 
         } else {
@@ -485,7 +491,8 @@ public class GridIndexToNC {
           // finally, add the variables
           for (int k = 0; k < plist.size(); k++) {
             GridVariable pv = plist.get(k);
-            if (isGrib2 &&  g2lookup.isEnsemble( pv.getFirstRecord() )) {
+            if (isGrib2 &&  g2lookup.isEnsemble( pv.getFirstRecord()) ||
+                (lookup instanceof GempakLookup) || (lookup instanceof McIDASLookup ) ) {
               ncfile.addVariable(hcs.getGroup(), pv.makeVariable(ncfile, hcs.getGroup(), false));
             } else {
               ncfile.addVariable(hcs.getGroup(), pv.makeVariable(ncfile, hcs.getGroup(), (k == 0)));

@@ -41,6 +41,8 @@ import ucar.ma2.DataType;
 import ucar.nc2.*;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
+import ucar.nc2.iosp.mcidas.McIDASLookup;
+import ucar.nc2.iosp.gempak.GempakLookup;
 import ucar.nc2.units.DateFormatter;
 import ucar.grid.GridRecord;
 import ucar.grid.GridTableLookup;
@@ -351,13 +353,12 @@ public class GridVariable {
     ntimes = tcs.getNTimes();
 
     if (vname == null) {
-      vname = AbstractIOServiceProvider.createValidNetcdfObjectName(useDesc
-          ? desc
-          : name);
+      vname = AbstractIOServiceProvider.createValidNetcdfObjectName(
+          useDesc ? desc : name);
     }
 
     //vname = StringUtil.replace(vname, '-', "_"); // Done in dods server now
-    // TODO: check if this can now be deleted
+    // need for Gempak and McIDAS
     vname = StringUtil.replace(vname, ' ', "_");
 
     Variable v = new Variable(ncfile, g, null, vname);
@@ -632,13 +633,20 @@ public class GridVariable {
     return (levelName.length() == 0)
         ? param.getDescription()
         : param.getDescription() + " @ " + levelName;
-    */
+   */
     GridParameter param = lookup.getParameter(gr);
-    String levelName = GridIndexToNC.makeLevelName(gr, lookup);
+
+    String levelName;
+    if ( (lookup instanceof GempakLookup) || (lookup instanceof McIDASLookup)) {
+      levelName = lookup.getLevelDescription( gr );
+    } else {
+      levelName = GridIndexToNC.makeLevelName(gr, lookup);
+    }
     String ensembleName = GridIndexToNC.makeEnsembleName(gr, lookup);
-    String paramName = (GridIndexToNC.useDescriptionForVariableName)
-        ? param.getDescription()
-        : param.getName();
+    String paramName = param.getDescription();
+    //String paramName = (GridIndexToNC.useDescriptionForVariableName)
+    //    ? param.getDescription()
+    //    : param.getName();
     paramName = (ensembleName.length() == 0)
         ? paramName : paramName + "_" + ensembleName;
 
@@ -647,6 +655,7 @@ public class GridVariable {
 
     return paramName;
   }
+
 
 }
 
