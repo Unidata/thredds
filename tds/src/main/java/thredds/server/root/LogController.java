@@ -69,7 +69,7 @@ public class LogController extends AbstractController {
       f.format("dateS = %s == %s == %s%n", date, d, df.toDateTimeStringISO(d));
       System.out.printf("%s", f.toString());
       res.getOutputStream().print(f.toString()); // LOOK whats easy ModelAndView ??
-      read(d);
+      read(df.toDateTimeStringISO(d));
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -80,15 +80,19 @@ public class LogController extends AbstractController {
 
 
 
-  private void read(Date d) throws IOException {
+  private void read(String afterDate) throws IOException {
     LogReader reader = new LogReader(new AccessLogParser());
 
     ArrayList<LogReader.Log> completeLogs = new ArrayList<LogReader.Log>(30000);
     for (File f : accessLogFiles)
-      reader.scanLogFile(f, new MyClosure(), new MyLogFilter(), null);  
+      reader.scanLogFile(f, new MyClosure(), new MyLogFilter(afterDate), null);
   }
 
   private class MyLogFilter implements LogReader.LogFilter {
+    String afterDate;
+    MyLogFilter(String afterDate) {
+      this.afterDate = afterDate;
+    }
     public boolean pass(LogReader.Log log) {
       return log.getDate().compareTo( afterDate) > 0;
     }
