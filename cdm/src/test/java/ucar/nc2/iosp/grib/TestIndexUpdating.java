@@ -189,11 +189,13 @@ public class TestIndexUpdating extends TestCase
     assertTrue( "Length of time dimension [" + timeComplete.getLength() + "] not as expected [21].",
                 timeComplete.getLength() == 21 );
   }
-  /* //TODO: fix
+
   public void testBadIndexFileWithExtendModeFalse()
   {
-    ucar.nc2.iosp.grid.GridServiceProvider.setAlwaysInCache( false );
-    ucar.nc2.iosp.grid.GridServiceProvider.setExtendMode( false );
+    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
+    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
+    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
+    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
 
     // Setup dataset to use partial GRIB index file.
     if ( ! setupGribAndPartialIndex0() )
@@ -219,12 +221,14 @@ public class TestIndexUpdating extends TestCase
 
     fail( "Expected IOException not thrown.");
   }
-  */
+
   /**
    * tests the TDS configuration : there is no index available on first access to the Grib file, so
-   * an index is created in the cache directory.  
+   * an index is created in the cache directory because the TDS doesn't have write permission in the
+   * same directory as the Grib file. Then future accesses use the index in the  same
+   * directory as the Grib file.
    */
-  public void testNoIndex()
+  public void testNoIndexTDS()
   {
     ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
     ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
@@ -273,7 +277,59 @@ public class TestIndexUpdating extends TestCase
     DiskCache.simulateUnwritableDir = false;
   }
 
+   /**
+     * tests the ToolsUI or TDS configuration : there is no index available on first access to the Grib file, so
+     * an index is created in the same directory as the Grib file. Then future accesses use the index in the  same
+     * directory as the Grib file but the Index can be extended with sync().
+     */
+    public void testNoIndexNextToGrib()
+    {
+      ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
+      ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
+      ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( true );
+      ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( true  );
 
+      // Setup dataset to use partial GRIB index file.
+      if ( ! setupGrib() )
+        return;
+
+      // Initial opening of the data file.
+      NetcdfFile ncf = null;
+      try { ncf = NetcdfFile.open( dataFile.getPath() ); }
+      catch ( IOException e )
+      {
+        fail( "exception opening");
+      }
+
+      Dimension timePartial = ncf.findDimension( "time" );
+
+      assertTrue( "Time dimension ["+ timePartial.getLength()+"] not as expected [4].", timePartial.getLength() == 4 );
+
+      // Switch to use the complete GRIB file.
+      if ( ! switchToCompleteGrib() )
+        return;
+
+      try
+      {
+        ncf.sync();
+      }
+      catch ( IOException e )
+      {
+        fail( "Failed to sync() data file [" + dataFile.getPath() + "]: " + e.getMessage() );
+        return;
+      }
+
+      Dimension timeNew = ncf.findDimension( "time" );
+
+      assertTrue( "Time dimension [" + timeNew.getLength() + "] not as expected [21].", timeNew.getLength() == 21 );
+    }
+
+  /**
+   * Test a TDS configuration where the program has write permission in the directory
+   * where the Grib file is located. If the Index doesn't exist then one will created. If the
+   * Index exists then it will be checked to see if it's up to date. Sync() doesn't have any
+   * affect because the index has already been updated.
+   */
   public void testExtendModeTrue()
   {
     ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
@@ -301,7 +357,6 @@ public class TestIndexUpdating extends TestCase
 
     assertTrue( "Time dimension ["+ timeComplete.getLength()+"] not as expected [21].", timeComplete.getLength() == 21 );
 
-    // sync() the dataset with  index.
     try
     {
       ncf.sync();
