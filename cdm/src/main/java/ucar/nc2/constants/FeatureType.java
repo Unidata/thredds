@@ -86,7 +86,7 @@ public enum FeatureType {
 
   /**
    * Is this a Point feature type?
-   * @return
+   * @return true if this is a Point feature type
    */
   public boolean isPointFeatureType() {
     return (this == FeatureType.POINT) || (this == FeatureType.STATION) || (this == FeatureType.TRAJECTORY) ||

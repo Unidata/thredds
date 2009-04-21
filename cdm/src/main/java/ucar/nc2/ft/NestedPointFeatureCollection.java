@@ -73,6 +73,15 @@ public interface NestedPointFeatureCollection extends FeatureCollection {
   public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws java.io.IOException;
 
   /**
+   * Get a subsetted NestedPointFeatureCollection based on a LatLonRect
+   *
+   * @param boundingBox spatial subset
+   * @return subsetted collection
+   * @throws java.io.IOException on i/o error
+   */
+  public NestedPointFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
+
+  /**
    *  Flatten into a PointFeatureCollection, discarding connectedness information. Optionally subset.
    * @param boundingBox only points in this lat/lon bounding box. may be null.
    * @param dateRange only points in this date range. may be null.

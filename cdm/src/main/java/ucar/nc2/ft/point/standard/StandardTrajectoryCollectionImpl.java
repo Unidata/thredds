@@ -34,11 +34,13 @@ package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.ft.point.OneNestedPointCollectionImpl;
 import ucar.nc2.ft.point.TrajectoryFeatureImpl;
+import ucar.nc2.ft.point.PointCollectionIteratorFiltered;
 import ucar.nc2.ft.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateUnit;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureData;
+import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
 
@@ -49,6 +51,10 @@ import java.io.IOException;
 public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionImpl implements TrajectoryFeatureCollection {
   private DateUnit timeUnit;
   private NestedTable ft;
+
+  protected StandardTrajectoryCollectionImpl(String name) {
+    super(name, FeatureType.TRAJECTORY);
+  }
 
   StandardTrajectoryCollectionImpl(NestedTable ft, DateUnit timeUnit) {
     super(ft.getName(), FeatureType.TRAJECTORY);
@@ -64,6 +70,10 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
   public boolean hasNext() throws IOException {
     if (localIterator == null) resetIteration();
     return localIterator.hasNext();
+  }
+
+  public TrajectoryFeatureCollection subset(LatLonRect boundingBox) throws IOException {
+    return new StandardTrajectoryCollectionSubset( this, boundingBox);
   }
 
   // need covariant return to allow superclass to implement
@@ -111,6 +121,29 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
       cursor.parentIndex = 1; // LOOK ?
       StructureDataIterator siter = ft.getFeatureObsDataIterator( cursor, bufferSize);
       return new StandardPointFeatureIterator(ft, timeUnit, siter, cursor, false);
+    }
+  }
+
+  private class StandardTrajectoryCollectionSubset extends StandardTrajectoryCollectionImpl {
+    TrajectoryFeatureCollection from;
+    LatLonRect boundingBox;
+
+    StandardTrajectoryCollectionSubset(TrajectoryFeatureCollection from, LatLonRect boundingBox) {
+      super(from.getName()+"-subset");
+      this.from = from;
+      this.boundingBox = boundingBox;
+    }
+
+    public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
+      return new PointCollectionIteratorFiltered( from.getPointFeatureCollectionIterator(bufferSize), new Filter());
+    }
+
+    private class Filter implements PointFeatureCollectionIterator.Filter {
+
+      public boolean filter(PointFeatureCollection pointFeatureCollection) {
+        ProfileFeature profileFeature = (ProfileFeature) pointFeatureCollection;
+        return boundingBox.contains(profileFeature.getLatLon());
+      }
     }
   }
 

@@ -82,6 +82,10 @@ public abstract class StationProfileCollectionImpl extends MultipleNestedPointCo
     return new StationProfileFeatureCollectionSubset(this, stations);
   }
 
+  public StationProfileCollectionImpl subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
+    return subset( getStations(boundingBox));
+  }
+
   public StationProfileFeature getStationProfileFeature(Station s) throws IOException {
     return (StationProfileFeature) s;  // LOOK subclass must override if not true
   }

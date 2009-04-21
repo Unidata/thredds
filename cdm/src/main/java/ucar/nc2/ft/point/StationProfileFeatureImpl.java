@@ -39,6 +39,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.StationImpl;
 import ucar.unidata.geoloc.Station;
+import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
 
@@ -123,7 +124,11 @@ public abstract class StationProfileFeatureImpl extends OneNestedPointCollection
   }
 
   public StationProfileFeature subset(DateRange dateRange) throws IOException {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return null;  // LOOK
+  }
+
+  public StationProfileFeature subset(LatLonRect dateRange) throws IOException {
+    return this;
   }
 
 }

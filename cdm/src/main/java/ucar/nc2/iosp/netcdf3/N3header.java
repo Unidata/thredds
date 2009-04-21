@@ -337,7 +337,7 @@ public class N3header {
         try {
           memberV = v.slice(0, 0); // set unlimited dimension to 0
         } catch (InvalidRangeException e) {
-          log.warn("N3header.makeRecordStructure cant slice variable " + v);
+          log.warn("N3header.makeRecordStructure cant slice variable " +v+ " "+e.getMessage());
           return false;
         }
         memberV.setParentStructure(recordStructure);

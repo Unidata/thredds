@@ -77,6 +77,10 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
     return new StationFeatureCollectionSubset(this, stations);
   }
 
+  public StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
+    return subset( getStations(boundingBox));
+  }
+
   public StationTimeSeriesFeature getStationFeature(Station s) throws IOException {
     return (StationTimeSeriesFeature) s;  // subclasses nust override if not true
   }

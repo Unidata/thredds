@@ -112,7 +112,6 @@ public class PointFeatureDatasetViewer extends JPanel {
 
         // is the date window showing ?
         DateRange dateRange = stationMap.getDateRange();
-
         if (debugQuery) System.out.println("date range=" + dateRange);
 
         // is the geoRegion mode true ?
@@ -393,7 +392,13 @@ public class PointFeatureDatasetViewer extends JPanel {
 
     else if (selectedType == FeatureType.STATION) {
       StationTimeSeriesFeatureCollection stationCollection = (StationTimeSeriesFeatureCollection) selectedCollection;
-      pc = stationCollection.flatten(geoRegion, dateRange);
+      if (geoRegion != null) {
+        StationTimeSeriesFeatureCollection stationSubset = stationCollection.subset(geoRegion);
+        setStations( stationSubset);
+        return;
+      } else {
+        pc = stationCollection.flatten(null, dateRange);
+      }
     }
 
     else if (selectedType == FeatureType.STATION_PROFILE) {
@@ -512,12 +517,13 @@ public class PointFeatureDatasetViewer extends JPanel {
 
     } else if (selectedType == FeatureType.STATION) {
       StationTimeSeriesFeatureCollection stationCollection = (StationTimeSeriesFeatureCollection) selectedCollection;
-      PointFeatureCollectionIterator iter = stationCollection.getPointFeatureCollectionIterator(-1);
+      setStations(stationCollection);
+      /* PointFeatureCollectionIterator iter = stationCollection.getPointFeatureCollectionIterator(-1);
       List<PointFeature> obsList = new ArrayList<PointFeature>();
       int count = 0;
       while (iter.hasNext() && (count++ < maxCount))
         obsList.add((PointFeature) iter.next());
-      setObservations(obsList);
+      setObservations(obsList);  */
 
     } else if (selectedType == FeatureType.STATION_PROFILE) {
       StationProfileFeatureCollection stationCollection = (StationProfileFeatureCollection) selectedCollection;

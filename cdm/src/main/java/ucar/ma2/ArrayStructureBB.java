@@ -64,8 +64,8 @@ public class ArrayStructureBB extends ArrayStructure {
 
   /**
    * Set the offsets, based on m.getSizeBytes()
-   * @param members
-   * @return
+   * @param members set offsets for these members
+   * @return the total size
    */
   public static int setOffsets(StructureMembers members) {
     int offset = 0;

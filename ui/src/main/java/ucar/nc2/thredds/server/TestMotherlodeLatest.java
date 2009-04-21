@@ -186,7 +186,7 @@ public class TestMotherlodeLatest extends TimerTask {
     timer.schedule(test1, 0, 1000 * 60 * 10); // 10 mins   */
 
     TestMotherlodeLatest test2 = new TestMotherlodeLatest("NCEP/RUC2/CONUS_20km/pressure", latestSuffix);
-    test2.doAll();
+    test2.doAll();               
 
     timer.schedule(test2, 0, 1000 * 60 * 10); // 10 mins
 

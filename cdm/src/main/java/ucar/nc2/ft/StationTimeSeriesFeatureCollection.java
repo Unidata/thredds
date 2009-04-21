@@ -66,7 +66,7 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, N
   public void resetIteration() throws IOException;
 
   /**
-   * Get a subsetted StationCollection
+   * Get a subsetted StationCollection based on a list of Stations.
    *
    * @param stations only contain these stations
    * @return subsetted collection
@@ -75,9 +75,18 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, N
   public StationTimeSeriesFeatureCollection subset(List<Station> stations) throws IOException;
 
   /**
-   * Get the collection of data for this Station.
+   * Get a subsetted StationCollection based on a LatLonRect
    *
-   * @param s at this station
+   * @param boundingBox spatial subset
+   * @return subsetted collection
+   * @throws java.io.IOException on i/o error
+   */
+  public StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
+
+  /**
+   * Get the collection of data for a particular Station.
+   *
+   * @param s get data for this station
    * @return collection of data for this Station.
    * @throws java.io.IOException on i/o error
    */

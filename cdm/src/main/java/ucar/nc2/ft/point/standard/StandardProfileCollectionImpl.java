@@ -121,7 +121,6 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
     }
   }
 
-    // LOOK subset by filtering on the stations, but it would be easier if we could get the StationFeature from the Station
   private class StandardProfileCollectionSubset extends StandardProfileCollectionImpl {
     StandardProfileCollectionImpl from;
       LatLonRect boundingBox;
