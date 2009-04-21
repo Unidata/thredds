@@ -26,7 +26,7 @@ public class TestDiskCacheUtils
    */
   public static void setupDiskCacheInTmpDir( boolean alwaysInCache)
   {
-    String cacheDir = TestAll.temporaryDataDir + "cache/DiskCache/";
+    String cacheDir = TestAll.temporaryLocalDataDir + "cache/DiskCache/";
     if ( ! DiskCache.getRootDirectory().equals( cacheDir))
     {
       DiskCache.setRootDirectory( cacheDir );
@@ -51,7 +51,7 @@ public class TestDiskCacheUtils
    */
   public static void setupDiskCache2WithTmpRootDir()
   {
-    String cacheDir = TestAll.temporaryDataDir + "cache/DiskCache2/";
+    String cacheDir = TestAll.temporaryLocalDataDir + "cache/DiskCache2/";
     File f = new File( cacheDir);
     if ( ! f.exists())
       if ( ! f.mkdirs())

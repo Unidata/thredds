@@ -41,7 +41,7 @@ import ucar.nc2.TestAll;
  *
  */
 public class TestGrid {
-  public static String topDir = TestAll.cdmTestDataDir;
+  public static String topDir = TestAll.cdmLocalTestDataDir;
 
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();

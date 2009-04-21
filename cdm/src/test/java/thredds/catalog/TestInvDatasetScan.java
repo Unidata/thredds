@@ -56,7 +56,7 @@ public class TestInvDatasetScan extends TestCase
   private String dsScanName = "Test Data";
   private String dsScanPath = "testData";
 
-  private String dsScanDir = TestAll.cdmTestDataDir;
+  private String dsScanDir = TestAll.cdmLocalTestDataDir;
   private String dsScanFilter = ".*\\.nc$";
 
   private String serviceName = "ncdods";

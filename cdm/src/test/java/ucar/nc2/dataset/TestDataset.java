@@ -40,7 +40,7 @@ import ucar.nc2.TestAll;
  *
  */
 public class TestDataset {
-  public static String writeDir = TestAll.temporaryDataDir;
+  public static String writeDir = TestAll.temporaryLocalDataDir;
 
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();

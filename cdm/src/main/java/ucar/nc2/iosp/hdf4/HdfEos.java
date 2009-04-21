@@ -274,7 +274,13 @@ public class HdfEos {
     } else if (name.equalsIgnoreCase("Time")) {
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
       //v.addAttribute(new Attribute("units", "unknown"));
-    }
+    } else if (name.equalsIgnoreCase("Pressure")) {
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
+      //v.addAttribute(new Attribute("units", "unknown"));
+    } else if (name.equalsIgnoreCase("Altitude")) {
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
+      v.addAttribute(new Attribute("positive", "up")); // probably
+     }
   }
 
 

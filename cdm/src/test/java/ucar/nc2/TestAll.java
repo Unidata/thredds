@@ -59,27 +59,46 @@ public class TestAll {
   /**
    * Unidata "/upc/share" directory (MAY NOT be used in Unidata nightly testing).
    */
-  public static String upcShareDir;
+  //public static String upcShareDir;
 
   /**
    * Level 2 test data directory (MAY be used in Unidata nightly testing).
    * Unidata "/upc/share/thredds/data" directory
    */
-  public static String upcShareThreddsDataDir;
+  //public static String upcShareThreddsDataDir;
 
   /**
-   * Level 3 test data directory (MAY NOT be used in Unidata nightly testing).
-   * Unidata "/upc/share/testdata" directory. For once off testing and debuging.
+   * Old test data directory. may have cruft in it
+   * Unidata "newshemp:/data/testdata" directory.
    */
   public static String testdataDir = null;
 
+  /**
+   * New test data directory. do not put temprory files in here. migrate all test data here eventually
+   * Unidata "newshemp:/data/testdata/cdmUnitTest" directory.
+   */
+  public static String cdmUnitTestDir = null;
+
+  /**
+   * Level 1 test data directory (distributed with code and MAY be used in Unidata nightly testing).
+   */
+  public static String cdmLocalTestDataDir = "src/test/data/";
+
+  /**
+   * Temporary data directory (for writing temporary data).
+   */
+  public static String temporaryLocalDataDir = "target/test/tmp/";
+
+  //////////////////////////////////////////////////////////////////////
   /** Property name for the path to the Unidata test data directory,
-   * i.e., newshemp:/data/testdata. */
+   * e.g unidata.testdata.path=//newshemp/data/testdata/
+   * the real directory is at newshemp:/data/testdata
+   */
   private static String testdataDirPropName ="unidata.testdata.path";
 
   /** Property name for the path to the Unidata shared directory,
    * i.e., zero:/upc/share. */
-  private static String upcShareDirPropName ="unidata.upc.share.path";
+  //private static String upcShareDirPropName ="unidata.upc.share.path";
 
   /** Filename of the user property file read from the "user.home" directory
    * if the "unidata.testdata.path" and "unidata.upc.share.path" are not
@@ -92,10 +111,9 @@ public class TestAll {
   // on local machine by reading system or THREDDS property.
   static {
     // Check for system property
-    String sharePath = System.getProperty( upcShareDirPropName );
     String testdataDirPath = System.getProperty( testdataDirPropName );
 
-    if ( sharePath == null || testdataDirPath == null )
+    if (testdataDirPath == null )
     {
       // Get user property.
       File userHomeDirFile = new File( System.getProperty( "user.home" ) );
@@ -113,8 +131,6 @@ public class TestAll {
         }
         if ( userThreddsProps != null && ! userThreddsProps.isEmpty() )
         {
-          if ( sharePath == null )
-            sharePath = userThreddsProps.getProperty( upcShareDirPropName );
           if ( testdataDirPath == null )
             testdataDirPath = userThreddsProps.getProperty( testdataDirPropName );
         }
@@ -122,61 +138,25 @@ public class TestAll {
     }
 
     // Use default paths if needed.
-    if ( sharePath == null )
-    {
-      System.out.println( "**No \"unidata.upc.share.path\"property, defaulting to \"/upc/share/\"." );
-      sharePath = "/upc/share/";
-    }
     if ( testdataDirPath == null )
     {
       System.out.println( "**No \"unidata.testdata.path\"property, defaulting to \"/data/testdata/\"." );
       testdataDirPath = "/data/testdata/";
     }
     // Make sure paths ends with a slash.
-    if ((! sharePath.endsWith( "/")) && ! sharePath.endsWith( "\\"))
-      sharePath = sharePath + "/";
     if ((!testdataDirPath.endsWith( "/")) && !testdataDirPath.endsWith( "\\"))
       testdataDirPath += "/";
 
     testdataDir = testdataDirPath;
-    upcShareDir = sharePath;
-    upcShareThreddsDataDir = upcShareDir + "thredds/data/";
-  }
+    cdmUnitTestDir = testdataDirPath + "cdmUnitTest/";
 
-  // Check that directories exist and are directories.
-  static
-  {
-    File file = new File( upcShareDir );
-    if ( ! file.exists() || ! file.isDirectory() )
-    {
-      System.out.println( "**WARN: Non-existence of \"/upc/share\" directory [" + file.getAbsolutePath() + "]." );
-    }
-
-    file = new File( testdataDir );
+    File file = new File( testdataDir );
     if ( ! file.exists() || !file.isDirectory() )
     {
       System.out.println( "**WARN: Non-existence of Level 3 test data directory [" + file.getAbsolutePath() + "]." );
     }
-    file = new File( upcShareThreddsDataDir );
-    if ( ! file.exists() || ! file.isDirectory() )
-    {
-      System.out.println( "**WARN: Non-existence of Level 2 test data directory [" + file.getAbsolutePath() + "]." );
-    }
-  }
 
-  /**
-   * Level 1 test data directory (distributed with code and MAY be used in Unidata nightly testing).
-   */
-  public static String cdmTestDataDir = "src/test/data/";
-
-  /**
-   * Temporary data directory (for writing temporary data).
-   */
-  public static String temporaryDataDir = "target/test/tmp/";
-
-  // Make sure the temp data dir is created.
-  static {
-    File tmpDataDir = new File( temporaryDataDir);
+    File tmpDataDir = new File(temporaryLocalDataDir);
     if ( ! tmpDataDir.exists() )
     {
       if ( ! tmpDataDir.mkdirs() )
@@ -184,10 +164,7 @@ public class TestAll {
         System.out.println( "**ERROR: Could not create temporary data dir <" + tmpDataDir.getAbsolutePath() + ">." );
       }
     }
-  }
 
-  // Configure disk caching for
-  static {
     // Setup for DiskCache
     TestDiskCacheUtils.setupDiskCacheInTmpDir( true );
     TestDiskCacheUtils.emptyDiskCache( null );
@@ -197,7 +174,6 @@ public class TestAll {
   }
 
   public static junit.framework.Test suite ( ) {
-    
     RandomAccessFile.setDebugLeaks( true);
 
     TestSuite suite= new TestSuite();
@@ -230,7 +206,7 @@ public class TestAll {
     suite.addTest( ucar.nc2.ncml.TestNcMLoffsite.suite());  // */
     suite.addTest( new TestSuite(TestOffAggForecastModel.class));  // */
 
-    TestSetup wrapper = new TestSetup(suite) {
+   return new TestSetup(suite) {
 
       protected void setUp() {
         //NetcdfDataset.initNetcdfFileCache(10, 20, 60*60);
@@ -249,8 +225,6 @@ public class TestAll {
         System.out.println(" that took= "+took+" secs");
       }
     };
-
-    return wrapper;
   }
 
   static private void checkLeaks() {

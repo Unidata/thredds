@@ -43,7 +43,7 @@ import ucar.nc2.TestAll;
  */
 public class TestDatasetScanBrowseMetadata extends TestCase
 {
-  private String tmpDirPath = TestAll.temporaryDataDir + "TestDatasetScanBrowseMetadata/";
+  private String tmpDirPath = TestAll.temporaryLocalDataDir + "TestDatasetScanBrowseMetadata/";
 
   public TestDatasetScanBrowseMetadata( String name )
   {

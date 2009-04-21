@@ -58,7 +58,7 @@ public class TestNC2 {
   }
 
   public static NetcdfFile openFile( String filename) {
-    return open( TestAll.cdmTestDataDir +filename);
+    return open( TestAll.cdmLocalTestDataDir +filename);
   }
 
   public static junit.framework.Test suite ( ) {

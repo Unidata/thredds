@@ -55,7 +55,7 @@ import java.util.TimeZone;
  */
 public class TestDmspIosp extends TestCase
 {
-  private String testFilePath = TestAll.cdmTestDataDir + "dmsp";
+  private String testFilePath = TestAll.cdmLocalTestDataDir + "dmsp";
   private String testDataFileName = "F14200307192230.n.OIS";
 
   private String testDataFileFileIdAttValue = "/dmsp/moby-1-3/subscriptions/IBAMA/1353226646955.tmp";

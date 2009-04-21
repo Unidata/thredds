@@ -42,6 +42,7 @@ import java.net.MalformedURLException;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.ByteArrayInputStream;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.TestAll;
@@ -65,7 +66,7 @@ public class TestDatasetURL extends TestCase {
   }
 
   public void testNcML() throws IOException {
-    String dir = TestAll.upcShareDir;
+    String dir = TestAll.testdataDir;
     String ncml =
       "<?xml version='1.0' encoding='UTF-8'?>\n" +
       "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
@@ -75,7 +76,7 @@ public class TestDatasetURL extends TestCase {
       " </aggregation>\n" +
       "</netcdf> ";
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), null);
-
+    System.out.printf("result=%s %n", ncfile);
     ncfile.close();
   }
 

@@ -45,7 +45,7 @@ import junit.framework.TestCase;
  * To change this template use File | Settings | File Templates.
  */
 public class TestScaleOffset extends TestCase {
-  private String filename = TestAll.cdmTestDataDir +"scaleOffset.nc";
+  private String filename = TestAll.cdmLocalTestDataDir +"scaleOffset.nc";
 
   public TestScaleOffset( String name) {
     super(name);

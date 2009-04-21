@@ -105,7 +105,7 @@ public class TestOffNcMLWriteReadwithCoords extends TestCase {
     // create a file and write it out
     int pos = location.lastIndexOf("/");
     String filename = location.substring(pos+1);
-    String ncmlOut = TestAll.temporaryDataDir + filename + ".ncml";
+    String ncmlOut = TestAll.temporaryLocalDataDir + filename + ".ncml";
     if (showFiles) System.out.println(" output filename= "+ncmlOut);
     try {
       OutputStream out = new BufferedOutputStream( new FileOutputStream( ncmlOut, false));

@@ -41,8 +41,8 @@ import ucar.nc2.TestAll;
  *
  */
 public class TestCatalogAll extends TestCase {
-  public static String tmpDir = TestAll.temporaryDataDir;
-  public static String dataDir = TestAll.cdmTestDataDir + "thredds/catalog/";
+  public static String tmpDir = TestAll.temporaryLocalDataDir;
+  public static String dataDir = TestAll.cdmLocalTestDataDir + "thredds/catalog/";
   static private boolean showValidation = false;
   static boolean debug = true, showValidationMessages = true;
 

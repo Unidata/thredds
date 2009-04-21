@@ -571,7 +571,7 @@ public class TestIndexUpdating extends TestCase
   private boolean setupGribAndPartialIndex0()
   {
     // Check that the data directory exists and is writable.
-    dataDir = new File( ucar.nc2.TestAll.cdmTestDataDir, "ucar/nc2/iosp/grib/indexUpdating");
+    dataDir = new File( ucar.nc2.TestAll.cdmLocalTestDataDir, "ucar/nc2/iosp/grib/indexUpdating");
     if ( ! dataDir.exists())
     {
       fail( "Non-existent data directory [" + dataDir.getPath() + "].");
@@ -643,7 +643,7 @@ public class TestIndexUpdating extends TestCase
   private boolean setupGrib()
   {
     // Check that the data directory exists and is writable.
-    dataDir = new File( ucar.nc2.TestAll.cdmTestDataDir, "ucar/nc2/iosp/grib/indexUpdating");
+    dataDir = new File( ucar.nc2.TestAll.cdmLocalTestDataDir, "ucar/nc2/iosp/grib/indexUpdating");
     if ( ! dataDir.exists())
     {
       fail( "Non-existent data directory [" + dataDir.getPath() + "].");
@@ -840,7 +840,7 @@ public class TestIndexUpdating extends TestCase
   private boolean gribInit_1_8()
   {
     // Check that the data directory exists and is writable.
-    dataDir = new File( ucar.nc2.TestAll.cdmTestDataDir, "ucar/nc2/iosp/grib/indexUpdating" );
+    dataDir = new File( ucar.nc2.TestAll.cdmLocalTestDataDir, "ucar/nc2/iosp/grib/indexUpdating" );
     if ( ! dataDir.exists() )
     {
       fail( "Non-existent data directory [" + dataDir.getPath() + "]." );

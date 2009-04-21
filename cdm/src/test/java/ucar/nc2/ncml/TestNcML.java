@@ -40,7 +40,7 @@ import ucar.nc2.TestAll;
  *
  */
 public class TestNcML {
-  public static String topDir = TestAll.cdmTestDataDir + "ncml/";
+  public static String topDir = TestAll.cdmLocalTestDataDir + "ncml/";
 
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();

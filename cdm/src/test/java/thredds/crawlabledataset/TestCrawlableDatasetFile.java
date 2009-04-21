@@ -55,7 +55,7 @@ public class TestCrawlableDatasetFile extends TestCase
 
   public void testUnreadableDir_Level2()
   {
-    File topDir = new File( new File( TestAll.upcShareThreddsDataDir ), "TestCrawlableDatasetFile");
+    File topDir = new File( new File( TestAll.cdmUnitTestDir ), "TestCrawlableDatasetFile");
     File testDir = new File( topDir, "testUnreadableDir"); 
     CrawlableDatasetFile crDs = new CrawlableDatasetFile( testDir);
     assertTrue( crDs.exists());

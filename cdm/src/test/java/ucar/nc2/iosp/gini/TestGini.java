@@ -41,21 +41,21 @@ import java.io.*;
 
 public class TestGini extends TestCase {
 
-  public static String compressGini = TestAll.cdmTestDataDir +"gini/n0r_20041013_1852-compress";
-  public static String uncompressGini = TestAll.cdmTestDataDir +"gini/n0r_20041013_1852-uncompress";
-  public static String compress_n1p = TestAll.cdmTestDataDir +"gini/n1p_20041206_2140";
-  public static String compress_ntp = TestAll.cdmTestDataDir +"gini/ntp_20041206_2154";
-  public static String satelliteAK_IR = TestAll.cdmTestDataDir +"gini/AK-NATIONAL_8km_IR_20050912_2345.gini";
-  public static String satellitePR_IR = TestAll.cdmTestDataDir +"gini/PR-REGIONAL_4km_12.0_20050922_0600.gini";
-  public static String satelliteHI10km_Sound = TestAll.cdmTestDataDir +"gini/HI-NATIONAL_10km_SOUND-6.51_20050918_1824.gini";
-  public static String satelliteHI14km_IR = TestAll.cdmTestDataDir +"gini/HI-NATIONAL_14km_IR_20050918_2000.gini";
-  public static String satelliteHI4km_IR = TestAll.cdmTestDataDir +"gini/HI-REGIONAL_4km_IR_20050919_1315.gini";
-  public static String satelliteSuper1km_PW = TestAll.cdmTestDataDir +"gini/SUPER-NATIONAL_1km_PW_20050923_1400.gini";
-  public static String satelliteSuper1km_SFT = TestAll.cdmTestDataDir +"gini/SUPER-NATIONAL_1km_SFC-T_20050912_1900.gini";
-  public static String satelliteSuper8km_IR = TestAll.cdmTestDataDir +"gini/SUPER-NATIONAL_8km_IR_20050911_2345.gini";
-  public static String satelliteEast_4km_12 = TestAll.cdmTestDataDir +"gini/EAST-CONUS_4km_12.0_20050912_0600.gini";
-  public static String satelliteEast_8km_13 = TestAll.cdmTestDataDir +"gini/EAST-CONUS_8km_13.3_20050912_2240.gini";
-  public static String satelliteWest_4km_39 = TestAll.cdmTestDataDir +"gini/WEST-CONUS_4km_3.9_20050912_2130.gini";
+  public static String compressGini = TestAll.cdmLocalTestDataDir +"gini/n0r_20041013_1852-compress";
+  public static String uncompressGini = TestAll.cdmLocalTestDataDir +"gini/n0r_20041013_1852-uncompress";
+  public static String compress_n1p = TestAll.cdmLocalTestDataDir +"gini/n1p_20041206_2140";
+  public static String compress_ntp = TestAll.cdmLocalTestDataDir +"gini/ntp_20041206_2154";
+  public static String satelliteAK_IR = TestAll.cdmLocalTestDataDir +"gini/AK-NATIONAL_8km_IR_20050912_2345.gini";
+  public static String satellitePR_IR = TestAll.cdmLocalTestDataDir +"gini/PR-REGIONAL_4km_12.0_20050922_0600.gini";
+  public static String satelliteHI10km_Sound = TestAll.cdmLocalTestDataDir +"gini/HI-NATIONAL_10km_SOUND-6.51_20050918_1824.gini";
+  public static String satelliteHI14km_IR = TestAll.cdmLocalTestDataDir +"gini/HI-NATIONAL_14km_IR_20050918_2000.gini";
+  public static String satelliteHI4km_IR = TestAll.cdmLocalTestDataDir +"gini/HI-REGIONAL_4km_IR_20050919_1315.gini";
+  public static String satelliteSuper1km_PW = TestAll.cdmLocalTestDataDir +"gini/SUPER-NATIONAL_1km_PW_20050923_1400.gini";
+  public static String satelliteSuper1km_SFT = TestAll.cdmLocalTestDataDir +"gini/SUPER-NATIONAL_1km_SFC-T_20050912_1900.gini";
+  public static String satelliteSuper8km_IR = TestAll.cdmLocalTestDataDir +"gini/SUPER-NATIONAL_8km_IR_20050911_2345.gini";
+  public static String satelliteEast_4km_12 = TestAll.cdmLocalTestDataDir +"gini/EAST-CONUS_4km_12.0_20050912_0600.gini";
+  public static String satelliteEast_8km_13 = TestAll.cdmLocalTestDataDir +"gini/EAST-CONUS_8km_13.3_20050912_2240.gini";
+  public static String satelliteWest_4km_39 = TestAll.cdmLocalTestDataDir +"gini/WEST-CONUS_4km_3.9_20050912_2130.gini";
 
 
   public static boolean dumpFile = false;

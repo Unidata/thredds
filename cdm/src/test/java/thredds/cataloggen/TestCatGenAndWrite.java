@@ -64,7 +64,7 @@ public class TestCatGenAndWrite extends TestCase
   protected void setUp()
   {
     // Create a data directory and some data files.
-    tmpDir = TestFileDirUtils.addDirectory( new File( TestAll.temporaryDataDir ), "TestCatGenAndWrite" );
+    tmpDir = TestFileDirUtils.addDirectory( new File( TestAll.temporaryLocalDataDir), "TestCatGenAndWrite" );
   }
 
   protected void tearDown()

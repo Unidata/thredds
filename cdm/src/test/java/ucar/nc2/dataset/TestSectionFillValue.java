@@ -33,13 +33,9 @@
 package ucar.nc2.dataset;
 
 import ucar.nc2.*;
-import ucar.nc2.util.*;
 import ucar.ma2.Range;
-import ucar.ma2.InvalidRangeException;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.io.IOException;
 
 import junit.framework.TestCase;
 
@@ -49,7 +45,7 @@ import junit.framework.TestCase;
  * @author caron
  */
 public class TestSectionFillValue extends TestCase {
-  private String filename = TestAll.cdmTestDataDir +"standardVar.nc";
+  private String filename = TestAll.cdmLocalTestDataDir +"standardVar.nc";
 
   public TestSectionFillValue( String name) {
     super(name);

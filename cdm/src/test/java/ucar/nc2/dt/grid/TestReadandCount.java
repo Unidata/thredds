@@ -35,13 +35,16 @@ package ucar.nc2.dt.grid;
 import junit.framework.*;
 import ucar.nc2.iosp.grib.GribServiceProvider;
 import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.TestAll;
+import ucar.nc2.ncml.NcMLReader;
+import ucar.nc2.ncml.TestNcML;
 
 import java.util.List;
 import java.util.Iterator;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 /** Count geogrid objects - sanity check when anything changes. */
 
@@ -53,15 +56,6 @@ public class TestReadandCount extends TestCase {
   }
 
   private String griddir = TestAll.testdataDir +"grid/netcdf/";
-
-  /* protected void setUp() {
-    NetcdfDataset.initNetcdfFileCache(10, 20, 60*60);
-  }
-
-  protected void tearDown() {
-    NetcdfDataset.getNetcdfFileCache().clearCache(true); // give messages on files not closed
-    NetcdfDataset.shutdown();
-  } */
 
   public void testRead1() throws Exception {
     doOne(griddir+"avhrr/","amsr-avhrr-v2.20040729.nc", 0, 1, 4, 0);
@@ -187,6 +181,35 @@ public class TestReadandCount extends TestCase {
 
     gridDs.close();
   }
+
+  public void testReadNcMLInputStream() throws Exception {
+    String ncmlLoc = "file:./"+ TestNcML.topDir + "aggExisting.xml";
+    GridDataset fullDataset = GridDataset.open( ncmlLoc);
+    System.out.printf("full size= %d%n", fullDataset.getGrids().size());
+
+    // real ncml through a InputStream.
+    String ncml =
+      "<?xml version='1.0' encoding='UTF-8'?>\n" +
+      "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
+      "  <variable name='time'>\n" +
+      "    <attribute name='ncmlAdded' value='timeAtt'/>\n" +
+      "  </variable>\n" +
+      "  <aggregation dimName='time' type='joinExisting'>\n" +
+      "    <netcdf location='C:/dev/tds/thredds/cdm/src/test/data/ncml/nc/jan.nc'/>\n" +
+      "    <netcdf location='C:/dev/tds/thredds/cdm/src/test/data/ncml/nc/feb.nc'/>\n" +
+      "  </aggregation>\n" +
+      "</netcdf>";
+    NetcdfDataset aggregatedDataset = NcMLReader.readNcML( new ByteArrayInputStream(ncml.getBytes()), null );
+    GridDataset emptyDataset = new GridDataset( aggregatedDataset );
+    System.out.printf("empty= %s%n", emptyDataset.getGrids().size());
+
+    assert emptyDataset.getGrids().size() == fullDataset.getGrids().size();
+
+    /* GridDataset ds2 = ucar.nc2.util.NcMLUtil.applyNcml( ncml);
+    System.out.printf("ds2= %s%n", ds2.getGrids().size());
+    assert ds2.getGrids().size() == fullDataset.getGrids().size();  */
+  }
+
 
    public static void main( String arg[]) throws Exception {
      // new TestReadandCount("dummy").doOne("C:/data/conventions/wrf/","wrf.nc", 33, 5, 7, 7);  // missing TSLB
