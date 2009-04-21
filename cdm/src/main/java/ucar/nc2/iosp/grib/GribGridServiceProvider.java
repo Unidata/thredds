@@ -62,6 +62,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GribGridServiceProvider.class);
 
   private long rafLength;    // length of the file when opened - used for syncing
+  private long indexLength;    // length of the index in getIndex - used for syncing
   private int saveEdition = 0;
   private String saveLocation;
 
@@ -284,7 +285,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
       //index = writeIndex(edition, indexFile, raf);
       index = writeIndex(indexFile, raf);
     }
-
+    indexLength = indexFile.length();
     return index;
   }
 
@@ -342,8 +343,9 @@ public class GribGridServiceProvider extends GridServiceProvider {
     //if (syncMode == IndexExtendMode.none) return false;
 
     // has the file chenged?
-    if (rafLength != raf.length()) {
-      File indexFile = getIndexFile(saveLocation);
+    File indexFile = getIndexFile(saveLocation);
+    if (rafLength != raf.length() || indexLength != indexFile.length() ) {
+      //File indexFile = getIndexFile(saveLocation);
       //Index index;
       GridIndex index;
       if (syncMode == IndexExtendMode.readonly) {
@@ -371,6 +373,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
       }
       // update so next sync call doesn't reread unnecessary
       rafLength = raf.length();
+      indexLength = indexFile.length();
       // reconstruct the ncfile objects
       ncfile.empty();
       open(index, null);
