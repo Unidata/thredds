@@ -139,7 +139,7 @@ public class Cinrad2Record {
    static public String getDatatypeUnits(int datatype) {
      switch (datatype) {
        case REFLECTIVITY :
-           return "dBZ";
+           return "dBz";
 
        case VELOCITY_HI :
        case VELOCITY_LOW :
