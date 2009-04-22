@@ -759,9 +759,9 @@ class Giniheader {
             iname = new String( "RAIN" );
             iunit = new String( "IN  ");
 
-        } else if ( unitStr.contains("DBZ" ) ) {
+        } else if ( unitStr.contains("dBz" ) ) {
             iname = new String( "ECHO" );
-            iunit = new String( "DBZ " );
+            iunit = new String( "dBz " );
 
         } else if (unitStr.contains("KFT" ) ) {
 
@@ -1086,17 +1086,17 @@ class Giniheader {
       case 26: return  "K FT";
       case 25:
         if( ent_id == 99)
-            return "dbZ";
+            return "dBz";
         else
             return  "N/A";
       case 27:
         if( ent_id == 99)
-            return "dbZ";
+            return "dBz";
         else
           return  "N/A";
       case 28:
         if( ent_id == 99)
-            return "dbZ";
+            return "dBz";
         else
           return  "N/A";
       case 30: return "IN";
