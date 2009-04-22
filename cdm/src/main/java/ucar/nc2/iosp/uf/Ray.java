@@ -164,9 +164,9 @@ public class Ray {
 
    public String getDatatypeUnits(String abbrev) {
        if(abbrev.equals("CZ") || abbrev.equals("DZ") || abbrev.equals("ZN") || abbrev.equals("ZS"))
-          return "dBZ";
+          return "dBz";
         else if (abbrev.equals("ZF") || abbrev.equals("ZX"))
-          return "dBZ";
+          return "dBz";
         else if(abbrev.equals("VR") || abbrev.equals("DN") || abbrev.equals("DS") || abbrev.equals("DF") ||abbrev.equals("DX") )
           return "m/s";
         else if(abbrev.equals("VN") || abbrev.equals("VF") )
