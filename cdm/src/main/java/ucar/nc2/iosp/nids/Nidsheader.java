@@ -1861,7 +1861,7 @@ class Nidsheader{
 
             ctilt = pname_lookup(19, prod_elevation/10);
             ctitle = "DigitalHybrid: Reflectivity";
-            cunit = "dbZ";
+            cunit = "dBz";
             cname = "DigitalHybridReflectivity";
             summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation/10 + 1) +  " and range 124 nm";
 
@@ -1878,7 +1878,7 @@ class Nidsheader{
                 summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation/10 + 1) +  " and range 124 nm";
             }
             ctitle = "BREF: Base Reflectivity";
-            cunit = "dbZ";
+            cunit = "dBz";
             cname = "BaseReflectivity";
 
         } else if (prod_type == BaseReflect248) {
@@ -1888,7 +1888,7 @@ class Nidsheader{
 
             ctilt = pname_lookup(20, prod_elevation/10);
             ctitle = "BREF: 248 nm Base Reflectivity";
-            cunit = "dbZ";
+            cunit = "dBz";
             cname = "BaseReflectivity248";
             summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation/10 + 1) +  " and range 248 nm";
             t1 = 248.0 * 1.853 / 111.26;
@@ -1913,7 +1913,7 @@ class Nidsheader{
             summary = ctilt + "is a raster image of composite reflectivity";
             cmemo = "Composite Reflectivity at " + cmode[pinfo.opmode];
             ctitle = "CREF Composite Reflectivity" + ctilt;
-            cunit = "dbZ" ;
+            cunit = "dBz" ;
             cname = "BaseReflectivityComp";
         } else if (prod_type == Layer_Reflect_Avg ||
                  prod_type == Layer_Reflect_Max)   {
@@ -1930,7 +1930,7 @@ class Nidsheader{
             lon_min = longitude + t2;
             lon_max = longitude - t2;
             ctitle = "LREF: Layer Composite Reflectivity" ;
-            cunit = "dbZ" ;
+            cunit = "dBz" ;
             cname = "LayerCompReflect";
         } else if (prod_type == Echo_Tops) {
             radial          = 3;
