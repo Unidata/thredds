@@ -162,7 +162,7 @@ public class Level2Record {
    static public String getDatatypeUnits(int datatype) {
      switch (datatype) {
        case REFLECTIVITY :
-           return "dBZ";
+           return "dBz";
 
        case VELOCITY_HI :
        case VELOCITY_LOW :
@@ -170,9 +170,9 @@ public class Level2Record {
            return "m/s";
 
        case REFLECTIVITY_HIGH :
-           return "dBZ";
+           return "dBz";
        case DIFF_REFLECTIVITY_HIGH :
-           return "dB";
+           return "dBz";
 
        case VELOCITY_HIGH : 
        case SPECTRUM_WIDTH_HIGH :
@@ -876,7 +876,7 @@ public class Level2Record {
     int dataCount = getGateCount( datatype);
     byte[] data = new byte[dataCount];
     raf.readFully(data);
-
+    short [] ds = convertunsignedByte2Short(data);
     for (int i = gateRange.first(); i <= gateRange.last(); i += gateRange.stride()) {
       if (i >= dataCount)
         ii.setByteNext(MISSING_DATA);
@@ -907,6 +907,18 @@ public class Level2Record {
     return hashCode;
   }
   private volatile int hashCode = 0;  */
+  public short[] convertunsignedByte2Short(byte[] inb) {
+     int len = inb.length;
+     short [] outs = new short[len];
+     int i = 0;
+     for(byte b: inb){
+         outs[i++] = convertunsignedByte2Short(b);
+     }
+    return outs;
+  }
+  public short convertunsignedByte2Short(byte b) {
+    return (short) ((b < 0) ? (short) b + 256 : (short) b);
+  }
 
   public String toString() {
     return "elev= "+elevation_num+" radial_num = "+radial_num;
