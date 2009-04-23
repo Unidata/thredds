@@ -48,8 +48,9 @@ import ucar.units.*;
  */
 
 public class SimpleUnit {
-  public static SimpleUnit kmUnit;
-  public static SimpleUnit meterUnit;
+  public static final SimpleUnit kmUnit;
+  public static final SimpleUnit meterUnit;
+  public static final SimpleUnit pressureUnit;
 
   //static protected UnitFormat format;
   static protected Unit secsUnit, dateUnit;
@@ -69,6 +70,7 @@ public class SimpleUnit {
 
       kmUnit = SimpleUnit.factoryWithExceptions("km");
       meterUnit = SimpleUnit.factoryWithExceptions("m");
+      pressureUnit = SimpleUnit.factoryWithExceptions("Pa");
 
     } catch (Exception e) {
       System.out.println("SimpleUnit initialization failed " + e);

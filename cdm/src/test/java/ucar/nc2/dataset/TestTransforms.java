@@ -35,6 +35,7 @@ package ucar.nc2.dataset;
 
 import ucar.nc2.TestAll;
 import ucar.nc2.*;
+import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.vertical.*;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.*;
@@ -60,83 +61,17 @@ public class TestTransforms extends TestCase {
 
   public void testHybridSigmaPressure() throws IOException, InvalidRangeException {
     String filename = TestAll.testdataDir + "grid/transforms/HybridSigmaPressure.nc";
-    NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
-    VariableDS lev = (VariableDS) ncd.findVariable("lev");
-    assert lev != null;
-    System.out.println(" dump of ctv = \n" + lev);
-
-    VariableDS v = (VariableDS) ncd.findVariable("T");
-    assert v != null;
-
-    List cList = v.getCoordinateSystems();
-    assert cList != null;
-    assert cList.size() == 1;
-    CoordinateSystem csys = (CoordinateSystem) cList.get(0);
-
-    List tList = csys.getCoordinateTransforms();
-    assert tList != null;
-    assert tList.size() == 1;
-    CoordinateTransform ct = (CoordinateTransform) tList.get(0);
-    assert ct.getTransformType() == TransformType.Vertical;
-    assert ct instanceof VerticalCT;
-
-    VerticalCT vct = (VerticalCT) ct;
-    assert vct.getVerticalTransformType() == VerticalCT.Type.HybridSigmaPressure;
-
-    VariableDS ctv = CoordTransBuilder.makeDummyTransformVariable(ncd, ct);
-    System.out.println(" dump of equivilent ctv = \n" + ctv);
-
-    Dimension timeDim = ncd.findDimension("time");
-    VerticalTransform vt = vct.makeVerticalTransform(ncd, timeDim);
-    assert vt != null;
-    assert vt instanceof HybridSigmaPressure;
-
-    assert vt.getUnitString().equals("Pa");
-    assert vt.isTimeDependent();
-
-    for (int i = 0; i < timeDim.getLength(); i++) {
-      ucar.ma2.ArrayDouble.D3 coordVals = vt.getCoordinateArray(i);
-    }
-
-    ncd.close();
+    test(filename, "lev", "T", "time", VerticalCT.Type.HybridSigmaPressure, HybridSigmaPressure.class,
+            SimpleUnit.pressureUnit );
   }
 
   public void testHybridSigmaPressure2() throws IOException, InvalidRangeException {
     String filename = TestAll.testdataDir + "grid/netcdf/cf/climo.cam2.h0.0000-09.nc";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
-    VariableDS lev = (VariableDS) ncd.findVariable("lev");
-    assert lev != null;
-    System.out.println(" dump of ctv = \n" + lev);
-
-    VariableDS v = (VariableDS) ncd.findVariable("T");
-    assert v != null;
-
-    List cList = v.getCoordinateSystems();
-    assert cList != null;
-    assert cList.size() == 1;
-    CoordinateSystem csys = (CoordinateSystem) cList.get(0);
-
-    List tList = csys.getCoordinateTransforms();
-    assert tList != null;
-    assert tList.size() == 1;
-    CoordinateTransform ct = (CoordinateTransform) tList.get(0);
-    assert ct.getTransformType() == TransformType.Vertical;
-    assert ct instanceof VerticalCT;
-
-    VerticalCT vct = (VerticalCT) ct;
-    assert vct.getVerticalTransformType() == VerticalCT.Type.HybridSigmaPressure;
-
-    VariableDS ctv = CoordTransBuilder.makeDummyTransformVariable(ncd, ct);
-    System.out.println(" dump of equivilent ctv = \n" + ctv);
+    VerticalTransform vt = test(ncd, "lev", "T", "time", VerticalCT.Type.HybridSigmaPressure, HybridSigmaPressure.class,
+            SimpleUnit.pressureUnit );
 
     Dimension timeDim = ncd.findDimension("time");
-    VerticalTransform vt = vct.makeVerticalTransform(ncd, timeDim);
-    assert vt != null;
-    assert vt instanceof HybridSigmaPressure;
-
-    assert vt.getUnitString().equals("Pa");
-    assert vt.isTimeDependent();
-
     for (int i = 0; i < timeDim.getLength(); i++) {
       ucar.ma2.ArrayDouble.D3 coordVals = vt.getCoordinateArray(i);
       int[] shape = coordVals.getShape();
@@ -150,144 +85,64 @@ public class TestTransforms extends TestCase {
 
   public void testOceanS() throws IOException, InvalidRangeException {
     String filename = TestAll.testdataDir + "grid/transforms/OceanS.nc";
-    NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
-    VariableDS lev = (VariableDS) ncd.findVariable("s_rho");
-    assert lev != null;
-    System.out.println(" dump of ctv = \n" + lev);
-
-    VariableDS v = (VariableDS) ncd.findVariable("salt");
-    assert v != null;
-
-    List cList = v.getCoordinateSystems();
-    assert cList != null;
-    assert cList.size() == 1;
-    CoordinateSystem csys = (CoordinateSystem) cList.get(0);
-
-    List tList = csys.getCoordinateTransforms();
-    assert tList != null;
-    assert tList.size() == 1;
-    CoordinateTransform ct = (CoordinateTransform) tList.get(0);
-    assert ct.getTransformType() == TransformType.Vertical;
-    assert ct instanceof VerticalCT;
-
-    VerticalCT vct = (VerticalCT) ct;
-    assert vct.getVerticalTransformType() == VerticalCT.Type.OceanS;
-
-    VariableDS ctv = CoordTransBuilder.makeDummyTransformVariable(ncd, ct);
-    System.out.println(" dump of equivilent ctv = \n" + ctv);
-
-    Dimension timeDim = ncd.findDimension("ocean_time");
-    assert null != timeDim;
-    VerticalTransform vt = vct.makeVerticalTransform(ncd, timeDim);
-    assert vt != null;
-    assert vt instanceof OceanS;
-
-    assert vt.getUnitString().equals("meter") : vt.getUnitString();
-    assert vt.isTimeDependent();
-
-    for (int i = 0; i < timeDim.getLength(); i++) {
-      ucar.ma2.ArrayDouble.D3 coordVals = vt.getCoordinateArray(i);
-    }
-
-    ncd.close();
+    test(filename, "s_rho", "salt", "ocean_time", VerticalCT.Type.OceanS, OceanS.class, SimpleUnit.meterUnit);
   }
 
   public void testOceanS2() throws IOException, InvalidRangeException {
     String filename = TestAll.testdataDir + "grid/transforms/OceanS2.nc";
-    NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
-    VariableDS lev = (VariableDS) ncd.findVariable("s_rho");
-    assert lev != null;
-    System.out.println(" dump of ctv = \n" + lev);
-
-    VariableDS v = (VariableDS) ncd.findVariable("temp");
-    assert v != null;
-
-    List cList = v.getCoordinateSystems();
-    assert cList != null;
-    assert cList.size() == 1;
-    CoordinateSystem csys = (CoordinateSystem) cList.get(0);
-
-    List tList = csys.getCoordinateTransforms();
-    assert tList != null;
-    assert tList.size() == 1;
-    CoordinateTransform ct = (CoordinateTransform) tList.get(0);
-    assert ct.getTransformType() == TransformType.Vertical;
-    assert ct instanceof VerticalCT;
-
-    VerticalCT vct = (VerticalCT) ct;
-    assert vct.getVerticalTransformType() == VerticalCT.Type.OceanS;
-
-    VariableDS ctv = CoordTransBuilder.makeDummyTransformVariable(ncd, ct);
-    System.out.println(" dump of equivilent ctv = \n" + ctv);
-
-    Dimension timeDim = ncd.findDimension("ocean_time");
-    assert null != timeDim;
-    VerticalTransform vt = vct.makeVerticalTransform(ncd, timeDim);
-    assert vt != null;
-    assert vt instanceof OceanS;
-
-    assert vt.getUnitString().equals("meter") : vt.getUnitString();
-    assert vt.isTimeDependent();
-
-    for (int i = 0; i < timeDim.getLength(); i++) {
-      ucar.ma2.ArrayDouble.D3 coordVals = vt.getCoordinateArray(i);
-    }
-
-    ncd.close();
+    test(filename, "s_rho", "temp", "ocean_time", VerticalCT.Type.OceanS, OceanS.class, SimpleUnit.meterUnit);
   }
-
 
   public void testOceanSigma() throws IOException, InvalidRangeException {
     String filename = TestAll.testdataDir + "grid/transforms/OceanSigma.nc";
-    NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
-    VariableDS lev = (VariableDS) ncd.findVariable("zpos");
-    assert lev != null;
-    System.out.println(" dump of ctv = \n" + lev);
+    test(filename, "zpos", "salt", "time", VerticalCT.Type.OceanSigma, OceanSigma.class, SimpleUnit.meterUnit);
+  }
 
-    VariableDS v = (VariableDS) ncd.findVariable("salt");
-    assert v != null;
+  public void testOceanS3() throws IOException, InvalidRangeException {
+    String filename = TestAll.testdataDir + "grid/transforms/ocean_his.nc";
+    test(filename, "s_rho", "u", "ocean_time", VerticalCT.Type.OceanS, OceanS.class, SimpleUnit.meterUnit);
+  }
 
-    List cList = v.getCoordinateSystems();
-    assert cList != null;
-    assert cList.size() == 1;
-    CoordinateSystem csys = (CoordinateSystem) cList.get(0);
+  public void testOceanG1() throws IOException, InvalidRangeException {
+    String filename = TestAll.testdataDir + "grid/transforms/ocean_his_g1.nc";
+    test(filename, "s_rho", "u", "ocean_time", VerticalCT.Type.OceanSG1, OceanSG1.class, SimpleUnit.meterUnit);
+  }
 
-    List tList = csys.getCoordinateTransforms();
-    assert tList != null;
-    assert tList.size() == 1;
-    CoordinateTransform ct = (CoordinateTransform) tList.get(0);
-    assert ct.getTransformType() == TransformType.Vertical;
-    assert ct instanceof VerticalCT;
-
-    VerticalCT vct = (VerticalCT) ct;
-    assert vct.getVerticalTransformType() == VerticalCT.Type.OceanSigma;
-
-    VariableDS ctv = CoordTransBuilder.makeDummyTransformVariable(ncd, ct);
-    System.out.println(" dump of equivilent ctv = \n" + ctv);
-
-    Dimension timeDim = ncd.findDimension("time");
-    assert null != timeDim;
-    VerticalTransform vt = vct.makeVerticalTransform(ncd, timeDim);
-    assert vt != null;
-    assert vt instanceof OceanSigma;
-
-    assert vt.getUnitString().equals("meters") : vt.getUnitString();
-    assert vt.isTimeDependent();
-
-    for (int i = 0; i < timeDim.getLength(); i++) {
-      ucar.ma2.ArrayDouble.D3 coordVals = vt.getCoordinateArray(i);
-    }
-    ncd.close();
+  public void testOceanG2() throws IOException, InvalidRangeException {
+    String filename = TestAll.testdataDir + "grid/transforms/ocean_his_g2.nc";
+    test(filename, "s_rho", "u", "ocean_time", VerticalCT.Type.OceanSG2, OceanSG2.class, SimpleUnit.meterUnit);
   }
 
   public void testSigma() throws IOException, InvalidRangeException {
     String filename = TestAll.testdataDir + "grid/transforms/Sigma_LC.nc";
+    test(filename, "level", "Temperature", null, VerticalCT.Type.Sigma, AtmosSigma.class, SimpleUnit.pressureUnit );
+  }
+
+  public void testExisting3D() throws IOException, InvalidRangeException {
+    String filename = TestAll.testdataDir + "grid/transforms/VExisting3D_NUWG.nc";
+    test(filename, "VerticalTransform", "rhu_hybr", "record", VerticalCT.Type.Existing3DField, VTfromExistingData.class,
+            null);
+  }
+
+  private VerticalTransform test(String filename, String levName, String varName, String timeName,
+          VerticalCT.Type vtype, Class vclass, SimpleUnit unit)
+          throws IOException, InvalidRangeException {
+
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
-    VariableDS lev = (VariableDS) ncd.findVariable("level");
+    test(ncd, levName, varName, timeName, vtype,  vclass, unit);
+    ncd.close();
+    return null;
+  }
+
+  private VerticalTransform test(NetcdfDataset ncd, String levName, String varName, String timeName,
+          VerticalCT.Type vtype, Class vclass, SimpleUnit vunit)
+          throws IOException, InvalidRangeException {
+
+    VariableDS lev = (VariableDS) ncd.findVariable(levName);
     assert lev != null;
     System.out.println(" dump of ctv = \n" + lev);
 
-    VariableDS v = (VariableDS) ncd.findVariable("Temperature");
+    VariableDS v = (VariableDS) ncd.findVariable(varName);
     assert v != null;
 
     List cList = v.getCoordinateSystems();
@@ -309,65 +164,42 @@ public class TestTransforms extends TestCase {
     assert ct instanceof VerticalCT;
 
     VerticalCT vct = (VerticalCT) ct;
-    assert vct.getVerticalTransformType() == VerticalCT.Type.Sigma;
+    assert vct.getVerticalTransformType() == vtype : vct.getVerticalTransformType();
 
     VariableDS ctv = CoordTransBuilder.makeDummyTransformVariable(ncd, ct);
     System.out.println(" dump of equivilent ctv = \n" + ctv);
 
-    VerticalTransform vt = vct.makeVerticalTransform(ncd, null);
-    assert vt != null;
-    assert vt instanceof AtmosSigma;
+    VerticalTransform vt = null;
+    if (timeName == null) {
+      vt = vct.makeVerticalTransform(ncd, null);
+      assert !vt.isTimeDependent();
+      ucar.ma2.Array coordVals = vt.getCoordinateArray(0);
+      assert (null != coordVals);
 
-    assert vt.getUnitString().equals("mbar") : vt.getUnitString();
-    assert !vt.isTimeDependent();
-
-    ucar.ma2.ArrayDouble.D3 coordVals = vt.getCoordinateArray(0);
-
-    ncd.close();
-  }
-
-  public void testExisting() throws IOException, InvalidRangeException {
-    String filename = TestAll.testdataDir + "grid/transforms/VExisting3D_NUWG.nc";
-    NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
-    VariableDS lev = (VariableDS) ncd.findVariable("VerticalTransform");
-    assert lev != null;
-    System.out.println(" dump of ctv = \n" + lev);
-
-    VariableDS v = (VariableDS) ncd.findVariable("rhu_hybr");
-    assert v != null;
-
-    List cList = v.getCoordinateSystems();
-    assert cList != null;
-    assert cList.size() == 1;
-    CoordinateSystem csys = (CoordinateSystem) cList.get(0);
-
-    List tList = csys.getCoordinateTransforms();
-    assert tList != null;
-    assert tList.size() == 1;
-    CoordinateTransform ct = (CoordinateTransform) tList.get(0);
-    assert ct.getTransformType() == TransformType.Vertical;
-    assert ct instanceof VerticalCT;
-
-    VerticalCT vct = (VerticalCT) ct;
-    assert vct.getVerticalTransformType() == VerticalCT.Type.Existing3DField;
-
-    VariableDS ctv = CoordTransBuilder.makeDummyTransformVariable(ncd, ct);
-    System.out.println(" dump of equivilent ctv = \n" + ctv);
-
-    Dimension timeDim = ncd.findDimension("record");
-    assert null != timeDim;
-    VerticalTransform vt = vct.makeVerticalTransform(ncd, timeDim);
-    assert vt != null;
-    assert vt instanceof VTfromExistingData;
-
-    assert vt.getUnitString().equals("gp m") : vt.getUnitString();
-    assert vt.isTimeDependent();
-
-    for (int i = 0; i < timeDim.getLength(); i++) {
-      ucar.ma2.ArrayDouble.D3 coordVals = vt.getCoordinateArray(i);
+    } else {
+      Dimension timeDim = ncd.findDimension(timeName);
+      assert null != timeDim;
+      vt = vct.makeVerticalTransform(ncd, timeDim);
+      assert vt.isTimeDependent();
+      for (int i = 0; i < timeDim.getLength(); i++) {
+        ucar.ma2.ArrayDouble.D3 coordVals = vt.getCoordinateArray(i);
+        assert (null != coordVals);
+      }
     }
-    ncd.close();
+    assert vt != null;
+    assert vclass.isInstance(vt);
+
+    // should be compatible with vunit
+    if (vunit != null) {
+      String vertCoordUnit = vt.getUnitString();
+      assert vunit.isCompatible(vertCoordUnit) : vertCoordUnit + " not udunits compatible with " + vunit.getUnitString();
+    }
+
+    return vt;
   }
+
+
+ /////////////////////////////////////////////////////////////////////////
 
   public void testLC() throws IOException, InvalidRangeException {
     String filename = TestAll.testdataDir + "grid/transforms/Sigma_LC.nc";

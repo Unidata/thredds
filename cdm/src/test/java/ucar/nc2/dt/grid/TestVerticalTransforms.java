@@ -1,4 +1,3 @@
-// $Id: TestVerticalTransforms.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -45,13 +44,6 @@ import ucar.ma2.InvalidRangeException;
 
 import java.io.IOException;
 
-/**
- * Created by IntelliJ IDEA.
- * User: caron
- * Date: Jun 27, 2006
- * Time: 10:07:43 AM
- * To change this template use File | Settings | File Templates.
- */
 public class TestVerticalTransforms extends TestCase {
 
   public TestVerticalTransforms(String name) {
