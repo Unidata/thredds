@@ -33,6 +33,7 @@
 package ucar.nc2.iosp.hdf4;
 
 import ucar.nc2.*;
+import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
@@ -48,8 +49,8 @@ import java.util.Iterator;
 import org.jdom.Element;
 
 /**
- * Parse structural metadata from HDF4-EOS.
- * This allows us to use shared dimensions.
+ * Parse structural metadata from HDF-EOS.
+ * This allows us to use shared dimensions, identify Coordinate Axes, and the FeatureType.
  *
  * @author caron
  * @since Jul 23, 2007
@@ -58,6 +59,15 @@ public class HdfEos {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HdfEos.class);
   static private boolean showTypes = false;
 
+  /**
+   * Amend the given NetcdfFile with metadata from HDF-EOS structMetadata.
+   * All Variables named StructMetadata.n, where n= 1, 2, 3 ... are read in and their contents concatenated
+   * to make the structMetadata String.
+   *
+   * @param ncfile Amend this file
+   * @param eosGroup the group containing variables named StructMetadata.*
+   * @throws IOException on read error
+   */
   static public void amendFromODL(NetcdfFile ncfile, Group eosGroup) throws IOException {
     StringBuilder sbuff = null;
     String structMetadata = null;
@@ -86,17 +96,21 @@ public class HdfEos {
       new HdfEos().amendFromODL(ncfile, structMetadata);
   }
 
-  private NetcdfFile ncfile;
-
-  public void amendFromODL(NetcdfFile ncfile, String structMetadata) throws IOException {
-    this.ncfile = ncfile;
+  /**
+   * Amend the given NetcdfFile with metadata from HDF-EOS structMetadata
+   *
+   * @param ncfile Amend this file
+   * @param structMetadata  structMetadata as String
+   * @throws IOException on read error
+   */
+  private void amendFromODL(NetcdfFile ncfile, String structMetadata) throws IOException {
     Group rootg = ncfile.getRootGroup();
 
     ODLparser parser = new ODLparser();
     Element root = parser.parseFromString(structMetadata); // now we have the ODL in JDOM elements
+    FeatureType featureType = null;
 
     // SWATH
-    boolean isSwath = false;
     Element swathStructure = root.getChild("SwathStructure");
     if (swathStructure != null) {
       List<Element> swaths = (List<Element>) swathStructure.getChildren();
@@ -109,20 +123,14 @@ public class HdfEos {
         String swathName = swathNameElem.getText();
         Group swathGroup = findGroupNested(rootg, swathName);
         if (swathGroup != null) {
-          amendSwath(elemSwath, swathGroup);
-          isSwath = true;
+          featureType = amendSwath(ncfile, elemSwath, swathGroup);
         } else {
           log.warn("Cant find swath group " + swathName);
         }
       }
-      if (isSwath) {
-        if (showTypes) System.out.println("***EOS SWATH");
-        rootg.addAttribute(new Attribute("cdm_data_type", FeatureType.SWATH.toString()));
-      }
     }
 
     // GRID
-    boolean isGrid = false;
     Element gridStructure = root.getChild("GridStructure");
     if (gridStructure != null) {
       List<Element> grids = (List<Element>) gridStructure.getChildren();
@@ -135,20 +143,14 @@ public class HdfEos {
         String gridName = gridNameElem.getText();
         Group gridGroup = findGroupNested(rootg, gridName);
         if (gridGroup != null) {
-          amendGrid(elemGrid, gridGroup);
-          isGrid = true;
+          featureType = amendGrid(elemGrid, gridGroup);
         } else {
           log.warn("Cant find Grid group " + gridName);
         }
       }
-      if (isGrid) {
-        if (showTypes) System.out.println("***EOS GRID");
-        rootg.addAttribute(new Attribute("cdm_data_type", FeatureType.GRID.toString()));
-      }
     }
 
-    // POINT
-    boolean isPoint = false;
+    // POINT - NOT DONE YET
     Element pointStructure = root.getChild("PointStructure");
     if (pointStructure != null) {
       List<Element> pts = (List<Element>) pointStructure.getChildren();
@@ -161,20 +163,22 @@ public class HdfEos {
         String name = nameElem.getText();
         Group ptGroup = findGroupNested(rootg, name);
         if (ptGroup != null) {
-          isPoint = true;
+          featureType = FeatureType.POINT;
         } else {
           log.warn("Cant find Point group " + name);
         }
       }
-      if (isPoint) {
-        if (showTypes) System.out.println("***EOS POINT");
-        rootg.addAttribute(new Attribute("cdm_data_type", FeatureType.POINT.toString()));
-      }
+    }
+
+    if (featureType != null) {
+      if (showTypes) System.out.println("***EOS featureType= "+featureType.toString());
+      rootg.addAttribute(new Attribute("cdm_data_type", featureType.toString()));
     }
 
   }
 
-  private void amendSwath(Element swathElem, Group parent) {
+  private FeatureType amendSwath(NetcdfFile ncfile, Element swathElem, Group parent) {
+    FeatureType featureType = FeatureType.SWATH;
     List<Dimension> unknownDims = new ArrayList<Dimension>();
 
     // Dimensions
@@ -222,20 +226,26 @@ public class HdfEos {
     // Geolocation Variables
     Group geoFieldsG = parent.findGroup("Geolocation Fields");
     if (geoFieldsG != null) {
-
+      Variable latAxis = null, lonAxis = null;
       Element floc = swathElem.getChild("GeoField");
       List<Element> varsLoc = (List<Element>) floc.getChildren();
       for (Element elem : varsLoc) {
         String varname = elem.getChild("GeoFieldName").getText();
         Variable v = geoFieldsG.findVariable(varname);
         assert v != null : varname;
-        addAxisType(v);
+        AxisType axis = addAxisType(v);
+        if (axis == AxisType.Lat) latAxis = v;
+        if (axis == AxisType.Lon) lonAxis = v;
 
-        StringBuilder sbuff = new StringBuilder();
         Element dimList = elem.getChild("DimList");
         List<Element> values = (List<Element>) dimList.getChildren("value");
         setSharedDimensions( v, values, unknownDims);
       }
+      if ((latAxis != null) && (lonAxis != null)) {
+        List<Dimension> xyDomain = CoordinateSystem.makeDomain(new Variable[] {latAxis, lonAxis});
+       if (xyDomain.size() < 2) featureType = FeatureType.PROFILE;
+      }
+
     }
 
     // Data Variables
@@ -254,37 +264,46 @@ public class HdfEos {
           continue;
         }
 
-        StringBuilder sbuff = new StringBuilder();
         Element dimList = elem.getChild("DimList");
         List<Element> values = (List<Element>) dimList.getChildren("value");
         setSharedDimensions( v, values, unknownDims);
       }
     }
 
+    return featureType;
   }
 
-  private void addAxisType(Variable v) {
+  private AxisType addAxisType(Variable v) {
     String name = v.getShortName();
     if (name.equalsIgnoreCase("Latitude") || name.equalsIgnoreCase("GeodeticLatitude")) {
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
       v.addAttribute(new Attribute("units", "degrees_north"));
+      return AxisType.Lat;
+
     } else if (name.equalsIgnoreCase("Longitude")) {
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
       v.addAttribute(new Attribute("units", "degrees_east"));
+      return AxisType.Lon;
+
     } else if (name.equalsIgnoreCase("Time")) {
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
-      //v.addAttribute(new Attribute("units", "unknown"));
+      return AxisType.Time;
+
     } else if (name.equalsIgnoreCase("Pressure")) {
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
-      //v.addAttribute(new Attribute("units", "unknown"));
+      return AxisType.Pressure;
+
     } else if (name.equalsIgnoreCase("Altitude")) {
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
       v.addAttribute(new Attribute("positive", "up")); // probably
+      return AxisType.Height;
      }
+
+    return null;
   }
 
 
-  private void amendGrid(Element gridElem, Group parent) {
+  private FeatureType amendGrid(Element gridElem, Group parent) {
     List<Dimension> unknownDims = new ArrayList<Dimension>();
 
     // always has x and y dimension
@@ -330,7 +349,6 @@ public class HdfEos {
         Variable v = geoFieldsG.findVariable(varname);
         assert v != null : varname;
 
-        StringBuilder sbuff = new StringBuilder();
         Element dimList = elem.getChild("DimList");
         List<Element> values = (List<Element>) dimList.getChildren("value");
         setSharedDimensions( v, values, unknownDims);
@@ -348,13 +366,13 @@ public class HdfEos {
         Variable v = dataG.findVariable(varname);
         assert v != null : varname;
 
-        StringBuilder sbuff = new StringBuilder();
         Element dimList = elem.getChild("DimList");
         List<Element> values = (List<Element>) dimList.getChildren("value");
         setSharedDimensions( v, values, unknownDims);
       }
     }
 
+    return FeatureType.GRID;
   }
 
   // convert to shared dimensions

@@ -401,7 +401,7 @@ public class TableAnalyzer {
 
     if (dimSet.size() == 1) {
       Dimension obsDim = (Dimension) dimSet.toArray()[0];
-      TableConfig st = new TableConfig(Table.Type.Structure, obsDim.getName());
+      TableConfig st = new TableConfig(Table.Type.Structure, "record");
       st.isPsuedoStructure = true;
       st.dim = obsDim;
       CoordSysEvaluator.findCoords(st, ds);

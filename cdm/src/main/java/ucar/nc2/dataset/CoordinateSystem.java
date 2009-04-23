@@ -414,6 +414,17 @@ public class CoordinateSystem {
     return true;
   }
 
+  public static List<Dimension> makeDomain(Variable[] axes) {
+    List<Dimension> domain = new ArrayList<Dimension>(10);
+    for (Variable axis : axes) {
+      for (Dimension dim : axis.getDimensions()) {
+        if (!domain.contains(dim))
+          domain.add(dim);
+      }
+    }
+    return domain;
+  }
+
   /**
    * Implicit Coordinate System are constructed based on which Coordinate Variables exist for the Dimensions of the Variable.
    * This is in contrast to a Coordinate System that is explicitly specified in the file.

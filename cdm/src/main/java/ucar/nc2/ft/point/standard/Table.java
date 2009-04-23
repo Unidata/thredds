@@ -189,7 +189,8 @@ public abstract class Table {
       if (config.isPsuedoStructure) {
         this.dim = config.dim;
         assert dim != null;
-        struct = new StructurePseudo(ds, null, config.structName, config.dim);
+        //Group parent = ds.findGroup(config.groupName); // will return rootGroup if null
+        struct = new StructurePseudo(ds, dim.getGroup(), config.structName, config.dim);
 
       } else {
         struct = (Structure) ds.findVariable(config.structName);

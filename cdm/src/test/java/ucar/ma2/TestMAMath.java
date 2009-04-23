@@ -209,10 +209,11 @@ public class TestMAMath extends TestCase {
 
     Section section = new Section("1,:,:");
     Array datasection = data.sectionNoReduce(section.getRanges());
-    NCdumpW.printArray(A, "section", new PrintWriter(System.out), null);
+    NCdumpW.printArray(datasection, "section", new PrintWriter(System.out), null);
 
     double sum = MAMath.sumDouble(datasection);
     System.out.printf(" sum=%f%n ", sum);
+    assert sum == 663.0;
   }
 
 

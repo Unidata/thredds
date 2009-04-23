@@ -25,7 +25,7 @@
       <value>
         /debug=debugController
         /debug/*=debugController
-        /log/*=logController
+        /log/**=logController
         /*=dirDisplayController
       </value>
     </property>

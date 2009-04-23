@@ -98,9 +98,8 @@ public class TestPointFeatureTypes  extends TestCase {
     }
   }
 
-  public void utestProblem() throws IOException {
-    //testPointDataset(topDir+"noZ/41001h2007.nc", FeatureType.ANY_POINT, true);
-    testPointDataset("R:/testdata/point/netcdf/madis.nc", FeatureType.POINT, true);
+  public void testProblem() throws IOException {
+    testPointDataset("R:/testdata/point/gempak/19580807_sao.gem", FeatureType.STATION, true);
   }
 
   int readAllDir(String dirName, FileFilter ff, FeatureType type) throws IOException {

@@ -856,8 +856,32 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     return null;
   }
 
+   /**
+   * Find a Group, with the specified (full) name.
+   * An embedded "/" is interpreted as seperating group names.
+   * If the name actually has a "/", you must escape it (replace with "%2f")
+   *
+   * @param fullNameEscaped eg "/group/subgroup/wantGroup". Null or empty string returns the root group.
+    *   Any chars may be escaped
+   * @return Group or null if not found.
+   * @see NetcdfFile#escapeName
+   * @see NetcdfFile#unescapeName
+   */
+  public Group findGroup(String fullNameEscaped) {
+    if (fullNameEscaped == null || fullNameEscaped.length ( ) == 0)
+      return rootGroup;
+
+    Group g = rootGroup;
+    String[] groupNames = fullNameEscaped.split("/");
+    for (String groupName : groupNames) {
+      g = g.findGroup( groupName);
+      if (g == null) return null;
+    }
+    return g;
+  }
+
   /**
-   * Find a variable, with the specified (full) name.
+   * Find a Variable, with the specified (full) name.
    * It may possibly be nested in multiple groups and/or structures.
    * An embedded "." is interpreted as structure.member.
    * An embedded "/" is interpreted as group/variable.

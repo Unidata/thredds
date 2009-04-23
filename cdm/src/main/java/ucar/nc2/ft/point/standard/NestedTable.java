@@ -189,7 +189,7 @@ public class NestedTable {
           return new CoordVarConstant(coordName.toString(), "", axisName); // assume its the actual value
       }
 
-      errlog.format("NestedTable: cant find variable %s for coordinate type " + axisName, coordName);
+      errlog.format("NestedTable: cant find variable %s for coordinate type %s %n", axisName, coordName);
     }
 
     // look in the parent

@@ -39,6 +39,7 @@ import ucar.nc2.units.TimeDuration;
 import ucar.nc2.units.DateType;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.RadialDatasetSweep;
+import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
 import java.io.FileFilter;
@@ -61,7 +62,7 @@ public class TestPointFeatureSubset extends TestCase {
 
   public void testProblem() throws IOException {
     //testPointDataset(topDir+"noZ/41001h2007.nc", FeatureType.ANY_POINT, true);
-    testFeatureDataset("R:/testdata/point/gempak/nmcbob.shp", FeatureType.POINT, true);
+    testFeatureDataset("R:/testdata/point/gempak/19580807_sao.gem", FeatureType.STATION, true);
   }
 
   int readAllDir(String dirName, FileFilter ff, FeatureType type) throws IOException {
@@ -136,7 +137,7 @@ public class TestPointFeatureSubset extends TestCase {
   }
 
 
-  void testPointFeatureDataset(FeatureDatasetPoint fdpoint) {
+  void testPointFeatureDataset(FeatureDatasetPoint fdpoint) throws IOException {
     FeatureType ftype = fdpoint.getFeatureType();
 
     for (FeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
@@ -148,6 +149,12 @@ public class TestPointFeatureSubset extends TestCase {
 
       } else if (ftype == FeatureType.STATION) {
         assert (fc instanceof StationTimeSeriesFeatureCollection);
+        StationTimeSeriesFeatureCollection sc = (StationTimeSeriesFeatureCollection) fc;
+        System.out.printf("StationTimeSeriesFeatureCollection size=%d%n", count(sc));
+        LatLonRect bb = sc.getBoundingBox();
+        LatLonRect bbsubset = new LatLonRect(bb.getLowerLeftPoint(), bb.getHeight()/2, bb.getWidth()/2);
+        StationTimeSeriesFeatureCollection subset = sc.subset( bbsubset);
+        System.out.printf(" subset size=%d%n", count(subset));
 
       } else if (ftype == FeatureType.PROFILE) {
         assert (fc instanceof ProfileFeatureCollection);
@@ -163,6 +170,17 @@ public class TestPointFeatureSubset extends TestCase {
       }
     }
 
+  }
+
+  int count(StationTimeSeriesFeatureCollection pfc) throws IOException {
+    if (pfc.size() > 0) return pfc.size();
+
+    int count = 0;
+    while (pfc.hasNext()) {
+      pfc.next();
+      count++;
+    }
+    return count;
   }
 
   private void testPointSubset(FeatureDataset fd, PointFeatureCollection fc) {

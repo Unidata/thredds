@@ -6,6 +6,10 @@ Changes in version 4.0
 
  Release Details:
   39:
+   HdfEos distinguish between swath and profiles
+   GridCoordSys.isGridCoordSys() checks for {x,y} having at least 2 dimensions. to exclude point data
+   add CoordinateSystem.makeDomain()
+   add NetcdfFile.findGroup()
    Array.getFastIterator is deprecated; remove use in MAMath which fails on section
    add NestedPointFeatureCollection.subset(latLonBB)
    vertical transforms OceanS modified, OceanSG1 and OceanSG2  added, thanks to Sachin Bhate and Rich Signell.

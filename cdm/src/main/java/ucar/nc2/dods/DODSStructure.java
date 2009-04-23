@@ -86,7 +86,6 @@ public class DODSStructure extends ucar.nc2.Structure {
 
   /** Copy constructor.
    * @param from  copy from this
-   * @param reparent : if true, reparent the members. if so, cant use 'from' anymore
    */
   private DODSStructure( DODSStructure from) { // boolean reparent) {
     super( from);

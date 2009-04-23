@@ -91,6 +91,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * @see CoordinateSystem#isGeoReferencing
    */
   public static boolean isGridCoordSys(Formatter sbuff, CoordinateSystem cs) {
+    // must be at least 2 axes
     if (cs.getRankDomain() < 2) {
       if (sbuff != null) {
         sbuff.format("%s: domain rank < 2%n", cs.getName());
@@ -98,6 +99,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       return false;
     }
 
+    // must be lat/lon or have x,y and projecction
     if (!cs.isLatLon()) {
       // do check for GeoXY ourself
       if ((cs.getXaxis() == null) || (cs.getYaxis() == null)) {
@@ -114,6 +116,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       }
     }
 
+    // obtain the x,y or lat/lon axes. x,y normally must be convertible to km
     CoordinateAxis xaxis, yaxis;
     if (cs.isGeoXY()) {
       xaxis = cs.getXaxis();
@@ -140,13 +143,20 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       yaxis = cs.getLatAxis();
     }
 
-    // check ranks
+    // check x,y rank <= 2
     if ((xaxis.getRank() > 2) || (yaxis.getRank() > 2)) {
-      if (sbuff != null) {
+      if (sbuff != null)
         sbuff.format("%s: X or Y axis rank must be <= 2%n", cs.getName());
-      }
       return false;
     }
+
+    // check that the x,y have at least 2 dimensions between them ( this eliminates point data)
+    List<Dimension> xyDomain = CoordinateSystem.makeDomain(new CoordinateAxis[] {xaxis, yaxis});
+    if (xyDomain.size() < 2) {
+      if (sbuff != null)
+        sbuff.format("%s: X and Y axis must have 2 or more dimensions%n", cs.getName());
+      return false;
+    }    
 
     //int countRangeRank = 2;
 

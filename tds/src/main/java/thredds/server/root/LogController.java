@@ -15,13 +15,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import ucar.nc2.units.DateFormatter;
 
-import java.util.Date;
-import java.util.Formatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * Handle the /admin/log interface
@@ -30,29 +28,35 @@ import java.io.IOException;
  * @since 4.0
  */
 public class LogController extends AbstractController {
-  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
   private MCollection collection;
   private File accessLogDirectory;
   private List<File> accessLogFiles = new ArrayList<File>(10);
+
+  private TdsContext tdsContext;
+
+  public void setTdsContext(TdsContext tdsContext) {
+    this.tdsContext = tdsContext;
+  }
 
   public void setAccessLogDirectory(String accessLogDirectory) {
     this.accessLogDirectory = new File(accessLogDirectory);
     init();
   }
 
-    private void init() {
-    for (File f : accessLogDirectory.listFiles( new FilenameFilter() {
-          public boolean accept(File dir, String name) {
-            return name.startsWith("access.");
-          }
-        })) {
+  private void init() {
+    for (File f : accessLogDirectory.listFiles(new FilenameFilter() {
+      public boolean accept(File dir, String name) {
+        return name.startsWith("access.");
+      }
+    })) {
 
       accessLogFiles.add(f);
     }
   }
 
-  protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
-    log.info( "handleRequestInternal(): " + UsageLog.setupRequestContext( req ) );
+  protected ModelAndView save(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    log.info("handleRequestInternal(): " + UsageLog.setupRequestContext(req));
 
     String path = req.getPathInfo();
     if (path == null) path = "";
@@ -79,7 +83,6 @@ public class LogController extends AbstractController {
   }
 
 
-
   private void read(String afterDate) throws IOException {
     LogReader reader = new LogReader(new AccessLogParser());
 
@@ -90,11 +93,13 @@ public class LogController extends AbstractController {
 
   private class MyLogFilter implements LogReader.LogFilter {
     String afterDate;
+
     MyLogFilter(String afterDate) {
       this.afterDate = afterDate;
     }
+
     public boolean pass(LogReader.Log log) {
-      return log.getDate().compareTo( afterDate) > 0;
+      return log.getDate().compareTo(afterDate) > 0;
     }
   }
 
@@ -104,4 +109,82 @@ public class LogController extends AbstractController {
       System.out.printf("%s%n", log.toString());
     }
   }
+
+  ////////
+  protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    String path = req.getPathInfo();
+    if (path == null) path = "";
+
+    // Don't allow ".." directories in path.
+    if (path.indexOf("/../") != -1
+            || path.equals("..")
+            || path.startsWith("../")
+            || path.endsWith("/..")) {
+      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Path cannot contain ..");
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, -1));
+      return null;
+    }
+
+    File file = null;
+    if (path.startsWith("/log/access/current")) {
+
+      File dir = tdsContext.getTomcatLogDirectory();
+      File[] files = dir.listFiles(new FilenameFilter() {
+        public boolean accept(File dir, String name) {
+          return name.startsWith("access");
+        }
+      });
+      if ((files == null) || (files.length == 0)) {
+        res.sendError(HttpServletResponse.SC_NOT_FOUND);
+        return null;
+      }
+
+      List fileList = Arrays.asList(files);
+      Collections.sort(fileList);
+      file = (File) fileList.get(fileList.size() - 1); // last one
+
+    } else if (path.startsWith("/log/access/")) {
+      showFiles(tdsContext.getTomcatLogDirectory(), "access", res);
+      return null;
+
+    } else if (path.startsWith("/log/thredds/current")) {
+      file = new File(tdsContext.getContentDirectory(), "logs/threddsServlet.log");
+
+    } else if (path.startsWith("/log/thredds/")) {
+      showFiles(new File(tdsContext.getContentDirectory(),"logs"), "thredds", res);
+
+    } else {
+      PrintWriter pw = new PrintWriter(res.getOutputStream());
+      pw.format("/log/access/current%n");
+      pw.format("/log/access/%n");
+      pw.format("/log/thredds/current%n");
+      pw.format("/log/thredds/%n");
+      pw.flush();
+      return null;
+    }
+
+    return new ModelAndView("threddsFileView", "file", file);
+  }
+
+  private void showFiles(File dir, final String filter, HttpServletResponse res) throws IOException {
+    File[] files = dir.listFiles(new FilenameFilter() {
+      public boolean accept(File dir, String name) {
+        return name.startsWith(filter);
+      }
+    });
+
+    if ((files == null) || (files.length == 0)) {
+      res.sendError(HttpServletResponse.SC_NOT_FOUND);
+      return;
+    }
+
+    List<File> fileList = Arrays.asList(files);
+    Collections.sort(fileList);
+
+    PrintWriter pw = new PrintWriter(res.getOutputStream());
+    for (File f : fileList)
+      pw.format("%s %d%n", f.getName(), f.length());
+    pw.flush();
+  }
+
 }
