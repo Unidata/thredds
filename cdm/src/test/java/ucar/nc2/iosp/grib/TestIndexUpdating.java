@@ -38,6 +38,8 @@ public class TestIndexUpdating extends TestCase
   private File dataFile;
   private File indexFile;
 
+  private NetcdfFile netcdfObj;
+
   private File indexFilePartial;
   private File indexFileFull;
 
@@ -49,6 +51,9 @@ public class TestIndexUpdating extends TestCase
   @Override
   protected void tearDown() throws Exception
   {
+    if ( netcdfObj != null )
+      netcdfObj.close();
+
     // Remove dataFile, created on setup.
     if ( dataFile != null && dataFile.exists() )
       dataFile.delete();
@@ -60,7 +65,7 @@ public class TestIndexUpdating extends TestCase
     // always remove cache index if it exists
     File cacheIndex = null;
     if ( indexFile != null )
-      cacheIndex = DiskCache.getFile(indexFile.getPath(), true);
+      cacheIndex = DiskCache.getFile( indexFile.getPath(), true);
     if ( cacheIndex != null && cacheIndex.exists())
     {
       if ( ! cacheIndex.canWrite())
@@ -162,29 +167,29 @@ public class TestIndexUpdating extends TestCase
     if ( ! gribInit_1_8() ) return false;
     if ( ! indexSetup1_8() ) return false;
 
-    NetcdfFile ncf = openNc( ncObjType, gribIospVer );
+    netcdfObj = openNc( ncObjType, gribIospVer );
 
     int timeDimLengthExpected = 8;
-    Dimension timeDim = ncf.findDimension( "time" );
+    Dimension timeDim = netcdfObj.findDimension( "time" );
     assertEquals( "Length of time dimension [" + timeDim.getLength() + "] not as expected [" + timeDimLengthExpected + "].",
                   timeDim.getLength(),
                   timeDimLengthExpected );
 
     // Setup 2: data file (1-12, CHANGE), index file (1-8).
     if ( ! gribAppend9_12() ) return false;
-    if ( ! syncNc( ncf ) ) return false;
+    if ( ! syncNc( netcdfObj ) ) return false;
 
-    timeDim = ncf.findDimension( "time" );
+    timeDim = netcdfObj.findDimension( "time" );
     assertEquals( "Length of time dimension [" + timeDim.getLength() + "] not as expected [" + timeDimLengthExpected + "].",
                   timeDim.getLength(),
                   timeDimLengthExpected );
 
     // Setup 2: data file (1-12), index file (1-12, CHANGE).
     if ( ! indexSetup1_12() ) return false;
-    if ( ! syncNc( ncf ) ) return false;
+    if ( ! syncNc( netcdfObj ) ) return false;
 
     timeDimLengthExpected = 12;
-    timeDim = ncf.findDimension( "time" );
+    timeDim = netcdfObj.findDimension( "time" );
     assertEquals( "Length of time dimension [" + timeDim.getLength() + "] not as expected [" + timeDimLengthExpected + "].",
                   timeDim.getLength(),
                   timeDimLengthExpected );
@@ -192,10 +197,10 @@ public class TestIndexUpdating extends TestCase
     // Setup 2: data file (1-18, CHANGE), index file (1-18, CHANGE).
     if ( ! gribAppend13_18() ) return false;
     if ( ! indexSetup1_18() ) return false;
-    if ( ! syncNc( ncf ) ) return false;
+    if ( ! syncNc( netcdfObj ) ) return false;
 
     timeDimLengthExpected = 18;
-    timeDim = ncf.findDimension( "time" );
+    timeDim = netcdfObj.findDimension( "time" );
     assertEquals( "Length of time dimension [" + timeDim.getLength() + "] not as expected [" + timeDimLengthExpected + "].",
                   timeDim.getLength(),
                   timeDimLengthExpected );
@@ -204,10 +209,10 @@ public class TestIndexUpdating extends TestCase
     if ( ! gribAppend19_21() ) return false;
     if ( ! indexSetup1_21() ) return false;
 
-    if ( ! syncNc( ncf ) ) return false;
+    if ( ! syncNc( netcdfObj ) ) return false;
 
     timeDimLengthExpected = 21;
-    timeDim = ncf.findDimension( "time" );
+    timeDim = netcdfObj.findDimension( "time" );
     assertEquals( "Length of time dimension [" + timeDim.getLength() + "] not as expected [" + timeDimLengthExpected + "].",
                   timeDim.getLength(),
                   timeDimLengthExpected );
@@ -293,10 +298,10 @@ public class TestIndexUpdating extends TestCase
     //         [Open should create index in cache.]
     if ( ! gribInit_1_8() ) return false;
 
-    NetcdfFile ncf = openNc( ncObjType, gribIospVer );
+    netcdfObj = openNc( ncObjType, gribIospVer );
 
     int timeDimLengthExpected = 8;
-    Dimension timeDim = ncf.findDimension( "time" );
+    Dimension timeDim = netcdfObj.findDimension( "time" );
     assertEquals( "Length of time dimension [" + timeDim.getLength() + "] not as expected [" + timeDimLengthExpected + "].",
                   timeDim.getLength(),
                   timeDimLengthExpected );
@@ -306,20 +311,20 @@ public class TestIndexUpdating extends TestCase
     if ( ! indexSetup1_12() ) return false;
     if ( ! gribAppend13_18()) return false;
 
-    if ( ! syncNc( ncf ) ) return false;
+    if ( ! syncNc( netcdfObj ) ) return false;
 
     timeDimLengthExpected = 12;
-    timeDim = ncf.findDimension( "time" );
+    timeDim = netcdfObj.findDimension( "time" );
     assertEquals( "Length of time dimension [" + timeDim.getLength() + "] not as expected [" + timeDimLengthExpected + "].",
                   timeDim.getLength(),
                   timeDimLengthExpected );
 
     // Setup 3: data file (1-18), index (1-18, CHANGE)
     if ( ! indexSetup1_18() ) return false;
-    if ( ! syncNc( ncf ) ) return false;
+    if ( ! syncNc( netcdfObj ) ) return false;
 
     timeDimLengthExpected = 18;
-    timeDim = ncf.findDimension( "time" );
+    timeDim = netcdfObj.findDimension( "time" );
     assertEquals( "Length of time dimension [" + timeDim.getLength() + "] not as expected [" + timeDimLengthExpected + "].",
                   timeDim.getLength(),
                   timeDimLengthExpected );
@@ -327,10 +332,10 @@ public class TestIndexUpdating extends TestCase
     // Setup 3: data file (1-21, CHANGE), index (1-21, CHANGE)
     if ( ! gribAppend19_21() ) return false;
     if ( ! indexSetup1_21() ) return false;
-    if ( ! syncNc( ncf ) ) return false;
+    if ( ! syncNc( netcdfObj ) ) return false;
 
     timeDimLengthExpected = 21;
-    timeDim = ncf.findDimension( "time" );
+    timeDim = netcdfObj.findDimension( "time" );
     assertEquals( "Length of time dimension [" + timeDim.getLength() + "] not as expected [" + timeDimLengthExpected + "].",
                   timeDim.getLength(),
                   timeDimLengthExpected );
@@ -357,8 +362,7 @@ public class TestIndexUpdating extends TestCase
     long badIndexFileLength = indexFile.length();
 
     // Initial opening of the data file.
-    NetcdfFile ncf = null;
-    try { ncf = NetcdfFile.open( dataFile.getPath() ); }
+    try { netcdfObj = NetcdfFile.open( dataFile.getPath() ); }
     catch ( IOException e )
     {
       assertTrue( "Index file has changed: either last mod time ["
@@ -392,14 +396,13 @@ public class TestIndexUpdating extends TestCase
     DiskCache.simulateUnwritableDir = true;
 
     // Initial opening of the data file.
-    NetcdfFile ncf = null;
-    try { ncf = NetcdfFile.open( dataFile.getPath() ); }
+    try { netcdfObj = NetcdfFile.open( dataFile.getPath() ); }
     catch ( IOException e )
     {
       fail( "exception opening");
     }
 
-    Dimension timePartial = ncf.findDimension( "time" );
+    Dimension timePartial = netcdfObj.findDimension( "time" );
 
     assertTrue( "Time dimension ["+ timePartial.getLength()+"] not as expected [4].", timePartial.getLength() == 4 );
 
@@ -413,7 +416,7 @@ public class TestIndexUpdating extends TestCase
     // sync() the dataset with new index.
     try
     {
-      ncf.sync();
+      netcdfObj.sync();
     }
     catch ( IOException e )
     {
@@ -421,7 +424,7 @@ public class TestIndexUpdating extends TestCase
       return;
     }
 
-    Dimension timeNew = ncf.findDimension( "time" );
+    Dimension timeNew = netcdfObj.findDimension( "time" );
 
     assertTrue( "Time dimension [" + timeNew.getLength() + "] not as expected [21].", timeNew.getLength() == 21 );
     DiskCache.simulateUnwritableDir = false;
@@ -444,14 +447,13 @@ public class TestIndexUpdating extends TestCase
         return;
 
       // Initial opening of the data file.
-      NetcdfFile ncf = null;
-      try { ncf = NetcdfFile.open( dataFile.getPath() ); }
+      try { netcdfObj = NetcdfFile.open( dataFile.getPath() ); }
       catch ( IOException e )
       {
         fail( "exception opening");
       }
 
-      Dimension timePartial = ncf.findDimension( "time" );
+      Dimension timePartial = netcdfObj.findDimension( "time" );
 
       assertTrue( "Time dimension ["+ timePartial.getLength()+"] not as expected [4].", timePartial.getLength() == 4 );
 
@@ -461,7 +463,7 @@ public class TestIndexUpdating extends TestCase
 
       try
       {
-        ncf.sync();
+        netcdfObj.sync();
       }
       catch ( IOException e )
       {
@@ -469,7 +471,7 @@ public class TestIndexUpdating extends TestCase
         return;
       }
 
-      Dimension timeNew = ncf.findDimension( "time" );
+      Dimension timeNew = netcdfObj.findDimension( "time" );
 
       assertTrue( "Time dimension [" + timeNew.getLength() + "] not as expected [21].", timeNew.getLength() == 21 );
     }
@@ -496,21 +498,20 @@ public class TestIndexUpdating extends TestCase
       return;
 
     // Initial opening of the data file.
-    NetcdfFile ncf = null;
-    try { ncf = NetcdfFile.open( dataFile.getPath() ); }
+    try { netcdfObj = NetcdfFile.open( dataFile.getPath() ); }
     catch ( IOException e )
     {
       fail( "exception opening");
     }
 
-    Dimension timeComplete = ncf.findDimension( "time" );
+    Dimension timeComplete = netcdfObj.findDimension( "time" );
 
     assertTrue( "Time dimension ["+ timeComplete.getLength()+"] not as expected [21].", timeComplete.getLength() == 21 );
 
     // sync() the dataset with  index.
     try
     {
-      ncf.sync();
+      netcdfObj.sync();
     }
     catch ( IOException e )
     {
@@ -518,7 +519,7 @@ public class TestIndexUpdating extends TestCase
       return;
     }
 
-    Dimension timeNew = ncf.findDimension( "time" );
+    Dimension timeNew = netcdfObj.findDimension( "time" );
 
     assertTrue( "Time dimension [" + timeNew.getLength() + "] not as expected [21].", timeNew.getLength() == 21 );
 
@@ -536,14 +537,13 @@ public class TestIndexUpdating extends TestCase
       return;
 
     // Initial opening of the data file.
-    NetcdfFile ncf = null;
-    try { ncf = NetcdfFile.open( dataFile.getPath() ); }
+    try { netcdfObj = NetcdfFile.open( dataFile.getPath() ); }
     catch ( IOException e )
     {
       fail( "exception opening");
     }
 
-    Dimension timeComplete = ncf.findDimension( "time" );
+    Dimension timeComplete = netcdfObj.findDimension( "time" );
 
     assertTrue( "Time dimension ["+ timeComplete.getLength()+"] not as expected [4].",
                 timeComplete.getLength() == 4 );
@@ -555,7 +555,7 @@ public class TestIndexUpdating extends TestCase
     // sync() the dataset  .
     try
     {
-      ncf.sync();
+      netcdfObj.sync();
     }
     catch ( IOException e )
     {
@@ -563,7 +563,7 @@ public class TestIndexUpdating extends TestCase
       return;
     }
 
-    Dimension timeNew = ncf.findDimension( "time" );
+    Dimension timeNew = netcdfObj.findDimension( "time" );
 
     assertTrue( "Time dimension [" + timeNew.getLength() + "] not as expected [21].", timeNew.getLength() == 21 );
   }
