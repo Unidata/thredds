@@ -79,7 +79,7 @@ public class PointCollectionIteratorFiltered implements PointFeatureCollectionIt
     if (!pfciter.hasNext()) return null;
 
     PointFeatureCollection pdata = pfciter.next();
-    if (!filter(pdata)) {
+    while (!filter(pdata)) {
       if (!pfciter.hasNext()) return null;
       pdata = pfciter.next();
     }
