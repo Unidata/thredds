@@ -34,6 +34,13 @@ package ucar.ma2;
 
 import junit.framework.*;
 import java.util.List;
+import java.io.PrintWriter;
+import java.io.IOException;
+import java.io.PrintStream;
+
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.NCdump;
+import ucar.nc2.NCdumpW;
 
 /** Test ma2 section methods in the JUnit framework. */
 
@@ -70,7 +77,7 @@ public class TestMAMath extends TestCase {
 
       // section
     try {
-      secA = (ArrayDouble) A.section( Range.parseSpec(m1+":"+m2+",:,:"));
+      secA = (ArrayDouble) A.section( new Section(m1+":"+m2+",:,:").getRanges());
     } catch (InvalidRangeException e) {
       fail("testMAsection failed == "+ e);
       return;
@@ -158,7 +165,7 @@ public class TestMAMath extends TestCase {
       MAMath.setDouble(A, 1.0);
       assert( MAMath.sumDouble(A) == ((double) dim0*dim1*dim2));
 
-      List ranges = Range.parseSpec(":,:,1");
+      List<Range> ranges = Range.parseSpec(":,:,1");
       Array secA = A.section(ranges);
       MAMath.setDouble(secA, 0.0);
 
@@ -180,6 +187,32 @@ public class TestMAMath extends TestCase {
     } catch (Exception e) {
       fail("testSectionCopy Exception"+e);
     }
+  }
+
+  /*
+    barronh@gmail.com
+    MAMath uses getIndexIteratorFast when it should use getIndexIterator.
+    getIndexIterator will use getIndexIteratorFast when appropriate. This
+    causes bugs with data_sections.
+
+    Array data = <some data>;
+    Section section = <some time slice>;
+    Array data_section = data.sectionNoReduce(section.getRanges();
+    Double test = MAMath.sumDouble(datasection);
+
+    The value of test will always be equal to the sum of the first data
+    slice. */
+
+  public void testSectionIterator() throws InvalidRangeException, IOException {
+    Array data = A;
+    NCdumpW.printArray(A, "full", new PrintWriter(System.out), null);
+
+    Section section = new Section("1,:,:");
+    Array datasection = data.sectionNoReduce(section.getRanges());
+    NCdumpW.printArray(A, "section", new PrintWriter(System.out), null);
+
+    double sum = MAMath.sumDouble(datasection);
+    System.out.printf(" sum=%f%n ", sum);
   }
 
 

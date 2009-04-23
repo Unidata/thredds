@@ -209,8 +209,11 @@ public class MAMath {
   }
 
   /**
-   * copy array a to array result, the result array will be in canonical order
+   * Copy array a to array result, the result array will be in canonical order
    * The operation type is taken from the type of a.
+   *
+   * @param result copy to here
+   * @param a copy from here
    *
    * @throws IllegalArgumentException      a and b are not conformable
    * @throws UnsupportedOperationException dont support this data type yet
@@ -242,6 +245,9 @@ public class MAMath {
    * The values from the arrays a are converted to double (if needed),
    * and then converted to the type of result (if needed).
    *
+   * @param result copy to here
+   * @param a copy from here
+   *
    * @throws IllegalArgumentException a and result are not conformable
    */
   public static void copyDouble(Array result, Array a) throws IllegalArgumentException {
@@ -259,6 +265,9 @@ public class MAMath {
    * The values from the arrays a are converted to float (if needed),
    * and then converted to the type of result (if needed).
    *
+   * @param result copy to here
+   * @param a copy from here
+   *
    * @throws IllegalArgumentException a and result are not conformable
    */
   public static void copyFloat(Array result, Array a) throws IllegalArgumentException {
@@ -275,6 +284,9 @@ public class MAMath {
    * copy array a to array result as longs
    * The values from the array a are converted to long (if needed),
    * and then converted to the type of result (if needed).
+   * @param result copy to here
+   * @param a copy from here
+   *
    *
    * @throws IllegalArgumentException a and result are not conformable
    */
@@ -294,6 +306,9 @@ public class MAMath {
    * The values from the arrays a are converted to integer (if needed),
    * and then converted to the type of result (if needed).
    *
+   * @param result copy to here
+   * @param a copy from here
+   *
    * @throws IllegalArgumentException a and result are not conformable
    */
   public static void copyInt(Array result, Array a) throws IllegalArgumentException {
@@ -311,6 +326,9 @@ public class MAMath {
    * The values from the array a are converted to short (if needed),
    * and then converted to the type of result (if needed).
    *
+   * @param result copy to here
+   * @param a copy from here
+   *
    * @throws IllegalArgumentException a and result are not conformable
    */
   public static void copyShort(Array result, Array a) throws IllegalArgumentException {
@@ -327,6 +345,9 @@ public class MAMath {
    * copy array a to array result as char
    * The values from the array a are converted to char (if needed),
    * and then converted to the type of result (if needed).
+   *
+   * @param result copy to here
+   * @param a copy from here
    *
    * @throws IllegalArgumentException a and result are not conformable
    */
@@ -346,6 +367,9 @@ public class MAMath {
    * The values from the array a are converted to byte (if needed),
    * and then converted to the type of result (if needed).
    *
+   * @param result copy to here
+   * @param a copy from here
+   *
    * @throws IllegalArgumentException a and result are not conformable
    */
   public static void copyByte(Array result, Array a) throws IllegalArgumentException {
@@ -361,6 +385,9 @@ public class MAMath {
   /**
    * copy array a to array result as bytes
    * The array a and result must be type boolean
+   *
+   * @param result copy to here
+   * @param a copy from here
    *
    * @throws IllegalArgumentException a and result are not conformable
    */
@@ -378,6 +405,9 @@ public class MAMath {
    * copy array a to array result as an Object
    * The array a and result must be type object
    *
+   * @param result copy to here
+   * @param a copy from here
+   *
    * @throws IllegalArgumentException a and result are not conformable
    */
   public static void copyObject(Array result, Array a) throws IllegalArgumentException {
@@ -392,6 +422,8 @@ public class MAMath {
 
   /**
    * Calculate the reduced rank of this shape, by subtracting dimensions with length 1
+   * @param shape shape of the array
+   * @return rank without dimensions of length 1
    */
   public static int reducedRank(int[] shape) {
     int rank = 0;
@@ -415,7 +447,7 @@ public class MAMath {
   }
 
   public static double getMaximum(Array a) {
-    IndexIterator iter = a.getIndexIteratorFast();
+    IndexIterator iter = a.getIndexIterator();
     double max = -Double.MAX_VALUE;
     while (iter.hasNext()) {
       double val = iter.getDoubleNext();
@@ -433,7 +465,7 @@ public class MAMath {
    * @return MinMax
    */
   public static MAMath.MinMax getMinMax(Array a) {
-    IndexIterator iter = a.getIndexIteratorFast();
+    IndexIterator iter = a.getIndexIterator();
     double max = -Double.MAX_VALUE;
     double min = Double.MAX_VALUE;
     while (iter.hasNext()) {
@@ -448,7 +480,7 @@ public class MAMath {
   }
 
   public static double getMinimumSkipMissingData(Array a, double missingValue) {
-    IndexIterator iter = a.getIndexIteratorFast();
+    IndexIterator iter = a.getIndexIterator();
     double min = Double.MAX_VALUE;
     while (iter.hasNext()) {
       double val = iter.getDoubleNext();
@@ -459,7 +491,7 @@ public class MAMath {
   }
 
   public static double getMaximumSkipMissingData(Array a, double missingValue) {
-    IndexIterator iter = a.getIndexIteratorFast();
+    IndexIterator iter = a.getIndexIterator();
     double max = -Double.MAX_VALUE;
     while (iter.hasNext()) {
       double val = iter.getDoubleNext();
@@ -470,7 +502,7 @@ public class MAMath {
   }
 
   public static MAMath.MinMax getMinMaxSkipMissingData(Array a, double missingValue) {
-    IndexIterator iter = a.getIndexIteratorFast();
+    IndexIterator iter = a.getIndexIterator();
     double max = -Double.MAX_VALUE;
     double min = Double.MAX_VALUE;
     while (iter.hasNext()) {
@@ -489,9 +521,12 @@ public class MAMath {
   /**
    * Set all the elements of this array to the given double value.
    * The value is converted to the element type of the array, if needed.
+   *
+   * @param result change this Array
+   * @param val set all elements to this value
    */
   public static void setDouble(Array result, double val) {
-    IndexIterator iter = result.getIndexIteratorFast();
+    IndexIterator iter = result.getIndexIterator();
     while (iter.hasNext()) {
       iter.setDoubleNext(val);
     }
@@ -500,10 +535,12 @@ public class MAMath {
   /**
    * sum all of the elements of array a as doubles.
    * The values from the array a are converted to double (if needed).
+   * @param a read values from this Array
+   * @return sum of elements
    */
   public static double sumDouble(Array a) {
     double sum = 0;
-    IndexIterator iterA = a.getIndexIteratorFast();
+    IndexIterator iterA = a.getIndexIterator();
     while (iterA.hasNext())
       sum += iterA.getDoubleNext();
     return sum;
@@ -512,10 +549,13 @@ public class MAMath {
   /**
    * sum all of the elements of array a as doubles.
    * The values from the array a are converted to double (if needed).
+   * @param a read values from this Array
+   * @param missingValue skip values equal to this, or which are NaNs
+   * @return sum of elements
    */
   public static double sumDoubleSkipMissingData(Array a, double missingValue) {
     double sum = 0;
-    IndexIterator iterA = a.getIndexIteratorFast();
+    IndexIterator iterA = a.getIndexIterator();
     while (iterA.hasNext()) {
       double val = iterA.getDoubleNext();
       if ((val == missingValue) || Double.isNaN(val))
@@ -592,7 +632,7 @@ public class MAMath {
   }
 
   public static Array convert2Unpacked(Array packed, ScaleOffset scaleOffset) {
-    boolean isUnsigned = packed.isUnsigned();
+    //boolean isUnsigned = packed.isUnsigned();
     Array result = Array.factory(DataType.DOUBLE, packed.getShape());
     IndexIterator riter = result.getIndexIterator();
     while (packed.hasNext())  {

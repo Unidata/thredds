@@ -466,7 +466,7 @@ public abstract class Array {
    * To get an iteration in order,  use getIndexIterator(), which returns a fast iterator if possible.
    *
    * @return an IndexIterator for traversing the array in arbitrary order.
-   * @see #getIndexIterator
+   * @deprecated use getIndexIterator
    */
   public IndexIterator getIndexIteratorFast() {
     return indexCalc.getIndexIteratorFast(this);

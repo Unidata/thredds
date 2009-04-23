@@ -296,7 +296,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
         Range         yRange    = section.getRange(count++);
         Range         xRange    = section.getRange(count);
 
-        IndexIterator ii        = dataArray.getIndexIteratorFast();
+        IndexIterator ii        = dataArray.getIndexIterator();
 
         // loop over time
         for (int timeIdx = timeRange.first(); timeIdx <= timeRange.last();
