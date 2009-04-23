@@ -244,6 +244,7 @@ public class DiskCache {
 
     String cachePath;
     try {
+      fileLocation = fileLocation.replace('\\', '/');  // LOOK - use better normalization code  eg Spring StringUtils
       cachePath = java.net.URLEncoder.encode(fileLocation, "UTF8");
     } catch (UnsupportedEncodingException e) {
       cachePath = java.net.URLEncoder.encode(fileLocation); // shouldnt happen
