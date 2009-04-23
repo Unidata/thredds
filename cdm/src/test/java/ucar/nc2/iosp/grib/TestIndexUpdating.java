@@ -34,6 +34,7 @@ public class TestIndexUpdating extends TestCase
   private String indexSuffix1_18 = ".times1-18";
   private String indexSuffix1_21 = ".times1-21";
 
+  private String localDataDirPath = "ucar/nc2/iosp/grib/indexUpdating";
   private File dataDir;
   private File dataFile;
   private File indexFile;
@@ -46,6 +47,35 @@ public class TestIndexUpdating extends TestCase
   public TestIndexUpdating( String name )
   {
     super( name );
+  }
+
+  @Override
+  protected void setUp() throws Exception
+  {
+    // Check that the data directory exists and is writable.
+    dataDir = new File( ucar.nc2.TestAll.cdmLocalTestDataDir, localDataDirPath );
+    if ( ! dataDir.exists() )
+    {
+      fail( "Non-existent data directory [" + dataDir.getPath() + "]." );
+      return;
+    }
+    if ( ! dataDir.canWrite() )
+    {
+      fail( "Cannot write to data directory [" + dataDir.getPath() + "]." );
+      return;
+    }
+
+    // Locate data file and setup for final deletion.
+    dataFile = new File( dataDir, dataFileName );
+    dataFile.deleteOnExit();
+
+    // Locate index file and setup for final deletion
+    indexFile = new File( dataDir, indexFileName );
+    indexFile.deleteOnExit();
+
+    // Check that index file doesn't exist or, if it does, is writable.
+    if ( indexFile.exists() && ! indexFile.canWrite() )
+      fail( "Cannot write index file [" + indexFile.getPath() + "]." );
   }
 
   @Override
@@ -105,35 +135,35 @@ public class TestIndexUpdating extends TestCase
     runTestExistingUpdatingIndex( NcObjectType.DATASET, GribIospVersion.NEW );
   }
 
-  /**
-   * Test existing index in "Server with External Indexer" user story
-   * with NetcdfFile using the Grib IOSP (old).
-   */
-  public void testExistingUpdatingIndex_ServerWithExternalIndexer_NcFile_OldGribIosp()
-  {
-    // Setup for "Server with external indexer" user story.
-    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
-    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
-    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
-    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
-
-    runTestExistingUpdatingIndex( NcObjectType.FILE, GribIospVersion.OLD );
-  }
-
-  /**
-   * Test existing index in "Server with External Indexer" user story
-   * with NetcdfDataset using the Grib IOSP (old). 
-   */
-  public void testExistingUpdatingIndex_ServerWithExternalIndexer_NcDataset_OldGribIosp()
-  {
-    // Setup for "Server with external indexer" user story.
-    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
-    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
-    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
-    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
-
-    runTestExistingUpdatingIndex( NcObjectType.DATASET, GribIospVersion.OLD );
-  }
+//  /**
+//   * Test existing index in "Server with External Indexer" user story
+//   * with NetcdfFile using the Grib IOSP (old).
+//   */
+//  public void testExistingUpdatingIndex_ServerWithExternalIndexer_NcFile_OldGribIosp()
+//  {
+//    // Setup for "Server with external indexer" user story.
+//    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
+//    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
+//    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
+//    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
+//
+//    runTestExistingUpdatingIndex( NcObjectType.FILE, GribIospVersion.OLD );
+//  }
+//
+//  /**
+//   * Test existing index in "Server with External Indexer" user story
+//   * with NetcdfDataset using the Grib IOSP (old).
+//   */
+//  public void testExistingUpdatingIndex_ServerWithExternalIndexer_NcDataset_OldGribIosp()
+//  {
+//    // Setup for "Server with external indexer" user story.
+//    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
+//    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
+//    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
+//    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
+//
+//    runTestExistingUpdatingIndex( NcObjectType.DATASET, GribIospVersion.OLD );
+//  }
 
   /**
    * Test GRIB IOSP open() and sync() on growing GRIB file with an external
@@ -250,35 +280,35 @@ public class TestIndexUpdating extends TestCase
     runTestInitiallyMissingUpdatingIndex( NcObjectType.DATASET, GribIospVersion.NEW );
   }
 
-  /**
-   * Test existing index in "Server with External Indexer" user story
-   * with NetcdfFile using the Grib IOSP (old).
-   */
-  public void testInitiallyMissingUpdatingIndex_ServerWithExternalIndexer_NcFile_OldGribIosp()
-  {
-    // Setup for "Server with external indexer" user story.
-    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
-    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
-    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
-    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
-
-    runTestInitiallyMissingUpdatingIndex( NcObjectType.FILE, GribIospVersion.OLD );
-  }
-
-  /**
-   * Test existing index in "Server with External Indexer" user story
-   * with NetcdfFile using the Grib IOSP (old).
-   */
-  public void testInitiallyMissingUpdatingIndex_ServerWithExternalIndexer_NcDataset_OldGribIosp()
-  {
-    // Setup for "Server with external indexer" user story.
-    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
-    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
-    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
-    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
-
-    runTestInitiallyMissingUpdatingIndex( NcObjectType.DATASET, GribIospVersion.OLD );
-  }
+//  /**
+//   * Test existing index in "Server with External Indexer" user story
+//   * with NetcdfFile using the Grib IOSP (old).
+//   */
+//  public void testInitiallyMissingUpdatingIndex_ServerWithExternalIndexer_NcFile_OldGribIosp()
+//  {
+//    // Setup for "Server with external indexer" user story.
+//    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
+//    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
+//    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
+//    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
+//
+//    runTestInitiallyMissingUpdatingIndex( NcObjectType.FILE, GribIospVersion.OLD );
+//  }
+//
+//  /**
+//   * Test existing index in "Server with External Indexer" user story
+//   * with NetcdfFile using the Grib IOSP (old).
+//   */
+//  public void testInitiallyMissingUpdatingIndex_ServerWithExternalIndexer_NcDataset_OldGribIosp()
+//  {
+//    // Setup for "Server with external indexer" user story.
+//    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
+//    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
+//    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
+//    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
+//
+//    runTestInitiallyMissingUpdatingIndex( NcObjectType.DATASET, GribIospVersion.OLD );
+//  }
 
   /**
    * Test GRIB IOSP open() and sync() on growing GRIB file with an external
@@ -344,6 +374,131 @@ public class TestIndexUpdating extends TestCase
 
     return true;
   }
+
+  /**
+   * Test missing index/updating data in "Server with External Indexer" user story
+   * with NetcdfFile using the GribGrid IOSP (new).
+   */
+  public void testMissingIndexUpdatingData_ServerWithExternalIndexer_NcFile_NewGribIosp()
+  {
+    // Setup for "Server with external indexer" user story.
+    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
+    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
+    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
+    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
+
+    runTestMissingIndexUpdatingData( NcObjectType.FILE, GribIospVersion.NEW );
+  }
+
+  /**
+   * Test missing index/updating data in "Server with External Indexer" user story
+   * with NetcdfDataset using the GribGrid IOSP (new).
+   */
+  public void testMissingIndexUpdatingData_ServerWithExternalIndexer_NcDataset_NewGribIosp()
+  {
+    // Setup for "Server with external indexer" user story.
+    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
+    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
+    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
+    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
+
+    runTestMissingIndexUpdatingData( NcObjectType.DATASET, GribIospVersion.NEW );
+  }
+
+  private boolean runTestMissingIndexUpdatingData( NcObjectType ncObjType, GribIospVersion gribIospVer )
+  {
+    DiskCache.simulateUnwritableDir = true;
+
+    // Setup 1: data file (1-8), no index file.
+    //         [Open should create index in cache.]
+    if ( ! gribInit_1_8() ) return false;
+
+    netcdfObj = openNc( ncObjType, gribIospVer );
+
+    int timeDimLengthExpected = 8;
+    Dimension timeDim = netcdfObj.findDimension( "time" );
+    assertEquals( "Length of time dimension [" + timeDim.getLength() + "] not as expected [" + timeDimLengthExpected + "].",
+                  timeDim.getLength(),
+                  timeDimLengthExpected );
+
+    // Setup 2: data file (1-12, CHANGE), no index file.
+    //          [Sync should extend index in cache.]
+    if ( ! gribAppend9_12() ) return false;
+
+    if ( ! syncNc( netcdfObj ) ) return false;
+
+    timeDimLengthExpected = 12;
+    timeDim = netcdfObj.findDimension( "time" );
+    assertEquals( "Length of time dimension [" + timeDim.getLength() + "] not as expected [" + timeDimLengthExpected + "].",
+                  timeDim.getLength(),
+                  timeDimLengthExpected );
+
+    DiskCache.simulateUnwritableDir = false;
+
+    return true;
+  }
+  
+//  /**
+//   * Test missing index/updating data in "Server with External Indexer" user story
+//   * with NetcdfFile using the GribGrid IOSP (new).
+//   */
+//  public void testMissingIndexUpdated_ServerWithExternalIndexer_NcFile_NewGribIosp()
+//  {
+//    // Setup for "Server with external indexer" user story.
+//    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
+//    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
+//    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
+//    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
+//
+//    runTestMissingIndexUpdated( NcObjectType.FILE, GribIospVersion.NEW );
+//  }
+//
+//  /**
+//   * Test missing index/updating data in "Server with External Indexer" user story
+//   * with NetcdfDataset using the GribGrid IOSP (new).
+//   */
+//  public void testMissingIndexUpdated_ServerWithExternalIndexer_NcDataset_NewGribIosp()
+//  {
+//    // Setup for "Server with external indexer" user story.
+//    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
+//    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
+//    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
+//    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
+//
+//    runTestMissingIndexUpdated( NcObjectType.DATASET, GribIospVersion.NEW );
+//  }
+//
+//  private boolean runTestMissingIndexUpdated( NcObjectType ncObjType, GribIospVersion gribIospVer )
+//  {
+//    DiskCache.simulateUnwritableDir = true;
+//
+//    // Setup 1: data file (1-8), no index file.
+//    //         [Open should create index in cache.]
+//    if ( ! gribInit_1_8() ) return false;
+//
+//    netcdfObj = openNc( ncObjType, gribIospVer );
+//
+//    int timeDimLengthExpected = 8;
+//    Dimension timeDim = netcdfObj.findDimension( "time" );
+//    assertEquals( "Length of time dimension [" + timeDim.getLength() + "] not as expected [" + timeDimLengthExpected + "].",
+//                  timeDim.getLength(),
+//                  timeDimLengthExpected );
+//
+//    // Setup 2: data file (1-8), index file (1-8, CHANGE).
+//    //          [Sync should not use index in cache. HOW TO TEST?]
+//    if ( !indexSetup1_8() ) return false;
+//
+//    if ( ! syncNc( netcdfObj ) ) return false;
+//
+//    timeDim = netcdfObj.findDimension( "time" );
+//    assertEquals( "Length of time dimension [" + timeDim.getLength() + "] not as expected [" + timeDimLengthExpected + "].",
+//                  timeDim.getLength(),
+//                  timeDimLengthExpected );
+//
+//    DiskCache.simulateUnwritableDir = false;
+//
+//    return true;
+//  }
 
   public void testBadIndexFileWithExtendModeFalse()
   {
@@ -570,30 +725,29 @@ public class TestIndexUpdating extends TestCase
 
   private boolean setupGribAndPartialIndex0()
   {
-    // Check that the data directory exists and is writable.
-    dataDir = new File( ucar.nc2.TestAll.cdmLocalTestDataDir, "ucar/nc2/iosp/grib/indexUpdating");
-    if ( ! dataDir.exists())
+    // Locate the source data file and check that it exists and can be read.
+    File sourceDataFile = new File( dataDir, dataFileName + ".part0" );
+    if ( ! sourceDataFile.exists() )
     {
-      fail( "Non-existent data directory [" + dataDir.getPath() + "].");
+      fail( "Non-existent source data file [" + sourceDataFile.getPath() + "].");
       return false;
     }
-    if ( ! dataDir.canWrite())
+    if ( ! sourceDataFile.canRead() )
     {
-      fail( "Cannot write to data directory [" + dataDir.getPath() + "].");
+      fail( "Cannot read source data file [" + sourceDataFile.getPath() + "]." );
+      return false;
+    }
+
+    // Copy source grib file into place
+    try
+    { IO.copyFile( sourceDataFile, dataFile ); }
+    catch ( IOException e )
+    {
+      fail( "Failed to copy partial grib file [" + sourceDataFile.getPath() + "] to grib file [" + dataFile.getPath() + "]: " + e.getMessage());
       return false;
     }
 
     // Check that the GRIB data file exists and is readable.
-    // Copy partial grib file into place
-    File gribFilePartial = new File( dataDir, dataFileName + ".part0" );
-    dataFile = new File( dataDir, dataFileName);
-    try
-    { IO.copyFile( gribFilePartial, dataFile ); }
-    catch ( IOException e )
-    {
-      fail( "Failed to copy partial grib file [" + gribFilePartial.getPath() + "] to grib file [" + dataFile.getPath() + "]: " + e.getMessage());
-      return false;
-    }
     if ( ! dataFile.exists() )
     {
       fail( "Non-existent data file [" + dataFile.getPath() + "].");
@@ -604,15 +758,6 @@ public class TestIndexUpdating extends TestCase
       fail( "Cannot read data file [" + dataFile.getPath() + "]." );
       return false;
     }
-
-    // Check that index file doesn't exist and is writable.
-    indexFile = new File( dataDir, dataFileName + ".gbx" );
-    if ( indexFile.exists() && ! indexFile.canWrite())
-    {
-      fail( "Cannot write index file [" + indexFile.getPath() + "].");
-      return false;
-    }
-    indexFile.deleteOnExit();
 
     // Check that partial index file exists and is readable.
     indexFilePartial = new File( dataDir, dataFileName + ".part0.gbx" );
@@ -636,34 +781,42 @@ public class TestIndexUpdating extends TestCase
       return false;
     }
 
-    return true;
+    // Check that the GRIB index file exists and is readable.
+    if ( ! indexFile.exists() )
+    {
+      fail( "Non-existent index file [" + indexFile.getPath() + "]." );
+      return false;
+    }
+    if ( ! indexFile.canRead() )
+    {
+      fail( "Cannot read index file [" + indexFile.getPath() + "]." );
+      return false;
+    }
 
+    return true;
   }
 
   private boolean setupGrib()
   {
-    // Check that the data directory exists and is writable.
-    dataDir = new File( ucar.nc2.TestAll.cdmLocalTestDataDir, "ucar/nc2/iosp/grib/indexUpdating");
-    if ( ! dataDir.exists())
+    // Locate source data file and check that it exists and is readable.
+    File sourceDataFile = new File( dataDir, dataFileName + ".part0" );
+    if ( ! sourceDataFile.exists())
     {
-      fail( "Non-existent data directory [" + dataDir.getPath() + "].");
+      fail( "Non-existent source data file [" + sourceDataFile.getPath() + "].");
       return false;
     }
-    if ( ! dataDir.canWrite())
+    if ( ! sourceDataFile.canRead() )
     {
-      fail( "Cannot write to data directory [" + dataDir.getPath() + "].");
+      fail( "Cannot read data file [" + sourceDataFile.getPath() + "]." );
       return false;
     }
 
-    // Check that the GRIB data file exists and is readable.
-    // Copy partial grib file into place
-    File gribFilePartial = new File( dataDir, dataFileName + ".part0" );
-    dataFile = new File( dataDir, dataFileName);
+    // Copy source grib file into place
     try
-    { IO.copyFile( gribFilePartial, dataFile ); }
+    { IO.copyFile( sourceDataFile, dataFile ); }
     catch ( IOException e )
     {
-      fail( "Failed to copy partial grib file [" + gribFilePartial.getPath() + "] to grib file [" + dataFile.getPath() + "]: " + e.getMessage());
+      fail( "Failed to copy partial grib file [" + sourceDataFile.getPath() + "] to grib file [" + dataFile.getPath() + "]: " + e.getMessage());
       return false;
     }
 
@@ -678,15 +831,6 @@ public class TestIndexUpdating extends TestCase
       return false;
     }
 
-    // Check that index file doesn't exist and is writable.
-    indexFile = new File( dataDir, dataFileName + ".gbx" );
-    if ( indexFile.exists() && ! indexFile.canWrite())
-    {
-      fail( "Cannot write index file [" + indexFile.getPath() + "].");
-      return false;
-    }
-    indexFile.deleteOnExit();
-
     return true;
   }
 
@@ -695,12 +839,12 @@ public class TestIndexUpdating extends TestCase
     RandomAccessFile input = null, output = null;
     try {
     // read in extra data
-    input = new RandomAccessFile(dataFile.getPath() +".extra", "r");
+    input = new RandomAccessFile( dataFile.getPath() +".extra", "r");
     byte[] extra = new byte[ (int) input.length()];
     input.read( extra );
     input.close();
 
-    output = new RandomAccessFile(dataFile.getPath(), "rw");
+    output = new RandomAccessFile( dataFile.getPath(), "rw");
     output.seek( output.length());
     output.write( extra );
     output.close();
@@ -751,17 +895,14 @@ public class TestIndexUpdating extends TestCase
 
   private boolean switchGribIndex( String indexSuffix )
   {
-    if ( dataDir == null || dataFileName == null || indexFile == null )
-      throw new IllegalStateException( "Must first call setupGribAndPartialIndex0() method.");
-
     // Check that the complete index file exists and is readable.
     indexFileFull = new File( dataDir, dataFileName + indexSuffix );
-    if ( !indexFileFull.exists() )
+    if ( ! indexFileFull.exists() )
     {
       fail( "Non-existent full index file [" + indexFileFull + "]." );
       return false;
     }
-    if ( !indexFileFull.canRead() )
+    if ( ! indexFileFull.canRead() )
     {
       fail( "Cannot read full index file [" + indexFileFull.getPath() + "]." );
       return false;
@@ -775,6 +916,19 @@ public class TestIndexUpdating extends TestCase
       fail( "Failed to copy complete index file [" + indexFileFull.getPath() + "] to index file [" + indexFile.getPath() + "]: " + e.getMessage() );
       return false;
     }
+
+    // Check that the GRIB data file exists and is readable.
+    if ( ! indexFile.exists() )
+    {
+      fail( "Non-existent index file [" + indexFile.getPath() + "]." );
+      return false;
+    }
+    if ( ! indexFile.canRead() )
+    {
+      fail( "Cannot read index file [" + indexFile.getPath() + "]." );
+      return false;
+    }
+
     return true;
   }
 
@@ -839,47 +993,32 @@ public class TestIndexUpdating extends TestCase
 
   private boolean gribInit_1_8()
   {
-    // Check that the data directory exists and is writable.
-    dataDir = new File( ucar.nc2.TestAll.cdmLocalTestDataDir, "ucar/nc2/iosp/grib/indexUpdating" );
-    if ( ! dataDir.exists() )
+
+    // Check that the source GRIB file exists and is readable.
+    File sourceDataFile = new File( dataDir, dataFileName + dataSuffix1_8 );
+    if ( ! sourceDataFile.exists())
     {
-      fail( "Non-existent data directory [" + dataDir.getPath() + "]." );
+      fail( "Non-existent source GRIB file [" + sourceDataFile.getPath() + "].");
       return false;
     }
-    if ( ! dataDir.canWrite() )
+    if ( ! sourceDataFile.canRead())
     {
-      fail( "Cannot write to data directory [" + dataDir.getPath() + "]." );
+      fail( "Cannot read the source GRIB file [" + sourceDataFile.getPath() + "].");
       return false;
     }
 
-    // Check that the partial GRIB file exists and is readable.
-    File gribFilePartial = new File( dataDir, dataFileName + dataSuffix1_8 );
-    if ( ! gribFilePartial.exists())
-    {
-      fail( "Non-existent partial GRIB file [" + gribFilePartial.getPath() + "].");
-      return false;
-    }
-    if ( ! gribFilePartial.canRead())
-    {
-      fail( "Cannot read the partial GRIB file [" + gribFilePartial.getPath() + "].");
-      return false;
-    }
-
-    // Locate data file and setup for final deletion.
-    dataFile = new File( dataDir, dataFileName );
-    dataFile.deleteOnExit();
-
-    // Copy partial grib file into place
+    // Copy source grib file into place
     try
     {
-      IO.copyFile( gribFilePartial, dataFile );
+      IO.copyFile( sourceDataFile, dataFile );
     }
     catch ( IOException e )
     {
-      fail( "Failed to copy partial grib file [" + gribFilePartial.getPath() + "] to grib file [" + dataFile.getPath() + "]: " + e.getMessage() );
+      fail( "Failed to copy partial grib file [" + sourceDataFile.getPath() + "] to grib file [" + dataFile.getPath() + "]: " + e.getMessage() );
       return false;
     }
 
+    // Check that data file exists and can be read.
     if ( ! dataFile.exists() )
     {
       fail( "Non-existent data file [" + dataFile.getPath() + "]." );
@@ -945,10 +1084,6 @@ public class TestIndexUpdating extends TestCase
       return false;
     }
 
-    // Locate index file and setup for final deletion
-    indexFile = new File( dataDir, indexFileName );
-    indexFile.deleteOnExit();
-
     // Copy source index file into place (".gbx").
     try
     {
@@ -960,6 +1095,7 @@ public class TestIndexUpdating extends TestCase
       return false;
     }
 
+    // Check that index file exists and can be read.
     if ( ! indexFile.exists())
     {
       fail( "Non-existent index file [" + indexFile.getPath() + "].");
