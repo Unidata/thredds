@@ -140,7 +140,7 @@ public class Index implements Cloneable {
 
   protected long size; // total number of elements
   protected int offset; // element = offset + stride[0]*current[0] + ...
-  protected boolean fastIterator = true; // use fast iterator if in canonical order
+  private boolean fastIterator = true; // use fast iterator if in canonical order
 
   protected int[] current; // current element's index, used only for the general case
 
@@ -269,7 +269,7 @@ public class Index implements Cloneable {
       }
     }
     newindex.size = computeSize(newindex.shape);
-    newindex.fastIterator = (newindex.size == size); // if equal, then its not a real subset, so can still use fastIterator
+    newindex.fastIterator = fastIterator && (newindex.size == size); // if equal, then its not a real subset, so can still use fastIterator
     newindex.precalc(); // any subclass-specific optimizations
     return newindex;
   }
@@ -317,7 +317,7 @@ public class Index implements Cloneable {
       //if (name != null) newindex.name[ii] = name[ii];
     }
     newindex.size = computeSize(newindex.shape);
-    newindex.fastIterator = (newindex.size == size); // if equal, then its not a real subset, so can still use fastIterator
+    newindex.fastIterator = fastIterator && (newindex.size == size); // if equal, then its not a real subset, so can still use fastIterator
     newindex.precalc(); // any subclass-specific optimizations
     return newindex;
   }
@@ -420,7 +420,7 @@ public class Index implements Cloneable {
       if (i != dims[i]) isPermuted = true;
     }
 
-    newIndex.fastIterator = !isPermuted; // useful optimization
+    newIndex.fastIterator = fastIterator && !isPermuted; // useful optimization
     newIndex.precalc(); // any subclass-specific optimizations
     return newIndex;
   }
@@ -468,6 +468,10 @@ public class Index implements Cloneable {
 
   IteratorFast getIndexIteratorFast(Array maa) {
     return new IteratorFast(size, maa);
+  }
+
+  boolean isFastIterator() {
+    return fastIterator;
   }
 
   /**

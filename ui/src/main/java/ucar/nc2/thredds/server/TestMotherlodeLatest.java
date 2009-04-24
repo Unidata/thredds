@@ -50,8 +50,13 @@ public class TestMotherlodeLatest extends TimerTask {
   static private final String server1 = "http://motherlode.ucar.edu:8080/";
   static private final String server2 = "http://motherlode.ucar.edu:9080/";
 
+  // fmrc
   static private final String latestPrefix = "thredds/catalog/fmrc/";
   static private final String latestSuffix = "/files/latest.xml";
+
+  // non-fmrc
+  //static private final String latestPrefix = "thredds/catalog/model/";
+  //static private final String latestSuffix = "/latest.xml";
 
   static private final String bestPrefix = "thredds/dodsC/fmrc/";
   static private final String bestSuffix = "_best.ncd";
@@ -182,11 +187,13 @@ public class TestMotherlodeLatest extends TimerTask {
   public static void main(String args[]) throws Exception {
     Timer timer = new Timer();
 
+    // http://motherlode.ucar.edu:9080/thredds/catalog/model/NCEP/RUC2/CONUS_20km/pressure/latest.xml
+
     /* TestMotherlodeLatest test1 = new TestMotherlodeLatest("NCEP/RUC2/CONUS_20km/pressure", bestSuffix);
     timer.schedule(test1, 0, 1000 * 60 * 10); // 10 mins   */
 
     TestMotherlodeLatest test2 = new TestMotherlodeLatest("NCEP/RUC2/CONUS_20km/pressure", latestSuffix);
-    test2.doAll();               
+    //test2.doAll();
 
     timer.schedule(test2, 0, 1000 * 60 * 10); // 10 mins
 

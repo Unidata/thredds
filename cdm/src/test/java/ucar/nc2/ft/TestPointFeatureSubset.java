@@ -39,12 +39,14 @@ import ucar.nc2.units.TimeDuration;
 import ucar.nc2.units.DateType;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.RadialDatasetSweep;
+import ucar.nc2.dt.TimeSeriesCollection;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
 import java.io.FileFilter;
 import java.io.File;
 import java.util.Formatter;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -142,6 +144,7 @@ public class TestPointFeatureSubset extends TestCase {
 
     for (FeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
       assert (ftype == fc.getCollectionFeatureType());
+      donsTest(fc);
 
       if (ftype == FeatureType.POINT) {
         assert (fc instanceof PointFeatureCollection);
@@ -151,8 +154,8 @@ public class TestPointFeatureSubset extends TestCase {
         assert (fc instanceof StationTimeSeriesFeatureCollection);
         StationTimeSeriesFeatureCollection sc = (StationTimeSeriesFeatureCollection) fc;
         System.out.printf("StationTimeSeriesFeatureCollection size=%d%n", count(sc));
-        LatLonRect bb = sc.getBoundingBox();
-        LatLonRect bbsubset = new LatLonRect(bb.getLowerLeftPoint(), bb.getHeight()/2, bb.getWidth()/2);
+        // LatLonRect bb = sc.getBoundingBox();
+        LatLonRect bbsubset = getHalfBB(sc); // new LatLonRect(bb.getLowerLeftPoint(), bb.getHeight()/2, bb.getWidth()/2);
         StationTimeSeriesFeatureCollection subset = sc.subset( bbsubset);
         System.out.printf(" subset size=%d%n", count(subset));
 
@@ -201,5 +204,42 @@ public class TestPointFeatureSubset extends TestCase {
     DateRange result = new DateRange(start, null, td, null);
     System.out.printf(" subset date range=%s %n", result);
     return result;
+  }
+
+  private void donsTest(FeatureCollection fc) throws IOException {
+    PointFeatureCollection subsetPfc = null;
+
+    if (fc instanceof PointFeatureCollection) {
+      System.out.print("Don test on PointFeatureCollection: ");
+      subsetPfc = (PointFeatureCollection) fc;
+      subsetPfc = subsetPfc.subset(getHalfBB(subsetPfc), null);
+
+    } else if (fc instanceof NestedPointFeatureCollection) {
+      System.out.print("Don test on NestedPointFeatureCollection: ");
+      NestedPointFeatureCollection npfc = (NestedPointFeatureCollection) fc;
+      NestedPointFeatureCollection subset = npfc.subset( getHalfBB(npfc));
+      subsetPfc = subset.flatten(null, null);
+    }
+
+    int total = subsetPfc.size();
+    int count = 0;
+    PointFeatureIterator dataIterator = subsetPfc.getPointFeatureIterator(16384);
+    while (dataIterator.hasNext()) {
+      PointFeature po = (PointFeature) dataIterator.next();
+      count++;
+    }
+    System.out.printf("count= %d%n", count);
+  }
+
+  private LatLonRect getHalfBB(PointFeatureCollection fc) {
+    LatLonRect bb = fc.getBoundingBox();
+    return new LatLonRect(bb.getLowerLeftPoint(), bb.getHeight()/2, bb.getWidth()/2);
+  }
+
+  private LatLonRect getHalfBB(NestedPointFeatureCollection fc) {
+    LatLonRect bb = new LatLonRect();
+    if (fc instanceof StationTimeSeriesFeatureCollection)
+      bb = ((StationTimeSeriesFeatureCollection)fc).getBoundingBox();
+    return new LatLonRect(bb.getLowerLeftPoint(), bb.getHeight()/2, bb.getWidth()/2);
   }
 }

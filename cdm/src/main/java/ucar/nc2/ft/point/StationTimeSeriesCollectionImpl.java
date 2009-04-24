@@ -109,8 +109,8 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
     StationFeatureCollectionSubset(StationTimeSeriesCollectionImpl from, List<Station> stations) {
       super( from.getName());
       this.from = from;
-      stationHelper = new StationHelper();
-      stationHelper.setStations(stations);
+      this.stationHelper = new StationHelper();
+      this.stationHelper.setStations(stations);
     }
 
     public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {

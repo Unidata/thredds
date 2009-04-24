@@ -1,6 +1,4 @@
 /*
- * $Id: IDV-Style.xjs,v 1.3 2007/02/16 19:18:30 dmurray Exp $
- *
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
@@ -36,7 +34,6 @@
 
 package ucar.nc2.iosp.grid;
 
-
 import ucar.ma2.*;
 
 import ucar.nc2.*;
@@ -50,379 +47,350 @@ import ucar.grid.GridRecord;
 
 import java.io.IOException;
 
-
 /**
  * An IOSP for Gempak Grid data
  *
  * @author IDV Development Team
- * @version $Revision: 1.3 $
  */
 public abstract class GridServiceProvider extends AbstractIOServiceProvider {
 
   public enum IndexExtendMode {
-    //extend, rewrite, read, none
-    rewrite, extendwrite, readonly
+    /**
+     * if data file changes, completely rewrite the index
+     */
+    rewrite,
+
+    /**
+     * if data file changes, assume its been extended, so extend the index
+     */
+    extendwrite,
+
+    /**
+     * if index file exists, use it as is
+     */
+    readonly
   }
-    /** FMRC coordinate system */
-    protected FmrcCoordSys fmrcCoordSys;
 
-    /** The netCDF file */
-    protected NetcdfFile ncfile;
+  // defaults are for clients, TDS sets these explicitly
+  static protected IndexExtendMode indexFileModeOnOpen = IndexExtendMode.rewrite; // default is to rewrite
+  static protected IndexExtendMode indexFileModeOnSync = IndexExtendMode.rewrite; // default is to rewrite
 
-    /** the file we are reading */
-    protected RandomAccessFile raf;
-
-    /* to use or not to use cache first */
-    protected static boolean alwaysInCache = false;
-
-    static public boolean addLatLon = false; // add lat/lon coordinates for striuct CF compliance
+  static protected boolean addLatLon = false; // add lat/lon coordinates for strict CF compliance
+  static protected boolean useMaximalCoordSys = false;
+  static protected boolean forceNewIndex = false; // force that a new index file is written - for debugging
+  static protected boolean alwaysInCache = false;
 
   /**
-   * these modes are set for the Default  client mode
+   * debug flags
    */
-    static public boolean forceNewIndex = false; // force that a new index file is written
-    static public IndexExtendMode extendMode = IndexExtendMode.rewrite; // default is to rewrite
-    //static public IndexExtendMode syncMode = IndexExtendMode.extend; // default is to extend
-    static public IndexExtendMode syncMode = IndexExtendMode.rewrite; // default is to rewrite
+  protected static boolean debugOpen = false,
+          debugMissing = false,
+          debugMissingDetails = false,
+          debugProj = false,
+          debugTiming = false,
+          debugVert = false;
 
-
-    /** place to store debug stuff */
-    protected StringBuilder parseInfo = new StringBuilder();
-
-    /** debug flags */
-    protected static boolean debugOpen           = false,
-                   debugMissing        = false,
-                   debugMissingDetails = false,
-                   debugProj           = false,
-                   debugTiming         = false,
-                   debugVert           = false;
-
-    /** flag for using maximal coordinate system */
-    static public boolean useMaximalCoordSys = false;
-
-    /**
-     * Set whether to use the maximal coordinate system or not
-     *
-     * @param b  true to use
-     */
-    static public void useMaximalCoordSys(boolean b) {
-        useMaximalCoordSys = b;
-    }
-
-    /**
-     * Set the debug flags
-     *
-     * @param debugFlag debug flags
-     */
-    static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
-        debugOpen           = debugFlag.isSet("Grid/open");
-        debugMissing        = debugFlag.isSet("Grid/missing");
-        debugMissingDetails = debugFlag.isSet("Grid/missingDetails");
-        debugProj           = debugFlag.isSet("Grid/projection");
-        debugVert           = debugFlag.isSet("Grid/vertical");
-        debugTiming         = debugFlag.isSet("Grid/timing");
-    }
+   /**
+   * Set whether to use the maximal coordinate system or not
+   *
+   * @param b true to use
+   */
+  static public void useMaximalCoordSys(boolean b) {
+    useMaximalCoordSys = b;
+  }
 
   /**
-     * This controls the case where the GRIB file has changed, which is detected by comparing the GRIB
-     *   file length with the file length recorded in the index file. If there is no index, one will be created.
-     *   Default is IndexExtendMode.rewrite.
-     * <ol>
-     * <li>IndexExtendMode.extend: when GRIB file length increases, extend the index. This is the case when the file
-     *   is being appended to, as new data arrives.
-     * <li>IndexExtendMode.rewrite: when GRIB file length changes, rewrite the index. This is the safest thing to do,
-     *   at the expense of performance.
-     * <li>IndexExtendMode.none: never modify an existing index. If there is no index, one will be created.
-     * </ol>
-     * @param mode IndexExtendMode when file is opened
-     */
-    static public void setIndexExtendMode(IndexExtendMode mode) {
-      extendMode = mode;
-    }
+   * Set the debug flags
+   *
+   * @param debugFlag debug flags
+   */
+  static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
+    debugOpen = debugFlag.isSet("Grid/open");
+    debugMissing = debugFlag.isSet("Grid/missing");
+    debugMissingDetails = debugFlag.isSet("Grid/missingDetails");
+    debugProj = debugFlag.isSet("Grid/projection");
+    debugVert = debugFlag.isSet("Grid/vertical");
+    debugTiming = debugFlag.isSet("Grid/timing");
+  }
 
-    /**
-     * This controls what happens when sync() is called on a GRIB file. The main use of sync() is when you are using
-     * NetcdfFile object caching. Before NetcdfFile is returned from a cache hit, sync() is called on it.
-     * Default is IndexExtendMode.extend.
-     *
-     * @param mode IndexExtendMode when sync() is called. Same meaning as setIndexExtendMode(IndexExtendMode mode)
-     */
-    static public void setIndexSyncMode(IndexExtendMode mode) {
-      syncMode = mode;
-    }
+  /**
+   * This controls the case where the GRIB file has changed, which is detected by comparing the GRIB
+   * file length with the file length recorded in the index file. If there is no index, one will be created.
+   * Default is IndexExtendMode.rewrite.
+   * <ol>
+   * <li>IndexExtendMode.extend: when GRIB file length increases, extend the index. This is the case when the file
+   * is being appended to, as new data arrives.
+   * <li>IndexExtendMode.rewrite: when GRIB file length changes, rewrite the index. This is the safest thing to do,
+   * at the expense of performance.
+   * <li>IndexExtendMode.none: never modify an existing index. If there is no index, one will be created.
+   * </ol>
+   *
+   * @param mode IndexExtendMode when file is opened
+   */
+  static public void setIndexFileModeOnOpen(IndexExtendMode mode) {
+    indexFileModeOnOpen = mode;
+  }
 
-    // backwards compatible with old API
-    /**
-     * Set how indexes are used
-     * @param b if true, same as setIndexExtendMode(IndexExtendMode.extend), if false, same as
-     * setIndexExtendMode(IndexExtendMode.none)
-     */
-    static public void setExtendIndex(boolean b) {
-      extendMode = b ? IndexExtendMode.rewrite : IndexExtendMode.readonly;
-      // use readonly since it's the default for false
-      syncMode = b ? IndexExtendMode.rewrite : IndexExtendMode.readonly;
-    }
+  /**
+   * This controls what happens when sync() is called on a GRIB file. The main use of sync() is when you are using
+   * NetcdfFile object caching. Before NetcdfFile is returned from a cache hit, sync() is called on it.
+   * Default is IndexExtendMode.extend.
+   *
+   * @param mode IndexExtendMode when sync() is called. Same meaning as setIndexExtendMode(IndexExtendMode mode)
+   */
+  static public void setIndexFileModeOnSync(IndexExtendMode mode) {
+    indexFileModeOnSync = mode;
+  }
 
-    /**
+  // backwards compatible with old API
+  /**
+   * Set how indexes are used
+   *
+   * @param b if true, same as setIndexExtendMode(IndexExtendMode.extend), if false, same as
+   *          setIndexExtendMode(IndexExtendMode.none)
+   */
+  static public void setExtendIndex(boolean b) {
+    indexFileModeOnOpen = b ? IndexExtendMode.rewrite : IndexExtendMode.readonly;
+    // use readonly since it's the default for false
+    indexFileModeOnSync = b ? IndexExtendMode.rewrite : IndexExtendMode.readonly;
+  }
+
+  /**
    * Set disk cache policy for index files.
    * Default = false, meaning try to write index files in same directory as grib file.
    * True means always use the DiskCache area. TDS sets this to true, so it wont interfere with external indexer.
    *
    * @param b set to this value
    */
-    static public void setIndexAlwaysInCache(boolean b) {
-      alwaysInCache = b;
+  static public void setIndexAlwaysInCache(boolean b) {
+    alwaysInCache = b;
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * set by the FMRC from the inventory definition, otherwise null
+   */
+  protected FmrcCoordSys fmrcCoordSys;
+
+  /**
+   * The netCDF file that the iosp is part of
+   */
+  protected NetcdfFile ncfile;
+
+  /**
+   * the RandomAccessFile we are reading from
+   */
+  protected RandomAccessFile raf;
+
+  /**
+   * place to store debug stuff
+   */
+  protected StringBuilder parseInfo = new StringBuilder();
+
+  /**
+   * Use the given index to fill the NetcdfFile object with attributes and variables.
+   *
+   * @param index      GridIndex to use
+   * @param cancelTask cancel task
+   * @throws IOException problem reading the file
+   */
+  protected abstract void open(GridIndex index, CancelTask cancelTask)
+          throws IOException;
+
+  /**
+   * Open the service provider for reading.
+   *
+   * @param raf        file to read from
+   * @param ncfile     netCDF file we are writing to (memory)
+   * @param cancelTask task for cancelling
+   * @throws IOException problem reading file
+   */
+  public void open(RandomAccessFile raf, NetcdfFile ncfile,
+          CancelTask cancelTask)
+          throws IOException {
+    this.raf = raf;
+    this.ncfile = ncfile;
+  }
+
+  /**
+   * Close this IOSP
+   *
+   * @throws IOException problem closing file
+   */
+  public void close() throws IOException {
+    raf.close();
+  }
+
+
+
+  /**
+   * Get the detail information
+   *
+   * @return the detail info
+   */
+  public String getDetailInfo() {
+    return parseInfo.toString();
+  }
+
+  /**
+   * Send an IOSP message
+   *
+   * @param special isn't that special?
+   */
+  public Object sendIospMessage(Object special) {
+    if (special instanceof FmrcCoordSys) {
+      fmrcCoordSys = (FmrcCoordSys) special;
     }
+    return null;
+  }
 
-    /**
-     * Use the given index to fill the NetcdfFile object with attributes and variables.
-     * 
-     * @param index   GridIndex to use
-     * @param cancelTask  cancel task
-     *
-     * @throws IOException  problem reading the file
-     */
-    protected abstract void open(GridIndex index, CancelTask cancelTask)
-     throws IOException;
+  /**
+   * Read the data for the variable
+   *
+   * @param v2      Variable to read
+   * @param section section infomation
+   * @return Array of data
+   * @throws IOException           problem reading from file
+   * @throws InvalidRangeException invalid Range
+   */
+  public Array readData(Variable v2, Section section)
+          throws IOException, InvalidRangeException {
+    long start = System.currentTimeMillis();
 
-    /**
-     * Open the service provider for reading.
-     * @param raf  file to read from
-     * @param ncfile  netCDF file we are writing to (memory)
-     * @param cancelTask  task for cancelling
-     *
-     * @throws IOException  problem reading file
-     */
-    public void open(RandomAccessFile raf, NetcdfFile ncfile,
-                     CancelTask cancelTask)
-            throws IOException {
-        this.raf    = raf;
-        this.ncfile = ncfile;
-    }
+    Array dataArray = Array.factory(DataType.FLOAT,
+            section.getShape());
+    GridVariable pv = (GridVariable) v2.getSPobject();
 
-    /**
-     * Close this IOSP
-     *
-     * @throws IOException problem closing file
-     */
-    public void close() throws IOException {
-        raf.close();
-    }
+    int count = 0;
+    Range timeRange = section.getRange(count++);
+    Range levRange = pv.hasVert()
+            ? section.getRange(count++)
+            : null;
+    Range yRange = section.getRange(count++);
+    Range xRange = section.getRange(count);
 
-    /**
-     * alwaysInCache
-     *
-     * @return alwaysInCache
-     */
-    public static boolean alwaysInCache() {
-        return alwaysInCache;
-    }
+    IndexIterator ii = dataArray.getIndexIterator();
 
-    /**
-     * alwaysInCache
-     *
-     * @param aic
-     */
-    public static void setAlwaysInCache( boolean aic ) {
-        alwaysInCache = aic;
-    }
-
-     /**
-     * extendMode
-     * this is left in for IDV folks, this is how they use it
-     * @return extendMode
-     */
-    public static boolean extendMode() {
-        return extendMode == IndexExtendMode.rewrite;
-    }
-
-    /**
-     * extendMode
-     *
-     * this is left in for IDV folks, this is how they use it
-     * @param em
-     */
-    public static void setExtendMode( boolean em ) {
-      if( em ) {
-        extendMode = IndexExtendMode.rewrite;
-      } else { // set to default
-        extendMode = IndexExtendMode.readonly;
+    // loop over time
+    for (int timeIdx = timeRange.first(); timeIdx <= timeRange.last();
+         timeIdx += timeRange.stride()) {
+      if (pv.hasVert()) {
+        readLevel(v2, timeIdx, levRange, yRange, xRange, ii);
+      } else {
+        readXY(v2, timeIdx, 0, yRange, xRange, ii);
       }
     }
 
-    /**
-     * Get the detail information
-     *
-     * @return the detail info
-     */
-    public String getDetailInfo() {
-        return parseInfo.toString();
+    if (debugTiming) {
+      long took = System.currentTimeMillis() - start;
+      System.out.println("  read data took=" + took + " msec ");
     }
 
-    /**
-     * Send an IOSP message
-     *
-     * @param special  isn't that special?
-     */
-    public Object sendIospMessage( Object special) {
-        if (special instanceof FmrcCoordSys) {
-            fmrcCoordSys = (FmrcCoordSys) special;
-        }
-        return null;
+    return dataArray;
+  }
+
+  // loop over level
+
+  /**
+   * Read a level
+   *
+   * @param v2         variable to put the data into
+   * @param timeIdx    time index
+   * @param levelRange level range
+   * @param yRange     x range
+   * @param xRange     y range
+   * @param ii         index iterator
+   * @throws IOException           problem reading the file
+   * @throws InvalidRangeException invalid range
+   */
+  private void readLevel(Variable v2, int timeIdx, Range levelRange,
+          Range yRange, Range xRange, IndexIterator ii)
+          throws IOException, InvalidRangeException {
+    for (int levIdx = levelRange.first(); levIdx <= levelRange.last();
+         levIdx += levelRange.stride()) {
+      readXY(v2, timeIdx, levIdx, yRange, xRange, ii);
+    }
+  }
+
+
+  /**
+   * read one product
+   *
+   * @param v2      variable to put the data into
+   * @param timeIdx time index
+   * @param levIdx  level index
+   * @param yRange  x range
+   * @param xRange  y range
+   * @param ii      index iterator
+   * @throws IOException           problem reading the file
+   * @throws InvalidRangeException invalid range
+   */
+  private void readXY(Variable v2, int timeIdx, int levIdx, Range yRange,
+          Range xRange, IndexIterator ii)
+          throws IOException, InvalidRangeException {
+    Attribute att = v2.findAttribute("missing_value");
+    float missing_value = (att == null)
+            ? -9999.0f
+            : att.getNumericValue()
+            .floatValue();
+
+    GridVariable pv = (GridVariable) v2.getSPobject();
+    GridHorizCoordSys hsys = pv.getHorizCoordSys();
+    int nx = hsys.getNx();
+
+    GridRecord record = pv.findRecord(timeIdx, levIdx);
+    if (record == null) {
+      int xyCount = yRange.length() * xRange.length();
+      for (int j = 0; j < xyCount; j++) {
+        ii.setFloatNext(missing_value);
+      }
+      return;
     }
 
-    /**
-     * Read the data for the variable
-     * @param v2  Variable to read
-     * @param section   section infomation
-     * @return Array of data
-     *
-     * @throws IOException problem reading from file
-     * @throws InvalidRangeException  invalid Range
-     */
-    public Array readData(Variable v2, Section section)
-            throws IOException, InvalidRangeException {
-        long start = System.currentTimeMillis();
+    // otherwise read it
+    float[] data = _readData(record);
 
-        Array dataArray = Array.factory(DataType.FLOAT,
-                                        section.getShape());
-        GridVariable  pv        = (GridVariable) v2.getSPobject();
-
-        int           count     = 0;
-        Range         timeRange = section.getRange(count++);
-        Range         levRange  = pv.hasVert()
-                                  ? section.getRange(count++)
-                                  : null;
-        Range         yRange    = section.getRange(count++);
-        Range         xRange    = section.getRange(count);
-
-        IndexIterator ii        = dataArray.getIndexIterator();
-
-        // loop over time
-        for (int timeIdx = timeRange.first(); timeIdx <= timeRange.last();
-                timeIdx += timeRange.stride()) {
-            if (pv.hasVert()) {
-                readLevel(v2, timeIdx, levRange, yRange, xRange, ii);
-            } else {
-                readXY(v2, timeIdx, 0, yRange, xRange, ii);
-            }
-        }
-
-        if (debugTiming) {
-            long took = System.currentTimeMillis() - start;
-            System.out.println("  read data took=" + took + " msec ");
-        }
-
-        return dataArray;
+    for (int y = yRange.first(); y <= yRange.last();
+         y += yRange.stride()) {
+      for (int x = xRange.first(); x <= xRange.last();
+           x += xRange.stride()) {
+        int index = y * nx + x;
+        ii.setFloatNext(data[index]);
+      }
     }
+  }
 
-    // loop over level
-
-    /**
-     * Read a level
-     *
-     * @param v2    variable to put the data into
-     * @param timeIdx  time index
-     * @param levelRange level range
-     * @param yRange   x range
-     * @param xRange   y range
-     * @param ii       index iterator
-     *
-     * @throws IOException   problem reading the file
-     * @throws InvalidRangeException  invalid range
-     */
-    private void readLevel(Variable v2, int timeIdx, Range levelRange,
-                           Range yRange, Range xRange, IndexIterator ii)
-            throws IOException, InvalidRangeException {
-        for (int levIdx = levelRange.first(); levIdx <= levelRange.last();
-                levIdx += levelRange.stride()) {
-            readXY(v2, timeIdx, levIdx, yRange, xRange, ii);
-        }
+  /**
+   * Is this XY level missing?
+   *
+   * @param v2      Variable
+   * @param timeIdx time index
+   * @param levIdx  level index
+   * @return true if missing
+   * @throws InvalidRangeException invalid range
+   */
+  public boolean isMissingXY(Variable v2, int timeIdx, int levIdx)
+          throws InvalidRangeException {
+    GridVariable pv = (GridVariable) v2.getSPobject();
+    if (null == pv) System.out.println("HEY");
+    if ((timeIdx < 0) || (timeIdx >= pv.getNTimes())) {
+      throw new InvalidRangeException("timeIdx=" + timeIdx);
     }
-
-
-    /**
-     * read one product
-     *
-     * @param v2    variable to put the data into
-     * @param timeIdx  time index
-     * @param levIdx   level index
-     * @param yRange   x range
-     * @param xRange   y range
-     * @param ii       index iterator
-     *
-     * @throws IOException   problem reading the file
-     * @throws InvalidRangeException  invalid range
-     */
-    private void readXY(Variable v2, int timeIdx, int levIdx, Range yRange,
-                        Range xRange, IndexIterator ii)
-            throws IOException, InvalidRangeException {
-        Attribute         att           = v2.findAttribute("missing_value");
-        float             missing_value = (att == null)
-                                          ? -9999.0f
-                                          : att.getNumericValue()
-                                              .floatValue();
-
-        GridVariable      pv            = (GridVariable) v2.getSPobject();
-        GridHorizCoordSys hsys          = pv.getHorizCoordSys();
-        int               nx            = hsys.getNx();
-
-        GridRecord        record        = pv.findRecord(timeIdx, levIdx);
-        if (record == null) {
-            int xyCount = yRange.length() * xRange.length();
-            for (int j = 0; j < xyCount; j++) {
-                ii.setFloatNext(missing_value);
-            }
-            return;
-        }
-
-        // otherwise read it
-        float[] data= _readData(record);
-
-        for (int y = yRange.first(); y <= yRange.last();
-                y += yRange.stride()) {
-            for (int x = xRange.first(); x <= xRange.last();
-                    x += xRange.stride()) {
-                int index = y * nx + x;
-                ii.setFloatNext(data[index]);
-            }
-        }
+    if ((levIdx < 0) || (levIdx >= pv.getVertNlevels())) {
+      throw new InvalidRangeException("levIdx=" + levIdx);
     }
+    return (null == pv.findRecord(timeIdx, levIdx));
+  }
 
-    /**
-     * Is this XY level missing?
-     *
-     * @param v2   Variable
-     * @param timeIdx time index
-     * @param levIdx  level index
-     *
-     * @return true if missing
-     *
-     * @throws InvalidRangeException  invalid range
-     */
-    public boolean isMissingXY(Variable v2, int timeIdx, int levIdx)
-            throws InvalidRangeException {
-        GridVariable pv = (GridVariable) v2.getSPobject();
-        if (null == pv) System.out.println("HEY");
-        if ((timeIdx < 0) || (timeIdx >= pv.getNTimes())) {
-            throw new InvalidRangeException("timeIdx=" + timeIdx);
-        }
-        if ((levIdx < 0) || (levIdx >= pv.getVertNlevels())) {
-            throw new InvalidRangeException("levIdx=" + levIdx);
-        }
-        return (null == pv.findRecord(timeIdx, levIdx));
-    }
-
-    /**
-     * Read the data for this GridRecord
-     *
-     * @param gr   grid identifier
-     *
-     * @return  the data (or null)
-     *
-     * @throws IOException  problem reading the data
-     */
-    protected abstract float[] _readData(GridRecord gr) throws IOException;
+  /**
+   * Read the data for this GridRecord
+   *
+   * @param gr grid identifier
+   * @return the data (or null)
+   * @throws IOException problem reading the data
+   */
+  protected abstract float[] _readData(GridRecord gr) throws IOException;
 
 
-} // end GribServiceProvider
+}

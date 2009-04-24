@@ -42,6 +42,7 @@ import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.DiskCache;
 import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.ncml.AggregationFmrc;
+import ucar.nc2.iosp.grid.GridServiceProvider;
 
 import java.util.Calendar;
 import java.util.Timer;
@@ -83,11 +84,13 @@ public class CdmInit {
       ServletUtil.setFileCache( new FileCacheRaf(min, max, secs));
     }
 
+    // for backwards compatibility - should be replaced by direct specifying of the IndexExtendMode
     // turn off Grib extend indexing; indexes are automatically done every 10 minutes externally
     boolean extendIndex = ThreddsConfig.getBoolean("GribIndexing.setExtendIndex", false);
-    // TODO: delete after deprecation
-    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( extendIndex);
-    ucar.nc2.iosp.grid.GridServiceProvider.setExtendMode( extendIndex);
+    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( extendIndex); // TODO: delete after deprecation
+    GridServiceProvider.IndexExtendMode mode = extendIndex ? GridServiceProvider.IndexExtendMode.extendwrite : GridServiceProvider.IndexExtendMode.readonly;
+    ucar.nc2.iosp.grid.GridServiceProvider.setIndexFileModeOnOpen( mode);
+    ucar.nc2.iosp.grid.GridServiceProvider.setIndexFileModeOnSync( mode);
 
     boolean alwaysUseCache = ThreddsConfig.getBoolean("GribIndexing.alwaysUseCache", false);
     // TODO: delete after deprecation

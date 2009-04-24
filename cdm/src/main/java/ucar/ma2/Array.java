@@ -632,7 +632,7 @@ public abstract class Array {
    */
   public Object get1DJavaArray(Class wantType) {
     if (wantType == getElementType()) {
-      if (indexCalc.fastIterator) return getStorage(); // already in order
+      if (indexCalc.isFastIterator()) return getStorage(); // already in order
       else return copyTo1DJavaArray(); // gotta copy
     }
 
