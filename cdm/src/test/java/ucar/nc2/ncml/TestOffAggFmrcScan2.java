@@ -52,12 +52,14 @@ public class TestOffAggFmrcScan2 extends TestCase {
     super(name);
   }
 
+
   public void testOpen() throws Exception {
+    String dataDir = TestAll.cdmUnitTestDir + "rtmodels/";
     String ncml =
       "<?xml version='1.0' encoding='UTF-8'?>\n" +
       "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
       "  <aggregation dimName='run' type='forecastModelRunSingleCollection' timeUnitsChange='true' >\n" +
-      "    <scanFmrc location='D:/data/grib/rtmodels/' regExp='.*_nmm\\.GrbF[0-9]{5}$'\n" +
+      "    <scanFmrc location='"+dataDir+"' regExp='.*_nmm\\.GrbF[0-9]{5}$'\n" +
       "           runDateMatcher='yyMMddHH#_nmm.GrbF#'\n" +
       "           forecastOffsetMatcher='#_nmm.GrbF#HHH'/>\n" +
       "  </aggregation>\n" +
@@ -72,11 +74,12 @@ public class TestOffAggFmrcScan2 extends TestCase {
   }
 
   public void testOpenNomads() throws Exception {
+    String dataDir = TestAll.cdmUnitTestDir + "nomads/gfs-hi/";
     String ncml =
       "<?xml version='1.0' encoding='UTF-8'?>\n" +
       "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
       "  <aggregation dimName='run' type='forecastModelRunSingleCollection' timeUnitsChange='true' >\n" +
-      "    <scanFmrc location='D:/data/nomads/gfs-hi' suffix='.grb'\n" +
+      "    <scanFmrc location='"+dataDir+"' suffix='.grb'\n" +
       "           runDateMatcher='#gfs_3_#yyyyMMdd_HH'\n" +
       "           forecastOffsetMatcher='HHH#.grb#'/>\n" +
       "  </aggregation>\n" +
@@ -90,7 +93,8 @@ public class TestOffAggFmrcScan2 extends TestCase {
     ncfile.close();
   }
 
-  public void testMargolis() throws IOException, InvalidRangeException {
+  public void utestMargolis() throws IOException, InvalidRangeException {
+    String dataDir = TestAll.cdmUnitTestDir + "nomads/gfs-hi/";
     GridDataset gridDataset = GridDataset.open( "D:/AStest/margolis/grib2ncdf.ncml" );
     GeoGrid grid = gridDataset.findGridByName( "Turbulence_SIGMET_AIRMET" );
     System.out.println("Grid= "+grid+" section="+ new Section(grid.getShape()));

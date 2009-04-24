@@ -292,7 +292,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
 
     if (indexFile.exists()) {
       boolean ok = indexFile.delete();
-      log.debug("Deletied old index " + indexFile.getPath() + " = " + ok);
+      log.debug("Deleted old index " + indexFile.getPath() + " = " + ok);
     }
 
     if (saveEdition == 0) {

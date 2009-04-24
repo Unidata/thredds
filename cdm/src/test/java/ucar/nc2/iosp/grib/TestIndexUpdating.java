@@ -525,10 +525,10 @@ public class TestIndexUpdating extends TestCase
                   + "]; and/or length [" + indexFile.length() + "] not as expected [" + badIndexFileLength + "].",
                   badIndexFileLastModified == indexFile.lastModified()
                   || badIndexFileLength == indexFile.length() );
-      return;
+
+      fail( " IOException was thrown - should have rewritten the index on read failure");
     }
 
-    fail( "Expected IOException not thrown.");
   }
 
   /**

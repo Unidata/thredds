@@ -57,7 +57,7 @@ public class TestSubset extends TestCase {
   }
 
   public void testRegular() throws Exception {
-    ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestAll.testdataDir + "cdmTest/grid/03061219_ruc.nc");
+    ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestAll.cdmUnitTestDir + "grid/03061219_ruc.nc");
 
     GeoGrid grid = dataset.findGridByName("T");
     assert null != grid;
@@ -478,9 +478,8 @@ public class TestSubset extends TestCase {
     //String uri="dods://www.gri.msstate.edu/rsearch_data/nopp/bora_feb.nc";
     //String varName = "temp";
 
-    String uri = "C:/dev/tds/thredds/cdm/src/test/data/ncml/nc/cg/CG2006158_120000h_usfc.nc";
+    String uri = TestAll.cdmLocalTestDataDir + "ncml/nc/cg/CG2006158_120000h_usfc.nc";
     String varName = "CGusfc";
-    
 
     GridDataset dataset = GridDataset.open(uri);
     GeoGrid grid = dataset.findGridByName(varName);

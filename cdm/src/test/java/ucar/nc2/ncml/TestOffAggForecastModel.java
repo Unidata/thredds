@@ -50,11 +50,12 @@ public class TestOffAggForecastModel extends TestCase {
     super(name);
   }
 
+  static String dataDir = TestAll.cdmUnitTestDir + "ncmodels/";
   static String ncml =
     "<?xml version='1.0' encoding='UTF-8'?>\n" +
     "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
     "  <aggregation dimName='runtime' type='forecastModelRunCollection' recheckEvery='0 sec'>\n" +
-    "    <scan location='D:/data/ncmodels/' suffix='.nc' dateFormatMark='NAM_CONUS_80km_#yyyyMMdd_HHmm' enhance='true'/>\n" +
+    "    <scan location='"+dataDir+"' suffix='.nc' dateFormatMark='NAM_CONUS_80km_#yyyyMMdd_HHmm' enhance='true'/>\n" +
     "  </aggregation>\n" +
     "</netcdf>";
 
@@ -74,8 +75,8 @@ public class TestOffAggForecastModel extends TestCase {
 
   public void testForecastModelExtend() throws IOException, InvalidRangeException {
     String filename = "file:./"+TestNcML.topDir + "offsite/aggForecastModel.xml";
-    String newModel = "D:/data/ncmodels/NAM_CONUS_80km_20051212_1200.nc";
-    String newModelsave = "D:/data/ncmodels/NAM_CONUS_80km_20051212_1200.nc.save";
+    String newModel = dataDir + "NAM_CONUS_80km_20051212_1200.nc";
+    String newModelsave = dataDir + "NAM_CONUS_80km_20051212_1200.nc.save";
     File newModelFile = new File(newModel);
     File newModelFileSave = new File(newModelsave);
 

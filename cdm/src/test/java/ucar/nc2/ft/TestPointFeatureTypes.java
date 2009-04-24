@@ -72,14 +72,14 @@ public class TestPointFeatureTypes  extends TestCase {
     testPointDataset(topdir+"cfPoint/point/filtered_apriori_super_calibrated_binned1.nc", FeatureType.POINT, true);
 
     // CF 1.5 psuedo-structure
-    testPointDataset(topdir+"cdmTest/point/cf/nmcbob.shp.nc", FeatureType.POINT, true);
+    testPointDataset(TestAll.cdmUnitTestDir+"point/cf/nmcbob.shp.nc", FeatureType.POINT, true);
 
     /////// STATION
     // CF 1.3 ragged contiguous
     testPointDataset(topdir+"cfPoint/station/rig_tower.2009-02-01.ncml", FeatureType.STATION, true);
 
     // CF 1.5 (GEMPAK IOSP) stn = psuedoSTruct, obs = multidim Structure, time(time) as extraJoin
-    testPointDataset(topdir+"cdmTest/point/gempak/19580807_sao.gem", FeatureType.STATION, true);
+    testPointDataset(TestAll.cdmUnitTestDir+"point/gempak/19580807_sao.gem", FeatureType.STATION, true);
 
     // CF 1.0 multidim with dimensions reversed
     //testPointDataset(topdir+"cfPoint/station/solrad_point_pearson.ncml", FeatureType.STATION, true);
