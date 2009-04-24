@@ -282,8 +282,13 @@ public class GridHorizCoordSys {
   void addToNetcdfFile(NetcdfFile ncfile) {
 
     if (isLatLon) {
-      double dy = (gds.getDouble(GridDefRecord.LA2) < gds.getDouble(GridDefRecord.LA1))
+      double dy;
+      if( gds.getDouble(GridDefRecord.DY ) == gds.UNDEFINED )  {
+        dy = setLatLonDxDy();
+      } else {
+        dy = (gds.getDouble(GridDefRecord.LA2) < gds.getDouble(GridDefRecord.LA1))
           ? -gds.getDouble(GridDefRecord.DY) : gds.getDouble(GridDefRecord.DY);
+      }
       if (isGaussian) {
         addGaussianLatAxis(ncfile, "lat", "degrees_north",
             "latitude coordinate", "latitude", AxisType.Lat);
@@ -918,4 +923,33 @@ public class GridHorizCoordSys {
     gds.addParam(GridDefRecord.DY, String.valueOf(dy));
     gds.addParam(GridDefRecord.GRID_UNITS, "km");
   }
+
+  /**
+   * Calculate  Dx Dy
+   *
+   */
+  private double setLatLonDxDy() {
+    double lo1 = gds.getDouble(GridDefRecord.LO1);
+    double la1 = gds.getDouble(GridDefRecord.LA1);
+    double lo2 = gds.getDouble(GridDefRecord.LO2);
+    double la2 = gds.getDouble(GridDefRecord.LA2);
+    if (Double.isNaN(lo2) || Double.isNaN(la2)) {
+      return Double.NaN;
+    }
+    if (lo2 < lo1) lo2 +=360;
+    double dx = Math.abs(lo2 - lo1)
+        / (gds.getInt(GridDefRecord.NX) - 1);
+    double dy = Math.abs(la2 - la1)
+        / (gds.getInt(GridDefRecord.NY) - 1);
+    gds.addParam(GridDefRecord.DX, String.valueOf(dx));
+    gds.addParam(GridDefRecord.DY, String.valueOf(dy));
+    // in case someone checked on these before, we need to override
+    gds.addParam(GridDefRecord.DX, new Double(dx));
+    gds.addParam(GridDefRecord.DY, new Double(dy));
+    gds.addParam(GridDefRecord.GRID_UNITS, "degree");
+
+    return dy;
+  }
+
+
 }
