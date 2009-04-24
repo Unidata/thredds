@@ -325,7 +325,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
           return false;
         }
 
-      } else if (indexFileModeOnOpen == IndexExtendMode.extendwrite) {
+      } else if (indexFileModeOnSync == IndexExtendMode.extendwrite) {
         if ((rafLength <= raf.length()) && (indexLength <= indexFile.length())) {
           if (log.isDebugEnabled()) log.debug("  extend Index = " + indexFile.getPath());
           index = extendIndex(new File(raf.getLocation()), indexFile, raf);

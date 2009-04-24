@@ -42,13 +42,6 @@ import java.io.File;
 
 import junit.framework.TestCase;
 
-/**
- * Created by IntelliJ IDEA.
- * User: caron
- * Date: Oct 16, 2005
- * Time: 1:05:16 PM
- * To change this template use File | Settings | File Templates.
- */
 public class TestNexrad2 extends TestCase {
 
   public TestNexrad2( String name) {

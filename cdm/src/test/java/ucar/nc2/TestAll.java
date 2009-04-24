@@ -57,17 +57,6 @@ public class TestAll {
   public static long startTime;
 
   /**
-   * Unidata "/upc/share" directory (MAY NOT be used in Unidata nightly testing).
-   */
-  //public static String upcShareDir;
-
-  /**
-   * Level 2 test data directory (MAY be used in Unidata nightly testing).
-   * Unidata "/upc/share/thredds/data" directory
-   */
-  //public static String upcShareThreddsDataDir;
-
-  /**
    * Old test data directory. may have cruft in it
    * Unidata "newshemp:/data/testdata" directory.
    */
@@ -96,9 +85,6 @@ public class TestAll {
    */
   private static String testdataDirPropName ="unidata.testdata.path";
 
-  /** Property name for the path to the Unidata shared directory,
-   * i.e., zero:/upc/share. */
-  //private static String upcShareDirPropName ="unidata.upc.share.path";
 
   /** Filename of the user property file read from the "user.home" directory
    * if the "unidata.testdata.path" and "unidata.upc.share.path" are not

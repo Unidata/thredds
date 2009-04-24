@@ -6,6 +6,7 @@ Changes in version 4.0
 
  Release Details:
   39:
+   add uamiv iosp, from Barron Henderson (UNC Chapel Hill)
    HdfEos distinguish between swath and profiles
    GridCoordSys.isGridCoordSys() checks for {x,y} having at least 2 dimensions. to exclude point data
    add CoordinateSystem.makeDomain()

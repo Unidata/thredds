@@ -56,6 +56,7 @@ public class TestIosp {
     suite.addTest( new TestSuite( ucar.nc2.iosp.nexrad2.TestNexrad2HiResolution.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.nids.TestNids.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.dorade.TestDorade.class));
+    suite.addTest( new TestSuite( ucar.nc2.iosp.TestMiscIosp.class));
     return suite;
   }
 

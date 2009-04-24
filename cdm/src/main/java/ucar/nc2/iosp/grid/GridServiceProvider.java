@@ -71,9 +71,9 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
     readonly
   }
 
-  // defaults are for clients, TDS sets these explicitly
+  // these defaults are for clients, TDS sets these explicitly
   static protected IndexExtendMode indexFileModeOnOpen = IndexExtendMode.rewrite; // default is to rewrite
-  static protected IndexExtendMode indexFileModeOnSync = IndexExtendMode.rewrite; // default is to rewrite
+  static protected IndexExtendMode indexFileModeOnSync = IndexExtendMode.extendwrite; // default is to extend
 
   static protected boolean addLatLon = false; // add lat/lon coordinates for strict CF compliance
   static protected boolean useMaximalCoordSys = false;
@@ -114,15 +114,13 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
   }
 
   /**
-   * This controls the case where the GRIB file has changed, which is detected by comparing the GRIB
-   * file length with the file length recorded in the index file. If there is no index, one will be created.
-   * Default is IndexExtendMode.rewrite.
+   * This controls what happens when a GRIB file is opened, and the data file has changed since the index was written.
    * <ol>
-   * <li>IndexExtendMode.extend: when GRIB file length increases, extend the index. This is the case when the file
+   * <li>IndexExtendMode.extendwrite: when GRIB file length increases, extend the index. This is the case when the file
    * is being appended to, as new data arrives.
    * <li>IndexExtendMode.rewrite: when GRIB file length changes, rewrite the index. This is the safest thing to do,
    * at the expense of performance.
-   * <li>IndexExtendMode.none: never modify an existing index. If there is no index, one will be created.
+   * <li>IndexExtendMode.readonly: never modify an existing index, just use it. However, if there is no index, created one
    * </ol>
    *
    * @param mode IndexExtendMode when file is opened
@@ -138,21 +136,32 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
    *
    * @param mode IndexExtendMode when sync() is called. Same meaning as setIndexExtendMode(IndexExtendMode mode)
    */
+  /**
+   * This controls what happens when a GRIB file is synced (usually from FileCache), and the data or index file has changed
+   *  since the file was placed in the cache.
+   * <ol>
+   * <li>IndexExtendMode.extendwrite: when GRIB file or index length increases, extend the index. If file or index length
+   *   decreases, rewrite it.
+   * <li>IndexExtendMode.rewrite: when GRIB file length changes, rewrite the index.
+   * <li>IndexExtendMode.readonly: never modify an existing index, just use it. However, if there is no index, created one
+   * </ol>
+   *
+   * @param mode IndexExtendMode when file is opened
+   */
   static public void setIndexFileModeOnSync(IndexExtendMode mode) {
     indexFileModeOnSync = mode;
   }
 
   // backwards compatible with old API
   /**
-   * Set how indexes are used
+   * Set how indexes are used for both open and sync
    *
-   * @param b if true, same as setIndexExtendMode(IndexExtendMode.extend), if false, same as
-   *          setIndexExtendMode(IndexExtendMode.none)
+   * @param b if true, set modes to IndexExtendMode.extendwrite, else IndexExtendMode.readonly
+   * @deprecated use setIndexFileModeOnSync and setIndexFileModeOnOpen
    */
   static public void setExtendIndex(boolean b) {
-    indexFileModeOnOpen = b ? IndexExtendMode.rewrite : IndexExtendMode.readonly;
-    // use readonly since it's the default for false
-    indexFileModeOnSync = b ? IndexExtendMode.rewrite : IndexExtendMode.readonly;
+    indexFileModeOnOpen = b ? IndexExtendMode.extendwrite : IndexExtendMode.readonly;
+    indexFileModeOnSync = b ? IndexExtendMode.extendwrite : IndexExtendMode.readonly;
   }
 
   /**
@@ -222,8 +231,6 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
     raf.close();
   }
 
-
-
   /**
    * Get the detail information
    *
@@ -258,8 +265,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
           throws IOException, InvalidRangeException {
     long start = System.currentTimeMillis();
 
-    Array dataArray = Array.factory(DataType.FLOAT,
-            section.getShape());
+    Array dataArray = Array.factory(DataType.FLOAT, section.getShape());
     GridVariable pv = (GridVariable) v2.getSPobject();
 
     int count = 0;
@@ -307,8 +313,8 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
   private void readLevel(Variable v2, int timeIdx, Range levelRange,
           Range yRange, Range xRange, IndexIterator ii)
           throws IOException, InvalidRangeException {
-    for (int levIdx = levelRange.first(); levIdx <= levelRange.last();
-         levIdx += levelRange.stride()) {
+
+    for (int levIdx = levelRange.first(); levIdx <= levelRange.last(); levIdx += levelRange.stride()) {
       readXY(v2, timeIdx, levIdx, yRange, xRange, ii);
     }
   }
@@ -391,6 +397,5 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
    * @throws IOException problem reading the data
    */
   protected abstract float[] _readData(GridRecord gr) throws IOException;
-
 
 }

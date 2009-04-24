@@ -79,7 +79,8 @@ import ucar.nc2.util.CancelTask;
 
 @ThreadSafe
 public class FileCache {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger("cacheLogger");
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCache.class);
+  static private org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
   static private ScheduledExecutorService exec;
   static boolean debug = true;
   static boolean debugPrint = false;
@@ -155,7 +156,7 @@ public class FileCache {
       if (exec == null)
         exec = Executors.newSingleThreadScheduledExecutor();
       exec.scheduleAtFixedRate(new CleanupTask(), period, period, TimeUnit.SECONDS);
-      log.debug("FileCache " + name + " cleanup every " + period + " secs");
+      cacheLog.debug("FileCache " + name + " cleanup every " + period + " secs");
     }
   }
 
@@ -220,7 +221,7 @@ public class FileCache {
 
     // open the file
     ncfile = factory.open(location, buffer_size, cancelTask, spiObject);
-    if (log.isDebugEnabled()) log.debug("FileCache " + name + " acquire " + hashKey + " " + ncfile.getLocation());
+    if (cacheLog.isDebugEnabled()) cacheLog.debug("FileCache " + name + " acquire " + hashKey + " " + ncfile.getLocation());
     if (debugPrint) System.out.println("  FileCache " + name + " acquire " + hashKey + " " + ncfile.getLocation());
 
     // user may have canceled
@@ -306,8 +307,8 @@ public class FileCache {
     if (ncfile != null) {
       try {
         ncfile.sync();
-        if (log.isDebugEnabled())
-          log.debug("FileCache " + name + " aquire from cache " + hashKey + " " + ncfile.getLocation());
+        if (cacheLog.isDebugEnabled())
+          cacheLog.debug("FileCache " + name + " aquire from cache " + hashKey + " " + ncfile.getLocation());
         if (debugPrint)
           System.out.println("  FileCache " + name + " aquire from cache " + hashKey + " " + ncfile.getLocation());
       } catch (IOException e) {
@@ -338,11 +339,11 @@ public class FileCache {
     CacheElement.CacheFile file = files.get(ncfile); // using hashCode of the FileCacheable
     if (file != null) {
       if (!file.isLocked.get())
-        log.warn("FileCache " + name + " release " + ncfile.getLocation() + " not locked");
+        cacheLog.warn("FileCache " + name + " release " + ncfile.getLocation() + " not locked");
       file.lastAccessed = System.currentTimeMillis();
       file.countAccessed++;
       file.isLocked.set(false);
-      if (log.isDebugEnabled()) log.debug("FileCache " + name + " release " + ncfile.getLocation());
+      if (cacheLog.isDebugEnabled()) cacheLog.debug("FileCache " + name + " release " + ncfile.getLocation());
       if (debugPrint) System.out.println("  FileCache " + name + " release " + ncfile.getLocation());
       return;
     }
@@ -407,7 +408,7 @@ public class FileCache {
     // close all files in deleteList
     for (CacheElement.CacheFile file : deleteList) {
       if (force && file.isLocked.get())
-        log.warn("FileCache " + name + " force close locked file= " + file);
+        cacheLog.warn("FileCache " + name + " force close locked file= " + file);
       //counter.decrementAndGet();
 
       try {
@@ -418,7 +419,7 @@ public class FileCache {
         log.error("FileCache " + name + " close failed on " + file);
       }
     }
-    log.debug("*FileCache " + name + " clearCache force= " + force + " deleted= " + deleteList.size() + " left=" + files.size());
+    cacheLog.debug("*FileCache " + name + " clearCache force= " + force + " deleted= " + deleteList.size() + " left=" + files.size());
     //System.out.println("\n*NetcdfFileCache.clearCache force= " + force + " deleted= " + deleteList.size() + " left=" + counter.get());
   }
 
@@ -488,7 +489,7 @@ public class FileCache {
       int size = files.size();
       if (size <= minElements) return;
 
-      log.debug(" FileCache " + name + " cleanup started at " + new Date() + " for cleanup maxElements=" + maxElements);
+      cacheLog.debug(" FileCache " + name + " cleanup started at " + new Date() + " for cleanup maxElements=" + maxElements);
       if (debugCleanup)
         System.out.println(" FileCache " + name + "cleanup started at " + new Date() + " for cleanup maxElements=" + maxElements);
 
@@ -517,7 +518,7 @@ public class FileCache {
         }
       }
       if (count < minDelete) {
-        log.warn("FileCache " + name + " cleanup couldnt remove enough to keep under the maximum= " + maxElements + " due to locked files; currently at = " + (size - count));
+        cacheLog.warn("FileCache " + name + " cleanup couldnt remove enough to keep under the maximum= " + maxElements + " due to locked files; currently at = " + (size - count));
         if (debugCleanup)
           System.out.println("FileCache " + name + "cleanup couldnt remove enough to keep under the maximum= " + maxElements + " due to locked files; currently at = " + (size - count));
       }
@@ -547,7 +548,7 @@ public class FileCache {
       }
 
       long took = System.currentTimeMillis() - start;
-      log.debug(" FileCache " + name + " cleanup had= " + size + " removed= " + deleteList.size() + " took=" + took + " msec");
+      cacheLog.debug(" FileCache " + name + " cleanup had= " + size + " removed= " + deleteList.size() + " took=" + took + " msec");
       if (debugCleanup)
         System.out.println(" FileCache " + name + "cleanup had= " + size + " removed= " + deleteList.size() + " took=" + took + " msec");
 
@@ -568,10 +569,10 @@ public class FileCache {
       list.add(file);
       if (debug) {
         if (files.get(ncfile) != null)
-          log.error("files already has " + hashKey + " " + name);
+          cacheLog.error("files already has " + hashKey + " " + name);
       }
       files.put(ncfile, file);
-      if (log.isDebugEnabled()) log.debug("CacheElement add to cache " + hashKey + " " + name);
+      if (cacheLog.isDebugEnabled()) cacheLog.debug("CacheElement add to cache " + hashKey + " " + name);
     }
 
     CacheFile addFile(FileCacheable ncfile) {
@@ -581,7 +582,7 @@ public class FileCache {
       }
       if (debug) {
         if (files.get(ncfile) != null)
-          log.error("files (2) already has " + hashKey + " " + name);   
+          cacheLog.error("files (2) already has " + hashKey + " " + name);
       }
       files.put(ncfile, file);
       return file;
@@ -603,7 +604,7 @@ public class FileCache {
 
         ncfile.setFileCache(FileCache.this);
 
-        if (log.isDebugEnabled()) log.debug("FileCache " + name + " add to cache " + hashKey);
+        if (cacheLog.isDebugEnabled()) cacheLog.debug("FileCache " + name + " add to cache " + hashKey);
         if (debugPrint) System.out.println("  FileCache " + name + " add to cache " + hashKey);
       }
 
@@ -614,9 +615,9 @@ public class FileCache {
       void remove() {
         synchronized (CacheElement.this) {
           if (!list.remove(this))
-            log.warn("FileCache " + name + " could not remove " + ncfile.getLocation());
+            cacheLog.warn("FileCache " + name + " could not remove " + ncfile.getLocation());
         }
-        if (log.isDebugEnabled()) log.debug("FileCache " + name + " remove " + ncfile.getLocation());
+        if (cacheLog.isDebugEnabled()) cacheLog.debug("FileCache " + name + " remove " + ncfile.getLocation());
         if (debugPrint) System.out.println("  FileCache " + name + " remove " + ncfile.getLocation());
       }
 
