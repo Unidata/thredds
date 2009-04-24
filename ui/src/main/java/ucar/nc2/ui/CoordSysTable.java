@@ -401,6 +401,9 @@ public class CoordSysTable extends JPanel {
           firstCoordSys = cs;
         else
           buff.append("; ");
+
+        if (cs == null)
+          System.out.printf("HEY");
         buff.append(cs.getName());
 
         Formatter gridBuff = new Formatter();
