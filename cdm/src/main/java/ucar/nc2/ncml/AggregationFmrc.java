@@ -344,7 +344,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
       String units = "hours since " + dateFormatter.toDateTimeStringISO(baseDate);
 
       String dims = getDimensionName() + " " + timeDimName;
-      Variable newV = new VariableDS(ncDataset, null, null, timeDimName, DataType.DOUBLE, dims, desc, units);
+      Variable newV = new VariableDS(ncDataset, null, null, timeDimName, DataType.DOUBLE, dims, units, desc);
 
       // do we already have the coordinate variable ?
       Variable oldV = ncDataset.getRootGroup().findVariable(timeDimName);

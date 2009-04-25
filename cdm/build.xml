@@ -792,7 +792,6 @@
   <target name="releaseInternal" depends="makeMain" description="internal release to lib">
     <copy todir="${lib.dir}/release" overwrite="true">
       <fileset dir="${build.dir}" includes="${jarMain}"/>
-      <fileset dir="${build.dir}" includes="${jarIdv}"/>
     </copy>
   </target>
 

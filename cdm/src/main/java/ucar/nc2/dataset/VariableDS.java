@@ -210,7 +210,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
    * Remove coordinate system info.
    */
   public void clearCoordinateSystems() {
-    this.enhanceProxy = new EnhancementsImpl( this, getDescription(), getUnitsString());
+    this.enhanceProxy = new EnhancementsImpl( this, getUnitsString(), getDescription());
   }
 
   /**

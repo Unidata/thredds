@@ -662,7 +662,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   public void clearCoordinateSystems() {
-    this.proxy = new EnhancementsImpl( this, getDescription(), getUnitsString());
+    this.proxy = new EnhancementsImpl( this, getUnitsString(), getDescription());
   }
 
   public void addCoordinateSystem(ucar.nc2.dataset.CoordinateSystem p0) {
