@@ -48,8 +48,8 @@ import thredds.crawlabledataset.CrawlableDataset;
  * @since Aug 10, 2007
  */
 public class DatasetCollectionManager {
-  static protected org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DatasetCollectionManager.class);
-  static private boolean debugSync = false, debugSyncDetail = false;
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DatasetCollectionManager.class);
+  static private boolean debugSyncDetail = false;
 
   private List<Scanner> scanList = new ArrayList<Scanner>();
   private Map<String, CrawlableDataset> map; // current map of CrawlableDataset
@@ -107,7 +107,7 @@ public class DatasetCollectionManager {
     Date lastCheckedDate = new Date(lastScanned);
     Date need = recheck.add(lastCheckedDate);
     if (now.before(need)) {
-      if (debugSync) System.out.println(" *Sync not needed, last= " + lastCheckedDate + " now = " + now);
+      if (logger.isDebugEnabled()) logger.debug(" *Sync not needed, last= " + lastCheckedDate + " now = " + now);
       return false;
     }
 
@@ -123,7 +123,7 @@ public class DatasetCollectionManager {
    * @throws IOException on I/O error
    */
   public boolean rescan() throws IOException {
-    if (debugSync) System.out.println(" *Sync at " + new Date());
+    if (logger.isDebugEnabled()) logger.debug(" *Sync at " + new Date());
     lastScanned = System.currentTimeMillis();
 
     // rescan

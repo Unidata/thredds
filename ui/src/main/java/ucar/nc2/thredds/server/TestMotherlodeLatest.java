@@ -190,19 +190,19 @@ public class TestMotherlodeLatest extends TimerTask {
     // http://motherlode.ucar.edu:9080/thredds/catalog/model/NCEP/RUC2/CONUS_20km/pressure/latest.xml
 
     TestMotherlodeLatest test1 = new TestMotherlodeLatest("NCEP/RUC2/CONUS_20km/pressure", bestSuffix);
-    timer.schedule(test1, 0, 1000 * 60 * 10); // 10 mins   */
+    timer.schedule(test1, 0, 1000 * 60 * 2); // 2 mins   */
 
     TestMotherlodeLatest test2 = new TestMotherlodeLatest("NCEP/RUC2/CONUS_20km/pressure", latestSuffix);
-    timer.schedule(test2, 0, 1000 * 60 * 10); // 10 mins
+    timer.schedule(test2, 0, 1000 * 60 * 2); // 2 mins  */
 
-    TestMotherlodeLatest test3 = new TestMotherlodeLatest("NCEP/NAM/CONUS_12km", latestSuffix);
-    timer.schedule(test3, 0, 1000 * 60 * 10); // 10 mins
+    /* TestMotherlodeLatest test3 = new TestMotherlodeLatest("NCEP/NAM/CONUS_12km", latestSuffix);
+    timer.schedule(test3, 0, 1000 * 60 * 10); // 10 mins  */
 
-    TestMotherlodeLatest test4 = new TestMotherlodeLatest("NCEP/GFS/Alaska_191km", bestSuffix);
+    /* TestMotherlodeLatest test4 = new TestMotherlodeLatest("NCEP/GFS/Alaska_191km", bestSuffix);
     timer.schedule(test4, 0, 1000 * 60 * 10); // 10 mins  */
 
     //test.doOne("NCEP/GFS/Global_1p0deg_Ensemble", bestSuffix);
-    test1.doAll();
+    //test1.doAll();
   }
 
 }

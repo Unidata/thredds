@@ -76,37 +76,44 @@
     <appender-ref ref="catalogErrors"/>
   </logger>
 
-   <!-- grib debugging -->
+  <!-- grib debugging -->
   <logger name="ucar.nc2.iosp.grid" additivity="false">
-    <level value="DEBUG"/>
-    <appender-ref ref="threddsServlet"/>
+    <level value="INFO"/>
+    <appender-ref ref="modelLog"/>
   </logger>
 
   <logger name="ucar.nc2.iosp.grib" additivity="false">
-    <level value="DEBUG"/>
-    <appender-ref ref="threddsServlet"/>
+    <level value="INFO"/>
+    <appender-ref ref="modelLog"/>
   </logger>
 
   <logger name="ucar.grib" additivity="false">
-    <level value="DEBUG"/>
-    <appender-ref ref="threddsServlet"/>
+    <level value="INFO"/>
+    <appender-ref ref="modelLog"/>
   </logger>
 
   <logger name="ucar.grid" additivity="false">
-    <level value="DEBUG"/>
-    <appender-ref ref="threddsServlet"/>
+    <level value="INFO"/>
+    <appender-ref ref="modelLog"/>
   </logger>
   <!-- end grib debugging -->
 
+  <!-- fmrc debugging -->
   <logger name="ucar.nc2.dt.fmrc" additivity="false">
-    <level value="INFO"/>
-    <appender-ref ref="modelLog"/>
+    <level value="DEBUG"/>
+    <appender-ref ref="threddsServlet"/>
   </logger>
 
   <logger name="thredds.catalog.InvDatasetFmrc" additivity="false">
-    <level value="INFO"/>
-    <appender-ref ref="modelLog"/>
+    <level value="DEBUG"/>
+    <appender-ref ref="threddsServlet"/>
   </logger>
+
+  <logger name="ucar.nc2.ncml" additivity="false">
+    <level value="DEBUG"/>
+    <appender-ref ref="threddsServlet"/>
+  </logger>
+  <!-- end fmrc debugging -->
 
   <!-- All normal logging messages go to threddsServlet.log -->
   <logger name="opendap" additivity="false">

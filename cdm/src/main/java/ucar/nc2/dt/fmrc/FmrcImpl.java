@@ -56,6 +56,7 @@ import java.io.PrintWriter;
  * @author caron
  */
 public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.GridDataset {
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(FmrcImpl.class);
   static private final String BEST = "best";
   static private final String RUN = "run";
   static private final String FORECAST = "forecast";
@@ -72,17 +73,9 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
   private Map<String, Gridset> gridHash; // key = grid name, value = Gridset : associate a Gridset with each grid.
   private Set<String> coordSet;  // time coord names, including runtime
 
-  /* apparently not used, except for debugging ??
-  private Map<Date, List<Inventory>> runMapAll;    // key = run Date, value = List<Inventory>
-  private Map<Date, List<Inventory>> timeMapAll;   // key = forecast Date, value = List<Inventory>
-  private Map<Double, List<Inventory>> offsetMapAll; // key = offset Double, value = List<Inventory>
-  private List<Inventory> bestListAll;                   // best List<Inventory>  */
-
   private List<Date> runtimes;  // List of all possible runtime Date
   private List<Date> forecasts;  // List of all possible forecast Date
   private List<Double> offsets;  // List of all possible offset Double
-
-  private boolean debugSync = false;
 
   public FmrcImpl(String filename) throws IOException {
     this( ucar.nc2.dataset.NetcdfDataset.acquireDataset(filename, null));
@@ -102,7 +95,7 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
   public boolean sync() throws IOException {
     boolean changed = ncd_2dtime.sync();
     if (changed) {
-      if (debugSync) System.out.println("sync Fmrc "+ncd_2dtime.getLocation());
+      if (logger.isDebugEnabled()) logger.debug("ncd_2dtime changed, reinit Fmrc "+ncd_2dtime.getLocation());
       init(ncd_2dtime);
     }
     return changed;

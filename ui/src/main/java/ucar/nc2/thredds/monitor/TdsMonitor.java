@@ -35,6 +35,7 @@ package ucar.nc2.thredds.monitor;
 
 import ucar.nc2.ui.StopButton;
 import ucar.nc2.util.net.HttpClientManager;
+import ucar.nc2.util.IO;
 import ucar.util.prefs.ui.Debug;
 import ucar.util.prefs.ui.ComboBox;
 import ucar.util.prefs.PreferencesExt;
@@ -42,6 +43,10 @@ import ucar.util.prefs.XMLStore;
 
 import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethodBase;
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.httpclient.methods.*;
 
 import org.apache.oro.io.GlobFilenameFilter;
 
@@ -52,6 +57,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.*;
 import java.util.*;
+import java.util.zip.InflaterInputStream;
+import java.util.zip.GZIPInputStream;
 
 import thredds.ui.BAMutil;
 import thredds.ui.FileManager;
@@ -91,11 +98,7 @@ public class TdsMonitor extends JPanel {
 
     makeCache();
 
-    // FileChooser is shared
-    javax.swing.filechooser.FileFilter[] filters = new javax.swing.filechooser.FileFilter[2];
-    filters[0] = new FileManager.HDF5ExtFilter();
-    filters[1] = new FileManager.NetcdfExtFilter();
-    fileChooser = new FileManager(parentFrame, null, filters, (PreferencesExt) prefs.node("FileManager"));
+    fileChooser = new FileManager(parentFrame, null, null, (PreferencesExt) prefs.node("FileManager"));
 
     // the top UI
     tabbedPane = new JTabbedPane(JTabbedPane.TOP);
@@ -177,10 +180,12 @@ public class TdsMonitor extends JPanel {
 
   ///////////////////////////
 
+  LogManager logManager = null;
+
   private abstract class OpPanel extends JPanel {
     PreferencesExt prefs;
     TextHistoryPane ta;
-    ComboBox cb;
+    ComboBox serverCB, fileCB;
     JPanel buttPanel;
     AbstractButton coordButt = null;
     StopButton stopButton;
@@ -192,41 +197,49 @@ public class TdsMonitor extends JPanel {
     IndependentWindow detailWindow;
     TextHistoryPane detailTA;
 
-    OpPanel(PreferencesExt prefs, String command) {
-      this(prefs, command, true);
-    }
-
-    OpPanel(PreferencesExt prefs, String command, boolean addFileButton) {
+    OpPanel(PreferencesExt prefs) {
       this.prefs = prefs;
       ta = new TextHistoryPane(true);
 
-      cb = new ComboBox(prefs);
-      cb.addActionListener(new ActionListener() {
+      serverCB = new ComboBox((PreferencesExt)prefs.node("servers"));
+      serverCB.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           if ((e.getWhen() != lastEvent) && eventOK) {// eliminate multiple events from same selection
-            doit(cb.getSelectedItem());
+            logManager = new LogManager((String) serverCB.getSelectedItem());
+            lastEvent = e.getWhen();
+          }
+        }
+      });
+
+      fileCB = new ComboBox((PreferencesExt)prefs.node("files"));
+      fileCB.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          if ((e.getWhen() != lastEvent) && eventOK) {// eliminate multiple events from same selection
+            doit(fileCB.getSelectedItem());
             lastEvent = e.getWhen();
           }
         }
       });
 
       buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+      AbstractAction fileAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          String filename = fileChooser.chooseFilename();
+          if (filename == null) return;
+          fileCB.setSelectedItem(filename);
+        }
+      };
+      BAMutil.setActionProperties(fileAction, "FileChooser", "open Local dataset...", false, 'L', -1);
+      BAMutil.addActionToContainer(buttPanel, fileAction);
 
-      if (addFileButton) {
-        AbstractAction fileAction = new AbstractAction() {
-          public void actionPerformed(ActionEvent e) {
-            String filename = fileChooser.chooseFilename();
-            if (filename == null) return;
-            cb.setSelectedItem(filename);
-          }
-        };
-        BAMutil.setActionProperties(fileAction, "FileChooser", "open Local dataset...", false, 'L', -1);
-        BAMutil.addActionToContainer(buttPanel, fileAction);
-      }
+      JPanel flowPanel = new JPanel(new FlowLayout());
+      flowPanel.add(new JLabel("server:"));
+      flowPanel.add(serverCB);
+      flowPanel.add(new JLabel("file:"));
+      flowPanel.add(fileCB);
 
       JPanel topPanel = new JPanel(new BorderLayout());
-      topPanel.add(new JLabel(command), BorderLayout.WEST);
-      topPanel.add(cb, BorderLayout.CENTER);
+      topPanel.add(flowPanel, BorderLayout.CENTER);
       topPanel.add(buttPanel, BorderLayout.EAST);
 
       setLayout(new BorderLayout());
@@ -248,7 +261,7 @@ public class TdsMonitor extends JPanel {
 
       busy = true;
       if (process(command)) {
-        if (!defer) cb.addItem(command);
+        if (!defer) fileCB.addItem(command);
       }
       busy = false;
     }
@@ -256,7 +269,8 @@ public class TdsMonitor extends JPanel {
     abstract boolean process(Object command);
 
     void save() {
-      cb.save();
+      fileCB.save();
+      serverCB.save();
       //if (v3Butt != null) prefs.putBoolean("nc3useRecords", v3Butt.getModel().isSelected());
       if (coordButt != null) prefs.putBoolean("coordState", coordButt.getModel().isSelected());
       if (detailWindow != null) prefs.putBeanObject(FRAME_SIZE, detailWindow.getBounds());
@@ -264,7 +278,7 @@ public class TdsMonitor extends JPanel {
 
     void setSelectedItem(Object item) {
       eventOK = false;
-      cb.setSelectedItem(item);
+      fileCB.setSelectedItem(item);
       eventOK = true;
     }
   }
@@ -274,7 +288,7 @@ public class TdsMonitor extends JPanel {
     AccessLogTable logTable;
 
     AccessLogPanel(PreferencesExt p) {
-      super(p, "file:", true);
+      super(p);
       logTable = new AccessLogTable((PreferencesExt) mainPrefs.node("LogTable"), dnsCache);
       add(logTable, BorderLayout.CENTER);
     }
@@ -313,7 +327,7 @@ public class TdsMonitor extends JPanel {
     ServletLogTable logTable;
 
     ServletLogPanel(PreferencesExt p) {
-      super(p, "file:", true);
+      super(p);
       logTable = new ServletLogTable((PreferencesExt) mainPrefs.node("ServletLogTable"), buttPanel, dnsCache);
       add(logTable, BorderLayout.CENTER);
     }
@@ -433,6 +447,8 @@ public class TdsMonitor extends JPanel {
     }
 
   //////////////////////////////////////////////
+
+  static HttpClient httpclient;
   public static void main(String args[]) {
 
     // prefs storage
@@ -472,6 +488,6 @@ public class TdsMonitor extends JPanel {
 
     // use HTTPClient - could use bean wiring here
     CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(frame);
-    HttpClient client = HttpClientManager.init(provider, "ToolsUI");
+    httpclient = HttpClientManager.init(provider, "TdsMonitor");
   }
 }
