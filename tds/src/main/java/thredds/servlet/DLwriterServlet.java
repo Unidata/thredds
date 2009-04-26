@@ -57,8 +57,8 @@ public class DLwriterServlet extends AbstractServlet {
     allow = ThreddsConfig.getBoolean( "DLwriter.allow", false );
     if ( !allow )
     {
-      log.info( "init(): DLwriter service not enabled in threddsConfig.xml." );
-      log.info( "init(): " + UsageLog.closingMessageNonRequestContext() );
+      logServerStartup.info( "init(): DLwriter service not enabled in threddsConfig.xml." );
+      logServerStartup.info( "init(): " + UsageLog.closingMessageNonRequestContext() );
       return;
     }
     allowRemote = ThreddsConfig.getBoolean( "DLwriter.allowRemote", false );
@@ -70,7 +70,7 @@ public class DLwriterServlet extends AbstractServlet {
     file.mkdirs();
     file = new File(difDir);
     file.mkdirs();
-    log.info( "init(): " + UsageLog.closingMessageNonRequestContext() );
+    logServerStartup.info( "init(): " + UsageLog.closingMessageNonRequestContext() );
   }
 
   protected String getPath() { return "DLwriter/"; }

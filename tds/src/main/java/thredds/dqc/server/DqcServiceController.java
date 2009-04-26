@@ -56,13 +56,15 @@ public class DqcServiceController extends AbstractController
 
   public void init()
   {
-    log.info( "init(): " + UsageLog.setupNonRequestContext() );
+    org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("catalogInit");
+
+    logServerStartup.info( "init(): " + UsageLog.setupNonRequestContext() );
 
     // Make sure DqcService is enabled.
     this.allow = ThreddsConfig.getBoolean( "DqcService.allow", false );
     if ( ! this.allow )
     {
-      log.info( "init(): DqcServlet not enabled in threddsConfig.xml - " + UsageLog.closingMessageNonRequestContext() );
+      logServerStartup.info( "init(): DqcServlet not enabled in threddsConfig.xml - " + UsageLog.closingMessageNonRequestContext() );
       return;
     }
 
@@ -70,7 +72,7 @@ public class DqcServiceController extends AbstractController
     if ( this.tdsContext == null )
     {
       this.allow = false;
-      log.error( "init(): Disabling DqcService - null TdsContext." );
+      logServerStartup.error( "init(): Disabling DqcService - null TdsContext." );
       return;
     }
 
@@ -82,7 +84,7 @@ public class DqcServiceController extends AbstractController
       if ( this.dqcConfigDir == null )
       {
         this.allow = false;
-        log.error( "init(): Disabling DqcService - " + UsageLog.closingMessageNonRequestContext() );
+        logServerStartup.error( "init(): Disabling DqcService - " + UsageLog.closingMessageNonRequestContext() );
         return;
       }
     }
@@ -95,13 +97,13 @@ public class DqcServiceController extends AbstractController
       if ( this.dqcConfigFile == null )
       {
         this.allow = false;
-        log.error( "init(): Disabling DqcService - " + UsageLog.closingMessageNonRequestContext() );
+        logServerStartup.error( "init(): Disabling DqcService - " + UsageLog.closingMessageNonRequestContext() );
         return;
       }
     }
 
-    log.debug( "init(): DqcService config directory = " + this.dqcConfigDir.toString());
-    log.debug( "init(): DqcService config file      = " + this.dqcConfigFile.toString());
+    logServerStartup.debug( "init(): DqcService config directory = " + this.dqcConfigDir.toString());
+    logServerStartup.debug( "init(): DqcService config file      = " + this.dqcConfigFile.toString());
 
     // Read DqcConfig.
     try
@@ -111,12 +113,12 @@ public class DqcServiceController extends AbstractController
     catch ( Throwable t )
     {
       this.allow = false;
-      log.error( "init(): Disabling DqcService - failed to read DqcConfig document: " + t.getMessage() );
-      log.error( "init(): " + UsageLog.closingMessageNonRequestContext() );
+      logServerStartup.error( "init(): Disabling DqcService - failed to read DqcConfig document: " + t.getMessage() );
+      logServerStartup.error( "init(): " + UsageLog.closingMessageNonRequestContext() );
       return;
     }
 
-    log.info( "init(): " + UsageLog.closingMessageNonRequestContext() );
+    logServerStartup.info( "init(): " + UsageLog.closingMessageNonRequestContext() );
   }
 
   public void destroy()

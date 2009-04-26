@@ -72,6 +72,7 @@ import uk.ac.rdg.resc.ncwms.config.Config;
  */
 public class WMSController extends AbstractController {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(WMSController.class);
+  private static org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("catalogInit");
 
   public static final Version WMS_VER_1_1_1 = new Version( "1.1.1");
   public static final Version WMS_VER_1_3_0 = new Version( "1.3.0");
@@ -82,15 +83,12 @@ public class WMSController extends AbstractController {
     return "wms/";
   }
 
-  protected void makeDebugActions() {
-  }
-
   private Config config;
   private Map<String, ColorScaleRange> colorRange;
 
   public void init() throws ServletException {
     allow = ThreddsConfig.getBoolean("WMS.allow", false);
-    log.info("initializing WMS: " + allow);
+    logServerStartup.info("initializing WMS: " + allow);
 
     if (allow) {
       String paletteLocation = this.getServletContext().getRealPath("/WEB-INF/" +
@@ -104,7 +102,7 @@ public class WMSController extends AbstractController {
         config = new Persister().read(Config.class, configFile);
       }
       catch (Exception e) {
-        log.debug("Loaded configuration from " + OGCMetaXmlFile);
+        logServerStartup.debug("Loaded configuration from " + OGCMetaXmlFile);
         throw new ServletException("Cannot read OGC config file " + e.toString());
       }
 

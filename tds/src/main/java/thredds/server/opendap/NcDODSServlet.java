@@ -82,7 +82,8 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
   public void init() throws javax.servlet.ServletException {
     super.init();
 
-    allowDeflate = false; // LOOK: use gzip at Tomcat
+    org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("catalogInit");
+    allowDeflate = false; // handled by Tomcat
 
     try {
       // init logging
@@ -123,10 +124,10 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
       // debugging actions
       makeDebugActions();
 
-      log.info(" initialized");
+      logServerStartup.info(" initialized");
 
     } catch (Throwable t) {
-      log.error("NcDODSServlet init", t);
+      logServerStartup.error("NcDODSServlet init", t);
       t.printStackTrace();
     }
 

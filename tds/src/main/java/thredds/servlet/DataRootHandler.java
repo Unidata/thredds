@@ -107,7 +107,7 @@ public class DataRootHandler {
   {
     if ( singleton == null )
     {
-      log.error( "getInstance(): Called without setInstance() having been called." );
+      logCatalogInit.error( "getInstance(): Called without setInstance() having been called." );
       throw new IllegalStateException( "setInstance() must be called first." );
     }
     return singleton;
@@ -191,7 +191,7 @@ public class DataRootHandler {
     catList.add( "catalog.xml" ); // always first
     getExtraCatalogs( catList );
 
-    log.info( "initCatalogs(): initializing " + catList.size() + " root catalogs [see catalogErrors.log for details]." );
+    logCatalogInit.info( "initCatalogs(): initializing " + catList.size() + " root catalogs [see catalogErrors.log for details]." );
     this.initCatalogs( catList );
   }
 
@@ -225,7 +225,7 @@ public class DataRootHandler {
       }
       catch ( IOException e )
       {
-        log.error( "Error on getExtraCatalogs ", e );
+        logCatalogInit.error( "Error on getExtraCatalogs ", e );
       }
     }
 

@@ -81,7 +81,7 @@ public class ServletLogParser implements LogReader.LogParser {
 
     public String toString() {
       Formatter f = new Formatter();
-      f.format("%s [%d] [%d] %s: ", date, reqTime, reqSeq, level);
+      f.format("%s [%d] [%d] %s %s: ", date, reqTime, reqSeq, level, where);
 
       if (isStart)
         f.format(" (%s) %s %n", ip, path);

@@ -71,7 +71,8 @@ public class TdsConfigContextListener
     // which is used in log4j.xml file loaded here.
     Log4jWebConfigurer.initLogging( servletContext );
 
-    logger.info( "contextInitialized(): " + UsageLog.setupNonRequestContext() );
+    org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("catalogInit");
+    logServerStartup.info( "contextInitialized(): " + UsageLog.setupNonRequestContext() );
 
     // Initialize the DataRootHandler.
     DataRootHandler catHandler = (DataRootHandler) wac.getBean( "tdsDRH", DataRootHandler.class );
@@ -87,7 +88,7 @@ public class TdsConfigContextListener
     // LOOK! ToDo This should be removed once the catalog service controllers uses JSP.
     HtmlWriter.init( tdsContext );
 
-    logger.debug( "contextInitialized(): done - " + UsageLog.closingMessageNonRequestContext() );
+    logServerStartup.debug( "contextInitialized(): done - " + UsageLog.closingMessageNonRequestContext() );
 
   }
 

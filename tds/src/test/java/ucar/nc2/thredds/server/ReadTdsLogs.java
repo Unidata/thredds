@@ -73,7 +73,7 @@ public class ReadTdsLogs {
   ReadTdsLogs(String server) throws FileNotFoundException {
     this.server = server;
 
-    executor = Executors.newFixedThreadPool(2); // number of threads
+    executor = Executors.newFixedThreadPool(5); // number of threads
     completionQ = new ArrayBlockingQueue<Future<SendRequestTask>>(10); // bounded, threadsafe
     completionService = new ExecutorCompletionService<SendRequestTask>(executor, completionQ);
 
@@ -651,7 +651,7 @@ public class ReadTdsLogs {
       }
     });
     System.out.println("total_submit= " + total_submit);
-    reader.exit(10 * 3600);
+    reader.exit(24 * 3600); // 24 hours
 
     long elapsedTime = System.nanoTime() - startElapsed;
     System.out.println("elapsed= " + elapsedTime / (1000 * 1000 * 1000) + "secs");

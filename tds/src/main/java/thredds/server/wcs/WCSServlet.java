@@ -76,8 +76,8 @@ public class WCSServlet extends AbstractServlet {
     allow = ThreddsConfig.getBoolean("WCS.allow", false);
     if ( ! allow )
     {
-      log.info( "init(): WCS service not enabled in threddsConfig.xml." );
-      log.info( UsageLog.closingMessageNonRequestContext() );
+      logServerStartup.info( "init(): WCS service not enabled in threddsConfig.xml." );
+      logServerStartup.info( UsageLog.closingMessageNonRequestContext() );
       return;
     }
     allowRemote = ThreddsConfig.getBoolean( "WCS.allowRemote", false );
@@ -117,17 +117,17 @@ public class WCSServlet extends AbstractServlet {
     this.experimentalHandlers = new ArrayList<VersionHandler>();
     this.experimentalHandlers.add( wcsPlusVersion );          // "1.0.0.11"
 
-    log.info( "init(): WCS service initialized.");
-    log.info( "init()" + UsageLog.closingMessageNonRequestContext() );
+    logServerStartup.info( "init(): WCS service initialized.");
+    logServerStartup.info( "init()" + UsageLog.closingMessageNonRequestContext() );
   }
 
   public void destroy()
   {
-    log.info( "destroy(): " + UsageLog.setupNonRequestContext() );
+    logServerStartup.info( "destroy(): " + UsageLog.setupNonRequestContext() );
     if (diskCache != null)
       diskCache.exit();
     super.destroy();
-    log.info( "destroy()" + UsageLog.closingMessageNonRequestContext() );
+    logServerStartup.info( "destroy()" + UsageLog.closingMessageNonRequestContext() );
   }
 
   public void doGet(HttpServletRequest req, HttpServletResponse res)
