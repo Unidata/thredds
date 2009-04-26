@@ -250,6 +250,71 @@ public class TestIndexUpdating extends TestCase
     return true;
   }
 
+  public void testExistingOutOfDateIndex_ServerWithExternalIndexer_NcFile_NewGribIosp()
+  {
+    // Setup for "Server with external indexer" user story.
+    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
+    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
+    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
+    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
+
+    runTestExistingOutOfDateIndex( NcObjectType.FILE, GribIospVersion.NEW );
+  }
+
+  /**
+   * Test existing index in "Server with External Indexer" user story
+   * with NetcdfDataset using the GribGrid IOSP (new).
+   */
+  public void testExistingOutOfDateIndex_ServerWithExternalIndexer_NcDataset_NewGribIosp()
+  {
+    // Setup for "Server with external indexer" user story.
+    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
+    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
+    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
+    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
+
+    runTestExistingOutOfDateIndex( NcObjectType.DATASET, GribIospVersion.NEW );
+  }
+
+  private boolean runTestExistingOutOfDateIndex( NcObjectType ncObjType, GribIospVersion gribIospVer )
+  {
+    // Setup 1: data file (1-12, CHANGE), index file (1-8, CHANGE).
+    if ( ! gribInit_1_8() ) return false;
+    if ( ! indexSetup1_8() ) return false;
+    if ( ! gribAppend9_12() ) return false;
+
+    netcdfObj = openNc( ncObjType, gribIospVer );
+
+    int timeDimLengthExpected = 8;
+    Dimension timeDim = netcdfObj.findDimension( "time" );
+    assertEquals( "Length of time dimension [" + timeDim.getLength() + "] not as expected [" + timeDimLengthExpected + "].",
+                  timeDim.getLength(),
+                  timeDimLengthExpected );
+
+    // Setup 2: data file (1-12), index file (1-12, CHANGE).
+    if ( ! indexSetup1_12() ) return false;
+    if ( ! syncNc( netcdfObj ) ) return false;
+
+    timeDimLengthExpected = 12;
+    timeDim = netcdfObj.findDimension( "time" );
+    assertEquals( "Length of time dimension [" + timeDim.getLength() + "] not as expected [" + timeDimLengthExpected + "].",
+                  timeDim.getLength(),
+                  timeDimLengthExpected );
+
+    // Setup 3: data file (1-18, CHANGE), index file (1-18, CHANGE).
+    if ( ! gribAppend13_18() ) return false;
+    if ( ! indexSetup1_18() ) return false;
+    if ( ! syncNc( netcdfObj ) ) return false;
+
+    timeDimLengthExpected = 18;
+    timeDim = netcdfObj.findDimension( "time" );
+    assertEquals( "Length of time dimension [" + timeDim.getLength() + "] not as expected [" + timeDimLengthExpected + "].",
+                  timeDim.getLength(),
+                  timeDimLengthExpected );
+
+    return true;
+  }
+
   /**
    * Test existing index in "Server with External Indexer" user story
    * with NetcdfFile using the GribGrid IOSP (new).
@@ -438,11 +503,127 @@ public class TestIndexUpdating extends TestCase
     return true;
   }
   
+  /**
+   * Test missing index/updating data in "Server with External Indexer" user story
+   * with NetcdfFile using the GribGrid IOSP (new).
+   */
+  public void testMissingIndexUpdatedThenAlternate_ServerWithExternalIndexer_NcFile_NewGribIosp()
+  {
+    // Setup for "Server with external indexer" user story.
+    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
+    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
+    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
+    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
+
+    runTestMissingIndexUpdatedThenAlternate( NcObjectType.FILE, GribIospVersion.NEW );
+  }
+
+  /**
+   * Test missing index/updating data in "Server with External Indexer" user story
+   * with NetcdfDataset using the GribGrid IOSP (new).
+   */
+  public void testMissingIndexUpdatedThenAlternate_ServerWithExternalIndexer_NcDataset_NewGribIosp()
+  {
+    // Setup for "Server with external indexer" user story.
+    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
+    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
+    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
+    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
+
+    runTestMissingIndexUpdatedThenAlternate( NcObjectType.DATASET, GribIospVersion.NEW );
+  }
+
+  private boolean runTestMissingIndexUpdatedThenAlternate( NcObjectType ncObjType, GribIospVersion gribIospVer )
+  {
+    DiskCache.simulateUnwritableDir = true;
+
+    // Setup 1: data file (1-8), no index file.
+    //         [Open should create index in cache.]
+    if ( ! gribInit_1_8() ) return false;
+
+    netcdfObj = openNc( ncObjType, gribIospVer );
+
+    int timeDimLengthExpected = 8;
+    Dimension timeDim = netcdfObj.findDimension( "time" );
+    assertEquals( "Length of time dimension [" + timeDim.getLength() + "] not as expected [" + timeDimLengthExpected + "].",
+                  timeDim.getLength(),
+                  timeDimLengthExpected );
+
+    // Setup 2: data file (1-8), index file (1-8, CHANGE).
+    //          [Sync should not use index in cache. HOW TO TEST?]
+    if ( ! indexSetup1_8() ) return false;
+
+    if ( ! syncNc( netcdfObj ) ) return false;
+
+    timeDim = netcdfObj.findDimension( "time" );
+    assertEquals( "Length of time dimension [" + timeDim.getLength() + "] not as expected [" + timeDimLengthExpected + "].",
+                  timeDim.getLength(),
+                  timeDimLengthExpected );
+
+    // Setup 3: data file (1-12, CHANGE), index file (1-8).
+    if ( ! gribAppend9_12()) return false;
+
+    if ( ! syncNc( netcdfObj ) ) return false;
+
+    timeDim = netcdfObj.findDimension( "time" );
+    assertEquals( "Length of time dimension [" + timeDim.getLength() + "] not as expected [" + timeDimLengthExpected + "].",
+                  timeDim.getLength(),
+                  timeDimLengthExpected );
+
+    // Setup 4: data file (1-12), index file (1-12, CHANGE).
+    if ( ! indexSetup1_12()) return false;
+
+    if ( ! syncNc( netcdfObj ) ) return false;
+
+    timeDimLengthExpected = 12;
+    timeDim = netcdfObj.findDimension( "time" );
+    assertEquals( "Length of time dimension [" + timeDim.getLength() + "] not as expected [" + timeDimLengthExpected + "].",
+                  timeDim.getLength(),
+                  timeDimLengthExpected );
+
+    // Setup 5: data file (1-18, CHANGE), index file (1-12).
+    if ( ! gribAppend13_18()) return false;
+
+    if ( ! syncNc( netcdfObj ) ) return false;
+
+    timeDim = netcdfObj.findDimension( "time" );
+    assertEquals( "Length of time dimension [" + timeDim.getLength() + "] not as expected [" + timeDimLengthExpected + "].",
+                  timeDim.getLength(),
+                  timeDimLengthExpected );
+
+    // Setup 6: data file (1-18), index file (1-18, CHANGE).
+    if ( ! indexSetup1_18()) return false;
+
+    if ( ! syncNc( netcdfObj ) ) return false;
+
+    timeDimLengthExpected = 18;
+    timeDim = netcdfObj.findDimension( "time" );
+    assertEquals( "Length of time dimension [" + timeDim.getLength() + "] not as expected [" + timeDimLengthExpected + "].",
+                  timeDim.getLength(),
+                  timeDimLengthExpected );
+
+    // Setup 7: data file (1-21, CHANGE), index file (1-21, CHANGE).
+    if ( ! gribAppend19_21()) return false;
+    if ( ! indexSetup1_21()) return false;
+
+    if ( ! syncNc( netcdfObj ) ) return false;
+
+    timeDimLengthExpected = 21;
+    timeDim = netcdfObj.findDimension( "time" );
+    assertEquals( "Length of time dimension [" + timeDim.getLength() + "] not as expected [" + timeDimLengthExpected + "].",
+                  timeDim.getLength(),
+                  timeDimLengthExpected );
+
+    DiskCache.simulateUnwritableDir = false;
+
+    return true;
+  }
+
 //  /**
 //   * Test missing index/updating data in "Server with External Indexer" user story
 //   * with NetcdfFile using the GribGrid IOSP (new).
 //   */
-//  public void testMissingIndexUpdated_ServerWithExternalIndexer_NcFile_NewGribIosp()
+//  public void testMissingIndexAdded_ServerWithExternalIndexer_NcFile_NewGribIosp()
 //  {
 //    // Setup for "Server with external indexer" user story.
 //    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
@@ -450,14 +631,14 @@ public class TestIndexUpdating extends TestCase
 //    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
 //    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
 //
-//    runTestMissingIndexUpdated( NcObjectType.FILE, GribIospVersion.NEW );
+//    runTestMissingIndexAdded( NcObjectType.FILE, GribIospVersion.NEW );
 //  }
 //
 //  /**
 //   * Test missing index/updating data in "Server with External Indexer" user story
 //   * with NetcdfDataset using the GribGrid IOSP (new).
 //   */
-//  public void testMissingIndexUpdated_ServerWithExternalIndexer_NcDataset_NewGribIosp()
+//  public void testMissingIndexAdded_ServerWithExternalIndexer_NcDataset_NewGribIosp()
 //  {
 //    // Setup for "Server with external indexer" user story.
 //    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
@@ -465,10 +646,10 @@ public class TestIndexUpdating extends TestCase
 //    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
 //    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
 //
-//    runTestMissingIndexUpdated( NcObjectType.DATASET, GribIospVersion.NEW );
+//    runTestMissingIndexAdded( NcObjectType.DATASET, GribIospVersion.NEW );
 //  }
 //
-//  private boolean runTestMissingIndexUpdated( NcObjectType ncObjType, GribIospVersion gribIospVer )
+//  private boolean runTestMissingIndexAdded( NcObjectType ncObjType, GribIospVersion gribIospVer )
 //  {
 //    DiskCache.simulateUnwritableDir = true;
 //
