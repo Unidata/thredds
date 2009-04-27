@@ -5,20 +5,7 @@
       <catalogRef xlink:href="gfs_model.xml" xlink:title="Global Forecast System Model" name="" />
       <catalogRef xlink:href="nam_model.xml" xlink:title="North American Model" name="" />
       <catalogRef xlink:href="ruc_model.xml" xlink:title="Rapid Update Cycle Model" name="" />
-      <dataset ID="NWS/SREF" name="NWS Short Range Ensemble Forecasting">
-        <metadata inherited="true">
-          <documentation type="summary">NCEP Short Range Ensemble Forecast (SREF): NOAA's National Weather Service Storm Prediction Center. </documentation>
-          <documentation xlink:href="http://w1.spc.woc.noaa.gov/exper/sref/" xlink:title="NCEP/SREF Website" />
-          <documentation xlink:href="http://www.emc.ncep.noaa.gov/mmb/SREF/SREF.html" xlink:title="NWS/SREF Website" />
-        </metadata>
-        <catalogRef
-        xlink:href="/thredds/catalog/fmrc/NCEP/SREF/CONUS_40km/ensprod_biasc/catalog.xml"
-        xlink:title="SREF-CONUS_40km-ensprod_biasc" name="" />
-        <catalogRef
-        xlink:href="/thredds/catalog/fmrc/NCEP/SREF/CONUS_40km/pgrb_biasc/catalog.xml"
-        xlink:title="SREF-CONUS_40km-pgrb_biasc" name="" />
-
-      </dataset>
+      <catalogRef xlink:href="sref_model.xml" xlink:title="Short Range Ensemble Forecasting" name="" />
       <catalogRef xlink:href="ndfd_model.xml" xlink:title="NWS National Digital Forecast Database" name="" />
       <catalogRef xlink:href="../idd/allModels.TDS-nc.xml"
                   xlink:title="Selected NCEP model data converted to netCDF" name="" />

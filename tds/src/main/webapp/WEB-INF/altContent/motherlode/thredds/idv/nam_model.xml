@@ -27,7 +27,7 @@
       </publisher>
       <timeCoverage>
         <end>present</end>
-        <duration>7 days</duration>
+        <duration>60 days</duration>
       </timeCoverage>
     </metadata>
     <datasetScan name="NCEP NAM Alaska 11 km" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/NAM/Alaska_11km" path="model/NCEP/NAM/Alaska_11km" location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/">
