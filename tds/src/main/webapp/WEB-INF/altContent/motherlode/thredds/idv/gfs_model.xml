@@ -28,7 +28,7 @@
       </publisher>
       <timeCoverage>
         <end>present</end>
-        <duration>7 days</duration>
+        <duration>60 days</duration>
       </timeCoverage>
     </metadata>
     <datasetScan name="NCEP GFS Alaska 191km" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/GFS/Alaska_191km" path="model/NCEP/GFS/Alaska_191km" location="/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/">

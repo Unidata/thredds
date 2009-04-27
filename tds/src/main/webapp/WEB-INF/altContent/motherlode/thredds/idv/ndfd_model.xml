@@ -27,7 +27,7 @@
       </publisher>
       <timeCoverage>
         <end>present</end>
-        <duration>7 days</duration>
+        <duration>60 days</duration>
       </timeCoverage>
       <variables vocabulary="GRIB-2" />
     </metadata>

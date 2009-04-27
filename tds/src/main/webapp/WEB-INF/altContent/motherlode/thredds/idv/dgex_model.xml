@@ -27,7 +27,7 @@
       </publisher>
       <timeCoverage>
         <end>present</end>
-        <duration>7 days</duration>
+        <duration>60 days</duration>
       </timeCoverage>
     </metadata>
     <datasetScan name="NCEP DGEX CONUS 12km" harvest="true" ID="NCEP/DGEX/CONUS_12km" path="model/NCEP/DGEX/CONUS_12km" location="/data/ldm/pub/native/grid/NCEP/DGEX/CONUS_12km/">

@@ -26,7 +26,7 @@
       </publisher>
       <timeCoverage>
         <end>present</end>
-        <duration>7 days</duration>
+        <duration>60 days</duration>
       </timeCoverage>
     </metadata>
     <dataset name="NCEP RUC2 CONUS 20km">
