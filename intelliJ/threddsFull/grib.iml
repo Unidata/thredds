@@ -2,8 +2,8 @@
 <module relativePaths="true" type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/../../../grib/target/classes" />
-    <exclude-output />
     <output-test url="file://$MODULE_DIR$/../../../grib/target/test/classes" />
+    <exclude-output />
     <content url="file://$MODULE_DIR$/../../../grib">
       <sourceFolder url="file://$MODULE_DIR$/../../../grib/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../../grib/test/src" isTestSource="true" />
@@ -47,7 +47,15 @@
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="common" />
-    <orderEntryProperties />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/jpeg-1.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
 

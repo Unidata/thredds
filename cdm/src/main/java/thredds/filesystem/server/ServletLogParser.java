@@ -128,17 +128,20 @@ public class ServletLogParser implements LogReader.LogParser {
   int count = 0, limit = 10;
 
   /*
-  Difficult thing is to return the extra line assicated wit the previous good log
+  Difficult thing is to return the extra line assocated with the previous good log
   We do this by not returning until we get a match on the next log. We have to rewind.
    */
   public LogReader.Log nextLog(BufferedReader dataIS) throws IOException {
+
     ServletLog log = new ServletLog();
     boolean haveLog = false;
 
     while (true) {
       dataIS.mark(20 * 1000); // track where we are
       String line = dataIS.readLine();
-      if (line == null) return null;
+      if (line == null) {
+        return haveLog ? log : null;
+      }
       // if (count++ < limit) System.out.println("\n" + line);
 
       try {

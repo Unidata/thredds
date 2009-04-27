@@ -2,12 +2,11 @@
 <module relativePaths="true" type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/../../lib/target/classes" />
-    <exclude-output />
     <output-test url="file://$MODULE_DIR$/../../lib/target/test/classes" />
+    <exclude-output />
     <content url="file://$MODULE_DIR$/../../lib" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntryProperties />
   </component>
 </module>
 
