@@ -1,7 +1,7 @@
 index_version = 6.0
 grid_edition = 1
 location = /data/ldm/pub/native/grid/NCEP/GFS/CONUS_191km/GFS_CONUS_191km_20090331_1800.grib1
-length = 5292956
+length = 5248568
 created = 2009-03-31T22:19:09Z
 center = 7
 sub_center = 0
