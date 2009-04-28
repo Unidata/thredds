@@ -63,7 +63,7 @@ public class RemoteCatalogRequestValidator implements Validator
 
     // Validate "catalogUri"
     URI catUri = rcr.getCatalogUri();
-    ValidationUtils.rejectIfEmpty( e, "catalogUri", "catalogUri.empty" );
+    ValidationUtils.rejectIfEmpty( e, "catalogUri", "catalogUri.empty", "No catalog URI given." );
 
     if ( catUri != null )
     {
@@ -94,7 +94,7 @@ public class RemoteCatalogRequestValidator implements Validator
     // - validate "htmlView" - not empty
     if ( rcr.getCommand().equals( Command.SUBSET ))
     {
-      ValidationUtils.rejectIfEmpty( e, "dataset", "dataset.empty" );
+      ValidationUtils.rejectIfEmpty( e, "dataset", "dataset.empty", "No dataset specified in SUBSET request." );
       ValidationUtils.rejectIfEmpty( e, "htmlView", "htmlView.empty" );
     }
 

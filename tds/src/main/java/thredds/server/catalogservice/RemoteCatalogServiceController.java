@@ -156,8 +156,8 @@ public class RemoteCatalogServiceController extends AbstractController
       StringBuilder msg = new StringBuilder( "Bad request" );
       List<ObjectError> oeList = bindingResult.getAllErrors();
       for ( ObjectError e : oeList )
-        msg.append( ": " ).append( e.toString() );
-      log.error( "handleRequestInternal(): " + msg );
+        msg.append( ": " ).append( e.getDefaultMessage() != null ? e.getDefaultMessage() : e.toString() );
+      log.info( "handleRequestInternal(): " + msg );
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ) );
       response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
       return null;

@@ -67,7 +67,7 @@ public class LocalCatalogRequestValidator implements Validator
 
     // Validate "path"
     String path = rcr.getPath();
-    ValidationUtils.rejectIfEmpty( e, "path", "path.empty" );
+    ValidationUtils.rejectIfEmpty( e, "path", "path.empty", "No path given in request." );
     // ToDo move this back into a javax.servlet.Filter
     if ( ! StringValidateEncodeUtils.validPath( path ) )
       e.rejectValue( "path", "path.notValidPath",
@@ -91,6 +91,6 @@ public class LocalCatalogRequestValidator implements Validator
     // When command.equals( SUBSET),
     // - validate "dataset" - not empty
     if ( rcr.getCommand().equals( Command.SUBSET ))
-      ValidationUtils.rejectIfEmpty( e, "dataset", "dataset.empty" );
+      ValidationUtils.rejectIfEmpty( e, "dataset", "dataset.empty", "No dataset specified in SUBSET request." );
   }
 }
