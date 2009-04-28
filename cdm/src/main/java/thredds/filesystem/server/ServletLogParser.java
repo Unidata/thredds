@@ -84,7 +84,7 @@ public class ServletLogParser implements LogReader.LogParser {
       f.format("%s [%d] [%d] %s %s: ", date, reqTime, reqSeq, level, where);
 
       if (isStart)
-        f.format(" (%s) %s %n", ip, path);
+        f.format(" (%s) %s %n", ip, getPath());
       else if (isDone)
         f.format(" %d %d %d %n", returnCode, sizeBytes, msecs);
 

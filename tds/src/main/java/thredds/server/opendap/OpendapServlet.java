@@ -302,7 +302,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
       ServerDDS dds = ds.getDDS();
       CEEvaluator ce = new CEEvaluator(dds);
       ce.parseConstraint(rs.getConstraintExpression());
-      checkSize(dds);
+      checkSize(dds, true);
 
       PrintWriter pw = new PrintWriter(response.getOutputStream());
       dds.printConstrained(pw);
@@ -443,7 +443,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
       ServerDDS myDDS = ds.getDDS();
       CEEvaluator ce = new CEEvaluator(myDDS);
       ce.parseConstraint(rs.getConstraintExpression());
-      checkSize(myDDS);
+      checkSize(myDDS, false);
 
       // Send the binary data back to the client
       DataOutputStream sink = new DataOutputStream(bOut);
@@ -488,7 +488,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
       ServerDDS myDDS = ds.getDDS();
       CEEvaluator ce = new CEEvaluator(myDDS);
       ce.parseConstraint(rs.getConstraintExpression());
-      checkSize(myDDS);
+      checkSize(myDDS, false);
 
       // Send the constrained DDS back to the client
       PrintWriter pw = new PrintWriter(new OutputStreamWriter(bOut));
@@ -701,7 +701,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
     session.invalidate();
   }
 
-  private void checkSize(ServerDDS dds) {
+  private void checkSize(ServerDDS dds, boolean isAscii) {
     try {
 
       long size = 0;
@@ -736,15 +736,17 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
             Section s = new Section(ranges);
             size += s.computeSize() * elemSize;
 
-          } else {
-            System.out.printf("Didnt count %s type= %s %n", bt.getName(), bt.getClass().getName());
+          } else if (!(bt instanceof SDString)) {
+            System.out.printf("OpendapServlet didnt count %s type= %s in size limit%n", bt.getName(), bt.getClass().getName());
           }
         }
       }
       log.debug("total size={}", size);
-      if (size > 500 * 1000 * 1000) {// 500 Mb
-        log.info("Reject request size = {} Mbytes", size/1000000);
-        throw new IllegalArgumentException("Size too big " + size);
+      double dsize = size/(1000 * 1000);
+      double maxSize = isAscii ? 50 : 500 ; // Mbytes
+      if (size > maxSize) {
+        log.info("Reject request size = {} Mbytes", dsize);
+        throw new IllegalArgumentException("Request too big=" + dsize+" Mbytes, max="+maxSize);
       }
 
     } catch (InvalidRangeException e) {

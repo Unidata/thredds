@@ -92,7 +92,7 @@ public class GridAsPointDataset {
     CoordinateAxis1DTime timeAxis = gcs.getTimeAxis1D();
     int tidx = timeAxis.findTimeIndexFromDate( date);
 
-    int[] xy = gcs.findXYindexFromLatLon(lat, lon, null);
+    int[] xy = gcs.findXYindexFromLatLonBounded(lat, lon, null);
 
     Array data  = grid.readDataSlice(tidx, -1, xy[1], xy[0]);
 

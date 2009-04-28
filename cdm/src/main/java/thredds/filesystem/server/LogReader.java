@@ -33,6 +33,8 @@
 
 package thredds.filesystem.server;
 
+import ucar.unidata.util.StringUtil;
+
 import java.io.BufferedReader;
 import java.io.*;
 import java.util.*;
@@ -79,7 +81,7 @@ public class LogReader {
     }
 
     public String getPath() {
-      return path;
+      return StringUtil.unescape(path);
     }
 
     String ip, date, referrer, client;
@@ -89,11 +91,11 @@ public class LogReader {
 
     public String toCSV() {
       //return ip + "," + date + ",\"" + verb + "\","+ path + "\"," + returnCode + "," + sizeBytes + ",\"" + referrer + "\",\"" + client + "\"," + msecs;
-      return ip + "," + date + "," + verb + ",\"" + path + "\"," + returnCode + "," + sizeBytes + ",\"" + referrer + "\",\"" + client + "\"," + msecs;
+      return ip + "," + date + "," + verb + ",\"" + getPath() + "\"," + returnCode + "," + sizeBytes + ",\"" + referrer + "\",\"" + client + "\"," + msecs;
     }
 
     public String toString() {
-      return ip + " [" + date + "] " + verb + " " + path + " " + http + " " + returnCode + " " + sizeBytes + " " + referrer + " " + client + " " + msecs;
+      return ip + " [" + date + "] " + verb + " " + getPath() + " " + http + " " + returnCode + " " + sizeBytes + " " + referrer + " " + client + " " + msecs;
     }
 
   }

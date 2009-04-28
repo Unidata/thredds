@@ -215,6 +215,17 @@ public interface GridCoordSystem {
   public int[] findXYindexFromCoord(double x_coord, double y_coord, int[] result);
 
   /**
+   * Given a point in x,y coordinate space, find the x,y indices.
+   * If outside the range, the closest point is returned
+   *
+   * @param x_coord position in x coordinate space, ie, units of getXHorizAxis().
+   * @param y_coord position in y coordinate space, ie, units of getYHorizAxis().
+   * @param result  optionally pass in the result array to use.
+   * @return int[2], 0=x, 1=y indices of the point.
+   */
+  public int[] findXYindexFromCoordBounded(double x_coord, double y_coord, int[] result);
+
+  /**
    * Given a lat,lon point, find the x,y index of the containing grid point.
    *
    * @param lat latitude position.
@@ -223,6 +234,17 @@ public interface GridCoordSystem {
    * @return int[2], 0=x,1=y indices in the coordinate system of the point. These will be -1 if out of range.
    */
   public int[] findXYindexFromLatLon(double lat, double lon, int[] result) ;
+
+  /**
+   * Given a lat,lon point, find the x,y index of the containing grid point.
+   * If outside the range, the closest point is returned
+   *
+   * @param lat latitude position.
+   * @param lon longitude position.
+   * @param result return result here, may be null
+   * @return int[2], 0=x,1=y indices in the coordinate system of the point.
+   */
+  public int[] findXYindexFromLatLonBounded(double lat, double lon, int[] result) ;
 
   /**
    * Get the Lat/Lon coordinates of the midpoint of a grid cell, using the x,y indices.

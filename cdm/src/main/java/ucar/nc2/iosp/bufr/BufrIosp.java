@@ -414,11 +414,16 @@ public class BufrIosp extends AbstractIOServiceProvider {
       int value = reader.bits2UInt(dkey.bitWidth); // read min value
       int dataWidth = reader.bits2UInt(6); // incremental data woidth
 
-      // if dataWidth == 0, just use min value
+      // if dataWidth == 0, just use min value, otherwise read the compressed value here
       if (dataWidth > 0) {
         // skip to where this observation starts in the variable data, and read the incremental value
         reader.setBitOffset( counter.getBitPos(msgOffset));
-        value += reader.bits2UInt(dataWidth);
+        int cv = reader.bits2UInt(dataWidth);
+
+        if (cv == BufrNumbers.missing_value[dataWidth]) // is this a missing value ??
+          value = BufrNumbers.missing_value[dkey.bitWidth]; // set to missing value
+        else // add to minimum
+          value += cv;
       }
 
       // workaround for misformed messages

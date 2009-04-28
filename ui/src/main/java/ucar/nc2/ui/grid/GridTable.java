@@ -1,4 +1,3 @@
-// $Id: GridTable.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -39,7 +38,6 @@ import thredds.viewer.ui.table.TableRowAbstract;
 import thredds.viewer.ui.event.*;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -51,12 +49,11 @@ import javax.swing.event.*;
  * @see thredds.viewer.ui.event.ActionSourceListener
  *
  * @author caron
- * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 
 public class GridTable {
   private JTableSorted table;
-  private ArrayList list = null;
+  private ArrayList<Row> list = null;
   private ActionSourceListener actionSource;
 
   private boolean eventOK = true;
@@ -69,11 +66,10 @@ public class GridTable {
          // event management
     actionSource = new ActionSourceListener(actionName) {
       public void actionPerformed( ActionValueEvent e) {
+        if (list == null) return;
         String want = e.getValue().toString();
         int count = 0;
-        Iterator iter = list.iterator();
-        while(iter.hasNext()) {
-          Row row = (Row) iter.next();
+        for (Row row : list) {
           if (want.equals(row.gg.getName())) {
             eventOK = false;
             table.setSelected(count);
@@ -100,21 +96,19 @@ public class GridTable {
     });
   }
 
-  public void setDataset(java.util.List fields) {
-    list = new ArrayList(40);
+  public void setDataset(java.util.List<GridDatatype> fields) {
     if (fields == null) return;
 
-    java.util.Iterator iter = fields.iterator();
-    while (iter.hasNext()) {
-      GridDatatype gg = (GridDatatype) iter.next();
-      list.add( new Row(gg));
-    }
+    list = new ArrayList<Row>(fields.size());
+    for (GridDatatype gg : fields)
+      list.add(new Row(gg));
+
     table.setList(list);
   }
 
   public JPanel getPanel() { return table; }
 
-      /** better way to do event management */
+      /* better way to do event management */
   public ActionSourceListener getActionSourceListener() { return actionSource; }
 
   /// inner classes
@@ -136,8 +130,8 @@ public class GridTable {
         case 1: return dims;
         case 2: return gg.getUnitsString();
         case 3: return gg.getDescription();
+        default: return "error";
       }
-      return "error";
     }
   }
 

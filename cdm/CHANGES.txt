@@ -5,6 +5,10 @@ Build Date = @BUILDTIME@
 Changes in version 4.0
 
  Release Details:
+  40:
+   new visad.jar
+   Bufr: was not getting missing data correct when compressed
+   add: GridCoordSystem.findXYindexFromLatLonBounded(), findXYindexFromCoordBounded()
   39:
    add uamiv iosp, from Barron Henderson (UNC Chapel Hill)
    HdfEos distinguish between swath and profiles

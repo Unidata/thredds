@@ -584,8 +584,12 @@ public class Message {
             double scale = Math.pow(10.0, -dkey.scale); // LOOK could precompute for efficiency
             for (int i = 0; i < n; i++) {
               int val = reader.bits2UInt(dataWidth);
-              float fval = (dataMin + val + dkey.refVal);
-              out.format(" %d (%f)", val, scale * fval);
+              if (val == BufrNumbers.missing_value[dataWidth]) // is this a missing value ??
+                out.format(" %d (MISSING)", val);
+              else {
+                float fval = (dataMin + val + dkey.refVal);
+                out.format(" %d (%f)", val, scale * fval);
+              }
             }
 
             out.format("%n");

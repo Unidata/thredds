@@ -730,6 +730,35 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   }
 
   /**
+   * Given a point in x,y coordinate space, find the x,y index in the coordinate system.
+   * If outside the range, the closest point is returned
+   * Not implemented yet for 2D.
+   *
+   * @param x_coord position in x coordinate space.
+   * @param y_coord position in y coordinate space.
+   * @param result  put result in here, may be null
+   * @return int[2], 0=x,1=y indices in the coordinate system of the point.
+   */
+  public int[] findXYindexFromCoordBounded(double x_coord, double y_coord, int[] result) {
+    if (result == null)
+      result = new int[2];
+
+    if ((horizXaxis instanceof CoordinateAxis1D) && (horizYaxis instanceof CoordinateAxis1D)) {
+      result[0] = ((CoordinateAxis1D) horizXaxis).findCoordElementBounded(x_coord);
+      result[1] = ((CoordinateAxis1D) horizYaxis).findCoordElementBounded(y_coord);
+      return result;
+    } else if ((horizXaxis instanceof CoordinateAxis2D) && (horizYaxis instanceof CoordinateAxis2D)) {
+      result[0] = -1;
+      result[1] = -1;
+      return result;
+      //return ((CoordinateAxis2D) xaxis).findXYindexFromCoord( xpos, ypos, result);
+    }
+
+    // cant happen
+    throw new IllegalStateException("GridCoordSystem.findXYindexFromCoord");
+  }
+
+  /**
    * Given a lat,lon point, find the x,y index in the coordinate system.
    *
    * @param lat    latitude position.
@@ -742,6 +771,22 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     ProjectionPoint pp = dataProjection.latLonToProj(new LatLonPointImpl(lat, lon), new ProjectionPointImpl());
 
     return findXYindexFromCoord(pp.getX(), pp.getY(), result);
+  }
+
+  /**
+   * Given a lat,lon point, find the x,y index in the coordinate system.
+   * If outside the range, the closest point is returned
+   *
+   * @param lat    latitude position.
+   * @param lon    longitude position.
+   * @param result put result in here, may be null
+   * @return int[2], 0=x,1=y indices in the coordinate system of the point.
+   */
+  public int[] findXYindexFromLatLonBounded(double lat, double lon, int[] result) {
+    Projection dataProjection = getProjection();
+    ProjectionPoint pp = dataProjection.latLonToProj(new LatLonPointImpl(lat, lon), new ProjectionPointImpl());
+
+    return findXYindexFromCoordBounded(pp.getX(), pp.getY(), result);
   }
 
   /**
