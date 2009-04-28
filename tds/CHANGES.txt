@@ -17,6 +17,16 @@ Changes in version 4.0
   * netcdf-java 4.0
 
 Release Details:
+ 10:
+  NcDODSServlet refactored to OpendapServlet: Redo error handling, put 500 Mb limit
+ 09:
+  admin/log/ interface
+  logging cleanup
+  try to get new GRIB/Grid to work correctly on server
+ 08:
+  candidate beta-release to 8080
+  various cleanup
+  use GRIB/Grid refactor i jCDM
  07:
   Rebuild opendap.jar with html page links corrected
   Port improved WMS version negotiation from ncWMS.

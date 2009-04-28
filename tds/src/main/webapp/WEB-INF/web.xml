@@ -173,7 +173,7 @@
   -->
   <filter-mapping>
     <filter-name>RequestQueryFilterAllowAngleBrackets</filter-name>
-    <servlet-name>NetcdfDODS</servlet-name>
+    <servlet-name>Opendap</servlet-name>
   </filter-mapping>
 
   <!--
@@ -298,12 +298,8 @@
   <!-- NetCDF/OPeNDAP server -->
   <servlet>
     <display-name>THREDDS/NetCDF DODS Server</display-name>
-    <servlet-name>NetcdfDODS</servlet-name>
-    <servlet-class>thredds.server.opendap.NcDODSServlet</servlet-class>
-    <init-param>
-      <param-name>DebugOn</param-name>
-      <param-value> </param-value>
-    </init-param>
+    <servlet-name>Opendap</servlet-name>
+    <servlet-class>thredds.server.opendap.OpendapServlet</servlet-class>
     <load-on-startup>2</load-on-startup>
   </servlet>
 
@@ -523,7 +519,7 @@
   </servlet-mapping>
 
   <servlet-mapping>
-    <servlet-name>NetcdfDODS</servlet-name>
+    <servlet-name>Opendap</servlet-name>
     <url-pattern>/dodsC/*</url-pattern>
   </servlet-mapping>
 

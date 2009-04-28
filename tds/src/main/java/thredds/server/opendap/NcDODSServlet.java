@@ -1,4 +1,3 @@
-// $Id: NcDODSServlet.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -36,11 +35,23 @@ package thredds.server.opendap;
 
 import opendap.dap.parser.ParseException;
 import opendap.dap.DAP2Exception;
+import opendap.dap.BaseType;
+import opendap.dap.NoSuchVariableException;
+import opendap.dap.Server.ServerDDS;
+import opendap.dap.Server.ServerMethods;
+import opendap.dap.Server.SDArray;
+import opendap.dap.Server.SDGrid;
+import opendap.dap.Server.InvalidParameterException;
 
 import opendap.servlet.GuardedDataset;
 import opendap.servlet.ReqState;
 
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.dods.DODSNetcdfFile;
+import ucar.ma2.Range;
+import ucar.ma2.Section;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.DataType;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -51,6 +62,9 @@ import java.net.URI;
 import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.ArrayList;
 
 import thredds.servlet.*;
 
@@ -59,7 +73,6 @@ import thredds.servlet.*;
  * NetCDF opendap server.
  *
  * @author John Caron
- * @version $Id: NcDODSServlet.java 51 2006-07-12 17:13:13Z caron $
  */
 
 public class NcDODSServlet extends opendap.servlet.AbstractServlet {
@@ -276,6 +289,9 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
     } catch (IOException ioe) {
       ServletUtil.handleException(ioe, res);
 
+    } catch (IllegalArgumentException e) {
+      res.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage()); // 403
+
     } catch (Throwable t) {
       t.printStackTrace();
       ServletUtil.handleException(t, res);
@@ -301,6 +317,59 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
   private void closeSession(HttpServletRequest req, HttpServletResponse res) {
     HttpSession session = req.getSession();
     session.invalidate();
+  }
+
+  protected void checkSize(ServerDDS dds) {
+    try {
+
+      long size = 0;
+      Enumeration vars = dds.getVariables();
+      while (vars.hasMoreElements()) {
+        BaseType bt = (BaseType) vars.nextElement();
+        if (((ServerMethods) bt).isProject()) {
+
+          if (bt instanceof SDArray) {
+            SDArray da = (SDArray) bt;
+            BaseType base = da.getPrimitiveVector().getTemplate();
+            DataType dtype = DODSNetcdfFile.convertToNCType(base);
+            int elemSize = dtype.getSize();
+            int n = da.numDimensions();
+            List<Range> ranges = new ArrayList<Range>(n);
+            for (int i = 0; i < n; i++)
+              ranges.add(new Range(da.getStart(i), da.getStop(i), da.getStride(i)));
+
+            Section s = new Section(ranges);
+            size += s.computeSize() * elemSize;
+
+          } else if (bt instanceof SDGrid) {
+            SDGrid grid = (SDGrid) bt;
+            SDArray da = (SDArray) grid.getVar(0);
+            BaseType base = da.getPrimitiveVector().getTemplate();
+            DataType dtype = DODSNetcdfFile.convertToNCType(base);
+            int elemSize = dtype.getSize();
+            int n = da.numDimensions();
+            List<Range> ranges = new ArrayList<Range>(n);
+            for (int i = 0; i < n; i++)
+              ranges.add(new Range(da.getStart(i), da.getStop(i), da.getStride(i)));
+            Section s = new Section(ranges);
+            size += s.computeSize() * elemSize;
+
+          } else {
+            System.out.printf("Didnt count %s type= %s %n", bt.getName(), bt.getClass().getName());
+          }
+        }
+      }
+      System.out.printf("total size=%d %n", size);
+      if (size > 50000)
+        throw new IllegalArgumentException("Size too big " + size);
+
+    } catch (InvalidRangeException e) {
+      e.printStackTrace();
+    } catch (InvalidParameterException e) {
+      e.printStackTrace();
+    } catch (NoSuchVariableException e) {
+      e.printStackTrace();  
+    }
   }
 
   /**

@@ -195,10 +195,10 @@ public class TestMotherlodeLatest extends TimerTask {
     TestMotherlodeLatest test2 = new TestMotherlodeLatest("NCEP/RUC2/CONUS_20km/pressure", latestSuffix);
     timer.schedule(test2, 0, 1000 * 60 * 2); // 2 mins  */
 
-    /* TestMotherlodeLatest test3 = new TestMotherlodeLatest("NCEP/NAM/CONUS_12km", latestSuffix);
+    TestMotherlodeLatest test3 = new TestMotherlodeLatest("NCEP/NAM/CONUS_12km", latestSuffix);
     timer.schedule(test3, 0, 1000 * 60 * 10); // 10 mins  */
 
-    /* TestMotherlodeLatest test4 = new TestMotherlodeLatest("NCEP/GFS/Alaska_191km", bestSuffix);
+    TestMotherlodeLatest test4 = new TestMotherlodeLatest("NCEP/NAM/CONUS_12km", bestSuffix);
     timer.schedule(test4, 0, 1000 * 60 * 10); // 10 mins  */
 
     //test.doOne("NCEP/GFS/Global_1p0deg_Ensemble", bestSuffix);
