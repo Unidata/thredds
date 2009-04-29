@@ -155,6 +155,7 @@ public class LogController extends AbstractController {
 
     } else if (path.equals("/log/thredds/")) {
       showFiles(new File(tdsContext.getContentDirectory(),"logs"), "thredds", res);
+      return null;
 
     } else if (path.startsWith("/log/thredds/")) {
       file = new File(tdsContext.getContentDirectory(), "logs/" + path.substring(13));
