@@ -925,7 +925,8 @@ public class GridHorizCoordSys {
   }
 
   /**
-   * Calculate  Dx Dy
+   * Calculate  Dx Dy Lat Lon Grid
+   * Note: this assumes lo1 < lo2 and dx is positive going east
    *
    */
   private double setLatLonDxDy() {
