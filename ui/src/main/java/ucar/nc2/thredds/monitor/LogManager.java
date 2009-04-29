@@ -39,6 +39,7 @@ import ucar.nc2.util.net.HttpClientManager;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.GZIPInputStream;
 
@@ -55,22 +56,34 @@ import org.apache.commons.httpclient.methods.GetMethod;
  * @since Apr 24, 2009
  */
 public class LogManager {
-  static HttpClient httpclient;
+  static private HttpClient httpclient;
+  static private File topDir;
 
   static {
     CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(null);
     httpclient = HttpClientManager.init(provider, "TdsMonitor");
+
+    // decide where to put the logs locally
+    String dataDir = System.getProperty( "tdsMonitor.dataDir" );
+    if (dataDir != null) {
+      topDir = new File(dataDir);
+    } else {
+      String homeDir = System.getProperty( "user.home" );
+      topDir = new File(homeDir, "tdsMonitor");
+    }
+
   }
 
-  File localDir;
   String server, type;
   List<RemoteLog> logs;
+  private File localDir;
 
   LogManager(String server, boolean isAccess) throws IOException {
     this.server = server;
     this.type = isAccess ? "access" : "thredds";
 
-    localDir = new File("D:/logs/motherlode/test/"+type);
+
+    localDir = new File(topDir, type);
     localDir.mkdirs();
     
     logs = getRemoteFiles();
@@ -86,9 +99,8 @@ public class LogManager {
     String[] lines = contents.split("\n");
     for (String line : lines) {
       RemoteLog remoteLog = new RemoteLog(line.trim());
-      System.out.printf(" %s == %s %n", line, remoteLog);
+      //System.out.printf(" %s == %s %n", line, remoteLog);
       result.add(remoteLog);
-      remoteLog.read();
     }
 
     return result;
@@ -110,12 +122,22 @@ public class LogManager {
       String[] tokes = line.split(" ");
       name = tokes[0];
       size = Long.parseLong(tokes[1]);
+
+      localFile = new File(localDir, name);
+      if (!localFile.exists()) {
+        read();
+      } else if (localFile.length() != size) {
+        System.out.printf("RemoteLog length=%d local=%d for %s%n", size, localFile.length(), name);
+        read();
+      } else {
+        System.out.printf("RemoteLog length=%d local=%d for %s%n", size, localFile.length(), name);
+      }
     }
 
     void read() {
       String urls = "http://" + server + "/thredds/admin/log/"+type+"/" + name;
-      localFile = new File(localDir, name);
       copyUrlContentsToFile(urls, localFile);
+      System.out.printf(" read %s to %s %n", urls, localFile.getPath());
     }
 
     @Override

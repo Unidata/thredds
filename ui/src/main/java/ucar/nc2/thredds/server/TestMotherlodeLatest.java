@@ -202,7 +202,7 @@ public class TestMotherlodeLatest extends TimerTask {
     timer.schedule(test4, 0, 1000 * 60 * 10); // 10 mins  */
 
     //test.doOne("NCEP/GFS/Global_1p0deg_Ensemble", bestSuffix);
-    //test1.doAll();
+    test1.doAll();
   }
 
 }
