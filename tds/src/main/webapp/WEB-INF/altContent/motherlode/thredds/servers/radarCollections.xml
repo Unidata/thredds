@@ -45,8 +45,8 @@
         <serviceName>radarServer</serviceName>
         <documentation type="summary">NEXRAD Level II Radar WSR-88D for Case Study CCS039. </documentation>
         <timeCoverage>
-          <start>1998-06-29T18:01:48</start>
-          <end>1998-06-29T19:01:21</end>
+          <start>1998-06-29T18:00:00</start>
+          <end>1998-06-29T23:00:00</end>
         </timeCoverage>
         <variables vocabulary="DIF">
           <variable name="Reflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="db" />
@@ -164,8 +164,8 @@
         </updown>
       </geospatialCoverage>
       <timeCoverage>
-          <start>1998-06-29T18:01:48</start>
-          <end>1998-06-29T19:01:21</end>
+          <start>1998-06-29T18:00:00</start>
+          <end>1998-06-29T23:00:00</end>
       </timeCoverage>
       <variables vocabulary="DIF">
         <variable name="BREF1/BaseReflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
