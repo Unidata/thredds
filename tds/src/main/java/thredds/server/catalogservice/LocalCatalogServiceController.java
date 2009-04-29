@@ -152,98 +152,114 @@ public class LocalCatalogServiceController extends AbstractController
                                                 HttpServletResponse response )
           throws Exception
   {
-    // Gather diagnostics for logging request.
-    log.info( "handleRequestInternal(): " + UsageLog.setupRequestContext( request ));
-
-    // Bind HTTP request to a LocalCatalogRequest.
-    BindingResult bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( request, this.htmlView );
-
-    // If any binding or validation errors, return BAD_REQUEST.
-    if ( bindingResult.hasErrors() )
-    {
-      StringBuilder msg = new StringBuilder( "Bad request" );
-      List<ObjectError> oeList = bindingResult.getAllErrors();
-      for ( ObjectError e : oeList )
-        msg.append( ": " ).append( e.getDefaultMessage() != null ? e.getDefaultMessage() : e.toString() );
-      log.info( "handleRequestInternal(): " + msg );
-      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ) );
-      response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
-      return null;
-    }
-
-    // Retrieve the resulting LocalCatalogRequest.
-    LocalCatalogRequest catalogServiceRequest = (LocalCatalogRequest) bindingResult.getTarget();
-
-    // Determine path and catalogPath
-    String path = catalogServiceRequest.getPath();
-    String catalogPath = this.htmlView ? path.replaceAll( ".html$", ".xml" ) : path;
-
-    // Check for matching catalog.
-    DataRootHandler drh = DataRootHandler.getInstance();
-
-    InvCatalog catalog = null;
-    String baseUriString = request.getRequestURI();
     try
     {
-      catalog = drh.getCatalog( catalogPath, new URI( baseUriString ) );
-    }
-    catch ( URISyntaxException e )
-    {
-      String msg = "Bad URI syntax [" + baseUriString + "]: " + e.getMessage();
-      log.error( "handleRequestInternal(): " + msg );
-      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ) );
-      response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
-      return null;
-    }
+      // Gather diagnostics for logging request.
+      log.info( "handleRequestInternal(): " + UsageLog.setupRequestContext( request ) );
 
-    // If no catalog found, handle as a publicDoc request.
-    if ( catalog == null )
-      return handlePublicDocumentRequest( request, response, path );
+      // Bind HTTP request to a LocalCatalogRequest.
+      BindingResult bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( request, this.htmlView );
 
-    // Otherwise, handle catalog as indicated by "command".
-    if ( catalogServiceRequest.getCommand().equals( Command.SHOW))
-    {
-      if ( this.htmlView )
+      // If any binding or validation errors, return BAD_REQUEST.
+      if ( bindingResult.hasErrors() )
       {
-        int i = HtmlWriter.getInstance().writeCatalog( response, (InvCatalogImpl) catalog, true );
-        log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, i ) );
-        return null;
-        // return constructModelForCatalogView( catalog, this.htmlView );
-      }
-      else
-        return new ModelAndView( "threddsInvCatXmlView", "catalog", catalog );
-    }
-    else if ( catalogServiceRequest.getCommand().equals( Command.SUBSET ))
-    {
-      String datasetId = catalogServiceRequest.getDataset();
-      InvDataset dataset = catalog.findDatasetByID( datasetId );
-      if ( dataset == null )
-      {
-        String msg = "Did not find dataset [" + datasetId + "] in catalog [" + baseUriString + "].";
+        StringBuilder msg = new StringBuilder( "Bad request" );
+        List<ObjectError> oeList = bindingResult.getAllErrors();
+        for ( ObjectError e : oeList )
+          msg.append( ": " ).append( e.getDefaultMessage() != null ? e.getDefaultMessage() : e.toString() );
         log.info( "handleRequestInternal(): " + msg );
         log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ) );
         response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
         return null;
       }
 
-      if ( this.htmlView)
+      // Retrieve the resulting LocalCatalogRequest.
+      LocalCatalogRequest catalogServiceRequest = (LocalCatalogRequest) bindingResult.getTarget();
+
+      // Determine path and catalogPath
+      String path = catalogServiceRequest.getPath();
+      String catalogPath = this.htmlView ? path.replaceAll( ".html$", ".xml" ) : path;
+
+      // Check for matching catalog.
+      DataRootHandler drh = DataRootHandler.getInstance();
+
+      InvCatalog catalog = null;
+      String baseUriString = request.getRequestURI();
+      try
       {
-        int i = HtmlWriter.getInstance().showDataset( baseUriString, (InvDatasetImpl) dataset, request, response, true );
-        log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, i ) );
+        catalog = drh.getCatalog( catalogPath, new URI( baseUriString ) );
+      }
+      catch ( URISyntaxException e )
+      {
+        String msg = "Bad URI syntax [" + baseUriString + "]: " + e.getMessage();
+        log.error( "handleRequestInternal(): " + msg );
+        log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ) );
+        response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
         return null;
+      }
+
+      // If no catalog found, handle as a publicDoc request.
+      if ( catalog == null )
+        return handlePublicDocumentRequest( request, response, path );
+
+      // Otherwise, handle catalog as indicated by "command".
+      if ( catalogServiceRequest.getCommand().equals( Command.SHOW))
+      {
+        if ( this.htmlView )
+        {
+          int i = HtmlWriter.getInstance().writeCatalog( response, (InvCatalogImpl) catalog, true );
+          log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, i ) );
+          return null;
+          // return constructModelForCatalogView( catalog, this.htmlView );
+        }
+        else
+          return new ModelAndView( "threddsInvCatXmlView", "catalog", catalog );
+      }
+      else if ( catalogServiceRequest.getCommand().equals( Command.SUBSET ))
+      {
+        String datasetId = catalogServiceRequest.getDataset();
+        InvDataset dataset = catalog.findDatasetByID( datasetId );
+        if ( dataset == null )
+        {
+          String msg = "Did not find dataset [" + datasetId + "] in catalog [" + baseUriString + "].";
+          log.info( "handleRequestInternal(): " + msg );
+          log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ) );
+          response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
+          return null;
+        }
+
+        if ( this.htmlView)
+        {
+          int i = HtmlWriter.getInstance().showDataset( baseUriString, (InvDatasetImpl) dataset, request, response, true );
+          log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, i ) );
+          return null;
+        }
+        else
+        {
+          catalog.subset( dataset ); // subset the catalog
+          return new ModelAndView( "threddsInvCatXmlView", "catalog", catalog );
+        }
       }
       else
       {
-        catalog.subset( dataset ); // subset the catalog
-        return new ModelAndView( "threddsInvCatXmlView", "catalog", catalog );
+        String msg = "Unsupported request command [" + catalogServiceRequest.getCommand() + "].";
+        log.error( "handleRequestInternal(): " + msg + " -- NOTE: Should have been caught on input validation." );
+        log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length()));
+        response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
+        return null;
       }
     }
-    else
+    catch ( IOException e )
     {
-      String msg = "Unsupported request command [" + catalogServiceRequest.getCommand() + "].";
-      log.error( "handleRequestInternal(): " + msg + " -- NOTE: Should have been caught on input validation." );
-      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length()));
-      response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
+      log.error( "handleRequestInternal(): Trouble writing to response.", e);
+      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ) );
+      return null;
+    }
+    catch ( Throwable e )
+    {
+      log.error( "handleRequestInternal(): Problem handling request.", e );
+      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ) );
+      response.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
       return null;
     }
   }
