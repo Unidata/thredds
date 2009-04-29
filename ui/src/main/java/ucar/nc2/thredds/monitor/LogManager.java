@@ -56,54 +56,66 @@ import org.apache.commons.httpclient.methods.GetMethod;
  */
 public class LogManager {
   static HttpClient httpclient;
+
   static {
     CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(null);
     httpclient = HttpClientManager.init(provider, "TdsMonitor");
   }
 
-  File dir = new File("D:/logs/motherlode/test/access/");
-  String server;
+  File localDir;
+  String server, type;
   List<RemoteLog> logs;
 
-  LogManager( String server) {
+  LogManager(String server, boolean isAccess) throws IOException {
     this.server = server;
-    try {
-      logs = getRemoteFiles();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
+    this.type = isAccess ? "access" : "thredds";
 
-  void getLocalFiles() {
-    File[] files = dir.listFiles();
+    localDir = new File("D:/logs/motherlode/test/"+type);
+    localDir.mkdirs();
+    
+    logs = getRemoteFiles();
   }
 
   List<RemoteLog> getRemoteFiles() throws IOException {
     List<RemoteLog> result = new ArrayList<RemoteLog>(50);
 
-    String urls = "http://" + server + "/thredds/admin/log/access/";
+    String urls = "http://" + server + "/thredds/admin/log/"+type+"/";
     String contents = getUrlContents(urls);
     if (contents == null) return null;
 
     String[] lines = contents.split("\n");
     for (String line : lines) {
-      RemoteLog remoteLog = new RemoteLog(line);
+      RemoteLog remoteLog = new RemoteLog(line.trim());
       System.out.printf(" %s == %s %n", line, remoteLog);
-      result.add( new RemoteLog(line));
+      result.add(remoteLog);
+      remoteLog.read();
     }
 
     return result;
   }
 
+  List<File> getLocalFiles() throws IOException {
+    List<File> result = new ArrayList<File>(logs.size());
+    for (RemoteLog rlog : logs)
+      result.add(rlog.localFile);
+    return result;
+  }
 
   private class RemoteLog {
     String name;
     long size;
+    File localFile;
 
-    RemoteLog( String line) {
+    RemoteLog(String line) {
       String[] tokes = line.split(" ");
       name = tokes[0];
-      size = Long.parseLong( tokes[1]);
+      size = Long.parseLong(tokes[1]);
+    }
+
+    void read() {
+      String urls = "http://" + server + "/thredds/admin/log/"+type+"/" + name;
+      localFile = new File(localDir, name);
+      copyUrlContentsToFile(urls, localFile);
     }
 
     @Override
@@ -119,36 +131,70 @@ public class LogManager {
 
   private String getUrlContents(String urlString) {
     HttpMethodBase m = new GetMethod(urlString);
-    m.setRequestHeader("Accept-Encoding","gzip,deflate");
+    m.setRequestHeader("Accept-Encoding", "gzip,deflate");
 
     try {
       httpclient.executeMethod(m);
 
-        String charset = m.getResponseCharSet();
-        if (charset == null) charset = "UTF-8";
+      String charset = m.getResponseCharSet();
+      if (charset == null) charset = "UTF-8";
 
-        // check for deflate and gzip compression
-        Header h = m.getResponseHeader("content-encoding");
-        String encoding = (h == null) ? null : h.getValue();
+      // check for deflate and gzip compression
+      Header h = m.getResponseHeader("content-encoding");
+      String encoding = (h == null) ? null : h.getValue();
 
-        if (encoding != null && encoding.equals("deflate")) {
-          byte[] body = m.getResponseBody();
-          InputStream is = new BufferedInputStream(new InflaterInputStream( new ByteArrayInputStream(body)), 10000);
-          return IO.readContents(is, charset);
+      if (encoding != null && encoding.equals("deflate")) {
+        byte[] body = m.getResponseBody();
+        InputStream is = new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(body)), 10000);
+        return IO.readContents(is, charset);
 
-        } else if (encoding != null && encoding.equals("gzip")) {
-          byte[] body = m.getResponseBody();
-          InputStream is = new BufferedInputStream(new GZIPInputStream( new ByteArrayInputStream(body)),  10000);
-          return IO.readContents(is, charset);
+      } else if (encoding != null && encoding.equals("gzip")) {
+        byte[] body = m.getResponseBody();
+        InputStream is = new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(body)), 10000);
+        return IO.readContents(is, charset);
 
-        } else {
-          byte[] body = m.getResponseBody(50 * 1000);
-          return new String(body, charset);
-        }
+      } else {
+        byte[] body = m.getResponseBody(50 * 1000);
+        return new String(body, charset);
+      }
 
     } catch (Exception e) {
       e.printStackTrace();
       return null;
+
+    } finally {
+      m.releaseConnection();
+    }
+  }
+
+  private void copyUrlContentsToFile(String urlString, File file) {
+    HttpMethodBase m = new GetMethod(urlString);
+    m.setRequestHeader("Accept-Encoding", "gzip,deflate");
+
+    try {
+      httpclient.executeMethod(m);
+
+      String charset = m.getResponseCharSet();
+      if (charset == null) charset = "UTF-8";
+
+      // check for deflate and gzip compression
+      Header h = m.getResponseHeader("content-encoding");
+      String encoding = (h == null) ? null : h.getValue();
+
+      if (encoding != null && encoding.equals("deflate")) {
+        InputStream is = new BufferedInputStream(new InflaterInputStream(m.getResponseBodyAsStream()), 10000);
+        IO.writeToFile(is, file.getPath());
+
+      } else if (encoding != null && encoding.equals("gzip")) {
+        InputStream is = new BufferedInputStream(new GZIPInputStream(m.getResponseBodyAsStream()), 10000);
+        IO.writeToFile(is, file.getPath());
+
+      } else {
+        IO.writeToFile(m.getResponseBodyAsStream(), file.getPath());
+      }
+
+    } catch (Exception e) {
+      e.printStackTrace();
 
     } finally {
       m.releaseConnection();

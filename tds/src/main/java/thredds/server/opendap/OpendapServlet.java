@@ -744,7 +744,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
       log.debug("total size={}", size);
       double dsize = size/(1000 * 1000);
       double maxSize = isAscii ? 50 : 500 ; // Mbytes
-      if (size > maxSize) {
+      if (dsize > maxSize) {
         log.info("Reject request size = {} Mbytes", dsize);
         throw new IllegalArgumentException("Request too big=" + dsize+" Mbytes, max="+maxSize);
       }

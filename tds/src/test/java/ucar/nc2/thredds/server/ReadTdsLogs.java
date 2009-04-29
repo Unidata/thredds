@@ -645,7 +645,7 @@ public class ReadTdsLogs {
 
     long startElapsed = System.nanoTime();
 
-    read("D:\\logs\\motherlode\\live\\access", new MClosure() {
+    read("D:\\logs\\motherlode\\live\\access/access.2009-04-25.log", new MClosure() {
       public void run(String filename) throws IOException {
         reader.sendRequests(filename, -1);
       }

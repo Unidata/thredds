@@ -81,7 +81,7 @@ public class LogReader {
     }
 
     public String getPath() {
-      return StringUtil.unescape(path);
+      return (path == null) ? null : StringUtil.unescape(path);
     }
 
     String ip, date, referrer, client;

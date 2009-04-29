@@ -126,7 +126,7 @@ public class LogController extends AbstractController {
     }
 
     File file = null;
-    if (path.startsWith("/log/access/current")) {
+    if (path.equals("/log/access/current")) {
 
       File dir = tdsContext.getTomcatLogDirectory();
       File[] files = dir.listFiles(new FilenameFilter() {
@@ -143,15 +143,21 @@ public class LogController extends AbstractController {
       Collections.sort(fileList);
       file = (File) fileList.get(fileList.size() - 1); // last one
 
-    } else if (path.startsWith("/log/access/")) {
+    } else if (path.equals("/log/access/")) {
       showFiles(tdsContext.getTomcatLogDirectory(), "access", res);
       return null;
 
-    } else if (path.startsWith("/log/thredds/current")) {
+    } else if (path.startsWith("/log/access/")) {
+      file = new File(tdsContext.getTomcatLogDirectory(), path.substring(12));
+
+    } else if (path.equals("/log/thredds/current")) {
       file = new File(tdsContext.getContentDirectory(), "logs/threddsServlet.log");
 
-    } else if (path.startsWith("/log/thredds/")) {
+    } else if (path.equals("/log/thredds/")) {
       showFiles(new File(tdsContext.getContentDirectory(),"logs"), "thredds", res);
+
+    } else if (path.startsWith("/log/thredds/")) {
+      file = new File(tdsContext.getContentDirectory(), "logs/" + path.substring(13));
 
     } else {
       PrintWriter pw = new PrintWriter(res.getOutputStream());

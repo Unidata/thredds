@@ -34,19 +34,10 @@
 package ucar.nc2.thredds.monitor;
 
 import ucar.nc2.ui.StopButton;
-import ucar.nc2.util.net.HttpClientManager;
-import ucar.nc2.util.IO;
 import ucar.util.prefs.ui.Debug;
 import ucar.util.prefs.ui.ComboBox;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
-
-import org.apache.commons.httpclient.auth.CredentialsProvider;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethodBase;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.commons.httpclient.methods.*;
 
 import org.apache.oro.io.GlobFilenameFilter;
 
@@ -57,8 +48,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.*;
 import java.util.*;
-import java.util.zip.InflaterInputStream;
-import java.util.zip.GZIPInputStream;
 
 import thredds.ui.BAMutil;
 import thredds.ui.FileManager;
@@ -72,7 +61,7 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.Statistics;
 
 /**
- * Class Description.
+ * Manage TDS logs
  *
  * @author caron
  * @since Mar 26, 2009
@@ -180,8 +169,6 @@ public class TdsMonitor extends JPanel {
 
   ///////////////////////////
 
-  LogManager logManager = null;
-
   private abstract class OpPanel extends JPanel {
     PreferencesExt prefs;
     TextHistoryPane ta;
@@ -205,7 +192,14 @@ public class TdsMonitor extends JPanel {
       serverCB.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           if ((e.getWhen() != lastEvent) && eventOK) {// eliminate multiple events from same selection
-            logManager = new LogManager((String) serverCB.getSelectedItem());
+            String server = (String) serverCB.getSelectedItem();
+            serverCB.addItem(server);
+            try {
+              if (setLogFiles(server))
+                serverCB.addItem(server);
+            } catch (IOException e1) {
+              e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
             lastEvent = e.getWhen();
           }
         }
@@ -267,10 +261,12 @@ public class TdsMonitor extends JPanel {
     }
 
     abstract boolean process(Object command);
+    abstract boolean setLogFiles(String command)  throws IOException ;
 
     void save() {
       fileCB.save();
       serverCB.save();
+
       //if (v3Butt != null) prefs.putBoolean("nc3useRecords", v3Butt.getModel().isSelected());
       if (coordButt != null) prefs.putBoolean("coordState", coordButt.getModel().isSelected());
       if (detailWindow != null) prefs.putBeanObject(FRAME_SIZE, detailWindow.getBounds());
@@ -286,11 +282,18 @@ public class TdsMonitor extends JPanel {
   /////////////////////////////////////////////////////////////////////
   private class AccessLogPanel extends OpPanel {
     AccessLogTable logTable;
+    LogManager logManager = null;
 
     AccessLogPanel(PreferencesExt p) {
       super(p);
       logTable = new AccessLogTable((PreferencesExt) mainPrefs.node("LogTable"), dnsCache);
       add(logTable, BorderLayout.CENTER);
+    }
+
+    boolean setLogFiles(String server) throws IOException {
+      logManager = new LogManager(server, true);
+      logTable.setLogFiles(logManager.getLocalFiles());
+      return true;
     }
 
     boolean process(Object o) {
@@ -325,11 +328,18 @@ public class TdsMonitor extends JPanel {
   /////////////////////////////////////////////////////////////////////
   private class ServletLogPanel extends OpPanel {
     ServletLogTable logTable;
+    LogManager logManager = null;
 
     ServletLogPanel(PreferencesExt p) {
       super(p);
       logTable = new ServletLogTable((PreferencesExt) mainPrefs.node("ServletLogTable"), buttPanel, dnsCache);
       add(logTable, BorderLayout.CENTER);
+    }
+
+    boolean setLogFiles(String server) throws IOException {
+      logManager = new LogManager(server, false);
+      logTable.setLogFiles(logManager.getLocalFiles());
+      return true;
     }
 
     boolean process(Object o) {
@@ -448,7 +458,6 @@ public class TdsMonitor extends JPanel {
 
   //////////////////////////////////////////////
 
-  static HttpClient httpclient;
   public static void main(String args[]) {
 
     // prefs storage
@@ -482,12 +491,5 @@ public class TdsMonitor extends JPanel {
     frame.pack();
     frame.setBounds(bounds);
     frame.setVisible(true);
-
-    // set Authentication for accessing passsword protected services like TDS PUT
-    java.net.Authenticator.setDefault(new thredds.ui.UrlAuthenticatorDialog(frame));
-
-    // use HTTPClient - could use bean wiring here
-    CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(frame);
-    httpclient = HttpClientManager.init(provider, "TdsMonitor");
   }
 }
