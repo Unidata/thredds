@@ -195,8 +195,8 @@ public class TestReadandCount extends TestCase {
       "    <attribute name='ncmlAdded' value='timeAtt'/>\n" +
       "  </variable>\n" +
       "  <aggregation dimName='time' type='joinExisting'>\n" +
-      "    <netcdf location='C:/dev/tds/thredds/cdm/src/test/data/ncml/nc/jan.nc'/>\n" +
-      "    <netcdf location='C:/dev/tds/thredds/cdm/src/test/data/ncml/nc/feb.nc'/>\n" +
+      "    <netcdf location='"+TestNcML.topDir+"nc/jan.nc'/>\n" +
+      "    <netcdf location='"+TestNcML.topDir+"nc/feb.nc'/>\n" +
       "  </aggregation>\n" +
       "</netcdf>";
     NetcdfDataset aggregatedDataset = NcMLReader.readNcML( new ByteArrayInputStream(ncml.getBytes()), null );

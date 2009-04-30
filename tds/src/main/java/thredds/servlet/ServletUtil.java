@@ -63,7 +63,7 @@ public class ServletUtil
    * @deprecated Now handled in TdsContext.init().
    */
   static public void initContext(ServletContext context)
-  {
+{
 //    setContextPath(context);
     if ( contextPath == null )
     {
@@ -495,17 +495,18 @@ public class ServletUtil
   static public FileCacheRaf getFileCache( ) { return fileCacheRaf; }
 
   /**
-   * Write a file to the response stream.
+   * Write a file to the response stream. Handles Range requests.
    *
    * @param servlet     called from here
    * @param req         the request
    * @param res         the response
    * @param file        to serve
-   * @param contentType content type, or null
+   * @param contentType content type, if null, will try to guess
    * @throws IOException on write error
    */
   public static void returnFile(HttpServlet servlet, HttpServletRequest req, HttpServletResponse res, File file, String contentType)
       throws IOException {
+
     // No file, nothing to view
     if (file == null) {
       log.info( "returnFile(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
@@ -545,6 +546,20 @@ public class ServletUtil
 
       if (contentType == null) contentType = "application/octet-stream";
     }
+
+    returnFile(req, res, file, contentType);
+  }
+
+  /**
+   * Write a file to the response stream. Handles Range requests.
+   *
+   * @param req request
+   * @param res response
+   * @param file must exists and not be a directory
+   * @param contentType must not be null
+   * @throws IOException or error
+   */
+  public static void returnFile(HttpServletRequest req, HttpServletResponse res, File file, String contentType) throws IOException {
     res.setContentType(contentType);
 
     // see if its a Range Request
@@ -575,6 +590,7 @@ public class ServletUtil
     }
     res.setContentLength( (int) contentLength);
 
+    String filename = file.getPath();
     boolean debugRequest = Debug.isSet("returnFile");
     if (debugRequest) log.debug("returnFile(): filename = " + filename + " contentType = " + contentType +
         " contentLength = " + contentLength);

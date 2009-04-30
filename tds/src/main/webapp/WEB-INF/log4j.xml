@@ -6,10 +6,19 @@
     Example:
     2005-04-18T11:33:43 -0600 [    359843 -        395] DEBUG - thredds.util.TdsPathUtils - extractPath():
   -->
-  <appender name="threddsServlet" class="org.apache.log4j.RollingFileAppender">
+  <!-- appender name="threddsServlet" class="org.apache.log4j.RollingFileAppender">
     <param name="File" value="${tds.log.dir}/threddsServlet.log"/>
     <param name="MaxFileSize" value="10MB"/>
     <param name="MaxBackupIndex" value="10"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"/>
+      // <param name="ConversionPattern" value="%d{ISO8601} [%10r - %10X{ID}] %-5p - %c - %m%n"/
+    </layout>
+  </appender -->
+
+  <appender name="threddsServlet" class="org.apache.log4j.DailyRollingFileAppender">
+    <param name="File" value="${tds.log.dir}/threddsServlet.log"/>
+    <param name="DatePattern" value=".yyyy-MM-dd-HH"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"/>
       <!--param name="ConversionPattern" value="%d{ISO8601} [%10r - %10X{ID}] %-5p - %c - %m%n"/-->

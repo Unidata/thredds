@@ -4,9 +4,8 @@ import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.ModelAndView;
 import thredds.server.config.TdsContext;
 import thredds.servlet.UsageLog;
-import thredds.servlet.DebugHandler;
+import thredds.servlet.ServletUtil;
 import thredds.filesystem.MCollection;
-import thredds.filesystem.MFile;
 import thredds.filesystem.server.LogReader;
 import thredds.filesystem.server.AccessLogParser;
 
@@ -149,6 +148,8 @@ public class LogController extends AbstractController {
 
     } else if (path.startsWith("/log/access/")) {
       file = new File(tdsContext.getTomcatLogDirectory(), path.substring(12));
+      ServletUtil.returnFile( req, res, file, "text/plain");
+      return null;
 
     } else if (path.equals("/log/thredds/current")) {
       file = new File(tdsContext.getContentDirectory(), "logs/threddsServlet.log");
@@ -159,6 +160,8 @@ public class LogController extends AbstractController {
 
     } else if (path.startsWith("/log/thredds/")) {
       file = new File(tdsContext.getContentDirectory(), "logs/" + path.substring(13));
+      ServletUtil.returnFile( req, res, file, "text/plain");
+      return null;
 
     } else {
       PrintWriter pw = new PrintWriter(res.getOutputStream());
@@ -169,8 +172,8 @@ public class LogController extends AbstractController {
       pw.flush();
       return null;
     }
-
     return new ModelAndView("threddsFileView", "file", file);
+
   }
 
   private void showFiles(File dir, final String filter, HttpServletResponse res) throws IOException {

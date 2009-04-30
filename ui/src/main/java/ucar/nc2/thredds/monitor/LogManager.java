@@ -82,8 +82,8 @@ public class LogManager {
     this.server = server;
     this.type = isAccess ? "access" : "thredds";
 
-
-    localDir = new File(topDir, type);
+    String cleanServer = java.net.URLEncoder.encode(server, "UTF8");            
+    localDir = new File(topDir, cleanServer+"/"+type);
     localDir.mkdirs();
 
     logs = getRemoteFiles();
@@ -128,7 +128,7 @@ public class LogManager {
         read();
       } else if (localFile.length() != size) {
         System.out.printf("RemoteLog length=%d local=%d for %s%n", size, localFile.length(), name);
-        read();
+        append();
       } else {
         System.out.printf("RemoteLog length=%d local=%d for %s%n", size, localFile.length(), name);
       }
@@ -138,6 +138,17 @@ public class LogManager {
       String urls = "http://" + server + "/thredds/admin/log/"+type+"/" + name;
       copyUrlContentsToFile(urls, localFile);
       System.out.printf(" read %s to %s %n", urls, localFile.getPath());
+    }
+
+    void append() {
+      String urls = "http://" + server + "/thredds/admin/log/"+type+"/" + name;
+      long start = localFile.length();
+      long want = size - start;
+      long got = appendUrlContentsToFile(urls, localFile, start, size);
+      if (want == got)
+        System.out.printf(" append %d bytes to %s %n", got, localFile.getPath());
+      else
+        System.out.printf(" append got=%d want=%d bytes to %s %n", got, want, localFile.getPath());
     }
 
     @Override
@@ -153,6 +164,7 @@ public class LogManager {
 
   private String getUrlContents(String urlString) {
     HttpMethodBase m = new GetMethod(urlString);
+    m.setFollowRedirects(true);
     m.setRequestHeader("Accept-Encoding", "gzip,deflate");
 
     try {
@@ -191,6 +203,7 @@ public class LogManager {
 
   private void copyUrlContentsToFile(String urlString, File file) {
     HttpMethodBase m = new GetMethod(urlString);
+    m.setFollowRedirects(true);
     m.setRequestHeader("Accept-Encoding", "gzip,deflate");
 
     try {
@@ -221,6 +234,46 @@ public class LogManager {
     } finally {
       m.releaseConnection();
     }
+  }
+
+  private long appendUrlContentsToFile(String urlString, File file, long start, long end) {
+    long nbytes = 0;
+
+    HttpMethodBase m = new GetMethod(urlString);
+    m.setRequestHeader("Accept-Encoding", "gzip,deflate");
+    m.setFollowRedirects(true);
+    m.setRequestHeader("Range", "bytes=" + start + "-" + end);
+
+    try {
+      httpclient.executeMethod(m);
+
+      String charset = m.getResponseCharSet();
+      if (charset == null) charset = "UTF-8";
+
+      // check for deflate and gzip compression
+      Header h = m.getResponseHeader("content-encoding");
+      String encoding = (h == null) ? null : h.getValue();
+
+      if (encoding != null && encoding.equals("deflate")) {
+        InputStream is = new BufferedInputStream(new InflaterInputStream(m.getResponseBodyAsStream()), 10000);
+        nbytes = IO.appendToFile(is, file.getPath());
+
+      } else if (encoding != null && encoding.equals("gzip")) {
+        InputStream is = new BufferedInputStream(new GZIPInputStream(m.getResponseBodyAsStream()), 10000);
+        nbytes = IO.appendToFile(is, file.getPath());
+
+      } else {
+        nbytes = IO.appendToFile(m.getResponseBodyAsStream(), file.getPath());
+      }
+
+    } catch (Exception e) {
+      e.printStackTrace();
+
+    } finally {
+      m.releaseConnection();
+    }
+
+    return nbytes;
   }
 
 

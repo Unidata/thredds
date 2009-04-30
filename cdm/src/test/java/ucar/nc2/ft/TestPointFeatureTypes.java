@@ -99,7 +99,7 @@ public class TestPointFeatureTypes  extends TestCase {
   }
 
   public void testProblem() throws IOException {
-    testPointDataset("R:/testdata/point/gempak/19580807_sao.gem", FeatureType.STATION, true);
+    testPointDataset(ucar.nc2.TestAll.testdataDir+"point/gempak/19580807_sao.gem", FeatureType.STATION, true);
   }
 
   int readAllDir(String dirName, FileFilter ff, FeatureType type) throws IOException {

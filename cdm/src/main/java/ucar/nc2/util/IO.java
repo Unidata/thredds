@@ -469,6 +469,18 @@ public class IO {
     }
   }
 
+  static public long appendToFile(InputStream in, String fileOutName) throws IOException {
+    OutputStream out = null;
+    try {
+      out = new BufferedOutputStream(new FileOutputStream(fileOutName, true));
+      return IO.copy(in, out);
+
+    } finally {
+      if (null != in) in.close();
+      if (null != out) out.close();
+    }
+  }
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
   // URLs
 
