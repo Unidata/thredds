@@ -115,6 +115,10 @@ public class RemoteNetcdfController extends AbstractController implements LastMo
       log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
 
+    } catch (IllegalArgumentException e) { // ParsedSectionSpec failed
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
+      res.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+
     } catch (Throwable e) {
       e.printStackTrace();
       log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
