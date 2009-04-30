@@ -736,9 +736,9 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
             Section s = new Section(ranges);
             size += s.computeSize() * elemSize;
 
-          } else if (!(bt instanceof SDString)) {
+          } /* else if (!(bt instanceof SDString)) {
             System.out.printf("OpendapServlet didnt count %s type= %s in size limit%n", bt.getName(), bt.getClass().getName());
-          }
+          }  */
         }
       }
       log.debug("total size={}", size);
