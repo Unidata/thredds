@@ -264,8 +264,9 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
 
       // all other DAP2Exception
     } catch (DAP2Exception de) {
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
-      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      int status = (de.getErrorCode() == DAP2Exception.NO_SUCH_FILE) ? HttpServletResponse.SC_NOT_FOUND : HttpServletResponse.SC_BAD_REQUEST;
+      log.info(UsageLog.closingMessageForRequestContext(status, -1));
+      response.setStatus(status);
       dap2ExceptionHandler(de, response);
 
       // parsing, usually the CE
