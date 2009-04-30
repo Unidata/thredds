@@ -85,7 +85,7 @@ public class LogManager {
 
     localDir = new File(topDir, type);
     localDir.mkdirs();
-    
+
     logs = getRemoteFiles();
   }
 

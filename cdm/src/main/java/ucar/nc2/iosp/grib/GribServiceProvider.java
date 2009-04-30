@@ -51,7 +51,7 @@ import java.net.URL;
 /**
  * Superclass for grib1 and grib2 iosp.
  *
- * @author caron
+ * @deprecated
  */
 public abstract class GribServiceProvider extends AbstractIOServiceProvider {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GribServiceProvider.class);

@@ -45,7 +45,7 @@ import java.util.*;
 /**
  * Grib1 iosp.
  *
- * @author caron
+ * @deprecated
  */
 public class Grib1ServiceProvider extends GribServiceProvider {
 
