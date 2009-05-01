@@ -181,7 +181,7 @@ public class GridVariable {
    *
    * @return grid records
    */
-  List getRecords() {
+  List<GridRecord> getRecords() {
     return records;
   }
 

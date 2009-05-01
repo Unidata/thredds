@@ -316,7 +316,7 @@ public class ForecastModelRunInventory {
    * Represents a list of valid times.
    * Tracks a list of variables that all have the same list of valid times.
    */
-  public static class TimeCoord implements FmrcCoordSys.TimeCoord {
+  public static class TimeCoord implements FmrcCoordSys.TimeCoord, Comparable {
     private CoordinateAxis1D axis; // is null when read from XML
     private List<Grid> vars = new ArrayList<Grid>();  // list of Grid
     private String id; // unique id
@@ -422,6 +422,11 @@ public class ForecastModelRunInventory {
       return hashcode;
     }
     private int hashcode = 0; */
+
+    public int compareTo(Object o) {
+      TimeCoord ot = (TimeCoord) o;
+      return id.compareTo(ot.id);
+    }
   }
 
   //////////////////////////////////////////////////////

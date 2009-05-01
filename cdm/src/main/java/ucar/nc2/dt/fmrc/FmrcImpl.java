@@ -762,6 +762,7 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
           varData = orgVar.read(section);
 
         } catch (InvalidRangeException e) {
+          logger.error("read failed", e);
           throw new IllegalStateException(e.getMessage());
         }
 
@@ -803,7 +804,7 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
           varData = orgVar.read(allSection);
 
         } catch (InvalidRangeException e) {
-          logger.error("read failed", e);
+          logger.error("readSection failed", e);
           throw new IllegalStateException("read failed", e);
         }
 

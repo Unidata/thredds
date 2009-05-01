@@ -47,7 +47,8 @@ import java.util.*;
 import java.io.IOException;
 
 public class TestMotherlodeLatest extends TimerTask {
-  static private final String server1 = "http://motherlode.ucar.edu:8080/";
+  //static private final String server1 = "http://motherlode.ucar.edu:8080/";
+  static private final String server1 = "http://thredds.cise-nsf.gov:8080/";
   static private final String server2 = "http://motherlode.ucar.edu:9080/";
 
   // fmrc
@@ -189,16 +190,16 @@ public class TestMotherlodeLatest extends TimerTask {
 
     // http://motherlode.ucar.edu:9080/thredds/catalog/model/NCEP/RUC2/CONUS_20km/pressure/latest.xml
 
-    TestMotherlodeLatest test1 = new TestMotherlodeLatest("NCEP/RUC2/CONUS_20km/pressure", bestSuffix);
+    /* TestMotherlodeLatest test1 = new TestMotherlodeLatest("NCEP/RUC2/CONUS_20km/pressure", bestSuffix);
     timer.schedule(test1, 0, 1000 * 60 * 2); // 2 mins   */
 
     TestMotherlodeLatest test2 = new TestMotherlodeLatest("NCEP/RUC2/CONUS_20km/pressure", latestSuffix);
-    timer.schedule(test2, 0, 1000 * 60 * 2); // 2 mins  */
+    //timer.schedule(test2, 0, 1000 * 60 * 2); // 2 mins  */
 
-    TestMotherlodeLatest test3 = new TestMotherlodeLatest("NCEP/NAM/CONUS_12km", latestSuffix);
+    /* TestMotherlodeLatest test3 = new TestMotherlodeLatest("NCEP/NAM/CONUS_12km", latestSuffix);
     timer.schedule(test3, 0, 1000 * 60 * 10); // 10 mins  */
 
-   TestMotherlodeLatest test4 = new TestMotherlodeLatest("NCEP/NAM/CONUS_12km", bestSuffix);
+   /* TestMotherlodeLatest test4 = new TestMotherlodeLatest("NCEP/NAM/CONUS_12km", bestSuffix);
     timer.schedule(test4, 0, 1000 * 60 * 10); // 10 mins  */
 
     test2.doAll();

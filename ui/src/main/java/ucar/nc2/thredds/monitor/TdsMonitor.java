@@ -48,6 +48,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.*;
 import java.util.*;
+import java.lang.reflect.Array;
 
 import thredds.ui.BAMutil;
 import thredds.ui.FileManager;
@@ -218,9 +219,12 @@ public class TdsMonitor extends JPanel {
       buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
       AbstractAction fileAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          String filename = fileChooser.chooseFilename();
-          if (filename == null) return;
-          fileCB.setSelectedItem(filename);
+          File[] files = fileChooser.chooseFiles();
+          if ((files == null) || (files.length == 0)) return;
+          if (files.length == 1)
+            fileCB.setSelectedItem(files[0].getPath());
+          else
+            setLogFiles(files);
         }
       };
       BAMutil.setActionProperties(fileAction, "FileChooser", "open Local dataset...", false, 'L', -1);
@@ -262,6 +266,7 @@ public class TdsMonitor extends JPanel {
 
     abstract boolean process(Object command);
     abstract boolean setLogFiles(String command)  throws IOException ;
+    abstract void setLogFiles(File[] files) ;
 
     void save() {
       fileCB.save();
@@ -294,6 +299,10 @@ public class TdsMonitor extends JPanel {
       logManager = new LogManager(server, true);
       logTable.setLogFiles(logManager.getLocalFiles());
       return true;
+    }
+
+    void setLogFiles(File[] files) {
+      logTable.setLogFiles(Arrays.asList(files));
     }
 
     boolean process(Object o) {
@@ -340,6 +349,10 @@ public class TdsMonitor extends JPanel {
       logManager = new LogManager(server, false);
       logTable.setLogFiles(logManager.getLocalFiles());
       return true;
+    }
+
+    void setLogFiles(File[] files) {
+      logTable.setLogFiles(Arrays.asList(files));
     }
 
     boolean process(Object o) {

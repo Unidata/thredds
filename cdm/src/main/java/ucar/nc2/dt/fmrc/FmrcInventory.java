@@ -1359,8 +1359,10 @@ public class FmrcInventory {
   }
 
   public static void doOne(String cat, int n) throws Exception {
-    String server = "http://motherlode.ucar.edu:9080/thredds/catalog/fmrc/";
-    String writeDir = "C:/temp/modelDef/";
+    String server = "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/";
+    String writeDir = "D:/temp/modelDef/";
+    new File(writeDir).mkdirs();
+
     String catName = server + cat + "/files/catalog.xml";
     FmrcInventory fmrCollection = makeFromCatalog(null, catName, catName, n, ForecastModelRunInventory.OPEN_FORCE_NEW);
 

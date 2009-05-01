@@ -140,7 +140,8 @@ public class Section {
       return new Section(shape);
 
     String errs = s.checkInRange(shape);
-    if (errs != null) throw new InvalidRangeException(errs);
+    if (errs != null)
+      throw new InvalidRangeException(errs);
 
     // if s is already filled, use it
     boolean ok = true;

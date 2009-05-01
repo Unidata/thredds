@@ -1,6 +1,4 @@
 /*
- * $Id: IDV-Style.xjs,v 1.3 2007/02/16 19:18:30 dmurray Exp $
- *
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
@@ -60,7 +58,6 @@ import java.util.*;
  * Create a Netcdf File from a GridIndex
  *
  * @author caron
- * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public class GridIndexToNC {
 
@@ -235,7 +232,7 @@ public class GridIndexToNC {
       }
       // (GridDefRecord gdsIndex, String grid_name, String shape_name, Group g)
       GridHorizCoordSys hcs = new GridHorizCoordSys(gdsIndex, lookup, g);
-      hcsHash.put(gdsIndex.getParam(gdsIndex.GDS_KEY), hcs);
+      hcsHash.put(gdsIndex.getParam(GridDefRecord.GDS_KEY), hcs);
     }
 
     // run through each record

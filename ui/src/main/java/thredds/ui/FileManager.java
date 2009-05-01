@@ -284,6 +284,16 @@ public class FileManager {
     return chooseFilename();
   }
 
+  public File[] chooseFiles() {
+    chooser.setMultiSelectionEnabled(true);
+    selectedFile = false;
+    w.setVisible(true);
+    
+    if (selectedFile)
+      return chooser.getSelectedFiles();
+
+    return null;
+  }
 
   public String getCurrentDirectory() {
     return chooser.getCurrentDirectory().getPath();

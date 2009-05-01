@@ -479,6 +479,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       rootElem.setAttribute("suffixFilter", suffixFilter);
 
     // list all the vertical coordinaates
+    Collections.sort(vertTimeCoords);
     for (VertTimeCoord vtc : vertTimeCoords) {
       ForecastModelRunInventory.VertCoord vc = vtc.vc;
 
@@ -505,6 +506,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     }
 
     // list all the offset hours
+    Collections.sort(timeCoords);
     for (ForecastModelRunInventory.TimeCoord tc : timeCoords) {
       Element offsetElem = new Element("offsetHours");
       rootElem.addContent(offsetElem);

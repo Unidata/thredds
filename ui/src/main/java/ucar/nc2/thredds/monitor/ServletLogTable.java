@@ -278,7 +278,7 @@ public class ServletLogTable extends JPanel {
     }
   }
 
-  public void setLogFiles(List<File> logFiles) throws IOException {
+  public void setLogFiles(List<File> logFiles) {
     LogReader reader = new LogReader(new ServletLogParser());
 
     long startElapsed = System.nanoTime();
@@ -300,11 +300,17 @@ public class ServletLogTable extends JPanel {
       }
     });
 
-    completeLogs = new ArrayList<ServletLogParser.ServletLog>(30000);
-    for (File f : logFiles)
-      reader.scanLogFile(f, new MyClosure(completeLogs), new MyLogFilter(), stats);
-    logTable.setBeans(completeLogs);
+    try {
+      completeLogs = new ArrayList<ServletLogParser.ServletLog>(30000);
+      for (File f : logFiles)
+        reader.scanLogFile(f, new MyClosure(completeLogs), new MyLogFilter(), stats);
+      logTable.setBeans(completeLogs);
 
+    } catch (IOException ioe) {
+      ioe.printStackTrace();
+      return;
+    }
+    
     long elapsedTime = System.nanoTime() - startElapsed;
     System.out.printf(" setLogFile total= %d passed=%d%n", stats.total, stats.passed);
     System.out.printf(" elapsed=%f msecs %n", elapsedTime / (1000 * 1000.0));

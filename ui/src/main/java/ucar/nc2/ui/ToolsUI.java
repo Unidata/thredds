@@ -2143,6 +2143,16 @@ public class ToolsUI extends JPanel {
       defineAction.putValue(BAMutil.STATE, new Boolean(useDefinition));
       defButt = BAMutil.addActionToContainer(buttPanel, defineAction);
 
+      // compare against the  definition file
+       AbstractAction testDefAction = new AbstractAction() {
+         public void actionPerformed(ActionEvent e) {
+           if (!useDefinition) return;
+           testDefinition();
+         }
+       };
+       BAMutil.setActionProperties(testDefAction, "dd", "test file against current definition", false, 'T', -1);
+       BAMutil.addActionToContainer(buttPanel, testDefAction);
+
       // make definition from catalog
       AbstractAction catAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
@@ -2292,9 +2302,30 @@ public class ToolsUI extends JPanel {
         } catch (IOException e) {
         }
       }
-
       return !err;
     }
+
+    private void testDefinition() {
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        String currentDef = (String) defComboBox.getSelectedItem();
+        if (currentDef == null)  return;
+
+        String currentFilename = (String) cb.getSelectedItem();
+        if (currentFilename == null)  return;
+
+        FmrcDefinition fmrc_def = new FmrcDefinition();
+        fmrc_def.readDefinitionXML(currentDef);
+        NetcdfDataset ds = NetcdfDataset.openDataset(currentFilename, true, -1, null, fmrc_def);
+
+      } catch (Exception ioe) {
+        ioe.printStackTrace();
+        ioe.printStackTrace(new PrintStream(bos));
+        ta.setText(bos.toString());
+      }
+    }
+
+
 
     private void defineFromDirectory(String dirName, String suffix) {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);

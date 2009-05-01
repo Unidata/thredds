@@ -295,20 +295,27 @@ public class AccessLogTable extends JPanel {
     }
   }
 
-  public void setLogFiles(java.util.List<File> accessLogFiles) throws IOException {
+  public void setLogFiles(java.util.List<File> accessLogFiles) {
     LogReader reader = new LogReader(new AccessLogParser());
-
-    long startElapsed = System.nanoTime();
-    LogReader.Stats stats = new LogReader.Stats();
-
     completeLogs = new ArrayList<LogReader.Log>(30000);
-    for (File f : accessLogFiles)
-      reader.scanLogFile(f, new MyClosure(completeLogs), new MyLogFilter(), stats);
 
 
-    long elapsedTime = System.nanoTime() - startElapsed;
-    System.out.printf(" setLogFile total= %d passed=%d%n", stats.total, stats.passed);
-    System.out.printf(" elapsed=%f msecs %n", elapsedTime / (1000 * 1000.0));
+    try {
+      long startElapsed = System.nanoTime();
+      LogReader.Stats stats = new LogReader.Stats();
+
+      for (File f : accessLogFiles)
+        reader.scanLogFile(f, new MyClosure(completeLogs), new MyLogFilter(), stats);
+
+      long elapsedTime = System.nanoTime() - startElapsed;
+       System.out.printf(" setLogFile total= %d passed=%d%n", stats.total, stats.passed);
+       System.out.printf(" elapsed=%f msecs %n", elapsedTime / (1000 * 1000.0));
+
+    } catch (IOException ioe) {
+      ioe.printStackTrace();
+      return;
+    }
+
 
     resetLogs();
   }
