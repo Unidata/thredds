@@ -803,7 +803,8 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
           varData = orgVar.read(allSection);
 
         } catch (InvalidRangeException e) {
-          throw new IllegalStateException(e.getMessage());
+          logger.error("read failed", e);
+          throw new IllegalStateException("read failed", e);
         }
 
         Array.arraycopy(varData, 0, sectionData, destPos, (int) varData.getSize());

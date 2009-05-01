@@ -255,6 +255,7 @@ public class QueryParams {
         return new DateType(s, null, null);
       } catch (java.text.ParseException e) {
         errs.append("Illegal param= '" + key + "=" + s + "' must be valid ISO Date\n");
+        fatal = true;
       }
     }
     return null;
@@ -267,6 +268,7 @@ public class QueryParams {
         return TimeDuration.parseW3CDuration(s);
       } catch (java.text.ParseException e) {
         errs.append("Illegal param= '" + key + "=" + s + "' must be valid ISO Duration\n");
+        fatal = true;
       }
     }
     return null;
@@ -279,6 +281,7 @@ public class QueryParams {
         return Double.parseDouble(s);
       } catch (NumberFormatException e) {
         errs.append("Illegal param= '" + key + "=" + s + "' must be valid floating point number\n");
+        fatal = true;
       }
     }
     return Double.NaN;
@@ -291,6 +294,7 @@ public class QueryParams {
         return Integer.parseInt(s);
       } catch (NumberFormatException e) {
         errs.append("Illegal param= '" + key + "=" + s + "' must be valid integer number\n");
+        fatal = true;
       }
     }
     return 0;
@@ -302,6 +306,7 @@ public class QueryParams {
       if ((lat > 90.0) || (lat < -90.0)) {
         errs.append("Illegal param= '" + key + "=" + lat + "' must be between +/- 90.0\n");
         lat = Double.NaN;
+        fatal = true;
       }
     }
     return lat;

@@ -284,10 +284,12 @@ public class ServletLogTable extends JPanel {
     long startElapsed = System.nanoTime();
     LogReader.Stats stats = new LogReader.Stats();
 
-    // reverse sort on sequence number
+    //  sort on name
     Collections.sort(logFiles, new Comparator<File>() {
       public int compare(File o1, File o2) {
-        return getSeq(o2) - getSeq(o1);
+        if (o1.getName().equals("threddsServlet.log")) return 1;
+        if (o2.getName().equals("threddsServlet.log")) return -1;
+        return o1.getName().compareTo(o2.getName());
       }
 
       private int getSeq(File f) {

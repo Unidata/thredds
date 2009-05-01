@@ -34,6 +34,10 @@
 package ucar.nc2.thredds.server;
 
 import ucar.nc2.util.IO;
+import ucar.nc2.util.net.HttpClientManager;
+import ucar.nc2.stream.NcStreamRemote;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.io.http.HTTPRandomAccessFile;
 
 import java.io.BufferedReader;
 import java.io.*;
@@ -42,6 +46,9 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.*;
+
+import org.apache.commons.httpclient.HttpClient;
+import opendap.dap.DConnect2;
 
 /**
  * Read TDS access logs
@@ -329,11 +336,11 @@ public class ReadTdsLogs {
         continue;
       }
 
-      /* if (!(log.path.indexOf("modelInventory") > 0))  {    // fmrc only
+      /* if (!(log.path.indexOf("ncss") > 0))  {    // ncss only
         // System.out.println(" *** skip fmrc " + log);
         skip++;
         continue;
-      } */
+      } // */
 
       if (log.path.indexOf("fileServer") > 0) {
         // System.out.println(" *** skip fmrc " + log);
@@ -587,58 +594,11 @@ public class ReadTdsLogs {
 
 
   public static void main(String args[]) throws IOException {
-    //new ReadTdsLogs().test();
-
-    /* scanRequest
-    read("d:/motherlode/logs/", new MClosure() {
-      public void run(String filename) throws IOException {
-        new ReadTdsLogs().scanRequest(filename);
-      }
-    }); // */
-
-    /* scanTime
-    read("d:/motherlode/logs/", new MClosure() {
-      public void run(String filename) throws IOException {
-        new ReadTdsLogs().scanTime(filename, 120);
-      }
-    });  // */
-
-    /* passFilter
-    filters.add(new Idv());
-    filters.add(new Client("libdap"));
-    filters.add(new Client("OpendapConnector"));
-    filters.add(new Client("My World"));
-    filters.add(new Client("ToolsUI"));
-    filters.add(new Datafed());
-    filters.add(new FileServer());
-    filters.add(new JUnitReqs());
-    filters.add(new Client("BigBrother"));
-    filters.add(new Client("www.dlese.org"));
-    filters.add(new PostProbe());
-    unknown = new Unknown();
-    all = new All();
-
-    final PrintWriter pw = new PrintWriter(new FileOutputStream("C:/temp/logs.csv"));
-    read("d:/motherlode/logs/access.2008-05-29.log", new MClosure() {
-    //read("d:/motherlode/logs/", new MClosure() {
-      public void run(String filename) throws IOException {
-        new ReadTdsLogs().passFilter(filename, pw);
-      }
-    });
-    pw.flush();
-    pw.close();
-
-    System.out.println("total bad requests= " + total_bad);
-    Formatter out = new Formatter(System.out);
-    out.format("\n                          nreqs       secs     Mbytes\n");
-    all.show(out);
-    out.format("\n");
-
-    for (Filter f : filters)
-      f.show(out);
-
-    unknown.show(out);
-    // */
+    HttpClient client = HttpClientManager.init(null, "ReadTdsLogs");
+    DConnect2.setHttpClient(client);
+    HTTPRandomAccessFile.setHttpClient(client);
+    NcStreamRemote.setHttpClient(client);
+    NetcdfDataset.setHttpClient(client);
 
     // sendRequests
     final ReadTdsLogs reader = new ReadTdsLogs("http://motherlode.ucar.edu:9080");

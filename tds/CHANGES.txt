@@ -18,6 +18,7 @@ Changes in version 4.0
 
 Release Details:
  10:
+  stricter ncss query parsing
   NcDODSServlet refactored to OpendapServlet: Redo error handling, put 500 Mb limit
  09:
   admin/log/ interface

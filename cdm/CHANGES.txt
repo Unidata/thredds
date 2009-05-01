@@ -6,6 +6,9 @@ Changes in version 4.0
 
  Release Details:
   40:
+   DateType was accepting invalid ISO strings.
+   grib indexing: binary indexes dont return unknown params
+   grib1 param table reading: make thread safe for TDS
    new visad.jar
    Bufr: was not getting missing data correct when compressed
    add: GridCoordSystem.findXYindexFromLatLonBounded(), findXYindexFromCoordBounded()

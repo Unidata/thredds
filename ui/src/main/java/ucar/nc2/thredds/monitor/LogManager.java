@@ -124,13 +124,14 @@ public class LogManager {
       size = Long.parseLong(tokes[1]);
 
       localFile = new File(localDir, name);
-      if (!localFile.exists()) {
+      if (!localFile.exists() || (localFile.length() > size)) {
+        System.out.printf("Read RemoteLog length=%d local=%d for %s%n", size, localFile.length(), name);
         read();
-      } else if (localFile.length() != size) {
-        System.out.printf("RemoteLog length=%d local=%d for %s%n", size, localFile.length(), name);
+      } else if (localFile.length() < size) {
+        System.out.printf("Append RemoteLog length=%d local=%d for %s%n", size, localFile.length(), name);
         append();
       } else {
-        System.out.printf("RemoteLog length=%d local=%d for %s%n", size, localFile.length(), name);
+        System.out.printf("Ok RemoteLog length=%d local=%d for %s%n", size, localFile.length(), name);
       }
     }
 

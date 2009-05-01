@@ -148,6 +148,8 @@ public class DateType {
       formatter = new DateFormatter();
 
     date = formatter.getISODate(text);
+    if (date == null)
+      throw new java.text.ParseException("invalid ISO date unit", 0);
   }
 
   /**
@@ -342,9 +344,10 @@ public class DateType {
   // test
   private static void doOne(String s) {
     try {
-      System.out.println("\nStart = (" + s + ")");
+      System.out.println("\nString = (" + s + ")");
       DateType d = new DateType(s, null, null);
-      System.out.println("Date = (" + d.toString() + ")");
+      System.out.println("DateType = (" + d.toString() + ")");
+      System.out.println("Date = (" + d.getDate() + ")");
     } catch (java.text.ParseException e) {
       e.printStackTrace();
     }
@@ -354,15 +357,7 @@ public class DateType {
    * test
    */
   public static void main(String[] args) {
-    doOne("1991-11-16");
-    doOne("1991-11-16T12:00:00");
-    doOne("1991-11-16T16:03:09");
-    doOne("5 hours since 1991-11-16");
-    doOne("3600 secs since 1991-11-16");
-    doOne("36000 secs since 1991-11-16 01:00:00");
-    doOne("5 days since 1991-11-16");
-    doOne("5 days since 1991-11-16T12:00:00");
-    doOne("5 days since 1991-BADDOG!:00");
+    doOne("T00:00:00Z");
   }
 
 }
