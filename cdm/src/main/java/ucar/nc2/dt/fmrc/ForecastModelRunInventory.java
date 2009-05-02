@@ -924,36 +924,27 @@ public class ForecastModelRunInventory {
 
     // do we already have a fmrInv file?
     String summaryFileLocation = ncfileLocation + ".fmrInv.xml";
-    File summaryFile = null;
-    try {
-      if (null != cache) {
+    File summaryFile = new File(summaryFileLocation);
+    if (!summaryFile.exists()) {
+      if (null != cache) { // look for it in the  cache
         summaryFile = cache.getCacheFile(summaryFileLocation);
         summaryFileLocation = summaryFile.getPath();
-      } else {
-        summaryFile = new File(summaryFileLocation);
-        if (summaryFile.createNewFile()) {
-          summaryFile.delete();
-        } else {
-          summaryFile = null;
-        }
       }
-    } catch (Throwable t) {
-      summaryFileLocation = null;
     }
     boolean haveOne = (summaryFile != null) && (summaryFile.exists());
 
     if (xml_only && !haveOne) return null;
 
-    // try to use the existing one
+    // use it if it exists
     if (!force && haveOne) {
 
       if (isFile) { // see if its changed
         File ncdFile = new File(ncfileLocation);
         if (!ncdFile.exists())
-          throw new IllegalArgumentException("File must exist = " + ncfileLocation);
+          throw new IllegalArgumentException("Data File must exist = " + ncfileLocation);
 
         if (xml_only || (summaryFile.lastModified() >= ncdFile.lastModified())) {
-          try {
+          try {  // hasnt changed - use it
             return readXML(summaryFileLocation);
           } catch (Exception ee) {
             log.error("Failed to read FmrcInventory " + summaryFileLocation, ee);
@@ -973,25 +964,47 @@ public class ForecastModelRunInventory {
       }
     }
 
-    // otherwise, make it
+    // otherwise, try to make it
+
+    /* try {
+      if (null != cache) {
+        summaryFile = cache.getCacheFile(summaryFileLocation);
+        summaryFileLocation = summaryFile.getPath();
+      } else {
+        summaryFile = new File(summaryFileLocation);
+        if (summaryFile.createNewFile()) {
+          summaryFile.delete();
+        } else {
+          summaryFile = null;
+        }
+      }
+    } catch (Throwable t) {
+      summaryFileLocation = null;
+    } */
+
     if (debug) System.out.println(" read from dataset " + ncfileLocation + " write to XML " + summaryFileLocation);
     ucar.nc2.dt.grid.GridDataset gds = null;
     ForecastModelRunInventory fmr = null;
     try {
       gds = ucar.nc2.dt.grid.GridDataset.open(ncfileLocation);
       fmr = new ForecastModelRunInventory(gds, null);
-
     }  finally {
       if (gds != null) gds.close();
     }
 
-    if (summaryFileLocation != null)
-      fmr.writeXML(summaryFileLocation);
-    fmr.releaseDataset();
+    // try to write it for future reference
+    if (summaryFileLocation != null) {
+      try {
+        fmr.writeXML(summaryFileLocation);
+      } catch (Throwable t) {
+        log.error("Failed to write FmrcInventory to " + summaryFileLocation, t);
+      }
+    }
 
     if (showXML)
       IO.copyFile(summaryFileLocation, System.out);
 
+    fmr.releaseDataset();
     return fmr;
   }
 
