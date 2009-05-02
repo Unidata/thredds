@@ -80,6 +80,8 @@ import java.util.ArrayList;
  * @since Jan 2, 2008
  */
 public class IndexChunker {
+  private static final boolean debug = false, debugMerge = false, debugNext = false;
+
   private List<Dim> dimList = new ArrayList<Dim>();
   private Index chunkIndex; // each element is one chunk; strides track position in source
 
@@ -87,7 +89,6 @@ public class IndexChunker {
   private int nelems; // number of elements to read at one time
   private long start, total, done;
 
-  private boolean debug = false, debugMerge = false, debugNext = false;
 
   /**
    * Constructor
@@ -140,6 +141,8 @@ public class IndexChunker {
       Dim elem2 = dimList.get(i + 1);
       elem2.maxSize *= elem.maxSize;
       elem2.wantSize *= elem.wantSize;
+      if (elem2.wantSize < 0)
+        throw new IllegalArgumentException("array size may not exceed 2^31");
       if (debugMerge) System.out.println(" ----" + this);
     }
 
@@ -159,7 +162,7 @@ public class IndexChunker {
 
     start = 0; // first wanted value
     for (Dim dim : dimList) {
-      start += dim.stride * dim.want.first();
+      start += ((long) dim.stride) * dim.want.first();  // watch for overflow on large files
     }
 
     // we will use an Index object to keep track of the chunks, each index represents nelems
@@ -189,7 +192,7 @@ public class IndexChunker {
 
   private class Dim {
     int stride;    // number of elements
-    int maxSize;   // number of elements
+    long maxSize;   // number of elements - must be a long since we may merge
     Range want;    // desired Range
     int wantSize;  // keep seperate from want so we can modify when merging
 
@@ -306,7 +309,9 @@ public class IndexChunker {
 
     // must be set by controlling Layout class - not used here
     public long getSrcPos() { return srcPos; }
-    public void setSrcPos(long srcPos) { this.srcPos = srcPos; }
+    public void setSrcPos(long srcPos) {
+      this.srcPos = srcPos;
+    }
     public void incrSrcPos(int incr) { this.srcPos += incr; }
   }
 

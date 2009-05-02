@@ -6,6 +6,7 @@ Changes in version 4.0
 
  Release Details:
   40:
+   overflow in IndexChunker when writing large files
    DateType was accepting invalid ISO strings.
    grib indexing: binary indexes dont return unknown params
    grib1 param table reading: make thread safe for TDS

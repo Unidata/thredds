@@ -599,7 +599,6 @@ public class RandomAccessFile implements DataInput, DataOutput {
    * @throws IOException on io error
    */
   protected int read_(long pos, byte[] b, int offset, int len) throws IOException {
-
     file.seek(pos);
     int n = file.read(b, offset, len);
     if (debugAccess)

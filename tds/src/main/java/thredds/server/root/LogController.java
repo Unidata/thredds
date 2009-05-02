@@ -111,7 +111,7 @@ public class LogController extends AbstractController {
 
   ////////
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
-    log.info("handleRequestInternal(): " + UsageLog.setupRequestContext(req));
+    log.info(UsageLog.setupRequestContext(req));
 
     String path = req.getPathInfo();
     if (path == null) path = "";
@@ -146,7 +146,6 @@ public class LogController extends AbstractController {
 
     } else if (path.equals("/log/access/")) {
       showFiles(tdsContext.getTomcatLogDirectory(), "access", res);
-      return null;
 
     } else if (path.startsWith("/log/access/")) {
       file = new File(tdsContext.getTomcatLogDirectory(), path.substring(12));
@@ -158,7 +157,6 @@ public class LogController extends AbstractController {
 
     } else if (path.equals("/log/thredds/")) {
       showFiles(new File(tdsContext.getContentDirectory(),"logs"), "thredds", res);
-      return null;
 
     } else if (path.startsWith("/log/thredds/")) {
       file = new File(tdsContext.getContentDirectory(), "logs/" + path.substring(13));
@@ -172,10 +170,13 @@ public class LogController extends AbstractController {
       pw.format("/log/thredds/current%n");
       pw.format("/log/thredds/%n");
       pw.flush();
-      return null;
     }
-    return new ModelAndView("threddsFileView", "file", file);
 
+    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
+    if (file != null)
+      return new ModelAndView("threddsFileView", "file", file);
+    else
+      return null;
   }
 
   private void showFiles(File dir, final String filter, HttpServletResponse res) throws IOException {

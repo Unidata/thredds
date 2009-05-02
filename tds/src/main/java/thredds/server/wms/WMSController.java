@@ -234,9 +234,9 @@ public class WMSController extends AbstractController {
       }
 
       finally {
-        if ((result == null) || (result.getModel() == null) || (result.getModel().get("dataset") == null)) {
+        //if ((result == null) || (result.getModel() == null) || (result.getModel().get("dataset") == null)) {
           closeDataset(dataset);
-        } // else use DatasetCloser HandlerInterceptor
+        // } // else use DatasetCloser HandlerInterceptor
       }
     } else {
       // ToDo - Server not configured to support WMS. Should
