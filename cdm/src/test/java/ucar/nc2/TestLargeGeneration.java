@@ -80,7 +80,7 @@ public class TestLargeGeneration {
 
   private static NetcdfFileWriteable createLatLonTimeDataCube(String filename) throws IOException, InvalidRangeException {
     NetcdfFileWriteable writeableFile = NetcdfFileWriteable.createNew(filename);
-    writeableFile.setLargeFHEYile(true);
+    writeableFile.setLargeFile(true);
     writeableFile.setFill(false);
 
     // define dimensions
