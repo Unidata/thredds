@@ -64,6 +64,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import java.beans.PropertyChangeEvent;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
@@ -122,6 +123,15 @@ public class AccessLogTable extends JPanel {
           infoTA.setTextFromStackTrace(ee);
         }
         infoWindow.showIfNotIconified();
+      }
+    });
+
+    varPopup.addAction("Resend URL", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        LogReader.Log log = (LogReader.Log) logTable.getSelectedBean();
+        if (log == null) return;
+        String urlString = log.getPath();
+        AccessLogTable.this.firePropertyChange("UrlDump", null, urlString);
       }
     });
 
@@ -666,6 +676,10 @@ public class AccessLogTable extends JPanel {
     double latency = (double) timeTook / count / 1000.;
     timeTookData.add(new Minute(date), (latency > 10*1000) ? 0 : latency);
     nreqData.add(new Minute(date), (double) count);
+  }
+
+  void sendURL(LogReader.Log log) {
+
   }
 
 }

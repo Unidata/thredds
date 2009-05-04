@@ -13,7 +13,8 @@ public class TestLargeGeneration {
    * @throws IOException
    */
   public static void main(String[] args) throws IOException, InvalidRangeException {
-    String filename = "D:/temp/test.nc";
+    String filename = "C:/temp/test3.nc";
+    long startAll = System.nanoTime();
 
     NetcdfFileWriteable writeableFile = null;
     try {
@@ -37,7 +38,7 @@ public class TestLargeGeneration {
 //			for (int lat = 0; lat < 177; lat++)
 //				latData.setFloat(latData.getIndex(), (float) (lat / 10.0));
       for (int lat = 0; lat < LAT_LEN; lat++) {
-        System.out.printf("write lat= %d%n", lat);
+        long start = System.nanoTime();
         latData.setFloat(latData.getIndex(), (float) (lat / 10.0));
         for (int lon = 0; lon < LON_LEN; lon++) {
           for (int time = 0; time < TIME_LEN; time++) {
@@ -50,6 +51,8 @@ public class TestLargeGeneration {
         writeableFile.write(variableName, origin, variableData);
         writeableFile.write(latVar, lat_origin, latData);
         writeableFile.flush();
+        long end = System.nanoTime();
+        System.out.printf("write lat= %d time=%f msecs %n", lat, (end-start) / 1000 / 1000.0);
       }
       
     } catch (Throwable t) {
@@ -59,6 +62,10 @@ public class TestLargeGeneration {
       if (writeableFile != null)
         writeableFile.close();
     }
+
+    long endAll = System.nanoTime();
+    System.out.printf("total time=%f secs %n", (endAll-startAll) / 1000 / 1000.0/ 1000);
+
   }
 
   static String latVar = "lat";
@@ -82,6 +89,7 @@ public class TestLargeGeneration {
     NetcdfFileWriteable writeableFile = NetcdfFileWriteable.createNew(filename);
     writeableFile.setLargeFile(true);
     writeableFile.setFill(false);
+    //writeableFile.setLength((long) 16 * 1000 * 1000 * 1000); // 16 gigs - prealloate
 
     // define dimensions
     Dimension timeDim = writeableFile.addDimension(timeVar, TIME_LEN);
@@ -138,7 +146,7 @@ public class TestLargeGeneration {
     writeableFile.addVariableAttribute(timeVar, axisAttName, "T");
     writeableFile.addVariableAttribute(timeVar, standardNameAttName, timeVar);
     writeableFile.addVariableAttribute(timeVar, longNameAttName, timeVar);
-    writeableFile.setFill(true);
+    // writeableFile.setFill(true);
     // could add bounds, but not familiar how it works
   }
 

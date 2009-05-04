@@ -66,7 +66,7 @@ import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 
 import thredds.ui.*;
-import thredds.ui.Resource;
+import ucar.nc2.ui.util.Resource;
 
 import ucar.nc2.ui.grid.GridUI;
 import ucar.nc2.ui.image.ImageViewPanel;

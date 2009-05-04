@@ -36,6 +36,7 @@ package ucar.nc2.util.net;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
@@ -48,7 +49,11 @@ import org.apache.commons.httpclient.auth.CredentialsProvider;
 //import opendap.dap.DConnect2;
 //import ucar.unidata.io.http.HTTPRandomAccessFile;
 
-import java.io.IOException;
+import java.io.*;
+import java.util.zip.InflaterInputStream;
+import java.util.zip.GZIPInputStream;
+
+import ucar.nc2.util.IO;
 
 /**
  * Manage Http Client protocol settings.
@@ -177,5 +182,128 @@ public class HttpClientManager {
       m.releaseConnection();
     }
   }
+
+  //////////////////////
+
+   static public String getUrlContents(String urlString, int maxKbytes) {
+     HttpMethodBase m = new GetMethod(urlString);
+     m.setFollowRedirects(true);
+     m.setRequestHeader("Accept-Encoding", "gzip,deflate");
+
+     try {
+       _client.executeMethod(m);
+
+       String charset = m.getResponseCharSet();
+       if (charset == null) charset = "UTF-8";
+
+       // check for deflate and gzip compression
+       Header h = m.getResponseHeader("content-encoding");
+       String encoding = (h == null) ? null : h.getValue();
+
+       if (encoding != null && encoding.equals("deflate")) {
+         byte[] body = m.getResponseBody();
+         InputStream is = new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(body)), 10000);
+         return readContents(is, charset, maxKbytes);
+
+       } else if (encoding != null && encoding.equals("gzip")) {
+         byte[] body = m.getResponseBody();
+         InputStream is = new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(body)), 10000);
+         return readContents(is, charset, maxKbytes);
+
+       } else {
+         byte[] body = m.getResponseBody(maxKbytes * 1000);
+         return new String(body, charset);
+       }
+
+     } catch (Exception e) {
+       e.printStackTrace();
+       return null;
+
+     } finally {
+       m.releaseConnection();
+     }
+   }
+
+   static private String readContents(InputStream is, String charset, int maxKbytes) throws IOException {
+     ByteArrayOutputStream bout = new ByteArrayOutputStream(1000 * maxKbytes);
+     IO.copy(is, bout, 1000 * maxKbytes);
+     return bout.toString(charset);
+   }
+
+   static public  void copyUrlContentsToFile(String urlString, File file) {
+     HttpMethodBase m = new GetMethod(urlString);
+     m.setFollowRedirects(true);
+     m.setRequestHeader("Accept-Encoding", "gzip,deflate");
+
+     try {
+       _client.executeMethod(m);
+
+       String charset = m.getResponseCharSet();
+       if (charset == null) charset = "UTF-8";
+
+       // check for deflate and gzip compression
+       Header h = m.getResponseHeader("content-encoding");
+       String encoding = (h == null) ? null : h.getValue();
+
+       if (encoding != null && encoding.equals("deflate")) {
+         InputStream is = new BufferedInputStream(new InflaterInputStream(m.getResponseBodyAsStream()), 10000);
+         IO.writeToFile(is, file.getPath());
+
+       } else if (encoding != null && encoding.equals("gzip")) {
+         InputStream is = new BufferedInputStream(new GZIPInputStream(m.getResponseBodyAsStream()), 10000);
+         IO.writeToFile(is, file.getPath());
+
+       } else {
+         IO.writeToFile(m.getResponseBodyAsStream(), file.getPath());
+       }
+
+     } catch (Exception e) {
+       e.printStackTrace();
+
+     } finally {
+       m.releaseConnection();
+     }
+   }
+
+   static public  long appendUrlContentsToFile(String urlString, File file, long start, long end) {
+     long nbytes = 0;
+
+     HttpMethodBase m = new GetMethod(urlString);
+     m.setRequestHeader("Accept-Encoding", "gzip,deflate");
+     m.setFollowRedirects(true);
+     m.setRequestHeader("Range", "bytes=" + start + "-" + end);
+
+     try {
+       _client.executeMethod(m);
+
+       String charset = m.getResponseCharSet();
+       if (charset == null) charset = "UTF-8";
+
+       // check for deflate and gzip compression
+       Header h = m.getResponseHeader("content-encoding");
+       String encoding = (h == null) ? null : h.getValue();
+
+       if (encoding != null && encoding.equals("deflate")) {
+         InputStream is = new BufferedInputStream(new InflaterInputStream(m.getResponseBodyAsStream()), 10000);
+         nbytes = IO.appendToFile(is, file.getPath());
+
+       } else if (encoding != null && encoding.equals("gzip")) {
+         InputStream is = new BufferedInputStream(new GZIPInputStream(m.getResponseBodyAsStream()), 10000);
+         nbytes = IO.appendToFile(is, file.getPath());
+
+       } else {
+         nbytes = IO.appendToFile(m.getResponseBodyAsStream(), file.getPath());
+       }
+
+     } catch (Exception e) {
+       e.printStackTrace();
+
+     } finally {
+       m.releaseConnection();
+     }
+
+     return nbytes;
+   }
+
 
 }

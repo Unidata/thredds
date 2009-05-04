@@ -50,10 +50,7 @@ import java.awt.*;
 import java.util.*;
 import java.lang.reflect.Array;
 
-import thredds.ui.BAMutil;
-import thredds.ui.FileManager;
-import thredds.ui.TextHistoryPane;
-import thredds.ui.IndependentWindow;
+import thredds.ui.*;
 
 import javax.swing.*;
 
@@ -78,6 +75,7 @@ public class TdsMonitor extends JPanel {
   private JTabbedPane tabbedPane;
   private AccessLogPanel accessLogPanel;
   private ServletLogPanel servletLogPanel;
+  private URLDumpPane urlDump;
 
   private JFrame parentFrame;
   private FileManager fileChooser;
@@ -94,9 +92,11 @@ public class TdsMonitor extends JPanel {
     tabbedPane = new JTabbedPane(JTabbedPane.TOP);
     accessLogPanel = new AccessLogPanel((PreferencesExt) mainPrefs.node("LogTable"));
     servletLogPanel = new ServletLogPanel((PreferencesExt) mainPrefs.node("ServletLogPanel"));
+    urlDump = new URLDumpPane((PreferencesExt) mainPrefs.node("urlDump"));
 
     tabbedPane.addTab("AccessLogs", accessLogPanel);
     tabbedPane.addTab("ServletLogs", servletLogPanel);
+    tabbedPane.addTab("UrlDump", urlDump);
     tabbedPane.setSelectedIndex(0);
 
     setLayout(new BorderLayout());
@@ -128,6 +128,15 @@ public class TdsMonitor extends JPanel {
     done = true; // on some systems, still get a window close event
     System.exit(0);
   }
+
+
+  private void gotoUrlDump(String urlString) {
+    urlDump.setURL(urlString);
+    tabbedPane.setSelectedIndex(2);
+  }
+
+
+  ////////////////////////////////////////////////////////////////////////////////////
 
   static private TdsMonitor ui;
   static private boolean done = false;
@@ -292,6 +301,17 @@ public class TdsMonitor extends JPanel {
     AccessLogPanel(PreferencesExt p) {
       super(p);
       logTable = new AccessLogTable((PreferencesExt) mainPrefs.node("LogTable"), dnsCache);
+      logTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+         public void propertyChange(java.beans.PropertyChangeEvent e) {
+           if (e.getPropertyName().equals("UrlDump")) {
+             String path = (String) e.getNewValue();
+             if (logManager != null)
+               path = logManager.makePath(path);
+             gotoUrlDump(path);
+           }
+         }
+       });
+
       add(logTable, BorderLayout.CENTER);
     }
 
@@ -486,7 +506,7 @@ public class TdsMonitor extends JPanel {
     // initializations
     BAMutil.setResourcePath("/resources/nj22/ui/icons/");
 
-// put UI in a JFrame
+     // put UI in a JFrame
     frame = new JFrame("TDS Monitor");
     ui = new TdsMonitor(prefs, frame);
 

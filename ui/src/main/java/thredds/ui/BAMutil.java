@@ -1,4 +1,3 @@
-// $Id: BAMutil.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -33,6 +32,8 @@
  */
 package thredds.ui;
 
+import ucar.nc2.ui.util.Resource;
+
 import java.awt.*;
 import javax.swing.*;
 
@@ -63,7 +64,6 @@ import javax.swing.*;
     </pre>
  *
  * @author John Caron
- * @version $Id: BAMutil.java 50 2006-07-12 16:30:06Z caron $
  */
 public class BAMutil {
     /** Action Property specifies Selected icon name */
@@ -78,9 +78,10 @@ public class BAMutil {
   public static final String STATE = "state";
 
   static private String defaultResourcePath = "/resources/nj22/ui/icons/";
+
   /**
    * Set the resource path for icons, images, cursors.
-   * @param path
+   * @param path reletive to the classpath
    */
   static public void setResourcePath( String path) { defaultResourcePath = path; }
   static public String getResourcePath( ) { return defaultResourcePath; }
@@ -228,6 +229,7 @@ public class BAMutil {
 
     @param menu : add to this menu
     @param act: the Action to make it out of
+    @param menuPos if >= 0, add at this position, otherwise append
     @return the MenuItem created
   */
    public static JMenuItem addActionToMenu( JMenu menu, Action act, int menuPos) {
@@ -374,7 +376,11 @@ public class BAMutil {
     return butt;
   }
 
-  /** Same as addActionToContainerPos, but add to end of Container */
+  /** Same as addActionToContainerPos, but add to end of Container
+   * @param c add to this container
+   * @param act add this action
+   * @return the Button that triggers this action, in case you want to decorate it
+   */
   public static AbstractButton addActionToContainer( Container c, Action act) {
     return addActionToContainerPos( c, act, -1);
   }
@@ -548,35 +554,3 @@ public class BAMutil {
   }
 
 }
-
-/* Change History:
-   $Log: BAMutil.java,v $
-   Revision 1.8  2005/05/12 14:29:55  caron
-   more station refactoring
-   intelliJ CVS wierdness
-
-   Revision 1.7  2005/03/19 00:06:16  caron
-   no message
-
-   Revision 1.6  2005/03/11 23:02:08  caron
-   *** empty log message ***
-
-   Revision 1.5  2005/02/20 00:36:58  caron
-   reorganize resources
-
-   Revision 1.4  2004/09/24 03:26:33  caron
-   merge nj22
-
-   Revision 1.3  2003/05/29 23:00:49  john
-   addActionToPopupMenu()
-
-   Revision 1.2  2003/03/17 20:11:31  john
-   add makeButtconFromAction( Action act)
-
-   Revision 1.1.1.1  2002/11/23 17:49:48  caron
-   thredds reorg
-
-   Revision 1.1.1.1  2002/02/15 00:01:48  caron
-   import sources
-
-*/

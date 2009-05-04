@@ -131,7 +131,7 @@ public class IO {
   }
 
   /**
-   * copy all bytes from in to out.
+   * copy all bytes from in to out, specify buffer size
    *
    * @param in         InputStream
    * @param out        OutputStream
@@ -192,8 +192,6 @@ public class IO {
    * @throws java.io.IOException on io error
    */
   static public String readContents(InputStream is) throws IOException {
-    ByteArrayOutputStream bout = new ByteArrayOutputStream(10 * default_file_buffersize);
-    IO.copy(is, bout);
     return readContents(is, "UTF-8");
   }
 

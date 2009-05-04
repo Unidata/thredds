@@ -33,21 +33,12 @@
 
 package ucar.nc2.thredds.monitor;
 
-import ucar.nc2.util.IO;
 import ucar.nc2.util.net.HttpClientManager;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
-import java.util.zip.InflaterInputStream;
-import java.util.zip.GZIPInputStream;
-
-import org.apache.commons.httpclient.HttpMethodBase;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
-import org.apache.commons.httpclient.methods.GetMethod;
 
 /**
  * Class Description.
@@ -56,12 +47,11 @@ import org.apache.commons.httpclient.methods.GetMethod;
  * @since Apr 24, 2009
  */
 public class LogManager {
-  static private HttpClient httpclient;
   static private File topDir;
 
   static {
     CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(null);
-    httpclient = HttpClientManager.init(provider, "TdsMonitor");
+    HttpClientManager.init(provider, "TdsMonitor");
 
     // decide where to put the logs locally
     String dataDir = System.getProperty( "tdsMonitor.dataDir" );
@@ -89,11 +79,15 @@ public class LogManager {
     logs = getRemoteFiles();
   }
 
+  String makePath( String path) {
+    return "http://" + server + path;
+  }
+
   List<RemoteLog> getRemoteFiles() throws IOException {
     List<RemoteLog> result = new ArrayList<RemoteLog>(50);
 
     String urls = "http://" + server + "/thredds/admin/log/"+type+"/";
-    String contents = getUrlContents(urls);
+    String contents = HttpClientManager.getUrlContents(urls, 50);
     if (contents == null) return null;
 
     String[] lines = contents.split("\n");
@@ -137,7 +131,7 @@ public class LogManager {
 
     void read() {
       String urls = "http://" + server + "/thredds/admin/log/"+type+"/" + name;
-      copyUrlContentsToFile(urls, localFile);
+      HttpClientManager.copyUrlContentsToFile(urls, localFile);
       System.out.printf(" read %s to %s %n", urls, localFile.getPath());
     }
 
@@ -145,7 +139,7 @@ public class LogManager {
       String urls = "http://" + server + "/thredds/admin/log/"+type+"/" + name;
       long start = localFile.length();
       long want = size - start;
-      long got = appendUrlContentsToFile(urls, localFile, start, size);
+      long got = HttpClientManager.appendUrlContentsToFile(urls, localFile, start, size);
       if (want == got)
         System.out.printf(" append %d bytes to %s %n", got, localFile.getPath());
       else
@@ -160,122 +154,5 @@ public class LogManager {
               '}';
     }
   }
-
-  //////////////////////
-
-  private String getUrlContents(String urlString) {
-    HttpMethodBase m = new GetMethod(urlString);
-    m.setFollowRedirects(true);
-    m.setRequestHeader("Accept-Encoding", "gzip,deflate");
-
-    try {
-      httpclient.executeMethod(m);
-
-      String charset = m.getResponseCharSet();
-      if (charset == null) charset = "UTF-8";
-
-      // check for deflate and gzip compression
-      Header h = m.getResponseHeader("content-encoding");
-      String encoding = (h == null) ? null : h.getValue();
-
-      if (encoding != null && encoding.equals("deflate")) {
-        byte[] body = m.getResponseBody();
-        InputStream is = new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(body)), 10000);
-        return IO.readContents(is, charset);
-
-      } else if (encoding != null && encoding.equals("gzip")) {
-        byte[] body = m.getResponseBody();
-        InputStream is = new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(body)), 10000);
-        return IO.readContents(is, charset);
-
-      } else {
-        byte[] body = m.getResponseBody(50 * 1000);
-        return new String(body, charset);
-      }
-
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
-
-    } finally {
-      m.releaseConnection();
-    }
-  }
-
-  private void copyUrlContentsToFile(String urlString, File file) {
-    HttpMethodBase m = new GetMethod(urlString);
-    m.setFollowRedirects(true);
-    m.setRequestHeader("Accept-Encoding", "gzip,deflate");
-
-    try {
-      httpclient.executeMethod(m);
-
-      String charset = m.getResponseCharSet();
-      if (charset == null) charset = "UTF-8";
-
-      // check for deflate and gzip compression
-      Header h = m.getResponseHeader("content-encoding");
-      String encoding = (h == null) ? null : h.getValue();
-
-      if (encoding != null && encoding.equals("deflate")) {
-        InputStream is = new BufferedInputStream(new InflaterInputStream(m.getResponseBodyAsStream()), 10000);
-        IO.writeToFile(is, file.getPath());
-
-      } else if (encoding != null && encoding.equals("gzip")) {
-        InputStream is = new BufferedInputStream(new GZIPInputStream(m.getResponseBodyAsStream()), 10000);
-        IO.writeToFile(is, file.getPath());
-
-      } else {
-        IO.writeToFile(m.getResponseBodyAsStream(), file.getPath());
-      }
-
-    } catch (Exception e) {
-      e.printStackTrace();
-
-    } finally {
-      m.releaseConnection();
-    }
-  }
-
-  private long appendUrlContentsToFile(String urlString, File file, long start, long end) {
-    long nbytes = 0;
-
-    HttpMethodBase m = new GetMethod(urlString);
-    m.setRequestHeader("Accept-Encoding", "gzip,deflate");
-    m.setFollowRedirects(true);
-    m.setRequestHeader("Range", "bytes=" + start + "-" + end);
-
-    try {
-      httpclient.executeMethod(m);
-
-      String charset = m.getResponseCharSet();
-      if (charset == null) charset = "UTF-8";
-
-      // check for deflate and gzip compression
-      Header h = m.getResponseHeader("content-encoding");
-      String encoding = (h == null) ? null : h.getValue();
-
-      if (encoding != null && encoding.equals("deflate")) {
-        InputStream is = new BufferedInputStream(new InflaterInputStream(m.getResponseBodyAsStream()), 10000);
-        nbytes = IO.appendToFile(is, file.getPath());
-
-      } else if (encoding != null && encoding.equals("gzip")) {
-        InputStream is = new BufferedInputStream(new GZIPInputStream(m.getResponseBodyAsStream()), 10000);
-        nbytes = IO.appendToFile(is, file.getPath());
-
-      } else {
-        nbytes = IO.appendToFile(m.getResponseBodyAsStream(), file.getPath());
-      }
-
-    } catch (Exception e) {
-      e.printStackTrace();
-
-    } finally {
-      m.releaseConnection();
-    }
-
-    return nbytes;
-  }
-
 
 }

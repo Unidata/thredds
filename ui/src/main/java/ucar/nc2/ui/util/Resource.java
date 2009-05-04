@@ -48,7 +48,7 @@ import javax.swing.ImageIcon;
 
   2. Filepath.
   Use a resourcePath starting with a forward slash. getResource() then searches relative to the classpath.
-    otherwise it will search reletive to ucar.unidata.util, which is probably not what you want.
+    otherwise it will search reletive to ucar.nc2.ui.util, which is probably not what you want.
 */
 
 public class Resource {
@@ -156,7 +156,7 @@ public class Resource {
     return is;
   }
 
-  /** testing */
+  // test
   public static void main(String[] args) {
     System.out.println("java.class.path = "+ System.getProperty("java.class.path"));
     System.out.println("Class = "+ cl);
