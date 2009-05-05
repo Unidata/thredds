@@ -214,14 +214,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
     // multidim case
     if (obsTableType == null) {
-      // time(station, time)
-      if (time.getRank() == 2) {
-        obsTableType = Table.Type.MultiDimInner;
-      }
-
-
-      // vars(station, time)
-
+        obsTableType = Table.Type.MultiDimInner;   // LOOK how to test ??
     }
 
     if (obsTableType == null) {
@@ -251,6 +244,8 @@ public class CFpointObs extends TableConfigurerImpl {
 
     if (obsTableType == Table.Type.MultiDimInner) {
       obs.dim = obsDim;
+      if (time.getRank() == 1)
+        obs.extraJoin = new JoinArray(time);
     }
 
     if (obsTableType == Table.Type.Contiguous) {
