@@ -223,15 +223,15 @@ public class GridIndexToNC {
     // create the HorizCoord Systems : one for each gds
     List<GridDefRecord> hcsList = index.getHorizCoordSys();
     boolean needGroups = (hcsList.size() > 1);
-    for (GridDefRecord gdsIndex : hcsList) {
+    for (GridDefRecord gds : hcsList) {
       Group g = null;
       if (needGroups) {
-        g = new Group(ncfile, null, gdsIndex.getGroupName());
+        g = new Group(ncfile, null, gds.getGroupName());
         ncfile.addGroup(null, g);
       }
       // (GridDefRecord gdsIndex, String grid_name, String shape_name, Group g)
-      GridHorizCoordSys hcs = new GridHorizCoordSys(gdsIndex, lookup, g);
-      hcsHash.put(gdsIndex.getParam(GridDefRecord.GDS_KEY), hcs);
+      GridHorizCoordSys hcs = new GridHorizCoordSys(gds, lookup, g);
+      hcsHash.put(gds.getParam(GridDefRecord.GDS_KEY), hcs);
     }
 
     // run through each record
@@ -354,6 +354,15 @@ public class GridIndexToNC {
     //for (GridHorizCoordSys ghcs : hcsHash.values()) {
     //  ghcs.empty();
     //}
+  }
+
+  // debugging
+  public GridHorizCoordSys getHorizCoordSys(GridRecord gribRecord) {
+    return hcsHash.get(gribRecord.getGridDefRecordId());
+  }
+
+  public Map<String,GridHorizCoordSys> getHorizCoordSystems() {
+    return hcsHash;
   }
 
   /**

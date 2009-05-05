@@ -31,8 +31,6 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-// $Id: GridHorizCoordSys.java 70 2006-07-13 15:16:05Z caron $
-
 package ucar.nc2.iosp.grid;
 
 
@@ -68,10 +66,19 @@ import java.util.*;
  * <li>We dont currently use, assuming that the x and y are just fine as negetive numbers.
  *
  * @author caron
- * @version $Revision: 70 $ $Date: 2006-07-13 15:16:05Z $
  */
 public class GridHorizCoordSys {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridHorizCoordSys.class);
+
+  /**
+   * GridVariables that have this GridHorizCoordSys
+   */
+  Map<String,GridVariable> varHash = new HashMap<String,GridVariable>(200);
+
+  /**
+   * List of GridVariable, sorted by product desc
+   */
+  Map<String, List<GridVariable>> productHash = new HashMap<String, List<GridVariable>>(100);
 
   /**
    * lookup table
@@ -99,15 +106,6 @@ public class GridHorizCoordSys {
   private boolean isLatLon = true,
       isGaussian = false;
 
-  /**
-   * GridVariables that have this GridHorizCoordSys
-   */
-  Map<String,GridVariable> varHash = new HashMap<String,GridVariable>(200);
-
-  /**
-   * List of GridVariable, sorted by product desc
-   */
-  Map<String, List<GridVariable>> productHash = new HashMap<String, List<GridVariable>>(100);
 
   /**
    * GridVertCoordSys
@@ -135,7 +133,7 @@ public class GridHorizCoordSys {
    * @param lookup lookup table for names
    * @param g      Group for this coord system
    */
-  GridHorizCoordSys(GridDefRecord gds, GridTableLookup lookup, Group g) {
+  public GridHorizCoordSys(GridDefRecord gds, GridTableLookup lookup, Group g) {
     this.gds = gds;
     this.lookup = lookup;
     this.g = g;
@@ -143,15 +141,14 @@ public class GridHorizCoordSys {
     this.grid_name = AbstractIOServiceProvider.createValidNetcdfObjectName(
         lookup.getGridName(gds));
     this.shape_name = lookup.getShapeName(gds);
-    this.g = g;
+
     isLatLon = lookup.isLatLon(gds);
     grid_name = StringUtil.replace(grid_name, ' ', "_");
     id = (g == null)
         ? grid_name
         : g.getName();
 
-    if (isLatLon
-        && (lookup.getProjectionType(gds) == GridTableLookup.GaussianLatLon)) {
+    if (isLatLon && (lookup.getProjectionType(gds) == GridTableLookup.GaussianLatLon)) {
       isGaussian = true;
 
       double np = gds.getDouble( GridDefRecord.NP ); // # lats between pole and equator  (octet 26/27)
@@ -166,7 +163,7 @@ public class GridHorizCoordSys {
    *
    * @return the ID
    */
-  String getID() {
+  public String getID() {
     return id;
   }  // unique within the file
 
@@ -175,7 +172,7 @@ public class GridHorizCoordSys {
    *
    * @return the grid name
    */
-  String getGridName() {
+  public String getGridName() {
     return grid_name;
   }  // used in CF-1 attributes
 
@@ -184,7 +181,7 @@ public class GridHorizCoordSys {
    *
    * @return the group
    */
-  Group getGroup() {
+  public Group getGroup() {
     return g;
   }
 
@@ -193,7 +190,7 @@ public class GridHorizCoordSys {
    *
    * @return true if is lat/lon
    */
-  boolean isLatLon() {
+  public boolean isLatLon() {
     return isLatLon;
   }
 
@@ -202,7 +199,7 @@ public class GridHorizCoordSys {
    *
    * @return the number of x points
    */
-  int getNx() {
+  public int getNx() {
     return gds.getInt(GridDefRecord.NX);
   }
 
@@ -211,7 +208,7 @@ public class GridHorizCoordSys {
    *
    * @return the number of Y points
    */
-  int getNy() {
+  public int getNy() {
     return gds.getInt(GridDefRecord.NY);
   }
 
@@ -220,7 +217,7 @@ public class GridHorizCoordSys {
    *
    * @return the X spacing in kilometers
    */
-  private double getDxInKm() {
+  public double getDxInKm() {
     return getGridSpacingInKm(GridDefRecord.DX);
     //return dx;
   }
@@ -230,7 +227,7 @@ public class GridHorizCoordSys {
    *
    * @return the Y spacing in kilometers
    */
-  private double getDyInKm() {
+  public double getDyInKm() {
     return getGridSpacingInKm(GridDefRecord.DY);
     //return dy;
   }
@@ -283,7 +280,7 @@ public class GridHorizCoordSys {
 
     if (isLatLon) {
       double dy;
-      if( gds.getDouble(GridDefRecord.DY ) == gds.UNDEFINED )  {
+      if( gds.getDouble(GridDefRecord.DY ) == GridDefRecord.UNDEFINED )  {
         dy = setLatLonDxDy();
       } else {
         dy = (gds.getDouble(GridDefRecord.LA2) < gds.getDouble(GridDefRecord.LA1))
@@ -572,8 +569,7 @@ public class GridHorizCoordSys {
    */
   private void addGDSparams(Variable v) {
     // add all the gds parameters
-    java.util.Set keys = gds.getKeys();
-    List<String> keyList = new ArrayList<String>(keys);
+    List<String> keyList = new ArrayList<String>(gds.getKeys());
     Collections.sort(keyList);
     String pre =
         (( lookup instanceof Grib2GridTableLookup) ||

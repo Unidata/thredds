@@ -36,16 +36,19 @@ package ucar.nc2.ui;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.grid.GridIndex;
-import ucar.grid.GridRecord;
-import ucar.grid.GridDefRecord;
+import ucar.grid.*;
 import ucar.grib.grib1.Grib1WriteIndex;
 import ucar.grib.grib2.Grib2Input;
 import ucar.grib.grib2.Grib2WriteIndex;
+import ucar.grib.GribGridRecord;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Group;
+import ucar.nc2.iosp.grib.GribGridServiceProvider;
+import ucar.nc2.iosp.IOServiceProvider;
+import ucar.nc2.iosp.grid.GridHorizCoordSys;
+import ucar.nc2.iosp.grid.GridIndexToNC;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
 
 import thredds.ui.TextHistoryPane;
 import thredds.ui.IndependentWindow;
@@ -53,8 +56,10 @@ import thredds.ui.BAMutil;
 import thredds.ui.FileManager;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * ToolsUI/Iosp/Bufr
@@ -66,9 +71,9 @@ public class GribTable extends JPanel {
   private PreferencesExt prefs;
 
   private BeanTableSorted gridRecordTable, gdsTable;
-  private JSplitPane split;
+  private JSplitPane split, split2;
 
-  private TextHistoryPane infoTA;
+  private TextHistoryPane infoTA, infoPopup;
   private IndependentWindow infoWindow;
 
   private StructureTable dataTable;
@@ -97,18 +102,13 @@ public class GribTable extends JPanel {
       }
     }); */
 
-    gdsTable = new BeanTableSorted(GdsBean.class, (PreferencesExt) prefs.node("GdsBean"), false);
-    /* obsTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        ObsBean csb = (ObsBean) obsTable.getSelectedBean();
-      }
-    }); */
 
-
-    /* thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(gridRecordTable.getJTable(), "Options");
-    varPopup.addAction("Show DDS", new AbstractAction() {
+    thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(gridRecordTable.getJTable(), "Options");
+    /* varPopup.addAction("Show GDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        GridRecordBean vb = (GridRecordBean) gridRecordTable.getSelectedBean();
+        GridRecordBean bean = (GridRecordBean) gridRecordTable.getSelectedBean();
+        GridHorizCoordSys hcs = index2nc.getHorizCoordSys(bean.gr);
+
         infoTA.clear();
         Formatter f = new Formatter();
         try {
@@ -130,15 +130,24 @@ public class GribTable extends JPanel {
     });  */
 
 
-    // the info window
+    gdsTable = new BeanTableSorted(GdsBean.class, (PreferencesExt) prefs.node("GdsBean"), false);
+    /* obsTable.addListSelectionListener(new ListSelectionListener() {
+      public void valueChanged(ListSelectionEvent e) {
+        ObsBean csb = (ObsBean) obsTable.getSelectedBean();
+      }
+    }); */
+
     infoTA = new TextHistoryPane();
-    infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), infoTA);
+
+    // the info window
+    infoPopup = new TextHistoryPane();
+    infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), infoPopup);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
-    //split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, ddsTable, obsTable);
-    //split2.setDividerLocation(prefs.getInt("splitPos2", 800));
+    split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, gdsTable, infoTA);
+    split2.setDividerLocation(prefs.getInt("splitPos2", 800));
 
-    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, gridRecordTable, gdsTable);
+    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, gridRecordTable, split2);
     split.setDividerLocation(prefs.getInt("splitPos", 500));
 
     setLayout(new BorderLayout());
@@ -158,14 +167,22 @@ public class GribTable extends JPanel {
     gdsTable.saveState(false);
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     prefs.putInt("splitPos", split.getDividerLocation());
-    //prefs.putInt("splitPos2", split2.getDividerLocation());
+    prefs.putInt("splitPos2", split2.getDividerLocation());
   }
 
   private String location;
+  private GridTableLookup lookup;
 
   public void setGribFile(RandomAccessFile raf) throws IOException {
     this.location = raf.getLocation();
+    if (location.endsWith(".gbx"))
+      setGribFileIndex(raf);
 
+    GribGridServiceProvider iosp = new GribGridServiceProvider();
+    NetcdfFile ncfile = new GribNetcdfFile(iosp, raf);
+    lookup = iosp.getLookup();
+
+    // write the index
     File indexFile = File.createTempFile("GribTable", "gbx");
     raf.seek(0);
     Grib2Input g2i = new Grib2Input(raf);
@@ -179,48 +196,81 @@ public class GribTable extends JPanel {
       index = new Grib2WriteIndex().writeGribIndex(gribFile, indexFile.getPath(), raf, true);
     }
 
+
     java.util.List<GridRecordBean> grList = new ArrayList<GridRecordBean>();
     for (GridRecord gr : index.getGridRecords()) {
-      grList.add( new GridRecordBean(gr));
+      grList.add(new GridRecordBean((GribGridRecord) gr));
+    }
+
+    Map<String, GridHorizCoordSys> hcsMap = new HashMap<String, GridHorizCoordSys>();
+    List<GridDefRecord> hcsList = index.getHorizCoordSys();
+    boolean needGroups = (hcsList.size() > 1);
+    for (GridDefRecord gds : hcsList) {
+      GridHorizCoordSys hcs = new GridHorizCoordSys(gds, lookup, null);
+      hcsMap.put(gds.getParam(GridDefRecord.GDS_KEY), hcs);
     }
 
     java.util.List<GdsBean> gdsList = new ArrayList<GdsBean>();
-    for (GridDefRecord gds : index.getHorizCoordSys()) {
-      gdsList.add( new GdsBean(gds));
+    for (String key : hcsMap.keySet()) {
+      GridHorizCoordSys hcs = hcsMap.get(key);
+      gdsList.add(new GdsBean(key, hcs));
     }
 
-    Map<String,String> atts = index.getGlobalAttributes();
+    Map<String, String> atts = index.getGlobalAttributes();
+    Formatter f = new Formatter();
+    ArrayList<String> attKeys = new ArrayList<String>( atts.keySet());
+    Collections.sort(attKeys);
+    for (String key : attKeys) {
+      f.format("%s == %s %n", key, atts.get(key));
+    }    
+    infoTA.setText(f.toString());
 
     gridRecordTable.setBeans(grList);
     gdsTable.setBeans(gdsList);
   }
 
+  private class GribNetcdfFile extends NetcdfFile {
+    GribNetcdfFile(IOServiceProvider iosp, RandomAccessFile raf) throws IOException {
+      super(iosp, raf, raf.getLocation(), null);
+    }
+  }
+
+  private void setGribFileIndex(RandomAccessFile raf) throws IOException {
+    this.location = raf.getLocation();
+  }
+
 
   public class GridRecordBean {
-    GridRecord gr;
+    GribGridRecord gr;
+    GridParameter param;
 
     // no-arg constructor
     public GridRecordBean() {
     }
 
-    public GridRecordBean(GridRecord m) {
+    public GridRecordBean(GribGridRecord m) {
       this.gr = m;
+      param = lookup.getParameter(gr);
     }
 
-    public double getLevelOne() {
-      return gr.getLevel1();
+    public String getLevel() {
+      return gr.getLevel1() + "/" + gr.getLevel2();
     }
 
-    public double getLevelTwo() {
-      return gr.getLevel2();
+    public String getLevelType() {
+      return gr.getLevelType1() + "/" + gr.getLevelType2();
     }
 
-    public int getLevelType1() {
-      return gr.getLevelType1();
+    public String getLevelName() {
+      return lookup.getLevelName(gr);
     }
 
-    public int getLevelType2() {
-      return gr.getLevelType2();
+    public String getLevelDescription() {
+      return lookup.getLevelDescription(gr);
+    }
+
+    public String getLevelUnit() {
+      return lookup.getLevelUnit(gr);
     }
 
     public Date getReferenceTime() {
@@ -231,37 +281,84 @@ public class GribTable extends JPanel {
       return gr.getValidTime();
     }
 
-    public int getValidTimeOffset() {
+    public int getOffsetHour() {
       return gr.getValidTimeOffset();
     }
 
-    public String getParameterName() {
-      return gr.getParameterName();
+    public String getName() {
+      return param.getName();
     }
 
-    public String getGridDefRecordId() {
+    public String getDesc() {
+      return param.getDescription();
+    }
+
+    public String getUnit() {
+      return param.getUnit();
+    }
+
+    public String getGdsId() {
       return gr.getGridDefRecordId();
     }
 
     public int getDecimalScale() {
       return gr.getDecimalScale();
     }
+
+    public String getTable() {
+      return gr.center + "-" + gr.subCenter + "-" + gr.table;
+    }
+
+    public String getParamNo() {
+      return gr.discipline + "-" + gr.category + "-" + gr.paramNumber;
+    }
   }
 
   public class GdsBean {
-     GridDefRecord gds;
+    GridHorizCoordSys gds;
+    String key;
 
-     // no-arg constructor
-     public GdsBean() {
-     }
+    // no-arg constructor
+    public GdsBean() {
+    }
 
-     public GdsBean(GridDefRecord m) {
-       this.gds = m;
-     }
+    public GdsBean(String key, GridHorizCoordSys m) {
+      this.key = key;
+      this.gds = m;
+    }
 
-     public String getGroupName() {
-       return gds.getGroupName();
-     }
+    public String getKey() {
+      return key;
+    }
+
+    public String getGridName() {
+      return gds.getGridName();
+    }
+
+    public String getID() {
+      return gds.getID();
+    }
+
+    public boolean isLatLon() {
+      return gds.isLatLon();
+    }
+
+    public int getNx() {
+      return gds.getNx();
+    }
+
+    public int getNy() {
+      return gds.getNy();
+    }
+
+    public double getDxInKm() {
+      return gds.getDxInKm();
+    }
+
+    public double getDyInKm() {
+      return gds.getDyInKm();
+    }
+
   }
 
 

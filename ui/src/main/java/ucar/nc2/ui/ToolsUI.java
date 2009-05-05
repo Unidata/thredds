@@ -763,9 +763,6 @@ public class ToolsUI extends JPanel {
 
   public void save() {
     fileChooser.save();
-    //if (debugWindow != null) {
-    //  mainPrefs.putBeanObject(DEBUG_FRAME_SIZE, debugWindow.getBounds());
-    //}
 
     if (aggPanel != null) aggPanel.save();
     if (bufrPanel != null) bufrPanel.save();
@@ -774,6 +771,7 @@ public class ToolsUI extends JPanel {
     if (fmrcPanel != null) fmrcPanel.save();
     if (fmrcImplPanel != null) fmrcImplPanel.save();
     if (geotiffPanel != null) geotiffPanel.save();
+    if (gribPanel != null) gribPanel.save();
     if (gridPanel != null) gridPanel.save();
     if (hdf5Panel != null) hdf5Panel.save();
     if (imagePanel != null) imagePanel.save();

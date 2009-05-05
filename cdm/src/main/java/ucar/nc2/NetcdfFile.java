@@ -1202,7 +1202,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   }
 
   /**
-   * This is can only be used for netcdf-3 files served over HTTP
+   * This can only be used for netcdf-3 files served over HTTP
    * @param url HTTP URL location
    * @deprecated use NetcdfFile.open( http:location) or NetcdfDataset.openFile( http:location)
    * @throws java.io.IOException if error

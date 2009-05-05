@@ -130,6 +130,17 @@ public class GribGridServiceProvider extends GridServiceProvider {
     log.debug("GribGridServiceProvider.open from sync" + ncfile.getLocation() + " took " + (System.currentTimeMillis() - start));
   }
 
+  // debugging
+  public GridTableLookup getLookup() throws IOException {
+    GridTableLookup lookup;
+    if (saveEdition == 2) {
+      lookup = getLookup2();
+    } else {
+      lookup = getLookup1();
+    }
+    return lookup;
+  }
+
   protected GridTableLookup getLookup2() throws IOException {
     Grib2Record firstRecord = null;
     try {

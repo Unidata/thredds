@@ -183,7 +183,7 @@ public class TestReadandCount extends TestCase {
   }
 
   public void testReadNcMLInputStream() throws Exception {
-    String ncmlLoc = "file:./"+ TestNcML.topDir + "aggExisting.xml";
+    String ncmlLoc = "file:C:\\data\\work\\margolis\\test.ncml";
     GridDataset fullDataset = GridDataset.open( ncmlLoc);
     System.out.printf("full size= %d%n", fullDataset.getGrids().size());
 
@@ -195,8 +195,8 @@ public class TestReadandCount extends TestCase {
       "    <attribute name='ncmlAdded' value='timeAtt'/>\n" +
       "  </variable>\n" +
       "  <aggregation dimName='time' type='joinExisting'>\n" +
-      "    <netcdf location='"+TestNcML.topDir+"nc/jan.nc'/>\n" +
-      "    <netcdf location='"+TestNcML.topDir+"nc/feb.nc'/>\n" +
+      "    <netcdf location='file:C:\\data\\work\\margolis\\f_0000000.nc'/>\n" +
+      "    <netcdf location='file:C:\\data\\work\\margolis\\f_0032400.nc'/>\n" +
       "  </aggregation>\n" +
       "</netcdf>";
     NetcdfDataset aggregatedDataset = NcMLReader.readNcML( new ByteArrayInputStream(ncml.getBytes()), null );
@@ -204,10 +204,6 @@ public class TestReadandCount extends TestCase {
     System.out.printf("empty= %s%n", emptyDataset.getGrids().size());
 
     assert emptyDataset.getGrids().size() == fullDataset.getGrids().size();
-
-    /* GridDataset ds2 = ucar.nc2.util.NcMLUtil.applyNcml( ncml);
-    System.out.printf("ds2= %s%n", ds2.getGrids().size());
-    assert ds2.getGrids().size() == fullDataset.getGrids().size();  */
   }
 
 
