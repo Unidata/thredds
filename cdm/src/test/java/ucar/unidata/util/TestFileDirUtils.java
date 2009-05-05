@@ -46,6 +46,8 @@ import java.util.Random;
  */
 public class TestFileDirUtils
 {
+  private TestFileDirUtils() {}
+  
   /**
    * Creates a new temporary directory in the specified directory. The name
    * of the new directory is generated with the given prefix string followed

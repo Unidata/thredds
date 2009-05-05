@@ -16,6 +16,8 @@ import java.io.File;
  */
 public class TestDiskCacheUtils
 {
+  private TestDiskCacheUtils() {}
+  
   /**
    * Configure DiskCache to use a temporary root directory. The policy of
    * whether to check first at the requested location and then the cache
