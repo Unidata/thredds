@@ -1,0 +1,11 @@
+JFrame(name=top, title=TdsMonitor, size=packed, defaultCloseOperation=exit):
+ - Action(name=newAction, text=New, toolTipText=tooltip, icon=/resources/nj22/ui/icons/FileChooser.gif, onAction=onFileNew)
+ - JMenuBar:
+   - JMenu(name=fileMenu,text=File):
+     - JMenuItem(action=newAction)
+     - JSeparator()
+     - JMenuItem(action=newAction)
+ - JTabbedPane(name=tabs):
+   - AccessLogPanel(name=AccessLogPanel,tabTitle=AccessLogs)
+   - ServletLogPanel(name=ServletLogPanel,tabTitle=ThreddsLogs)
+

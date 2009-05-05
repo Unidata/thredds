@@ -86,7 +86,7 @@ public class BufrTable extends JPanel {
   public BufrTable(PreferencesExt prefs) {
     this.prefs = prefs;
 
-    messageTable = new BeanTableSorted(MessageBean.class, (PreferencesExt) prefs.node("MessageBean"), false);
+    messageTable = new BeanTableSorted(MessageBean.class, (PreferencesExt) prefs.node("GridRecordBean"), false);
     messageTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         ddsTable.setBeans(new ArrayList());

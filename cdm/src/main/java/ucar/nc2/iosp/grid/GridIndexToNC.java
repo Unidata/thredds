@@ -36,7 +36,6 @@ package ucar.nc2.iosp.grid;
 
 
 import ucar.nc2.*;
-import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.mcidas.McIDASLookup;
 import ucar.nc2.iosp.gempak.GempakLookup;
 import ucar.nc2.constants._Coordinate;

@@ -250,7 +250,7 @@ public class StructureTable extends JPanel {
     revalidate();
 
     /* see "How to use Tables"
-    sortedModel = new TableSorter(m);
+    sortedModel = new TableSorter(gr);
     jtable.setModel( sortedModel);
     sortedModel.setTableHeader(jtable.getTableHeader()); */
   }
@@ -431,7 +431,7 @@ public class StructureTable extends JPanel {
       }
 
       String colName = getColumnName(column);
-      //StructureMembers.Member m = sd.getStructureMembers().getMember(memberCol);
+      //StructureMembers.Member gr = sd.getStructureMembers().getMember(memberCol);
       return sd.getScalarObject(colName);
     }
 
@@ -764,8 +764,8 @@ public class StructureTable extends JPanel {
     public Object getValueAt(int row, int column) {
       StructureData sd = (StructureData) data.get( row);
       List arrays = sd.getMembers();
-      StructureData.Member m = (StructureData.Member) arrays.get( column);
-      Array a = m.data;
+      StructureData.Member gr = (StructureData.Member) arrays.get( column);
+      Array a = gr.data;
       Index ima = a.getIndex();
       return a.getObject(ima);
     }

@@ -6,6 +6,7 @@ Changes in version 4.0
 
  Release Details:
   40:
+   CF 1.4 multidim case when time is 1 dimensional
    overflow in IndexChunker when writing large files
    DateType was accepting invalid ISO strings.
    grib indexing: binary indexes dont return unknown params

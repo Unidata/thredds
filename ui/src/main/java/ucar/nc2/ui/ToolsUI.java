@@ -124,6 +124,7 @@ public class ToolsUI extends JPanel {
   private FmrcPanel fmrcPanel;
   private FmrcImplPanel fmrcImplPanel;
   private GeoGridPanel gridPanel;
+  private GribPanel gribPanel;
   private Hdf5Panel hdf5Panel;
   private ImagePanel imagePanel;
   private NCdumpPanel ncdumpPanel;
@@ -215,6 +216,7 @@ public class ToolsUI extends JPanel {
 
     // nested tab - iosp
     iospTabPane.addTab("BUFR", new JLabel("BUFR"));
+    iospTabPane.addTab("GRIB", new JLabel("GRIB"));
     iospTabPane.addTab("HDF5", new JLabel("HDF5"));
     iospTabPane.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
@@ -311,6 +313,10 @@ public class ToolsUI extends JPanel {
     } else if (title.equals("BUFR")) {
       bufrPanel = new BufrPanel((PreferencesExt) mainPrefs.node("bufr"));
       c = bufrPanel;
+
+    } else if (title.equals("GRIB")) {
+      gribPanel = new GribPanel((PreferencesExt) mainPrefs.node("grib"));
+      c = gribPanel;
 
     } else if (title.equals("CoordSys")) {
       coordSysPanel = new CoordSysPanel((PreferencesExt) mainPrefs.node("CoordSys"));
@@ -1878,6 +1884,56 @@ public class ToolsUI extends JPanel {
 
     void save() {
       bufrTable.save();
+      super.save();
+    }
+
+  }
+
+  /////////////////////////////////////////////////////////////////////
+  private class GribPanel extends OpPanel {
+    ucar.unidata.io.RandomAccessFile raf = null;
+    GribTable gribTable;
+
+    boolean useDefinition = false;
+    JComboBox defComboBox;
+    IndependentWindow defWindow;
+    AbstractButton defButt;
+
+    GribPanel(PreferencesExt p) {
+      super(p, "file:", true, false);
+      gribTable = new GribTable(prefs);
+      add(gribTable, BorderLayout.CENTER);
+    }
+
+    boolean process(Object o) {
+      String command = (String) o;
+      boolean err = false;
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        if (raf != null)
+          raf.close();
+        raf = new ucar.unidata.io.RandomAccessFile(command, "r");
+
+        gribTable.setGribFile(raf);
+
+      } catch (FileNotFoundException ioe) {
+        JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
+        ta.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
+        err = true;
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        e.printStackTrace(new PrintStream(bos));
+        ta.setText(bos.toString());
+        err = true;
+      }
+
+      return !err;
+    }
+
+    void save() {
+      gribTable.save();
       super.save();
     }
 
