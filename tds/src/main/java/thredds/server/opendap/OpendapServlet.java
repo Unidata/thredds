@@ -71,7 +71,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
   static private final String GDATASET = "guarded_dataset";
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OpendapServlet.class);
 
-  private boolean allowDeflate = true; // handled by Tomcat
+  private boolean allowDeflate = false; // handled by Tomcat
   private String serviceId, serviceTitle;
   private String latestServiceId, latestServiceTitle;
 
