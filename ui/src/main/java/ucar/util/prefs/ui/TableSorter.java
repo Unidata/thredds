@@ -434,8 +434,8 @@ public class TableSorter extends AbstractTableModel {
         private int size;
         private int priority;
 
-        public Arrow(boolean descending, int size, int priority) {
-            this.descending = descending;
+        public Arrow(boolean ascending, int size, int priority) {
+            this.descending = !ascending;
             this.size = size;
             this.priority = priority;
         }

@@ -116,6 +116,7 @@ public class TdsMonitor extends JPanel {
     fileChooser.save();
     accessLogPanel.save();
     servletLogPanel.save();
+    urlDump.save();
 
     Rectangle bounds = frame.getBounds();
     prefs.putBeanObject(FRAME_SIZE, bounds);

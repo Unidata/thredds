@@ -767,7 +767,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
 
   // any time the server needs access to the dataset, it gets a "GuardedDataset" which allows us to add caching
   // optionally, a session may be established, which allows us to reserve the dataset for that session.
-  private GuardedDataset getDataset(ReqState preq) throws DAP2Exception, IOException, ParseException {
+  private GuardedDataset getDataset(ReqState preq) throws Exception {
     HttpServletRequest req = preq.getRequest();
 
     // see if the client wants sessions
@@ -806,14 +806,14 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
 
     NetcdfFile ncd;
     String reqPath = preq.getDataSet(); // was spath + preq.getDataSet();
-    try {
+    //try {
       ncd = DatasetHandler.getNetcdfFile(req, preq.getResponse(), reqPath);
-    } catch (FileNotFoundException fne) {
+    /* } catch (FileNotFoundException fne) {
       throw new DAP2Exception(DAP2Exception.NO_SUCH_FILE, "Cant find " + reqPath);
     } catch (Throwable e) {
       log.error("Error ", e);
       throw new DAP2Exception(DAP2Exception.UNDEFINED_ERROR, "Server Error on dataset " + reqPath);
-    }
+    } */
 
     if (null == ncd) return null;
     GuardedDatasetImpl gdataset = new GuardedDatasetImpl(reqPath, ncd, acceptSession);

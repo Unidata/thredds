@@ -191,7 +191,10 @@ public class HttpClientManager {
      m.setRequestHeader("Accept-Encoding", "gzip,deflate");
 
      try {
-       _client.executeMethod(m);
+       int status = _client.executeMethod(m);
+       if (status != 200) {
+         throw new RuntimeException("failed status = "+status);
+       }
 
        String charset = m.getResponseCharSet();
        if (charset == null) charset = "UTF-8";
@@ -236,7 +239,11 @@ public class HttpClientManager {
      m.setRequestHeader("Accept-Encoding", "gzip,deflate");
 
      try {
-       _client.executeMethod(m);
+       int status = _client.executeMethod(m);
+
+       if (status != 200) {
+         throw new RuntimeException("failed status = "+status);
+       }
 
        String charset = m.getResponseCharSet();
        if (charset == null) charset = "UTF-8";
@@ -265,7 +272,7 @@ public class HttpClientManager {
      }
    }
 
-   static public  long appendUrlContentsToFile(String urlString, File file, long start, long end) {
+   static public long appendUrlContentsToFile(String urlString, File file, long start, long end) {
      long nbytes = 0;
 
      HttpMethodBase m = new GetMethod(urlString);
@@ -274,7 +281,10 @@ public class HttpClientManager {
      m.setRequestHeader("Range", "bytes=" + start + "-" + end);
 
      try {
-       _client.executeMethod(m);
+       int status = _client.executeMethod(m);
+       if (status != 200) {
+         throw new RuntimeException("failed status = "+status);
+       }
 
        String charset = m.getResponseCharSet();
        if (charset == null) charset = "UTF-8";

@@ -73,7 +73,6 @@ public class BeanTableSorted extends BeanTable {
     restoreState(); // ??
   }
 
-    // so it can be ovverriden in BeanTableSorted
   protected int modelIndex(int viewIndex) {
     return sortedModel.modelIndex(viewIndex);
   }
