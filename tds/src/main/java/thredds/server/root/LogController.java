@@ -54,34 +54,6 @@ public class LogController extends AbstractController {
     }
   }
 
-  protected ModelAndView save(HttpServletRequest req, HttpServletResponse res) throws Exception {
-    log.info("handleRequestInternal(): " + UsageLog.setupRequestContext(req));
-
-    String path = req.getPathInfo();
-    if (path == null) path = "";
-    System.out.printf("path = %s %n", path);
-    if (path.startsWith("/log/")) path = path.substring(5);
-    System.out.printf("type = %s %n", path);
-
-    String date = req.getParameter("since");
-
-    try {
-      DateFormatter df = new DateFormatter();
-      Date d = df.getISODate(date);
-      Formatter f = new Formatter();
-      f.format("dateS = %s == %s == %s%n", date, d, df.toDateTimeStringISO(d));
-      System.out.printf("%s", f.toString());
-      res.getOutputStream().print(f.toString()); // LOOK whats easy ModelAndView ??
-      read(df.toDateTimeStringISO(d));
-
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-
-    return null; // ToDo
-  }
-
-
   private void read(String afterDate) throws IOException {
     LogReader reader = new LogReader(new AccessLogParser());
 
@@ -201,3 +173,34 @@ public class LogController extends AbstractController {
   }
 
 }
+
+/*
+
+  protected ModelAndView save(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    log.info("handleRequestInternal(): " + UsageLog.setupRequestContext(req));
+
+    String path = req.getPathInfo();
+    if (path == null) path = "";
+    System.out.printf("path = %s %n", path);
+    if (path.startsWith("/log/")) path = path.substring(5);
+    System.out.printf("type = %s %n", path);
+
+    String date = req.getParameter("since");
+
+    try {
+      DateFormatter df = new DateFormatter();
+      Date d = df.getISODate(date);
+      Formatter f = new Formatter();
+      f.format("dateS = %s == %s == %s%n", date, d, df.toDateTimeStringISO(d));
+      System.out.printf("%s", f.toString());
+      res.getOutputStream().print(f.toString()); // LOOK whats easy ModelAndView ??
+      read(df.toDateTimeStringISO(d));
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    return null; // ToDo
+  }
+
+*/

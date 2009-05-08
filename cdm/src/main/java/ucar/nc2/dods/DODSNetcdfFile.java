@@ -323,6 +323,13 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
   }
 
+  @Override
+  public boolean sync() throws IOException {
+    unlocked = false;
+
+    return (spi != null) && spi.sync();
+  }
+
   /* parse the DDS, creating a tree of DodsV objects
   private ArrayList parseDDS(DDS dds) throws IOException {
     ArrayList dodsVlist  = new ArrayList();
