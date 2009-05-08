@@ -722,17 +722,20 @@
 
     </dataset>
 
-    <dataset ID="NWS/SREF" name="NWS Short Range Ensemble Forecasting">
+    <dataset ID="NCEP/SREF" name="NCEP Short Range Ensemble Forecasting">
         <metadata inherited="true">
-          <documentation type="summary">NCEP Short Range Ensemble Forecast (SREF): NOAA's National Weather Service Storm Prediction Center. </documentation>
+          <documentation type="summary">NCEP Short Range Ensemble Forecast (SREF)</documentation>
           <documentation xlink:href="http://w1.spc.woc.noaa.gov/exper/sref/" xlink:title="NCEP/SREF Website" />
           <documentation xlink:href="http://www.emc.ncep.noaa.gov/mmb/SREF/SREF.html" xlink:title="NWS/SREF Website" />
         </metadata>
 
-      <datasetFmrc name="SREF-CONUS_40km-ensprod_biasc" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/SREF/CONUS_40km/ensprod_biasc">
+      <datasetFmrc name="NCEP-SREF-CONUS_40km Bias-corrected mean and spread products" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/SREF/CONUS_40km/ensprod_biasc">
         <metadata inherited="true">
           <documentation type="summary">
-            185 by 129 points, resolution 40 km. Models are run daily at 3,9,15,and 21Z. Forecasts every 3 hours from 3 to 87 hours.
+              NCEP Short Range Ensemble Forecast (SREF) bias-corrected mean and spread products
+              over CONUS with
+              185 by 129 points, resolution 40 km. Models are run daily at 3,9,15,and 21Z. Forecasts every 3 hours
+              from 3 to 87 hours.
           </documentation>
           <dataFormat>GRIB-2</dataFormat>
         </metadata>
@@ -748,10 +751,13 @@
                 startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="180 hours"/>
       </datasetFmrc>
 
-      <datasetFmrc name="SREF-CONUS_40km-pgrb_biasc" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/SREF/CONUS_40km/pgrb_biasc">
+      <datasetFmrc name="NCEP-SREF-CONUS_40km Bias-corrected Products" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/SREF/CONUS_40km/pgrb_biasc">
         <metadata inherited="true">
           <documentation type="summary">
-            185 by 129 points, resolution 40 km. Models are run daily at 3, 9, 15, and 21Z. Forecasts every 3 hours from 3 to 87 hours.
+              NCEP Short Range Ensemble Forecast (SREF) bias-corrected products
+              over CONUS with
+              185 by 129 points, resolution 40 km. Models are run daily at 3,9,15,and 21Z. Forecasts every 3 hours
+              from 3 to 87 hours.
           </documentation>
           <dataFormat>GRIB-2</dataFormat>
         </metadata>
