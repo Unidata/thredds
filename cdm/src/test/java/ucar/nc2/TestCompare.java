@@ -197,7 +197,8 @@ public class TestCompare {
         return;
       // not used or not in Grib1, why test for it 
       if ( a.getName().contains( "ScanningMode") || a.getName().contains( "grid_spacing")
-          || a.getName().contains( "grid_units"))
+          || a.getName().contains( "grid_units") || a.getName().contains( "spherical")
+          || a.getName().contains( "GDSkey"))
         return;
     }
     int index2 = list2.indexOf( want1);
