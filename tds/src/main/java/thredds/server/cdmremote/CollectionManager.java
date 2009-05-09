@@ -1,4 +1,3 @@
-// $Id: $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -32,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.server.ncSubset;
+package thredds.server.cdmremote;
 
 import ucar.nc2.units.DateFromString;
 
@@ -47,7 +46,6 @@ import java.util.ArrayList;
  * temp kludge until we consolidate NcML agg and DatasetScan (CrawlableDataset)
  *
  * @author caron
- * @version $Revision$ $Date$
  */
 public class CollectionManager {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CollectionManager.class);

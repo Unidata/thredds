@@ -894,6 +894,16 @@ public class ServletUtil
   }
 
   /**
+   * This is the server part, eg http://motherlode:8080
+   *
+   * @param req the HttpServletRequest
+   * @return request server
+   */
+  public static String getRequestServer(HttpServletRequest req) {
+    return req.getScheme() + "://"+req.getServerName()+":"+ req.getServerPort();
+  }
+
+  /**
    * This is everything except the query string
    *
    * @param req the HttpServletRequest
@@ -985,16 +995,6 @@ public class ServletUtil
     return "file:" + filename;
   }
 
-  public static String getFileURL2(String filename) {
-    File f = new File(filename);
-    try {
-      return f.toURL().toString();
-    } catch (java.net.MalformedURLException e) {
-      e.printStackTrace();
-    }
-    return null;
-  }
-
   /**
    * Show details about the request
    *
@@ -1013,7 +1013,8 @@ public class ServletUtil
     sbuff.append(" req.getPathInfo:").append(req.getPathInfo()).append("\n");
     sbuff.append(" req.getQueryString:").append(req.getQueryString()).append("\n");
     sbuff.append(" req.getRequestURI:").append(req.getRequestURI()).append("\n");
-    sbuff.append(" getRequestBase:").append(getRequestBase(req)).append("\n");
+    sbuff.append(" req.getRequestBase:").append(getRequestBase(req)).append("\n");
+    sbuff.append(" getRequestServer:").append(getRequestServer(req)).append("\n");
     sbuff.append(" getRequest:").append(getRequest(req)).append("\n");
     sbuff.append("\n");
 

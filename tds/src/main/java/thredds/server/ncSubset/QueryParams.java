@@ -65,6 +65,7 @@ public class QueryParams {
   static public final String CSV = "text/csv";
   static public final String NETCDF = "application/x-netcdf";
   static public final String NETCDFS = "application/x-netcdfs";
+  static public final String CdmRemote = "application/x-cdmremote";
 
   // the first in the list is the canonical name, the others are aliases
   static String[][] validAccept = new String[][]{
@@ -74,6 +75,7 @@ public class QueryParams {
           {HTML, "html"},
           {NETCDF, "netcdf"},
           {NETCDFS, "netcdfStream"},
+          {CdmRemote, "cdmRemote"},
   };
 
   public String queryString;

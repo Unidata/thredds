@@ -53,6 +53,11 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import org.apache.commons.httpclient.HttpMethod;
+import org.jdom.Element;
+import org.jdom.Document;
+import org.jdom.JDOMException;
+import org.jdom.output.XMLOutputter;
+import org.jdom.input.SAXBuilder;
 
 /**
  * Connect to remote Point Dataset
@@ -61,15 +66,38 @@ import org.apache.commons.httpclient.HttpMethod;
  * @since Feb 16, 2009
  */
 public class PointDatasetRemote extends PointDatasetImpl {
-  static public final String SCHEME = "pointDatasetRemote:";
+  static private boolean showXML = true;
 
   static public FeatureDatasetPoint factory(String endpoint) throws IOException {
-    if (endpoint.startsWith(SCHEME))
-      endpoint = endpoint.substring(SCHEME.length());
+    if (endpoint.startsWith(ucar.nc2.stream.NcStreamRemote.SCHEME))
+      endpoint = endpoint.substring(ucar.nc2.stream.NcStreamRemote.SCHEME.length());
 
-    NcStreamRemote ncremote = new NcStreamRemote(endpoint, null);
-    NetcdfDataset ncd = new NetcdfDataset(ncremote);
+    Document doc = getCapabilities(endpoint);
+    Element root = doc.getRootElement();
+    Element elem = root.getChild("featureDataset");
+    String datasetUri = elem.getAttribute("url").getValue();
+
+    NcStreamRemote ncremote = new NcStreamRemote(datasetUri, null);
+    NetcdfDataset ncd = new NetcdfDataset(ncremote, null);
     return new PointDatasetRemote(ncd, ncremote);
+  }
+
+  static private org.jdom.Document getCapabilities(String endpoint) throws IOException {
+    org.jdom.Document doc;
+    try {
+      SAXBuilder builder = new SAXBuilder(false);
+      doc = builder.build(endpoint+"?getCapabilities");
+    } catch (JDOMException e) {
+      throw new IOException(e.getMessage());
+    }
+
+    if (showXML) {
+      XMLOutputter xmlOut = new XMLOutputter();
+      System.out.println("*** NetcdfDataset/showParsedXML = \n" + xmlOut.outputString(doc) + "\n*******");
+    }
+
+    return doc;
+
   }
 
   private NcStreamRemote ncremote;
@@ -129,14 +157,18 @@ public class PointDatasetRemote extends PointDatasetImpl {
         try {
           timeUnit = new DateUnit(pfc.getTimeUnit());
         } catch (Exception e) {
-          e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+          e.printStackTrace();
         }
 
+        int offset = 0;
         sm = new StructureMembers(pfc.getName());
         for (PointStreamProto.Member m : pfc.getMembersList()) {
-          sm.addMember(m.getName(), m.getDesc(), m.getUnits(), NcStream.decodeDataType(m.getDataType()),
+          StructureMembers.Member member = sm.addMember(m.getName(), m.getDesc(), m.getUnits(), NcStream.decodeDataType(m.getDataType()),
                   NcStream.decodeSection(m.getSection()).getShape());
+          member.setDataParam( offset);
+          offset += member.getSizeBytes();
         }
+        sm.setStructureSize( offset);
       }
 
       public boolean hasNext() throws IOException {
@@ -256,7 +288,6 @@ public class PointDatasetRemote extends PointDatasetImpl {
     while (pfIter.hasNext()) {
       PointFeature pf = pfIter.next();
       System.out.println("pf= " + pf);
-
     }
   }
 

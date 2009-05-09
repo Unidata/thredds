@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.server.ncSubset;
+package thredds.server.cdmremote;
 
 import ucar.ma2.StructureData;
 import ucar.ma2.Array;
@@ -59,6 +59,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import thredds.catalog.XMLEntityResolver;
+import thredds.server.ncSubset.QueryParams;
 import org.jdom.Document;
 import org.jdom.Element;
 
@@ -801,6 +802,8 @@ public class StationObsCollection {
       w = new WriterNetcdf(qp, vars);
     } else if (type.equals(QueryParams.NETCDFS)) {
       w = new WriterNetcdfStream(qp, vars, res.getOutputStream());
+    } else if (type.equals(QueryParams.CdmRemote)) {
+      w = new WriterCdmRemote(qp, vars, res.getOutputStream());
     } else {
       log.error("Unknown writer type = " + type);
       return null;
@@ -952,6 +955,69 @@ public class StationObsCollection {
     List<VariableSimpleIF> varList;
 
     WriterNetcdfStream(QueryParams qp, List<String> varNames, OutputStream os) throws IOException {
+      super(qp, varNames, null);
+
+      out = new DataOutputStream( os);
+      sobsWriter = new WriterCFStationObsDataset(out, "Extracted data from Unidata/TDS Metar dataset");
+
+      if ((varNames == null) || (varNames.size() == 0)) {
+        varList = variableList;
+      } else {
+        varList = new ArrayList<VariableSimpleIF>(varNames.size());
+        for (VariableSimpleIF v : variableList) {
+          if (varNames.contains(v.getName()))
+            varList.add(v);
+        }
+      }
+    }
+
+    public void header(List<String> stns) {
+      try {
+        getStationMap();
+
+        if (stns.size() == 0)
+          stnList = stationList;
+        else {
+          stnList = new ArrayList<ucar.unidata.geoloc.Station>(stns.size());
+
+          for (String s : stns) {
+            stnList.add(stationMap.get(s));
+          }
+        }
+
+        sobsWriter.writeHeader(stnList, varList, -1);
+      } catch (IOException e) {
+        log.error("WriterNetcdf.header", e);
+      }
+    }
+
+    public void trailer() {
+      try {
+        sobsWriter.finish();
+        out.flush();
+      } catch (IOException e) {
+        log.error("WriterNetcdf.trailer", e);
+      }
+    }
+
+    Action getAction() {
+      return new Action() {
+        public void act(StationObsDataset sod, StationObsDatatype sobs, StructureData sdata) throws IOException {
+          sobsWriter.writeRecord(sobs, sdata);
+          count++;
+        }
+      };
+    }
+  }
+
+
+  class WriterCdmRemote extends Writer {
+    WriterCFStationObsDataset sobsWriter;
+    DataOutputStream out;
+    List<ucar.unidata.geoloc.Station> stnList;
+    List<VariableSimpleIF> varList;
+
+    WriterCdmRemote(QueryParams qp, List<String> varNames, OutputStream os) throws IOException {
       super(qp, varNames, null);
 
       out = new DataOutputStream( os);

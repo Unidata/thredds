@@ -30,7 +30,7 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.ncSubset;
+package thredds.server.cdmremote;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -39,31 +39,48 @@ import java.io.*;
 import java.util.ArrayList;
 
 import thredds.servlet.*;
+import thredds.server.ncSubset.QueryParams;
+import thredds.server.config.TdsContext;
 import ucar.nc2.units.DateRange;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.point.remote.PointStreamProto;
+import ucar.nc2.ft.point.remote.PointStream;
+import ucar.nc2.stream.NcStreamWriter;
+import ucar.nc2.stream.NcStream;
 import org.jdom.transform.XSLTransformer;
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
 import org.jdom.Document;
+import org.springframework.web.servlet.mvc.AbstractController;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
- * Netcdf StationObs subsetting.
- * Prototype - DO NOT USE
+ * CdmRemote - StationFeature server
  *
  * @author caron
+ * @since
  */
-public class StationObsServlet extends AbstractServlet {
+public class StationController extends AbstractController {
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+  private static org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("catalogInit");
 
-  private boolean allow = false;
   private StationObsCollection soc;
   private boolean debug = false, showTime = false;
 
-  // must end with "/"
-  protected String getPath() {
-    return "ncss/metars/";
+  private TdsContext tdsContext;
+  public void setTdsContext(TdsContext tdsContext) {
+    this.tdsContext = tdsContext;
+  }
+
+  private boolean allow = false;
+  public void setAllow( boolean allow) {
+    this.allow = allow;
   }
 
   protected void makeDebugActions() {
-    DebugHandler debugHandler = DebugHandler.get("NetcdfSubsetServer");
+    DebugHandler debugHandler = DebugHandler.get("StationController");
     DebugHandler.Action act;
 
     act = new DebugHandler.Action("showMetarFiles", "Show Metar Files") {
@@ -79,12 +96,9 @@ public class StationObsServlet extends AbstractServlet {
   }
 
   public void init() throws ServletException {
-    super.init();
+    logServerStartup.info( getClass().getName() + " initialization start" );
 
-    allow = ThreddsConfig.getBoolean("NetcdfSubsetService.allow", false);
-    if (!allow) return;
-
-    String metarDir = ThreddsConfig.get("NetcdfSubsetService.metarDataDir", "/opt/tomcat/content/thredds/public/stn/");
+    /* String metarDir = ThreddsConfig.get("NetcdfSubsetService.metarDataDir", "/opt/tomcat/content/thredds/public/stn/");
     File dir = new File(metarDir);
     if (!dir.exists()) {
       allow = false;
@@ -96,23 +110,34 @@ public class StationObsServlet extends AbstractServlet {
     if (!rawDir.exists()) {
       metarRawDir = null;
     }
-    soc = new StationObsCollection(metarDir, metarRawDir);
+    soc = new StationObsCollection(metarDir, metarRawDir); */
+
+    logServerStartup.info( getClass().getName() + " initialization done" );
   }
 
   public void destroy() {
-    super.destroy();
     if (null != soc)
       soc.close();
+    logServerStartup.info( getClass().getName() + " destroy" );
+  }
+  
+
+  public long getLastModified(HttpServletRequest req) {
+    File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(req.getPathInfo());
+    if ((file != null) && file.exists())
+      return file.lastModified();
+    return -1;
   }
 
-  protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+
+  protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
     if (!allow) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
-      return;
+      return null;
     }
     if (!soc.isReady()) {
       res.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "Service Temporarily Unavailable");
-      return;
+      return null;
     }
 
     long start = System.currentTimeMillis();
@@ -128,27 +153,27 @@ public class StationObsServlet extends AbstractServlet {
     boolean wantStationXML = pathInfo.endsWith("stations.xml");
     if (wantXML || showForm || wantStationXML) {
       showForm(res, wantXML, wantStationXML);
-      return;
+      return null;
     }
 
     // parse the input
     QueryParams qp = new QueryParams();
-    if (!qp.parseQuery(req, res, new String[]{QueryParams.RAW, QueryParams.CSV, QueryParams.XML, QueryParams.NETCDF, QueryParams.NETCDFS}))
-      return; // has sent the error message
+    if (!qp.parseQuery(req, res, new String[]{QueryParams.RAW, QueryParams.CSV, QueryParams.XML, QueryParams.NETCDF, QueryParams.NETCDFS, QueryParams.CdmRemote}))
+      return null; // has sent the error message
 
     if (qp.hasBB) {
       qp.stns = soc.getStationNames(qp.getBB());
       if (qp.stns.size() == 0) {
         qp.errs.append("ERROR: Bounding Box contains no stations\n");
         qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-        return;
+        return null;
       }
     }
 
     if (qp.hasStns && soc.isStationListEmpty(qp.stns)) {
       qp.errs.append("ERROR: No valid stations specified\n");
       qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-      return;
+      return null;
     }
 
     if (qp.hasLatlonPoint) {
@@ -157,7 +182,7 @@ public class StationObsServlet extends AbstractServlet {
     } else if (qp.fatal) {
       qp.errs.append("ERROR: No valid stations specified\n");
       qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-      return;
+      return null;
     }
 
     boolean useAllStations = (!qp.hasBB && !qp.hasStns && !qp.hasLatlonPoint);
@@ -167,7 +192,7 @@ public class StationObsServlet extends AbstractServlet {
     if (qp.hasTimePoint && (soc.filterDataset(qp.time) == null)) {
       qp.errs.append("ERROR: This dataset does not contain the time point= " + qp.time + " \n");
       qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-      return;
+      return null;
     }
 
     if (qp.hasDateRange) {
@@ -175,7 +200,7 @@ public class StationObsServlet extends AbstractServlet {
       if (!soc.intersect(dr)) {
         qp.errs.append("ERROR: This dataset does not contain the time range= " + qp.time + " \n");
         qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-        return;
+        return null;
       }
       if (debug) System.out.println(" date range= "+dr);
     }
@@ -184,7 +209,7 @@ public class StationObsServlet extends AbstractServlet {
     if (useAllStations && useAllTimes) {
       qp.errs.append("ERROR: You must subset by space or time\n");
       qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-      return;
+      return null;
     }
 
     // set content type
@@ -196,14 +221,14 @@ public class StationObsServlet extends AbstractServlet {
     if (qp.acceptType.equals(QueryParams.NETCDF)) {
       res.setHeader("Content-Disposition", "attachment; filename=metarSubset.nc");
       File file = soc.writeNetcdf(qp);
-      ServletUtil.returnFile(this, req, res, file, QueryParams.NETCDF);
+      ServletUtil.returnFile( req, res, file, QueryParams.NETCDF);
       file.delete();
 
       if (showTime) {
         long took = System.currentTimeMillis() - start;
         System.out.println("\ntotal response took = " + took + " msecs");
       }
-      return;
+      return null;
     }
 
     soc.write(qp, res);
@@ -213,6 +238,8 @@ public class StationObsServlet extends AbstractServlet {
       long took = System.currentTimeMillis() - start;
       System.out.println("\ntotal response took = " + took + " msecs");
     }
+
+    return null;
   }
 
   private void showForm(HttpServletResponse res, boolean wantXml, boolean wantStationXml) throws IOException {

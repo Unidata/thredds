@@ -54,8 +54,8 @@ import java.io.InputStream;
  * @author caron
  * @since Feb 7, 2009
  */
-public class NcStreamRemote extends ucar.nc2.NetcdfFile {
-  static public final String SCHEME = "ncstream:";
+public class NcStreamRemote extends ucar.nc2.NetcdfFile {  // LOOK perhaps should be NetcdfDataset ??
+  static public final String SCHEME = "cdmremote:";
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NetcdfRemote.class);
   static private HttpClient httpClient;
 
@@ -98,23 +98,24 @@ public class NcStreamRemote extends ucar.nc2.NetcdfFile {
       this.remoteURI = "http:" + _remoteURI.substring(SCHEME.length());
       this.location = _remoteURI; // canonical name uses SCHEME
     } else if (_remoteURI.startsWith("http:")) {
-      this.location = SCHEME + _remoteURI.substring(5);
+      this.location = SCHEME + _remoteURI;
       this.remoteURI = _remoteURI;
     } else {
       throw new java.net.MalformedURLException(_remoteURI + " must start with "+SCHEME+" or http:");
     }
 
+    // get the header
     HttpMethod method = null;
     try {
-      method = new GetMethod(remoteURI);
+      method = new GetMethod(remoteURI+"?header");
       method.setFollowRedirects(true);
       int statusCode = httpClient.executeMethod(method);
 
       if (statusCode == 404)
-        throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
+        throw new FileNotFoundException(method.getURI() + " " + method.getStatusLine());
 
       if (statusCode >= 300)
-        throw new IOException(method.getPath() + " " + method.getStatusLine());
+        throw new IOException(method.getURI() + " " + method.getStatusLine());
 
       InputStream is = method.getResponseBodyAsStream();
       NcStreamReader reader = new NcStreamReader();

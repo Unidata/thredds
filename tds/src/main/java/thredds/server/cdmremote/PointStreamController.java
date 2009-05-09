@@ -30,7 +30,7 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.ncstream;
+package thredds.server.cdmremote;
 
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.mvc.LastModified;
@@ -39,11 +39,13 @@ import thredds.server.config.TdsContext;
 import thredds.servlet.UsageLog;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.DataRootHandler;
+import thredds.servlet.DatasetHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.remote.PointStreamProto;
@@ -60,116 +62,129 @@ import java.util.List;
  * @since Feb 16, 2009
  */
 public class PointStreamController extends AbstractController implements LastModified {
-  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
 
+  private String prefix = "/point/"; // LOOK how do we obtain this?
   private TdsContext tdsContext;
-  private boolean allow = true;
-  //private String location = "R:\\testdata\\point\\netcdf\\971101.PAM_Atl_met.nc";
-  private String location = "C:/data/ft/point/Compilation_eq.nc";
-  private FeatureDatasetPoint fd;
-  private PointFeatureCollection pfc;
-
-  void init() {
-    Formatter errlog = new Formatter();
-    try {
-      fd = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.POINT, location, null, errlog);
-      List<FeatureCollection> coll =  fd.getPointFeatureCollectionList();
-      pfc = (PointFeatureCollection) coll.get(0);
-    } catch (Throwable t) {
-      t.printStackTrace();
-    }
-  }
 
   public void setTdsContext(TdsContext tdsContext) {
     this.tdsContext = tdsContext;
   }
 
-  public void setAllow( boolean allow) {
+  private boolean allow = true;
+
+  public void setAllow(boolean allow) {
     this.allow = allow;
   }
 
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    log.info(UsageLog.setupRequestContext(req));
+
     if (!allow) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, -1));
       return null;
     }
 
-    if (pfc == null) init();
-
-    log.info(UsageLog.setupRequestContext(req));
-
     String pathInfo = req.getPathInfo();
-    System.out.println("req=" + pathInfo);
+    String path = pathInfo.substring(prefix.length());
+    System.out.println("pointReq=" + pathInfo+" path=" + path);
 
     String query = req.getQueryString();
     if (query != null) System.out.println(" query=" + query);
 
-    res.setContentType("application/octet-stream");
-    res.setHeader("Content-Description", "ncstream");
+    String view = ServletUtil.getParameterIgnoreCase(req, "view");
 
-    NetcdfFile ncfile = null;
+    NetcdfDataset ncd = null;
+    FeatureDatasetPoint fd;
+    PointFeatureCollection pfc;
+
     try {
+      NetcdfFile ncfile = DatasetHandler.getNetcdfFile(req, res, path);
+      if (ncfile == null) {
+        res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
+        return null;
+      }
+
+      ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getEnhanceAll());
+      Formatter errlog = new Formatter();
+      fd = (FeatureDatasetPoint) FeatureDatasetFactoryManager.wrap(FeatureType.POINT, ncd, null, errlog);
+       if (fd == null) {
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, errlog.toString());
+        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
+        return null;
+      }
+
+      List<FeatureCollection> coll = fd.getPointFeatureCollectionList();
+      pfc = (PointFeatureCollection) coll.get(0);
 
       OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
-      if (query == null) { // just the header
-        ncfile = fd.getNetcdfFile();
-        if (ncfile == null) {
-          res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-          log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
-        }
-        NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequest(req));
-        ncWriter.sendHeader(out);
+      if (query == null) {
+        res.setContentType("text/plain");
+        Formatter f = new Formatter(out);
+        fd.getDetailInfo(f);
+        f.flush();
+        out.flush();
 
-      } else { // they want some data
+      } else {
+        res.setContentType("application/octet-stream");
+        res.setHeader("Content-Description", "ncstream");
 
-        int count = 0;
-        PointFeatureIterator pfIter = pfc.getPointFeatureIterator(-1);
-        while( pfIter.hasNext()) {
-          PointFeature pf = pfIter.next();
-          if (count == 0) {
-            PointStreamProto.PointFeatureCollection pfc = PointStream.encodePointFeatureCollection(fd.getLocation(), pf);
-            byte[] b = pfc.toByteArray();
+        if (query.equals("header")) { // just the header
+
+          NcStreamWriter ncWriter = new NcStreamWriter(ncd, ServletUtil.getRequestBase(req));
+          ncWriter.sendHeader(out);
+
+        } else { // they want some data
+
+          int count = 0;
+          PointFeatureIterator pfIter = pfc.getPointFeatureIterator(-1);
+          while (pfIter.hasNext()) {
+            PointFeature pf = pfIter.next();
+            if (count == 0) {
+              PointStreamProto.PointFeatureCollection proto = PointStream.encodePointFeatureCollection(fd.getLocation(), pf);
+              byte[] b = proto.toByteArray();
+              NcStream.writeVInt(out, b.length);
+              out.write(b);
+            }
+
+            PointStreamProto.PointFeature pfp = PointStream.encodePointFeature(pf);
+            byte[] b = pfp.toByteArray();
             NcStream.writeVInt(out, b.length);
             out.write(b);
+            //System.out.println(" count = " + count + " pf= " + pf.getLocation());
+            count++;
           }
-
-          PointStreamProto.PointFeature pfp = PointStream.encodePointFeature(pf);
-          byte[] b = pfp.toByteArray();
-          NcStream.writeVInt(out, b.length);
-          out.write(b);
-          System.out.println(" count = "+count+" pf= "+pf.getLocation());
-          count++;
         }
-      }
-      NcStream.writeVInt(out, 0);
+        NcStream.writeVInt(out, 0);
 
-      out.flush();
-      res.flushBuffer();
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
+        out.flush();
+        res.flushBuffer();
+      }
 
     } catch (FileNotFoundException e) {
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
+      return null;
 
     } catch (Throwable e) {
       e.printStackTrace();
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+      return null;
 
-    } /* finally {
-      if (null != ncfile)
+    } finally {
+      if (null != ncd)
         try {
-          ncfile.close();
+          ncd.close();
         } catch (IOException ioe) {
-          log.error("Failed to close = " + pathInfo);
+          log.error("Failed to close = " + path);
         }
-    } */
+    }
 
+    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
     return null;
-  }
-
-  private void write(PointFeature pf, OutputStream out) {
-
   }
 
   public long getLastModified(HttpServletRequest req) {

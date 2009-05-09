@@ -61,7 +61,7 @@
   <bean id="openRAFMonitor" class="thredds.monitor.OpenRAFMonitorImpl"/>
   <bean id="netcdfFileCacheMonitor" class="thredds.monitor.NetcdfFileCacheMonitorImpl"/>
 
-	<!-- Configuration for JMX exposure in the application -->
+	<!-- Configuration for JMX exposure in the application
 	<bean id="mbeanExporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">
 		<property name="beans">
 			<util:map>
@@ -69,6 +69,6 @@
 				<entry key="thredds:name=netcdfFileCache" value-ref="netcdfFileCacheMonitor"/>
 			</util:map>
 		</property>
-	</bean>
+	</bean> -->
 
 </beans>

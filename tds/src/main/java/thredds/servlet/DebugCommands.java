@@ -194,12 +194,12 @@ public class DebugCommands {
     };
     debugHandler.addAction(act); */
 
-    /* act = new DebugHandler.Action("showRequest", "Show HTTP Request info") {
+    act = new DebugHandler.Action("showRequest", "Show HTTP Request info") {
       public void doAction(DebugHandler.Event e) {
-        e.pw.println(ServletUtil.showRequestDetail(ThreddsDefaultServlet.this, e.req));
+        e.pw.println(ServletUtil.showRequestDetail(null, e.req));
       }
     };
-    debugHandler.addAction(act);  */
+    debugHandler.addAction(act);
 
     act = new DebugHandler.Action("showSystemProperties", "Show Server info") {
       public void doAction(DebugHandler.Event e) {

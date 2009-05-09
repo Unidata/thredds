@@ -54,8 +54,6 @@ public final class ServiceType {
   public final static ServiceType GRIDFTP = new ServiceType( "GridFTP" );
   public final static ServiceType FILE = new ServiceType( "File" );
   public final static ServiceType NetcdfSubset = new ServiceType( "NetcdfSubset" );
-  public final static ServiceType NetcdfStream = new ServiceType( "NetcdfStream" );
-  public final static ServiceType RemotePointFeature = new ServiceType( "RemotePointFeature" );
 
   public final static ServiceType LAS = new ServiceType( "LAS" );
   public final static ServiceType WMS = new ServiceType( "WMS" );
@@ -71,9 +69,14 @@ public final class ServiceType {
   public final static ServiceType COMPOUND = new ServiceType( "Compound" );
   public final static ServiceType THREDDS = new ServiceType( "THREDDS" );
 
+  // experimental
+  public final static ServiceType NetcdfStream = new ServiceType( "NetcdfStream" );
+  public final static ServiceType CdmRemote = new ServiceType( "CdmRemote" );
+
+  // deprecated - do not use
   public final static ServiceType NETCDF = new ServiceType( "NetCDF" ); // deprecated - use dataFormatType = NetCDF
   public final static ServiceType HTTP = new ServiceType( "HTTP" ); // deprecated - use HTTPServer
-  public final static ServiceType NetcdfServer = new ServiceType( "NetcdfServer" ); // deprecated
+  public final static ServiceType NetcdfServer = new ServiceType( "NetcdfServer" ); // deprecated - use CdmRemote
 
   private String name;
 
@@ -82,8 +85,7 @@ public final class ServiceType {
     members.add(this);
   }
   
-  private ServiceType( String name, boolean fake)
-  {
+  private ServiceType( String name, boolean fake) {
     this.name = name;
   }
 

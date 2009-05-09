@@ -178,17 +178,19 @@ public class GribTable extends JPanel {
     if (location.endsWith(".gbx"))
       setGribFileIndex(raf);
 
+    // get the lookup
     GribGridServiceProvider iosp = new GribGridServiceProvider();
     NetcdfFile ncfile = new GribNetcdfFile(iosp, raf);
     lookup = iosp.getLookup();
 
-    // write the index
-    File indexFile = File.createTempFile("GribTable", "gbx");
+    // get the edition
     raf.seek(0);
     Grib2Input g2i = new Grib2Input(raf);
     int edition = g2i.getEdition();
     File gribFile = new File(raf.getLocation());
 
+    // get the index, write to temp file
+    File indexFile = File.createTempFile("GribTable", "gbx");
     GridIndex index = null;
     if (edition == 1) {
       index = new Grib1WriteIndex().writeGribIndex(gribFile, indexFile.getPath(), raf, true);
@@ -196,15 +198,15 @@ public class GribTable extends JPanel {
       index = new Grib2WriteIndex().writeGribIndex(gribFile, indexFile.getPath(), raf, true);
     }
 
-
+    // fill the index bean table
     java.util.List<GridRecordBean> grList = new ArrayList<GridRecordBean>();
     for (GridRecord gr : index.getGridRecords()) {
       grList.add(new GridRecordBean((GribGridRecord) gr));
     }
 
+    // find all the GridHorizCoordSys
     Map<String, GridHorizCoordSys> hcsMap = new HashMap<String, GridHorizCoordSys>();
     List<GridDefRecord> hcsList = index.getHorizCoordSys();
-    boolean needGroups = (hcsList.size() > 1);
     for (GridDefRecord gds : hcsList) {
       GridHorizCoordSys hcs = new GridHorizCoordSys(gds, lookup, null);
       hcsMap.put(gds.getParam(GridDefRecord.GDS_KEY), hcs);

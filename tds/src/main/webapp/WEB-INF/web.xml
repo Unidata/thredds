@@ -156,7 +156,7 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>pointFeature</servlet-name>
+    <servlet-name>cdmRemote</servlet-name>
   </filter-mapping>
 
   <!-- New -->
@@ -318,12 +318,8 @@
     <load-on-startup>3</load-on-startup>
   </servlet>
 
-  <!-- servlet>
-    <servlet-name>MetarSubsetService</servlet-name>
-    <servlet-class>thredds.server.ncSubset.StationObsServlet</servlet-class>
-    <load-on-startup>5</load-on-startup>
-  </servlet -->
 
+  <!-- ncss grids -->
   <servlet>
     <servlet-name>GridSubsetService</servlet-name>
     <servlet-class>thredds.server.ncSubset.GridServlet</servlet-class>
@@ -343,9 +339,9 @@
     <load-on-startup>4</load-on-startup>
   </servlet>
 
-  <!-- Experimental point Feature service -->
+  <!-- Experimental cdmRemote - first implemtation is pointFeature service -->
   <servlet>
-    <servlet-name>pointFeature</servlet-name>
+    <servlet-name>cdmRemote</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>4</load-on-startup>
   </servlet>
@@ -539,8 +535,8 @@
   </servlet-mapping>
 
   <servlet-mapping>
-    <servlet-name>pointFeature</servlet-name>
-    <url-pattern>/pointFeature/*</url-pattern>
+    <servlet-name>cdmRemote</servlet-name>
+    <url-pattern>/cdmremote/*</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>

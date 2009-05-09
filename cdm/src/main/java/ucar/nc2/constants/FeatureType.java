@@ -92,4 +92,5 @@ public enum FeatureType {
     return (this == FeatureType.POINT) || (this == FeatureType.STATION) || (this == FeatureType.TRAJECTORY) ||
           (this == FeatureType.PROFILE) || (this == FeatureType.STATION_PROFILE) || (this == FeatureType.SECTION);
   }
+
 }

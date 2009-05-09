@@ -681,7 +681,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * <ol>
    * <li> opendap
    * <li> remote ncstream
-   * <li> htp byte range
+   * <li> http byte range
    * </ol>
    * Do a HEAD call on the URL. 
    * Look for the header "Content-Description" = "ncstream" or "dods".

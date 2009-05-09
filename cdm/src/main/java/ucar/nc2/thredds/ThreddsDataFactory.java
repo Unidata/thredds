@@ -125,7 +125,7 @@ public class ThreddsDataFactory {
   /**
    * Open a FeatureDataset from a URL location string, and a desired type (may by NONE or null).
    *
-   * @param wantFeatureType
+   * @param wantFeatureType desired feature type, may be NONE or null
    * @param urlString       [thredds:]catalog.xml#datasetId
    * @param task            may be null
    * @return ThreddsDataFactory.Result check fatalError for validity
@@ -206,7 +206,7 @@ public class ThreddsDataFactory {
 
     // look for remote FeatureDataset
     if ((result.featureType != null) && result.featureType.isPointFeatureType()) {
-      InvAccess access = findAccessByServiceType(invDataset.getAccess(), ServiceType.RemotePointFeature);
+      InvAccess access = findAccessByServiceType(invDataset.getAccess(), ServiceType.CdmRemote);
       if (access != null)
         return openFeatureDataset(result.featureType, access, task, result);
     }
@@ -292,7 +292,7 @@ public class ThreddsDataFactory {
       return result;
     }
 
-    if (access.getService().getServiceType() == ServiceType.RemotePointFeature) {
+    if (access.getService().getServiceType() == ServiceType.CdmRemote) {
       result.featureDataset = PointDatasetRemote.factory(access.getStandardUrlName());
 
     } else {
