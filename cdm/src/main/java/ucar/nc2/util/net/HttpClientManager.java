@@ -282,7 +282,7 @@ public class HttpClientManager {
 
      try {
        int status = _client.executeMethod(m);
-       if (status != 200) {
+       if ((status != 200) && (status != 206)) {
          throw new RuntimeException("failed status = "+status);
        }
 
