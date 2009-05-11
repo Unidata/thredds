@@ -196,7 +196,7 @@
               <addID/>
               <namer>
                   <regExpOnName regExp="latest.xml"
-                                replaceString="Latest NCEP SREF CONUS 40km - ensprod_biasc"/>
+                                replaceString="Latest NCEP SREF CONUS 40km - Bias-corrected mean and spread products"/>
               </namer>
               <sort>
                   <lexigraphicByName increasing="false"/>
@@ -259,7 +259,7 @@
               <addID/>
               <namer>
                   <regExpOnName regExp="latest.xml"
-                                replaceString="Latest NCEP SREF CONUS 40km - pgrb_biasc"/>
+                                replaceString="Latest NCEP SREF CONUS 40km - Bias-corrected Products"/>
               </namer>
               <sort>
                   <lexigraphicByName increasing="false"/>
