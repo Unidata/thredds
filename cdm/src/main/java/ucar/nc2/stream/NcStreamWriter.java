@@ -49,7 +49,7 @@ import java.io.OutputStream;
 public class NcStreamWriter {
   private NetcdfFile ncfile;
   private NcStreamProto.Header header;
-  private boolean show = false;
+  private boolean show = true;
   private int sizeToCache = 100;
 
   public NcStreamWriter(NetcdfFile ncfile, String location) throws IOException {

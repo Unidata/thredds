@@ -535,6 +535,8 @@ public abstract class Table {
       count = 0;
       return this;
     }
+
+    public void finish() {}
   }
 
   ////////////////////////////////////////////////////////////////

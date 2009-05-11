@@ -35,7 +35,8 @@ package ucar.ma2;
 import java.io.IOException;
 
 /**
- * An iterator over StructureData
+ * An iterator over StructureData.
+
  * @author caron
  * @since Feb 23, 2008
  */
@@ -67,4 +68,20 @@ public interface StructureDataIterator {
    * @return a new or reset iterator.
    */
   public StructureDataIterator reset();
+
+  /*
+   * Make sure that the iterator is complete, and recover resources.
+   * You must complete the iteration (until hasNext() returns false) or call finish().
+   * may be called more than once.
+* You must complete the iteration or call finish() to sensure resources are released.
+ * Best to put in a try/finally block like:
+  <pre>
+  try {
+   while (iter.hasNext())
+     process(iter.next());
+  } finally {
+    iter.finish();
+  }
+  </pre>   *
+  public void finish();    */
 }

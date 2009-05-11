@@ -102,6 +102,10 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
     }
 
     public void setBufferSize(int bytes) { }
+
+    public void finish() {
+    }
+
   }
 
   private class StandardTrajectoryFeature extends TrajectoryFeatureImpl {

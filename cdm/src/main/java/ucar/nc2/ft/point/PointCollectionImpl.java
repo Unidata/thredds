@@ -76,6 +76,11 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
     return localIterator.hasNext();
   }
 
+  public void finish() {
+    if (localIterator != null)
+      localIterator.finish();
+  }
+
   public PointFeature next() throws IOException {
     return localIterator.next();
   }

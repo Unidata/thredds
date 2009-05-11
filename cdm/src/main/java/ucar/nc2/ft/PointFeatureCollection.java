@@ -35,7 +35,6 @@ package ucar.nc2.ft;
 import ucar.nc2.units.DateRange;
 
 import java.io.IOException;
-import java.util.Date;
 
 /**
  * A collection of PointFeatures.
@@ -49,6 +48,7 @@ public interface PointFeatureCollection extends FeatureCollection {
    * Use the internal iterator to check if there is another PointFeature in the iteration.
    * @return true is there is another PointFeature in the iteration.
    * @throws java.io.IOException on read error
+   * @see PointFeatureIterator#hasNext
    */
   public boolean hasNext() throws java.io.IOException;
 
@@ -57,6 +57,7 @@ public interface PointFeatureCollection extends FeatureCollection {
    * You must call hasNext() before you call this.
    * @return the next PointFeature in the iteration
    * @throws java.io.IOException on read error
+   * @see PointFeatureIterator#next
    */
   public PointFeature next() throws java.io.IOException;
 
@@ -65,6 +66,14 @@ public interface PointFeatureCollection extends FeatureCollection {
    * @throws java.io.IOException on read error
    */
   public void resetIteration() throws IOException;
+
+  /**
+   * Make sure that the internal iterator is complete, and recover resources.
+   * You must complete the iteration (until hasNext() returns false)
+   *  or call finish().
+   * @see PointFeatureIterator#finish
+   */
+  public void finish();
 
   /**
    * The number of points in the collection. May not be known until after iterating through the collection.

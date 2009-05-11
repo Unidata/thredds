@@ -175,6 +175,7 @@ public class CdmRemoteController extends AbstractController implements LastModif
         }
       }
 
+      out.flush();
       res.flushBuffer();
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
 

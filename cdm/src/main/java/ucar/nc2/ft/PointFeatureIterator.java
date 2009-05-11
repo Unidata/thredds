@@ -34,8 +34,15 @@ package ucar.nc2.ft;
 
 /**
  * An iterator over PointFeatures.
- * You must complete the iteration or call cancel().
- *
+ * You must complete the iteration or call finish(). Best to put in a try/finally block like:
+  <pre>
+  try {
+   while (iter.hasNext())
+     process(iter.next());
+  } finally {
+    iter.finish();
+  }
+  </pre>
  * @author caron
  * @since Feb 18, 2008
  */
@@ -57,10 +64,11 @@ public interface PointFeatureIterator {
   public PointFeature next() throws java.io.IOException;
 
   /**
-   * You must complete the iteration (until hasNext() returns false)
-   *  or call cancel().
+   * Make sure that the iterator is complete, and recover resources.
+   * You must complete the iteration (until hasNext() returns false) or call finish().
+   * may be called more than once.
    */
-  public void cancel();
+  public void finish();
   
   /**
    * Hint to use this much memory in buffering the iteration.

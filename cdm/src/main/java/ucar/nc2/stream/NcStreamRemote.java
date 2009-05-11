@@ -56,8 +56,10 @@ import java.io.InputStream;
  */
 public class NcStreamRemote extends ucar.nc2.NetcdfFile {  // LOOK perhaps should be NetcdfDataset ??
   static public final String SCHEME = "cdmremote:";
+
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NetcdfRemote.class);
   static private HttpClient httpClient;
+  static private boolean showRequest = true;
 
   /**
    * Create the canonical form of the URL.
@@ -109,6 +111,7 @@ public class NcStreamRemote extends ucar.nc2.NetcdfFile {  // LOOK perhaps shoul
     try {
       method = new GetMethod(remoteURI+"?header");
       method.setFollowRedirects(true);
+      if (showRequest) System.out.printf(" ncstream request %s %n",remoteURI+"?header" );
       int statusCode = httpClient.executeMethod(method);
 
       if (statusCode == 404)
@@ -145,6 +148,7 @@ public class NcStreamRemote extends ucar.nc2.NetcdfFile {  // LOOK perhaps shoul
     try {
       method = new GetMethod(sbuff.toString());
       method.setFollowRedirects(true);
+      if (showRequest) System.out.printf(" ncstream readData %s %n", sbuff );
       int statusCode = httpClient.executeMethod(method);
 
       if (statusCode == 404)
@@ -187,6 +191,8 @@ public class NcStreamRemote extends ucar.nc2.NetcdfFile {  // LOOK perhaps shoul
     HttpMethod method = null;
     try {
       method = new GetMethod(sbuff.toString());
+      if (showRequest) System.out.printf(" ncstream readSequence %s %n", sbuff );
+
       method.setFollowRedirects(true);
       int statusCode = httpClient.executeMethod(method);
 

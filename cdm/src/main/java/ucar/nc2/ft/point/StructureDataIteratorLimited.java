@@ -70,4 +70,7 @@ public class StructureDataIteratorLimited implements StructureDataIterator {
   public void setBufferSize(int bytes) {
     org.setBufferSize( bytes);
   }
+
+  public void finish() {}
+  
 }

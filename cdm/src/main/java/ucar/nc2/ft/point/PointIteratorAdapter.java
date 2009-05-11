@@ -43,31 +43,41 @@ import ucar.unidata.geoloc.LatLonRect;
 import java.io.IOException;
 
 /**
- * Adapt a FeatureIterator to a PointFeatureIterator
+ * Adapt a PointFeatureCollectionIterator to a PointFeatureIterator, by flattening alla the iterators in the collection
+ *   into a single iterator over PointFeatures.
  *
  * @author caron
  * @since Mar 19, 2008
  */
 public class PointIteratorAdapter implements PointFeatureIterator {
-  private PointFeatureCollectionIterator fiter;
+  private PointFeatureCollectionIterator collectionIter;
   private LatLonRect filter_bb;
   private DateRange filter_date;
 
-  private PointFeatureIterator pfiter;
-  private PointFeature pointFeature;
+  private PointFeatureIterator pfiter; // iterator over the current PointFeatureCollection
+  private PointFeature pointFeature; // current PointFeature in the current PointFeatureCollection
   private boolean done = false;
 
-  PointIteratorAdapter(PointFeatureCollectionIterator fiter, LatLonRect filter_bb, DateRange filter_date) {
-    this.fiter = fiter;
+  /**
+   * Constructor.
+   * @param collectionIter iterator over the PointFeatureCollection
+   * @param filter_bb boundingbox, or null
+   * @param filter_date data range, or null
+   */
+  PointIteratorAdapter(PointFeatureCollectionIterator collectionIter, LatLonRect filter_bb, DateRange filter_date) {
+    this.collectionIter = collectionIter;
     this.filter_bb = filter_bb;
     this.filter_date = filter_date;
   }
 
   public void setBufferSize(int bytes) {
-    fiter.setBufferSize(bytes);
+    collectionIter.setBufferSize(bytes);
   }
 
-  public void cancel() {}
+  public void finish() {
+    if (pfiter != null) pfiter.finish();
+    collectionIter.finish();
+  }
 
   public boolean hasNext() throws IOException {
     if (done) return false;
@@ -90,16 +100,17 @@ public class PointIteratorAdapter implements PointFeatureIterator {
   }
 
   private PointFeatureCollection nextFilteredCollection() throws IOException {
-    if (!fiter.hasNext()) return null;
-    PointFeatureCollection f = (PointFeatureCollection) fiter.next();
+    if (!collectionIter.hasNext()) return null;
+    PointFeatureCollection f = (PointFeatureCollection) collectionIter.next();
 
-    if (filter_bb == null)
-      return f;
+    //if (filter_bb == null)
+    //  return f;
 
     /* while (!filter_bb.contains(f.getLatLon())) {
-      if (!fiter.hasNext()) return null;
-      f = (PointFeatureCollection) fiter.nextFeature();
+      if (!collectionIter.hasNext()) return null;
+      f = (PointFeatureCollection) collectionIter.nextFeature();
     } LOOK */
+    
     return f;
   }
 

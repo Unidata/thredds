@@ -320,8 +320,7 @@ The specifics for the binary NLDN data record contained in the IDD is:
       return true;
     }
 
-    public void setBufferSize(int bytes) {
-    }
+    public void setBufferSize(int bytes) {}
   }
 
 

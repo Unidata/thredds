@@ -62,8 +62,8 @@ public class PointIteratorFiltered implements PointFeatureIterator {
     pfiter.setBufferSize(bytes);
   }
 
-  public void cancel() {
-    pfiter.cancel();
+  public void finish() {
+    pfiter.finish();
   }
 
   public boolean hasNext() throws IOException {

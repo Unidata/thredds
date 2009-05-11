@@ -51,7 +51,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
  */
 public class NcStreamReader {
 
-  private static final boolean debug = false;
+  private static final boolean debug = true;
 
   private NcStreamProto.Header proto;
 
@@ -66,6 +66,7 @@ public class NcStreamReader {
     NcStream.readFully(is, m);
     proto = NcStreamProto.Header.parseFrom(m);
     ncfile = proto2nc(proto, ncfile);
+    if (debug) System.out.printf("  proto= ", proto);
 
     // LOOK why doesnt this work ?
     //CodedInputStream cis = CodedInputStream.newInstance(is);

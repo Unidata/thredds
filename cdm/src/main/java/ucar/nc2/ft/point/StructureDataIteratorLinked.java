@@ -90,4 +90,7 @@ public class StructureDataIteratorLinked implements StructureDataIterator {
   }
 
   public void setBufferSize(int bytes) {}
+
+  public void finish() {}
+  
 }

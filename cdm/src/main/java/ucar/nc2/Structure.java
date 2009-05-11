@@ -437,6 +437,8 @@ public class Structure extends Variable {
       return as.getStructureData( readCount++);
     }
 
+    public void finish() {}
+
     private void readNextRank1() throws IOException {
       int left = Math.min(recnum, readStart+readAtaTime); // dont go over recnum
       int need = left - readStart; // how many to read this time

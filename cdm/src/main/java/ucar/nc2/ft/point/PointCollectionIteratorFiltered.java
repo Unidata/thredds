@@ -70,6 +70,10 @@ public class PointCollectionIteratorFiltered implements PointFeatureCollectionIt
     return done ? null : pointFeatureCollection;
   }
 
+  public void finish() {
+    pfciter.finish();
+  }
+
   private boolean filter(PointFeatureCollection pdata) {
     return (filter == null) || filter.filter(pdata);
   }

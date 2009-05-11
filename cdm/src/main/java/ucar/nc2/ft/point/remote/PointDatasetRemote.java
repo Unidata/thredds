@@ -67,6 +67,7 @@ import org.jdom.input.SAXBuilder;
  */
 public class PointDatasetRemote extends PointDatasetImpl {
   static private boolean showXML = true;
+  static private boolean showRequest = true;
 
   static public FeatureDatasetPoint factory(String endpoint) throws IOException {
     if (endpoint.startsWith(ucar.nc2.stream.NcStreamRemote.SCHEME))
@@ -92,12 +93,12 @@ public class PointDatasetRemote extends PointDatasetImpl {
     }
 
     if (showXML) {
+      System.out.printf("*** endpoint = %s %n", endpoint);
       XMLOutputter xmlOut = new XMLOutputter();
-      System.out.println("*** NetcdfDataset/showParsedXML = \n" + xmlOut.outputString(doc) + "\n*******");
+      System.out.printf("*** NetcdfDataset/showParsedXML = %n %s %n", xmlOut.outputString(doc));
     }
 
     return doc;
-
   }
 
   private NcStreamRemote ncremote;
@@ -174,7 +175,8 @@ public class PointDatasetRemote extends PointDatasetImpl {
       public boolean hasNext() throws IOException {
         int len = NcStream.readVInt(in);
         if (len <= 0) {
-          cancel();
+          System.out.println(" total read= " + count);          
+          finish();
           return false;
         }
 
@@ -194,7 +196,7 @@ public class PointDatasetRemote extends PointDatasetImpl {
         return pf;
       }
 
-      public void cancel() {
+      public void finish() {
         if (method != null)
           method.releaseConnection();
         method = null;
@@ -285,9 +287,13 @@ public class PointDatasetRemote extends PointDatasetImpl {
     PointFeatureCollection pc = (PointFeatureCollection) fd.getPointFeatureCollectionList().get(0);
 
     PointFeatureIterator pfIter = pc.getPointFeatureIterator(-1);
-    while (pfIter.hasNext()) {
-      PointFeature pf = pfIter.next();
-      System.out.println("pf= " + pf);
+    try {
+      while (pfIter.hasNext()) {
+        PointFeature pf = pfIter.next();
+        System.out.println("pf= " + pf);
+      }
+    } finally {
+      pfIter.finish();
     }
   }
 

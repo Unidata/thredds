@@ -32,9 +32,10 @@
  */
 package thredds.server.cdmremote;
 
-import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.mvc.LastModified;
+import org.springframework.web.servlet.mvc.AbstractCommandController;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.validation.BindException;
 import thredds.server.config.TdsContext;
 import thredds.servlet.UsageLog;
 import thredds.servlet.ServletUtil;
@@ -61,11 +62,17 @@ import java.util.List;
  * @author caron
  * @since Feb 16, 2009
  */
-public class PointStreamController extends AbstractController implements LastModified {
+public class PointStreamController extends AbstractCommandController implements LastModified {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
+  private boolean debug = true;
 
   private String prefix = "/point/"; // LOOK how do we obtain this?
   private TdsContext tdsContext;
+
+  public PointStreamController() {
+    setCommandClass(PointQueryBean.class);
+    setCommandName("PointQueryBean");
+  }
 
   public void setTdsContext(TdsContext tdsContext) {
     this.tdsContext = tdsContext;
@@ -77,7 +84,14 @@ public class PointStreamController extends AbstractController implements LastMod
     this.allow = allow;
   }
 
-  protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
+  public long getLastModified(HttpServletRequest req) {
+    File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(req.getPathInfo()); // LOOK
+    if ((file != null) && file.exists())
+      return file.lastModified();
+    return -1;
+  }
+
+  protected ModelAndView handle(HttpServletRequest req, HttpServletResponse res, Object command, BindException errors) throws Exception {
     log.info(UsageLog.setupRequestContext(req));
 
     if (!allow) {
@@ -88,12 +102,16 @@ public class PointStreamController extends AbstractController implements LastMod
 
     String pathInfo = req.getPathInfo();
     String path = pathInfo.substring(prefix.length());
-    System.out.println("pointReq=" + pathInfo+" path=" + path);
+    if (debug) System.out.printf("PointStreamController pathInfo= %s path= %s %n", pathInfo, path);
 
-    String query = req.getQueryString();
-    if (query != null) System.out.println(" query=" + query);
-
-    String view = ServletUtil.getParameterIgnoreCase(req, "view");
+    PointQueryBean query = (PointQueryBean) command;
+    if (debug) System.out.printf(" query= %s %n", query);
+    if (!query.parse()) {
+      res.sendError(HttpServletResponse.SC_BAD_REQUEST, query.getErrorMessage());
+      if (debug) System.out.printf(" query error= %s %n", query.getErrorMessage());
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
+      return null;
+    }
 
     NetcdfDataset ncd = null;
     FeatureDatasetPoint fd;
@@ -110,17 +128,14 @@ public class PointStreamController extends AbstractController implements LastMod
       ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getEnhanceAll());
       Formatter errlog = new Formatter();
       fd = (FeatureDatasetPoint) FeatureDatasetFactoryManager.wrap(FeatureType.POINT, ncd, null, errlog);
-       if (fd == null) {
+      if (fd == null) {
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, errlog.toString());
         log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
         return null;
       }
 
-      List<FeatureCollection> coll = fd.getPointFeatureCollectionList();
-      pfc = (PointFeatureCollection) coll.get(0);
-
       OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
-      if (query == null) {
+      if (req.getQueryString() == null) {
         res.setContentType("text/plain");
         Formatter f = new Formatter(out);
         fd.getDetailInfo(f);
@@ -131,33 +146,24 @@ public class PointStreamController extends AbstractController implements LastMod
         res.setContentType("application/octet-stream");
         res.setHeader("Content-Description", "ncstream");
 
-        if (query.equals("header")) { // just the header
+        if (query.wantHeader()) { // just the header
 
           NcStreamWriter ncWriter = new NcStreamWriter(ncd, ServletUtil.getRequestBase(req));
           ncWriter.sendHeader(out);
 
         } else { // they want some data
 
-          int count = 0;
-          PointFeatureIterator pfIter = pfc.getPointFeatureIterator(-1);
-          while (pfIter.hasNext()) {
-            PointFeature pf = pfIter.next();
-            if (count == 0) {
-              PointStreamProto.PointFeatureCollection proto = PointStream.encodePointFeatureCollection(fd.getLocation(), pf);
-              byte[] b = proto.toByteArray();
-              NcStream.writeVInt(out, b.length);
-              out.write(b);
-            }
+          List<FeatureCollection> coll = fd.getPointFeatureCollectionList();
+          pfc = (PointFeatureCollection) coll.get(0);
 
-            PointStreamProto.PointFeature pfp = PointStream.encodePointFeature(pf);
-            byte[] b = pfp.toByteArray();
-            NcStream.writeVInt(out, b.length);
-            out.write(b);
-            //System.out.println(" count = " + count + " pf= " + pf.getLocation());
-            count++;
+          if (query.getLatLonRect() != null) {
+            pfc = pfc.subset(query.getLatLonRect(), null);
           }
+
+          sendData(fd.getLocation(), pfc, out);
+
         }
-        NcStream.writeVInt(out, 0);
+        NcStream.writeVInt(out, 0);  // LOOK: terminator ?
 
         out.flush();
         res.flushBuffer();
@@ -187,11 +193,29 @@ public class PointStreamController extends AbstractController implements LastMod
     return null;
   }
 
-  public long getLastModified(HttpServletRequest req) {
-    File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(req.getPathInfo());
-    if ((file != null) && file.exists())
-      return file.lastModified();
-    return -1;
-  }
+  private void sendData(String location, PointFeatureCollection pfc, OutputStream out) throws IOException {
+    int count = 0;
+    PointFeatureIterator pfIter = pfc.getPointFeatureIterator(-1);
+    try {
+      while (pfIter.hasNext()) {
+        PointFeature pf = pfIter.next();
+        if (count == 0) {
+          PointStreamProto.PointFeatureCollection proto = PointStream.encodePointFeatureCollection(location, pf);
+          byte[] b = proto.toByteArray();
+          NcStream.writeVInt(out, b.length);
+          out.write(b);
+        }
 
+        PointStreamProto.PointFeature pfp = PointStream.encodePointFeature(pf);
+        byte[] b = pfp.toByteArray();
+        NcStream.writeVInt(out, b.length);
+        out.write(b);
+        count++;
+      }
+    } finally {
+      pfIter.finish();
+    }
+    if (debug) System.out.printf(" sent %d features to %s %n ", count, location);
+
+  }
 }

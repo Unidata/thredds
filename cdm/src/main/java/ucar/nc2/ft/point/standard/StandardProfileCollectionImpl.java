@@ -105,6 +105,10 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
     }
 
     public void setBufferSize(int bytes) { }
+
+    public void finish() {
+    }
+
   }
 
   private class StandardProfileFeature extends ProfileFeatureImpl {

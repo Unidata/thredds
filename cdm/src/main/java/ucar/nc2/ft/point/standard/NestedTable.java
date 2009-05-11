@@ -634,6 +634,9 @@ public class NestedTable {
         count = 0;
         return this;
       }
+
+      public void finish() {}
+      
     }
 
   }

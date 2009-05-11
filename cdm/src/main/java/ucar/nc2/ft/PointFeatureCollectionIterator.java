@@ -35,6 +35,14 @@ package ucar.nc2.ft;
 
 /**
  * An iterator over PointFeatureCollections.
+ * <pre>
+  try {
+   while (iter.hasNext())
+     process(iter.next());
+  } finally {
+    iter.finish();
+  }
+  </pre>
  *
  * @author caron
  */
@@ -54,6 +62,13 @@ public interface PointFeatureCollectionIterator {
    * @throws java.io.IOException on i/o error
    */
   public PointFeatureCollection next() throws java.io.IOException;
+
+  /**
+   * Make sure that the iterator is complete, and recover resources.
+   * You must complete the iteration (until hasNext() returns false) or call finish().
+   * may be called more than once.
+   */
+  public void finish();
 
   /**
    * Hint to use this much memory in buffering the iteration.

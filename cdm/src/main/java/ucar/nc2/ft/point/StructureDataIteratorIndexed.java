@@ -79,4 +79,7 @@ public class StructureDataIteratorIndexed implements StructureDataIterator {
   }
 
   public void setBufferSize(int bytes) {}
+
+  public void finish() {}
+  
 }

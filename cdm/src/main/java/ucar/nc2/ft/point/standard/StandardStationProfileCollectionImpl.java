@@ -150,6 +150,10 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       public void setBufferSize(int bytes) {
         iter.setBufferSize(bytes);
       }
+
+    public void finish() {
+    }
+
     }
   }
 

@@ -87,7 +87,7 @@ public class PointFeatureDatasetViewer extends JPanel {
   private boolean eventsOK = true;
   private boolean debugStationRegionSelect = false, debugQuery = false;
 
-  private int maxCount = 100;
+  private int maxCount = Integer.MAX_VALUE;
 
   public PointFeatureDatasetViewer(PreferencesExt prefs) {
     this.prefs = prefs;
@@ -344,9 +344,13 @@ public class PointFeatureDatasetViewer extends JPanel {
     int count = 0;
 
     PointFeatureIterator iter = pointCollection.getPointFeatureIterator(-1);
-    while (iter.hasNext()) {
-      PointFeature pob = iter.next();
-      pointBeans.add(new PointObsBean(count++, pob, df));
+    try {
+      while (iter.hasNext() && (count++ < maxCount)) {
+        PointFeature pob = iter.next();
+        pointBeans.add(new PointObsBean(count++, pob, df));
+      }
+    } finally {
+      iter.finish();
     }
 
     stnTable.setBeans(pointBeans);
@@ -540,8 +544,12 @@ public class PointFeatureDatasetViewer extends JPanel {
     PointFeatureIterator iter = pointCollection.getPointFeatureIterator(-1);
     List<PointFeature> obsList = new ArrayList<PointFeature>();
     int count = 0;
-    while (iter.hasNext() && (count++ < maxCount))
-      obsList.add(iter.next());
+    try {
+      while (iter.hasNext() && (count++ < maxCount))
+        obsList.add(iter.next());
+    } finally {
+      iter.finish();
+    }
     setObservations(obsList);
   }
 

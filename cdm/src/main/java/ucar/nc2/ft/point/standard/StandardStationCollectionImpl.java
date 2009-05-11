@@ -93,6 +93,9 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
       }
 
       public void setBufferSize(int bytes) { }
+
+      public void finish() { }
+
     };
   }
 
