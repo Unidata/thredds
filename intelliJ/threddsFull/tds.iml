@@ -2,7 +2,13 @@
 <module relativePaths="true" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="Spring" name="Spring">
-      <configuration />
+      <configuration>
+        <options>
+          <option name="enableValidation" value="false" />
+          <option name="reportErrorsAsWarnings" value="true" />
+        </options>
+        <customNs />
+      </configuration>
     </facet>
     <facet type="web" name="tds">
       <configuration>
@@ -23,7 +29,11 @@
           <setting name="EXPLODED_ENABLED" value="true" />
           <setting name="JAR_URL" value="file://$MODULE_DIR$/../../tds/target/thredds.war" />
           <setting name="JAR_ENABLED" value="false" />
+          <setting name="BUILD_MODULE_ON_FRAME_DEACTIVATION" value="false" />
+          <setting name="BUILD_EXTERNAL_DEPENDENCIES" value="false" />
           <setting name="EXCLUDE_EXPLODED_DIRECTORY" value="true" />
+          <setting name="RUN_JASPER_VALIDATION" value="false" />
+          <setting name="BUILD_ONLY_WEB_RESOURCES" value="false" />
         </building>
         <packaging>
           <containerElement type="facet" facetId="opendap/web/opendap">
@@ -68,7 +78,7 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/acegi-security-1.0.4.jar" />
             <url>jar://$MODULE_DIR$/../../lib/ncWMS/acegi-security-1.0.4.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -78,12 +88,12 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/bufrTables-1.5.jar" />
             <url>jar://$MODULE_DIR$/../../lib/release/bufrTables-1.5.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/casclient-2.1.1.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/casclient-2.1.1.jar!/</url>
           </containerElement>
           <containerElement type="library" name="catalina" level="project">
@@ -102,82 +112,82 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/collections-generic-4.01.jar" />
             <url>jar://$MODULE_DIR$/../../lib/ncWMS/collections-generic-4.01.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-codec-1.3.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-codec-1.3.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-fileupload-1.2.1.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-fileupload-1.2.1.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-httpclient-3.1.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-httpclient-3.1.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-io-1.4.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-io-1.4.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-logging-1.1.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-logging-1.1.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/ehcache-1.4.0.jar" />
             <url>jar://$MODULE_DIR$/../../lib/ncWMS/ehcache-1.4.0.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/geoapi-nogenerics-2.1.0.jar" />
             <url>jar://$MODULE_DIR$/../../lib/ncWMS/geoapi-nogenerics-2.1.0.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/gnu-getopt-1.0.6.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/gnu-getopt-1.0.6.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/gnu-regexp-1.1.4.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/gnu-regexp-1.1.4.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/gt2-epsg-wkt-2.4.0.jar" />
             <url>jar://$MODULE_DIR$/../../lib/ncWMS/gt2-epsg-wkt-2.4.0.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/gt2-metadata-2.4.0.jar" />
             <url>jar://$MODULE_DIR$/../../lib/ncWMS/gt2-metadata-2.4.0.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/gt2-referencing-2.4.0.jar" />
             <url>jar://$MODULE_DIR$/../../lib/ncWMS/gt2-referencing-2.4.0.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/h2.jar" />
             <url>jar://$MODULE_DIR$/../../lib/ncWMS/h2.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/httpunit.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/httpunit.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/jakarta-oro-2.0.8.jar" />
             <url>jar://$MODULE_DIR$/../../lib/ncWMS/jakarta-oro-2.0.8.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -187,12 +197,12 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/jcommon-1.0.8.jar" />
             <url>jar://$MODULE_DIR$/../../lib/ncWMS/jcommon-1.0.8.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/jdom.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/jdom.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -207,7 +217,7 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/jna.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/jna.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -217,17 +227,17 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/jpeg2000.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/jpeg2000.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/json-taglib-0.4.1.jar" />
             <url>jar://$MODULE_DIR$/../../lib/ncWMS/json-taglib-0.4.1.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/jsr108-0.01.jar" />
             <url>jar://$MODULE_DIR$/../../lib/ncWMS/jsr108-0.01.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -242,7 +252,7 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/prefsAll.jar" />
             <url>jar://$MODULE_DIR$/../../lib/release/prefsAll.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -257,7 +267,7 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/simple-xml-1.4.2.jar" />
             <url>jar://$MODULE_DIR$/../../lib/ncWMS/simple-xml-1.4.2.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -277,17 +287,17 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/standard.jar" />
             <url>jar://$MODULE_DIR$/../../lib/ncWMS/standard.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/vecmath-1.3.1.jar" />
             <url>jar://$MODULE_DIR$/../../lib/ncWMS/vecmath-1.3.1.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/visadNoDods.jar" />
             <url>jar://$MODULE_DIR$/../../lib/release/visadNoDods.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -344,7 +354,11 @@
           <setting name="EXPLODED_ENABLED" value="false" />
           <setting name="JAR_URL" value="file://" />
           <setting name="JAR_ENABLED" value="false" />
+          <setting name="BUILD_MODULE_ON_FRAME_DEACTIVATION" value="false" />
+          <setting name="BUILD_EXTERNAL_DEPENDENCIES" value="false" />
           <setting name="EXCLUDE_EXPLODED_DIRECTORY" value="true" />
+          <setting name="RUN_JASPER_VALIDATION" value="false" />
+          <setting name="BUILD_ONLY_WEB_RESOURCES" value="false" />
         </building>
         <packaging>
           <containerElement type="facet" facetId="opendap/web/opendap">
@@ -443,7 +457,7 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-logging-1.1.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-logging-1.1.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -508,7 +522,7 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/jdom.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/jdom.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -553,7 +567,7 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/prefsAll.jar" />
             <url>jar://$MODULE_DIR$/../../lib/release/prefsAll.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -720,7 +734,11 @@
           <setting name="EXPLODED_ENABLED" value="false" />
           <setting name="JAR_URL" value="file://" />
           <setting name="JAR_ENABLED" value="false" />
+          <setting name="BUILD_MODULE_ON_FRAME_DEACTIVATION" value="false" />
+          <setting name="BUILD_EXTERNAL_DEPENDENCIES" value="false" />
           <setting name="EXCLUDE_EXPLODED_DIRECTORY" value="true" />
+          <setting name="RUN_JASPER_VALIDATION" value="false" />
+          <setting name="BUILD_ONLY_WEB_RESOURCES" value="false" />
         </building>
         <packaging>
           <containerElement type="facet" facetId="opendap/web/opendap">
@@ -780,7 +798,7 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/casclient-2.1.1.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/casclient-2.1.1.jar!/</url>
           </containerElement>
           <containerElement type="library" name="catalina" level="project">
@@ -799,7 +817,7 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-codec-1.3.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-codec-1.3.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -819,7 +837,7 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-logging-1.1.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-logging-1.1.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -834,12 +852,12 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/gnu-getopt-1.0.6.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/gnu-getopt-1.0.6.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/gnu-regexp-1.1.4.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/gnu-regexp-1.1.4.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -884,7 +902,7 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/jdom.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/jdom.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -904,7 +922,7 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/jpeg2000.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/jpeg2000.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -929,7 +947,7 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/prefsAll.jar" />
             <url>jar://$MODULE_DIR$/../../lib/release/prefsAll.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -974,7 +992,7 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/visadNoDods.jar" />
             <url>jar://$MODULE_DIR$/../../lib/release/visadNoDods.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -1059,17 +1077,17 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-fileupload-1.1.1.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-fileupload-1.1.1.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-httpclient-3.0.1.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-httpclient-3.0.1.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-io-1.2.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-io-1.2.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -1093,7 +1111,11 @@
           <setting name="EXPLODED_ENABLED" value="true" />
           <setting name="JAR_URL" value="file://$MODULE_DIR$/../../tds/target/cdmvalidator.war" />
           <setting name="JAR_ENABLED" value="false" />
+          <setting name="BUILD_MODULE_ON_FRAME_DEACTIVATION" value="false" />
+          <setting name="BUILD_EXTERNAL_DEPENDENCIES" value="false" />
           <setting name="EXCLUDE_EXPLODED_DIRECTORY" value="true" />
+          <setting name="RUN_JASPER_VALIDATION" value="false" />
+          <setting name="BUILD_ONLY_WEB_RESOURCES" value="false" />
         </building>
         <packaging>
           <containerElement type="facet" facetId="opendap/web/opendap">
@@ -1148,7 +1170,7 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/bufrTables-1.5.jar" />
             <url>jar://$MODULE_DIR$/../../lib/release/bufrTables-1.5.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -1177,27 +1199,27 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-codec-1.3.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-codec-1.3.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-fileupload-1.2.1.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-fileupload-1.2.1.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-httpclient-3.1.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-httpclient-3.1.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-io-1.4.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-io-1.4.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-logging-1.1.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-logging-1.1.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -1262,7 +1284,7 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/jdom.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/jdom.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -1287,7 +1309,7 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/jpeg2000.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/jpeg2000.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -1312,7 +1334,7 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/prefsAll.jar" />
             <url>jar://$MODULE_DIR$/../../lib/release/prefsAll.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -1357,12 +1379,12 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/visadNoDods.jar" />
             <url>jar://$MODULE_DIR$/../../lib/release/visadNoDods.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-lang-2.4.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-lang-2.4.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -1381,8 +1403,8 @@
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/../../tds/target/classes" />
-    <output-test url="file://$MODULE_DIR$/../../tds/target/test/classes" />
     <exclude-output />
+    <output-test url="file://$MODULE_DIR$/../../tds/target/test/classes" />
     <content url="file://$MODULE_DIR$/../../tds">
       <sourceFolder url="file://$MODULE_DIR$/../../tds/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../tds/src/test/java" isTestSource="true" />
@@ -1466,7 +1488,7 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="file://$MODULE_DIR$/../../../../../../apps/jakarta-taglibs-standard-1.1.2-src/standard/src" />
+          <root url="file:///apps/jakarta-taglibs-standard-1.1.2-src/standard/src" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -1709,6 +1731,7 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="catalina" level="project" />
+    <orderEntryProperties />
   </component>
 </module>
 

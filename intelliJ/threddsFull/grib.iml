@@ -2,8 +2,8 @@
 <module relativePaths="true" type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/../../../grib/target/classes" />
-    <output-test url="file://$MODULE_DIR$/../../../grib/target/test/classes" />
     <exclude-output />
+    <output-test url="file://$MODULE_DIR$/../../../grib/target/test/classes" />
     <content url="file://$MODULE_DIR$/../../../grib">
       <sourceFolder url="file://$MODULE_DIR$/../../../grib/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../../grib/test/src" isTestSource="true" />
@@ -56,6 +56,17 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/slf4j-api-1.5.6.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/slf4j-jdk14-1.5.6.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntryProperties />
   </component>
 </module>
 

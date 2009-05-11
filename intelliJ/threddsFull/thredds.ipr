@@ -7,7 +7,6 @@
       <antReference projectDefault="true" />
       <customJdkName value="" />
       <maximumHeapSize value="128" />
-      <maximumStackSize value="32" />
       <properties />
     </buildFile>
     <buildFile url="file://$PROJECT_DIR$/../../tds/build.xml">
@@ -15,7 +14,6 @@
       <antReference projectDefault="true" />
       <customJdkName value="" />
       <maximumHeapSize value="128" />
-      <maximumStackSize value="32" />
       <properties />
     </buildFile>
   </component>
@@ -30,6 +28,15 @@
     <option name="PER_PROJECT_SETTINGS">
       <value>
         <ADDITIONAL_INDENT_OPTIONS fileType="java">
+          <option name="INDENT_SIZE" value="4" />
+          <option name="CONTINUATION_INDENT_SIZE" value="8" />
+          <option name="TAB_SIZE" value="4" />
+          <option name="USE_TAB_CHARACTER" value="false" />
+          <option name="SMART_TABS" value="false" />
+          <option name="LABEL_INDENT_SIZE" value="0" />
+          <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+        </ADDITIONAL_INDENT_OPTIONS>
+        <ADDITIONAL_INDENT_OPTIONS fileType="js">
           <option name="INDENT_SIZE" value="4" />
           <option name="CONTINUATION_INDENT_SIZE" value="8" />
           <option name="TAB_SIZE" value="4" />
@@ -235,7 +242,7 @@
     <option name="DEBUGGING_INFO" value="true" />
     <option name="GENERATE_NO_WARNINGS" value="true" />
     <option name="DEPRECATION" value="false" />
-    <option name="ADDITIONAL_OPTIONS_STRING" value="" />
+    <option name="ADDITIONAL_OPTIONS_STRING" value=" " />
     <option name="MAXIMUM_HEAP_SIZE" value="512" />
   </component>
   <component name="JavadocGenerationManager">
@@ -412,7 +419,7 @@
       <module fileurl="file://$PROJECT_DIR$/ui.iml" filepath="$PROJECT_DIR$/ui.iml" />
     </modules>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/../../../target/classes" />
   </component>
   <component name="ResourceManagerContainer">
@@ -486,8 +493,7 @@
         </entry>
       </map>
     </option>
-    <option name="myVersion" value="124" />
-    <option name="mySupportsUserInfoFilter" value="true" />
+    <option name="myVersion" value="123" />
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="svn" />

@@ -2,7 +2,13 @@
 <module relativePaths="true" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="Spring" name="Spring">
-      <configuration />
+      <configuration>
+        <options>
+          <option name="enableValidation" value="false" />
+          <option name="reportErrorsAsWarnings" value="true" />
+        </options>
+        <customNs />
+      </configuration>
     </facet>
     <facet type="web" name="bufrTables">
       <configuration>
@@ -18,7 +24,11 @@
           <setting name="EXPLODED_ENABLED" value="true" />
           <setting name="JAR_URL" value="file://" />
           <setting name="JAR_ENABLED" value="false" />
+          <setting name="BUILD_MODULE_ON_FRAME_DEACTIVATION" value="false" />
+          <setting name="BUILD_EXTERNAL_DEPENDENCIES" value="false" />
           <setting name="EXCLUDE_EXPLODED_DIRECTORY" value="true" />
+          <setting name="RUN_JASPER_VALIDATION" value="false" />
+          <setting name="BUILD_ONLY_WEB_RESOURCES" value="false" />
         </building>
         <packaging>
           <containerElement type="facet" facetId="opendap/web/opendap">
@@ -59,12 +69,12 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-codec-1.3.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-codec-1.3.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-fileupload-1.1.1.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-fileupload-1.1.1.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -74,12 +84,12 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-io-1.2.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-io-1.2.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-logging-1.1.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-logging-1.1.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -99,7 +109,7 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/jdom.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/jdom.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -114,7 +124,7 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/nlog4j-1.2.25.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/nlog4j-1.2.25.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -144,22 +154,22 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-fileupload-1.2.1.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-fileupload-1.2.1.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-io-1.4.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-io-1.4.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/netcdf-4.0.jar" />
             <url>jar://$MODULE_DIR$/../../lib/release/netcdf-4.0.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="/WEB-INF/lib/junit.jar" />
             <url>jar://$MODULE_DIR$/../../../lib/external/junit.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -178,8 +188,8 @@
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/../../bufrTables/target/WEB-INF/classes" />
-    <output-test url="file://$MODULE_DIR$/../../bufrTables/target/test/classes" />
     <exclude-output />
+    <output-test url="file://$MODULE_DIR$/../../bufrTables/target/test/classes" />
     <content url="file://$MODULE_DIR$/../../bufrTables">
       <sourceFolder url="file://$MODULE_DIR$/../../bufrTables/src/main/java" isTestSource="false" />
     </content>
@@ -225,6 +235,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntryProperties />
   </component>
 </module>
 

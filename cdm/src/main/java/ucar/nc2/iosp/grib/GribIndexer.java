@@ -115,6 +115,7 @@ public final class GribIndexer {
   private void indexer() throws IOException {
 
     System.out.println("Start " + Calendar.getInstance().getTime().toString());
+    long start = System.currentTimeMillis();
     for (String dir : dirs) {
       File d = new File(dir);
       if (!d.exists()) {
@@ -134,6 +135,7 @@ public final class GribIndexer {
       dl.delete();  // delete lock when done
     }
     System.out.println("End " + Calendar.getInstance().getTime().toString());
+    System.out.println("Total time in ms " + (System.currentTimeMillis() - start ));
   }
 
   /*

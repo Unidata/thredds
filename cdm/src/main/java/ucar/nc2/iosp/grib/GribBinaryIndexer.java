@@ -112,6 +112,7 @@ public final class GribBinaryIndexer {
   private void indexer() throws IOException {
 
     System.out.println("Start " + Calendar.getInstance().getTime().toString());
+    long start = System.currentTimeMillis();
     for (String dir : dirs) {
       File d = new File(dir);
       if (!d.exists()) {
@@ -131,6 +132,7 @@ public final class GribBinaryIndexer {
       dl.delete();  // delete lock when done
     }
     System.out.println("End " + Calendar.getInstance().getTime().toString());
+    System.out.println("Total time in ms " + (System.currentTimeMillis() - start ));
   }
 
   /*
@@ -302,7 +304,7 @@ public final class GribBinaryIndexer {
     //if( test() )
     //  return;
     
-    GribBinaryIndexer gi = new GribBinaryIndexer();
+    GribBinaryIndexer gbi = new GribBinaryIndexer();
 
     boolean clear = false;
     for (String arg : args) {
@@ -318,14 +320,14 @@ public final class GribBinaryIndexer {
         return;
       }
       // read in conf file
-      gi.readConf(arg);
+      gbi.readConf(arg);
     }
     if (clear) {
-      gi.clearLocks();
+      gbi.clearLocks();
       return;
     }
     // Grib Index files in dirs
-    gi.indexer();
+    gbi.indexer();
 
   }
 }

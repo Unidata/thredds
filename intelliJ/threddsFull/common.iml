@@ -2,8 +2,8 @@
 <module relativePaths="true" type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/../../common/target/classes" />
-    <output-test url="file://$MODULE_DIR$/../../common/target/test/classes" />
     <exclude-output />
+    <output-test url="file://$MODULE_DIR$/../../common/target/test/classes" />
     <content url="file://$MODULE_DIR$/../../common">
       <sourceFolder url="file://$MODULE_DIR$/../../common/src/java" isTestSource="false" />
     </content>
@@ -18,6 +18,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntryProperties />
   </component>
 </module>
 

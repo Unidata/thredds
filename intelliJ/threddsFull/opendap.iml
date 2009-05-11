@@ -14,7 +14,11 @@
           <setting name="EXPLODED_ENABLED" value="false" />
           <setting name="JAR_URL" value="file://" />
           <setting name="JAR_ENABLED" value="false" />
+          <setting name="BUILD_MODULE_ON_FRAME_DEACTIVATION" value="false" />
+          <setting name="BUILD_EXTERNAL_DEPENDENCIES" value="false" />
           <setting name="EXCLUDE_EXPLODED_DIRECTORY" value="true" />
+          <setting name="RUN_JASPER_VALIDATION" value="false" />
+          <setting name="BUILD_ONLY_WEB_RESOURCES" value="false" />
         </building>
         <packaging>
           <containerElement type="module" name="opendap">
@@ -52,8 +56,8 @@
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/../../../Java-OPeNDAP/target/classes" />
-    <output-test url="file://$MODULE_DIR$/../../../Java-OPeNDAP/target/test/classes" />
     <exclude-output />
+    <output-test url="file://$MODULE_DIR$/../../../Java-OPeNDAP/target/test/classes" />
     <content url="file://$MODULE_DIR$/../../../Java-OPeNDAP">
       <sourceFolder url="file://$MODULE_DIR$/../../../Java-OPeNDAP/src" isTestSource="false" />
     </content>
@@ -104,6 +108,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntryProperties />
   </component>
 </module>
 
