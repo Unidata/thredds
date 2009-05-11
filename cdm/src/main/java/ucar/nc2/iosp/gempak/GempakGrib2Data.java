@@ -130,7 +130,7 @@ public final class GempakGrib2Data {
 
         secLength = raf.readInt();
         if (secLength > 0) {
-            bms = new Grib2BitMapSection(raf, gds);  // Section 6
+            bms = new Grib2BitMapSection(true, raf, gds);  // Section 6
         }
         if (bms.getBitmapIndicator() == 254) {  //previously defined in the same GRIB2 record
             long offset = raf.getFilePointer();
@@ -143,7 +143,7 @@ public final class GempakGrib2Data {
             Grib2DataRepresentationSection savedrs = drs;
             drs = new Grib2DataRepresentationSection(raf);  // Section 5
 
-            bms = new Grib2BitMapSection(raf, gds);         // Section 6
+            bms = new Grib2BitMapSection(true, raf, gds);         // Section 6
 
             // reset pds, drs
             pds = savepds;
