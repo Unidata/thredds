@@ -128,7 +128,7 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
     try {
       setTimeUnits();
     } catch (Exception e) {
-      throw new IOException(e);
+      throw new IOException(e.getMessage());
     }
     setStartDate();
     setEndDate();
