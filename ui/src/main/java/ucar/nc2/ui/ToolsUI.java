@@ -1778,7 +1778,7 @@ public class ToolsUI extends JPanel {
               NetcdfDataset ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getDefaultEnhanceMode());
               openCoordSystems(ncd);
             } catch (IOException e1) {
-              e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+              e1.printStackTrace();
             }
 
           } else if (e.getPropertyName().equals("openGridDataset")) {
@@ -1788,7 +1788,7 @@ public class ToolsUI extends JPanel {
               NetcdfDataset ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getDefaultEnhanceMode());
               openGridDataset(ncd);
             } catch (IOException e1) {
-              e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+              e1.printStackTrace();
             }
           }
         }

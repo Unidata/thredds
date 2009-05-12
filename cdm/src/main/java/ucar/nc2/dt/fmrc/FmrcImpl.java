@@ -567,7 +567,7 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
         VariableDS vds = new VariableDS(newds.getRootGroup(), v, false); // reparent LOOK fishy !!!!
         vds.clearCoordinateSystems();
         vds.remove(vds.findAttribute("coordinates"));
-        vds.remove(v.findAttribute("_CoordinateAxes"));
+        //vds.remove(v.findAttribute("_CoordinateAxes")); LOOK we need these attributes still
         target.addVariable(vds);
       }
     }

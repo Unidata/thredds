@@ -430,6 +430,12 @@ public class NcMLReader {
     if (debugOpen)
       System.out.println("NcMLReader.readNetcdf ncml= " + ncmlLocation + " referencedDatasetUri= " + refds.getLocation());
 
+    // detect incorrect namespace
+    Namespace use = netcdfElem.getNamespace();
+    if (!use.equals(ncNS)) {
+      throw new IllegalArgumentException("Incorrect namespace specified in NcML= "+use.getURI()+"\n   must be="+ncNS.getURI());
+    }
+
     if (ncmlLocation != null) targetDS.setLocation(ncmlLocation);
     targetDS.setId(netcdfElem.getAttributeValue("id"));
     targetDS.setTitle(netcdfElem.getAttributeValue("title"));

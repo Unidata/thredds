@@ -57,6 +57,7 @@ public class Mercator extends AbstractCoordTransBuilder {
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
     double par = readAttributeDouble( ctv, "standard_parallel", Double.NaN);
     double lon0 = readAttributeDouble( ctv, "longitude_of_projection_origin", Double.NaN);
+    double lat0 = readAttributeDouble( ctv, "latitude_of_projection_origin", Double.NaN); // LOOK not used
     double false_easting = readAttributeDouble(ctv, "false_easting", 0.0);
     double false_northing = readAttributeDouble(ctv, "false_northing", 0.0);
 
