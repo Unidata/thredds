@@ -34,6 +34,7 @@ package ucar.nc2.dataset;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.stream.NcStreamRemote;
 import ucar.nc2.util.CancelTask;
@@ -912,7 +913,22 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   } */
 
   /**
-   * Retrieve the CoordinateAxis with the specified name.
+   * Retrieve the CoordinateAxis with the specified Axis Type.
+   *
+   * @param type axis type
+   * @return the first CoordinateAxis that has that type, or null if not found
+   */
+  public CoordinateAxis findCoordinateAxis(AxisType type) {
+    if (type == null) return null;
+    for (CoordinateAxis v : coordAxes) {
+      if (type == v.getAxisType())
+        return v;
+    }
+    return null;
+  }
+
+  /**
+   * Retrieve the CoordinateAxis with the specified type.
    *
    * @param fullName full name of the coordinate axis
    * @return the CoordinateAxis, or null if not found

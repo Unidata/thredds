@@ -56,33 +56,11 @@ public class StandardPointCollectionImpl extends PointCollectionImpl {
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
     // only one Cursor object needed - it will be used for each iteration with different structData's
     Cursor tableData = new Cursor(ft.getNumberOfLevels());
-    boolean calcBB = (boundingBox == null) || (dateRange == null);
 
-    return new TableIterator( ft.getObsDataIterator(tableData, bufferSize), tableData, calcBB);
+    PointFeatureIterator iter = new StandardPointFeatureIterator( ft, timeUnit, ft.getObsDataIterator(tableData, bufferSize), tableData);
+    if ((boundingBox == null) || (dateRange == null))
+      iter.setCalculateBounds(this);
+    return iter;
   }
 
-  // the iterator over the observations
-  private class TableIterator extends ucar.nc2.ft.point.standard.StandardPointFeatureIterator {
-
-    TableIterator(ucar.ma2.StructureDataIterator structIter, Cursor tableData, boolean calcBB) throws IOException {
-      super( ft, timeUnit, structIter, tableData, calcBB);
-    }
-
-    // decorate hasNext to know when the iteraton is complete
-    @Override
-    public boolean hasNext() throws IOException {
-      boolean r = super.hasNext();
-      // if iteration is complete, capture info about collection
-      if (!r) {
-        if (npts < 0) npts = getCount();
-        if (calcBB) {
-          if (boundingBox == null)
-            boundingBox = getBoundingBox();
-          if (dateRange == null)
-            dateRange = getDateRange(timeUnit);
-        }
-      }
-      return r;
-    }
-  }
 }

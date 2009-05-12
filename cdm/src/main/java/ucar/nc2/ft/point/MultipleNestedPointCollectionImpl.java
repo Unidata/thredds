@@ -105,7 +105,7 @@ public abstract class MultipleNestedPointCollectionImpl implements NestedPointFe
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       // LOOK need the isMultipleNested case
-      return new PointIteratorAdapter(from.getPointFeatureCollectionIterator(bufferSize), this.boundingBox, this.dateRange);
+      return new PointIteratorFlatten(from.getPointFeatureCollectionIterator(bufferSize), this.boundingBox, this.dateRange);
     }
 
   }

@@ -42,7 +42,8 @@ import java.util.List;
 
 /**
  * A PointFeatureIterator using the "multidimensional representation".
- *
+ * Not currently used.
+ * 
  * @author caron
  * @since Mar 26, 2008
  */

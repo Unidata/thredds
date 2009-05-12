@@ -32,6 +32,9 @@
  */
 package ucar.nc2.ft;
 
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.nc2.units.DateRange;
+
 /**
  * An iterator over PointFeatures.
  * You must complete the iteration or call finish(). Best to put in a try/finally block like:
@@ -78,11 +81,31 @@ public interface PointFeatureIterator {
   public void setBufferSize( int bytes);
 
   /**
+   * If this is set to true, then the iterator must calculate the bounding box and time range,
+   *   and make it available through getBoundingBox and getDateRange().
+   * @param collection if not null, on complete iteration set the results into the collection.
+   */
+  public void setCalculateBounds( PointFeatureCollection collection);
+
+   /**
+   * Get BoundingBox after iteration is finished, if calcBounds was set true
+   * @return BoundingBox of all returned points
+   */
+  public LatLonRect getBoundingBox();
+
+  /**
+   * Get DateRange of observation time after iteration is finished, if calcBounds was set true
+   * @return DateRange of all returned points
+   */
+  public DateRange getDateRange();
+
+  /**
    * A filter on PointFeatures
    */
   public interface Filter {
+
     /**
-     * test if a PointFeature passes this filter
+     * True if the PointFeature passes this filter
      * @param pointFeature the PointFeature to test
      * @return true if given pointFeature passes the filter
      */

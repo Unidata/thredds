@@ -111,6 +111,15 @@ public interface FeatureDataset extends FileCacheable {
   public ucar.unidata.geoloc.LatLonRect getBoundingBox();
 
   /**
+   * Caclulate date range and bounding box, even if the data has to be scanned.
+   * This ensures that getDateRange() and getBoundingBox() return non-null.
+   * If the collection already knows its date range and bounding box, then this has no effect.
+   *
+   * @throws java.io.IOException or read error.
+   */
+  public void calcBounds() throws java.io.IOException;
+
+  /**
    * List of global attributes.
    *
    * @return List of type ucar.nc2.Attribute, may be empty but not null

@@ -208,6 +208,10 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
     return llbbMax;
   }
 
+  public void calcBounds() throws java.io.IOException {
+    // not needed
+  }
+
   public List<Attribute> getGlobalAttributes() {
     return ds.getGlobalAttributes();
   }

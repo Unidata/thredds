@@ -2198,14 +2198,14 @@ public class ToolsUI extends JPanel {
       defButt = BAMutil.addActionToContainer(buttPanel, defineAction);
 
       // compare against the  definition file
-       AbstractAction testDefAction = new AbstractAction() {
-         public void actionPerformed(ActionEvent e) {
-           if (!useDefinition) return;
-           testDefinition();
-         }
-       };
-       BAMutil.setActionProperties(testDefAction, "dd", "test file against current definition", false, 'T', -1);
-       BAMutil.addActionToContainer(buttPanel, testDefAction);
+      AbstractAction testDefAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          if (!useDefinition) return;
+          testDefinition();
+        }
+      };
+      BAMutil.setActionProperties(testDefAction, "dd", "test file against current definition", false, 'T', -1);
+      BAMutil.addActionToContainer(buttPanel, testDefAction);
 
       // make definition from catalog
       AbstractAction catAction = new AbstractAction() {
@@ -2363,10 +2363,10 @@ public class ToolsUI extends JPanel {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         String currentDef = (String) defComboBox.getSelectedItem();
-        if (currentDef == null)  return;
+        if (currentDef == null) return;
 
         String currentFilename = (String) cb.getSelectedItem();
-        if (currentFilename == null)  return;
+        if (currentFilename == null) return;
 
         FmrcDefinition fmrc_def = new FmrcDefinition();
         fmrc_def.readDefinitionXML(currentDef);
@@ -2378,7 +2378,6 @@ public class ToolsUI extends JPanel {
         ta.setText(bos.toString());
       }
     }
-
 
 
     private void defineFromDirectory(String dirName, String suffix) {
@@ -3101,6 +3100,28 @@ public class ToolsUI extends JPanel {
         }
       });
       buttPanel.add(infoButton);
+
+      AbstractButton calcButton = BAMutil.makeButtcon("CalcBounds", "CalcBounds", false);
+      calcButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          if (pfDataset == null) return;
+          Formatter f = new Formatter();
+          try {
+            pfDataset.calcBounds();
+            pfDataset.getDetailInfo(f);
+            detailTA.setText(f.toString());
+            
+          } catch (IOException ioe) {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
+            ioe.printStackTrace(new PrintStream(bos));
+            detailTA.setText(bos.toString());
+          }
+
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(calcButton);
 
       AbstractAction netcdfAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {

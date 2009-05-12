@@ -126,7 +126,7 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
     StationFeatureImpl station;
 
     StandardStationPointIterator(StationFeatureImpl station, StructureDataIterator structIter, Cursor tableData) throws IOException {
-      super(ft, timeUnit, structIter, tableData, false);
+      super(ft, timeUnit, structIter, tableData);
       this.station = station;
     }
 

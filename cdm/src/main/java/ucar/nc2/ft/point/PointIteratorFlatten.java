@@ -43,16 +43,15 @@ import ucar.unidata.geoloc.LatLonRect;
 import java.io.IOException;
 
 /**
- * Adapt a PointFeatureCollectionIterator to a PointFeatureIterator, by flattening alla the iterators in the collection
+ * Adapt a PointFeatureCollectionIterator to a PointFeatureIterator, by flattening all the iterators in the collection
  *   into a single iterator over PointFeatures.
  *
  * @author caron
  * @since Mar 19, 2008
  */
-public class PointIteratorAdapter implements PointFeatureIterator {
+public class PointIteratorFlatten extends PointIteratorAbstract {
   private PointFeatureCollectionIterator collectionIter;
-  private LatLonRect filter_bb;
-  private DateRange filter_date;
+  private Filter filter = null;
 
   private PointFeatureIterator pfiter; // iterator over the current PointFeatureCollection
   private PointFeature pointFeature; // current PointFeature in the current PointFeatureCollection
@@ -64,10 +63,10 @@ public class PointIteratorAdapter implements PointFeatureIterator {
    * @param filter_bb boundingbox, or null
    * @param filter_date data range, or null
    */
-  PointIteratorAdapter(PointFeatureCollectionIterator collectionIter, LatLonRect filter_bb, DateRange filter_date) {
+  PointIteratorFlatten(PointFeatureCollectionIterator collectionIter, LatLonRect filter_bb, DateRange filter_date) {
     this.collectionIter = collectionIter;
-    this.filter_bb = filter_bb;
-    this.filter_date = filter_date;
+    if ((filter_bb != null) || (filter_date != null))
+      this.filter = new Filter( filter_bb, filter_date);
   }
 
   public void setBufferSize(int bytes) {
@@ -85,8 +84,9 @@ public class PointIteratorAdapter implements PointFeatureIterator {
     pointFeature = nextFilteredDataPoint();
     if (pointFeature != null) return true;
 
-    PointFeatureCollection feature = nextFilteredCollection();
+    PointFeatureCollection feature = nextCollection();
     if (feature == null) {
+      finishCalcBounds();
       done = true;
       return false;
     }
@@ -96,22 +96,14 @@ public class PointIteratorAdapter implements PointFeatureIterator {
   }
 
   public PointFeature next() throws IOException {
-    return done ? null : pointFeature;
+    if (done) return null;
+    calcBounds(pointFeature);
+    return pointFeature;
   }
 
-  private PointFeatureCollection nextFilteredCollection() throws IOException {
+  private PointFeatureCollection nextCollection() throws IOException {
     if (!collectionIter.hasNext()) return null;
-    PointFeatureCollection f = (PointFeatureCollection) collectionIter.next();
-
-    //if (filter_bb == null)
-    //  return f;
-
-    /* while (!filter_bb.contains(f.getLatLon())) {
-      if (!collectionIter.hasNext()) return null;
-      f = (PointFeatureCollection) collectionIter.nextFeature();
-    } LOOK */
-    
-    return f;
+    return (PointFeatureCollection) collectionIter.next();
   }
 
   private PointFeature nextFilteredDataPoint() throws IOException {
@@ -119,10 +111,10 @@ public class PointIteratorAdapter implements PointFeatureIterator {
     if (!pfiter.hasNext()) return null;
     PointFeature pdata = pfiter.next();
 
-    if (filter_date == null)
+    if (filter == null)
       return pdata;
 
-    while (!filter_date.included(pdata.getObservationTimeAsDate())) {
+    while (!filter.filter(pdata)) {
       if (!pfiter.hasNext()) return null;
       pdata = pfiter.next();
     }

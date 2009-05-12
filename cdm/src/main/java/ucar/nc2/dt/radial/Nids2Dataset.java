@@ -130,11 +130,9 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
     return "Level III";
   }
 
-
   public boolean isVolume() {
     return false;
   }
-
 
   protected void setEarthLocation() {
     double lat = 0.0;
@@ -169,35 +167,52 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
     origin = new ucar.unidata.geoloc.EarthLocationImpl(lat, lon, elev);
   }
 
-
   protected void setTimeUnits() throws Exception {
-    List axes = ds.getCoordinateAxes();
-    for (int i = 0; i < axes.size(); i++) {
-      CoordinateAxis axis = (CoordinateAxis) axes.get(i);
-      if (axis.getAxisType() == AxisType.Time) {
-        String units = axis.getUnitsString();
-        dateUnits = new DateUnit(units);
-        return;
-      }
+    CoordinateAxis axis = ds.findCoordinateAxis(AxisType.Time);
+    if (axis == null) {
+      parseInfo.append("*** Time Units not Found\n");
+
+    } else {
+      String units = axis.getUnitsString();
+      dateUnits = new DateUnit(units);
     }
-    parseInfo.append("*** Time Units not Found\n");
+
   }
 
   protected void setStartDate() {
+
     String start_datetime = ds.findAttValueIgnoreCase(null, "time_coverage_start", null);
-    if (start_datetime != null)
+    if (start_datetime != null) {
       startDate = DateUnit.getStandardOrISO(start_datetime);
-    else
-      parseInfo.append("*** start_datetime not Found\n");
+      return;
+    } else {
+      CoordinateAxis axis = ds.findCoordinateAxis(AxisType.Time);
+      if (axis != null) {
+        double val = axis.getMinValue();
+        startDate = dateUnits.makeDate(val);
+        return;
+      }
+    }
+    parseInfo.append("*** start_datetime not Found\n");
   }
 
   protected void setEndDate() {
+
     String end_datetime = ds.findAttValueIgnoreCase(null, "time_coverage_end", null);
-    if (end_datetime != null)
+    if (end_datetime != null) {
       endDate = DateUnit.getStandardOrISO(end_datetime);
-    else
-      parseInfo.append("*** end_datetime not Found\n");
+    } else {
+      CoordinateAxis axis = ds.findCoordinateAxis(AxisType.Time);
+      if (axis != null) {
+        double val = axis.getMaxValue();
+        endDate = dateUnits.makeDate(val);
+        return;
+      }
+    }
+
+    parseInfo.append("*** end_datetime not Found\n");
   }
+
 
   protected void addRadialVariable(NetcdfDataset nds, Variable var) {
     RadialVariable rsvar = null;

@@ -32,7 +32,7 @@
  */
 package ucar.nc2.ft.point.standard;
 
-import ucar.nc2.ft.point.PointIteratorImpl;
+import ucar.nc2.ft.point.PointIteratorFromStructureData;
 import ucar.nc2.ft.point.PointFeatureImpl;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.units.DateUnit;
@@ -46,14 +46,13 @@ import java.io.IOException;
  * @author caron
  * @since Mar 29, 2008
  */
-public class StandardPointFeatureIterator extends PointIteratorImpl {
+public class StandardPointFeatureIterator extends PointIteratorFromStructureData {
   private NestedTable ft;
   private DateUnit timeUnit;
   private Cursor cursor;
 
-  StandardPointFeatureIterator(NestedTable ft, DateUnit timeUnit, ucar.ma2.StructureDataIterator structIter,
-                               Cursor cursor, boolean calcBB) throws IOException {
-    super(structIter, null, calcBB);
+  StandardPointFeatureIterator(NestedTable ft, DateUnit timeUnit, ucar.ma2.StructureDataIterator structIter, Cursor cursor) throws IOException {
+    super(structIter, null);
     this.ft = ft;
     this.timeUnit = timeUnit;
     this.cursor = cursor;

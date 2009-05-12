@@ -124,7 +124,7 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
       cursor.tableData[1] = trajData;
       cursor.parentIndex = 1; // LOOK ?
       StructureDataIterator siter = ft.getFeatureObsDataIterator( cursor, bufferSize);
-      return new StandardPointFeatureIterator(ft, timeUnit, siter, cursor, false);
+      return new StandardPointFeatureIterator(ft, timeUnit, siter, cursor);
     }
   }
 

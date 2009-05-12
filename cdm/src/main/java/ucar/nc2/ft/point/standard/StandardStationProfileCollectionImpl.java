@@ -183,7 +183,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       StationFeatureImpl station;
 
       StandardStationProfilePointIterator(StructureDataIterator structIter, Cursor cursor) throws IOException {
-        super(ft, timeUnit, structIter, cursor.copy(), false);
+        super(ft, timeUnit, structIter, cursor.copy());
       }
 
       // decorate to capture npts

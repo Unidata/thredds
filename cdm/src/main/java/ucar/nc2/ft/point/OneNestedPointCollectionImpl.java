@@ -34,6 +34,7 @@ package ucar.nc2.ft.point;
 
 import ucar.nc2.ft.*;
 import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateUnit;
 import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -102,7 +103,7 @@ public abstract class OneNestedPointCollectionImpl implements NestedPointFeature
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       // LOOK need the isMultipleNested case
-      return new PointIteratorAdapter( from.getPointFeatureCollectionIterator(bufferSize), this.boundingBox, this.dateRange);
+      return new PointIteratorFlatten( from.getPointFeatureCollectionIterator(bufferSize), this.boundingBox, this.dateRange);
     }
   }
 }

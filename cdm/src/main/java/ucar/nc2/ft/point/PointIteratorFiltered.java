@@ -36,45 +36,50 @@ import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.ma2.StructureData;
 
 import java.io.IOException;
 
 /**
- * An implementation of PointFeatureIterator which allows filtering by dateRange and/or bounding box.
+ * Decorate a PointFeatureIterator with filtering on dateRange and/or bounding box.
  * @author caron
  * @since Mar 20, 2008
  */
-public class PointIteratorFiltered implements PointFeatureIterator {
-  private PointFeatureIterator pfiter;
+public class PointIteratorFiltered extends PointIteratorAbstract {
+  private PointFeatureIterator orgIter;
   private LatLonRect filter_bb;
   private DateRange filter_date;
 
   private PointFeature pointFeature;
   private boolean done = false;
 
-  PointIteratorFiltered(PointFeatureIterator pfiter, LatLonRect filter_bb, DateRange filter_date) {
-    this.pfiter = pfiter;
+  PointIteratorFiltered(PointFeatureIterator orgIter, LatLonRect filter_bb, DateRange filter_date) {
+    this.orgIter = orgIter;
     this.filter_bb = filter_bb;
     this.filter_date = filter_date;
   }
 
   public void setBufferSize(int bytes) {
-    pfiter.setBufferSize(bytes);
+    orgIter.setBufferSize(bytes);
   }
 
   public void finish() {
-    pfiter.finish();
+    orgIter.finish();
   }
 
   public boolean hasNext() throws IOException {
     if (done) return false;
 
     pointFeature = nextFilteredDataPoint();
-    return (pointFeature != null);
+    done = (pointFeature == null);
+    if (done) finishCalcBounds();
+    return !done;
   }
 
   public PointFeature next() throws IOException {
-    return done ? null : pointFeature;
+    if (done) return null;
+    calcBounds(pointFeature);
+    return pointFeature;
   }
 
   private boolean filter(PointFeature pdata) {
@@ -88,13 +93,13 @@ public class PointIteratorFiltered implements PointFeatureIterator {
   }
 
   private PointFeature nextFilteredDataPoint() throws IOException {
-    if ( pfiter == null) return null;
-    if (!pfiter.hasNext()) return null;
+    if ( orgIter == null) return null;
+    if (!orgIter.hasNext()) return null;
 
-    PointFeature pdata = pfiter.next();
+    PointFeature pdata = orgIter.next();
     while (!filter(pdata)) {
-      if (!pfiter.hasNext()) return null;
-      pdata = pfiter.next();
+      if (!orgIter.hasNext()) return null;
+      pdata = orgIter.next();
     }
 
     return pdata;

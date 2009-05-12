@@ -84,16 +84,46 @@ public interface PointFeatureCollection extends FeatureCollection {
   /**
    * Date range for the FeatureCollection. May not be known until after iterating through the collection.
    *
-   * @return the date range for the entire dataset, or null if unknown
+   * @return the date range for the entire collection, or null if unknown
    */
   public DateRange getDateRange();
 
   /**
    * The boundingBox for the FeatureCollection. May not be known until after iterating through the collection.
    *
-   * @return the lat/lon boundingBox for the entire dataset, or null if unknown.
+   * @return the lat/lon boundingBox for the entire collection, or null if unknown.
    */
   public ucar.unidata.geoloc.LatLonRect getBoundingBox();
+
+  /**
+   * Set the date range for the FeatureCollection.
+   *
+   * @param range the date range for the entire collection
+   */
+  public void setDateRange(DateRange range);
+
+  /**
+   * Set the boundingBox for the FeatureCollection.
+   *
+   * @param bb the lat/lon boundingBox for the entire collection.
+   */
+  public void setBoundingBox(ucar.unidata.geoloc.LatLonRect bb);
+
+  /**
+   * Set the size of the FeatureCollection.
+   *
+   * @param npts size of the collection
+   */
+  public void setSize(int npts);
+
+  /**
+   * Caclulate date range and bounding box, and size, even if the data has to be scanned.
+   * This ensures that getDateRange() and getBoundingBox() return non-null.
+   * If the collection already knows its size, date range and bounding box, then this has no effect.
+   *
+   * @throws java.io.IOException or read error.
+   */
+  public void calcBounds() throws java.io.IOException;
 
   /**
    * Get an iterator over the PointFeatures of this collection

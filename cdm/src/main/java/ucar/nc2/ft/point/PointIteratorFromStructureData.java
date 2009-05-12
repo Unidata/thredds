@@ -32,26 +32,22 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateUnit;
 import ucar.nc2.ft.*;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.LatLonPointImpl;
 
 import java.io.IOException;
 
 /**
  * A PointFeatureIterator which uses a StructureDataIterator to iterate over members of a Structure,
  * with optional filtering and calculation of time range and bounding box.
- *
+ * <p/>
  * Subclass must implement makeFeature() to turn the StructureData into a PointFeature.
  *
  * @author caron
  * @since Feb 29, 2008
  */
-public abstract class PointIteratorImpl implements PointFeatureIterator {
+public abstract class PointIteratorFromStructureData extends PointIteratorAbstract {
 
   // makeFeature may return null, then skip it and go to next iteration
   protected abstract PointFeature makeFeature(int recnum, StructureData sdata) throws IOException;
@@ -61,24 +57,13 @@ public abstract class PointIteratorImpl implements PointFeatureIterator {
   private int count = 0;
   private PointFeature feature = null; // hasNext must cache
 
-  // optionally calculate bounding box, date range
-  protected boolean calcBB;
-  private LatLonRect bb = null;
-  private double minTime = Double.MAX_VALUE;
-  private double maxTime = -Double.MAX_VALUE;
-
-  protected PointIteratorImpl(Filter filter, boolean calcBB) throws IOException {
-    this.filter = filter;
-    this.calcBB = calcBB;
-  }
-
-  protected PointIteratorImpl(StructureDataIterator structIter, Filter filter, boolean calcBB) throws IOException {
+  public PointIteratorFromStructureData(StructureDataIterator structIter, Filter filter) throws IOException {
     this.structIter = structIter;
     this.filter = filter;
-    this.calcBB = calcBB;
   }
 
   public boolean hasNext() throws IOException {
+
     while (true) {
       StructureData sdata = nextStructureData();
       if (sdata == null) break;
@@ -92,14 +77,14 @@ public abstract class PointIteratorImpl implements PointFeatureIterator {
     }
 
     // all done
-    if (calcBB) finishCalc();
+    finishCalcBounds();
     feature = null;
     return false;
   }
 
   public PointFeature next() throws IOException {
     if (feature == null) return null;
-    if (calcBB) doCalc(feature);
+    calcBounds(feature);
     count++;
     return feature;
   }
@@ -108,58 +93,12 @@ public abstract class PointIteratorImpl implements PointFeatureIterator {
     structIter.setBufferSize(bytes);
   }
 
-  public void finish() {}
+  public void finish() {
+  }
 
   // so subclasses can override
   protected StructureData nextStructureData() throws IOException {
     return structIter.hasNext() ? structIter.next() : null;
-  }
-
-  ////////////////////////////////////////////////////////////////////
-  // bb, dateRange calculations
-  private void doCalc(PointFeature pf) {
-    if (bb == null)
-      bb = new LatLonRect(pf.getLocation().getLatLon(), .001, .001);
-    else
-      bb.extend(pf.getLocation().getLatLon());
-
-    double obsTime = pf.getObservationTime();
-    minTime = Math.min(minTime, obsTime);
-    maxTime = Math.max(maxTime, obsTime);
-  }
-
-  private void finishCalc() {
-    if (bb.crossDateline() && bb.getWidth() > 350.0) { // call it global - less confusing
-      double lat_min = bb.getLowerLeftPoint().getLatitude();
-      double deltaLat = bb.getUpperLeftPoint().getLatitude() - lat_min;
-      bb = new LatLonRect(new LatLonPointImpl(lat_min, -180.0), deltaLat, 360.0);
-    }
-    //calcBB = false;
-  }
-
-  /**
-   * Get BoundingBox after iteration is finished, if calcBB was set true
-   * @return BoundingBox of all returned points
-   */
-  public LatLonRect getBoundingBox() {
-    return bb;
-  }
-
-  /**
-   * Get DateRange of observation time after iteration is finished, if calcBB was set true
-   * @param timeUnit to convert times to dates
-   * @return DateRange of all returned points
-   */
-  public DateRange getDateRange(DateUnit timeUnit) {
-    return new DateRange(timeUnit.makeDate(minTime), timeUnit.makeDate(maxTime));
-  }
-
-  /**
-   * Get number of points returned so far
-   * @return number of points returned so far
-   */
-  public int getCount() {
-    return count;
   }
 
 }

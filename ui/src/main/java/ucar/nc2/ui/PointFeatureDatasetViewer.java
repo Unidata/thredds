@@ -344,6 +344,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     int count = 0;
 
     PointFeatureIterator iter = pointCollection.getPointFeatureIterator(-1);
+    iter.setCalculateBounds(pointCollection);
     try {
       while (iter.hasNext() && (count++ < maxCount)) {
         PointFeature pob = iter.next();
@@ -542,6 +543,7 @@ public class PointFeatureDatasetViewer extends JPanel {
 
   private void setObservations(PointFeatureCollection pointCollection) throws IOException {
     PointFeatureIterator iter = pointCollection.getPointFeatureIterator(-1);
+    iter.setCalculateBounds(pointCollection);
     List<PointFeature> obsList = new ArrayList<PointFeature>();
     int count = 0;
     try {

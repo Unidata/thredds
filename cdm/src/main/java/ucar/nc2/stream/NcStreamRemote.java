@@ -50,7 +50,7 @@ import java.io.InputStream;
 
 /**
  * A remote NetcdfFile, using ncStream to communicate.
- * 
+ *
  * @author caron
  * @since Feb 7, 2009
  */
@@ -77,6 +77,7 @@ public class NcStreamRemote extends ucar.nc2.NetcdfFile {  // LOOK perhaps shoul
 
   /**
    * Set the HttpClient object - so that a single, shared instance is used within the application.
+   *
    * @param client the HttpClient object
    */
   static public void setHttpClient(HttpClient client) {
@@ -93,25 +94,35 @@ public class NcStreamRemote extends ucar.nc2.NetcdfFile {  // LOOK perhaps shoul
   private final String remoteURI;
 
   public NcStreamRemote(String _remoteURI, CancelTask cancel) throws IOException {
+
+    // get http URL
+    String temp = _remoteURI;
+    try {
+      if (temp.startsWith(SCHEME))
+        temp = temp.substring(SCHEME.length());
+      if (!temp.startsWith("http:"))
+        temp = "http:" + temp;
+    } catch (Exception e) {
+    }
+    remoteURI = temp;
+
     initHttpClient(); // make sure the httpClient has been set
 
-    // canonicalize name
-    if (_remoteURI.startsWith(SCHEME)) {
-      this.remoteURI = "http:" + _remoteURI.substring(SCHEME.length());
-      this.location = _remoteURI; // canonical name uses SCHEME
-    } else if (_remoteURI.startsWith("http:")) {
-      this.location = SCHEME + _remoteURI;
-      this.remoteURI = _remoteURI;
-    } else {
-      throw new java.net.MalformedURLException(_remoteURI + " must start with "+SCHEME+" or http:");
-    }
+
+    /*   this.location = _remoteURI; // canonical name uses SCHEME
+   } else if (_remoteURI.startsWith("http:")) {
+     this.location = SCHEME + _remoteURI;
+     this.remoteURI = _remoteURI;
+   } else {
+     throw new java.net.MalformedURLException(_remoteURI + " must start with "+SCHEME+" or http:");
+   } */
 
     // get the header
     HttpMethod method = null;
     try {
-      method = new GetMethod(remoteURI+"?header");
+      method = new GetMethod(remoteURI + "?header");
       method.setFollowRedirects(true);
-      if (showRequest) System.out.printf(" ncstream request %s %n",remoteURI+"?header" );
+      if (showRequest) System.out.printf(" ncstream request %s %n", remoteURI + "?header");
       int statusCode = httpClient.executeMethod(method);
 
       if (statusCode == 404)
@@ -123,6 +134,7 @@ public class NcStreamRemote extends ucar.nc2.NetcdfFile {  // LOOK perhaps shoul
       InputStream is = method.getResponseBodyAsStream();
       NcStreamReader reader = new NcStreamReader();
       reader.readStream(is, this);
+      this.location = SCHEME + remoteURI;
 
     } finally {
       if (method != null) method.releaseConnection();
@@ -133,7 +145,7 @@ public class NcStreamRemote extends ucar.nc2.NetcdfFile {  // LOOK perhaps shoul
   protected Array readData(ucar.nc2.Variable v, Section section) throws IOException, InvalidRangeException {
     if (unlocked)
       throw new IllegalStateException("File is unlocked - cannot use");
-    
+
     StringBuilder sbuff = new StringBuilder(remoteURI);
     sbuff.append("?");
     sbuff.append(v.getShortName());
@@ -142,13 +154,13 @@ public class NcStreamRemote extends ucar.nc2.NetcdfFile {  // LOOK perhaps shoul
     sbuff.append(")");
 
     if (showRequest)
-      System.out.println("NetcdfRemote data request for variable: "+v.getName()+" section= "+section+ " url="+sbuff);
+      System.out.println("NetcdfRemote data request for variable: " + v.getName() + " section= " + section + " url=" + sbuff);
 
     HttpMethod method = null;
     try {
       method = new GetMethod(sbuff.toString());
       method.setFollowRedirects(true);
-      if (showRequest) System.out.printf(" ncstream readData %s %n", sbuff );
+      if (showRequest) System.out.printf(" ncstream readData %s %n", sbuff);
       int statusCode = httpClient.executeMethod(method);
 
       if (statusCode == 404)
@@ -163,7 +175,7 @@ public class NcStreamRemote extends ucar.nc2.NetcdfFile {  // LOOK perhaps shoul
         String s = h.getValue();
         int readLen = Integer.parseInt(s);
         if (readLen != wantSize)
-          throw new IOException("content-length= "+readLen+" not equal expected Size= "+wantSize);
+          throw new IOException("content-length= " + readLen + " not equal expected Size= " + wantSize);
       }
 
       InputStream is = method.getResponseBodyAsStream();
@@ -186,12 +198,12 @@ public class NcStreamRemote extends ucar.nc2.NetcdfFile {  // LOOK perhaps shoul
     sbuff.append(constraint);
 
     if (showRequest)
-      System.out.println("NetcdfRemote data request constraint= "+constraint+ " url="+sbuff);
+      System.out.println("NetcdfRemote data request constraint= " + constraint + " url=" + sbuff);
 
     HttpMethod method = null;
     try {
       method = new GetMethod(sbuff.toString());
-      if (showRequest) System.out.printf(" ncstream readSequence %s %n", sbuff );
+      if (showRequest) System.out.printf(" ncstream readSequence %s %n", sbuff);
 
       method.setFollowRedirects(true);
       int statusCode = httpClient.executeMethod(method);

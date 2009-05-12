@@ -101,7 +101,31 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
     return boundingBox;
   }
 
-  protected void setSize( int npts) {
+  public void setDateRange(DateRange range) {
+    this.dateRange = range;
+  }
+
+  public void setBoundingBox(ucar.unidata.geoloc.LatLonRect bb) {
+    this.boundingBox = bb;
+  }
+
+  public void calcBounds() throws java.io.IOException {
+    if ((dateRange != null) && (boundingBox != null) && (size() > 0))
+      return;
+
+    PointFeatureIterator iter = getPointFeatureIterator(-1);
+    iter.setCalculateBounds(this);
+    try {
+      while (iter.hasNext())
+        iter.next();
+
+    } finally {
+      iter.finish();
+    }
+
+  }
+
+  public void setSize(int npts) {
     this.npts = npts;
   }
 
@@ -123,17 +147,17 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
       if (filter_bb == null)
         this.boundingBox = from.boundingBox;
       else
-        this.boundingBox = (from.boundingBox == null) ? filter_bb : from.boundingBox.intersect( filter_bb);
+        this.boundingBox = (from.boundingBox == null) ? filter_bb : from.boundingBox.intersect(filter_bb);
 
       if (filter_date == null) {
         this.dateRange = from.dateRange;
       } else {
-        this.dateRange =  (from.dateRange == null) ? filter_date : from.dateRange.intersect( filter_date);
+        this.dateRange = (from.dateRange == null) ? filter_date : from.dateRange.intersect(filter_date);
       }
     }
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      return new PointIteratorFiltered( from.getPointFeatureIterator(bufferSize), this.boundingBox, this.dateRange);
+      return new PointIteratorFiltered(from.getPointFeatureIterator(bufferSize), this.boundingBox, this.dateRange);
     }
   }
 

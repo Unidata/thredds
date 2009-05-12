@@ -122,6 +122,19 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
     boundingBox = largestBB;
   }
 
+
+  public void calcBounds() throws java.io.IOException {
+    setBoundingBox();
+    try {
+      setTimeUnits();
+    } catch (Exception e) {
+      throw new IOException(e);
+    }
+    setStartDate();
+    setEndDate();
+  }
+
+
   public class MyRadialVariableAdapter implements VariableSimpleIF {
 
     private int rank;

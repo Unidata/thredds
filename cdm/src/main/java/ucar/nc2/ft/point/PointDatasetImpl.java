@@ -61,12 +61,12 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
     if (filter_bb == null)
       this.boundingBox = from.boundingBox;
     else
-      this.boundingBox = (from.boundingBox == null) ? filter_bb : from.boundingBox.intersect( filter_bb);
+      this.boundingBox = (from.boundingBox == null) ? filter_bb : from.boundingBox.intersect(filter_bb);
 
     if (filter_date == null) {
       this.dateRange = from.dateRange;
     } else {
-      this.dateRange =  (from.dateRange == null) ? filter_date : from.dateRange.intersect( filter_date);
+      this.dateRange = (from.dateRange == null) ? filter_date : from.dateRange.intersect(filter_date);
     }
   }
 
@@ -96,12 +96,67 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
     return collectionList;
   }
 
-  public void getDetailInfo( java.util.Formatter sf) {
+  public void calcBounds() throws java.io.IOException {
+    if ((boundingBox != null) && (dateRange != null)) return;
+
+    LatLonRect bb = null;
+    DateRange dates = null;
+    for (FeatureCollection fc : collectionList) {
+
+      if (fc instanceof PointFeatureCollection) {
+        PointFeatureCollection pfc = (PointFeatureCollection) fc;
+        pfc.calcBounds();
+        if (bb == null)
+          bb = pfc.getBoundingBox();
+        else
+          bb.extend(pfc.getBoundingBox());
+        if (dates == null)
+          dates = pfc.getDateRange();
+        else
+          dates.extend(pfc.getDateRange());
+
+      }  else if (fc instanceof StationTimeSeriesFeatureCollection) {
+
+        StationTimeSeriesFeatureCollection sc = (StationTimeSeriesFeatureCollection) fc;
+        if (bb == null)
+           bb = sc.getBoundingBox();
+         else
+           bb.extend(sc.getBoundingBox());
+
+        PointFeatureCollection pfc = sc.flatten(null, null);
+        pfc.calcBounds();
+        if (dates == null)
+          dates = pfc.getDateRange();
+        else
+          dates.extend(pfc.getDateRange());
+      }
+
+    }
+
+    if (boundingBox == null) boundingBox = bb;
+    if (dateRange == null) dateRange = dates;
+  }
+
+  public void getDetailInfo(java.util.Formatter sf) {
     super.getDetailInfo(sf);
 
-    sf.format("\nFeatureCollections\n");
+    int count = 0;
     for (FeatureCollection fc : collectionList) {
-      sf.format(" %s type=%s\n", fc.getName(), fc.getCollectionFeatureType());
+      sf.format("%nFeatureCollection %d %n", count++);
+      if (fc instanceof PointFeatureCollection) {
+        PointFeatureCollection pfc = (PointFeatureCollection) fc;
+        sf.format(" %s %s\n", pfc.getCollectionFeatureType(), pfc.getName());
+        sf.format("   npts = %d %n", pfc.size());
+        sf.format("     bb = %s %n", pfc.getBoundingBox() == null ? "" : pfc.getBoundingBox().toString2());
+        sf.format("  dates = %s %n", pfc.getDateRange() == null ? "" : pfc.getDateRange().toString());
+
+      } else if (fc instanceof StationTimeSeriesFeatureCollection) {
+        StationTimeSeriesFeatureCollection npfc = (StationTimeSeriesFeatureCollection) fc;
+        sf.format(" %s %s\n", npfc.getCollectionFeatureType(), npfc.getName());
+        sf.format("   npts = %d %n", npfc.size());
+        sf.format("     bb = %s %n", npfc.getBoundingBox() == null ? "" : npfc.getBoundingBox().toString2());
+        //sf.format("  dates = %s %n", npfc.getDateRange() == null ? "" : npfc.getDateRange().toString());
+      }
     }
   }
 

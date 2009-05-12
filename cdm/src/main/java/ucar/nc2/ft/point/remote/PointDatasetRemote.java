@@ -36,6 +36,7 @@ import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.PointCollectionImpl;
 import ucar.nc2.ft.point.PointFeatureImpl;
 import ucar.nc2.ft.point.PointDatasetImpl;
+import ucar.nc2.ft.point.PointIteratorAbstract;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.stream.NcStreamRemote;
@@ -123,7 +124,6 @@ public class PointDatasetRemote extends PointDatasetImpl {
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       try {
-
         HttpMethod method = ncremote.readSequence(makeRequest());
         InputStream in = method.getResponseBodyAsStream();
 
@@ -131,7 +131,9 @@ public class PointDatasetRemote extends PointDatasetImpl {
         byte[] b = new byte[len];
         NcStream.readFully(in, b);
         PointStreamProto.PointFeatureCollection pfc = PointStreamProto.PointFeatureCollection.parseFrom(b);
-        return new RemotePointFeatureIterator(pfc, method, in);
+        PointFeatureIterator iter = new RemotePointFeatureIterator(pfc, method, in);
+        iter.setCalculateBounds(this);
+        return iter;
 
       } catch (InvalidRangeException e) {
         e.printStackTrace();
@@ -139,8 +141,7 @@ public class PointDatasetRemote extends PointDatasetImpl {
       }
     }
 
-
-    private class RemotePointFeatureIterator implements PointFeatureIterator {
+    private class RemotePointFeatureIterator extends PointIteratorAbstract {
       PointStreamProto.PointFeatureCollection pfc;
       HttpMethod method;
       InputStream in;
@@ -177,6 +178,7 @@ public class PointDatasetRemote extends PointDatasetImpl {
         if (len <= 0) {
           System.out.println(" total read= " + count);          
           finish();
+          pf = null;
           return false;
         }
 
@@ -193,6 +195,8 @@ public class PointDatasetRemote extends PointDatasetImpl {
       }
 
       public PointFeature next() throws IOException {
+        if (pf != null)
+          calcBounds(pf);
         return pf;
       }
 
@@ -200,6 +204,8 @@ public class PointDatasetRemote extends PointDatasetImpl {
         if (method != null)
           method.releaseConnection();
         method = null;
+        
+        finishCalcBounds();
       }
 
       public void setBufferSize(int bytes) {

@@ -36,6 +36,10 @@ import org.springframework.web.servlet.mvc.LastModified;
 import org.springframework.web.servlet.mvc.AbstractCommandController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindException;
+import org.jdom.Element;
+import org.jdom.Document;
+import org.jdom.output.XMLOutputter;
+import org.jdom.output.Format;
 import thredds.server.config.TdsContext;
 import thredds.servlet.UsageLog;
 import thredds.servlet.ServletUtil;
@@ -113,6 +117,8 @@ public class PointStreamController extends AbstractCommandController implements 
       return null;
     }
 
+    String queryS = req.getQueryString();
+
     NetcdfDataset ncd = null;
     FeatureDatasetPoint fd;
     PointFeatureCollection pfc;
@@ -135,11 +141,16 @@ public class PointStreamController extends AbstractCommandController implements 
       }
 
       OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
-      if (req.getQueryString() == null) {
+      if (queryS == null) {
         res.setContentType("text/plain");
         Formatter f = new Formatter(out);
         fd.getDetailInfo(f);
         f.flush();
+        out.flush();
+
+      } else if (queryS.equalsIgnoreCase("getCapabilities")) {
+        sendCapabilities(req, out, fd.getFeatureType());
+        res.flushBuffer();
         out.flush();
 
       } else {
@@ -147,12 +158,10 @@ public class PointStreamController extends AbstractCommandController implements 
         res.setHeader("Content-Description", "ncstream");
 
         if (query.wantHeader()) { // just the header
-
           NcStreamWriter ncWriter = new NcStreamWriter(ncd, ServletUtil.getRequestBase(req));
           ncWriter.sendHeader(out);
 
         } else { // they want some data
-
           List<FeatureCollection> coll = fd.getPointFeatureCollectionList();
           pfc = (PointFeatureCollection) coll.get(0);
 
@@ -161,7 +170,6 @@ public class PointStreamController extends AbstractCommandController implements 
           }
 
           sendData(fd.getLocation(), pfc, out);
-
         }
         NcStream.writeVInt(out, 0);  // LOOK: terminator ?
 
@@ -216,6 +224,28 @@ public class PointStreamController extends AbstractCommandController implements 
       pfIter.finish();
     }
     if (debug) System.out.printf(" sent %d features to %s %n ", count, location);
-
   }
+
+  private void sendCapabilities(HttpServletRequest req, OutputStream os, FeatureType ft) throws IOException {
+    Element rootElem = new Element("cdmRemoteCapabilities");
+    Document doc = new Document(rootElem);
+    rootElem.setAttribute("location", ServletUtil.getRequestBase(req));
+    Element elem = new Element("featureDataset");
+    elem.setAttribute("type", ft.toString());
+    elem.setAttribute("url", makeFeatureUri(req, ft));
+    rootElem.addContent(elem);
+
+    XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+    fmt.output(doc, os);
+  }
+
+  private String makeFeatureUri(HttpServletRequest req, FeatureType ft) {
+    String path = req.getPathInfo().substring(1); // remove leading '/'
+    int pos = path.indexOf("/");
+    path = path.substring(pos+1); // remove next segment '/'
+
+    return ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath() + "/" + ft.toString().toLowerCase() + "/" + path;
+  }
+
+
 }
