@@ -5,6 +5,12 @@ Build Date = @BUILDTIME@
 Changes in version 4.0
 
  Release Details:
+  42:
+   FmrcImpl: dont remove _CoordinateAxes
+   ncml: check namespace is correct
+   enhanceProxy: throw exception if coordSystem is null
+   cdmremote replaces ncstream
+   point: add calcBounds() to iterator, collections, datasets
   40:
    CF 1.4 multidim case when time is 1 dimensional
    overflow in IndexChunker when writing large files
