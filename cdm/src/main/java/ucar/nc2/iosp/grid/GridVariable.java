@@ -409,6 +409,10 @@ public class GridVariable {
       v.addAttribute(new Attribute("GRIB_param_id", Array.factory(int.class, new int[]{paramId.length}, paramId)));
       v.addAttribute(new Attribute("GRIB_product_definition_type", g2lookup.getProductDefinitionName(firstRecord)));
       v.addAttribute(new Attribute("GRIB_level_type", new Integer(firstRecord.getLevelType1())));
+      if (g2lookup.isEnsemble( firstRecord ))
+        v.addAttribute(new Attribute("GRIB_forecasts_in_ensemble", g2lookup.NumberOfForecastsInEnsemble(firstRecord)));
+      if (g2lookup.isProbability( firstRecord ))
+        v.addAttribute(new Attribute("GRIB_forecasts_in_probability", g2lookup.NumberOfForecastsInProbability(firstRecord)));
       //if( firstRecord.getLevelType2() != 255)
       //   v.addAttribute( new Attribute("GRIB2_level_type2", new Integer(firstRecord.getLevelType2())));
     } else if (lookup instanceof Grib1GridTableLookup) {
@@ -642,7 +646,9 @@ public class GridVariable {
     } else {
       levelName = GridIndexToNC.makeLevelName(gr, lookup);
     }
-    String ensembleName = GridIndexToNC.makeEnsembleName(gr, lookup);
+    // TODO: correct spelling
+    //String ensembleName = GridIndexToNC.makeEnsembleName(gr, lookup);
+    String ensembleName = GridIndexToNC.makeSuffixName(gr, lookup);
     String paramName = param.getDescription();
     paramName = (ensembleName.length() == 0)
         ? paramName : paramName + "_" + ensembleName;

@@ -106,12 +106,34 @@ public class GridIndexToNC {
   }
 
   /**
+   * Get suffix name of variable if it exists
+   *
+   * @param gr     grid record
+   * @param lookup lookup table
+   * @return name of the suffix, ensemble or probability
+   */
+  public static String makeSuffixName(GridRecord gr, GridTableLookup lookup) {
+    if ( ! (lookup instanceof Grib2GridTableLookup) )
+      return "";
+    Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
+    if (g2lookup.isEnsemble(gr)) {
+      return g2lookup.makeEnsembleName( gr, lookup);
+    } if (g2lookup.isProbability(gr) ) {
+      return g2lookup.makeProbabilityName( gr, lookup);
+    } else {
+      return "";
+    }
+
+  }
+
+  /**
    * Make the ensemble name
    *
    * @param gr     grid record
    * @param lookup lookup table
    * @return name for the level
    */
+  /*  // TODO: delete after testing  moved to Grib2GridTableLookup
   public static String makeEnsembleName(GridRecord gr, GridTableLookup lookup) {
     if ( ! (lookup instanceof Grib2GridTableLookup) )
       return "";
@@ -132,37 +154,38 @@ public class GridIndexToNC {
 //        5 Large Anomaly Index of All Members (see note below)
 //        6 Unweighted Mean of the Cluster Members
       if (ensemble < 41000) {
-        ensembleName = "unweightedMean" + Integer.toString(ensemble - 40000);
+        ensembleName = "unweightedMean"; //+ Integer.toString(ensemble - 40000);
       } else if (ensemble < 42000) {
-        ensembleName = "weightedMean" + Integer.toString(ensemble - 41000);
+        ensembleName = "weightedMean"; // + Integer.toString(ensemble - 41000);
       } else if (ensemble < 43000) {
-        ensembleName = "stdDev" + Integer.toString(ensemble - 42000);
+        ensembleName = "stdDev"; // + Integer.toString(ensemble - 42000);
       } else if (ensemble < 44000) {
-        ensembleName = "stdDevNor" + Integer.toString(ensemble - 43000);
+        ensembleName = "stdDevNor"; // + Integer.toString(ensemble - 43000);
       } else if (ensemble < 45000) {
-        ensembleName = "spread" + Integer.toString(ensemble - 44000);
+        ensembleName = "spread"; // + Integer.toString(ensemble - 44000);
       } else if (ensemble < 46000) {
-        ensembleName = "anomaly" + Integer.toString(ensemble - 45000);
+        ensembleName = "anomaly"; // + Integer.toString(ensemble - 45000);
       } else if (ensemble < 47000) {
-        ensembleName = "unweightedMeanCluster" + Integer.toString(ensemble - 46000);
+        ensembleName = "unweightedMeanCluster"; // + Integer.toString(ensemble - 46000);
       } else {
         ensembleName = "unknownEnsemble";
       }
     } else if (productDef == 1 || productDef == 11) {
       if (ensemble < 41000) {
-        ensembleName = "Cntrl_high" + Integer.toString(ensemble - 40000);
+        ensembleName = "Cntrl_high"; // + Integer.toString(ensemble - 40000);
       } else if (ensemble < 42000) {
-        ensembleName = "Cntrl_low" + Integer.toString(ensemble - 41000);
+        ensembleName = "Cntrl_low"; // + Integer.toString(ensemble - 41000);
       } else if (ensemble < 43000) {
-        ensembleName = "Perturb_neg" + Integer.toString(ensemble - 42000);
+        ensembleName = "Perturb_neg"; // + Integer.toString(ensemble - 42000);
       } else if (ensemble < 44000) {
-        ensembleName = "Perturb_pos" + Integer.toString(ensemble - 43000);
+        ensembleName = "Perturb_pos"; // + Integer.toString(ensemble - 43000);
       } else {
         ensembleName = "unknownEnsemble";
       }
     }
     return ensembleName;
   }
+  */
 
   /**
    * Make the variable name
@@ -174,12 +197,12 @@ public class GridIndexToNC {
   public String makeVariableName(GridRecord gr, GridTableLookup lookup) {
     GridParameter param = lookup.getParameter(gr);
     String levelName = makeLevelName(gr, lookup);
-    String ensembleName = makeEnsembleName(gr, lookup);
+    String suffixName = makeSuffixName(gr, lookup);
     String paramName = (useDescriptionForVariableName)
         ? param.getDescription()
         : param.getName();
-    paramName = (ensembleName.length() == 0)
-        ? paramName : paramName + "_" + ensembleName;
+    paramName = (suffixName.length() == 0)
+        ? paramName : paramName + "_" + suffixName;
 
     paramName = (levelName.length() == 0)
         ? paramName : paramName + "_" + levelName;
@@ -188,7 +211,7 @@ public class GridIndexToNC {
   }
 
   /**
-   * TODO:  moved to GridVariable = made sense since it knows what it is
+   * moved to GridVariable = made sense since it knows what it is
    * Make a long name for the variable
    *
    * @param gr   grid record
@@ -486,7 +509,6 @@ public class GridIndexToNC {
         } else {
 
           Collections.sort(plist, new CompareGridVariableByNumberVertLevels());
-          // TODO: check other coord system routines for same problem
           boolean isGrib2 = false;
           Grib2GridTableLookup g2lookup = null;
           if ( (lookup instanceof Grib2GridTableLookup) ) {
