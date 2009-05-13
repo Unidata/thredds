@@ -303,14 +303,15 @@ public class Level2VolumeScan {
     // use the maximum radials
     for (int i = 0; i < groups.size(); i++) {
       ArrayList group = (ArrayList) groups.get(i);
-      int size = group.size();
-      if (runCheck) testScan(name, group);
-      if (size < 600) {
-        max_radials = Math.max(max_radials, group.size());
-        min_radials = Math.min(min_radials, group.size());
-      } else {
+      Level2Record r =(Level2Record) group.get(0);
+      if(runCheck) testScan(name, group);
+      if(r.hasHighResREFData || r.hasHighResVELData || r.hasHighResSWData) {
         max_radials_hr = Math.max(max_radials_hr, group.size());
         min_radials_hr = Math.min(min_radials_hr, group.size());
+      }
+      else {
+        max_radials = Math.max(max_radials, group.size());
+        min_radials = Math.min(min_radials, group.size());
       }
     }
 
