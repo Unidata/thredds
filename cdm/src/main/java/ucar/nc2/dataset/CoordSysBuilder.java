@@ -675,7 +675,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
     // look for explicit references from coord sys variables to data variables
     for (VarProcess csVar : varList) {
-      if (!csVar.isCoordinateSystem)
+      if (!csVar.isCoordinateSystem && (csVar.coordSysFor != null))
         continue;
 
       // get list of dimensions from '_CoordinateSystemFor' attribute

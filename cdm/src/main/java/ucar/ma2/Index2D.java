@@ -115,7 +115,7 @@ public class Index2D extends Index {
 
   public Index set1(int v) {
     if (v < 0 || v >= shape1)  // check index here
-      throw new ArrayIndexOutOfBoundsException();
+      throw new ArrayIndexOutOfBoundsException("index="+v+" shape="+shape1);
     curr1 = v;
     return this;
   }
