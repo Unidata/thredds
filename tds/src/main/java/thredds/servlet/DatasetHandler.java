@@ -218,8 +218,11 @@ public class DatasetHandler {
     }
   }
 
-  static public GridDataset openGridDataset(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
-
+  static public GridDataset openGridDataset( HttpServletRequest req,
+                                             HttpServletResponse res,
+                                             String reqPath)
+          throws IOException
+  {
     /* first look for an fmrc dataset
     DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
     if ((match != null) && (match.dataRoot.fmrc != null)) {
@@ -234,9 +237,29 @@ public class DatasetHandler {
     NetcdfFile ncfile = getNetcdfFile(req, res, reqPath);
     if (ncfile == null) return null;
 
-    // convert to NetcdfDataset with defaultEnhanceMode
-    NetcdfDataset ncd = NetcdfDataset.wrap(ncfile, null); // do not enhance !!
-    return new ucar.nc2.dt.grid.GridDataset(ncd);
+    NetcdfDataset ncd = null;
+    try
+    {
+      // convert to NetcdfDataset with defaultEnhanceMode
+      ncd = NetcdfDataset.wrap( ncfile, null ); // do not enhance !!
+
+      return new ucar.nc2.dt.grid.GridDataset(ncd);
+    }
+    catch ( Throwable t )
+    {
+      if ( ncd == null )
+        ncfile.close();
+      else
+        ncd.close();
+
+      if ( t instanceof IOException)
+        throw (IOException) t;
+
+      String msg = ncd == null ? "Problem wrapping NetcdfFile in NetcdfDataset"
+                               : "Problem creating GridDataset from NetcdfDataset";
+      log.error( "openGridDataset(): " + msg, t);
+      throw new IOException( msg + t.getMessage());
+    }
   }
 
 
