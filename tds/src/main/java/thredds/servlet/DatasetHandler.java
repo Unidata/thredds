@@ -240,8 +240,9 @@ public class DatasetHandler {
     NetcdfDataset ncd = null;
     try
     {
-      // convert to NetcdfDataset with defaultEnhanceMode
-      ncd = NetcdfDataset.wrap( ncfile, null ); // do not enhance !!
+      // Convert to NetcdfDataset without enhancing.
+      // [Enhance will be done by GridDataset() below.]
+      ncd = NetcdfDataset.wrap( ncfile, null );
 
       return new ucar.nc2.dt.grid.GridDataset(ncd);
     }
