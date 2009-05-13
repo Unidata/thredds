@@ -332,13 +332,6 @@
     <servlet-class>thredds.server.radarServer.RadarServer</servlet-class>
   </servlet>
 
-  <!-- Experimental ncstream service -->
-  <servlet>
-    <servlet-name>ncstream</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <load-on-startup>4</load-on-startup>
-  </servlet>
-
   <!-- Experimental cdmRemote - first implemtation is pointFeature service -->
   <servlet>
     <servlet-name>cdmRemote</servlet-name>
