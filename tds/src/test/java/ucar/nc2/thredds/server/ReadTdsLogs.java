@@ -74,18 +74,18 @@ public class ReadTdsLogs {
   AtomicLong total_expected_time = new AtomicLong();
 
   final String server;
-  Formatter out;
+  //Formatter out;
   boolean dump = false;
 
   ReadTdsLogs(String server) throws FileNotFoundException {
     this.server = server;
 
-    executor = Executors.newFixedThreadPool(5); // number of threads
+    executor = Executors.newFixedThreadPool(1); // number of threads
     completionQ = new ArrayBlockingQueue<Future<SendRequestTask>>(10); // bounded, threadsafe
     completionService = new ExecutorCompletionService<SendRequestTask>(executor, completionQ);
 
-    out = new Formatter(new FileOutputStream("C:/TEMP/readTDSnew3.csv"));
-    out.format("n, url, size, org, new, speedup, fail %n");
+    //out = new Formatter(new FileOutputStream("C:/TEMP/readTDSnew3.csv"));
+    //out.format("n, url, size, org, new, speedup, fail %n");
 
     resultProcessingThread = new Thread(new ResultProcessor());
     resultProcessingThread.start();
@@ -143,11 +143,11 @@ public class ReadTdsLogs {
           SendRequestTask itask = f.get();
           Log log = itask.log;
           String urlString = server + log.path;
-          out.format("%d,\"%s\",%d,%d", reqno, urlString, log.sizeBytes, log.msecs);
+          //out.format("%d,\"%s\",%d,%d", reqno, urlString, log.sizeBytes, log.msecs);
           if (dump) System.out.printf("\"%s\",%d,%d", urlString, log.sizeBytes, log.msecs);
           float speedup = (itask.msecs > 0) ? ((float) log.msecs) / itask.msecs : 0;
 
-          out.format(",%d,%f,%s%n", itask.msecs, speedup, itask.failed);
+          //out.format(",%d,%f,%s%n", itask.msecs, speedup, itask.failed);
           if (itask.failed) System.out.printf("***FAIL %s %s %n", log.path, itask.failMessage);
           if (dump) System.out.printf(",%d,%f,%s%n", itask.msecs, speedup, itask.failed);
         } catch (InterruptedException e) {
@@ -187,7 +187,7 @@ public class ReadTdsLogs {
 
     float speedup = ((float) total_expected_time.get()) / total_sendRequest_time.get();
     System.out.println("speedup= " + speedup);
-    out.close();
+    //out.close();
   }
 
   ///////////////////////////////////////////////////////
@@ -605,7 +605,10 @@ public class ReadTdsLogs {
 
     long startElapsed = System.nanoTime();
 
-    read("D:\\logs\\motherlode\\live\\access", new MClosure() {
+    //String accessLogs = "D:\\logs\\motherlode\\live\\access";
+    String accessLogs = "C:\\Documents and Settings\\caron.UNIDATA_DOMAIN\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access";
+
+    read(accessLogs, new MClosure() {
       public void run(String filename) throws IOException {
         reader.sendRequests(filename, -1);
       }

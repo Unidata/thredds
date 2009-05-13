@@ -509,7 +509,7 @@ public class TestSubset extends TestCase {
   }
 
   public void testBBSubsetVP() throws Exception {
-    String filename = TestAll.testdataDir + "grid/transforms/Eumetsat.VerticalPerspective.grb";
+    String filename = TestAll.testdataDir + "cdmUnitTest/transforms/Eumetsat.VerticalPerspective.grb";
     GridDataset dataset = GridDataset.open(filename);
     GeoGrid grid = dataset.findGridByName("Pixel_scene_type");
     assert null != grid;

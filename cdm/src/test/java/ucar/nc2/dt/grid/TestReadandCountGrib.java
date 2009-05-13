@@ -34,6 +34,8 @@ package ucar.nc2.dt.grid;
 
 import junit.framework.*;
 import ucar.nc2.TestAll;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.TestCompare;
 
 /** Count geogrid objects - sanity check when anything changes. */
 
@@ -56,7 +58,7 @@ public class TestReadandCountGrib extends TestCase {
     doOne("grib1/data/","radar_national_rcm.grib", 1, 1, 3, 0);
     doOne("grib1/data/","radar_national.grib", 1, 1, 3, 0);
     //doOne("grib1/data/","thin.wmo", 240, 87, 117, 63);
-    doOne("grib1/data/","ukm.wmo", 96, 49, 72, 32);
+    //doOne("grib1/data/","ukm.wmo", 96, 49, 68, 32);
     doOne("grib1/data/","AVN.wmo", 22, 9, 11, 7);
     doOne("grib1/data/","AVN-I.wmo", 20, 8, 10, 7); //
     doOne("grib1/data/","MRF.wmo", 15, 8, 10, 6); //
@@ -81,9 +83,11 @@ public class TestReadandCountGrib extends TestCase {
   }
 
    public static void main( String arg[]) throws Exception {
-     // new TestReadandCount("dummy").doOne("C:/data/conventions/wrf/","wrf.nc", 33, 5, 7, 7);  // missing TSLB
-     new TestReadandCountGrib("dummy").testRead();  // missing TSLB
-     //new TestReadandCount("dummy").doOne(TestAll.testdataDir+"grid/grib/grib1/data/","ukm.wmo", 96, 49, 69, 32);
+     //TestReadandCount.doOne("Q:/grid/grib/grib1/data/", "ukm.wmo", -1, -1, -1, -1);
+
+     NetcdfFile ncfile = NetcdfFile.open("//newshemp/testdata/grid/grib/grib1/data/ukm.wmo", null);
+     NetcdfFile ncfile1 = NetcdfFile.open("//newshemp/testdata/grid/grib/grib1/data/ukm1.wmo", null);
+     TestCompare.compareFiles(ncfile, ncfile1, false, false, false);
   }
 
 }
