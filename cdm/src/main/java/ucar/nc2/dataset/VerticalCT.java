@@ -35,21 +35,22 @@ package ucar.nc2.dataset;
 
 import ucar.unidata.geoloc.vertical.*;
 import ucar.nc2.Dimension;
+import net.jcip.annotations.Immutable;
 
 
 /**
  * A VerticalCT is a CoordinateTransform function CT: (GeoZ) -> Height or Pressure.
  * Typically it may be dependent also on X,Y and/or Time. CT: (X,Y,GeoZ,Time) -> Height or Pressure.
  * This class just records the transformation parameters. The mathematical transformation itself is
- * delegated to a class implementing ucar.unidata.geoloc.vertical.VerticalTransform;
+ * delegated to a class implementing ucar.unidata.geoloc.vertical.VerticalTransform.
  *
  * @author  caron
  */
-
+@Immutable
 public class VerticalCT extends CoordinateTransform {
-   private VerticalTransform vt;
-   private VerticalCT.Type type;
-   private CoordTransBuilderIF builder;
+   //private VerticalTransform vt;
+   private final VerticalCT.Type type;
+   private final CoordTransBuilderIF builder;
 
   /**
    * Create a Vertical Coordinate Transform.
@@ -72,7 +73,7 @@ public class VerticalCT extends CoordinateTransform {
     super( from.getName(), from.getAuthority(), from.getTransformType());
     this.type = from.getVerticalTransformType();
     this.builder = from.getBuilder();
-    this.vt = from.getVerticalTransform();
+    //this.vt = from.getVerticalTransform();
   }
 
   /**
@@ -84,13 +85,13 @@ public class VerticalCT extends CoordinateTransform {
   /**
    * get the Vertical Transform function - actually does the calculations.
    * @return the Vertical Transform function
-   */
-  public VerticalTransform getVerticalTransform() { return vt; }
+   *
+  public VerticalTransform getVerticalTransform() { return vt; }  */
 
  /** set the Vertical Transform function
   * @param vt the VerticalTransform
   */
-  public void setVerticalTransform(VerticalTransform vt ) { this.vt = vt; }
+  // public void setVerticalTransform(VerticalTransform vt ) { this.vt = vt; }
 
   /**
    * Use the builder to make the Vertical Transform function
@@ -101,8 +102,7 @@ public class VerticalCT extends CoordinateTransform {
    * @see CoordTransBuilderIF#makeMathTransform
    */
   public VerticalTransform makeVerticalTransform(NetcdfDataset ds, Dimension timeDim) {
-    this.vt = builder.makeMathTransform(ds, timeDim, this);
-    return this.vt;
+    return builder.makeMathTransform(ds, timeDim, this);
   }
 
   /** get the CoordTransBuilderIF
@@ -110,8 +110,12 @@ public class VerticalCT extends CoordinateTransform {
    */
   public CoordTransBuilderIF getBuilder() { return builder; }
 
+  @Override
   public String toString() {
-    return name +" type="+type+" impl.class="+(vt == null ? "none" : vt.getClass().getName());  
+    return "VerticalCT {" +
+        "type=" + type +
+        ", builder=" + builder.getTransformName() +
+        '}';
   }
 
 

@@ -247,6 +247,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   private CoordinateAxis1D vertZaxis, ensembleAxis;
   private CoordinateAxis1DTime timeTaxis, runTimeAxis;
   private VerticalCT vCT;
+  private VerticalTransform vt;
   private Dimension timeDim;
 
   private boolean isDate = false;
@@ -407,6 +408,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * This will create sections of the corresponding CoordinateAxes.
    *
    * @param from    copy this GridCoordSys
+   * @param rt_range subset the runtime dimension, or null if you want all of it
+   * @param e_range subset the ensemble dimension, or null if you want all of it
    * @param t_range subset the time dimension, or null if you want all of it
    * @param z_range subset the vertical dimension, or null if you want all of it
    * @param y_range subset the y dimension, or null if you want all of it
@@ -462,12 +465,11 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     }
 
     if (from.getVerticalCT() != null) {
-      VerticalTransform vt = from.getVerticalTransform();
-      if (vt != null)
-        vt = vt.subset(t_range, z_range, y_range, x_range);
+      VerticalTransform vtFrom = from.getVerticalTransform(); // LOOK may need to make sure this exists?
+      if (vtFrom != null)
+        vt = vtFrom.subset(t_range, z_range, y_range, x_range);
 
-      vCT = new VerticalCT(from.getVerticalCT());
-      vCT.setVerticalTransform(vt);
+      vCT = from.getVerticalCT();
     }
 
     CoordinateAxis1DTime rtaxis = from.getRunTimeAxis();
@@ -543,27 +545,30 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     return newAxis;
   }
 
-  //private VerticalTransform vt = null;
-
   /**
-   * Get the vertical transform, if any.
+   * Get the vertical transform function, or null if none
+   * @return the vertical transform function, or null if none
    */
   public VerticalTransform getVerticalTransform() {
-    return vCT == null ? null : vCT.getVerticalTransform();
+    return vt;
   }
 
+  /**
+   * Get the Coordinate Transform description.
+   * @return Coordinate Transform description, or null if none
+   */
   public VerticalCT getVerticalCT() {
     return vCT;
   }
 
   // we have to delay making these, since we dont identify the dimensions specifically until now
   void makeVerticalTransform(GridDataset gds, Formatter parseInfo) {
-    if (vCT == null) return;
-    if (vCT.getVerticalTransform() != null) return; // already done
+    if (vt != null) return; // already done
+    if (vCT == null) return;  // no vt
 
-    vCT.makeVerticalTransform(gds.getNetcdfDataset(), timeDim);
+    vt = vCT.makeVerticalTransform(gds.getNetcdfDataset(), timeDim);
 
-    if (vCT.getVerticalTransform() == null) {
+    if (vt == null) {
       if (parseInfo != null) parseInfo.format("  - ERR can't make VerticalTransform = %s\n", vCT.getVerticalTransformType());
     } else {
       if (parseInfo != null) parseInfo.format("  - VerticalTransform = %s\n", vCT.getVerticalTransformType());

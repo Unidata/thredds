@@ -6,6 +6,10 @@ Changes in version 4.0
 
  Release Details:
   42:
+   ucar.nc2.dataset.grid is removed, since it can no longer be made to work.
+   VerticalTransformCT no longer keeps copy of VerticalTransform, since difference coordSys may need different functions.
+     Now the VerticalTransform is kept in GridCoordSys, which is the only places that was used. 
+     VerticalTransformCT is now immutable, so it can be shared safely.
    FmrcImpl: dont remove _CoordinateAxes
    ncml: check namespace is correct
    enhanceProxy: throw exception if coordSystem is null

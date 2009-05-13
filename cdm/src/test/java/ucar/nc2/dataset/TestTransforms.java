@@ -35,11 +35,16 @@ package ucar.nc2.dataset;
 
 import ucar.nc2.TestAll;
 import ucar.nc2.*;
+import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.dt.grid.GeoGrid;
+import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.vertical.*;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.*;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Section;
+import ucar.ma2.ArrayDouble;
 
 import java.io.IOException;
 import java.util.List;
@@ -62,14 +67,14 @@ public class TestTransforms extends TestCase {
   public void testHybridSigmaPressure() throws IOException, InvalidRangeException {
     String filename = TestAll.testdataDir + "grid/transforms/HybridSigmaPressure.nc";
     test(filename, "lev", "T", "time", VerticalCT.Type.HybridSigmaPressure, HybridSigmaPressure.class,
-            SimpleUnit.pressureUnit );
+        SimpleUnit.pressureUnit);
   }
 
   public void testHybridSigmaPressure2() throws IOException, InvalidRangeException {
     String filename = TestAll.testdataDir + "grid/netcdf/cf/climo.cam2.h0.0000-09.nc";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     VerticalTransform vt = test(ncd, "lev", "T", "time", VerticalCT.Type.HybridSigmaPressure, HybridSigmaPressure.class,
-            SimpleUnit.pressureUnit );
+        SimpleUnit.pressureUnit);
 
     Dimension timeDim = ncd.findDimension("time");
     for (int i = 0; i < timeDim.getLength(); i++) {
@@ -98,6 +103,11 @@ public class TestTransforms extends TestCase {
     test(filename, "zpos", "salt", "time", VerticalCT.Type.OceanSigma, OceanSigma.class, SimpleUnit.meterUnit);
   }
 
+  public void testOceanSigma2() throws IOException, InvalidRangeException {
+    String filename = "C:\\data\\work\\signell/erie_test.ncml";
+    test(filename, "sigma", "temp", "time", VerticalCT.Type.OceanSigma, OceanSigma.class, SimpleUnit.meterUnit);
+  }
+
   public void testOceanS3() throws IOException, InvalidRangeException {
     String filename = TestAll.testdataDir + "grid/transforms/ocean_his.nc";
     test(filename, "s_rho", "u", "ocean_time", VerticalCT.Type.OceanS, OceanS.class, SimpleUnit.meterUnit);
@@ -115,28 +125,30 @@ public class TestTransforms extends TestCase {
 
   public void testSigma() throws IOException, InvalidRangeException {
     String filename = TestAll.testdataDir + "grid/transforms/Sigma_LC.nc";
-    test(filename, "level", "Temperature", null, VerticalCT.Type.Sigma, AtmosSigma.class, SimpleUnit.pressureUnit );
+    test(filename, "level", "Temperature", null, VerticalCT.Type.Sigma, AtmosSigma.class, SimpleUnit.pressureUnit);
   }
 
   public void testExisting3D() throws IOException, InvalidRangeException {
     String filename = TestAll.testdataDir + "grid/transforms/VExisting3D_NUWG.nc";
     test(filename, "VerticalTransform", "rhu_hybr", "record", VerticalCT.Type.Existing3DField, VTfromExistingData.class,
-            null);
+        null);
   }
 
   private VerticalTransform test(String filename, String levName, String varName, String timeName,
-          VerticalCT.Type vtype, Class vclass, SimpleUnit unit)
-          throws IOException, InvalidRangeException {
+                                 VerticalCT.Type vtype, Class vclass, SimpleUnit unit)
+      throws IOException, InvalidRangeException {
 
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
-    test(ncd, levName, varName, timeName, vtype,  vclass, unit);
+    test(ncd, levName, varName, timeName, vtype, vclass, unit);
     ncd.close();
+
+    testGrid(filename, varName);
     return null;
   }
 
   private VerticalTransform test(NetcdfDataset ncd, String levName, String varName, String timeName,
-          VerticalCT.Type vtype, Class vclass, SimpleUnit vunit)
-          throws IOException, InvalidRangeException {
+                                 VerticalCT.Type vtype, Class vclass, SimpleUnit vunit)
+      throws IOException, InvalidRangeException {
 
     VariableDS lev = (VariableDS) ncd.findVariable(levName);
     assert lev != null;
@@ -144,17 +156,17 @@ public class TestTransforms extends TestCase {
 
     VariableDS v = (VariableDS) ncd.findVariable(varName);
     assert v != null;
+    System.out.printf(" data variable = %s%n", v);
+    Section varSection = new Section(v.getShapeAsSection());
+    varSection = varSection.removeRange(0); // remove time dependence
 
     List cList = v.getCoordinateSystems();
     assert cList != null;
     assert cList.size() == 1;
     CoordinateSystem csys = (CoordinateSystem) cList.get(0);
 
-    List vList = new ArrayList();
-    List tList = csys.getCoordinateTransforms();
-    assert tList != null;
-    for (int i = 0; i < tList.size(); i++) {
-      CoordinateTransform ct = (CoordinateTransform) tList.get(i);
+    List<CoordinateTransform> vList = new ArrayList<CoordinateTransform>();
+    for (CoordinateTransform ct : csys.getCoordinateTransforms()) {
       if (ct.getTransformType() == TransformType.Vertical)
         vList.add(ct);
     }
@@ -176,6 +188,10 @@ public class TestTransforms extends TestCase {
       ucar.ma2.Array coordVals = vt.getCoordinateArray(0);
       assert (null != coordVals);
 
+      Section cSection = new Section(coordVals.getShape());
+      System.out.printf(" coordVal shape = %s %n", cSection);
+      assert varSection.equals(cSection);
+
     } else {
       Dimension timeDim = ncd.findDimension(timeName);
       assert null != timeDim;
@@ -184,6 +200,9 @@ public class TestTransforms extends TestCase {
       for (int i = 0; i < timeDim.getLength(); i++) {
         ucar.ma2.ArrayDouble.D3 coordVals = vt.getCoordinateArray(i);
         assert (null != coordVals);
+        Section cSection = new Section(coordVals.getShape());
+        System.out.printf(" coordVal shape = %s %n", cSection);
+        assert varSection.equals(cSection);
       }
     }
     assert vt != null;
@@ -198,8 +217,30 @@ public class TestTransforms extends TestCase {
     return vt;
   }
 
+  private void testGrid(String uri, String var) throws IOException, InvalidRangeException {
 
- /////////////////////////////////////////////////////////////////////////
+    GridDataset ds = null;
+    try {
+      ds = GridDataset.open(uri);
+      GeoGrid grid = ds.findGridByName(var);
+      Section s = new Section(grid.getShape());
+      System.out.printf("var = %s %n", s);
+
+      GridCoordSystem GridCoordS = grid.getCoordinateSystem();
+      VerticalTransform vt = GridCoordS.getVerticalTransform();
+      ArrayDouble.D3 z = vt.getCoordinateArray(0);
+      Section sv = new Section(z.getShape());
+      System.out.printf("3dcoord = %s %n", sv);
+
+      s = s.removeRange(0);
+      assert s.equals(sv);
+    } finally {
+      if (ds != null) ds.close();
+    }
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////
 
   public void testLC() throws IOException, InvalidRangeException {
     String filename = TestAll.testdataDir + "grid/transforms/Sigma_LC.nc";

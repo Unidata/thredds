@@ -71,7 +71,7 @@ public class VOceanSigma extends AbstractCoordTransBuilder {
     CoordinateTransform rs = new VerticalCT("OceanSigma_Transform_"+ctv.getShortName(), getTransformName(), VerticalCT.Type.OceanSigma, this);
     rs.addParameter(new Parameter("standard_name", getTransformName()));
     rs.addParameter(new Parameter("formula_terms", formula_terms));
-    rs.addParameter((new Parameter("height_formula", "height(x,y,z) = eta(x,y) + sigma(k)*(depth(x,y) + eta(x,y))")));
+    rs.addParameter((new Parameter("height_formula", "height(x,y,z) = eta(n,j,i) + sigma(k)*(depth(j,i)+eta(n,j,i))")));
 
     if (!addParameter(rs, OceanSigma.SIGMA, ds, sigma)) return null;
     if (!addParameter(rs, OceanSigma.ETA, ds, eta)) return null;
