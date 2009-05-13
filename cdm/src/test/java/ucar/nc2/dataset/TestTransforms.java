@@ -59,13 +59,14 @@ import junit.framework.TestCase;
  * @version $Revision$ $Date$
  */
 public class TestTransforms extends TestCase {
+  private String testDir="cdmUnitTest/transforms/";
 
   public TestTransforms(String name) {
     super(name);
   }
 
   public void testHybridSigmaPressure() throws IOException, InvalidRangeException {
-    String filename = TestAll.testdataDir + "grid/transforms/HybridSigmaPressure.nc";
+    String filename = TestAll.testdataDir + testDir + "HybridSigmaPressure.nc";
     test(filename, "lev", "T", "time", VerticalCT.Type.HybridSigmaPressure, HybridSigmaPressure.class,
         SimpleUnit.pressureUnit);
   }
@@ -89,47 +90,52 @@ public class TestTransforms extends TestCase {
   }
 
   public void testOceanS() throws IOException, InvalidRangeException {
-    String filename = TestAll.testdataDir + "grid/transforms/OceanS.nc";
+    String filename = TestAll.testdataDir + testDir+ "OceanS.nc";
     test(filename, "s_rho", "salt", "ocean_time", VerticalCT.Type.OceanS, OceanS.class, SimpleUnit.meterUnit);
   }
 
   public void testOceanS2() throws IOException, InvalidRangeException {
-    String filename = TestAll.testdataDir + "grid/transforms/OceanS2.nc";
+    String filename = TestAll.testdataDir + testDir+ "OceanS2.nc";
     test(filename, "s_rho", "temp", "ocean_time", VerticalCT.Type.OceanS, OceanS.class, SimpleUnit.meterUnit);
   }
 
   public void testOceanSigma() throws IOException, InvalidRangeException {
-    String filename = TestAll.testdataDir + "grid/transforms/OceanSigma.nc";
+    String filename = TestAll.testdataDir + testDir+ "OceanSigma.nc";
     test(filename, "zpos", "salt", "time", VerticalCT.Type.OceanSigma, OceanSigma.class, SimpleUnit.meterUnit);
   }
 
   public void testOceanSigma2() throws IOException, InvalidRangeException {
-    String filename = "C:\\data\\work\\signell/erie_test.ncml";
+    String filename = TestAll.testdataDir + testDir+ "erie_test.ncml";
     test(filename, "sigma", "temp", "time", VerticalCT.Type.OceanSigma, OceanSigma.class, SimpleUnit.meterUnit);
   }
 
+  public void testGomoos() throws IOException, InvalidRangeException {
+    String filename = TestAll.testdataDir + testDir+ "gomoos.ncml";
+    test(filename, "zpos", "temp", "time", VerticalCT.Type.OceanSigma, OceanSigma.class, SimpleUnit.meterUnit);
+  }
+
   public void testOceanS3() throws IOException, InvalidRangeException {
-    String filename = TestAll.testdataDir + "grid/transforms/ocean_his.nc";
+    String filename = TestAll.testdataDir + testDir+ "ocean_his.nc";
     test(filename, "s_rho", "u", "ocean_time", VerticalCT.Type.OceanS, OceanS.class, SimpleUnit.meterUnit);
   }
 
   public void testOceanG1() throws IOException, InvalidRangeException {
-    String filename = TestAll.testdataDir + "grid/transforms/ocean_his_g1.nc";
+    String filename = TestAll.testdataDir + testDir+ "ocean_his_g1.nc";
     test(filename, "s_rho", "u", "ocean_time", VerticalCT.Type.OceanSG1, OceanSG1.class, SimpleUnit.meterUnit);
   }
 
   public void testOceanG2() throws IOException, InvalidRangeException {
-    String filename = TestAll.testdataDir + "grid/transforms/ocean_his_g2.nc";
+    String filename = TestAll.testdataDir + testDir+ "ocean_his_g2.nc";
     test(filename, "s_rho", "u", "ocean_time", VerticalCT.Type.OceanSG2, OceanSG2.class, SimpleUnit.meterUnit);
   }
 
   public void testSigma() throws IOException, InvalidRangeException {
-    String filename = TestAll.testdataDir + "grid/transforms/Sigma_LC.nc";
+    String filename = TestAll.testdataDir + testDir+ "Sigma_LC.nc";
     test(filename, "level", "Temperature", null, VerticalCT.Type.Sigma, AtmosSigma.class, SimpleUnit.pressureUnit);
   }
 
   public void testExisting3D() throws IOException, InvalidRangeException {
-    String filename = TestAll.testdataDir + "grid/transforms/VExisting3D_NUWG.nc";
+    String filename = TestAll.testdataDir + testDir+ "VExisting3D_NUWG.nc";
     test(filename, "VerticalTransform", "rhu_hybr", "record", VerticalCT.Type.Existing3DField, VTfromExistingData.class,
         null);
   }
@@ -150,6 +156,9 @@ public class TestTransforms extends TestCase {
                                  VerticalCT.Type vtype, Class vclass, SimpleUnit vunit)
       throws IOException, InvalidRangeException {
 
+    System.out.printf("file= %s%n", ncd.getLocation());
+
+
     VariableDS lev = (VariableDS) ncd.findVariable(levName);
     assert lev != null;
     System.out.println(" dump of ctv = \n" + lev);
@@ -158,7 +167,6 @@ public class TestTransforms extends TestCase {
     assert v != null;
     System.out.printf(" data variable = %s%n", v);
     Section varSection = new Section(v.getShapeAsSection());
-    varSection = varSection.removeRange(0); // remove time dependence
 
     List cList = v.getCoordinateSystems();
     assert cList != null;
@@ -190,19 +198,22 @@ public class TestTransforms extends TestCase {
 
       Section cSection = new Section(coordVals.getShape());
       System.out.printf(" coordVal shape = %s %n", cSection);
-      assert varSection.equals(cSection);
+      assert varSection.computeSize() == cSection.computeSize();
 
     } else {
       Dimension timeDim = ncd.findDimension(timeName);
       assert null != timeDim;
       vt = vct.makeVerticalTransform(ncd, timeDim);
       assert vt.isTimeDependent();
+
+      varSection = varSection.removeRange(0); // remove time dependence for comparision
+
       for (int i = 0; i < timeDim.getLength(); i++) {
         ucar.ma2.ArrayDouble.D3 coordVals = vt.getCoordinateArray(i);
         assert (null != coordVals);
         Section cSection = new Section(coordVals.getShape());
         System.out.printf(" coordVal shape = %s %n", cSection);
-        assert varSection.equals(cSection);
+        assert varSection.computeSize() == cSection.computeSize();
       }
     }
     assert vt != null;
@@ -232,7 +243,8 @@ public class TestTransforms extends TestCase {
       Section sv = new Section(z.getShape());
       System.out.printf("3dcoord = %s %n", sv);
 
-      s = s.removeRange(0);
+      if (vt.isTimeDependent())
+        s = s.removeRange(0);
       assert s.equals(sv);
     } finally {
       if (ds != null) ds.close();
@@ -243,7 +255,7 @@ public class TestTransforms extends TestCase {
   /////////////////////////////////////////////////////////////////////////
 
   public void testLC() throws IOException, InvalidRangeException {
-    String filename = TestAll.testdataDir + "grid/transforms/Sigma_LC.nc";
+    String filename = TestAll.testdataDir+ testDir + "Sigma_LC.nc";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     VariableDS lev = (VariableDS) ncd.findVariable("Lambert_Conformal");
     assert lev != null;
@@ -282,7 +294,7 @@ public class TestTransforms extends TestCase {
   }
 
   public void testLA() throws IOException, InvalidRangeException {
-    String filename = TestAll.testdataDir + "grid/transforms/LambertAzimuth.nc";
+    String filename = TestAll.testdataDir + testDir+ "LambertAzimuth.nc";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     VariableDS lev = (VariableDS) ncd.findVariable("grid_mapping0");
     assert lev != null;
@@ -321,7 +333,7 @@ public class TestTransforms extends TestCase {
   }
 
   public void testPS() throws IOException, InvalidRangeException {
-    String filename = TestAll.testdataDir + "grid/transforms/PolarStereographic.nc";
+    String filename = TestAll.testdataDir + testDir+ "PolarStereographic.nc";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     VariableDS lev = (VariableDS) ncd.findVariable("Polar_Stereographic");
     assert lev != null;
@@ -360,7 +372,7 @@ public class TestTransforms extends TestCase {
   }
 
   public void testPS2() throws IOException, InvalidRangeException {
-    String filename = TestAll.testdataDir + "grid/transforms/Polar_Stereographic2.nc";
+    String filename = TestAll.testdataDir + testDir+ "Polar_Stereographic2.nc";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
 
     VariableDS v = (VariableDS) ncd.findVariable("dpd-Surface0");
@@ -432,7 +444,7 @@ public class TestTransforms extends TestCase {
   }
 
   public void testMercator() throws IOException, InvalidRangeException {
-    String filename = TestAll.testdataDir + "grid/transforms/Mercator.grib1";
+    String filename = TestAll.testdataDir + testDir+ "Mercator.grib1";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     VariableDS lev = (VariableDS) ncd.findVariable("Mercator_Projection_Grid");
     assert lev != null;
@@ -471,7 +483,7 @@ public class TestTransforms extends TestCase {
   }
 
   public void testVerticalPerspective() throws IOException, InvalidRangeException {
-    String filename = TestAll.testdataDir + "grid/transforms/Eumetsat.VerticalPerspective.grb";
+    String filename = TestAll.testdataDir + testDir+ "Eumetsat.VerticalPerspective.grb";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     VariableDS lev = (VariableDS) ncd.findVariable("Space_View_Perspective_or_Orthographic");
     assert lev != null;

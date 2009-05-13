@@ -182,7 +182,7 @@ public class TestReadandCount extends TestCase {
     gridDs.close();
   }
 
-  public void testReadNcMLInputStream() throws Exception {
+  public void utestReadNcMLInputStream() throws Exception {
     String ncmlLoc = "file:C:\\data\\work\\margolis\\test.ncml";
     GridDataset fullDataset = GridDataset.open( ncmlLoc);
     System.out.printf("full size= %d%n", fullDataset.getGrids().size());
