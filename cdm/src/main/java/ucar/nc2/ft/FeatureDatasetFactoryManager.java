@@ -365,4 +365,12 @@ public class FeatureDatasetFactoryManager {
     return null;
   }
 
+  public static void main(String[] args) throws IOException {
+    String server = "http://motherlode:8080/";
+    String dataset = "/thredds/dodsC/fmrc/NCEP/GFS/Global_0p5deg/runs/NCEP-GFS-Global_0p5deg_RUN_2009-05-13T12:00:00Z";
+    Formatter errlog = new Formatter();
+    FeatureDataset fd = FeatureDatasetFactoryManager.open( FeatureType.GRID, server + dataset,  null, errlog );
+    System.out.printf("%s%n", fd);
+  }
+
 }

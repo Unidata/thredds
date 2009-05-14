@@ -498,9 +498,8 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
       myDDS.printConstrained(pw);
 
       // Send the Data delimiter back to the client
-      //pw.println("Data:"); // JCARON CHANGED
       pw.flush();
-      bOut.write("\nData:\n".getBytes()); // JCARON CHANGED
+      bOut.write("\nData:\n".getBytes());
       bOut.flush();
 
       // Send the binary data back to the client

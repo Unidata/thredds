@@ -126,7 +126,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" exported="" name="protobuf" level="application" />
+    <orderEntry type="library" exported="" name="ptotobuf" level="application" />
   </component>
 </module>
 
