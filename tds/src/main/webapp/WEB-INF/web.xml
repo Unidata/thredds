@@ -152,10 +152,6 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>ncstream</servlet-name>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>cdmRemote</servlet-name>
   </filter-mapping>
 
@@ -520,11 +516,6 @@
   <servlet-mapping>
     <servlet-name>FileServer</servlet-name>
     <url-pattern>/fileServer/*</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>ncstream</servlet-name>
-    <url-pattern>/ncstream/*</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
