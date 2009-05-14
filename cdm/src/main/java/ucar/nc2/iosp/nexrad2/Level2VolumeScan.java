@@ -38,7 +38,8 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DiskCache;
 import ucar.nc2.NetcdfFile;
-
+import static ucar.nc2.iosp.nexrad2.Level2Record.REFLECTIVITY_HIGH;
+import static ucar.nc2.iosp.nexrad2.Level2Record.VELOCITY_HIGH ;
 import java.io.*;
 import java.util.*;
 import java.nio.channels.FileLock;
@@ -305,7 +306,7 @@ public class Level2VolumeScan {
       ArrayList group = (ArrayList) groups.get(i);
       Level2Record r =(Level2Record) group.get(0);
       if(runCheck) testScan(name, group);
-      if(r.hasHighResREFData || r.hasHighResVELData || r.hasHighResSWData) {
+      if(r.getGateCount(REFLECTIVITY_HIGH) > 500 || r.getGateCount(VELOCITY_HIGH) > 1000) {
         max_radials_hr = Math.max(max_radials_hr, group.size());
         min_radials_hr = Math.min(min_radials_hr, group.size());
       }

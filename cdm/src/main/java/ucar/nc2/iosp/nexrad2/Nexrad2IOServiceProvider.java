@@ -198,7 +198,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
         List o = (List) groups.get(i);
         Level2Record firstRecord = (Level2Record)o.get(0);
 
-        if(firstRecord.hasHighResREFData || firstRecord.hasHighResVELData)
+        if(firstRecord.getGateCount(REFLECTIVITY_HIGH) > 500 || firstRecord.getGateCount(VELOCITY_HIGH) > 1000)
             firstGroup.add(o);
         else
             secondGroup.add(o);
