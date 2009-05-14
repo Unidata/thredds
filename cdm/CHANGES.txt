@@ -6,9 +6,13 @@ Changes in version 4.0
 
  Release Details:
   42:
+   upgrade protobuf library to 2.1.0
+   grib index performance enhancements
+   ucar.units enhancement
+   nexrad2 bug fixes
    ucar.nc2.dataset.grid is removed, since it can no longer be made to work.
-   VerticalTransformCT no longer keeps copy of VerticalTransform, since difference coordSys may need different functions.
-     Now the VerticalTransform is kept in GridCoordSys, which is the only places that was used. 
+   VerticalTransformCT no longer keeps copy of VerticalTransform, since different coordSys may need different functions.
+     Now the VerticalTransform is kept in GridCoordSys, which is the only place that it was used. 
      VerticalTransformCT is now immutable, so it can be shared safely.
    FmrcImpl: dont remove _CoordinateAxes
    ncml: check namespace is correct

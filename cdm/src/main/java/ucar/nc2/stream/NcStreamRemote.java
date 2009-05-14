@@ -38,7 +38,6 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.methods.GetMethod;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.stream.old.NetcdfRemote;
 
 import ucar.ma2.Array;
 import ucar.ma2.Section;
@@ -57,7 +56,7 @@ import java.io.InputStream;
 public class NcStreamRemote extends ucar.nc2.NetcdfFile {  // LOOK perhaps should be NetcdfDataset ??
   static public final String SCHEME = "cdmremote:";
 
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NetcdfRemote.class);
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcStreamRemote.class);
   static private HttpClient httpClient;
   static private boolean showRequest = true;
 

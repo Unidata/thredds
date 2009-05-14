@@ -13,7 +13,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 
 /**
- * Defines the nc stream format, along with ncStream.proto.
+ * Defines the ncstream format, along with ncStream.proto.
  * cd /dev/tds/thredds/cdm/src/main/java
  * protoc --proto_path=. --java_out=. ucar/nc2/stream/ncStream.proto
  */
@@ -83,7 +83,7 @@ public class NcStream {
       if (var.isCoordinateVariable() || var.getSize() * var.getElementSize() < sizeToCache) {
         Array data = var.read();
         ByteBuffer bb = data.getDataAsByteBuffer();
-        builder.setData( new ByteString(bb.array()));
+        builder.setData( ByteString.copyFrom(bb.array()));
       }
     }
 
@@ -153,7 +153,7 @@ public class NcStream {
     Array data = att.getValues();
     ByteBuffer bb = data.getDataAsByteBuffer();
 
-    return new ByteString(bb.array());
+    return ByteString.copyFrom(bb.array());
   }
 
   ////////////////////////////////////////////////////////////

@@ -71,6 +71,7 @@
   <property name="log4j.jar" value="log4j-1.2.15.jar"/>
   <property name="lucene.jar" value="lucene.jar"/>
   <property name="opendap.jar" value="opendap-2.1.jar"/>
+  <property name="protobuf.jar" value="protobuf-java-2.1.0.jar"/>
   <property name="resourcesOptional.jar" value="resourcesOptional.jar"/>
   <property name="spring.jar" value="spring-2.5.jar"/>
   <property name="stax.jar" value="stax-api-1.0.1.jar"/>
@@ -90,6 +91,7 @@
     <include name="external/${httpclient.jar}"/>
     <include name="external/${jdom.jar}"/>
     <include name="external/${loggingAPI.jar}"/>
+    <include name="external/${protobuf.jar}"/>
     <include name="release/${visadNoDods.jar}"/>
     <include name="external/${stax.jar}"/>
   </fileset>
@@ -104,6 +106,7 @@
     <include name="lib/${visadNoDods.jar}"/>
     <include name="lib/${jgoodies.jar}"/>
     <include name="lib/${lucene.jar}"/>
+    <include name="lib/${protobuf.jar}"/>
     <include name="lib/${spring.jar}"/>
     <include name="lib/${stax.jar}"/>
   </fileset>
@@ -131,7 +134,7 @@
 
   <!-- LOOK can we generate with pathconvert? -->
   <property name="Class-Path"
-            value="${jgoodies.jar} ${grib.jar} ${jdom.jar} ${opendap.jar} ${http-codec.jar} ${httpclient.jar} ${http-logging.jar} ${loggingAPI.jar} ${logging-minimal.jar} ${jpeg2000.jar} ${resourcesOptional.jar} ${spring.jar} ${visadNoDods.jar}"/>
+            value="${jgoodies.jar} ${grib.jar} ${jdom.jar} ${opendap.jar} ${http-codec.jar} ${httpclient.jar} ${http-logging.jar} ${loggingAPI.jar} ${logging-minimal.jar} ${jpeg2000.jar} ${protobuf.jar} ${resourcesOptional.jar} ${spring.jar} ${visadNoDods.jar}"/>
   <property name="ClassPath-CommandLine"
             value="lib/${grib.jar}:lib/${jdom.jar}:lib/${httpclient.jar}:lib/${http-codec.jar}:lib/${http-logging.jar}:lib/${jpeg2000.jar}:lib/${loggingAPI.jar}:lib/${logging-minimal.jar}:lib/${jgoodies.jar}:lib/${spring.jar}:lib/${visadNoDods.jar}"/>
 
@@ -330,6 +333,7 @@
         <include name="external/${loggingAPI.jar}"/>
         <include name="external/${logging-minimal.jar}"/>
         <include name="release/${opendap.jar}"/>
+        <include name="release/${protobuf.jar}"/>
         <include name="release/${visadNoDods.jar}"/>
       </fileset>
     </unzip>
@@ -403,6 +407,7 @@
         <include name="external/${loggingAPI.jar}"/>
         <include name="external/${logging-minimal.jar}"/>
         <include name="release/${opendap.jar}"/>
+        <include name="external/${protobuf.jar}"/>
       </fileset>
     </unzip>
     <unzip dest="${idv.dir}">

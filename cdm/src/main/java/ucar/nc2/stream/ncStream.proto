@@ -28,8 +28,8 @@ enum AxisType {
   GeoX = 5;
   Lat = 6;
   Lon = 7;
-  Height = 8
-  Pressure = 9;,
+  Height = 8;
+  Pressure = 9;
   RadialAzimuth = 10;
   RadialDistance = 11;
   RadialElevation = 12;
@@ -70,7 +70,7 @@ message Dimension {
 message Variable {
   required string name = 1;
   required DataType dataType = 2;
-  repeated Dimension shape = 3;  //actual dimension instead of reference
+  repeated Dimension shape = 3;  // actual dimension instead of reference
   repeated Attribute atts = 4;
   optional bytes data = 5;    // "immediate" - store small data in header
   optional AxisType axis = 6;
@@ -95,7 +95,7 @@ message Group {
   repeated Attribute atts = 5;
   repeated Group groups = 6;
   repeated CoordinateSystem coordSys = 7;
-  repeated CoordinateTransform coordTrans = 7;
+  repeated CoordinateTransform coordTrans = 8;
 }
 
 message Header {
