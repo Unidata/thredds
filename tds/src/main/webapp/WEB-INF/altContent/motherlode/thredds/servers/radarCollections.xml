@@ -10,7 +10,7 @@
         <documentation type="summary">NEXRAD Level II Radar WSR-88D from IDD. Sent every 5 minutes.</documentation>
         <timeCoverage>
           <end>present</end>
-          <duration>7 days</duration>
+          <duration>90 days</duration>
         </timeCoverage>
         <variables vocabulary="DIF">
           <variable name="Reflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="db" />
@@ -106,7 +106,7 @@
       </geospatialCoverage>
       <timeCoverage>
         <end>present</end>
-        <duration>14 days</duration>
+        <duration>90 days</duration>
       </timeCoverage>
       <variables vocabulary="DIF">
         <variable name="NTP/Storm Total Rainfall" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Rain" units="in" />
@@ -205,7 +205,7 @@
       </geospatialCoverage>
       <timeCoverage>
         <end>present</end>
-        <duration>14 days</duration>
+        <duration>90 days</duration>
       </timeCoverage>
       <variables vocabulary="DIF">
         <variable name="TR0/Base Reflectivity Tilt 1" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
