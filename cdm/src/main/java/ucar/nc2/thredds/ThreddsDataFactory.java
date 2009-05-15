@@ -293,7 +293,7 @@ public class ThreddsDataFactory {
     }
 
     if (access.getService().getServiceType() == ServiceType.CdmRemote) {
-      result.featureDataset = PointDatasetRemote.factory(access.getStandardUrlName());
+      result.featureDataset = PointDatasetRemote.factory(wantFeatureType, access.getStandardUrlName());
 
     } else {
 

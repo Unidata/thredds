@@ -197,7 +197,7 @@ public class FeatureDatasetFactoryManager {
 
     // special processing for cdmRemote: datasets
     } else if (location.startsWith(ucar.nc2.stream.NcStreamRemote.SCHEME)) {
-      return ucar.nc2.ft.point.remote.PointDatasetRemote.factory(location); 
+      return ucar.nc2.ft.point.remote.PointDatasetRemote.factory(wantFeatureType, location);
     }
 
     NetcdfDataset ncd = NetcdfDataset.acquireDataset(location, task);
@@ -219,7 +219,7 @@ public class FeatureDatasetFactoryManager {
     if (debug) System.out.println("wrap " + ncd.getLocation() + " want = " + wantFeatureType);
 
     // the case where we dont know what type it is
-    if ((wantFeatureType == null) || (wantFeatureType == FeatureType.NONE)) {
+    if ((wantFeatureType == null) || (wantFeatureType == FeatureType.NONE) || (wantFeatureType == FeatureType.ANY)) {
       return wrapUnknown(ncd, task, errlog);
     }
 

@@ -83,7 +83,7 @@ public class RadialDatasetStandardFactory implements FeatureDatasetFactory {
 
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
 
-    if ((wantFeatureType != FeatureType.RADIAL) && (wantFeatureType != FeatureType.NONE))
+    if ((wantFeatureType != FeatureType.RADIAL) && (wantFeatureType != FeatureType.NONE) && (wantFeatureType != FeatureType.ANY))
       return null;
 
     for (TypedDatasetFactoryIF fac : factories) {

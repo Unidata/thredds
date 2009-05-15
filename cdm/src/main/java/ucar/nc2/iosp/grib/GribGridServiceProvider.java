@@ -332,7 +332,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
         try {
           index = new GribReadIndex().open(indexFile.getPath());
         } catch (Exception e) {
-          log.error("  sync read Index failed = " + indexFile.getPath());
+          log.error("  sync read Index failed = " + indexFile.getPath(), e);
           return false;
         }
 

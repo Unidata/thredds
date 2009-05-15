@@ -42,7 +42,7 @@ package ucar.nc2.constants;
 
 public enum FeatureType {
   /** No specific type */
-  NONE,
+  ANY,
   /** Gridded Data */
   GRID,
   /** Radial data */
@@ -68,7 +68,10 @@ public enum FeatureType {
   TRAJECTORY,
 
   /** experimental */
-  STATION_RADIAL;
+  STATION_RADIAL,
+
+  /** deprecated - use ANY */
+  NONE;
 
   /**
    * Find the FeatureType that matches this name.

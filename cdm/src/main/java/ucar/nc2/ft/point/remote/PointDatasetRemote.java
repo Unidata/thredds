@@ -70,7 +70,7 @@ public class PointDatasetRemote extends PointDatasetImpl {
   static private boolean showXML = true;
   static private boolean showRequest = true;
 
-  static public FeatureDatasetPoint factory(String endpoint) throws IOException {
+  static public FeatureDatasetPoint factory(FeatureType wantFeatureType, String endpoint) throws IOException {
     if (endpoint.startsWith(ucar.nc2.stream.NcStreamRemote.SCHEME))
       endpoint = endpoint.substring(ucar.nc2.stream.NcStreamRemote.SCHEME.length());
 
@@ -81,14 +81,14 @@ public class PointDatasetRemote extends PointDatasetImpl {
 
     NcStreamRemote ncremote = new NcStreamRemote(datasetUri, null);
     NetcdfDataset ncd = new NetcdfDataset(ncremote, null);
-    return new PointDatasetRemote(ncd, ncremote);
+    return new PointDatasetRemote(wantFeatureType, ncd, ncremote);
   }
 
   static private org.jdom.Document getCapabilities(String endpoint) throws IOException {
     org.jdom.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder(false);
-      doc = builder.build(endpoint+"?getCapabilities");
+      doc = builder.build(endpoint+"?getCapabilities"); // LOOK - not useing httpclient
     } catch (JDOMException e) {
       throw new IOException(e.getMessage());
     }
@@ -102,20 +102,25 @@ public class PointDatasetRemote extends PointDatasetImpl {
     return doc;
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////
   private NcStreamRemote ncremote;
 
-  private PointDatasetRemote(NetcdfDataset ncd, NcStreamRemote ncremote) {
-    super(ncd, FeatureType.POINT);
+  private PointDatasetRemote(FeatureType wantFeatureType, NetcdfDataset ncd, NcStreamRemote ncremote) throws IOException {
+    super(ncd, wantFeatureType);
     this.ncremote = ncremote;
+
     collectionList = new ArrayList<FeatureCollection>(1);
-    collectionList.add( new RemotePointCollection());
+    switch (wantFeatureType) {
+      case POINT:
+        collectionList.add( new RemotePointCollection());
+      //case STATION:
+      //  collectionList.add( new RemoteStationCollection(ncd.getLocation(), ncremote));
+      default:
+        throw new UnsupportedOperationException("No implemenattion for "+wantFeatureType);
+    }
   }
 
-  @Override
-  public FeatureType getFeatureType() {
-    return FeatureType.POINT;
-  }
-
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   private class RemotePointCollection extends PointCollectionImpl {
 
     RemotePointCollection() {
@@ -123,8 +128,10 @@ public class PointDatasetRemote extends PointDatasetImpl {
     }
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+      HttpMethod method = null;
+
       try {
-        HttpMethod method = ncremote.readSequence(makeRequest());
+        method = ncremote.sendQuery(makeRequest());
         InputStream in = method.getResponseBodyAsStream();
 
         int len = NcStream.readVInt(in);
@@ -135,9 +142,10 @@ public class PointDatasetRemote extends PointDatasetImpl {
         iter.setCalculateBounds(this);
         return iter;
 
-      } catch (InvalidRangeException e) {
-        e.printStackTrace();
-        return null;
+      } catch (Throwable t) {
+        // log.error(t);
+        if (method != null) method.releaseConnection();
+        throw new RuntimeException(t);
       }
     }
 
@@ -289,7 +297,7 @@ public class PointDatasetRemote extends PointDatasetImpl {
 
   public static void main(String args[]) throws IOException {
     String endpoint = "http://localhost:8080/thredds/ncstream/point/data";
-    FeatureDatasetPoint fd = PointDatasetRemote.factory(endpoint);
+    FeatureDatasetPoint fd = PointDatasetRemote.factory(FeatureType.ANY, endpoint);
     PointFeatureCollection pc = (PointFeatureCollection) fd.getPointFeatureCollectionList().get(0);
 
     PointFeatureIterator pfIter = pc.getPointFeatureIterator(-1);

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="tds" default="compile" basedir=".">
   <property name="release.version" value="4.0"/>
-  <property name="release.version.minor" value="${release.version}.9"/>
+  <property name="release.version.minor" value="${release.version}.10"/>
   <tstamp>
     <format property="buildtime" pattern="yyyy-MM-dd HH:mm:ss" timezone="GMT"/>
   </tstamp>
@@ -91,6 +91,7 @@
   <property name="httpclient.jar" value="external/commons-httpclient-3.1.jar"/>
   <property name="jdom.jar" value="external/jdom.jar"/>
   <property name="joda.jar" value="external/joda-time-1.6.jar"/>
+  <property name="protobuf.jar" value="external/protobuf-java-2.1.0.jar"/>
   <property name="slf4jAPI.jar" value="external/slf4j-api-1.5.6.jar"/>
   <property name="slf4jImpl.jar" value="external/slf4j-log4j12-1.5.6.jar"/>
   <property name="log4j.jar" value="external/log4j-1.2.15.jar"/>
@@ -137,6 +138,7 @@
       <include name="${httpclient.jar}"/>
       <include name="${jdom.jar}"/>
       <include name="${joda.jar}"/>
+      <include name="${protobuf.jar}"/>
       <include name="${slf4jAPI.jar}"/>
       <include name="${spring.jar}"/>
       <include name="${spring-webmvc.jar}"/>

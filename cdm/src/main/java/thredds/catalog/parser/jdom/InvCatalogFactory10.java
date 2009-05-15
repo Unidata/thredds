@@ -2352,7 +2352,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       elem.addContent( authElem);
     }
 
-    if ((tmg.getDataType() != null) && (tmg.getDataType() != FeatureType.NONE)) {
+    if ((tmg.getDataType() != null) && (tmg.getDataType() != FeatureType.NONE) && (tmg.getDataType() != FeatureType.ANY)) {
       Element dataTypeElem = new Element("dataType", defNS);
       dataTypeElem.setText(tmg.getDataType().toString());
       elem.addContent( dataTypeElem);

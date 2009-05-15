@@ -107,15 +107,6 @@ public class NcStreamRemote extends ucar.nc2.NetcdfFile {  // LOOK perhaps shoul
 
     initHttpClient(); // make sure the httpClient has been set
 
-
-    /*   this.location = _remoteURI; // canonical name uses SCHEME
-   } else if (_remoteURI.startsWith("http:")) {
-     this.location = SCHEME + _remoteURI;
-     this.remoteURI = _remoteURI;
-   } else {
-     throw new java.net.MalformedURLException(_remoteURI + " must start with "+SCHEME+" or http:");
-   } */
-
     // get the header
     HttpMethod method = null;
     try {
@@ -190,35 +181,27 @@ public class NcStreamRemote extends ucar.nc2.NetcdfFile {  // LOOK perhaps shoul
     }
   }
 
-  public HttpMethod readSequence(String constraint) throws IOException, InvalidRangeException {
+  public HttpMethod sendQuery(String query) throws IOException {
 
     StringBuilder sbuff = new StringBuilder(remoteURI);
     sbuff.append("?");
-    sbuff.append(constraint);
+    sbuff.append(query);
 
     if (showRequest)
-      System.out.println("NetcdfRemote data request constraint= " + constraint + " url=" + sbuff);
+      System.out.println("NetcdfRemote sendQuery= " + query + " url=" + sbuff);
 
-    HttpMethod method = null;
-    try {
-      method = new GetMethod(sbuff.toString());
-      if (showRequest) System.out.printf(" ncstream readSequence %s %n", sbuff);
+    HttpMethod method = new GetMethod(sbuff.toString());
 
-      method.setFollowRedirects(true);
-      int statusCode = httpClient.executeMethod(method);
+    method.setFollowRedirects(true);
+    int statusCode = httpClient.executeMethod(method);
 
-      if (statusCode == 404)
-        throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
+    if (statusCode == 404)
+      throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
 
-      if (statusCode >= 300)
-        throw new IOException(method.getPath() + " " + method.getStatusLine());
+    if (statusCode >= 300)
+      throw new IOException(method.getPath() + " " + method.getStatusLine());
 
-      return method;
-
-    } finally {
-      // if (method != null) method.releaseConnection();
-    }
+    return method;
   }
-
 
 }

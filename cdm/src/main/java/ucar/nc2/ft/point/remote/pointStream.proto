@@ -32,3 +32,18 @@ message PointFeatureCollection {
   required string timeUnit = 2;
   repeated Member members = 3;
 }
+
+message Station {
+  required string id = 1;
+  required double lat = 2;
+  required double lon = 3;
+  optional double alt = 4;
+  optional string desc = 5;
+  optional string wmoId = 6;
+}
+
+message StationList {
+  repeated Station stations = 1;
+}
+
+}
