@@ -45,5 +45,3 @@ message Station {
 message StationList {
   repeated Station stations = 1;
 }
-
-}

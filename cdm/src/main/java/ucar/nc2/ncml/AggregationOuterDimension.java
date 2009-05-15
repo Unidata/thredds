@@ -560,7 +560,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
      * @param id          attribute "id" on the netcdf element
      * @param ncoordS     attribute "ncoords" on the netcdf element
      * @param coordValueS attribute "coordValue" on the netcdf element
-     * @param enhance     open dataset in enhance mode
+     * @param enhance     open dataset in enhance mode NOT USED
      * @param reader      factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
      */
     protected DatasetOuterDimension(String cacheName, String location, String id, String ncoordS, String coordValueS,
@@ -778,6 +778,8 @@ public abstract class AggregationOuterDimension extends Aggregation {
         }
 
         Variable v = findVariable(ncd, mainv);
+        if (v == null)
+            System.out.printf("HEY%n");
 
         // its possible that we are asking for more of the time coordinate than actually exists (fmrc ragged time)
         // so we need to read only what is there

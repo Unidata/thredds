@@ -49,8 +49,11 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
       int len = NcStream.readVInt(in);
       byte[] b = new byte[len];
       NcStream.readFully(in, b);
-      PointStreamProto.StationList pfc = PointStreamProto.StationList.parseFrom(b);
-      stationHelper.addStation(new StationImpl());
+      PointStreamProto.StationList stationsp = PointStreamProto.StationList.parseFrom(b);
+      for (ucar.nc2.ft.point.remote.PointStreamProto.Station sp : stationsp.getStationsList()) {
+        Station s = new StationImpl(sp.getId(), sp.getDesc(), sp.getWmoId(), sp.getLat(), sp.getLon(), sp.getAlt());
+        stationHelper.addStation(s);
+      }
 
     } finally {
       if (method != null) method.releaseConnection();
@@ -80,38 +83,35 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
     };
   }
 
+  DateUnit dateUnit;
+
   private class RemoteStationFeatureImpl extends StationFeatureImpl {
 
     RemoteStationFeatureImpl(Station s) {
       super(s, dateUnit, -1);
+    }
 
-            HttpMethod method = null;
+    // an iterator over the observations for this station
+    public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+
+      HttpMethod method = null;
 
       try {
-        method = ncremote.sendQuery(makeRequest());
+        method = ncremote.sendQuery("stn="+s.getName());
         InputStream in = method.getResponseBodyAsStream();
 
         int len = NcStream.readVInt(in);
         byte[] b = new byte[len];
         NcStream.readFully(in, b);
         PointStreamProto.PointFeatureCollection pfc = PointStreamProto.PointFeatureCollection.parseFrom(b);
-        PointFeatureIterator iter = new RemotePointFeatureIterator(pfc, method, in);
+        PointFeatureIterator iter = new RemoteStationPointIterator(null);
         iter.setCalculateBounds(this);
         return iter;
 
       } finally {
         if (method != null) method.releaseConnection();
       }
-    }
 
-    // an iterator over the observations for this station
-    public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      Cursor cursor = new Cursor(ft.getNumberOfLevels());
-      cursor.recnum[1] = recnum;
-      cursor.tableData[1] = stationData;
-      cursor.parentIndex = 1; // LOOK ?
-      StructureDataIterator obsIter = ft.getStationObsDataIterator(cursor, bufferSize);
-      return new RemoteStationPointIterator((size() < 0) ? this : null, obsIter, cursor);
     }
 
   }

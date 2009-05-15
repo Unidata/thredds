@@ -109,6 +109,11 @@ public class TestTransforms extends TestCase {
     test(filename, "sigma", "temp", "time", VerticalCT.Type.OceanSigma, OceanSigma.class, SimpleUnit.meterUnit);
   }
 
+  public void testOceanSigmaNcml() throws IOException, InvalidRangeException {
+    String filename = "http://coast-enviro.er.usgs.gov/models/share/glos_test.ncml";
+    test(filename, "sigma", "temp", "time", VerticalCT.Type.OceanSigma, OceanSigma.class, SimpleUnit.meterUnit);
+  }
+
   public void testGomoos() throws IOException, InvalidRangeException {
     String filename = TestAll.testdataDir + testDir+ "gomoos.ncml";
     test(filename, "zpos", "temp", "time", VerticalCT.Type.OceanSigma, OceanSigma.class, SimpleUnit.meterUnit);

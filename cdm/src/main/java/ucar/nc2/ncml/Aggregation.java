@@ -485,7 +485,7 @@ public abstract class Aggregation implements ProxyReader {
    * @param ncoordS     attribute "ncoords" on the netcdf element
    * @param coordValueS attribute "coordValue" on the netcdf element
    * @param sectionSpec attribute "sectionSpec" on the netcdf element
-   * @param enhance     open dataset in enhance mode
+   * @param enhance     open dataset in enhance mode NOT USED
    * @param reader      factory for reading this netcdf dataset
    * @return a Aggregation.Dataset
    */
@@ -508,7 +508,7 @@ public abstract class Aggregation implements ProxyReader {
     // deferred opening
     protected String cacheLocation;
     protected ucar.nc2.util.cache.FileFactory reader;
-    // protected EnumSet<NetcdfDataset.Enhance> enhance;
+    protected Set<NetcdfDataset.Enhance> enhance; // used by Fmrc to read enhanced datasets
 
     protected Object extraInfo;
 
@@ -524,7 +524,6 @@ public abstract class Aggregation implements ProxyReader {
     protected Dataset(CrawlableDataset cd) {
       this( cd.getPath());
       this.cacheLocation = location;
-      //this.enhance = Aggregation.this.enhance;
     }
 
     /**
@@ -535,7 +534,7 @@ public abstract class Aggregation implements ProxyReader {
      * @param cacheLocation a unique name to use for caching
      * @param location  attribute "location" on the netcdf element
      * @param id  attribute "id" on the netcdf element
-     * @param enhance   open dataset in enhance mode, may be null
+     * @param enhance   open dataset in enhance mode, may be null NOT USED
      * @param reader    factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
      */
     protected Dataset(String cacheLocation, String location, String id, EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
@@ -571,7 +570,7 @@ public abstract class Aggregation implements ProxyReader {
 
       NetcdfFile ncfile;
       // no enhance
-      //if (enhance == null || enhance.isEmpty()) {
+      if (enhance == null || enhance.isEmpty()) {
         if (mergeNcml == null)
           ncfile = NetcdfDataset.acquireFile(reader, null, cacheLocation, -1, cancelTask, spiObject);
         else {
@@ -579,7 +578,7 @@ public abstract class Aggregation implements ProxyReader {
           new NcMLReader().merge((NetcdfDataset) ncfile, mergeNcml);
         }
 
-        /* yes enhance
+        // yes enhance : used by Fmrc
       } else {
         if (mergeNcml == null) {
           ncfile = NetcdfDataset.acquireDataset(reader, cacheLocation, enhance, -1, cancelTask, spiObject);
@@ -590,7 +589,7 @@ public abstract class Aggregation implements ProxyReader {
           ncd.enhance( enhance);
           ncfile = ncd;
         }
-      } */
+      }
 
       if (debugOpenFile) System.out.println(" acquire " + cacheLocation + " took " + (System.currentTimeMillis() - start));
       return ncfile;

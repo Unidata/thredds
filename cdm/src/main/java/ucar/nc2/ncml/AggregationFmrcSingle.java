@@ -168,6 +168,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     // create new list of Datasets
     datasets = new ArrayList<Dataset>();
     for (Aggregation.Dataset dataset : explicitDatasets) {
+      dataset.enhance = fmrcEnhanceMode;
       datasets.add(dataset);
     }
 
@@ -316,8 +317,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     DatasetFmrcSingle(CrawlableDataset cd) {
       super(cd.getPath());
       this.cacheLocation = this.location;
-      //this.enhance = AggregationFmrcSingle.this.enhance;
-      //this.enhance = NetcdfDataset.getDefaultEnhanceMode(); 
+      this.enhance = fmrcEnhanceMode;
       this.ncoord = 1;
 
       // parse for rundate

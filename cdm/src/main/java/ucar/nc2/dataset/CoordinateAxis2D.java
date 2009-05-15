@@ -80,6 +80,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
     Array data;
     try {
       data = read();
+      if (!hasCachedData()) setCachedData(data, false); //cache data for subsequent reading
     } catch (IOException ioe) {
       log.error("Error reading coordinate values " + ioe);
       throw new IllegalStateException(ioe);

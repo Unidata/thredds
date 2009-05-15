@@ -1723,6 +1723,799 @@ public final class PointStreamProto {
     }
   }
   
+  public static final class Station extends
+      com.google.protobuf.GeneratedMessage {
+    // Use Station.newBuilder() to construct.
+    private Station() {}
+    
+    private static final Station defaultInstance = new Station();
+    public static Station getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public Station getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Station_descriptor;
+    }
+    
+    @Override
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_Station_fieldAccessorTable;
+    }
+    
+    // required string id = 1;
+    public static final int ID_FIELD_NUMBER = 1;
+    private boolean hasId;
+    private java.lang.String id_ = "";
+    public boolean hasId() { return hasId; }
+    public java.lang.String getId() { return id_; }
+    
+    // required double lat = 2;
+    public static final int LAT_FIELD_NUMBER = 2;
+    private boolean hasLat;
+    private double lat_ = 0D;
+    public boolean hasLat() { return hasLat; }
+    public double getLat() { return lat_; }
+    
+    // required double lon = 3;
+    public static final int LON_FIELD_NUMBER = 3;
+    private boolean hasLon;
+    private double lon_ = 0D;
+    public boolean hasLon() { return hasLon; }
+    public double getLon() { return lon_; }
+    
+    // optional double alt = 4;
+    public static final int ALT_FIELD_NUMBER = 4;
+    private boolean hasAlt;
+    private double alt_ = 0D;
+    public boolean hasAlt() { return hasAlt; }
+    public double getAlt() { return alt_; }
+    
+    // optional string desc = 5;
+    public static final int DESC_FIELD_NUMBER = 5;
+    private boolean hasDesc;
+    private java.lang.String desc_ = "";
+    public boolean hasDesc() { return hasDesc; }
+    public java.lang.String getDesc() { return desc_; }
+    
+    // optional string wmoId = 6;
+    public static final int WMOID_FIELD_NUMBER = 6;
+    private boolean hasWmoId;
+    private java.lang.String wmoId_ = "";
+    public boolean hasWmoId() { return hasWmoId; }
+    public java.lang.String getWmoId() { return wmoId_; }
+    
+    @Override
+    public final boolean isInitialized() {
+      if (!hasId) return false;
+      if (!hasLat) return false;
+      if (!hasLon) return false;
+      return true;
+    }
+    
+    @Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (hasId()) {
+        output.writeString(1, getId());
+      }
+      if (hasLat()) {
+        output.writeDouble(2, getLat());
+      }
+      if (hasLon()) {
+        output.writeDouble(3, getLon());
+      }
+      if (hasAlt()) {
+        output.writeDouble(4, getAlt());
+      }
+      if (hasDesc()) {
+        output.writeString(5, getDesc());
+      }
+      if (hasWmoId()) {
+        output.writeString(6, getWmoId());
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    @Override
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (hasId()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeStringSize(1, getId());
+      }
+      if (hasLat()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(2, getLat());
+      }
+      if (hasLon()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(3, getLon());
+      }
+      if (hasAlt()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(4, getAlt());
+      }
+      if (hasDesc()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeStringSize(5, getDesc());
+      }
+      if (hasWmoId()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeStringSize(6, getWmoId());
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeDelimitedFrom(input).buildParsed();
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeDelimitedFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.Station parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return new Builder(); }
+    public Builder newBuilderForType() { return new Builder(); }
+    public static Builder newBuilder(ucar.nc2.ft.point.remote.PointStreamProto.Station prototype) {
+      return new Builder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> {
+      // Construct using ucar.nc2.ft.point.remote.PointStreamProto.Station.newBuilder()
+      private Builder() {}
+      
+      ucar.nc2.ft.point.remote.PointStreamProto.Station result = new ucar.nc2.ft.point.remote.PointStreamProto.Station();
+      
+      @Override
+      protected ucar.nc2.ft.point.remote.PointStreamProto.Station internalGetResult() {
+        return result;
+      }
+      
+      @Override
+      public Builder clear() {
+        result = new ucar.nc2.ft.point.remote.PointStreamProto.Station();
+        return this;
+      }
+      
+      @Override
+      public Builder clone() {
+        return new Builder().mergeFrom(result);
+      }
+      
+      @Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return ucar.nc2.ft.point.remote.PointStreamProto.Station.getDescriptor();
+      }
+      
+      public ucar.nc2.ft.point.remote.PointStreamProto.Station getDefaultInstanceForType() {
+        return ucar.nc2.ft.point.remote.PointStreamProto.Station.getDefaultInstance();
+      }
+      
+      public ucar.nc2.ft.point.remote.PointStreamProto.Station build() {
+        if (result != null && !isInitialized()) {
+          throw new com.google.protobuf.UninitializedMessageException(
+            result);
+        }
+        return buildPartial();
+      }
+      
+      private ucar.nc2.ft.point.remote.PointStreamProto.Station buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        if (!isInitialized()) {
+          throw new com.google.protobuf.UninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return buildPartial();
+      }
+      
+      public ucar.nc2.ft.point.remote.PointStreamProto.Station buildPartial() {
+        if (result == null) {
+          throw new IllegalStateException(
+            "build() has already been called on this Builder.");  }
+        ucar.nc2.ft.point.remote.PointStreamProto.Station returnMe = result;
+        result = null;
+        return returnMe;
+      }
+      
+      @Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof ucar.nc2.ft.point.remote.PointStreamProto.Station) {
+          return mergeFrom((ucar.nc2.ft.point.remote.PointStreamProto.Station)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(ucar.nc2.ft.point.remote.PointStreamProto.Station other) {
+        if (other == ucar.nc2.ft.point.remote.PointStreamProto.Station.getDefaultInstance()) return this;
+        if (other.hasId()) {
+          setId(other.getId());
+        }
+        if (other.hasLat()) {
+          setLat(other.getLat());
+        }
+        if (other.hasLon()) {
+          setLon(other.getLon());
+        }
+        if (other.hasAlt()) {
+          setAlt(other.getAlt());
+        }
+        if (other.hasDesc()) {
+          setDesc(other.getDesc());
+        }
+        if (other.hasWmoId()) {
+          setWmoId(other.getWmoId());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      @Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return mergeFrom(input,
+          com.google.protobuf.ExtensionRegistry.getEmptyRegistry());
+      }
+      
+      @Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistry extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                return this;
+              }
+              break;
+            }
+            case 10: {
+              setId(input.readString());
+              break;
+            }
+            case 17: {
+              setLat(input.readDouble());
+              break;
+            }
+            case 25: {
+              setLon(input.readDouble());
+              break;
+            }
+            case 33: {
+              setAlt(input.readDouble());
+              break;
+            }
+            case 42: {
+              setDesc(input.readString());
+              break;
+            }
+            case 50: {
+              setWmoId(input.readString());
+              break;
+            }
+          }
+        }
+      }
+      
+      
+      // required string id = 1;
+      public boolean hasId() {
+        return result.hasId();
+      }
+      public java.lang.String getId() {
+        return result.getId();
+      }
+      public Builder setId(java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  result.hasId = true;
+        result.id_ = value;
+        return this;
+      }
+      public Builder clearId() {
+        result.hasId = false;
+        result.id_ = "";
+        return this;
+      }
+      
+      // required double lat = 2;
+      public boolean hasLat() {
+        return result.hasLat();
+      }
+      public double getLat() {
+        return result.getLat();
+      }
+      public Builder setLat(double value) {
+        result.hasLat = true;
+        result.lat_ = value;
+        return this;
+      }
+      public Builder clearLat() {
+        result.hasLat = false;
+        result.lat_ = 0D;
+        return this;
+      }
+      
+      // required double lon = 3;
+      public boolean hasLon() {
+        return result.hasLon();
+      }
+      public double getLon() {
+        return result.getLon();
+      }
+      public Builder setLon(double value) {
+        result.hasLon = true;
+        result.lon_ = value;
+        return this;
+      }
+      public Builder clearLon() {
+        result.hasLon = false;
+        result.lon_ = 0D;
+        return this;
+      }
+      
+      // optional double alt = 4;
+      public boolean hasAlt() {
+        return result.hasAlt();
+      }
+      public double getAlt() {
+        return result.getAlt();
+      }
+      public Builder setAlt(double value) {
+        result.hasAlt = true;
+        result.alt_ = value;
+        return this;
+      }
+      public Builder clearAlt() {
+        result.hasAlt = false;
+        result.alt_ = 0D;
+        return this;
+      }
+      
+      // optional string desc = 5;
+      public boolean hasDesc() {
+        return result.hasDesc();
+      }
+      public java.lang.String getDesc() {
+        return result.getDesc();
+      }
+      public Builder setDesc(java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  result.hasDesc = true;
+        result.desc_ = value;
+        return this;
+      }
+      public Builder clearDesc() {
+        result.hasDesc = false;
+        result.desc_ = "";
+        return this;
+      }
+      
+      // optional string wmoId = 6;
+      public boolean hasWmoId() {
+        return result.hasWmoId();
+      }
+      public java.lang.String getWmoId() {
+        return result.getWmoId();
+      }
+      public Builder setWmoId(java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  result.hasWmoId = true;
+        result.wmoId_ = value;
+        return this;
+      }
+      public Builder clearWmoId() {
+        result.hasWmoId = false;
+        result.wmoId_ = "";
+        return this;
+      }
+    }
+    
+    static {
+      ucar.nc2.ft.point.remote.PointStreamProto.getDescriptor();
+    }
+  }
+  
+  public static final class StationList extends
+      com.google.protobuf.GeneratedMessage {
+    // Use StationList.newBuilder() to construct.
+    private StationList() {}
+    
+    private static final StationList defaultInstance = new StationList();
+    public static StationList getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public StationList getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_StationList_descriptor;
+    }
+    
+    @Override
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return ucar.nc2.ft.point.remote.PointStreamProto.internal_static_pointStream_StationList_fieldAccessorTable;
+    }
+    
+    // repeated .pointStream.Station stations = 1;
+    public static final int STATIONS_FIELD_NUMBER = 1;
+    private java.util.List<ucar.nc2.ft.point.remote.PointStreamProto.Station> stations_ =
+      java.util.Collections.emptyList();
+    public java.util.List<ucar.nc2.ft.point.remote.PointStreamProto.Station> getStationsList() {
+      return stations_;
+    }
+    public int getStationsCount() { return stations_.size(); }
+    public ucar.nc2.ft.point.remote.PointStreamProto.Station getStations(int index) {
+      return stations_.get(index);
+    }
+    
+    @Override
+    public final boolean isInitialized() {
+      for (ucar.nc2.ft.point.remote.PointStreamProto.Station element : getStationsList()) {
+        if (!element.isInitialized()) return false;
+      }
+      return true;
+    }
+    
+    @Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      for (ucar.nc2.ft.point.remote.PointStreamProto.Station element : getStationsList()) {
+        output.writeMessage(1, element);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    @Override
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      for (ucar.nc2.ft.point.remote.PointStreamProto.Station element : getStationsList()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, element);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    public static ucar.nc2.ft.point.remote.PointStreamProto.StationList parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.StationList parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.StationList parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.StationList parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.StationList parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.StationList parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.StationList parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeDelimitedFrom(input).buildParsed();
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.StationList parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeDelimitedFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.StationList parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static ucar.nc2.ft.point.remote.PointStreamProto.StationList parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return new Builder(); }
+    public Builder newBuilderForType() { return new Builder(); }
+    public static Builder newBuilder(ucar.nc2.ft.point.remote.PointStreamProto.StationList prototype) {
+      return new Builder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> {
+      // Construct using ucar.nc2.ft.point.remote.PointStreamProto.StationList.newBuilder()
+      private Builder() {}
+      
+      ucar.nc2.ft.point.remote.PointStreamProto.StationList result = new ucar.nc2.ft.point.remote.PointStreamProto.StationList();
+      
+      @Override
+      protected ucar.nc2.ft.point.remote.PointStreamProto.StationList internalGetResult() {
+        return result;
+      }
+      
+      @Override
+      public Builder clear() {
+        result = new ucar.nc2.ft.point.remote.PointStreamProto.StationList();
+        return this;
+      }
+      
+      @Override
+      public Builder clone() {
+        return new Builder().mergeFrom(result);
+      }
+      
+      @Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return ucar.nc2.ft.point.remote.PointStreamProto.StationList.getDescriptor();
+      }
+      
+      public ucar.nc2.ft.point.remote.PointStreamProto.StationList getDefaultInstanceForType() {
+        return ucar.nc2.ft.point.remote.PointStreamProto.StationList.getDefaultInstance();
+      }
+      
+      public ucar.nc2.ft.point.remote.PointStreamProto.StationList build() {
+        if (result != null && !isInitialized()) {
+          throw new com.google.protobuf.UninitializedMessageException(
+            result);
+        }
+        return buildPartial();
+      }
+      
+      private ucar.nc2.ft.point.remote.PointStreamProto.StationList buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        if (!isInitialized()) {
+          throw new com.google.protobuf.UninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return buildPartial();
+      }
+      
+      public ucar.nc2.ft.point.remote.PointStreamProto.StationList buildPartial() {
+        if (result == null) {
+          throw new IllegalStateException(
+            "build() has already been called on this Builder.");  }
+        if (result.stations_ != java.util.Collections.EMPTY_LIST) {
+          result.stations_ =
+            java.util.Collections.unmodifiableList(result.stations_);
+        }
+        ucar.nc2.ft.point.remote.PointStreamProto.StationList returnMe = result;
+        result = null;
+        return returnMe;
+      }
+      
+      @Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof ucar.nc2.ft.point.remote.PointStreamProto.StationList) {
+          return mergeFrom((ucar.nc2.ft.point.remote.PointStreamProto.StationList)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(ucar.nc2.ft.point.remote.PointStreamProto.StationList other) {
+        if (other == ucar.nc2.ft.point.remote.PointStreamProto.StationList.getDefaultInstance()) return this;
+        if (!other.stations_.isEmpty()) {
+          if (result.stations_.isEmpty()) {
+            result.stations_ = new java.util.ArrayList<ucar.nc2.ft.point.remote.PointStreamProto.Station>();
+          }
+          result.stations_.addAll(other.stations_);
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      @Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return mergeFrom(input,
+          com.google.protobuf.ExtensionRegistry.getEmptyRegistry());
+      }
+      
+      @Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistry extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                return this;
+              }
+              break;
+            }
+            case 10: {
+              ucar.nc2.ft.point.remote.PointStreamProto.Station.Builder subBuilder = ucar.nc2.ft.point.remote.PointStreamProto.Station.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addStations(subBuilder.buildPartial());
+              break;
+            }
+          }
+        }
+      }
+      
+      
+      // repeated .pointStream.Station stations = 1;
+      public java.util.List<ucar.nc2.ft.point.remote.PointStreamProto.Station> getStationsList() {
+        return java.util.Collections.unmodifiableList(result.stations_);
+      }
+      public int getStationsCount() {
+        return result.getStationsCount();
+      }
+      public ucar.nc2.ft.point.remote.PointStreamProto.Station getStations(int index) {
+        return result.getStations(index);
+      }
+      public Builder setStations(int index, ucar.nc2.ft.point.remote.PointStreamProto.Station value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        result.stations_.set(index, value);
+        return this;
+      }
+      public Builder setStations(int index, ucar.nc2.ft.point.remote.PointStreamProto.Station.Builder builderForValue) {
+        result.stations_.set(index, builderForValue.build());
+        return this;
+      }
+      public Builder addStations(ucar.nc2.ft.point.remote.PointStreamProto.Station value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        if (result.stations_.isEmpty()) {
+          result.stations_ = new java.util.ArrayList<ucar.nc2.ft.point.remote.PointStreamProto.Station>();
+        }
+        result.stations_.add(value);
+        return this;
+      }
+      public Builder addStations(ucar.nc2.ft.point.remote.PointStreamProto.Station.Builder builderForValue) {
+        if (result.stations_.isEmpty()) {
+          result.stations_ = new java.util.ArrayList<ucar.nc2.ft.point.remote.PointStreamProto.Station>();
+        }
+        result.stations_.add(builderForValue.build());
+        return this;
+      }
+      public Builder addAllStations(
+          java.lang.Iterable<? extends ucar.nc2.ft.point.remote.PointStreamProto.Station> values) {
+        if (result.stations_.isEmpty()) {
+          result.stations_ = new java.util.ArrayList<ucar.nc2.ft.point.remote.PointStreamProto.Station>();
+        }
+        super.addAll(values, result.stations_);
+        return this;
+      }
+      public Builder clearStations() {
+        result.stations_ = java.util.Collections.emptyList();
+        return this;
+      }
+    }
+    
+    static {
+      ucar.nc2.ft.point.remote.PointStreamProto.getDescriptor();
+    }
+  }
+  
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_pointStream_Location_descriptor;
   private static
@@ -1743,6 +2536,16 @@ public final class PointStreamProto {
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_pointStream_PointFeatureCollection_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_pointStream_Station_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_pointStream_Station_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_pointStream_StationList_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_pointStream_StationList_fieldAccessorTable;
   
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -1763,9 +2566,12 @@ public final class PointStreamProto {
       "\002(\0162\022.ncstream.DataType\022\"\n\007section\030\005 \002(\013" +
       "2\021.ncstream.Section\"^\n\026PointFeatureColle" +
       "ction\022\014\n\004name\030\001 \002(\t\022\020\n\010timeUnit\030\002 \002(\t\022$\n" +
-      "\007members\030\003 \003(\0132\023.pointStream.MemberB,\n\030u" +
-      "car.nc2.ft.point.remoteB\020PointStreamProt" +
-      "o";
+      "\007members\030\003 \003(\0132\023.pointStream.Member\"Y\n\007S" +
+      "tation\022\n\n\002id\030\001 \002(\t\022\013\n\003lat\030\002 \002(\001\022\013\n\003lon\030\003" +
+      " \002(\001\022\013\n\003alt\030\004 \001(\001\022\014\n\004desc\030\005 \001(\t\022\r\n\005wmoId" +
+      "\030\006 \001(\t\"5\n\013StationList\022&\n\010stations\030\001 \003(\0132" +
+      "\024.pointStream.StationB,\n\030ucar.nc2.ft.poi" +
+      "nt.remoteB\020PointStreamProto";
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
         public com.google.protobuf.ExtensionRegistry assignDescriptors(
@@ -1803,6 +2609,22 @@ public final class PointStreamProto {
               new java.lang.String[] { "Name", "TimeUnit", "Members", },
               ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection.class,
               ucar.nc2.ft.point.remote.PointStreamProto.PointFeatureCollection.Builder.class);
+          internal_static_pointStream_Station_descriptor =
+            getDescriptor().getMessageTypes().get(4);
+          internal_static_pointStream_Station_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_pointStream_Station_descriptor,
+              new java.lang.String[] { "Id", "Lat", "Lon", "Alt", "Desc", "WmoId", },
+              ucar.nc2.ft.point.remote.PointStreamProto.Station.class,
+              ucar.nc2.ft.point.remote.PointStreamProto.Station.Builder.class);
+          internal_static_pointStream_StationList_descriptor =
+            getDescriptor().getMessageTypes().get(5);
+          internal_static_pointStream_StationList_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_pointStream_StationList_descriptor,
+              new java.lang.String[] { "Stations", },
+              ucar.nc2.ft.point.remote.PointStreamProto.StationList.class,
+              ucar.nc2.ft.point.remote.PointStreamProto.StationList.Builder.class);
           return null;
         }
       };

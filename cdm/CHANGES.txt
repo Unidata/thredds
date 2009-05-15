@@ -6,6 +6,7 @@ Changes in version 4.0
 
  Release Details:
   42:
+   Fmrc must enhance datasets when acquiring.
    Use FeatureType.ANY instead of FeatureType.NONE
    upgrade protobuf library to 2.1.0
    grib index performance enhancements

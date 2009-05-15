@@ -57,6 +57,7 @@ import java.io.*;
  */
 public class AggregationFmrc extends AggregationOuterDimension {
   static private String definitionDir;
+  static protected Set<NetcdfDataset.Enhance> fmrcEnhanceMode = EnumSet.of(NetcdfDataset.Enhance.CoordSystems);
 
   static public void setDefinitionDirectory(File defDir) {
     definitionDir = defDir.getPath() + '/';
@@ -93,6 +94,8 @@ public class AggregationFmrc extends AggregationOuterDimension {
   @Override
   protected void makeDatasets(CancelTask cancelTask) throws IOException {
     super.makeDatasets(cancelTask);
+    for (Dataset ds : datasets)
+      ds.enhance = fmrcEnhanceMode;
   }
 
   @Override
@@ -444,7 +447,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
     Array allData = Array.factory(dtype, mainv.getShape());
     int destPos = 0;
 
-    // make concurrent
+    // LOOK: could make concurrent
     List<Dataset> nestedDatasets = getDatasets();
     for (Dataset vnested : nestedDatasets) {
       Array varData = vnested.read(mainv, cancelTask);
