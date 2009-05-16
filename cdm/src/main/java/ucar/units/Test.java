@@ -91,11 +91,18 @@ public class Test {
                 .println("kelvin.getConverterTo(celsius).convert(273.15) = \""
                         + kelvin.getConverterTo(celsius).convert(273.15) + '"');
         myAssert(kelvin.isCompatible(celsius));
+        myAssert(!kelvin.equals(celsius));
+        myAssert(kelvin.hashCode() != celsius.hashCode());
         Unit fahrenheit = format.parse("fahrenheit");
         fahrenheit = fahrenheit.clone(UnitName.newUnitName("fahrenheit"));
         kelvin = kelvin.clone(UnitName.newUnitName("kelvin"));
         myAssert(kelvin.isCompatible(fahrenheit));
         myAssert(fahrenheit.isCompatible(kelvin));
+        final Unit kelvinUnit = format.parse("kelvin").clone(
+                UnitName.newUnitName("kelvin"));
+        final Unit fahrenUnit = format.parse("fahrenheit").clone(
+                UnitName.newUnitName("fahrenheit"));
+        myAssert(kelvinUnit.isCompatible(fahrenUnit));
         final Unit second = format.parse("s");
         final Unit minute = format.parse("min");
         System.out.println("second.getConverterTo(minute).convert(60) = \""

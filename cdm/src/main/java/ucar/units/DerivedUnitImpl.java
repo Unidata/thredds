@@ -436,7 +436,9 @@ public class DerivedUnitImpl extends UnitImpl implements DerivedUnit,
      */
     @Override
     public int hashCode() {
-        return dimension.hashCode();
+        return this instanceof BaseUnit
+                ? System.identityHashCode(this)
+                : dimension.hashCode();
     }
 
     /**
