@@ -147,12 +147,6 @@ public class WMSController extends AbstractController {
           versionString = "1.1.1";
         }
 
-        String service = params.getMandatoryString( "service" );
-        if ( ! service.equalsIgnoreCase( "WMS" ) )
-        {
-          throw new WmsException( "The SERVICE parameter must be WMS" );
-        }
-
         String request = params.getMandatoryString("request");
         dataset = openDataset(req, res);
         FileBasedResponse  response;
@@ -160,6 +154,13 @@ public class WMSController extends AbstractController {
         log.debug("Processing request: (version): " + versionString );
 
         if (request.equalsIgnoreCase("GetCapabilities")) {
+          String service = params.getMandatoryString( "service" );
+          if ( ! service.equalsIgnoreCase( "WMS" ) )
+          {
+            throw new WmsException( "The SERVICE parameter must be WMS" );
+          }
+
+
           errMessage = "Error encountered while processing GetCapabilities request";
           long startupDate =   this.getApplicationContext().getStartupDate();
           GetCapabilities getCap = new GetCapabilities(params, dataset, usageLogEntry);
