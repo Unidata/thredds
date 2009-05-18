@@ -852,6 +852,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
   private void sendErrorResponse(HttpServletResponse response, int errorCode, String errorMessage) throws IOException {
     log.info(UsageLog.closingMessageForRequestContext(errorCode, -1));
     response.setStatus(errorCode);
+    response.setHeader( "Content-Description", "dods-error" );
     response.setContentType("text/plain");
 
     PrintWriter pw = new PrintWriter(response.getOutputStream());
