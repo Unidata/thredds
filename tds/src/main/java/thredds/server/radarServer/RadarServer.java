@@ -147,6 +147,8 @@ public class RadarServer extends AbstractServlet {
 
     PrintWriter pw = null;
     try {
+      long startms = System.currentTimeMillis();
+      
       if (cat == null || rm.nexradList == null) { // something major wrong
         log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1));
         res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
@@ -168,9 +170,10 @@ public class RadarServer extends AbstractServlet {
       }
       // radar  query
       if (req.getQueryString() != null) {
-        //System.out.println("RadarServer query ="+ req.getQueryString() );
+        //log.debug("RadarServer query ="+ req.getQueryString() );
         if (debug) System.out.println("<documentation>\n" + req.getQueryString() + "</documentation>\n");
         rm.radarQuery(radarType, req, res, pw);
+        log.debug( "after doGet "+ (System.currentTimeMillis() - startms));
         pw.flush();
         log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
         return;
@@ -325,7 +328,13 @@ public class RadarServer extends AbstractServlet {
               "</documentation>");
       DateRange dr = ds.getTimeCoverage();
       pw.println("      <TimeSpan>");
-      pw.println("        <start>" + dr.getStart().toDateTimeStringISO() + "</start>");
+      pw.print("        <start>");
+      if( pathInfo.contains( "IDD")) {
+        pw.print( rm.getStartDateTime(ds.getPath() ));
+      } else {
+        pw.print( dr.getStart().toDateTimeStringISO() );
+      }
+      pw.println( "</start>");
       pw.println("        <end>" + dr.getEnd().toDateTimeStringISO() + "</end>");
       pw.println("      </TimeSpan>");
       ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();

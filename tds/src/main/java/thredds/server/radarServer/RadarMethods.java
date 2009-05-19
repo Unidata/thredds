@@ -54,27 +54,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
-/*
- * Copyright 1997-Nov 29, 2008 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
- *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- */
-
 /**
  * By:   Robb Kambic
  * Date: Nov 29, 2008
@@ -217,6 +196,8 @@ public class RadarMethods {
 
     String radarDir = null;
     try {
+//      long  startms = System.currentTimeMillis();
+//      long  endms;
       // need to extract data according to the (dataset) given
       String pathInfo = req.getPathInfo();
       if (pathInfo == null) pathInfo = "";
@@ -231,12 +212,20 @@ public class RadarMethods {
       QueryParams qp = new QueryParams();
       if( ! qp.parseQuery(req, res, new String[]{ QueryParams.XML, QueryParams.HTML, QueryParams.RAW, QueryParams.NETCDF}))
         return; // has sent the error message
-
+//      endms = System.currentTimeMillis();
+//      System.out.println( "after QueryParams "+ (endms - startms));
+//      startms = System.currentTimeMillis();
       // check Query Params
       if( ! checkQueryParms( radarType, qp, level2 ) ) {
         qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
         return;
       }
+//      endms = System.currentTimeMillis();
+//      System.out.println( "after checkQueryParms "+ (endms - startms));
+//      startms = System.currentTimeMillis();
+      // check if all data needs to be return, ie not time information given
+     // boolean allTimes = ! ( qp.hasTimePoint || qp.hasDateRange );
+
       // what type of output wanted XML html
       String serviceBase;
       qp.acceptType = qp.acceptType.replaceFirst( ".*/", "" );
@@ -249,8 +238,14 @@ public class RadarMethods {
       // writes first part of catalog
       if( ! writeHeader( radarType,  qp, pathInfo, pw) )
         return;
+//      endms = System.currentTimeMillis();
+//      System.out.println( "after writeHeader "+ (endms - startms));
+//      startms = System.currentTimeMillis();
       // gets products according to stations, time, and variables
       boolean dataFound = processQuery( radarDir, qp, pw, serviceBase );
+//      endms = System.currentTimeMillis();
+//      System.out.println( "after processQuery "+ (endms - startms));
+//      startms = System.currentTimeMillis();
       // add ending tags
       if ( ServerMethods.p_xml_i.matcher(qp.acceptType).find() ) {
           if (! dataFound ) {
@@ -266,6 +261,9 @@ public class RadarMethods {
                       req.getQueryString() +"</p>");
           pw.println("</html>");
       }
+//      endms = System.currentTimeMillis();
+//      System.out.println( "after radarQuery "+ (endms - startms));
+//      startms = System.currentTimeMillis();
     } catch (Throwable t) {
         log.error(req.getQueryString());
         log.error("radarServer radarNexradQuery error" );
@@ -366,9 +364,9 @@ public class RadarMethods {
         DateRange dr = qp.getDateRange();
         qp.time_start = dr.getStart();
         qp.time_end = dr.getEnd();
-    // return latest
+    // return latest // TODO: changed default to all times
     } else {
-       qp.hasTimePoint = true;
+       //qp.hasTimePoint = true;
        try {
            qp.time = new DateType( "present", null, null);
            qp.time_end = new DateType( "present", null, null);
@@ -508,8 +506,8 @@ public class RadarMethods {
   // This routine is very complex cuz if figures out different paths to
   // actual products ie stn/var/time stn/time/var  var/stn/time etc.
   // processQuery is limited by the stns, dates and vars in the query
-  private Boolean processQuery( String tdir, QueryParams qp, PrintWriter pw, String serviceBase )
-    throws IOException {
+  private Boolean processQuery( String tdir, QueryParams qp, PrintWriter pw,
+    String serviceBase ) throws IOException {
 
     // set date info
     String yyyymmddStart = qp.time_start.toDateString();
@@ -567,7 +565,7 @@ public class RadarMethods {
           File file = new File( sDir +"/"+ sdirs[ 0 ] );
           if( file.isFile() ) { // products in dir, process dir
             numProds += processProducts( sdirs, sDir.replaceFirst( tdir, "").substring( 1 ),
-              qp.hasTimePoint, dateStart, dateEnd, qp, pw, serviceBase );
+               dateStart, dateEnd, qp, pw, serviceBase );
           } else if( ServerMethods.p_yyyymmdd.matcher(sdirs[ 0 ]).find() ) { //dates
             java.util.Arrays.sort( sdirs, new CompareKeyDescend() );
             for( int j = 0; j < sdirs.length; j++) {
@@ -580,7 +578,7 @@ public class RadarMethods {
                 file = new File( dDir +"/"+ ndirs[ 0 ]);
                 if( file.isFile() ) { // products in dir, process dir
                   numProds += processProducts( ndirs, dDir.replaceFirst( tdir, "").substring( 1 ),
-                    qp.hasTimePoint, dateStart, dateEnd, qp, pw, serviceBase );
+                     dateStart, dateEnd, qp, pw, serviceBase );
                   if( qp.hasTimePoint ) // only want one product
                     break;
                 } else if( nexradVars.contains( ndirs[ 0 ].toUpperCase() ) ) {
@@ -601,7 +599,7 @@ public class RadarMethods {
               if( file.isFile() ) { // products in dir, return dir
                 //dirTree.add( vDir );
                 numProds += processProducts( vdirs, vDir.replaceFirst( tdir, "").substring( 1 ),
-                  qp.hasTimePoint, dateStart, dateEnd, qp, pw, serviceBase );
+                   dateStart, dateEnd, qp, pw, serviceBase );
 
               }
             }
@@ -622,7 +620,7 @@ public class RadarMethods {
           File file = new File( vDir +"/"+ vdirs[ 0 ] );
           if( file.isFile() ) { // products in dir, process dir
             numProds += processProducts( vdirs, vDir.replaceFirst( tdir, "").substring( 1 ),
-              qp.hasTimePoint, dateStart, dateEnd, qp, pw, serviceBase );
+               dateStart, dateEnd, qp, pw, serviceBase );
           } else if( nexradMap.get( "K"+ vdirs[ 0 ] ) != null ||
             terminalMap.get( "T"+ vdirs[ 0 ] ) != null ) { // got to be level3 station
             for (String station : qp.stns ) {
@@ -637,7 +635,7 @@ public class RadarMethods {
               file = new File( sDir +"/"+ sdirs[ 0 ] );
               if( file.isFile() ) { // products in dir, return dir
                 numProds += processProducts( sdirs, sDir.replaceFirst( tdir, "").substring( 1 ),
-                  qp.hasTimePoint, dateStart, dateEnd, qp, pw, serviceBase );
+                   dateStart, dateEnd, qp, pw, serviceBase );
               } else if( ServerMethods.p_yyyymmdd.matcher(sdirs[ 0 ]).find() ) { //dates
                 java.util.Arrays.sort( sdirs, new CompareKeyDescend() );
                 for( int k = 0; k < sdirs.length; k++) {
@@ -647,7 +645,7 @@ public class RadarMethods {
                     files = new File( dDir );
                     String[] ddirs = files.list();
                     numProds += processProducts( ddirs, dDir.replaceFirst( tdir, "").substring( 1 ),
-                      qp.hasTimePoint, dateStart, dateEnd, qp, pw, serviceBase);
+                       dateStart, dateEnd, qp, pw, serviceBase);
                     if( qp.hasTimePoint ) // only want one product
                       break;
                   }
@@ -673,9 +671,13 @@ public class RadarMethods {
 
   // check if product has valid time then creates a dataset for product
   private int processProducts( String[] products, String rPath,
-    Boolean latest, String dateStart, String dateEnd, QueryParams qp,
+    String dateStart, String dateEnd, QueryParams qp,
     PrintWriter pw, String serviceBase ) {
 
+    Boolean latest = qp.hasTimePoint;
+
+    // Just return all products
+    boolean allTimes = ! ( qp.hasTimePoint || qp.hasDateRange );
     java.util.Arrays.sort( products, new CompareKeyDescend() );
 
     int numProducts = 0;
@@ -684,8 +686,10 @@ public class RadarMethods {
       for( int t = 0; t < products.length; t++ ) {
         if( products[ t ].startsWith( "." ) )
           continue;
-        if( ! sm.isValidDate( products[ t ], dateStart, dateEnd ) )
-          continue;
+        if( ! allTimes ) {
+          if( ! sm.isValidDate( products[ t ], dateStart, dateEnd ) )
+            continue;
+        }
         numProducts++;
         XMLdataset(  products[ t ], rPath, pw );
         if ( latest ) {
@@ -696,8 +700,10 @@ public class RadarMethods {
       for( int t = 0; t < products.length; t++ ) {
         if( products[ t ].startsWith( "." ) )
           continue;
-        if( ! sm.isValidDate( products[ t ], dateStart, dateEnd ) )
-          continue;
+        if( ! allTimes ) {
+          if( ! sm.isValidDate( products[ t ], dateStart, dateEnd ) )
+            continue;
+        }  
         numProducts++;
         HTMLdataset(  products[ t ], rPath, pw, serviceBase );
         if( latest ) {
@@ -861,6 +867,30 @@ public class RadarMethods {
     }
   }
 
+  public String getStartDateTime( String path ) {
+    String timeDir =  RadarServer.dataLocation.get( path );
+    log.debug( "timeDir ="+ timeDir );
+    // hard coded, otherwise not sure one get a valid station ID
+    if( path.contains( "level3") ) {
+       timeDir = timeDir + "/N0R/TLX";
+    } else if( path.contains( "level2") ) {
+       timeDir = timeDir + "/KTLX";
+    }
+    File dir = new File( timeDir );
+    String[] files = dir.list();
+    java.util.Arrays.sort( files, new CompareKeyDescend() );
+//    for( String file : files ) {
+//        System.out.println( file );
+//    }
+    String year = files[ files.length -1 ].substring( 0, 4);
+    String month = files[ files.length -1 ].substring( 4, 6);
+    String day = files[ files.length -1 ].substring( 6, 8);
+    log.debug( year +"-"+ month +"-"+ day +"T:00:00:00Z" );
+
+    return year +"-"+ month +"-"+ day +"T:00:00:00Z";
+
+  }
+
   protected class CompareKeyDescend implements Comparator<String> {
     /*
     public int compare(Object o1, Object o2) {
@@ -872,6 +902,18 @@ public class RadarMethods {
     */
     public int compare(String s1, String s2 ) {
       return s2.compareTo(s1);
+    }
+  }
+
+
+  public static void main(String args[]) throws IOException  {
+    try {
+      DateType dte = new DateType( "present", null, null);
+      DateType dts = new DateType(ServerMethods.epic, null, null);
+      System.out.println("DateType = (" + dts.toString() + ")");
+      System.out.println("Date = (" + dts.getDate() + ")");
+    } catch (java.text.ParseException e) {
+        System.out.println("Illegal param= 'time' must be valid ISO Duration\n");
     }
   }
 }
