@@ -778,8 +778,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
         }
 
         Variable v = findVariable(ncd, mainv);
-        if (v == null)
-            System.out.printf("HEY%n");
+        assert v != null : "AggOuterDimension cant find "+mainv+" in "+ ncd.getLocation();
 
         // its possible that we are asking for more of the time coordinate than actually exists (fmrc ragged time)
         // so we need to read only what is there

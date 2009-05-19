@@ -277,8 +277,9 @@ public class ADASConvention extends CoordSysBuilder {
       data.setDouble(dataIndex.set(i), 0.5 * val);
     }
 
+    DataType dtype = DataType.getType(data.getElementType());
     String units = ds.findAttValueIgnoreCase(stagV, "units", "m");
-    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, axisName, units, "synthesized non-staggered " + axisName + " coordinate");
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, dtype, axisName, units, "synthesized non-staggered " + axisName + " coordinate");
     v.setCachedData(data, true);
     return v;
   }
