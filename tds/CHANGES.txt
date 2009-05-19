@@ -17,6 +17,9 @@ Changes in version 4.0
   * netcdf-java 4.0
 
 Release Details:
+ 11:
+  WMS SERVICE parameter requirement aligned with specification.
+  OPeNDAP error responses use correct "Content-Description header value ("dods-error").
  10:
   WMSController finally always closes dataset
   stricter ncss query parsing
