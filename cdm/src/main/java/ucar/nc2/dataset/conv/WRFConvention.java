@@ -557,7 +557,7 @@ orientation of the grid). This should be set equal to the center longitude in mo
 
     String units = ds.findAttValueIgnoreCase(coordVar, "units", "");
 
-    CoordinateAxis v = new CoordinateAxis1D(ds, null, "soilDepth", DataType.SHORT, soilDim.getName(), units, "soil depth");
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, "soilDepth", DataType.DOUBLE, soilDim.getName(), units, "soil depth");
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoZ"));
     v.addAttribute(new Attribute("units", "units"));
     if (!v.getShortName().equals(soilDim.getName()))

@@ -57,6 +57,8 @@ import java.io.File;
  */
 
 public class NetcdfFileWriteable extends NetcdfFile {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFileWriteable.class);
+
   private IOServiceProviderWriter spiw;
 
   // modes
@@ -267,6 +269,13 @@ public class NetcdfFileWriteable extends NetcdfFile {
    */
   public Attribute addGlobalAttribute(Attribute att) {
     if (!defineMode) throw new UnsupportedOperationException("not in define mode");
+
+    if (!N3iosp.isValidNetcdf3ObjectName(att.getName())) {
+      String attName = N3iosp.createValidNetcdf3ObjectName(att.getName());
+      log.warn("illegal netCDF-3 attribute name= "+att.getName() + " change to "+ attName);
+      att = new Attribute(attName, att.getValues());
+    }
+
     return super.addAttribute(null, att);
   }
 
@@ -278,8 +287,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @return the created attribute
    */
   public Attribute addGlobalAttribute(String name, String value) {
-    if (!defineMode) throw new UnsupportedOperationException("not in define mode");
-    return super.addAttribute(null, new Attribute(name, value));
+    return addGlobalAttribute( new Attribute(name, value));
   }
 
   /**
@@ -290,8 +298,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @return the created attribute
    */
   public Attribute addGlobalAttribute(String name, Number value) {
-    if (!defineMode) throw new UnsupportedOperationException("not in define mode");
-    return super.addAttribute(null, new Attribute(name, value));
+    return addGlobalAttribute( new Attribute(name, value));
   }
 
   /**
@@ -302,8 +309,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @return the created attribute
    */
   public Attribute addGlobalAttribute(String name, Array values) {
-    if (!defineMode) throw new UnsupportedOperationException("not in define mode");
-    return super.addAttribute(null, new Attribute(name, values));
+    return addGlobalAttribute( new Attribute(name, values));
   }
 
   /**
@@ -452,7 +458,12 @@ public class NetcdfFileWriteable extends NetcdfFile {
   public void addVariableAttribute(String varName, Attribute att) {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
-    if (!N3iosp.isValidNetcdf3ObjectName(att.getName())) throw new IllegalArgumentException("illegal netCDF-3 object name");
+
+    if (!N3iosp.isValidNetcdf3ObjectName(att.getName())) {
+      String attName = N3iosp.createValidNetcdf3ObjectName(att.getName());
+      log.warn("illegal netCDF-3 attribute name= "+att.getName() + " change to "+ attName);
+      att = new Attribute(attName, att.getValues());
+    }
 
     Variable v = rootGroup.findVariable(varName);
     if (null == v)

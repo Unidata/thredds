@@ -34,6 +34,7 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.*;
+import ucar.nc2.FileWriter;
 import ucar.nc2.stream.NcStreamRemote;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
@@ -2783,7 +2784,23 @@ public class ToolsUI extends JPanel {
       BAMutil.setActionProperties(dumpAction, "Dump", "NCDump", false, 'D', -1);
       BAMutil.addActionToContainer(buttPanel, dumpAction);
 
-      AbstractAction syncAction = new AbstractAction() {
+      AbstractAction netcdfAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          String location = ncfile.getLocation();
+          if (location == null) location = "test";
+          int pos = location.lastIndexOf(".");
+          if (pos > 0)
+            location = location.substring(0, pos);
+
+          String filename = fileChooser.chooseFilenameToSave(location + ".nc");
+          if (filename == null) return;
+          doWriteNetCDF(filename);
+        }
+      };
+      BAMutil.setActionProperties(netcdfAction, "Save", "Write local netCDF file", false, 'S', -1);
+      BAMutil.addActionToContainer(buttPanel, netcdfAction);
+
+     /* AbstractAction syncAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           NetcdfFile ds = dsViewer.getDataset();
           if (ds != null)
@@ -2796,8 +2813,8 @@ public class ToolsUI extends JPanel {
         }
       };
       BAMutil.setActionProperties(syncAction, null, "SyncExtend", false, 'D', -1);
-      BAMutil.addActionToContainer(buttPanel, syncAction);
-    }
+      BAMutil.addActionToContainer(buttPanel, syncAction); */
+    }  
 
     boolean process(Object o) {
       String command = (String) o;
@@ -2841,6 +2858,16 @@ public class ToolsUI extends JPanel {
     void save() {
       super.save();
       dsViewer.save();
+    }
+
+    void doWriteNetCDF(String filename) {
+      try {
+        FileWriter.writeToFile(ncfile, filename, false, -1);
+        JOptionPane.showMessageDialog(this, "File successfully written");
+      } catch (Exception ioe) {
+        JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
+        ioe.printStackTrace();
+      }
     }
 
   }

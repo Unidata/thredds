@@ -1596,6 +1596,9 @@ public class Variable implements VariableIF {
    * @param isMetadata : synthesized data, set true if must be saved in NcML output (ie data not actually in the file).
    */
   public void setCachedData(Array cacheData, boolean isMetadata) {
+    if (cacheData.getElementType() != getDataType().getPrimitiveClassType())
+      throw new IllegalArgumentException("setCachedData type="+cacheData.getElementType()+" incompatible with variable type="+getDataType());
+
     this.cache.data = cacheData;
     this.isMetadata = isMetadata;
     this.cache.cachingSet = true;

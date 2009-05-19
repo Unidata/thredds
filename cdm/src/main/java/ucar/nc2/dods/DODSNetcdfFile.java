@@ -294,8 +294,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       List<Variable> preloadList = new ArrayList<Variable>();
       for (Variable dodsVar : variables) {
         long size = dodsVar.getSize() * dodsVar.getElementSize();
-        if ((dodsVar.isCoordinateVariable() && size < preloadCoordVarSize)
-           || dodsVar.isCaching() || dodsVar.getDataType() == DataType.STRING) {
+        if ((dodsVar.isCoordinateVariable() && size < preloadCoordVarSize) || dodsVar.isCaching() || dodsVar.getDataType() == DataType.STRING) {
           dodsVar.setCaching(true);
           preloadList.add(dodsVar);
           if (debugPreload) System.out.println("  preload"+dodsVar);

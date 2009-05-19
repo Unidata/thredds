@@ -5,6 +5,11 @@ Build Date = @BUILDTIME@
 Changes in version 4.0
 
  Release Details:
+  43:
+   add Cariable.setCachedData check for correct array type
+   WRF CoordSysBuilder makeSoilCoordintae had wrong datatype
+   ToolsUI Viewer: write local file
+   NetcdfFileWriteable: change att names to legal and give warning rather than exception
   42:
    Fmrc must enhance datasets when acquiring.
    Use FeatureType.ANY instead of FeatureType.NONE
