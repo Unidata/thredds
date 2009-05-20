@@ -92,6 +92,13 @@
   <li><em><strong>file:data/model.nc </strong></em> (relative to the current working directory)</li>
 </ul>
 <p>When using a directory location that has an embedded ':' char, eg <em><strong>C:/share/data/model.nc</strong></em>, its a really good idea to add the file: prefix, to prevent the 'C:' from being misinterpreted as a URI schema. Future versions of NcML may use URIs for the location.</p>
+<p>Common mistakes:</p>
+<ul>
+  <li>
+    <p> &lt;scan location=&quot;<strong>D:\work\agg</strong>&quot; suffix=&quot;.nc&quot; /&gt; in a Windows machine will try to scan <strong>D:/work/agg/D:/work/agg </strong>. Use &lt;scan location=&quot;<strong>D:/work/agg</strong>&quot; suffix=&quot;.nc&quot; /&gt;, or better &lt;scan location=&quot;<strong>file:D:/work/agg</strong>&quot; suffix=&quot;.nc&quot; /&gt;<br>
+    </p>
+  </li>
+</ul>
 <h2> ucar.nc2.dt.TypedDatasetFactory</h2>
 <p>The TypedDatasetFactory creates <em><strong>Scientific Typed Datasets</strong></em> such as GridDatasets, PointObsDatasets, RadialDatasetSweep, etc. Usually (but not always) these are based on NetcdfDataset objects. </p>
 <h3>ucar.nc2.dt.TypedDatasetFactory.open( thredds.catalog.DataType datatype, String location)</h3>
@@ -107,7 +114,7 @@
 <p>&nbsp; </p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 17, 2008
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on May 18, 2009
 </address>
 <p>&nbsp;</p>
 </body>

@@ -128,7 +128,7 @@ public class CdmRemoteController extends AbstractController implements LastModif
     if (view == null) view = "";
 
     if (view.equalsIgnoreCase("getCapabilities")) {
-      sendCapabilities(req, res.getOutputStream(), FeatureType.POINT);
+      sendCapabilities(req, res.getOutputStream(), FeatureType.STATION);
       res.flushBuffer();
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
       return null;

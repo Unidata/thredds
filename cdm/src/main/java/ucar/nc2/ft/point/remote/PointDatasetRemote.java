@@ -61,13 +61,13 @@ import org.jdom.output.XMLOutputter;
 import org.jdom.input.SAXBuilder;
 
 /**
- * Connect to remote Point Dataset
+ * Remote Point Dataset. Also has the RemotePointCollection implementation.
  *
  * @author caron
  * @since Feb 16, 2009
  */
 public class PointDatasetRemote extends PointDatasetImpl {
-  static private boolean showXML = true;
+  /* static private boolean showXML = true;
   static private boolean showRequest = true;
 
   static public FeatureDatasetPoint factory(FeatureType wantFeatureType, String endpoint) throws IOException {
@@ -100,12 +100,12 @@ public class PointDatasetRemote extends PointDatasetImpl {
     }
 
     return doc;
-  }
+  } */
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////
   private NcStreamRemote ncremote;
 
-  private PointDatasetRemote(FeatureType wantFeatureType, NetcdfDataset ncd, NcStreamRemote ncremote) throws IOException {
+  public PointDatasetRemote(FeatureType wantFeatureType, NetcdfDataset ncd, NcStreamRemote ncremote) throws IOException {
     super(ncd, wantFeatureType);
     this.ncremote = ncremote;
 
@@ -113,8 +113,10 @@ public class PointDatasetRemote extends PointDatasetImpl {
     switch (wantFeatureType) {
       case POINT:
         collectionList.add( new RemotePointCollection());
-      //case STATION:
-      //  collectionList.add( new RemoteStationCollection(ncd.getLocation(), ncremote));
+        break;
+      case STATION:
+        collectionList.add( new RemoteStationCollection(ncd.getLocation(), ncremote));
+        break;
       default:
         throw new UnsupportedOperationException("No implemenattion for "+wantFeatureType);
     }
@@ -294,22 +296,5 @@ public class PointDatasetRemote extends PointDatasetImpl {
       return sb.toString();
     }
   }
-
-  public static void main(String args[]) throws IOException {
-    String endpoint = "http://localhost:8080/thredds/ncstream/point/data";
-    FeatureDatasetPoint fd = PointDatasetRemote.factory(FeatureType.ANY, endpoint);
-    PointFeatureCollection pc = (PointFeatureCollection) fd.getPointFeatureCollectionList().get(0);
-
-    PointFeatureIterator pfIter = pc.getPointFeatureIterator(-1);
-    try {
-      while (pfIter.hasNext()) {
-        PointFeature pf = pfIter.next();
-        System.out.println("pf= " + pf);
-      }
-    } finally {
-      pfIter.finish();
-    }
-  }
-
 
 }

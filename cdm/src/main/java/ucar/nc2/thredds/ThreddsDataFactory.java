@@ -34,6 +34,7 @@ package ucar.nc2.thredds;
 
 import ucar.nc2.*;
 import ucar.nc2.stream.NcStreamRemote;
+import ucar.nc2.stream.CdmRemoteDatasetFactory;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.point.remote.PointDatasetRemote;
 import ucar.nc2.constants.FeatureType;
@@ -293,7 +294,7 @@ public class ThreddsDataFactory {
     }
 
     if (access.getService().getServiceType() == ServiceType.CdmRemote) {
-      result.featureDataset = PointDatasetRemote.factory(wantFeatureType, access.getStandardUrlName());
+      result.featureDataset = CdmRemoteDatasetFactory.factory(wantFeatureType, access.getStandardUrlName());
 
     } else {
 

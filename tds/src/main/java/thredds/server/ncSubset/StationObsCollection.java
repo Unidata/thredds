@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.server.cdmremote;
+package thredds.server.ncSubset;
 
 import ucar.ma2.StructureData;
 import ucar.ma2.Array;

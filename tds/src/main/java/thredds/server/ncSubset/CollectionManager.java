@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.server.cdmremote;
+package thredds.server.ncSubset;
 
 import ucar.nc2.units.DateFromString;
 

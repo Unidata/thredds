@@ -106,7 +106,7 @@ public class PointStreamController extends AbstractCommandController implements 
 
     String pathInfo = req.getPathInfo();
     String path = pathInfo.substring(prefix.length());
-    if (debug) System.out.printf("PointStreamController pathInfo= %s path= %s %n", pathInfo, path);
+    if (debug) System.out.printf("PointStreamController pathInfo= %s query= %s %n", pathInfo, req.getQueryString());
 
     PointQueryBean query = (PointQueryBean) command;
     if (debug) System.out.printf(" query= %s %n", query);

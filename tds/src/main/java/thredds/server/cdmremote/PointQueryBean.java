@@ -48,6 +48,9 @@ public class PointQueryBean {
   // comma delimited list of variable names
   private String vars;
 
+  // comma delimited list of station ids
+  private String stn;
+
   // spatial extent - one or none
   private String bbox;
   private String west, east, south, north;
@@ -58,8 +61,8 @@ public class PointQueryBean {
   private String time;
 
   // type of request
-  private String header; // ??
-  private String iterator;
+  private String header;
+  private String stations;
 
   private LatLonRect llbb;
   private boolean fatal = false;
@@ -85,6 +88,10 @@ public class PointQueryBean {
 
   boolean wantHeader() {
     return (header != null);
+  }
+
+  boolean wantStations() {
+    return (stations != null);
   }
 
   private void parseSpatialExtent() {
@@ -147,6 +154,14 @@ public class PointQueryBean {
 
   /////////////////////////////////////
 
+  public void setStn(String stn) {
+    this.stn = stn;
+  }
+
+  public String getStns() {
+    return stn;
+  }
+
   public void setVars(String vars) {
     this.vars = vars;
   }
@@ -199,14 +214,15 @@ public class PointQueryBean {
     this.header = header;
   }
 
-  public void setIterator(String iterator) {
-    this.iterator = iterator;
+  public void setStations(String stations) {
+    this.stations = stations;
   }
 
   @Override
   public String toString() {
     return "PointQueryBean{" +
         "vars='" + vars + '\'' +
+        ", stn='" + stn + '\'' +
         ", bbox='" + bbox + '\'' +
         ", west='" + west + '\'' +
         ", east='" + east + '\'' +
@@ -218,8 +234,8 @@ public class PointQueryBean {
         ", timeEnd='" + timeEnd + '\'' +
         ", timeDuration='" + timeDuration + '\'' +
         ", time='" + time + '\'' +
-        ", header='" + header + '\'' +
-        ", iterator='" + iterator + '\'' +
+        ", header='" + wantHeader() + '\'' +
+        ", stations='" + wantStations() + '\'' +
         '}';
   }
 }

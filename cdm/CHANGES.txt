@@ -5,6 +5,10 @@ Build Date = @BUILDTIME@
 Changes in version 4.0
 
  Release Details:
+  44:
+   TDS: remote station data
+   add List<Station> StationCollection.getStations(String[] names);
+   CdmRemoteDatasetFactory now handles any type of cdmRemote dataset, including Grid.
   43:
    add Variable.setCachedData check for correct array type
    WRF, ADAS CoordSysBuilder makeSoilCoordintae had wrong datatype

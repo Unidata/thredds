@@ -41,6 +41,7 @@ import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.EarthLocationImpl;
+import ucar.unidata.geoloc.Station;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 import ucar.ma2.DataType;
@@ -48,6 +49,7 @@ import ucar.ma2.Section;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.List;
 
 import com.google.protobuf.ByteString;
 
@@ -102,10 +104,13 @@ public class PointStream {
     StructureMembers sm = sdata.getStructureMembers();
     int size = sm.getStructureSize();
     ByteBuffer bb = ByteBuffer.allocate(size);
+    int stringno = 0;
     for (StructureMembers.Member m : sm.getMembers()) {
-      if (m.getDataType() == DataType.STRING)
+      //System.out.printf("%s offset=%d%n", m.getName(), bb.position());      
+      if (m.getDataType() == DataType.STRING) {
         builder.addSdata(sdata.getScalarString(m));
-      else if (m.getDataType() == DataType.DOUBLE)
+        bb.putInt(stringno++); // 4 bytes for the string num on the object heap. LOOK could optimize this
+      } else if (m.getDataType() == DataType.DOUBLE)
         bb.putDouble(sdata.getScalarDouble(m));
       else if (m.getDataType() == DataType.FLOAT)
         bb.putFloat(sdata.getScalarFloat(m));
@@ -115,14 +120,37 @@ public class PointStream {
         bb.putShort(sdata.getScalarShort(m));
       else if (m.getDataType() == DataType.BYTE)
         bb.put(sdata.getScalarByte(m));
-      else if (m.getDataType() == DataType.CHAR)
-        bb.put(sdata.getScalarByte(m));
-      else
-      System.out.println(" unimplemented type = "+m.getDataType());
+      else if (m.getDataType() == DataType.CHAR) {
+        for (char c : sdata.getJavaArrayChar(m))
+          bb.put((byte) c);
+      } else
+        System.out.println(" unimplemented type = "+m.getDataType());
+
     }
     //System.out.println(" size= "+size+" bb="+bb.limit());
     builder.setData( ByteString.copyFrom( bb.array()));
     return builder.build();
+  }
+
+  static public PointStreamProto.StationList encodeStations(List<Station> stnList) throws IOException {
+    PointStreamProto.StationList.Builder stnBuilder = PointStreamProto.StationList.newBuilder();
+    for (Station loc : stnList) {
+      PointStreamProto.Station.Builder locBuilder = PointStreamProto.Station.newBuilder();
+
+      locBuilder.setId(loc.getName());
+      locBuilder.setLat(loc.getLatitude());
+      locBuilder.setLon(loc.getLongitude());
+      if (!Double.isNaN( loc.getAltitude()))
+        locBuilder.setAlt(loc.getAltitude());
+      if (loc.getDescription() != null)
+        locBuilder.setDesc(loc.getDescription());
+      if (loc.getWmoId() != null)
+        locBuilder.setWmoId(loc.getWmoId());
+
+      stnBuilder.addStations(locBuilder);
+    }
+
+    return stnBuilder.build();
   }
 
 }

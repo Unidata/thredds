@@ -12,17 +12,25 @@
       <property name="supportedMethods" value="GET"/>
     </bean>
 
-    <bean id="pointController" class="thredds.server.cdmremote.PointStreamController" >
-      <property name="tdsContext" ref="tdsContext"/>
-      <property name="allow" value="true"/>
+  <bean id="pointController" class="thredds.server.cdmremote.PointStreamController" >
+    <property name="tdsContext" ref="tdsContext"/>
+    <property name="allow" value="true"/>
 
-      <property name="supportedMethods" value="GET"/>
-    </bean>
+    <property name="supportedMethods" value="GET"/>
+  </bean>
+
+  <bean id="stationController" class="thredds.server.cdmremote.StationStreamController" >
+    <property name="tdsContext" ref="tdsContext"/>
+    <property name="allow" value="true"/>
+
+    <property name="supportedMethods" value="GET"/>
+  </bean>
 
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
       <value>
-          /point/**=pointController
+        /point/**=pointController
+        /station/**=stationController
           /**=cdmremoteController
       </value>
     </property>

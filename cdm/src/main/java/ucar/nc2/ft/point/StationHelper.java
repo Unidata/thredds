@@ -115,5 +115,14 @@ public class StationHelper {
     return stations;
   }
 
+  public List<Station> getStations(String[] stns) {
+    List<Station> result = new ArrayList<Station>(stns.length);
+    for (String name : stns) {
+      Station stn = getStation(name);
+      if (stn != null) result.add(stn);
+    }
+    return result;
+  }
+
 }
 

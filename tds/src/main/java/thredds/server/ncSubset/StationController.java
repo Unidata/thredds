@@ -30,7 +30,7 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.cdmremote;
+package thredds.server.ncSubset;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -42,13 +42,6 @@ import thredds.servlet.*;
 import thredds.server.ncSubset.QueryParams;
 import thredds.server.config.TdsContext;
 import ucar.nc2.units.DateRange;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.ft.PointFeatureIterator;
-import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.point.remote.PointStreamProto;
-import ucar.nc2.ft.point.remote.PointStream;
-import ucar.nc2.stream.NcStreamWriter;
-import ucar.nc2.stream.NcStream;
 import org.jdom.transform.XSLTransformer;
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;

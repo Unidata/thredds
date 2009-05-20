@@ -62,6 +62,11 @@ public abstract class StationProfileCollectionImpl extends MultipleNestedPointCo
     return stationHelper.getStations();
   }
 
+  public List<Station> getStations(String[] names) throws IOException {
+    initStations();
+    return stationHelper.getStations(names);
+  }
+
   public List<Station> getStations(LatLonRect boundingBox) throws IOException {
     initStations();
     return stationHelper.getStations(boundingBox);

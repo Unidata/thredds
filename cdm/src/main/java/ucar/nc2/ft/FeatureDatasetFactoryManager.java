@@ -41,6 +41,7 @@ import ucar.nc2.ft.point.standard.PointDatasetStandardFactory;
 import ucar.nc2.ft.grid.GridDatasetStandardFactory;
 import ucar.nc2.ft.radial.RadialDatasetStandardFactory;
 import ucar.nc2.thredds.ThreddsDataFactory;
+import ucar.nc2.stream.CdmRemoteDatasetFactory;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -197,7 +198,7 @@ public class FeatureDatasetFactoryManager {
 
     // special processing for cdmRemote: datasets
     } else if (location.startsWith(ucar.nc2.stream.NcStreamRemote.SCHEME)) {
-      return ucar.nc2.ft.point.remote.PointDatasetRemote.factory(wantFeatureType, location);
+      return CdmRemoteDatasetFactory.factory(wantFeatureType, location);
     }
 
     NetcdfDataset ncd = NetcdfDataset.acquireDataset(location, task);

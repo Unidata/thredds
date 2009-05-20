@@ -64,6 +64,10 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
     return stationHelper.getStations(boundingBox);
   }
 
+  public List<Station> getStations(String[] names) throws IOException {
+    return stationHelper.getStations(names);
+  }
+
   public Station getStation(String name) {
     return stationHelper.getStation(name);
   }
