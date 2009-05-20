@@ -276,14 +276,15 @@ public abstract class Array {
    * ArraySrc and ArrayDst must be the same primitive type.
    * Exposed for efficiency; use at your own risk.
    *
-   * @param arraySrc copy from here
+   * @param arraySrc copy from here : if not in canonical order, an extra copy will be done
    * @param srcPos   starting at
-   * @param arrayDst copy to here
+   * @param arrayDst copy to here : must be in canonical order
    * @param dstPos   starting at
    * @param len      number of elements to copy
    */
   static public void arraycopy(Array arraySrc, int srcPos, Array arrayDst, int dstPos, int len) {
-    System.arraycopy(arraySrc.getStorage(), srcPos, arrayDst.getStorage(), dstPos, len);
+    Object src = arraySrc.get1DJavaArray( arraySrc.getElementType()); // ensure canonical order
+    System.arraycopy(src, srcPos, arrayDst.getStorage(), dstPos, len);
   }
 
   /**

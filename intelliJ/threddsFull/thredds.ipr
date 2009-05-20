@@ -77,8 +77,8 @@
       <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/search/Indexer.java" />
       <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/search/ui/CatalogIndexer.java" />
       <file url="file://$PROJECT_DIR$/../../tds/src/main/java/thredds/servlet/tomcat/UsageValve.java" />
-      <file url="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/ft/point/standard/plug/UnidataPointFeature.java" />
       <file url="file://$PROJECT_DIR$/../../ldm/src/main/thredds/db/TestBabu.java" />
+      <file url="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/ft/point/standard/plug/UnidataPointFeature.java" />
     </excludeFromCompile>
     <resourceExtensions>
       <entry name=".+\.(properties|xml|html|dtd|tld)" />
@@ -96,8 +96,16 @@
       <entry name="?*.tld" />
     </wildcardResourcePatterns>
   </component>
-  <component name="CopyrightManager" default="">
-    <module2copyright />
+  <component name="CopyrightManager" default="default">
+    <copyright>
+      <option name="notice" value="Copyright (c) 1998 - &amp;#36;today.year. University Corporation for Atmospheric Research/Unidata&#10;Portions of this software were developed by the Unidata Program at the&#10;University Corporation for Atmospheric Research.&#10;&#10;Access and use of this software shall impose the following obligations&#10;and understandings on the user. The user is granted the right, without&#10;any fee or cost, to use, copy, modify, alter, enhance and distribute&#10;this software, and any derivative works thereof, and its supporting&#10;documentation for any purpose whatsoever, provided that this entire&#10;notice appears in all copies of the software, derivative works and&#10;supporting documentation.  Further, UCAR requests that the user credit&#10;UCAR/Unidata in any publications that result from the use of this&#10;software or in any product that includes this software. The names UCAR&#10;and/or Unidata, however, may not be used in any advertising or publicity&#10;to endorse or promote any products or commercial entity unless specific&#10;written permission is obtained from UCAR/Unidata. The user also&#10;understands that UCAR/Unidata is not obligated to provide the user with&#10;any support, consulting, training or assistance of any kind with regard&#10;to the use, operation and performance of this software nor to provide&#10;the user with any updates, revisions, new versions or &quot;bug fixes.&quot;&#10;&#10;THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA &quot;AS IS&quot; AND ANY EXPRESS OR&#10;IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED&#10;WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE&#10;DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,&#10;INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING&#10;FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,&#10;NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION&#10;WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE." />
+      <option name="keyword" value="Copyright" />
+      <option name="myName" value="default" />
+      <option name="myLocal" value="true" />
+    </copyright>
+    <module2copyright>
+      <element module="All" copyright="default" />
+    </module2copyright>
   </component>
   <component name="DependenciesAnalyzeManager">
     <option name="myForwardDirection" value="false" />

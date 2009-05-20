@@ -34,6 +34,7 @@
 package ucar.nc2;
 
 import ucar.nc2.dataset.VariableEnhanced;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.DataType;
@@ -189,6 +190,7 @@ public class TestCompare {
   }
 
   static public void checkEach(Object want1, List list1, List list2, List result) {
+    try {
     String status = null;
     if( want1 instanceof Attribute ) {
       Attribute a = (Attribute)want1;
@@ -217,6 +219,9 @@ public class TestCompare {
     if (result != null) {
       result.add(want1);
       result.add(want2);
+    }
+    } catch (Throwable t) {
+      System.out.printf(" Error= %s %n",t.getMessage());
     }
   }
 
@@ -281,4 +286,9 @@ public class TestCompare {
   }
 
 
+    public static void main(String arg[]) throws IOException {
+      NetcdfFile ncfile1 = NetcdfDataset.openFile("dods://thredds.cise-nsf.gov:8080/thredds/dodsC/satellite/SFC-T/SUPER-NATIONAL_1km/20090516/SUPER-NATIONAL_1km_SFC-T_20090516_2200.gini", null);
+      NetcdfFile ncfile2 = NetcdfDataset.openFile("dods://motherlode.ucar.edu:8080/thredds/dodsC/satellite/SFC-T/SUPER-NATIONAL_1km/20090516/SUPER-NATIONAL_1km_SFC-T_20090516_2200.gini", null);
+      compareFiles(ncfile1, ncfile2, false, true, false);
+    }
 }
