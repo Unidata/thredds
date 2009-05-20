@@ -555,16 +555,16 @@ class Giniheader {
     this.ncfile.addAttribute(null, new Attribute("id", gini_GetSectorID(sec_id)));
     this.ncfile.addAttribute(null, new Attribute("keywords_vocabulary", gini_GetPhysElemID(phys_elem, ent_id)));
     this.ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.GRID.toString()));
-    this.ncfile.addAttribute(null, new Attribute("standard_name_vacabulary", getPhysElemLongName(phys_elem, ent_id)));
+    this.ncfile.addAttribute(null, new Attribute("standard_name_vocabulary", getPhysElemLongName(phys_elem, ent_id)));
     this.ncfile.addAttribute(null, new Attribute("creator_name", "UNIDATA"));
-    this.ncfile.addAttribute(null, new Attribute("creator_url", "http://my.unidata.ucar.edu/"));
+    this.ncfile.addAttribute(null, new Attribute("creator_url", "http://www.unidata.ucar.edu/"));
     this.ncfile.addAttribute(null, new Attribute("naming_authority", "UCAR/UOP"));
     this.ncfile.addAttribute(null, new Attribute("geospatial_lat_min", new Float(lat1)));
     this.ncfile.addAttribute(null, new Attribute("geospatial_lat_max", new Float(lat2)));
     this.ncfile.addAttribute(null, new Attribute("geospatial_lon_min", new Float(lon1)));
     this.ncfile.addAttribute(null, new Attribute("geospatial_lon_max", new Float(lon2)));
-    this.ncfile.addAttribute(null, new Attribute("geospatial_vertical_min", new Float(0.0)));
-    this.ncfile.addAttribute(null, new Attribute("geospatial_vertical_max", new Float(0.0)));
+    //this.ncfile.addAttribute(null, new Attribute("geospatial_vertical_min", new Float(0.0)));
+    //this.ncfile.addAttribute(null, new Attribute("geospatial_vertical_max", new Float(0.0)));
 
     /** Get the image resolution.
     */
