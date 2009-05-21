@@ -225,13 +225,13 @@ public class WMSController extends AbstractController {
         return new ModelAndView(jspPage, model);
       }
       catch (java.net.SocketException se) { // Google Earth does thius a lot for some reason
-        log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -10));
+        log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -10), se);
         return null;
       }
       catch (Throwable t) {
-        log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1));
-        t.printStackTrace();
-        throw new RuntimeException(t);
+        log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1), t);
+        res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
+        return null;
       }
 
       finally {
