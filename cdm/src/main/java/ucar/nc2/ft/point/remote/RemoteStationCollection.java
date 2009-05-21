@@ -115,7 +115,8 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
 
       } catch (Throwable t) {
         if (method != null) method.releaseConnection();
-        throw new IOException(t);
+        // log.error( "", t);
+        throw new IOException( t.getMessage());
       }
     }
   }
