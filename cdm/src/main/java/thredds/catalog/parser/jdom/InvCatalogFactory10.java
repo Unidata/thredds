@@ -165,29 +165,28 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
     // read top-level services
     java.util.List<Element> sList = catalogElem.getChildren("service", defNS);
-    for (int j=0; j< sList.size(); j++) {
-      InvService s = readService((Element) sList.get(j), baseURI );
+    for ( Element e : sList ) {
+      InvService s = readService( e, baseURI );
       catalog.addService(s);
     }
 
     // read top-level properties
     java.util.List<Element> pList = catalogElem.getChildren("property", defNS);
-    for (int j=0; j< pList.size(); j++) {
-      InvProperty s = readProperty((Element) pList.get(j));
+    for ( Element e : pList ) {
+      InvProperty s = readProperty( e);
       catalog.addProperty(s);
     }
 
     // read top-level dataroots
     java.util.List<Element> rootList = catalogElem.getChildren("datasetRoot", defNS);
-    for (int j=0; j< rootList.size(); j++) {
-      InvProperty root = readDatasetRoot((Element) rootList.get(j));
+    for ( Element e : rootList ) {
+      InvProperty root = readDatasetRoot(e);
       catalog.addDatasetRoot( root);
     }
 
      // look for top-level dataset and catalogRefs elements (keep them in order)
     java.util.List<Element> allChildren = catalogElem.getChildren();
-    for (int j=0; j< allChildren.size(); j++) {
-      Element e = (Element) allChildren.get(j);
+    for ( Element e : allChildren ) {
       if (e.getName().equals("dataset")) {
         catalog.addDataset( readDataset( catalog, null, e, baseURI ));
       } else if (e.getName().equals("datasetFmrc")) {
@@ -286,8 +285,9 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
         // look for services
     java.util.List<Element> serviceList = dsElem.getChildren("service", defNS);
-    for (int j=0; j< serviceList.size(); j++) {
-      InvService s = readService( (Element) serviceList.get(j), base);
+    for ( Element curElem : serviceList )
+    {
+      InvService s = readService( curElem, base);
       dataset.addService( s);
     }
 
@@ -297,8 +297,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
       // look for access elements
     java.util.List<Element> aList = dsElem.getChildren("access", defNS);
-    for (int j=0; j< aList.size(); j++) {
-      InvAccessImpl a = readAccess( dataset, (Element) aList.get(j));
+    for ( Element e : aList ) {
+      InvAccessImpl a = readAccess( dataset, e);
       dataset.addAccess( a);
      }
 
@@ -312,8 +312,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
      // look for nested dataset and catalogRefs elements (keep them in order)
     java.util.List<Element> allChildren = dsElem.getChildren();
-    for (int j=0; j< allChildren.size(); j++) {
-      Element e = (Element) allChildren.get(j);
+    for ( Element e : allChildren) {
       if (e.getName().equals("dataset")) {
         InvDatasetImpl ds = readDataset( catalog, dataset, e, base);
         if (ds != null)
@@ -1136,9 +1135,9 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
     // look for names
     ArrayList names = new ArrayList();
-    java.util.List list = gcElem.getChildren("name", defNS);
-    for (int j=0; j< list.size(); j++) {
-      ThreddsMetadata.Vocab name = readControlledVocabulary((Element) list.get(j));
+    java.util.List<Element> list = gcElem.getChildren("name", defNS);
+    for ( Element e : list) {
+      ThreddsMetadata.Vocab name = readControlledVocabulary(e);
       names.add(name);
     }
 
@@ -1301,22 +1300,22 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
     InvService service = new InvService( name, type, serviceBase, suffix, desc);
 
-    java.util.List propertyList = s.getChildren("property", defNS);
-    for (int j=0; j< propertyList.size(); j++) {
-      InvProperty p = readProperty( (Element) propertyList.get(j));
+    java.util.List<Element> propertyList = s.getChildren("property", defNS);
+    for ( Element e : propertyList) {
+      InvProperty p = readProperty( e);
       service.addProperty( p);
      }
 
-    java.util.List rootList = s.getChildren("datasetRoot", defNS);
-    for (int j=0; j< rootList.size(); j++) {
-      InvProperty root = readDatasetRoot((Element) rootList.get(j));
+    java.util.List<Element> rootList = s.getChildren("datasetRoot", defNS);
+    for ( Element e : rootList ) {
+      InvProperty root = readDatasetRoot(e);
       service.addDatasetRoot( root);
     }
 
     // nested services
-    java.util.List serviceList = s.getChildren("service", defNS);
-    for (int j=0; j< serviceList.size(); j++) {
-      InvService ss = readService( (Element) serviceList.get(j), baseURI);
+    java.util.List<Element> serviceList = s.getChildren("service", defNS);
+    for ( Element e : serviceList ) {
+      InvService ss = readService( e, baseURI);
       service.addService( ss);
      }
 
@@ -1366,44 +1365,44 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
   protected void readThreddsMetadata( InvCatalog catalog, InvDatasetImpl dataset,
                                       Element parent, ThreddsMetadata tmg) {
-    List list;
+    List<Element> list;
 
      // look for creators - kind of a Source
     list = parent.getChildren("creator", defNS);
-    for (int j=0; j< list.size(); j++) {
-      tmg.addCreator( readSource( (Element) list.get(j)));
+    for ( Element e : list) {
+      tmg.addCreator( readSource( e));
     }
 
      // look for contributors
     list = parent.getChildren("contributor", defNS);
-    for (int j=0; j< list.size(); j++) {
-      tmg.addContributor( readContributor( (Element) list.get(j)));
+    for (Element e : list) {
+      tmg.addContributor( readContributor( e));
     }
 
      // look for dates
     list = parent.getChildren("date", defNS);
-    for (int j=0; j< list.size(); j++) {
-      DateType d = readDate( (Element) list.get(j));
+    for ( Element e : list) {
+      DateType d = readDate( e);
       tmg.addDate( d);
      }
 
      // look for documentation
     list = parent.getChildren("documentation", defNS);
-    for (int j=0; j< list.size(); j++) {
-      InvDocumentation doc = readDocumentation( catalog, (Element) list.get(j));
+    for ( Element e : list) {
+      InvDocumentation doc = readDocumentation( catalog, e);
       tmg.addDocumentation( doc);
      }
 
      // look for keywords - kind of a controlled vocabulary
     list = parent.getChildren("keyword", defNS);
-    for (int j=0; j< list.size(); j++) {
-      tmg.addKeyword( readControlledVocabulary( (Element) list.get(j)));
+    for ( Element e : list) {
+      tmg.addKeyword( readControlledVocabulary( e));
     }
 
     // look for metadata
-    java.util.List mList = parent.getChildren("metadata", defNS);
-    for (int j=0; j< mList.size(); j++) {
-      InvMetadata m = readMetadata( catalog, dataset, (Element) mList.get(j));
+    java.util.List<Element> mList = parent.getChildren("metadata", defNS);
+    for ( Element e : mList) {
+      InvMetadata m = readMetadata( catalog, dataset, e);
       if (m != null) {
           tmg.addMetadata(m);
       }
@@ -1411,27 +1410,27 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
      // look for projects - kind of a controlled vocabulary
     list = parent.getChildren("project", defNS);
-    for (int j=0; j< list.size(); j++) {
-      tmg.addProject( readControlledVocabulary( (Element) list.get(j)));
+    for ( Element e : list) {
+      tmg.addProject( readControlledVocabulary( e));
     }
 
      // look for properties
     list = parent.getChildren("property", defNS);
-    for (int j=0; j< list.size(); j++) {
-      InvProperty p = readProperty( (Element) list.get(j));
+    for ( Element e : list) {
+      InvProperty p = readProperty( e);
       tmg.addProperty( p);
      }
 
      // look for publishers - kind of a Source
     list = parent.getChildren("publisher", defNS);
-    for (int j=0; j< list.size(); j++) {
-      tmg.addPublisher( readSource( (Element) list.get(j)));
+    for ( Element e : list) {
+      tmg.addPublisher( readSource( e));
     }
 
      // look for variables
     list = parent.getChildren("variables", defNS);
-    for (int j=0; j< list.size(); j++) {
-      ThreddsMetadata.Variables vars = readVariables( catalog, dataset, (Element) list.get(j));
+    for ( Element e : list) {
+      ThreddsMetadata.Variables vars = readVariables( catalog, dataset, e);
       tmg.addVariables( vars);
      }
 
@@ -1506,7 +1505,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       }
     }
 
-    java.util.List vlist = varsElem.getChildren("variable", defNS);
+    java.util.List<Element> vlist = varsElem.getChildren("variable", defNS);
 
     String mapHref = null;
     URI mapUri = null;
@@ -1528,8 +1527,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
     ThreddsMetadata.Variables variables = new ThreddsMetadata.Variables( vocab, vocabHref, vocabUri, mapHref, mapUri);
 
-    for (int j=0; j< vlist.size(); j++) {
-      ThreddsMetadata.Variable v = readVariable( (Element) vlist.get(j));
+    for ( Element e : vlist) {
+      ThreddsMetadata.Variable v = readVariable( e);
       variables.addVariable( v);
     }
 
@@ -1538,9 +1537,9 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       Element varsElement;
       try {
         varsElement = readContentFromURL(mapUri);
-        List list = varsElement.getChildren("variable", defNS);
-        for (int j = 0; j < list.size(); j++) {
-          ThreddsMetadata.Variable v = readVariable((Element) list.get(j));
+        List<Element> list = varsElement.getChildren("variable", defNS);
+        for ( Element e : list) {
+          ThreddsMetadata.Variable v = readVariable(e);
           variables.addVariable(v);
         }
       } catch (IOException e) {
@@ -2160,7 +2159,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       writeGeospatialRange( elem, new Element("updown", defNS), gc.getUpDownRange());
 
     // serialize isGlobal
-    java.util.List names = gc.getNames();
+    java.util.List<ThreddsMetadata.Vocab> names = gc.getNames();
     ThreddsMetadata.Vocab global = new ThreddsMetadata.Vocab("global", null);
     if (gc.isGlobal() && !names.contains(global)) {
       names.add(global);
@@ -2168,8 +2167,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       names.remove(global);
     }
 
-    for (int j = 0; j < names.size(); j++) {
-      ThreddsMetadata.Vocab name = (ThreddsMetadata.Vocab) names.get(j);
+    for ( ThreddsMetadata.Vocab name : names) {
       elem.addContent(writeControlledVocabulary(name, "name"));
     }
 
@@ -2216,9 +2214,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       if ((converter != null) && mdata.getContentObject() != null) {
         if (mdata.getContentObject() instanceof Element) { // special case
           Element mdataOrg = (Element) mdata.getContentObject();
-          List children = mdataOrg.getChildren();
-          for (int i=0; i<children.size(); i++) {
-            Element child = (Element) children.get(i);
+          List<Element> children = mdataOrg.getChildren();
+          for ( Element child : children ) {
             mdataElem.addContent( (Element) child.clone());
           }
         } else {
@@ -2338,7 +2335,6 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
   }
 
   protected void writeThreddsMetadata( Element elem, ThreddsMetadata tmg) {
-    java.util.List list;
 
     if (tmg.getServiceName() != null) {
       Element serviceNameElem = new Element("serviceName", defNS);
@@ -2367,57 +2363,48 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     if ( tmg.hasDataSize())
       elem.addContent( writeDataSize( tmg.getDataSize()));
 
-    list = tmg.getDocumentation();
-    for (int j=0; j< list.size(); j++) {
-      InvDocumentation doc = (InvDocumentation) list.get(j);
+    List<InvDocumentation> docList = tmg.getDocumentation();
+    for ( InvDocumentation doc : docList ) {
       elem.addContent( writeDocumentation(doc, "documentation"));
     }
 
-    list = tmg.getContributors();
-    for (int j=0; j< list.size(); j++) {
-      ThreddsMetadata.Contributor c = (ThreddsMetadata.Contributor) list.get(j);
+    List<ThreddsMetadata.Contributor> contribList = tmg.getContributors();
+    for ( ThreddsMetadata.Contributor c : contribList) {
       elem.addContent( writeContributor(c));
     }
 
-    list = tmg.getCreators();
-    for (int j=0; j< list.size(); j++) {
-      ThreddsMetadata.Source p = (ThreddsMetadata.Source) list.get(j);
+    List<ThreddsMetadata.Source> creatorList = tmg.getCreators();
+    for ( ThreddsMetadata.Source p : creatorList ) {
       elem.addContent( writeSource("creator", p));
     }
 
-    list = tmg.getKeywords();
-    for (int j=0; j< list.size(); j++) {
-      ThreddsMetadata.Vocab v = (ThreddsMetadata.Vocab) list.get(j);
+    List<ThreddsMetadata.Vocab> kewordList = tmg.getKeywords();
+    for ( ThreddsMetadata.Vocab v : kewordList ) {
       elem.addContent( writeControlledVocabulary(v, "keyword"));
     }
 
-    list = tmg.getMetadata();
-    for (int j=0; j< list.size(); j++) {
-      InvMetadata m = (InvMetadata) list.get(j);
+    List<InvMetadata> mdList = tmg.getMetadata();
+    for ( InvMetadata m : mdList ) {
       elem.addContent( writeMetadata(m));
     }
 
-    list = tmg.getProjects();
-    for (int j=0; j< list.size(); j++) {
-      ThreddsMetadata.Vocab v = (ThreddsMetadata.Vocab) list.get(j);
+    List<ThreddsMetadata.Vocab> projList = tmg.getProjects();
+    for ( ThreddsMetadata.Vocab v : projList) {
       elem.addContent( writeControlledVocabulary(v, "project"));
     }
 
-    list = tmg.getProperties();
-    for (int j=0; j< list.size(); j++) {
-      InvProperty p = (InvProperty) list.get(j);
+    List<InvProperty> propertyList = tmg.getProperties();
+    for ( InvProperty p : propertyList ) {
       elem.addContent( writeProperty(p));
     }
 
-    list = tmg.getPublishers();
-    for (int j=0; j< list.size(); j++) {
-      ThreddsMetadata.Source p = (ThreddsMetadata.Source) list.get(j);
+    List<ThreddsMetadata.Source> pubList = tmg.getPublishers();
+    for ( ThreddsMetadata.Source p : pubList ) {
       elem.addContent( writeSource("publisher", p));
     }
 
-    list = tmg.getDates();
-    for (int j=0; j< list.size(); j++) {
-      DateType d = (DateType) list.get(j);
+    List<DateType> dateList = tmg.getDates();
+    for ( DateType d : dateList ) {
       elem.addContent( writeDate("date", d));
     }
 
@@ -2429,9 +2416,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     if (tc != null)
       elem.addContent( writeTimeCoverage( tc));
 
-    list = tmg.getVariables();
-    for (int j=0; j< list.size(); j++) {
-      ThreddsMetadata.Variables v = (ThreddsMetadata.Variables) list.get(j);
+    List<ThreddsMetadata.Variables> varList = tmg.getVariables();
+    for ( ThreddsMetadata.Variables v : varList ) {
       elem.addContent( writeVariables(v));
     }
   }
@@ -2504,9 +2490,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       elem.addContent( mapElem);
 
     } else { // inline variables
-      List list = vs.getVariableList();
-      for (int j = 0; j < list.size(); j++) {
-        ThreddsMetadata.Variable v = (ThreddsMetadata.Variable) list.get(j);
+      List<ThreddsMetadata.Variable> varList = vs.getVariableList();
+      for ( ThreddsMetadata.Variable v : varList ) {
         elem.addContent(writeVariable(v));
       }
     }
