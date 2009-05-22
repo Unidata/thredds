@@ -42,8 +42,15 @@ import junit.framework.TestCase;
 
 import java.io.IOException;
 import java.io.File;
+import java.util.List;
+import java.util.Map;
 
 import ucar.nc2.iosp.IOServiceProvider;
+import ucar.grid.GridIndex;
+import ucar.grid.GridDefRecord;
+import ucar.grid.GridRecord;
+import ucar.grib.GribReadIndex;
+import ucar.grib.GribGridRecord;
 
 public class TestBinaryTextIndexes extends TestCase {
 
@@ -106,6 +113,57 @@ public class TestBinaryTextIndexes extends TestCase {
      ncfileText.close();
   }
 
+  void compareIndexes(String fileBinary, String fileText) throws IOException {
+
+    long start = System.currentTimeMillis() ;
+    GridIndex giB = new GribReadIndex().open( fileBinary +".gbx");
+    GridIndex giT = new GribReadIndex().open( fileText +".gbx");
+
+    // Coordinate systems
+    List<GridDefRecord> hcsB =   giB.getHorizCoordSys();
+    List<GridDefRecord> hcsT =   giT.getHorizCoordSys();
+
+    for(int i = 0; i < hcsB.size(); i++ ) {
+      GridDefRecord gdrB = hcsB.get( i );
+      GridDefRecord gdrT = hcsT.get( i );
+
+      java.util.Set<String> keysB = gdrB.getKeys();
+      for( String key : keysB ) {
+        String valueB = gdrB.getParam( key );
+        String valueT = gdrT.getParam( key );
+        if( ! valueB.equals( valueT ))
+           System.out.println( "hcs "+ key +" differ B and T  "+  valueB +" "+ valueT);
+
+      }
+    }
+
+    // Attribubutes
+    Map<String,String> attB = giB.getGlobalAttributes();
+    Map<String,String> attT = giT.getGlobalAttributes();
+    java.util.Set<String> keysB = attB.keySet();
+    for( String key : keysB ) {
+        String valueB = attB.get( key );
+        String valueT = attT.get( key );
+        if( ! valueB.equals( valueT ))
+           System.out.println( "att "+ key +" differ B and T  "+  valueB +" "+ valueT);
+
+     }
+
+    // records
+    List<GridRecord> grsB =   giB.getGridRecords();
+    List<GridRecord> grsT =   giT.getGridRecords();
+    //for(int i = 0; i < grsB.size(); i++ ) {
+    for(int i = 0; i < 10; i++ ) {
+      GribGridRecord grB = (GribGridRecord)grsB.get( i );
+      GribGridRecord grT = (GribGridRecord)grsT.get( i );
+      String valueB = grB.toString();
+      String valueT = grT.toString();
+      if( ! valueB.equals( valueT ))
+           System.out.println( "rec  differ B and T  \n"+  valueB +"\n"+ valueT);
+    }
+  }
+
+
   void doAll(String args[]) throws IOException {
 
     String dirB, dirT;
@@ -143,8 +201,12 @@ public class TestBinaryTextIndexes extends TestCase {
             child.endsWith("tmp") || //index in creation process
             child.length() == 0) { // zero length file, ugh...
         } else {
-          System.out.println( "\n\nComparing File "+ child );
-          compareNC( dirB +"/"+ child, dirT +"/"+ child);
+          if( ! child.contains( "ukm"))
+            continue;
+          System.out.println( "\n\nComparing File "+ child );  //TODO: remove
+          //compareNC( dirB +"/"+ child, dirT +"/"+ child);
+          compareIndexes( dirB +"/"+ child, dirT +"/"+ child);
+          System.out.println();
         }
       }
     } else {
