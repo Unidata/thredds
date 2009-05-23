@@ -1,6 +1,4 @@
 /*
- * $Id: IDV-Style.xjs,v 1.3 2007/02/16 19:18:30 dmurray Exp $
- *
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
@@ -46,19 +44,21 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dt.fmr.FmrcCoordSys;
 import ucar.nc2.iosp.IOServiceProvider;
-//import ucar.nc2.iosp.grid.GridDefRecord;
-//import ucar.nc2.iosp.grid.GridIndex;
 import ucar.nc2.iosp.grid.GridIndexToNC;
-
-//import ucar.nc2.iosp.grid.GridRecord;
 import ucar.nc2.iosp.grid.GridServiceProvider;
+
 import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.io.RandomAccessFile;
 
+import java.io.FileNotFoundException;
+
 import java.io.IOException;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 
 /**
@@ -174,17 +174,65 @@ public class GempakGridServiceProvider extends GridServiceProvider {
     }
 
     /**
-     * Test this.
+     * Test this class and possibly write out a netCDF file
      *
-     * @param args file name
+     * @param args arg1 input GEMPAK grid to read,
+     *             arg2 output Netcdf file  (optional)
+     * @throws java.io.IOException on io error
      *
-     * @throws IOException  problem reading the file
+     * @throws IOException problem reading or writing file
      */
-    public static void main(String[] args) throws IOException {
-        IOServiceProvider mciosp = new GempakGridServiceProvider();
-        RandomAccessFile  rf     = new RandomAccessFile(args[0], "r", 2048);
-        NetcdfFile ncfile = new MakeNetcdfFile(mciosp, rf, args[0], null);
-    }
+    public static void main(String args[]) throws IOException {
+
+        // Function References
+        GempakGridServiceProvider ggsp      = new GempakGridServiceProvider();
+        String                    className = ggsp.getClass().getName();
+
+        // Test usage
+        if (args.length < 1) {
+            System.out.println("\nUsage of " + className + ":\n");
+            System.out.println("Parameters:");
+            System.out.println(
+                "\t<GEMPAK Grid File> GEMPAK grid file to read");
+            System.out.println(
+                "\t<NetCDF output file> file to store results (optional)\n");
+            System.out.println("java -Xmx256m " + className
+                               + " <GEMPAK Grid File> <NetCDF output file>");
+            System.exit(0);
+        }
+
+        // Get UTC TimeZone
+        // A list of available ID's show that UTC has ID = 127
+        TimeZone tz = TimeZone.getTimeZone("127");
+        TimeZone.setDefault(tz);
+
+        // Say hello
+        Date now = Calendar.getInstance().getTime();
+        System.out.println(now.toString() + " ... Start of " + className);
+
+        try {
+            System.out.println("reading GEMPAK grid file=" + args[0]);
+            RandomAccessFile rf = new RandomAccessFile(args[0], "r", 2048);
+            NetcdfFile ncfile   = new MakeNetcdfFile(ggsp, rf, args[0], null);
+            if (args.length == 2) {
+                System.out.print("writing to netCDF file=" + args[1]);
+                NetcdfFile nc = FileWriter.writeToFile(ncfile, args[1]);
+                nc.close();
+            }
+            rf.close();  // done reading
+
+            // Catch thrown errors from ncFile
+        } catch (FileNotFoundException noFileError) {
+            System.err.println("FileNotFoundException : " + noFileError);
+        } catch (IOException ioError) {
+            System.err.println("IOException : " + ioError);
+        }
+
+        // Goodbye message
+        now = Calendar.getInstance().getTime();
+        System.out.println(now.toString() + " ... End of " + className + "!");
+
+    }  // end main
 
     /**
      * TODO:  generalize this
