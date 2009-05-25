@@ -114,7 +114,6 @@ public class TestBinaryTextIndexes extends TestCase {
   }
 
   void compareIndexes(String fileBinary, String fileText) throws IOException {
-
     long start = System.currentTimeMillis() ;
     GridIndex giB = new GribReadIndex().open( fileBinary +".gbx");
     GridIndex giT = new GribReadIndex().open( fileText +".gbx");
@@ -129,10 +128,22 @@ public class TestBinaryTextIndexes extends TestCase {
 
       java.util.Set<String> keysB = gdrB.getKeys();
       for( String key : keysB ) {
+        if( key.equals( "grid_units") ||  key.equals( "created") || key.equals( "location") || key.equals( "grid_units"))
+           continue;
         String valueB = gdrB.getParam( key );
         String valueT = gdrT.getParam( key );
         if( ! valueB.equals( valueT ))
-           System.out.println( "hcs "+ key +" differ B and T  "+  valueB +" "+ valueT);
+           System.out.println( "hcs "+ key +" differ for B and T  "+  valueB +" "+ valueT);
+
+      }
+      java.util.Set<String> keysT = gdrT.getKeys();
+      for( String key : keysT ) {
+        if( key.equals( "ScanningMode") ||  key.equals( "created") || key.equals( "location") || key.equals( "grid_units"))
+           continue;
+        String valueB = gdrB.getParam( key );
+        String valueT = gdrT.getParam( key );
+        if( ! valueT.equals( valueB ))
+           System.out.println( "hcs "+ key +" differ for B and T  "+  valueB +" "+ valueT);
 
       }
     }
@@ -142,25 +153,30 @@ public class TestBinaryTextIndexes extends TestCase {
     Map<String,String> attT = giT.getGlobalAttributes();
     java.util.Set<String> keysB = attB.keySet();
     for( String key : keysB ) {
+        if( key.equals( "basetime") ||  key.equals( "created") || key.equals( "location") || key.equals( "grid_units"))
+           continue;
         String valueB = attB.get( key );
         String valueT = attT.get( key );
         if( ! valueB.equals( valueT ))
-           System.out.println( "att "+ key +" differ B and T  "+  valueB +" "+ valueT);
+           System.out.println( "attribute "+ key +" differ for B and T  "+  valueB +" "+ valueT);
 
      }
 
     // records
     List<GridRecord> grsB =   giB.getGridRecords();
     List<GridRecord> grsT =   giT.getGridRecords();
-    //for(int i = 0; i < grsB.size(); i++ ) {
-    for(int i = 0; i < 10; i++ ) {
-      GribGridRecord grB = (GribGridRecord)grsB.get( i );
-      GribGridRecord grT = (GribGridRecord)grsT.get( i );
-      String valueB = grB.toString();
-      String valueT = grT.toString();
-      if( ! valueB.equals( valueT ))
-           System.out.println( "rec  differ B and T  \n"+  valueB +"\n"+ valueT);
-    }
+      //for(int i = 0; i < grsB.size(); i++ ) {
+      int stop = (grsB.size() < 10) ? grsB.size() : 10;
+      for(int i = 0; i < stop; i++ ) {
+        GribGridRecord grB = (GribGridRecord)grsB.get( i );
+        GribGridRecord grT = (GribGridRecord)grsT.get( i );
+        int valueB = grB.gdsKey;
+        //String valueB = grB.toString();
+        int valueT = grT.gdsKey;
+        //String valueT = grT.toString();
+        if(  valueB !=  valueT )
+             System.out.println( "record gdsKey  differ for B and T  "+  valueB +"  "+ valueT);
+      }
   }
 
 
@@ -188,12 +204,13 @@ public class TestBinaryTextIndexes extends TestCase {
         } else if (
 //            child.contains( "Ensemble") ||
 //            child.contains( "SREF") ||
-            child.contains( "GFS_Spectral") || //uses >1 parameter tables
+//            child.contains( "GFS_Spectral") || //uses >1 parameter tables
 //            child.contains( "SPECTRAL") || //uses >1 parameter tables
-//            child.contains( "OCEAN") || //uses >1 horizontal coord system
-            child.contains( "ECMWF") || //uses >1 horizontal coord system
+//          child.contains( "OCEAN") || //uses >1 horizontal coord system
+//            child.contains( "ECMWF") || //uses >1 horizontal coord system
+//            child.contains( "RADAR") || //uses >1 horizontal coord system
 //            child.contains( "SST") || //uses >1 horizontal coord system
-            child.contains( "UKMET") || //uses >1 horizontal coord system
+//            child.contains( "UKMET") || //uses >1 horizontal coord system
 //            child.contains( "GFS_Global_1p25deg") || //uses >1 horizontal coord system
             child.endsWith("gbx") ||
             child.endsWith("gbx2") ||
@@ -201,11 +218,11 @@ public class TestBinaryTextIndexes extends TestCase {
             child.endsWith("tmp") || //index in creation process
             child.length() == 0) { // zero length file, ugh...
         } else {
-          if( ! child.contains( "ukm"))
-            continue;
-          System.out.println( "\n\nComparing File "+ child );  //TODO: remove
-          //compareNC( dirB +"/"+ child, dirT +"/"+ child);
-          compareIndexes( dirB +"/"+ child, dirT +"/"+ child);
+//          if( ! child.contains( "GFS_Ensemble_1p25deg")) //TODO: remove
+//            continue;
+          System.out.println( "\n\nComparing File "+ child );  
+          compareNC( dirB +"/"+ child, dirT +"/"+ child);
+          //compareIndexes( dirB +"/"+ child, dirT +"/"+ child);
           System.out.println();
         }
       }

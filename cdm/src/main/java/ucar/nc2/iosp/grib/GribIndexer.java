@@ -57,6 +57,11 @@ import java.util.List;
 
 public final class GribIndexer {
 
+  /**
+     * delete all indexes, it makes a complete rebuild
+     */
+  private static final boolean removeGBX = false;
+
   /*
   * dirs to inspect
   *
@@ -179,6 +184,8 @@ public final class GribIndexer {
 
     String[] args = new String[2];
     File gbx = new File(dir, grib.getName() + ".gbx");
+    if (removeGBX && gbx.exists())
+        gbx.delete();
     //System.out.println( "index ="+ gbx.getName() );
 
     args[0] = grib.getParent() + "/" + grib.getName();

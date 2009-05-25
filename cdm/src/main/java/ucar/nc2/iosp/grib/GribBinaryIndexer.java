@@ -56,6 +56,11 @@ import java.io.*;
 
 public final class GribBinaryIndexer {
 
+  /**
+   * delete all indexes, it makes a complete rebuild
+   */
+  private static final boolean removeGBX = false;
+
   /*
   * dirs to inspect
   */
@@ -65,7 +70,6 @@ public final class GribBinaryIndexer {
   * reads in the configuration file
   *
   */
-
   private boolean readConf(String conf) throws IOException {
 
     InputStream ios = new FileInputStream(conf);
@@ -175,6 +179,8 @@ public final class GribBinaryIndexer {
 
     String[] args = new String[2];
     File gbx = new File(dir, grib.getName() + ".gbx");
+    if (removeGBX && gbx.exists())
+        gbx.delete();
     //System.out.println( "index ="+ gbx.getName() );
 
     args[0] = grib.getParent() + "/" + grib.getName();

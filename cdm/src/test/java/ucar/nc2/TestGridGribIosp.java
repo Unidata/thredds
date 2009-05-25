@@ -67,21 +67,7 @@ public class TestGridGribIosp extends TestCase {
     void compareNC(String fileBinary, String fileText) throws IOException {
 
     long start = System.currentTimeMillis() ;
-    //String fileBinary = "C:/data/GFS_Global_2p5deg_20090305_0000.grib2";
-    //String fileBinary = "C:/data/GFS_Alaska_191km_20090307_1200.grib1";
-    //String fileBinary = "C:/data/rotatedlatlon.grb";
-    //String fileBinary = "C:/data/NDFD.grib2";
-    //String fileBinary = "C:/data/ds.sky.bin";
-    //String fileBinary = "C:/data/MPE_M7_57.grb";
-    //fileBinary = "/local/robb/data/grib/idd/binary/RUC2_CONUS_20km_pressure_20090220_1900.grib2";
-    //String fileText = "C:/data/text/GFS_Global_2p5deg_20090305_0000.grib2";
-    //String fileText = "C:/data/text/GFS_Alaska_191km_20090307_1200.grib1";
-    //String fileText = "C:/data/text/rotatedlatlon.grb";
-    //String fileText = "C:/data/text/NDFD.grib2";
-    //String fileText = "C:/data/text/ds.sky.bin";
-    //String fileText = "C:/data/text/MPE_M7_57.grb";
-    //fileText = "/local/robb/data/grib/idd/text/RUC2_CONUS_20km_pressure_20090220_1900.grib2";
-
+ 
     Class c = ucar.nc2.iosp.grib.GribGridServiceProvider.class;
     IOServiceProvider spiB = null;
     try {
@@ -164,13 +150,16 @@ public class TestGridGribIosp extends TestCase {
             child.contains( "Ensemble") ||
             child.contains( "SREF") ||
             child.contains( "GFS_Spectral") || //uses >1 parameter tables
-            child.contains( "SPECTRAL") || //uses >1 parameter tables    
+            child.contains( "SPECTRAL") || //uses >1 parameter tables
+            child.contains( "ECMWF") || //uses >1 groups    
             child.endsWith("gbx") ||
             child.endsWith("xml") ||
             child.endsWith("tmp") || //index in creation process
             child.length() == 0) { // zero length file, ugh...
         } else {
           System.out.println( "\n\nComparing File "+ child );
+          //if( ! child.contains( "ECMWF")) TODO: delete
+           //  continue;
           compareNC( dirB +"/"+ child, dirT +"/"+ child);
         }
       }
