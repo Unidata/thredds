@@ -104,7 +104,7 @@
         <li>Remove the <strong>recheckEvery</strong> attribute if present on the &lt;scan&gt; element.</li>
         <li>Make sure that the &lt;scan&gt; location is available on the machine you are running ToolsUI</li>
       </ol>
-    Now start up <a href="http://www.unidata.ucar.edu/content/software/netcdf-java/v2.2/webstart/index.html">ToolsUI</a>, and in the viewer tab, navigate to test.ncml and try to open it. </li>
+    Now start up <a href="http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart/index.html">ToolsUI</a>, and in the viewer tab, navigate to test.ncml and try to open it. </li>
     <li> If the dataset is <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/Aggregation.html#dynamic">dynamic</a> ( files can be added or deleted), add the <strong>recheckEvery</strong> attribute on the scan element and open the dataset, then reopen after a new file has arrived (and recheckEvery time has passed). Generally you make <strong>recheckEvery</strong> very short while testing. </li>
     <li>Now add the NcML dataset back to the TDS, without a <strong>recheckEvery</strong> attribute on the scan element. See if OPeNDAP access works, </li>
     <li> Add the <strong>recheckEvery</strong> attribute (if needed) and test again. </li>

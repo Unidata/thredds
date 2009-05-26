@@ -67,42 +67,7 @@ import org.jdom.input.SAXBuilder;
  * @since Feb 16, 2009
  */
 public class PointDatasetRemote extends PointDatasetImpl {
-  /* static private boolean showXML = true;
-  static private boolean showRequest = true;
 
-  static public FeatureDatasetPoint factory(FeatureType wantFeatureType, String endpoint) throws IOException {
-    if (endpoint.startsWith(ucar.nc2.stream.NcStreamRemote.SCHEME))
-      endpoint = endpoint.substring(ucar.nc2.stream.NcStreamRemote.SCHEME.length());
-
-    Document doc = getCapabilities(endpoint);
-    Element root = doc.getRootElement();
-    Element elem = root.getChild("featureDataset");
-    String datasetUri = elem.getAttribute("url").getValue();
-
-    NcStreamRemote ncremote = new NcStreamRemote(datasetUri, null);
-    NetcdfDataset ncd = new NetcdfDataset(ncremote, null);
-    return new PointDatasetRemote(wantFeatureType, ncd, ncremote);
-  }
-
-  static private org.jdom.Document getCapabilities(String endpoint) throws IOException {
-    org.jdom.Document doc;
-    try {
-      SAXBuilder builder = new SAXBuilder(false);
-      doc = builder.build(endpoint+"?getCapabilities"); // LOOK - not useing httpclient
-    } catch (JDOMException e) {
-      throw new IOException(e.getMessage());
-    }
-
-    if (showXML) {
-      System.out.printf("*** endpoint = %s %n", endpoint);
-      XMLOutputter xmlOut = new XMLOutputter();
-      System.out.printf("*** NetcdfDataset/showParsedXML = %n %s %n", xmlOut.outputString(doc));
-    }
-
-    return doc;
-  } */
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////
   private NcStreamRemote ncremote;
 
   public PointDatasetRemote(FeatureType wantFeatureType, NetcdfDataset ncd, NcStreamRemote ncremote) throws IOException {

@@ -2797,7 +2797,7 @@ public class ToolsUI extends JPanel {
           doWriteNetCDF(filename);
         }
       };
-      BAMutil.setActionProperties(netcdfAction, "Save", "Write local netCDF file", false, 'S', -1);
+      BAMutil.setActionProperties(netcdfAction, "netcdf", "Write local netCDF file", false, 'S', -1);
       BAMutil.addActionToContainer(buttPanel, netcdfAction);
 
      /* AbstractAction syncAction = new AbstractAction() {
@@ -3128,7 +3128,7 @@ public class ToolsUI extends JPanel {
       });
       buttPanel.add(infoButton);
 
-      AbstractButton calcButton = BAMutil.makeButtcon("CalcBounds", "CalcBounds", false);
+      AbstractButton calcButton = BAMutil.makeButtcon("V3", "CalcBounds", false);
       calcButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           if (pfDataset == null) return;

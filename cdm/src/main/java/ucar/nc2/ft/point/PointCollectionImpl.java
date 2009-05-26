@@ -137,10 +137,10 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
     return new PointFeatureCollectionSubset(this, boundingBox, dateRange);
   }
 
-  private class PointFeatureCollectionSubset extends PointCollectionImpl {
-    PointCollectionImpl from;
+  protected class PointFeatureCollectionSubset extends PointCollectionImpl {
+    protected PointCollectionImpl from;
 
-    PointFeatureCollectionSubset(PointCollectionImpl from, LatLonRect filter_bb, DateRange filter_date) {
+    public PointFeatureCollectionSubset(PointCollectionImpl from, LatLonRect filter_bb, DateRange filter_date) {
       super(from.name);
       this.from = from;
 

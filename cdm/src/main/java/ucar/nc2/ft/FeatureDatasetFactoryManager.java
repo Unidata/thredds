@@ -38,6 +38,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft.point.standard.PointDatasetStandardFactory;
+import ucar.nc2.ft.point.collection.CompositeDatasetFactory;
 import ucar.nc2.ft.grid.GridDatasetStandardFactory;
 import ucar.nc2.ft.radial.RadialDatasetStandardFactory;
 import ucar.nc2.thredds.ThreddsDataFactory;
@@ -188,7 +189,7 @@ public class FeatureDatasetFactoryManager {
   static public FeatureDataset open(FeatureType wantFeatureType, String location, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
     // special processing for thredds: datasets
     if (location.startsWith("thredds:")) {
-      ThreddsDataFactory.Result result = new ThreddsDataFactory().openFeatureDataset( wantFeatureType, location, task);
+      ThreddsDataFactory.Result result = new ThreddsDataFactory().openFeatureDataset(wantFeatureType, location, task);
       errlog.format("%s", result.errLog);
       if (!featureTypeOk(wantFeatureType, result.featureType)) {
         errlog.format("wanted %s but dataset is of type %s%n", wantFeatureType, result.featureType);
@@ -196,9 +197,13 @@ public class FeatureDatasetFactoryManager {
       }
       return result.featureDataset;
 
-    // special processing for cdmRemote: datasets
+      // special processing for cdmremote: datasets
     } else if (location.startsWith(ucar.nc2.stream.NcStreamRemote.SCHEME)) {
       return CdmRemoteDatasetFactory.factory(wantFeatureType, location);
+
+      // special processing for collection: datasets
+    } else if (location.startsWith(ucar.nc2.ft.point.collection.CompositeDatasetFactory.SCHEME)) {
+      return CompositeDatasetFactory.factory(wantFeatureType, location);
     }
 
     NetcdfDataset ncd = NetcdfDataset.acquireDataset(location, task);

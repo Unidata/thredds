@@ -6,6 +6,7 @@ Changes in version 4.0
 
  Release Details:
   44:
+   ArrayChar.makeString() needs to check string len
    Array.arrayCopy() now deals with src not in canonical order. mostly affected aggregation of datasets which
      do sectioning in memory, such as GINI.
    TDS: remote station data

@@ -37,11 +37,14 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
+import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 
 import java.io.IOException;
+import java.io.File;
+import java.util.List;
 
 /**
  * Class Description
@@ -78,6 +81,39 @@ z is of shape 20x2x87, it should be 20x87x193.
 
     s = s.removeRange(0);
     assert s.equals(sv);
+  }
+
+
+  public void testFileClosing() throws IOException, InvalidRangeException {
+
+    File inDir = new File("C:/data/work/ansari/");
+    RandomAccessFile.setDebugLeaks(true);
+    for (File file : inDir.listFiles()) {
+
+      NetcdfFile ncIn = null;
+      try {
+
+        System.out.println("PROCESSING: " + file);
+        ncIn = NetcdfFile.open(file.toURI().toURL().toString());
+        //ucar.nc2.FileWriter.writeToFile(ncIn, new File(outDir.toString()+File.separator+file.getName()+"-out.nc").toString());
+
+      } catch (Exception e) {
+        System.err.println("CAUGHT EXCEPTION: " + e);
+      } finally {
+        try {
+          ncIn.close();
+        } catch (Exception e) {
+
+        }
+      }
+
+
+    }
+
+    System.out.printf("open files:%n");
+    for (String raf : RandomAccessFile.getOpenFiles())
+      System.out.printf(" %s %n", raf);
+
   }
 
 }

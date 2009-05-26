@@ -325,6 +325,10 @@
             <attribute name="URI" value="&lt;N/A&gt;" />
             <url>jar://$MODULE_DIR$/../../lib/external/tomcat-5.5.20_servlet-api.jar!/</url>
           </containerElement>
+          <containerElement type="library" name="protobuf" level="application">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib" />
+          </containerElement>
         </packaging>
       </configuration>
     </facet>
@@ -1709,6 +1713,7 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="catalina" level="project" />
+    <orderEntry type="library" name="protobuf" level="application" />
   </component>
 </module>
 

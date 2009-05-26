@@ -87,7 +87,7 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     this.location = location;
   }
 
-  /** Construtor when theres a NetcdfFile underneath
+  /** Constructor when theres a NetcdfFile underneath
    * @param ncfile adapt this NetcdfDataset
    */
   public FeatureDatasetImpl(NetcdfDataset ncfile) {

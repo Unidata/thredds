@@ -66,10 +66,10 @@
 a NetCDF dataset to discovery systems such as Digital Libraries.
 THREDDS tools will use these attributes for extracting metadata from
 datasets, and exporting to <a href="http://dublincore.org/">Dublin Core</a>, <a href="http://gcmd.gsfc.nasa.gov/User/difguide/difman.html">DIF</a>, <a href="http://www.dlese.org/Metadata/adn-item/">ADN</a>, <a href="http://www.fgdc.gov/">FGDC</a>, <a href="http://www.isotc211.org/scope.htm#19115">ISO 19115</a> etc. metadata formats. </p>
-<p> These attributes parallel  THREDDS catalog specification's <a href="/content/projects/THREDDS/tech/catalog/InvCatalogSpec.html#threddsMetadataGroup">digital library metadata</a>.
+<p> These attributes parallel  THREDDS catalog specification's <a href="/projects/THREDDS/tech/catalog/InvCatalogSpec.html#threddsMetadataGroup">digital library metadata</a>.
 Attributes are used to add information inside the NetCDF file, while
 THREDDS catalog metadata adds information external to the NetCDF file. </p>
-<p>Where appropriate, we use attributes described in the <a href="/content/software/netcdf/docs/">NetCDF Users Guide</a> as well as some attributes defined in the <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF convention</a>.
+<p>Where appropriate, we use attributes described in the <a href="/software/netcdf/docs/">NetCDF Users Guide</a> as well as some attributes defined in the <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF convention</a>.
 Some we use directly (e.g., "title" and "history") others we use unless
 more detailed attributes defined here are given (e.g., "institution" vs
 "creator_*").<br>
@@ -925,7 +925,7 @@ for the variable (not necessarily from a controlled vocabulary). Its
 use is highly recommended. If a "standard_name" attribute is not given
 (and a "standard_name_vocabulary" is given), the "long_name" attribute
 value will be used by THREDDS as the variable's name in the variable
-mapping. The "long_name" attribute is recommended by the "<a href="/content/software/netcdf/docs/">NetCDF Users Guide</a>", the <a href="http://ferret.wrc.noaa.gov/noaa_coop/coop_cdf_profile.html">COARDS convention</a>, and the <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF convention</a>.</p>
+mapping. The "long_name" attribute is recommended by the "<a href="/software/netcdf/docs/">NetCDF Users Guide</a>", the <a href="http://ferret.wrc.noaa.gov/noaa_coop/coop_cdf_profile.html">COARDS convention</a>, and the <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF convention</a>.</p>
 <h3><a name="processing_level_Attribute"></a>processing_level Attribute</h3>
 <p>The "processing_level" attribute provides a textual description of
 the processing (or quality control) level of the data. The use of this
@@ -1028,9 +1028,9 @@ recommended by the "<a href="/packages/netcdf/docs/netcdf/">NetCDF Users Guide</
 <h3><a name="units_Attribute"></a>units Attribute</h3>
 <p>The "units" variable attribute gives the units of the data contained
 by that variable. The value of the "units" attribute should be a valid
-<a href="/content/software/udunits/">udunits</a> string. Its use is highly recommended and its value will be
+<a href="/software/udunits/">udunits</a> string. Its use is highly recommended and its value will be
 used by THREDDS as the variable's units in the variable mapping. The
-"units" attribute is recommended by the "<a href="/content/software/netcdf/docs/">NetCDF Users Guide</a>", the <a href="http://ferret.wrc.noaa.gov/noaa_coop/coop_cdf_profile.html">COARDS convention</a>, and the <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF convention</a>.</p>
+"units" attribute is recommended by the "<a href="/software/netcdf/docs/">NetCDF Users Guide</a>", the <a href="http://ferret.wrc.noaa.gov/noaa_coop/coop_cdf_profile.html">COARDS convention</a>, and the <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF convention</a>.</p>
 
 
 <hr size="2" width="100%">

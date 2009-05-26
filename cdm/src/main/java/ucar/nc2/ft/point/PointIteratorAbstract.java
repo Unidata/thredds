@@ -66,6 +66,7 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator {
   }
 
   protected void calcBounds(PointFeature pf) {
+    npts++;
     if (!calcBounds) return;
 
     if (bb == null)
@@ -80,7 +81,6 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator {
     minTime = Math.min(minTime, obsTime);
     maxTime = Math.max(maxTime, obsTime);
 
-    npts++;
   }
 
   protected void finishCalcBounds() {

@@ -52,6 +52,10 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
   protected List<FeatureCollection> collectionList;
   protected FeatureType featureType;
 
+  protected PointDatasetImpl(FeatureType featureType) {
+    this.featureType = featureType;
+  }
+
   // subsetting
   protected PointDatasetImpl(PointDatasetImpl from, LatLonRect filter_bb, DateRange filter_date) {
     super(from);

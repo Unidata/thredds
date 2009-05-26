@@ -59,16 +59,26 @@ public class DateRange {
   }
 
   /**
-   * Create Date Range from a start and end date
-   *
-   * @param start start of range
-   * @param end   end of range
-   */
-  public DateRange(Date start, Date end) {
-    this(new DateType(false, start), new DateType(false, end), null, null);
-  }
+    * Create Date Range from a start and end date
+    *
+    * @param start start of range
+    * @param end   end of range
+    */
+   public DateRange(Date start, Date end) {
+     this(new DateType(false, start), new DateType(false, end), null, null);
+   }
 
   /**
+    * Create Date Range from a start date and duration
+    *
+    * @param start start of range
+    * @param duration   duration of range
+    */
+   public DateRange(Date start, TimeDuration duration) {
+     this(new DateType(false, start), null, duration, null);
+   }
+
+   /**
    * Create DateRange from another DateRange, with a different units of resolution.
    *
    * @param range     copy start and end from here
@@ -190,6 +200,16 @@ public class DateRange {
     if (getEnd().before(start_want)) return false;
 
     return true;
+  }
+
+  /**
+   * Determine if the given range intersects this date range.
+   *
+   * @param other date range
+   * @return true if ranges intersect
+   */
+  public boolean intersects(DateRange other) {
+    return intersects(other.getStart().getDate(), other.getEnd().getDate());
   }
 
   /**

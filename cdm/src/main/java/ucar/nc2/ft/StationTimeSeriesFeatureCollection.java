@@ -86,7 +86,7 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, N
   /**
    * Get the collection of data for a particular Station.
    *
-   * @param s get data for this station
+   * @param s get data for this station, must have come from 
    * @return collection of data for this Station.
    * @throws java.io.IOException on i/o error
    */
