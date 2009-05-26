@@ -65,26 +65,42 @@ public class TestPointFeatureTypes  extends TestCase {
   }
 
   public void testCF() throws IOException {
-    String topdir = TestAll.testdataDir;
+    String topdir = TestAll.testdataDir + "cdmUnitTest/";
 
     /////// POINT
     // CF 1.1 psuedo-structure
     testPointDataset(topdir+"cfPoint/point/filtered_apriori_super_calibrated_binned1.nc", FeatureType.POINT, true);
 
     // CF 1.5 psuedo-structure
-    testPointDataset(TestAll.cdmUnitTestDir+"point/cf/nmcbob.shp.nc", FeatureType.POINT, true);
+    testPointDataset(topdir+"cfPoint/point/nmcbob.shp.nc", FeatureType.POINT, true);
 
     /////// STATION
     // CF 1.3 ragged contiguous
     testPointDataset(topdir+"cfPoint/station/rig_tower.2009-02-01.ncml", FeatureType.STATION, true);
 
-    // CF 1.5 (GEMPAK IOSP) stn = psuedoSTruct, obs = multidim Structure, time(time) as extraJoin
-    testPointDataset(TestAll.cdmUnitTestDir+"point/gempak/19580807_sao.gem", FeatureType.STATION, true);
+    // CF 1.5 station unlimited, multidim
+    testPointDataset(topdir+"cfPoint/station/billNewDicast.nc", FeatureType.STATION, true);
+
+    // CF 1.5 station multdim
+    testPointDataset(topdir+"cfPoint/station/billOldDicast.nc", FeatureType.STATION, true);
+
 
     // CF 1.0 multidim with dimensions reversed
     //testPointDataset(topdir+"cfPoint/station/solrad_point_pearson.ncml", FeatureType.STATION, true);
 
   }
+
+  public void testGempak() throws IOException {
+    // CF 1.5 (GEMPAK IOSP) stn = psuedoSTruct, obs = multidim Structure, time(time) as extraJoin
+    testPointDataset(TestAll.cdmUnitTestDir+"point/gempak/19580807_sao.gem", FeatureType.STATION, true);
+  }
+
+
+
+  public void testCdmRemote() throws IOException {
+    testPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/station/testCdmRemote/gempak/19580807_sao.gem", FeatureType.STATION, true);
+  }
+
 
   public void utestReadAll() throws IOException {
     readAllDir(ucar.nc2.TestAll.testdataDir + "station/", new MyFileFilter() , FeatureType.ANY_POINT);
