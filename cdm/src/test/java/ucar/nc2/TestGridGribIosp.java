@@ -129,7 +129,7 @@ public class TestGridGribIosp extends TestCase {
     String dirB, dirT;
     if ( args == null || args.length < 1 ) {
       dirB = TestAll.testdataDir +"test/motherlode/grid/grib/binary";
-      dirT = TestAll.testdataDir +"test/motherlode/grid/grib/text";
+      dirT = TestAll.testdataDir +"test/motherlode/grid/grib/3_17text";
     } else {
       dirB = args[ 0 ] +"/binary"; // "/local/robb/data/grib/idd/binary";
       dirT = args[ 0 ] +"/text"; // "/local/robb/data/grib/idd/text";
@@ -152,14 +152,14 @@ public class TestGridGribIosp extends TestCase {
             child.contains( "GFS_Spectral") || //uses >1 parameter tables
             child.contains( "SPECTRAL") || //uses >1 parameter tables
             child.contains( "ECMWF") || //uses >1 groups    
+            child.contains( "GFS_Global_1p25deg") || //uses >1 groups    
+            child.contains( "UKMET") || //uses >1 groups
             child.endsWith("gbx") ||
             child.endsWith("xml") ||
             child.endsWith("tmp") || //index in creation process
             child.length() == 0) { // zero length file, ugh...
         } else {
           System.out.println( "\n\nComparing File "+ child );
-          //if( ! child.contains( "ECMWF")) TODO: delete
-           //  continue;
           compareNC( dirB +"/"+ child, dirT +"/"+ child);
         }
       }
