@@ -77,7 +77,6 @@
       <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/search/Indexer.java" />
       <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/search/ui/CatalogIndexer.java" />
       <file url="file://$PROJECT_DIR$/../../tds/src/main/java/thredds/servlet/tomcat/UsageValve.java" />
-      <file url="file://$PROJECT_DIR$/../../ldm/src/main/thredds/db/TestBabu.java" />
       <file url="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/ft/point/standard/plug/UnidataPointFeature.java" />
     </excludeFromCompile>
     <resourceExtensions>

@@ -1029,21 +1029,20 @@ public class H4header {
     }
 
     public String toString() {
-      StringBuilder sbuff = new StringBuilder();
-      sbuff.append("refno=");
-      sbuff.append(refno);
-      sbuff.append(" variable=");
-      sbuff.append(v.getShortName());
-      sbuff.append(" data offset=");
-      sbuff.append(start);
-      sbuff.append("\n");
+      Formatter sbuff = new Formatter();
+      sbuff.format("refno=%d name=%s fillValue=%s %n", refno, v.getShortName(), fillValue);
+      sbuff.format(" isChunked=%s isCompressed=%s isLinked=%s hasNoData=%s %n", isChunked, isCompressed, isLinked, hasNoData);
+      sbuff.format(" elemSize=%d data start=%d length=%s %n%n", elemSize, start, length);
       for (Tag t : tags)
-        sbuff.append(" ").append(t.detail()).append("\n");
+        sbuff.format(" %s%n", t.detail());
       return sbuff.toString();
     }
+  
   }
 
   //////////////////////////////////////////////////////////////////////
+
+
 
   private long readDDH(List<Tag> alltags, long start) throws IOException {
     raf.seek(start);

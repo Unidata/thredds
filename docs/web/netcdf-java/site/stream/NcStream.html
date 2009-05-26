@@ -55,8 +55,7 @@
 </ul>
 <h2>&nbsp;</h2>
 <h2>CdmRemote Web Service</h2>
-<p>CdmRemote is an experimental web service implemented in the TDS, providing remote access to CDM datasets, using ncstream as the on-the-wire protocol. It provides access at the NetcdfFile, NetcdfDataset, and Feature Type levels of the CDM. </p>
-<p>This uses THREDDS ServiceType = <strong>ServiceType.CdmRemote</strong></p>
+<p>CdmRemote is an experimental web service implemented in the TDS, providing remote access to CDM datasets, using ncstream as the on-the-wire protocol. It provides access at the NetcdfFile, NetcdfDataset, and Feature Type levels of the CDM. This uses THREDDS ServiceType = <strong>ServiceType.CdmRemote</strong></p>
 <h3>NetcdfFile (Data Access)</h3>
 <table width="795" border="1">
 <tr>
@@ -130,10 +129,10 @@
   <li>data requests return an unordered list of observation as StructureData</li>
 </ul>
 <h4>StationTimeSeries</h4>
-<table width="867" border="1">
+<table width="961" border="1">
   <tr>
-    <th width="658" scope="col">Request</th>
-    <th width="193" scope="col">Response</th>
+    <th width="741" scope="col">Request</th>
+    <th width="204" scope="col">Response</th>
   </tr>
   <tr>
     <td>http://server:8080/thredds/cdmremote/station/data.nc?<strong>header</strong></td>
@@ -144,8 +143,8 @@
     <td>stationList ncstream message</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/station/data.nc?<strong>stn=KDEN,KLOG,MOAS</strong></td>
-    <td>pointData ncstream message</td>
+    <td>http://server:8080/thredds/cdmremote/station/data.nc?<strong>stations&amp;north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
+    <td>stationList ncstream message</td>
   </tr>
   <tr>
     <td>http://server:8080/thredds/cdmremote/station/data.nc?<strong>time_start=&amp;time_end=</strong></td>
@@ -153,6 +152,14 @@
   </tr>
   <tr>
     <td>http://server:8080/thredds/cdmremote/station/data.nc?<strong>time=</strong></td>
+    <td>pointData ncstream message</td>
+  </tr>
+  <tr>
+    <td>http://server:8080/thredds/cdmremote/point/data.nc?<strong>stations&amp;north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
+    <td>stationList ncstream message</td>
+  </tr>
+  <tr>
+    <td>http://server:8080/thredds/cdmremote/station/data.nc?<strong>stn=KDEN,KLOG,MOAS</strong></td>
     <td>pointData ncstream message</td>
   </tr>
 </table>

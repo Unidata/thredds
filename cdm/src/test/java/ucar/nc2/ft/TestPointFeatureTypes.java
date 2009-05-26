@@ -159,7 +159,7 @@ public class TestPointFeatureTypes  extends TestCase {
     FeatureDataset fdataset = FeatureDatasetFactoryManager.open(type, location, null, out);
     if (fdataset == null) {
       System.out.printf("**failed on %s %n --> %s %n", location, out);
-      return;
+      assert false;
     }
 
     // FeatureDataset
