@@ -133,7 +133,7 @@ public class TestBinaryTextIndexes extends TestCase {
         String valueB = gdrB.getParam( key );
         String valueT = gdrT.getParam( key );
         if( ! valueB.equals( valueT ))
-           System.out.println( "hcs "+ key +" differ for B and T  "+  valueB +" "+ valueT);
+           System.out.println( "hcs "+ key +" differ for Binary and Text  "+  valueB +" "+ valueT);
 
       }
       java.util.Set<String> keysT = gdrT.getKeys();
@@ -143,7 +143,7 @@ public class TestBinaryTextIndexes extends TestCase {
         String valueB = gdrB.getParam( key );
         String valueT = gdrT.getParam( key );
         if( ! valueT.equals( valueB ))
-           System.out.println( "hcs "+ key +" differ for B and T  "+  valueB +" "+ valueT);
+           System.out.println( "hcs "+ key +" differ for Binary and Text  "+  valueB +" "+ valueT);
 
       }
     }
@@ -158,7 +158,7 @@ public class TestBinaryTextIndexes extends TestCase {
         String valueB = attB.get( key );
         String valueT = attT.get( key );
         if( ! valueB.equals( valueT ))
-           System.out.println( "attribute "+ key +" differ for B and T  "+  valueB +" "+ valueT);
+           System.out.println( "attribute "+ key +" differ for Binary and Text  "+  valueB +" "+ valueT);
 
      }
 
@@ -175,7 +175,7 @@ public class TestBinaryTextIndexes extends TestCase {
         int valueT = grT.gdsKey;
         //String valueT = grT.toString();
         if(  valueB !=  valueT )
-             System.out.println( "record gdsKey  differ for B and T  "+  valueB +"  "+ valueT);
+             System.out.println( "record gdsKey  differ for Binary and Text  "+  valueB +"  "+ valueT);
       }
   }
 
@@ -220,9 +220,11 @@ public class TestBinaryTextIndexes extends TestCase {
         } else {
 //          if( ! child.contains( "GFS_Ensemble_1p25deg")) //TODO: remove
 //            continue;
-          System.out.println( "\n\nComparing File "+ child );  
+          System.out.println( "\n\nComparing File:  "+ child  );
+          System.out.println( "  Index comparisons Binary and Text" );
+          compareIndexes( dirB +"/"+ child, dirT +"/"+ child);
+          System.out.println( "  \n  Netcdf Object comparisons Binary and Text" );
           compareNC( dirB +"/"+ child, dirT +"/"+ child);
-          //compareIndexes( dirB +"/"+ child, dirT +"/"+ child);
           System.out.println();
         }
       }
