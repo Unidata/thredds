@@ -9,7 +9,7 @@ import java.util.Arrays;
  * @author edavis
  * @since 4.0
  */
-public class TestIddModels
+public class IddModelDatasetsUtils
 {
   private static final String[][] modelIds =
           {

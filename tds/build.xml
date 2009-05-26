@@ -780,29 +780,10 @@
   </target>
 
   <target name="unit-test" depends="compile, test-setup" description="run junit tests">
-    <mkdir dir="${test.reports.dir}/unit-test"/>
-    <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on" dir="${root.dir}">
-      <classpath refid="test.classpath"/>
-      <jvmarg value="-ea"/>
-      <formatter type="xml"/>
-      <formatter type="brief" usefile="false"/>
-      <test todir="${test.reports.dir}/unit-test" name="thredds.TestAll"/>
-    </junit>
-
-    <!-- #Generate test reports -->
-    <junitreport todir="${test.reports.dir}/unit-test">
-      <fileset dir="${test.reports.dir}/unit-test">
-        <include name="TEST-*.xml"/>
-      </fileset>
-      <report format="frames" todir="${test.reports.dir}/unit-test"/>
-    </junitreport>
-    <!-- create temporary file indicating these tests failed -->
-    <!-- #Test case bypass trick -->
-    <echo message="last build failed tests" file="${test.reports.dir}/unit-test/failed"/>
-    <fail if="test.failed">FAILED! Unit tests failed.  Look at ${test.reports.dir}/unit-test/index.html for details.</fail>
-    <!-- Remove test failed file, as these tests succeeded -->
-    <delete file="${test.reports.dir}/unit-test/failed"/>
-    <echo message="SUCCESS! Unit tests succeeded.  Look at ${test.reports.dir}/unit-test/index.html for details."/>
+    <antcall target="test-TDS">
+      <param name="test.id" value="unit-test" />
+      <param name="test.class" value="thredds.TestAll" />
+    </antcall>
   </target>
 
   <!-- Sampling of TDS IDD catalogs. -->
@@ -1024,40 +1005,45 @@
   </target>
 
 
-  <target name="testTdsMotherlode8080">
-    <antcall target="testTds">
-      <param name="testId" value="testTdsMotherlode8080"/>
-      <param name="testClass" value="thredds.tds.idd.TestMotherlode8080"/>
+  <target name="testMotherlodeTds">
+    <antcall target="run-unit-test">
+      <param name="test.id" value="testMotherlodeTds"/>
+      <param name="test.class" value="thredds.tds.idd.TestMotherlodeTds"/>
     </antcall>
   </target>
 
-  <!-- Test TDS on motherlode:8080 -->
-  <target name="testTds" description="test a TDS">
+  <!--
+    - Run a unit test, assumes "compile", and "test-setup" targets.
+    -
+    - @param test.id a string identifier used in result directory paths.
+    - @param test.class the name of the test Class to run.
+    -->
+  <target name="run-unit-test" description="run a unit test with parameters 'test.id' and 'test.class'.">
 
-    <mkdir dir="${test.reports.dir}/${testId}"/>
+    <mkdir dir="${test.reports.dir}/${test.id}"/>
     <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on"  dir="${root.dir}">
       <classpath refid="test.classpath"/>
       <jvmarg value="-ea"/>
       <formatter type="xml"/>
       <formatter type="brief" usefile="false"/>
-      <test todir="${test.reports.dir}/${testId}"
-            name="${testClass}"/>
+      <test todir="${test.reports.dir}/${test.id}"
+            name="${test.class}"/>
     </junit>
 
     <!-- #Generate test reports -->
-    <junitreport todir="${test.reports.dir}/${testId}">
-      <fileset dir="${test.reports.dir}/${testId}">
+    <junitreport todir="${test.reports.dir}/${test.id}">
+      <fileset dir="${test.reports.dir}/${test.id}">
         <include name="TEST-*.xml"/>
       </fileset>
-      <report format="frames" todir="${test.reports.dir}/${testId}"/>
+      <report format="frames" todir="${test.reports.dir}/${test.id}"/>
     </junitreport>
     <!-- create temporary file indicating these tests failed -->
     <!-- #Test case bypass trick -->
-    <echo message="last build failed tests" file="${test.reports.dir}/${testId}/failed"/>
-    <fail if="test.failed">FAILED! Unit tests failed.  Look at ${test.reports.dir}/${testId}/index.html for details.</fail>
+    <echo message="last build failed tests" file="${test.reports.dir}/${test.id}/failed"/>
+    <fail if="test.failed">FAILED! Unit tests failed.  Look at ${test.reports.dir}/${test.id}/index.html for details.</fail>
     <!-- Remove test failed file, as these tests succeeded -->
-    <delete file="${test.reports.dir}/${testId}/failed"/>
-    <echo message="SUCCESS! Unit tests succeeded.  Look at ${test.reports.dir}/${testId}/index.html for details."/>
+    <delete file="${test.reports.dir}/${test.id}/failed"/>
+    <echo message="SUCCESS! Unit tests succeeded.  Look at ${test.reports.dir}/${test.id}/index.html for details."/>
   </target>
 
 </project>

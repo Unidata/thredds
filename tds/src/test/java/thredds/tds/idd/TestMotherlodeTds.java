@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         TestMotherlodeGribVarNames.class,
-        PingMotherlode8080Test.class
+        PingMotherlodeTdsTest.class
 })
-public class TestMotherlode8080 { }
+public class TestMotherlodeTds
+{ }

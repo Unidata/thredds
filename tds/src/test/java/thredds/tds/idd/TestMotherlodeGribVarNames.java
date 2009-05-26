@@ -1,6 +1,7 @@
 package thredds.tds.idd;
 
 import org.junit.Test;
+import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.dt.GridDataset;
@@ -27,6 +28,7 @@ import thredds.catalog.*;
 public class TestMotherlodeGribVarNames
 {
   private String modelId;
+  private String tdsUrl;
 
   public TestMotherlodeGribVarNames( String modelId )
   {
@@ -34,18 +36,22 @@ public class TestMotherlodeGribVarNames
     this.modelId = modelId;
   }
 
+  @Before
+  public void init()
+  {
+    this.tdsUrl = TdsTestUtils.getTargetTdsUrl();
+  }
+
   @Parameterized.Parameters
   public static Collection<Object[]> getModelIds()
   {
-    return Arrays.asList( TestIddModels.getModelIds());
+    return Arrays.asList( IddModelDatasetsUtils.getModelIds());
   }
 
-  private final String server = "http://motherlode.ucar.edu:8080";
-
-  private final String fmrcPrefix = "/thredds/catalog/fmrc/";
+  private final String fmrcPrefix = "catalog/fmrc/";
   private final String fmrcSuffix = "/runs/catalog.xml";
 
-  private final String scanPrefix = "/thredds/catalog/model/";
+  private final String scanPrefix = "catalog/model/";
   private final String scanCatalogSuffix = "/catalog.xml";
 
   /**
@@ -107,7 +113,7 @@ public class TestMotherlodeGribVarNames
   private GridDataset getFmrcRunDataset( String modelId, int index )
   {
     // Construct URL for the given model's FMRC Run catalog.
-    String fmrcRunCatUrl = this.server + this.fmrcPrefix + modelId + this.fmrcSuffix;
+    String fmrcRunCatUrl = this.tdsUrl + this.fmrcPrefix + modelId + this.fmrcSuffix;
 
     // Read the "FMRC Run" catalog
     InvCatalogImpl cat = InvCatalogFactory.getDefaultFactory( false ).readXML( fmrcRunCatUrl );
@@ -201,7 +207,7 @@ public class TestMotherlodeGribVarNames
   private GridDataset getScanDatasetMatchingTime( String modelId, Date runDate)
   {
     // Construct URL for the given model's "Scan" catalog.
-    String scanCatalogUrl = this.server + this.scanPrefix + modelId + this.scanCatalogSuffix;
+    String scanCatalogUrl = this.tdsUrl + this.scanPrefix + modelId + this.scanCatalogSuffix;
 
     // Read the "Scan" catalog.
     InvCatalogImpl cat = InvCatalogFactory.getDefaultFactory( false ).readXML( scanCatalogUrl );

@@ -3,6 +3,7 @@ package thredds.tds.idd;
 import org.junit.runners.Parameterized;
 import org.junit.runner.RunWith;
 import org.junit.Test;
+import org.junit.Before;
 
 import java.util.Collection;
 import java.util.Arrays;
@@ -15,23 +16,30 @@ import thredds.catalog.InvCatalogImpl;
 import static org.junit.Assert.*;
 
 /**
- * _more_
+ * Ping a TDS assuming an IDD setup.
  *
  * @author edavis
  * @since 4.0
  */
 @RunWith(Parameterized.class)
-public class PingMotherlode8080Test
+public class PingMotherlodeTdsTest
 {
-  private final String mlode8080TdsUrl = "http://motherlode.ucar.edu:8080/thredds/";
+  private String tdsUrl;
 
   private String catUrl;
 
-  public PingMotherlode8080Test( String catUrl )
+  public PingMotherlodeTdsTest( String catUrl )
   {
     super();
     this.catUrl = catUrl;
   }
+
+  @Before
+  public void init()
+  {
+    this.tdsUrl = TdsTestUtils.getTargetTdsUrl();
+  }
+
 
   @Parameterized.Parameters
   public static Collection<Object[]> getCatalogUrls()
@@ -47,7 +55,7 @@ public class PingMotherlode8080Test
   {
     StringBuilder msgLog = new StringBuilder();
 
-    String url = this.mlode8080TdsUrl + this.catUrl;
+    String url = this.tdsUrl + this.catUrl;
     InvCatalogImpl cat = TestAll.openValidateAndCheckExpires( url, msgLog );
 
     assertNotNull( "Catalog [" + url + "] failed to open, failed to validate, or was expired: " + msgLog,
