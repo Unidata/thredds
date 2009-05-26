@@ -161,6 +161,7 @@ public class CFpointObs extends TableConfigurerImpl {
     stnTable.featureType = FeatureType.STATION;
     stnTable.isPsuedoStructure = !stationDim.isUnlimited();
     stnTable.dim = stationDim;
+    stnTable.structName = stationDim.isUnlimited() ? "record" : stationDim.getName();
 
     stnTable.lat= lat.getName();
     stnTable.lon= lon.getName();
