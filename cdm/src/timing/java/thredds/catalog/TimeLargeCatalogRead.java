@@ -32,6 +32,9 @@
 
 package thredds.catalog;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 /**
  * _more_
  *
@@ -43,17 +46,19 @@ public class TimeLargeCatalogRead
   static final String catURL = "http://motherlode.ucar.edu:9080/thredds/radarServer/nexrad/level2/IDD?stn=KARX&time_start=2009-04-07T:00:00:00Z&time_end=2009-05-22T16:44:39Z";
   //static final String catURL = "http://motherlode.ucar.edu:9080/thredds/radarServer/nexrad/level2/IDD?stn=KARX&time_start=2009-04-07T:00:00:00Z&time_end=2009-05-22T16:44:39Z";
 
-  public static void main( String[] args )
+  public static void main( String[] args ) throws URISyntaxException
   {
     InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
-
+    String catAsString = gatCat();
+    URI uri = new URI( catURL);
     InvCatalogImpl cat = null;
     long cum = 0;
     int numAttempts = 100;
     for ( int i = 0; i < numAttempts; i++ )
     {
       long start = System.currentTimeMillis();
-      cat = fac.readXML( catURL );
+      cat = fac.readXML( catAsString, uri );
+      // cat = fac.readXML( catURL );
       long done = System.currentTimeMillis();
       long elapsed = done - start;
       cum+=elapsed;
@@ -70,5 +75,44 @@ public class TimeLargeCatalogRead
 
     System.out.println( "Done" );
 
+  }
+
+  private static String gatCat()
+  {
+    StringBuilder sb = new StringBuilder();
+    sb.append( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+               "<catalog xmlns=\"http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" name=\"Radar Level2 datasets in near real time\" version=\"1.0.1\">\n" +
+               "\n" +
+               "  <service name=\"OPENDAP\" serviceType=\"OPENDAP\" base=\"/thredds/dodsC/nexrad/level2/IDD/\"/>\n" +
+               "    <dataset name=\"RadarLevel2 datasets for available stations and times\" collectionType=\"TimeSeries\" ID=\"accept=xml&amp;stn=KARX&amp;time_start=2009-04-07T00:00:00Z&amp;time_end=2009-05-22T16:44:39Z\">\n" +
+               "    <metadata inherited=\"true\">\n" +
+               "      <dataType>Radial</dataType>\n" +
+               "      <dataFormat>NEXRAD2</dataFormat>\n" +
+               "      <serviceName>OPENDAP</serviceName>\n" +
+               "\n" +
+               "    </metadata>\n" +
+               "\n" +
+               "      <dataset name=\"Level2_KARX_20090522_1518.ar2v\" ID=\"1209322007\"\n" +
+               "        urlPath=\"KARX/20090522/Level2_KARX_20090522_1518.ar2v\">\n" +
+               "        <date type=\"start of ob\">2009-05-22T15:18:00</date>\n" +
+               "      </dataset>");
+
+    for (int i=0; i<9111; i++)
+    {
+      sb.append( "      <dataset name=\"Level2_KARX_20090522_1518.ar2v\" ID=\"").append( 1209322007 + i).append("\"\n")
+              .append(   "        urlPath=\"KARX/20090522/Level2_KARX_20090522_1518.ar2v\">\n")
+              .append(   "        <date type=\"start of ob\">2009-05-22T15:18:00</date>\n")
+              .append(   "      </dataset>");
+    }
+
+    sb.append( "      <dataset name=\"Level2_KARX_20090407_0007.ar2v\" ID=\"1616941921\"\n" +
+               "        urlPath=\"KARX/20090407/Level2_KARX_20090407_0007.ar2v\">\n" +
+               "        <date type=\"start of ob\">2009-04-07T00:07:00</date>\n" +
+               "\n" +
+               "      </dataset>\n" +
+               "    </dataset>\n" +
+               "</catalog>");
+
+    return sb.toString();
   }
 }
