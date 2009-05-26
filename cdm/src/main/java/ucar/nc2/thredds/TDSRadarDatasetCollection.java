@@ -30,30 +30,43 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
+
 package ucar.nc2.thredds;
+
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
+
 import thredds.catalog.*;
+
 import ucar.nc2.dt.DataIterator;
 import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.dt.radial.StationRadarCollectionImpl;
+import ucar.nc2.units.DateType;
+
 import ucar.nc2.units.DateUnit;
+
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.Station;
+import ucar.unidata.geoloc.StationImpl;
+
 import ucar.unidata.util.DateSelection;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.DatedThing;
 import ucar.unidata.util.Product;
 
-import ucar.unidata.geoloc.Station;
 
 import java.io.IOException;
+
 import java.net.URI;
+
 import java.util.*;
+
 
 /**
  * Client side for getting data from the TDS radar server.
@@ -61,36 +74,32 @@ import java.util.*;
  */
 public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
 
-    //////////////////////////////////////////////////////////////////////////////////
 
-    // private InvDataset ds;
-
-
-    /** _more_ */
+    /** map of station name to station */
     protected HashMap<String, Station> stationHMap;
 
-    /** _more_ */
+    /** radar time span */
     private List radarTimeSpan;
 
-    /** _more_ */
+    /** radar region */
     private LatLonRect radarRegion;
 
     /** _more_ */
     private String dsc_location;
 
-    /** _more_ */
+    /** radar products */
     private List radarProducts;
 
     /** _more_ */
     private String summary;
 
-    /** _more_          */
+    /** _more_ */
     protected static final Namespace defNS =
         Namespace.getNamespace(
             thredds.catalog.XMLEntityResolver.DQC_NAMESPACE_04);
 
 
-    /** _more_          */
+    /** _more_ */
     private URI docURI;
 
     /**
@@ -102,16 +111,13 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      *
      * @return any foctory
      *
-     * @throws java.io.IOException _more_
-     *
      * @throws IOException _more_
      * @throws java.net.URISyntaxException _more_
      */
 
     static public TDSRadarDatasetCollection factory(InvDataset ds,
-            String dsc_location,
-            StringBuffer errlog) throws IOException,
-                                        java.net.URISyntaxException {
+            String dsc_location, StringBuffer errlog)
+            throws IOException, java.net.URISyntaxException {
 
         // URI catalogURI = new URI(dsc_location);
         //this.docURI =    catalogURI;
@@ -130,7 +136,8 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      * @throws IOException _more_
      */
     static public TDSRadarDatasetCollection factory(String desc,
-            String dsc_location, StringBuffer errlog) throws IOException {
+            String dsc_location, StringBuffer errlog)
+            throws IOException {
         // super();
         SAXBuilder        builder;
         Document          doc  = null;
@@ -162,9 +169,10 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      *
      * @throws IOException _more_
      */
-    private TDSRadarDatasetCollection(
-            String desc, String dsc_location, Element elem, Namespace ns,
-            StringBuffer errlog) throws IOException {
+    private TDSRadarDatasetCollection(String desc, String dsc_location,
+                                      Element elem, Namespace ns,
+                                      StringBuffer errlog)
+            throws IOException {
         super();
         Element serviceElem = readElements(elem, "service");
         Element dsElem      = readElements(elem, "dataset");
@@ -224,8 +232,8 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      *
      * @throws IOException _more_
      */
-    public HashMap readRadarStations(
-            String stsXML_location) throws IOException {
+    public HashMap readRadarStations(String stsXML_location)
+            throws IOException {
         SAXBuilder        builder;
         Document          doc  = null;
         XMLEntityResolver jaxp = new XMLEntityResolver(true);
@@ -241,7 +249,7 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
         Element        rootElem = doc.getRootElement();
         java.util.List children = rootElem.getChildren();
         for (int j = 0; j < children.size(); j++) {
-            ucar.unidata.geoloc.Station s;
+            Station s;
             if (null != (s = readStation((Element) children.get(j)))) {
                 stations.put(s.getName(), s);
             }
@@ -277,7 +285,7 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      * @param elem _more_
      * @return stationImpl
      */
-    private ucar.unidata.geoloc.Station readStation(Element elem) {
+    private Station readStation(Element elem) {
         // look for stations
         String name = elem.getAttributeValue("id");
         //latitude
@@ -290,9 +298,9 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
         Element alt   = elem.getChild("elevation");
         String  altv  = alt.getValue();
 
-        ucar.unidata.geoloc.StationImpl station =
-                new ucar.unidata.geoloc.StationImpl(name, descv, "",
-                                  Double.parseDouble(latv), Double.parseDouble(lonv),
+        StationImpl station = new StationImpl(name, descv, "",
+                                  Double.parseDouble(latv),
+                                  Double.parseDouble(lonv),
                                   Double.parseDouble(altv));
 
         return station;
@@ -511,7 +519,7 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
     }
 
     /**
-     *get the number of products
+     * get the number of products
      *
      * @param sName _more_
      *
@@ -526,20 +534,19 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      * @return List of type DqcRadarStation objects
      * @throws IOException java io exception
      */
-    public List getStations() throws IOException {
+    public List<Station> getStations() throws IOException {
         return getRadarStations();
     }
 
     /**
      * get all radar station.
      * @return List of type DqcRadarStation objects
-     * @throws IOException java io exception
      */
-    public List getRadarStations() {
-        ArrayList slist = new ArrayList();
-        Iterator  it    = this.stationHMap.values().iterator();
+    public List<Station> getRadarStations() {
+        List<Station> slist = new ArrayList();
+        Iterator      it    = this.stationHMap.values().iterator();
         while (it.hasNext()) {
-            slist.add(it.next());
+            slist.add((Station) it.next());
         }
 
         return slist;
@@ -551,7 +558,7 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      * @param sName _more_
      * @return Station object
      */
-    public ucar.unidata.geoloc.Station getRadarStation(String sName) {
+    public Station getRadarStation(String sName) {
 
         return this.stationHMap.get(sName);
 
@@ -564,8 +571,8 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      *  @return List of type DqcRadarStation objects
      *  @throws IOException java io exception
      */
-    public List getStations(
-            ucar.nc2.util.CancelTask cancel) throws IOException {
+    public List<Station> getStations(ucar.nc2.util.CancelTask cancel)
+            throws IOException {
         return getStations(null, cancel);
     }
 
@@ -576,8 +583,8 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      *  @return List of type DqcRadarStation objects
      *  @throws IOException java io exception
      */
-    public List getStations(
-            ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
+    public List<Station> getStations(LatLonRect boundingBox)
+            throws IOException {
         return getStations(boundingBox, null);
     }
 
@@ -589,18 +596,18 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      *  @return List of type DqcRadarStation objects
      *  @throws IOException java io exception
      */
-    public List getStations(
-            ucar.unidata.geoloc.LatLonRect boundingBox,
-            ucar.nc2.util.CancelTask cancel) throws IOException {
-        List      sl  = (List) stationHMap.values();
-        ArrayList dsl = new ArrayList();
+    public List<Station> getStations(LatLonRect boundingBox,
+                                     ucar.nc2.util.CancelTask cancel)
+            throws IOException {
+        List          sl  = (List) stationHMap.values();
+        List<Station> dsl = new ArrayList();
 
         if ( !boundingBox.containedIn(radarRegion)) {
             return null;
         }
 
         for (Iterator it = sl.iterator(); it.hasNext(); ) {
-            Station s = (Station) it.next();
+            Station         s        = (Station) it.next();
             LatLonPointImpl latlonPt = new LatLonPointImpl();
             latlonPt.set(s.getLatitude(), s.getLongitude());
             if (boundingBox.contains(latlonPt)) {
@@ -621,8 +628,8 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      * @return RadialDatasetSweep object
      * @throws IOException java io exception
      */
-    public RadialDatasetSweep getRadarDataset(String stnName,
-            Date absTime) throws IOException {
+    public RadialDatasetSweep getRadarDataset(String stnName, Date absTime)
+            throws IOException {
         // absTime is a member of  datasetsDateURI
         // long start = System.currentTimeMillis();
         InvDataset invdata = queryRadarStation(stnName, absTime);
@@ -651,7 +658,8 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      * @throws IOException java io exception
      */
     public RadialDatasetSweep getRadarDataset(String stnName,
-            String productID, Date absTime) throws IOException {
+            String productID, Date absTime)
+            throws IOException {
         // absTime is a member of  datasetsDateURI
         // long start = System.currentTimeMillis();
         InvDataset invdata = queryRadarStation(stnName, productID, absTime);
@@ -678,8 +686,8 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      * @return URI
      * @throws IOException  java io exception
      */
-    public URI getRadarDatasetURI(String stnName,
-                                  Date absTime) throws IOException {
+    public URI getRadarDatasetURI(String stnName, Date absTime)
+            throws IOException {
         // absTime is a member of  datasetsDateURI
         InvDataset invdata = queryRadarStation(stnName, absTime);
         /*  List dsets = idata.getDatasets();
@@ -707,8 +715,8 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      * @return InvDataset
      * @throws IOException  java io exception
      */
-    private InvDataset queryRadarStation(String stnName,
-                                         Date absTime) throws IOException {
+    private InvDataset queryRadarStation(String stnName, Date absTime)
+            throws IOException {
         return queryRadarStation(stnName, (String) null, absTime);
     }
 
@@ -721,7 +729,8 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      * @throws IOException  java io exception
      */
     private InvDataset queryRadarStation(String stnName, String productID,
-                                         Date absTime) throws IOException {
+                                         Date absTime)
+            throws IOException {
         String stime = DateUtil.getTimeAsISO8601(absTime).replaceAll("GMT",
                            "");
         // construct a query like this:
@@ -751,30 +760,46 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
         }
 
         InvCatalogFactory factory = new InvCatalogFactory("default", false);
+        //visad.util.Trace.call1("TDSRadarDatasetCollection.readXML");
 
         InvCatalogImpl catalog = (InvCatalogImpl) factory.readXML(catalogURI);
 
-            StringBuilder      buff    = new StringBuilder();
+        //visad.util.Trace.call2("TDSRadarDatasetCollection.readXML");
+        //visad.util.Trace.call1("TDSRadarDatasetCollection.checkCatalog");
+        StringBuilder buff = new StringBuilder();
         if ( !catalog.check(buff)) {
             throw new IOException("Invalid catalog <" + catalogURI + ">\n"
                                   + buff.toString());
         }
+        //visad.util.Trace.call2("TDSRadarDatasetCollection.checkCatalog");
         // catalog.writeXML(System.out);  // debugg
 
-        List       datasets = catalog.getDatasets();
+        List             datasets = catalog.getDatasets();
 
-        InvDataset idata    = (InvDataset) datasets.get(0);
-        ArrayList  dsets    = (ArrayList) idata.getDatasets();
+        InvDataset       idata    = (InvDataset) datasets.get(0);
+        List<InvDataset> dsets    = (ArrayList) idata.getDatasets();
 
-        InvDataset tdata    = (InvDataset) dsets.get(0);
+        InvDataset       tdata    = (InvDataset) dsets.get(0);
         return tdata;
     }
 
+    /**
+     * _more_
+     *
+     * @param stnName _more_
+     * @param productID _more_
+     * @param absTime _more_
+     *
+     * @return _more_
+     *
+     * @throws IOException _more_
+     */
     public URI getRadarDatasetURI(String stnName, String productID,
-                                  Date absTime) throws IOException {
+                                  Date absTime)
+            throws IOException {
         // absTime is a member of  datasetsDateURI
 
-        if(productID == null) {
+        if (productID == null) {
             return getRadarDatasetURI(stnName, absTime);
         }
 
@@ -806,7 +831,8 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      * @throws IOException java io exception
      */
     private TDSRadarDatasetInfo queryRadarStation(String stnName, Date start,
-            Date end) throws IOException {
+            Date end)
+            throws IOException {
         return queryRadarStation(stnName, null, start, end);
     }
 
@@ -820,7 +846,8 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      * @throws IOException java io exception
      */
     private TDSRadarDatasetInfo queryRadarStation(String stnName,
-            String productID, Date start, Date end) throws IOException {
+            String productID, Date start, Date end)
+            throws IOException {
         // http://motherlode.ucar.edu:9080/thredds/idd/radarLevel2?returns=catalog&stn=KFTG&dtime=latest
         StringBuffer queryb  = new StringBuffer();
         String       baseURI = dsc_location.replaceFirst("/dataset.xml", "?");
@@ -856,35 +883,39 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
 
         InvCatalogFactory factory = new InvCatalogFactory("default", false);
 
+        //visad.util.Trace.call1("TDSRadarDatasetCollection.readXML");
         InvCatalogImpl catalog = (InvCatalogImpl) factory.readXML(catalogURI);
-            StringBuilder      buff    = new StringBuilder();
+        //visad.util.Trace.call2("TDSRadarDatasetCollection.readXML");
+        StringBuilder buff = new StringBuilder();
+        //visad.util.Trace.call1("TDSRadarDatasetCollection.checkCatalog");
         if ( !catalog.check(buff)) {
             throw new IOException("Invalid catalog <" + catalogURI + ">\n"
                                   + buff.toString());
         }
+        //visad.util.Trace.call2("TDSRadarDatasetCollection.checkCatalog");
 
-        List       datasets = catalog.getDatasets();
+        List<InvDataset> datasets = catalog.getDatasets();
 
-        InvDataset idata    = (InvDataset) datasets.get(0);
-        //    List ddate = idata.getDates();
+        InvDataset       idata    = (InvDataset) datasets.get(0);
 
-        ArrayList dsets       = (ArrayList) idata.getDatasets();
+        List<InvDataset>     dsets       = idata.getDatasets();
 
-        ArrayList absTimeList = new ArrayList();
-        ArrayList dURIList    = new ArrayList();
-        ArrayList dInvList    = new ArrayList();
+        List<Date>           absTimeList = new ArrayList<Date>();
+        List<DatasetURIInfo> dURIList    = new ArrayList<DatasetURIInfo>();
+        List<InvDatasetInfo> dInvList    = new ArrayList<InvDatasetInfo>();
 
-        for (int i = 0; i < dsets.size(); i++) {
-            InvDataset tdata = (InvDataset) dsets.get(i);
-            List       acess = tdata.getAccess();
-            List       dates = tdata.getDates();
-            InvAccess  ia    = (InvAccess) acess.get(0);
-            URI        d     = ia.getStandardUri();
-            Date date = DateUnit.getStandardOrISO(dates.get(0).toString());
+        //visad.util.Trace.call1("TDSRadarDatasetCollection.getLists");
+        for (InvDataset tdata : dsets) {
+            List<InvAccess> acess = tdata.getAccess();
+            List<DateType>  dates = tdata.getDates();
+            InvAccess       ia    = (InvAccess) acess.get(0);
+            URI             d     = ia.getStandardUri();
+            Date date = ((DateType) dates.get(0)).getDate();
             absTimeList.add(date);
             dURIList.add(new DatasetURIInfo(d, date));
             dInvList.add(new InvDatasetInfo(tdata, date));
         }
+        //visad.util.Trace.call2("TDSRadarDatasetCollection.getLists");
 
         TDSRadarDatasetInfo dri = new TDSRadarDatasetInfo(absTimeList,
                                       dURIList, dInvList);
@@ -900,14 +931,14 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      * @return data URI list
      * @throws IOException java io exception
      */
-    public ArrayList getRadarStationURIs(String stnName, Date start,
-                                         Date end) throws IOException {
+    public List getRadarStationURIs(String stnName, Date start, Date end)
+            throws IOException {
 
         TDSRadarDatasetInfo dri = queryRadarStation(stnName, start, end);
-        ArrayList           uList       = dri.getURIList();
+        List                uList       = dri.getURIList();
 
         int                 size        = uList.size();
-        ArrayList           datasetsURI = new ArrayList();
+        List                datasetsURI = new ArrayList();
 
         for (int i = 0; i < size; i++) {
             DatasetURIInfo du = (DatasetURIInfo) uList.get(i);
@@ -925,13 +956,13 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      * @return dataset list
      * @throws IOException java io exception
      */
-    public ArrayList getRadarStationDatasets(String stnName, Date start,
-                                             Date end) throws IOException {
+    public List getRadarStationDatasets(String stnName, Date start, Date end)
+            throws IOException {
 
-        ArrayList           datasetList = new ArrayList();
+        List                datasetList = new ArrayList();
 
         TDSRadarDatasetInfo dri = queryRadarStation(stnName, start, end);
-        ArrayList           iList       = dri.getInvList();
+        List                iList       = dri.getInvList();
         int                 size        = iList.size();
 
         for (int i = 0; i < size; i++) {
@@ -954,8 +985,9 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      * @return list of URIs
      * @throws IOException java io exception
      */
-    public ArrayList getRadarStationTimes(String stnName, Date start,
-                                          Date end) throws IOException {
+    public List<Date> getRadarStationTimes(String stnName, Date start,
+                                           Date end)
+            throws IOException {
 
         return getRadarStationTimes(stnName, null, start, end);
 
@@ -970,9 +1002,9 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      * @return list of URIs
      * @throws IOException java io exception
      */
-    public ArrayList getRadarStationTimes(String stnName, String productID,
-                                          Date start,
-                                          Date end) throws IOException {
+    public List<Date> getRadarStationTimes(String stnName, String productID,
+                                           Date start, Date end)
+            throws IOException {
 
         TDSRadarDatasetInfo dri = queryRadarStation(stnName, productID,
                                       start, end);
@@ -1010,8 +1042,8 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      *
      * @throws IOException _more_
      */
-    public ArrayList getDataURIs(String sName,
-                                 DateSelection dateInfo) throws IOException {
+    public List getDataURIs(String sName, DateSelection dateInfo)
+            throws IOException {
 
         return getDataURIs(sName, dateInfo, null);
     }
@@ -1025,8 +1057,8 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      * @throws IOException _more_
      */
 
-    public ArrayList getData(String sName,
-                             DateSelection dateInfo) throws IOException {
+    public List getData(String sName, DateSelection dateInfo)
+            throws IOException {
 
         return getData(sName, dateInfo, null);
     }
@@ -1041,20 +1073,20 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      * @throws IOException _more_
      */
 
-    public ArrayList getData(
-            String sName, DateSelection dateSelect,
-            ucar.nc2.util.CancelTask cancel) throws IOException {
+    public List getData(String sName, DateSelection dateSelect,
+                        ucar.nc2.util.CancelTask cancel)
+            throws IOException {
         if ((cancel != null) && cancel.isCancel()) {
             return null;
         }
         TDSRadarDatasetInfo dri = queryRadarStation(sName,
                                       dateSelect.getStartFixedDate(),
                                       dateSelect.getEndFixedDate());
-        ArrayList datasetList = new ArrayList();
+        List     datasetList = new ArrayList();
 
-        List      datasetINVs = dateSelect.apply(dri.getInvList());
+        List     datasetINVs = dateSelect.apply(dri.getInvList());
 
-        Iterator  it          = datasetINVs.iterator();
+        Iterator it          = datasetINVs.iterator();
         while (it.hasNext()) {
             InvDatasetInfo            ifo       = (InvDatasetInfo) it.next();
             InvDataset                tdata     = ifo.inv;
@@ -1076,17 +1108,17 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
     /**
      * getting data uri list
      *
-     * @param sName _more_
-     * @param dateSelect _more_
-     * @param cancel _more_
+     * @param sName  station name
+     * @param dateSelect the date selection
+     * @param cancel   the cancel task
      *
-     * @return _more_
+     * @return  the list of URIs
      *
-     * @throws IOException _more_
+     * @throws IOException  problem reading URIs
      */
-    public ArrayList getDataURIs(
-            String sName, DateSelection dateSelect,
-            ucar.nc2.util.CancelTask cancel) throws IOException {
+    public List<URI> getDataURIs(String sName, DateSelection dateSelect,
+                                 ucar.nc2.util.CancelTask cancel)
+            throws IOException {
         if ((cancel != null) && cancel.isCancel()) {
             return null;
         }
@@ -1095,13 +1127,12 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
                                       dateSelect.getEndFixedDate());
 
         // create a list to hold URIs
-        List      datasetsURIs = dateSelect.apply(dri.getURIList());
-        ArrayList uriList      = new ArrayList();
+        List<DatasetURIInfo> datasetsURIs =
+            dateSelect.apply(dri.getURIList());
+        List<URI> uriList = new ArrayList();
 
-        Iterator  it           = datasetsURIs.iterator();
-        while (it.hasNext()) {
-            DatasetURIInfo ufo = (DatasetURIInfo) it.next();
-            URI            u   = ufo.uri;
+        for (DatasetURIInfo ufo : datasetsURIs) {
+            URI u = ufo.uri;
             uriList.add(u);
             if ((cancel != null) && cancel.isCancel()) {
                 return null;
@@ -1131,9 +1162,6 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
     /**
      * Class DatasetURIInfo _more_
      *
-     *
-     * @author IDV Development Team
-     * @version $Revision: 1.3 $
      */
     public class DatasetURIInfo implements DatedThing {
 
@@ -1167,25 +1195,21 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
 
 
     /**
-     * Class InvDatasetInfo _more_
-     *
-     *
-     * @author IDV Development Team
-     * @version $Revision: 1.3 $
+     * Class to hold an InvDataset and a Date
      */
     public class InvDatasetInfo implements DatedThing {
 
-        /** _more_ */
+        /** The InvDataset */
         private InvDataset inv = null;
 
-        /** _more_ */
+        /** the Date */
         private Date date = null;
 
         /**
-         * _more_
+         * Create an InvDatasetInfo
          *
-         * @param u _more_
-         * @param date _more_
+         * @param u  the InvDataset
+         * @param date  the Date
          */
         public InvDatasetInfo(InvDataset u, Date date) {
             this.inv  = u;
@@ -1193,9 +1217,9 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
         }
 
         /**
-         * _more_
+         * Get the date
          *
-         * @return _more_
+         * @return  the Date
          */
         public Date getDate() {
             return date;
@@ -1205,67 +1229,62 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
 
 
     /**
-     * Class DqcRadarDatasetInfo _more_
-     *
-     *
-     * @author IDV Development Team
-     * @version $Revision: 1.3 $
+     * Class to hold some information about TDS Radar Datasets
      */
     public class TDSRadarDatasetInfo {
 
-        /** _more_ */
-        private ArrayList absTimeList;
+        /** list of times */
+        private List absTimeList;
 
-        /** _more_ */
-        private ArrayList datasetInfoList;
+        /** list of dataset infos */
+        private List datasetInfoList;
 
-        /** _more_ */
-        private ArrayList invDatasetList;
+        /** list of InvDatasets */
+        private List invDatasetList;
 
         /**
-         * _more_
+         * Default ctor
          */
         public TDSRadarDatasetInfo() {}
 
         /**
-         * _more_
+         * Ctor
          *
          * @param absTimeList _more_
          * @param datasetInfoList _more_
          * @param invDatasetList _more_
          */
-        public TDSRadarDatasetInfo(ArrayList absTimeList,
-                                   ArrayList datasetInfoList,
-                                   ArrayList invDatasetList) {
+        public TDSRadarDatasetInfo(List absTimeList, List datasetInfoList,
+                                   List invDatasetList) {
             this.absTimeList     = absTimeList;
             this.datasetInfoList = datasetInfoList;
             this.invDatasetList  = invDatasetList;
         }
 
         /**
-         * _more_
+         * Get the time line
          *
-         * @return _more_
+         * @return  the list of times
          */
-        public ArrayList getTimeList() {
+        public List<Date> getTimeList() {
             return this.absTimeList;
         }
 
         /**
-         * _more_
+         * Get the URI list
          *
-         * @return _more_
+         * @return  the list of URIs
          */
-        public ArrayList getURIList() {
+        public List<DatasetURIInfo> getURIList() {
             return this.datasetInfoList;
         }
 
         /**
-         * _more_
+         * Get the InvDatatest List
          *
-         * @return _more_
+         * @return the list of InvDatsets
          */
-        public ArrayList getInvList() {
+        public List<InvDataset> getInvList() {
             return this.invDatasetList;
         }
 
@@ -1273,49 +1292,50 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
     }
 
     /**
-     * _more_
+     * Test the program
      *
-     * @param args _more_
+     * @param args  the args
      *
      * @throws IOException _more_
      */
     public static void main(String args[]) throws IOException {
-        StringBuffer errlog = new StringBuffer();
-        String ds_location = null;
-        TDSRadarDatasetCollection dsc = null;
-        List stns = null;
+        StringBuffer              errlog      = new StringBuffer();
+        String                    ds_location = null;
+        TDSRadarDatasetCollection dsc         = null;
+        List                      stns        = null;
 
         ds_location =
-            "http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level3/CCS039/dataset.xml";
-         dsc =
-            TDSRadarDatasetCollection.factory("test", ds_location, errlog);
+            "http://motherlode.ucar.edu:9080/thredds/radarServer/nexrad/level3/CCS039/dataset.xml";
+        dsc = TDSRadarDatasetCollection.factory("test", ds_location, errlog);
         System.out.println(" errs= " + errlog);
-            stns = dsc.getStations();
+        stns = dsc.getStations();
         System.out.println(" nstns= " + stns.size());
 
-      // System.exit(0);
+        // System.exit(0);
         stns = dsc.getStations();
         System.out.println(" nstns= " + stns.size());
 
         Station stn = dsc.getRadarStation("DVN");  //(StationImpl)stns.get(12);
+        System.out.println("stn = " + stn);
 
         // List ulist = stn.getRadarStationURIs();
         // assert null != ulist;
-        List tl = dsc.getRadarTimeSpan();
-        Date ts1   = DateUnit.getStandardOrISO("1998-06-28T01:01:21Z");
-        Date ts2   = DateUnit.getStandardOrISO("1998-07-30T19:01:21Z");
-        List pd = dsc.getRadarProducts();
-        List tlist = dsc.getRadarStationTimes(stn.getName(),"BREF1", new Date(ts1.getTime()), new Date(ts2.getTime()));
-        int  sz    = tlist.size();
+        List tl  = dsc.getRadarTimeSpan();
+        Date ts1 = DateUnit.getStandardOrISO("1998-06-28T01:01:21Z");
+        Date ts2 = DateUnit.getStandardOrISO("1998-07-30T19:01:21Z");
+        List pd  = dsc.getRadarProducts();
+        List<Date> tlist = dsc.getRadarStationTimes(stn.getName(), "BREF1",
+                               ts1, ts2);
+        int sz = tlist.size();
         for (int i = 0; i < 3; i++) {
             Date ts0 = (Date) tlist.get(i);
-            //  Date ts0 = DateUnit.getStandardOrISO((String) tlist.get(1));
-            RadialDatasetSweep rds = dsc.getRadarDataset(stn.getName(), "BREF1", ts0);
+            RadialDatasetSweep rds = dsc.getRadarDataset(stn.getName(),
+                                         "BREF1", ts0);
             int tt = 0;
         }
 
         Date ts0   = (Date) tlist.get(0);
-        URI  stURL = dsc.getRadarDatasetURI(stn.getName(), ts0);
+        URI  stURL = dsc.getRadarDatasetURI(stn.getName(), "BREF1", ts0);
         assert null != stURL;
         DateSelection dateS = new DateSelection(ts1, ts2);
         dateS.setInterval((double) 3600 * 1000);
@@ -1327,12 +1347,12 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
 
         for (int i = 0; i < stns.size(); i++) {
             stn = (Station) stns.get(i);
-            List times = dsc.getRadarStationTimes(
-                             stn.getName(),
-                             new Date(
-                                 System.currentTimeMillis()
-                                 - 3600 * 1000 * 24 * 100), new Date(
-                                     System.currentTimeMillis()));
+            List<Date> times = dsc.getRadarStationTimes(
+                                   stn.getName(),
+                                   new Date(
+                                       System.currentTimeMillis()
+                                       - 3600 * 1000 * 24 * 100), new Date(
+                                           System.currentTimeMillis()));
             if (times.size() > 0) {
                 System.err.println(stn + " times:" + times.size() + " "
                                    + times.get(0) + " - "
