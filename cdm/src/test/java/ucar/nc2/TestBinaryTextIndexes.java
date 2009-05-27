@@ -58,14 +58,14 @@ public class TestBinaryTextIndexes extends TestCase {
       super(name);
     }
 
-    public void testCompare( String[] newargs ) throws IOException {
+    public void testCompare() throws IOException {
       File where = new File("C:/data/grib/idd");
       if( where.exists() ) {
         String[] args = new String[ 1 ];
         args[ 0 ] = "C:/data/grib/idd";
         doAll( args );
       } else {
-        doAll( newargs );
+        doAll( null );
       }
     }
 
@@ -143,7 +143,7 @@ public class TestBinaryTextIndexes extends TestCase {
         String valueB = gdrB.getParam( key );
         String valueT = gdrT.getParam( key );
         if( ! valueT.equals( valueB ))
-           System.out.println( "hcs "+ key +" differ for Binary and Text  "+  valueB +" "+ valueT);
+           System.out.println( "hcs "+ key +" differ for Binary and Text "+  valueB +" "+ valueT);
 
       }
     }
@@ -159,6 +159,17 @@ public class TestBinaryTextIndexes extends TestCase {
         String valueT = attT.get( key );
         if( ! valueB.equals( valueT ))
            System.out.println( "attribute "+ key +" differ for Binary and Text  "+  valueB +" "+ valueT);
+
+     }
+     java.util.Set<String> keysT = attT.keySet();
+     for( String key : keysT ) {
+        if( key.equals( "ensemble") ||  key.equals( "tiles") ||  key.equals( "thin") ||
+            key.equals( "created") || key.equals( "location") || key.equals( "grid_units"))
+           continue;
+        String valueB = attB.get( key );
+        String valueT = attT.get( key );
+        if( ! valueT.equals( valueB ))
+           System.out.println( "attribute "+ key +" differ for Binary and Text "+  valueB +" "+ valueT);
 
      }
 
@@ -206,7 +217,7 @@ public class TestBinaryTextIndexes extends TestCase {
 //            child.contains( "SREF") ||
 //            child.contains( "GFS_Spectral") || //uses >1 parameter tables
 //            child.contains( "SPECTRAL") || //uses >1 parameter tables
-//          child.contains( "OCEAN") || //uses >1 horizontal coord system
+//            child.contains( "OCEAN") || //uses >1 horizontal coord system
 //            child.contains( "ECMWF") || //uses >1 horizontal coord system
 //            child.contains( "RADAR") || //uses >1 horizontal coord system
 //            child.contains( "SST") || //uses >1 horizontal coord system
@@ -234,7 +245,7 @@ public class TestBinaryTextIndexes extends TestCase {
 
   static public void main(String args[]) throws IOException {
     TestBinaryTextIndexes bti = new TestBinaryTextIndexes( "" );
-    bti.testCompare( args );
+    bti.testCompare();
   }
 
 }

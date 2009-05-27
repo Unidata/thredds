@@ -177,11 +177,12 @@ public class TestAll {
     suite.addTest( ucar.nc2.dt.TestTypedDatasets.suite()); // deprecated, but backwards compatible
 
     suite.addTest( ucar.unidata.geoloc.TestGeoloc.suite());  //
-    suite.addTest( ucar.nc2.dods.TestDODS.suite()); // 
+    suite.addTest( ucar.nc2.dods.TestDODS.suite()); //
 
     suite.addTest( thredds.catalog.TestCatalogAll.suite()); //
 
     suite.addTest( ucar.nc2.TestIosp.suite());   //
+    suite.addTest( new TestSuite(TestBinaryTextIndexes.class));  //
     suite.addTest( new TestSuite(TestGridGribIosp.class));  //
     suite.addTest( ucar.nc2.iosp.hdf5.TestH5.suite()); // */
     suite.addTest( ucar.nc2.iosp.hdf4.TestH4.suite()); //
