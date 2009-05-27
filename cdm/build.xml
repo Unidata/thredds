@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="cdm" default="makeMain" basedir=".">
   <property name="release.version" value="4.0"/>
-  <property name="minor" value="43" />
+  <property name="minor" value="44" />
   <!-- "build.number" is already set for TeamCity builds. -->
   <tstamp>
     <format property="build.time.number" pattern="yyyyMMdd.HHmm" timezone="GMT"/>
@@ -45,13 +45,13 @@
 
   <property name="release.library.dir" value="${uni.ftp.dir}/pub/netcdf-java/v${release.version}/"/>
   <property name="release.doc.dir" value="${uni.ftp.dir}/pub/netcdf-java/v${release.version}/"/>
-  <property name="release.html.dir" value="${uni.www.dir}/software/netcdf-java/v${release.version}/"/>
+  <property name="release.html.dir" value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/"/>
   <property name="release.schema.dir" value="${uni.www.dir}/schema"/>
   <property name="release.javadoc.dir"
-            value="${uni.www.dir}/software/netcdf-java/v${release.version}/javadoc/"/>
+            value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/javadoc/"/>
   <property name="release.javadocAll.dir"
-            value="${uni.www.dir}/software/netcdf-java/v${release.version}/javadocAll/"/>
-  <property name="webstart_dir" value="${uni.www.dir}/software/netcdf-java/v${release.version}/webstart"/>
+            value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/javadocAll/"/>
+  <property name="webstart_dir" value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/webstart"/>
 
   <!-- property name="bzip2.jar" value="bzip2.jar"/ -->
   <!-- property name="gnu-regexp.jar" value="gnu-regexp-1.1.4.jar"/ -->

@@ -58,6 +58,7 @@ import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.NetcdfFile;
+import org.apache.catalina.connector.ClientAbortException;
 
 /**
  * THREDDS opendap server.
@@ -280,6 +281,21 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
       // 403 - request too big
     } catch (IllegalArgumentException e) {
       sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN, e.getMessage());
+
+    } catch (java.net.SocketException e) {
+      log.info("SocketException: " + e.getMessage(), e);
+      log.info(UsageLog.closingMessageForRequestContext(1000, -1));
+
+    } catch (IOException e) {
+      String eName = e.getClass().getName(); // dont want compile time dependency on ClientAbortException
+      if (eName.equals("org.apache.catalina.connector.ClientAbortException")) {
+        log.info("ClientAbortException: " + e.getMessage());
+        log.info(UsageLog.closingMessageForRequestContext(1000, -1));
+        return;
+      }
+
+      log.error("path= "+path, e);
+      sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
 
       // everything else
     } catch (Throwable t) {
