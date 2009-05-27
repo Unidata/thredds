@@ -118,7 +118,7 @@ public class RadarServer extends AbstractServlet {
     InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(false); // no validation
     cat = readCatalog(factory, getPath() + catName, contentPath + getPath() + catName);
     if (cat == null) {
-      System.out.println("cat initialization failed");
+      log.info("cat initialization failed");
       return;
     }
     //URI tmpURI = cat.getBaseURI();
@@ -133,7 +133,7 @@ public class RadarServer extends AbstractServlet {
         InvDatasetScan ds = (InvDatasetScan) datasets.get(j);
         if (ds.getPath() != null) {
           dataLocation.put(ds.getPath(), ds.getScanLocation());
-          System.out.println("path =" + ds.getPath() + " location =" + ds.getScanLocation());
+          log.info("path =" + ds.getPath() + " location =" + ds.getScanLocation());
         }
         ds.setXlinkHref(ds.getPath() + "/dataset.xml");
       }
@@ -171,7 +171,7 @@ public class RadarServer extends AbstractServlet {
       // radar  query
       if (req.getQueryString() != null) {
         //log.debug("RadarServer query ="+ req.getQueryString() );
-        if (debug) System.out.println("<documentation>\n" + req.getQueryString() + "</documentation>\n");
+        log.debug("<documentation>\n" + req.getQueryString() + "</documentation>\n");
         rm.radarQuery(radarType, req, res, pw);
         log.debug( "after doGet "+ (System.currentTimeMillis() - startms));
         pw.flush();
@@ -485,18 +485,18 @@ public class RadarServer extends AbstractServlet {
       catURI = new URI("file:" + StringUtil.escape(catalogFullPath, "/:-_.")); // LOOK needed ?
     }
     catch (URISyntaxException e) {
-      System.out.println("radarServer readCatalog(): URISyntaxException=" + e.getMessage());
+      log.info("radarServer readCatalog(): URISyntaxException=" + e.getMessage());
       return null;
     }
 
     // read the catalog
-    System.out.println("radarServer readCatalog(): full path=" + catalogFullPath + "; path=" + path);
+    log.info("radarServer readCatalog(): full path=" + catalogFullPath + "; path=" + path);
     FileInputStream ios = null;
     try {
       ios = new FileInputStream(catalogFullPath);
       acat = factory.readXML(ios, catURI);
     } catch (Throwable t) {
-      System.out.println("radarServer readCatalog(): Exception on catalog=" +
+      log.info("radarServer readCatalog(): Exception on catalog=" +
               catalogFullPath + " " + t.getMessage()); //+"\n log="+cat.getLog(), t);
       return null;
     }
@@ -506,7 +506,7 @@ public class RadarServer extends AbstractServlet {
           ios.close();
         }
         catch (IOException e) {
-          System.out.println("radarServer readCatalog(): error closing" + catalogFullPath);
+          log.info("radarServer readCatalog(): error closing" + catalogFullPath);
         }
       }
     }
