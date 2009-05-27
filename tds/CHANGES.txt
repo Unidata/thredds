@@ -17,6 +17,9 @@ Changes in version 4.0
   * netcdf-java 4.0
 
 Release Details:
+ 12:
+  WMS: improved logging and exception handling.
+  Minor bug fixes.
  11:
   WMS SERVICE parameter requirement aligned with specification.
   OPeNDAP error responses use correct "Content-Description header value ("dods-error").
