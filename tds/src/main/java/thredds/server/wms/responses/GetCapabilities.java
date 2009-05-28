@@ -72,6 +72,10 @@ public class GetCapabilities extends FileBasedResponse
     protected Config config;
     protected static final String FEATURE_INFO_XML_FORMAT = "text/xml";
     protected static final String FEATURE_INFO_PNG_FORMAT = "image/png";
+    
+    //Please note that in LayerBasedResponse's constructor,
+    //it depends on getting *single* layer.  LAYER_LIMIT is somewhat
+    //related to this.  So change this value with care!
     public static final int LAYER_LIMIT = 1;
     protected DateTime lastUpdate;
 

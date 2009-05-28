@@ -44,6 +44,7 @@ import thredds.server.wms.responses.*;
 import thredds.servlet.ThreddsConfig;
 import thredds.servlet.DatasetHandler;
 import thredds.servlet.UsageLog;
+import thredds.servlet.ServletUtil;
 import thredds.util.Version;
 
 import java.io.File;
@@ -78,6 +79,7 @@ public class WMSController extends AbstractController {
   public static final Version WMS_VER_1_3_0 = new Version( "1.3.0");
 
   private boolean allow;
+  private boolean allowRemote;
 
   protected String getPath() {
     return "wms/";
@@ -88,6 +90,7 @@ public class WMSController extends AbstractController {
 
   public void init() throws ServletException {
     allow = ThreddsConfig.getBoolean("WMS.allow", false);
+    allowRemote = ThreddsConfig.getBoolean("WMS.allowRemote", false);
     logServerStartup.info("initializing WMS: " + allow);
 
     if (allow) {
@@ -132,6 +135,18 @@ public class WMSController extends AbstractController {
     log.info( UsageLog.setupRequestContext( req ) );
 
     if (allow) {
+
+      // Check if the request is for a remote dataset; if it is only
+      // proceed if the TDS is configured to allow it.
+      String datasetURL = ServletUtil.getParameterIgnoreCase( req, "dataset" );
+      // ToDo LOOK - move this into TdsConfig?
+      if ( datasetURL != null && ! allowRemote )
+      {
+        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ) );
+        res.sendError( HttpServletResponse.SC_FORBIDDEN, "WMS service not supported for remote datasets." );
+        return null;
+      }
+
       Map<String, Object> model = new HashMap<String, Object>();
       UsageLogEntry usageLogEntry = new UsageLogEntry(req);
       GridDataset dataset = null;
@@ -256,9 +271,17 @@ public class WMSController extends AbstractController {
     log.debug("in openDataset");
     GridDataset dataset;
     String datasetPath = req.getPathInfo();
+
+    boolean isRemote = false;
+      
+    if ( datasetPath == null )
+    {
+        datasetPath = ServletUtil.getParameterIgnoreCase( req, "dataset" );
+        isRemote = ( datasetPath != null );
+    }
+
     try {
-      dataset = DatasetHandler.openGridDataset(req, res, datasetPath);
-      //System.out.println("**openGridDataset "+dataset.getLocationURI());      
+        dataset = isRemote ? ucar.nc2.dt.grid.GridDataset.open( datasetPath ) : DatasetHandler.openGridDataset( req, res, datasetPath );
     }
     catch (IOException e) {
       log.warn("WMSController: Failed to open dataset <" + datasetPath + ">: " + e.getMessage());

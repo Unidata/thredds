@@ -151,7 +151,7 @@ public class WCSServlet extends AbstractServlet {
     if ( datasetURL != null && ! allowRemote )
     {
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ));
-      res.sendError( HttpServletResponse.SC_FORBIDDEN, "Catalog services not supported for remote catalogs." );
+      res.sendError( HttpServletResponse.SC_FORBIDDEN, "WCS service not supported for remote datasets." );
       return;
     }
 

@@ -86,13 +86,6 @@ public class WmsGetMap extends LayerBasedResponse
         ImageFormat imageFormat = ImageFormat.get(mimeType);
 
         GetMapDataRequest dr = getMapRequest.getDataRequest();
-        String[] layers = dr.getLayers();
-
-        if (layers.length > GetCapabilities.LAYER_LIMIT)
-        {
-            throw new WmsException("You may only request a maximum of " +
-                GetCapabilities.LAYER_LIMIT + " layer(s) simultaneously from this server");
-        }
 
         // Get the grid onto which the data will be projected
         HorizontalGrid grid = new HorizontalGrid(dr);

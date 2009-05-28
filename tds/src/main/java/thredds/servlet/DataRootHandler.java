@@ -994,7 +994,7 @@ public class DataRootHandler {
     res.getOutputStream().write( result.getBytes() );
   }
 
-  /*
+  /**
    * DO NOT USE, this is Ethan's attempt at designing a generic way to handle data requests.
    *
    * Only used is in ExampleThreddsServlet.

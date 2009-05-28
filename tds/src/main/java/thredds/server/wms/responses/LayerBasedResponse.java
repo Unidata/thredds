@@ -69,9 +69,21 @@ abstract public class LayerBasedResponse extends FileBasedResponse
     {
         super(_params, _dataset, _usageLogEntry);
 
-        layerName = params.getMandatoryString("layers");
-        log.debug("layers: " + layerName);
-        layer = layers.get(layerName);
+        String[] layerNames = params.getMandatoryString("layers").split(",");
+
+        if (layerNames.length > GetCapabilities.LAYER_LIMIT)
+        {
+            throw new WmsException("You may only request a maximum of " +
+                GetCapabilities.LAYER_LIMIT + " layer(s) simultaneously from this server");
+        }
+
+        //Hmmm... this kinds of restrict it to 1 layer at a time.
+        //Given that this is a setting in GetCapabilities.LAYER_LIMIT, it's probably
+        //not soooo bad.  But beware for future versions....
+        // From ncWMS: TODO: support more than one layer (superimposition, difference, mask)
+        layer = layers.get(layerNames[0]);
+
+        log.debug("layers: " + layerNames[0]);
 
         HorizontalGrid grid = new HorizontalGrid("CRS:84", 100, 100, layer.getBbox());
 
