@@ -19,53 +19,38 @@ Map Service (<a href="http://www.opengeospatial.org/standards/wms">WMS</a>)
 </p>
 <h2>Status</h2>
 The THREDDS WMS server is considered experimental, do not rely on it in
-a production environment.
-
-<hr>
-<hr>
-<hr>
-<hr>
-<hr>
-
-<h2>Which files can be served through the WMS server? </h2>
-<ol>
-<li>Data files must contain gridded data.</li>
-<li>The
+a production environment.<br><h2><a name="Which_files_can_be_served_through_the"></a>Which files can be served through the WMS server? </h2>
+<ol><li>Data files must contain gridded data.</li><li>The
 NetCDF-Java Common Data Model must be able to identify the coordinates
 system used. Check this by opening in the Grid Panel of the <a href="http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart/index.html">ToolsUI</a>
-application. There should be one or more variables shown as a GeoGrid.</li>
-<li>Currently due to WCS and GeoTIFF limitations, the X,Y and
-(if it exists) Z axes must be regularly spaced.</li>
-</ol>
-<h2>Configuration</h2><p>WCS must be enabled in the <code>threddsConfig.xml</code> configuration file before it can be used. This is done by adding an <strong>allow</strong> element to the <strong>WCS</strong> element as follows:</p><pre style="margin-left: 40px;">&lt;WCS&gt;<br>  &lt;allow&gt;true&lt;/allow&gt;<br>  ...<br>&lt;/WCS&gt;</pre><p>Once
-WCS is enabled, datasets can be configured to have a WCS access method
+application. There should be one or more variables shown as a GeoGrid.</li></ol>
+<h2>Configuration</h2><p>WMS must be enabled in the <code>threddsConfig.xml</code> configuration file before it can be used. This is done by adding an <strong>allow</strong> element to the <strong>WMS</strong> element as follows:</p><pre style="margin-left: 40px;">&lt;WMS&gt;<br>  &lt;allow&gt;true&lt;/allow&gt;<br>  ...<br>&lt;/WMS&gt;</pre><p>Once
+WMS is enabled, datasets can be configured to have a WMS access method
 in the TDS catalog configuration files similar to how other services
 are configured. The service element's serviceType and base attribute
-values must be as follows:</p><pre style="margin-left: 40px;">&lt;service name="wcs" serviceType="<strong>WCS</strong>" base="<strong>/thredds/wcs/</strong>" /&gt;</pre><p>The dataset to be served must reference this service (or a containing compound service) by the service name:</p><pre style="margin-left: 40px;">&lt;dataset ID="sample" name="Sample Data" urlPath="sample.nc"&gt;<br>  &lt;serviceName&gt;wcs&lt;/serviceName&gt;<br>&lt;/dataset&gt;</pre><p>The dataset can be configured by datasetRoot or datasetScan as appropriate (see "<a href="../tutorial/BasicConfig.html">Basic Configuration</a>").
+values must be as follows:</p><pre style="margin-left: 40px;">&lt;service name="wms" serviceType="<strong>WMS</strong>" base="<strong>/thredds/wms/</strong>" /&gt;</pre><p>The dataset to be served must reference this service (or a containing compound service) by the service name:</p><pre style="margin-left: 40px;">&lt;dataset ID="sample" name="Sample Data" urlPath="sample.nc"&gt;<br>  &lt;serviceName&gt;wms&lt;/serviceName&gt;<br>&lt;/dataset&gt;</pre><p>The dataset can be configured by datasetRoot or datasetScan as appropriate (see "<a href="../tutorial/BasicConfig.html">Basic Configuration</a>").
 They are listed in the resulting THREDDS catalogs as are other
-datasets.&nbsp;WCS clients may not be able to directly use the THREDDS
-catalogs to find the WCS services but the catalogs are useful for users
+datasets.&nbsp;WMS clients may not be able to directly use the THREDDS
+catalogs to find the WMS services but the catalogs are useful for users
 to browse and for separate search services (e.g., OGC catalog
-services). &nbsp;</p><h3>Serving Remote Dataset</h3><p>The TDS can also
-serve remote datasets with the WCS protocol if configured to do so. It
-must be explicitly configured&nbsp;in the <code>threddsConfig.xml</code> configuration file. This is done by adding an <strong>allowRemote</strong> element to the <strong>WCS</strong> element as follows:</p><pre style="margin-left: 40px;">&lt;WCS&gt;<br>  &lt;allow&gt;true&lt;/allow&gt;<br>  &lt;allowRemote&gt;true&lt;/allowRemote&gt; <br>  ...<br>&lt;/WCS&gt;</pre><p>A slight extension of the WCS Dataset URL format allows the
+services).</p><h3>Serving Remote Dataset</h3><p>The TDS can also
+serve remote datasets with the WMS protocol if configured to do so. It
+must be explicitly configured&nbsp;in the <code>threddsConfig.xml</code> configuration file. This is done by adding an <strong>allowRemote</strong> element to the <strong>WMS</strong> element as follows:</p><pre style="margin-left: 40px;">&lt;WMS&gt;<br>  &lt;allow&gt;true&lt;/allow&gt;<br>  &lt;allowRemote&gt;true&lt;/allowRemote&gt; <br>  ...<br>&lt;/WMS&gt;</pre><p>A slight extension of the WMS Dataset URL format allows the
 TDS to serve remote datasets. The dataset is identified by adding the
 parameter <strong>dataset</strong> whose value is a URL:</p>
-<pre style="margin-left: 40px;">http://servername:8080/thredds/wcs?<strong>dataset=<em>datasetURL</em></strong></pre><p>The URL must be a dataset readable by the NetCDF-Java library,
+<pre style="margin-left: 40px;">http://servername:8080/thredds/wms?<strong>dataset=<em>datasetURL</em></strong></pre><p>The URL must be a dataset readable by the NetCDF-Java library,
 typically an OPeNDAP dataset on another server. It must have gridded
-data, with identifiable coordinate systems, etc. For example, an
+data with identifiable coordinate systems (see <a href="#Which_files_can_be_served_through_the">above</a>). For example, an
 OPeNDAP URL might be</p>
 <pre style="margin-left: 40px;">http://las.pfeg.noaa.gov/cgi-bin/nph-dods/data/oceanwatch/nrt/gac/AG14day.nc <br></pre>
-<p> This can be served remotely as a WCS dataset with this URL:</p>
-<pre style="margin-left: 40px;">http://servername:8080/thredds/wcs?<strong>dataset=http://las.pfeg.noaa.gov/cgi-bin/nph-dods/data/oceanwatch/nrt/gac/AG14day.nc</strong></pre><h2>Capabilities/Limitations</h2>
+<p> This can be served remotely as a WMS dataset with this URL:</p>
+<pre style="margin-left: 40px;">http://servername:8080/thredds/wms?<strong>dataset=http://las.pfeg.noaa.gov/cgi-bin/nph-dods/data/oceanwatch/nrt/gac/AG14day.nc</strong></pre><h2>Capabilities/Limitations</h2>
 
 <hr width="100%">
 <address>
   <img src="../../images/thread.png" alt="THREDDS" height="108" width="110">
-  This document is maintained by Unidata and was last updated
-  March 2009. Send comments to
+  This document is maintained by Unidata and was last updated May 2009. Send comments to
   <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
 
-</body>
-</html>
+</body></html>

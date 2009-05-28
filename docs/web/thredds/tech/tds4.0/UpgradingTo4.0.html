@@ -22,7 +22,7 @@ giving your gridded datasets that service.</li>
 <pre style="margin-left: 40px;">&lt;WMS&gt;<br>  &lt;allow&gt;true&lt;/allow&gt;<br>&nbsp; &lt;paletteLocationDir&gt;palettes&lt;/paletteLocationDir&gt;  <br>  ...<br>&lt;/WMS&gt;</pre>
 <h2>Must Explicitly Enable Certain Services</h2>
 <p>More detail on explicitly enabling services in the <a href="../reference/index.html">TDS Reference</a> for each individual service. The following services must be explicitly enabled in the <code>threddsConfig.xml</code> file:</p><ul><li>WCS (required explicit allow since 3.16)</li><li>WCS for remote datasets (required explicit allow since 3.17)</li>
-  <li>WMS</li>
+  <li>WMS: general allow and allow for remote datasets.</li>
 <li>Catalog Services on remote catalogs (requires explicit allow as of 4.0)</li><li>Less common services:</li><ul><li>DLwriter (requires explicit allow as of 4.0)</li><li>DLwriter on remote catalogs (requires explicit allow as of 4.0)</li></ul><li>Deprecated services (as of 4.0):</li><ul><li>CatalogGen (requires explicit allow as of 4.0)</li><li>DqcService (requires explicit allow as of 4.0)</li></ul></ul>
 <h2>New Size Restrictions on OPeNDAP Requests</h2>
 <p>As of TDS 4.0.12,
