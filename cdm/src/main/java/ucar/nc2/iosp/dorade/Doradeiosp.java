@@ -76,7 +76,7 @@ public class Doradeiosp extends AbstractIOServiceProvider {
     }
 
     if (mySweep.getScanMode(0) != ScanMode.MODE_SUR) {
-      System.err.println("ScanMode is : " + mySweep.getScanMode(0).getName());
+   //   System.err.println("ScanMode is : " + mySweep.getScanMode(0).getName());
       //System.exit(1);
     }
     try {
