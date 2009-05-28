@@ -134,6 +134,13 @@ public class CoordinateAxis extends VariableDS {
   public CoordinateAxis copyNoCache() {
     CoordinateAxis axis = new CoordinateAxis( ncd, getParentGroup(), getShortName(), getDataType(), getDimensionsString(),
             getUnitsString(), getDescription());
+
+    // other state
+    axis.axisType = this.axisType;
+    axis.boundaryRef = this.boundaryRef;
+    axis.isContiguous = this.isContiguous;
+    axis.positive = this.positive; 
+
     axis.cache = new Variable.Cache(); // decouple cache
     return axis;
   }

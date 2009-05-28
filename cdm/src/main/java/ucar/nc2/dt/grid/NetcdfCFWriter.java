@@ -213,8 +213,12 @@ public class NetcdfCFWriter {
         newV.addAttribute(new Attribute("units", "degrees_east"));
         newV.addAttribute(new Attribute("standard_name", "longitude"));
       }
-
-      // newV.addAttribute(new Attribute(_Coordinate.AxisType, axis.getAxisType().toString())); // cheating
+      if (axis.getAxisType() == AxisType.GeoX) {
+        newV.addAttribute(new Attribute("standard_name", "projection_x_coordinate"));
+      }
+      if (axis.getAxisType() == AxisType.GeoY) {
+        newV.addAttribute(new Attribute("standard_name", "projection_y_coordinate"));
+      }
     }
 
     // coordinate transform variables : must convert false easting, northing to km
@@ -334,15 +338,15 @@ public class NetcdfCFWriter {
   }
 
   public static void main(String args[]) throws IOException, InvalidRangeException, ParseException {
-    String fileIn = "C:/data/cdp/test_for_jc.ncml";
-    String fileOut = "C:/temp/cf2.nc";
+    String fileIn = "D:/work/test.nc";
+    String fileOut = "D:/work/testCF.nc";
 
     ucar.nc2.dt.GridDataset gds = ucar.nc2.dt.grid.GridDataset.open(fileIn);
 
     NetcdfCFWriter writer = new NetcdfCFWriter();
 
     List<String> gridList = new ArrayList<String>();
-    gridList.add("pr");
+    gridList.add("Temperature");
 
     DateFormatter format = new DateFormatter();
     Date start = format.isoDateTimeFormat("2003-06-01T03:00:00Z");
@@ -350,7 +354,7 @@ public class NetcdfCFWriter {
 
     writer.makeFile(fileOut, gds, gridList,
             new LatLonRect(new LatLonPointImpl(30, -109), 10, 50),
-            new DateRange(start, end),
+            null, // new DateRange(start, end),
             true,
             1, 1, 1);
 

@@ -5,6 +5,8 @@ Build Date = @BUILDTIME@
 Changes in version 4.0
 
  Release Details:
+  45:
+   CoordinateAxis.copyNoCache() must preserve state. caused grid.NetcdfCFWriter to fail when x,y units != km.
   44:
    TDSRadarDatasetCollection improvements
    AvhrrSatellite Convention - start of Image datatype

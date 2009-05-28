@@ -121,6 +121,14 @@ public class CoordinateAxis1D extends CoordinateAxis {
   public CoordinateAxis copyNoCache() {
     CoordinateAxis1D axis = new CoordinateAxis1D(ncd, getParentGroup(), getShortName(), getDataType(), getDimensionsString(),
             getUnitsString(), getDescription());
+
+        // other state
+    axis.axisType = this.axisType;
+    axis.boundaryRef = this.boundaryRef;
+    axis.isContiguous = this.isContiguous;
+    axis.positive = this.positive;
+    setIsLayer();
+
     axis.cache = new Variable.Cache(); // decouple cache
     return axis;
   }
