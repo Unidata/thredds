@@ -24,7 +24,18 @@ giving your gridded datasets that service.</li>
 <p>More detail on explicitly enabling services in the <a href="../reference/index.html">TDS Reference</a> for each individual service. The following services must be explicitly enabled in the <code>threddsConfig.xml</code> file:</p><ul><li>WCS (required explicit allow since 3.16)</li><li>WCS for remote datasets (required explicit allow since 3.17)</li>
   <li>WMS</li>
 <li>Catalog Services on remote catalogs (requires explicit allow as of 4.0)</li><li>Less common services:</li><ul><li>DLwriter (requires explicit allow as of 4.0)</li><li>DLwriter on remote catalogs (requires explicit allow as of 4.0)</li></ul><li>Deprecated services (as of 4.0):</li><ul><li>CatalogGen (requires explicit allow as of 4.0)</li><li>DqcService (requires explicit allow as of 4.0)</li></ul></ul>
-<h2>CDM Validator Service Now a Separate Web Application</h2><p>As of
+<h2>New Size Restrictions on OPeNDAP Requests</h2>
+<p>As of TDS 4.0.12,
+binary (".dods") and ASCII (".asc") OPeNDAP requests are being
+restricted depending on the size of the response body. If a binary
+OPeNDAP request will result in a response body greater than 500Mbytes
+or an ASCII OPeNDAP request will result in a response body greater than
+50Mbytes, the request will not be handled. Instead an HTTP status code
+of 403 (Forbidden) is returned with a "dods-error" response body.</p>
+<p>Currently, these size limits are not configurable. They will be
+configurable before TDS 4.0 becomes the stable release. </p>
+<h2>CDM Validator Service Now a Separate Web Application</h2>
+<p>As of
 TDS 4.0, the CDM Coordinate System validator is no longer available as
 part of the TDS. It is available as a separate web application
 distributed in its own .war file.&nbsp;</p><p>
