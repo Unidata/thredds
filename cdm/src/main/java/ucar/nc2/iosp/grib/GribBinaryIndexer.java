@@ -59,7 +59,7 @@ public final class GribBinaryIndexer {
   /**
    * delete all indexes, it makes a complete rebuild
    */
-  private static final boolean removeGBX = false;
+  private static boolean removeGBX = false;
 
   /*
   * dirs to inspect
@@ -228,7 +228,8 @@ public final class GribBinaryIndexer {
 
     try {
       if (gbx.exists()) {
-        if (grib.lastModified() > gbx.lastModified())
+        // gbx older then grib
+        if (grib.lastModified() < gbx.lastModified())
           return;
         System.out.println("IndexExtending " + grib.getName() + " " +
             Calendar.getInstance().getTime().toString());
@@ -241,7 +242,6 @@ public final class GribBinaryIndexer {
         // grib, gribName, gbxName, false(make index)
         new Grib1WriteIndex().writeGribIndex(grib, args[0], args[1], false);
         ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
-
       }
     } catch (Exception e) {
       e.printStackTrace();
@@ -260,11 +260,11 @@ public final class GribBinaryIndexer {
       if (gbx.exists()) {
         // gbx older than grib, no need to check
         if (grib.lastModified() < gbx.lastModified()) {
-          File invFile = new File( args[ 0 ] +".fmrInv.xml");
-          // sometimes an index without inventory file
-          if( invFile.exists() )
-            return;
-          ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
+//          File invFile = new File( args[ 0 ] +".fmrInv.xml");
+//          // sometimes an index without inventory file
+//          if( invFile.exists() )
+//            return;
+//          ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
           return;
         }
         System.out.println("IndexExtending " + grib.getName() + " " +
@@ -277,8 +277,7 @@ public final class GribBinaryIndexer {
         System.out.println("Indexing " + grib.getName() + " " +
             Calendar.getInstance().getTime().toString());
         // grib, gribName, gbxName, false(make index)
-        new Grib2WriteIndex().writeGribIndex(
-            grib, args[0], args[1], false);
+        new Grib2WriteIndex().writeGribIndex(grib, args[0], args[1], false);
         ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
       }
     } catch (Exception e) {
@@ -317,6 +316,10 @@ public final class GribBinaryIndexer {
       if (arg.equals("clear")) {
         clear = true;
         System.out.println("Clearing Index locks");
+        continue;
+      } else if (arg.equals("remove")) {
+        removeGBX = true;
+        System.out.println("Removing all indexes");
         continue;
       }
       // else conf file

@@ -50,6 +50,11 @@ import java.io.*;
 
 public class GribBinaryIndexer2 {
 
+  /**
+   * delete all indexes, it makes a complete rebuild
+   */
+  private static boolean removeGBX = false;
+
   /*
   * dirs to inspect
   */
@@ -169,6 +174,8 @@ public class GribBinaryIndexer2 {
     String[] args = new String[2];
     File gbx = new File(dir, grib.getName() + ".gbx2");
     //System.out.println( "index ="+ gbx.getName() );
+    if (removeGBX && gbx.exists())
+        gbx.delete();
 
     args[0] = grib.getParent() + "/" + grib.getName();
     args[1] = grib.getParent() + "/" + gbx.getName();
@@ -215,7 +222,8 @@ public class GribBinaryIndexer2 {
 
     try {
       if (gbx.exists()) {
-        if (grib.lastModified() > gbx.lastModified())
+        // gbx older than grib, no need to check
+        if (grib.lastModified() < gbx.lastModified())
           return;
         System.out.println("IndexExtending " + grib.getName() + " " +
             Calendar.getInstance().getTime().toString());
@@ -247,10 +255,10 @@ public class GribBinaryIndexer2 {
       if (gbx.exists()) {
         // gbx older than grib, no need to check
         if (grib.lastModified() < gbx.lastModified()) {
-          File invFile = new File( args[ 0 ] +".fmrInv.xml");
-          // sometimes an index without inventory file
-          if( invFile.exists() )
-            return;
+//          File invFile = new File( args[ 0 ] +".fmrInv.xml");
+//          // sometimes an index without inventory file
+//          if( invFile.exists() )
+//            return;
           //ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
           return;
         }
@@ -304,6 +312,10 @@ public class GribBinaryIndexer2 {
       if (arg.equals("clear")) {
         clear = true;
         System.out.println("Clearing Index locks");
+        continue;
+      } else if (arg.equals("remove")) {
+        removeGBX = true;
+        System.out.println("Removing all indexes");
         continue;
       }
       // else conf file
