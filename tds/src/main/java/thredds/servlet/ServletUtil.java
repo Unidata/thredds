@@ -45,12 +45,16 @@ import ucar.nc2.util.cache.FileCacheRaf;
 import ucar.nc2.util.IO;
 import thredds.catalog.XMLEntityResolver;
 
-public class ServletUtil
-{
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( ServletUtil.class );
+public class ServletUtil {
 
   public static final String CONTENT_TEXT = "text/plain; charset=utf-8";
 
+  // bogus status returns for our logging
+  public static final int STATUS_CLIENT_ABORT = 1000;
+  public static final int STATUS_FORWARDED = 1001;
+  public static final int STATUS_FORWARD_FAILURE = 1002;
+
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( ServletUtil.class );
   static private boolean isDebugInit = false;
 
   static private String contextPath = null;
@@ -336,9 +340,9 @@ public class ServletUtil
    * @param pathPrefix
    * @param path
    * @param servlet
-   * @param req
-   * @param res
-   * @throws IOException
+   * @param req request
+   * @param res response
+   * @throws IOException on IO error
    */
   private static void handleRequestForContentOrRootFile(String pathPrefix, String path, HttpServlet servlet, HttpServletRequest req, HttpServletResponse res)
       throws IOException {
@@ -640,13 +644,13 @@ public class ServletUtil
     }
     catch (java.net.SocketException e) {
       log.info("returnFile(): SocketException sending file: " + filename + " " + e.getMessage());
-      log.info( "returnFile(): " + UsageLog.closingMessageForRequestContext(1000, 0)); // dunno what error code to log
+      log.info( "returnFile(): " + UsageLog.closingMessageForRequestContext(STATUS_CLIENT_ABORT, 0));
     }
     catch (IOException e) {
       String eName = e.getClass().getName(); // dont want compile time dependency on ClientAbortException
       if (eName.equals("org.apache.catalina.connector.ClientAbortException")) {
         log.info("returnFile(): ClientAbortException while sending file: " + filename + " " + e.getMessage());
-        log.info( "returnFile(): " + UsageLog.closingMessageForRequestContext(1000, 0)); // dunno what error code to log
+        log.info( "returnFile(): " + UsageLog.closingMessageForRequestContext(STATUS_CLIENT_ABORT, 0));
         return;
       }
 
@@ -682,8 +686,8 @@ public class ServletUtil
   /**
    * Return the request URL relative to the server (i.e., starting with the context path).
    *
-   * @param req
-   * @return
+   * @param req request
+   * @return URL relative to the server
    */
   public static String getReletiveURL(HttpServletRequest req) {
     return req.getContextPath() + req.getServletPath() + req.getPathInfo();
@@ -692,10 +696,10 @@ public class ServletUtil
   /**
    * Forward this request to the CatalogServices servlet ("/catalog.html").
    * 
-   * @param req
-   * @param res
-   * @throws IOException
-   * @throws ServletException
+   * @param req request
+   * @param res response
+   * @throws IOException on IO error
+   * @throws ServletException other error
    */
   public static void forwardToCatalogServices(HttpServletRequest req, HttpServletResponse res)
       throws IOException, ServletException {
@@ -710,11 +714,13 @@ public class ServletUtil
     // "The pathname specified may be relative, although it cannot extend outside the current servlet context.
     // "If the path begins with a "/" it is interpreted as relative to the current context root."
     RequestDispatcher dispatch = req.getRequestDispatcher("/catalog.html?" + reqs);
-    if (dispatch != null)
+    if (dispatch != null) {
+      log.info( UsageLog.closingMessageForRequestContext(STATUS_FORWARDED, 0));
       dispatch.forward(req, res);
-    else
+    } else {
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
-    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
+      log.info( UsageLog.closingMessageForRequestContext(STATUS_FORWARD_FAILURE, 0));
+    }
   }
 
 

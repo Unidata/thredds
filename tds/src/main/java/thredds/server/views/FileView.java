@@ -253,7 +253,7 @@ public class FileView extends AbstractView
     catch ( java.net.SocketException e )
     {
       log.info( "returnFile(): SocketException sending file: " + filename + " " + e.getMessage() );
-      log.info( UsageLog.closingMessageForRequestContext( 1000, 0 ) ); // dunoo what error code to log
+      log.info( UsageLog.closingMessageForRequestContext( ServletUtil.STATUS_CLIENT_ABORT, 0 ) ); 
     }
     catch ( IOException e )
     {
@@ -261,7 +261,7 @@ public class FileView extends AbstractView
       if ( eName.equals( "org.apache.catalina.connector.ClientAbortException" ) )
       {
         log.info( "returnFile(): ClientAbortException while sending file: " + filename + " " + e.getMessage() );
-        log.info( UsageLog.closingMessageForRequestContext( 1000, 0 ) ); // dunno what error code to log
+        log.info( UsageLog.closingMessageForRequestContext( ServletUtil.STATUS_CLIENT_ABORT, 0 ) );
         return;
       }
 

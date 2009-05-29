@@ -69,8 +69,7 @@ abstract public class FileBasedResponse
        params = _params;
        dataset = _dataset;
        usageLogEntry = _usageLogEntry;
-       reader = DataReader.getDataReader("uk.ac.rdg.resc.ncwms.datareader.DefaultDataReader",
-               dataset.getLocationURI());
+       reader = DataReader.getDataReader("uk.ac.rdg.resc.ncwms.datareader.DefaultDataReader", dataset);
 
        layers = reader.getAllLayers(dataset);
     }

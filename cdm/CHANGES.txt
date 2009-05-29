@@ -6,6 +6,7 @@ Changes in version 4.0
 
  Release Details:
   45:
+   AvhrrConvention bug
    CoordinateAxis.copyNoCache() must preserve state. caused grid.NetcdfCFWriter to fail when x,y units != km.
   44:
    TDSRadarDatasetCollection improvements

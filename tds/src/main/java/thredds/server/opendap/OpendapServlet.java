@@ -197,10 +197,12 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
         DataRootHandler.getInstance().processReqForLatestDataset(this, request, response);
         return;
 
-        // need to pass normal "html" on to super class
       } else if (path.endsWith("catalog.xml") || path.endsWith("catalog.html") || path.endsWith("/")) {
-        if (DataRootHandler.getInstance().processReqForCatalog(request, response))
-          return;
+        log.info(UsageLog.closingMessageForRequestContext(ServletUtil.STATUS_FORWARDED, -1));
+        if (!DataRootHandler.getInstance().processReqForCatalog(request, response)) {
+          log.error(UsageLog.closingMessageForRequestContext(ServletUtil.STATUS_FORWARD_FAILURE, -1));
+        }
+        return;
       }
 
       ReqState rs = new ReqState(request, response, getServletConfig(), getServerName());
@@ -209,11 +211,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
         String dataSet = rs.getDataSet();
         String requestSuffix = rs.getRequestSuffix();
 
-        if (dataSet == null) {
-          doGetDIR(request, response, rs);
-        } else if (dataSet.equals("/")) {
-          doGetDIR(request, response, rs);
-        } else if (dataSet.equals("")) {
+        if ((dataSet == null) || dataSet.equals("/") || dataSet.equals("")) {
           doGetDIR(request, response, rs);
         } else if (dataSet.equalsIgnoreCase("/version") || dataSet.equalsIgnoreCase("/version/")) {
           doGetVER(request, response, rs);
@@ -284,13 +282,13 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
 
     } catch (java.net.SocketException e) {
       log.info("SocketException: " + e.getMessage(), e);
-      log.info(UsageLog.closingMessageForRequestContext(1000, -1));
+      log.info(UsageLog.closingMessageForRequestContext(ServletUtil.STATUS_CLIENT_ABORT, -1));
 
     } catch (IOException e) {
       String eName = e.getClass().getName(); // dont want compile time dependency on ClientAbortException
       if (eName.equals("org.apache.catalina.connector.ClientAbortException")) {
         log.info("ClientAbortException: " + e.getMessage());
-        log.info(UsageLog.closingMessageForRequestContext(1000, -1));
+        log.info(UsageLog.closingMessageForRequestContext(ServletUtil.STATUS_CLIENT_ABORT, -1));
         return;
       }
 
