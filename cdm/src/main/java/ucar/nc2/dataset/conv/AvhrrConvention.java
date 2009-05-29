@@ -65,6 +65,7 @@ public class AvhrrConvention extends ucar.nc2.dataset.CoordSysBuilder {
     if (!(iosp instanceof H5iosp)) return false;
 
     Group loc = ncfile.findGroup("VHRR/Geo-Location");
+    if (null == loc) return false;
     if (null == loc.findVariable("Latitude")) return false;
     if (null == loc.findVariable("Longitude")) return false;
 
