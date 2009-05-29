@@ -172,7 +172,9 @@ public class TestBinaryTextIndexesML {
             aChildren.endsWith("gbx2") ||
             aChildren.endsWith("xml") ||
             aChildren.endsWith("tmp") || //index in creation process
+            aChildren.startsWith("GFS_Global_1p25deg") ||
             aChildren.length() == 0) { // zero length file, ugh...
+
         } else {
           checkGrib(dir, child);
         }
