@@ -39,15 +39,12 @@
 package ucar.nc2;
 
 import ucar.grib.*;
-import ucar.grib.grib2.Grib2WriteIndex;
 import ucar.grib.grib2.Grib2Record;
 import ucar.grib.grib2.Grib2Input;
 import ucar.grib.grib2.Grib2GridTableLookup;
-import ucar.grib.grib1.Grib1WriteIndex;
 import ucar.grib.grib1.Grib1Record;
 import ucar.grib.grib1.Grib1Input;
 import ucar.grib.grib1.Grib1GridTableLookup;
-import ucar.nc2.dt.fmrc.ForecastModelRunInventory;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.grid.GridIndexToNC;
 import ucar.grid.GridIndex;
@@ -61,8 +58,8 @@ import java.util.Calendar;
 import java.util.Map;
 import java.io.*;
 
-// Purpose: 	walks directory structure testing Grib Indexes as needed.
-//            Uses a configuration file to designate which dirs to index
+// Purpose: 	walks directory structure testing Grib Binary and Text Indexes .
+//            Uses a configuration file to designate which dirs to test on ML
 //
 
 public class TestBinaryTextIndexesML {
@@ -102,29 +99,11 @@ public class TestBinaryTextIndexesML {
     return true;
   }
 
-
   /*
-  * clears all IndexLock in the directories
+  * walks the directory trees checking directories
   *
   */
-  private void clearLocks() {
-
-    for (String dir : dirs) {
-      File f = new File(dir + "/IndexLock");
-      if (f.exists()) {
-        f.delete();
-        System.out.println("Cleared lock " + dir + "/IndexLock");
-      } else {
-        System.out.println("In directory " + dir);
-      }
-    }
-  }
-
-  /*
-  * walks the directory trees setting IndexLocks
-  *
-  */
-  private void indexer() throws IOException {
+  private void checker() throws IOException {
 
     System.out.println("Start " + Calendar.getInstance().getTime().toString());
     long start = System.currentTimeMillis();
@@ -134,17 +113,7 @@ public class TestBinaryTextIndexesML {
         System.out.println("Dir " + dir + " doesn't exists");
         continue;
       }
-//      File dl = new File(dir + "/IndexLock");
-//      if (dl.exists()) {
-//        System.out.println("Exiting " + dir + " another Indexer working here");
-//        continue;
-//      }
-//      //System.out.println( "In directory "+ dir );
-//      dl.createNewFile(); // create a lock while indexing dir
-
       checkDirs(d);
-
-//      dl.delete();  // delete lock when done
     }
     System.out.println("End " + Calendar.getInstance().getTime().toString());
     System.out.println("Total time in ms " + (System.currentTimeMillis() - start));
@@ -155,13 +124,13 @@ public class TestBinaryTextIndexesML {
   * depth first search checking the index of GRIB files .
   */
   private void checkDirs(File dir) throws IOException {
-
+    int count = 0;
     if (dir.isDirectory()) {
       System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
       String[] children = dir.list();
       for (String aChildren : children) {
-        if (aChildren.equals("IndexLock"))
-          continue;
+        if (count == 50 )
+          break;
         //System.out.println( "children i ="+ children[ i ]);
         File child = new File(dir, aChildren);
         //System.out.println( "child ="+ child.getName() );
@@ -172,11 +141,12 @@ public class TestBinaryTextIndexesML {
             aChildren.endsWith("gbx2") ||
             aChildren.endsWith("xml") ||
             aChildren.endsWith("tmp") || //index in creation process
-            aChildren.startsWith("GFS_Global_1p25deg") ||
+            //aChildren.startsWith("GFS_Global_1p25deg") ||
             aChildren.length() == 0) { // zero length file, ugh...
 
         } else {
-          checkGrib(dir, child);
+          checkGrib( child);
+          count++;
         }
       }
     } else {
@@ -185,10 +155,10 @@ public class TestBinaryTextIndexesML {
   }
 
   /*
-  * checks the status of index files
+  * Compares index files and netcdf objects
   *
   */
-  private void checkGrib(File dir, File grib)
+  private void checkGrib(  File grib)
       throws IOException {
 
 
@@ -217,17 +187,15 @@ public class TestBinaryTextIndexesML {
     ucar.unidata.io.RandomAccessFile rafB = new ucar.unidata.io.RandomAccessFile(fileBinary, "r");
     rafB.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
     NetcdfFile ncfileBinary = new NetcdfFile(spiB, rafB, fileBinary, null);
-    // this is really a ncfile built with a text
+    // this is really a ncfile built with a text index, so now use a binary index
     // reconstruct the ncfile objects
     ncfileBinary.empty();
     GridIndex index = new GribReadIndex().open(fileBinary + ".gbx2");
-    //spiB.open(index, null);
     Map<String, String> attr = index.getGlobalAttributes();
     int saveEdition = attr.get("grid_edition").equals("2") ? 2 : 1;
 
     GridTableLookup lookup;
     if (saveEdition == 2) {
-      //lookup = spiB.getLookup2();
       Grib2Record firstRecord = null;
       try {
         Grib2Input g2i = new Grib2Input(rafB);
@@ -247,7 +215,6 @@ public class TestBinaryTextIndexesML {
 
       lookup = new Grib2GridTableLookup(firstRecord);
     } else {
-      //lookup = spiB.getLookup1();
       Grib1Record firstRecord = null;
       try {
         Grib1Input g1i = new Grib1Input(rafB);
@@ -387,135 +354,6 @@ public class TestBinaryTextIndexesML {
     return lengthOK;
   }
 
-
-  /*
-  * checks the status of index files
-  *
-  */
-  private void checkIndex(File dir, File grib)
-      throws IOException {
-
-    String[] args = new String[2];
-    File gbx = new File(dir, grib.getName() + ".gbx");
-    if (removeGBX && gbx.exists())
-      gbx.delete();
-    //System.out.println( "index ="+ gbx.getName() );
-
-    args[0] = grib.getParent() + "/" + grib.getName();
-    args[1] = grib.getParent() + "/" + gbx.getName();
-    //System.out.println( "args ="+ args[ 0] +" "+ args[ 1 ] );
-    if (gbx.exists()) {
-      // skip files older than 3 hours
-      if ((System.currentTimeMillis() - grib.lastModified()) > 10800000)
-        return;
-      // skip indexes that have a length of 0, most likely there is a index problem
-      if (gbx.length() == 0) {
-        System.out.println("ERROR " + args[1] + " has length zero");
-        return;
-      }
-    }
-
-    if (grib.getName().endsWith("grib1")) {
-      grib1check(grib, gbx, args);
-    } else if (grib.getName().endsWith("grib2")) {
-      grib2check(grib, gbx, args);
-    } else { // else check file for Grib version
-      ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(args[0], "r");
-      //System.out.println("Grib "+ args[ 0 ] );
-      int result = GribChecker.getEdition(raf);
-      if (result == 2) {
-        //System.out.println("Valid Grib Edition 2 File");
-        grib2check(grib, gbx, args);
-      } else if (result == 1) {
-        //System.out.println("Valid Grib Edition 1 File");
-        grib1check(grib, gbx, args);
-      } else {
-        System.out.println("Not a Grib File " + args[0]);
-      }
-      raf.close();
-    }
-
-  }
-
-  /*
-  * indexes or extends Grib1 files plus creates inventories files
-  *
-  */
-  private void grib1check(File grib, File gbx, String[] args) {
-    // args 0  grib name, args 1 grib index name
-
-    try {
-      if (gbx.exists()) {
-        // gbx older then grib
-        if (grib.lastModified() < gbx.lastModified())
-          return;
-        System.out.println("IndexExtending " + grib.getName() + " " +
-            Calendar.getInstance().getTime().toString());
-        // grib, gbx, gribName, gbxName, false(make index)
-        new Grib1WriteIndex().extendGribIndex(grib, gbx, args[0], args[1], false);
-        ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
-      } else {  // create index
-        System.out.println("Indexing " + grib.getName() + " " +
-            Calendar.getInstance().getTime().toString());
-        // grib, gribName, gbxName, false(make index)
-        new Grib1WriteIndex().writeGribIndex(grib, args[0], args[1], false);
-        ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-      System.out.println("Caught Exception doing index or inventory for " + grib.getName());
-    }
-
-  }
-
-  /*
-  * indexes or extends Grib2 files plus creates inventories files
-  *
-  */
-  private void grib2check(File grib, File gbx, String[] args) {
-
-    try {
-      if (gbx.exists()) {
-        // gbx older than grib, no need to check
-        if (grib.lastModified() < gbx.lastModified()) {
-//          File invFile = new File( args[ 0 ] +".fmrInv.xml");
-//          // sometimes an index without inventory file
-//          if( invFile.exists() )
-//            return;
-//          ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
-          return;
-        }
-        System.out.println("IndexExtending " + grib.getName() + " " +
-            Calendar.getInstance().getTime().toString());
-        // grib, gbx, gribName, gbxName, false(make index)
-        new Grib2WriteIndex().extendGribIndex(grib, gbx, args[0], args[1], false);
-
-        ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
-      } else {  // create index
-        System.out.println("Indexing " + grib.getName() + " " +
-            Calendar.getInstance().getTime().toString());
-        // grib, gribName, gbxName, false(make index)
-        new Grib2WriteIndex().writeGribIndex(grib, args[0], args[1], false);
-        ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-      System.out.println("Caught Exception doing index or inventory for " + grib.getName());
-    }
-
-  }
-
-  static public boolean test() throws IOException {
-    TestBinaryTextIndexesML gi = new TestBinaryTextIndexesML();
-    String[] args = new String[2];
-    args[0] = "C:/data/gefs/GFS_Global_1p0deg_Ensemble_20090303_0000.grib2";
-    args[1] = args[0] + ".gbx";
-    File grib = new File(args[0]);
-    File gbx = new File(args[1]);
-    gi.grib2check(grib, gbx, args);
-    return true;
-  }
-
   /**
    * main.
    *
@@ -524,18 +362,13 @@ public class TestBinaryTextIndexesML {
    */
   // process command line switches
   static public void main(String[] args) throws IOException {
-    //if( test() )
-    //  return;
+
 
     TestBinaryTextIndexesML gbi = new TestBinaryTextIndexesML();
 
     boolean clear = false;
     for (String arg : args) {
-      if (arg.equals("clear")) {
-        clear = true;
-        System.out.println("Clearing Index locks");
-        continue;
-      } else if (arg.equals("remove")) {
+      if (arg.equals("remove")) {
         removeGBX = true;
         System.out.println("Removing all indexes");
         continue;
@@ -549,12 +382,9 @@ public class TestBinaryTextIndexesML {
       // read in conf file
       gbi.readConf(arg);
     }
-    if (clear) {
-      gbi.clearLocks();
-      return;
-    }
+
     // Grib Index files in dirs
-    gbi.indexer();
+    gbi.checker();
 
   }
 
