@@ -59,6 +59,8 @@ public class TestGrid {
 
     suite.addTest(new TestSuite(TestSubset.class));
     suite.addTest(new TestSuite(TestVerticalTransforms.class));
+    
+    suite.addTest(new TestSuite(TestCFWriter.class));
 
     return suite;
   }

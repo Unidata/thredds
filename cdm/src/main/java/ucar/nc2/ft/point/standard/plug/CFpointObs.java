@@ -239,14 +239,14 @@ public class CFpointObs extends TableConfigurerImpl {
       obs.isPsuedoStructure = false;
       // if time is not in this structure, need to join it
       if (multidimStruct.findVariable( time.getShortName()) == null) {
-        obs.extraJoin = new JoinArray( time);
+        obs.addJoin( new JoinArray( time, JoinArray.Type.raw, 0));
       }
     }
 
     if (obsTableType == Table.Type.MultiDimInner) {
       obs.dim = obsDim;
       if (time.getRank() == 1)
-        obs.extraJoin = new JoinArray(time);
+        obs.addJoin( new JoinArray( time, JoinArray.Type.raw, 0));
     }
 
     if (obsTableType == Table.Type.Contiguous) {

@@ -51,7 +51,7 @@ public interface Join {
   public StructureData getJoinData(Cursor cursor) throws IOException;
 
   /**
-   * Find the Variable of the given name.
+   * Find the Variable of the given name in the joined table.
    * @param varName find this Variable
    * @return the named Variable, or null
    */

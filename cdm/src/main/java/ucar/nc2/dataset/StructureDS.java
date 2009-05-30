@@ -573,19 +573,18 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     }
   }
 
-  @Override
   /* public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
     StructureDataIterator iter = orgVar.getStructureIterator(bufferSize);
     return new StructureDataConverter(this, iter);
   } */
 
-  public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
+  /* public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
      //StructureDataIterator iter = ncfile.getStructureIterator(this, bufferSize);
      //return (iter != null) ? iter : new Structure.Iterator(bufferSize);
-     return new StructureDS.Iterator(bufferSize);
-   }
+     return new Structure.Iterator(bufferSize);
+   } */
 
-   // Experimental - convert entire original array at once, to avoid one-by-one StructureData conversion.
+   /* Experimental - convert entire original array at once, to avoid one-by-one StructureData conversion.
    private class Iterator implements StructureDataIterator {
      private int count = 0;
      private int recnum = (int) getSize();
@@ -593,9 +592,11 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
      private int readCount = 0;
      private int readAtaTime;
      private ArrayStructure as = null;
+     private Index ii = null;
 
      protected Iterator(int bufferSize) {
        setBufferSize( bufferSize);
+       reset();
      }
 
      public boolean hasNext() { return count < recnum; }
@@ -604,6 +605,8 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
        count = 0;
        readStart = 0;
        readCount = 0;
+       ii = Index.factory(shape); // convert to nD index
+
        return this;
      }
 
@@ -623,7 +626,6 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
        try {
          // System.out.println(" read start= "+readStart+" count= "+need);
          as = readStructure( readStart, need);
-         // as = convert(as, null); LOOK - conversion already done in StructureDS._read()
 
        } catch (InvalidRangeException e) {
          log.error("Structure.Iterator.readNext() ",e);
@@ -635,7 +637,11 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
      }
 
      private void readNextGeneralRank() throws IOException {
-       throw new UnsupportedOperationException();  // not implemented yet - need example to test
+      ii.setCurrentCounter(index);
+      int[] origin = ii.getCurrentCounter();
+      section = new Section();
+      for (int i=0;i<origin.length;i++)
+        section.appendRange(origin[i], origin[i]);
      }
 
      public void setBufferSize(int bytes) {
@@ -646,7 +652,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
        readAtaTime = Math.max( 10, bytes / structureSize);
      }
 
-   }
+   }  */
 
   ///////////////////////////////////////////////////////////
 

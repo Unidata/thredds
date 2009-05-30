@@ -1,6 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
- *
+ * Copyright (c) 1998 - 2009. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -30,47 +29,55 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package thredds.server.cdmremote;
 
-import org.springframework.web.servlet.mvc.LastModified;
 import org.springframework.web.servlet.mvc.AbstractCommandController;
+import org.springframework.web.servlet.mvc.LastModified;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindException;
+import org.jdom.Element;
+import org.jdom.Document;
+import org.jdom.output.XMLOutputter;
+import org.jdom.output.Format;
 import thredds.server.config.TdsContext;
-import thredds.servlet.UsageLog;
-import thredds.servlet.ServletUtil;
 import thredds.servlet.DataRootHandler;
+import thredds.servlet.UsageLog;
 import thredds.servlet.DatasetHandler;
+import thredds.servlet.ServletUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.*;
-import ucar.nc2.ft.point.remote.PointStreamProto;
-import ucar.nc2.ft.point.remote.PointStream;
-import ucar.nc2.stream.NcStreamWriter;
-import ucar.nc2.stream.NcStream;
-import ucar.unidata.geoloc.Station;
-
 import java.io.*;
 import java.util.Formatter;
 import java.util.List;
+import java.util.HashMap;
+
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.ft.*;
+import ucar.nc2.ft.point.remote.PointStreamProto;
+import ucar.nc2.ft.point.remote.PointStream;
+import ucar.nc2.ft.point.collection.CompositeDatasetFactory;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.stream.NcStreamWriter;
+import ucar.nc2.stream.NcStream;
+import ucar.nc2.constants.FeatureType;
+import ucar.unidata.geoloc.Station;
 
 /**
+ * Describe
+ *
  * @author caron
- * @since Feb 16, 2009
+ * @since May 28, 2009
  */
-public class StationStreamController extends AbstractCommandController implements LastModified {
+public class CollectionController extends AbstractCommandController implements LastModified {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
   private boolean debug = true;
 
-  private String prefix = "/station"; // LOOK how do we obtain this?
+  private String prefix = "/collection"; // LOOK how do we obtain this?
   private TdsContext tdsContext;
 
-  public StationStreamController() {
+  public CollectionController() {
     setCommandClass(PointQueryBean.class);
     setCommandName("PointQueryBean");
   }
@@ -83,6 +90,12 @@ public class StationStreamController extends AbstractCommandController implement
 
   public void setAllow(boolean allow) {
     this.allow = allow;
+  }
+
+
+  private String configDirectory;
+  public void setConfigDirectory(String configDirectory) {
+    this.configDirectory = configDirectory;
   }
 
   public long getLastModified(HttpServletRequest req) {
@@ -103,7 +116,7 @@ public class StationStreamController extends AbstractCommandController implement
 
     String pathInfo = req.getPathInfo();
     String path = pathInfo.substring(0, pathInfo.length() - prefix.length());
-    if (debug) System.out.printf("StationStreamController path= %s query= %s %n", path, req.getQueryString());
+    if (debug) System.out.printf("CollectionController path= %s query= %s %n", path, req.getQueryString());
 
     PointQueryBean query = (PointQueryBean) command;
     if (debug) System.out.printf(" query= %s %n", query);
@@ -116,25 +129,13 @@ public class StationStreamController extends AbstractCommandController implement
 
     String queryS = req.getQueryString();
 
-    NetcdfDataset ncd = null;
-    FeatureDatasetPoint fd;
+    FeatureDatasetPoint fd = null;
 
     try {
-      NetcdfFile ncfile = DatasetHandler.getNetcdfFile(req, res, path);
-      if (ncfile == null) {
-        res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
+      fd = getFeatureCollectionDataset(path);
+      if (fd == null)
         return null;
-      }
 
-      ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getEnhanceAll());
-      Formatter errlog = new Formatter();
-      fd = (FeatureDatasetPoint) FeatureDatasetFactoryManager.wrap(FeatureType.STATION, ncd, null, errlog);
-      if (fd == null) {
-        res.sendError(HttpServletResponse.SC_BAD_REQUEST, errlog.toString());
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
-        return null;
-      }
 
       OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
       if (queryS == null) {
@@ -145,7 +146,7 @@ public class StationStreamController extends AbstractCommandController implement
         out.flush();
 
       } else if (queryS.equalsIgnoreCase("getCapabilities")) {
-        CdmRemoteController.sendCapabilities(req, out, fd.getFeatureType(), true);
+        CdmRemoteController.sendCapabilities(req, out, fd.getFeatureType(), false);
         res.flushBuffer();
         out.flush();
 
@@ -157,7 +158,8 @@ public class StationStreamController extends AbstractCommandController implement
         StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) coll.get(0);
 
         if (query.wantHeader()) { // just the header
-          NcStreamWriter ncWriter = new NcStreamWriter(ncd, ServletUtil.getRequestBase(req));
+          NetcdfFile ncfile = fd.getNetcdfFile(); // LOOK will fail
+          NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(req));
           ncWriter.sendHeader(out);
 
         } else if (query.wantStations()) { // just the station list
@@ -202,9 +204,9 @@ public class StationStreamController extends AbstractCommandController implement
       return null;
 
     } finally {
-      if (null != ncd)
+      if (null != fd)
         try {
-          ncd.close();
+          fd.close();
         } catch (IOException ioe) {
           log.error("Failed to close = " + path);
         }
@@ -239,4 +241,53 @@ public class StationStreamController extends AbstractCommandController implement
     if (debug) System.out.printf(" sent %d features to %s %n ", count, location);
   }
 
+  private HashMap<String, FeatureDatasetPoint> fdmap = new HashMap<String, FeatureDatasetPoint>(20);
+  private FeatureDatasetPoint getFeatureCollectionDataset(String path) throws IOException {
+    FeatureDatasetPoint fd = fdmap.get(path);
+    if (fd == null) {
+      File content = tdsContext.getContentDirectory();
+      File config = new File( content, path);
+      fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(FeatureType.STATION, "D:/formats/gempak/surface/*.gem?#yyyyMMdd");
+      fdmap.put(path, fd);
+    }
+    return fd;
+  }
+
+
+  // one could use this for non-collection datasets
+  private FeatureDatasetPoint getFeatureDataset(HttpServletRequest req, HttpServletResponse res, String path) throws IOException {
+    NetcdfDataset ncd = null;
+    try {
+      NetcdfFile ncfile = DatasetHandler.getNetcdfFile(req, res, path);
+      if (ncfile == null) {
+        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
+        res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        return null;
+      }
+
+      ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getEnhanceAll());
+      Formatter errlog = new Formatter();
+      FeatureDatasetPoint fd = (FeatureDatasetPoint) FeatureDatasetFactoryManager.wrap(FeatureType.STATION, ncd, null, errlog);
+      if (fd == null) {
+        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, errlog.toString());
+        if (ncd != null) ncd.close();
+        return null;
+      }
+
+      return fd;
+
+    } catch (FileNotFoundException e) {
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
+      res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
+
+    } catch (Throwable e) {
+      e.printStackTrace();
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
+      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+    }
+
+    if (ncd != null) ncd.close();
+    return null;
+  }
 }

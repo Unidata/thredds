@@ -38,7 +38,8 @@ import ucar.nc2.units.DateRange;
 import java.util.Iterator;
 
 /**
- * Class Description
+ * Interface for a collection of Datasets that each have a DateRange and location.
+ * The location can be passed to 
  *
  * @author caron
  * @since May 19, 2009

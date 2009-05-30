@@ -36,10 +36,6 @@ import org.springframework.web.servlet.mvc.LastModified;
 import org.springframework.web.servlet.mvc.AbstractCommandController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindException;
-import org.jdom.Element;
-import org.jdom.Document;
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
 import thredds.server.config.TdsContext;
 import thredds.servlet.UsageLog;
 import thredds.servlet.ServletUtil;
@@ -70,7 +66,7 @@ public class PointStreamController extends AbstractCommandController implements 
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
   private boolean debug = true;
 
-  private String prefix = "/point/"; // LOOK how do we obtain this?
+  private String prefix = "/point"; // LOOK how do we obtain this?
   private TdsContext tdsContext;
 
   public PointStreamController() {
@@ -105,8 +101,8 @@ public class PointStreamController extends AbstractCommandController implements 
     }
 
     String pathInfo = req.getPathInfo();
-    String path = pathInfo.substring(prefix.length());
-    if (debug) System.out.printf("PointStreamController pathInfo= %s query= %s %n", pathInfo, req.getQueryString());
+    String path = pathInfo.substring(0, pathInfo.length() - prefix.length());
+    if (debug) System.out.printf("PointStreamController path= %s query= %s %n", path, req.getQueryString());
 
     PointQueryBean query = (PointQueryBean) command;
     if (debug) System.out.printf(" query= %s %n", query);
@@ -149,7 +145,7 @@ public class PointStreamController extends AbstractCommandController implements 
         out.flush();
 
       } else if (queryS.equalsIgnoreCase("getCapabilities")) {
-        sendCapabilities(req, out, fd.getFeatureType());
+        CdmRemoteController.sendCapabilities(req, out, fd.getFeatureType(), true);
         res.flushBuffer();
         out.flush();
 
@@ -225,27 +221,5 @@ public class PointStreamController extends AbstractCommandController implements 
     }
     if (debug) System.out.printf(" sent %d features to %s %n ", count, location);
   }
-
-  private void sendCapabilities(HttpServletRequest req, OutputStream os, FeatureType ft) throws IOException {
-    Element rootElem = new Element("cdmRemoteCapabilities");
-    Document doc = new Document(rootElem);
-    rootElem.setAttribute("location", ServletUtil.getRequestBase(req));
-    Element elem = new Element("featureDataset");
-    elem.setAttribute("type", ft.toString());
-    elem.setAttribute("url", makeFeatureUri(req, ft));
-    rootElem.addContent(elem);
-
-    XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-    fmt.output(doc, os);
-  }
-
-  private String makeFeatureUri(HttpServletRequest req, FeatureType ft) {
-    String path = req.getPathInfo().substring(1); // remove leading '/'
-    int pos = path.indexOf("/");
-    path = path.substring(pos+1); // remove next segment '/'
-
-    return ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath() + "/" + ft.toString().toLowerCase() + "/" + path;
-  }
-
 
 }

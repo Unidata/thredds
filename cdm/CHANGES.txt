@@ -6,6 +6,10 @@ Changes in version 4.0
 
  Release Details:
   45:
+   GempakCdm point adapter now does stationAsPoint.
+   JoinArray is parameterized
+   Table.extraJoins now is a list.
+   Stucture.Iterator now handles general rank case. StructureDS.Itertaor is removed
    AvhrrConvention bug
    CoordinateAxis.copyNoCache() must preserve state. caused grid.NetcdfCFWriter to fail when x,y units != km.
   44:

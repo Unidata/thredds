@@ -289,15 +289,6 @@
     <load-on-startup>4</load-on-startup>
   </servlet>
 
-  <!-- data services -->
-
-  <!-- NetCDF/OPeNDAP server -->
-  <servlet>
-    <display-name>THREDDS/NetCDF DODS Server</display-name>
-    <servlet-name>Opendap</servlet-name>
-    <servlet-class>thredds.server.opendap.OpendapServlet</servlet-class>
-    <load-on-startup>2</load-on-startup>
-  </servlet>
 
   <!-- Setup for the DQC servlet. -->
   <servlet>
@@ -306,6 +297,15 @@
     <load-on-startup>1</load-on-startup>
   </servlet>
 
+  <!-- data services -->
+
+  <!-- NetCDF/OPeNDAP server -->
+  <servlet>
+    <display-name>OPeNDAP Server</display-name>
+    <servlet-name>Opendap</servlet-name>
+    <servlet-class>thredds.server.opendap.OpendapServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
 
   <!-- HTTP File server -->
   <servlet>
@@ -314,13 +314,11 @@
     <load-on-startup>3</load-on-startup>
   </servlet>
 
-
   <!-- ncss grids -->
   <servlet>
     <servlet-name>GridSubsetService</servlet-name>
     <servlet-class>thredds.server.ncSubset.GridServlet</servlet-class>
   </servlet>
-
 
   <!-- Radar Server -->
   <servlet>
@@ -328,7 +326,20 @@
     <servlet-class>thredds.server.radarServer.RadarServer</servlet-class>
   </servlet>
 
-  <!-- Experimental cdmRemote - first implemtation is pointFeature service -->
+  <!-- OGC Web Coverage server -->
+  <servlet>
+    <servlet-name>WCS</servlet-name>
+    <servlet-class>thredds.server.wcs.WCSServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet>
+    <servlet-name>wms</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>4</load-on-startup>
+  </servlet>
+
+  <!-- Experimental - first implementation is pointFeature service -->
   <servlet>
     <servlet-name>cdmRemote</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -389,18 +400,6 @@
     <load-on-startup>2</load-on-startup>
   </servlet>  -->
 
-  <!-- OGC Web Coverage server -->
-  <servlet>
-    <servlet-name>WCS</servlet-name>
-    <servlet-class>thredds.server.wcs.WCSServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-
-  <servlet>
-    <servlet-name>wms</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <load-on-startup>4</load-on-startup>
-  </servlet>
 
   <!-- catalog services -->
 

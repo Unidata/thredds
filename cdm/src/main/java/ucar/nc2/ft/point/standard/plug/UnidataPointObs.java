@@ -142,7 +142,7 @@ public class UnidataPointObs extends TableConfigurerImpl {
       obsTable.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height, stationDim);
 
       Structure stns = new ucar.nc2.StructurePseudo(ds, null, "stationPsuedoStructure", stationDim);
-      obsTable.extraJoin = new JoinParentIndex(stns, parentIndexVar);
+      obsTable.addJoin( new JoinParentIndex(stns, parentIndexVar));
 
       return obsTable;
     }

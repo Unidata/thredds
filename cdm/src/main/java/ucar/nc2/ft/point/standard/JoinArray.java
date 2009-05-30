@@ -45,15 +45,25 @@ import java.io.IOException;
  * @since Feb 25, 2009
  */
 public class JoinArray implements Join {
+  public enum Type { 
+    modulo,  // use cursor[0] % param
+    divide, // use cursor[0] / param
+    raw   // use cursor[0]
+  }
+
   private Variable v;
   private Array data;
+  private Type type;
+  private int param;
 
   /**
    * Constructor.
    * @param v get data from this Variable
    */
-  public JoinArray(Variable v) {
+  public JoinArray(Variable v, Type type, int param) {
     this.v = v;
+    this.type = type;
+    this.param = param;
 
     try {
       data = v.read();
@@ -63,7 +73,18 @@ public class JoinArray implements Join {
   }
 
   public StructureData getJoinData(Cursor cursor) {
-    int recnum = cursor.recnum[0]; // LOOK ??
+    int recnum = -1;
+    switch (type) {
+      case modulo:
+        recnum = cursor.recnum[0] % param;
+        break;
+      case divide:
+        recnum = cursor.recnum[0] / param;
+        break;
+      case raw:
+        recnum = cursor.recnum[0];
+        break;
+    }
     return StructureDataFactory.make(v.getShortName(), data.getObject(recnum));
   }
 

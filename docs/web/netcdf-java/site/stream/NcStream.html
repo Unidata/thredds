@@ -55,12 +55,13 @@
 </ul>
 <h2>&nbsp;</h2>
 <h2>CdmRemote Web Service</h2>
-<p>CdmRemote is an experimental web service implemented in the TDS, providing remote access to CDM datasets, using ncstream as the on-the-wire protocol. It provides access at the NetcdfFile, NetcdfDataset, and Feature Type levels of the CDM. This uses THREDDS ServiceType = <strong>ServiceType.CdmRemote</strong></p>
-<h3>NetcdfFile (Data Access)</h3>
-<table width="795" border="1">
+<p>CdmRemote is an experimental web service implemented in the TDS, providing remote access to CDM datasets, using ncstream as the on-the-wire protocol. It provides access at the  NetcdfDataset, and Feature Type levels of the CDM, using   <strong>ServiceType.CdmRemote</strong></p>
+<h3>NetcdfDataset (Data Access and Coordinate Systems)</h3>
+<p>Datasets can be accessed in index space, similar to netCDF or OPeNDAP. The Coordinate Systems are created on the server, and passed to the client.</p>
+<table width="831" border="1">
 <tr>
         <th width="595" scope="col">Request</th>
-    <th width="184" scope="col">Response</th>
+    <th width="220" scope="col">Response</th>
   </tr>
       <tr>
         <td><p>
@@ -78,7 +79,7 @@
       </tr>
       <tr>
         <td>http://server:8080/thredds/cdmremote/data.nc?<strong>header</strong></td>
-        <td>header ncstream message</td>
+        <td>header ncstream message, contains the structural metadata</td>
       </tr>
       <tr>
         <td>http://server:8080/thredds/cdmremote/data.nc?<strong>Temp(0:100:10,0:127,0:163),lat,lon</strong></td>
@@ -87,12 +88,13 @@
 </table>
 
 <ul>
-  <li>Data request may use Section specification (same as Fortran-90 array notation) to ask for a subset in index space.</li>
+  <li>Data request  uses Section specification (same as Fortran-90 array notation) to ask for a subset in index space.</li>
   <li> Variable names must be UTF8-escape encoded.</li>
-  <li>GetCapabilities indicates which (if any) feature types the dataset can be opened as, along with the endpoints.</li>
+  <li>GetCapabilities indicates which (if any) feature types the dataset can be opened as, along with the URLs of those services. TBD.</li>
 </ul>
-<h3>NetcdfDataset (Coordinate Systems)</h3>
+<h3>&nbsp;</h3>
 <h3>FeatureType Dataset</h3>
+<p>Datasets can be accessed in coordinate space, similar to the  Netcdf Subset Service, WCS and WMS. </p>
 <h4>PointDataset</h4>
 <table width="867" border="1">
   <tr>
@@ -100,27 +102,27 @@
     <th width="193" scope="col">Response</th>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/point/data.nc?<strong>header</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>header</strong></td>
     <td>header ncstream message</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/point/data.nc?<strong>all</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>all</strong></td>
     <td>pointData ncstream message</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/point/data.nc?<strong>north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
     <td>pointData ncstream message</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/point/data.nc?<strong>bbox=-105,-80,22,40</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>bbox=-105,-80,22,40</strong></td>
     <td>pointData ncstream message</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/point/data.nc?<strong>time_start=&amp;time_end=</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>time_start=&amp;time_end=</strong></td>
     <td>pointData ncstream message</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/point/data.nc?<strong>time=</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>time=</strong></td>
     <td>pointData ncstream message</td>
   </tr>
 </table>
@@ -135,31 +137,31 @@
     <th width="204" scope="col">Response</th>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/station/data.nc?<strong>header</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>header</strong></td>
     <td>header ncstream message</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/station/data.nc?<strong>stations</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>stations</strong></td>
     <td>stationList ncstream message</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/station/data.nc?<strong>stations&amp;north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>stations&amp;north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
     <td>stationList ncstream message</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/station/data.nc?<strong>time_start=&amp;time_end=</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>time_start=&amp;time_end=</strong></td>
     <td>pointData ncstream message</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/station/data.nc?<strong>time=</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>time=</strong></td>
     <td>pointData ncstream message</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/point/data.nc?<strong>stations&amp;north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>stations&amp;north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
     <td>stationList ncstream message</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/station/data.nc?<strong>stn=KDEN,KLOG,MOAS</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>stn=KDEN,KLOG,MOAS</strong></td>
     <td>pointData ncstream message</td>
   </tr>
 </table>
@@ -170,7 +172,7 @@
 </p>
 <hr width="100%" />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on May 14, 2009
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on May 28, 2009
 </address>
 <p>&nbsp;</p>
 </body>

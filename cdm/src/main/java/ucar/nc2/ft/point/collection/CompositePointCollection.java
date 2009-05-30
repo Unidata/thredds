@@ -76,6 +76,8 @@ public class CompositePointCollection extends PointCollectionImpl {
       TimedCollection.Dataset td = iter.next();
       Formatter errlog = new Formatter();
       currentDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.POINT, td.getLocation(), null, errlog);
+      if (currentDataset == null)
+        System.out.printf("HEY%n");
       List<FeatureCollection> fcList = currentDataset.getPointFeatureCollectionList();
       PointFeatureCollection pc = (PointFeatureCollection) fcList.get(0);
       return pc.getPointFeatureIterator(bufferSize);
@@ -120,7 +122,9 @@ public class CompositePointCollection extends PointCollectionImpl {
 
   @Override
   public PointFeatureCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
-     if (dateRange == null)
+    if ((dateRange == null) && (boundingBox == null))
+      return this;
+    else if (dateRange == null)
       return new PointFeatureCollectionSubset(this, boundingBox, dateRange);
     else {
       CompositePointCollection dateSubset = new CompositePointCollection(name, pointCollections.subset(dateRange));

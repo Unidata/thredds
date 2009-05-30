@@ -112,13 +112,13 @@ public class CdmRemoteController extends AbstractController implements LastModif
     System.out.println("request= " + ServletUtil.getRequest(req));
     //System.out.println(ServletUtil.showRequestDetail(null, req));
 
-    String ft = ServletUtil.getParameterIgnoreCase(req, "ft");
+    /* String ft = ServletUtil.getParameterIgnoreCase(req, "ft");
     if (ft != null) {
       String newPath = req.getContextPath() + req.getServletPath() + "/" + ft + pathInfo;
       System.out.printf("newPath=%s%n", newPath);
       res.sendRedirect(newPath);
       return null;
-    }
+    } */
 
     String query = req.getQueryString();
     if (query != null) System.out.println(" query=" + query);
@@ -128,7 +128,7 @@ public class CdmRemoteController extends AbstractController implements LastModif
     if (view == null) view = "";
 
     if (view.equalsIgnoreCase("getCapabilities")) {
-      sendCapabilities(req, res.getOutputStream(), FeatureType.STATION);
+      sendCapabilities(req, res.getOutputStream(), FeatureType.STATION, true); // LOOK! bogus !!
       res.flushBuffer();
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
       return null;
@@ -204,21 +204,30 @@ public class CdmRemoteController extends AbstractController implements LastModif
     return null;
   }
 
-  private String makeFeatureUri(HttpServletRequest req, FeatureType ft) {
-    return ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath() + "/" + ft.toString().toLowerCase() + req.getPathInfo();
-  }
-
-  private void sendCapabilities(HttpServletRequest req, OutputStream os, FeatureType ft) throws IOException {
+  static void sendCapabilities(HttpServletRequest req, OutputStream os, FeatureType ft, boolean addSuffix) throws IOException {
     Element rootElem = new Element("cdmRemoteCapabilities");
     Document doc = new Document(rootElem);
     rootElem.setAttribute("location", ServletUtil.getRequestBase(req));
     Element elem = new Element("featureDataset");
     elem.setAttribute("type", ft.toString());
-    elem.setAttribute("url", makeFeatureUri(req, ft));
+    elem.setAttribute("url", makeFeatureUri(req, ft, addSuffix));
     rootElem.addContent(elem);
 
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
     fmt.output(doc, os);
+  }
+   
+
+  static String makeFeatureUri(HttpServletRequest req, FeatureType ft, boolean addSuffix) {
+    /* String path = req.getPathInfo().substring(1); // remove leading '/'
+    int pos = path.indexOf("/");
+    path = path.substring(pos+1); // remove next segment '/'
+    return ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath() + "/" + ft.toString().toLowerCase() + "/" + path;
+    */
+    String url = ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath() + req.getPathInfo();
+    if (addSuffix)
+      url = url + "/"+ ft.toString().toLowerCase();
+    return url;
   }
 
 }

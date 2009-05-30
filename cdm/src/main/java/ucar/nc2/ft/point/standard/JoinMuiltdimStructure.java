@@ -30,34 +30,50 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.ft.point.collection;
+package ucar.nc2.ft.point.standard;
 
-import ucar.nc2.ft.point.PointDatasetImpl;
-import ucar.nc2.ft.FeatureDatasetImpl;
-import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.FeatureCollection;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.constants.FeatureType;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
+import ucar.ma2.ArrayStructure;
+import ucar.ma2.StructureData;
 
 import java.io.IOException;
-import java.util.List;
 
-public class CompositePointDataset extends FeatureDatasetImpl implements FeatureDatasetPoint {
-  FeatureType featureType;
+/**
+ * Join data from a row of a Structure, whose index is passed in as recnum[0] mod dimLen
+ *
+ * @author caron
+ * @since May 29, 2009
+ */
+public class JoinMuiltdimStructure implements Join {
+  private Structure parentStructure;
+  private ArrayStructure parentData;
+  private int dimLength;
 
-  public CompositePointDataset(FeatureType featureType, String glob) {
-    this.featureType = featureType;
+  /**
+   * Constructor.
+   * @param parentStructure  get data from this Structure
+   * @param dimLength structure index is recnum % dimlength
+   */
+  public JoinMuiltdimStructure(Structure parentStructure, int dimLength) {
+    this.parentStructure = parentStructure;
+    this.dimLength = dimLength;
+
+    try {
+      parentData = (ArrayStructure) parentStructure.read(); // cache entire ArrayStructure  LOOK
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
-  public FeatureType getFeatureType() {
-    return featureType;
+  public StructureData getJoinData(Cursor cursor) {
+    int recnum = cursor.recnum[0] % dimLength;
+    return parentData.getStructureData(recnum);
   }
 
-  public void calcBounds() throws IOException {
-    //To change body of implemented methods use File | Settings | File Templates.
+  public Variable findVariable(String axisName) {
+    return parentStructure.findVariable(axisName);
   }
 
-  public List<FeatureCollection> getPointFeatureCollectionList() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
+
 }

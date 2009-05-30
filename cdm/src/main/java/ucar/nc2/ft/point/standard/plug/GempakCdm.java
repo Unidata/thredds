@@ -40,9 +40,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.ft.point.standard.*;
-import ucar.nc2.Structure;
-import ucar.nc2.Variable;
-import ucar.nc2.Dimension;
+import ucar.nc2.*;
 import ucar.ma2.Array;
 
 import java.util.*;
@@ -78,19 +76,22 @@ public class GempakCdm extends TableConfigurerImpl {
   }
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
+
     String ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt, null);
     CF.FeatureType ftype = (ftypeS == null) ? CF.FeatureType.point : CF.FeatureType.valueOf(ftypeS);
     switch (ftype) {
       case point:
         return null; // use default handler
       case stationTimeSeries:
-        return getStationConfig(ds, errlog);
+        if (wantFeatureType == FeatureType.POINT)
+          return getStationAsPointConfig(ds, errlog);
+        else
+          return getStationConfig(ds, errlog);
       default:
         throw new IllegalStateException("unimplemented feature ftype= " + ftype);
     }
   }
 
-  // start as clone of CF station config
   protected TableConfig getStationConfig(NetcdfDataset ds, Formatter errlog) throws IOException {
     boolean needFinish = false;
 
@@ -165,14 +166,6 @@ public class GempakCdm extends TableConfigurerImpl {
     boolean hasStruct = obsDim.isUnlimited();
 
     Table.Type obsTableType = null;
-    String ragged_parentIndex = Evaluator.getVariableWithAttribute(ds, "standard_name", "ragged_parentIndex");
-    String ragged_rowSize = Evaluator.getVariableWithAttribute(ds, "standard_name", "ragged_rowSize");
-    if (ragged_parentIndex != null)
-      obsTableType = Table.Type.ParentIndex;
-    else if (ragged_rowSize != null)
-      obsTableType = Table.Type.Contiguous;
-
-    // multidim case with Structure (GEMPAK IOSP)
     Structure multidimStruct = null;
     if (obsTableType == null) {
       // Structure(station, time)
@@ -188,10 +181,6 @@ public class GempakCdm extends TableConfigurerImpl {
       if (time.getRank() == 2) {
         obsTableType = Table.Type.MultiDimInner;
       }
-
-
-      // vars(station, time)
-
     }
 
     if (obsTableType == null) {
@@ -215,7 +204,7 @@ public class GempakCdm extends TableConfigurerImpl {
       obs.isPsuedoStructure = false;
       // if time is not in this structure, need to join it
       if (multidimStruct.findVariable( time.getShortName()) == null) {
-        obs.extraJoin = new JoinArray( time);
+        obs.addJoin(new JoinArray( time, JoinArray.Type.raw, 0));
       }
     }
 
@@ -223,55 +212,87 @@ public class GempakCdm extends TableConfigurerImpl {
       obs.dim = obsDim;
     }
 
-    if (obsTableType == Table.Type.Contiguous) {
-      obs.numRecords = ragged_rowSize;
-      obs.start = "raggedStartVar";
-
-      // construct the start variable
-      Variable v = ds.findVariable(ragged_rowSize);
-      if (!v.getDimension(0).equals(stationDim)) {
-        errlog.format("Station - contiguous numRecords must use station dimension");
-        return null;
-      }
-
-      Array numRecords = v.read();
-      Array startRecord = Array.factory(v.getDataType(), v.getShape());
-      int i = 0;
-      long count = 0;
-      while (numRecords.hasNext()) {
-        startRecord.setLong(i++, count);
-        count += numRecords.nextLong();
-      }
-
-      VariableDS startV = new VariableDS(ds,  v.getParentGroup(), v.getParentStructure(), obs.start, v.getDataType(),
-          v.getDimensionsString(), null, "starting record number for station");
-      startV.setCachedData(startRecord, false);
-      ds.addVariable(v.getParentGroup(), startV);
-      needFinish = true;
-    }
-
-    if (obsTableType == Table.Type.ParentIndex) {
-      // non-contiguous ragged array
-      Variable rpIndex = ds.findVariable(ragged_parentIndex);
-
-      // construct the map
-      Array index = rpIndex.read();
-      int childIndex = 0;
-      Map<Integer, List<Integer>> map = new HashMap<Integer, List<Integer>>( (int) (2 * index.getSize()));
-      while (index.hasNext()) {
-        int parent = index.nextInt();
-        List<Integer> list = map.get(parent);
-        if (list == null) {
-          list = new ArrayList<Integer>();
-          map.put(parent, list);
-        }
-        list.add(childIndex);
-        childIndex++;
-      }
-      obs.indexMap = map;
-    }
-
     if (needFinish) ds.finish();
     return stnTable;
+  }
+
+  protected TableConfig getStationAsPointConfig(NetcdfDataset ds, Formatter errlog) throws IOException {
+    boolean needFinish = false;
+
+    // find lat coord
+    Variable lat = CoordSysEvaluator.findCoordByType(ds, AxisType.Lat);
+    if (lat == null) {
+      errlog.format("Must have a Latitude coordinate");
+      return null;
+    }
+
+    // find lon coord
+    Variable lon = CoordSysEvaluator.findCoordByType(ds, AxisType.Lon);
+    if (lon == null) {
+      errlog.format("Must have a Longitude coordinate");
+      return null;
+    }
+
+    if (lat.getRank() != lon.getRank()) {
+      errlog.format("Lat and Lon coordinate must have same rank");
+      return null;
+    }
+
+    // check dimensions
+    boolean stnIsScalar = (lat.getRank() == 0);
+    boolean stnIsSingle = (lat.getRank() == 1) && (lat.getSize() == 1);
+    Dimension stationDim = null;
+
+    if (!stnIsScalar) {
+      if (lat.getDimension(0) != lon.getDimension(0)) {
+        errlog.format("Lat and Lon coordinate must have same size");
+        return null;
+      }
+      stationDim = lat.getDimension(0);
+    }
+
+    // optional alt coord
+    Variable alt = CoordSysEvaluator.findCoordByType(ds, AxisType.Height);
+
+    // obs table
+    Variable time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
+    if (time == null) {
+      errlog.format("Must have a Time coordinate");
+      return null;
+    }
+    Dimension obsDim = time.getDimension(time.getRank()-1); // may be time(time) or time(stn, obs)
+
+    Table.Type obsTableType = Table.Type.Structure;
+    Structure multidimStruct = Evaluator.getStructureWithDimensions(ds, stationDim, obsDim);
+
+    if (multidimStruct == null) {
+        errlog.format("Cannot figure out StationAsPoint table structure");
+        return null;
+    }
+
+    TableConfig obs = new TableConfig(obsTableType, obsDim.getName());
+    obs.dim = obsDim;
+    obs.structName = multidimStruct.getName();
+    obs.isPsuedoStructure = false;
+    obs.featureType = FeatureType.POINT;
+
+    obs.lat= lat.getName();
+    obs.lon= lon.getName();
+    obs.time= time.getName();
+    if (alt != null)
+       obs.elev = alt.getName();
+
+    List<Variable> vars = new ArrayList<Variable>(30);
+    for (Variable v : ds.getVariables()) {
+      if ((v.getRank() == 1) && (v.getDimension(0) == stationDim))
+          vars.add(v);
+    }
+
+    Structure s =   new StructurePseudo(ds, null, "stnStruct", vars, stationDim);
+    obs.addJoin(new JoinMuiltdimStructure(s, obsDim.getLength()));
+    obs.addJoin(new JoinArray( time, JoinArray.Type.modulo, obsDim.getLength()));
+
+    if (needFinish) ds.finish();
+    return obs;
   }
 }

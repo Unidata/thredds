@@ -139,12 +139,7 @@ public class NestedTable {
       StructureData sdata = StructureDataFactory.make(featureVariableName, ds.getLocation());
       TableConfig parentConfig = new TableConfig(Table.Type.Singleton, featureType.toString());
       parentConfig.sdata = sdata;
-      Table newRoot = Table.factory(ds, parentConfig);
-
-      //Join join = Join.factory(new TableConfig.JoinConfig(Join.Type.Identity));
-      //join.joinTables(newRoot, root);
-
-      root = newRoot;
+      root = Table.factory(ds, parentConfig);
 
       nlevels++;
     }
@@ -167,10 +162,12 @@ public class NestedTable {
       if (v != null)
         return new CoordVarExtractorVariable(v, axisName, nestingLevel);
 
-      if (t.extraJoin != null) {
-         v = t.extraJoin.findVariable(axisName);
-         if (v != null)
-           return new CoordVarExtractorVariable(v, axisName, nestingLevel);
+      if (t.extraJoins != null) {
+        for (Join j : t.extraJoins) {
+          v = j.findVariable(axisName);
+          if (v != null)
+            return new CoordVarExtractorVariable(v, axisName, nestingLevel);
+        }
       }
 
       // see if its in the StructureData
@@ -388,6 +385,7 @@ public class NestedTable {
   // not clear these methods should be here
 
   // Point
+
   public StructureDataIterator getObsDataIterator(Cursor cursor, int bufferSize) throws IOException {
     return root.getStructureDataIterator(cursor, bufferSize);
   }
@@ -540,9 +538,13 @@ public class NestedTable {
   }
 
   public void addParentJoin(Cursor cursor) throws IOException {
-    if (leaf.extraJoin != null) {
-      StructureData extra = leaf.extraJoin.getJoinData(cursor);
-      cursor.tableData[0] = StructureDataFactory.make(cursor.tableData[0], extra);
+    if (leaf.extraJoins != null) {
+      List<StructureData> sdata = new ArrayList<StructureData>(3);
+      sdata.add(cursor.tableData[0]);
+      for (Join j : leaf.extraJoins) {
+        sdata.add(j.getJoinData(cursor));
+      }
+      cursor.tableData[0] = StructureDataFactory.make( sdata.toArray(new StructureData[ sdata.size()]));
     }
   }
 
@@ -635,8 +637,9 @@ public class NestedTable {
         return this;
       }
 
-      public void finish() {}
-      
+      public void finish() {
+      }
+
     }
 
   }

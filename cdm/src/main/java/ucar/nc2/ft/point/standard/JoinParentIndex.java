@@ -41,7 +41,7 @@ import ucar.nc2.Variable;
 import java.io.IOException;
 
 /**
- * Join data from a row of a a Structure, whose index is passed in as the value of a member variable of the
+ * Join data from a row of a Structure, whose index is passed in as the value of a member variable of the
  * leaf StructureData (cursor.table[0]).
  *
  * @author caron

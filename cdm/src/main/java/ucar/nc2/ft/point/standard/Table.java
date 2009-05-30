@@ -110,7 +110,7 @@ public abstract class Table {
   FeatureType featureType;
 
   Table parent;
-  Join extraJoin;
+  List<Join> extraJoins;
 
   String lat, lon, elev, time, timeNominal;
   String stnId, stnDesc, stnNpts, stnWmoId, stnAlt, limit;
@@ -139,7 +139,7 @@ public abstract class Table {
     if (config.parent != null)
       parent = Table.factory(ds, config.parent);
 
-    this.extraJoin = config.extraJoin;
+    this.extraJoins = config.extraJoin;
   }
 
   /**

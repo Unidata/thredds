@@ -579,7 +579,7 @@ public class ReadTdsLogs {
   }
 
   static void read(String filename, MClosure closure) throws IOException {
-    File f = new File(filename);
+    File f = new File(filename);       
     if (!f.exists()) {
       System.out.println(filename + " does not exist");
       return;
@@ -601,7 +601,7 @@ public class ReadTdsLogs {
     NetcdfDataset.setHttpClient(client);
 
     // sendRequests
-    final ReadTdsLogs reader = new ReadTdsLogs("http://motherlode.ucar.edu:9080");
+    final ReadTdsLogs reader = new ReadTdsLogs("http://motherlode.ucar.edu:8081");
 
     long startElapsed = System.nanoTime();
 

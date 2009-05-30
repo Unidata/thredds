@@ -53,7 +53,7 @@ public class TableConfig {
   public Table.Type type;
   public String name;
   public TableConfig parent;
-  public Join extraJoin;
+  public List<Join> extraJoin;
   public List<TableConfig> children;
 
   public String structName; // full name of structure
@@ -102,6 +102,11 @@ public class TableConfig {
     if (children == null) children = new ArrayList<TableConfig>();
     children.add(t);
     t.parent = this;
+  }
+
+  public void addJoin(Join extra) {
+    if (extraJoin == null) extraJoin = new ArrayList<Join>(3);
+    extraJoin.add(extra);
   }
 
 }

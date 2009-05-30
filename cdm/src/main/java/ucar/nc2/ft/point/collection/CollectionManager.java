@@ -39,7 +39,10 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 /**
- * Class Description
+ * Manages feature dataset collections.
+ *
+ * collection URI syntax:
+ *   directory/filter?dateFormatMark
  *
  * @author caron
  * @since May 20, 2009
@@ -51,21 +54,24 @@ public class CollectionManager implements TimedCollection {
   private List<TimedCollection.Dataset> c;
   private DateRange dateRange;
 
-  CollectionManager(String wildcard) {
-    int posWildcard = wildcard.lastIndexOf('/');
-    String dirName = wildcard.substring(0, posWildcard);
+  CollectionManager(String collectionDesc) {
+    // first part is the directory
+    int posWildcard = collectionDesc.lastIndexOf('/');
+    String dirName = collectionDesc.substring(0, posWildcard);
     File dir = new File(dirName);
 
+    // optional dateFormatMark
     String dateFormatMark = null;
-    int posFormat = wildcard.lastIndexOf('?');
+    int posFormat = collectionDesc.lastIndexOf('?');
     if (posFormat > 0) {
-      dateFormatMark = wildcard.substring(posFormat+1);
-      wildcard = wildcard.substring(0,posFormat);
+      dateFormatMark = collectionDesc.substring(posFormat+1); // after the ?
+      collectionDesc = collectionDesc.substring(0,posFormat); // before the ?
     }
 
+    // filter
     String filter = null;
-    if (posWildcard < wildcard.length() - 2)
-      filter = wildcard.substring(posWildcard + 1);
+    if (posWildcard < collectionDesc.length() - 2)
+      filter = collectionDesc.substring(posWildcard + 1);
 
     File[] files = (filter == null) ? dir.listFiles() : dir.listFiles(new WildcardMatchOnNameFilter( filter));
     c = new ArrayList<TimedCollection.Dataset>(files.length);

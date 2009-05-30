@@ -398,15 +398,13 @@ public class Structure extends Variable {
    * @throws java.io.IOException on read error
    */
   public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
-    //StructureDataIterator iter = ncfile.getStructureIterator(this, bufferSize);
-    //return (iter != null) ? iter : new Structure.Iterator(bufferSize);
-    return new Structure.Iterator(bufferSize);
+    return (getRank() < 2) ? new Structure.IteratorRank1(bufferSize) : new Structure.Iterator(bufferSize);
   }
 
   /**
-   * Iterator over type StructureData.
+   * Iterator over type StructureData, rank 1 (common) case
    */
-  private class Iterator implements StructureDataIterator {
+  private class IteratorRank1 implements StructureDataIterator {
     private int count = 0;
     private int recnum = (int) getSize();
     private int readStart = 0;
@@ -414,7 +412,7 @@ public class Structure extends Variable {
     private int readAtaTime;
     private ArrayStructure as = null;
 
-    protected Iterator(int bufferSize) {
+    protected IteratorRank1(int bufferSize) {
       setBufferSize( bufferSize);
     }
 
@@ -429,8 +427,7 @@ public class Structure extends Variable {
 
     public StructureData next() throws IOException {
       if (count >= readStart) {
-        if (getRank() == 1) readNextRank1();
-        else readNextGeneralRank();
+        readNext();
       }
 
       count++;
@@ -439,7 +436,7 @@ public class Structure extends Variable {
 
     public void finish() {}
 
-    private void readNextRank1() throws IOException {
+    private void readNext() throws IOException {
       int left = Math.min(recnum, readStart+readAtaTime); // dont go over recnum
       int need = left - readStart; // how many to read this time
       try {
@@ -449,15 +446,11 @@ public class Structure extends Variable {
           System.out.println("readNext "+count+" "+readStart);
 
       } catch (InvalidRangeException e) {
-        log.error("Structure.Iterator.readNext() ",e);
+        log.error("Structure.IteratorRank1.readNext() ",e);
         throw new IllegalStateException("Structure.Iterator.readNext() ",e);
       } // cant happen
       readStart += need;
       readCount = 0;
-    }
-
-    private void readNextGeneralRank() throws IOException {
-      throw new UnsupportedOperationException();  // not implemented yet - need example to test
     }
 
     public void setBufferSize(int bytes) {
@@ -471,6 +464,75 @@ public class Structure extends Variable {
     }
 
   }
+
+  /**
+   * Iterator over type StructureData, general case
+   */
+  private class Iterator implements StructureDataIterator {
+    private int count; // done so far
+    private int total; // total to do
+    private int readStart; // current buffer starts at
+    private int readCount; // count within the current buffer [0,readAtaTime)
+    private int outerCount;  // over the outer Dimension
+    private int readAtaTime;
+    private ArrayStructure as = null;
+
+    protected Iterator(int bufferSize) {
+      reset();
+    }
+
+    public boolean hasNext() {
+      return count < total;
+    }
+
+    public StructureDataIterator reset() {
+      count = 0;
+      total = (int) getSize();
+      readStart = 0;
+      readCount = 0;
+      outerCount = 0;
+      readAtaTime = (int) getSize() / shape[0];
+      return this;
+    }
+
+    public StructureData next() throws IOException {
+      if (count >= readStart)
+        readNextGeneralRank();
+
+      count++;
+      return as.getStructureData( readCount++);
+    }
+
+    public void finish() {}
+
+    private void readNextGeneralRank() throws IOException {
+
+      try {
+        Section section = new Section(shape);
+        section.setRange( 0, new Range(outerCount, outerCount));
+
+        as = (ArrayStructure) read( section);
+
+        if (NetcdfFile.debugStructureIterator)
+          System.out.println("readNext inner="+outerCount+" total="+outerCount);
+
+        outerCount++;
+
+      } catch (InvalidRangeException e) {
+        log.error("Structure.Iterator.readNext() ",e);
+        throw new IllegalStateException("Structure.Iterator.readNext() ",e);
+      } // cant happen
+
+      readStart += as.getSize();
+      readCount = 0;
+    }
+
+    public void setBufferSize(int bytes) {
+      // ignored
+    }
+
+  }
+
 
   ////////////////////////////////////////////
 
