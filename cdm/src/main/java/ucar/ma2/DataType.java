@@ -99,7 +99,8 @@ public enum DataType {
   }
 
   /**
-   * The primitive class type: char, byte, float, double, short, int, long, boolean, String, StructureData.
+   * The primitive class type: char, byte, float, double, short, int, long, boolean, String, StructureData, StructureDataIterator,
+   *   ByteBuffer.
    *
    * @return the primitive class type
    */

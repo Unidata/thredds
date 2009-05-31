@@ -646,7 +646,7 @@ public abstract class Array {
   /**
    * This gets the data as a ByteBuffer, in correct order.
    * It avoids copying if possible.
-   * Only for numeric types (byte, short, int, long, double, float
+   * Only for numeric types (byte, short, int, long, double, float)
    *
    * @return equivilent data in a ByteBuffer
    */

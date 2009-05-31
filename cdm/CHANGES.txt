@@ -6,6 +6,9 @@ Changes in version 4.0
 
  Release Details:
   45:
+   Fmrc: remove global atttributes taken from random prototype dataset
+   fix readToByteChannel() problems
+   refactor ncstream, another pass at protobuf messsages
    GempakCdm point adapter now does stationAsPoint.
    JoinArray is parameterized
    Table.extraJoins now is a list.

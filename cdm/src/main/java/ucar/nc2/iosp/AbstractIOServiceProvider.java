@@ -36,6 +36,7 @@ package ucar.nc2.iosp;
 import ucar.ma2.*;
 import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Structure;
+import ucar.nc2.stream.NcStream;
 
 import java.io.IOException;
 import java.io.DataOutputStream;
@@ -65,6 +66,11 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
       throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
     Array data = readData(v2, section);
+    return copyToByteChannel(data,  channel);
+  }
+
+  public static long copyToByteChannel(Array data, WritableByteChannel channel)
+      throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
     // ArrayStructureBB can be optimised
     // LOOK not actually right until we define the on-the-wire protocol
@@ -76,7 +82,6 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
       return bb.limit();
     }
 
-    // LOOK should we buffer ?? 
     DataOutputStream outStream = new DataOutputStream( Channels.newOutputStream( channel));
 
     IndexIterator iterA = data.getIndexIterator();
@@ -114,11 +119,34 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
       while (iterA.hasNext())
         outStream.writeBoolean(iterA.getBooleanNext());
 
+    } else if (classType == String.class) {
+      long size = 0;
+      while (iterA.hasNext()) {
+        String s = (String) iterA.getObjectNext();
+        size += NcStream.writeVInt( outStream, s.length());
+        byte[] b = s.getBytes("UTF-8");
+        outStream.write(b);
+        size += b.length;
+      }
+      return size;
+
+    } else if (classType == ByteBuffer.class) { // OPAQUE
+      long size = 0;
+      while (iterA.hasNext()) {
+        ByteBuffer bb = (ByteBuffer) iterA.getObjectNext();
+        size += NcStream.writeVInt( outStream, bb.limit());
+        bb.rewind();
+        channel.write(bb);
+        size += bb.limit();
+      }
+      return size;
+
     } else
       throw new UnsupportedOperationException("Class type = " + classType.getName());
 
     return data.getSizeBytes();
   }
+
 
   public ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException {
     return IospHelper.readSection(cer);  //  IOSPs can optimize by overriding

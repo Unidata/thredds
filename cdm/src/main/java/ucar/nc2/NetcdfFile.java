@@ -45,6 +45,7 @@ import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.netcdf3.SPFactory;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.IospHelper;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
 
 import java.util.*;
 import java.util.zip.ZipInputStream;
@@ -1755,7 +1756,10 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     if (unlocked)
       throw new IllegalStateException("File is unlocked - cannot use");
 
-    // LOOK: should go through Variable for caching ??
+    if (spi == null)
+      return AbstractIOServiceProvider.copyToByteChannel( v.read(section), wbc);
+
+     // LOOK: should go through Variable for caching ??
     return spi.readToByteChannel(v, section, wbc);
   }
 

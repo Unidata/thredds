@@ -54,11 +54,21 @@ public class CollectionManager implements TimedCollection {
   private List<TimedCollection.Dataset> c;
   private DateRange dateRange;
 
-  CollectionManager(String collectionDesc) {
+  static public CollectionManager factory(String collectionDesc, Formatter errlog) {
+    return new CollectionManager(collectionDesc, errlog);
+  }
+
+
+  private  CollectionManager(String collectionDesc, Formatter errlog) {
     // first part is the directory
     int posWildcard = collectionDesc.lastIndexOf('/');
     String dirName = collectionDesc.substring(0, posWildcard);
     File dir = new File(dirName);
+    File locFile = new File( dirName);
+    if (!locFile.exists()) {
+      errlog.format(" Directory %s does not exist %n", dirName);
+      return;
+    }
 
     // optional dateFormatMark
     String dateFormatMark = null;

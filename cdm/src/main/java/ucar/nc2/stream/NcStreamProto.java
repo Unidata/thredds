@@ -7,81 +7,6 @@ public final class NcStreamProto {
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
   }
-  public static enum AxisType
-      implements com.google.protobuf.ProtocolMessageEnum {
-    RunTime(0, 0),
-    Ensemble(1, 1),
-    Time(2, 2),
-    GeoZ(3, 3),
-    GeoY(4, 4),
-    GeoX(5, 5),
-    Lat(6, 6),
-    Lon(7, 7),
-    Height(8, 8),
-    Pressure(9, 9),
-    RadialAzimuth(10, 10),
-    RadialDistance(11, 11),
-    RadialElevation(12, 12),
-    ;
-    
-    
-    public final int getNumber() { return value; }
-    
-    public static AxisType valueOf(int value) {
-      switch (value) {
-        case 0: return RunTime;
-        case 1: return Ensemble;
-        case 2: return Time;
-        case 3: return GeoZ;
-        case 4: return GeoY;
-        case 5: return GeoX;
-        case 6: return Lat;
-        case 7: return Lon;
-        case 8: return Height;
-        case 9: return Pressure;
-        case 10: return RadialAzimuth;
-        case 11: return RadialDistance;
-        case 12: return RadialElevation;
-        default: return null;
-      }
-    }
-    
-    public final com.google.protobuf.Descriptors.EnumValueDescriptor
-        getValueDescriptor() {
-      return getDescriptor().getValues().get(index);
-    }
-    public final com.google.protobuf.Descriptors.EnumDescriptor
-        getDescriptorForType() {
-      return getDescriptor();
-    }
-    public static final com.google.protobuf.Descriptors.EnumDescriptor
-        getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.getDescriptor().getEnumTypes().get(0);
-    }
-    
-    private static final AxisType[] VALUES = {
-      RunTime, Ensemble, Time, GeoZ, GeoY, GeoX, Lat, Lon, Height, Pressure, RadialAzimuth, RadialDistance, RadialElevation, 
-    };
-    public static AxisType valueOf(
-        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
-      if (desc.getType() != getDescriptor()) {
-        throw new java.lang.IllegalArgumentException(
-          "EnumValueDescriptor is not for this type.");
-      }
-      return VALUES[desc.getIndex()];
-    }
-    private final int index;
-    private final int value;
-    private AxisType(int index, int value) {
-      this.index = index;
-      this.value = value;
-    }
-    
-    static {
-      ucar.nc2.stream.NcStreamProto.getDescriptor();
-    }
-  }
-  
   public static enum DataType
       implements com.google.protobuf.ProtocolMessageEnum {
     CHAR(0, 0),
@@ -94,6 +19,10 @@ public final class NcStreamProto {
     STRING(7, 7),
     STRUCTURE(8, 8),
     SEQUENCE(9, 9),
+    ENUM1(10, 10),
+    ENUM2(11, 11),
+    ENUM4(12, 12),
+    OPAQUE(13, 13),
     ;
     
     
@@ -111,6 +40,10 @@ public final class NcStreamProto {
         case 7: return STRING;
         case 8: return STRUCTURE;
         case 9: return SEQUENCE;
+        case 10: return ENUM1;
+        case 11: return ENUM2;
+        case 12: return ENUM4;
+        case 13: return OPAQUE;
         default: return null;
       }
     }
@@ -125,11 +58,11 @@ public final class NcStreamProto {
     }
     public static final com.google.protobuf.Descriptors.EnumDescriptor
         getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.getDescriptor().getEnumTypes().get(1);
+      return ucar.nc2.stream.NcStreamProto.getDescriptor().getEnumTypes().get(0);
     }
     
     private static final DataType[] VALUES = {
-      CHAR, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, STRING, STRUCTURE, SEQUENCE, 
+      CHAR, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, STRING, STRUCTURE, SEQUENCE, ENUM1, ENUM2, ENUM4, OPAQUE, 
     };
     public static DataType valueOf(
         com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
@@ -609,795 +542,6 @@ public final class NcStreamProto {
       public Builder clearData() {
         result.hasData = false;
         result.data_ = com.google.protobuf.ByteString.EMPTY;
-        return this;
-      }
-    }
-    
-    static {
-      ucar.nc2.stream.NcStreamProto.getDescriptor();
-    }
-  }
-  
-  public static final class CoordinateSystem extends
-      com.google.protobuf.GeneratedMessage {
-    // Use CoordinateSystem.newBuilder() to construct.
-    private CoordinateSystem() {}
-    
-    private static final CoordinateSystem defaultInstance = new CoordinateSystem();
-    public static CoordinateSystem getDefaultInstance() {
-      return defaultInstance;
-    }
-    
-    public CoordinateSystem getDefaultInstanceForType() {
-      return defaultInstance;
-    }
-    
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_CoordinateSystem_descriptor;
-    }
-    
-    @Override
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_CoordinateSystem_fieldAccessorTable;
-    }
-    
-    // required string name = 1;
-    public static final int NAME_FIELD_NUMBER = 1;
-    private boolean hasName;
-    private java.lang.String name_ = "";
-    public boolean hasName() { return hasName; }
-    public java.lang.String getName() { return name_; }
-    
-    // repeated string axes = 2;
-    public static final int AXES_FIELD_NUMBER = 2;
-    private java.util.List<java.lang.String> axes_ =
-      java.util.Collections.emptyList();
-    public java.util.List<java.lang.String> getAxesList() {
-      return axes_;
-    }
-    public int getAxesCount() { return axes_.size(); }
-    public java.lang.String getAxes(int index) {
-      return axes_.get(index);
-    }
-    
-    // repeated string transform = 3;
-    public static final int TRANSFORM_FIELD_NUMBER = 3;
-    private java.util.List<java.lang.String> transform_ =
-      java.util.Collections.emptyList();
-    public java.util.List<java.lang.String> getTransformList() {
-      return transform_;
-    }
-    public int getTransformCount() { return transform_.size(); }
-    public java.lang.String getTransform(int index) {
-      return transform_.get(index);
-    }
-    
-    @Override
-    public final boolean isInitialized() {
-      if (!hasName) return false;
-      return true;
-    }
-    
-    @Override
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      if (hasName()) {
-        output.writeString(1, getName());
-      }
-      for (java.lang.String element : getAxesList()) {
-        output.writeString(2, element);
-      }
-      for (java.lang.String element : getTransformList()) {
-        output.writeString(3, element);
-      }
-      getUnknownFields().writeTo(output);
-    }
-    
-    private int memoizedSerializedSize = -1;
-    @Override
-    public int getSerializedSize() {
-      int size = memoizedSerializedSize;
-      if (size != -1) return size;
-    
-      size = 0;
-      if (hasName()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeStringSize(1, getName());
-      }
-      {
-        int dataSize = 0;
-        for (java.lang.String element : getAxesList()) {
-          dataSize += com.google.protobuf.CodedOutputStream
-            .computeStringSizeNoTag(element);
-        }
-        size += dataSize;
-        size += 1 * getAxesList().size();
-      }
-      {
-        int dataSize = 0;
-        for (java.lang.String element : getTransformList()) {
-          dataSize += com.google.protobuf.CodedOutputStream
-            .computeStringSizeNoTag(element);
-        }
-        size += dataSize;
-        size += 1 * getTransformList().size();
-      }
-      size += getUnknownFields().getSerializedSize();
-      memoizedSerializedSize = size;
-      return size;
-    }
-    
-    public static ucar.nc2.stream.NcStreamProto.CoordinateSystem parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
-    }
-    public static ucar.nc2.stream.NcStreamProto.CoordinateSystem parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistry extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
-    }
-    public static ucar.nc2.stream.NcStreamProto.CoordinateSystem parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
-    }
-    public static ucar.nc2.stream.NcStreamProto.CoordinateSystem parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistry extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
-    }
-    public static ucar.nc2.stream.NcStreamProto.CoordinateSystem parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
-    }
-    public static ucar.nc2.stream.NcStreamProto.CoordinateSystem parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistry extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    public static ucar.nc2.stream.NcStreamProto.CoordinateSystem parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeDelimitedFrom(input).buildParsed();
-    }
-    public static ucar.nc2.stream.NcStreamProto.CoordinateSystem parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistry extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeDelimitedFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    public static ucar.nc2.stream.NcStreamProto.CoordinateSystem parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
-    }
-    public static ucar.nc2.stream.NcStreamProto.CoordinateSystem parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistry extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    
-    public static Builder newBuilder() { return new Builder(); }
-    public Builder newBuilderForType() { return new Builder(); }
-    public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.CoordinateSystem prototype) {
-      return new Builder().mergeFrom(prototype);
-    }
-    public Builder toBuilder() { return newBuilder(this); }
-    
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> {
-      // Construct using ucar.nc2.stream.NcStreamProto.CoordinateSystem.newBuilder()
-      private Builder() {}
-      
-      ucar.nc2.stream.NcStreamProto.CoordinateSystem result = new ucar.nc2.stream.NcStreamProto.CoordinateSystem();
-      
-      @Override
-      protected ucar.nc2.stream.NcStreamProto.CoordinateSystem internalGetResult() {
-        return result;
-      }
-      
-      @Override
-      public Builder clear() {
-        result = new ucar.nc2.stream.NcStreamProto.CoordinateSystem();
-        return this;
-      }
-      
-      @Override
-      public Builder clone() {
-        return new Builder().mergeFrom(result);
-      }
-      
-      @Override
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return ucar.nc2.stream.NcStreamProto.CoordinateSystem.getDescriptor();
-      }
-      
-      public ucar.nc2.stream.NcStreamProto.CoordinateSystem getDefaultInstanceForType() {
-        return ucar.nc2.stream.NcStreamProto.CoordinateSystem.getDefaultInstance();
-      }
-      
-      public ucar.nc2.stream.NcStreamProto.CoordinateSystem build() {
-        if (result != null && !isInitialized()) {
-          throw new com.google.protobuf.UninitializedMessageException(
-            result);
-        }
-        return buildPartial();
-      }
-      
-      private ucar.nc2.stream.NcStreamProto.CoordinateSystem buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        if (!isInitialized()) {
-          throw new com.google.protobuf.UninitializedMessageException(
-            result).asInvalidProtocolBufferException();
-        }
-        return buildPartial();
-      }
-      
-      public ucar.nc2.stream.NcStreamProto.CoordinateSystem buildPartial() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "build() has already been called on this Builder.");  }
-        if (result.axes_ != java.util.Collections.EMPTY_LIST) {
-          result.axes_ =
-            java.util.Collections.unmodifiableList(result.axes_);
-        }
-        if (result.transform_ != java.util.Collections.EMPTY_LIST) {
-          result.transform_ =
-            java.util.Collections.unmodifiableList(result.transform_);
-        }
-        ucar.nc2.stream.NcStreamProto.CoordinateSystem returnMe = result;
-        result = null;
-        return returnMe;
-      }
-      
-      @Override
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof ucar.nc2.stream.NcStreamProto.CoordinateSystem) {
-          return mergeFrom((ucar.nc2.stream.NcStreamProto.CoordinateSystem)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-      
-      public Builder mergeFrom(ucar.nc2.stream.NcStreamProto.CoordinateSystem other) {
-        if (other == ucar.nc2.stream.NcStreamProto.CoordinateSystem.getDefaultInstance()) return this;
-        if (other.hasName()) {
-          setName(other.getName());
-        }
-        if (!other.axes_.isEmpty()) {
-          if (result.axes_.isEmpty()) {
-            result.axes_ = new java.util.ArrayList<java.lang.String>();
-          }
-          result.axes_.addAll(other.axes_);
-        }
-        if (!other.transform_.isEmpty()) {
-          if (result.transform_.isEmpty()) {
-            result.transform_ = new java.util.ArrayList<java.lang.String>();
-          }
-          result.transform_.addAll(other.transform_);
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        return this;
-      }
-      
-      @Override
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input)
-          throws java.io.IOException {
-        return mergeFrom(input,
-          com.google.protobuf.ExtensionRegistry.getEmptyRegistry());
-      }
-      
-      @Override
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistry extensionRegistry)
-          throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                return this;
-              }
-              break;
-            }
-            case 10: {
-              setName(input.readString());
-              break;
-            }
-            case 18: {
-              addAxes(input.readString());
-              break;
-            }
-            case 26: {
-              addTransform(input.readString());
-              break;
-            }
-          }
-        }
-      }
-      
-      
-      // required string name = 1;
-      public boolean hasName() {
-        return result.hasName();
-      }
-      public java.lang.String getName() {
-        return result.getName();
-      }
-      public Builder setName(java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  result.hasName = true;
-        result.name_ = value;
-        return this;
-      }
-      public Builder clearName() {
-        result.hasName = false;
-        result.name_ = "";
-        return this;
-      }
-      
-      // repeated string axes = 2;
-      public java.util.List<java.lang.String> getAxesList() {
-        return java.util.Collections.unmodifiableList(result.axes_);
-      }
-      public int getAxesCount() {
-        return result.getAxesCount();
-      }
-      public java.lang.String getAxes(int index) {
-        return result.getAxes(index);
-      }
-      public Builder setAxes(int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  result.axes_.set(index, value);
-        return this;
-      }
-      public Builder addAxes(java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  if (result.axes_.isEmpty()) {
-          result.axes_ = new java.util.ArrayList<java.lang.String>();
-        }
-        result.axes_.add(value);
-        return this;
-      }
-      public Builder addAllAxes(
-          java.lang.Iterable<? extends java.lang.String> values) {
-        if (result.axes_.isEmpty()) {
-          result.axes_ = new java.util.ArrayList<java.lang.String>();
-        }
-        super.addAll(values, result.axes_);
-        return this;
-      }
-      public Builder clearAxes() {
-        result.axes_ = java.util.Collections.emptyList();
-        return this;
-      }
-      
-      // repeated string transform = 3;
-      public java.util.List<java.lang.String> getTransformList() {
-        return java.util.Collections.unmodifiableList(result.transform_);
-      }
-      public int getTransformCount() {
-        return result.getTransformCount();
-      }
-      public java.lang.String getTransform(int index) {
-        return result.getTransform(index);
-      }
-      public Builder setTransform(int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  result.transform_.set(index, value);
-        return this;
-      }
-      public Builder addTransform(java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  if (result.transform_.isEmpty()) {
-          result.transform_ = new java.util.ArrayList<java.lang.String>();
-        }
-        result.transform_.add(value);
-        return this;
-      }
-      public Builder addAllTransform(
-          java.lang.Iterable<? extends java.lang.String> values) {
-        if (result.transform_.isEmpty()) {
-          result.transform_ = new java.util.ArrayList<java.lang.String>();
-        }
-        super.addAll(values, result.transform_);
-        return this;
-      }
-      public Builder clearTransform() {
-        result.transform_ = java.util.Collections.emptyList();
-        return this;
-      }
-    }
-    
-    static {
-      ucar.nc2.stream.NcStreamProto.getDescriptor();
-    }
-  }
-  
-  public static final class CoordinateTransform extends
-      com.google.protobuf.GeneratedMessage {
-    // Use CoordinateTransform.newBuilder() to construct.
-    private CoordinateTransform() {}
-    
-    private static final CoordinateTransform defaultInstance = new CoordinateTransform();
-    public static CoordinateTransform getDefaultInstance() {
-      return defaultInstance;
-    }
-    
-    public CoordinateTransform getDefaultInstanceForType() {
-      return defaultInstance;
-    }
-    
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_CoordinateTransform_descriptor;
-    }
-    
-    @Override
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_CoordinateTransform_fieldAccessorTable;
-    }
-    
-    // required string name = 1;
-    public static final int NAME_FIELD_NUMBER = 1;
-    private boolean hasName;
-    private java.lang.String name_ = "";
-    public boolean hasName() { return hasName; }
-    public java.lang.String getName() { return name_; }
-    
-    // repeated .ncstream.Attribute atts = 2;
-    public static final int ATTS_FIELD_NUMBER = 2;
-    private java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> atts_ =
-      java.util.Collections.emptyList();
-    public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> getAttsList() {
-      return atts_;
-    }
-    public int getAttsCount() { return atts_.size(); }
-    public ucar.nc2.stream.NcStreamProto.Attribute getAtts(int index) {
-      return atts_.get(index);
-    }
-    
-    @Override
-    public final boolean isInitialized() {
-      if (!hasName) return false;
-      for (ucar.nc2.stream.NcStreamProto.Attribute element : getAttsList()) {
-        if (!element.isInitialized()) return false;
-      }
-      return true;
-    }
-    
-    @Override
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      if (hasName()) {
-        output.writeString(1, getName());
-      }
-      for (ucar.nc2.stream.NcStreamProto.Attribute element : getAttsList()) {
-        output.writeMessage(2, element);
-      }
-      getUnknownFields().writeTo(output);
-    }
-    
-    private int memoizedSerializedSize = -1;
-    @Override
-    public int getSerializedSize() {
-      int size = memoizedSerializedSize;
-      if (size != -1) return size;
-    
-      size = 0;
-      if (hasName()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeStringSize(1, getName());
-      }
-      for (ucar.nc2.stream.NcStreamProto.Attribute element : getAttsList()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, element);
-      }
-      size += getUnknownFields().getSerializedSize();
-      memoizedSerializedSize = size;
-      return size;
-    }
-    
-    public static ucar.nc2.stream.NcStreamProto.CoordinateTransform parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
-    }
-    public static ucar.nc2.stream.NcStreamProto.CoordinateTransform parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistry extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
-    }
-    public static ucar.nc2.stream.NcStreamProto.CoordinateTransform parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
-    }
-    public static ucar.nc2.stream.NcStreamProto.CoordinateTransform parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistry extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
-    }
-    public static ucar.nc2.stream.NcStreamProto.CoordinateTransform parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
-    }
-    public static ucar.nc2.stream.NcStreamProto.CoordinateTransform parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistry extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    public static ucar.nc2.stream.NcStreamProto.CoordinateTransform parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeDelimitedFrom(input).buildParsed();
-    }
-    public static ucar.nc2.stream.NcStreamProto.CoordinateTransform parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistry extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeDelimitedFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    public static ucar.nc2.stream.NcStreamProto.CoordinateTransform parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
-    }
-    public static ucar.nc2.stream.NcStreamProto.CoordinateTransform parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistry extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    
-    public static Builder newBuilder() { return new Builder(); }
-    public Builder newBuilderForType() { return new Builder(); }
-    public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.CoordinateTransform prototype) {
-      return new Builder().mergeFrom(prototype);
-    }
-    public Builder toBuilder() { return newBuilder(this); }
-    
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> {
-      // Construct using ucar.nc2.stream.NcStreamProto.CoordinateTransform.newBuilder()
-      private Builder() {}
-      
-      ucar.nc2.stream.NcStreamProto.CoordinateTransform result = new ucar.nc2.stream.NcStreamProto.CoordinateTransform();
-      
-      @Override
-      protected ucar.nc2.stream.NcStreamProto.CoordinateTransform internalGetResult() {
-        return result;
-      }
-      
-      @Override
-      public Builder clear() {
-        result = new ucar.nc2.stream.NcStreamProto.CoordinateTransform();
-        return this;
-      }
-      
-      @Override
-      public Builder clone() {
-        return new Builder().mergeFrom(result);
-      }
-      
-      @Override
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return ucar.nc2.stream.NcStreamProto.CoordinateTransform.getDescriptor();
-      }
-      
-      public ucar.nc2.stream.NcStreamProto.CoordinateTransform getDefaultInstanceForType() {
-        return ucar.nc2.stream.NcStreamProto.CoordinateTransform.getDefaultInstance();
-      }
-      
-      public ucar.nc2.stream.NcStreamProto.CoordinateTransform build() {
-        if (result != null && !isInitialized()) {
-          throw new com.google.protobuf.UninitializedMessageException(
-            result);
-        }
-        return buildPartial();
-      }
-      
-      private ucar.nc2.stream.NcStreamProto.CoordinateTransform buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        if (!isInitialized()) {
-          throw new com.google.protobuf.UninitializedMessageException(
-            result).asInvalidProtocolBufferException();
-        }
-        return buildPartial();
-      }
-      
-      public ucar.nc2.stream.NcStreamProto.CoordinateTransform buildPartial() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "build() has already been called on this Builder.");  }
-        if (result.atts_ != java.util.Collections.EMPTY_LIST) {
-          result.atts_ =
-            java.util.Collections.unmodifiableList(result.atts_);
-        }
-        ucar.nc2.stream.NcStreamProto.CoordinateTransform returnMe = result;
-        result = null;
-        return returnMe;
-      }
-      
-      @Override
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof ucar.nc2.stream.NcStreamProto.CoordinateTransform) {
-          return mergeFrom((ucar.nc2.stream.NcStreamProto.CoordinateTransform)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-      
-      public Builder mergeFrom(ucar.nc2.stream.NcStreamProto.CoordinateTransform other) {
-        if (other == ucar.nc2.stream.NcStreamProto.CoordinateTransform.getDefaultInstance()) return this;
-        if (other.hasName()) {
-          setName(other.getName());
-        }
-        if (!other.atts_.isEmpty()) {
-          if (result.atts_.isEmpty()) {
-            result.atts_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Attribute>();
-          }
-          result.atts_.addAll(other.atts_);
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        return this;
-      }
-      
-      @Override
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input)
-          throws java.io.IOException {
-        return mergeFrom(input,
-          com.google.protobuf.ExtensionRegistry.getEmptyRegistry());
-      }
-      
-      @Override
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistry extensionRegistry)
-          throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                return this;
-              }
-              break;
-            }
-            case 10: {
-              setName(input.readString());
-              break;
-            }
-            case 18: {
-              ucar.nc2.stream.NcStreamProto.Attribute.Builder subBuilder = ucar.nc2.stream.NcStreamProto.Attribute.newBuilder();
-              input.readMessage(subBuilder, extensionRegistry);
-              addAtts(subBuilder.buildPartial());
-              break;
-            }
-          }
-        }
-      }
-      
-      
-      // required string name = 1;
-      public boolean hasName() {
-        return result.hasName();
-      }
-      public java.lang.String getName() {
-        return result.getName();
-      }
-      public Builder setName(java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  result.hasName = true;
-        result.name_ = value;
-        return this;
-      }
-      public Builder clearName() {
-        result.hasName = false;
-        result.name_ = "";
-        return this;
-      }
-      
-      // repeated .ncstream.Attribute atts = 2;
-      public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> getAttsList() {
-        return java.util.Collections.unmodifiableList(result.atts_);
-      }
-      public int getAttsCount() {
-        return result.getAttsCount();
-      }
-      public ucar.nc2.stream.NcStreamProto.Attribute getAtts(int index) {
-        return result.getAtts(index);
-      }
-      public Builder setAtts(int index, ucar.nc2.stream.NcStreamProto.Attribute value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        result.atts_.set(index, value);
-        return this;
-      }
-      public Builder setAtts(int index, ucar.nc2.stream.NcStreamProto.Attribute.Builder builderForValue) {
-        result.atts_.set(index, builderForValue.build());
-        return this;
-      }
-      public Builder addAtts(ucar.nc2.stream.NcStreamProto.Attribute value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        if (result.atts_.isEmpty()) {
-          result.atts_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Attribute>();
-        }
-        result.atts_.add(value);
-        return this;
-      }
-      public Builder addAtts(ucar.nc2.stream.NcStreamProto.Attribute.Builder builderForValue) {
-        if (result.atts_.isEmpty()) {
-          result.atts_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Attribute>();
-        }
-        result.atts_.add(builderForValue.build());
-        return this;
-      }
-      public Builder addAllAtts(
-          java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.Attribute> values) {
-        if (result.atts_.isEmpty()) {
-          result.atts_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Attribute>();
-        }
-        super.addAll(values, result.atts_);
-        return this;
-      }
-      public Builder clearAtts() {
-        result.atts_ = java.util.Collections.emptyList();
         return this;
       }
     }
@@ -1897,31 +1041,19 @@ public final class NcStreamProto {
       return atts_.get(index);
     }
     
-    // optional bytes data = 5;
-    public static final int DATA_FIELD_NUMBER = 5;
+    // optional bool unsigned = 5;
+    public static final int UNSIGNED_FIELD_NUMBER = 5;
+    private boolean hasUnsigned;
+    private boolean unsigned_ = false;
+    public boolean hasUnsigned() { return hasUnsigned; }
+    public boolean getUnsigned() { return unsigned_; }
+    
+    // optional bytes data = 6;
+    public static final int DATA_FIELD_NUMBER = 6;
     private boolean hasData;
     private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
     public boolean hasData() { return hasData; }
     public com.google.protobuf.ByteString getData() { return data_; }
-    
-    // optional .ncstream.AxisType axis = 6;
-    public static final int AXIS_FIELD_NUMBER = 6;
-    private boolean hasAxis;
-    private ucar.nc2.stream.NcStreamProto.AxisType axis_ = ucar.nc2.stream.NcStreamProto.AxisType.RunTime;
-    public boolean hasAxis() { return hasAxis; }
-    public ucar.nc2.stream.NcStreamProto.AxisType getAxis() { return axis_; }
-    
-    // repeated string coordSys = 7;
-    public static final int COORDSYS_FIELD_NUMBER = 7;
-    private java.util.List<java.lang.String> coordSys_ =
-      java.util.Collections.emptyList();
-    public java.util.List<java.lang.String> getCoordSysList() {
-      return coordSys_;
-    }
-    public int getCoordSysCount() { return coordSys_.size(); }
-    public java.lang.String getCoordSys(int index) {
-      return coordSys_.get(index);
-    }
     
     @Override
     public final boolean isInitialized() {
@@ -1948,14 +1080,11 @@ public final class NcStreamProto {
       for (ucar.nc2.stream.NcStreamProto.Attribute element : getAttsList()) {
         output.writeMessage(4, element);
       }
+      if (hasUnsigned()) {
+        output.writeBool(5, getUnsigned());
+      }
       if (hasData()) {
-        output.writeBytes(5, getData());
-      }
-      if (hasAxis()) {
-        output.writeEnum(6, getAxis().getNumber());
-      }
-      for (java.lang.String element : getCoordSysList()) {
-        output.writeString(7, element);
+        output.writeBytes(6, getData());
       }
       getUnknownFields().writeTo(output);
     }
@@ -1983,22 +1112,13 @@ public final class NcStreamProto {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(4, element);
       }
+      if (hasUnsigned()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(5, getUnsigned());
+      }
       if (hasData()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(5, getData());
-      }
-      if (hasAxis()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(6, getAxis().getNumber());
-      }
-      {
-        int dataSize = 0;
-        for (java.lang.String element : getCoordSysList()) {
-          dataSize += com.google.protobuf.CodedOutputStream
-            .computeStringSizeNoTag(element);
-        }
-        size += dataSize;
-        size += 1 * getCoordSysList().size();
+          .computeBytesSize(6, getData());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -2132,10 +1252,6 @@ public final class NcStreamProto {
           result.atts_ =
             java.util.Collections.unmodifiableList(result.atts_);
         }
-        if (result.coordSys_ != java.util.Collections.EMPTY_LIST) {
-          result.coordSys_ =
-            java.util.Collections.unmodifiableList(result.coordSys_);
-        }
         ucar.nc2.stream.NcStreamProto.Variable returnMe = result;
         result = null;
         return returnMe;
@@ -2171,17 +1287,11 @@ public final class NcStreamProto {
           }
           result.atts_.addAll(other.atts_);
         }
+        if (other.hasUnsigned()) {
+          setUnsigned(other.getUnsigned());
+        }
         if (other.hasData()) {
           setData(other.getData());
-        }
-        if (other.hasAxis()) {
-          setAxis(other.getAxis());
-        }
-        if (!other.coordSys_.isEmpty()) {
-          if (result.coordSys_.isEmpty()) {
-            result.coordSys_ = new java.util.ArrayList<java.lang.String>();
-          }
-          result.coordSys_.addAll(other.coordSys_);
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -2243,22 +1353,12 @@ public final class NcStreamProto {
               addAtts(subBuilder.buildPartial());
               break;
             }
-            case 42: {
+            case 40: {
+              setUnsigned(input.readBool());
+              break;
+            }
+            case 50: {
               setData(input.readBytes());
-              break;
-            }
-            case 48: {
-              int rawValue = input.readEnum();
-              ucar.nc2.stream.NcStreamProto.AxisType value = ucar.nc2.stream.NcStreamProto.AxisType.valueOf(rawValue);
-              if (value == null) {
-                unknownFields.mergeVarintField(6, rawValue);
-              } else {
-                setAxis(value);
-              }
-              break;
-            }
-            case 58: {
-              addCoordSys(input.readString());
               break;
             }
           }
@@ -2410,7 +1510,25 @@ public final class NcStreamProto {
         return this;
       }
       
-      // optional bytes data = 5;
+      // optional bool unsigned = 5;
+      public boolean hasUnsigned() {
+        return result.hasUnsigned();
+      }
+      public boolean getUnsigned() {
+        return result.getUnsigned();
+      }
+      public Builder setUnsigned(boolean value) {
+        result.hasUnsigned = true;
+        result.unsigned_ = value;
+        return this;
+      }
+      public Builder clearUnsigned() {
+        result.hasUnsigned = false;
+        result.unsigned_ = false;
+        return this;
+      }
+      
+      // optional bytes data = 6;
       public boolean hasData() {
         return result.hasData();
       }
@@ -2428,67 +1546,6 @@ public final class NcStreamProto {
       public Builder clearData() {
         result.hasData = false;
         result.data_ = com.google.protobuf.ByteString.EMPTY;
-        return this;
-      }
-      
-      // optional .ncstream.AxisType axis = 6;
-      public boolean hasAxis() {
-        return result.hasAxis();
-      }
-      public ucar.nc2.stream.NcStreamProto.AxisType getAxis() {
-        return result.getAxis();
-      }
-      public Builder setAxis(ucar.nc2.stream.NcStreamProto.AxisType value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        result.hasAxis = true;
-        result.axis_ = value;
-        return this;
-      }
-      public Builder clearAxis() {
-        result.hasAxis = false;
-        result.axis_ = ucar.nc2.stream.NcStreamProto.AxisType.RunTime;
-        return this;
-      }
-      
-      // repeated string coordSys = 7;
-      public java.util.List<java.lang.String> getCoordSysList() {
-        return java.util.Collections.unmodifiableList(result.coordSys_);
-      }
-      public int getCoordSysCount() {
-        return result.getCoordSysCount();
-      }
-      public java.lang.String getCoordSys(int index) {
-        return result.getCoordSys(index);
-      }
-      public Builder setCoordSys(int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  result.coordSys_.set(index, value);
-        return this;
-      }
-      public Builder addCoordSys(java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  if (result.coordSys_.isEmpty()) {
-          result.coordSys_ = new java.util.ArrayList<java.lang.String>();
-        }
-        result.coordSys_.add(value);
-        return this;
-      }
-      public Builder addAllCoordSys(
-          java.lang.Iterable<? extends java.lang.String> values) {
-        if (result.coordSys_.isEmpty()) {
-          result.coordSys_ = new java.util.ArrayList<java.lang.String>();
-        }
-        super.addAll(values, result.coordSys_);
-        return this;
-      }
-      public Builder clearCoordSys() {
-        result.coordSys_ = java.util.Collections.emptyList();
         return this;
       }
     }
@@ -2585,18 +1642,6 @@ public final class NcStreamProto {
       return structs_.get(index);
     }
     
-    // repeated string coordSys = 7;
-    public static final int COORDSYS_FIELD_NUMBER = 7;
-    private java.util.List<java.lang.String> coordSys_ =
-      java.util.Collections.emptyList();
-    public java.util.List<java.lang.String> getCoordSysList() {
-      return coordSys_;
-    }
-    public int getCoordSysCount() { return coordSys_.size(); }
-    public java.lang.String getCoordSys(int index) {
-      return coordSys_.get(index);
-    }
-    
     @Override
     public final boolean isInitialized() {
       if (!hasName) return false;
@@ -2634,9 +1679,6 @@ public final class NcStreamProto {
       for (ucar.nc2.stream.NcStreamProto.Structure element : getStructsList()) {
         output.writeMessage(6, element);
       }
-      for (java.lang.String element : getCoordSysList()) {
-        output.writeString(7, element);
-      }
       getUnknownFields().writeTo(output);
     }
     
@@ -2670,15 +1712,6 @@ public final class NcStreamProto {
       for (ucar.nc2.stream.NcStreamProto.Structure element : getStructsList()) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(6, element);
-      }
-      {
-        int dataSize = 0;
-        for (java.lang.String element : getCoordSysList()) {
-          dataSize += com.google.protobuf.CodedOutputStream
-            .computeStringSizeNoTag(element);
-        }
-        size += dataSize;
-        size += 1 * getCoordSysList().size();
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -2820,10 +1853,6 @@ public final class NcStreamProto {
           result.structs_ =
             java.util.Collections.unmodifiableList(result.structs_);
         }
-        if (result.coordSys_ != java.util.Collections.EMPTY_LIST) {
-          result.coordSys_ =
-            java.util.Collections.unmodifiableList(result.coordSys_);
-        }
         ucar.nc2.stream.NcStreamProto.Structure returnMe = result;
         result = null;
         return returnMe;
@@ -2870,12 +1899,6 @@ public final class NcStreamProto {
             result.structs_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Structure>();
           }
           result.structs_.addAll(other.structs_);
-        }
-        if (!other.coordSys_.isEmpty()) {
-          if (result.coordSys_.isEmpty()) {
-            result.coordSys_ = new java.util.ArrayList<java.lang.String>();
-          }
-          result.coordSys_.addAll(other.coordSys_);
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -2947,10 +1970,6 @@ public final class NcStreamProto {
               ucar.nc2.stream.NcStreamProto.Structure.Builder subBuilder = ucar.nc2.stream.NcStreamProto.Structure.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addStructs(subBuilder.buildPartial());
-              break;
-            }
-            case 58: {
-              addCoordSys(input.readString());
               break;
             }
           }
@@ -3203,46 +2222,6 @@ public final class NcStreamProto {
         result.structs_ = java.util.Collections.emptyList();
         return this;
       }
-      
-      // repeated string coordSys = 7;
-      public java.util.List<java.lang.String> getCoordSysList() {
-        return java.util.Collections.unmodifiableList(result.coordSys_);
-      }
-      public int getCoordSysCount() {
-        return result.getCoordSysCount();
-      }
-      public java.lang.String getCoordSys(int index) {
-        return result.getCoordSys(index);
-      }
-      public Builder setCoordSys(int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  result.coordSys_.set(index, value);
-        return this;
-      }
-      public Builder addCoordSys(java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  if (result.coordSys_.isEmpty()) {
-          result.coordSys_ = new java.util.ArrayList<java.lang.String>();
-        }
-        result.coordSys_.add(value);
-        return this;
-      }
-      public Builder addAllCoordSys(
-          java.lang.Iterable<? extends java.lang.String> values) {
-        if (result.coordSys_.isEmpty()) {
-          result.coordSys_ = new java.util.ArrayList<java.lang.String>();
-        }
-        super.addAll(values, result.coordSys_);
-        return this;
-      }
-      public Builder clearCoordSys() {
-        result.coordSys_ = java.util.Collections.emptyList();
-        return this;
-      }
     }
     
     static {
@@ -3342,30 +2321,6 @@ public final class NcStreamProto {
       return groups_.get(index);
     }
     
-    // repeated .ncstream.CoordinateSystem coordSys = 7;
-    public static final int COORDSYS_FIELD_NUMBER = 7;
-    private java.util.List<ucar.nc2.stream.NcStreamProto.CoordinateSystem> coordSys_ =
-      java.util.Collections.emptyList();
-    public java.util.List<ucar.nc2.stream.NcStreamProto.CoordinateSystem> getCoordSysList() {
-      return coordSys_;
-    }
-    public int getCoordSysCount() { return coordSys_.size(); }
-    public ucar.nc2.stream.NcStreamProto.CoordinateSystem getCoordSys(int index) {
-      return coordSys_.get(index);
-    }
-    
-    // repeated .ncstream.CoordinateTransform coordTrans = 8;
-    public static final int COORDTRANS_FIELD_NUMBER = 8;
-    private java.util.List<ucar.nc2.stream.NcStreamProto.CoordinateTransform> coordTrans_ =
-      java.util.Collections.emptyList();
-    public java.util.List<ucar.nc2.stream.NcStreamProto.CoordinateTransform> getCoordTransList() {
-      return coordTrans_;
-    }
-    public int getCoordTransCount() { return coordTrans_.size(); }
-    public ucar.nc2.stream.NcStreamProto.CoordinateTransform getCoordTrans(int index) {
-      return coordTrans_.get(index);
-    }
-    
     @Override
     public final boolean isInitialized() {
       if (!hasName) return false;
@@ -3379,12 +2334,6 @@ public final class NcStreamProto {
         if (!element.isInitialized()) return false;
       }
       for (ucar.nc2.stream.NcStreamProto.Group element : getGroupsList()) {
-        if (!element.isInitialized()) return false;
-      }
-      for (ucar.nc2.stream.NcStreamProto.CoordinateSystem element : getCoordSysList()) {
-        if (!element.isInitialized()) return false;
-      }
-      for (ucar.nc2.stream.NcStreamProto.CoordinateTransform element : getCoordTransList()) {
         if (!element.isInitialized()) return false;
       }
       return true;
@@ -3410,12 +2359,6 @@ public final class NcStreamProto {
       }
       for (ucar.nc2.stream.NcStreamProto.Group element : getGroupsList()) {
         output.writeMessage(6, element);
-      }
-      for (ucar.nc2.stream.NcStreamProto.CoordinateSystem element : getCoordSysList()) {
-        output.writeMessage(7, element);
-      }
-      for (ucar.nc2.stream.NcStreamProto.CoordinateTransform element : getCoordTransList()) {
-        output.writeMessage(8, element);
       }
       getUnknownFields().writeTo(output);
     }
@@ -3450,14 +2393,6 @@ public final class NcStreamProto {
       for (ucar.nc2.stream.NcStreamProto.Group element : getGroupsList()) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(6, element);
-      }
-      for (ucar.nc2.stream.NcStreamProto.CoordinateSystem element : getCoordSysList()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(7, element);
-      }
-      for (ucar.nc2.stream.NcStreamProto.CoordinateTransform element : getCoordTransList()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(8, element);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -3603,14 +2538,6 @@ public final class NcStreamProto {
           result.groups_ =
             java.util.Collections.unmodifiableList(result.groups_);
         }
-        if (result.coordSys_ != java.util.Collections.EMPTY_LIST) {
-          result.coordSys_ =
-            java.util.Collections.unmodifiableList(result.coordSys_);
-        }
-        if (result.coordTrans_ != java.util.Collections.EMPTY_LIST) {
-          result.coordTrans_ =
-            java.util.Collections.unmodifiableList(result.coordTrans_);
-        }
         ucar.nc2.stream.NcStreamProto.Group returnMe = result;
         result = null;
         return returnMe;
@@ -3660,18 +2587,6 @@ public final class NcStreamProto {
             result.groups_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Group>();
           }
           result.groups_.addAll(other.groups_);
-        }
-        if (!other.coordSys_.isEmpty()) {
-          if (result.coordSys_.isEmpty()) {
-            result.coordSys_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.CoordinateSystem>();
-          }
-          result.coordSys_.addAll(other.coordSys_);
-        }
-        if (!other.coordTrans_.isEmpty()) {
-          if (result.coordTrans_.isEmpty()) {
-            result.coordTrans_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.CoordinateTransform>();
-          }
-          result.coordTrans_.addAll(other.coordTrans_);
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -3739,18 +2654,6 @@ public final class NcStreamProto {
               ucar.nc2.stream.NcStreamProto.Group.Builder subBuilder = ucar.nc2.stream.NcStreamProto.Group.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addGroups(subBuilder.buildPartial());
-              break;
-            }
-            case 58: {
-              ucar.nc2.stream.NcStreamProto.CoordinateSystem.Builder subBuilder = ucar.nc2.stream.NcStreamProto.CoordinateSystem.newBuilder();
-              input.readMessage(subBuilder, extensionRegistry);
-              addCoordSys(subBuilder.buildPartial());
-              break;
-            }
-            case 66: {
-              ucar.nc2.stream.NcStreamProto.CoordinateTransform.Builder subBuilder = ucar.nc2.stream.NcStreamProto.CoordinateTransform.newBuilder();
-              input.readMessage(subBuilder, extensionRegistry);
-              addCoordTrans(subBuilder.buildPartial());
               break;
             }
           }
@@ -4033,108 +2936,6 @@ public final class NcStreamProto {
         result.groups_ = java.util.Collections.emptyList();
         return this;
       }
-      
-      // repeated .ncstream.CoordinateSystem coordSys = 7;
-      public java.util.List<ucar.nc2.stream.NcStreamProto.CoordinateSystem> getCoordSysList() {
-        return java.util.Collections.unmodifiableList(result.coordSys_);
-      }
-      public int getCoordSysCount() {
-        return result.getCoordSysCount();
-      }
-      public ucar.nc2.stream.NcStreamProto.CoordinateSystem getCoordSys(int index) {
-        return result.getCoordSys(index);
-      }
-      public Builder setCoordSys(int index, ucar.nc2.stream.NcStreamProto.CoordinateSystem value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        result.coordSys_.set(index, value);
-        return this;
-      }
-      public Builder setCoordSys(int index, ucar.nc2.stream.NcStreamProto.CoordinateSystem.Builder builderForValue) {
-        result.coordSys_.set(index, builderForValue.build());
-        return this;
-      }
-      public Builder addCoordSys(ucar.nc2.stream.NcStreamProto.CoordinateSystem value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        if (result.coordSys_.isEmpty()) {
-          result.coordSys_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.CoordinateSystem>();
-        }
-        result.coordSys_.add(value);
-        return this;
-      }
-      public Builder addCoordSys(ucar.nc2.stream.NcStreamProto.CoordinateSystem.Builder builderForValue) {
-        if (result.coordSys_.isEmpty()) {
-          result.coordSys_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.CoordinateSystem>();
-        }
-        result.coordSys_.add(builderForValue.build());
-        return this;
-      }
-      public Builder addAllCoordSys(
-          java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.CoordinateSystem> values) {
-        if (result.coordSys_.isEmpty()) {
-          result.coordSys_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.CoordinateSystem>();
-        }
-        super.addAll(values, result.coordSys_);
-        return this;
-      }
-      public Builder clearCoordSys() {
-        result.coordSys_ = java.util.Collections.emptyList();
-        return this;
-      }
-      
-      // repeated .ncstream.CoordinateTransform coordTrans = 8;
-      public java.util.List<ucar.nc2.stream.NcStreamProto.CoordinateTransform> getCoordTransList() {
-        return java.util.Collections.unmodifiableList(result.coordTrans_);
-      }
-      public int getCoordTransCount() {
-        return result.getCoordTransCount();
-      }
-      public ucar.nc2.stream.NcStreamProto.CoordinateTransform getCoordTrans(int index) {
-        return result.getCoordTrans(index);
-      }
-      public Builder setCoordTrans(int index, ucar.nc2.stream.NcStreamProto.CoordinateTransform value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        result.coordTrans_.set(index, value);
-        return this;
-      }
-      public Builder setCoordTrans(int index, ucar.nc2.stream.NcStreamProto.CoordinateTransform.Builder builderForValue) {
-        result.coordTrans_.set(index, builderForValue.build());
-        return this;
-      }
-      public Builder addCoordTrans(ucar.nc2.stream.NcStreamProto.CoordinateTransform value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        if (result.coordTrans_.isEmpty()) {
-          result.coordTrans_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.CoordinateTransform>();
-        }
-        result.coordTrans_.add(value);
-        return this;
-      }
-      public Builder addCoordTrans(ucar.nc2.stream.NcStreamProto.CoordinateTransform.Builder builderForValue) {
-        if (result.coordTrans_.isEmpty()) {
-          result.coordTrans_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.CoordinateTransform>();
-        }
-        result.coordTrans_.add(builderForValue.build());
-        return this;
-      }
-      public Builder addAllCoordTrans(
-          java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.CoordinateTransform> values) {
-        if (result.coordTrans_.isEmpty()) {
-          result.coordTrans_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.CoordinateTransform>();
-        }
-        super.addAll(values, result.coordTrans_);
-        return this;
-      }
-      public Builder clearCoordTrans() {
-        result.coordTrans_ = java.util.Collections.emptyList();
-        return this;
-      }
     }
     
     static {
@@ -4167,22 +2968,29 @@ public final class NcStreamProto {
       return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Header_fieldAccessorTable;
     }
     
-    // required fixed64 indexPos = 1;
-    public static final int INDEXPOS_FIELD_NUMBER = 1;
-    private boolean hasIndexPos;
-    private long indexPos_ = 0L;
-    public boolean hasIndexPos() { return hasIndexPos; }
-    public long getIndexPos() { return indexPos_; }
+    // optional string location = 1;
+    public static final int LOCATION_FIELD_NUMBER = 1;
+    private boolean hasLocation;
+    private java.lang.String location_ = "";
+    public boolean hasLocation() { return hasLocation; }
+    public java.lang.String getLocation() { return location_; }
     
-    // optional string name = 2;
-    public static final int NAME_FIELD_NUMBER = 2;
-    private boolean hasName;
-    private java.lang.String name_ = "";
-    public boolean hasName() { return hasName; }
-    public java.lang.String getName() { return name_; }
+    // optional string title = 2;
+    public static final int TITLE_FIELD_NUMBER = 2;
+    private boolean hasTitle;
+    private java.lang.String title_ = "";
+    public boolean hasTitle() { return hasTitle; }
+    public java.lang.String getTitle() { return title_; }
     
-    // required .ncstream.Group root = 3;
-    public static final int ROOT_FIELD_NUMBER = 3;
+    // optional string id = 3;
+    public static final int ID_FIELD_NUMBER = 3;
+    private boolean hasId;
+    private java.lang.String id_ = "";
+    public boolean hasId() { return hasId; }
+    public java.lang.String getId() { return id_; }
+    
+    // required .ncstream.Group root = 4;
+    public static final int ROOT_FIELD_NUMBER = 4;
     private boolean hasRoot;
     private ucar.nc2.stream.NcStreamProto.Group root_ = ucar.nc2.stream.NcStreamProto.Group.getDefaultInstance();
     public boolean hasRoot() { return hasRoot; }
@@ -4190,7 +2998,6 @@ public final class NcStreamProto {
     
     @Override
     public final boolean isInitialized() {
-      if (!hasIndexPos) return false;
       if (!hasRoot) return false;
       if (!getRoot().isInitialized()) return false;
       return true;
@@ -4199,14 +3006,17 @@ public final class NcStreamProto {
     @Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (hasIndexPos()) {
-        output.writeFixed64(1, getIndexPos());
+      if (hasLocation()) {
+        output.writeString(1, getLocation());
       }
-      if (hasName()) {
-        output.writeString(2, getName());
+      if (hasTitle()) {
+        output.writeString(2, getTitle());
+      }
+      if (hasId()) {
+        output.writeString(3, getId());
       }
       if (hasRoot()) {
-        output.writeMessage(3, getRoot());
+        output.writeMessage(4, getRoot());
       }
       getUnknownFields().writeTo(output);
     }
@@ -4218,17 +3028,21 @@ public final class NcStreamProto {
       if (size != -1) return size;
     
       size = 0;
-      if (hasIndexPos()) {
+      if (hasLocation()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeFixed64Size(1, getIndexPos());
+          .computeStringSize(1, getLocation());
       }
-      if (hasName()) {
+      if (hasTitle()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeStringSize(2, getName());
+          .computeStringSize(2, getTitle());
+      }
+      if (hasId()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeStringSize(3, getId());
       }
       if (hasRoot()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(3, getRoot());
+          .computeMessageSize(4, getRoot());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -4371,11 +3185,14 @@ public final class NcStreamProto {
       
       public Builder mergeFrom(ucar.nc2.stream.NcStreamProto.Header other) {
         if (other == ucar.nc2.stream.NcStreamProto.Header.getDefaultInstance()) return this;
-        if (other.hasIndexPos()) {
-          setIndexPos(other.getIndexPos());
+        if (other.hasLocation()) {
+          setLocation(other.getLocation());
         }
-        if (other.hasName()) {
-          setName(other.getName());
+        if (other.hasTitle()) {
+          setTitle(other.getTitle());
+        }
+        if (other.hasId()) {
+          setId(other.getId());
         }
         if (other.hasRoot()) {
           mergeRoot(other.getRoot());
@@ -4414,15 +3231,19 @@ public final class NcStreamProto {
               }
               break;
             }
-            case 9: {
-              setIndexPos(input.readFixed64());
+            case 10: {
+              setLocation(input.readString());
               break;
             }
             case 18: {
-              setName(input.readString());
+              setTitle(input.readString());
               break;
             }
             case 26: {
+              setId(input.readString());
+              break;
+            }
+            case 34: {
               ucar.nc2.stream.NcStreamProto.Group.Builder subBuilder = ucar.nc2.stream.NcStreamProto.Group.newBuilder();
               if (hasRoot()) {
                 subBuilder.mergeFrom(getRoot());
@@ -4436,46 +3257,70 @@ public final class NcStreamProto {
       }
       
       
-      // required fixed64 indexPos = 1;
-      public boolean hasIndexPos() {
-        return result.hasIndexPos();
+      // optional string location = 1;
+      public boolean hasLocation() {
+        return result.hasLocation();
       }
-      public long getIndexPos() {
-        return result.getIndexPos();
+      public java.lang.String getLocation() {
+        return result.getLocation();
       }
-      public Builder setIndexPos(long value) {
-        result.hasIndexPos = true;
-        result.indexPos_ = value;
-        return this;
-      }
-      public Builder clearIndexPos() {
-        result.hasIndexPos = false;
-        result.indexPos_ = 0L;
-        return this;
-      }
-      
-      // optional string name = 2;
-      public boolean hasName() {
-        return result.hasName();
-      }
-      public java.lang.String getName() {
-        return result.getName();
-      }
-      public Builder setName(java.lang.String value) {
+      public Builder setLocation(java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  result.hasName = true;
-        result.name_ = value;
+  result.hasLocation = true;
+        result.location_ = value;
         return this;
       }
-      public Builder clearName() {
-        result.hasName = false;
-        result.name_ = "";
+      public Builder clearLocation() {
+        result.hasLocation = false;
+        result.location_ = "";
         return this;
       }
       
-      // required .ncstream.Group root = 3;
+      // optional string title = 2;
+      public boolean hasTitle() {
+        return result.hasTitle();
+      }
+      public java.lang.String getTitle() {
+        return result.getTitle();
+      }
+      public Builder setTitle(java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  result.hasTitle = true;
+        result.title_ = value;
+        return this;
+      }
+      public Builder clearTitle() {
+        result.hasTitle = false;
+        result.title_ = "";
+        return this;
+      }
+      
+      // optional string id = 3;
+      public boolean hasId() {
+        return result.hasId();
+      }
+      public java.lang.String getId() {
+        return result.getId();
+      }
+      public Builder setId(java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  result.hasId = true;
+        result.id_ = value;
+        return this;
+      }
+      public Builder clearId() {
+        result.hasId = false;
+        result.id_ = "";
+        return this;
+      }
+      
+      // required .ncstream.Group root = 4;
       public boolean hasRoot() {
         return result.hasRoot();
       }
@@ -5575,16 +4420,6 @@ public final class NcStreamProto {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_ncstream_Attribute_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_ncstream_CoordinateSystem_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_ncstream_CoordinateSystem_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_ncstream_CoordinateTransform_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_ncstream_CoordinateTransform_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_ncstream_Dimension_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -5638,46 +4473,36 @@ public final class NcStreamProto {
       " \002(\0162\030.ncstream.Attribute.Type\022\013\n\003len\030\003 " +
       "\002(\r\022\014\n\004data\030\004 \002(\014\"Q\n\004Type\022\n\n\006STRING\020\000\022\010\n" +
       "\004BYTE\020\001\022\t\n\005SHORT\020\002\022\007\n\003INT\020\003\022\010\n\004LONG\020\004\022\t\n" +
-      "\005FLOAT\020\005\022\n\n\006DOUBLE\020\006\"A\n\020CoordinateSystem" +
-      "\022\014\n\004name\030\001 \002(\t\022\014\n\004axes\030\002 \003(\t\022\021\n\ttransfor" +
-      "m\030\003 \003(\t\"F\n\023CoordinateTransform\022\014\n\004name\030\001" +
-      " \002(\t\022!\n\004atts\030\002 \003(\0132\023.ncstream.Attribute\"" +
-      "a\n\tDimension\022\014\n\004name\030\001 \001(\t\022\016\n\006length\030\002 \001" +
-      "(\004\022\023\n\013isUnlimited\030\003 \001(\010\022\016\n\006isVlen\030\004 \001(\010\022" +
-      "\021\n\tisPrivate\030\005 \001(\010\"\307\001\n\010Variable\022\014\n\004name\030" +
-      "\001 \002(\t\022$\n\010dataType\030\002 \002(\0162\022.ncstream.DataT" +
-      "ype\022\"\n\005shape\030\003 \003(\0132\023.ncstream.Dimension\022" +
-      "!\n\004atts\030\004 \003(\0132\023.ncstream.Attribute\022\014\n\004da" +
-      "ta\030\005 \001(\014\022 \n\004axis\030\006 \001(\0162\022.ncstream.AxisTy" +
-      "pe\022\020\n\010coordSys\030\007 \003(\t\"\340\001\n\tStructure\022\014\n\004na" +
-      "me\030\001 \002(\t\022$\n\010dataType\030\002 \002(\0162\022.ncstream.Da" +
-      "taType\022\"\n\005shape\030\003 \003(\0132\023.ncstream.Dimensi" +
-      "on\022!\n\004atts\030\004 \003(\0132\023.ncstream.Attribute\022 \n" +
-      "\004vars\030\005 \003(\0132\022.ncstream.Variable\022$\n\007struc" +
-      "ts\030\006 \003(\0132\023.ncstream.Structure\022\020\n\010coordSy" +
-      "s\030\007 \003(\t\"\245\002\n\005Group\022\014\n\004name\030\001 \002(\t\022!\n\004dims\030" +
-      "\002 \003(\0132\023.ncstream.Dimension\022 \n\004vars\030\003 \003(\013" +
-      "2\022.ncstream.Variable\022$\n\007structs\030\004 \003(\0132\023." +
-      "ncstream.Structure\022!\n\004atts\030\005 \003(\0132\023.ncstr" +
-      "eam.Attribute\022\037\n\006groups\030\006 \003(\0132\017.ncstream" +
-      ".Group\022,\n\010coordSys\030\007 \003(\0132\032.ncstream.Coor" +
-      "dinateSystem\0221\n\ncoordTrans\030\010 \003(\0132\035.ncstr" +
-      "eam.CoordinateTransform\"G\n\006Header\022\020\n\010ind" +
-      "exPos\030\001 \002(\006\022\014\n\004name\030\002 \001(\t\022\035\n\004root\030\003 \002(\0132" +
-      "\017.ncstream.Group\"a\n\004Data\022\017\n\007varName\030\001 \002(" +
-      "\t\022$\n\010dataType\030\002 \002(\0162\022.ncstream.DataType\022" +
-      "\"\n\007section\030\003 \002(\0132\021.ncstream.Section\"4\n\005R" +
-      "ange\022\r\n\005start\030\001 \001(\004\022\014\n\004size\030\002 \002(\004\022\016\n\006str" +
-      "ide\030\003 \001(\004\")\n\007Section\022\036\n\005range\030\001 \003(\0132\017.nc" +
-      "stream.Range*\265\001\n\010AxisType\022\013\n\007RunTime\020\000\022\014" +
-      "\n\010Ensemble\020\001\022\010\n\004Time\020\002\022\010\n\004GeoZ\020\003\022\010\n\004GeoY" +
-      "\020\004\022\010\n\004GeoX\020\005\022\007\n\003Lat\020\006\022\007\n\003Lon\020\007\022\n\n\006Height" +
-      "\020\010\022\014\n\010Pressure\020\t\022\021\n\rRadialAzimuth\020\n\022\022\n\016R" +
-      "adialDistance\020\013\022\023\n\017RadialElevation\020\014*|\n\010" +
-      "DataType\022\010\n\004CHAR\020\000\022\010\n\004BYTE\020\001\022\t\n\005SHORT\020\002\022" +
-      "\007\n\003INT\020\003\022\010\n\004LONG\020\004\022\t\n\005FLOAT\020\005\022\n\n\006DOUBLE\020" +
-      "\006\022\n\n\006STRING\020\007\022\r\n\tSTRUCTURE\020\010\022\014\n\010SEQUENCE" +
-      "\020\tB \n\017ucar.nc2.streamB\rNcStreamProto";
+      "\005FLOAT\020\005\022\n\n\006DOUBLE\020\006\"a\n\tDimension\022\014\n\004nam" +
+      "e\030\001 \001(\t\022\016\n\006length\030\002 \001(\004\022\023\n\013isUnlimited\030\003" +
+      " \001(\010\022\016\n\006isVlen\030\004 \001(\010\022\021\n\tisPrivate\030\005 \001(\010\"" +
+      "\245\001\n\010Variable\022\014\n\004name\030\001 \002(\t\022$\n\010dataType\030\002" +
+      " \002(\0162\022.ncstream.DataType\022\"\n\005shape\030\003 \003(\0132" +
+      "\023.ncstream.Dimension\022!\n\004atts\030\004 \003(\0132\023.ncs" +
+      "tream.Attribute\022\020\n\010unsigned\030\005 \001(\010\022\014\n\004dat" +
+      "a\030\006 \001(\014\"\316\001\n\tStructure\022\014\n\004name\030\001 \002(\t\022$\n\010d" +
+      "ataType\030\002 \002(\0162\022.ncstream.DataType\022\"\n\005sha" +
+      "pe\030\003 \003(\0132\023.ncstream.Dimension\022!\n\004atts\030\004 " +
+      "\003(\0132\023.ncstream.Attribute\022 \n\004vars\030\005 \003(\0132\022" +
+      ".ncstream.Variable\022$\n\007structs\030\006 \003(\0132\023.nc" +
+      "stream.Structure\"\304\001\n\005Group\022\014\n\004name\030\001 \002(\t" +
+      "\022!\n\004dims\030\002 \003(\0132\023.ncstream.Dimension\022 \n\004v" +
+      "ars\030\003 \003(\0132\022.ncstream.Variable\022$\n\007structs" +
+      "\030\004 \003(\0132\023.ncstream.Structure\022!\n\004atts\030\005 \003(" +
+      "\0132\023.ncstream.Attribute\022\037\n\006groups\030\006 \003(\0132\017" +
+      ".ncstream.Group\"T\n\006Header\022\020\n\010location\030\001 " +
+      "\001(\t\022\r\n\005title\030\002 \001(\t\022\n\n\002id\030\003 \001(\t\022\035\n\004root\030\004" +
+      " \002(\0132\017.ncstream.Group\"a\n\004Data\022\017\n\007varName" +
+      "\030\001 \002(\t\022$\n\010dataType\030\002 \002(\0162\022.ncstream.Data" +
+      "Type\022\"\n\007section\030\003 \002(\0132\021.ncstream.Section" +
+      "\"4\n\005Range\022\r\n\005start\030\001 \001(\004\022\014\n\004size\030\002 \002(\004\022\016" +
+      "\n\006stride\030\003 \001(\004\")\n\007Section\022\036\n\005range\030\001 \003(\013" +
+      "2\017.ncstream.Range*\251\001\n\010DataType\022\010\n\004CHAR\020\000" +
+      "\022\010\n\004BYTE\020\001\022\t\n\005SHORT\020\002\022\007\n\003INT\020\003\022\010\n\004LONG\020\004" +
+      "\022\t\n\005FLOAT\020\005\022\n\n\006DOUBLE\020\006\022\n\n\006STRING\020\007\022\r\n\tS" +
+      "TRUCTURE\020\010\022\014\n\010SEQUENCE\020\t\022\t\n\005ENUM1\020\n\022\t\n\005E" +
+      "NUM2\020\013\022\t\n\005ENUM4\020\014\022\n\n\006OPAQUE\020\rB \n\017ucar.nc" +
+      "2.streamB\rNcStreamProto";
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
         public com.google.protobuf.ExtensionRegistry assignDescriptors(
@@ -5691,24 +4516,8 @@ public final class NcStreamProto {
               new java.lang.String[] { "Name", "Type", "Len", "Data", },
               ucar.nc2.stream.NcStreamProto.Attribute.class,
               ucar.nc2.stream.NcStreamProto.Attribute.Builder.class);
-          internal_static_ncstream_CoordinateSystem_descriptor =
-            getDescriptor().getMessageTypes().get(1);
-          internal_static_ncstream_CoordinateSystem_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_ncstream_CoordinateSystem_descriptor,
-              new java.lang.String[] { "Name", "Axes", "Transform", },
-              ucar.nc2.stream.NcStreamProto.CoordinateSystem.class,
-              ucar.nc2.stream.NcStreamProto.CoordinateSystem.Builder.class);
-          internal_static_ncstream_CoordinateTransform_descriptor =
-            getDescriptor().getMessageTypes().get(2);
-          internal_static_ncstream_CoordinateTransform_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_ncstream_CoordinateTransform_descriptor,
-              new java.lang.String[] { "Name", "Atts", },
-              ucar.nc2.stream.NcStreamProto.CoordinateTransform.class,
-              ucar.nc2.stream.NcStreamProto.CoordinateTransform.Builder.class);
           internal_static_ncstream_Dimension_descriptor =
-            getDescriptor().getMessageTypes().get(3);
+            getDescriptor().getMessageTypes().get(1);
           internal_static_ncstream_Dimension_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ncstream_Dimension_descriptor,
@@ -5716,39 +4525,39 @@ public final class NcStreamProto {
               ucar.nc2.stream.NcStreamProto.Dimension.class,
               ucar.nc2.stream.NcStreamProto.Dimension.Builder.class);
           internal_static_ncstream_Variable_descriptor =
-            getDescriptor().getMessageTypes().get(4);
+            getDescriptor().getMessageTypes().get(2);
           internal_static_ncstream_Variable_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ncstream_Variable_descriptor,
-              new java.lang.String[] { "Name", "DataType", "Shape", "Atts", "Data", "Axis", "CoordSys", },
+              new java.lang.String[] { "Name", "DataType", "Shape", "Atts", "Unsigned", "Data", },
               ucar.nc2.stream.NcStreamProto.Variable.class,
               ucar.nc2.stream.NcStreamProto.Variable.Builder.class);
           internal_static_ncstream_Structure_descriptor =
-            getDescriptor().getMessageTypes().get(5);
+            getDescriptor().getMessageTypes().get(3);
           internal_static_ncstream_Structure_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ncstream_Structure_descriptor,
-              new java.lang.String[] { "Name", "DataType", "Shape", "Atts", "Vars", "Structs", "CoordSys", },
+              new java.lang.String[] { "Name", "DataType", "Shape", "Atts", "Vars", "Structs", },
               ucar.nc2.stream.NcStreamProto.Structure.class,
               ucar.nc2.stream.NcStreamProto.Structure.Builder.class);
           internal_static_ncstream_Group_descriptor =
-            getDescriptor().getMessageTypes().get(6);
+            getDescriptor().getMessageTypes().get(4);
           internal_static_ncstream_Group_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ncstream_Group_descriptor,
-              new java.lang.String[] { "Name", "Dims", "Vars", "Structs", "Atts", "Groups", "CoordSys", "CoordTrans", },
+              new java.lang.String[] { "Name", "Dims", "Vars", "Structs", "Atts", "Groups", },
               ucar.nc2.stream.NcStreamProto.Group.class,
               ucar.nc2.stream.NcStreamProto.Group.Builder.class);
           internal_static_ncstream_Header_descriptor =
-            getDescriptor().getMessageTypes().get(7);
+            getDescriptor().getMessageTypes().get(5);
           internal_static_ncstream_Header_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ncstream_Header_descriptor,
-              new java.lang.String[] { "IndexPos", "Name", "Root", },
+              new java.lang.String[] { "Location", "Title", "Id", "Root", },
               ucar.nc2.stream.NcStreamProto.Header.class,
               ucar.nc2.stream.NcStreamProto.Header.Builder.class);
           internal_static_ncstream_Data_descriptor =
-            getDescriptor().getMessageTypes().get(8);
+            getDescriptor().getMessageTypes().get(6);
           internal_static_ncstream_Data_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ncstream_Data_descriptor,
@@ -5756,7 +4565,7 @@ public final class NcStreamProto {
               ucar.nc2.stream.NcStreamProto.Data.class,
               ucar.nc2.stream.NcStreamProto.Data.Builder.class);
           internal_static_ncstream_Range_descriptor =
-            getDescriptor().getMessageTypes().get(9);
+            getDescriptor().getMessageTypes().get(7);
           internal_static_ncstream_Range_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ncstream_Range_descriptor,
@@ -5764,7 +4573,7 @@ public final class NcStreamProto {
               ucar.nc2.stream.NcStreamProto.Range.class,
               ucar.nc2.stream.NcStreamProto.Range.Builder.class);
           internal_static_ncstream_Section_descriptor =
-            getDescriptor().getMessageTypes().get(10);
+            getDescriptor().getMessageTypes().get(8);
           internal_static_ncstream_Section_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ncstream_Section_descriptor,

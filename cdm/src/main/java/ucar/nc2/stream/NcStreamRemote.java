@@ -48,7 +48,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 /**
- * A remote NetcdfFile, using ncStream to communicate.
+ * A remote NetcdfFile, using ncstream to communicate.
  *
  * @author caron
  * @since Feb 7, 2009
@@ -150,7 +150,6 @@ public class NcStreamRemote extends ucar.nc2.NetcdfFile {  // LOOK perhaps shoul
     try {
       method = new GetMethod(sbuff.toString());
       method.setFollowRedirects(true);
-      if (showRequest) System.out.printf(" ncstream readData %s %n", sbuff);
       int statusCode = httpClient.executeMethod(method);
 
       if (statusCode == 404)

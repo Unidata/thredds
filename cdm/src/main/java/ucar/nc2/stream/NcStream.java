@@ -4,6 +4,7 @@ import ucar.nc2.*;
 import ucar.ma2.*;
 
 import java.nio.ByteBuffer;
+import java.nio.channels.WritableByteChannel;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,6 +17,8 @@ import com.google.protobuf.InvalidProtocolBufferException;
  * Defines the ncstream format, along with ncStream.proto.
  * cd /dev/tds/thredds/cdm/src/main/java
  * protoc --proto_path=. --java_out=. ucar/nc2/stream/ncStream.proto
+ *
+ * @see "http://www.unidata.ucar.edu/software/netcdf-java/stream/NcStream.html"
  */
 public class NcStream {
   //  must start with this "CDFS"
@@ -24,6 +27,8 @@ public class NcStream {
   static final byte[] MAGIC_HEADER = new byte[]{(byte) 0xad, (byte) 0xec, (byte) 0xce, (byte) 0xda};
   // abecceba
   static final byte[] MAGIC_DATA = new byte[]{(byte) 0xab, (byte) 0xec, (byte) 0xce, (byte) 0xba};
+  // abadbada
+  static final byte[] MAGIC_ERR = new byte[]{(byte) 0xab, (byte) 0xad, (byte) 0xba, (byte) 0xda};
 
   static NcStreamProto.Group.Builder encodeGroup(Group g, int sizeToCache) throws IOException {
     NcStreamProto.Group.Builder groupBuilder = NcStreamProto.Group.newBuilder();
@@ -37,7 +42,7 @@ public class NcStream {
 
     for (Variable var : g.getVariables()) {
       if (var instanceof Structure)
-        groupBuilder.addStructs(NcStream.encodeStructure( (Structure) var));
+        groupBuilder.addStructs(NcStream.encodeStructure((Structure) var));
       else
         groupBuilder.addVars(NcStream.encodeVar(var, sizeToCache));
     }
@@ -69,6 +74,8 @@ public class NcStream {
     NcStreamProto.Variable.Builder builder = NcStreamProto.Variable.newBuilder();
     builder.setName(var.getShortName());
     builder.setDataType(encodeDataType(var.getDataType()));
+    if (var.isUnsigned())
+      builder.setUnsigned(true);
 
     for (Dimension dim : var.getDimensions()) {
       builder.addShape(encodeDim(dim));
@@ -78,12 +85,12 @@ public class NcStream {
       builder.addAtts(encodeAtt(att));
     }
 
-    // send small variable data in header
-    if (var.isCaching()) {
+    // put small amounts of data in header "immediate mode"
+    if (var.isCaching() && var.getDataType().isNumeric()) {
       if (var.isCoordinateVariable() || var.getSize() * var.getElementSize() < sizeToCache) {
         Array data = var.read();
         ByteBuffer bb = data.getDataAsByteBuffer();
-        builder.setData( ByteString.copyFrom(bb.array()));
+        builder.setData(ByteString.copyFrom(bb.array()));
       }
     }
 
@@ -103,14 +110,15 @@ public class NcStream {
 
     for (Variable v : s.getVariables()) {
       if (v instanceof Structure)
-        builder.addStructs(NcStream.encodeStructure( (Structure) v));
+        builder.addStructs(NcStream.encodeStructure((Structure) v));
       else
-        builder.addVars(NcStream.encodeVar(v, -1));    }
+        builder.addVars(NcStream.encodeVar(v, -1));
+    }
 
     return builder;
   }
 
-  static NcStreamProto.Data encodeDataProto(Variable var, Section section) {
+  static NcStreamProto.Data encodeDataProto(Variable var, Section section) throws IOException, InvalidRangeException {
     NcStreamProto.Data.Builder builder = NcStreamProto.Data.newBuilder();
     builder.setVarName(var.getName());
     builder.setDataType(encodeDataType(var.getDataType()));
@@ -172,22 +180,42 @@ public class NcStream {
     return writeBytes(out, b, 0, b.length);
   }
 
-  static public int writeVInt(OutputStream out, int i) throws IOException {
+  static public int writeVInt(OutputStream out, int value) throws IOException {
     int count = 0;
-    while ((i & ~0x7F) != 0) {
-      writeByte(out, (byte) ((i & 0x7f) | 0x80));
-      i >>>= 7;
-      count++;
+
+    // stolen from protobuf.CodedOutputStream.writeRawVarint32()
+    while (true) {
+      if ((value & ~0x7F) == 0) {
+        writeByte(out, (byte) value);
+        break;
+      } else {
+        writeByte(out, (byte) ((value & 0x7F) | 0x80));
+        value >>>= 7;
+      }
     }
-    writeByte(out, (byte) i);
+
     return count + 1;
   }
 
-  /**
-   * Writes an long in a variable-length format.  Writes between one and five
-   * bytes.  Smaller values take fewer bytes.  Negative numbers are not
-   * supported.
-   */
+  static public int writeVInt(WritableByteChannel wbc, int value) throws IOException {
+    ByteBuffer bb = ByteBuffer.allocate(8);
+
+    // stolen from protobuf.CodedOutputStream.writeRawVarint32()
+    while (true) {
+      if ((value & ~0x7F) == 0) {
+        bb.put((byte) value);
+        break;
+      } else {
+        bb.put((byte) ((value & 0x7F) | 0x80));
+        value >>>= 7;
+      }
+    }
+
+    bb.flip();
+    wbc.write(bb);
+    return bb.limit();
+  }
+
   static int writeVLong(OutputStream out, long i) throws IOException {
     int count = 0;
     while ((i & ~0x7F) != 0) {
@@ -226,13 +254,13 @@ public class NcStream {
     is.read(b);
 
     if (b.length != test.length) return false;
-    for (int i=0; i<b.length; i++)
+    for (int i = 0; i < b.length; i++)
       if (b[i] != test[i]) return false;
     return true;
   }
 
   static Dimension decodeDim(NcStreamProto.Dimension dim) {
-    return new Dimension( dim.getName(), (int) dim.getLength(), !dim.getIsPrivate(), dim.getIsUnlimited(), dim.getIsVlen());
+    return new Dimension(dim.getName(), (int) dim.getLength(), !dim.getIsPrivate(), dim.getIsUnlimited(), dim.getIsVlen());
   }
 
   static Attribute decodeAtt(NcStreamProto.Attribute att) {
@@ -241,8 +269,8 @@ public class NcStream {
       return new Attribute(att.getName(), bs.toStringUtf8());
     }
 
-    ByteBuffer bb = ByteBuffer.wrap( bs.toByteArray());
-    return new Attribute(att.getName(), Array.factory( decodeAttributeType(att.getType()), null,  bb));
+    ByteBuffer bb = ByteBuffer.wrap(bs.toByteArray());
+    return new Attribute(att.getName(), Array.factory(decodeAttributeType(att.getType()), null, bb));
   }
 
   static Variable decodeVar(NetcdfFile ncfile, Group g, Structure parent, NcStreamProto.Variable var) {
@@ -262,8 +290,8 @@ public class NcStream {
 
     if (var.hasData()) {
       // LOOK may mess with ability to change var size later.
-      ByteBuffer bb = ByteBuffer.wrap( var.getData().toByteArray());
-      Array data = Array.factory( varType, ncvar.getShape(), bb);
+      ByteBuffer bb = ByteBuffer.wrap(var.getData().toByteArray());
+      Array data = Array.factory(varType, ncvar.getShape(), bb);
       ncvar.setCachedData(data, false);
       // if (debug) System.out.println(" read cached data for "+ncvar.getName()+" nbytes= "+bb.limit());
     }
@@ -273,7 +301,7 @@ public class NcStream {
 
   static Structure decodeStructure(NetcdfFile ncfile, Group g, Structure parent, NcStreamProto.Structure s) {
     Structure ncvar = (s.getDataType() == ucar.nc2.stream.NcStreamProto.DataType.SEQUENCE) ?
-      new Sequence(ncfile, g, parent, s.getName()) : new Structure(ncfile, g, parent, s.getName());
+        new Sequence(ncfile, g, parent, s.getName()) : new Structure(ncfile, g, parent, s.getName());
 
     ncvar.setDataType(decodeDataType(s.getDataType()));
 
@@ -288,10 +316,10 @@ public class NcStream {
       ncvar.addAttribute(decodeAtt(att));
 
     for (ucar.nc2.stream.NcStreamProto.Variable vp : s.getVarsList())
-      ncvar.addMemberVariable( decodeVar( ncfile, g, ncvar, vp));
+      ncvar.addMemberVariable(decodeVar(ncfile, g, ncvar, vp));
 
     for (NcStreamProto.Structure sp : s.getStructsList())
-      ncvar.addMemberVariable( decodeStructure( ncfile, g, ncvar, sp));
+      ncvar.addMemberVariable(decodeStructure(ncfile, g, ncvar, sp));
 
     return ncvar;
   }
@@ -354,6 +382,14 @@ public class NcStream {
         return ucar.nc2.stream.NcStreamProto.DataType.STRUCTURE;
       case SEQUENCE:
         return ucar.nc2.stream.NcStreamProto.DataType.SEQUENCE;
+      case ENUM1:
+        return ucar.nc2.stream.NcStreamProto.DataType.ENUM1;
+      case ENUM2:
+        return ucar.nc2.stream.NcStreamProto.DataType.ENUM2;
+      case ENUM4:
+        return ucar.nc2.stream.NcStreamProto.DataType.ENUM4;
+      case OPAQUE:
+        return ucar.nc2.stream.NcStreamProto.DataType.OPAQUE;
     }
     throw new IllegalStateException("illegal data type " + dtype);
   }
@@ -400,6 +436,14 @@ public class NcStream {
         return DataType.STRUCTURE;
       case SEQUENCE:
         return DataType.SEQUENCE;
+      case ENUM1:
+         return DataType.ENUM1;
+      case ENUM2:
+         return DataType.ENUM2;
+      case ENUM4:
+         return DataType.ENUM4;
+       case OPAQUE:
+        return DataType.OPAQUE;
     }
     throw new IllegalStateException("illegal data type " + dtype);
   }

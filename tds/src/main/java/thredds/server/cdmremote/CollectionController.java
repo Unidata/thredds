@@ -52,6 +52,8 @@ import java.io.*;
 import java.util.Formatter;
 import java.util.List;
 import java.util.HashMap;
+import java.nio.channels.WritableByteChannel;
+import java.nio.channels.Channels;
 
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.*;
@@ -94,6 +96,7 @@ public class CollectionController extends AbstractCommandController implements L
 
 
   private String configDirectory;
+
   public void setConfigDirectory(String configDirectory) {
     this.configDirectory = configDirectory;
   }
@@ -133,9 +136,11 @@ public class CollectionController extends AbstractCommandController implements L
 
     try {
       fd = getFeatureCollectionDataset(path);
-      if (fd == null)
+      if (fd == null) {
+        res.sendError(HttpServletResponse.SC_NOT_FOUND);
+        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
         return null;
-
+      }
 
       OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
       if (queryS == null) {
@@ -160,7 +165,8 @@ public class CollectionController extends AbstractCommandController implements L
         if (query.wantHeader()) { // just the header
           NetcdfFile ncfile = fd.getNetcdfFile(); // LOOK will fail
           NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(req));
-          ncWriter.sendHeader(out);
+          WritableByteChannel wbc = Channels.newChannel(out);
+          ncWriter.sendHeader(wbc);
 
         } else if (query.wantStations()) { // just the station list
           PointStreamProto.StationList stationsp;
@@ -241,13 +247,25 @@ public class CollectionController extends AbstractCommandController implements L
     if (debug) System.out.printf(" sent %d features to %s %n ", count, location);
   }
 
-  private HashMap<String, FeatureDatasetPoint> fdmap = new HashMap<String, FeatureDatasetPoint>(20);
+  private HashMap<String, FeatureDatasetPoint> fdmap = new HashMap<String, FeatureDatasetPoint>();
+
   private FeatureDatasetPoint getFeatureCollectionDataset(String path) throws IOException {
     FeatureDatasetPoint fd = fdmap.get(path);
     if (fd == null) {
       File content = tdsContext.getContentDirectory();
-      File config = new File( content, path);
-      fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(FeatureType.STATION, "D:/formats/gempak/surface/*.gem?#yyyyMMdd");
+      File config = new File(content, path);
+      if (!config.exists()) {
+        log.error("Config file %s doesnt exists %n", config);
+        return null;
+      }
+
+      //fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(FeatureType.STATION, "D:/formats/gempak/surface/*.gem?#yyyyMMdd");
+      Formatter errlog = new Formatter();
+      fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(config, errlog);
+      if (fd == null) {
+        log.error("Error opening dataset error =", errlog);
+        return null;
+      }
       fdmap.put(path, fd);
     }
     return fd;

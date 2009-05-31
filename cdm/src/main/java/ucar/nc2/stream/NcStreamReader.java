@@ -51,7 +51,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
  */
 public class NcStreamReader {
 
-  private static final boolean debug = true;
+  private static final boolean debug = false;
 
   private NcStreamProto.Header proto;
 
@@ -59,7 +59,7 @@ public class NcStreamReader {
     assert readAndTest(is, NcStream.MAGIC_START);
     assert readAndTest(is, NcStream.MAGIC_HEADER);
 
-    int msize = readVInt(is);
+    int msize = NcStream.readVInt(is);
     if (debug) System.out.println("READ header len= " + msize);
 
     byte[] m = new byte[msize];
@@ -96,21 +96,49 @@ public class NcStreamReader {
   public DataResult readData(InputStream is, NetcdfFile ncfile) throws IOException {
     assert readAndTest(is, NcStream.MAGIC_DATA);
 
-    int psize = readVInt(is);
+    int psize = NcStream.readVInt(is);
     if (debug) System.out.println(" readData len= " + psize);
     byte[] dp = new byte[psize];
     NcStream.readFully(is, dp);
     NcStreamProto.Data dproto = NcStreamProto.Data.parseFrom(dp);
     if (debug) System.out.println(" readData proto = " + dproto);
 
-    int dsize = readVInt(is);
+    int dsize = NcStream.readVInt(is);
     if (debug) System.out.println(" readData len= " + dsize);
+
+    DataType dataType = NcStream.decodeDataType(dproto.getDataType());
+    Section section = NcStream.decodeSection(dproto.getSection());
+
+    // special cases
+    if (dataType == DataType.STRING) {
+      Array data = Array.factory(dataType, section.getShape());
+      IndexIterator ii = data.getIndexIterator();
+      while(ii.hasNext()) {
+        int slen = NcStream.readVInt(is);
+        byte[] sb = new byte[slen];
+        NcStream.readFully(is, sb);
+        ii.setObjectNext( new String(sb, "UTF-8"));
+      }
+      return new DataResult(dproto.getVarName(), section, data);
+    }
+
+    else if (dataType == DataType.OPAQUE) {
+      Array data = Array.factory(dataType, section.getShape());
+      IndexIterator ii = data.getIndexIterator();
+      while(ii.hasNext()) {
+        int slen = NcStream.readVInt(is);
+        byte[] sb = new byte[slen];
+        NcStream.readFully(is, sb);
+        ii.setObjectNext( ByteBuffer.wrap(sb));
+      }
+      return new DataResult(dproto.getVarName(), section, data);
+    }
+
+    // otherwise read that many bytes
     byte[] datab = new byte[dsize];
     NcStream.readFully(is, datab);
 
     ByteBuffer dataBB = ByteBuffer.wrap(datab);
-    DataType dataType = NcStream.decodeDataType(dproto.getDataType());
-    Section section = NcStream.decodeSection(dproto.getSection());
 
     if (dataType == DataType.STRUCTURE) {
       Structure s = (Structure) ncfile.findVariable(dproto.getVarName());
@@ -123,16 +151,6 @@ public class NcStreamReader {
       Array data = Array.factory(dataType, section.getShape(), dataBB);
       return new DataResult(dproto.getVarName(), section, data);
     }
-  }
-
-  private int readVInt(InputStream is) throws IOException {
-    byte b = (byte) is.read();
-    int i = b & 0x7F;
-    for (int shift = 7; (b & 0x80) != 0; shift += 7) {
-      b = (byte) is.read();
-      i |= (b & 0x7F) << shift;
-    }
-    return i;
   }
 
   private boolean readAndTest(InputStream is, byte[] test) throws IOException {
@@ -148,7 +166,9 @@ public class NcStreamReader {
   public NetcdfFile proto2nc(NcStreamProto.Header proto, NetcdfFile ncfile) throws InvalidProtocolBufferException {
     if (ncfile == null)
       ncfile = new NetcdfFileStream();
-    ncfile.setLocation(proto.getName());
+    ncfile.setLocation(proto.getLocation());
+    if (proto.hasId()) ncfile.setId(proto.getId());
+    if (proto.hasTitle()) ncfile.setTitle(proto.getTitle());
 
     NcStreamProto.Group root = proto.getRoot();
     readGroup(root, ncfile, ncfile.getRootGroup());

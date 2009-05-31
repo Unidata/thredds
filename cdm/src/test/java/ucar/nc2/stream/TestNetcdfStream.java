@@ -2,6 +2,9 @@ package ucar.nc2.stream;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.TestCompare;
+import ucar.nc2.TestAll;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 import java.nio.channels.WritableByteChannel;
@@ -16,23 +19,45 @@ public class TestNetcdfStream extends TestCase {
   }
 
   public void testCompare() throws IOException {
-    //doOne("metars/Surface_METAR_20070326_0000.nc");
-    //doOne("rotatedPole/eu.mn.std.fc.d12z20070820.nc");
-    //doOne("gempak/nmcbob.shp.nc");
-    doOne("gempak/19330101_sao.gem");
+    //
+    doOne("station/20090524_sao.gem");
+    //doOne("point/uspln_20061023.18");
+  }
+
+  public void testScan() throws IOException {
+    scanDir("C:/data/ft/", new FileFilter() {
+      public boolean accept(File pathname) {
+        return !pathname.getPath().endsWith(".xml") && !pathname.getPath().endsWith(".gbx");
+      }
+    });
+  }
+
+  void scanDir(String dirName, FileFilter ff) throws IOException {
+    final int dirlen = dirName.length();
+    TestAll.actOnAll( dirName, ff, new TestAll.Act() {
+      public int doAct(String filename) throws IOException {
+        String name = StringUtil.substitute(filename.substring(dirlen), "\\", "/");
+        doOne(name);
+        return 1;
+      }
+    });
+
   }
 
   void doOne(String name) throws IOException {
-    String file = "C:/data/"+name;
-    String remote = "http://localhost:8080/thredds/ncstream/stream/" + name;
-
+    String file = "C:/data/ft/"+name;
+    String remote = "http://localhost:8080/thredds/cdmremote/testCdmRemote/" + name;
     doOne(file, remote);
   }
 
   void doOne(String file, String remote) throws IOException {
-    NetcdfFile ncfile = NetcdfFile.open(file, null);
+    System.out.printf("---------------------------\n");
+    NetcdfFile ncfile = NetcdfDataset.openFile(file, null);
     NetcdfFile ncfileRemote = new NcStreamRemote(remote, null);
+    TestCompare.compareFiles(ncfile, ncfileRemote, false, true, false);
+    System.out.printf("compare %s ok %n", file);
     TestCompare.compareFiles(ncfile, ncfileRemote, true, false, false);
+    System.out.printf("compare data %s ok %n", file);
     ncfile.close();
     ncfileRemote.close();
   }
@@ -48,7 +73,7 @@ public class TestNetcdfStream extends TestCase {
       File file = new File("C:/temp/out.ncs");
       FileOutputStream fos = new FileOutputStream(file);
       WritableByteChannel wbc = fos.getChannel();
-      writer.streamAll(fos, wbc);
+      writer.streamAll( wbc);
       wbc.close();
 
       NcStreamReader reader = new NcStreamReader();      

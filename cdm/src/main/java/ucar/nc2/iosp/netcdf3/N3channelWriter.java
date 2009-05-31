@@ -42,6 +42,7 @@ import java.nio.channels.Channels;
 import java.nio.ByteBuffer;
 
 /**
+ *  Experimental
  * @author john
  */
 public class N3channelWriter extends N3streamWriter {

@@ -138,6 +138,10 @@ public class AggregationFmrc extends AggregationOuterDimension {
     root.addAttribute(new Attribute("Conventions", "CF-1.0, " + _Coordinate.Convention));
     root.addAttribute(new Attribute("cdm_data_type", FeatureType.GRID.toString()));
 
+    // remove some attributes that can cause trouble
+    root.remove( root.findAttribute(_Coordinate.ModelRunDate));
+    root.remove( root.findAttribute("location"));
+
     // create runtime aggregation dimension
     String dimName = getDimensionName();
     int nruns = getTotalCoords();

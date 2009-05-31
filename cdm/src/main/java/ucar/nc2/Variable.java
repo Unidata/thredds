@@ -33,6 +33,7 @@
 package ucar.nc2;
 
 import ucar.ma2.*;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
 
 import java.util.*;
 import java.io.IOException;
@@ -987,7 +988,10 @@ public class Variable implements VariableIF {
   } */
 
   public long readToByteChannel(Section section, WritableByteChannel wbc) throws IOException, InvalidRangeException {
-    return ncfile.readToByteChannel(this,  section, wbc);
+    if ((ncfile == null) || hasCachedData())
+      return AbstractIOServiceProvider.copyToByteChannel( read(section), wbc);      
+    
+    return ncfile.readToByteChannel(this, section, wbc);
   }
 
   /*******************************************/

@@ -64,15 +64,13 @@ public class CompositeDatasetFactory {
   static public final String SCHEME = "collection:";
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CompositeDatasetFactory.class);
 
-  static public FeatureDataset factory(File configFile) throws IOException {
-    Formatter errlog = new Formatter();
-
+  static public FeatureDataset factory(File configFile, Formatter errlog) throws IOException {
     SAXBuilder builder = new SAXBuilder();
     Document configDoc;
     try {
       configDoc = builder.build( configFile );
     } catch ( JDOMException e ) {
-      log.error( "setUp(): failed to read config document: " + e.getMessage());
+      errlog.format( "CompositeDatasetFactory failed to read config document %s err= %s %n", configFile.getPath(), e.getMessage());
       return null;
     }
 
@@ -105,8 +103,8 @@ public class CompositeDatasetFactory {
       return null;
     }
 
-
-    CompositePointDataset fd = (CompositePointDataset) factory(wantFeatureType, location +"?"+dateFormatMark);
+    CompositePointDataset fd = (CompositePointDataset) factory(wantFeatureType, location +"?"+dateFormatMark, errlog);
+    if (fd == null) return null;
 
     fd.setBoundingBox(llbb);
     fd.setDateRange(dateRange);
@@ -150,11 +148,13 @@ public class CompositeDatasetFactory {
     }
   }
 
-  static public FeatureDataset factory(FeatureType wantFeatureType, String wildcard) throws IOException {
+  static public FeatureDataset factory(FeatureType wantFeatureType, String wildcard, Formatter errlog) throws IOException {
     if (wildcard.startsWith(SCHEME))
       wildcard = wildcard.substring(SCHEME.length());
 
-    TimedCollection datasets = new CollectionManager(wildcard);
+    TimedCollection datasets = CollectionManager.factory(wildcard, errlog);
+    if (datasets == null) return null;
+
     FeatureCollection pfc = null;
     switch (wantFeatureType) {
       case POINT:

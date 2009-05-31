@@ -58,6 +58,8 @@ import ucar.unidata.geoloc.Station;
 import java.io.*;
 import java.util.Formatter;
 import java.util.List;
+import java.nio.channels.WritableByteChannel;
+import java.nio.channels.Channels;
 
 /**
  * @author caron
@@ -158,7 +160,8 @@ public class StationStreamController extends AbstractCommandController implement
 
         if (query.wantHeader()) { // just the header
           NcStreamWriter ncWriter = new NcStreamWriter(ncd, ServletUtil.getRequestBase(req));
-          ncWriter.sendHeader(out);
+          WritableByteChannel wbc = Channels.newChannel(out);
+          ncWriter.sendHeader(wbc);
 
         } else if (query.wantStations()) { // just the station list
           PointStreamProto.StationList stationsp;

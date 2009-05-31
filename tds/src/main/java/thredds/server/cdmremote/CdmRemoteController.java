@@ -55,35 +55,18 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.stream.NcStreamWriter;
 
 /**
- * This is a prototype for "cdm remote service". General interface:
- * <pre>
- * <ul>
- * <li>http://server/thredds/cdmremote/dataset           show cdl
- * <li>http://server/thredds/cdmremote/dataset?view=cdl  show cdl
- * <li>http://server/thredds/cdmremote/dataset?view=ncml show ncml
- * <li>http://server/thredds/cdmremote/dataset?view=getCapabilities return getCapabilities.xml
- * <li>http://server/thredds/cdmremote/dataset?ft=point  redirects to http://server/thredds/cdmremote/point/dataset
- * </ul>
- * </pre>
- * <p/>
- * Also handles the low level interface, equivilent to netcdf/opendap API.
- * A request is made in the form server/dataset[?query]. The query is defined in ucar.nc2.stream
- * The response is an experimental on-the-wire protocol using protobuf. It can be read by the NcStreamIosp.
- * <pre>
- * <ul>
- * <li>http://server/thredds/cdmremote/dataset?header
- * <li>http://server/thredds/cdmremote/dataset?var1[start:end:stride],var1[start:end:stride],...
- * </ul>
- * </pre>
+ * This is a prototype for "cdm remote service".
  *
  * @author caron
  * @since Feb 16, 2009
+ * @see "http://www.unidata.ucar.edu/software/netcdf-java/stream/NcStream.html"
  */
 public class CdmRemoteController extends AbstractController implements LastModified {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
 
   private TdsContext tdsContext;
   private boolean allow = true;
+  private boolean debug = false;
 
   public void setTdsContext(TdsContext tdsContext) {
     this.tdsContext = tdsContext;
@@ -109,7 +92,7 @@ public class CdmRemoteController extends AbstractController implements LastModif
     log.info(UsageLog.setupRequestContext(req));
 
     String pathInfo = req.getPathInfo();
-    System.out.println("request= " + ServletUtil.getRequest(req));
+    if (debug) System.out.println("request= " + ServletUtil.getRequest(req));
     //System.out.println(ServletUtil.showRequestDetail(null, req));
 
     /* String ft = ServletUtil.getParameterIgnoreCase(req, "ft");
@@ -160,17 +143,16 @@ public class CdmRemoteController extends AbstractController implements LastModif
         res.setContentType("application/octet-stream");
         res.setHeader("Content-Description", "ncstream");
 
+        WritableByteChannel wbc = Channels.newChannel(out);
         NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(req));
         if (query.equals("header")) { // just the header
-          ncWriter.sendHeader(out);
+          ncWriter.sendHeader( wbc);
 
         } else { // they want some data
-          WritableByteChannel wbc = Channels.newChannel(out);
-
           StringTokenizer stoke = new StringTokenizer(query, ";"); // need UTF/%decode
           while (stoke.hasMoreTokens()) {
             ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());
-            ncWriter.sendData(out, cer.v, cer.section, wbc);
+            ncWriter.sendData( cer.v, cer.section, wbc);
           }
         }
       }

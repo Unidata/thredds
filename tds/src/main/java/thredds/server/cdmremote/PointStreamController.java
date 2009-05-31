@@ -57,6 +57,8 @@ import ucar.nc2.stream.NcStream;
 import java.io.*;
 import java.util.Formatter;
 import java.util.List;
+import java.nio.channels.WritableByteChannel;
+import java.nio.channels.Channels;
 
 /**
  * @author caron
@@ -155,7 +157,8 @@ public class PointStreamController extends AbstractCommandController implements 
 
         if (query.wantHeader()) { // just the header
           NcStreamWriter ncWriter = new NcStreamWriter(ncd, ServletUtil.getRequestBase(req));
-          ncWriter.sendHeader(out);
+          WritableByteChannel wbc = Channels.newChannel(out);
+          ncWriter.sendHeader(wbc);
 
         } else { // they want some data
           List<FeatureCollection> coll = fd.getPointFeatureCollectionList();

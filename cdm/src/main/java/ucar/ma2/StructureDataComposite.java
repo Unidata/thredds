@@ -43,7 +43,7 @@ import java.util.HashMap;
  * @since Jan 21, 2009
  */
 public class StructureDataComposite extends StructureData {
-  protected Map<StructureMembers.Member, StructureData> proxy = new HashMap<StructureMembers.Member,StructureData>();
+  protected Map<StructureMembers.Member, StructureData> proxy = new HashMap<StructureMembers.Member,StructureData>(32);
 
   public StructureDataComposite() {
     super(new StructureMembers(""));

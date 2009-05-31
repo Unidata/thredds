@@ -19,33 +19,6 @@ message Attribute {
   required bytes data = 4;
 }
 
-enum AxisType {
-  RunTime = 0;
-  Ensemble = 1;
-  Time = 2;
-  GeoZ = 3;
-  GeoY = 4;
-  GeoX = 5;
-  Lat = 6;
-  Lon = 7;
-  Height = 8;
-  Pressure = 9;
-  RadialAzimuth = 10;
-  RadialDistance = 11;
-  RadialElevation = 12;
-}
-
-message CoordinateSystem {
-  required string name = 1;
-  repeated string axes = 2;
-  repeated string transform = 3;
-}
-
-message CoordinateTransform {
-  required string name = 1;
-  repeated Attribute atts = 2;
-}
-
 enum DataType {
   CHAR = 0;
   BYTE = 1;
@@ -57,6 +30,10 @@ enum DataType {
   STRING = 7;
   STRUCTURE = 8;
   SEQUENCE = 9;
+  ENUM1 = 10;
+  ENUM2 = 11;
+  ENUM4 = 12;
+  OPAQUE = 13;
 }
 
 message Dimension {
@@ -72,19 +49,17 @@ message Variable {
   required DataType dataType = 2;
   repeated Dimension shape = 3;  // actual dimension instead of reference
   repeated Attribute atts = 4;
-  optional bytes data = 5;    // "immediate" - store small data in header
-  optional AxisType axis = 6;
-  repeated string coordSys = 7;
+  optional bool unsigned = 5;  // default false
+  optional bytes data = 6;    // "immediate" - store small data in header
 }
 
 message Structure {
   required string name = 1;
-  required DataType dataType = 2;
+  required DataType dataType = 2;  // struct or seq
   repeated Dimension shape = 3; // actual dimension instead of reference
   repeated Attribute atts = 4;
   repeated Variable vars = 5;
   repeated Structure structs = 6;
-  repeated string coordSys = 7;
 }
 
 message Group {
@@ -94,15 +69,16 @@ message Group {
   repeated Structure structs = 4;
   repeated Attribute atts = 5;
   repeated Group groups = 6;
-  repeated CoordinateSystem coordSys = 7;
-  repeated CoordinateTransform coordTrans = 8;
 }
 
 message Header {
-  required fixed64 indexPos = 1;
-  optional string name = 2;
-  required Group root = 3;
+  optional string location = 1;
+  optional string title = 2;
+  optional string id = 3;
+  required Group root = 4;
 }
+
+//////////////////////////////////
 
 message Data {
   required string varName = 1;

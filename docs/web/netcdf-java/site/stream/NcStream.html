@@ -2,12 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>ncstream</title></head>
+<title>ncstream</title>
+</head>
 
 <body>
 <h1>NetCDF Streaming Format (Experimental)</h1>
 <hr width="100%" />
-<h3>Overview</h3>
+<h2>Overview</h2>
 <p>NetCDF Streaming Format (ncstream) is a write-optimized  encoding of CDM datasets. Ncstream consists of a series of header and data messages, in any order. Writes are always appended. Later messages override earlier ones whenever they overlap or conflict. To add or modify structural metadata, simply append a new header message. Each data message identifies the variable and the section (rectangular subset) of data it contains. A variable's data thus consists of the collection of data messages for it, if any.</p>
 <h3> Design Goals</h3>
 <ul>
@@ -32,30 +33,52 @@
 </blockquote>
 <p>The main advantage of protobuf over XML is performance, since both message size and parsing speed is improved. A very important feature of protobuf is the ability to evolve the message structure in a way that doesnt break previous code.</p>
 <p>We dont use protobuf messages for the data, since protobuf messages are built in memory, and we need to be able to stream (write data directly from its source onto the output stream, eg socket). The data is simply linearized in the usual netCDF way, and written to the stream. A data message identifying the variable and the section that the data represents is part of every data message. Probably we will use &quot;reader makes right&quot; byte order.</p>
+<p>Variable length datatypes like  String and Opaque use the vdataMessage for data transfer. First the number of objects is written, then each object, preceeded by its length in bytes as a vlen. Strings are encoded as UTF-8 bytes.</p>
 <p>TDS 4.0 currently has  a prototype service using ncstream similar to OPeNDAP, which  can be used by Netcdf-Java 4.0 library. The classic model has been tested, and the extended model  processing is mostly complete. </p>
-<h3>Grammer</h3>
-<pre>   stream = MAGIC_HEADER, {message}
-   message = headerMessage | dataMessage
+<h2>Grammer</h2>
+<p>An <em><strong>ncstream</strong></em> is a sequence of one or more messages:</p>
+<pre>   ncstream = {message}
+   message = headerMessage | dataMessage | vdataMessage | errorMessage
    headerMessage = MAGIC_HEADER, vlen, NcStreamProto.Header
-   dataMessage = MAGIC_DATA, vlen, NcStreamProto.Data, vlen, data
+   dataMessage = MAGIC_DATA, vlen, NcStreamProto.Data, vlen, (byte)*vlen
+   vdataMessage = MAGIC_DATA, vlen, NcStreamProto.Data, vn, (vlen, bytes)*vn
+   errorMessage = MAGIC_ERR, vlen, NcStreamProto.Error
    
-   vlen = variable length encoded positive integer
+   vlen = variable length encoded positive integer == length of the following object in bytes
+   vn = variable length encoded positive integer == number of objects that follow
    NcStreamProto.Header = Header message encoded by protobuf
    NcStreamProto.Data = Data message encoded by protobuf
+   data = actual bytes of data, encoding described by the NcStreamProto.Data message
+     primitives: 
 
-   MAGIC_START = 0x43, 0x44, 0x46, 0x53 // 'CDFS'
-   MAGIC_HEADER= 0xad, 0xec,  0xce, 0xda 
-   MAGIC_DATA =  0xab, 0xec,  0xce,  0xba 
- </pre>
-<p>The messages are defined in </p>
+
+   MAGIC_HEADER= 0xad, 0xec, 0xce, 0xda 
+   MAGIC_DATA =  0xab, 0xec, 0xce, 0xba <br />
+   MAGIC_ERR   = 0xab, 0xad, 0xba, 0xda <br />
+</pre>
+<p>The protobuf messages are defined by </p>
 <ul>
   <li><strong>thredds\cdm\src\main\java\ucar\nc2\stream\ncStream.proto</strong></li>
   <li><strong>thredds\cdm\src\main\java\ucar\nc2\ft\point\remote\pointStream.proto</strong><br>
   </li>
 </ul>
-<h2>&nbsp;</h2>
+<p>(these are files on Unidata's SVN server)</p>
+<p>An <em><strong>ncstream dataset </strong></em>  starts with MAGIC_START,  followed by a set of messages. </p>
+<pre>	ncstreamDataset = MAGIC_START ncstream
+
+
+
+   MAGIC_START = 0x43, 0x44, 0x46, 0x53 // 'CDFS'
+
+</pre>
+<h4>  Rules:</h4>
+<ul>
+  <li>A valid dataset must have at least one header message</li>
+  <li>A variable must be defined first in a header message, before it can appear in a data message.</li>
+</ul>
+<p>&nbsp;</p>
 <h2>CdmRemote Web Service</h2>
-<p>CdmRemote is an experimental web service implemented in the TDS, providing remote access to CDM datasets, using ncstream as the on-the-wire protocol. It provides access at the  NetcdfDataset, and Feature Type levels of the CDM, using   <strong>ServiceType.CdmRemote</strong></p>
+<p>CdmRemote is an experimental web service implemented in the TDS, providing remote access to CDM datasets, using ncstream as the on-the-wire protocol. It provides access at the  NetcdfDataset, and Feature Type levels of the CDM. The TDS catalog uses <strong>ServiceType.CdmRemote</strong> service type.</p>
 <h3>NetcdfDataset (Data Access and Coordinate Systems)</h3>
 <p>Datasets can be accessed in index space, similar to netCDF or OPeNDAP. The Coordinate Systems are created on the server, and passed to the client.</p>
 <table width="831" border="1">

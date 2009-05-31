@@ -104,7 +104,7 @@ public class TestCompare {
          continue;
       Variable copyVar = copy.findVariable(orgV.getShortName());
       assert copyVar != null : orgV.getShortName();
-      compareVariables(orgV, copyVar);
+      compareVariables(orgV, copyVar, compareData);
     }
 
     List<Variable> varsCopy = copy.getVariables();
@@ -124,7 +124,7 @@ public class TestCompare {
   }
 
 
-  static void compareVariables(Variable org, Variable copy) {
+  static void compareVariables(Variable org, Variable copy, boolean compareData) {
     if( skipUnknownVar && org.getName().contains( "Unknown")) {
       System.out.println( "skipping "+ org.getName() );
       return;
@@ -140,7 +140,7 @@ public class TestCompare {
     checkAll( org.getAttributes(), copy.getAttributes());
 
     // coord sys
-    if (org instanceof VariableEnhanced) {
+    if ((org instanceof VariableEnhanced) && (copy instanceof VariableEnhanced) ) {
       VariableEnhanced orge = (VariableEnhanced) org;
       VariableEnhanced copye = (VariableEnhanced) copy;
       checkAll( orge.getCoordinateSystems(), copye.getCoordinateSystems());
@@ -151,6 +151,7 @@ public class TestCompare {
       try {
         compareVariableData(org, copy);
       } catch (IOException e) {
+        e.printStackTrace();
         assert false;
       }
     }
@@ -165,7 +166,7 @@ public class TestCompare {
       for (int i = 0; i < vars.size(); i+=2) {
         Variable orgV =  (Variable) vars.get(i);
         Variable ncmlV =  (Variable) vars.get(i+1);
-        compareVariables(orgV, ncmlV);
+        compareVariables(orgV, ncmlV, false);
       }
     }
 
