@@ -48,6 +48,7 @@ import java.io.*;
 import java.nio.channels.WritableByteChannel;
 import java.nio.channels.Channels;
 import java.util.StringTokenizer;
+import java.net.URLDecoder;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
@@ -66,7 +67,7 @@ public class CdmRemoteController extends AbstractController implements LastModif
 
   private TdsContext tdsContext;
   private boolean allow = true;
-  private boolean debug = false;
+  private boolean debug = true;
 
   public void setTdsContext(TdsContext tdsContext) {
     this.tdsContext = tdsContext;
@@ -104,7 +105,7 @@ public class CdmRemoteController extends AbstractController implements LastModif
     } */
 
     String query = req.getQueryString();
-    if (query != null) System.out.println(" query=" + query);
+    //if (query != null) System.out.println(" query=" + query);
 
     String view = ServletUtil.getParameterIgnoreCase(req, "view");
     if (view == null) view = query;
@@ -125,7 +126,17 @@ public class CdmRemoteController extends AbstractController implements LastModif
         log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
         return null;
       }
+    } catch (FileNotFoundException e) {
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
+      res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
 
+    } catch (Throwable e) {
+      e.printStackTrace();
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
+      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+    }
+
+    try {
       OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
 
       if ((query == null) || view.equalsIgnoreCase("cdl")) {
@@ -149,6 +160,7 @@ public class CdmRemoteController extends AbstractController implements LastModif
           ncWriter.sendHeader( wbc);
 
         } else { // they want some data
+          query = URLDecoder.decode(query, "UTF-8");
           StringTokenizer stoke = new StringTokenizer(query, ";"); // need UTF/%decode
           while (stoke.hasMoreTokens()) {
             ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());
@@ -160,10 +172,6 @@ public class CdmRemoteController extends AbstractController implements LastModif
       out.flush();
       res.flushBuffer();
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
-
-    } catch (FileNotFoundException e) {
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
-      res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
 
     } catch (IllegalArgumentException e) { // ParsedSectionSpec failed
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));

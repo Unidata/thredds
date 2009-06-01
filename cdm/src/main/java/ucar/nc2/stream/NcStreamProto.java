@@ -3409,6 +3409,13 @@ public final class NcStreamProto {
     public boolean hasSection() { return hasSection; }
     public ucar.nc2.stream.NcStreamProto.Section getSection() { return section_; }
     
+    // optional bool bigend = 4;
+    public static final int BIGEND_FIELD_NUMBER = 4;
+    private boolean hasBigend;
+    private boolean bigend_ = false;
+    public boolean hasBigend() { return hasBigend; }
+    public boolean getBigend() { return bigend_; }
+    
     @Override
     public final boolean isInitialized() {
       if (!hasVarName) return false;
@@ -3429,6 +3436,9 @@ public final class NcStreamProto {
       }
       if (hasSection()) {
         output.writeMessage(3, getSection());
+      }
+      if (hasBigend()) {
+        output.writeBool(4, getBigend());
       }
       getUnknownFields().writeTo(output);
     }
@@ -3451,6 +3461,10 @@ public final class NcStreamProto {
       if (hasSection()) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(3, getSection());
+      }
+      if (hasBigend()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(4, getBigend());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -3602,6 +3616,9 @@ public final class NcStreamProto {
         if (other.hasSection()) {
           mergeSection(other.getSection());
         }
+        if (other.hasBigend()) {
+          setBigend(other.getBigend());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -3657,6 +3674,10 @@ public final class NcStreamProto {
               }
               input.readMessage(subBuilder, extensionRegistry);
               setSection(subBuilder.buildPartial());
+              break;
+            }
+            case 32: {
+              setBigend(input.readBool());
               break;
             }
           }
@@ -3740,6 +3761,24 @@ public final class NcStreamProto {
       public Builder clearSection() {
         result.hasSection = false;
         result.section_ = ucar.nc2.stream.NcStreamProto.Section.getDefaultInstance();
+        return this;
+      }
+      
+      // optional bool bigend = 4;
+      public boolean hasBigend() {
+        return result.hasBigend();
+      }
+      public boolean getBigend() {
+        return result.getBigend();
+      }
+      public Builder setBigend(boolean value) {
+        result.hasBigend = true;
+        result.bigend_ = value;
+        return this;
+      }
+      public Builder clearBigend() {
+        result.hasBigend = false;
+        result.bigend_ = false;
         return this;
       }
     }
@@ -4492,17 +4531,17 @@ public final class NcStreamProto {
       "\0132\023.ncstream.Attribute\022\037\n\006groups\030\006 \003(\0132\017" +
       ".ncstream.Group\"T\n\006Header\022\020\n\010location\030\001 " +
       "\001(\t\022\r\n\005title\030\002 \001(\t\022\n\n\002id\030\003 \001(\t\022\035\n\004root\030\004" +
-      " \002(\0132\017.ncstream.Group\"a\n\004Data\022\017\n\007varName" +
+      " \002(\0132\017.ncstream.Group\"q\n\004Data\022\017\n\007varName" +
       "\030\001 \002(\t\022$\n\010dataType\030\002 \002(\0162\022.ncstream.Data" +
       "Type\022\"\n\007section\030\003 \002(\0132\021.ncstream.Section" +
-      "\"4\n\005Range\022\r\n\005start\030\001 \001(\004\022\014\n\004size\030\002 \002(\004\022\016" +
-      "\n\006stride\030\003 \001(\004\")\n\007Section\022\036\n\005range\030\001 \003(\013" +
-      "2\017.ncstream.Range*\251\001\n\010DataType\022\010\n\004CHAR\020\000" +
-      "\022\010\n\004BYTE\020\001\022\t\n\005SHORT\020\002\022\007\n\003INT\020\003\022\010\n\004LONG\020\004" +
-      "\022\t\n\005FLOAT\020\005\022\n\n\006DOUBLE\020\006\022\n\n\006STRING\020\007\022\r\n\tS" +
-      "TRUCTURE\020\010\022\014\n\010SEQUENCE\020\t\022\t\n\005ENUM1\020\n\022\t\n\005E" +
-      "NUM2\020\013\022\t\n\005ENUM4\020\014\022\n\n\006OPAQUE\020\rB \n\017ucar.nc" +
-      "2.streamB\rNcStreamProto";
+      "\022\016\n\006bigend\030\004 \001(\010\"4\n\005Range\022\r\n\005start\030\001 \001(\004" +
+      "\022\014\n\004size\030\002 \002(\004\022\016\n\006stride\030\003 \001(\004\")\n\007Sectio" +
+      "n\022\036\n\005range\030\001 \003(\0132\017.ncstream.Range*\251\001\n\010Da" +
+      "taType\022\010\n\004CHAR\020\000\022\010\n\004BYTE\020\001\022\t\n\005SHORT\020\002\022\007\n" +
+      "\003INT\020\003\022\010\n\004LONG\020\004\022\t\n\005FLOAT\020\005\022\n\n\006DOUBLE\020\006\022" +
+      "\n\n\006STRING\020\007\022\r\n\tSTRUCTURE\020\010\022\014\n\010SEQUENCE\020\t" +
+      "\022\t\n\005ENUM1\020\n\022\t\n\005ENUM2\020\013\022\t\n\005ENUM4\020\014\022\n\n\006OPA" +
+      "QUE\020\rB \n\017ucar.nc2.streamB\rNcStreamProto";
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
         public com.google.protobuf.ExtensionRegistry assignDescriptors(
@@ -4561,7 +4600,7 @@ public final class NcStreamProto {
           internal_static_ncstream_Data_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ncstream_Data_descriptor,
-              new java.lang.String[] { "VarName", "DataType", "Section", },
+              new java.lang.String[] { "VarName", "DataType", "Section", "Bigend", },
               ucar.nc2.stream.NcStreamProto.Data.class,
               ucar.nc2.stream.NcStreamProto.Data.Builder.class);
           internal_static_ncstream_Range_descriptor =

@@ -6,6 +6,8 @@ Changes in version 4.0
 
  Release Details:
   45:
+   ncstream uses URLEncode for passing UTF-8 var names.
+   N3iosp.sync() checks for numrec < 0 (isStreaming)
    Fmrc: remove global atttributes taken from random prototype dataset
    fix readToByteChannel() problems
    refactor ncstream, another pass at protobuf messsages

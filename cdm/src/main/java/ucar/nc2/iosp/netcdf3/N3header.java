@@ -299,8 +299,9 @@ public class N3header {
     out.format("  dataStart= %d%n", dataStart);
     out.format("  nonRecordData size= %d %n", recStart-dataStart);
     out.format("  record Data starts = %d %n", recStart);
-    out.format("  recsize= = %d %n", recsize);
-    out.format("  numrecs= = %d %n", numrecs);
+    out.format("  recsize = %d %n", recsize);
+    out.format("  numrecs = %d %n", numrecs);
+    out.format("  isStreaming= %s %n", isStreaming);
 
     long calcSize = recStart + recsize * numrecs;
     out.format("  computedSize = %d %n", calcSize);
@@ -909,6 +910,8 @@ public class N3header {
     // gotta bypass the RAF buffer
     int n = raf.readIntUnbuffered(4);
     if (n == this.numrecs)
+      return false;
+    if (n < 0) // streaming
       return false;
 
     // update everything

@@ -63,25 +63,26 @@ public class N3raf extends N3iosp  {
  }
 
   /**
-   * Read data subset from file for a variable, to WritableByteChannel .
+   * Read data subset from file for a variable, to WritableByteChannel.
+   * Will send as bigendian, since thats what the underlying file has.
    * @param index handles skipping around in the file.
    * @param dataType dataType of the variable
    */
   protected long readData( Layout index, DataType dataType, WritableByteChannel out) throws java.io.IOException {
     long count = 0;
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
+    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.ENUM1)) {
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
         count += raf.readToByteChannel( out, chunk.getSrcPos(), chunk.getNelems());
       }
 
-    } else if (dataType == DataType.SHORT) {
+    } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
         count += raf.readToByteChannel( out, chunk.getSrcPos(), 2 * chunk.getNelems());
       }
 
-    } else if ((dataType == DataType.INT) || (dataType == DataType.FLOAT)) {
+    } else if ((dataType == DataType.INT) || (dataType == DataType.FLOAT) || (dataType == DataType.ENUM4)) {
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
         count += raf.readToByteChannel( out, chunk.getSrcPos(), 4 * chunk.getNelems());

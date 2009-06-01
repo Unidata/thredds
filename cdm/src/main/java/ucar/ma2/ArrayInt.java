@@ -139,9 +139,9 @@ public class ArrayInt extends Array {
   }
 
   public ByteBuffer getDataAsByteBuffer() {
-    ByteBuffer bb = ByteBuffer.allocate((int) (4 * getSize()));
+    ByteBuffer bb = ByteBuffer.allocate((int) (4 * getSize())); // default big-endian
     IntBuffer ib = bb.asIntBuffer();
-    ib.put((int[]) get1DJavaArray(int.class)); // make sure its in canocal order
+    ib.put((int[]) get1DJavaArray(int.class)); // make sure its in canonical order
     return bb;
   }
 

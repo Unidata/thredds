@@ -32,8 +32,8 @@
   <p>&quot;Protocol buffers are a flexible, efficient, automated mechanism for  serializing structured data – think XML, but smaller, faster, and  simpler. You define how you want your data to be structured once, then  you can use special generated source code to easily write and read your  structured data to and from a variety of data streams and using a  variety of languages. You can even update your data structure without  breaking deployed programs that are compiled against the &quot;old&quot; format.&quot;</p>
 </blockquote>
 <p>The main advantage of protobuf over XML is performance, since both message size and parsing speed is improved. A very important feature of protobuf is the ability to evolve the message structure in a way that doesnt break previous code.</p>
-<p>We dont use protobuf messages for the data, since protobuf messages are built in memory, and we need to be able to stream (write data directly from its source onto the output stream, eg socket). The data is simply linearized in the usual netCDF way, and written to the stream. A data message identifying the variable and the section that the data represents is part of every data message. Probably we will use &quot;reader makes right&quot; byte order.</p>
-<p>Variable length datatypes like  String and Opaque use the vdataMessage for data transfer. First the number of objects is written, then each object, preceeded by its length in bytes as a vlen. Strings are encoded as UTF-8 bytes.</p>
+<p>We dont use protobuf messages for the data, since protobuf messages are built in memory, and we need to be able to stream (write data directly from its source onto the output stream, eg socket). The data is simply linearized in the usual netCDF way, and written to the stream. A data message identifying the variable and the section that the data represents is part of every data message.</p>
+<p>Variable length datatypes like  String and Opaque use the vdataMessage for data transfer. First the number of objects is written, then each object, preceeded by its length in bytes as a vlen. Strings are encoded as UTF-8 bytes. Opaque is just a bag of bytes.</p>
 <p>TDS 4.0 currently has  a prototype service using ncstream similar to OPeNDAP, which  can be used by Netcdf-Java 4.0 library. The classic model has been tested, and the extended model  processing is mostly complete. </p>
 <h2>Grammer</h2>
 <p>An <em><strong>ncstream</strong></em> is a sequence of one or more messages:</p>
@@ -76,6 +76,20 @@
   <li>A valid dataset must have at least one header message</li>
   <li>A variable must be defined first in a header message, before it can appear in a data message.</li>
 </ul>
+<h3>Data encoding</h3>
+<p>There is just enough information in the stream to break the stream into messages and to know what kind of message it is. To interpret the message correctly, one must have the correct proto file. To interpret the data stream correctly, one must have the header information.<em> (is that really true? maybe only for structs)</em></p>
+<p>NcStreamProto.Data contains the full variable name the data belongs to, the DataType and Section,<em> if its big-endian or little-endian. ?? Note in Java, DataOutputStream always writes in big-endian order.</em></p>
+<pre> message Data {<br />   required string varName = 1;<br />   required DataType dataType = 2;<br />   required Section section = 3;<br />   optional bool bigend = 4 [default=true];<br /> }</pre>
+<p><strong>Primitive types (byte, char, short, int, long, float, double)</strong>: arrays of primitives are stored in row-major order. The endian-ness is specified in the NcStreamProto.Data message when needed.</p>
+<ul>
+  <li>
+    <strong>char</strong> is a legacy data type contains uninterpreted  characters, one character per byte. Typically these contain 7-bit ASCII characters.</li>
+  <li>
+    <strong>byte, short, int, long</strong> may be interpreted as signed or unsigned. This is specified in the variable's header information.  
+  </li>
+</ul>
+<p><strong>Variable length types (String, Opaque): </strong>First the number of objects is written, then each object, preceeded by its length in bytes as a vlen. Strings are encoded as UTF-8 bytes. Opaque is just a bag of bytes. <em>what about vlen? eg int (3, *) ??</em></p>
+<p><strong>Structure types (Structure, Sequence): </strong>An array of StructureData. Can be encoded in row or col (?). <em>What about vlens ??</em></p>
 <p>&nbsp;</p>
 <h2>CdmRemote Web Service</h2>
 <p>CdmRemote is an experimental web service implemented in the TDS, providing remote access to CDM datasets, using ncstream as the on-the-wire protocol. It provides access at the  NetcdfDataset, and Feature Type levels of the CDM. The TDS catalog uses <strong>ServiceType.CdmRemote</strong> service type.</p>
@@ -112,7 +126,7 @@
 
 <ul>
   <li>Data request  uses Section specification (same as Fortran-90 array notation) to ask for a subset in index space.</li>
-  <li> Variable names must be UTF8-escape encoded.</li>
+  <li> Variable names must be UTF8-escape encoded. In Java we use URLEncode.encode() and URLDecode().decode. This creates a <em><strong>application/x-www-form-urlencoded</strong></em>   MIME encoding.</li>
   <li>GetCapabilities indicates which (if any) feature types the dataset can be opened as, along with the URLs of those services. TBD.</li>
 </ul>
 <h3>&nbsp;</h3>

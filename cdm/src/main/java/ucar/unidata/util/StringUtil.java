@@ -31,11 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-// $Id: StringUtil.java,v 1.53 2007/06/01 17:02:44 jeffmc Exp $
-
-
 package ucar.unidata.util;
-
 
 import java.text.ParsePosition;
 
@@ -46,13 +42,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.*;
 
-
-
-
 /**
  * String utilities
  * @author John Caron
- * @version $Id: StringUtil.java,v 1.53 2007/06/01 17:02:44 jeffmc Exp $
  */
 
 public class StringUtil {

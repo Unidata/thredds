@@ -20,14 +20,15 @@ public class TestNetcdfStream extends TestCase {
 
   public void testCompare() throws IOException {
     //
-    doOne("station/20090524_sao.gem");
+    doOne("formats/netcdf3/standardVar.nc");
     //doOne("point/uspln_20061023.18");
   }
 
   public void testScan() throws IOException {
-    scanDir("C:/data/ft/", new FileFilter() {
+    scanDir("C:/data/", new FileFilter() {
       public boolean accept(File pathname) {
-        return !pathname.getPath().endsWith(".xml") && !pathname.getPath().endsWith(".gbx");
+        //return !pathname.getPath().endsWith(".xml") && !pathname.getPath().endsWith(".gbx");
+        return pathname.getPath().endsWith(".nc");
       }
     });
   }
@@ -45,7 +46,7 @@ public class TestNetcdfStream extends TestCase {
   }
 
   void doOne(String name) throws IOException {
-    String file = "C:/data/ft/"+name;
+    String file = "C:/data/"+name;
     String remote = "http://localhost:8080/thredds/cdmremote/testCdmRemote/" + name;
     doOne(file, remote);
   }
@@ -54,9 +55,9 @@ public class TestNetcdfStream extends TestCase {
     System.out.printf("---------------------------\n");
     NetcdfFile ncfile = NetcdfDataset.openFile(file, null);
     NetcdfFile ncfileRemote = new NcStreamRemote(remote, null);
-    TestCompare.compareFiles(ncfile, ncfileRemote, false, true, false);
+    TestCompare.compareFiles(ncfile, ncfileRemote, false, false, false);
     System.out.printf("compare %s ok %n", file);
-    TestCompare.compareFiles(ncfile, ncfileRemote, true, false, false);
+    TestCompare.compareFiles(ncfile, ncfileRemote, true, true, true);
     System.out.printf("compare data %s ok %n", file);
     ncfile.close();
     ncfileRemote.close();

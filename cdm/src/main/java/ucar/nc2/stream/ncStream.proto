@@ -84,6 +84,7 @@ message Data {
   required string varName = 1;
   required DataType dataType = 2;
   required Section section = 3;
+  optional bool bigend = 4 [default = true];
 }
 
 message Range {

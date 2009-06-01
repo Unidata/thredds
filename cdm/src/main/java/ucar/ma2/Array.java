@@ -654,11 +654,19 @@ public abstract class Array {
     throw new UnsupportedOperationException();
   }
 
+  /**
+   * Create an Array from a ByteBuffer
+   * @param dtype type of data
+   * @param shape shape of data
+   * @param bb data is in here
+   * @return equivilent array
+   */
   public static Array factory(DataType dtype, int[] shape, ByteBuffer bb) {
     int size;
     Array result;
 
     switch (dtype) {
+      case ENUM1:
       case BYTE:
         if (shape == null) shape =  new int[]{bb.limit()};
         return factory(dtype, shape, bb.array());
@@ -671,6 +679,7 @@ public abstract class Array {
           result.setChar(i, (char) bb.get(i));
         return result;
 
+      case ENUM2:
       case SHORT:
         ShortBuffer sb = bb.asShortBuffer();
         size = sb.limit();
@@ -680,6 +689,7 @@ public abstract class Array {
           result.setShort(i, sb.get(i));
         return result;
 
+      case ENUM4:
       case INT:
         IntBuffer ib = bb.asIntBuffer();
         size = ib.limit();

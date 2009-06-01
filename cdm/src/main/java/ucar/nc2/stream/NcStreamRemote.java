@@ -46,6 +46,7 @@ import ucar.ma2.InvalidRangeException;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.net.URLEncoder;
 
 /**
  * A remote NetcdfFile, using ncstream to communicate.
@@ -138,7 +139,7 @@ public class NcStreamRemote extends ucar.nc2.NetcdfFile {  // LOOK perhaps shoul
 
     StringBuilder sbuff = new StringBuilder(remoteURI);
     sbuff.append("?");
-    sbuff.append(v.getShortName());
+    sbuff.append( URLEncoder.encode(v.getShortName(), "UTF-8"));
     sbuff.append("(");
     sbuff.append(section.toString());
     sbuff.append(")");
