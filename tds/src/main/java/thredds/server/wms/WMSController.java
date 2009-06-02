@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
 import thredds.server.wms.responses.*;
+import thredds.server.config.TdsContext;
 import thredds.servlet.ThreddsConfig;
 import thredds.servlet.DatasetHandler;
 import thredds.servlet.UsageLog;
@@ -94,26 +95,38 @@ public class WMSController extends AbstractController {
     logServerStartup.info("initializing WMS: " + allow);
 
     if (allow) {
-      String paletteLocation = this.getServletContext().getRealPath("/WEB-INF/" +
-              ThreddsConfig.get("WMS.paletteLocationDir", "palettes"));
-      String OGCMetaXmlFile = this.getServletContext().getRealPath("/WEB-INF/" +
-              ThreddsConfig.get("WMS.ogcMetaXML", "OGCMeta.xml"));
+      // OGC metadata
+      String  defaultMetadataLocation = this.getServletContext().getRealPath("/WEB-INF/OGCMeta.xml");
+      String OGCMetaXmlFile = ThreddsConfig.get("WMS.ogcMetaXML", null);
+      if (OGCMetaXmlFile == null)
+        OGCMetaXmlFile = defaultMetadataLocation;
+      else if (!OGCMetaXmlFile.startsWith("/"))
+        OGCMetaXmlFile = tdsContext.getContentDirectory() + OGCMetaXmlFile;
 
-      File configFile = null;
       try {
-        configFile = new File(OGCMetaXmlFile);
-        config = new Persister().read(Config.class, configFile);
+        config = new Persister().read(Config.class, new File(OGCMetaXmlFile));
+        logServerStartup.debug("Loaded OGCMetaXmlFile from " + OGCMetaXmlFile);
       }
       catch (Exception e) {
-        logServerStartup.debug("Loaded configuration from " + OGCMetaXmlFile);
+        logServerStartup.error("Failed to load OGCMetaXmlFile from " + OGCMetaXmlFile);
         throw new ServletException("Cannot read OGC config file " + e.toString());
       }
+
+      // color pallettes
+      String  defaultPaletteLocation = this.getServletContext().getRealPath("/WEB-INF/palettes");
+      String paletteLocation = ThreddsConfig.get("WMS.paletteLocationDir", null);
+      if (paletteLocation == null)
+        paletteLocation = defaultPaletteLocation;
+      else if (!paletteLocation.startsWith("/"))
+        paletteLocation = tdsContext.getContentDirectory() + paletteLocation;
 
       File paletteLocationDir = new File(paletteLocation);
       if (paletteLocationDir.exists() && paletteLocationDir.isDirectory()) {
         ColorPalette.loadPalettes(paletteLocationDir);
+        logServerStartup.debug("Loaded palettes from " + paletteLocation);
       } else {
-        log.info("Directory of palette files does not exist or is not a directory");
+        log.warn("Directory of palette files does not exist or is not a directory.  paletteLocation="+paletteLocation);
+        ColorPalette.loadPalettes( new File(paletteLocation));
       }
 
       colorRange = new HashMap<String, ColorScaleRange>();
@@ -125,6 +138,11 @@ public class WMSController extends AbstractController {
 
   public void destroy() {
     NetcdfDataset.shutdown();
+  }
+
+  private TdsContext tdsContext;
+  public void setTdsContext(TdsContext tdsContext) {
+    this.tdsContext = tdsContext;
   }
 
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res)

@@ -17,6 +17,9 @@ Changes in version 4.0
   * netcdf-java 4.0
 
 Release Details:
+ 13:
+  WMS: minor configuration improvements
+  cdmremote service
  12:
   WMS: improved logging and exception handling.
   Minor bug fixes.

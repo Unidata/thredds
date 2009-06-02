@@ -4,7 +4,9 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-  <bean id="wmsController" init-method="init" destroy-method="destroy" class="thredds.server.wms.WMSController"/>
+  <bean id="wmsController" init-method="init" destroy-method="destroy" class="thredds.server.wms.WMSController">
+      <property name="tdsContext" ref="tdsContext"/>
+  </bean>
 
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
@@ -13,11 +15,11 @@
       </value>
     </property>
     <property name="alwaysUseFullPath" value="true"/>
-    <property name="interceptors">
+    <!-- property name="interceptors">
       <list>
         <ref bean="datasetCloser"/>
       </list>
-    </property>
+    </property -->
   </bean>
 
   <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -26,6 +28,6 @@
     <property name="suffix" value=".jsp"/>
   </bean>
 
-  <bean id="datasetCloser" class="thredds.server.wms.DatasetCloser"/>
+  <!-- bean id="datasetCloser" class="thredds.server.wms.DatasetCloser"/ -->
 
 </beans>

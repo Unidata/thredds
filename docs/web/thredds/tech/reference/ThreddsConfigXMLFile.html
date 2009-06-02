@@ -99,20 +99,22 @@ is occurring. The files are deleted after a successful download. </li>
 </ol>
  <p>If <strong>WCS</strong> is allowed but the directory is not set, the TDS will use the <strong>${tomcat_home}/content/thredds/wcs/wcache</strong>/ directory for temporary files. </p>
  <h3>WMS<a name="WMS" id="WMS"></a> Service (version 4.0)</h3>
- <pre>  &lt;<strong>WMS</strong>&gt;<br>    &lt;<strong>allow</strong>&gt;true&lt;/allow&gt;<br>&nbsp;&nbsp;&nbsp; &lt;<strong>paletteLocationDir</strong>&gt;palettes&lt;/paletteLocationDir&gt;  
+ <pre>  &lt;<strong>WMS</strong>&gt;<br>    &lt;<strong>allow</strong>&gt;true&lt;/allow&gt;<br>&nbsp;&nbsp;&nbsp; &lt;<strong>paletteLocationDir</strong>&gt;/data/my/pallettes/&lt;/paletteLocationDir&gt;
+    &lt;<strong>ogcMetaXML</strong>&gt;OGCMeta.xml&lt;/ogcMetaXML&gt;  
     &lt;<strong>dir</strong>&gt;/temp/ncache/&lt;/dir&gt;<br>    &lt;<strong>scour</strong>&gt;15 min&lt;/scour&gt;<br>    &lt;<strong>maxAge</strong>&gt;30 min&lt;/maxAge&gt;<br>  &lt;/WMS&gt;</pre>
- <p>This controls the <em><strong>Web Map Service (WMS) </strong></em>,
+<p>This controls the <em><strong>Web Map Service (WMS) </strong></em>,
    which allows WMS clients to get images of gridded datasets. By default, this service is off. </p>
  <ol>
    <li><strong>allow</strong> : to disallow, change this to false. If you don't use a <strong>WCS</strong> service in your catalogs, there will be no valid URLs for this service. </li>
-   <li><strong>paletteLocationDir</strong>: this is required to tell the server where the pallet files are located</li>
+   <li><strong>paletteLocationDir</strong>: optionally specify your own pallette files, by specifying the directory where they are contained. If the directory location starts with a &quot;/&quot;, the path is absolute, otherwise it is relative to <strong>${tomcat_home}/content/thredds/</strong>. If you dont specify it, or specify it incorrectly, the default pallettes will be used, which are in the war file under <strong>WEB-INF/pallettes</strong>.</li>
+   <li><strong>ogcMetaXML</strong>: optionally specify your own OGC metadata file. Use an absolute file path, or a path reletive to <strong>${tomcat_home}/content/thredds/</strong>. Otherwise the default file <strong>WEB-INF/OGCMeta.xml</strong>. is used.</li>
    <li><strong>dir</strong> : the working directory for files to be downloaded&nbsp;(<a href="#Cache_Locations">choosing a cache directory</a>) </li>
    <li> <strong>scour</strong> : how often to scour the working directory, to delete files that were not successfully downloaded. </li>
    <li><strong>maxAge</strong>:
      how long to leave the files in the working directory while the download
      is occurring. The files are deleted after a successful download. </li>
  </ol>
- <p>&nbsp;</p>
+<p>&nbsp;</p>
 <h3>Loadable Viewers</h3>
  <pre>   &lt;<strong>Viewer</strong>&gt;my.package.MyViewer&lt;/Viewer&gt;</pre>
  <p>You can place a link  to your own <em><strong>Viewer</strong></em>  on the TDS HTML page, by loading a <a href="Viewers.html">viewer</a> at runtime. </p>

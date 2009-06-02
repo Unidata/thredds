@@ -13,45 +13,49 @@ import junit.framework.TestCase;
 
 
 public class TestNetcdfStream extends TestCase {
-
+  String serverRoot = "C:/data/";
+  
   public TestNetcdfStream(String name) {
     super(name);
   }
 
   public void testCompare() throws IOException {
-    //
-    doOne("formats/netcdf3/standardVar.nc");
-    //doOne("point/uspln_20061023.18");
+    doOne("C:/data/formats/netcdf3/standardVar.nc");
   }
 
   public void testScan() throws IOException {
-    scanDir("C:/data/", new FileFilter() {
+    /* scanDir("C:/data/", new FileFilter() {
       public boolean accept(File pathname) {
         //return !pathname.getPath().endsWith(".xml") && !pathname.getPath().endsWith(".gbx");
         return pathname.getPath().endsWith(".nc");
+      }
+    }); */
+
+    scanDir("C:\\data\\formats\\gempak\\surface", new FileFilter() {
+      public boolean accept(File pathname) {
+        //return !pathname.getPath().endsWith(".xml") && !pathname.getPath().endsWith(".gbx");
+        return pathname.getPath().endsWith(".gem");
       }
     });
   }
 
   void scanDir(String dirName, FileFilter ff) throws IOException {
-    final int dirlen = dirName.length();
     TestAll.actOnAll( dirName, ff, new TestAll.Act() {
       public int doAct(String filename) throws IOException {
-        String name = StringUtil.substitute(filename.substring(dirlen), "\\", "/");
-        doOne(name);
+        doOne(filename);
         return 1;
       }
     });
 
   }
 
-  void doOne(String name) throws IOException {
-    String file = "C:/data/"+name;
+  void doOne(String filename) throws IOException {
+    String name = StringUtil.substitute(filename.substring(serverRoot.length()), "\\", "/");
     String remote = "http://localhost:8080/thredds/cdmremote/testCdmRemote/" + name;
-    doOne(file, remote);
+    compare(filename, remote);
   }
 
-  void doOne(String file, String remote) throws IOException {
+  void compare(String file, String remote) throws IOException {
     System.out.printf("---------------------------\n");
     NetcdfFile ncfile = NetcdfDataset.openFile(file, null);
     NetcdfFile ncfileRemote = new NcStreamRemote(remote, null);
