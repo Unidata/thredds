@@ -257,8 +257,8 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
             if(! vName.endsWith("_HI")) {
                  VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
                  rsvar = makeRadialVariable(nds, v, var);
-            }
           }
+      }
       }
 
       if(rsvar != null)
@@ -531,8 +531,10 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
         float sum = 0;
         int sumSize = 0;
 
-        try {
-            Array eleTmp =  ds.findVariable(elevName).read();
+        try{
+            Variable evar = ds.findVariable(elevName);
+            Array eleTmp =  evar.read();
+            evar.setCachedData(eleTmp, false);
             int [] eleOrigin = new int[2];
             eleOrigin[0] = swpNumber;
             eleOrigin[1] = 0;
@@ -684,7 +686,9 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
         Array eleData = null;
 
         try {
-            Array eleTmp = ds.findVariable(elevName).read();
+            Variable evar = ds.findVariable(elevName);
+            Array eleTmp = evar.read();
+            evar.setCachedData(eleTmp, false);
             int [] eleOrigin = new int[2];
             eleOrigin[0] = swpNumber;
             eleOrigin[1] = 0; //shape[1] - getRadialNumber();
@@ -725,7 +729,9 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
 
         if(eleData == null) {
             try {
-                Array eleTmp = ds.findVariable(elevName).read();
+                Variable evar = ds.findVariable(elevName);
+                Array eleTmp = evar.read();
+                evar.setCachedData(eleTmp, false);
                 int [] eleOrigin = new int[2];
                 eleOrigin[0] = swpNumber;
                 eleOrigin[1] = 0;
@@ -766,7 +772,9 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
 
         if(aziData == null) {
             try {
-                Array aziTmp = ds.findVariable(aziName).read();
+                Variable avar = ds.findVariable(aziName);
+                Array aziTmp = avar.read();
+                avar.setCachedData(aziTmp, false);
                 int [] aziOrigin = new int[2];
                 aziOrigin[0] = swpNumber;
                 aziOrigin[1] = 0;  //shape[1] - getRadialNumber();
@@ -807,7 +815,9 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
        // int[] shape = ve.getShape();
         if(aziData == null) {
             try {
-                Array aziTmp = ds.findVariable(aziName).read();
+                Variable avar = ds.findVariable(aziName);
+                Array aziTmp = avar.read();
+                avar.setCachedData(aziTmp, false);
                 int [] aziOrigin = new int[2];
                 aziOrigin[0] = swpNumber;
                 aziOrigin[1] = 0; //shape[1] - getRadialNumber();
@@ -846,7 +856,9 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
       }
 
       public float getRadialDist(String dName, int gate) throws IOException {
-        Array data = ds.findVariable(dName).read();
+        Variable dvar = ds.findVariable(dName);
+        Array data = dvar.read();
+        dvar.setCachedData(data, false);
         Index index = data.getIndex();
         return data.getFloat(index.set(gate));
       }
@@ -871,7 +883,9 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
       }
 
       public float getT(String tName, int swpNumber, int ray) throws IOException {
-        Array timeData = ds.findVariable(tName).read();
+        Variable tvar = ds.findVariable(tName);
+        Array timeData = tvar.read();
+        tvar.setCachedData(timeData, false);
         Index timeIndex = timeData.getIndex();
         return timeData.getFloat(timeIndex.set(swpNumber, ray));
       }
@@ -972,13 +986,13 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
 
 
   public static void main(String args[]) throws Exception, IOException, InstantiationException, IllegalAccessException {
-   String fileIn = "/home/yuanho/dorade/KATX_20040113_0107";
+   String fileIn = "/home/yuanho/Desktop/idv/dorade/KATX_20040113_0107";
    // String fileIn ="/upc/share/testdata/radar/NOP3_20071112_1633";
     //RadialDatasetSweepFactory datasetFactory = new RadialDatasetSweepFactory();
     //RadialDatasetSweep rds = datasetFactory.open(fileIn, null);
- // ucar.unidata.util.Trace.call1("LevelII2Dataset:main dataset");
+  //ucar.unidata.util.Trace.call1("LevelII2Dataset:main dataset");
     RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( FeatureType.RADIAL, fileIn, null, new StringBuilder());
- // ucar.unidata.util.Trace.call2("LevelII2Dataset:main dataset");
+      //ucar.unidata.util.Trace.call2("LevelII2Dataset:main dataset");
     String st = rds.getStartDate().toString();
     String et = rds.getEndDate().toString();
     String id = rds.getRadarID();
