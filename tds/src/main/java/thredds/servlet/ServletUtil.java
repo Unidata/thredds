@@ -415,7 +415,7 @@ public class ServletUtil {
     }
     catch (URISyntaxException e) {
       log.error("sendPermanentRedirect(): Bad syntax on request URL <" + req.getRequestURL() + ">.", e);
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
+      log.info( "sendPermanentRedirect(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       return;
     }
@@ -443,7 +443,8 @@ public class ServletUtil {
         .append("</body></html>")
         .toString();
 
-    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_MOVED_PERMANENTLY, htmlResp.length()));
+    log.info( "sendPermanentRedirect(): redirect to " + absolutePath);
+    log.info( "sendPermanentRedirect(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_MOVED_PERMANENTLY, htmlResp.length()));
 
     // Write the catalog out.
     PrintWriter out = res.getWriter();

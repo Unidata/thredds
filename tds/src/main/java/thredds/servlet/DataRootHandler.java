@@ -1125,15 +1125,31 @@ public class DataRootHandler {
     if (catPath == null)
       return false;
 
-    if (catPath.endsWith("/"))
+    // Handle case for root catalog.
+    // ToDo Is this needed? OPeNDAP no longer allows "/thredds/dodsC/catalog.html"
+    if ( catPath.equals( "" ))
+      catPath = "catalog.html";
+
+    if ( catPath.endsWith( "/"))
       catPath += "catalog.html";
 
     if (!catPath.endsWith(".xml")
             && !catPath.endsWith(".html"))
       return false;
 
-    RequestDispatcher rd = req.getRequestDispatcher("/catalog/" + catPath);
-    rd.forward(req, res);
+    // Forward request to the "/catalog" servlet.
+    String path = "/catalog/" + catPath;
+
+    // Handle case for root catalog.
+    // ToDo Is this needed? OPeNDAP no longer allows "/thredds/dodsC/catalog.html"
+    if ( catPath.equals( "catalog.html") || catPath.equals( "catalog.xml"))
+      path = "/" + catPath;
+
+    log.info( "processReqForCatalog(): forwarding request to " + path );
+    RequestDispatcher rd = req.getRequestDispatcher( path );
+    rd.forward( req, res);
+    log.info( "processReqForCatalog(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
+
     return true;
   }
 

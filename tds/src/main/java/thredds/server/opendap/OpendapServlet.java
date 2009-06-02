@@ -165,7 +165,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
 
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-    log.info(UsageLog.setupRequestContext(request));
+    log.info("doGet(): " + UsageLog.setupRequestContext(request));
     String path = null;
 
     try {
@@ -175,7 +175,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
         log.debug(ServletUtil.showRequestDetail(this, request));
 
       if (path == null) {
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
+        log.info( "doGet(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
         response.sendError(HttpServletResponse.SC_NOT_FOUND);
         return;
       }
@@ -184,24 +184,44 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
         URI reqURI = ServletUtil.getRequestURI(request);
         baseURI = reqURI.resolve("/thredds/dodsC/");
         //rootCatalog.setBaseURI( baseURI);
-        log.debug(" baseURI was set = {}", baseURI);
+        log.debug( "doGet(): baseURI was set = {}", baseURI);
       }
 
       if (path.endsWith(".close")) {
         closeSession(request, response);
         response.setContentLength(0);
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, 0));
+        log.info( "doGet(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, 0));
         return;
 
       } else if (path.endsWith("latest.xml")) {
         DataRootHandler.getInstance().processReqForLatestDataset(this, request, response);
         return;
-
-      } else if (path.endsWith("catalog.xml") || path.endsWith("catalog.html") || path.endsWith("/")) {
-        log.info(UsageLog.closingMessageForRequestContext(ServletUtil.STATUS_FORWARDED, -1));
-        if (!DataRootHandler.getInstance().processReqForCatalog(request, response)) {
-          log.error(UsageLog.closingMessageForRequestContext(ServletUtil.STATUS_FORWARD_FAILURE, -1));
+      }
+      // Redirect all catalog requests at the root level.
+      else if ( path.equals( "/" )
+                || path.equals( "/catalog.html" )
+                || path.equals( "/catalog.xml" ) )
+      {
+        ServletUtil.sendPermanentRedirect( ServletUtil.getContextPath() + path, request, response );
+        return;
+      }
+      // Make sure catalog requests match a dataRoot before trying to handle.
+      else if ( path.endsWith( "/" )
+                || path.endsWith( "/catalog.html" )
+                || path.endsWith( "/catalog.xml" ) )
+      {
+        if ( ! DataRootHandler.getInstance().hasDataRootMatch( path ))
+        {
+          log.info( "doGet(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, -1 ) );
+          response.sendError( HttpServletResponse.SC_NOT_FOUND );
+          return;
         }
+        
+        if ( DataRootHandler.getInstance().processReqForCatalog( request, response ) )
+          log.info( "doGet(): " + UsageLog.closingMessageForRequestContext( ServletUtil.STATUS_FORWARDED, -1 ) );
+        else
+          log.error( "doGet(): " + UsageLog.closingMessageForRequestContext( ServletUtil.STATUS_FORWARD_FAILURE, -1 ) );
+
         return;
       }
 
