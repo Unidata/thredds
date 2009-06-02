@@ -56,6 +56,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.TimeZone;
 import java.util.TreeSet;
 
 
@@ -447,6 +448,7 @@ public abstract class AbstractGempakStationFileReader extends GempakFileReader {
     public List<Date> getDates() {
         if ((dates == null) || (dates.isEmpty() && !dateList.isEmpty())) {
             dates = new ArrayList<Date>(dateList.size());
+            dateFmt.setTimeZone(TimeZone.getTimeZone("GMT"));
             for (String dateString : dateList) {
                 Date d = dateFmt.parse(dateString, new ParsePosition(0));
                 //DateFromString.getDateUsingSimpleDateFormat(dateString,

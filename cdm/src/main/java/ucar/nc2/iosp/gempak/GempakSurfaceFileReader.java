@@ -1,6 +1,4 @@
 /*
- * $Id: IDV-Style.xjs,v 1.3 2007/02/16 19:18:30 dmurray Exp $
- *
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
@@ -34,7 +32,6 @@
  */
 
 
-
 package ucar.nc2.iosp.gempak;
 
 
@@ -42,29 +39,13 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
 import ucar.unidata.util.StringUtil;
 
-import visad.util.Trace;
-
 import java.io.*;
 
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 
 /**
- * Read a Gempak grid file
- *
- * @author IDV Development Team
- * @version $Revision: 1.3 $
+ * Read a Gempak surface file
  */
 public class GempakSurfaceFileReader extends AbstractGempakStationFileReader {
 
