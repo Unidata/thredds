@@ -32,15 +32,19 @@ public class CdmRemoteDatasetFactory {
     Element elem = root.getChild("featureDataset");
     String fType = elem.getAttribute("type").getValue();
     String datasetUri = elem.getAttribute("url").getValue();
+
+    
     System.out.printf("CdmRemoteDatasetFactory endpoint %s getCapabilities= %s %s%n", endpoint, fType, datasetUri);
 
     FeatureType ft = FeatureType.valueOf(fType);
     NcStreamRemote ncremote = new NcStreamRemote(datasetUri, null);
     NetcdfDataset ncd = new NetcdfDataset(ncremote, null);
-    if (ft == null || ft == FeatureType.GRID)
+
+    if (ft == null || ft == FeatureType.GRID) {
       return new GridDataset(ncd);
-    else
+    } else {
       return new PointDatasetRemote(ft, ncd, ncremote);
+    }
   }
 
   static private org.jdom.Document getCapabilities(String endpoint) throws IOException {

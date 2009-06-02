@@ -151,7 +151,7 @@ public class CollectionController extends AbstractCommandController implements L
         out.flush();
 
       } else if (queryS.equalsIgnoreCase("getCapabilities")) {
-        CdmRemoteController.sendCapabilities(req, out, fd.getFeatureType(), false);
+        CdmRemoteController.sendCapabilities(req, out, fd, false);
         res.flushBuffer();
         out.flush();
 

@@ -240,8 +240,8 @@ public class DebugCommands {
         e.pw.println("reinit ok");
       }
     };
-    debugHandler.addAction(act);   */
-  }
+    debugHandler.addAction(act); */
+  }  
 
   void showFlags(HttpServletRequest req, PrintStream pw) {
     for (String key : Debug.keySet()) {

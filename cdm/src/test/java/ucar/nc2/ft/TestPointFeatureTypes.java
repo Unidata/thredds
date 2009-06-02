@@ -101,6 +101,9 @@ public class TestPointFeatureTypes  extends TestCase {
     testPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/station/testCdmRemote/gempak/19580807_sao.gem", FeatureType.STATION, true);
   }
 
+  public void testCdmRemoteCollection() throws IOException {
+    testPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/gempakSurface.xml/collection", FeatureType.STATION, true);
+  }
 
   public void utestReadAll() throws IOException {
     readAllDir(ucar.nc2.TestAll.testdataDir + "station/", new MyFileFilter() , FeatureType.ANY_POINT);

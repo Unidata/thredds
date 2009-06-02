@@ -98,8 +98,8 @@ public class COARDSConvention extends CoordSysBuilder {
     // :Source = "NOAA/National Climatic Data Center";
    // :Contact = "Dick Reynolds, email: Richard.W.Reynolds@noaa.gov & Chunying Liu, email: Chunying.liu@noaa.gov";
    //:netcdf_Convention = "COARDS";
-    if (checkForMeter && SimpleUnit.isCompatible("m", unit))
-      return AxisType.Height;
+   // if (checkForMeter && SimpleUnit.isCompatible("m", unit))
+   //   return AxisType.Height;
 
     return null;
   }

@@ -3215,7 +3215,8 @@ public class ToolsUI extends JPanel {
         return true;
 
       } catch (IOException e) {
-        JOptionPane.showMessageDialog(this, e.getMessage());
+        String message = e.getClass().getName() + ": " + e.getMessage();
+        JOptionPane.showMessageDialog(this, message);
         return false;
 
       } catch (Throwable e) {

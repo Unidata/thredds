@@ -52,8 +52,14 @@ import java.net.URLDecoder;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
+import ucar.nc2.units.DateType;
+import ucar.nc2.units.TimeDuration;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.stream.NcStreamWriter;
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.LatLonPointImpl;
 
 /**
  * This is a prototype for "cdm remote service".
@@ -206,7 +212,63 @@ public class CdmRemoteController extends AbstractController implements LastModif
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
     fmt.output(doc, os);
   }
-   
+
+  static void sendCapabilities(HttpServletRequest req, OutputStream os, FeatureDatasetPoint fd, boolean addSuffix) throws IOException {
+    Element rootElem = new Element("cdmRemoteCapabilities");
+    Document doc = new Document(rootElem);
+    rootElem.setAttribute("location", ServletUtil.getRequestBase(req));
+    Element elem = new Element("featureDataset");
+    elem.setAttribute("type", fd.getFeatureType().toString());
+    elem.setAttribute("url", makeFeatureUri(req, fd.getFeatureType(), addSuffix));
+    rootElem.addContent(elem);
+
+    LatLonRect bb = fd.getBoundingBox(); // LOOK should be a utility somewhere
+    if (bb != null) {
+      elem = new Element("geospatialCoverage");
+      rootElem.addContent(elem);
+      Element northsouth =  new Element("northsouth");
+      elem.addContent(northsouth);
+      northsouth.addContent( new Element("start").setText( Double.toString(bb.getLatMin())));
+      northsouth.addContent( new Element("size").setText( Double.toString(bb.getHeight())));
+
+      Element eastwest =  new Element("eastwest");
+      elem.addContent(eastwest);
+      eastwest.addContent( new Element("start").setText( Double.toString(bb.getLonMin())));
+      eastwest.addContent( new Element("size").setText( Double.toString(bb.getWidth())));
+    }
+
+    DateRange t = fd.getDateRange(); // LOOK should be a utility somewhere
+    if (t != null) {
+      elem = new Element("timeCoverage");
+      rootElem.addContent(elem);
+
+      DateType start = t.getStart();
+      DateType end = t.getEnd();
+      TimeDuration duration = t.getDuration();
+
+      if (t.useStart() && (start != null) && !start.isBlank()) {
+        Element startElem = new Element("start");
+        startElem.setText(start.toString());
+        elem.addContent(startElem);
+      }
+
+      if (t.useEnd() && (end != null) && !end.isBlank()) {
+        Element telem = new Element("end");
+        telem.setText(end.toString());
+        elem.addContent(telem);
+      }
+
+      if (t.useDuration() && (duration != null) && !duration.isBlank()) {
+        Element telem = new Element("duration");
+        telem.setText(duration.toString());
+        elem.addContent(telem);
+      }
+    }
+
+    XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+    fmt.output(doc, os);
+  }
+
 
   static String makeFeatureUri(HttpServletRequest req, FeatureType ft, boolean addSuffix) {
     /* String path = req.getPathInfo().substring(1); // remove leading '/'

@@ -1650,7 +1650,7 @@ public class DataRootHandler {
     debugHandler.addAction( act);
 
     /* moved to ThreddsDefaultServlet
-      act = new DebugHandler.Action("reinit", "Reinitialize") {
+    act = new DebugHandler.Action("reinit", "Reinitialize") {
       public void doAction(DebugHandler.Event e) {
         try {
           DatasetHandler.reinit();

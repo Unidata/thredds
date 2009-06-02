@@ -54,7 +54,7 @@ import java.net.URLEncoder;
  * @author caron
  * @since Feb 7, 2009
  */
-public class NcStreamRemote extends ucar.nc2.NetcdfFile {  // LOOK perhaps should be NetcdfDataset ??
+public class NcStreamRemote extends ucar.nc2.NetcdfFile {  
   static public final String SCHEME = "cdmremote:";
 
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcStreamRemote.class);
