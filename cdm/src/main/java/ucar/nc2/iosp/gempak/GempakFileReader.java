@@ -1,6 +1,4 @@
 /*
- * $Id: IDV-Style.xjs,v 1.3 2007/02/16 19:18:30 dmurray Exp $
- *
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
@@ -35,7 +33,6 @@
 
 
 
-
 package ucar.nc2.iosp.gempak;
 
 
@@ -51,9 +48,6 @@ import java.util.List;
 
 /**
  * Read a Gempak grid file
- *
- * @author IDV Development Team
- * @version $Revision: 1.3 $
  */
 public class GempakFileReader implements GempakConstants {
 
@@ -548,9 +542,6 @@ public class GempakFileReader implements GempakConstants {
 
     /**
      * Class to mimic the GEMPAK DMLABL common block
-     *
-     * @author IDV Development Team
-     * @version $Revision: 1.3 $
      */
     protected class DMLabel {
 
@@ -1467,6 +1458,7 @@ public class GempakFileReader implements GempakConstants {
             System.out.println("bad row/column number " + irow + "/" + icol);
             return null;
         }
+        //System.out.println("reading row " + irow + ", column " + icol);
         int iprt = getPartNumber(partName);
         if (iprt == 0) {
             System.out.println("couldn't find part: " + partName);
@@ -1492,27 +1484,32 @@ public class GempakFileReader implements GempakConstants {
         int length = DM_RINT(istart);
         int isword = istart + 1;
         if (length <= ilenhd) {
-            System.out.println("length (" + length
-                               + ") is less than header length (" + ilenhd
-                               + ")");
+            //System.out.println("length (" + length
+            //                   + ") is less than header length (" + ilenhd
+            //                   + ")");
             return null;
         } else if (Math.abs(length) > 10000000) {
-            System.out.println("length is huge");
+            //System.out.println("length is huge");
             return null;
         }
         int[] header = new int[ilenhd];
         DM_RINT(isword, header);
         int nword = length - ilenhd;
         isword += header.length;
-        if (part.ktyprt == MDREAL) {
-            rdata = new float[nword];
-            DM_RFLT(isword, rdata);
-        } else if (part.ktyprt == MDGRID) {
-            rdata = DM_RPKG(isword, nword, decimalScale);
-        } else {  //  packed ints
-            int[] idata = new int[nword];
-            DM_RINT(isword, idata);
-            rdata = DM_UNPK(part, idata);
+        try {
+            if (part.ktyprt == MDREAL) {
+                rdata = new float[nword];
+                DM_RFLT(isword, rdata);
+            } else if (part.ktyprt == MDGRID) {
+                rdata = DM_RPKG(isword, nword, decimalScale);
+            } else {  //  packed ints
+                int[] idata = new int[nword];
+                DM_RINT(isword, idata);
+                rdata = DM_UNPK(part, idata);
+            }
+        } catch (EOFException eof) {
+            System.err.println("reading off end of file");
+            rdata = null;
         }
         RData rd = null;
         if (rdata != null) {
