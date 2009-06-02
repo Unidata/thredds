@@ -91,8 +91,10 @@ public class TestPointFeatureTypes  extends TestCase {
   }
 
   public void testGempak() throws IOException {
-    // CF 1.5 (GEMPAK IOSP) stn = psuedoSTruct, obs = multidim Structure, time(time) as extraJoin
-    testPointDataset(TestAll.cdmUnitTestDir+"point/gempak/19580807_sao.gem", FeatureType.STATION, true);
+    // (GEMPAK IOSP) stn = psuedoStruct, obs = multidim Structure, time(time) as extraJoin
+    //testPointDataset(TestAll.cdmUnitTestDir+"point/gempak/19580807_sao.gem", FeatureType.STATION, true);
+    // stationAsPoint (GEMPAK IOSP) stn = psuedoStruct, obs = multidim Structure, time(time) as extraJoin
+    testPointDataset(TestAll.cdmUnitTestDir+"formats/gempak/surface/20090521_sao.gem", FeatureType.POINT, true);
   }
 
 
@@ -228,6 +230,7 @@ public class TestPointFeatureTypes  extends TestCase {
       count++;
     }
     long took = System.currentTimeMillis() - start;
+    System.out.println("complete count= "+count);
     System.out.println(" full iter took= "+took+" msec");
 
 

@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+</head>
+
+<body>
+<h1>TDS State Management and Startup</h1>
+<p>last update: Jun2 2, 2009</p>
+<hr />
+<h2>Startup</h2>
+<h4>1. Spring ServletContextListener in web.xml </h4>
+<pre>  &lt;context-param&gt;<br />    &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;<br />    &lt;param-value&gt;<strong>/WEB-INF/applicationContext-tdsConfig.xml</strong>&lt;/param-value&gt;<br />  &lt;/context-param&gt;
+  &lt;listener&gt;
+   &lt;listener-class&gt;org.springframework.web.context.<strong>ContextLoaderListener</strong>&lt;/listener-class&gt;
+  &lt;/listener&gt;
+</pre>
+<p>  this loads the <strong>tdsContext</strong> and <strong>tdsDRH (DataRootHandler)</strong> beans, which other spring config files  use.</p>
+<p>It also loads in properties from <strong>classpath:thredds/server/tds.properties</strong></p>
+<h4>2. <strong>TdsConfigContextListener</strong> ServletContextListener<strong> </strong>in web.xml </h4>
+<pre> &lt;!-- TDS experimental listener. --&gt;
+ &lt;listener&gt;
+   &lt;listener-class&gt;thredds.server.config.<strong>TdsConfigContextListener</strong>&lt;/listener-class&gt;
+ &lt;/listener&gt;
+</pre>
+<p> // Initialize the DataRootHandler.<br />
+  <strong>DataRootHandler</strong> catHandler = (DataRootHandler) wac.getBean( &quot;tdsDRH&quot;, DataRootHandler.class );<br />
+  catHandler.registerConfigListener( new RestrictedAccessConfigListener() );<br />
+  <strong>catHandler</strong>.init();<br />
+  DataRootHandler.setInstance( catHandler );</p>
+<p> // Initialize the CDM, now that tdsContext is ready<br />
+  CdmInit cdmInit = (CdmInit) wac.getBean( &quot;cdmInit&quot;, CdmInit.class );<br />
+  <strong>cdmInit</strong>.<strong>init</strong>(tdsContext);</p>
+<p> // Initialize HtmlWriter<br />
+  // LOOK! ToDo This should be removed once the catalog service controllers uses JSP.<br />
+<strong>HtmlWriter</strong>.<strong>init</strong>( tdsContext );</p>
+<h4>3. DataRootHandler init</h4>
+<ol>
+  <li>populate <strong>staticCatalogHash</strong></li>
+  <li>populate <strong>pathMatcher</strong> with dataRoots</li>
+  <li>populate <strong>idHash</strong> with dataset ids</li>
+  <li>populate <strong>DatasetHandler</strong>.<strong>ncmlDatasetHash</strong> with InvDatasetImpl</li>
+</ol>
+<h4>4. CdmInit</h4>
+<p><br />
+</p>
+<h2>State</h2>
+<h3>DataRootHandler</h3>
+<pre> private final TdsContext tdsContext;
+ private List&lt;ConfigListener&gt; configListeners = new ArrayList&lt;ConfigListener&gt;();</pre>
+<pre> // @GuardedBy(&quot;this&quot;) LOOK should be able to access without synchronization
+ private HashMap&lt;String,InvCatalogImpl&gt; <strong>staticCatalogHash</strong>; // Hash of static catalogs, key = path</pre>
+<pre> // @GuardedBy(&quot;this&quot;)
+ private HashSet&lt;String&gt; <strong>idHash</strong> = new HashSet&lt;String&gt;(); // Hash of ids, to look for duplicates</pre>
+<pre> //  PathMatcher is &quot;effectively immutable&quot;; use volatile for visibilty
+ private volatile PathMatcher <strong>pathMatcher</strong> = new PathMatcher(); // collection of DataRoot objects
+ volatile boolean <strong>isReinit</strong> = false;<br /></pre>
+<pre> private PathAliasReplacement contentPathAliasReplacement = null;
+ private PathAliasReplacement iddDataRootPathAliasReplacement = null;
+ private List&lt;PathAliasReplacement&gt; fullDataRootLocationAliasExpanders = new ArrayList&lt;PathAliasReplacement&gt;();
+ private List&lt;PathAliasReplacement&gt; dataRootLocAliasExpanders = Collections.emptyList();
+</pre>
+<p><em>  Controlled by a singleton</em></p>
+<h3><br>
+  DatasetHandler</h3>
+<pre> // InvDataset (not DatasetScan, DatasetFmrc) that have an NcML element in it. key is the request Path<br /> static private HashMap&lt;String, InvDatasetImpl&gt; <strong>ncmlDatasetHash</strong> = new HashMap&lt;String, InvDatasetImpl&gt;();</pre>
+<pre> static private ArrayList&lt;DatasetSource&gt; <strong>sourceList</strong> = new ArrayList&lt;DatasetSource&gt;();</pre>
+<pre> // resource control
+ static private HashMap&lt;String, String&gt; <strong>resourceControlHash</strong> = new HashMap&lt;String, String&gt;(); // path, restrictAccess string for datasets
+ static private volatile PathMatcher <strong>resourceControlMatcher</strong> = new PathMatcher(); // path, restrictAccess string for datasetScan
+ static private boolean <strong>hasResourceControl</strong> = false;
+</pre>
+<p><em><br>
+  Note these are all static. If not, we could build and switch atomically.</em></p>
+<p> </p>
+</body>
+</html>

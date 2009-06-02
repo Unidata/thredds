@@ -36,7 +36,6 @@ import thredds.catalog.*;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFile;
 import thredds.crawlabledataset.CrawlableDatasetDods;
-import thredds.servlet.PathMatcher;
 import thredds.cataloggen.ProxyDatasetHandler;
 import thredds.server.config.TdsContext;
 import thredds.util.PathAliasReplacement;
@@ -62,11 +61,11 @@ import org.springframework.util.StringUtils;
  * The DataRootHandler manages all the "data roots" for a given web application
  * and provides mappings from URLs to catalog and data objects (e.g.,
  * InvCatalog and CrawlableDataset).
- *
+ * <p/>
  * <p>The "data roots" are read in from one or more trees of config catalogs
  * and are defined by the datasetScan and datasetRoot elements in the config
  * catalogs.
- *
+ * <p/>
  * <p> Uses the singleton design pattern.
  *
  * @author caron
@@ -85,11 +84,9 @@ public class DataRootHandler {
    *
    * @param drh the singleton instance of DataRootHandler being used
    */
-  static public void setInstance( DataRootHandler drh )
-  {
-    if ( singleton != null )
-    {
-      log.warn( "setInstance(): Singleton already set: ignoring call." );
+  static public void setInstance(DataRootHandler drh) {
+    if (singleton != null) {
+      log.warn("setInstance(): Singleton already set: ignoring call.");
       return;
     }
     singleton = drh;
@@ -103,12 +100,10 @@ public class DataRootHandler {
    * @return the singleton instance.
    * @throws IllegalStateException if setInstance() has not been called.
    */
-  static public DataRootHandler getInstance()
-  {
-    if ( singleton == null )
-    {
-      logCatalogInit.error( "getInstance(): Called without setInstance() having been called." );
-      throw new IllegalStateException( "setInstance() must be called first." );
+  static public DataRootHandler getInstance() {
+    if (singleton == null) {
+      logCatalogInit.error("getInstance(): Called without setInstance() having been called.");
+      throw new IllegalStateException("setInstance() must be called first.");
     }
     return singleton;
   }
@@ -117,7 +112,7 @@ public class DataRootHandler {
   private final TdsContext tdsContext;
 
   // @GuardedBy("this") LOOK should be able to access without synchronization
-  private HashMap<String,InvCatalogImpl> staticCatalogHash; // Hash of static catalogs, key = path
+  private HashMap<String, InvCatalogImpl> staticCatalogHash; // Hash of static catalogs, key = path
 
   // @GuardedBy("this")
   private HashSet<String> idHash = new HashSet<String>(); // Hash of ids, to look for duplicates
@@ -129,12 +124,12 @@ public class DataRootHandler {
 
   /**
    * Constructor.
+   *
    * @param tdsContext
    */
-  public DataRootHandler( TdsContext tdsContext )
-  {
+  public DataRootHandler(TdsContext tdsContext) {
     this.tdsContext = tdsContext;
-    this.staticCatalogHash = new HashMap<String,InvCatalogImpl>();
+    this.staticCatalogHash = new HashMap<String, InvCatalogImpl>();
   }
 
   private PathAliasReplacement contentPathAliasReplacement = null;
@@ -142,31 +137,27 @@ public class DataRootHandler {
   private List<PathAliasReplacement> fullDataRootLocationAliasExpanders = new ArrayList<PathAliasReplacement>();
   private List<PathAliasReplacement> dataRootLocAliasExpanders = Collections.emptyList();
 
-  public void setDataRootLocationAliasExpanders( List<PathAliasReplacement> dataRootLocAliasExpanders )
-  {
-    if ( dataRootLocAliasExpanders != null )
-      this.dataRootLocAliasExpanders = new ArrayList<PathAliasReplacement>( dataRootLocAliasExpanders );
-    this.updateFullDataRootLocationAliasExpanders( this.dataRootLocAliasExpanders );
+  public void setDataRootLocationAliasExpanders(List<PathAliasReplacement> dataRootLocAliasExpanders) {
+    if (dataRootLocAliasExpanders != null)
+      this.dataRootLocAliasExpanders = new ArrayList<PathAliasReplacement>(dataRootLocAliasExpanders);
+    this.updateFullDataRootLocationAliasExpanders(this.dataRootLocAliasExpanders);
   }
 
-  public List<PathAliasReplacement> getDataRootLocationAliasExpanders()
-  {
-    return Collections.unmodifiableList( this.dataRootLocAliasExpanders );
+  public List<PathAliasReplacement> getDataRootLocationAliasExpanders() {
+    return Collections.unmodifiableList(this.dataRootLocAliasExpanders);
   }
 
-  public void init()
-  {
+  public void init() {
     // Initialize any given DataRootLocationAliasExpanders that are TdsConfiguredPathAliasReplacement
-    String contentReplacementPath = StringUtils.cleanPath( tdsContext.getPublicDocFileSource().getFile( "" ).getPath() );
-    this.contentPathAliasReplacement = new StartsWithPathAliasReplacement( "content", contentReplacementPath );
+    String contentReplacementPath = StringUtils.cleanPath(tdsContext.getPublicDocFileSource().getFile("").getPath());
+    this.contentPathAliasReplacement = new StartsWithPathAliasReplacement("content", contentReplacementPath);
 
-    String iddDataRootReplacementPath = ThreddsConfig.get( "DataRoots.idd", null );
-    if ( iddDataRootReplacementPath != null )
-    {
-      iddDataRootReplacementPath = StringUtils.cleanPath( iddDataRootReplacementPath );
-      this.iddDataRootPathAliasReplacement = new StartsWithPathAliasReplacement( "${iddDataRoot}", iddDataRootReplacementPath );
+    String iddDataRootReplacementPath = ThreddsConfig.get("DataRoots.idd", null);
+    if (iddDataRootReplacementPath != null) {
+      iddDataRootReplacementPath = StringUtils.cleanPath(iddDataRootReplacementPath);
+      this.iddDataRootPathAliasReplacement = new StartsWithPathAliasReplacement("${iddDataRoot}", iddDataRootReplacementPath);
     }
-    this.updateFullDataRootLocationAliasExpanders( null );
+    this.updateFullDataRootLocationAliasExpanders(null);
 
     //this.contentPath = this.tdsContext.
     this.initCatalogs();
@@ -175,74 +166,67 @@ public class DataRootHandler {
     DatasetHandler.makeDebugActions();
   }
 
-  private void updateFullDataRootLocationAliasExpanders( List<PathAliasReplacement> list )
-  {
+  private void updateFullDataRootLocationAliasExpanders(List<PathAliasReplacement> list) {
     this.fullDataRootLocationAliasExpanders = new ArrayList<PathAliasReplacement>();
-    this.fullDataRootLocationAliasExpanders.add( this.contentPathAliasReplacement );
-    if ( iddDataRootPathAliasReplacement != null )
-      this.fullDataRootLocationAliasExpanders.add( this.iddDataRootPathAliasReplacement );
-    if ( list != null && ! list.isEmpty())
-      this.fullDataRootLocationAliasExpanders.addAll( list );
+    this.fullDataRootLocationAliasExpanders.add(this.contentPathAliasReplacement);
+    if (iddDataRootPathAliasReplacement != null)
+      this.fullDataRootLocationAliasExpanders.add(this.iddDataRootPathAliasReplacement);
+    if (list != null && !list.isEmpty())
+      this.fullDataRootLocationAliasExpanders.addAll(list);
   }
 
-  void initCatalogs()
-  {
+  void initCatalogs() {
     ArrayList<String> catList = new ArrayList<String>();
-    catList.add( "catalog.xml" ); // always first
-    getExtraCatalogs( catList );
+    catList.add("catalog.xml"); // always first
+    ThreddsConfig.getCatalogRoots(catList);
 
-    logCatalogInit.info( "initCatalogs(): initializing " + catList.size() + " root catalogs [see catalogErrors.log for details]." );
-    this.initCatalogs( catList );
+    //getExtraCatalogs(catList); // no more extraCatalogs.txt
+
+    logCatalogInit.info("initCatalogs(): initializing " + catList.size() + " root catalogs [see catalogErrors.log for details].");
+    this.initCatalogs(catList);
   }
 
-  private void getExtraCatalogs( List<String> extraList )
-  {
+  private void getExtraCatalogs(List<String> extraList) {
     // if there are some roots in ThreddsConfig, then dont read extraCatalogs.txt
-    ThreddsConfig.getCatalogRoots( extraList );
-    if ( extraList.size() > 0 )
+    ThreddsConfig.getCatalogRoots(extraList);
+    if (extraList.size() > 0)
       return;
 
     // see if extraCatalogs.txt exists
-    File file = this.tdsContext.getConfigFileSource().getFile( "extraCatalogs.txt" );
-    if ( file != null && file.exists() )
-    {
+    File file = this.tdsContext.getConfigFileSource().getFile("extraCatalogs.txt");
+    if (file != null && file.exists()) {
 
-      try
-      {
-        FileInputStream fin = new FileInputStream( file );
-        BufferedReader reader = new BufferedReader( new InputStreamReader( fin ) );
-        while ( true )
-        {
+      try {
+        FileInputStream fin = new FileInputStream(file);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(fin));
+        while (true) {
           String line = reader.readLine();
-          if ( line == null ) break;
+          if (line == null) break;
           line = line.trim();
-          if ( line.length() == 0 ) continue;
-          if ( line.startsWith( "#" ) ) continue; // Skip comment lines.
-          extraList.add( line );
+          if (line.length() == 0) continue;
+          if (line.startsWith("#")) continue; // Skip comment lines.
+          extraList.add(line);
         }
         fin.close();
 
       }
-      catch ( IOException e )
-      {
-        logCatalogInit.error( "Error on getExtraCatalogs ", e );
+      catch (IOException e) {
+        logCatalogInit.error("Error on getExtraCatalogs ", e);
       }
     }
 
   }
 
 
-  public boolean registerConfigListener( ConfigListener cl )
-  {
-    if ( cl == null ) return false;
-    if ( configListeners.contains( cl )) return false;
-    return configListeners.add( cl);
+  public boolean registerConfigListener(ConfigListener cl) {
+    if (cl == null) return false;
+    if (configListeners.contains(cl)) return false;
+    return configListeners.add(cl);
   }
 
-  public boolean unregisterConfigListener( ConfigListener cl )
-  {
-    if ( cl == null ) return false;
-    return configListeners.remove( cl);
+  public boolean unregisterConfigListener(ConfigListener cl) {
+    if (cl == null) return false;
+    return configListeners.remove(cl);
   }
 
   // @TODO Should pull the init construction of hashes and such out of synchronization and only synchronize the change over to the constructed hashes. (How would that work with ConfigListeners?)
@@ -253,11 +237,11 @@ public class DataRootHandler {
   public synchronized void reinit() {
     // Notify listeners of start of initialization.
     isReinit = true;
-    for ( ConfigListener cl : configListeners)
+    for (ConfigListener cl : configListeners)
       cl.configStart();
 
     // Empty all config catalog information.
-    staticCatalogHash = new HashMap<String,InvCatalogImpl>();
+    staticCatalogHash = new HashMap<String, InvCatalogImpl>();
     pathMatcher = new PathMatcher();
     idHash = new HashSet<String>();
 
@@ -265,29 +249,25 @@ public class DataRootHandler {
 
     logCatalogInit.info("\n**************************************\n**************************************\nCatalog reinit\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]");
   }
+
   volatile boolean isReinit = false;
 
-  public synchronized void initCatalogs( List<String> configCatalogNames )
-  {
+  public synchronized void initCatalogs(List<String> configCatalogNames) {
     // Notify listeners of start of initialization if not reinit (in which case it is already done).
-    if ( ! isReinit )
-      for ( ConfigListener cl : configListeners )
+    if (!isReinit)
+      for (ConfigListener cl : configListeners)
         cl.configStart();
     isReinit = false;
 
-    for ( String catName : configCatalogNames)
-    {
-      try
-      {
-        initCatalog( catName );
-      }
-      catch ( Throwable e )
-      {
-        logCatalogInit.error( "initCatalogs(): Error initializing catalog " + catName + "; " + e.getMessage(), e );
+    for (String catName : configCatalogNames) {
+      try {
+        initCatalog(catName);
+      } catch (Throwable e) {
+        logCatalogInit.error("initCatalogs(): Error initializing catalog " + catName + "; " + e.getMessage(), e);
       }
     }
 
-    for ( ConfigListener cl : configListeners )
+    for (ConfigListener cl : configListeners)
       cl.configEnd();
   }
 
@@ -299,46 +279,45 @@ public class DataRootHandler {
    * @throws IOException if reading catalog fails
    */
   synchronized void initCatalog(String path) throws IOException {
-    path = StringUtils.cleanPath( path );
-    logCatalogInit.info("\n**************************************\nCatalog init "+path + "\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]");
+    path = StringUtils.cleanPath(path);
+    logCatalogInit.info("\n**************************************\nCatalog init " + path + "\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]");
     initCatalog(path, true);
   }
 
   /**
    * Reads a catalog, finds datasetRoot, datasetScan, datasetFmrc, NcML and restricted access datasets
-   *
+   * <p/>
    * Only called by synchronized methods.
    *
-   * @param path file path of catalog, reletive to contentPath, ie catalog fullpath = contentPath + path.
-   * @param recurse  if true, look for catRefs in this catalog
+   * @param path    file path of catalog, reletive to contentPath, ie catalog fullpath = contentPath + path.
+   * @param recurse if true, look for catRefs in this catalog
    * @throws IOException if reading catalog fails
    */
-  private void initCatalog(String path, boolean recurse ) throws IOException {
-    path = StringUtils.cleanPath( path );
-    File f = this.tdsContext.getConfigFileSource().getFile( path );
+  private void initCatalog(String path, boolean recurse) throws IOException {
+    path = StringUtils.cleanPath(path);
+    File f = this.tdsContext.getConfigFileSource().getFile(path);
 
-    if ( f == null )
-    {
-      logCatalogInit.error( "initCatalog(): Catalog [" + path + "] does not exist in config directory." );
+    if (f == null) {
+      logCatalogInit.error("initCatalog(): Catalog [" + path + "] does not exist in config directory.");
       return;
     }
 
     // make sure we dont already have it
-      if ( staticCatalogHash.containsKey(path)) { // This method only called by synchronized methods.
-        logCatalogInit.warn("initCatalog(): Catalog [" + path + "] already seen, possible loop (skip).");
-        return;
-      }
+    if (staticCatalogHash.containsKey(path)) { // This method only called by synchronized methods.
+      logCatalogInit.warn("initCatalog(): Catalog [" + path + "] already seen, possible loop (skip).");
+      return;
+    }
 
     InvCatalogFactory factory = this.getCatalogFactory(true); // always validate the config catalogs
-    InvCatalogImpl cat = readCatalog( factory, path, f.getPath() );
-    if ( cat == null ) {
-      logCatalogInit.warn( "initCatalog(): failed to read catalog <" + f.getPath() + ">." );
+    InvCatalogImpl cat = readCatalog(factory, path, f.getPath());
+    if (cat == null) {
+      logCatalogInit.warn("initCatalog(): failed to read catalog <" + f.getPath() + ">.");
       return;
     }
 
     // Notify listeners of config catalog.
-    for ( ConfigListener cl : configListeners )
-      cl.configCatalog( cat);
+    for (ConfigListener cl : configListeners)
+      cl.configCatalog(cat);
 
     // look for datasetRoots
     for (InvProperty p : cat.getDatasetRoots()) {
@@ -353,34 +332,33 @@ public class DataRootHandler {
     }
 
     // get the directory path, reletive to the contentPath
-    int pos = path.lastIndexOf( "/" );
-    String dirPath = ( pos > 0 ) ? path.substring( 0, pos + 1 ) : "";
+    int pos = path.lastIndexOf("/");
+    String dirPath = (pos > 0) ? path.substring(0, pos + 1) : "";
 
     // look for datasetScans and NcML elements
-    initSpecialDatasets( cat.getDatasets() );
+    initSpecialDatasets(cat.getDatasets());
 
     // add catalog to hash tables
     staticCatalogHash.put(path, cat); // This method only called by synchronized methods.
-    if ( logCatalogInit.isDebugEnabled()) logCatalogInit.debug("  add static catalog=" + path);
+    if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("  add static catalog=" + path);
 
     if (recurse) {
       initFollowCatrefs(dirPath, cat.getDatasets());
     }
   }
 
-  private InvCatalogFactory getCatalogFactory( boolean validate )
-  {
-    InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory( validate );
-    if ( !this.fullDataRootLocationAliasExpanders.isEmpty() )
-      factory.setDataRootLocationAliasExpanders( this.fullDataRootLocationAliasExpanders );
+  private InvCatalogFactory getCatalogFactory(boolean validate) {
+    InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(validate);
+    if (!this.fullDataRootLocationAliasExpanders.isEmpty())
+      factory.setDataRootLocationAliasExpanders(this.fullDataRootLocationAliasExpanders);
     return factory;
   }
 
   /**
    * Does the actual work of reading a catalog.
    *
-   * @param factory  use this InvCatalogFactory
-   * @param path reletive path starting from content root
+   * @param factory         use this InvCatalogFactory
+   * @param path            reletive path starting from content root
    * @param catalogFullPath absolute location on disk
    * @return the InvCatalogImpl, or null if failure
    */
@@ -412,7 +390,7 @@ public class DataRootHandler {
     }
     catch (Throwable t) {
       String msg = (cat == null) ? "null catalog" : cat.getLog();
-      logCatalogInit.error("readCatalog(): Exception on catalog=" + catalogFullPath + " " + t.getMessage()+"\n log="+msg, t);
+      logCatalogInit.error("readCatalog(): Exception on catalog=" + catalogFullPath + " " + t.getMessage() + "\n log=" + msg, t);
       return null;
     }
     finally {
@@ -433,12 +411,13 @@ public class DataRootHandler {
    * Finds datasetScan, datasetFmrc, NcML and restricted access datasets.
    * Look for duplicate Ids (give message). Dont follow catRefs.
    * Only called by synchronized methods.
+   *
    * @param dsList the list of InvDatasetImpl
    */
-  private void initSpecialDatasets( List<InvDataset> dsList) {
+  private void initSpecialDatasets(List<InvDataset> dsList) {
 
     for (InvDataset invds : dsList) {
-      InvDatasetImpl  invDataset = (InvDatasetImpl) invds;
+      InvDatasetImpl invDataset = (InvDatasetImpl) invds;
 
       // look for duplicate ids
       String id = invDataset.getUniqueID();
@@ -451,9 +430,8 @@ public class DataRootHandler {
       }
 
       // Notify listeners of config datasets.
-      for ( ConfigListener cl : configListeners )
-        cl.configDataset( invDataset );
-
+      for (ConfigListener cl : configListeners)
+        cl.configDataset(invDataset);
 
       if (invDataset instanceof InvDatasetScan) {
         InvDatasetScan ds = (InvDatasetScan) invDataset;
@@ -488,13 +466,13 @@ public class DataRootHandler {
   }
 
   // Only called by synchronized methods
- private void initFollowCatrefs(String dirPath, List<InvDataset> datasets)  throws IOException {
+  private void initFollowCatrefs(String dirPath, List<InvDataset> datasets) throws IOException {
     for (InvDataset invDataset : datasets) {
 
       if ((invDataset instanceof InvCatalogRef) && !(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc)) {
         InvCatalogRef catref = (InvCatalogRef) invDataset;
         String href = catref.getXlinkHref();
-        if ( logCatalogInit.isDebugEnabled()) logCatalogInit.debug("  catref.getXlinkHref=" + href);
+        if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("  catref.getXlinkHref=" + href);
 
         // Check that catRef is relative
         if (!href.startsWith("http:")) {
@@ -505,19 +483,14 @@ public class DataRootHandler {
 
           String path;
           String contextPathPlus = this.tdsContext.getContextPath() + "/";
-          if ( href.startsWith( contextPathPlus ) )
-          {
-            path = href.substring( contextPathPlus.length() ); // absolute starting from content root
-          }
-          else if ( href.startsWith( "/" ) )
-          {
+          if (href.startsWith(contextPathPlus)) {
+            path = href.substring(contextPathPlus.length()); // absolute starting from content root
+          } else if (href.startsWith("/")) {
             // Drop the catRef because it points to a non-TDS served catalog.
-            logCatalogInit.warn( "**Warning: Skipping catalogRef <xlink:href=" + href + ">. Reference is relative to the server outside the context path [" + contextPathPlus + "]. " +
-                      "Parent catalog info: Name=\"" + catref.getParentCatalog().getName() + "\"; Base URI=\"" + catref.getParentCatalog().getUriString() + "\"; dirPath=\"" + dirPath + "\"." );
+            logCatalogInit.warn("**Warning: Skipping catalogRef <xlink:href=" + href + ">. Reference is relative to the server outside the context path [" + contextPathPlus + "]. " +
+                    "Parent catalog info: Name=\"" + catref.getParentCatalog().getName() + "\"; Base URI=\"" + catref.getParentCatalog().getUriString() + "\"; dirPath=\"" + dirPath + "\".");
             continue;
-          }
-          else
-          {
+          } else {
             path = dirPath + href;  // reletive starting from current directory
           }
 
@@ -530,30 +503,30 @@ public class DataRootHandler {
       }
     }
   }
+
   // Only called by synchronized methods
   private boolean addRoot(InvDatasetScan dscan) {
     // check for duplicates
     String path = dscan.getPath();
 
     if (path == null) {
-      logCatalogInit.error("**Error: "+dscan.getFullName()+" missing a path attribute.");
+      logCatalogInit.error("**Error: " + dscan.getFullName() + " missing a path attribute.");
       return false;
     }
 
     DataRoot droot = (DataRoot) pathMatcher.get(path);
     if (droot != null) {
-      if (!droot.dirLocation.equals( dscan.getScanLocation())) {
-        logCatalogInit.error( "**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
-            " wanted to map to fmrc=<" + dscan.getScanLocation() + "> in catalog "+dscan.getParentCatalog().getUriString() );
+      if (!droot.dirLocation.equals(dscan.getScanLocation())) {
+        logCatalogInit.error("**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
+                " wanted to map to fmrc=<" + dscan.getScanLocation() + "> in catalog " + dscan.getParentCatalog().getUriString());
       }
 
       return false;
     }
 
     // Check whether InvDatasetScan is valid before adding.
-    if ( ! dscan.isValid() )
-    {
-      logCatalogInit.error( dscan.getInvalidMessage() + "\n... Dropping this datasetScan [" + path + "].");
+    if (!dscan.isValid()) {
+      logCatalogInit.error(dscan.getInvalidMessage() + "\n... Dropping this datasetScan [" + path + "].");
       return false;
     }
 
@@ -571,14 +544,14 @@ public class DataRootHandler {
     String path = fmrc.getPath();
 
     if (path == null) {
-      logCatalogInit.error(fmrc.getFullName()+" missing a path attribute.");
+      logCatalogInit.error(fmrc.getFullName() + " missing a path attribute.");
       return false;
     }
 
     DataRoot droot = (DataRoot) pathMatcher.get(path);
     if (droot != null) {
       logCatalogInit.error("**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
-            " wanted to use by FMRC Dataset =<" + fmrc.getFullName() + ">");
+              " wanted to use by FMRC Dataset =<" + fmrc.getFullName() + ">");
       return false;
     }
 
@@ -604,15 +577,15 @@ public class DataRootHandler {
     // check for duplicates
     DataRoot droot = (DataRoot) pathMatcher.get(path);
     if (droot != null) {
-      if (wantErr) logCatalogInit.error("**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">"+
-              " wanted to map to <" + dirLocation + ">");
+      if (wantErr)
+        logCatalogInit.error("**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
+                " wanted to map to <" + dirLocation + ">");
 
       return false;
     }
 
     File file = new File(dirLocation);
-    if ( ! file.exists())
-    {
+    if (!file.exists()) {
       logCatalogInit.error("**Error: Data Root =" + path + " directory= <" + dirLocation + "> does not exist");
       return false;
     }
@@ -669,8 +642,8 @@ public class DataRootHandler {
     }
 
     void makeProxy() {
-      this.datasetRootProxy = new InvDatasetScan( null, "", this.path, this.dirLocation,
-                                                  null, null, null, null, null, false, null, null, null, null );
+      this.datasetRootProxy = new InvDatasetScan(null, "", this.path, this.dirLocation,
+              null, null, null, null, null, false, null, null, null, null);
     }
 
 
@@ -696,6 +669,7 @@ public class DataRootHandler {
 
   /**
    * Find the longest match for this path.
+   *
    * @param fullpath the complete path name
    * @return best DataRoot or null if no match.
    */
@@ -721,7 +695,7 @@ public class DataRootHandler {
         spath = spath.substring(1);
     }
 
-    return findDataRootMatch( spath);
+    return findDataRootMatch(spath);
   }
 
   public DataRootMatch findDataRootMatch(String spath) {
@@ -748,7 +722,7 @@ public class DataRootHandler {
    * @return true if the given path matches a dataRoot, otherwise false.
    */
   public boolean hasDataRootMatch(String path) {
-    if ( path.length() > 0 )
+    if (path.length() > 0)
       if (path.startsWith("/"))
         path = path.substring(1);
 
@@ -772,8 +746,7 @@ public class DataRootHandler {
    * @throws IOException if an I/O error occurs while locating the requested dataset.
    */
   public CrawlableDataset getCrawlableDataset(String path)
-          throws IOException
-  {
+          throws IOException {
     if (path.length() > 0) {
       if (path.startsWith("/"))
         path = path.substring(1);
@@ -783,17 +756,17 @@ public class DataRootHandler {
     if (reqDataRoot == null)
       return null;
 
-    if ( reqDataRoot.scan != null)
-      return reqDataRoot.scan.requestCrawlableDataset( path );
+    if (reqDataRoot.scan != null)
+      return reqDataRoot.scan.requestCrawlableDataset(path);
 
-    if ( reqDataRoot.fmrc != null )
+    if (reqDataRoot.fmrc != null)
       return null; // if fmrc exists, bail out and deal with it in caller
 
     // must be a data root
-    if ( reqDataRoot.dirLocation != null ) {
+    if (reqDataRoot.dirLocation != null) {
       if (reqDataRoot.datasetRootProxy == null)
         reqDataRoot.makeProxy();
-      return reqDataRoot.datasetRootProxy.requestCrawlableDataset( path );
+      return reqDataRoot.datasetRootProxy.requestCrawlableDataset(path);
     }
 
     return null;
@@ -811,7 +784,7 @@ public class DataRootHandler {
    * @return the requested java.io.File or null.
    * @throws IllegalStateException if the request is not for a descendant of (or the same as) the matching DatasetRoot collection location.
    */
-  public File getCrawlableDatasetAsFile( String path ) {
+  public File getCrawlableDatasetAsFile(String path) {
     if (path.length() > 0) {
       if (path.startsWith("/"))
         path = path.substring(1);
@@ -826,17 +799,15 @@ public class DataRootHandler {
     }
 
     CrawlableDataset crDs;
-    try
-    {
-      crDs = getCrawlableDataset( path );
+    try {
+      crDs = getCrawlableDataset(path);
     }
-    catch ( IOException e )
-    {
+    catch (IOException e) {
       return null;
     }
-    if ( crDs == null ) return null;
+    if (crDs == null) return null;
     File retFile = null;
-    if ( crDs instanceof CrawlableDatasetFile )
+    if (crDs instanceof CrawlableDatasetFile)
       retFile = ((CrawlableDatasetFile) crDs).getFile();
 
     return retFile;
@@ -853,83 +824,76 @@ public class DataRootHandler {
    * @return the requested OPeNDAP URI or null.
    * @throws IllegalStateException if the request is not for a descendant of (or the same as) the matching DatasetRoot collection location.
    */
-  public URI getCrawlableDatasetAsOpendapUri( String path ) {
+  public URI getCrawlableDatasetAsOpendapUri(String path) {
     if (path.length() > 0) {
       if (path.startsWith("/"))
         path = path.substring(1);
     }
 
     CrawlableDataset crDs;
-    try
-    {
-      crDs = getCrawlableDataset( path );
+    try {
+      crDs = getCrawlableDataset(path);
     }
-    catch ( IOException e )
-    {
+    catch (IOException e) {
       return null;
     }
-    if ( crDs == null ) return null;
+    if (crDs == null) return null;
     URI retUri = null;
-    if ( crDs instanceof CrawlableDatasetDods )
+    if (crDs instanceof CrawlableDatasetDods)
       retUri = ((CrawlableDatasetDods) crDs).getUri();
 
     return retUri;
   }
 
-  public boolean isProxyDataset( String path )
-  {
-    ProxyDatasetHandler pdh = this.getMatchingProxyDataset( path );
+  public boolean isProxyDataset(String path) {
+    ProxyDatasetHandler pdh = this.getMatchingProxyDataset(path);
     return pdh != null;
   }
 
-  public boolean isProxyDatasetResolver( String path )
-  {
-    ProxyDatasetHandler pdh = this.getMatchingProxyDataset( path );
-    if ( pdh == null )
+  public boolean isProxyDatasetResolver(String path) {
+    ProxyDatasetHandler pdh = this.getMatchingProxyDataset(path);
+    if (pdh == null)
       return false;
 
     return pdh.isProxyDatasetResolver();
   }
 
-  private ProxyDatasetHandler getMatchingProxyDataset( String path )
-  {
-    InvDatasetScan scan = this.getMatchingScan( path);
+  private ProxyDatasetHandler getMatchingProxyDataset(String path) {
+    InvDatasetScan scan = this.getMatchingScan(path);
     if (null == scan) return null;
 
-    int index = path.lastIndexOf( "/" );
-    String proxyName = path.substring( index + 1 );
+    int index = path.lastIndexOf("/");
+    String proxyName = path.substring(index + 1);
 
     Map pdhMap = scan.getProxyDatasetHandlers();
-    if ( pdhMap == null ) return null;
+    if (pdhMap == null) return null;
 
-    return (ProxyDatasetHandler) pdhMap.get( proxyName );
+    return (ProxyDatasetHandler) pdhMap.get(proxyName);
   }
 
-  private InvDatasetScan getMatchingScan( String path )
-  {
-    DataRoot reqDataRoot = findDataRoot( path );
-    if ( reqDataRoot == null )
+  private InvDatasetScan getMatchingScan(String path) {
+    DataRoot reqDataRoot = findDataRoot(path);
+    if (reqDataRoot == null)
       return null;
 
     InvDatasetScan scan = null;
-    if ( reqDataRoot.scan != null )
+    if (reqDataRoot.scan != null)
       scan = reqDataRoot.scan;
-    else if ( reqDataRoot.fmrc != null )  // TODO refactor UGLY FMRC HACK
+    else if (reqDataRoot.fmrc != null)  // TODO refactor UGLY FMRC HACK
       scan = reqDataRoot.fmrc.getRawFileScan();
 
     return scan;
   }
 
-  public InvCatalog getProxyDatasetResolverCatalog( String path, URI baseURI )
-  {
-    if ( ! isProxyDatasetResolver( path ) )
-      throw new IllegalArgumentException( "Not a proxy dataset resolver path <" + path + ">." );
+  public InvCatalog getProxyDatasetResolverCatalog(String path, URI baseURI) {
+    if (!isProxyDatasetResolver(path))
+      throw new IllegalArgumentException("Not a proxy dataset resolver path <" + path + ">.");
 
-    InvDatasetScan scan = this.getMatchingScan( path );
+    InvDatasetScan scan = this.getMatchingScan(path);
 
     // Call the matching InvDatasetScan to make the proxy dataset resolver catalog.
     //noinspection UnnecessaryLocalVariable
-    InvCatalogImpl cat = scan.makeProxyDsResolverCatalog( path, baseURI );
+    InvCatalogImpl cat = scan.makeProxyDsResolverCatalog(path, baseURI);
 
     return cat;
   }
@@ -944,59 +908,56 @@ public class DataRootHandler {
 //
 //  }
 
-  /** @deprecated */
-  public void handleRequestForProxyDatasetResolverCatalog( HttpServletRequest req, HttpServletResponse res )
-          throws IOException
-  {
+  /**
+   * @deprecated
+   */
+  public void handleRequestForProxyDatasetResolverCatalog(HttpServletRequest req, HttpServletResponse res)
+          throws IOException {
     String path = req.getPathInfo();
-    if ( ! isProxyDatasetResolver( path) )
-    {
+    if (!isProxyDatasetResolver(path)) {
       String resMsg = "Request <" + path + "> not for proxy dataset resolver.";
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg.length() ));
-      log.error( "handleRequestForProxyDatasetResolverCatalog(): " + resMsg );
-      res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg );
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg.length()));
+      log.error("handleRequestForProxyDatasetResolverCatalog(): " + resMsg);
+      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg);
       return;
 
     }
 
     String baseUriString = req.getRequestURL().toString();
     URI baseURI;
-    try
-    {
-      baseURI = new URI( baseUriString );
+    try {
+      baseURI = new URI(baseUriString);
     }
-    catch ( URISyntaxException e )
-    {
+    catch (URISyntaxException e) {
       String resMsg = "Request URL <" + baseUriString + "> not a valid URI: " + e.getMessage();
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg.length() ));
-      log.error( "handleRequestForProxyDatasetResolverCatalog(): " + resMsg );
-      res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg );
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg.length()));
+      log.error("handleRequestForProxyDatasetResolverCatalog(): " + resMsg);
+      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg);
       return;
     }
 
-    InvCatalogImpl cat = (InvCatalogImpl) this.getProxyDatasetResolverCatalog( path, baseURI );
-    if ( cat == null )
-    {
+    InvCatalogImpl cat = (InvCatalogImpl) this.getProxyDatasetResolverCatalog(path, baseURI);
+    if (cat == null) {
       String resMsg = "Could not generate proxy dataset resolver catalog <" + path + ">.";
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg.length() ));
-      log.error( "handleRequestForProxyDatasetResolverCatalog(): " + resMsg );
-      res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg );
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg.length()));
+      log.error("handleRequestForProxyDatasetResolverCatalog(): " + resMsg);
+      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg);
       return;
     }
 
     // Return catalog as XML response.
-    InvCatalogFactory catFactory = getCatalogFactory( false );
-    String result = catFactory.writeXML( cat );
-    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, result.length() ));
+    InvCatalogFactory catFactory = getCatalogFactory(false);
+    String result = catFactory.writeXML(cat);
+    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, result.length()));
 
-    res.setContentLength( result.length() );
-    res.setContentType( "text/xml" );
-    res.getOutputStream().write( result.getBytes() );
+    res.setContentLength(result.length());
+    res.setContentType("text/xml");
+    res.getOutputStream().write(result.getBytes());
   }
 
   /**
    * DO NOT USE, this is Ethan's attempt at designing a generic way to handle data requests.
-   *
+   * <p/>
    * Only used is in ExampleThreddsServlet.
    *
    * @param path
@@ -1004,69 +965,56 @@ public class DataRootHandler {
    * @param req
    * @param res
    * @throws IOException
-   *
    * @deprecated DO NOT USE
    */
-  public void handleRequestForDataset( String path, DataServiceProvider dsp, HttpServletRequest req, HttpServletResponse res )
-          throws IOException
-  {
+  public void handleRequestForDataset(String path, DataServiceProvider dsp, HttpServletRequest req, HttpServletResponse res)
+          throws IOException {
     // Can the DataServiceProvider handle the data request given by the path?
-    DataServiceProvider.DatasetRequest dsReq = dsp.getRecognizedDatasetRequest( path, req );
+    DataServiceProvider.DatasetRequest dsReq = dsp.getRecognizedDatasetRequest(path, req);
     String crDsPath;
     boolean dspCanHandle = false;
-    if ( dsReq != null )
-    {
+    if (dsReq != null) {
       String dsPath = dsReq.getDatasetPath();
-      if ( dsPath != null )
-      {
+      if (dsPath != null) {
         // Use the path returned by the DataServiceProvider.
         crDsPath = dsPath;
         dspCanHandle = true;
-      }
-      else
-      {
+      } else {
         // DataServiceProvider recognized request path but returned a null dataset path. Hmm?
-        log.warn( "handleRequestForDataset(): DataServiceProvider recognized request path <" + path + "> but returned a null dataset path, using request path." );
+        log.warn("handleRequestForDataset(): DataServiceProvider recognized request path <" + path + "> but returned a null dataset path, using request path.");
         // Use the incoming request path.
         crDsPath = path;
       }
-    }
-    else
-    {
+    } else {
       // DataServiceProvider  did not recognized request path.
       // Use the incoming request path.
       crDsPath = path;
     }
 
     // Find the CrawlableDataset represented by the request path.
-    CrawlableDataset crDs = this.getCrawlableDataset( crDsPath );
-    if ( crDs == null )
-    {
+    CrawlableDataset crDs = this.getCrawlableDataset(crDsPath);
+    if (crDs == null) {
       // @todo Check if this is a proxy dataset request (not resolver).
       // Request is not for a known (or allowed) dataset.
-      res.sendError( HttpServletResponse.SC_NOT_FOUND ); // 404
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, -1 ));
+      res.sendError(HttpServletResponse.SC_NOT_FOUND); // 404
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
       return;
     }
 
-    if ( dspCanHandle )
-    {
+    if (dspCanHandle) {
       // Request recognized by DataServiceProvider, handle dataset request.
-      dsp.handleRequestForDataset( dsReq, crDs, req, res );
+      dsp.handleRequestForDataset(dsReq, crDs, req, res);
       return;
-    }
-    else
-    {
+    } else {
       // Request not recognized by DataServiceProvider.
-      if ( crDs.isCollection() )
-      {
+      if (crDs.isCollection()) {
         // Handle request for a collection dataset.
-        dsp.handleUnrecognizedRequestForCollection( crDs, req, res );
+        dsp.handleUnrecognizedRequestForCollection(crDs, req, res);
         return;
       }
 
       // Handle request for an atomic dataset.
-      dsp.handleUnrecognizedRequest( crDs, req, res );
+      dsp.handleUnrecognizedRequest(crDs, req, res);
       return;
     }
   }
@@ -1080,42 +1028,35 @@ public class DataRootHandler {
    * @return true if the path is a request for a catalog, false otherwise.
    * @deprecated actually, this is experimental
    */
-  public boolean isRequestForCatalog( String path )
-  {
+  public boolean isRequestForCatalog(String path) {
     String workPath = path;
-    if ( workPath == null )
+    if (workPath == null)
       return false;
-    else if ( workPath.endsWith( "/" ) )
-    {
+    else if (workPath.endsWith("/")) {
       workPath = workPath + "catalog.xml";
-    }
-    else if ( workPath.endsWith( ".html" ) )
-    {
+    } else if (workPath.endsWith(".html")) {
       // Change ".html" to ".xml"
       int len = workPath.length();
-      workPath = workPath.substring( 0, len - 4 ) + "xml";
-    }
-    else if ( !workPath.endsWith( ".xml" ) )
-    {
+      workPath = workPath.substring(0, len - 4) + "xml";
+    } else if (!workPath.endsWith(".xml")) {
       // Not a catalog request.
       return false;
     }
 
     boolean hasCatalog = false;
 
-    if ( workPath.startsWith( "/" ) )
-      workPath = workPath.substring( 1 );
+    if (workPath.startsWith("/"))
+      workPath = workPath.substring(1);
 
     // Check for static catalog.
-    synchronized ( this )
-    {
-       if (staticCatalogHash.containsKey( workPath ) )
-         return true;
+    synchronized (this) {
+      if (staticCatalogHash.containsKey(workPath))
+        return true;
     }
 
     //----------------------
-    DataRootMatch match = findDataRootMatch( workPath );
-    if ( match == null )
+    DataRootMatch match = findDataRootMatch(workPath);
+    if (match == null)
       return false;
 
 //    // look for the fmrc
@@ -1171,29 +1112,28 @@ public class DataRootHandler {
    * If so, it processes the request completely.
    * req.getPathInfo() is used for the path (ie ignores context and servlet path)
    *
-   * @param req     the request
-   * @param res     the response
+   * @param req the request
+   * @param res the response
    * @return true if request was handled
-   * @throws IOException on I/O error
+   * @throws IOException      on I/O error
    * @throws ServletException on other errors
    * @deprecated Instead forward() request to
    */
-  public boolean processReqForCatalog( HttpServletRequest req, HttpServletResponse res)
-          throws IOException, ServletException
-  {
-    String catPath = TdsPathUtils.extractPath( req );
-    if ( catPath == null )
+  public boolean processReqForCatalog(HttpServletRequest req, HttpServletResponse res)
+          throws IOException, ServletException {
+    String catPath = TdsPathUtils.extractPath(req);
+    if (catPath == null)
       return false;
 
-    if ( catPath.endsWith( "/"))
+    if (catPath.endsWith("/"))
       catPath += "catalog.html";
 
-    if ( ! catPath.endsWith( ".xml" )
-         && ! catPath.endsWith( ".html"))
+    if (!catPath.endsWith(".xml")
+            && !catPath.endsWith(".html"))
       return false;
 
-    RequestDispatcher rd = req.getRequestDispatcher( "/catalog/" + catPath );
-    rd.forward( req, res);
+    RequestDispatcher rd = req.getRequestDispatcher("/catalog/" + catPath);
+    rd.forward(req, res);
     return true;
   }
 
@@ -1228,12 +1168,11 @@ public class DataRootHandler {
       if (expiresDateType != null) {
         if (expiresDateType.getDate().getTime() < System.currentTimeMillis()) {
           // If stale, re-read catalog from disk.
-          File catFile = this.tdsContext.getConfigFileSource().getFile( workPath );
-          if ( catFile != null )
-          {
+          File catFile = this.tdsContext.getConfigFileSource().getFile(workPath);
+          if (catFile != null) {
             String catalogFullPath = catFile.getPath();
-            log.info( "getCatalog(): Rereading expired catalog [" + catalogFullPath + "].");
-            InvCatalogFactory factory = getCatalogFactory( true);
+            log.info("getCatalog(): Rereading expired catalog [" + catalogFullPath + "].");
+            InvCatalogFactory factory = getCatalogFactory(true);
             InvCatalogImpl reReadCat = readCatalog(factory, workPath, catalogFullPath);
 
             if (reReadCat != null) {
@@ -1266,12 +1205,11 @@ public class DataRootHandler {
     return catalog;
   }
 
-  private InvCatalogImpl makeDynamicCatalog(String path, URI baseURI)
-  {
+  private InvCatalogImpl makeDynamicCatalog(String path, URI baseURI) {
     String workPath = path;
 
     // Make sure this is a dynamic catalog request.
-    if ( ! path.endsWith( "/catalog.xml"))
+    if (!path.endsWith("/catalog.xml"))
       return null;
 
     // strip off the filename
@@ -1286,18 +1224,16 @@ public class DataRootHandler {
 
     // look for the fmrc
     if (match.dataRoot.fmrc != null) {
-      return match.dataRoot.fmrc.makeCatalog( match.remaining, path, baseURI);
+      return match.dataRoot.fmrc.makeCatalog(match.remaining, path, baseURI);
     }
 
     // Check that path is allowed, ie not filtered out
-    try
-    {
+    try {
       if (getCrawlableDataset(workPath) == null)
         return null;
     }
-    catch ( IOException e )
-    {
-      log.error( "makeDynamicCatalog(): I/O error on request <" + path + ">: " + e.getMessage(), e);
+    catch (IOException e) {
+      log.error("makeDynamicCatalog(): I/O error on request <" + path + ">: " + e.getMessage(), e);
       return null;
     }
 
@@ -1309,7 +1245,7 @@ public class DataRootHandler {
 
     InvDatasetScan dscan = match.dataRoot.scan;
     log.debug("makeDynamicCatalog(): Calling makeCatalogForDirectory( " + baseURI + ", " + path + ").");
-    InvCatalogImpl cat = dscan.makeCatalogForDirectory( path, baseURI );
+    InvCatalogImpl cat = dscan.makeCatalogForDirectory(path, baseURI);
 
     if (null == cat) {
       log.error("makeDynamicCatalog(): makeCatalogForDirectory failed = " + workPath);
@@ -1320,27 +1256,27 @@ public class DataRootHandler {
 
   private InvCatalogImpl makeTDRDynamicCatalog(String path, URI baseURI) {
     // Make sure this is a tdr catalog request.
-    if ( ! path.startsWith( "tdr"))
+    if (!path.startsWith("tdr"))
       return null;
 
-    File catFile = this.tdsContext.getConfigFileSource().getFile( path );
-    if ( catFile == null )
+    File catFile = this.tdsContext.getConfigFileSource().getFile(path);
+    if (catFile == null)
       return null;
     String catalogFullPath = catFile.getPath();
 
-    InvCatalogFactory factory = getCatalogFactory( false); // no validation
-    InvCatalogImpl cat = readCatalog( factory, path, catalogFullPath );
-    if ( cat == null ) {
-      log.warn( "makeTDRDynamicCatalog(): failed to read tdr catalog <" + catalogFullPath + ">." );
+    InvCatalogFactory factory = getCatalogFactory(false); // no validation
+    InvCatalogImpl cat = readCatalog(factory, path, catalogFullPath);
+    if (cat == null) {
+      log.warn("makeTDRDynamicCatalog(): failed to read tdr catalog <" + catalogFullPath + ">.");
       return null;
     }
 
-        /* look for datasetRoots
-    Iterator roots = cat.getDatasetRoots().iterator();
-    while ( roots.hasNext() ) {
-      InvProperty p = (InvProperty) roots.next();
-      addRoot( p.getName(), p.getValue(), false );
-    }  */
+    /* look for datasetRoots
+  Iterator roots = cat.getDatasetRoots().iterator();
+  while ( roots.hasNext() ) {
+    InvProperty p = (InvProperty) roots.next();
+    addRoot( p.getName(), p.getValue(), false );
+  }  */
 
     cat.setBaseURI(baseURI);
     return cat;
@@ -1409,12 +1345,10 @@ public class DataRootHandler {
    * @param res     response
    * @return true if request was processed successfully.
    * @throws IOException if have I/O trouble writing response.
-   *
-   * @deprecated  Instead use {@link #processReqForCatalog(HttpServletRequest, HttpServletResponse) processReqForCatalog()} which provides more general proxy dataset handling.
+   * @deprecated Instead use {@link #processReqForCatalog(HttpServletRequest, HttpServletResponse) processReqForCatalog()} which provides more general proxy dataset handling.
    */
   public boolean processReqForLatestDataset(HttpServlet servlet, HttpServletRequest req, HttpServletResponse res)
-          throws IOException
-  {
+          throws IOException {
     String orgPath = req.getPathInfo();
     if (orgPath.startsWith("/"))
       orgPath = orgPath.substring(1);
@@ -1429,8 +1363,8 @@ public class DataRootHandler {
 
     if (path.equals("/") || path.equals("")) {
       String resMsg = "No data at root level, \"/latest.xml\" request not available.";
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, resMsg.length()));
-      if ( log.isDebugEnabled()) log.debug( "processReqForLatestDataset(): " + resMsg);
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, resMsg.length()));
+      if (log.isDebugEnabled()) log.debug("processReqForLatestDataset(): " + resMsg);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
       return false;
     }
@@ -1439,8 +1373,8 @@ public class DataRootHandler {
     DataRoot dataRoot = findDataRoot(path);
     if (dataRoot == null) {
       String resMsg = "No scan root matches requested path <" + path + ">.";
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, resMsg.length()));
-      log.warn( "processReqForLatestDataset(): " + resMsg);
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, resMsg.length()));
+      log.warn("processReqForLatestDataset(): " + resMsg);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
       return false;
     }
@@ -1449,8 +1383,8 @@ public class DataRootHandler {
     InvDatasetScan dscan = dataRoot.scan;
     if (dscan == null) {
       String resMsg = "Probable conflict between datasetScan and datasetRoot for path <" + path + ">.";
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, resMsg.length()));
-      log.warn( "processReqForLatestDataset(): " + resMsg);
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, resMsg.length()));
+      log.warn("processReqForLatestDataset(): " + resMsg);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
       return false;
     }
@@ -1458,45 +1392,43 @@ public class DataRootHandler {
     // Check that latest is allowed
     if (dscan.getProxyDatasetHandlers() == null) {
       String resMsg = "No \"addProxies\" or \"addLatest\" on matching scan root <" + path + ">.";
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, resMsg.length()));
-      log.warn( "processReqForLatestDataset(): " + resMsg);
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, resMsg.length()));
+      log.warn("processReqForLatestDataset(): " + resMsg);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
       return false;
     }
 
     String reqBase = ServletUtil.getRequestBase(req); // this is the base of the request
     URI reqBaseURI;
-    try
-    {
-      reqBaseURI = new URI( reqBase );
+    try {
+      reqBaseURI = new URI(reqBase);
     }
-    catch ( URISyntaxException e )
-    {
+    catch (URISyntaxException e) {
       String resMsg = "Request base URL <" + reqBase + "> not valid URI (???): " + e.getMessage();
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg.length() ));
-      log.error( "processReqForLatestDataset(): " + resMsg );
-      res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg );
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg.length()));
+      log.error("processReqForLatestDataset(): " + resMsg);
+      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg);
       return false;
     }
-    InvCatalog cat = dscan.makeLatestCatalogForDirectory(orgPath, reqBaseURI );
+    InvCatalog cat = dscan.makeLatestCatalogForDirectory(orgPath, reqBaseURI);
 
     if (null == cat) {
       String resMsg = "Failed to build response catalog <" + path + ">.";
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, resMsg.length()));
-      log.error( "processReqForLatestDataset(): " + resMsg);
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, resMsg.length()));
+      log.error("processReqForLatestDataset(): " + resMsg);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
       return false;
     }
 
     // Send latest.xml catalog as response.
-    InvCatalogFactory catFactory = getCatalogFactory( false);
+    InvCatalogFactory catFactory = getCatalogFactory(false);
     String catAsString = catFactory.writeXML((InvCatalogImpl) cat);
     PrintWriter out = res.getWriter();
     res.setContentType("text/xml");
-    res.setStatus( HttpServletResponse.SC_OK );
+    res.setStatus(HttpServletResponse.SC_OK);
     out.print(catAsString);
-    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, catAsString.length()));
-    if (log.isDebugEnabled()) log.debug( "processReqForLatestDataset(): Finished \"" + orgPath + "\".");
+    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, catAsString.length()));
+    if (log.isDebugEnabled()) log.debug("processReqForLatestDataset(): Finished \"" + orgPath + "\".");
     return true;
   }
 
@@ -1518,7 +1450,7 @@ public class DataRootHandler {
     }
 
     InvDatasetScan dscan = dataRoot.scan;
-    if ( dscan == null ) dscan = dataRoot.datasetRootProxy;
+    if (dscan == null) dscan = dataRoot.datasetRootProxy;
     if (dscan == null) return null;
     return dscan.getNcmlElement();
   }
@@ -1590,89 +1522,89 @@ public class DataRootHandler {
    debugHandler.addAction( act);  */
 
     act = new DebugHandler.Action("showStatic", "Show static catalogs") {
-     public void doAction(DebugHandler.Event e) {
-       ArrayList<String> list;
-       StringBuilder sbuff = new StringBuilder();
-       synchronized ( DataRootHandler.this )
-       {
-         list = new ArrayList<String>( staticCatalogHash.keySet());
-         Collections.sort(list);
-         for (String catPath : list) {
-           InvCatalogImpl cat = staticCatalogHash.get( catPath);
-           sbuff.append(" catalog= ").append(catPath).append("; ");
-           String filename = StringUtil.unescape(cat.getCreateFrom());
-           sbuff.append(" from= ").append(filename).append("\n");
-         }
-       }
-       e.pw.println( StringUtil.quoteHtmlContent( "\n"+sbuff.toString()));
-     }
-   };
-   debugHandler.addAction( act);
+      public void doAction(DebugHandler.Event e) {
+        ArrayList<String> list;
+        StringBuilder sbuff = new StringBuilder();
+        synchronized (DataRootHandler.this) {
+          list = new ArrayList<String>(staticCatalogHash.keySet());
+          Collections.sort(list);
+          for (String catPath : list) {
+            InvCatalogImpl cat = staticCatalogHash.get(catPath);
+            sbuff.append(" catalog= ").append(catPath).append("; ");
+            String filename = StringUtil.unescape(cat.getCreateFrom());
+            sbuff.append(" from= ").append(filename).append("\n");
+          }
+        }
+        e.pw.println(StringUtil.quoteHtmlContent("\n" + sbuff.toString()));
+      }
+    };
+    debugHandler.addAction(act);
 
     act = new DebugHandler.Action("showRoots", "Show data roots") {
       public void doAction(DebugHandler.Event e) {
-        synchronized ( DataRootHandler.this ) {
+        synchronized (DataRootHandler.this) {
           Iterator iter = pathMatcher.iterator();
           while (iter.hasNext()) {
             DataRoot ds = (DataRoot) iter.next();
-            e.pw.print(" <b>" + ds.path+"</b>");
-            String url = DataRootHandler.this.tdsContext.getContextPath() + "/dataDir/" + ds.path+"/";
+            e.pw.print(" <b>" + ds.path + "</b>");
+            String url = DataRootHandler.this.tdsContext.getContextPath() + "/dataDir/" + ds.path + "/";
             if (ds.fmrc == null) {
-              String type = (ds.scan == null) ? "root":"scan";
-              e.pw.println(" for "+type+" directory= <a href='" +url+"'>"+ds.dirLocation+"</a> ");
+              String type = (ds.scan == null) ? "root" : "scan";
+              e.pw.println(" for " + type + " directory= <a href='" + url + "'>" + ds.dirLocation + "</a> ");
             } else {
               if (ds.dirLocation == null) {
-                url = DataRootHandler.this.tdsContext.getContextPath() + "/"+ ds.path;
-                e.pw.println("  for fmrc= <a href='" +url+"'>"+ds.fmrc.getXlinkHref()+"</a>");
+                url = DataRootHandler.this.tdsContext.getContextPath() + "/" + ds.path;
+                e.pw.println("  for fmrc= <a href='" + url + "'>" + ds.fmrc.getXlinkHref() + "</a>");
               } else {
-                e.pw.println("  for fmrc= <a href='" +url+"'>"+ds.dirLocation+"</a>");
+                e.pw.println("  for fmrc= <a href='" + url + "'>" + ds.dirLocation + "</a>");
               }
             }
           }
         }
       }
     };
-    debugHandler.addAction( act);
+    debugHandler.addAction(act);
 
     act = new DebugHandler.Action("getRoots", "Get data roots") {
       public void doAction(DebugHandler.Event e) {
-        synchronized ( DataRootHandler.this ) {
+        synchronized (DataRootHandler.this) {
           e.pw.print("<pre>\n");
           Iterator iter = pathMatcher.iterator();
           while (iter.hasNext()) {
             DataRoot ds = (DataRoot) iter.next();
-            e.pw.print(ds.path+","+ds.dirLocation+"\n");
+            e.pw.print(ds.path + "," + ds.dirLocation + "\n");
           }
           e.pw.print("</pre>\n");
         }
       }
     };
-    debugHandler.addAction( act);
+    debugHandler.addAction(act);
 
-    /* moved to ThreddsDefaultServlet
     act = new DebugHandler.Action("reinit", "Reinitialize") {
       public void doAction(DebugHandler.Event e) {
         try {
           DatasetHandler.reinit();
           singleton.reinit();
           e.pw.println( "reinit ok");
-        } catch (IOException e1) {
+
+        } catch (Exception e1) {
           e.pw.println( "Error on reinit "+e1.getMessage());
           log.error( "Error on reinit "+e1.getMessage());
         }
       }
     };
-    debugHandler.addAction( act); */
+    debugHandler.addAction( act);
+
   }
 
   /**
    * To recieve notice of TDS configuration events, implement this interface
    * and use the DataRootHandler.registerConfigListener() method to register
    * an instance with a DataRootHandler instance.
-   *
+   * <p/>
    * Configuration events include start and end of configuration, inclusion
    * of a catalog in configuration, and finding a dataset in configuration.
-   *
+   * <p/>
    * Concurrency issues:<br>
    * 1) As this is a servlet framework, requests that configuration be reinitialized
    * may occur concurrently with requests for the information the listener is
@@ -1684,8 +1616,7 @@ public class DataRootHandler {
    * and switch only when the already built config information is being switched
    * with the existing config information.
    */
-  public interface ConfigListener
-  {
+  public interface ConfigListener {
     /**
      * Recieve notification that configuration has started.
      */
@@ -1698,15 +1629,17 @@ public class DataRootHandler {
 
     /**
      * Recieve notification on the inclusion of a configuration catalog.
+     *
      * @param catalog the catalog being included in configuration.
      */
-    public void configCatalog( InvCatalog catalog );
+    public void configCatalog(InvCatalog catalog);
 
     /**
      * Recieve notification that configuration has found a dataset.
+     *
      * @param dataset the dataset found during configuration.
      */
-    public void configDataset( InvDataset dataset );
+    public void configDataset(InvDataset dataset);
   }
 }
 

@@ -59,7 +59,8 @@ import javax.servlet.ServletException;
  * 2) if datasetScan with ncml, wrap
  */
 public class DatasetHandler {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DatasetHandler.class);
+  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DatasetHandler.class);
+  static private final boolean debugResourceControl = false;
 
   // InvDataset (not DatasetScan, DatasetFmrc) that have an NcML element in it. key is the request Path
   static private HashMap<String, InvDatasetImpl> ncmlDatasetHash = new HashMap<String, InvDatasetImpl>();
@@ -70,7 +71,6 @@ public class DatasetHandler {
   static private HashMap<String, String> resourceControlHash = new HashMap<String, String>(); // path, restrictAccess string for datasets
   static private volatile PathMatcher resourceControlMatcher = new PathMatcher(); // path, restrictAccess string for datasetScan
   static private boolean hasResourceControl = false;
-  static private boolean debugResourceControl = false;
 
   static void reinit() {
     ncmlDatasetHash = new HashMap<String, InvDatasetImpl>();

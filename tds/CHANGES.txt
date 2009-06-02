@@ -17,7 +17,8 @@ Changes in version 4.0
   * netcdf-java 4.0
 
 Release Details:
- 13:
+ 14:
+  Add Reinit back
   WMS: minor configuration improvements
   cdmremote service
  12:
