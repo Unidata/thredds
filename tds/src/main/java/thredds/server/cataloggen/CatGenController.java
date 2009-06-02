@@ -48,6 +48,7 @@ import java.util.HashMap;
 import thredds.server.config.TdsContext;
 import thredds.servlet.UsageLog;
 import thredds.servlet.ThreddsConfig;
+import thredds.servlet.ServletUtil;
 
 /**
  * _more_
@@ -227,6 +228,7 @@ public class CatGenController extends AbstractController
       {
         RequestDispatcher rd = request.getRequestDispatcher( "/catalog" + extendedPath );
         rd.forward( request, response );
+        log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( ServletUtil.STATUS_FORWARDED, -1 ) );
         return null;
       }
 

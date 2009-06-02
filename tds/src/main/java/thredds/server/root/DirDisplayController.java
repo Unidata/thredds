@@ -42,6 +42,7 @@ import javax.servlet.ServletContext;
 
 import thredds.servlet.HtmlWriter;
 import thredds.servlet.UsageLog;
+import thredds.servlet.ServletUtil;
 import thredds.server.config.TdsContext;
 
 import java.io.File;
@@ -93,13 +94,14 @@ public class DirDisplayController extends AbstractController {
 
     if (file == null) {
       tdsContext.getDefaultRequestDispatcher().forward(req, res);
+      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( ServletUtil.STATUS_FORWARDED, -1 ) );
       return null;
     }
 
     if (file.isDirectory()) {
       int i = HtmlWriter.getInstance().writeDirectory(res, file, path);
       int status = i == 0 ? HttpServletResponse.SC_NOT_FOUND : HttpServletResponse.SC_OK;
-      log.info( UsageLog.closingMessageForRequestContext( status, i ) );
+      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( status, i ) );
       return null;
     }
 

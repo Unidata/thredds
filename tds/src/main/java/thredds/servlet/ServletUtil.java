@@ -716,8 +716,8 @@ public class ServletUtil {
     // "If the path begins with a "/" it is interpreted as relative to the current context root."
     RequestDispatcher dispatch = req.getRequestDispatcher("/catalog.html?" + reqs);
     if (dispatch != null) {
-      log.info( UsageLog.closingMessageForRequestContext(STATUS_FORWARDED, 0));
       dispatch.forward(req, res);
+      log.info( UsageLog.closingMessageForRequestContext( STATUS_FORWARDED, 0 ) );
     } else {
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
       log.info( UsageLog.closingMessageForRequestContext(STATUS_FORWARD_FAILURE, 0));

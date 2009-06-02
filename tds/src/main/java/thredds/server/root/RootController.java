@@ -43,6 +43,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletContext;
 
 import thredds.servlet.ServletUtil;
+import thredds.servlet.UsageLog;
 import thredds.server.config.TdsContext;
 import thredds.util.TdsPathUtils;
 
@@ -57,8 +58,7 @@ import java.io.IOException;
  */
 public class RootController extends AbstractController implements LastModified
 {
-//  private static org.slf4j.Logger log =
-//          org.slf4j.LoggerFactory.getLogger( RootController.class );
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
   private TdsContext tdsContext;
 
@@ -70,11 +70,14 @@ public class RootController extends AbstractController implements LastModified
   protected ModelAndView handleRequestInternal( HttpServletRequest req, HttpServletResponse res )
           throws Exception
   {
+    log.info( "handleRequestInternal(): " + UsageLog.setupRequestContext( req ) );
+
     String path = TdsPathUtils.extractPath( req );
     if (( null == path) || path.equals( "/" ) || path.equals( ""))
     {
       String newPath = tdsContext.getContextPath() + "/catalog.html";
       res.sendRedirect( newPath );
+      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FOUND, -1 ) );
       return null;
     }
 
@@ -82,8 +85,10 @@ public class RootController extends AbstractController implements LastModified
     if ( file == null )
     {
       tdsContext.getDefaultRequestDispatcher().forward( req, res );
+      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( ServletUtil.STATUS_FORWARDED, -1 ) );
       return null;
     }
+    log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
     return new ModelAndView( "threddsFileView", "file", file );
   }
 

@@ -45,6 +45,7 @@ import javax.servlet.ServletException;
 import thredds.servlet.DataRootHandler;
 import thredds.servlet.HtmlWriter;
 import thredds.servlet.UsageLog;
+import thredds.servlet.ServletUtil;
 import thredds.server.config.TdsContext;
 import thredds.catalog.InvCatalog;
 import thredds.catalog.InvCatalogImpl;
@@ -280,11 +281,14 @@ public class LocalCatalogServiceController extends AbstractController
     // If request doesn't match a known catalog, look for a public document.
     File publicFile = tdsContext.getPublicDocFileSource().getFile( path );
     if ( publicFile != null )
+    {
+      log.info( "handlePublicDocumentRequest(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
       return new ModelAndView( "threddsFileView", "file", publicFile );
+    }
 
     // If request doesn't match a public document, hand to default.
     tdsContext.getDefaultRequestDispatcher().forward( request, response );
-    log.info( "handlePublicDocumentRequest(): " + UsageLog.closingMessageForRequestContext( -1, -1 ) );
+    log.info( "handlePublicDocumentRequest(): " + UsageLog.closingMessageForRequestContext( ServletUtil.STATUS_FORWARDED, -1 ) );
     return null;
   }
 }
