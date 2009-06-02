@@ -333,6 +333,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
           try {
             Variable sp = ds.findVariable("elevation");
             spData = sp.read();
+            sp.setCachedData(spData, false);
           } catch (IOException e) {
             e.printStackTrace();
             meanElevation = 0.0;
@@ -354,6 +355,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
           try {
             Variable sp = ds.findVariable("azimuth");
             spData = sp.read();
+            sp.setCachedData(spData, false);
 
           } catch (IOException e) {
             e.printStackTrace();
@@ -426,6 +428,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
         try {
           Variable sp = ds.findVariable("elevation");
           Array spData = sp.read();
+          sp.setCachedData(spData, false);
           spArray = (float[]) spData.get1DJavaArray(float.class);
 
         } catch (IOException e) {
@@ -440,7 +443,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
         try {
           Variable sp = ds.findVariable("azimuth");
           spData = sp.read();
-
+          sp.setCachedData(spData, false);
         } catch (IOException e) {
           e.printStackTrace();
         }
@@ -453,6 +456,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
         try {
           Variable sp = ds.findVariable("azimuth");
           Array spData = sp.read();
+          sp.setCachedData(spData, false);
           spArray = (float[]) spData.get1DJavaArray(float.class);
 
         } catch (IOException e) {
@@ -467,7 +471,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
         try {
           Variable sp = ds.findVariable("gate");
           spData = sp.read();
-
+          sp.setCachedData(spData, false);
         } catch (IOException e) {
           e.printStackTrace();
         }
@@ -480,6 +484,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
         try {
           Variable sp = ds.findVariable("rays_time");
           timeData = sp.read();
+          sp.setCachedData(timeData, false);
         } catch (IOException e) {
           e.printStackTrace();
         }
