@@ -56,7 +56,7 @@ import java.util.List;
 public class CompositeStationCollection extends StationTimeSeriesCollectionImpl {
   private TimedCollection stnCollections;
   private FeatureDatasetPoint openDataset;
-  private boolean debug = true;
+  private boolean debug = false;
 
   protected CompositeStationCollection(String name, TimedCollection stnCollections) throws IOException {
     super(name);
@@ -154,10 +154,14 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
         List<FeatureCollection> fcList = currentDataset.getPointFeatureCollectionList();
         StationTimeSeriesFeatureCollection stnCollection = (StationTimeSeriesFeatureCollection) fcList.get(0);
         Station s = stnCollection.getStation(getName());
+        if (s == null) {
+         System.out.printf("CompositeStationFeatureIterator dataset%s missing station %s%n", 
+                  td.getLocation(), getName());
+          return getNextIterator();
+        }
+
         StationTimeSeriesFeature stnFeature = stnCollection.getStationFeature(s);
-
         if (debug) System.out.printf("CompositeStationFeatureIterator open dataset%s%n", td.getLocation());
-
         return stnFeature.getPointFeatureIterator(bufferSize);
       }
 
