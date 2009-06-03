@@ -388,17 +388,17 @@ public final class FysatHeader {
 		    
 		    var .addAttribute(new Attribute("coordinates", "Lon Lat"));
 		    
-		    var.addAttribute(new Attribute("_unsigned", "false"));
+		    var.addAttribute(new Attribute("_unsigned", "true"));
 		    var.addAttribute(new Attribute("units", "percent"));
-            if(var.getDataType() == DataType.BYTE) {
-                var.addAttribute(new Attribute("_missing_value", new Byte((byte)-1)));
-                var.addAttribute( new Attribute("scale_factor", new Byte((byte)(1))));
-                var.addAttribute( new Attribute("add_offset", new Byte((byte)(0))));
-            } else {
+           // if(var.getDataType() == DataType.BYTE) {
+           //     var.addAttribute(new Attribute("_missing_value", new Byte((byte)-1)));
+           //     var.addAttribute( new Attribute("scale_factor", new Byte((byte)(1))));
+           //     var.addAttribute( new Attribute("add_offset", new Byte((byte)(0))));
+          //  } else {
                 var.addAttribute(new Attribute("_missing_value", new Short((short)-1)));
                 var.addAttribute( new Attribute("scale_factor", new Short((short)(1))));
                 var.addAttribute( new Attribute("add_offset", new Short((short)(0))));
-            }
+          //  }
 		    
     	      // size and beginning data position in file
     	    int vsize = velems;
