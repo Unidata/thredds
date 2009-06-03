@@ -1,41 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fmrcDefinition dataset="http://motherlode.ucar.edu:8081/thredds/catalog/fmrc/NCEP/SREF/CONUS_40km/ensprod_biasc/files/catalog.xml">
-  <vertCoord id="3" name="height_above_ground" units="m">2.0</vertCoord>
-  <vertCoord id="5" name="height_above_ground1" units="m">10.0</vertCoord>
+<fmrcDefinition dataset="http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/SREF/CONUS_40km/ensprod_biasc/files/catalog.xml">
+  <vertCoord id="5" name="height_above_ground" units="m">10.0</vertCoord>
+  <vertCoord id="2" name="height_above_ground1" units="m">2.0</vertCoord>
   <vertCoord id="0" name="pressure" units="Pa">25000.0 30000.0 50000.0 70000.0 85000.0 100000.0</vertCoord>
-  <vertCoord id="2" name="pressure1" units="Pa">30000.0 50000.0 70000.0 85000.0</vertCoord>
+  <vertCoord id="3" name="pressure1" units="Pa">30000.0 50000.0 70000.0 85000.0</vertCoord>
   <vertCoord id="4" name="pressure2" units="Pa">85000.0</vertCoord>
   <vertCoord id="1" name="pressure_layer" units="Pa">100000.0,50000.0 85000.0,70000.0 100000.0,85000.0</vertCoord>
   <offsetHours id="0">3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0 87.0</offsetHours>
   <runSequence allUseSeq="0">
-    <variable name="Geopotential_height" vertCoord="0" />
-    <variable name="Geopotential_height_stdDev21_pressure_layer" vertCoord="1" />
-    <variable name="Geopotential_height_weightedMean21_pressure" vertCoord="0" />
-    <variable name="Geopotential_height_weightedMean21_pressure_layer" vertCoord="1" />
-    <variable name="Pressure_reduced_to_MSL" />
-    <variable name="Pressure_reduced_to_MSL_weightedMean21_msl" />
-    <variable name="Relative_humidity" vertCoord="2" />
-    <variable name="Relative_humidity_stdDev21_height_above_ground" vertCoord="3" />
-    <variable name="Relative_humidity_weightedMean21_height_above_ground" vertCoord="3" />
-    <variable name="Relative_humidity_weightedMean21_pressure" vertCoord="2" />
-    <variable name="Temperature" vertCoord="2" />
-    <variable name="Temperature_height_above_ground" vertCoord="3" />
-    <variable name="Temperature_pressure" vertCoord="4" />
-    <variable name="Temperature_stdDev21_height_above_ground" vertCoord="3" />
-    <variable name="Temperature_weightedMean21_height_above_ground" vertCoord="3" />
-    <variable name="Temperature_weightedMean21_pressure" vertCoord="2" />
-    <variable name="U-component_of_wind" vertCoord="0" />
-    <variable name="U-component_of_wind_stdDev21_height_above_ground" vertCoord="5" />
-    <variable name="U-component_of_wind_weightedMean21_height_above_ground" vertCoord="5" />
-    <variable name="U-component_of_wind_weightedMean21_pressure" vertCoord="0" />
-    <variable name="V-component_of_wind" vertCoord="0" />
-    <variable name="V-component_of_wind_stdDev21_height_above_ground" vertCoord="5" />
-    <variable name="V-component_of_wind_weightedMean21_height_above_ground" vertCoord="5" />
-    <variable name="V-component_of_wind_weightedMean21_pressure" vertCoord="0" />
-    <variable name="Wind_speed" vertCoord="0" />
-    <variable name="Wind_speed_height_above_ground" vertCoord="5" />
-    <variable name="Wind_speed_stdDev21_height_above_ground" vertCoord="5" />
-    <variable name="Wind_speed_weightedMean21_height_above_ground" vertCoord="5" />
-    <variable name="Wind_speed_weightedMean21_pressure" vertCoord="0" />
+    <variable name="Geopotential_height_stdDev_pressure" vertCoord="0" />
+    <variable name="Geopotential_height_stdDev_pressure_layer" vertCoord="1" />
+    <variable name="Geopotential_height_weightedMean_pressure" vertCoord="0" />
+    <variable name="Geopotential_height_weightedMean_pressure_layer" vertCoord="1" />
+    <variable name="Pressure_reduced_to_MSL_stdDev_msl" />
+    <variable name="Pressure_reduced_to_MSL_weightedMean_msl" />
+    <variable name="Relative_humidity_stdDev_height_above_ground" vertCoord="2" />
+    <variable name="Relative_humidity_stdDev_pressure" vertCoord="3" />
+    <variable name="Relative_humidity_weightedMean_height_above_ground" vertCoord="2" />
+    <variable name="Relative_humidity_weightedMean_pressure" vertCoord="3" />
+    <variable name="Temperature_belowLL_height_above_ground" vertCoord="2" />
+    <variable name="Temperature_belowLL_pressure" vertCoord="4" />
+    <variable name="Temperature_stdDev_height_above_ground" vertCoord="2" />
+    <variable name="Temperature_stdDev_pressure" vertCoord="3" />
+    <variable name="Temperature_weightedMean_height_above_ground" vertCoord="2" />
+    <variable name="Temperature_weightedMean_pressure" vertCoord="3" />
+    <variable name="U-component_of_wind_stdDev_height_above_ground" vertCoord="5" />
+    <variable name="U-component_of_wind_stdDev_pressure" vertCoord="0" />
+    <variable name="U-component_of_wind_weightedMean_height_above_ground" vertCoord="5" />
+    <variable name="U-component_of_wind_weightedMean_pressure" vertCoord="0" />
+    <variable name="V-component_of_wind_stdDev_height_above_ground" vertCoord="5" />
+    <variable name="V-component_of_wind_stdDev_pressure" vertCoord="0" />
+    <variable name="V-component_of_wind_weightedMean_height_above_ground" vertCoord="5" />
+    <variable name="V-component_of_wind_weightedMean_pressure" vertCoord="0" />
+    <variable name="Wind_speed_aboveUL_height_above_ground" vertCoord="5" />
+    <variable name="Wind_speed_stdDev_height_above_ground" vertCoord="5" />
+    <variable name="Wind_speed_stdDev_pressure" vertCoord="0" />
+    <variable name="Wind_speed_weightedMean_height_above_ground" vertCoord="5" />
+    <variable name="Wind_speed_weightedMean_pressure" vertCoord="0" />
   </runSequence>
 </fmrcDefinition>
+
