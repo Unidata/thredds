@@ -114,6 +114,15 @@ public abstract class StationFeatureImpl extends PointCollectionImpl implements 
     return FeatureType.STATION;
   }
 
+  @Override
+  public String toString() {
+    return "StationFeatureImpl{" +
+        "s=" + s +
+        ", timeUnit=" + timeUnit +
+        ", npts=" + npts +
+        '}';
+  }
+
   public StationTimeSeriesFeature subset(DateRange dateRange) throws IOException {
     if (dateRange == null) return this;
     return new StationFeatureSubset(this, dateRange);
