@@ -237,9 +237,9 @@ public class RadarServer extends AbstractServlet {
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
 
     } catch (Throwable e) {
-      log.error("RadarServer.doGet", e);
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
-      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      log.info("RadarServer.doGet", e);
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, 0));
+      res.sendError(HttpServletResponse.SC_FORBIDDEN);
     }
 
   } // end doGet
