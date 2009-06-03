@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmrcDefinition dataset="test">
+  <vertCoord id="5" name="height_above_ground" units="m">10.0</vertCoord>
+  <vertCoord id="0" name="height_above_ground1" units="m">2.0</vertCoord>
+  <vertCoord id="3" name="pressure" units="Pa">25000.0 30000.0 50000.0 70000.0 85000.0</vertCoord>
+  <vertCoord id="1" name="pressure1" units="Pa">50000.0 70000.0 85000.0</vertCoord>
+  <vertCoord id="2" name="pressure2" units="Pa">30000.0 50000.0 70000.0 85000.0</vertCoord>
+  <vertCoord id="4" name="pressure_difference_layer" units="Pa">108.0,3000.0</vertCoord>
+  <offsetHours id="0">0.0 3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0 87.0</offsetHours>
+  <offsetHours id="1">0.0</offsetHours>
+  <offsetHours id="2">-9999.0</offsetHours>
+  <runSequence allUseSeq="0">
+    <variable name="Categorical_Freezing_Rain_betweenLimits_surface" />
+    <variable name="Categorical_Freezing_Rain_weightedMean_surface" />
+    <variable name="Categorical_Ice_Pellets_betweenLimits_surface" />
+    <variable name="Categorical_Ice_Pellets_weightedMean_surface" />
+    <variable name="Categorical_Rain_betweenLimits_surface" />
+    <variable name="Categorical_Rain_weightedMean_surface" />
+    <variable name="Categorical_Snow_betweenLimits_surface" />
+    <variable name="Categorical_Snow_weightedMean_surface" />
+    <variable name="Convective_available_potential_energy" />
+    <variable name="Dew_point_temperature_stdDev_height_above_ground" vertCoord="0" />
+    <variable name="Dew_point_temperature_stdDev_pressure" vertCoord="1" />
+    <variable name="Dew_point_temperature_weightedMean_height_above_ground" vertCoord="0" />
+    <variable name="Dew_point_temperature_weightedMean_pressure" vertCoord="1" />
+    <variable name="Geopotential_height_stdDev_pressure" vertCoord="2" />
+    <variable name="Geopotential_height_weightedMean_pressure" vertCoord="3" />
+    <variable name="Parcel_lifted_index_to_500_hPa" vertCoord="4" />
+    <variable name="Pressure_reduced_to_MSL_stdDev_msl" />
+    <variable name="Pressure_reduced_to_MSL_weightedMean_msl" />
+    <variable name="Temperature_stdDev_height_above_ground" vertCoord="0" />
+    <variable name="Temperature_stdDev_pressure" vertCoord="2" />
+    <variable name="Temperature_weightedMean_height_above_ground" vertCoord="0" />
+    <variable name="Temperature_weightedMean_pressure" vertCoord="2" />
+    <variable name="U-component_of_wind_weightedMean_height_above_ground" vertCoord="5" />
+    <variable name="U-component_of_wind_weightedMean_pressure" vertCoord="3" />
+    <variable name="V-component_of_wind_weightedMean_height_above_ground" vertCoord="5" />
+    <variable name="V-component_of_wind_weightedMean_pressure" vertCoord="3" />
+    <variable name="Wind_speed_aboveUL_height_above_ground" vertCoord="5" />
+    <variable name="Wind_speed_stdDev_height_above_ground" vertCoord="5" />
+    <variable name="Wind_speed_stdDev_pressure" vertCoord="2" />
+  </runSequence>
+  <runSequence allUseSeq="1">
+    <variable name="Temperature__layer" />
+  </runSequence>
+  <runSequence allUseSeq="2">
+    <variable name="Total_precipitation" />
+  </runSequence>
+</fmrcDefinition>
