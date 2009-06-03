@@ -224,13 +224,16 @@ public class RadarServer extends AbstractServlet {
         log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
         return;
       }
-      // needs work noboy using it now
+      // needs work nobody using it now
       // return Dataset information in html form format
       if (pathInfo.endsWith("dataset.html") || pathInfo.endsWith("catalog.html")) {
         datasetInfoHtml(radarType, pathInfo, pw, res);
         log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
         return;
       }
+      // mal formed request with no exceptions
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
+      res.sendError(HttpServletResponse.SC_NOT_FOUND);
 
     } catch (FileNotFoundException e) {
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
