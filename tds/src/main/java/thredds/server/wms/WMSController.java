@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
 
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
@@ -76,8 +77,10 @@ public class WMSController extends AbstractController {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(WMSController.class);
   private static org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("catalogInit");
 
-  public static final Version WMS_VER_1_1_1 = new Version( "1.1.1");
-  public static final Version WMS_VER_1_3_0 = new Version( "1.3.0");
+  public static final Version WMS_VER_1_1_1 = new Version("1.1.1");
+  public static final Version WMS_VER_1_3_0 = new Version("1.3.0");
+
+  private static final Set<NetcdfDataset.Enhance> enhanceMode = EnumSet.of(NetcdfDataset.Enhance.ScaleMissingDefer, NetcdfDataset.Enhance.CoordSystems);
 
   private boolean allow;
   private boolean allowRemote;
@@ -96,7 +99,7 @@ public class WMSController extends AbstractController {
 
     if (allow) {
       // OGC metadata
-      String  defaultMetadataLocation = this.getServletContext().getRealPath("/WEB-INF/OGCMeta.xml");
+      String defaultMetadataLocation = this.getServletContext().getRealPath("/WEB-INF/OGCMeta.xml");
       String OGCMetaXmlFile = ThreddsConfig.get("WMS.ogcMetaXML", null);
       if (OGCMetaXmlFile == null)
         OGCMetaXmlFile = defaultMetadataLocation;
@@ -113,7 +116,7 @@ public class WMSController extends AbstractController {
       }
 
       // color pallettes
-      String  defaultPaletteLocation = this.getServletContext().getRealPath("/WEB-INF/palettes");
+      String defaultPaletteLocation = this.getServletContext().getRealPath("/WEB-INF/palettes");
       String paletteLocation = ThreddsConfig.get("WMS.paletteLocationDir", null);
       if (paletteLocation == null)
         paletteLocation = defaultPaletteLocation;
@@ -125,14 +128,14 @@ public class WMSController extends AbstractController {
         ColorPalette.loadPalettes(paletteLocationDir);
         logServerStartup.debug("Loaded palettes from " + paletteLocation);
       } else {
-        log.warn("Directory of palette files does not exist or is not a directory.  paletteLocation="+paletteLocation);
-        ColorPalette.loadPalettes( new File(paletteLocation));
+        log.warn("Directory of palette files does not exist or is not a directory.  paletteLocation=" + paletteLocation);
+        ColorPalette.loadPalettes(new File(paletteLocation));
       }
 
       colorRange = new HashMap<String, ColorScaleRange>();
 
       // LOOK Problem - global setting
-      NetcdfDataset.setDefaultEnhanceMode(EnumSet.of(NetcdfDataset.Enhance.ScaleMissingDefer, NetcdfDataset.Enhance.CoordSystems));
+      NetcdfDataset.setDefaultEnhanceMode(enhanceMode);
     }
   }
 
@@ -141,146 +144,133 @@ public class WMSController extends AbstractController {
   }
 
   private TdsContext tdsContext;
+
   public void setTdsContext(TdsContext tdsContext) {
     this.tdsContext = tdsContext;
   }
 
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res)
-          throws ServletException, IOException {
+      throws ServletException, IOException {
     String jspPage = "";
     ModelAndView result = null;
 
-    log.info( UsageLog.setupRequestContext( req ) );
+    log.info(UsageLog.setupRequestContext(req));
 
-    if (allow) {
+    if (!allow) {
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, -1));
+      res.sendError(HttpServletResponse.SC_FORBIDDEN, "WMS service not supported.");
+      return null;
+    }
 
-      // Check if the request is for a remote dataset; if it is only
-      // proceed if the TDS is configured to allow it.
-      String datasetURL = ServletUtil.getParameterIgnoreCase( req, "dataset" );
-      // ToDo LOOK - move this into TdsConfig?
-      if ( datasetURL != null && ! allowRemote )
-      {
-        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ) );
-        res.sendError( HttpServletResponse.SC_FORBIDDEN, "WMS service not supported for remote datasets." );
-        return null;
+    // Check if the request is for a remote dataset; if it is only
+    // proceed if the TDS is configured to allow it.
+    String datasetURL = ServletUtil.getParameterIgnoreCase(req, "dataset");
+    // ToDo LOOK - move this into TdsConfig?
+    if (datasetURL != null && !allowRemote) {
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, -1));
+      res.sendError(HttpServletResponse.SC_FORBIDDEN, "WMS service not supported for remote datasets.");
+      return null;
+    }
+
+    Map<String, Object> model = new HashMap<String, Object>();
+    UsageLogEntry usageLogEntry = new UsageLogEntry(req);
+    GridDataset dataset = null;
+    String errMessage = "";
+
+    RequestParams params = new RequestParams(req.getParameterMap());
+    String versionString = params.getWmsVersion();
+
+    try {
+      if (versionString == null) {
+        //for Google!
+        versionString = "1.1.1";
       }
 
-      Map<String, Object> model = new HashMap<String, Object>();
-      UsageLogEntry usageLogEntry = new UsageLogEntry(req);
-      GridDataset dataset = null;
-      String errMessage = "";
+      String request = params.getMandatoryString("request");
+      dataset = openDataset(req, res);
+      FileBasedResponse response;
 
-      RequestParams params = new RequestParams(req.getParameterMap());
-      String versionString = params.getWmsVersion();
+      log.debug("Processing request: (version): " + versionString);
 
-      try
-      {
-        if ( versionString == null) {
-          //for Google!
-          versionString = "1.1.1";
+      if (request.equalsIgnoreCase("GetCapabilities")) {
+        String service = params.getMandatoryString("service");
+        if (!service.equalsIgnoreCase("WMS")) {
+          throw new WmsException("The SERVICE parameter must be WMS");
         }
 
-        String request = params.getMandatoryString("request");
-        dataset = openDataset(req, res);
-        FileBasedResponse  response;
+        errMessage = "Error encountered while processing GetCapabilities request";
+        long startupDate = this.getApplicationContext().getStartupDate();
+        GetCapabilities getCap = new GetCapabilities(params, dataset, usageLogEntry);
+        getCap.setConfig(config);
+        getCap.setStartupDate(startupDate);
+        response = getCap;
 
-        log.debug("Processing request: (version): " + versionString );
-
-        if (request.equalsIgnoreCase("GetCapabilities")) {
-          String service = params.getMandatoryString( "service" );
-          if ( ! service.equalsIgnoreCase( "WMS" ) )
-          {
-            throw new WmsException( "The SERVICE parameter must be WMS" );
-          }
-
-
-          errMessage = "Error encountered while processing GetCapabilities request";
-          long startupDate =   this.getApplicationContext().getStartupDate();
-          GetCapabilities getCap = new GetCapabilities(params, dataset, usageLogEntry);
-          getCap.setConfig(config);
-          getCap.setStartupDate(startupDate);
-          response = getCap;
-
-
-        } else if (request.equalsIgnoreCase("GetMap")) {
-          errMessage = "Error encountered while processing GetMap request ";
-          WmsGetMap getMapHandler = new WmsGetMap(params, dataset, usageLogEntry);
-          response = getMapHandler;
-          // LOOK how do we close the log messages ?
-          log.info( "GetMap: " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
-        } else if (request.equalsIgnoreCase("GetLegendGraphic")) {
-          errMessage = "Error encountered while processing GetLegendGraphic request ";
-          response = new GetLegendGraphic(params, dataset, usageLogEntry);
-        } else if (request.equalsIgnoreCase("GetFeatureInfo")) {
-          errMessage = "Error encountered while processing GetFeatureInfo request ";
-          response = new GetFeatureInfo(params, dataset, usageLogEntry);
-        } else if (request.equals("GetMetadata")) {
-          errMessage = "Error encountered while processing GetMetadata request ";
-          MetadataResponse metaController = new MetadataResponse(params, dataset, usageLogEntry);
-          metaController.setConfig(config);
-          response = metaController;
-        }
+      } else if (request.equalsIgnoreCase("GetMap")) {
+        errMessage = "Error encountered while processing GetMap request ";
+        response = new WmsGetMap(params, dataset, usageLogEntry);
+        // LOOK how do we close the log messages ?
+        log.info("GetMap: " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
+      } else if (request.equalsIgnoreCase("GetLegendGraphic")) {
+        errMessage = "Error encountered while processing GetLegendGraphic request ";
+        response = new GetLegendGraphic(params, dataset, usageLogEntry);
+      } else if (request.equalsIgnoreCase("GetFeatureInfo")) {
+        errMessage = "Error encountered while processing GetFeatureInfo request ";
+        response = new GetFeatureInfo(params, dataset, usageLogEntry);
+      } else if (request.equals("GetMetadata")) {
+        errMessage = "Error encountered while processing GetMetadata request ";
+        MetadataResponse metaController = new MetadataResponse(params, dataset, usageLogEntry);
+        metaController.setConfig(config);
+        response = metaController;
+      }
 //        else if (request.equals("GetKML")) {
 //
 //        } else if (request.equals("GetKMLRegion")) {
 //
 //        }
-        else
-          throw new WmsException( "Unsupported REQUEST parameter" );
+      else
+        throw new WmsException("Unsupported REQUEST parameter");
 
 
-        result = response.processRequest(res, req);
-        closeDataset(dataset);
-          
-        return result;
-      }
-      catch (MetadataException me) {
-        log.debug("MetadataException: " + me.toString());
-      }
-      catch (WmsException e) {
-        log.debug("WMS Exception! " + errMessage);
-        if ( versionString.equals("1.1.1"))
-        {
-          model.put( "exception", new Wms1_1_1Exception( e));
-          jspPage = "displayWms1_1_1Exception";
-        }
-        else if ( versionString.equals("1.3.0"))
-        {
-          model.put( "exception", e );
-          jspPage = "displayWmsException";
-        }
-        else
-        {
-          model.put( "exception", e );
-          jspPage = "displayWmsException";
-        }
+      result = response.processRequest(res, req);
+      closeDataset(dataset);
 
-        return new ModelAndView(jspPage, model);
-      }
-      catch (java.net.SocketException se) { // Google Earth does thius a lot for some reason
-        log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -10), se);
-        return null;
-      }
-      catch (Throwable t) {
-        log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1), t);
-        res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
-        return null;
+      return result;
+    }
+    catch (MetadataException me) {
+      log.debug("MetadataException: " + me.toString());
+    }
+    catch (WmsException e) {
+      log.debug("WMS Exception! " + errMessage);
+      if (versionString.equals("1.1.1")) {
+        model.put("exception", new Wms1_1_1Exception(e));
+        jspPage = "displayWms1_1_1Exception";
+      } else if (versionString.equals("1.3.0")) {
+        model.put("exception", e);
+        jspPage = "displayWmsException";
+      } else {
+        model.put("exception", e);
+        jspPage = "displayWmsException";
       }
 
-      finally {
-        //if ((result == null) || (result.getModel() == null) || (result.getModel().get("dataset") == null)) {
-          closeDataset(dataset);
-        // } // else use DatasetCloser HandlerInterceptor
-      }
-    } else {
-      // ToDo - Server not configured to support WMS. Should
-      // response code be 404 (Not Found) instead of 403 (Forbidden)?
-      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
-      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, -1));
+      return new ModelAndView(jspPage, model);
+    }
+    catch (java.net.SocketException se) { // Google Earth does thius a lot for some reason
+      log.info("handleRequestInternal(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -10), se);
+      return null;
+    }
+    catch (Throwable t) {
+      log.info("handleRequestInternal(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1), t);
+      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       return null;
     }
 
-    log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -3));
+    finally {
+      //if ((result == null) || (result.getModel() == null) || (result.getModel().get("dataset") == null)) {
+      closeDataset(dataset);
+      // } // else use DatasetCloser HandlerInterceptor
+    }
+
+    log.info("handleRequestInternal(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -3));
     return null;
   }
 
@@ -291,15 +281,14 @@ public class WMSController extends AbstractController {
     String datasetPath = req.getPathInfo();
 
     boolean isRemote = false;
-      
-    if ( datasetPath == null )
-    {
-        datasetPath = ServletUtil.getParameterIgnoreCase( req, "dataset" );
-        isRemote = ( datasetPath != null );
+
+    if (datasetPath == null) {
+      datasetPath = ServletUtil.getParameterIgnoreCase(req, "dataset");
+      isRemote = (datasetPath != null);
     }
 
     try {
-        dataset = isRemote ? ucar.nc2.dt.grid.GridDataset.open( datasetPath ) : DatasetHandler.openGridDataset( req, res, datasetPath );
+      dataset = isRemote ? ucar.nc2.dt.grid.GridDataset.open(datasetPath) : DatasetHandler.openGridDataset(req, res, datasetPath);
     }
     catch (IOException e) {
       log.warn("WMSController: Failed to open dataset <" + datasetPath + ">: " + e.getMessage());
@@ -310,7 +299,7 @@ public class WMSController extends AbstractController {
       log.debug("WMSController: Unknown dataset <" + datasetPath + ">.");
       throw new WmsException("Unknown dataset, \"" + datasetPath + "\".");
     }
-  
+
     log.debug("leave openDataset");
     return dataset;
   }

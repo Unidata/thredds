@@ -65,6 +65,8 @@ public class DatasetHandler {
   // InvDataset (not DatasetScan, DatasetFmrc) that have an NcML element in it. key is the request Path
   static private HashMap<String, InvDatasetImpl> ncmlDatasetHash = new HashMap<String, InvDatasetImpl>();
 
+   // list of dataset sources. note we have to search this each call to getNetcdfFile - most requests (!)
+  // possible change to one global hash table request
   static private ArrayList<DatasetSource> sourceList = new ArrayList<DatasetSource>();
 
   // resource control

@@ -94,8 +94,16 @@ public class TestPointFeatureTypes extends TestCase {
     //testPointDataset(TestAll.cdmUnitTestDir+"point/gempak/19580807_sao.gem", FeatureType.STATION, true);
     // stationAsPoint (GEMPAK IOSP) stn = psuedoStruct, obs = multidim Structure, time(time) as extraJoin
     //testPointDataset(TestAll.cdmUnitTestDir + "formats/gempak/surface/20090521_sao.gem", FeatureType.POINT, true);
-    testPointDataset("C:/data/formats/gempak/surface/20090524_sao.gem", FeatureType.ANY_POINT, true);
-    testLocation("C:/data/formats/gempak/surface/20090524_sao.gem", FeatureType.ANY_POINT, true);
+
+    testGempakAll("C:/data/formats/gempak/surface/20090524_sao.gem");
+    testGempakAll("C:/data/ft/station/09052812.sf");
+  }
+
+    public void testGempakAll(String filename) throws IOException {
+    testPointDataset(filename, FeatureType.ANY_POINT, true);
+    testLocation(filename, FeatureType.ANY_POINT, true);
+    testPointDataset(filename, FeatureType.POINT, true);
+    testLocation(filename, FeatureType.POINT, true);
   }
 
 
@@ -346,16 +354,29 @@ public class TestPointFeatureTypes extends TestCase {
 
     // check uniqueness
     Map<String, StationTimeSeriesFeature> stns = new HashMap<String, StationTimeSeriesFeature>(5000);
+    Map<MyLocation, StationTimeSeriesFeature> locs = new HashMap<MyLocation, StationTimeSeriesFeature>(5000);
+
     sfc.resetIteration();
     while (sfc.hasNext()) {
       StationTimeSeriesFeature sf = sfc.next();
       StationTimeSeriesFeature other = stns.get(sf.getName());
       if (other != null) {
-        System.out.printf("duplicate = %s %n", sf);
+        System.out.printf("duplicate name = %s %n", sf);
         System.out.printf(" of = %s %n", other);
       } else
         stns.put(sf.getName(), sf);
+
+      MyLocation loc = new MyLocation(sf);
+      StationTimeSeriesFeature already = locs.get(loc);
+      if (already != null) {
+        System.out.printf("duplicate location = %s %n", sf);
+        System.out.printf(" of = %s %n", already);
+      } else
+        locs.put(loc, sf);
+
     }
+
+    System.out.printf(" unique locs = %d %n", locs.size());
     System.out.printf(" unique stns = %d %n", stns.size());
 
      return stns.size();
@@ -412,15 +433,19 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   int count(PointFeatureCollection pfc) throws IOException {
-
+    int count = 0;
+    Set<PointFeature> points = new HashSet<PointFeature>(80000);
     Set<MyLocation> locs = new HashSet<MyLocation>(80000);
     pfc.resetIteration();
     while (pfc.hasNext()) {
       PointFeature pf = pfc.next();
       MyLocation loc = new MyLocation(pf.getLocation());
       locs.add(loc);
+      //points.add(pf);
+      count++;
     }
 
+    System.out.printf("Count= %d Unique points = %d %n", count, points.size());
     return locs.size();
 
     //The problem is that all the locations are coming up with the same value.  This:

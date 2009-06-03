@@ -62,10 +62,16 @@
  private List&lt;PathAliasReplacement&gt; dataRootLocAliasExpanders = Collections.emptyList();
 </pre>
 <p><em>  Controlled by a singleton</em></p>
+<h3>DataRoot</h3>
+<pre>  public class DataRoot {<br />    String path;         // match this path<br />    String dirLocation; // to this directory. where to find the file<br />    InvDatasetScan scan; // the InvDatasetScan that created this (may be null). needed to add metadata to dataset<br />    InvDatasetFmrc fmrc; // the InvDatasetFmrc that created this (may be null)
+  }<br />
+</pre>
+<p><em>These are stored in the pathMatcher object in DataRootHandler in a  TreeMap</em></p>
 <h3><br>
   DatasetHandler</h3>
 <pre> // InvDataset (not DatasetScan, DatasetFmrc) that have an NcML element in it. key is the request Path<br /> static private HashMap&lt;String, InvDatasetImpl&gt; <strong>ncmlDatasetHash</strong> = new HashMap&lt;String, InvDatasetImpl&gt;();</pre>
-<pre> static private ArrayList&lt;DatasetSource&gt; <strong>sourceList</strong> = new ArrayList&lt;DatasetSource&gt;();</pre>
+<pre> // list of dataset sources. note we have to search this each time (!)
+static private ArrayList&lt;DatasetSource&gt; <strong>sourceList</strong> = new ArrayList&lt;DatasetSource&gt;();</pre>
 <pre> // resource control
  static private HashMap&lt;String, String&gt; <strong>resourceControlHash</strong> = new HashMap&lt;String, String&gt;(); // path, restrictAccess string for datasets
  static private volatile PathMatcher <strong>resourceControlMatcher</strong> = new PathMatcher(); // path, restrictAccess string for datasetScan
@@ -73,6 +79,15 @@
 </pre>
 <p><em><br>
   Note these are all static. If not, we could build and switch atomically.</em></p>
+<hr />
+<h2>possible changes</h2>
+<p> use one global hash table that has all possible modification/annotation needed. use ehcache  ??</p>
+<ul>
+  <li>NcML</li>
+  <li>resource control</li>
+  <li>datasetSource<br />
+  </li>
+</ul>
 <p> </p>
 </body>
 </html>

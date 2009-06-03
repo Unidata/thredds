@@ -40,7 +40,7 @@ import ucar.ma2.StructureData;
 import java.io.IOException;
 
 /**
- * Join data from a row of a Structure, whose index is passed in as recnum[0] mod dimLen
+ * Join data from a row of a Structure, whose index is passed in as recnum[0] / dimLen
  *
  * @author caron
  * @since May 29, 2009
@@ -67,7 +67,7 @@ public class JoinMuiltdimStructure implements Join {
   }
 
   public StructureData getJoinData(Cursor cursor) {
-    int recnum = cursor.recnum[0] % dimLength;
+    int recnum = cursor.recnum[0] / dimLength;
     return parentData.getStructureData(recnum);
   }
 

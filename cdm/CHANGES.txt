@@ -6,7 +6,8 @@ Changes in version 4.0
 
  Release Details:
   45:
-   GEMPAK bug workaround
+   NetcdfDataset.setDefaultEnhanceMode(Set<Enhance> mode);
+   GEMPAK bug workaround (from Don)
    Nexrad2,3 coord caching
    COARDSConvention: withdraw "SimpleUnit.isCompatible("m", unit), must have "positive" attibute
    ncstream uses URLEncode for passing UTF-8 var names.

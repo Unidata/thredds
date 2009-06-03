@@ -93,4 +93,14 @@ public abstract class PointFeatureImpl implements PointFeature, Comparable<Point
     if (obsTime > other.getObservationTime()) return 1;
     return 0;
   }
+
+  @Override
+  public String toString() {
+    return "PointFeatureImpl{" +
+        "location=" + location +
+        ", obsTime=" + obsTime +
+        ", nomTime=" + nomTime +
+        ", timeUnit=" + timeUnit +
+        '}';
+  }
 }

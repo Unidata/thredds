@@ -163,7 +163,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @param mode the default set of Enhancements for open and acquire factory methods
    */
-  static public void setDefaultEnhanceMode(EnumSet<Enhance> mode) {
+  static public void setDefaultEnhanceMode(Set<Enhance> mode) {
     defaultEnhanceMode = Collections.unmodifiableSet( mode);
     coordSysEnhanceMode = null;
   }

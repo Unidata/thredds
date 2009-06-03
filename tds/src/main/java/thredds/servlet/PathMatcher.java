@@ -45,10 +45,10 @@ import java.util.*;
  */
 public class PathMatcher {
 
-  private final TreeMap treeMap;
+  private final TreeMap<String, Object> treeMap;
 
   public PathMatcher() {
-    treeMap = new TreeMap( new PathComparator());
+    treeMap = new TreeMap<String, Object>( new PathComparator());
   }
 
   /**
@@ -83,17 +83,15 @@ public class PathMatcher {
    * @return the value whose key is the longest that matches path, or null if none
    */
   public Object match( String path) {
-    SortedMap tail = treeMap.tailMap( path);
+    SortedMap<String, Object> tail = treeMap.tailMap( path);
     if (tail.isEmpty()) return null;
-    String after = (String) tail.firstKey();
+    String after = tail.firstKey();
     //System.out.println("  "+path+"; after="+afterPath);
     if (path.startsWith( after)) // common case
       return treeMap.get( after);
 
     // have to check more, until no common starting chars
-    Iterator iter = tail.keySet().iterator();
-    while (iter.hasNext()) {
-      String key =  (String) iter.next();
+    for (String key : tail.keySet()) {
       if (path.startsWith(key))
         return treeMap.get(key);
       // terminate when theres no match at all.
@@ -105,14 +103,15 @@ public class PathMatcher {
   }
 
 
-  private class PathComparator implements Comparator {
-    public int compare(Object o1, Object o2) {
-      int compare = -1 * o1.toString().compareTo( o2.toString()); // reverse sort
-      if (debug) System.out.println(" compare "+o1+" to "+o2+" = "+compare);
+  private class PathComparator implements Comparator<String> {
+    public int compare(String s1, String s2) {
+      int compare = s2.compareTo( s1); // reverse sort
+      if (debug) System.out.println(" compare "+s1+" to "+s2+" = "+compare);
       return compare;
     }
   }
 
+  //////////////////////////////////////////////////////////////////////////////
   // testing
   private void doit( String s) {
     System.out.println(s+" == "+match(s));
