@@ -58,7 +58,6 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 
 /**
@@ -200,11 +199,6 @@ public class GempakGridServiceProvider extends GridServiceProvider {
                                + " <GEMPAK Grid File> <NetCDF output file>");
             System.exit(0);
         }
-
-        // Get UTC TimeZone
-        // A list of available ID's show that UTC has ID = 127
-        TimeZone tz = TimeZone.getTimeZone("127");
-        TimeZone.setDefault(tz);
 
         // Say hello
         Date now = Calendar.getInstance().getTime();
