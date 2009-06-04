@@ -64,6 +64,7 @@
 <p><em>  Controlled by a singleton</em></p>
 <h3>DataRoot</h3>
 <pre>  public class DataRoot {<br />    String path;         // match this path<br />    String dirLocation; // to this directory. where to find the file<br />    InvDatasetScan scan; // the InvDatasetScan that created this (may be null). needed to add metadata to dataset<br />    InvDatasetFmrc fmrc; // the InvDatasetFmrc that created this (may be null)
+    InvDatasetScan datasetRootProxy; // ??<br />
   }<br />
 </pre>
 <p><em>These are stored in the pathMatcher object in DataRootHandler in a  TreeMap</em></p>
@@ -85,7 +86,14 @@ static private ArrayList&lt;DatasetSource&gt; <strong>sourceList</strong> = new 
 <ul>
   <li>NcML</li>
   <li>resource control</li>
-  <li>datasetSource<br />
+  <li>datasetSource</li>
+  <li></li>
+</ul>
+<h2>features</h2>
+<ul>
+  <li>
+    <p>have global metadata - added to all catalogs, like OCGMeta in WMS<br />
+    </p>
   </li>
 </ul>
 <p> </p>

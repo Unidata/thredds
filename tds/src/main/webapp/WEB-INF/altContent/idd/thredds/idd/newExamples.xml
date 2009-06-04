@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tdsConfig xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+           xmlns:xlink="http://www.w3.org/1999/xlink" name="THREDDS-IDD Data Server - Station Data"
+           version="2">
+
+  <service name="all" serviceType="Compound" base="">
+    <service name="dods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
+    <service name="fileServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
+    <service name="cdm" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
+  </service>
+
+  <dataset name="Station Data">
+
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+      <authority>edu.ucar.unidata</authority>
+      <dataType>Station</dataType>
+      <dataFormat>NetCDF</dataFormat>
+      <documentation type="rights">Freely available</documentation>
+      <creator>
+        <name vocabulary="DIF">DOC/NOAA/NWS</name>
+        <contact url="http://www.noaa.gov/" email="answers@noaa.gov"/>
+      </creator>
+      <publisher>
+        <name vocabulary="DIF">UCAR/UNIDATA</name>
+        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
+      </publisher>
+    </metadata>
+
+    <dataset name="Metars">
+
+      <metadata inherited="true">
+        <documentation type="summary">Metars: hourly surface weather observations</documentation>
+        <documentation xlink:href="http://metar.noaa.gov/" xlink:title="NWS/NOAA information"/>
+        <keyword>metar</keyword>
+        <keyword>surface observations</keyword>
+      </metadata>
+
+      <datasetCollection name="Metar Station Data" featureType="Station" harvest="true" path="station/metar"
+                         location="/data/ldm/pub/decoded/netcdf/surface/metar/*.nc"
+                         dateFormatMark="Surface_METAR_#yyyyMMdd_HHmm">
+
+        <metadata>
+          <dataFormat>NetCDF</dataFormat>
+
+          <geospatialCoverage>
+            <northsouth>
+              <start>-90.0</start>
+              <size>180.0</size>
+              <units>degrees_north</units>
+            </northsouth>
+            <eastwest>
+              <start>0.0</start>
+              <size>360.0</size>
+              <units>degrees_east</units>
+            </eastwest>
+          </geospatialCoverage>
+        </metadata>
+
+      </datasetCollection>
+
+      <datasetCollection name="Realtime surface Data" featureType="Station" harvest="true"
+                         path="gempak/surface" location="/data/ldm/gempak/surface/*.gem" dateFormatMark="#yyyyMMdd">
+
+        <dataFormat>GEMPAK</dataFormat>
+
+      </datasetCollection>
+    </dataset>
+
+    <dataset name="NOAA Profiler Network">
+      <metadata inherited="true">
+        <documentation type="summary">The NOAA Profiler Network (NPN), consisting of 35 unmanned Doppler Radar sites
+          located in 18 central US states and Alaska, provides vertical wind profile data. Some of the sites are also
+          equipped with RASS temperature profilers.
+        </documentation>
+        <documentation xlink:href="http://www.arm.gov/xds/static/wpdn.stm" xlink:title="NWS/NOAA information"/>
+        <keyword>profiler</keyword>
+        <keyword>WPDN</keyword>
+      </metadata>
+
+      <dataset name="Wind Profilers">
+
+        <datasetScan name="1 hour" collectionType="TimeSeries" harvest="true" ID="NWS/NPN/1hour"
+                     path="station/profiler/wind/1hr" location="/data/ldm/pub/native/profiler/wind/01hr/">
+          <documentation type="summary">Hourly average data</documentation>
+          <filter>
+            <include wildcard="*.nc" atomic="true" collection="false"/>
+          </filter>
+          <addID/>
+          <sort>
+            <lexigraphicByName increasing="false"/>
+          </sort>
+          <addLatest/>
+          <addDatasetSize/>
+          <addTimeCoverage
+                  datasetNameMatchPattern="PROFILER_wind_01hr_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nc$"
+                  startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="1 hour"/>
+        </datasetScan>
+
+        <datasetCollection name="6 minute" featureType="STATION_PROFILE" harvest="true"
+                           path="station/profiler/wind/06min"
+                           location="/data/ldm/pub/native/profiler/wind/06min/**/*.nc">
+          <documentation type="summary">Six minute average data.</documentation>
+        </datasetCollection>
+
+        <datasetCollection name="1 hour" featureType="STATION_PROFILE" harvest="true"
+                           path="station/profiler/wind/1hr"
+                           location="/data/ldm/pub/native/profiler/wind/01hr/**/*.nc">
+          <documentation type="summary">Hourly average data</documentation>
+        </datasetCollection>
+
+      </dataset>
+
+      <dataset name="RASS (Radio Acoustic Sounding System)">
+        <metadata inherited="true">
+          <documentation type="summary">Eleven NOAA Profiler sites equipped with RASS (Radio Acoustic Sounding System),
+            which measure vertical temperature profiles.
+          </documentation>
+        </metadata>
+
+        <datasetCollection name="6 minute" featureType="ProfileTimeSeries" harvest="true" ID="NWS/RASS/6min"
+                           path="station/profiler/RASS/06min" location="/data/ldm/pub/native/profiler/RASS/06min/*.nc">
+          <documentation type="summary">Six minute average data.</documentation>
+        </datasetCollection>
+
+        <datasetCollection name="1 hour" featureType="ProfileTimeSeries" harvest="true" ID="NWS/RASS/1hour"
+                           path="station/profiler/RASS/1hr" location="/data/ldm/pub/native/profiler/RASS/01hr/*.nc">
+          <documentation type="summary">Hourly average data</documentation>
+        </datasetCollection>
+
+      </dataset>
+    </dataset>
+
+  </dataset>
+</tdsConfig>
+
