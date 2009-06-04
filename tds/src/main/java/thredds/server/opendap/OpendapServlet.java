@@ -433,6 +433,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
       OutputStream out = new BufferedOutputStream(response.getOutputStream());
 
       ServerDDS myDDS = ds.getDDS();
+      myDDS.ingestDAS( ds.getDAS());
 
       if (rs.getConstraintExpression().equals("")) { // No Constraint Expression?
         // Send the whole DDS
