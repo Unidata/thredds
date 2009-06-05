@@ -211,7 +211,7 @@ public class CdmValidatorContext
     }
 
     // read in persistent user-defined params from threddsConfig.xml
-    ThreddsConfig.init( servletContext, configFile.getPath() );
+    ThreddsConfig.init( configFile.getPath() );
 
     this.configSource = contentDirSource;
 
