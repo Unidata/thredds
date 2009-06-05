@@ -42,6 +42,7 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.ft.point.standard.*;
 import ucar.nc2.*;
 import ucar.ma2.Array;
+import ucar.ma2.DataType;
 
 import java.util.*;
 import java.io.IOException;
@@ -284,7 +285,8 @@ public class GempakCdm extends TableConfigurerImpl {
 
     List<Variable> vars = new ArrayList<Variable>(30);
     for (Variable v : ds.getVariables()) {
-      if ((v.getRank() == 1) && (v.getDimension(0) == stationDim))
+      if ((v.getDimension(0) == stationDim) &&
+          ((v.getRank() == 1) || ((v.getRank() == 2) && (v.getDataType() == DataType.CHAR)))) 
           vars.add(v);
     }
 
