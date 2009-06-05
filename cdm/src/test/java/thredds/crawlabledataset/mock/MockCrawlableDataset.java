@@ -52,9 +52,17 @@ public class MockCrawlableDataset implements CrawlableDataset
 
   public MockCrawlableDataset( String path, boolean isCollection )
   {
-    if ( path == null || path.equals( "" ) )
+    this( new MockCrDsInfo( path, true, isCollection,  null, -1));
+  }
+
+  public MockCrawlableDataset( MockCrDsInfo crDsInfo )
+  {
+    if ( crDsInfo == null )
+      throw new IllegalArgumentException( "CrawlableDataset info must not be null.");
+
+    if ( crDsInfo.getPath() == null || crDsInfo.getPath().equals( "" ) )
       throw new IllegalArgumentException( "Path must not be null or empty." );
-    this.path = path;
+    this.path = crDsInfo.getPath();
 
     lastPathSegmentSeparatorIndx = this.path.lastIndexOf( "/" );
     if ( lastPathSegmentSeparatorIndx == -1 )
@@ -64,13 +72,15 @@ public class MockCrawlableDataset implements CrawlableDataset
       this.name = this.path.substring( lastPathSegmentSeparatorIndx + 1 );
       if ( this.name.equals( "" ) )
         throw new IllegalArgumentException( "Path [" + path + "] must not end with a slash (\"/\")" );
-      if ( ! this.path.endsWith( "/" + this.name ) )
+      if ( !this.path.endsWith( "/" + this.name ) )
         throw new IllegalArgumentException( "Path [" + this.path + "] must end with name [" + this.name + "]." );
     }
 
-    this.isCollection = isCollection;
+    this.exists = crDsInfo.isExists();
+    this.isCollection = crDsInfo.isCollection();
+    this.lastModified = crDsInfo.getLastModified();
+    this.length = crDsInfo.getLength();
   }
-
 
   public Object getConfigObject()
   {

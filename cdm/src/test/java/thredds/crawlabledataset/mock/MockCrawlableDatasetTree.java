@@ -38,6 +38,7 @@ import thredds.crawlabledataset.CrawlableDatasetFilter;
 import java.util.List;
 import java.util.Date;
 import java.util.Map;
+import java.util.Collections;
 import java.io.IOException;
 
 /**
@@ -49,7 +50,7 @@ import java.io.IOException;
 public class MockCrawlableDatasetTree implements CrawlableDataset
 {
   private final MockCrawlableDataset delegate;
-  private final Map<String,Boolean> crDsTree;
+  private final Map<String,MockCrDsInfo> crDsTree;
 
 //  private final String[] crDsTree =
 //          {
@@ -75,17 +76,24 @@ public class MockCrawlableDatasetTree implements CrawlableDataset
 //  private final boolean isCollection;
 
 
-  public MockCrawlableDatasetTree( Map<String,Boolean> crDsTree )
+  public MockCrawlableDatasetTree( String path, Map<String,MockCrDsInfo> crDsTree )
   {
     if ( crDsTree == null || crDsTree.isEmpty() )
       throw new IllegalArgumentException( "CrawlableDataset tree must not be null or empty.");
 
-    String path = crDsTree.keySet().iterator().next();
-    this.delegate = new MockCrawlableDataset( path, crDsTree.get( path ));
-    //
-//    this.delegate.setExists( true );
-//    this.delegate.setLength( -1 );
-//    this.delegate.setLastModified( null );
+    if ( path == null )
+    {
+      path = crDsTree.keySet().iterator().next();
+      this.delegate = new MockCrawlableDataset( crDsTree.get( path ) );
+    }
+    else
+    {
+      if ( crDsTree.containsKey( path ))
+        this.delegate = new MockCrawlableDataset( crDsTree.get( path));
+      else
+        this.delegate = new MockCrawlableDataset( new MockCrDsInfo( path, false, false, null, -1 ));
+    }
+
     this.crDsTree = crDsTree;
   }
 
@@ -106,6 +114,15 @@ public class MockCrawlableDatasetTree implements CrawlableDataset
 
   public CrawlableDataset getParentDataset()
   {
+    if ( ! this.delegate.exists() )
+      return null;
+
+    CrawlableDataset possibleParent = this.delegate.getParentDataset();
+    if ( possibleParent == null )
+      return null;
+
+    if ( crDsTree.containsKey( possibleParent.getPath() ))
+      return new MockCrawlableDatasetTree( possibleParent.getPath(), this.crDsTree );
     // ToDo
     return this.delegate.getParentDataset();
   }
@@ -122,18 +139,27 @@ public class MockCrawlableDatasetTree implements CrawlableDataset
 
   public CrawlableDataset getDescendant( String relativePath )
   {
+    if ( ! this.delegate.exists())
+      return null;
+
     // ToDo
     return this.delegate.getDescendant( relativePath );
   }
 
   public List<CrawlableDataset> listDatasets() throws IOException
   {
+    if ( ! this.delegate.exists() )
+      return Collections.emptyList();
+
     // ToDo
     return null;
   }
 
   public List<CrawlableDataset> listDatasets( CrawlableDatasetFilter filter ) throws IOException
   {
+    if ( ! this.delegate.exists() )
+      return Collections.emptyList();
+
     // ToDo
     return null;
   }
