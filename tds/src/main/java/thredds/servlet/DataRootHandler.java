@@ -247,6 +247,10 @@ public class DataRootHandler {
 
     DatasetHandler.reinit(); // NcML datasets
 
+    initCatalogs();
+
+    isReinit = false;
+
     logCatalogInit.info("\n**************************************\n**************************************\nCatalog reinit\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]");
   }
 
@@ -1599,7 +1603,6 @@ public class DataRootHandler {
     act = new DebugHandler.Action("reinit", "Reinitialize") {
       public void doAction(DebugHandler.Event e) {
         try {
-          DatasetHandler.reinit();
           singleton.reinit();
           e.pw.println( "reinit ok");
 

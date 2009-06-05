@@ -288,8 +288,8 @@ public class PointFeatureDatasetViewer extends JPanel {
     FeatureType ftype = fcb.fc.getCollectionFeatureType();
 
     if (ftype == FeatureType.POINT) {
-      PointFeatureCollection pfc = (PointFeatureCollection) fcb.fc;
-      setPointCollection(pfc);
+      //PointFeatureCollection pfc = (PointFeatureCollection) fcb.fc;
+      //setPointCollection(pfc);
       changingPane.add( stnTable, BorderLayout.CENTER);
 
     } else if (ftype == FeatureType.PROFILE) {
