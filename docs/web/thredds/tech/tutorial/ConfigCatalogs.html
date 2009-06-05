@@ -83,7 +83,7 @@ read:</p>
   </li>
   <li>Click on the "Show static catalogs" link - <a href="https://localhost:8443/thredds/debug?catalogs/showStatic"> https://localhost:8443/thredds/debug?catalogs/showStatic</a>:
     <br><br>
-    <div style="margin-left: 40px;"><img style="border: 0 solid ; width: 428px; height: 406px;" alt="List of Static Catalogs" src="TdsRemoteManager-staticCatalogs.png"></div>
+    <div style="margin-left: 40px;"><img style="border: 0pt solid ; width: 428px; height: 406px;" alt="List of Static Catalogs" src="TdsRemoteManager-staticCatalogs.png"></div>
     <br>&nbsp;
   </li>
 </ul>
@@ -418,8 +418,7 @@ attribute value is used for a regular expression match on the dataset
 name. If a match is found, a <strong>timeCoverage</strong>
 element is added to the dataset. The match pattern should include <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/Pattern.html#cg">capturing
 groups</a> which allow the match to save substrings from the
-dataset name.<br>
-</li>
+dataset name.</li><ul><li>A new (2009-05-06, TDS 4.0) variation is the addition of the <code>datasetPathMatchPattern</code> attribute. It can be used instead of the <code>datasetNameMatchPattern</code> attribute and changes the target of the match from the dataset name to the dataset path. If both attributes are used, the <code>datasetNameMatchPattern</code> attribute takes precedence.</li></ul>
 <li>The <code>startTimeSubstitutionPattern</code>
 attribute value has all capture group references ("$n") replaced by the
 corresponding substring that was captured during the match. The

@@ -7,8 +7,7 @@
 
   
   
-  <meta name="Author" content="John Caron"><title>Server-side InvCatalog Spec v1.0.2</title>
-</head>
+  <meta name="Author" content="John Caron"><title>Server-side InvCatalog Spec v1.0.2</title></head>
 <body>
 <div class="head"> 
   <h1> <img alt="THREDDS" src="../../images/THREDDSlogo.jpg" height="54" width="67"> Server-side InvCatalog Specification, Version 1.0.2<br>
@@ -297,7 +296,7 @@ specified by the <i>lastModifedLimit</i> attribute. It must contain all the attr
 <h3><a name="addTimeCoverage_Element"></a>addTimeCoverage Element<br>
 </h3>
 
-<pre>  &lt;xsd:element name="addTimeCoverage"&gt;<br>    &lt;xsd:complexType&gt;<br>      &lt;xsd:attribute name="datasetNameMatchPattern" type="xsd:string"/&gt;<br>      &lt;xsd:attribute name="startTimeSubstitutionPattern" type="xsd:string"/&gt;<br>      &lt;xsd:attribute name="duration" type="xsd:string"/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;<br></pre>
+<pre>  &lt;xsd:element name="addTimeCoverage"&gt;<br>    &lt;xsd:complexType&gt;<br>      &lt;xsd:attribute name="datasetNameMatchPattern" type="xsd:string"/&gt;<br>      &lt;xsd:attribute name="datasetPathMatchPattern" type="xsd:string"/&gt;<br>      &lt;xsd:attribute name="startTimeSubstitutionPattern" type="xsd:string"/&gt;<br>      &lt;xsd:attribute name="duration" type="xsd:string"/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;<br></pre>
 
 
 <p>The <i>addTimeCoverage</i> element indicatest that a THREDDS <i>timeCoverage</i> element should be added to each atomic dataset cataloged by the containing <i>datasetScan</i> element and describes how to determine the time coverage for each datasets in the collection.<br>
@@ -305,7 +304,11 @@ specified by the <i>lastModifedLimit</i> attribute. It must contain all the attr
 
 <p>Currently, the <i>addTimeCoverage</i> element can only describe one method for determining the time coverage of a dataset. The&nbsp; <i>datasetNameMatchPattern</i>
 attribute is used in a regular expression match on the dataset name. If
-the match succeeds, a capturing group replacement is performed on the <i>startTimeSubstitutionPattern</i> attribute and the result is the start time string (see the <i>namer</i> element description, <a href="#namer_Element">above</a>, for more on regular expressions and capturing groups). The time coverage duration is given by the <i>duration</i> attribute.<br>
+the match succeeds, a capturing group replacement is performed on the <i>startTimeSubstitutionPattern</i> attribute and the result is the start time string (see the <i>namer</i> element description, <a href="#namer_Element">above</a>, for more on regular expressions and capturing groups). The time coverage duration is given by the <i>duration</i> attribute.</p><p>The <span style="font-style: italic;">datasetPathMatchPattern</span>
+attribute was added (2009-06-05, TDS 4.0) to allow matching on the
+entire dataset path instead of just the dataset name. The two match
+pattern attributes should not be used together; if they are both given
+the <span style="font-style: italic;">datasetNameMatchPattern</span> will be used.<br>
 </p>
 
 <p>Example:<br>
@@ -364,37 +367,26 @@ from the datasetRoot location.<br>
 <h3><a name="datasetFmrc_Element"></a>datasetFmrc Element<br>
 </h3>
 <pre>
-
 &lt;!-- Define a Forecast Model Run Collection dataset --&gt;
-&lt;xsd:element name=&quot;datasetFmrc&quot; substitutionGroup=&quot;dataset&quot;&gt;
+&lt;xsd:element name="datasetFmrc" substitutionGroup="dataset"&gt;
   &lt;xsd:complexType&gt;
     &lt;xsd:complexContent&gt;
-      &lt;xsd:extension base=&quot;DatasetType&quot;&gt;
+      &lt;xsd:extension base="DatasetType"&gt;
          &lt;xsd:sequence&gt;
-          &lt;xsd:element ref=&quot;fmrcInventory&quot; minOccurs=&quot;0&quot;/&gt;
-          &lt;xsd:element ref=&quot;addTimeCoverage&quot; minOccurs=&quot;0&quot;/&gt;
+          &lt;xsd:element ref="fmrcInventory" minOccurs="0"/&gt;
+          &lt;xsd:element ref="addTimeCoverage" minOccurs="0"/&gt;
         &lt;/xsd:sequence&gt;
-        &lt;xsd:attribute name=&quot;path&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
-        &lt;xsd:attribute name=&quot;runsOnly&quot; type=&quot;xsd:boolean&quot; /&gt;
+        &lt;xsd:attribute name="path" type="xsd:string" use="required"/&gt;
+        &lt;xsd:attribute name="runsOnly" type="xsd:boolean" /&gt;
       &lt;/xsd:extension&gt;
     &lt;/xsd:complexContent&gt;
   &lt;/xsd:complexType&gt;
 &lt;/xsd:element&gt;</pre>
-<pre>&lt;xsd:element name=&quot;fmrcInventory&quot;&gt;
-  &lt;xsd:complexType&gt;
-    &lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
-    &lt;xsd:attribute name=&quot;suffix&quot; type=&quot;xsd:string&quot;/&gt;
-    &lt;xsd:attribute name=&quot;fmrcDefinition&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
-    &lt;xsd:attribute name=&quot;olderThan&quot; type=&quot;xsd:string&quot; /&gt;
-  &lt;/xsd:complexType&gt;
-&lt;/xsd:element&gt;</pre>
+<pre>&lt;xsd:element name="fmrcInventory"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:attribute name="location" type="xsd:string" use="required"/&gt;<br>    &lt;xsd:attribute name="suffix" type="xsd:string"/&gt;<br>    &lt;xsd:attribute name="fmrcDefinition" type="xsd:string" use="required"/&gt;<br>    &lt;xsd:attribute name="olderThan" type="xsd:string" /&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;</pre>
 <p>A <strong>datasetFmrc</strong> is a kind of dataset, and so allows all of the attributes and child elements of the dataset element. </p>
 <h4>Example<br>
 </h4>
-<pre>  &lt;datasetFmrc name=&quot;SABGOM Forecast Model Run Collection&quot; <strong>path</strong>=&quot;fmrc/sabgom&quot;&gt;
-<br>    &lt;metadata inherited=&quot;true&quot;&gt;<br>      &lt;serviceName&gt;dapService&lt;/serviceName&gt;<br>    &lt;/metadata&gt;
-<br>	 &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br>      &lt;aggregation dimName=&quot;runtime&quot; type=&quot;<strong>forecastModelRunCollection</strong>&quot; recheckEvery=&quot;10min&quot;&gt;<br>        &lt;scan location=&quot;D:/test/signell/big/&quot; suffix=&quot;.nc&quot; dateFormatMark=&quot;his_#yyyyMMdd&quot; olderThan=&quot;5 min&quot;/&gt;<br>      &lt;/aggregation&gt;<br>    &lt;/netcdf&gt;
-<br>  &lt;/datasetFmrc&gt;<br></pre>
+<pre>  &lt;datasetFmrc name="SABGOM Forecast Model Run Collection" <strong>path</strong>="fmrc/sabgom"&gt;<br><br>    &lt;metadata inherited="true"&gt;<br>      &lt;serviceName&gt;dapService&lt;/serviceName&gt;<br>    &lt;/metadata&gt;<br><br>	 &lt;netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"&gt;<br>      &lt;aggregation dimName="runtime" type="<strong>forecastModelRunCollection</strong>" recheckEvery="10min"&gt;<br>        &lt;scan location="D:/test/signell/big/" suffix=".nc" dateFormatMark="his_#yyyyMMdd" olderThan="5 min"/&gt;<br>      &lt;/aggregation&gt;<br>    &lt;/netcdf&gt;<br><br>  &lt;/datasetFmrc&gt;<br></pre>
 <p><br>
   Like <em>datasetScan</em>, the <i>path</i> attribute is used to define the URL path that will map to to a given datasetFmrc. </p>
 <hr>

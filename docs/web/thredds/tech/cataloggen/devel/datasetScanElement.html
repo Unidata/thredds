@@ -184,7 +184,10 @@ dataset name. Any capturing groups from the match are used for
 capturing group replacement in the <strong>startTimeSubstitutionPattern</strong>;
 the resulting string is used as the start time in the timeCoverage
 metadata element. The value of the duration attribute is used as the
-duration in the timeCoverage metadata element.<br>
+duration in the timeCoverage metadata element.</p><p>The&nbsp;new (2009-06-05, TDS 4.0) <strong>datasetPathMatchPattern</strong> attribute is an alternate to the <strong>datasetNameMatchPattern</strong>
+attribute. When the new attribute is used, the match pattern is applied
+to the dataset path instead of the dataset name. If both attributes are
+given, the <strong>datasetNameMatchPattern</strong> takes precedence. <br>
 </p>
 <h2><a name="datasetEnhancerImpl_element"></a>datasetEnhancerImpl element</h2>
 <pre>&lt;datasetEnhancerImpl className="my.package.MyEnhancer"&gt;<br>  &lt;!-- Any single XML element may be placed here. The element will be<br>      &nbsp;passed to the specified enhancer implementation as a JDOM Element<br>    &nbsp;&nbsp; in the public constructor with a single Object argument (the<br>       Object argument is a configuration object. --&gt;<br>&lt;/datasetEnhancerImpl&gt;<br></pre>

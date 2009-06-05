@@ -284,6 +284,7 @@
   <xsd:element name="addTimeCoverage">
     <xsd:complexType>
       <xsd:attribute name="datasetNameMatchPattern" type="xsd:string"/>
+      <xsd:attribute name="datasetPathMatchPattern" type="xsd:string"/>
       <xsd:attribute name="startTimeSubstitutionPattern" type="xsd:string"/>
       <xsd:attribute name="duration" type="xsd:string"/>
     </xsd:complexType>
