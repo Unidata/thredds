@@ -60,7 +60,7 @@
                   </updown>
               </geospatialCoverage>
           </metadata>
-          <datasetScan ID="NCEP/SREF/CONUS_40km/ensprod_biasc" name="Bias-corrected mean and spread products"
+          <datasetScan ID="NCEP/SREF/CONUS_40km/ensprod_biasc" name="Bias-corrected mean, spread, and probability products"
                        path="model/NCEP/SREF/CONUS_40km/ensprod_biasc"
                        location="/data/ldm/pub/native/grid/NCEP/SREF/CONUS_40km/ensprod_biasc"
                        collectionType="ForecastModelRuns" harvest="true">
@@ -71,48 +71,48 @@
                   <variables vocabulary="GRIB-2">
                       <variable name="Geopotential_height"
                                 vocabulary_name="Meteorological_products / Mass / Geopotential_height" units="gpm"
-                                vocabulary_id="2,0,3,5">Geopotential_height_stdDev21 @ pressure
+                                vocabulary_id="2,0,3,5">Geopotential_height_stdDev @ pressure
                       </variable>
-                      <variable name="Geopotential_height_stdDev21_pressure_layer"
+                      <variable name="Geopotential_height_stdDev_pressure_layer"
                                 vocabulary_name="Meteorological_products / Mass / Geopotential_height" units="gpm"
-                                vocabulary_id="2,0,3,5">Geopotential_height_stdDev21 @ pressure_layer
+                                vocabulary_id="2,0,3,5">Geopotential_height_stdDev @ pressure_layer
                       </variable>
-                      <variable name="Geopotential_height_weightedMean21_pressure"
+                      <variable name="Geopotential_height_weightedMean_pressure"
                                 vocabulary_name="Meteorological_products / Mass / Geopotential_height" units="gpm"
-                                vocabulary_id="2,0,3,5">Geopotential_height_weightedMean21 @ pressure
+                                vocabulary_id="2,0,3,5">Geopotential_height_weightedMean @ pressure
                       </variable>
 
-                      <variable name="Geopotential_height_weightedMean21_pressure_layer"
+                      <variable name="Geopotential_height_weightedMean_pressure_layer"
                                 vocabulary_name="Meteorological_products / Mass / Geopotential_height" units="gpm"
-                                vocabulary_id="2,0,3,5">Geopotential_height_weightedMean21 @ pressure_layer
+                                vocabulary_id="2,0,3,5">Geopotential_height_weightedMean @ pressure_layer
                       </variable>
                       <variable name="Pressure_reduced_to_MSL"
                                 vocabulary_name="Meteorological_products / Mass / Pressure_reduced_to_MSL" units="Pa"
-                                vocabulary_id="2,0,3,1">Pressure_reduced_to_MSL_stdDev21 @ msl
+                                vocabulary_id="2,0,3,1">Pressure_reduced_to_MSL_stdDev @ msl
                       </variable>
-                      <variable name="Pressure_reduced_to_MSL_weightedMean21_msl"
+                      <variable name="Pressure_reduced_to_MSL_weightedMean_msl"
                                 vocabulary_name="Meteorological_products / Mass / Pressure_reduced_to_MSL" units="Pa"
-                                vocabulary_id="2,0,3,1">Pressure_reduced_to_MSL_weightedMean21 @ msl
+                                vocabulary_id="2,0,3,1">Pressure_reduced_to_MSL_weightedMean @ msl
                       </variable>
                       <variable name="Relative_humidity"
                                 vocabulary_name="Meteorological_products / Moisture / Relative_humidity" units="percent"
-                                vocabulary_id="2,0,1,1">Relative_humidity_stdDev21 @ pressure
+                                vocabulary_id="2,0,1,1">Relative_humidity_stdDev @ pressure
                       </variable>
-                      <variable name="Relative_humidity_stdDev21_height_above_ground"
+                      <variable name="Relative_humidity_stdDev_height_above_ground"
                                 vocabulary_name="Meteorological_products / Moisture / Relative_humidity" units="percent"
-                                vocabulary_id="2,0,1,1">Relative_humidity_stdDev21 @ height_above_ground
+                                vocabulary_id="2,0,1,1">Relative_humidity_stdDev @ height_above_ground
                       </variable>
-                      <variable name="Relative_humidity_weightedMean21_height_above_ground"
+                      <variable name="Relative_humidity_weightedMean_height_above_ground"
                                 vocabulary_name="Meteorological_products / Moisture / Relative_humidity" units="percent"
-                                vocabulary_id="2,0,1,1">Relative_humidity_weightedMean21 @ height_above_ground
+                                vocabulary_id="2,0,1,1">Relative_humidity_weightedMean @ height_above_ground
                       </variable>
 
-                      <variable name="Relative_humidity_weightedMean21_pressure"
+                      <variable name="Relative_humidity_weightedMean_pressure"
                                 vocabulary_name="Meteorological_products / Moisture / Relative_humidity" units="percent"
-                                vocabulary_id="2,0,1,1">Relative_humidity_weightedMean21 @ pressure
+                                vocabulary_id="2,0,1,1">Relative_humidity_weightedMean @ pressure
                       </variable>
                       <variable name="Temperature" vocabulary_name="Meteorological_products / Temperature / Temperature"
-                                units="K" vocabulary_id="2,0,0,0">Temperature_stdDev21 @ pressure
+                                units="K" vocabulary_id="2,0,0,0">Temperature_stdDev @ pressure
                       </variable>
                       <variable name="Temperature_height_above_ground"
                                 vocabulary_name="Meteorological_products / Temperature / Temperature" units="K"
@@ -122,71 +122,71 @@
                                 vocabulary_name="Meteorological_products / Temperature / Temperature" units="K"
                                 vocabulary_id="2,0,0,0">Temperature @ pressure
                       </variable>
-                      <variable name="Temperature_stdDev21_height_above_ground"
+                      <variable name="Temperature_stdDev_height_above_ground"
                                 vocabulary_name="Meteorological_products / Temperature / Temperature" units="K"
-                                vocabulary_id="2,0,0,0">Temperature_stdDev21 @ height_above_ground
+                                vocabulary_id="2,0,0,0">Temperature_stdDev @ height_above_ground
                       </variable>
-                      <variable name="Temperature_weightedMean21_height_above_ground"
+                      <variable name="Temperature_weightedMean_height_above_ground"
                                 vocabulary_name="Meteorological_products / Temperature / Temperature" units="K"
-                                vocabulary_id="2,0,0,0">Temperature_weightedMean21 @ height_above_ground
+                                vocabulary_id="2,0,0,0">Temperature_weightedMean @ height_above_ground
                       </variable>
 
-                      <variable name="Temperature_weightedMean21_pressure"
+                      <variable name="Temperature_weightedMean_pressure"
                                 vocabulary_name="Meteorological_products / Temperature / Temperature" units="K"
-                                vocabulary_id="2,0,0,0">Temperature_weightedMean21 @ pressure
+                                vocabulary_id="2,0,0,0">Temperature_weightedMean @ pressure
                       </variable>
                       <variable name="U-component_of_wind"
                                 vocabulary_name="Meteorological_products / Momentum / U-component_of_wind" units="m s-1"
-                                vocabulary_id="2,0,2,2">U-component_of_wind_stdDev21 @ pressure
+                                vocabulary_id="2,0,2,2">U-component_of_wind_stdDev @ pressure
                       </variable>
-                      <variable name="U-component_of_wind_stdDev21_height_above_ground"
+                      <variable name="U-component_of_wind_stdDev_height_above_ground"
                                 vocabulary_name="Meteorological_products / Momentum / U-component_of_wind" units="m s-1"
-                                vocabulary_id="2,0,2,2">U-component_of_wind_stdDev21 @ height_above_ground
+                                vocabulary_id="2,0,2,2">U-component_of_wind_stdDev @ height_above_ground
                       </variable>
-                      <variable name="U-component_of_wind_weightedMean21_height_above_ground"
+                      <variable name="U-component_of_wind_weightedMean_height_above_ground"
                                 vocabulary_name="Meteorological_products / Momentum / U-component_of_wind" units="m s-1"
-                                vocabulary_id="2,0,2,2">U-component_of_wind_weightedMean21 @ height_above_ground
+                                vocabulary_id="2,0,2,2">U-component_of_wind_weightedMean @ height_above_ground
                       </variable>
-                      <variable name="U-component_of_wind_weightedMean21_pressure"
+                      <variable name="U-component_of_wind_weightedMean_pressure"
                                 vocabulary_name="Meteorological_products / Momentum / U-component_of_wind" units="m s-1"
-                                vocabulary_id="2,0,2,2">U-component_of_wind_weightedMean21 @ pressure
+                                vocabulary_id="2,0,2,2">U-component_of_wind_weightedMean @ pressure
                       </variable>
                       <variable name="V-component_of_wind"
                                 vocabulary_name="Meteorological_products / Momentum / V-component_of_wind" units="m s-1"
-                                vocabulary_id="2,0,2,3">V-component_of_wind_stdDev21 @ pressure
+                                vocabulary_id="2,0,2,3">V-component_of_wind_stdDev @ pressure
                       </variable>
 
-                      <variable name="V-component_of_wind_stdDev21_height_above_ground"
+                      <variable name="V-component_of_wind_stdDev_height_above_ground"
                                 vocabulary_name="Meteorological_products / Momentum / V-component_of_wind" units="m s-1"
-                                vocabulary_id="2,0,2,3">V-component_of_wind_stdDev21 @ height_above_ground
+                                vocabulary_id="2,0,2,3">V-component_of_wind_stdDev @ height_above_ground
                       </variable>
-                      <variable name="V-component_of_wind_weightedMean21_height_above_ground"
+                      <variable name="V-component_of_wind_weightedMean_height_above_ground"
                                 vocabulary_name="Meteorological_products / Momentum / V-component_of_wind" units="m s-1"
-                                vocabulary_id="2,0,2,3">V-component_of_wind_weightedMean21 @ height_above_ground
+                                vocabulary_id="2,0,2,3">V-component_of_wind_weightedMean @ height_above_ground
                       </variable>
-                      <variable name="V-component_of_wind_weightedMean21_pressure"
+                      <variable name="V-component_of_wind_weightedMean_pressure"
                                 vocabulary_name="Meteorological_products / Momentum / V-component_of_wind" units="m s-1"
-                                vocabulary_id="2,0,2,3">V-component_of_wind_weightedMean21 @ pressure
+                                vocabulary_id="2,0,2,3">V-component_of_wind_weightedMean @ pressure
                       </variable>
                       <variable name="Wind_speed" vocabulary_name="Meteorological_products / Momentum / Wind_speed"
-                                units="m s-1" vocabulary_id="2,0,2,1">Wind_speed_stdDev21 @ pressure
+                                units="m s-1" vocabulary_id="2,0,2,1">Wind_speed_stdDev @ pressure
                       </variable>
                       <variable name="Wind_speed_height_above_ground"
                                 vocabulary_name="Meteorological_products / Momentum / Wind_speed" units="m s-1"
                                 vocabulary_id="2,0,2,1">Wind_speed @ height_above_ground
                       </variable>
-                      <variable name="Wind_speed_stdDev21_height_above_ground"
+                      <variable name="Wind_speed_stdDev_height_above_ground"
                                 vocabulary_name="Meteorological_products / Momentum / Wind_speed" units="m s-1"
-                                vocabulary_id="2,0,2,1">Wind_speed_stdDev21 @ height_above_ground
+                                vocabulary_id="2,0,2,1">Wind_speed_stdDev @ height_above_ground
                       </variable>
 
-                      <variable name="Wind_speed_weightedMean21_height_above_ground"
+                      <variable name="Wind_speed_weightedMean_height_above_ground"
                                 vocabulary_name="Meteorological_products / Momentum / Wind_speed" units="m s-1"
-                                vocabulary_id="2,0,2,1">Wind_speed_weightedMean21 @ height_above_ground
+                                vocabulary_id="2,0,2,1">Wind_speed_weightedMean @ height_above_ground
                       </variable>
-                      <variable name="Wind_speed_weightedMean21_pressure"
+                      <variable name="Wind_speed_weightedMean_pressure"
                                 vocabulary_name="Meteorological_products / Momentum / Wind_speed" units="m s-1"
-                                vocabulary_id="2,0,2,1">Wind_speed_weightedMean21 @ pressure
+                                vocabulary_id="2,0,2,1">Wind_speed_weightedMean @ pressure
                       </variable>
                   </variables>
               </metadata>
@@ -196,7 +196,7 @@
               <addID/>
               <namer>
                   <regExpOnName regExp="latest.xml"
-                                replaceString="Latest NCEP SREF CONUS 40km - Bias-corrected mean and spread products"/>
+                                replaceString="Latest NCEP SREF CONUS 40km - Bias-corrected mean, spread, and probability products"/>
               </namer>
               <sort>
                   <lexigraphicByName increasing="false"/>
@@ -209,11 +209,13 @@
           </datasetScan>
           <datasetScan ID="NCEP/SREF/CONUS_40km/pgrb_biasc" name="Bias-corrected Products"
                        path="model/NCEP/SREF/CONUS_40km/pgrb_biasc"
-                       location="/data/ldm/pub/native/grid/NCEP/SREF/CONUS_40km/pgrb_biasc"
+                       location="/data/ldm/pub/native/conduit/data/nccf/com/sref/prod"
                        collectionType="ForecastModelRuns" harvest="true">
+<!--                       location="/data/ldm/pub/native/grid/NCEP/SREF/CONUS_40km/pgrb_biasc" -->
+
               <metadata inherited="true">
                   <documentation type="summary">
-                      NCEP SREF CONUS 40km: Bias-corrected products.
+                      NCEP SREF CONUS 40km: Bias-corrected products from 21 ensemble members.
                   </documentation>
                   <variables vocabulary="GRIB-2">
                       <variable name="Geopotential_height"
@@ -254,7 +256,8 @@
                   </variables>
               </metadata>
               <filter>
-                  <include wildcard="*.grib2" atomic="true" collection="false"/>
+                <include wildcard="*.grib2" atomic="true" collection="false"/>
+                <exclude wildcard="ensprod_biasc" atomic="false" collection="true"/>
               </filter>
               <addID/>
               <namer>
@@ -267,11 +270,67 @@
               <addLatest/>
               <addDatasetSize/>
               <addTimeCoverage
-                      datasetNameMatchPattern="SREF_CONUS_40km_pgrb_biasc_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib2"
+                      datasetPathMatchPattern="prod/sref.([0-9]{4})([0-9]{2})([0-9]{2})/([0-9]{2})/pgrb_biasc/sref_([^.]*)\\.t\\4z\\.pgrb([0-9]{3})\\.(.*)\\.grib2$"
                       startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="87 hours"/>
+              <!--addTimeCoverage
+                      datasetNameMatchPattern="SREF_CONUS_40km_pgrb_biasc_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib2"
+                      startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="87 hours"/-->
           </datasetScan>
 
       </dataset>
+    <datasetScan ID="NCEP/SREF/Alaska_45km/ensprod" name="Mean, spread, and probability products"
+                 path="model/NCEP/SREF/Alaska_45km/ensprod"
+                 location="/data/ldm/pub/native/grid/NCEP/SREF/Alaska_45km/ensprod"
+                 collectionType="ForecastModelRuns" harvest="true">
+      <metadata inherited="true">
+        <documentation type="summary">
+          NCEP SREF Alaska 45km: Mean, spread, and probability products.
+        </documentation>
+      </metadata>
+      <filter>
+        <include wildcard="*.grib2" atomic="true" collection="false"/>
+      </filter>
+      <addID/>
+      <namer>
+        <regExpOnName regExp="latest.xml"
+                      replaceString="Latest NCEP SREF Alaska 45km - Mean, spread, and probability products"/>
+      </namer>
+      <sort>
+        <lexigraphicByName increasing="false"/>
+      </sort>
+      <addLatest/>
+      <addDatasetSize/>
+      <addTimeCoverage
+              datasetNameMatchPattern="SREF_Alaska_45km_ensprod_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib2"
+              startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="87 hours"/>
+    </datasetScan>
+    <datasetScan ID="NCEP/SREF/PacificNE_0p4/ensprod" name="Mean, spread, and probability products"
+                 path="model/NCEP/SREF/PacificNE_0p4/ensprod"
+                 location="/data/ldm/pub/native/grid/NCEP/SREF/PacificNE_0p4/ensprod"
+                 collectionType="ForecastModelRuns" harvest="true">
+      <metadata inherited="true">
+        <documentation type="summary">
+          NCEP SREF PacificNE 0.4 degree: Mean, spread, and probability products.
+        </documentation>
+      </metadata>
+      <filter>
+        <include wildcard="*.grib2" atomic="true" collection="false"/>
+      </filter>
+      <addID/>
+      <namer>
+        <regExpOnName regExp="latest.xml"
+                      replaceString="Latest NCEP SREF PacificNE 0.4 degree - Mean, spread, and probability products"/>
+      </namer>
+      <sort>
+        <lexigraphicByName increasing="false"/>
+      </sort>
+      <addLatest/>
+      <addDatasetSize/>
+      <addTimeCoverage
+              datasetNameMatchPattern="SREF_PacificNE_0p4_ensprod_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib2"
+              startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="87 hours"/>
+    </datasetScan>
+
   </dataset>
   
 </catalog>
