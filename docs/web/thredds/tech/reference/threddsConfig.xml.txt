@@ -84,6 +84,12 @@
     <metarDataDir>/opt/tomcat/content/thredds/public/stn/</metarDataDir>
     <metarRawDir>/data/ldm/pub/decoded/netcdf/surface/metar/</metarRawDir>
   </NetcdfSubsetService>
+  
+  <Opendap>
+    <ascLimit>50</ascLimit>
+    <binLimit>500</binLimit>
+    <serverVersion>opendap/3.7</serverVersion>
+  </Opendap>
 
   <!-- The WCS Service is off by default. -->
   <WCS>

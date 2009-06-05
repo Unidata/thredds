@@ -97,16 +97,16 @@ public class Madis  extends TableConfigurerImpl  {
     }
     VNames vn = getVariableNames(ds, errlog);
 
-    boolean isPsuedo = !obsDim.isUnlimited();
+    boolean hasStruct = Evaluator.hasRecordStructure(ds);
     FeatureType ft = Evaluator.getFeatureType(ds, ":thredds_data_type", errlog);
     if (null == ft) ft = FeatureType.POINT;
 
     // points
     // if ((wantFeatureType == FeatureType.POINT) || (ft == FeatureType.POINT)) {
-      TableConfig ptTable = new TableConfig(Table.Type.Structure, isPsuedo? obsDim.getName() : "record");
+      TableConfig ptTable = new TableConfig(Table.Type.Structure, hasStruct ? "record" : obsDim.getName() );
       ptTable.structName = "record";
       ptTable.featureType = FeatureType.POINT;
-      ptTable.isPsuedoStructure = isPsuedo;
+      ptTable.isPsuedoStructure = !hasStruct;
 
       ptTable.dim = obsDim;
       ptTable.time = vn.obsTime;

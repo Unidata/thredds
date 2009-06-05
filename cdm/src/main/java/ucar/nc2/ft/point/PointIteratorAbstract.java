@@ -80,13 +80,12 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator {
     double obsTime = pf.getObservationTime();
     minTime = Math.min(minTime, obsTime);
     maxTime = Math.max(maxTime, obsTime);
-
   }
 
   protected void finishCalcBounds() {
     if (!calcBounds) return;
 
-    if (bb.crossDateline() && bb.getWidth() > 350.0) { // call it global - less confusing
+    if ((bb != null) && bb.crossDateline() && (bb.getWidth() > 350.0)) { // call it global - less confusing
       double lat_min = bb.getLowerLeftPoint().getLatitude();
       double deltaLat = bb.getUpperLeftPoint().getLatitude() - lat_min;
       bb = new LatLonRect(new LatLonPointImpl(lat_min, -180.0), deltaLat, 360.0);

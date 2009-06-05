@@ -44,6 +44,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.Structure;
 import ucar.ma2.Array;
+import ucar.ma2.DataType;
 
 import java.util.*;
 import java.io.IOException;
@@ -110,7 +111,7 @@ public class CFpointObs extends TableConfigurerImpl {
       return null;
     }
     Dimension obsDim = time.getDimension(0); // what about time(stn, obs) ??
-    boolean hasStruct = obsDim.isUnlimited();
+    boolean hasStruct = Evaluator.hasRecordStructure(ds);
     TableConfig obs = new TableConfig(Table.Type.Structure, obsDim.getName());
     obs.structName = hasStruct ? "record" : obsDim.getName();
     obs.isPsuedoStructure = !hasStruct;
@@ -156,12 +157,14 @@ public class CFpointObs extends TableConfigurerImpl {
       stationDim = lat.getDimension(0);
     }
 
+    boolean hasStruct = Evaluator.hasRecordStructure(ds);
+
     Table.Type stationTableType = stnIsScalar ? Table.Type.Top : Table.Type.Structure;
     TableConfig stnTable = new TableConfig(stationTableType, "station");
     stnTable.featureType = FeatureType.STATION;
-    stnTable.isPsuedoStructure = !stationDim.isUnlimited();
+    stnTable.isPsuedoStructure = !hasStruct;
     stnTable.dim = stationDim;
-    stnTable.structName = stationDim.isUnlimited() ? "record" : stationDim.getName();
+    stnTable.structName = hasStruct ? "record" : stationDim.getName();
 
     stnTable.lat= lat.getName();
     stnTable.lon= lon.getName();
@@ -193,7 +196,6 @@ public class CFpointObs extends TableConfigurerImpl {
       return null;
     }
     Dimension obsDim = time.getDimension(time.getRank()-1); // may be time(time) or time(stn, obs)
-    boolean hasStruct = obsDim.isUnlimited();
 
     Table.Type obsTableType = null;
     String ragged_parentIndex = Evaluator.getVariableWithAttribute(ds, "standard_name", "ragged_parentIndex");

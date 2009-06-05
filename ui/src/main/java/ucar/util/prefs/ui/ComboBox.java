@@ -58,6 +58,7 @@ import javax.swing.*;
  *
  * When listening for change events, generally key on type comboBoxChanged, and you
  *  must explicitly decide to save it in the list:
+ *
  * <pre>
  *  cb.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {

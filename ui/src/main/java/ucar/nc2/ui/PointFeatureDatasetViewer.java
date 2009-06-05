@@ -543,7 +543,7 @@ public class PointFeatureDatasetViewer extends JPanel {
 
   private void setObservations(PointFeatureCollection pointCollection) throws IOException {
     PointFeatureIterator iter = pointCollection.getPointFeatureIterator(-1);
-    iter.setCalculateBounds(pointCollection);
+    //iter.setCalculateBounds(pointCollection);
     List<PointFeature> obsList = new ArrayList<PointFeature>();
     int count = 0;
     try {
@@ -567,6 +567,7 @@ public class PointFeatureDatasetViewer extends JPanel {
   private void setObservations(List<PointFeature>obsList) throws IOException {
     if (obsList.size() == 0) {
       obsTable.clear();
+      JOptionPane.showMessageDialog(null, "There are no observations for this selection");
       return;
     }
     obsTable.setPointFeatureData(obsList);

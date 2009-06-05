@@ -165,7 +165,7 @@ public class ToolsUI extends JPanel {
   //private IndependentWindow debugWindow;
   //private TextOutputStreamPane debugPane;
   //  private PrintStream debugOS;
-  private boolean debug = false, debugTab = false, debugNcmlWrite = false, debugCB = false;
+  private boolean debug = false, debugTab = false, debugNcmlWrite = false, debugCB = true;
 
 
   public ToolsUI(ucar.util.prefs.PreferencesExt prefs, JFrame parentFrame) {
@@ -1146,9 +1146,11 @@ public class ToolsUI extends JPanel {
       cb = new ComboBox(prefs);
       cb.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          if ((e.getWhen() != lastEvent) && eventOK) {// eliminate multiple events from same selection
-            if (debugCB)
-              System.out.println(" doit " + cb.getSelectedItem() + " cmd=" + e.getActionCommand() + " whne=" + e.getWhen() + " class=" + OpPanel.this.getClass().getName());
+          if (debugCB)
+             System.out.println(" doit " + cb.getSelectedItem() + " cmd=" + e.getActionCommand() + " when=" + e.getWhen() + " class=" + OpPanel.this.getClass().getName());
+
+          // eliminate multiple events from same selection
+           if (eventOK && (e.getWhen() > lastEvent + 10000)) { // not sure of units - must be nanosecs - ?? platform dependednt ??
             doit(cb.getSelectedItem());
             lastEvent = e.getWhen();
           }

@@ -6,6 +6,9 @@ Changes in version 4.0
 
  Release Details:
   45:
+   ToolsUI: fine tune point obs display
+   ToolsUI: eliminate multiple combobox events by waiting 10 msecs
+   dont rely on dim.isUnlimited() to test if theres a record structure
    NetcdfDataset.setDefaultEnhanceMode(Set<Enhance> mode);
    GEMPAK bug workaround (from Don)
    Nexrad2,3 coord caching

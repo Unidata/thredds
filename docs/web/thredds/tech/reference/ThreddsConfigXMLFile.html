@@ -7,21 +7,21 @@
 <body>
  <h1><img src="../images/unidataLogo.png" align="middle" height="75" width="75">Annotated TDS Configuration file </h1>
 <hr>
- <p>These are parameters that control the TDS that can be set by the TDS administrator in <strong>${tomcat_home}/content/thredds/threddsConfig.xml</strong>. These have been extensively reworked for version 3.14+ (they do not apply to versions before that). </p>
- <p>In
+ <p>These are parameters that control the TDS that can be set by the TDS administrator in <strong>${tomcat_home}/content/thredds/threddsConfig.xml</strong>. </p>
+<p>In
 general, you do not have to set any of these parameters, since the TDS
 will use default settings. If you do change any of these, you must
 restart the thredds webapp (eg through the tomcat manager application)
 for them to take effect. The exception is that the <strong>catalogRoot</strong> elements will be reread by doing a <strong>Debug/Reinit</strong>, if you have remote management enabled.</p>
  <p>Here is an annotated example<a href="threddsConfig.xml.txt"> threddsConfig.xml</a>:</p>
- <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;threddsConfig&gt;</pre>
- <h3><strong>  Catalog Roots</strong></h3>
+ <h2>Elements in <strong>threddsConfig.xml</strong></h2>
+<h3><strong>  Catalog Roots</strong></h3>
  <pre><strong>  </strong>&lt;<strong>catalogRoot</strong>&gt;tempCatalog.xml&lt;/catalogRoot&gt;<br>  &lt;<strong>catalogRoot</strong>&gt;idd/catalog.xml&lt;/catalogRoot&gt;<br>  &lt;<strong>catalogRoot</strong>&gt;catgen/subdir/enhancedCatalog-1.0.xml&lt;/catalogRoot&gt;</pre>
  <p>These elements name your root catalogs that are not referenced from your main catalog ( <strong>${tomcat_home}/content/thredds/catalog.xml</strong>).
 On startup, the TDS reads the main catalog and any root catalogs you
 list here, plus any catalogs that are referenced by them in a <strong>catalogRef</strong>. Data roots and other needed information are found and cached. All the catalogs found in this way are called <em>static catalogs</em>, and all static catalogs must live under the <strong>${tomcat_home}/content/thredds</strong> directory. When you do a <strong>Debug/Reinit</strong>, the static  catalogs are reread. </p>
- <h3>NetCDF-Java Disk cache </h3>
- <pre>  &lt;<strong>DiskCache</strong>&gt;<br>    &lt;<strong>alwaysUse</strong>&gt;false&lt;/alwaysUse&gt;<br>    &lt;<strong>dir</strong>&gt;/temp/cache/&lt;/dir&gt;<br>    &lt;<strong>scour</strong>&gt;1 hour&lt;/scour&gt;<br>    &lt;<strong>maxSize</strong>&gt;10 Gb&lt;/maxSize&gt;<br>  &lt;/DiskCache&gt;<br></pre>
+ <h3>CDM library Disk cache </h3>
+<pre>  &lt;<strong>DiskCache</strong>&gt;<br>    &lt;<strong>alwaysUse</strong>&gt;false&lt;/alwaysUse&gt;<br>    &lt;<strong>dir</strong>&gt;/temp/cache/&lt;/dir&gt;<br>    &lt;<strong>scour</strong>&gt;1 hour&lt;/scour&gt;<br>    &lt;<strong>maxSize</strong>&gt;10 Gb&lt;/maxSize&gt;<br>  &lt;/DiskCache&gt;<br></pre>
  <p>These elements control where the <em><strong>CDM/NetCDF-Java</strong></em> library writes temporary files, for example when it needs to unzip files, or write GRIB index files, etc. If <strong>alwaysUse</strong> is true, these temporary files will always be written to the <em>cache directory</em> specified by <strong>dir</strong> (<a href="#Cache_Locations">choosing a cache directory</a>). If <strong>alwaysUse</strong>
 is false, TDS will try to write them to the same directory as the
 original file, and if the TDS doesnt have write permission it will then
@@ -84,7 +84,18 @@ how long to leave the files in the working directory while the download
 is occurring. The files are deleted after a successful download. </li>
  </ol>
  <p>If <strong>NetcdfSubsetService</strong> is allowed but the directory is not set, the TDS will use the <strong>${tomcat_home}/content/thredds/ncss/grid/cache</strong>/ directory for temporary files. </p>
- <h3>WCS<a name="WCS"></a> Service </h3>
+ <p>&nbsp;</p>
+ <h3>OPeNDAP<a name="opendap" id="opendap"></a> Service </h3>
+ <pre>  &lt;<strong>Opendap</strong>&gt;<br>    &lt;<strong>ascLimit</strong>&gt;50&lt;/ascLimit&gt;<br>    &lt;<strong>binLimit</strong>&gt;500&lt;/binLimit&gt;
+    &lt;<strong>serverVersion</strong>&gt;opendap/3.7&lt;/serverVersion&gt;<br>  &lt;/<strong>Opendap</strong>&gt;</pre>
+ <p>This controls the <em><strong>OPeNDAP </strong></em>data service.</p>
+ <ol>
+   <li><strong>ascLimit</strong>: maximum size of an ascii data request , in Megabytes. </li>
+   <li><strong>binLimit</strong>: maximum size of a binary data request , in Megabytes.</li>
+   <li><strong>serverVersion</strong>:  this is the String thats returned by the OPeNDAP <strong>getVersion</strong> request, and also placed into the  <strong><em>XDOS-Server</em></strong> HTTP Header on all OPeNDAP responses.</li>
+ </ol>
+ <p>&nbsp;</p>
+<h3>WCS<a name="WCS"></a> Service </h3>
  <pre>  &lt;<strong>WCS</strong>&gt;<br>    &lt;<strong>allow</strong>&gt;true&lt;/allow&gt;<br>    &lt;<strong>dir</strong>&gt;/temp/ncache/&lt;/dir&gt;<br>    &lt;<strong>scour</strong>&gt;15 min&lt;/scour&gt;<br>    &lt;<strong>maxAge</strong>&gt;30 min&lt;/maxAge&gt;<br>  &lt;/WCS&gt;</pre>
  <p>This controls the <em><strong>Web Coverage Service (WCS) </strong></em>,
 which allows WCS clients to specify a subset of a dataset and download
@@ -141,7 +152,7 @@ listing of disks on your machine. The listing includes size and mount
 location. </p>
  <hr width="100%">
  <address>
- <img src="../images/thread.png" height="108" width="110">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Mar 12, 2008
+ <img src="../images/thread.png" height="108" width="110">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Jun 5, 2009
  </address>
  <p></p>
 </body></html>

@@ -38,6 +38,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
 import ucar.nc2.Structure;
 import ucar.nc2.Attribute;
+import ucar.ma2.DataType;
 
 import java.util.Formatter;
 
@@ -135,6 +136,10 @@ public class Evaluator {
   }
 
 
+  static public boolean hasRecordStructure(NetcdfDataset ds) {
+    Variable v = ds.findVariable("record");
+    return (v != null) && (v.getDataType() == DataType.STRUCTURE);
+  }
 
   /////////////////////////////////
   private String constant;

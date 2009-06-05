@@ -79,7 +79,7 @@ public class UnidataPointObs extends TableConfigurerImpl {
       errlog.format("Must have an Observation dimension: named by global attribute 'observationDimension', or unlimited dimension");
       return null;
     }
-    boolean isPsuedo = !obsDim.isUnlimited();
+    boolean hasStruct = Evaluator.hasRecordStructure(ds);
 
     FeatureType ft = Evaluator.getFeatureType(ds, ":cdm_datatype", null);
     if (ft == null )
@@ -87,8 +87,8 @@ public class UnidataPointObs extends TableConfigurerImpl {
 
     // its really a point
     if (ft == FeatureType.POINT) {
-      TableConfig obsTable = new TableConfig(Table.Type.Structure, isPsuedo? obsDim.getName() : "record");
-      obsTable.isPsuedoStructure = isPsuedo;
+      TableConfig obsTable = new TableConfig(Table.Type.Structure, hasStruct ? "record" : obsDim.getName());
+      obsTable.isPsuedoStructure = !hasStruct;
       obsTable.featureType = FeatureType.POINT;
       obsTable.structName = "record";
 
@@ -105,8 +105,8 @@ public class UnidataPointObs extends TableConfigurerImpl {
     // iterate over obs struct, in file order
     // extra join on station structure
     if ((ft == FeatureType.STATION) && (wantFeatureType == FeatureType.POINT)) {
-      TableConfig obsTable = new TableConfig(Table.Type.Structure, isPsuedo? obsDim.getName() : "record");
-      obsTable.isPsuedoStructure = isPsuedo;
+      TableConfig obsTable = new TableConfig(Table.Type.Structure, hasStruct ? "record" : obsDim.getName() );
+      obsTable.isPsuedoStructure = !hasStruct;
       obsTable.featureType = FeatureType.POINT;
       obsTable.dim = obsDim;
       obsTable.structName = "record";
@@ -150,8 +150,8 @@ public class UnidataPointObs extends TableConfigurerImpl {
 
     // its really a trajectory
     if (ft == FeatureType.TRAJECTORY) {
-      TableConfig obsTable = new TableConfig(Table.Type.Structure, isPsuedo? obsDim.getName() : "record");
-      obsTable.isPsuedoStructure = isPsuedo;
+      TableConfig obsTable = new TableConfig(Table.Type.Structure, hasStruct ? "record" : obsDim.getName());
+      obsTable.isPsuedoStructure = !hasStruct;
       obsTable.featureType = FeatureType.TRAJECTORY;
 
       obsTable.time = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Time, obsDim);
@@ -212,8 +212,8 @@ public class UnidataPointObs extends TableConfigurerImpl {
 
       Table.Type obsType =  isForwardLinkedList || isBackwardLinkedList ? Table.Type.LinkedList : Table.Type.Contiguous;
 
-      obsTable = new TableConfig(obsType, isPsuedo? obsDim.getName() : "record");
-      obsTable.isPsuedoStructure = isPsuedo;
+      obsTable = new TableConfig(obsType, hasStruct ? "record" : obsDim.getName());
+      obsTable.isPsuedoStructure = !hasStruct;
       obsTable.structName = "record";
 
       if (isForwardLinkedList) {

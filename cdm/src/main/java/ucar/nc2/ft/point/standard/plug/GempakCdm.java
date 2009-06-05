@@ -128,10 +128,12 @@ public class GempakCdm extends TableConfigurerImpl {
       stationDim = lat.getDimension(0);
     }
 
+    boolean hasStruct = Evaluator.hasRecordStructure(ds);
+
     Table.Type stationTableType = stnIsScalar ? Table.Type.Top : Table.Type.Structure;
     TableConfig stnTable = new TableConfig(stationTableType, "station");
     stnTable.featureType = FeatureType.STATION;
-    stnTable.isPsuedoStructure = !stationDim.isUnlimited();
+    stnTable.isPsuedoStructure = !hasStruct;
     stnTable.dim = stationDim;
 
     stnTable.lat= lat.getName();
@@ -164,7 +166,6 @@ public class GempakCdm extends TableConfigurerImpl {
       return null;
     }
     Dimension obsDim = time.getDimension(time.getRank()-1); // may be time(time) or time(stn, obs)
-    boolean hasStruct = obsDim.isUnlimited();
 
     Table.Type obsTableType = null;
     Structure multidimStruct = null;
