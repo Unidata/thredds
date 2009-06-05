@@ -30,7 +30,9 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package ucar.unidata.util;
+
 
 /**
  * Created by IntelliJ IDEA.
@@ -40,34 +42,72 @@ package ucar.unidata.util;
  * To change this template use File | Settings | File Templates.
  */
 public class Product {
+
+    /** _more_          */
     private String id;
+
+    /** _more_          */
     private String name;
 
-    public Product() {
-        
-    }
+    /**
+     * _more_
+     */
+    public Product() {}
 
-    public Product(String id, String name){
-        this.id = id;
+    /**
+     * _more_
+     *
+     * @param id _more_
+     * @param name _more_
+     */
+    public Product(String id, String name) {
+        this.id   = id;
         this.name = name;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getID() {
         return this.id;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getName() {
         return this.name;
     }
 
+    /**
+     * _more_
+     *
+     * @param id _more_
+     */
     public void setID(String id) {
         this.id = id;
     }
 
+    /**
+     * _more_
+     *
+     * @param name _more_
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * _more_
+     *
+     * @param oo _more_
+     *
+     * @return _more_
+     */
     public boolean equals(Object oo) {
 
         if ( !(oo instanceof Product)) {
@@ -79,3 +119,4 @@ public class Product {
     }
 
 }
+

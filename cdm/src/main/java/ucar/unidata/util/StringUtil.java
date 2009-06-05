@@ -31,7 +31,9 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
 package ucar.unidata.util;
+
 
 import java.text.ParsePosition;
 
@@ -42,9 +44,10 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.*;
 
+
+
 /**
  * String utilities
- * @author John Caron
  */
 
 public class StringUtil {
@@ -809,6 +812,10 @@ public class StringUtil {
     /**
      * Check if the given input String  matches the given pattern String.
      * First see if input.equals (patternString). If true then return true.
+     * Next, if the pattern string is a simple "*" or begins with a "*"
+     * or starts with the prefix "glob:" then is is a glob style pattern
+     * and we convert it to a regexp.
+     *
      * Next if there are no regular expression characters
      * (look for ^, $, *, and +) in the patternString then return false.
      * Else treat the patternString as a regexp and return if it matches
@@ -853,6 +860,16 @@ public class StringUtil {
                 if (patternString.toLowerCase().indexOf("t_") >= 0) {
                     //                    System.err.println ("pattern:" + patternString + " " +StringUtil.containsRegExp(patternString));
                 }
+                //Simple check for  glob style
+                if (patternString.startsWith("*")
+                        || patternString.equals("*")) {
+                    patternString = "." + patternString;
+                } else if (patternString.startsWith("glob:")) {
+                    patternString = patternString.substring("glob:".length());
+                    patternString = wildcardToRegexp(patternString);
+                    //                    System.err.println("   xxx:" + patternString+ " " +input);
+                }
+
                 if ( !StringUtil.containsRegExp(patternString)) {
                     return false;
                 }
@@ -1392,9 +1409,9 @@ public class StringUtil {
      *
      * @param content The String to  parse
      * @param lengths the length of each word.
-     * @param lineDelimiter What to split  the line content string on 
+     * @param lineDelimiter What to split  the line content string on
      *                      (usually "\n").
-     * @param commentString If non-null defines the comment String in 
+     * @param commentString If non-null defines the comment String in
      *                      the content.
      * @param trimWords Do we trim each word.
      *
@@ -1491,6 +1508,73 @@ public class StringUtil {
     }
 
     /**
+     * tokenize the given string on spaces. Respect double quotes
+     *
+     * @param s The string to tokenize
+     * @return the list of tokens
+     */
+    public static List<String> splitWithQuotes(String s) {
+        ArrayList<String> list = new ArrayList();
+        if (s == null) {
+            return list;
+        }
+        //        System.err.println ("S:" + s);
+        while (true) {
+            s = s.trim();
+            int qidx1 = s.indexOf("\"");
+            int qidx2 = s.indexOf("\"", qidx1 + 1);
+            int sidx1 = 0;
+            int sidx2 = s.indexOf(" ", sidx1 + 1);
+            if ((qidx1 < 0) && (sidx2 < 0)) {
+                if (s.length() > 0) {
+                    list.add(s);
+                }
+                break;
+            }
+            if ((qidx1 >= 0) && ((sidx2 == -1) || (qidx1 < sidx2))) {
+                if (qidx1 >= qidx2) {
+                    //Malformed string. Add the rest of the line and break
+                    if (qidx1 == 0) {
+                        s = s.substring(qidx1 + 1);
+                    } else if (qidx1 > 0) {
+                        s = s.substring(0, qidx1);
+                    }
+                    if (s.length() > 0) {
+                        list.add(s);
+                    }
+                    break;
+                }
+                if (qidx2 < 0) {
+                    //Malformed string. Add the rest of the line and break
+                    s = s.substring(1);
+                    list.add(s);
+                    break;
+                }
+                String tok = s.substring(qidx1 + 1, qidx2);
+                if (tok.length() > 0) {
+                    list.add(tok);
+                }
+                s = s.substring(qidx2 + 1);
+                //                System.err.println ("qtok:" + tok);
+            } else {
+                if (sidx2 < 0) {
+                    list.add(s);
+                    break;
+                }
+                String tok = s.substring(sidx1, sidx2);
+                if (tok.length() > 0) {
+                    list.add(tok);
+                }
+                s = s.substring(sidx2);
+                //                System.err.println ("stok:" + tok);
+            }
+        }
+        return list;
+    }
+
+
+
+    /**
      * Tokenize the toString value of the given source object, splitting
      * on the given delimiter. If trim is true the string trim each token.
      *
@@ -1562,6 +1646,86 @@ public class StringUtil {
         return a;
     }
 
+    /**
+     * Split up to a certain number of characters
+     *
+     * @param s   the string to split
+     * @param delimiter  the delimiter
+     * @param cnt the max number
+     *
+     * @return the list of split strings
+     */
+    public static List<String> splitUpTo(String s, String delimiter,
+                                         int cnt) {
+        List<String> toks = new ArrayList<String>();
+        for (int i = 0; i < cnt - 1; i++) {
+            int idx = s.indexOf(delimiter);
+            if (idx < 0) {
+                break;
+            }
+            toks.add(s.substring(0, idx));
+            s = s.substring(idx + 1).trim();
+        }
+        if (s.length() > 0) {
+            toks.add(s);
+        }
+        return toks;
+    }
+
+
+    /**
+     * Replace the macro within s with the formatted date.
+     * s can contain macros of the form ${macroName:some date format}
+     *
+     * @param s source string
+     * @param macroName macro name_
+     * @param date date to use
+     *
+     * @return formatted string
+     */
+    public static String replaceDate(String s, String macroName, Date date) {
+        return replaceDate(s, macroName, date, "${", "}");
+    }
+
+
+    /**
+     * Replace the macro within s with the formatted date.
+     * s can contain macros of the form <macroPrefix>macroName:some date format<macroSuffix>
+     *
+     * @param s source string
+     * @param macroName macro name_
+     * @param date date to use
+     * @param macroPrefix  the macro prefix
+     * @param macroSuffix  the macro suffix
+     *
+     * @return formatted string
+     */
+    public static String replaceDate(String s, String macroName, Date date,
+                                     String macroPrefix, String macroSuffix) {
+        int idx1 = s.indexOf(macroPrefix + macroName);
+        if (idx1 < 0) {
+            return s;
+        }
+
+        int idx2 = s.indexOf(macroSuffix, idx1);
+        if (idx2 < 0) {
+            return s;
+        }
+
+        String   fullMacro = s.substring(idx1 + macroPrefix.length(), idx2);
+        String[] toks      = StringUtil.split(fullMacro, ":", 2);
+
+        if ((toks == null) || (toks.length != 2)) {
+            throw new IllegalArgumentException("Could not find date format:"
+                    + s);
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat(toks[1]);
+        sdf.setTimeZone(DateUtil.TIMEZONE_GMT);
+        String formattedDate = sdf.format(date);
+        s = s.replace(macroPrefix + fullMacro + macroSuffix, formattedDate);
+        //        System.err.println(s);
+        return s;
+    }
 
 
 
@@ -1629,6 +1793,9 @@ public class StringUtil {
      */
     public static String replace(String string, String pattern,
                                  String value) {
+        if (pattern.length() == 0) {
+            return string;
+        }
         StringBuffer returnValue   = new StringBuffer();
         int          patternLength = pattern.length();
         while (true) {
@@ -2022,6 +2189,39 @@ public class StringUtil {
         return null;
     }
 
+    /**
+     * Is the string all upper case?
+     *
+     * @param s  string to check
+     *
+     * @return true if all uppercase
+     */
+    public static boolean isUpperCase(String s) {
+        return s.toUpperCase().equals(s);
+    }
+
+    /**
+     * Is the string all lower case?
+     *
+     * @param s  string to check
+     *
+     * @return true if all characters are lowercase
+     */
+    public static boolean isLowerCase(String s) {
+        return s.toLowerCase().equals(s);
+    }
+
+
+    /**
+     * Camel case a string (eg howard -&gt; Howard)
+     *
+     * @param s  string to camel case
+     *
+     * @return the camel cased string
+     */
+    public static String camelCase(String s) {
+        return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
+    }
 
 
     /**
@@ -2194,6 +2394,99 @@ public class StringUtil {
 
 
     /**
+     * Parse HTML Properties
+     *
+     * @param s  the string
+     *
+     * @return a hashtable of properties
+     */
+    public static Hashtable parseHtmlProperties(String s) {
+        //        boolean debug = true;
+        boolean   debug      = false;
+        Hashtable properties = new Hashtable();
+        //        debug = true;
+        if (debug) {
+            System.err.println("Source:" + s);
+        }
+
+        while (true) {
+            if (debug) {
+                System.err.println("S:" + s);
+            }
+            int idx = s.indexOf("=");
+            if (idx < 0) {
+                s = s.trim();
+                if (s.length() > 0) {
+                    if (debug) {
+                        System.err.println("\tsingle name:" + s + ":");
+                    }
+                    properties.put(s, "");
+                }
+                break;
+            }
+            String name = s.substring(0, idx).trim();
+            s = s.substring(idx + 1).trim();
+            if (s.length() == 0) {
+                if (debug) {
+                    System.err.println("\tsingle name=" + name);
+                }
+                properties.put(name, "");
+                break;
+            }
+            if (s.charAt(0) == '\"') {
+                s   = s.substring(1);
+                idx = s.indexOf("\"");
+                if (idx < 0) {
+                    //no closing "="
+                    properties.put(name, s);
+                    break;
+                }
+                String value = s.substring(0, idx);
+                if (debug) {
+                    System.err.println("\tname=" + name);
+                }
+                if (debug) {
+                    System.err.println("\tvalue=" + value);
+                }
+                properties.put(name, value);
+                s = s.substring(idx + 1);
+            } else {
+                idx = s.indexOf(" ");
+                if (idx < 0) {
+                    if (debug) {
+                        System.err.println("\tname=" + name);
+                    }
+                    if (debug) {
+                        System.err.println("\tvalue=" + s);
+                    }
+                    properties.put(name, s);
+                    break;
+                }
+                String value = s.substring(0, idx);
+                properties.put(name, value);
+                if (debug) {
+                    System.err.println("\tname=" + name);
+                }
+                if (debug) {
+                    System.err.println("\tvalue=" + value);
+                }
+                s = s.substring(idx + 1);
+
+            }
+
+        }
+        if (debug) {
+            System.err.println("props:" + properties);
+        }
+
+
+
+        return properties;
+    }
+
+
+
+    /**
      * usage for test code
      */
     private static void showUsage() {
@@ -2209,16 +2502,26 @@ public class StringUtil {
      * @throws Exception some problem
      */
     public static void main(String[] args) throws Exception {
-        String pattern =
-            ".*([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).*";
-        String with  = "NCEP GFS 191km Alaska $1-$2-$3 $4:$5:00 GMT";
-        String value = "GFS_Alaska_191km_20051011_0000.grib1";
-        System.err.println(value);
-        System.err.println(pattern);
-        System.err.println(with);
-        System.err.println(value.replaceAll(pattern, with));
+        System.err.println(
+            splitWithQuotes(
+                " single  again \"hello there\" another couple of toks  \"how are you\" I am fine \"and you"));
+
+        System.err.println(splitWithQuotes("text1 text2"));
+        System.err.println(splitWithQuotes("hello"));
+        System.err.println(splitWithQuotes("\"hello"));
+        System.err.println(splitWithQuotes("\"hello\""));
+        System.err.println(splitWithQuotes("hello\""));
+        if (true) {
+            return;
+        }
 
 
+        args = new String[] { "*", "glob:fo*o", "glob:*fo*o*", "x.*" };
+        for (int i = 0; i < args.length; i++) {
+            System.err.println("pattern:" + args[i]);
+            System.err.println("   "
+                               + stringMatch("foobar", args[i], false, true));
+        }
     }
 
 
@@ -2259,9 +2562,9 @@ public class StringUtil {
      *
      * @return List of tokens
      */
-    public static List splitMacros(String s) {
-        List tokens = new ArrayList();
-        int  idx1   = s.indexOf("${");
+    public static List<String> splitMacros(String s) {
+        List<String> tokens = new ArrayList<String>();
+        int          idx1   = s.indexOf("${");
         while (idx1 >= 0) {
             int idx2 = s.indexOf("}", idx1);
             if (idx2 < 0) {
