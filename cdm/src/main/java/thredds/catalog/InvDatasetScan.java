@@ -95,7 +95,7 @@ public class InvDatasetScan extends InvCatalogRef {
 
   private boolean addDatasetSize;
 
-  private List childEnhancerList;
+  private List<DatasetEnhancer> childEnhancerList;
   private CatalogRefExpander catalogRefExpander;
 
   private boolean isValid;
@@ -213,8 +213,12 @@ public class InvDatasetScan extends InvCatalogRef {
          && startTimeSubstitutionPattern != null
          && duration != null )
     {
-      childEnhancerList = new ArrayList();
-      childEnhancerList.add( new RegExpAndDurationTimeCoverageEnhancer( datasetNameMatchPattern, startTimeSubstitutionPattern, duration ) );
+      childEnhancerList = new ArrayList<DatasetEnhancer>();
+      childEnhancerList.add(
+              RegExpAndDurationTimeCoverageEnhancer
+                      .getInstanceToMatchOnDatasetName( datasetNameMatchPattern,
+                                                        startTimeSubstitutionPattern,
+                                                        duration ) );
     }
 
     // catalogRefExpander = new BooleanCatalogRefExpander( this.datasetScan.??? );

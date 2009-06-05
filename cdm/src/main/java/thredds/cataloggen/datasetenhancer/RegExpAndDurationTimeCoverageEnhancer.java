@@ -58,11 +58,59 @@ public class RegExpAndDurationTimeCoverageEnhancer implements DatasetEnhancer
   static private org.slf4j.Logger log =
           org.slf4j.LoggerFactory.getLogger( RegExpAndDurationTimeCoverageEnhancer.class );
 
-  private String matchPattern;
-  private String substitutionPattern;
-  private String duration;
+  private final String matchPattern;
+  private final String substitutionPattern;
+  private final String duration;
+
+  private final MatchTarget matchTarget;
+  private enum MatchTarget
+  {
+    DATASET_NAME,
+    DATASET_PATH
+  }
 
   private java.util.regex.Pattern pattern;
+
+  /**
+   * Factory method that returns a RegExpAndDurationTimeCoverageEnhancer instance
+   * that will apply the match pattern to the dataset name.
+   *
+   * @param matchPattern a regular expression used to match against the CrawlableDataset name.
+   * @param substitutionPattern the time coverage start time (which may contain regular expression capturing group substitution strings).
+   * @param duration the time coverage duration string.
+   *
+   * @return a RegExpAndDurationTimeCoverageEnhancer that will apply the match pattern to the dataset name.
+   */
+  public static
+  RegExpAndDurationTimeCoverageEnhancer
+  getInstanceToMatchOnDatasetName( String matchPattern,
+                                   String substitutionPattern,
+                                   String duration )
+  {
+    return new RegExpAndDurationTimeCoverageEnhancer(
+            matchPattern, substitutionPattern,
+            duration, MatchTarget.DATASET_NAME );
+  }
+
+  /**
+   * Factory method that returns a RegExpAndDurationTimeCoverageEnhancer instance
+   * that will apply the match pattern to the dataset path.
+   *
+   * @param matchPattern a regular expression used to match against the CrawlableDataset path.
+   * @param substitutionPattern the time coverage start time (which may contain regular expression capturing group substitution strings).
+   * @param duration the time coverage duration string.
+   *
+   * @return a RegExpAndDurationTimeCoverageEnhancer that will apply the match pattern to the dataset path.
+   */
+  public static RegExpAndDurationTimeCoverageEnhancer
+  getInstanceToMatchOnDatasetPath( String matchPattern,
+                                   String substitutionPattern,
+                                   String duration )
+  {
+    return new RegExpAndDurationTimeCoverageEnhancer(
+            matchPattern, substitutionPattern,
+            duration, MatchTarget.DATASET_PATH );
+  }
 
   /**
    * Constructor
@@ -70,12 +118,22 @@ public class RegExpAndDurationTimeCoverageEnhancer implements DatasetEnhancer
    * @param matchPattern a regular expression used to match against the CrawlableDataset name.
    * @param substitutionPattern used, after substitution with the regular expression capturing groups, as the start time for a time coverage.
    * @param duration used as the duration string for a time coverage.
+   * @param matchTarget indicates what information to match on (e.g., the dataset path).
    */
-  public RegExpAndDurationTimeCoverageEnhancer( String matchPattern, String substitutionPattern, String duration )
+  private RegExpAndDurationTimeCoverageEnhancer( String matchPattern,
+                                                String substitutionPattern,
+                                                String duration,
+                                                MatchTarget matchTarget )
   {
+    if ( matchPattern == null ) throw new IllegalArgumentException( "Null match pattern not allowed.");
+    if ( substitutionPattern == null ) throw new IllegalArgumentException( "Null substitution pattern not allowed.");
+    if ( duration == null ) throw new IllegalArgumentException( "Null duration not allowed.");
+    if ( matchTarget == null ) throw new IllegalArgumentException( "Null match target not allowed.");
+
     this.matchPattern = matchPattern;
     this.substitutionPattern = substitutionPattern;
     this.duration = duration;
+    this.matchTarget = matchTarget;
 
     try
     {
@@ -88,6 +146,7 @@ public class RegExpAndDurationTimeCoverageEnhancer implements DatasetEnhancer
     }
   }
 
+  public MatchTarget getMatchTarget() { return this.matchTarget; }
   public String getMatchPattern() { return matchPattern; }
   public String getSubstitutionPattern() { return substitutionPattern; }
   public String getDuration() { return duration; }
@@ -102,7 +161,15 @@ public class RegExpAndDurationTimeCoverageEnhancer implements DatasetEnhancer
       return false;
     }
 
-    java.util.regex.Matcher matcher = this.pattern.matcher( crDataset.getName() );
+    String matchTargetString;
+    if ( this.matchTarget.equals( MatchTarget.DATASET_NAME ))
+      matchTargetString = crDataset.getName();
+    else if ( this.matchTarget.equals( MatchTarget.DATASET_PATH ))
+      matchTargetString = crDataset.getPath();
+    else
+      throw new IllegalStateException( "Unknown match target [" + this.matchTarget.toString() + "].");
+
+    java.util.regex.Matcher matcher = this.pattern.matcher( matchTargetString );
     if ( ! matcher.find() )
     {
       return ( false ); // Pattern not found.

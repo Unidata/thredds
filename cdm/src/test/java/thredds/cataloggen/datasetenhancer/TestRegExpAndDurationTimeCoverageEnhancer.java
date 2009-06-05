@@ -30,17 +30,12 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-// $Id: TestRegExpAndDurationTimeCoverageEnhancer.java 61 2006-07-12 21:36:00Z edavis $
 package thredds.cataloggen.datasetenhancer;
 
 import junit.framework.*;
 import thredds.catalog.InvDatasetImpl;
 import thredds.crawlabledataset.CrawlableDataset;
-import thredds.crawlabledataset.CrawlableDatasetFilter;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Date;
+import thredds.crawlabledataset.mock.MockCrawlableDataset;
 
 /**
  * _more_
@@ -66,7 +61,7 @@ public class TestRegExpAndDurationTimeCoverageEnhancer extends TestCase
   /**
    * Test ...
    */
-  public void testSuccess()
+  public void testDatasetNameMatchSuccess()
   {
     String matchPattern = "NDFD_CONUS_5km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).grib2";
     String substitutionPattern = "$1-$2-$3T$4:$5:00";
@@ -74,19 +69,20 @@ public class TestRegExpAndDurationTimeCoverageEnhancer extends TestCase
 
     String dsName = "NDFD_CONUS_5km_20060325_1200.grib2";
 
-    RegExpAndDurationTimeCoverageEnhancer me =
-            new RegExpAndDurationTimeCoverageEnhancer(
-                    matchPattern, substitutionPattern, duration );
-    assertTrue( me != null );
+    RegExpAndDurationTimeCoverageEnhancer timeCoverageEnhancer =
+            RegExpAndDurationTimeCoverageEnhancer
+                    .getInstanceToMatchOnDatasetName(
+                            matchPattern, substitutionPattern, duration );
+    assertTrue( timeCoverageEnhancer != null );
 
     InvDatasetImpl ds = new InvDatasetImpl( null, dsName );
-    CrawlableDataset crDs = new MyCrDs( dsName, dsName );
+    CrawlableDataset crDs = new MockCrawlableDataset( dsName, false );
 
     assertTrue( "Failed to add metadata.",
-                me.addMetadata( ds, crDs ));
+                timeCoverageEnhancer.addMetadata( ds, crDs ));
   }
 
-  public void testFail()
+  public void testDatasetNameMatchFail()
   {
     String matchPattern = "NDFD_CONUS_5km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).grib2";
     String substitutionPattern = "$1-$2-$3T$4:$5:00";
@@ -94,92 +90,46 @@ public class TestRegExpAndDurationTimeCoverageEnhancer extends TestCase
 
     String dsName = "NDFD_CONUS_5km_200600325_1200.grib2";
 
-    RegExpAndDurationTimeCoverageEnhancer me =
-            new RegExpAndDurationTimeCoverageEnhancer(
-                    matchPattern, substitutionPattern, duration );
-    assertTrue( me != null );
+    RegExpAndDurationTimeCoverageEnhancer timeCoverageEnhancer =
+            RegExpAndDurationTimeCoverageEnhancer
+                    .getInstanceToMatchOnDatasetName(
+                            matchPattern, substitutionPattern, duration );
+    assertTrue( timeCoverageEnhancer != null );
 
     InvDatasetImpl ds = new InvDatasetImpl( null, dsName );
-    CrawlableDataset crDs = new MyCrDs( dsName, dsName );
+    CrawlableDataset crDs = new MockCrawlableDataset( dsName, false );
 
     assertTrue( "Unexpected success adding metadata.",
-                ! me.addMetadata( ds, crDs ));
+                ! timeCoverageEnhancer.addMetadata( ds, crDs ));
   }
 
-  private class MyCrDs implements CrawlableDataset
+  public void testDatasetPathMatchSuccess()
   {
-    private String _path;
-    private String _name;
+    String matchPattern = "prod/sref.([0-9]{4})([0-9]{2})([0-9]{2})/([0-9]{2})/pgrb_biasc/sref_([^.]*)\\.t\\4z\\.pgrb([0-9]{3})\\.(.*)\\.grib2$";
+    String substitutionPattern = "$1-$2-$3T$4";
+//    String substitutionPattern = "$1-$2-$3T$4 Grid $6 member $5-$7";
+    String duration = "96 hours";
 
-    private MyCrDs( String path, String name )
-    {
-      if ( ! path.endsWith( name)) throw new IllegalArgumentException( "Path <"+path+"> must end with name <"+name+">.");
-      if ( name.indexOf( "/") != -1 ) throw new IllegalArgumentException( "Name <"+name+"> must not contain slash (\"/\".");
-      this._path = path;
-      this._name = name;
-    }
+    String dsName = "/data/nccf/com/sref/prod/sref.20090603/03/pgrb_biasc/sref_eta.t03z.pgrb212.n2.grib2";
 
-    public Object getConfigObject()
-    {
-      return null;
-    }
+    RegExpAndDurationTimeCoverageEnhancer timeCoverageEnhancer =
+            RegExpAndDurationTimeCoverageEnhancer
+                    .getInstanceToMatchOnDatasetPath(
+                            matchPattern, substitutionPattern, duration );
+    assertTrue( timeCoverageEnhancer != null );
 
-    public String getPath()
-    {
-      return _path;
-    }
+    InvDatasetImpl ds = new InvDatasetImpl( null, dsName );
+    CrawlableDataset crDs = new MockCrawlableDataset( dsName, false );
 
-    public String getName()
-    {
-      return _name;
-    }
+    assertTrue( "Failed to add metadata.",
+                timeCoverageEnhancer.addMetadata( ds, crDs ) );
 
-    public CrawlableDataset getParentDataset()
-    {
-      return null;
-    }
-
-    public boolean exists()
-    {
-      return true;
-    }
-
-    public boolean isCollection()
-    {
-      return false;
-    }
-
-    public CrawlableDataset getDescendant( String relativePath )
-    {
-      return null;
-    }
-
-    public List listDatasets() throws IOException
-    {
-      return null;
-    }
-
-    public List listDatasets( CrawlableDatasetFilter filter ) throws IOException
-    {
-      return null;
-    }
-
-    public long length()
-    {
-      return 0;
-    }
-
-    public Date lastModified() // or long milliseconds?
-    {
-      return null;
-    }
+    // This dataset hasn't been finalized so ds.getTimeCoverage() doesn't work.
+    String startDateString = ds.getLocalMetadata().getTimeCoverage().getStart().getText();
+    String expectedStartDateString = "2009-06-03T03";
+    assertTrue( "TimeCoverage start date [" + startDateString + "] not as expected [" + expectedStartDateString + "].",
+                startDateString.equals( expectedStartDateString ));
   }
+
+
 }
-/*
- * $Log: TestRegExpAndDurationTimeCoverageEnhancer.java,v $
- * Revision 1.1  2006/03/27 22:30:24  edavis
- * Add some tests for RegExpAndDurationTimeCoverageEnhancer. (Was getting
- * java.lang.NumberFormatException in certain situations but looks like a synchronize
- * issue in thredds.datatype.DateType rather than a problem here.)
- *
- */

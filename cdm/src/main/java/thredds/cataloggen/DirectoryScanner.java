@@ -210,7 +210,7 @@ public class DirectoryScanner
          && duration != null )
     {
       enhancerList = new ArrayList();
-      enhancerList.add( new RegExpAndDurationTimeCoverageEnhancer( dsNameMatchPattern, startTimeSubstitutionPattern, duration ) );
+      enhancerList.add( RegExpAndDurationTimeCoverageEnhancer.getInstanceToMatchOnDatasetName( dsNameMatchPattern, startTimeSubstitutionPattern, duration ) );
     }
     CatalogBuilder catBuilder = new StandardCatalogBuilder( prefixPath, null, collectionCrDs, filter, service,
                                                             addIdBase, null, null, addDatasetSize,

@@ -963,12 +963,19 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
   {
     DatasetEnhancer timeCovEnhancer = null;
 
-    String match = addTimeCovElem.getAttributeValue( "datasetNameMatchPattern" );
+    String matchName = addTimeCovElem.getAttributeValue( "datasetNameMatchPattern" );
+    String matchPath = addTimeCovElem.getAttributeValue( "datasetPathMatchPattern" );
     String subst = addTimeCovElem.getAttributeValue( "startTimeSubstitutionPattern" );
     String duration = addTimeCovElem.getAttributeValue( "duration" );
-    if ( match != null && subst != null && duration != null )
+    if ( matchName != null && subst != null && duration != null )
     {
-      timeCovEnhancer = new RegExpAndDurationTimeCoverageEnhancer( match, subst, duration );
+      timeCovEnhancer = RegExpAndDurationTimeCoverageEnhancer
+              .getInstanceToMatchOnDatasetName( matchName, subst, duration );
+    }
+    else if ( matchPath != null && subst != null && duration != null )
+    {
+      timeCovEnhancer = RegExpAndDurationTimeCoverageEnhancer
+              .getInstanceToMatchOnDatasetPath( matchPath, subst, duration );
     }
 
     return timeCovEnhancer;
