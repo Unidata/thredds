@@ -17,10 +17,13 @@ Changes in version 4.0
   * netcdf-java 4.0
 
 Release Details:
- 14:
+ 15:
   opendap configuration in threddsConfig.xml
   opendap: add DAS to DDX with myDDS.ingestDAS( ds.getDAS());
   Add Reinit back
+  Enhance datasetScan/addTimeCoverage to allow matching on the dataset path
+  Update the NCEP SREF datasets in IDD and IDV catalogs
+ 14:
   WMS: minor configuration improvements
   cdmremote service
  12:
