@@ -18,6 +18,7 @@ Changes in version 4.0
 
 Release Details:
  14:
+  opendap configuration in threddsConfig.xml
   opendap: add DAS to DDX with myDDS.ingestDAS( ds.getDAS());
   Add Reinit back
   WMS: minor configuration improvements

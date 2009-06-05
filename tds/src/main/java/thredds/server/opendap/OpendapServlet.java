@@ -58,7 +58,6 @@ import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.NetcdfFile;
-import org.apache.catalina.connector.ClientAbortException;
 
 /**
  * THREDDS opendap server.
@@ -73,17 +72,13 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OpendapServlet.class);
 
   private boolean allowDeflate = false; // handled by Tomcat
-  private String serviceId, serviceTitle;
-  private String latestServiceId, latestServiceTitle;
 
-  private String odapVersionString;
-  private String odapSpecVersionString = "opendap/3.7";
-  private String odapImplVersionString = null;
+  private String odapVersionString = "opendap/3.7";
 
   private URI baseURI = null;
 
-  private Object syncLock = new Object(); // thread syncronization.
-  private int HitCounter = 0; // Count "hits" on the server
+  private int ascLimit = 50;
+  private int binLimit = 500;
 
   private boolean track = false;
 
@@ -94,21 +89,10 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
 
     log = org.slf4j.LoggerFactory.getLogger(getClass());
 
-    // Configure OPeNDAP spec and impl version numbers
-    this.odapImplVersionString = ThreddsConfig.get("odapImplVersion", null);
-    this.odapVersionString = this.odapSpecVersionString
-            + (this.odapImplVersionString != null
-            ? " \r\n " + this.odapImplVersionString : "");
+    this.ascLimit = ThreddsConfig.getInt("ascLimit", ascLimit);
+    this.binLimit = ThreddsConfig.getInt("binLimit", binLimit);
 
-    serviceId = getInitParameter("serviceId");
-    if (serviceId == null) serviceId = "ncdods";
-    serviceTitle = getInitParameter("serviceTitle");
-    if (serviceTitle == null) serviceTitle = "netCDF-OpenDAP Server";
-
-    latestServiceId = getInitParameter("latestServiceId");
-    if (latestServiceId == null) latestServiceId = "latest";
-    latestServiceTitle = getInitParameter("latestServiceTitle");
-    if (latestServiceTitle == null) latestServiceTitle = "netCDF-OpenDAP Server";
+    this.odapVersionString = ThreddsConfig.get("serverVersion", odapVersionString);
 
     // debugging actions
     makeDebugActions();
@@ -780,7 +764,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
       }
       log.debug("total size={}", size);
       double dsize = size/(1000 * 1000);
-      double maxSize = isAscii ? 50 : 500 ; // Mbytes
+      double maxSize = isAscii ? ascLimit : binLimit ; // Mbytes
       if (dsize > maxSize) {
         log.info("Reject request size = {} Mbytes", dsize);
         throw new IllegalArgumentException("Request too big=" + dsize+" Mbytes, max="+maxSize);

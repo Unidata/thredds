@@ -50,29 +50,31 @@ import ucar.nc2.units.TimeUnit;
 import ucar.nc2.util.xml.RuntimeConfigParser;
 
 /**
- * Read and process the threddsConfig.xml file
+ * Read and process the threddsConfig.xml file.
+ * You can access the values by calling ThreddsConfig.getXXX(name1.name2), where
+ * <pre>
+ *  <name1>
+ *   <name2>value</name2>
+ *  </name1>
+ * </pre>
  */
 public class ThreddsConfig {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( ThreddsConfig.class );
 
 
-  private static javax.servlet.ServletContext _context;
   private static String _filename;
   private static Element rootElem;
 
-  //private static HashMap paramHash;
   private static List<String> catalogRoots;
   private static List<String> contentRootList;
 
-  public static void init(javax.servlet.ServletContext context, String filename) {
-    _context = context;
+  public static void init( String filename) {
     _filename = filename;
 
     readConfig();
   }
 
   static void readConfig() {
-    //paramHash = new HashMap();
     catalogRoots = new ArrayList<String>();
     contentRootList = new ArrayList<String>();
 
@@ -93,20 +95,6 @@ public class ThreddsConfig {
       return;
     }
     rootElem = doc.getRootElement();
-
-    /* context-param : may override the ones in web.xml
-    List paramList = rootElem.getChildren("context-param");
-    for (int j = 0; j < paramList.size(); j++) {
-      Element paramElem = (Element) paramList.get(j);
-      String name = paramElem.getChildText("param-name");
-      String value = paramElem.getChildText("param-value");
-      if ((name == null) || (value == null)) {
-        log.error("ThreddsConfig: incorrectly formed context-param " + name + " " + value);
-        continue;
-      }
-      paramHash.put(name, value);
-      //System.out.println("param= "+ name + " " + value);
-    } */
 
     List<Element> rootList = rootElem.getChildren("catalogRoot");
     for (Element catrootElem : rootList) {
@@ -166,14 +154,6 @@ public class ThreddsConfig {
   {
     return Collections.unmodifiableList( contentRootList);
   }
-
-  /* static public String getInitParameter(String name, String defaultValue) {
-    if (null != paramHash.get(name))
-      return (String) paramHash.get(name);
-
-    String value = _context.getInitParameter(name);
-    return (value == null) ? defaultValue : value;
-  } */
 
   static public String get(String paramName, String defValue) {
     String s = getParam( paramName);

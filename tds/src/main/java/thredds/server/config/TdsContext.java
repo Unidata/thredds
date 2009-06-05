@@ -238,7 +238,7 @@ public class TdsContext
     // read in persistent user-defined params from threddsConfig.xml
     File tdsConfigFile = this.contentDirSource.getFile( this.getTdsConfigFileName() );
     String tdsConfigFilename = tdsConfigFile != null ? tdsConfigFile.getPath() : "";
-    ThreddsConfig.init( servletContext, tdsConfigFilename );
+    ThreddsConfig.init( tdsConfigFilename );
 
     File logDir = new File( this.contentDirectory, "logs");
     if ( ! logDir.exists())
