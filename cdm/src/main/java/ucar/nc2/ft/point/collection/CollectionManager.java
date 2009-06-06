@@ -84,8 +84,10 @@ public class CollectionManager implements TimedCollection {
       filter = collectionDesc.substring(posWildcard + 1);
 
     File[] files = (filter == null) ? dir.listFiles() : dir.listFiles(new WildcardMatchOnNameFilter( filter));
-    c = new ArrayList<TimedCollection.Dataset>(files.length);
-    for (File f : files)
+    List<File> fileList = Arrays.asList(files);
+    Collections.sort(fileList);
+    c = new ArrayList<TimedCollection.Dataset>(fileList.size());
+    for (File f : fileList)
       c.add(new Dataset(f, dateFormatMark));
 
     if (dateFormatMark != null) {
