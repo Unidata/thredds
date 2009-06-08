@@ -194,9 +194,8 @@ public class WMSController extends AbstractController {
 
       if (request.equalsIgnoreCase("GetCapabilities")) {
         String service = params.getMandatoryString("service");
-        if (!service.equalsIgnoreCase("WMS")) {
+        if (!service.equalsIgnoreCase("WMS"))
           throw new WmsException("The SERVICE parameter must be WMS");
-        }
 
         errMessage = "Error encountered while processing GetCapabilities request";
         long startupDate = this.getApplicationContext().getStartupDate();
@@ -208,14 +207,15 @@ public class WMSController extends AbstractController {
       } else if (request.equalsIgnoreCase("GetMap")) {
         errMessage = "Error encountered while processing GetMap request ";
         response = new WmsGetMap(params, dataset, usageLogEntry);
-        // LOOK how do we close the log messages ?
-        log.info("GetMap: " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
+
       } else if (request.equalsIgnoreCase("GetLegendGraphic")) {
         errMessage = "Error encountered while processing GetLegendGraphic request ";
         response = new GetLegendGraphic(params, dataset, usageLogEntry);
+
       } else if (request.equalsIgnoreCase("GetFeatureInfo")) {
         errMessage = "Error encountered while processing GetFeatureInfo request ";
         response = new GetFeatureInfo(params, dataset, usageLogEntry);
+
       } else if (request.equals("GetMetadata")) {
         errMessage = "Error encountered while processing GetMetadata request ";
         MetadataResponse metaController = new MetadataResponse(params, dataset, usageLogEntry);
@@ -228,18 +228,19 @@ public class WMSController extends AbstractController {
 //
 //        }
       else
-        throw new WmsException("Unsupported REQUEST parameter");
-
+        throw new WmsException("Unsupported REQUEST parameter="+request);
 
       result = response.processRequest(res, req);
       closeDataset(dataset);
 
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
       return result;
-    }
-    catch (MetadataException me) {
+
+    } catch (MetadataException me) {
       log.debug("MetadataException: " + me.toString());
-    }
-    catch (WmsException e) {
+      // falls through
+
+    } catch (WmsException e) {
       log.debug("WMS Exception! " + errMessage);
       if (versionString.equals("1.1.1")) {
         model.put("exception", new Wms1_1_1Exception(e));
@@ -252,25 +253,36 @@ public class WMSController extends AbstractController {
         jspPage = "displayWmsException";
       }
 
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
       return new ModelAndView(jspPage, model);
-    }
-    catch (java.net.SocketException se) { // Google Earth does thius a lot for some reason
-      log.info("handleRequestInternal(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -10), se);
+
+    } catch (java.net.SocketException se) { // Google Earth does this a lot for some reason
+      log.info(UsageLog.closingMessageForRequestContext(ServletUtil.STATUS_CLIENT_ABORT, -1), se);
       return null;
-    }
-    catch (Throwable t) {
-      log.info("handleRequestInternal(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1), t);
+
+    } catch (IOException e) {
+      String eName = e.getClass().getName(); // dont want compile-time dependency on ClientAbortException
+      if (eName.equals("org.apache.catalina.connector.ClientAbortException")) {
+        log.info("ClientAbortException: " + e.getMessage());
+        log.info(UsageLog.closingMessageForRequestContext(ServletUtil.STATUS_CLIENT_ABORT, -1));
+        return null;
+      }
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1), e);
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       return null;
-    }
 
-    finally {
+    } catch (Throwable t) {
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1), t);
+      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      return null;
+
+    } finally {
       //if ((result == null) || (result.getModel() == null) || (result.getModel().get("dataset") == null)) {
       closeDataset(dataset);
       // } // else use DatasetCloser HandlerInterceptor
     }
 
-    log.info("handleRequestInternal(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -3));
+    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
     return null;
   }
 
