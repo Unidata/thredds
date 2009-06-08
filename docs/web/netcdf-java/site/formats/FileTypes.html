@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+</head>
+
+<body>
+<h1>CDM File Types</h1>
+<p>The NetCDF-Java/CDM library provides a uniform API to many different scientific file formats and remote access protocols. Generally, application programmers should respect the encapsolation of these formats. When information is needed about the underlying file type,  <strong>NetcdfFile.getFileType()</strong> and <strong>NetcdfFile.getFileDescription()</strong> methods can be called.</p>
+<p>The <em><strong>FileType</strong></em> must be unique and once registered, will never change, so that application code can test against it. The <em><strong>Description</strong></em> is human-readable and may present variations when appropriate, such as adding  version information, etc. The <em><strong>Reference URL</strong></em>(s) are informational, and may change as needed.</p>
+<p>To support this functionality, <strong>getFileType()</strong> and <strong>getFileDescription()</strong> methods have been added to the IOServiceProvider interface as of version 4.0.46. You will need to add these methods to your IOServiceProvider implementations.</p>
+<p>To register your format/IOServiceProvider, or to send corrections and additions to this table, please send email to <a href="mailto:support-netcdf-java@unidata.ucar.edu">support-netcdf-java@unidata.ucar.edu</a>.</p>
+<table width="1063" border="1">
+  <tr>
+    <th width="98" scope="col">FileType</th>
+    <th width="293" scope="col">Description</th>
+    <th width="650" scope="col">Reference URL</th>
+  </tr>
+  <tr>
+    <td>BUFR</td>
+    <td>WMO Binary Universal Form</td>
+    <td><a href="http://www.wmo.int/pages/prog/www/WMOCodes/OperationalCodes.html">http://www.wmo.int/pages/prog/www/WMOCodes/OperationalCodes.html</a></td>
+  </tr>
+  <tr>
+    <td>CINRAD</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>DMSP</td>
+    <td>Defense Meteorological Satellite Program</td>
+    <td><a href="http://dmsp.ngdc.noaa.gov/">http://dmsp.ngdc.noaa.gov/</a></td>
+  </tr>
+  <tr>
+    <td>DORADE</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>FYSAT</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>GempakGrid</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>GempakSurface</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>GINI</td>
+    <td>GOES Ingest and NOAAPORT Interface</td>
+    <td><a href="http://weather.unisys.com/wxp/Appendices/Formats/GINI.html">http://weather.unisys.com/wxp/Appendices/Formats/GINI.html</a></td>
+  </tr>
+  <tr>
+    <td>GRIB1</td>
+    <td>WMO GRIB Edition 1</td>
+    <td><a href="http://www.wmo.ch/pages/prog/www/WMOCodes/Guides/GRIB/GRIB1-Contents.html">http://www.wmo.ch/pages/prog/www/WMOCodes/Guides/GRIB/GRIB1-Contents.html</a></td>
+  </tr>
+  <tr>
+    <td>GRIB2</td>
+    <td>WMO GRIB Edition 2</td>
+    <td><a href="http://www.wmo.ch/pages/prog/www/WMOCodes/Guides/GRIB/GRIB2_062006.pdf">http://www.wmo.ch/pages/prog/www/WMOCodes/Guides/GRIB/GRIB2_062006.pdf</a></td>
+  </tr>
+  <tr>
+    <td>GTOPO</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>HDF4</td>
+    <td>&nbsp;</td>
+    <td><a href="http://www.hdfgroup.org/products/hdf4/">http://www.hdfgroup.org/products/hdf4/</a></td>
+  </tr>
+  <tr>
+    <td>HDF5</td>
+    <td>&nbsp;</td>
+    <td><a href="http://www.hdfgroup.org/HDF5/">http://www.hdfgroup.org/HDF5/</a></td>
+  </tr>
+  <tr>
+    <td>McIDASArea</td>
+    <td>McIDAS area file </td>
+    <td><a href="http://www.ssec.wisc.edu/mcidas/doc/misc_doc/area2.html">http://www.ssec.wisc.edu/mcidas/doc/misc_doc/area2.html</a></td>
+  </tr>
+  <tr>
+    <td>netCDF</td>
+    <td>NetCDF classic format</td>
+    <td><a href="http://www.unidata.ucar.edu/software/netcdf/index.html">http://www.unidata.ucar.edu/software/netcdf/index.html</a></td>
+  </tr>
+  <tr>
+    <td>netCDF-4</td>
+    <td>NetCDF-4 format</td>
+    <td><a href="http://www.unidata.ucar.edu/software/netcdf/index.html">http://www.unidata.ucar.edu/software/netcdf/index.html</a></td>
+  </tr>
+  <tr>
+    <td height="32">NEXRAD-2</td>
+    <td><p>NEXRAD Level-II Base Data</p></td>
+    <td><a href="http://www.ncdc.noaa.gov/oa/radar/radarresources.html">http://www.ncdc.noaa.gov/oa/radar/radarresources.html</a></td>
+  </tr>
+  <tr>
+    <td height="32">NEXRAD-3</td>
+    <td>NEXRAD Level-III Products</td>
+    <td><a href="http://www.ncdc.noaa.gov/oa/radar/radarresources.html">http://www.ncdc.noaa.gov/oa/radar/radarresources.html</a></td>
+  </tr>
+  <tr>
+    <td>NLDN</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>NMCLegacy</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>OPeNDAP</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>URF</td>
+    <td>Universal Radar Format</td>
+    <td><a href="ftp://ftp.sigmet.com/outgoing/manuals/program/cuf.pdf">ftp://ftp.sigmet.com/outgoing/manuals/program/cuf.pdf</a></td>
+  </tr>
+  <tr>
+    <td>USPLN</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+</body>
+</html>
