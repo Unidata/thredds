@@ -90,7 +90,7 @@ public class NetcdfCFWriter {
   public void makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
           LatLonRect llbb, int horizStride,
           Range zRange,
-          DateRange range, int stride_time,
+          DateRange dateRange, int stride_time,
           boolean addLatLon)
           throws IOException, InvalidRangeException {
 
@@ -119,17 +119,17 @@ public class NetcdfCFWriter {
 
       GridDatatype grid = gds.findGridDatatype(gridName);
       GridCoordSystem gcsOrg = grid.getCoordinateSystem();
+      CoordinateAxis1DTime timeAxis = gcsOrg.getTimeAxis1D();
 
       // make subset if needed
       Range timeRange = null;
-      if (range != null) {
-        CoordinateAxis1DTime timeAxis = gcsOrg.getTimeAxis1D();
-        int startIndex = timeAxis.findTimeIndexFromDate(range.getStart().getDate());
-        int endIndex = timeAxis.findTimeIndexFromDate(range.getEnd().getDate());
+      if ((dateRange != null) && (timeAxis != null)) {
+        int startIndex = timeAxis.findTimeIndexFromDate(dateRange.getStart().getDate());
+        int endIndex = timeAxis.findTimeIndexFromDate(dateRange.getEnd().getDate());
         if (startIndex < 0)
-          throw new InvalidRangeException("start time=" + range.getStart().getDate() + " must be >= " + timeAxis.getTimeDate(0));
+          throw new InvalidRangeException("start time=" + dateRange.getStart().getDate() + " must be >= " + timeAxis.getTimeDate(0));
         if (endIndex < 0)
-          throw new InvalidRangeException("end time=" + range.getEnd().getDate() + " must be >= " + timeAxis.getTimeDate(0));
+          throw new InvalidRangeException("end time=" + dateRange.getEnd().getDate() + " must be >= " + timeAxis.getTimeDate(0));
         timeRange = new Range(startIndex, endIndex);
       }
 
@@ -338,23 +338,23 @@ public class NetcdfCFWriter {
   }
 
   public static void main(String args[]) throws IOException, InvalidRangeException, ParseException {
-    String fileIn = "D:/work/test.nc";
-    String fileOut = "D:/work/testCF.nc";
+    String fileIn = "dods://motherlode.ucar.edu/repository/entry/show/output:data.opendap/entryid:c41a3a26-57e5-4b15-b8b1-a8762b6f02c7/dodsC/entry";
+    String fileOut = "C:/temp/testCF.nc";
 
     ucar.nc2.dt.GridDataset gds = ucar.nc2.dt.grid.GridDataset.open(fileIn);
 
     NetcdfCFWriter writer = new NetcdfCFWriter();
 
     List<String> gridList = new ArrayList<String>();
-    gridList.add("Temperature");
+    gridList.add("Z_sfc");
 
     DateFormatter format = new DateFormatter();
     Date start = format.isoDateTimeFormat("2003-06-01T03:00:00Z");
     Date end = format.isoDateTimeFormat("2004-01-01T00:00:00Z");
 
-    writer.makeFile(fileOut, gds, gridList,
-            new LatLonRect(new LatLonPointImpl(30, -109), 10, 50),
-            null, // new DateRange(start, end),
+    writer.makeFile(fileOut, gds, gridList, null,
+            // new LatLonRect(new LatLonPointImpl(30, -109), 10, 50),
+            new DateRange(start, end),
             true,
             1, 1, 1);
 
