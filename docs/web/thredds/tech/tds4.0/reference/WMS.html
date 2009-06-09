@@ -8,7 +8,7 @@
   dl {margin: 10px 5px 5px 15px;)
   </style></head>
 <body>
-<h1><img src="../../images/unidataLogo.png" alt="Unidata" align="middle" height="75" width="75"> THREDDS Web Coverage Service</h1>
+<h1><img src="../../images/unidataLogo.png" alt="Unidata" align="middle" height="75" width="75"> THREDDS Web Map Service</h1>
 <div class="head">
 <address> </address>
 </div>
@@ -39,8 +39,15 @@ services).</p>
 <p>You can specify your own OGC metadata file  in the <strong>threddsConfig.xml</strong> file:</p>
 <pre style="margin-left: 40px;">&lt;WMS&gt;<br>  ...<br>  &lt;ogcMetaXML&gt;OGCMeta.xml&lt;/ogcMetaXML&gt; <br>&lt;/WMS&gt;</pre>
 <p>Use an absolute file path, or a path reletive to <strong>${tomcat_home}/content/thredds/</strong>. Otherwise the default file <strong>WEB-INF/OGCMeta.xml</strong>. is used.</p>
-<p>&nbsp;</p>
-<h3>Serving Remote Dataset</h3>
+<h3>Add a new JVM option to Tomcat Startup</h3>
+<p>You should  add the following definition to the JVM command line when starting:</p>
+<pre wrap="">-Djava.awt.headless=true
+</pre>
+<p>The standard way you do this is by modifying the JAVA_OPTS environmental variable in <strong>${tomcat_home}/bin/startup.sh</strong>:</p>
+<pre>JAVA_OPTS="-Xmx1024m -Xms512m -server -Djava.awt.headless=true"
+export JAVA_OPTS  </pre>
+<p> This should eliminate an obscure bug concerning X servers that can crash Tomcat.</p>
+<h3>Serving Remote Datasets</h3>
 <p>The TDS can also
 serve remote datasets with the WMS protocol if configured to do so. It
 must be explicitly configured&nbsp;in the <code>threddsConfig.xml</code> configuration file. This is done by adding an <strong>allowRemote</strong> element to the <strong>WMS</strong> element as follows:</p><pre style="margin-left: 40px;">&lt;WMS&gt;<br>  &lt;allow&gt;true&lt;/allow&gt;<br>  &lt;allowRemote&gt;true&lt;/allowRemote&gt; <br>  ...<br>&lt;/WMS&gt;</pre><p>A slight extension of the WMS Dataset URL format allows the

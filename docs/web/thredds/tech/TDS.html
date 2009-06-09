@@ -1,7 +1,8 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html><head>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <title>TDS</title></head>
+  <title>TDS</title>
+</head>
 <body>
     <h1 align="left"> <img src="images/unidataLogo.png" alt="Unidata" align="middle" height="75" width="75"><strong>THREDDS Data Server</strong></h1>
     <hr>
@@ -17,7 +18,7 @@ Atmospheric Research (<a href="http://www.ucar.edu/">UCAR</a>), and is sponsored
 are used to provide virtual directories of available data and their
 associated metadata. These catalogs can be generated dynamically or
 statically. </li>
-  <li>The <a href="http://www.unidata.ucar.edu/software/netcdf-java/">Netcdf-Java library</a>
+  <li>The <a href="http://www.unidata.ucar.edu/software/netcdf-java/">Netcdf-Java/CDM library</a>
 reads NetCDF, OpenDAP, and HDF5 datasets, as well as other binary
 formats such as GRIB and NEXRAD into a Common Data Model (CDM),
 essentially an (extended) netCDF view of the data. Datasets that can be
@@ -30,10 +31,6 @@ read through the Netcdf-Java library are called <em>CDM datasets</em>.</li>
 protocol, for any "gridded" dataset whose coordinate system information
 is complete. This software was developed by Jon Blower (University of
 Reading (UK) E-Science Center) as part of the <a href="http://behemoth.nerc-essc.ac.uk/ncWMS/godiva2.html">ESSC Web Map Service for environmental data</a> (aka Godiva2).</li>
-  <li>An integrated <a href="interfaceSpec/NetcdfSubsetService.html">NetCDF Subset Service</a>
-allows subsetting of THREDDS datasets, using earth coordinates (such as
-lat/lon bounding boxes and date ranges) and returns netCDF binary
-files, XML or CSV ascii. <em><strong>This is a prototype, please do not rely on the APIs until announced as ready for use</strong></em>. </li>
 </ol>
 <p>The THREDDS Data Server is implemented in 100% Java, and is
 contained in a single war file, which allows very easy installation
@@ -51,9 +48,8 @@ you need regular access to large amounts of data, please contact <a href="mailto
   <li><a href="http://tomcat.apache.org/">Tomcat</a> 5.5 or above, we recommend the latest version of Tomcat 6.x </li>
 </ul>
 <h2>Downloads</h2>
-<p><strong>TDS version 4.0.15</strong> is available as a release
-candidate (RC1). Please use and give us any feedback. We are planning
-on this becoming our stable release within the next week.</p><p>TDS 4.0 has many bug fixes and
+<p><strong>TDS version 4.0 is now the stable release.</strong></p>
+<p>TDS 4.0 has many bug fixes and
 improvements "under the covers" that are not in the 3.17 release.
 Besides using the netcdf-java 4.0 library, the main new feature is the
 addition of an OGC WMS service, thanks to our collaborators Jon Blower
@@ -63,13 +59,15 @@ Service) who did the hard work. </p>
   <li><a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.0/thredds.war">Download</a> the latest version 4.0 (requires Java 1.6.) <a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.0/CHANGES.txt">Change Log</a>. </li>
   <li><a href="tds4.0/UpgradingTo4.0.html">Upgrading to TDS 4.0</a></li><li><a href="tds4.0/reference/index.html">TDS 4.0 Reference Documentation</a> [still porting from&nbsp;3.17]</li>
 </ul>
-<p><strong>TDS version 3.17 </strong>is the stable release. It is no longer being improved, and only critical bugs are being fixed. </p>
+<p><strong>TDS version 3.17 </strong>is the previous stable release. It requires Java 1.5+. It is no longer being improved, and only critical bugs are being fixed. </p>
 <ul>
-  <li><a href="ftp://ftp.unidata.ucar.edu/pub/thredds/3.17/thredds.war">Download</a> the latest stable version (3.17). <a href="ftp://ftp.unidata.ucar.edu/pub/thredds/3.17/CHANGES.txt">Change Log</a>. (requires Java 1.5)</li>
+  <li><a href="ftp://ftp.unidata.ucar.edu/pub/thredds/3.17/thredds.war">Download</a> the latest stable version (3.17). <a href="ftp://ftp.unidata.ucar.edu/pub/thredds/3.17/CHANGES.txt">Change Log</a>. </li>
 </ul>
 <h2>Documentation</h2>
-<ul><li><a href="tutorial/index.html">TDS Installation and Administration Tutorial</a></li>
-  <li><a href="reference/index.html">TDS Reference Documentation</a></li>
+<ul>
+  <li><a href="tutorial/index.html">TDS Installation and Administration Tutorial</a></li>
+  <li>TDS Reference Documentation <a href="tds4.0/reference/index.html">version 4.0</a></li>
+  <li>TDS Reference Documentation <a href="reference/index.html">version 3.17</a></li>
   <li><a href="interfaceSpec/NetcdfSubsetService.html">Netcdf Subset Service</a> (experimental)
     <ul>
       <li><a href="interfaceSpec/StationDataSubsetService.html">Station Subset Service</a></li>
@@ -124,6 +122,6 @@ Common Data Model (CDM) coordinate system validator is no longer part
 of the TDS distribution. Instead it comes as a separate distribution.</p><ul><li><a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.0/cdmvalidator.war">Download</a> the latest cdmvalidator.war file.</li><li><a href="tds4.0/cdmValidator.html">Documentation</a></li><li><a href="http://motherlode.ucar.edu:8080/cdmvalidator/validate.html">CDM Validator</a> on the Unidata server.</li></ul>
 <hr width="100%">
 <address>
-<img src="images/thread.png" height="108" width="110">This document is maintained by John Caron and was last updated on Mar 12, 2009
+<img src="images/thread.png" height="108" width="110">This document is maintained by John Caron and was last updated June 2009
 </address>
 </body></html>
