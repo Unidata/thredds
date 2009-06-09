@@ -65,8 +65,7 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public class WmsGetMap extends LayerBasedResponse
 {
-    private static org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger( WmsGetMap.class );
+    private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( WmsGetMap.class );
 
     protected GetMapRequest getMapRequest;
     
@@ -112,7 +111,14 @@ public class WmsGetMap extends LayerBasedResponse
         // Cycle through all the provided timesteps, extracting data for each step
         List<String> tValues = new ArrayList<String>();
         String timeString = getMapRequest.getDataRequest().getTimeString();
-        List<Integer> tIndices = LayerOps.getTIndices(timeString, layer);
+
+        List<Integer> tIndices = null;
+        try {
+          tIndices = LayerOps.getTIndices(timeString, layer);
+        } catch (IllegalArgumentException e) {
+          throw new WmsException("Incorrect time ("+timeString+") error="+e.getMessage());        
+        }
+
         if (tIndices.size() > 1 && !imageFormat.supportsMultipleFrames())
         {
             throw new WmsException("The image format " + mimeType +
