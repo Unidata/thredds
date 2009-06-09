@@ -177,7 +177,7 @@ public class McIDASGridReader {
 
                 McIDASGridRecord gr = new McIDASGridRecord(entries[i],
                                           header);
-                if (gr.getGridDefRecordId().equals("CONF X:93 Y:65")) {
+                //if (gr.getGridDefRecordId().equals("CONF X:93 Y:65")) {
                     //if (gr.getGridDefRecordId().equals("CONF X:54 Y:47")) {
                     // figure out how to handle Mercator projections
                     // if ( !(gr.getGridDefRecordId().startsWith("MERC"))) {
@@ -188,7 +188,7 @@ public class McIDASGridReader {
                         gdsMap.put(mcdef.toString(), mcdef);
                         gridIndex.addHorizCoordSys(mcdef);
                     }
-                }
+                //}
             } catch (McIDASException me) {
                 logError("problem creating grid dir");
                 return false;
