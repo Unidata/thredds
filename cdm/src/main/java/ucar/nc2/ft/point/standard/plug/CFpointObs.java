@@ -205,7 +205,7 @@ public class CFpointObs extends TableConfigurerImpl {
     else if (ragged_rowSize != null)
       obsTableType = Table.Type.Contiguous;
 
-    // multidim case with Structure (GEMPAK IOSP)
+    // multidim case with Structure
     Structure multidimStruct = null;
     if (obsTableType == null) {
       // Structure(station, time)

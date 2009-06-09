@@ -75,5 +75,11 @@ public class JoinMuiltdimStructure implements Join {
     return parentStructure.findVariable(axisName);
   }
 
-
+    @Override
+  public String toString() {
+    return "JoinMuiltdimStructure{" +
+        "parentStructure=" + parentStructure +
+        ", dimLength='" + dimLength +
+        '}';
+    }
 }

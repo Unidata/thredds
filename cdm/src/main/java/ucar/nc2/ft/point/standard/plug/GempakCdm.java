@@ -291,7 +291,7 @@ public class GempakCdm extends TableConfigurerImpl {
           vars.add(v);
     }
 
-    Structure s =   new StructurePseudo(ds, null, "stnStruct", vars, stationDim);
+    Structure s = new StructurePseudo(ds, null, "stnStruct", vars, stationDim);
     obs.addJoin(new JoinMuiltdimStructure(s, obsDim.getLength()));
     obs.addJoin(new JoinArray( time, JoinArray.Type.modulo, obsDim.getLength()));
 

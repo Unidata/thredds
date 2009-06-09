@@ -64,10 +64,10 @@ public abstract class Table {
 
     switch (config.type) {
 
-      case ArrayStructure: // given array of StructureData
+      case ArrayStructure: // given array of StructureData, stored in config.as
         return new TableArrayStructure(ds, config);
 
-      case Construct: // construct the table from its children
+      case Construct: // construct the table from its children - theres no seperate station table, stn info is duplicated in the obs structure.
         return new TableConstruct(ds, config);
 
       case Contiguous: // contiguous list of child record, using indexes
@@ -82,7 +82,7 @@ public abstract class Table {
       case MultiDimOuter: // outer struct of a multdim
         return new TableMultiDimOuter(ds, config);
 
-      case MultiDimStructure: // obs is a Structure
+      case MultiDimStructure: // flatten a multidim structure
         return new TableMultiDimStructure(ds, config);
 
       case NestedStructure: // Structure or Sequence is nested in the parent
@@ -178,6 +178,11 @@ public abstract class Table {
   }
 
   ///////////////////////////////////////////////////////
+
+  /**
+   * A Structure or PsuedoStructure.
+   * PsuedoStructure defined by all variables with outer dimension = config.dim
+   */
   public static class TableStructure extends Table {
     Structure struct;
     Dimension dim;
@@ -212,8 +217,8 @@ public abstract class Table {
     }
 
     @Override
-    protected void showExtra(Formatter f) {
-      f.format("    struct=%s, dim=%s pseudo=%s%n", struct.getNameAndDimensions(), dim.getName(),
+    protected void showTableExtraInfo(String indent, Formatter f) {
+      f.format("%sstruct=%s, dim=%s pseudo=%s%n", indent, struct.getNameAndDimensions(), dim.getName(),
               (struct instanceof StructurePseudo));
     }
 
@@ -234,6 +239,10 @@ public abstract class Table {
   }
 
   ///////////////////////////////////////////////////////
+
+  /**
+   * ArrayStructure is passed in config.as
+   */
   public static class TableArrayStructure extends Table {
     ArrayStructure as;
     Dimension dim;
@@ -249,8 +258,8 @@ public abstract class Table {
     }
 
     @Override
-    protected void showExtra(Formatter f) {
-      f.format("    ArrayStruct=%s, dim=%s%n", new Section(as.getShape()), dim.getName());
+    protected void showTableExtraInfo(String indent, Formatter f) {
+      f.format("%sArrayStruct=%s, dim=%s%n", indent, new Section(as.getShape()), dim.getName());
     }
 
     @Override
@@ -264,6 +273,14 @@ public abstract class Table {
   }
 
   ///////////////////////////////////////////////////////
+
+  /**
+   * When theres no seperate station table, but info is duplicated in the obs structure.
+   * The name of the structure is in config.structName.
+   * Just return the obs structure iterator, extraction is done elsewhere.
+   * TableConstruct is the parent table, config.structName is the child table.
+   * No variables are added to cols.
+   */
   public static class TableConstruct extends Table {
     Structure struct;
 
@@ -275,8 +292,8 @@ public abstract class Table {
     }
 
     @Override
-    protected void showExtra(Formatter f) {
-      f.format("    ArrayStruct=%s%n", struct.getNameAndDimensions());
+    protected void showTableExtraInfo(String indent, Formatter f) {
+      f.format("%sArrayStruct=%s%n", indent, struct.getNameAndDimensions());
     }
 
     public Variable findVariable(String axisName) {
@@ -289,6 +306,11 @@ public abstract class Table {
   }
 
   ///////////////////////////////////////////////////////
+
+  /**
+   * Contiguous children, using start and numRecords variables in the parent.
+   * TableContiguous is the children, config.struct describes the cols.
+   */
   public static class TableContiguous extends TableStructure {
     private String start; // variable name holding the starting index in parent
     private String numRecords; // variable name holding the number of children in parent
@@ -300,8 +322,8 @@ public abstract class Table {
     }
 
     @Override
-    protected void showExtra(Formatter f) {
-      f.format("    start=%s, numRecords=%s%n", start, numRecords);
+    protected void showTableExtraInfo(String indent, Formatter f) {
+      f.format("%sstart=%s, numRecords=%s%n", indent, start, numRecords);
     }
 
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
@@ -313,6 +335,13 @@ public abstract class Table {
   }
 
   ///////////////////////////////////////////////////////
+
+  /**
+   * The children have a parentIndex, child -> parent.
+   * For efficiency, we scan this data and construct an IndexMap( parentIndex -> list of children),
+   *   i.e. we compute the inverse link, parent -> children.
+   * TableParentIndex is the children, config.struct describes the cols.
+   */
   public static class TableParentIndex extends TableStructure {
     private Map<Integer, List<Integer>> indexMap;
     private String parentIndexName;
@@ -324,8 +353,8 @@ public abstract class Table {
     }
 
     @Override
-    protected void showExtra(Formatter f) {
-      f.format("    parentIndexName=%s, indexMap.size=%d%n", parentIndexName, indexMap.size());
+    protected void showTableExtraInfo(String indent, Formatter f) {
+      f.format("%sparentIndexName=%s, indexMap.size=%d%n", indent, parentIndexName, indexMap.size());
     }
 
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
@@ -337,6 +366,11 @@ public abstract class Table {
   }
 
   ///////////////////////////////////////////////////////
+
+  /**
+   * Linked list of children, using start variable in the parent, and next in the child.
+   * TableLinkedList is the children, config.struct describes the cols.
+   */
   public static class TableLinkedList extends TableStructure {
     private String start; // variable name holding the starting index in parent
     private String next; // variable name holding the next index in child
@@ -355,6 +389,10 @@ public abstract class Table {
   }
 
   ///////////////////////////////////////////////////////
+
+  /**
+   * Actually same as TableStructure, used as a tag for TableMultiDimInner
+   */
    public static class TableMultiDimOuter extends Table.TableStructure {
 
      TableMultiDimOuter(NetcdfDataset ds, TableConfig config) {
@@ -363,8 +401,48 @@ public abstract class Table {
    }
 
    ///////////////////////////////////////////////////////
+
+  /**
+   * A Multim Variable: Variable v(outDim, innerDim) can be thought of as nested structures:
+   *
+   *     Structure {
+   *       Structure si(innerDim);
+   *     } so(outerDim);
+   *
+   * where
+   *   config.outer = outerDim
+   *   config.dim = innerDim
+   *
+   *  So we find all Variables with signature v(outDim, innerDim, ...) and make them into
+   *
+   *  Structure {
+   *    v1(...);
+   *    v2(...);
+   *  } si
+   *
+   * The parent table is a PsuedoStructure:
+   *   Structure {
+   *     v1(innerDim, ...);
+   *     v2(innerDim, ...);
+   *  } so(outDim)
+   *
+   * so the parentStructure is passed into getStructureDataIterator():
+   *   StructureData {
+   *    v1(innerDim, ...);
+   *    v2(innerDim, ...);
+   *  } s
+   *
+   * So we just rearrange this into an ArrayStructure:
+   *    ArrayStructure(innerDim) {
+   *      v1(...);
+   *      v2(...);
+   *    }
+   *
+   * and return the iterator over it.
+   *
+   */
   public static class TableMultiDimInner extends Table {
-    StructureMembers sm; // MultiDim
+    StructureMembers sm; // the inner structure members
     Dimension dim;
     NetcdfDataset ds;
 
@@ -389,8 +467,8 @@ public abstract class Table {
     }
 
     @Override
-    protected void showExtra(Formatter f) {
-      f.format("    StructureMembers=%s, dim=%s%n", sm.getName(), dim.getName());
+    protected void showTableExtraInfo(String indent, Formatter f) {
+      f.format("%sStructureMembers=%s, dim=%s%n", indent, sm.getName(), dim.getName());
     }
 
     @Override
@@ -414,9 +492,13 @@ public abstract class Table {
       return asma.getStructureDataIterator();
     }
 
-  }
+   }
 
   ///////////////////////////////////////////////////////
+
+  /**
+   *
+   */
    public static class TableMultiDimStructure extends Table.TableStructure {
 
      TableMultiDimStructure(NetcdfDataset ds, TableConfig config) {
@@ -437,6 +519,11 @@ public abstract class Table {
    }
 
   ///////////////////////////////////////////////////////
+
+  /**
+   * A Structure inside of a parent Structure.
+   * Name of child member inside parent Structure is config.nestedTableName
+   */
   public static class TableNestedStructure extends Table {
     String nestedTableName; // short name of structure
     Structure struct;
@@ -445,11 +532,15 @@ public abstract class Table {
       super(ds, config);
       this.nestedTableName = config.nestedTableName;
       struct = (Structure) ds.findVariable(config.structName);
+      assert (struct != null);
+
+      for (Variable v : struct.getVariables())
+        cols.add(v);
     }
 
     @Override
-    protected void showExtra(Formatter f) {
-      f.format("    struct=%s, nestedTableName=%s%n", struct.getNameAndDimensions(), nestedTableName);
+    protected void showTableExtraInfo(String indent, Formatter f) {
+      f.format("%sstruct=%s, nestedTableName=%s%n", indent, struct.getNameAndDimensions(), nestedTableName);
     }
 
     public Variable findVariable(String axisName) {
@@ -475,6 +566,10 @@ public abstract class Table {
   }
 
   ///////////////////////////////////////////////////////
+
+  /**
+   * Table is a single StructureData, passed in as config.sdata.
+   */
   public static class TableSingleton extends Table {
     StructureData sdata;
 
@@ -482,11 +577,14 @@ public abstract class Table {
       super(ds, config);
       this.sdata = config.sdata;
       assert (this.sdata != null);
+
+      for (StructureMembers.Member m : sdata.getStructureMembers().getMembers())
+        cols.add(new VariableSimpleAdapter(m));
     }
 
     @Override
-    protected void showExtra(Formatter f) {
-      f.format("    StructureData=%s%n", sdata.getName());
+    protected void showTableExtraInfo(String indent, Formatter f) {
+      f.format("%sStructureData=%s%n", indent, sdata.getName());
     }
 
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
@@ -494,6 +592,9 @@ public abstract class Table {
     }
   }
 
+  /**
+   * Table is a single StructureData, which is empty. Look: replace with TableSingleton ?
+   */
   public static class TableTop extends Table {
     NetcdfDataset ds;
 
@@ -503,7 +604,7 @@ public abstract class Table {
     }
 
     @Override
-    protected void showExtra(Formatter f) {
+    protected void showTableExtraInfo(String indent, Formatter f) {
     }
 
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
@@ -587,10 +688,16 @@ public abstract class Table {
     String s = indent(indent);
     String ftDesc = (featureType == null) ? "" : "featureType=" + featureType.toString();
     f.format("%n%sTable %s: type=%s %s%n", s, getName(), getClass().toString(), ftDesc);
-    showExtra(f);
-    showCoords(f, s);
+    if (extraJoins != null) {
+      f.format("  %sExtraJoins:\n", s);
+      for (Join j : extraJoins) 
+        f.format("   %s  %s \n", s, j);
+    }
+    showTableExtraInfo(indent(indent+2), f);
+    showCoords(s, f);
+    f.format("  %sVariables:\n", s);
     for (VariableSimpleIF v : cols) {
-      f.format("%s  %s %s\n", s, v.getName(), getKind(v.getShortName()));
+      f.format("   %s  %s %s\n", s, v.getName(), getKind(v.getShortName()));
     }
     return indent + 2;
   }
@@ -601,7 +708,7 @@ public abstract class Table {
     return sbuff.toString();
   }
 
-  protected abstract void showExtra(Formatter f);
+  protected abstract void showTableExtraInfo(String indent, Formatter f);
 
   private String getKind(String v) {
     if (v.equals(lat)) return "[Lat]";
@@ -619,7 +726,7 @@ public abstract class Table {
     return "";
   }
 
-  private void showCoords(Formatter out, String indent) {
+  private void showCoords(String indent, Formatter out) {
     boolean gotSome;
     gotSome = showCoord(out, lat, indent);
     gotSome |= showCoord(out, lon, indent);

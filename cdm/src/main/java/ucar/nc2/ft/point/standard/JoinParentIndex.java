@@ -79,4 +79,11 @@ public class JoinParentIndex implements Join {
   }
 
 
+  @Override
+  public String toString() {
+    return "JoinParentIndex{" +
+        "parentStructure=" + parentStructure +
+        ", parentIndex='" + parentIndex +
+        '}';
+  }
 }

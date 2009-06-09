@@ -35,7 +35,7 @@ package ucar.nc2.ft.point.standard;
 import ucar.ma2.StructureData;
 
 /**
- * Keeps track of the iteration through the table
+ * Keeps track of the iteration through nested tables
  * @author caron
  * @since Jan 24, 2009
  */

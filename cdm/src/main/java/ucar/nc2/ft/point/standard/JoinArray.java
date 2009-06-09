@@ -92,4 +92,12 @@ public class JoinArray implements Join {
     return (varName.equals(v.getName())) ? v : null;
   }
 
+  @Override
+  public String toString() {
+    return "JoinArray{" +
+        "v=" + v.getName() +
+        ", type=" + type +
+        ", param=" + param +
+        '}';
+  }
 }
