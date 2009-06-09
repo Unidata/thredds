@@ -95,12 +95,16 @@ public class GridServlet extends AbstractServlet {
 
     // LOOK: what happens if we are still downloading when the disk scour starts?
     diskCache = new DiskCache2(cache, false, maxAgeSecs / 60, scourSecs / 60);
+
+    logServerStartup.info( getClass().getName() + " initialization done -  " + UsageLog.closingMessageNonRequestContext() );
   }
 
   public void destroy() {
+    logServerStartup.info( getClass().getName() + " destroy start -  " + UsageLog.setupNonRequestContext() );
     if (diskCache != null)
       diskCache.exit();
     super.destroy();
+    logServerStartup.info( getClass().getName() + " destroy done -  " + UsageLog.closingMessageNonRequestContext() );
   }
 
   protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {

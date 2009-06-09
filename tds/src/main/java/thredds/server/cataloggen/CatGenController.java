@@ -60,6 +60,8 @@ public class CatGenController extends AbstractController
 {
   private static org.slf4j.Logger log =
           org.slf4j.LoggerFactory.getLogger( CatGenController.class );
+  private org.slf4j.Logger logServerStartup =
+          org.slf4j.LoggerFactory.getLogger( "serverStartup" );
 
   private TdsContext tdsContext;
   private boolean allow;
@@ -83,13 +85,13 @@ public class CatGenController extends AbstractController
 
   public void init()
   {
-    log.info( "init(): " + UsageLog.setupNonRequestContext() );
+    logServerStartup.info( "CatalogGen - initialize start - " + UsageLog.setupNonRequestContext() );
 
     // Check that CatalogGen is enabled.
     this.allow = ThreddsConfig.getBoolean( "CatalogGen.allow", false );
     if ( ! this.allow )
     {
-      log.info( "init(): CatalogGen not enabled in threddsConfig.xml - " + UsageLog.closingMessageNonRequestContext() );
+      logServerStartup.info( "CatalogGen not enabled in threddsConfig.xml - " + UsageLog.closingMessageNonRequestContext() );
       return;
     }
 
@@ -97,7 +99,7 @@ public class CatGenController extends AbstractController
     if ( this.tdsContext == null )
     {
       this.allow = false;
-      log.error( "init(): Disabling DqcService - null TdsContext - " + UsageLog.closingMessageNonRequestContext() );
+      logServerStartup.error( "CatalogGen - Disabling service - null TdsContext - " + UsageLog.closingMessageNonRequestContext() );
       return;
     }
 
@@ -109,7 +111,7 @@ public class CatGenController extends AbstractController
       if ( this.catGenConfigDir == null )
       {
         this.allow = false;
-        log.error( "init(): Disabling catGenService - could not locate or create CatGenConfig directory - " + UsageLog.closingMessageNonRequestContext() );
+        logServerStartup.error( "CatalogGen - Disabling service - could not locate or create CatGenConfig directory - " + UsageLog.closingMessageNonRequestContext() );
         return;
       }
     }
@@ -122,7 +124,7 @@ public class CatGenController extends AbstractController
       if ( this.catGenConfigFile == null )
       {
         this.allow = false;
-        log.error( "init(): Disabling DqcService - could not locate or create CatGenConfig file - " + UsageLog.closingMessageNonRequestContext() );
+        logServerStartup.error( "CatalogGen - Disabling service - could not locate or create CatGenConfig file - " + UsageLog.closingMessageNonRequestContext() );
         return;
       }
     }
@@ -134,14 +136,14 @@ public class CatGenController extends AbstractController
       this.catGenResultsDir = createCatGenResultsDirectory();
       if ( this.catGenResultsDir == null )
       {
-        log.warn( "init(): Could not locate or create CatGenResults directory - MAY cause problems when writing results."  );
+        logServerStartup.warn( "CatalogGen - Could not locate or create CatGenResults directory - MAY cause problems when writing results."  );
       }
     }
 
     // Some debug info.
-    log.debug( "init(): CatGen config directory  = " + this.catGenConfigDir.toString() );
-    log.debug( "init(): CatGen config file       = " + this.catGenConfigFile.toString() );
-    log.debug( "init(): CatGen results directory = " + this.catGenResultsDir.toString() );
+    logServerStartup.debug( "CatalogGen - config directory  = " + this.catGenConfigDir.toString() );
+    logServerStartup.debug( "CatalogGen - config file       = " + this.catGenConfigFile.toString() );
+    logServerStartup.debug( "CatalogGen - results directory = " + this.catGenResultsDir.toString() );
 
     this.catGenConfigParser = new CatGenConfigParser();
     try
@@ -150,7 +152,7 @@ public class CatGenController extends AbstractController
     }
     catch ( IOException e )
     {
-      log.error( "init(): Disabling DqcService - failed to parse CatGenConfig file - "
+      logServerStartup.error( "CatalogGen - Disabling service - failed to parse CatGenConfig file - "
                  + UsageLog.closingMessageNonRequestContext()
                  + " - " + e.getMessage());
       this.allow = false;
@@ -170,8 +172,8 @@ public class CatGenController extends AbstractController
         if ( ! curResultFileParentDir.exists()
              && ! curResultFileParentDir.mkdirs() )
         {
-          log.warn( "init(): CatGenConfig Task [" + curTask.getName() + "]: Non-existent results directory [" + curResultFileParentDir + "] couldn't be created." );
-          return;
+          // ToDo Should disable this task!!!
+          logServerStartup.warn( "CatalogGen - Dropping \"" + curTask.getName() + "\" CatGenConfig Task: Non-existent results directory [" + curResultFileParentDir + "] couldn't be created." );
         }
       }
     }
@@ -183,15 +185,15 @@ public class CatGenController extends AbstractController
                                                 this.tdsContext.getContentDirectory() );
       this.scheduler.start();
     }
-    log.info( "init(): " + UsageLog.closingMessageNonRequestContext() );
+    logServerStartup.info( "CatalogGen - initialize done -  " + UsageLog.closingMessageNonRequestContext() );
   }
 
   public void destroy()
   {
-    log.info( "destroy(): start - " + UsageLog.setupNonRequestContext() );
+    logServerStartup.info( "CatalogGen - destroy start - " + UsageLog.setupNonRequestContext() );
     if ( this.scheduler != null)
       this.scheduler.stop();
-    log.info( "destroy(): done - " + UsageLog.closingMessageNonRequestContext() );
+    logServerStartup.info( "CatalogGen - destroy done - " + UsageLog.closingMessageNonRequestContext() );
   }
 
   protected ModelAndView handleRequestInternal( HttpServletRequest request, HttpServletResponse response )

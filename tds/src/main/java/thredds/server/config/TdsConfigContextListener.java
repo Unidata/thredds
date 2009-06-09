@@ -55,6 +55,8 @@ public class TdsConfigContextListener
 {
   private org.slf4j.Logger logger =
           org.slf4j.LoggerFactory.getLogger( TdsConfigContextListener.class );
+  private org.slf4j.Logger logServerStartup =
+          org.slf4j.LoggerFactory.getLogger( "serverStartup" );
 
   public void contextInitialized( ServletContextEvent event )
   {
@@ -71,8 +73,7 @@ public class TdsConfigContextListener
     // which is used in log4j.xml file loaded here.
     Log4jWebConfigurer.initLogging( servletContext );
 
-    org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("catalogInit");
-    logServerStartup.info( "contextInitialized(): " + UsageLog.setupNonRequestContext() );
+    logServerStartup.info( "TdsConfigContextListener.contextInitialized() start[2]: " + UsageLog.setupNonRequestContext() );
 
     // Initialize the DataRootHandler.
     DataRootHandler catHandler = (DataRootHandler) wac.getBean( "tdsDRH", DataRootHandler.class );
@@ -88,19 +89,19 @@ public class TdsConfigContextListener
     // LOOK! ToDo This should be removed once the catalog service controllers uses JSP.
     HtmlWriter.init( tdsContext );
 
-    logServerStartup.debug( "contextInitialized(): done - " + UsageLog.closingMessageNonRequestContext() );
+    logServerStartup.info( "TdsConfigContextListener.contextInitialized(): done - " + UsageLog.closingMessageNonRequestContext() );
 
   }
 
   public void contextDestroyed( ServletContextEvent event )
   {
-    logger.debug( "contextDestroyed(): start." + UsageLog.setupNonRequestContext() );
+    logServerStartup.info( "TdsConfigContextListener.contextDestroyed(): start." + UsageLog.setupNonRequestContext() );
     ServletContext servletContext = event.getServletContext();
     WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext( servletContext );
     TdsContext tdsContext = (TdsContext) wac.getBean( "tdsContext", TdsContext.class );
     tdsContext.destroy();
 
-    logger.debug( "contextDestroyed(): Done except for shutdownLogging() - " + UsageLog.closingMessageNonRequestContext());
+    logServerStartup.info( "TdsConfigContextListener.contextDestroyed(): Done except for shutdownLogging() - " + UsageLog.closingMessageNonRequestContext());
     Log4jWebConfigurer.shutdownLogging( servletContext );
   }
 }

@@ -112,6 +112,12 @@ public class ViewServlet extends AbstractServlet {
     return template;
   }
 
+  public void init() throws ServletException
+  {
+    super.init();
+    logServerStartup.info( getClass().getName() + " initialization done -  " + UsageLog.closingMessageNonRequestContext() );
+  }
+
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
     log.info( UsageLog.setupRequestContext( req ));
 

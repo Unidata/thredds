@@ -56,8 +56,10 @@ import org.springframework.web.servlet.ModelAndView;
  * @since
  */
 public class StationController extends AbstractController {
-  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
-  private static org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("catalogInit");
+  private org.slf4j.Logger log =
+          org.slf4j.LoggerFactory.getLogger( getClass() );
+  private static org.slf4j.Logger logServerStartup =
+          org.slf4j.LoggerFactory.getLogger("serverStartup");
 
   private StationObsCollection soc;
   private boolean debug = false, showTime = false;
@@ -89,7 +91,7 @@ public class StationController extends AbstractController {
   }
 
   public void init() throws ServletException {
-    logServerStartup.info( getClass().getName() + " initialization start" );
+    logServerStartup.info( getClass().getName() + " initialization start - " + UsageLog.setupNonRequestContext());
 
     /* String metarDir = ThreddsConfig.get("NetcdfSubsetService.metarDataDir", "/opt/tomcat/content/thredds/public/stn/");
     File dir = new File(metarDir);
@@ -105,13 +107,14 @@ public class StationController extends AbstractController {
     }
     soc = new StationObsCollection(metarDir, metarRawDir); */
 
-    logServerStartup.info( getClass().getName() + " initialization done" );
+    logServerStartup.info( getClass().getName() + " initialization done - " + UsageLog.closingMessageNonRequestContext() );
   }
 
   public void destroy() {
+    logServerStartup.info( getClass().getName() + " destroy start - " + UsageLog.setupNonRequestContext() );
     if (null != soc)
       soc.close();
-    logServerStartup.info( getClass().getName() + " destroy" );
+    logServerStartup.info( getClass().getName() + " destroy done - " + UsageLog.closingMessageNonRequestContext() );
   }
   
 

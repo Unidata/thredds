@@ -41,6 +41,16 @@
     <param name="File" value="${tds.log.dir}/serverStartup.log"/>
     <param name="Append" value="false"/>
     <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"/>
+      <!--param name="ConversionPattern" value="%d{ISO8601} [%10r - %10X{ID}] %-5p - %c - %m%n"/-->
+    </layout>
+  </appender>
+
+  <!-- catalogInit.log is recreated each time Tomcat is started -->
+  <appender name="catalogInit" class="org.apache.log4j.FileAppender">
+    <param name="File" value="${tds.log.dir}/catalogInit.log"/>
+    <param name="Append" value="false"/>
+    <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%m%n"/>
     </layout>
   </appender>
@@ -82,10 +92,10 @@
 
   <logger name="thredds.servlet.DataRootHandler.catalogInit" additivity="false">
     <level value="INFO"/>
-    <appender-ref ref="serverStartup"/>
+    <appender-ref ref="catalogInit"/>
   </logger>
 
-  <logger name="catalogInit" additivity="false">
+  <logger name="serverStartup" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="serverStartup"/>
   </logger>

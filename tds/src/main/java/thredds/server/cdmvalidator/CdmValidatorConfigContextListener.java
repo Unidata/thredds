@@ -70,17 +70,17 @@ public class CdmValidatorConfigContextListener
     CdmValidatorContext cdmValidatorContext = (CdmValidatorContext) wac.getBean( "cdmValidatorContext", CdmValidatorContext.class );
     cdmValidatorContext.init( servletContext );
 
-    logger.debug( "contextInitialized(): done - " + UsageLog.closingMessageNonRequestContext() );
+    logger.info( "contextInitialized(): done - " + UsageLog.closingMessageNonRequestContext() );
   }
 
   public void contextDestroyed( ServletContextEvent event )
   {
-    logger.debug( "contextDestroyed(): start." + UsageLog.setupNonRequestContext() );
+    logger.info( "contextDestroyed(): start." + UsageLog.setupNonRequestContext() );
     ServletContext servletContext = event.getServletContext();
     WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext( servletContext );
     CdmValidatorContext cdmValidatorContext = (CdmValidatorContext) wac.getBean( "cdmValidatorContext", CdmValidatorContext.class );
     cdmValidatorContext.destroy();
 
-    logger.debug( "contextDestroyed(): Done - " + UsageLog.closingMessageNonRequestContext());
+    logger.info( "contextDestroyed(): Done - " + UsageLog.closingMessageNonRequestContext());
   }
 }

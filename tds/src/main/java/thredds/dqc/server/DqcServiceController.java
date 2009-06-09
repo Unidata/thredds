@@ -28,6 +28,8 @@ public class DqcServiceController extends AbstractController
 {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
+  private org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger( "serverStartup" );
+
   private TdsContext tdsContext;
 
   private boolean allow = false;
@@ -56,15 +58,13 @@ public class DqcServiceController extends AbstractController
 
   public void init()
   {
-    org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("catalogInit");
-
-    logServerStartup.info( "init(): " + UsageLog.setupNonRequestContext() );
+    logServerStartup.info( "DQC Service - init start - " + UsageLog.setupNonRequestContext() );
 
     // Make sure DqcService is enabled.
     this.allow = ThreddsConfig.getBoolean( "DqcService.allow", false );
     if ( ! this.allow )
     {
-      logServerStartup.info( "init(): DqcServlet not enabled in threddsConfig.xml - " + UsageLog.closingMessageNonRequestContext() );
+      logServerStartup.info( "Dqc Service not enabled in threddsConfig.xml - " + UsageLog.closingMessageNonRequestContext() );
       return;
     }
 
@@ -72,7 +72,7 @@ public class DqcServiceController extends AbstractController
     if ( this.tdsContext == null )
     {
       this.allow = false;
-      logServerStartup.error( "init(): Disabling DqcService - null TdsContext." );
+      logServerStartup.error( "Disabling Dqc Service - null TdsContext - " + UsageLog.closingMessageNonRequestContext() );
       return;
     }
 
@@ -84,7 +84,7 @@ public class DqcServiceController extends AbstractController
       if ( this.dqcConfigDir == null )
       {
         this.allow = false;
-        logServerStartup.error( "init(): Disabling DqcService - " + UsageLog.closingMessageNonRequestContext() );
+        logServerStartup.error( "Disabling Dqc Service - " + UsageLog.closingMessageNonRequestContext() );
         return;
       }
     }
@@ -97,13 +97,13 @@ public class DqcServiceController extends AbstractController
       if ( this.dqcConfigFile == null )
       {
         this.allow = false;
-        logServerStartup.error( "init(): Disabling DqcService - " + UsageLog.closingMessageNonRequestContext() );
+        logServerStartup.error( "Disabling Dqc Service - " + UsageLog.closingMessageNonRequestContext() );
         return;
       }
     }
 
-    logServerStartup.debug( "init(): DqcService config directory = " + this.dqcConfigDir.toString());
-    logServerStartup.debug( "init(): DqcService config file      = " + this.dqcConfigFile.toString());
+    logServerStartup.debug( "Dqc Service config directory = " + this.dqcConfigDir.toString());
+    logServerStartup.debug( "Dqc Service config file      = " + this.dqcConfigFile.toString());
 
     // Read DqcConfig.
     try
@@ -113,17 +113,17 @@ public class DqcServiceController extends AbstractController
     catch ( Throwable t )
     {
       this.allow = false;
-      logServerStartup.error( "init(): Disabling DqcService - failed to read DqcConfig document: " + t.getMessage() );
-      logServerStartup.error( "init(): " + UsageLog.closingMessageNonRequestContext() );
+      logServerStartup.error( "Disabling Dqc Service - failed to read DqcConfig document: " + t.getMessage() );
+      logServerStartup.info( "Done - " + UsageLog.closingMessageNonRequestContext() );
       return;
     }
 
-    logServerStartup.info( "init(): " + UsageLog.closingMessageNonRequestContext() );
+    logServerStartup.info( "DQC Service - init done - " + UsageLog.closingMessageNonRequestContext() );
   }
 
   public void destroy()
   {
-    log.info( "destroy(): " + UsageLog.setupNonRequestContext() );
+    logServerStartup.info( "DQC Service - destroy start - " + UsageLog.setupNonRequestContext() );
 
     // Shutdown all scheduled events
 
@@ -131,7 +131,7 @@ public class DqcServiceController extends AbstractController
 
 //    if ( this.scheduler != null )
 //      this.scheduler.stop();
-    log.info( "destroy()" + UsageLog.closingMessageNonRequestContext() );
+    logServerStartup.info( "DQC Service - destroy done - " + UsageLog.closingMessageNonRequestContext() );
   }
 
 

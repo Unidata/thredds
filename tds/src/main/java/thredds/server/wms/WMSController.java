@@ -75,7 +75,7 @@ import uk.ac.rdg.resc.ncwms.config.Config;
  */
 public class WMSController extends AbstractController {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(WMSController.class);
-  private static org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("catalogInit");
+  private static org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
   public static final Version WMS_VER_1_1_1 = new Version("1.1.1");
   public static final Version WMS_VER_1_3_0 = new Version("1.3.0");
@@ -93,9 +93,10 @@ public class WMSController extends AbstractController {
   private Map<String, ColorScaleRange> colorRange;
 
   public void init() throws ServletException {
+    logServerStartup.info( "WMS - initialization start: " + UsageLog.setupNonRequestContext() );
+
     allow = ThreddsConfig.getBoolean("WMS.allow", false);
     allowRemote = ThreddsConfig.getBoolean("WMS.allowRemote", false);
-    logServerStartup.info("initializing WMS: " + allow);
 
     if (allow) {
       // OGC metadata
@@ -112,24 +113,52 @@ public class WMSController extends AbstractController {
       }
       catch (Exception e) {
         logServerStartup.error("Failed to load OGCMetaXmlFile from " + OGCMetaXmlFile);
+        logServerStartup.info( "WMS - initialization done: " + UsageLog.closingMessageNonRequestContext() );
         throw new ServletException("Cannot read OGC config file " + e.toString());
       }
 
       // color pallettes
-      String defaultPaletteLocation = this.getServletContext().getRealPath("/WEB-INF/palettes");
-      String paletteLocation = ThreddsConfig.get("WMS.paletteLocationDir", null);
-      if (paletteLocation == null)
-        paletteLocation = defaultPaletteLocation;
-      else if (!paletteLocation.startsWith("/"))
-        paletteLocation = tdsContext.getContentDirectory() + paletteLocation;
+      String paletteLocation = ThreddsConfig.get( "WMS.paletteLocationDir",
+                                                  this.getServletContext().getRealPath( "/WEB-INF/palettes" ));
+      if ( paletteLocation == null )
+      {
+        // Default palette directory not found!!!
+        allow = allowRemote = false;
+        logServerStartup.error( "Palette location not configured and default location not found." +
+                                "\n**** Disabling WMS - check palette configuration: "
+                                + UsageLog.closingMessageNonRequestContext() );
+        return;
+      }
+      File paletteLocationDir = new File( paletteLocation );
+      if ( ! paletteLocationDir.isAbsolute())
+      {
+        paletteLocationDir = tdsContext.getConfigFileSource().getFile( paletteLocation );
+        if ( paletteLocationDir == null )
+        {
+          // User configured palette directory not found!!!
+          allow = allowRemote = false;
+          logServerStartup.error( "Palette location [" + paletteLocation + "] not found." +
+                                  "\n**** Disabling WMS - check palette configuration: "
+                                  + UsageLog.closingMessageNonRequestContext() );
+          return;
+        }
+      }
 
-      File paletteLocationDir = new File(paletteLocation);
-      if (paletteLocationDir.exists() && paletteLocationDir.isDirectory()) {
-        ColorPalette.loadPalettes(paletteLocationDir);
-        logServerStartup.debug("Loaded palettes from " + paletteLocation);
-      } else {
-        log.warn("Directory of palette files does not exist or is not a directory.  paletteLocation=" + paletteLocation);
-        ColorPalette.loadPalettes(new File(paletteLocation));
+      if ( paletteLocationDir.exists() && paletteLocationDir.isDirectory() )
+      {
+        ColorPalette.loadPalettes( paletteLocationDir );
+        logServerStartup.debug( "Loaded palettes from " + paletteLocation );
+      }
+      else
+      {
+        // Palette directory doesn't exist or isn't directory!!!
+        allow = allowRemote = false;
+        logServerStartup.error( "Palette location directory [" + paletteLocation + "] doesn't exist or isn't a directory." +
+                                "\n**** Disabling WMS - check palette configuration: "
+                                + UsageLog.closingMessageNonRequestContext() );
+        return;
+//        logServerStartup.warn( "Directory of palette files does not exist or is not a directory.  paletteLocation=" + paletteLocation );
+//        ColorPalette.loadPalettes( paletteLocationDir );
       }
 
       colorRange = new HashMap<String, ColorScaleRange>();
@@ -137,10 +166,14 @@ public class WMSController extends AbstractController {
       // LOOK Problem - global setting
       NetcdfDataset.setDefaultEnhanceMode(enhanceMode);
     }
+
+    logServerStartup.info( "WMS - initialization done: " + UsageLog.closingMessageNonRequestContext() );
   }
 
   public void destroy() {
+    logServerStartup.info( "WMS - destroy start: " + UsageLog.setupNonRequestContext() );
     NetcdfDataset.shutdown();
+    logServerStartup.info( "WMS - destroy done: " + UsageLog.closingMessageNonRequestContext() );
   }
 
   private TdsContext tdsContext;

@@ -51,6 +51,12 @@ public class TesterServlet extends AbstractServlet {
   protected String getPath() { return "tester/"; }
   protected void makeDebugActions() {  }
 
+  public void init() throws ServletException
+  {
+    super.init();
+    logServerStartup.info( getClass().getName() + " initialization done -  " + UsageLog.closingMessageNonRequestContext() );
+  }
+
   public void doGet(HttpServletRequest req, HttpServletResponse res)
                              throws ServletException, IOException {
 

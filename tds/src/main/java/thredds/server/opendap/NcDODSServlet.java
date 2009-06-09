@@ -95,7 +95,7 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
   public void init() throws javax.servlet.ServletException {
     super.init();
 
-    org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("catalogInit");
+    org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
     allowDeflate = false; // handled by Tomcat
 
     try {

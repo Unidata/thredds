@@ -112,13 +112,13 @@ public class RadarServer extends AbstractServlet {
     //String radarLevel2Dir = ThreddsConfig.get("NetcdfSubsetService.radarLevel2DataDir", "/data/ldm/pub/native/radar/level2/");
     //if (!allow) return;
     contentPath = ServletUtil.getContentPath();
-    rm = new RadarMethods(contentPath, log);
+    rm = new RadarMethods(contentPath, logServerStartup);
 
     // read in radarCollections.xml catalog
     InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(false); // no validation
     cat = readCatalog(factory, getPath() + catName, contentPath + getPath() + catName);
     if (cat == null) {
-      log.info("cat initialization failed");
+      logServerStartup.info("cat initialization failed" + UsageLog.closingMessageNonRequestContext());
       return;
     }
     //URI tmpURI = cat.getBaseURI();
@@ -133,11 +133,12 @@ public class RadarServer extends AbstractServlet {
         InvDatasetScan ds = (InvDatasetScan) datasets.get(j);
         if (ds.getPath() != null) {
           dataLocation.put(ds.getPath(), ds.getScanLocation());
-          log.info("path =" + ds.getPath() + " location =" + ds.getScanLocation());
+          logServerStartup.info("path =" + ds.getPath() + " location =" + ds.getScanLocation());
         }
         ds.setXlinkHref(ds.getPath() + "/dataset.xml");
       }
     }
+    logServerStartup.info( getClass().getName() + " initialization done -  " + UsageLog.closingMessageNonRequestContext() );
   } // end init
 
   // get pathInfo and parmameters from servlet call

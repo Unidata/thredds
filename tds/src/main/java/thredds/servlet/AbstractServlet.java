@@ -43,7 +43,7 @@ import javax.servlet.http.*;
  * @author caron
  */
 public abstract class AbstractServlet extends HttpServlet {
-  static protected org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("catalogInit");
+  static protected org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
   protected org.slf4j.Logger log;
   protected String contentPath;
 
@@ -52,17 +52,17 @@ public abstract class AbstractServlet extends HttpServlet {
 
   protected abstract void makeDebugActions();
 
-  public void init() throws javax.servlet.ServletException {
+  public void init() throws javax.servlet.ServletException
+  {
+    logServerStartup.info( getClass().getName() + " initialization start -  " + UsageLog.setupNonRequestContext() );
+
     contentPath = ServletUtil.getContentPath() + getPath();
 
     // init logging
     log = org.slf4j.LoggerFactory.getLogger(getClass());
-    logServerStartup.info( "init(): " + UsageLog.setupNonRequestContext());
 
     // debug actions
     makeDebugActions();
-
-    logServerStartup.info("--- initialized " + getClass().getName());
   }
 
   protected void initContent() throws javax.servlet.ServletException {
@@ -78,8 +78,5 @@ public abstract class AbstractServlet extends HttpServlet {
         logServerStartup.error("failed to copyDir " + initialContentPath + " to " + contentPath, ioe);
       }
     }
-
   }
-
-
 }
