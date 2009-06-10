@@ -8,13 +8,14 @@
   dl {margin: 10px 5px 5px 15px;)
   </style></head>
 <body>
-<h1><img src="../images/unidataLogo.png" align="middle" height="75" width="75"> TDS Catalog Generation Service</h1>
+<h1><img src="../../images/unidataLogo.png" align="middle" height="150" width="146"> TDS Catalog Generation Service</h1>
 <div class="head">
 <address> </address>
 </div>
 <hr>
 <h2>DEPRECATED</h2><p>The TDS Catalog Generation service has been <strong>DEPRECATED</strong>. Instead, please use&nbsp;<code>datasetScan</code> elements in TDS catalog configuration files.</p><p></p><hr style="width: 100%; height: 2px;"><p></p><hr style="width: 100%; height: 2px;"><p></p><h2>Configuration</h2><p>The TDS Catalog Generation service must be enabled in the <code>threddsConfig.xml</code> configuration file before it can be used. This is done by adding the following:</p><pre style="margin-left: 40px;">  &lt;CatalogGen&gt;<br>    &lt;allow&gt;true&lt;/allow&gt;<br>  &lt;/CatalogGen&gt;</pre><h2>Usage</h2><p>The Catalog Generation service provides a web interface for
-controlling your catalog generation tasks. To use the catalog generation admin pages, <a href="RemoteManagement.html">TDS remote management</a> must be setup and requires login with the "tdsConfig" role. The catalog generation admin pages are located at:</p><pre style="margin-left: 40px;">http://server:port/thredds<strong>/cataloggen/admin/</strong></pre><p>You
+controlling your catalog generation tasks. To use the catalog generation admin pages, <a href="../../reference/RemoteManagement.html">TDS remote management</a> must be setup and requires login with the "tdsConfig" role. The catalog generation admin pages are located at:</p>
+<pre style="margin-left: 40px;">http://server:port/thredds<strong>/cataloggen/admin/</strong></pre><p>You
 will see something like:</p><img style="width: 891px; height: 499px;" alt="CatalogGen Admin Page" src="CatalogGen_Admin.png"><p>Each row in the web form table is a single catalog generation task.
 The form allows users to look at the configuration files and control
 the frequency at which each catalog is generated. When a task's period
@@ -37,11 +38,11 @@ or more dataset collections. Each CatalogGen configuration document is a skeleto
       describes how to access the datasets you want to catalog, how to
       group those datasets, and how to name those datasets. The syntax
       and meaning of the CatalogGen config files are described on the
-      <a href="../cataloggen/CatalogGenConfig.html">
-        "CatalogGen Configuration" page</a>.
-    </p><div class="head"></div>
+      <a href="../../cataloggen/CatalogGenConfig.html">
+        "CatalogGen Configuration" page</a>.    </p>
+<div class="head"></div>
 <hr width="100%">
-<address><img src="../images/thread.png" height="108" width="110">This document is maintained by Unidata and was
+<address><img src="../../images/THREDDSlogo.jpg" height="54" width="67">This document is maintained by Unidata and was
 last updated February 2009. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
 support</a>.
 </address>

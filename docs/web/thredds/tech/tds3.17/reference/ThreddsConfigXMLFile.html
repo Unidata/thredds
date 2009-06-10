@@ -4,7 +4,7 @@
 <title>threddsConfig.xml</title></head>
 
 <body>
- <h1><img src="../images/unidataLogo.png" align="middle" height="75" width="75">Annotated TDS Configuration file (version 3.17)</h1>
+ <h1><img src="../../images/unidataLogo.png" align="middle" height="150" width="146">Annotated TDS Configuration file (version 3.17)</h1>
 <hr>
  <p>These are parameters that control the TDS that can be set by the TDS administrator in <strong>${tomcat_home}/content/thredds/threddsConfig.xml</strong>. These have been extensively reworked for version 3.14+ (they do not apply to versions before that). </p>
  <p>In
@@ -99,11 +99,11 @@ is occurring. The files are deleted after a successful download. </li>
  <p>If <strong>WCS</strong> is allowed but the directory is not set, the TDS will use the <strong>${tomcat_home}/content/thredds/wcs/wcache</strong>/ directory for temporary files. </p>
 <h3>Loadable Viewers</h3>
  <pre>   &lt;<strong>Viewer</strong>&gt;my.package.MyViewer&lt;/Viewer&gt;</pre>
- <p>You can place a link  to your own <em><strong>Viewer</strong></em>  on the TDS HTML page, by loading a <a href="Viewers.html">viewer</a> at runtime. </p>
- <h3>Loadable Dataset Source </h3>
+ <p>You can place a link  to your own <em><strong>Viewer</strong></em>  on the TDS HTML page, by loading a <a href="../../reference/Viewers.html">viewer</a> at runtime. </p>
+<h3>Loadable Dataset Source </h3>
  <pre>   &lt;<strong>DatsetSource</strong>&gt;my.package.DatsetSourceImpl&lt;/<strong>DatsetSource</strong>&gt;</pre>
- <p>You can add  a <em><strong>DataSource</strong></em> - essentially an IOSP with access to Servlet request parameters, by loading a <a href="DatasetSource.html">dataset source</a> at runtime. </p>
- <h3>FmrcInventory</h3>
+ <p>You can add  a <em><strong>DataSource</strong></em> - essentially an IOSP with access to Servlet request parameters, by loading a <a href="../../reference/DatasetSource.html">dataset source</a> at runtime. </p>
+<h3>FmrcInventory</h3>
  <pre>  &lt;<strong>FmrcInventory</strong>&gt;<br>    &lt;<strong>openType</strong>&gt;XML_ONLY&lt;/<strong>openType</strong>&gt;<br>  &lt;/FmrcInventory&gt;</pre>
  <p>This
 controls how the Forecast Model Run Collection Inventory Servlet opens
@@ -123,7 +123,7 @@ listing of disks on your machine. The listing includes size and mount
 location. </p>
  <hr width="100%">
  <address>
- <img src="../images/thread.png" height="108" width="110">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 31, 2008
- </address>
+ <img src="../../images/THREDDSlogo.jpg" height="54" width="67">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 31, 2008
+</address>
  <p></p>
 </body></html>

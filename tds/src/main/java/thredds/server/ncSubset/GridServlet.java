@@ -457,6 +457,11 @@ public class GridServlet extends AbstractServlet {
       log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ioe.getMessage());
       return;
+
+    } catch (IllegalArgumentException e) { // file too big
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, 0));
+      res.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
+      return;
     }
 
     res.addHeader("Content-Location", url);

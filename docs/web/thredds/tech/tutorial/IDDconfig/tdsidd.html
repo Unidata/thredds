@@ -80,8 +80,8 @@ Get the TDS/IDD catalog from the distribution
 </P>
 <PRE STYLE="margin-bottom: 0.2in">% cd ${tomcat_home}/bin
 % ./shutdown.sh
-% ./startup.sh</PRE><H2>
-&nbsp;</H2>
+% ./startup.sh</PRE><H2>&nbsp;
+</H2>
 <H2>IDD/LDM configurations 
 </H2>
 <P>At this point, it is assumed that one has installed the <A HREF="http://www.unidata.ucar.edu/software/ldm">LDM
@@ -141,7 +141,7 @@ worry.
 <P><B># files/dirs managing script</B></P>
 <P>30 21 * * * util/manageFilesDirs.pl -f etc/manageFilesDirs.conf &gt;
 /data/ldm/logs/manageFilesDirs.log 2&gt;/dev/null</P>
-<P><FONT SIZE=5><B>Performance Enhancements by Grib Indexing</B></FONT></P>
+<P><FONT SIZE=5><B>Performance Enhancements by Grib Indexing<a name="grib"></a></B></FONT></P>
 <P>Since the IDD distributes GRIB files and the TDS requires a Grib
 Index to exist before it can open the files, there is a script to
 pre-index the files to speed up the access time. The <A HREF="util/GribIndexer.pl">GribIndexer.pl</A>

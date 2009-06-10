@@ -8,12 +8,13 @@
   dl {margin: 10px 5px 5px 15px;)
   </style></head>
 <body>
-<h1><img src="../images/unidataLogo.png" align="middle" height="75" width="75"> TDS DQC Service</h1>
+<h1><img src="../../images/unidataLogo.png" align="middle" height="150" width="146"> TDS DQC Service</h1>
 <div class="head">
 <address> </address>
 </div>
 <hr>
-<h2>DEPRECATED</h2><p>The TDS DQC service has been <strong>DEPRECATED</strong>. Instead use the <a href="DatasetSource.html#Adding_Proxy_Datasets">TDS <code>datasetScan</code> proxy dataset capability</a> (using the <code>addProxies</code> element).</p><p></p><hr style="width: 100%; height: 2px;"><p></p><hr style="width: 100%; height: 2px;"><p></p><h2>Configuration</h2><p>The TDS DQC service must be enabled in the <code>threddsConfig.xml</code> configuration file before it can be used. This is done by adding the following:</p><pre style="margin-left: 40px;">  &lt;DqcService&gt;<br>    &lt;allow&gt;true&lt;/allow&gt;<br>  &lt;/DqcService&gt;</pre><p>Configuration files for the DQC service are located in <code>${TOMCAT_HOME}/content/thredds/dqcServlet/config/</code>. The <code>config.xml</code>&nbsp;configuration
+<h2>DEPRECATED</h2><p>The TDS DQC service has been <strong>DEPRECATED</strong>. Instead use the <a href="../../reference/DatasetSource.html#Adding_Proxy_Datasets">TDS <code>datasetScan</code> proxy dataset capability</a> (using the <code>addProxies</code> element).</p>
+<p></p><hr style="width: 100%; height: 2px;"><p></p><hr style="width: 100%; height: 2px;"><p></p><h2>Configuration</h2><p>The TDS DQC service must be enabled in the <code>threddsConfig.xml</code> configuration file before it can be used. This is done by adding the following:</p><pre style="margin-left: 40px;">  &lt;DqcService&gt;<br>    &lt;allow&gt;true&lt;/allow&gt;<br>  &lt;/DqcService&gt;</pre><p>Configuration files for the DQC service are located in <code>${TOMCAT_HOME}/content/thredds/dqcServlet/config/</code>. The <code>config.xml</code>&nbsp;configuration
 file describes a set of thredds.dqc.server.DqcServletConfigItems (the
 format of config.xml is a Java Preferences format). Here's an example:</p><pre style="margin-left: 40px;">&lt;?xml version='1.0' encoding='UTF-8'?&gt;<br>&lt;preferences EXTERNAL_XML_VERSION='1.0'&gt;<br>  &lt;root type='user'&gt;<br>    &lt;map&gt;<br>      &lt;beanCollection key='config' class='thredds.dqc.server.DqcServletConfigItem'&gt;<br><br>        &lt;bean name='latestModel'<br>          description='Provide Access to Latest Model Runs.'<br>          handlerClassName='thredds.dqc.server.latest.LatestDqcHandler'<br>          handlerConfigFileName='configDqcHandler.latestModel-InvCat1.0.xml' /&gt;<br><br>        &lt;!-- other beans could go here --&gt;<br><br>      &lt;/beanCollection&gt;<br>    &lt;/map&gt;<br>  &lt;/root&gt;<br>&lt;/preferences&gt;<br></pre><p>The
 only implementation of DqcHandler is
@@ -23,11 +24,11 @@ configuration file listed above ():</p><pre style="margin-left: 40px;">&lt;?xml 
 
 
 
-<p>More information is available on the <a href="../dqcServlet/DqcServlet.html">DQC Servlet page</a>.<br>
+<p>More information is available on the <a href="../../dqcServlet/DqcServlet.html">DQC Servlet page</a>.<br>
 </p>
 <div class="head"></div>
 <hr width="100%">
-<address><img src="../images/thread.png" height="108" width="110">This document is maintained by Unidata and was
+<address><img src="../../images/THREDDSlogo.jpg" height="54" width="67">This document is maintained by Unidata and was
 last updated February 2009. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
 support</a>.
 </address>

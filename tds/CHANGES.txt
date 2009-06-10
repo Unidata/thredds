@@ -23,6 +23,8 @@ Release Details:
   Clean up logging
   Minor bug fixes
  15:
+  ncss: check files < 2 Gbytes
+  WMS: clean up logging, some error handling
   opendap configuration in threddsConfig.xml
   opendap: add DAS to DDX with myDDS.ingestDAS( ds.getDAS());
   Add Reinit back
