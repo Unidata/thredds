@@ -1233,9 +1233,8 @@ public class NcMLReader {
       // possible relative location
       dirLocation = URLnaming.resolve(ncmlLocation, dirLocation);
 
-      // can embed a full-blown crawlableDatasetImpl element LOOK- not implemented yet
-      // Element cdElement = scanElem.getChild("crawlableDatasetImpl", ncNS);  // ok if null
-      Element cdElement = null;
+      // can embed a full-blown crawlableDatasetImpl element
+      Element cdElement = scanElem.getChild("crawlableDatasetImpl", ncNS);  // ok if null
       agg.addDatasetScan(cdElement, dirLocation, suffix, regexpPatternString, dateFormatMark, mode, subdirs, olderS);
 
       if ((cancelTask != null) && cancelTask.isCancel())
