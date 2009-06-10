@@ -376,10 +376,10 @@ public class GetCapabilities extends WcsRequest
     // ToDo WCS 1.0Plus - change GridDatatype to GridDataset.Gridset
 
     for ( WcsCoverage curCoverage : this.getDataset().getAvailableCoverageCollection())
-      // WCS_Capabilities/ContentMetadata/ContentOfferingBrief
-      // WCS_Capabilities/ContentMetadata/ContentOfferingBrief
+      // WCS_Capabilities/ContentMetadata/CoverageOfferingBrief
+      // WCS_Capabilities/ContentMetadata/CoverageOfferingBrief
       contMdElem.addContent(
-              genCoverageOfferingBriefElem( "ContentOfferingBrief",
+              genCoverageOfferingBriefElem( "CoverageOfferingBrief",
                                             curCoverage.getName(),
                                             curCoverage.getLabel(),
                                             curCoverage.getDescription(),
