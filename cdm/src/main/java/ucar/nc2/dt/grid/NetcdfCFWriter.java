@@ -62,7 +62,9 @@ import java.text.ParseException;
  * @author caron
  */
 public class NetcdfCFWriter {
+  static private long maxSize = 2 * 1000 * 1000 * 1000; // 2 Gb
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfCFWriter.class);
+
 
   /**
    * Write a CF compliant Netcdf-3 file from any gridded dataset.
@@ -111,6 +113,7 @@ public class NetcdfCFWriter {
     ArrayList<CoordinateAxis> axisList = new ArrayList<CoordinateAxis>();
 
     // add each desired Grid to the new file
+    long total_size = 0;
     for (String gridName : gridList) {
       if (varNameList.contains(gridName))
         continue;
@@ -139,6 +142,7 @@ public class NetcdfCFWriter {
 
       Variable gridV = (Variable) grid.getVariable();
       varList.add(gridV);
+      total_size += gridV.getSize() * gridV.getElementSize();
 
       // add coordinate axes
       GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -168,6 +172,13 @@ public class NetcdfCFWriter {
         }
       }
     }
+
+    // check size is ok
+    if (total_size > maxSize) {
+      log.info("Reject request size = {} Mbytes", total_size);
+      throw new IllegalArgumentException("Request too big=" + total_size+" Mbytes, max="+maxSize);
+    }
+
     writer.writeVariables(varList);
 
     // now add CF annotations as needed - dont change original ncd or gds
