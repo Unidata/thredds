@@ -17,6 +17,11 @@ Changes in version 4.0
   * netcdf-java 4.0
 
 Release Details:
+ 16:
+  Allow use of alternate CrawlableDataset implementations in NcML aggregation
+  Improved error handling
+  Clean up logging
+  Minor bug fixes
  15:
   opendap configuration in threddsConfig.xml
   opendap: add DAS to DDX with myDDS.ingestDAS( ds.getDAS());
