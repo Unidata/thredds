@@ -36,6 +36,9 @@ Release Details:
  14:
   WMS: minor configuration improvements
   cdmremote service
+ 13:
+  GRIB indexing improvements.
+  Minor bug and logging fixes.
  12:
   WMS: improved logging and exception handling.
   Minor bug fixes.
