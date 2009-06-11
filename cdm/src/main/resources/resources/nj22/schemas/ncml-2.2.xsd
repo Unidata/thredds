@@ -144,6 +144,20 @@
     </xsd:restriction>
   </xsd:simpleType>
 
+  <!-- logical view: use only a section of original  -->
+  <xsd:element name="logicalSection">
+    <xsd:complexType>
+      <xsd:attribute name="section" type="xsd:token" use="required"/>  <!-- creates anonymous dimension -->
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="logicalSlice">
+    <xsd:complexType>
+      <xsd:attribute name="dimName" type="xsd:token" use="required"/>
+      <xsd:attribute name="index" type="xsd:int" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
   <!-- aggregation  -->
   <xsd:element name="aggregation">
     <xsd:complexType>
@@ -220,13 +234,6 @@
       <xsd:enumeration value="union"/>
     </xsd:restriction>
   </xsd:simpleType>
-
-  <!-- logical view  -->
-  <xsd:element name="logicalView">
-    <xsd:complexType>
-      <xsd:attribute name="section" type="xsd:token" use="optional"/>
-    </xsd:complexType>
-  </xsd:element>
 
  <!-- promote global attribute to variable -->
  <xsd:element name="promoteGlobalAttribute">

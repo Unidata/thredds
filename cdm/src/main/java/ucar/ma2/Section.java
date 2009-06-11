@@ -406,6 +406,29 @@ public class Section {
 
 
   /**
+   * See if this Section contains another Section. ignores strides
+   * Must have same rank and last >= other.last.
+   * @param other another section
+   * @return true if its a subset
+   */
+  public boolean contains(Section other) {
+    if (other.getRank() != getRank())
+      return false;
+
+    for (int j = 0; j < list.size(); j++) {
+      Range base = list.get(j);
+      Range r = other.getRange(j);
+      if (base.first() > r.first())
+        return false;
+      if (base.last() < r.last())
+        return false;
+    }
+
+    return true;
+  }
+
+
+  /**
    * Convert List of Ranges to String Spec.
    * Inverse of new Section(String sectionSpec)
    *

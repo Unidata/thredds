@@ -59,7 +59,6 @@ import java.util.*;
 
 public class NcMLReader {
   static public final Namespace ncNS = Namespace.getNamespace("nc", XMLEntityResolver.NJ22_NAMESPACE);
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcMLReader.class);
 
   private static boolean debugURL = false, debugXML = false, showParsedXML = false;
   private static boolean debugOpen = false, debugConstruct = false, debugCmd = false;
@@ -317,7 +316,7 @@ public class NcMLReader {
   //////////////////////////////////////////////////////////////////////////////////////
   //private boolean enhance = false;
   private boolean explicit = false;
-  private boolean hasFatalError = false;
+  private Formatter errlog = new Formatter();
 
   /**
    * This sets up the target dataset and the referenced dataset.
@@ -450,8 +449,9 @@ public class NcMLReader {
 
     // the root group
     readGroup(targetDS, refds, null, null, netcdfElem);
-    if (hasFatalError)
-      throw new IllegalArgumentException("NcML had fatal errors - see logs");
+    String errors = errlog.toString();
+    if (errors.length() > 0)
+      throw new IllegalArgumentException("NcML had fatal errors:"+errors);
 
     // transfer from groups to global containers
     targetDS.finish();
@@ -489,8 +489,7 @@ public class NcMLReader {
   private void readAtt(Object parent, Object refParent, Element attElem) {
     String name = attElem.getAttributeValue("name");
     if (name == null) {
-      log.warn("NcML Attribute name is required (" + attElem + ")");
-      hasFatalError = true;
+      errlog.format("NcML Attribute name is required (%s)%n", attElem);
       return;
     }
     String nameInFile = attElem.getAttributeValue("orgName");
@@ -498,8 +497,7 @@ public class NcMLReader {
     if (nameInFile == null)
       nameInFile = name;
     else if (null == findAttribute(refParent, nameInFile)) { // has to exists
-      log.warn("NcML attribute orgName '" + nameInFile + "' doesnt exist. att=" + name + " in=" + parent);
-      hasFatalError = true;
+      errlog.format("NcML attribute orgName '%s' doesnt exist. att=%s in=%s%n", nameInFile, name, parent);
       return;
     }
 
@@ -511,8 +509,7 @@ public class NcMLReader {
         ucar.ma2.Array values = readAttributeValues(attElem);
         addAttribute(parent, new ucar.nc2.Attribute(name, values));
       } catch (RuntimeException e) {
-        log.warn("NcML new Attribute Exception: " + e.getMessage() + " att=" + name + " in=" + parent);
-        hasFatalError = true;
+        errlog.format("NcML new Attribute Exception: %s att=%s in=%s%n", e.getMessage(), name, parent);
       }
 
     } else { // already exists
@@ -524,8 +521,7 @@ public class NcMLReader {
           ucar.ma2.Array values = readAttributeValues(attElem);
           addAttribute(parent, new ucar.nc2.Attribute(name, values));
         } catch (RuntimeException e) {
-          log.warn("NcML existing Attribute Exception: " + e.getMessage() + " att=" + name + " in=" + parent);
-          hasFatalError = true;
+          errlog.format("NcML existing Attribute Exception: %s att=%s in=%s%n",e.getMessage() , name, parent);
           return;
         }
       } else { // use the old values
@@ -608,8 +604,7 @@ public class NcMLReader {
   private void readDim(Group g, Group refg, Element dimElem) {
     String name = dimElem.getAttributeValue("name");
     if (name == null) {
-      log.info("NcML Dimension name is required (" + dimElem + ")");
-      hasFatalError = true;
+      errlog.format("NcML Dimension name is required (%s)%n", dimElem);
       return;
     }
 
@@ -687,8 +682,7 @@ public class NcMLReader {
 
       String name = groupElem.getAttributeValue("name");
       if (name == null) {
-        log.info("NcML Group name is required (" + groupElem + ")");
-        hasFatalError = true;
+        errlog.format("NcML Group name is required (%s)%n", groupElem);
         return;
       }
 
@@ -786,12 +780,12 @@ public class NcMLReader {
    * @param g       parent Group
    * @param refg    referenced dataset parent Group - may be same (modify) or different (explicit)
    * @param varElem ncml variable element
+   * @throws java.io.IOException on read error
    */
   private void readVariable(NetcdfDataset ds, Group g, Group refg, Element varElem) throws IOException {
     String name = varElem.getAttributeValue("name");
     if (name == null) {
-      log.info("NcML Variable name is required (" + varElem + ")");
-      hasFatalError = true;
+      errlog.format("NcML Variable name is required (%s)%n", varElem);
       return;
     }
 
@@ -889,9 +883,66 @@ public class NcMLReader {
       }
     }
 
-    /* now that we have attributes finalized, redo the enhance
-    if (enhance && (v instanceof VariableDS))
-      ((VariableDS) v).enhance();  */
+    // look for logical views
+    Element viewElem = varElem.getChild("logicalSection", ncNS);
+    if (null != viewElem) {
+      String sectionSpec = viewElem.getAttributeValue("section");
+      if (sectionSpec != null) {
+        try {
+          Section s = new Section(sectionSpec); // parse spec
+          Section viewSection = Section.fill(s, v.getShape());
+          // check that its a subset
+          if (!v.getShapeAsSection().contains(viewSection)) {
+            errlog.format("Invalid logicalSection on variable=%s section =(%s) original=(%s) %n", v.getName(), sectionSpec, v.getShapeAsSection());
+            return;
+          }
+          Variable view = v.section( viewSection);
+          g.removeVariable(v.getShortName());
+          g.addVariable(view);
+
+        } catch (InvalidRangeException e) {
+          errlog.format("Invalid logicalSection on variable=%s section=(%s) error=%s %n", v.getName(), sectionSpec, e.getMessage());
+          return;
+        }
+      }
+    }
+
+    viewElem = varElem.getChild("logicalSlice", ncNS);
+    if (null != viewElem) {
+      String dimName = viewElem.getAttributeValue("dimName");
+      if (null == dimName) {
+        errlog.format("NcML logicalSlice: dimName is required, variable=%s %n", v.getName());
+        return;
+      }
+      int dim = v.findDimensionIndex(dimName);
+      if (dim < 0) {
+        errlog.format("NcML logicalSlice: cant find dimension %s in variable=%s %n", dimName, v.getName());
+        return;
+      }
+
+      String indexS = viewElem.getAttributeValue("index");
+      int index = -1;
+      if (null == indexS) {
+        errlog.format("NcML logicalSlice: index is required, variable=%s %n", v.getName());
+        return;
+      }
+      try {
+        index = Integer.parseInt(indexS);
+      } catch (NumberFormatException e) {
+        errlog.format("NcML logicalSlice: index=%s must be integer, variable=%s %n", indexS, v.getName());
+        return;
+      }
+
+      try {
+        Variable view = v.slice(dim, index);
+        g.removeVariable(v.getShortName());
+        g.addVariable(view);
+
+      } catch (InvalidRangeException e) {
+        errlog.format("Invalid logicalSlice (%d,%d) on variable=%s error=%s %n", dim, index, v.getName(), e.getMessage());
+        return;
+      }
+    }
 
   }
 
@@ -907,8 +958,7 @@ public class NcMLReader {
   private Variable readVariableNew(NetcdfDataset ds, Group g, Structure parentS, Element varElem) {
     String name = varElem.getAttributeValue("name");
     if (name == null) {
-      log.info("NcML Variable name is required (" + varElem + ")");
-      hasFatalError = true;
+      errlog.format("NcML Variable name is required (%s)%n",varElem);
       return null;
     }
 
@@ -965,8 +1015,7 @@ public class NcMLReader {
   private void readVariableNested(NetcdfDataset ds, Structure parentS, Structure refStruct, Element varElem) {
     String name = varElem.getAttributeValue("name");
     if (name == null) {
-      log.info("NcML Variable name is required (" + varElem + ")");
-      hasFatalError = true;
+      errlog.format("NcML Variable name is required (%s)%n", varElem);
       return;
     }
 
