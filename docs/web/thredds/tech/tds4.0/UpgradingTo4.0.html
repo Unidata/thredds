@@ -28,13 +28,18 @@ giving your gridded datasets that service.</li>
 <h2>New Size Restrictions on OPeNDAP Requests</h2>
 <p>As of TDS 4.0.12,
 binary (".dods") and ASCII (".asc") OPeNDAP requests are being
-restricted depending on the size of the response body. If a binary
-OPeNDAP request will result in a response body greater than 500Mbytes
-or an ASCII OPeNDAP request will result in a response body greater than
-50Mbytes, the request will not be handled. Instead an HTTP status code
-of 403 (Forbidden) is returned with a "dods-error" response body.</p>
-<p>Currently, these size limits are not configurable. They will be
-configurable before TDS 4.0 becomes the stable release. </p>
+restricted depending on the size of the response body. By default, the
+size limit on the binary response is&nbsp;500Mbytes and on the ascii
+response is 50Mbytes. Details on configuring these size limits are
+available <a href="reference/ThreddsConfigXmlFile.html#opendap">here</a>.</p><p>
+If a binary
+OPeNDAP request will result in a response body larger than the
+configured limit
+or an ASCII OPeNDAP request will result in a response body larger than
+the configured limit, the request will not be handled. Instead an HTTP
+status code
+of 403 (Forbidden) is returned with a "dods-error" response body.&nbsp;</p>
+
 <h2>CDM Validator Service Now a Separate Web Application</h2>
 <p>As of
 TDS 4.0, the CDM Coordinate System validator is no longer available as
