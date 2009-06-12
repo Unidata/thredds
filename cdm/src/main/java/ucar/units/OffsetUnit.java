@@ -423,7 +423,7 @@ public final class OffsetUnit extends UnitImpl implements DerivableUnit {
             return true;
         }
         if (_offset == 0) {
-            return _unit.equals(object);
+            return object.equals(_unit);
         }
         if (!(object instanceof OffsetUnit)) {
             return false;

@@ -399,8 +399,7 @@ public final class LogarithmicUnit extends UnitImpl implements DerivableUnit {
             return false;
         }
         final LogarithmicUnit that = (LogarithmicUnit) object;
-        return super.equals(that) && base == that.base
-                && reference.equals(that.reference);
+        return base == that.base && reference.equals(that.reference);
     }
 
     /**

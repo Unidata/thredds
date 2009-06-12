@@ -391,61 +391,53 @@ PARSER_BEGIN(StandardUnitFormat)
 			final Unit m = parser.parse("m");
 			final Unit s = parser.parse("s");
 			final Unit epoch = parser.parse("s @ 1970-01-01 00:00:00 UTC");
-			class Test {
-				String	spec;
-				Unit	unit;
-	
-				Test(final String spec, final Unit unit) {
-					this.spec = spec;
-					this.unit = unit;
-				}
-			}
-			final Test[] tests = {
-	            new Test("m m", m.multiplyBy(m)),
-	            new Test("m.m", m.multiplyBy(m)),
-	            new Test("(m)(m)", m.multiplyBy(m)),
-	            new Test("m/s/s", m.divideBy(s).divideBy(s)),
-	            new Test("m2", m.raiseTo(2)),
-	            new Test("m2.s", m.raiseTo(2).multiplyBy(s)),
-	            new Test("m2/s", m.raiseTo(2).divideBy(s)),
-	            new Test("m^2/s", m.raiseTo(2).divideBy(s)),
-	            new Test("m s @ 5", m.multiplyBy(s).shiftTo(5.0)),
-	            new Test("m2 s @ 5", m.raiseTo(2).multiplyBy(s).shiftTo(5)),
-	            new Test("m2 s-1 @ 5", m.raiseTo(2).multiplyBy(s.raiseTo(-1)).shiftTo(5)),
-	            new Test("m s from 5", m.multiplyBy(s).shiftTo(5)),
-	            new Test("s@19700101", epoch),
-	            new Test("s@19700101T000000", epoch),
-	            new Test("s@19700101T000000.00", epoch),
-	            new Test("s @ 1970-01-01T00:00:00.00", epoch),
-	            new Test("s @ 1970-01-01 00:00:00.00", epoch),
-	            new Test("s @ 1970-01-01T00:00:00.00 -12", epoch.shiftTo(new Date(12*60*60*1000))),
-	            new Test("lg(re: 1)", DerivedUnitImpl.DIMENSIONLESS.log(10)),
-	            new Test("0.1 lg(re 1 mm)", m.multiplyBy(1e-3).log(10).multiplyBy(0.1)),
-				new Test("m", m),
-				new Test("2 m s", m.multiplyBy(s).multiplyBy(2)),
-				new Test("3.14 m.s", m.multiplyBy(s).multiplyBy(3.14)),
-				new Test("1e9 (m)", m.multiplyBy(1e9)),
-				new Test("(m s)2", m.multiplyBy(s).raiseTo(2)),
-				new Test("m2.s-1", m.raiseTo(2).divideBy(s)),
-				new Test("m2 s^-1", m.raiseTo(2).divideBy(s)),
-				new Test("(m/s)2", m.divideBy(s).raiseTo(2)),
-				new Test("m2/s-1", m.raiseTo(2).divideBy(s.raiseTo(-1))),
-				new Test("m2/s^-1", m.raiseTo(2).divideBy(s.raiseTo(-1))),
-				new Test(".5 m/(.25 s)2", m.multiplyBy(.5).divideBy(
-						s.multiplyBy(.25).raiseTo(2))),
-				new Test("m.m-1.m", m.multiplyBy(m.raiseTo(-1)).multiplyBy(m)),
-				new Test("2.0 m 1/2 s-1*(m/s^1)^-1 (1e9 m-1)(1e9 s-1)-1.m/s", m
-						.multiplyBy(2).multiplyBy(1. / 2.).multiplyBy(s.raiseTo(-1)).multiplyBy(
-								m.divideBy(s.raiseTo(1)).raiseTo(-1)).multiplyBy(
-								m.raiseTo(-1).multiplyBy(1e9)).multiplyBy(
-								s.raiseTo(-1).multiplyBy(1e9).raiseTo(-1)).multiplyBy(m)
-						.divideBy(s)), new Test("m/km", m.divideBy(m.multiplyBy(1e3)))
-			};
+	        myAssert(parser, "m m", m.multiplyBy(m));
+	        myAssert(parser, "m.m", m.multiplyBy(m));
+	        myAssert(parser, "(m)(m)", m.multiplyBy(m));
+	        myAssert(parser, "m/s/s", m.divideBy(s).divideBy(s));
+	        myAssert(parser, "m2", m.raiseTo(2));
+	        myAssert(parser, "m2.s", m.raiseTo(2).multiplyBy(s));
+	        myAssert(parser, "m2/s", m.raiseTo(2).divideBy(s));
+	        myAssert(parser, "m^2/s", m.raiseTo(2).divideBy(s));
+	        myAssert(parser, "m s @ 5", m.multiplyBy(s).shiftTo(5.0));
+	        myAssert(parser, "m2 s @ 5", m.raiseTo(2).multiplyBy(s).shiftTo(5));
+	        myAssert(parser, "m2 s-1 @ 5", m.raiseTo(2).multiplyBy(s.raiseTo(-1))
+	                .shiftTo(5));
+	        myAssert(parser, "m s from 5", m.multiplyBy(s).shiftTo(5));
+	        myAssert(parser, "s@19700101", epoch);
+	        myAssert(parser, "s@19700101T000000", epoch);
+	        myAssert(parser, "s@19700101T000000.00", epoch);
+	        myAssert(parser, "s @ 1970-01-01T00:00:00.00", epoch);
+	        myAssert(parser, "s @ 1970-01-01 00:00:00.00", epoch);
+	        myAssert(parser, "s @ 1970-01-01T00:00:00.00 -12", epoch
+	                .shiftTo(new Date(12 * 60 * 60 * 1000)));
+	        myAssert(parser, "lg(re: 1)", DerivedUnitImpl.DIMENSIONLESS.log(10));
+	        myAssert(parser, "0.1 lg(re 1 mm)", m.multiplyBy(1e-3).log(10)
+	                .multiplyBy(0.1));
+	        myAssert(parser, "m", m);
+	        myAssert(parser, "2 m s", m.multiplyBy(s).multiplyBy(2));
+	        myAssert(parser, "3.14 m.s", m.multiplyBy(s).multiplyBy(3.14));
+	        myAssert(parser, "1e9 (m)", m.multiplyBy(1e9));
+	        myAssert(parser, "(m s)2", m.multiplyBy(s).raiseTo(2));
+	        myAssert(parser, "m2.s-1", m.raiseTo(2).divideBy(s));
+	        myAssert(parser, "m2 s^-1", m.raiseTo(2).divideBy(s));
+	        myAssert(parser, "(m/s)2", m.divideBy(s).raiseTo(2));
+	        myAssert(parser, "m2/s-1", m.raiseTo(2).divideBy(s.raiseTo(-1)));
+	        myAssert(parser, "m2/s^-1", m.raiseTo(2).divideBy(s.raiseTo(-1)));
+	        myAssert(parser, ".5 m/(.25 s)2", m.multiplyBy(.5).divideBy(
+	                s.multiplyBy(.25).raiseTo(2)));
+	        myAssert(parser, "m.m-1.m", m.multiplyBy(m.raiseTo(-1)).multiplyBy(m));
+	        myAssert(parser, "2.0 m 1/2 s-1*(m/s^1)^-1 (1e9 m-1)(1e9 s-1)-1.m/s", m
+	                .multiplyBy(2).multiplyBy(1. / 2.).multiplyBy(
+	                        s.raiseTo(-1)).multiplyBy(
+	                        m.divideBy(s.raiseTo(1)).raiseTo(-1))
+	                .multiplyBy(m.raiseTo(-1).multiplyBy(1e9)).multiplyBy(
+	                        s.raiseTo(-1).multiplyBy(1e9).raiseTo(-1))
+	                .multiplyBy(m).divideBy(s));
+	        myAssert(parser, "m/km", m.divideBy(m.multiplyBy(1e3)));
+	        
             LineNumberReader    lineInput = new LineNumberReader(
                                     new InputStreamReader(System.in));
-            for (Test test : tests) {
-            	myAssert(parser, test.spec, test.unit);
-            }
 
             for (;;)
             {
