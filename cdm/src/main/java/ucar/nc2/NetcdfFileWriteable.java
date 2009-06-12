@@ -58,6 +58,8 @@ import java.io.File;
 
 public class NetcdfFileWriteable extends NetcdfFile {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFileWriteable.class);
+  static private Set<DataType> valid = EnumSet.of(DataType.BYTE, DataType.CHAR, DataType.SHORT, DataType.INT,
+          DataType.DOUBLE, DataType.FLOAT);
 
   private IOServiceProviderWriter spiw;
 
@@ -213,9 +215,13 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @return the created dimension
    */
   public Dimension addDimension(String dimName, int length) {
-    if (!defineMode) throw new UnsupportedOperationException("not in define mode");
-    if (length <= 0) throw new IllegalArgumentException("length must be > 0");
-    if (!N3iosp.isValidNetcdf3ObjectName(dimName)) throw new IllegalArgumentException("illegal netCDF-3 object name");
+    if (!defineMode)
+      throw new UnsupportedOperationException("not in define mode");
+    if (length <= 0)
+      throw new IllegalArgumentException("dimension length must be > 0 :"+length);
+    if (!N3iosp.isValidNetcdf3ObjectName(dimName))
+      throw new IllegalArgumentException("illegal netCDF-3 dimension name: "+dimName);
+
     Dimension dim = new Dimension(dimName, length, true, false, false);
     super.addDimension(null, dim);
     return dim;
@@ -232,8 +238,11 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @return the created dimension
    */
   public Dimension addDimension(String dimName, int length, boolean isShared, boolean isUnlimited, boolean isVariableLength) {
-    if (!defineMode) throw new UnsupportedOperationException("not in define mode");
-    if (!N3iosp.isValidNetcdf3ObjectName(dimName)) throw new IllegalArgumentException("illegal netCDF-3 object name");
+    if (!defineMode)
+      throw new UnsupportedOperationException("not in define mode");
+    if (!N3iosp.isValidNetcdf3ObjectName(dimName))
+      throw new IllegalArgumentException("illegal netCDF-3 dimension name "+dimName);
+
     Dimension dim = new Dimension(dimName, length, isShared, isUnlimited, isVariableLength);
     super.addDimension(null, dim);
     return dim;
@@ -256,7 +265,9 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @return renamed dimension, or null if not found
    */
   public Dimension renameDimension(String oldName, String newName) {
-    if (!defineMode) throw new UnsupportedOperationException("not in define mode");
+    if (!defineMode)
+      throw new UnsupportedOperationException("not in define mode");
+
     Dimension dim = findDimension(oldName);
     if (null != dim) dim.setName(newName);
     return dim;
@@ -268,7 +279,8 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @return the created attribute
    */
   public Attribute addGlobalAttribute(Attribute att) {
-    if (!defineMode) throw new UnsupportedOperationException("not in define mode");
+    if (!defineMode)
+      throw new UnsupportedOperationException("not in define mode");
 
     if (!N3iosp.isValidNetcdf3ObjectName(att.getName())) {
       String attName = N3iosp.createValidNetcdf3ObjectName(att.getName());
@@ -375,7 +387,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
       String tok = stoker.nextToken();
       Dimension d = rootGroup.findDimension(tok);
       if (null == d)
-        throw new IllegalArgumentException("Canat find dimension " + tok);
+        throw new IllegalArgumentException("Cant find dimension " + tok);
       list.add(d);
     }
 
@@ -394,7 +406,10 @@ public class NetcdfFileWriteable extends NetcdfFile {
   public Variable addVariable(String varName, DataType dataType, List<Dimension> dims) {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
-    if (!N3iosp.isValidNetcdf3ObjectName(varName)) throw new IllegalArgumentException("illegal netCDF-3 object name");
+    if (!N3iosp.isValidNetcdf3ObjectName(varName))
+      throw new IllegalArgumentException("illegal netCDF-3 variable name: "+varName);
+    if (!valid.contains(dataType))
+      throw new IllegalArgumentException("illegal dataType for netcdf-3 format: "+dataType);
 
     Variable v = new Variable(this, rootGroup, null, varName);
     v.setDataType(dataType);
@@ -422,7 +437,8 @@ public class NetcdfFileWriteable extends NetcdfFile {
   public Variable addStringVariable(String varName, List<Dimension> dims, int max_strlen) {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
-    if (!N3iosp.isValidNetcdf3ObjectName(varName)) throw new IllegalArgumentException("illegal netCDF-3 object name");
+    if (!N3iosp.isValidNetcdf3ObjectName(varName))
+      throw new IllegalArgumentException("illegal netCDF-3 variable name: "+varName);
 
     Variable v = new Variable(this, rootGroup, null, varName);
     v.setDataType(DataType.CHAR);
@@ -754,6 +770,14 @@ public class NetcdfFileWriteable extends NetcdfFile {
       spiw = null;
     }
     spi = null;
+  }
+
+  public String getFileTypeId() {
+    return "netCDF";
+  }
+
+  public String getFileTypeDescription() {
+    return "netCDF classic format - writer";
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////

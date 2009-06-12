@@ -61,6 +61,14 @@ public class Fysatiosp  extends AbstractIOServiceProvider {
     return( localHeader.isValidFile( raf ));
   }
 
+  public String getFileTypeId() {
+    return "CINRAD";
+  }
+
+  public String getFileTypeDescription() {
+    return "Chinese FY-2 satellite image data in AWX format";
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   // reading
 

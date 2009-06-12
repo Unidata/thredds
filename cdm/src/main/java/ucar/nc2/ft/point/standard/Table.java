@@ -79,10 +79,10 @@ public abstract class Table {
       case MultiDimInner: // inner struct of a multdim
         return new TableMultiDimInner(ds, config);
 
-      case MultiDimOuter: // outer struct of a multdim
+      case MultiDimOuter: // outer struct of a multdim - same as psuedoStructure
         return new TableMultiDimOuter(ds, config);
 
-      case MultiDimStructure: // flatten a multidim structure
+      case MultiDimStructure: // a multidim structure
         return new TableMultiDimStructure(ds, config);
 
       case NestedStructure: // Structure or Sequence is nested in the parent
@@ -181,7 +181,16 @@ public abstract class Table {
 
   /**
    * A Structure or PsuedoStructure.
+   *
    * PsuedoStructure defined by all variables with outer dimension = config.dim
+   * So we find all Variables with signature v(outDim, ...) and make them into
+   *
+   *  Structure {
+   *    v1(...);
+   *    v2(...);
+   *  } s
+   *
+   *  config.vars if not null restrictsto list of vars, must be members.
    */
   public static class TableStructure extends Table {
     Structure struct;
@@ -195,7 +204,10 @@ public abstract class Table {
         this.dim = config.dim;
         assert dim != null;
         //Group parent = ds.findGroup(config.groupName); // will return rootGroup if null
-        struct = new StructurePseudo(ds, dim.getGroup(), config.structName, config.dim);
+        if (config.vars != null)
+          struct = new StructurePseudo(ds, dim.getGroup(), config.structName, config.vars, config.dim);
+        else
+          struct = new StructurePseudo(ds, dim.getGroup(), config.structName, config.dim);
 
       } else {
         struct = (Structure) ds.findVariable(config.structName);
@@ -203,7 +215,13 @@ public abstract class Table {
           throw new IllegalStateException("Cant find Structure " + config.structName);
 
         dim = struct.getDimension(0);
+
+
+        if (config.vars != null) {
+          struct = struct.select( config.vars); // limit to list of vars
+        }
       }
+
 
       for (Variable v : struct.getVariables()) {
         // remove substructures
@@ -242,6 +260,8 @@ public abstract class Table {
 
   /**
    * ArrayStructure is passed in config.as
+   * Used by
+   *  UnidataPointFeature: type StationProfile  (deprecated)
    */
   public static class TableArrayStructure extends Table {
     ArrayStructure as;
@@ -280,6 +300,9 @@ public abstract class Table {
    * Just return the obs structure iterator, extraction is done elsewhere.
    * TableConstruct is the parent table, config.structName is the child table.
    * No variables are added to cols.
+   *
+   * Used by:
+   *   BufrCdm StationProfile type
    */
   public static class TableConstruct extends Table {
     Structure struct;
@@ -310,6 +333,10 @@ public abstract class Table {
   /**
    * Contiguous children, using start and numRecords variables in the parent.
    * TableContiguous is the children, config.struct describes the cols.
+   *
+   * Used by:
+   *   UnidataPointObs
+   *   CFPointObs
    */
   public static class TableContiguous extends TableStructure {
     private String start; // variable name holding the starting index in parent
@@ -341,6 +368,9 @@ public abstract class Table {
    * For efficiency, we scan this data and construct an IndexMap( parentIndex -> list of children),
    *   i.e. we compute the inverse link, parent -> children.
    * TableParentIndex is the children, config.struct describes the cols.
+   *
+   * Used by:
+   *   CFPointObs
    */
   public static class TableParentIndex extends TableStructure {
     private Map<Integer, List<Integer>> indexMap;
@@ -370,6 +400,9 @@ public abstract class Table {
   /**
    * Linked list of children, using start variable in the parent, and next in the child.
    * TableLinkedList is the children, config.struct describes the cols.
+   *
+   * Used by:
+   *   UnidataPointObs
    */
   public static class TableLinkedList extends TableStructure {
     private String start; // variable name holding the starting index in parent
@@ -403,7 +436,7 @@ public abstract class Table {
    ///////////////////////////////////////////////////////
 
   /**
-   * A Multim Variable: Variable v(outDim, innerDim) can be thought of as nested structures:
+   * A collection of Multdim Variable: Variable vi(outDim, innerDim) can be thought of as nested structures:
    *
    *     Structure {
    *       Structure si(innerDim);
@@ -420,13 +453,13 @@ public abstract class Table {
    *    v2(...);
    *  } si
    *
-   * The parent table is a PsuedoStructure:
+   * The parent table is the PsuedoStructure:
    *   Structure {
    *     v1(innerDim, ...);
    *     v2(innerDim, ...);
-   *  } so(outDim)
+   *  } parent(outDim)
    *
-   * so the parentStructure is passed into getStructureDataIterator():
+   * and the parent StructureData is passed into getStructureDataIterator():
    *   StructureData {
    *    v1(innerDim, ...);
    *    v2(innerDim, ...);
@@ -439,6 +472,12 @@ public abstract class Table {
    *    }
    *
    * and return the iterator over it.
+   *
+   * Used by:
+   *   FSLWindProfiler
+   *   GempakCdm
+   *   Iridl
+   *   UnidataPointObs
    *
    */
   public static class TableMultiDimInner extends Table {
@@ -453,16 +492,29 @@ public abstract class Table {
       assert dim != null;
 
       sm = new StructureMembers(config.name);
-      for (Variable v : ds.getVariables()) {
-        if (v.getRank() < 2) continue;
-        if (v.getDimension(0).equals(config.outer) && v.getDimension(1).equals(config.dim)) {
+      if (config.vars != null) {
+        for (String name : config.vars) {
+          Variable v = ds.findVariable(name);
+          if (v == null) continue;
           cols.add(v);
-          // make member
           int rank = v.getRank();
           int[] shape = new int[rank - 2];
           System.arraycopy(v.getShape(), 2, shape, 0, rank - 2);
           sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
         }
+
+      } else {
+        for (Variable v : ds.getVariables()) {
+          if (v.getRank() < 2) continue;
+          if (v.getDimension(0).equals(config.outer) && v.getDimension(1).equals(config.dim)) {
+            cols.add(v);
+            int rank = v.getRank();
+            int[] shape = new int[rank - 2];
+            System.arraycopy(v.getShape(), 2, shape, 0, rank - 2);
+            sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
+          }
+        }
+
       }
     }
 
@@ -497,7 +549,12 @@ public abstract class Table {
   ///////////////////////////////////////////////////////
 
   /**
+   * Used for Structure(station, time).
+   * This is used for the inner table.
    *
+   * Used by:
+   *   GempakCdm
+   *   CFpointObs
    */
    public static class TableMultiDimStructure extends Table.TableStructure {
 
@@ -523,6 +580,9 @@ public abstract class Table {
   /**
    * A Structure inside of a parent Structure.
    * Name of child member inside parent Structure is config.nestedTableName
+   *
+   * Used by:
+   *   BufrCdm
    */
   public static class TableNestedStructure extends Table {
     String nestedTableName; // short name of structure
@@ -569,6 +629,9 @@ public abstract class Table {
 
   /**
    * Table is a single StructureData, passed in as config.sdata.
+   *
+   * Used by:
+   *   Cosmic
    */
   public static class TableSingleton extends Table {
     StructureData sdata;
@@ -593,7 +656,17 @@ public abstract class Table {
   }
 
   /**
-   * Table is a single StructureData, which is empty. Look: replace with TableSingleton ?
+   * Table is a single StructureData, which is empty.
+   * NestedTable looks for instance of this, and
+   *   1) increments the nesting level
+   *   2) looks for coordinat variables at the top level.
+   *
+   * Essentialy adds a table at top of the tree, constisting only of coordinate variables
+   *
+   * Used by:
+   *   CFpointObs
+   *   GempakCdm
+   *   Ndbc
    */
   public static class TableTop extends Table {
     NetcdfDataset ds;

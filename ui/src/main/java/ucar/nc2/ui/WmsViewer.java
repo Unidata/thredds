@@ -36,8 +36,6 @@ package ucar.nc2.ui;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.nc2.util.IO;
-import ucar.nc2.util.CancelTask;
-import ucar.nc2.stream.NcStreamReader;
 import ucar.unidata.util.StringUtil;
 
 import javax.swing.*;

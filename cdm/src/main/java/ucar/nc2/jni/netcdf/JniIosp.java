@@ -70,6 +70,14 @@ public class JniIosp extends AbstractIOServiceProvider {
     return false;
   }
 
+  public String getFileTypeId() {
+    return "netCDF";
+  }
+
+  public String getFileTypeDescription() {
+    return "Netcdf/JNI";
+  }
+
   private NetcdfFile ncfile;
   private int ncid = -1, format;
   private boolean isClosed = false;

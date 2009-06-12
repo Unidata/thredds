@@ -107,6 +107,14 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     return true;
   }
 
+    public String getFileTypeId() {
+      return "NMCon29";
+    }
+
+    public String getFileTypeDescription() {
+      return "NMC Office Note 29";
+    }
+
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     this.raf = raf;
     this.ncfile = ncfile;

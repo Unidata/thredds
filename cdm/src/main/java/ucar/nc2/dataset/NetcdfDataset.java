@@ -141,8 +141,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     ConvertEnums
   }
 
-  static private Set<Enhance> EnhanceAll = Collections.unmodifiableSet( EnumSet.of(Enhance.ScaleMissing, Enhance.CoordSystems, Enhance.ConvertEnums));
-  static private Set<Enhance> EnhanceNone = Collections.unmodifiableSet( EnumSet.noneOf(Enhance.class));
+  static private Set<Enhance> EnhanceAll = Collections.unmodifiableSet(EnumSet.of(Enhance.ScaleMissing, Enhance.CoordSystems, Enhance.ConvertEnums));
+  static private Set<Enhance> EnhanceNone = Collections.unmodifiableSet(EnumSet.noneOf(Enhance.class));
   static private Set<Enhance> defaultEnhanceMode = EnhanceAll;
   static private Set<Enhance> coordSysEnhanceMode = null;
 
@@ -164,12 +164,13 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param mode the default set of Enhancements for open and acquire factory methods
    */
   static public void setDefaultEnhanceMode(Set<Enhance> mode) {
-    defaultEnhanceMode = Collections.unmodifiableSet( mode);
+    defaultEnhanceMode = Collections.unmodifiableSet(mode);
     coordSysEnhanceMode = null;
   }
 
   /**
    * Get the default set of Enhancements
+   *
    * @return the the default set of Enhancements for open and acquire factory methods
    */
   static public Set<Enhance> getDefaultEnhanceMode() {
@@ -178,13 +179,14 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   /**
    * Get the default set of Enhancements, and add CoordSystems if not present
+   *
    * @return EnhanceMode including CoordSystems
    */
   static public Set<Enhance> getCoordSysEnhanceMode() {
     if (coordSysEnhanceMode == null) {
       EnumSet<NetcdfDataset.Enhance> mode = EnumSet.copyOf(defaultEnhanceMode);
-      mode.add( NetcdfDataset.Enhance.CoordSystems);
-      coordSysEnhanceMode = Collections.unmodifiableSet( mode);
+      mode.add(NetcdfDataset.Enhance.CoordSystems);
+      coordSysEnhanceMode = Collections.unmodifiableSet(mode);
     }
     return coordSysEnhanceMode;
   }
@@ -359,7 +361,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   /**
    * Make NetcdfFile into NetcdfDataset with given enhance mode
-   * @param ncfile wrap this
+   *
+   * @param ncfile      wrap this
    * @param enhanceMode using this enhancemode
    * @return NetcdfDataset wrapping the given ncfile
    * @throws IOException on io error
@@ -426,7 +429,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @throws java.io.IOException on read error
    */
   static public NetcdfDataset openDataset(String location, Set<Enhance> enhanceMode, int buffer_size,
-          ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+                                          ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
     // do not acquire
     NetcdfFile ncfile = openOrAcquireFile(null, null, null, location, buffer_size, cancelTask, spiObject);
     NetcdfDataset ds;
@@ -457,21 +460,21 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     // enhance scale/offset first, so its transferred to CoordinateAxes in CoordSystems
     if (mode.contains(Enhance.ConvertEnums) || mode.contains(Enhance.ScaleMissing) || mode.contains(Enhance.ScaleMissingDefer)) {
-    for (Variable v : ds.getVariables()) {
-      VariableEnhanced ve = (VariableEnhanced) v;
+      for (Variable v : ds.getVariables()) {
+        VariableEnhanced ve = (VariableEnhanced) v;
         ve.enhance(mode);
-      if ((cancelTask != null) && cancelTask.isCancel()) return;
-    }
+        if ((cancelTask != null) && cancelTask.isCancel()) return;
+      }
     }
 
     // now find coord systems which may add new variables, change some Variables to axes, etc
     if (mode.contains(Enhance.CoordSystems) && !ds.enhanceMode.contains(Enhance.CoordSystems)) {
-        CoordSysBuilderIF builder = ucar.nc2.dataset.CoordSysBuilder.addCoordinateSystems(ds, cancelTask);
-        ds.convUsed = builder.getConventionUsed();
-      }
+      CoordSysBuilderIF builder = ucar.nc2.dataset.CoordSysBuilder.addCoordinateSystems(ds, cancelTask);
+      ds.convUsed = builder.getConventionUsed();
+    }
 
     ds.finish(); // recalc the global lists
-    ds.enhanceMode.addAll( mode);
+    ds.enhanceMode.addAll(mode);
   }
 
   /**
@@ -503,7 +506,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @throws java.io.IOException on read error
    */
   static public NetcdfDataset acquireDataset(FileFactory fac, String location, Set<Enhance> enhanceMode, int buffer_size,
-          ucar.nc2.util.CancelTask cancelTask, Object iospMessage) throws IOException {
+                                             ucar.nc2.util.CancelTask cancelTask, Object iospMessage) throws IOException {
 
     // caching not turned on
     if (fileCache == null) {
@@ -610,7 +613,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @throws java.io.IOException on read error
    */
   static public NetcdfFile acquireFile(ucar.nc2.util.cache.FileFactory factory, Object hashKey,
-          String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+                                       String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
 
     // must use the factory if there is one
     if ((fileCache == null) && (factory != null)) {
@@ -634,7 +637,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @throws java.io.IOException on read error
    */
   static private NetcdfFile openOrAcquireFile(FileCache cache, FileFactory factory, Object hashKey,
-          String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+                                              String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
 
     if (location == null)
       throw new IOException("NetcdfDataset.openFile: location is null");
@@ -727,7 +730,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     try {
       method = new HeadMethod(location + ".dds");
       method.setFollowRedirects(true);
-      int status =  httpClient.executeMethod(method);
+      int status = httpClient.executeMethod(method);
       if (status == 200) {
         Header h = method.getResponseHeader("Content-Description");
         if ((h != null) && (h.getValue() != null)) {
@@ -767,7 +770,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   static private NetcdfFile acquireDODS(FileCache cache, FileFactory factory, Object hashKey,
-          String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+                                        String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
     if (cache == null) return new DODSNetcdfFile(location, cancelTask);
 
     if (factory == null) factory = new DodsFactory();
@@ -781,7 +784,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   static private NetcdfFile acquireNcml(FileCache cache, FileFactory factory, Object hashKey,
-          String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+                                        String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
     if (cache == null) return NcMLReader.readNcML(location, cancelTask);
 
     if (factory == null) factory = new NcMLFactory();
@@ -795,7 +798,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   static private NetcdfFile acquireRemote(FileCache cache, FileFactory factory, Object hashKey,
-          String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+                                          String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
     if (cache == null) return new NcStreamRemote(location, cancelTask);
 
     if (factory == null) factory = new RemoteFactory();
@@ -895,10 +898,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     coordAxes = new ArrayList<CoordinateAxis>();
     coordTransforms = new ArrayList<CoordinateTransform>();
 
-     for (Variable v : getVariables()) {
+    for (Variable v : getVariables()) {
       VariableEnhanced ve = (VariableEnhanced) v;
       ve.clearCoordinateSystems(); // ??
-  }
+    }
 
     enhanceMode.remove(Enhance.CoordSystems);
   }
@@ -1020,11 +1023,11 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   public boolean sync() throws IOException {
     unlocked = false;
 
-    if ( agg != null )
+    if (agg != null)
       return agg.sync();
 
-    if ( orgFile != null ) {
-      if ( orgFile.sync() ) {
+    if (orgFile != null) {
+      if (orgFile.sync()) {
         // start over again
         this.location = orgFile.getLocation();
         this.id = orgFile.getId();
@@ -1032,13 +1035,13 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
         // build global lists
         empty();
-        convertGroup( getRootGroup(), orgFile.getRootGroup() );
+        convertGroup(getRootGroup(), orgFile.getRootGroup());
         finish();
 
         // redo enhance
         EnumSet<Enhance> saveMode = this.enhanceMode;
-        this.enhanceMode = EnumSet.noneOf( Enhance.class );
-        enhance( this, saveMode, null );
+        this.enhanceMode = EnumSet.noneOf(Enhance.class);
+        enhance(this, saveMode, null);
       }
     }
 
@@ -1517,6 +1520,16 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     ncd.dumpClasses(ncd.getRootGroup(), out);
   }
 
+  public String getFileTypeId() {
+    if (orgFile != null) return orgFile.getFileTypeId();
+    return "N/A";
+  }
+
+  public String getFileTypeDescription() {
+    if (orgFile != null) return orgFile.getFileTypeDescription();
+    return "N/A";
+  }
+
   /**
    * Main program - cover to ucar.nc2.FileWriter, for all files that can be read by NetcdfDataset.openFile()
    * <p><strong>ucar.nc2.dataset.NetcdfDataset -in fileIn -out fileOut
@@ -1546,7 +1559,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
 
     NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, null);
-    System.out.println("Read from "+ datasetIn+" write to "+datasetOut);
+    System.out.println("Read from " + datasetIn + " write to " + datasetOut);
 
     NetcdfFile ncfileOut = ucar.nc2.FileWriter.writeToFile(ncfileIn, datasetOut, false, -1);
     ncfileIn.close();

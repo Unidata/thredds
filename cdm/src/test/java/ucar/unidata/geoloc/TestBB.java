@@ -38,7 +38,7 @@ import ucar.unidata.geoloc.projection.LambertConformal;
 import ucar.nc2.util.Misc;
 
 /**
- * Test Bounding Box utilities
+ * compare ProjectionImpl.latLonToProjBB against latLonToProjBB2
  *
  * @author caron
  */

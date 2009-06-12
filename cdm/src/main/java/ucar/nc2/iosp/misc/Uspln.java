@@ -420,4 +420,8 @@ these are long-range detections.
 
     return structData;
   }
+
+  public String getFileTypeId() { return "USPLN"; }
+
+  public String getFileTypeDescription()  { return "US Precision Lightning Network"; }
 }

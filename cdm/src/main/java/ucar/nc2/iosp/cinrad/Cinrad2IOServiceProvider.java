@@ -73,7 +73,14 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     } catch (IOException ioe) {
         return false;
     }
+  }
 
+  public String getFileTypeId() {
+    return "CINRAD";
+  }
+
+  public String getFileTypeDescription() {
+    return "Chinese Level-II Base Data";
   }
 
   private Cinrad2VolumeScan volScan;

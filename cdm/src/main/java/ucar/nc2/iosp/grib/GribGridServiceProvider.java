@@ -82,6 +82,14 @@ public class GribGridServiceProvider extends GridServiceProvider {
     }
   }
 
+  public String getFileTypeId() {
+    return (saveEdition == 2) ? "GRIB2" : "GRIB1";
+  }
+
+  public String getFileTypeDescription() {
+    return (saveEdition == 2) ? "WMO GRIB Edition 2" : "WMO GRIB Edition 1";
+  }
+
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     this.raf = raf;
     this.ncfile = ncfile;

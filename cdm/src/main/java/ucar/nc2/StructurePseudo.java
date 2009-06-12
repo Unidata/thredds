@@ -116,10 +116,10 @@ public class StructurePseudo extends Structure {
    * @param ncfile part of this file
    * @param group part of this group
    * @param shortName short name of this Structure
-   * @param vars limited to these variables. all must have dim as outer dimension.
+   * @param varNames limited to these variables. all must have dim as outer dimension.
    * @param dim the existing dimension
    */
-  public StructurePseudo( NetcdfFile ncfile, Group group, String shortName,  List<Variable> vars, Dimension dim) {
+  public StructurePseudo( NetcdfFile ncfile, Group group, String shortName,  List<String> varNames, Dimension dim) {
     super (ncfile, group, null, shortName); // cant do this for nested structures
     this.dataType = DataType.STRUCTURE;
     setDimensions( dim.getName());
@@ -128,7 +128,10 @@ public class StructurePseudo extends Structure {
       group = ncfile.getRootGroup();
 
     // find all variables in this group that has this as the outer dimension
-    for (Variable orgV : vars) {
+    for (String name : varNames) {
+      Variable orgV = findVariable(name);
+      if (orgV == null) continue; // skip - should log message
+
       Dimension dim0 = orgV.getDimension(0);
       if (!dim0.equals(dim)) throw new IllegalArgumentException("Variable "+orgV.getNameAndDimensions()+" must have outermost dimension="+dim);
 

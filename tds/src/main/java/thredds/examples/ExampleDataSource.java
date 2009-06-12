@@ -55,39 +55,47 @@ import java.util.List;
  * @author caron
  * @version $Revision$ $Date$
  */
-public class ExampleDataSource  implements thredds.servlet.DatasetSource {
-    HashMap hash = new HashMap();
+public class ExampleDataSource implements thredds.servlet.DatasetSource {
+  HashMap hash = new HashMap();
 
-    public boolean isMine(HttpServletRequest req) {
-      String path = req.getPathInfo();
-      return path.startsWith("/barrodale/");
+  public boolean isMine(HttpServletRequest req) {
+    String path = req.getPathInfo();
+    return path.startsWith("/barrodale/");
+  }
+
+  public NetcdfFile getNetcdfFile(HttpServletRequest req, HttpServletResponse res) throws IOException {
+    String path = req.getPathInfo();
+    path = path.substring("/barrodale/".length());
+
+    String databaseURL = (String) hash.get(path);
+    if (databaseURL == null) {
+      res.sendError(HttpServletResponse.SC_NOT_FOUND);
+      return null;
     }
 
-    public NetcdfFile getNetcdfFile(HttpServletRequest req, HttpServletResponse res) throws IOException {
-      String path = req.getPathInfo();
-      path = path.substring("/barrodale/".length());
-
-      String databaseURL = (String) hash.get(path);
-      if (databaseURL == null) {
-        res.sendError(HttpServletResponse.SC_NOT_FOUND);
-        return null;
-      }
-
-      return new BarrodaleNetcdfFile(req.getRequestURI(), databaseURL);
-    }
+    return new BarrodaleNetcdfFile(req.getRequestURI(), databaseURL);
+  }
 
   public class BarrodaleNetcdfFile extends NetcdfFile {
     BarrodaleNetcdfFile(String location, String databaseURL) throws IOException {
-      super( new BarrodaleIOSP(databaseURL), null, location, null);
+      super(new BarrodaleIOSP(databaseURL), null, location, null);
     }
   }
 
   public class BarrodaleIOSP extends AbstractIOServiceProvider {
-    BarrodaleIOSP( String databaseURL) {
+    BarrodaleIOSP(String databaseURL) {
     }
 
     public boolean isValidFile(RandomAccessFile raf) throws IOException {
       return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public String getFileTypeId() {
+      return "Barrodale";
+    }
+
+    public String getFileTypeDescription() {
+      return "Barrodale";
     }
 
     public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {

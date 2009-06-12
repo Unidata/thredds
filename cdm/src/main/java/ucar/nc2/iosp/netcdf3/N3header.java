@@ -38,6 +38,7 @@ import ucar.unidata.io.RandomAccessFile;
 
 import java.util.*;
 import java.io.IOException;
+import java.io.File;
 
 
 /**
@@ -88,7 +89,7 @@ public class N3header {
 
   private long globalAttsPos = 0; // global attributes start here - used for update
 
-  private boolean debugPos = false, debugVariablePos = false;
+  private boolean debugVariablePos = false;
   private boolean debugStreaming = false;
 
   /* Notes
@@ -149,7 +150,7 @@ public class N3header {
     }
 
     for (int i = 0; i < numdims; i++) {
-      if (debugPos) fout.format("  dim %d pos= %d\n", i, raf.getFilePointer());
+      if (fout != null) fout.format("  dim %d pos= %d\n", i, raf.getFilePointer());
       String name = readString();
       int len = raf.readInt();
       Dimension dim;
@@ -207,10 +208,8 @@ public class N3header {
 
       if (fout != null) {
         fout.format("---name=<%s> dims = [", name);
-        for (int j = 0; j < rank; j++) {
-          Dimension dim = dims.get(j);
+        for ( Dimension dim : dims)
           fout.format("%s ", dim.getName());
-        }
         fout.format("]\n");
       }
 
@@ -241,6 +240,8 @@ public class N3header {
 
       if (debugVariablePos)
         System.out.printf("%s begin at=%d end=%d  isRecord=%s nonRecordData=%d\n", var.getName(), begin, (begin + vsize), isRecord, nonRecordData);
+      if (fout != null)
+        fout.format("%s begin at=%d end=%d  isRecord=%s nonRecordData=%d%n", var.getName(), begin, (begin + vsize), isRecord, nonRecordData);
       if (debugHeaderSize)
         System.out.printf("%s header size=%d data size= %d\n", var.getName(), (raf.getFilePointer() - startPos), vsize);
 
@@ -302,6 +303,7 @@ public class N3header {
     out.format("  recsize = %d %n", recsize);
     out.format("  numrecs = %d %n", numrecs);
     out.format("  isStreaming= %s %n", isStreaming);
+    out.format("  useLongOffset= %s %n", useLongOffset);
 
     long calcSize = recStart + recsize * numrecs;
     out.format("  computedSize = %d %n", calcSize);
@@ -375,19 +377,19 @@ public class N3header {
     if (fout != null) fout.format(" num atts= %d\n", natts);
 
     for (int i = 0; i < natts; i++) {
-      if (debugPos && fout != null) fout.format("***att %d pos= %d\n", i, raf.getFilePointer());
+      if (fout != null) fout.format("***att %d pos= %d\n", i, raf.getFilePointer());
       String name = readString();
       int type = raf.readInt();
       Attribute att;
 
       if (type == 2) {
-        if (debugPos  && fout != null) fout.format(" begin read String val pos= %d\n", raf.getFilePointer());
+        if (fout != null) fout.format(" begin read String val pos= %d\n", raf.getFilePointer());
         String val = readString();
-        if (debugPos  && fout != null) fout.format(" end read String val pos= %d\n", raf.getFilePointer());
+        if (fout != null) fout.format(" end read String val pos= %d\n", raf.getFilePointer());
         att = new Attribute(name, val); // no validation !!
 
       } else {
-        if (debugPos  && fout != null) fout.format(" begin read val pos= %d\n", raf.getFilePointer());
+        if (fout != null) fout.format(" begin read val pos= %d\n", raf.getFilePointer());
         int nelems = raf.readInt();
 
         DataType dtype = getDataType(type);
@@ -401,7 +403,7 @@ public class N3header {
         att = new Attribute(name, arr); // no validation !!
 
         skip(nbytes);
-        if (debugPos  && fout != null) fout.format(" end read val pos= %d\n", raf.getFilePointer());
+        if (fout != null) fout.format(" end read val pos= %d\n", raf.getFilePointer());
       }
 
       atts.add(att);
@@ -589,7 +591,7 @@ public class N3header {
     }
     for (int i = 0; i < numdims; i++) {
       Dimension dim = (Dimension) dims.get(i);
-      if (debugPos) fout.format("  dim %d pos %d\n", i, raf.getFilePointer());
+      if (fout != null) fout.format("  dim %d pos %d\n", i, raf.getFilePointer());
       writeString(dim.getName());
       raf.writeInt(dim.isUnlimited() ? 0 : dim.getLength());
       if (dim.isUnlimited()) udim = dim;
@@ -626,7 +628,7 @@ public class N3header {
         }
 
         vinfo.begin = pos;
-        if (debugVariablePos)
+        if (fout != null)
           fout.format("  %s begin at = %d end= %d\n", var.getName(), vinfo.begin, (vinfo.begin + vinfo.vsize));
         pos += vinfo.vsize;
       }
@@ -697,7 +699,7 @@ public class N3header {
     }
 
     for (int i = 0; i < n; i++) {
-      if (debugPos  && fout != null) fout.format("***att %d pos= %d\n", i, raf.getFilePointer());
+      if (fout != null) fout.format("***att %d pos= %d\n", i, raf.getFilePointer());
       Attribute att = atts.get(i);
 
       writeString(att.getName());
@@ -713,7 +715,7 @@ public class N3header {
         for (int j = 0; j < nelems; j++)
           nbytes += writeAttributeValue(att.getNumericValue(j));
         pad(nbytes, (byte) 0);
-        if (debugPos  && fout != null) fout.format(" end write val pos= %d\n", raf.getFilePointer());
+        if (fout != null) fout.format(" end write val pos= %d\n", raf.getFilePointer());
       }
       if (fout != null) fout.format("  %s\n", att);
     }
@@ -829,7 +831,7 @@ public class N3header {
       writeString(var.getName());
 
       // dimensions
-      long vsize = var.getDataType().getSize();
+      long vsize = var.getDataType().getSize(); // LOOK probably wrong - use n3-specific sizeof
       List<Dimension> dims = var.getDimensions();
       raf.writeInt(dims.size());
       for (Dimension dim : dims) {
@@ -1015,6 +1017,30 @@ public class N3header {
     }
 
     throw new IllegalArgumentException("no such attribute " + want);
+  }
+
+  ///////////////////////////
+  private static void dump(String filename) throws IOException {
+    System.out.printf("Dump %s%n", filename);
+    RandomAccessFile raf = new RandomAccessFile(filename, "r");
+    NetcdfFile ncfile = new MyNetcdfFile();
+
+    // its a netcdf-3 file
+    raf.order(RandomAccessFile.BIG_ENDIAN);
+    N3header headerParser = new N3header();
+
+    headerParser.read(raf, ncfile, new Formatter(System.out));
+    raf.close();
+  }
+
+  private static class MyNetcdfFile extends NetcdfFile {
+  }
+
+  public static void main(String[] args) throws IOException {
+    dump("D:/work/csiro/testWrite.nc");
+    /* dump("D:/work/csiro/russ/sixCells.nc");
+    System.out.printf("--------------------------%n");
+    dump("D:/work/csiro/russ/sixCellsc.nc"); */
   }
 
 }

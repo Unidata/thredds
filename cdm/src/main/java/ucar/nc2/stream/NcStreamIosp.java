@@ -23,6 +23,14 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     return test(b, NcStream.MAGIC_HEADER) || test(b, NcStream.MAGIC_DATA); // immed followed by one of these
   }
 
+  public String getFileTypeId() {
+    return "ncstream";
+  }
+
+  public String getFileTypeDescription() {
+    return "netCDF streaming protocol";
+  }
+
   //////////////////////////////////////////////////////////////////////
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
@@ -75,9 +83,9 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
       DataSection dataSection = new DataSection();
       dataSection.size = dsize;
       dataSection.filePos = raf.getFilePointer();
-      dataSection.section = NcStream.decodeSection( dproto.getSection());
+      dataSection.section = NcStream.decodeSection(dproto.getSection());
 
-      Variable v = ncfile.getRootGroup().findVariable( dproto.getVarName());
+      Variable v = ncfile.getRootGroup().findVariable(dproto.getVarName());
       v.setSPobject(dataSection);
 
       raf.skipBytes(dsize);
@@ -94,11 +102,11 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     DataSection dataSection = (DataSection) v.getSPobject();
 
     raf.seek(dataSection.filePos);
-    byte[] data = new byte[ dataSection.size];
+    byte[] data = new byte[dataSection.size];
     raf.read(data);
 
-    Array dataArray = Array.factory( v.getDataType(), v.getShape(), ByteBuffer.wrap( data));
-    return dataArray.section( section.getRanges());
+    Array dataArray = Array.factory(v.getDataType(), v.getShape(), ByteBuffer.wrap(data));
+    return dataArray.section(section.getRanges());
   }
 
   private int readVInt(RandomAccessFile raf) throws IOException {

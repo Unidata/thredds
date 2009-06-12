@@ -142,11 +142,19 @@ public class TestProjections extends TestCase {
 
   public void testLC() {
     testProjection(new LambertConformal());
-
     LambertConformal lc = new LambertConformal();
     LambertConformal lc2 = (LambertConformal) lc.constructCopy();
     assert lc.equals(lc2);
+  }
 
+  public void testLCseam() {
+    // test seam crossing
+    LambertConformal lc = new LambertConformal(40.0, 180.0, 20.0, 60.0);
+    ProjectionPointImpl p1 = (ProjectionPointImpl) lc.latLonToProj( new LatLonPointImpl(0.0, -1.0), new ProjectionPointImpl());
+    ProjectionPointImpl p2 = (ProjectionPointImpl) lc.latLonToProj( new LatLonPointImpl(0.0, 1.0), new ProjectionPointImpl());
+    System.out.printf(" p1= x=%f y=%f%n", p1.getX(), p1.getY());
+    System.out.printf(" p2= x=%f y=%f%n", p2.getX(), p2.getY());
+    assert lc.crossSeam(p1, p2);
   }
 
   public void testTM() {

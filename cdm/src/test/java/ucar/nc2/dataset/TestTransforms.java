@@ -217,6 +217,7 @@ public class TestTransforms extends TestCase {
         ucar.ma2.ArrayDouble.D3 coordVals = vt.getCoordinateArray(i);
         assert (null != coordVals);
         Section cSection = new Section(coordVals.getShape());
+        System.out.printf(" varSection shape = %s %n", varSection);
         System.out.printf(" coordVal shape = %s %n", cSection);
         assert varSection.computeSize() == cSection.computeSize();
       }

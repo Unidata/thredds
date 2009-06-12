@@ -157,14 +157,14 @@ public class CFpointObs extends TableConfigurerImpl {
       stationDim = lat.getDimension(0);
     }
 
-    boolean hasStruct = Evaluator.hasRecordStructure(ds);
+    boolean stnIsStruct = Evaluator.hasRecordStructure(ds) && stationDim.isUnlimited();
 
     Table.Type stationTableType = stnIsScalar ? Table.Type.Top : Table.Type.Structure;
     TableConfig stnTable = new TableConfig(stationTableType, "station");
     stnTable.featureType = FeatureType.STATION;
-    stnTable.isPsuedoStructure = !hasStruct;
+    stnTable.isPsuedoStructure = !stnIsStruct;
     stnTable.dim = stationDim;
-    stnTable.structName = hasStruct ? "record" : stationDim.getName();
+    stnTable.structName = stnIsStruct ? "record" : stationDim.getName();
 
     stnTable.lat= lat.getName();
     stnTable.lon= lon.getName();
@@ -205,53 +205,60 @@ public class CFpointObs extends TableConfigurerImpl {
     else if (ragged_rowSize != null)
       obsTableType = Table.Type.Contiguous;
 
-    // multidim case with Structure
-    Structure multidimStruct = null;
+    // must be multidim case if not ragged
+    List<String> obsVars = null;
     if (obsTableType == null) {
-      // Structure(station, time)
-      multidimStruct = Evaluator.getStructureWithDimensions(ds, stationDim, obsDim);
-      if (multidimStruct != null) {
-        obsTableType = Table.Type.MultiDimStructure;
+
+      // divide up the variables bewteen the stn and the obs
+      List<Variable> vars = ds.getVariables();
+      List<String> stnVars = new ArrayList<String>(vars.size());
+      obsVars = new ArrayList<String>(vars.size());
+      for (Variable orgV : vars) {
+        if (orgV instanceof Structure) continue;
+        
+        Dimension dim0 = orgV.getDimension(0);
+        if ((dim0 != null) && dim0.equals(stationDim)) {
+          if ((orgV.getRank() == 1) || ((orgV.getRank() == 2) && orgV.getDataType() == DataType.CHAR)) {
+            stnVars.add(orgV.getShortName());
+          } else {
+            Dimension dim1 = orgV.getDimension(1);
+            if ((dim1 != null) && dim1.equals(obsDim))
+              obsVars.add(orgV.getShortName());
+          }
+        }
+      }
+
+      // ok, must be multidim
+      if (obsVars.size() > 0) {
+        stnTable.vars = stnVars; // restrict to these
+        obsTableType = Table.Type.MultiDimInner;
       }
     }
 
-    // multidim case
     if (obsTableType == null) {
-        obsTableType = Table.Type.MultiDimInner;   // LOOK how to test ??
+      errlog.format("Unknown Station/Obs");
+      return null;
     }
 
-    if (obsTableType == null) {
-        errlog.format("Cannot figure out Station/obs table structure");
-        return null;
-    }
 
     TableConfig obs = new TableConfig(obsTableType, obsDim.getName());
     obs.dim = obsDim;
     obs.time = time.getName();
     stnTable.addChild(obs);
 
-    if ((obsTableType == Table.Type.Structure) || (obsTableType == Table.Type.Contiguous) ||
-      (obsTableType == Table.Type.ParentIndex)) {
-      obs.structName = hasStruct ? "record" : obsDim.getName();
-      obs.isPsuedoStructure = !hasStruct;
-    }
-
-    if (obsTableType == Table.Type.MultiDimStructure) {
-      obs.structName = multidimStruct.getName();
-      obs.isPsuedoStructure = false;
-      // if time is not in this structure, need to join it
-      if (multidimStruct.findVariable( time.getShortName()) == null) {
-        obs.addJoin( new JoinArray( time, JoinArray.Type.raw, 0));
-      }
-    }
+    boolean obsIsStruct = Evaluator.hasRecordStructure(ds) && obsDim.isUnlimited();
+    obs.structName = obsIsStruct ? "record" : obsDim.getName();
+    obs.isPsuedoStructure = !obsIsStruct;
 
     if (obsTableType == Table.Type.MultiDimInner) {
-      obs.dim = obsDim;
+      obs.isPsuedoStructure = !stnIsStruct;
+      obs.dim = stationDim;
+      obs.structName = stnIsStruct ? "record" : stationDim.getName();
+      obs.vars = obsVars;
       if (time.getRank() == 1)
         obs.addJoin( new JoinArray( time, JoinArray.Type.raw, 0));
-    }
 
-    if (obsTableType == Table.Type.Contiguous) {
+    } else if (obsTableType == Table.Type.Contiguous) {
       obs.numRecords = ragged_rowSize;
       obs.start = "raggedStartVar";
 
@@ -276,9 +283,8 @@ public class CFpointObs extends TableConfigurerImpl {
       startV.setCachedData(startRecord, false);
       ds.addVariable(v.getParentGroup(), startV);
       needFinish = true;
-    }
 
-    if (obsTableType == Table.Type.ParentIndex) {
+    } else if (obsTableType == Table.Type.ParentIndex) {
       // non-contiguous ragged array
       Variable rpIndex = ds.findVariable(ragged_parentIndex);
   
@@ -308,7 +314,7 @@ public class CFpointObs extends TableConfigurerImpl {
   }
 
   protected TableConfig getTrajectoryConfig(NetcdfDataset ds, Formatter errlog) {
-    TableConfig nt = new TableConfig(Table.Type.MultiDimOuter, "trajectory"); // LOOK
+    TableConfig nt = new TableConfig(Table.Type.MultiDimOuter, "trajectory");
     nt.featureType = FeatureType.TRAJECTORY;
 
     CoordSysEvaluator.findCoords(nt, ds);

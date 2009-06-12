@@ -32,7 +32,6 @@ public class CdmRemoteDatasetFactory {
     Element elem = root.getChild("featureDataset");
     String fType = elem.getAttribute("type").getValue();
     String datasetUri = elem.getAttribute("url").getValue();
-
     
     System.out.printf("CdmRemoteDatasetFactory endpoint %s getCapabilities= %s %s%n", endpoint, fType, datasetUri);
 

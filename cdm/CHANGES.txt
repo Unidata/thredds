@@ -6,7 +6,18 @@ Changes in version 4.0
 
  Release Details:
   46:
-   NcML: logical view
+   PointTable: refactor and document, esp for CF
+   Structure.select(), StructurePseudo() : use member names, not Variable object
+   NetcdfWriteable: check for valid DataType, improve error messages. was allowing addVariable(.., DataType.STRING)
+     causing invalid vsize. netcdf-java read ok, c library doesnt.
+   NcML: logical view (not done)
+   NCMLReader: allow use of alternate CrawlableDataset impls in NcML aggregation.
+   LambertConformal: crossSeam() true when distance > 20,000.
+   ProjectionImpl.latLonToProjBB: dont check crosssSeam()
+   ProjectionImpl: now create a new object when needed in latlonToProj(), projToLatlon() - too susceptible to error otherwise.
+   NetcdfCFWriter: max 2 GB files.
+   NetcdfCFWriter: check if timeAxis is null when dateRange is passed in.
+   IOSP and NetcdfFile new methods: .getFileTypeId(), getFileTypeVersion(), getFileTypeDescription()
   45:
    ToolsUI: fine tune point obs display
    ToolsUI: eliminate multiple combobox events by waiting 10 msecs

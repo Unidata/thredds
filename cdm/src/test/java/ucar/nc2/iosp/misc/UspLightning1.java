@@ -129,6 +129,14 @@ these are long-range detections.
     return got.equals(MAGIC);
   }
 
+  public String getFileTypeId() {
+    return "USPLN/example1";
+  }
+
+  public String getFileTypeDescription() {
+    return "USPLN/example1";
+  }
+
   private  ArrayInt.D1 dateArray;
   private  ArrayDouble.D1 latArray;
   private  ArrayDouble.D1 lonArray;

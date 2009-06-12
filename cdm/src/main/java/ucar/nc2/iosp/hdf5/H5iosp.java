@@ -82,6 +82,14 @@ public class H5iosp extends AbstractIOServiceProvider {
     return H5header.isValidFile(raf);
   }
 
+  public String getFileTypeId() {
+    return "HDF5";
+  }
+
+  public String getFileTypeDescription() {
+    return "Hierarchical Data Format, version 5";
+  }
+
   //////////////////////////////////////////////////////////////////////////////////
 
   private RandomAccessFile myRaf;
@@ -196,7 +204,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
     // special processing
     if (typeInfo.hdfType == 2) { // time
-      Object data =  IospHelper.readDataFill(myRaf, layout, dataType, fillValue, byteOrder, true);
+      Object data = IospHelper.readDataFill(myRaf, layout, dataType, fillValue, byteOrder, true);
       Array timeArray = Array.factory(dataType.getPrimitiveClassType(), shape, data);
 
       // now transform into an ISO Date String
@@ -210,7 +218,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     }
 
     if (typeInfo.hdfType == 8) { // enum
-      Object data = IospHelper.readDataFill( myRaf, layout, dataType, fillValue, byteOrder);
+      Object data = IospHelper.readDataFill(myRaf, layout, dataType, fillValue, byteOrder);
       return Array.factory(dataType.getPrimitiveClassType(), shape, data);
     }
 
@@ -273,7 +281,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       // strings are stored on the heap, and must be read separately
       if (hasStrings) {
         int destPos = 0;
-        for (int i = 0; i< layout.getTotalNelems(); i++) { // loop over each structure
+        for (int i = 0; i < layout.getTotalNelems(); i++) { // loop over each structure
           convertStrings(asbb, destPos, sm);
           destPos += layout.getElemSize();
         }
@@ -301,15 +309,15 @@ public class H5iosp extends AbstractIOServiceProvider {
     ByteBuffer bb = asbb.getByteBuffer();
     for (StructureMembers.Member m : sm.getMembers()) {
       if (m.getDataType() == DataType.STRING) {
-        m.setDataObject( ByteOrder.nativeOrder()); // the string index is always written in "native order"
+        m.setDataObject(ByteOrder.nativeOrder()); // the string index is always written in "native order"
         int size = m.getSize();
-        int destPos = pos  + m.getDataParam();
+        int destPos = pos + m.getDataParam();
         String[] result = new String[size];
         for (int i = 0; i < size; i++)
           result[i] = headerParser.readHeapString(bb, destPos + i * 16); // 16 byte "heap ids" are in the ByteBuffer
 
-        int index = asbb.addObjectToHeap( result);
-        bb.order( ByteOrder.nativeOrder()); // the string index is always written in "native order"
+        int index = asbb.addObjectToHeap(result);
+        bb.order(ByteOrder.nativeOrder()); // the string index is always written in "native order"
         bb.putInt(destPos, index); // overwrite with the index into the StringHeap
       }
     }
@@ -356,7 +364,7 @@ public class H5iosp extends AbstractIOServiceProvider {
           byte[] pa = new byte[recsize];
           myRaf.seek(chunk.getSrcPos() + i * recsize);
           myRaf.read(pa, 0, recsize);
-          opArray.setObject( count++, ByteBuffer.wrap(pa));
+          opArray.setObject(count++, ByteBuffer.wrap(pa));
         }
       }
       return opArray;
@@ -386,6 +394,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
   /**
    * Close the file.
+   *
    * @throws IOException on io error
    */
   public void close() throws IOException {
@@ -414,7 +423,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     try {
       NetcdfFile ncfile = new FakeNetcdfFile();
       H5header detailParser = new H5header(myRaf, ncfile, this);
-      detailParser.read( new PrintStream(ff));
+      detailParser.read(new PrintStream(ff));
     } catch (IOException e) {
       e.printStackTrace();
     }

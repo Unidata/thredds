@@ -195,12 +195,6 @@ public class GempakCdm extends TableConfigurerImpl {
     obs.time = time.getName();
     stnTable.addChild(obs);
 
-    if ((obsTableType == Table.Type.Structure) || (obsTableType == Table.Type.Contiguous) ||
-      (obsTableType == Table.Type.ParentIndex)) {
-      obs.structName = hasStruct ? "record" : obsDim.getName();
-      obs.isPsuedoStructure = !hasStruct;
-    }
-
     if (obsTableType == Table.Type.MultiDimStructure) {
       obs.structName = multidimStruct.getName();
       obs.isPsuedoStructure = false;
@@ -284,11 +278,11 @@ public class GempakCdm extends TableConfigurerImpl {
     if (alt != null)
        obs.elev = alt.getName();
 
-    List<Variable> vars = new ArrayList<Variable>(30);
+    List<String> vars = new ArrayList<String>(30);
     for (Variable v : ds.getVariables()) {
       if ((v.getDimension(0) == stationDim) &&
           ((v.getRank() == 1) || ((v.getRank() == 2) && (v.getDataType() == DataType.CHAR)))) 
-          vars.add(v);
+          vars.add(v.getShortName());
     }
 
     Structure s = new StructurePseudo(ds, null, "stnStruct", vars, stationDim);

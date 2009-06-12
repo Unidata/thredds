@@ -55,6 +55,8 @@ import java.util.*;
  * Note: Apparently WRF netcdf files before version 2 didnt output the projection origin, so
  * we cant properly georeference them.
  *
+ * This Convention currently only supports ARW output.
+ *
  * @author caron
  */
 
@@ -67,13 +69,17 @@ public class WRFConvention extends CoordSysBuilder {
     dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
   }
 
-  /**
-   * @param ncfile the NetcdfFile to test
-   * @return true if we think this is a WRF file.
-   */
   public static boolean isMine(NetcdfFile ncfile) {
-    return (null != ncfile.findGlobalAttribute("MAP_PROJ")) &&
-        (null != ncfile.findDimension("south_north"));
+    Attribute att = ncfile.findGlobalAttribute("DYN_OPT");
+    if ((att == null) || (att.getNumericValue().intValue() != 2)) // ARW only
+      return false;
+
+    if (null == ncfile.findDimension("south_north")) return false;
+
+    att = ncfile.findGlobalAttribute("MAP_PROJ");
+    if (att == null) return false;
+
+    return true;
   }
 
   private double centerX = 0.0, centerY = 0.0;
@@ -716,3 +722,169 @@ orientation of the grid). This should be set equal to the center longitude in mo
 
 
 }
+
+/*
+ NMM . output from gridgen. these are the input files to WRF i think
+netcdf Q:/grid/netcdf/wrf/geo_nmm.d01.nc {
+ dimensions:
+   Time = UNLIMITED;   // (1 currently)
+   DateStrLen = 19;
+   west_east = 136;
+   south_north = 309;
+   land_cat = 24;
+   soil_cat = 16;
+   month = 12;
+ variables:
+   char Times(Time=1, DateStrLen=19);
+   float XLAT_M(Time=1, south_north=309, west_east=136);
+     :FieldType = 104; // int
+     :MemoryOrder = "XY ";
+     :units = "degrees latitude";
+     :description = "Latitude on mass grid";
+     :stagger = "M";
+   float XLONG_M(Time=1, south_north=309, west_east=136);
+     :FieldType = 104; // int
+     :MemoryOrder = "XY ";
+     :units = "degrees longitude";
+     :description = "Longitude on mass grid";
+     :stagger = "M";
+   float XLAT_V(Time=1, south_north=309, west_east=136);
+     :FieldType = 104; // int
+     :MemoryOrder = "XY ";
+     :units = "degrees latitude";
+     :description = "Latitude on velocity grid";
+     :stagger = "V";
+   float XLONG_V(Time=1, south_north=309, west_east=136);
+     :FieldType = 104; // int
+     :MemoryOrder = "XY ";
+     :units = "degrees longitude";
+     :description = "Longitude on velocity grid";
+     :stagger = "V";
+   float E(Time=1, south_north=309, west_east=136);
+     :FieldType = 104; // int
+     :MemoryOrder = "XY ";
+     :units = "-";
+     :description = "Coriolis E parameter";
+     :stagger = "M";
+   float F(Time=1, south_north=309, west_east=136);
+     :FieldType = 104; // int
+     :MemoryOrder = "XY ";
+     :units = "-";
+     :description = "Coriolis F parameter";
+     :stagger = "M";
+   float LANDMASK(Time=1, south_north=309, west_east=136);
+     :FieldType = 104; // int
+     :MemoryOrder = "XY ";
+     :units = "none";
+     :description = "Landmask : 1=land, 0=water";
+     :stagger = "M";
+   float LANDUSEF(Time=1, land_cat=24, south_north=309, west_east=136);
+     :FieldType = 104; // int
+     :MemoryOrder = "XYZ";
+     :units = "category";
+     :description = "24-category USGS landuse";
+     :stagger = "M";
+   float LU_INDEX(Time=1, south_north=309, west_east=136);
+     :FieldType = 104; // int
+     :MemoryOrder = "XY ";
+     :units = "category";
+     :description = "Dominant category";
+     :stagger = "M";
+   float HGT_M(Time=1, south_north=309, west_east=136);
+     :FieldType = 104; // int
+     :MemoryOrder = "XY ";
+     :units = "meters MSL";
+     :description = "Topography height";
+     :stagger = "M";
+   float HGT_V(Time=1, south_north=309, west_east=136);
+     :FieldType = 104; // int
+     :MemoryOrder = "XY ";
+     :units = "meters MSL";
+     :description = "Topography height";
+     :stagger = "V";
+   float SOILTEMP(Time=1, south_north=309, west_east=136);
+     :FieldType = 104; // int
+     :MemoryOrder = "XY ";
+     :units = "Kelvin";
+     :description = "Annual mean deep soil temperature";
+     :stagger = "M";
+   float SOILCTOP(Time=1, soil_cat=16, south_north=309, west_east=136);
+     :FieldType = 104; // int
+     :MemoryOrder = "XYZ";
+     :units = "category";
+     :description = "16-category top-layer soil type";
+     :stagger = "M";
+   float SOILCBOT(Time=1, soil_cat=16, south_north=309, west_east=136);
+     :FieldType = 104; // int
+     :MemoryOrder = "XYZ";
+     :units = "category";
+     :description = "16-category bottom-layer soil type";
+     :stagger = "M";
+   float ALBEDO12M(Time=1, month=12, south_north=309, west_east=136);
+     :FieldType = 104; // int
+     :MemoryOrder = "XYZ";
+     :units = "percent";
+     :description = "Monthly surface albedo";
+     :stagger = "M";
+   float GREENFRAC(Time=1, month=12, south_north=309, west_east=136);
+     :FieldType = 104; // int
+     :MemoryOrder = "XYZ";
+     :units = "fraction";
+     :description = "Monthly green fraction";
+     :stagger = "M";
+   float SNOALB(Time=1, south_north=309, west_east=136);
+     :FieldType = 104; // int
+     :MemoryOrder = "XY ";
+     :units = "percent";
+     :description = "Maximum snow albedo";
+     :stagger = "M";
+   float SLOPECAT(Time=1, south_north=309, west_east=136);
+     :FieldType = 104; // int
+     :MemoryOrder = "XY ";
+     :units = "category";
+     :description = "Dominant category";
+     :stagger = "M";
+
+ :TITLE = "OUTPUT FROM GRIDGEN";
+ :SIMULATION_START_DATE = "0000-00-00_00:00:00";
+ :WEST-EAST_GRID_DIMENSION = 136; // int
+ :SOUTH-NORTH_GRID_DIMENSION = 309; // int
+ :BOTTOM-TOP_GRID_DIMENSION = 0; // int
+ :WEST-EAST_PATCH_START_UNSTAG = 1; // int
+ :WEST-EAST_PATCH_END_UNSTAG = 136; // int
+ :WEST-EAST_PATCH_START_STAG = 1; // int
+ :WEST-EAST_PATCH_END_STAG = 136; // int
+ :SOUTH-NORTH_PATCH_START_UNSTAG = 1; // int
+ :SOUTH-NORTH_PATCH_END_UNSTAG = 309; // int
+ :SOUTH-NORTH_PATCH_START_STAG = 1; // int
+ :SOUTH-NORTH_PATCH_END_STAG = 309; // int
+ :GRIDTYPE = "E";
+ :DX = 0.111143f; // float
+ :DY = 0.106776f; // float
+ :DYN_OPT = 4; // int
+ :CEN_LAT = 21.0f; // float
+ :CEN_LON = 80.0f; // float
+ :TRUELAT1 = 1.0E20f; // float
+ :TRUELAT2 = 1.0E20f; // float
+ :MOAD_CEN_LAT = 0.0f; // float
+ :STAND_LON = 1.0E20f; // float
+ :POLE_LAT = 90.0f; // float
+ :POLE_LON = 0.0f; // float
+ :corner_lats = 3.8832555f, 36.602543f, 36.602543f, 3.8832555f, 3.8931324f, 36.61482f, 36.59018f, 3.873307f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f; // float
+ :corner_lons = 65.589096f, 61.982986f, 98.01701f, 94.410904f, 65.69548f, 62.114895f, 98.14889f, 94.51727f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f; // float
+ :MAP_PROJ = 203; // int
+ :MMINLU = "USGS";
+ :ISWATER = 16; // int
+ :ISICE = 24; // int
+ :ISURBAN = 1; // int
+ :ISOILWATER = 14; // int
+ :grid_id = 1; // int
+ :parent_id = 1; // int
+ :i_parent_start = 0; // int
+ :j_parent_start = 0; // int
+ :i_parent_end = 136; // int
+ :j_parent_end = 309; // int
+ :parent_grid_ratio = 1; // int
+}
+
+*/

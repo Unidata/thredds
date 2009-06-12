@@ -95,11 +95,16 @@ public class Structure extends Variable {
 
   /**
    * Create a subset of the Structure consisting only of the given member variables
-   * @param members list of Variable
-   * @return subsetted Structure
+   * @param memberNames list of Variable names, already a member
+   * @return Structure containing just those members
    */
-  public Structure select( List<Variable> members) {
+  public Structure select( List<String> memberNames) {
     Structure result = (Structure) copy();
+    List<Variable> members = new ArrayList<Variable>();
+    for (String name : memberNames) {
+      Variable m = findVariable(name);
+      if (null != m) members.add(m);
+    }
     result.setMemberVariables(members);
     result.isSubset = true;
     return result;
@@ -107,16 +112,13 @@ public class Structure extends Variable {
 
   /**
    * Create a subset of the Structure consisting only of the one member variable
-   * @param v Variable
-   * @return subsetted Structure
+   * @param varName name of member Variable
+   * @return containing just that member
    */
-  public Structure select( Variable v) {
-    Structure result = (Structure) copy();
-    List<Variable> members = new ArrayList<Variable>(1);
-    members.add(v);
-    result.setMemberVariables(members);
-    result.isSubset = true;
-    return result;
+  public Structure select( String varName) {
+    List<String> memberNames = new ArrayList<String>(1);
+    memberNames.add(varName);
+    return  select(memberNames);
   }
 
   /**

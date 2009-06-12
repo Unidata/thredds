@@ -79,7 +79,8 @@ public abstract class HorizontalProjection
                 {
                     // We need to create a new object each time because
                     // this is not guaranteed by proj.latLonToProj().
-                    return new ProjectionPointImpl(proj.latLonToProj(point));
+                    // now OK jc 06/11/09
+                    return proj.latLonToProj(point);
                 }
             }
             

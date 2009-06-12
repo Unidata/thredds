@@ -1960,6 +1960,14 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     return buff.toString();
   }
 
+  public String getFileTypeId() {
+    return "OPeNDAP";
+  }
+
+  public String getFileTypeDescription() {
+    return "Open-source Project for a Network Data Access Protocol";
+  }
+
   public static void main(String arg[]) {
     //String url = "http://eosdata.gsfc.nasa.gov/daac-bin/nph-hdf/DODS/catalog/health/modis/L3ocean/hdf/MO1DMWD2.sst4.ADD2000297.002.2000366024147.hdf";
     //String url = (arg.length > 1) ? arg[0] : "http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/dods/model/2003020200_sst-t.nc";

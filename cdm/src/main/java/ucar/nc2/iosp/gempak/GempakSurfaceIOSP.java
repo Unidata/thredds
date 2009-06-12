@@ -134,6 +134,14 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                || gemreader.getSurfaceFileType().equals(gemreader.SHIP);
     }
 
+    public String getFileTypeId() {
+      return "GempakSurface";
+    }
+
+    public String getFileTypeDescription() {
+      return "GEMPAK Surface Obs Data";
+    }
+
     /**
      * Open the service provider for reading.
      * @param raf  file to read from
@@ -486,7 +494,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         }
     }
 
-    /**
+  /**
      * TODO:  generalize this
      * static class for testing
      */

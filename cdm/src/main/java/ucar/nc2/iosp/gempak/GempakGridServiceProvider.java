@@ -93,6 +93,14 @@ public class GempakGridServiceProvider extends GridServiceProvider {
         return true;
     }
 
+      public String getFileTypeId() {
+        return "GempakGrid";
+      }
+
+      public String getFileTypeDescription() {
+        return "GEMPAK Gridded Data";
+      }
+
     /**
      * Open the service provider for reading.
      * @param raf  file to read from
@@ -228,7 +236,7 @@ public class GempakGridServiceProvider extends GridServiceProvider {
 
     }  // end main
 
-    /**
+  /**
      * TODO:  generalize this
      * static class for testing
      */

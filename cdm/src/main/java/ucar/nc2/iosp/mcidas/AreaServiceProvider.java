@@ -78,6 +78,14 @@ public class AreaServiceProvider extends AbstractIOServiceProvider {
         return AreaReader.isValidFile(raf);
     }
 
+    public String getFileTypeId() {
+      return "McIDASArea";
+    }
+
+    public String getFileTypeDescription() {
+      return "McIDAS area file";
+    }
+
     /**
      * Open the service provider for reading.
      * @param raf  file to read from
@@ -158,7 +166,7 @@ public class AreaServiceProvider extends AbstractIOServiceProvider {
         }
     }
 
-    /**
+  /**
      * TODO:  generalize this
      * static class for testing
      */

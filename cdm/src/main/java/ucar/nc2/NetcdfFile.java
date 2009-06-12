@@ -1869,6 +1869,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     f.format("NetcdfFile location= %s%n", getLocation());
     f.format("  title= %s%n",getTitle());
     f.format("  id= %s%n",getId());
+    f.format("  fileType= %s%n", getFileTypeId());
+    f.format("  fileDesc= %s%n", getFileTypeDescription());
 
     f.format("  class= %s%n", getClass().getName());
     if (spi == null) {
@@ -1886,6 +1888,37 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    */
   public IOServiceProvider getIosp() {
     return spi;
+  }
+
+  /**
+   * Get the file type id for the underlying data source.
+   * @return registered id of the file type
+   * @see "http://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
+   */
+  public String getFileTypeId() {
+    if (spi != null) return spi.getFileTypeId();
+    return "N/A";
+  }
+
+  /**
+   * Get a human-readable description for this file type.
+   * @return description of the file type
+   * @see "http://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
+   */
+  public String getFileTypeDescription() {
+    if (spi != null) return spi.getFileTypeDescription();
+    return "N/A";
+  }
+
+
+  /**
+   * Get the version of this file type.
+   * @return version of the file type
+   * @see "http://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
+   */
+  public String getFileTypeVersion() {
+    if (spi != null) return spi.getFileTypeVersion();
+    return "N/A";
   }
 
   /* "safety net" use of finalize cf Bloch p 22

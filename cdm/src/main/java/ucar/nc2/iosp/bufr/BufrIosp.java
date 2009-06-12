@@ -592,5 +592,9 @@ public class BufrIosp extends AbstractIOServiceProvider {
     return ff.toString();
   }
 
+  public String getFileTypeId() { return "BUFR"; }
+
+  public String getFileTypeDescription()  { return "WMO Binary Universal Form"; }
+
 
 } // end BufrIosp

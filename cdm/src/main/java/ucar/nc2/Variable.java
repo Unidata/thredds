@@ -909,8 +909,8 @@ public class Variable implements VariableIF {
       return preReader.read(this, null);
 
     if (isMemberOfStructure()) {
-      List<Variable> memList = new ArrayList<Variable>();
-      memList.add(this);
+      List<String> memList = new ArrayList<String>();
+      memList.add(this.getShortName());
       Structure s = parent.select(memList);
       ArrayStructure as = (ArrayStructure) s.read();
       return as.extractMemberArray( as.findMember( shortName));

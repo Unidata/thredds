@@ -165,7 +165,7 @@ public class NcStreamReader {
 
   public NetcdfFile proto2nc(NcStreamProto.Header proto, NetcdfFile ncfile) throws InvalidProtocolBufferException {
     if (ncfile == null)
-      ncfile = new NetcdfFileStream();
+      ncfile = new NetcdfFileStream(); // not used i think
     ncfile.setLocation(proto.getLocation());
     if (proto.hasId()) ncfile.setId(proto.getId());
     if (proto.hasTitle()) ncfile.setTitle(proto.getTitle());

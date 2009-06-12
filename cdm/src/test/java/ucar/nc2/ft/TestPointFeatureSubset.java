@@ -40,6 +40,7 @@ import ucar.nc2.units.DateType;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.dt.TimeSeriesCollection;
+import ucar.nc2.TestAll;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
@@ -63,11 +64,10 @@ public class TestPointFeatureSubset extends TestCase {
   }
 
   public void testProblem() throws IOException {
-    //testPointDataset(topDir+"noZ/41001h2007.nc", FeatureType.ANY_POINT, true);
-    testFeatureDataset("R:/testdata/point/gempak/19580807_sao.gem", FeatureType.STATION, true);
+    testFeatureDataset(TestAll.cdmUnitTestDir+"formats/gempak/surface/19580807_sao.gem", FeatureType.STATION, true);
   }
 
-  public void testCdmRemote() throws IOException {
+  public void utestCdmRemote() throws IOException {
     testFeatureDataset("cdmremote:http://localhost:8080/thredds/cdmremote/station/testCdmRemote/gempak/19580807_sao.gem", FeatureType.STATION, true);
   }
 

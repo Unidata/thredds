@@ -58,6 +58,14 @@ public class Doradeiosp extends AbstractIOServiceProvider {
     return (Doradeheader.isValidFile(raf));
   }
 
+  public String getFileTypeId() {
+    return "DORADE";
+  }
+
+  public String getFileTypeDescription() {
+    return "DOppler RAdar Data Exchange Format";
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   // reading
 

@@ -98,6 +98,14 @@ The specifics for the binary NLDN data record contained in the IDD is:
     return got.equals(MAGIC);
   }
 
+  public String getFileTypeId() {
+    return "NLDN";
+  }
+
+  public String getFileTypeDescription() {
+    return "National Lightning Detection Network";
+  }
+
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     this.raf = raf;
 

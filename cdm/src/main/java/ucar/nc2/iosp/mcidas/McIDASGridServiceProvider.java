@@ -82,6 +82,14 @@ public class McIDASGridServiceProvider extends GridServiceProvider {
         return true;
     }
 
+    public String getFileTypeId() {
+      return "McIDASGrid";
+    }
+
+    public String getFileTypeDescription() {
+      return "McIDAS Grid file";
+    }
+
     /**
      * Open the service provider for reading.
      * @param raf  file to read from
@@ -173,7 +181,7 @@ public class McIDASGridServiceProvider extends GridServiceProvider {
         NetcdfFile ncfile = new MakeNetcdfFile(mciosp, rf, args[0], null);
     }
 
-    /**
+  /**
      * Not sure why we need this
      *
      * @author IDV Development Team

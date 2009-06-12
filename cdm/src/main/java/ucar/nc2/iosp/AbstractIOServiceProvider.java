@@ -176,4 +176,8 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
     return "";
   }
 
+  public String getFileTypeVersion() {
+    return "N/A";
+  }
+
 }

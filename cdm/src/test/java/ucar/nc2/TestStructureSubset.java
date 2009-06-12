@@ -60,10 +60,10 @@ public class TestStructureSubset extends TestCase {
     Structure record = (Structure) ncfile.findVariable("record");
     assert record != null;
 
-    List<Variable> vars = new ArrayList<Variable>();
-    vars.add( record.findVariable("wind_speed"));
-    vars.add( record.findVariable("wind_gust"));
-    vars.add( record.findVariable("report"));
+    List<String> vars = new ArrayList<String>();
+    vars.add( "wind_speed");
+    vars.add( "wind_gust");
+    vars.add( "report");
     Structure subset = record.select(vars);
 
     // read entire subset

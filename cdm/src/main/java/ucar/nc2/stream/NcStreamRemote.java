@@ -204,4 +204,12 @@ public class NcStreamRemote extends ucar.nc2.NetcdfFile {
     return method;
   }
 
+  public String getFileTypeId() {
+    return "ncstreamRemote";
+  }
+
+  public String getFileTypeDescription() {
+    return "ncstreamRemote";
+  }
+
 }

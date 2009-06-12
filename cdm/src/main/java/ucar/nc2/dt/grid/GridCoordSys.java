@@ -1130,7 +1130,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   /**
    * Get Index Ranges for the given lat, lon bounding box.
    *
-   * @deprecated use getRangesFromLatRect.
+   * @deprecated use getRangesFromLatLonRect.
    */
   public List<Range> getLatLonBoundingBox(LatLonRect rect) throws InvalidRangeException {
     return getRangesFromLatLonRect(rect);
@@ -1141,6 +1141,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * For projection, only an approximation based on latlon corners.
    * Must have CoordinateAxis1D or 2D for x and y axis.
    *
+   * @param rect the requested lat/lon bounding box
    * @return list of 2 Range objects, first y then x.
    */
   public List<Range> getRangesFromLatLonRect(LatLonRect rect) throws InvalidRangeException {

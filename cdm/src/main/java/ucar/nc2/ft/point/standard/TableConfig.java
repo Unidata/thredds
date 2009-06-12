@@ -34,6 +34,7 @@ package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.Dimension;
+import ucar.nc2.Variable;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.StructureData;
 
@@ -67,6 +68,9 @@ public class TableConfig {
 
   // top only
   public FeatureType featureType;
+
+  // TablePsuedoStructureList, Structure
+  public List<String> vars;
 
   // multidim: outer and inner dimensions
   public Dimension dim, outer;

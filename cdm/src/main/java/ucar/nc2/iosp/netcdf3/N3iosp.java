@@ -898,6 +898,10 @@ public String NC_check_name(String name) {
     return null;
   }
 
+  public String getFileTypeId() { return "netCDF"; }
+
+  public String getFileTypeDescription()  { return "NetCDF classic format"; }
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   // stuff we need the subclass to implement
 

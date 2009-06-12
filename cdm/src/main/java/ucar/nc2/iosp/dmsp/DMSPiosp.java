@@ -90,6 +90,14 @@ public class DMSPiosp extends AbstractIOServiceProvider {
     return( localHeader.isValidFile( raf ));
   }
 
+  public String getFileTypeId() {
+    return "DMSP";
+  }
+
+  public String getFileTypeDescription() {
+    return "Defense Meteorological Satellite Program";
+  }
+
   public void open( RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask )
           throws IOException
   {

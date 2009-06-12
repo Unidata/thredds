@@ -67,6 +67,14 @@ public class UspLightning2  extends AbstractIOServiceProvider {
     return got.equals(MAGIC);
   }
 
+  public String getFileTypeId() {
+    return "USPLN/example2";
+  }
+
+  public String getFileTypeDescription() {
+    return "USPLN/example2";
+  }
+
   private long[] offsets;
   private double lat_min, lat_max;
   private double lon_min, lon_max;

@@ -600,7 +600,7 @@ public class IospHelper {
 
     // must be a Structure
     Structure outer = (Structure) cer.v;
-    Structure outerSubset = outer.select( cer.child.v); // allows IOSPs to optimize for  this case
+    Structure outerSubset = outer.select( cer.child.v.getShortName()); // allows IOSPs to optimize for  this case
     ArrayStructure outerData = (ArrayStructure) outerSubset.read(cer.section);
     extractSection( cer.child, outerData, result.getIndexIterator());
 

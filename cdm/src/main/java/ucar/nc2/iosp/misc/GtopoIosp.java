@@ -61,8 +61,16 @@ public class GtopoIosp extends AbstractIOServiceProvider {
 
     int pos = location.lastIndexOf(".");
     String stub = location.substring(0, pos);
-    File hdrFile = new File( stub+".HDR");
+    File hdrFile = new File(stub + ".HDR");
     return hdrFile.exists();
+  }
+
+  public String getFileTypeId() {
+    return "GTOPO";
+  }
+
+  public String getFileTypeDescription() {
+    return "USGS GTOPO digital elevation model";
   }
 
 
@@ -86,7 +94,7 @@ public class GtopoIosp extends AbstractIOServiceProvider {
     elev.setDimensions("lat lon");
 
     elev.addAttribute(new Attribute("units", "m"));
-    elev.addAttribute( new Attribute("units_desc", "meters above sea level"));
+    elev.addAttribute(new Attribute("units_desc", "meters above sea level"));
     elev.addAttribute(new Attribute("long_name", "digital elevation in meters above mean sea level"));
     elev.addAttribute(new Attribute("missing_value", (short) -9999));
     ncfile.addVariable(null, elev);
@@ -117,7 +125,7 @@ public class GtopoIosp extends AbstractIOServiceProvider {
   private void readHDR() throws IOException {
     String location = raf.getLocation();
     int pos = location.lastIndexOf(".");
-    String HDRname = location.substring(0, pos)+".HDR";
+    String HDRname = location.substring(0, pos) + ".HDR";
     String HDRcontents = IO.readFile(HDRname);
     StringTokenizer stoke = new StringTokenizer(HDRcontents);
     while (stoke.hasMoreTokens()) {

@@ -35,9 +35,6 @@ package ucar.nc2.thredds.server;
 
 import ucar.nc2.util.IO;
 import ucar.nc2.util.net.HttpClientManager;
-import ucar.nc2.stream.NcStreamRemote;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.io.http.HTTPRandomAccessFile;
 
 import java.io.BufferedReader;
 import java.io.*;
@@ -48,7 +45,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.*;
 
 import org.apache.commons.httpclient.HttpClient;
-import opendap.dap.DConnect2;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.methods.GetMethod;
 
 /**
  * Read TDS access logs
@@ -59,6 +57,9 @@ import opendap.dap.DConnect2;
 public class ReadTdsLogs {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ReadTdsLogs.class);
   private static AtomicInteger reqno = new AtomicInteger(0);
+  private static Formatter out, out2;
+
+  private HttpClient httpClient = HttpClientManager.init(null, "ReadTdsLogs");
 
   ///////////////////////////////////////////////////////
   // multithreading
@@ -74,18 +75,16 @@ public class ReadTdsLogs {
   AtomicLong total_expected_time = new AtomicLong();
 
   final String server;
-  //Formatter out;
   boolean dump = false;
 
   ReadTdsLogs(String server) throws FileNotFoundException {
     this.server = server;
 
-    executor = Executors.newFixedThreadPool(1); // number of threads
+    executor = Executors.newFixedThreadPool(3); // number of threads
     completionQ = new ArrayBlockingQueue<Future<SendRequestTask>>(10); // bounded, threadsafe
     completionService = new ExecutorCompletionService<SendRequestTask>(executor, completionQ);
 
-    //out = new Formatter(new FileOutputStream("C:/TEMP/readTDSnew3.csv"));
-    //out.format("n, url, size, org, new, speedup, fail %n");
+    out = new Formatter(new FileOutputStream("C:/TEMP/readTdsLogs.txt"));
 
     resultProcessingThread = new Thread(new ResultProcessor());
     resultProcessingThread.start();
@@ -93,6 +92,9 @@ public class ReadTdsLogs {
 
   public class SendRequestTask implements Callable<SendRequestTask> {
     Log log;
+
+    long statusCode;
+    long bytesRead;
     boolean failed = false;
     String failMessage;
     long msecs;
@@ -109,7 +111,7 @@ public class ReadTdsLogs {
         System.out.println(rnum + " request= " + log);
 
       try {
-        IO.copyUrlB(server + log.path, null, 10 * 1000); // read data and throw away
+        send();
 
         long took = System.nanoTime() - start;
         msecs = took / 1000 / 1000;
@@ -124,6 +126,26 @@ public class ReadTdsLogs {
       }
 
       return this;
+    }
+
+    void send() throws IOException {
+
+      HttpMethod method = null;
+      try {
+        method = new GetMethod(server + log.path);
+        // out2.format("send %s %n", method.getPath());
+
+        method.setFollowRedirects(true);
+        statusCode = httpClient.executeMethod(method);
+
+        InputStream is = method.getResponseBodyAsStream();
+        if (is != null)
+          bytesRead = IO.copy2null(method.getResponseBodyAsStream(), 10 * 1000); // read data and throw away
+
+      } finally {
+        if (method != null) method.releaseConnection();
+      }
+
     }
   }
 
@@ -148,8 +170,19 @@ public class ReadTdsLogs {
           float speedup = (itask.msecs > 0) ? ((float) log.msecs) / itask.msecs : 0;
 
           //out.format(",%d,%f,%s%n", itask.msecs, speedup, itask.failed);
-          if (itask.failed) System.out.printf("***FAIL %s %s %n", log.path, itask.failMessage);
+          if (itask.failed)
+            System.out.printf("***FAIL %s %s %n", log.path, itask.failMessage);
+          else if (itask.statusCode != log.returnCode) {
+          out.format("%5d: status=%d was=%d %s  %n", reqno, itask.statusCode, log.returnCode, log.path);
+          out2.format("%5d: status=%d was=%d %s  %n", reqno, itask.statusCode, log.returnCode, log.path);
+
+        } else if ((itask.statusCode == 200) && (itask.bytesRead != log.sizeBytes)) {
+          out.format("%5d: bytes=%d was=%d %s%n", reqno, itask.bytesRead, log.sizeBytes, log.path);
+          out2.format("%5d: bytes=%d was=%d %s%n", reqno, itask.bytesRead, log.sizeBytes, log.path);
+        }
+
           if (dump) System.out.printf(",%d,%f,%s%n", itask.msecs, speedup, itask.failed);
+
         } catch (InterruptedException e) {
           cancel = true;
 
@@ -336,11 +369,10 @@ public class ReadTdsLogs {
         continue;
       }
 
-      /* if (!(log.path.indexOf("ncss") > 0))  {    // ncss only
-        // System.out.println(" *** skip fmrc " + log);
+      if (!(log.path.indexOf("ncss/grid") > 0))  {    // ncss only
         skip++;
         continue;
-      } // */
+      }
 
       if (log.path.indexOf("fileServer") > 0) {
         // System.out.println(" *** skip fmrc " + log);
@@ -579,7 +611,7 @@ public class ReadTdsLogs {
   }
 
   static void read(String filename, MClosure closure) throws IOException {
-    File f = new File(filename);       
+    File f = new File(filename);
     if (!f.exists()) {
       System.out.println(filename + " does not exist");
       return;
@@ -594,11 +626,15 @@ public class ReadTdsLogs {
 
 
   public static void main(String args[]) throws IOException {
+    out = new Formatter(new FileOutputStream("C:/TEMP/readTdsLogs.txt"));
+    out2 = new Formatter(System.out);
+
+    /* why ?
     HttpClient client = HttpClientManager.init(null, "ReadTdsLogs");
     DConnect2.setHttpClient(client);
     HTTPRandomAccessFile.setHttpClient(client);
     NcStreamRemote.setHttpClient(client);
-    NetcdfDataset.setHttpClient(client);
+    NetcdfDataset.setHttpClient(client);  */
 
     // sendRequests
     final ReadTdsLogs reader = new ReadTdsLogs("http://motherlode.ucar.edu:8081");
@@ -619,6 +655,8 @@ public class ReadTdsLogs {
     long elapsedTime = System.nanoTime() - startElapsed;
     System.out.println("elapsed= " + elapsedTime / (1000 * 1000 * 1000) + "secs");
 
+    out.close();
+    out2.close();
 
   }
 }

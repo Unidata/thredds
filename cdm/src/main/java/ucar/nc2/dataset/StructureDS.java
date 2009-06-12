@@ -139,31 +139,21 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     this.orgVar = orgVar;
   }
 
-  // for section and slice
+  // for section and slice and select
   @Override
   protected Variable copy() {
-    return new StructureDS(null, this);
+    return new StructureDS(null, this); // why group == null ??
   }
 
+  // copy() doesnt work because convert gets called twice
   @Override
-  public Structure select(List<Variable> members) {
-    StructureDS result = new StructureDS(group, orgVar);
-    result.setMemberVariables(members);
-    result.isSubset = true;
-    return result;
-  }
-
-  /**
-   * Create a subset of the Structure consisting only of the one member variable
-   *
-   * @param v Variable
-   * @return subsetted Structure
-   */
-  @Override
-  public Structure select(Variable v) {
-    StructureDS result = new StructureDS(group, orgVar);
-    List<Variable> members = new ArrayList<Variable>(1);
-    members.add(v);
+  public Structure select(List<String> memberNames) {
+    StructureDS result = new StructureDS(group, orgVar);   
+    List<Variable> members = new ArrayList<Variable>();
+    for (String name : memberNames) {
+      Variable m = findVariable(name);
+      if (null != m) members.add(m);
+    }
     result.setMemberVariables(members);
     result.isSubset = true;
     return result;
@@ -484,9 +474,9 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       if ((v == null) && (orgVar != null)) // may have been renamed
         v = (Variable) findVariableFromOrgName(m.getName());
 
-      if (v == null)
-        log.error("Cant find " + m.getName());
-      else
+      if (v != null) // a section will have missing variables LOOK wrapperSm probbably wrong in that case
+      //  log.error("Cant find " + m.getName());
+      //else
         m.setVariableInfo(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType());
 
       // nested structures
@@ -504,7 +494,8 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       Variable v = vTop;
       while (v instanceof VariableEnhanced) {
         VariableEnhanced ve = (VariableEnhanced) v;
-        if (ve.getOriginalName().equals(orgName)) return (VariableEnhanced) vTop;
+        if ((ve.getOriginalName() != null) && (ve.getOriginalName().equals(orgName)))
+          return (VariableEnhanced) vTop;
         v = ve.getOriginalVariable();
       }
     }

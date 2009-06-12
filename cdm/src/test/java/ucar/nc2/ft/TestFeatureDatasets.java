@@ -45,6 +45,7 @@ public class TestFeatureDatasets {
     TestSuite suite= new TestSuite();
 
     suite.addTestSuite( TestPointFeatureTypes.class);
+    suite.addTestSuite( TestPointFeatureSubset.class);
 
     return suite;
   }

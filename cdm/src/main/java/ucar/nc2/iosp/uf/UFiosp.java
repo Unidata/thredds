@@ -68,6 +68,14 @@ public class UFiosp extends AbstractIOServiceProvider {
         return (localHeader.isValidFile(raf));
     }
 
+    public String getFileTypeId() {
+      return "UniversalRadarFormat";
+    }
+
+    public String getFileTypeDescription() {
+      return "Universal Radar Format";
+    }
+
     public void open(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile file,
                    ucar.nc2.util.CancelTask cancelTask) throws IOException {
         ncfile = file;
@@ -351,7 +359,7 @@ public class UFiosp extends AbstractIOServiceProvider {
         myRaf.close();
     }
 
-    private class Vgroup {
+  private class Vgroup {
         Ray[][] map;
         String abbrev;
 

@@ -575,4 +575,12 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     volScan.raf.close();
   }
 
+  public String getFileTypeId() {
+    return "NEXRAD-2";
+  }
+
+  public String getFileTypeDescription() {
+    return "NEXRAD Level-II Base Data";
+  }
+
 }

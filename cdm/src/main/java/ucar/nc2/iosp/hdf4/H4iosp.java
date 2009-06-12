@@ -63,6 +63,14 @@ public class H4iosp extends AbstractIOServiceProvider {
     return H4header.isValidFile(raf);
   }
 
+    public String getFileTypeId() {
+      return "HDF4";
+    }
+
+    public String getFileTypeDescription() {
+      return "Hierarchical Data Format, version 4";
+    }
+
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     this.raf = raf;
     header.read(raf, ncfile);

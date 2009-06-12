@@ -67,6 +67,14 @@ public class Grib1ServiceProvider extends GribServiceProvider {
 
   }
 
+  public String getFileTypeId() {
+    return "GRIB1";
+  }
+
+  public String getFileTypeDescription() {
+    return "WMO GRIB Edition 1";
+  }
+
   protected void open(Index index, CancelTask cancelTask) throws IOException {
 
     long startTime = System.currentTimeMillis();
