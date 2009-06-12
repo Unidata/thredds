@@ -76,7 +76,7 @@ public class Iridl extends TableConfigurerImpl  {
     }
 
     // station table
-    TableConfig stationTable = new TableConfig(Table.Type.MultiDimOuter, "station");
+    TableConfig stationTable = new TableConfig(Table.Type.Structure, "station");
     stationTable.structName = "station";
     stationTable.isPsuedoStructure = true;
     stationTable.featureType = FeatureType.STATION;

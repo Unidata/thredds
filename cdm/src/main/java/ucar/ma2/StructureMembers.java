@@ -324,8 +324,6 @@ public class StructureMembers {
     public void setDataArray(Array data) {
       this.dataArray = data;
       dtype = DataType.getType( data.getElementType());
-      if (dtype == null)
-        System.out.println("HEY");
     }
 
     /**

@@ -504,6 +504,9 @@ public class TableAnalyzer {
         leaves.add(flatTable);
       }
     }
+
+    if (PointDatasetStandardFactory.showTables)
+      getDetailInfo( new Formatter( System.out));
   }
 
   /////////////////////////////////////////////////////

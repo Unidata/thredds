@@ -42,6 +42,7 @@ import java.util.*;
 
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateUnit;
+import ucar.nc2.units.DateRange;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.TestAll;
 import ucar.ma2.StructureData;
@@ -49,7 +50,6 @@ import ucar.ma2.StructureMembers;
 import ucar.ma2.DataType;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.EarthLocation;
-import ucar.unidata.geoloc.Station;
 
 /**
  * Test PointFeatureTypes.
@@ -63,6 +63,36 @@ public class TestPointFeatureTypes extends TestCase {
   public TestPointFeatureTypes(String name) {
     super(name);
   }
+
+  public void testAll() throws IOException {
+    scanDir(topdir + "cfPoint/", new MyFileFilter()); 
+    //scanDir(ucar.nc2.TestAll.testdataDir + "station/");
+  }
+
+  private void scanDir(String dir, FileFilter ff ) throws IOException {
+    TestAll.actOnAll(dir, ff, new TestAll.Act() {
+
+      public int doAct(String filename) throws IOException {
+        testPointDataset(filename, FeatureType.ANY_POINT, true);
+        //testPointDataset(filename, FeatureType.POINT, true);
+        return 1;
+      }
+    });
+  }
+
+
+  class MyFileFilter implements FileFilter {
+    public boolean accept(File pathname) {
+      String path = pathname.getPath();
+      // eliminate once that have been replaced by ncml
+      if (new File(path + ".ncml").exists()) return false;
+      if (path.endsWith(".ncml")) return true;
+      int pos = path.lastIndexOf(".");
+      if (new File(path.substring(0,pos) + ".ncml").exists()) return false;
+      return true;
+    }
+  }
+
 
   public void testCF() throws IOException {
 
@@ -79,6 +109,9 @@ public class TestPointFeatureTypes extends TestCase {
 
     // CF 1.5 station unlimited, multidim
     testPointDataset(topdir + "cfPoint/station/billNewDicast.nc", FeatureType.STATION, true);
+
+    // CF 1.5 station regular (not unlimited), multidim
+    testPointDataset(topdir + "cfPoint/station/billOldDicast.nc", FeatureType.STATION, true);
 
     // CF 1.0 multidim with dimensions reversed
     //testPointDataset(topdir+"cfPoint/station/solrad_point_pearson.ncml", FeatureType.STATION, true);
@@ -115,21 +148,8 @@ public class TestPointFeatureTypes extends TestCase {
     testPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/gempakSurface.xml/collection", FeatureType.STATION, true);
   }
 
-  public void utestReadAll() throws IOException {
-    readAllDir(ucar.nc2.TestAll.testdataDir + "station/", new MyFileFilter(), FeatureType.ANY_POINT);
-  }
-
-  class MyFileFilter implements FileFilter {
-    public boolean accept(File pathname) {
-      String path = pathname.getPath();
-      if (new File(path + "ml").exists()) return false;
-      return path.endsWith(".nc") || path.endsWith(".ncml");
-    }
-  }
-
-  public void utestProblem() throws IOException {
-    // CF 1.5 multidim stations, stn dim unlimited, must distinguish station table from obs.
-    testPointDataset(topdir + "cfPoint/station/sampleDataset.nc", FeatureType.STATION, true);
+  public void testProblem() throws IOException {
+    testPointDataset(TestAll.cdmUnitTestDir + "formats/gempak/surface/20090521_sao.gem", FeatureType.POINT, true);
   }
 
   int readAllDir(String dirName, FileFilter ff, FeatureType type) throws IOException {
@@ -224,6 +244,7 @@ public class TestPointFeatureTypes extends TestCase {
     System.out.println(" took= " + took + " msec");
   }
 
+  // loop through all PointFeatureCollection
   void testNestedPointFeatureCollection(NestedPointFeatureCollection npfc, boolean show) throws IOException {
     long start = System.currentTimeMillis();
     int count = 0;
@@ -237,10 +258,15 @@ public class TestPointFeatureTypes extends TestCase {
       System.out.println(" testNestedPointFeatureCollection complete count= " + count + " full iter took= " + took + " msec");
   }
 
+  // calcBounds
+  // read all the data - check contained in the bbox, dateRange
+  // subset with a bounding box, test result is in the bounding box
   int testPointFeatureCollection(PointFeatureCollection pfc, boolean show) throws IOException {
     pfc.calcBounds();
     LatLonRect bb = pfc.getBoundingBox();
     assert bb != null;
+    DateRange dr = pfc.getDateRange();
+    assert dr != null;
 
     // complete iteration
     long start = System.currentTimeMillis();
@@ -248,7 +274,9 @@ public class TestPointFeatureTypes extends TestCase {
     pfc.resetIteration();
     while (pfc.hasNext()) {
       PointFeature pf = pfc.next();
+      testPointFeature(pf);
       assert bb.contains(pf.getLocation().getLatLon());
+      assert dr.contains(pf.getObservationTimeAsDate());
       count++;
     }
     long took = System.currentTimeMillis() - start;
@@ -279,6 +307,8 @@ public class TestPointFeatureTypes extends TestCase {
     return count;
   }
 
+  // check that the location and times are filled out
+  // read and test the data
   private void testPointFeature(PointFeature pobs) throws java.io.IOException {
 
     EarthLocation loc = pobs.getLocation();
@@ -296,6 +326,7 @@ public class TestPointFeatureTypes extends TestCase {
     testData(sdata);
   }
 
+  // read each field, check datatype
   private void testData(StructureData sdata) {
 
     for (StructureMembers.Member member : sdata.getMembers()) {

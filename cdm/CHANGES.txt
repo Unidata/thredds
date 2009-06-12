@@ -6,6 +6,8 @@ Changes in version 4.0
 
  Release Details:
   46:
+   udunit fixes for logarithmic units
+   StructurePsuedo: bug in _read(section), returning wrong ArrayStructure.getShape().
    PointTable: refactor and document, esp for CF
    Structure.select(), StructurePseudo() : use member names, not Variable object
    NetcdfWriteable: check for valid DataType, improve error messages. was allowing addVariable(.., DataType.STRING)

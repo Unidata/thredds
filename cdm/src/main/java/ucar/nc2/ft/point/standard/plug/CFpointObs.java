@@ -230,8 +230,8 @@ public class CFpointObs extends TableConfigurerImpl {
 
       // ok, must be multidim
       if (obsVars.size() > 0) {
-        stnTable.vars = stnVars; // restrict to these
-        obsTableType = Table.Type.MultiDimInner;
+        stnTable.vars = stnIsStruct ? null : stnVars; // restrict to these if psuedo Struct
+        obsTableType = stnIsStruct ? Table.Type.MultiDimInner : Table.Type.MultiDimStructurePsuedo;
       }
     }
 
@@ -250,9 +250,10 @@ public class CFpointObs extends TableConfigurerImpl {
     obs.structName = obsIsStruct ? "record" : obsDim.getName();
     obs.isPsuedoStructure = !obsIsStruct;
 
-    if (obsTableType == Table.Type.MultiDimInner) {
+    if ((obsTableType == Table.Type.MultiDimInner) || (obsTableType == Table.Type.MultiDimStructurePsuedo)) {
       obs.isPsuedoStructure = !stnIsStruct;
       obs.dim = stationDim;
+      obs.inner = obsDim;
       obs.structName = stnIsStruct ? "record" : stationDim.getName();
       obs.vars = obsVars;
       if (time.getRank() == 1)
@@ -314,7 +315,7 @@ public class CFpointObs extends TableConfigurerImpl {
   }
 
   protected TableConfig getTrajectoryConfig(NetcdfDataset ds, Formatter errlog) {
-    TableConfig nt = new TableConfig(Table.Type.MultiDimOuter, "trajectory");
+    TableConfig nt = new TableConfig(Table.Type.Structure, "trajectory");
     nt.featureType = FeatureType.TRAJECTORY;
 
     CoordSysEvaluator.findCoords(nt, ds);

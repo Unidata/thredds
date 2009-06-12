@@ -119,7 +119,7 @@ public class StructurePseudo extends Structure {
    * @param varNames limited to these variables. all must have dim as outer dimension.
    * @param dim the existing dimension
    */
-  public StructurePseudo( NetcdfFile ncfile, Group group, String shortName,  List<String> varNames, Dimension dim) {
+  public StructurePseudo( NetcdfFile ncfile, Group group, String shortName, List<String> varNames, Dimension dim) {
     super (ncfile, group, null, shortName); // cant do this for nested structures
     this.dataType = DataType.STRUCTURE;
     setDimensions( dim.getName());
@@ -129,7 +129,7 @@ public class StructurePseudo extends Structure {
 
     // find all variables in this group that has this as the outer dimension
     for (String name : varNames) {
-      Variable orgV = findVariable(name);
+      Variable orgV = group.findVariable(name);
       if (orgV == null) continue; // skip - should log message
 
       Dimension dim0 = orgV.getDimension(0);
@@ -180,12 +180,12 @@ public class StructurePseudo extends Structure {
     Range r = section.getRange(0);
 
     StructureMembers smembers = makeStructureMembers();
-    ArrayStructureMA asma = new ArrayStructureMA( smembers, getShape());
+    ArrayStructureMA asma = new ArrayStructureMA( smembers, section.getShape());
 
     for (Variable v : orgVariables) {
       List<Range> vsection =  new ArrayList<Range>(v.getRanges());
       vsection.set(0, r);
-      Array data = v.read(vsection);
+      Array data = v.read(vsection); // LOOK should these be flattened ??
       StructureMembers.Member m = smembers.findMember(v.getShortName());
       m.setDataArray(data);
     }

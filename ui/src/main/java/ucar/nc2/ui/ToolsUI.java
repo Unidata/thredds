@@ -683,6 +683,7 @@ public class ToolsUI extends JPanel {
     ucar.nc2.thredds.ThreddsDataFactory.setDebugFlags(debugFlags);
 
     ucar.nc2.FileWriter.setDebugFlags(debugFlags);
+    ucar.nc2.ft.point.standard.PointDatasetStandardFactory.setDebugFlags(debugFlags);
   }
 
   /*public void setDebugOutputStream(boolean b) {

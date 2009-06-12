@@ -653,7 +653,7 @@ public abstract class ArrayStructure extends Array {
     long len = data.getSize();
     float[] fa = (float []) data.getStorage();
     if (recnum * m.getSize() >= fa.length)
-      System.out.println("HEY"); */
+      System.out.println("HEY"); // */
 
     return data.getFloat(recnum * m.getSize()); // gets first one in the array
   }

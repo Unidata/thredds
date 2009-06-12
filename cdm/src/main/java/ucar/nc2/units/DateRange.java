@@ -187,6 +187,16 @@ public class DateRange {
   }
 
   /**
+   * Same as included()
+   * @param d date to check
+   * @return true if date in inside this range
+   */
+  public boolean contains(Date d) {
+    return included(d);
+  }
+
+
+  /**
    * Determine if the given range intersects this date range.
    *
    * @param start_want range starts here

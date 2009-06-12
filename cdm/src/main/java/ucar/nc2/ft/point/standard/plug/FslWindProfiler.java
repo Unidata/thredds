@@ -54,7 +54,7 @@ public class FslWindProfiler extends TableConfigurerImpl  {
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
     //TableConfig nt = new TableConfig(Table.Type.Singleton, "station");
 
-    TableConfig profile = new TableConfig(Table.Type.MultiDimOuter, "record");
+    TableConfig profile = new TableConfig(Table.Type.Structure, "record");
     profile.structName = "record";
     profile.dim = Evaluator.getDimension(ds, "recNum", errlog);
     profile.time = Evaluator.getVariableName(ds, "timeObs", errlog);

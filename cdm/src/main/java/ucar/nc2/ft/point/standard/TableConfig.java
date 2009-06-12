@@ -73,7 +73,7 @@ public class TableConfig {
   public List<String> vars;
 
   // multidim: outer and inner dimensions
-  public Dimension dim, outer;
+  public Dimension dim, outer, inner;
   
   // Table.Type ArrayStructure
   public ArrayStructure as;

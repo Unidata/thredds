@@ -47,7 +47,7 @@ import java.util.Formatter;
 import java.io.IOException;
 
 /**
- * Standard handler for Point obs dataset based ona  NetcdfDataset object.
+ * Standard handler for Point obs dataset based on a NetcdfDataset object.
  * Registered with FeatureDatasetFactoryManager.
  * The convention-specific stuff is handled by TableAnayser.
  *
@@ -55,6 +55,11 @@ import java.io.IOException;
  */
 public class PointDatasetStandardFactory implements FeatureDatasetFactory {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PointDatasetStandardFactory.class);
+  static boolean showTables = false;
+
+  public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlags) {
+    showTables = debugFlags.isSet("PointDatasetStandardFactory/showTables");
+  }
 
   /**
    * Check if this is a POINT datatype. If so, a TableAnalyser is used to analyze its structure.
@@ -80,7 +85,7 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
 
     TableConfigurer tc = TableAnalyzer.getTableConfigurer(wantFeatureType, ds);
 
-    // if no explicit tc, then check whatever we can before expensive anysis)
+    // if no explicit tc, then check whatever we can before expensive analysis)
     if (tc == null) {
       boolean hasTime = false;
       boolean hasLat = false;
@@ -99,6 +104,8 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
         errlog.format("PointDataset must have lat,lon,time");
         return null;
       }
+    } else if (showTables) {
+      System.out.printf("TableConfigurer = %s%n", tc.getClass().getName());
     }
 
     // gotta do some work
