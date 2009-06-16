@@ -46,7 +46,6 @@ import ucar.unidata.geoloc.LatLonPointImpl;
  */
 public abstract class ProfileFeatureImpl extends PointCollectionImpl implements ProfileFeature {
   private LatLonPoint latlonPoint;
-  private int npts;
 
   public ProfileFeatureImpl( String name, double lat, double lon, int npts) {
     super(name);
@@ -67,11 +66,4 @@ public abstract class ProfileFeatureImpl extends PointCollectionImpl implements 
     return FeatureType.PROFILE;
   }
 
-  public int size() {
-    return npts;
-  }
-
-  protected void setNumberPoints(int npts) {
-    this.npts = npts;
-  }
 }

@@ -81,8 +81,8 @@ public interface PointFeatureIterator {
   public void setBufferSize( int bytes);
 
   /**
-   * If this is set to true, then the iterator must calculate the bounding box and time range,
-   *   and make it available through getBoundingBox and getDateRange().
+   * If this is set, then the iterator will calculate the bounding box, time range, and size,
+   *   and make it available through getBoundingBox(), getDateRange(), and getSize().
    * @param collection if not null, on complete iteration set the results into the collection.
    */
   public void setCalculateBounds( PointFeatureCollection collection);
@@ -100,10 +100,15 @@ public interface PointFeatureIterator {
   public DateRange getDateRange();
 
   /**
+   * Get number of points after the iteration is finished, if calcBounds was set true
+   * @return number of points in the iteration
+   */
+  public int getCount();
+
+  /**
    * A filter on PointFeatures
    */
   public interface Filter {
-
     /**
      * True if the PointFeature passes this filter
      * @param pointFeature the PointFeature to test

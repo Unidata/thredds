@@ -39,6 +39,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.geoloc.StationImpl;
+import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
 
@@ -53,7 +54,6 @@ import java.io.IOException;
 public abstract class StationFeatureImpl extends PointCollectionImpl implements StationTimeSeriesFeature {
   protected Station s;
   protected DateUnit timeUnit;
-  protected int npts;
 
   public StationFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt, DateUnit timeUnit, int npts) {
     super(name);
@@ -67,6 +67,7 @@ public abstract class StationFeatureImpl extends PointCollectionImpl implements 
     this.s = s;
     this.timeUnit = timeUnit;
     this.npts = npts;
+    setBoundingBox( new LatLonRect(s.getLatLon(), .0001, .0001));
   }
 
   public String getWmoId() {

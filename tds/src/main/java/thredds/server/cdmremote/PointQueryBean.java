@@ -34,11 +34,14 @@ package thredds.server.cdmremote;
 
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
+import ucar.nc2.units.TimeDuration;
 
 import java.util.Formatter;
 
 /**
- * Class Description
+ * Parses the query parameters for cdmRemote point features
  *
  * @author caron
  * @since May 11, 2009
@@ -57,13 +60,15 @@ public class PointQueryBean {
   private String latitude, longitude;
 
   // time range
-  private String timeStart, timeEnd, timeDuration;
+  private String time_start, time_end, time_duration;
   private String time;
 
   // type of request
   private String header;
   private String stations;
 
+  // parsed quantities
+  private DateRange dateRange;
   private LatLonRect llbb;
   private boolean fatal = false;
   private Formatter errs = new Formatter();
@@ -81,8 +86,13 @@ public class PointQueryBean {
     return llbb;
   }
 
+  DateRange getDateRange() {
+    return dateRange;
+  }
+
   boolean parse() {
     parseSpatialExtent();
+    parseTimeExtent();
     return !fatal;
   }
 
@@ -152,6 +162,48 @@ public class PointQueryBean {
     return Double.NaN;
   }
 
+  ////////////////////////////////////////
+
+  private void parseTimeExtent() {
+    DateType startDate = parseDate("time_start", time_start);
+    DateType endDate = parseDate("time_end", time_end);
+    TimeDuration duration = parseW3CDuration("time_duration", time_duration);
+
+    // no range
+    if ((startDate != null) && (endDate != null))
+      dateRange = new DateRange(startDate, endDate, null, null);
+    else if ((startDate != null) && (duration != null))
+      dateRange = new DateRange(startDate, null, duration, null);
+    else if ((endDate != null) && (duration != null))
+      dateRange = new DateRange(null, endDate, duration, null);
+  }
+
+
+  public DateType parseDate(String key, String value) {
+    if (value != null) {
+      try {
+        return new DateType(value, null, null);
+      } catch (java.text.ParseException e) {
+        errs.format("Illegal param='%s=%s'  must be valid ISO Date%n", key, value);
+        fatal = true;
+      }
+    }
+    return null;
+  }
+
+  public TimeDuration parseW3CDuration(String key, String value) {
+    if (value != null) {
+      try {
+        return TimeDuration.parseW3CDuration(value);
+      } catch (java.text.ParseException e) {
+        errs.format("Illegal param='%s=%s'  must be valid ISO Duration%n", key, value);
+        fatal = true;
+      }
+    }
+    return null;
+  }
+
+
   /////////////////////////////////////
 
   public void setStn(String stn) {
@@ -194,16 +246,16 @@ public class PointQueryBean {
     this.longitude = longitude;
   }
 
-  public void setTimeStart(String timeStart) {
-    this.timeStart = timeStart;
+  public void setTime_start(String timeStart) {
+    this.time_start = timeStart;
   }
 
-  public void setTimeEnd(String timeEnd) {
-    this.timeEnd = timeEnd;
+  public void setTime_end(String timeEnd) {
+    this.time_end = timeEnd;
   }
 
-  public void setTimeDuration(String timeDuration) {
-    this.timeDuration = timeDuration;
+  public void setTime_duration(String timeDuration) {
+    this.time_duration = timeDuration;
   }
 
   public void setTime(String time) {
@@ -221,21 +273,21 @@ public class PointQueryBean {
   @Override
   public String toString() {
     return "PointQueryBean{" +
-        "vars='" + vars + '\'' +
-        ", stn='" + stn + '\'' +
-        ", bbox='" + bbox + '\'' +
-        ", west='" + west + '\'' +
-        ", east='" + east + '\'' +
-        ", south='" + south + '\'' +
-        ", north='" + north + '\'' +
-        ", latitude='" + latitude + '\'' +
-        ", longitude='" + longitude + '\'' +
-        ", timeStart='" + timeStart + '\'' +
-        ", timeEnd='" + timeEnd + '\'' +
-        ", timeDuration='" + timeDuration + '\'' +
-        ", time='" + time + '\'' +
-        ", header='" + wantHeader() + '\'' +
-        ", stations='" + wantStations() + '\'' +
-        '}';
+            "vars='" + vars + '\'' +
+            ", stn='" + stn + '\'' +
+            ", bbox='" + bbox + '\'' +
+            ", west='" + west + '\'' +
+            ", east='" + east + '\'' +
+            ", south='" + south + '\'' +
+            ", north='" + north + '\'' +
+            ", latitude='" + latitude + '\'' +
+            ", longitude='" + longitude + '\'' +
+            ", timeStart='" + time_start + '\'' +
+            ", timeEnd='" + time_end + '\'' +
+            ", timeDuration='" + time_duration + '\'' +
+            ", time='" + time + '\'' +
+            ", header='" + wantHeader() + '\'' +
+            ", stations='" + wantStations() + '\'' +
+            '}';
   }
 }

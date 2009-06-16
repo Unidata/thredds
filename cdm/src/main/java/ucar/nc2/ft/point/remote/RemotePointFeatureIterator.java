@@ -20,7 +20,7 @@ public class RemotePointFeatureIterator extends PointIteratorAbstract {
   private FeatureMaker featureMaker;
 
   private PointFeature pf;
-  int count = 0;
+  private boolean finished = false;
 
   RemotePointFeatureIterator(HttpMethod method, InputStream in, FeatureMaker featureMaker) throws IOException {
     this.method = method;
@@ -29,17 +29,22 @@ public class RemotePointFeatureIterator extends PointIteratorAbstract {
   }
 
   public void finish() {
+    if (finished) return;
     if (method != null)
       method.releaseConnection();
     method = null;
+    finishCalcBounds();
+    finished = true;
   }
 
   public boolean hasNext() throws IOException {
+    if (finished) return false;
+    
     int len = NcStream.readVInt(in);
+    //System.out.println(" RemotePointFeatureIterator len= " + len+ " count = "+count);
     if (len <= 0) {
-      System.out.println(" total read= " + count);
-      finish();
       pf = null;
+      finish();
       return false;
     }
 
@@ -47,14 +52,12 @@ public class RemotePointFeatureIterator extends PointIteratorAbstract {
     NcStream.readFully(in, b);
 
     pf = featureMaker.make(b);
-    //System.out.println(" count= " + count + " pf=" + pf);
-    count++;
     return true;
   }
 
   public PointFeature next() throws IOException {
-    if (pf != null)
-      calcBounds(pf);
+    if (null == pf) return null;
+    calcBounds(pf);
     return pf;
   }
 

@@ -234,6 +234,7 @@ public class StationStreamController extends AbstractCommandController implement
         byte[] b = pfp.toByteArray();
         NcStream.writeVInt(out, b.length);
         out.write(b);
+
         count++;
       }
     } finally {

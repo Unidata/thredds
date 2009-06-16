@@ -51,7 +51,7 @@ public class PointIteratorFiltered extends PointIteratorAbstract {
   private DateRange filter_date;
 
   private PointFeature pointFeature;
-  private boolean done = false;
+  private boolean finished = false;
 
   PointIteratorFiltered(PointFeatureIterator orgIter, LatLonRect filter_bb, DateRange filter_date) {
     this.orgIter = orgIter;
@@ -64,20 +64,21 @@ public class PointIteratorFiltered extends PointIteratorAbstract {
   }
 
   public void finish() {
+    if (finished) return;
     orgIter.finish();
+    finishCalcBounds();
+    finished = true;
   }
 
   public boolean hasNext() throws IOException {
-    if (done) return false;
-
     pointFeature = nextFilteredDataPoint();
-    done = (pointFeature == null);
-    if (done) finishCalcBounds();
+    boolean done = (pointFeature == null);
+    if (done) finish();
     return !done;
   }
 
   public PointFeature next() throws IOException {
-    if (done) return null;
+    if (pointFeature == null) return null;
     calcBounds(pointFeature);
     return pointFeature;
   }

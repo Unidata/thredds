@@ -63,8 +63,9 @@ import thredds.catalog.ThreddsMetadata;
 public class CompositeDatasetFactory {
   static public final String SCHEME = "collection:";
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CompositeDatasetFactory.class);
+  static boolean debug = true;
 
-  static public FeatureDataset factory(File configFile, Formatter errlog) throws IOException {
+  static public FeatureDataset factory(String locationURI, File configFile, Formatter errlog) throws IOException {
     SAXBuilder builder = new SAXBuilder();
     Document configDoc;
     try {
@@ -103,7 +104,7 @@ public class CompositeDatasetFactory {
       return null;
     }
 
-    CompositePointDataset fd = (CompositePointDataset) factory(wantFeatureType, location +"?"+dateFormatMark, errlog);
+    CompositePointDataset fd = (CompositePointDataset) factory(locationURI, wantFeatureType, location +"?"+dateFormatMark, errlog);
     if (fd == null) return null;
 
     fd.setBoundingBox(llbb);
@@ -148,7 +149,7 @@ public class CompositeDatasetFactory {
     }
   }
 
-  static public FeatureDataset factory(FeatureType wantFeatureType, String wildcard, Formatter errlog) throws IOException {
+  static public FeatureDataset factory(String location, FeatureType wantFeatureType, String wildcard, Formatter errlog) throws IOException {
     if (wildcard.startsWith(SCHEME))
       wildcard = wildcard.substring(SCHEME.length());
 
@@ -167,15 +168,16 @@ public class CompositeDatasetFactory {
        return null;
     }
 
-    return new CompositePointDataset(wantFeatureType, pfc, datasets);
+    return new CompositePointDataset(location, wantFeatureType, pfc, datasets);
   }
 
   private static class CompositePointDataset extends PointDatasetImpl {
     private TimedCollection datasets;
     private FeatureDatasetPoint proto;
 
-    public CompositePointDataset(FeatureType featureType, FeatureCollection pfc, TimedCollection datasets) {
+    public CompositePointDataset(String location, FeatureType featureType, FeatureCollection pfc, TimedCollection datasets) {
       super(featureType);
+      setLocationURI(location);
       setPointFeatureCollection( pfc);
       this.datasets = datasets;
 

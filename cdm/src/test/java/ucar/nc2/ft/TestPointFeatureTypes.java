@@ -50,6 +50,7 @@ import ucar.ma2.StructureMembers;
 import ucar.ma2.DataType;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.EarthLocation;
+import ucar.unidata.geoloc.Station;
 
 /**
  * Test PointFeatureTypes.
@@ -65,11 +66,11 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   public void testAll() throws IOException {
-    scanDir(topdir + "cfPoint/", new MyFileFilter()); 
+    scanDir(topdir + "cfPoint/", new MyFileFilter());
     //scanDir(ucar.nc2.TestAll.testdataDir + "station/");
   }
 
-  private void scanDir(String dir, FileFilter ff ) throws IOException {
+  private void scanDir(String dir, FileFilter ff) throws IOException {
     TestAll.actOnAll(dir, ff, new TestAll.Act() {
 
       public int doAct(String filename) throws IOException {
@@ -88,7 +89,7 @@ public class TestPointFeatureTypes extends TestCase {
       if (new File(path + ".ncml").exists()) return false;
       if (path.endsWith(".ncml")) return true;
       int pos = path.lastIndexOf(".");
-      if (new File(path.substring(0,pos) + ".ncml").exists()) return false;
+      if (new File(path.substring(0, pos) + ".ncml").exists()) return false;
       return true;
     }
   }
@@ -116,19 +117,19 @@ public class TestPointFeatureTypes extends TestCase {
     // CF 1.0 multidim with dimensions reversed
     //testPointDataset(topdir+"cfPoint/station/solrad_point_pearson.ncml", FeatureType.STATION, true);
 
-     // CF 1.5 multidim stations, stn dim unlimited, must distinguish station table from obs.
+    // CF 1.5 multidim stations, stn dim unlimited, must distinguish station table from obs.
     testPointDataset(topdir + "cfPoint/station/sampleDataset.nc", FeatureType.STATION, true);
 
   }
 
   public void testGempak() throws IOException {
     // (GEMPAK IOSP) stn = psuedoStruct, obs = multidim Structure, time(time) as extraJoin
-    testPointDataset(TestAll.cdmUnitTestDir+"formats/gempak/surface/19580807_sao.gem", FeatureType.STATION, true);
+    testPointDataset(TestAll.cdmUnitTestDir + "formats/gempak/surface/19580807_sao.gem", FeatureType.STATION, true);
 
     // stationAsPoint (GEMPAK IOSP) stn = psuedoStruct, obs = multidim Structure, time(time) as extraJoin
     //testPointDataset(TestAll.cdmUnitTestDir + "formats/gempak/surface/20090521_sao.gem", FeatureType.POINT, true);
 
-    testGempakAll(TestAll.cdmUnitTestDir+"formats/gempak/surface/20090524_sao.gem");
+    testGempakAll(TestAll.cdmUnitTestDir + "formats/gempak/surface/20090524_sao.gem");
     //testGempakAll(TestAll.cdmUnitTestDir+"C:/data/ft/station/09052812.sf");
   }
 
@@ -140,16 +141,53 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
 
-  public void utestCdmRemote() throws IOException {
-    testPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/station/testCdmRemote/gempak/19580807_sao.gem", FeatureType.STATION, true);
-  }
-
-  public void utestCdmRemoteCollection() throws IOException {
-    testPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/gempakSurface.xml/collection", FeatureType.STATION, true);
+  public void testProblemGemPak() throws IOException {
+    testPointDataset("D:\\formats\\gempak\\surface\\20090521_sao.gem", FeatureType.STATION, true);
   }
 
   public void testProblem() throws IOException {
-    testPointDataset(TestAll.cdmUnitTestDir + "formats/gempak/surface/20090521_sao.gem", FeatureType.POINT, true);
+    testPointDataset("D:\\datasets\\metars\\Surface_METAR_20070513_0000.nc", FeatureType.STATION, true);
+  }
+
+  public void testCollectionGempak() throws IOException {
+    testPointDataset("collection:D:/formats/gempak/surface/*.gem?#yyyyMMdd", FeatureType.STATION, true);
+  }
+
+  public void testCollection() throws IOException {
+    testPointDataset("collection:D:/datasets/metars/*.nc?Surface_METAR_#yyyyMMdd_HHmm", FeatureType.STATION, true);
+  }
+
+  public void testCdmRemote() throws IOException {
+    testPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/station/testCdmRemote/gempak/19580807_sao.gem", FeatureType.STATION, true);
+  }
+
+  public void testCdmRemoteCollection() throws IOException {
+    testPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/gempakSurface.xml/collection", FeatureType.STATION, true);
+  }
+
+  public void testCdmRemoteCollectionSubsets() throws IOException {
+    Formatter f = new Formatter();
+    String location = "cdmremote:http://localhost:8080/thredds/cdmremote/gempakSurface.xml/collection";
+    FeatureDataset fdataset = FeatureDatasetFactoryManager.open(FeatureType.STATION, location, null, f);
+    assert fdataset instanceof FeatureDatasetPoint;
+    FeatureDatasetPoint fdpoint = (FeatureDatasetPoint) fdataset;
+
+    assert fdpoint.getPointFeatureCollectionList().size() == 1;
+    FeatureCollection fc = fdpoint.getPointFeatureCollectionList().get(0);
+    assert (fc instanceof StationTimeSeriesFeatureCollection);
+    StationTimeSeriesFeatureCollection stnc = (StationTimeSeriesFeatureCollection) fc;
+
+    Station stn = stnc.getStation("04V");
+    assert (stn != null);
+    StationTimeSeriesFeature stnFeature = stnc.getStationFeature(stn);
+    assert (stnFeature != null);
+    stnFeature.calcBounds();
+    int n = stnFeature.size();
+    System.out.printf(" n=%d from %s ", n, stnFeature);
+
+    testPointFeatureCollection(stnFeature, true);
+
+    fdataset.close();
   }
 
   int readAllDir(String dirName, FileFilter ff, FeatureType type) throws IOException {
@@ -231,7 +269,7 @@ public class TestPointFeatureTypes extends TestCase {
 
       } else if (fc instanceof StationTimeSeriesFeatureCollection) {
         testStationFeatureCollection((StationTimeSeriesFeatureCollection) fc);
-        testNestedPointFeatureCollection((StationTimeSeriesFeatureCollection) fc, show);
+        //testNestedPointFeatureCollection((StationTimeSeriesFeatureCollection) fc, show);
 
       } else {
 
@@ -258,41 +296,58 @@ public class TestPointFeatureTypes extends TestCase {
       System.out.println(" testNestedPointFeatureCollection complete count= " + count + " full iter took= " + took + " msec");
   }
 
-  // calcBounds
-  // read all the data - check contained in the bbox, dateRange
-  // subset with a bounding box, test result is in the bounding box
   int testPointFeatureCollection(PointFeatureCollection pfc, boolean show) throws IOException {
+    if (show) {
+      System.out.println(" test PointFeatureCollection " + pfc.getName());
+      System.out.println(" calcBounds");
+    }
     pfc.calcBounds();
+    if (show) {
+      System.out.println("  bb= " + pfc.getBoundingBox());
+      System.out.println("  dateRange= " + pfc.getDateRange());
+      System.out.println("  npts= " + pfc.size());
+    }
+
+    int n = pfc.size();
+    if (n == 0) {
+      System.out.println("  empty " + pfc);
+      return 0; // empty
+    }
+
     LatLonRect bb = pfc.getBoundingBox();
     assert bb != null;
     DateRange dr = pfc.getDateRange();
     assert dr != null;
 
-    // complete iteration
+    // read all the data - check that it is contained in the bbox, dateRange
+    if (show) System.out.println(" complete iteration");
     long start = System.currentTimeMillis();
     int count = 0;
     pfc.resetIteration();
     while (pfc.hasNext()) {
       PointFeature pf = pfc.next();
       testPointFeature(pf);
-      assert bb.contains(pf.getLocation().getLatLon());
-      assert dr.contains(pf.getObservationTimeAsDate());
+      assert bb.contains(pf.getLocation().getLatLon()) : pf.getLocation().getLatLon();
+      if (!dr.contains(pf.getObservationTimeAsDate()))
+        System.out.printf("  date out of Range= %s on %s %n", pf.getObservationTimeAsDate(), pfc.getName());
       count++;
     }
     long took = System.currentTimeMillis() - start;
     if (show)
       System.out.println(" testPointFeatureCollection complete count= " + count + " full iter took= " + took + " msec");
 
-    // try a subset
+    // subset with a bounding box, test result is in the bounding box
     LatLonRect bb2 = new LatLonRect(bb.getLowerLeftPoint(), bb.getHeight() / 2, bb.getWidth() / 2);
     PointFeatureCollection subset = pfc.subset(bb2, null);
-    if (show) System.out.println(" subset= " + bb2.toString2());
+    if (show) System.out.println(" subset bb= " + bb2.toString2());
 
     start = System.currentTimeMillis();
     int counts = 0;
     PointFeatureIterator iters = subset.getPointFeatureIterator(-1);
     while (iters.hasNext()) {
       PointFeature pf = iters.next();
+      assert pf != null;
+      assert pf.getLocation() != null;
 
       assert bb2.contains(pf.getLocation().getLatLon()) : bb2.toString2() + " does not contains point " + pf.getLocation().getLatLon();
       //System.out.printf(" contains point %s%n",pf.getLocation().getLatLon());
@@ -367,21 +422,26 @@ public class TestPointFeatureTypes extends TestCase {
   ////////////////////////////////////////////////////////////
 
   void testStationFeatureCollection(StationTimeSeriesFeatureCollection sfc) throws IOException {
-    System.out.printf(" Complete for %s %n", sfc.getName());
+    System.out.printf("Complete Iteration for %s %n", sfc.getName());
     int countAll = count(sfc);
 
     // try a subset
     LatLonRect bb = sfc.getBoundingBox();
     assert bb != null;
     LatLonRect bb2 = new LatLonRect(bb.getLowerLeftPoint(), bb.getHeight() / 2, bb.getWidth() / 2);
-    System.out.println(" subset= " + bb2.toString2());
+    System.out.println("Subset= " + bb2.toString2());
     StationTimeSeriesFeatureCollection sfcSub = sfc.subset(bb2);
     int countSub = count(sfcSub);
-
     assert countSub <= countAll;
+
+    System.out.println("Flatten= " + bb2.toString2());
+    PointFeatureCollection flatten = sfc.flatten(bb2, null);
+    int countFlat = count(flatten);
+
+    assert countFlat <= countAll;
   }
 
-   int count(StationTimeSeriesFeatureCollection sfc) throws IOException {
+  int count(StationTimeSeriesFeatureCollection sfc) throws IOException {
     System.out.printf(" Station List Size = %d %n", sfc.getStations().size());
 
     // check uniqueness
@@ -393,25 +453,24 @@ public class TestPointFeatureTypes extends TestCase {
       StationTimeSeriesFeature sf = sfc.next();
       StationTimeSeriesFeature other = stns.get(sf.getName());
       if (other != null) {
-        System.out.printf("duplicate name = %s %n", sf);
-        System.out.printf(" of = %s %n", other);
+        System.out.printf("  duplicate name = %s %n", sf);
+        System.out.printf("   of = %s %n", other);
       } else
         stns.put(sf.getName(), sf);
 
       MyLocation loc = new MyLocation(sf);
       StationTimeSeriesFeature already = locs.get(loc);
       if (already != null) {
-        System.out.printf("duplicate location = %s %n", sf);
-        System.out.printf(" of = %s %n", already);
+        System.out.printf("  duplicate location %s(%s) of %s(%s) %n", sf.getName(), sf.getDescription(),
+                already.getName(), already.getDescription());
       } else
         locs.put(loc, sf);
-
     }
 
     System.out.printf(" unique locs = %d %n", locs.size());
     System.out.printf(" unique stns = %d %n", stns.size());
 
-     return stns.size();
+    return stns.size();
   }
 
 
@@ -466,18 +525,17 @@ public class TestPointFeatureTypes extends TestCase {
 
   int count(PointFeatureCollection pfc) throws IOException {
     int count = 0;
-    Set<PointFeature> points = new HashSet<PointFeature>(80000);
     Set<MyLocation> locs = new HashSet<MyLocation>(80000);
     pfc.resetIteration();
     while (pfc.hasNext()) {
       PointFeature pf = pfc.next();
       MyLocation loc = new MyLocation(pf.getLocation());
-      locs.add(loc);
-      //points.add(pf);
+      if (!locs.contains(loc)) locs.add(loc);
       count++;
+      //if (count % 1000 == 0) System.out.printf("Count %d%n", count);
     }
 
-    System.out.printf("Count= %d Unique points = %d %n", count, points.size());
+    System.out.printf("Count Points  = %d Unique points = %d %n", count, locs.size());
     return locs.size();
 
     //The problem is that all the locations are coming up with the same value.  This:

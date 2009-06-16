@@ -188,7 +188,7 @@ public class CollectionController extends AbstractCommandController implements L
           }
 
         } else { // they want some data
-          PointFeatureCollection pfc = sfc.flatten(query.getLatLonRect(), null);
+          PointFeatureCollection pfc = sfc.flatten(query.getLatLonRect(), query.getDateRange());
           sendData(fd.getLocation(), pfc, out);
         }
 
@@ -239,6 +239,8 @@ public class CollectionController extends AbstractCommandController implements L
         byte[] b = pfp.toByteArray();
         NcStream.writeVInt(out, b.length);
         out.write(b);
+        //System.out.println(" CollectionController len= " + b.length+ " count = "+count);
+
         count++;
       }
     } finally {
@@ -261,7 +263,7 @@ public class CollectionController extends AbstractCommandController implements L
 
       //fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(FeatureType.STATION, "D:/formats/gempak/surface/*.gem?#yyyyMMdd");
       Formatter errlog = new Formatter();
-      fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(config, errlog);
+      fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(path, config, errlog);
       if (fd == null) {
         log.error("Error opening dataset error =", errlog);
         return null;

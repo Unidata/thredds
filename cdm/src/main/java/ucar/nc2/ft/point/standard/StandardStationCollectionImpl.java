@@ -116,12 +116,15 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
       cursor.tableData[1] = stationData;
       cursor.parentIndex = 1; // LOOK ?
       StructureDataIterator obsIter = ft.getStationObsDataIterator(cursor, bufferSize);
-      return new StandardStationPointIterator((size() < 0) ? this : null, obsIter, cursor);
+      StandardPointFeatureIterator iter = new StandardPointFeatureIterator(ft, timeUnit, obsIter, cursor);
+      if ((boundingBox == null) || (dateRange == null) || (npts < 0))
+        iter.setCalculateBounds(this);
+      return iter;
     }
 
   }
 
-  // the iterator over the observations
+  /* the iterator over the observations
   private class StandardStationPointIterator extends StandardPointFeatureIterator {
     StationFeatureImpl station;
 
@@ -138,6 +141,6 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
         station.setNumberPoints(getCount());
       return result;
     }
-  }
+  } */
 
 }

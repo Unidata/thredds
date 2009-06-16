@@ -159,7 +159,7 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
         sf.format(" %s %s\n", npfc.getCollectionFeatureType(), npfc.getName());
         sf.format("   npts = %d %n", npfc.size());
         sf.format("     bb = %s %n", npfc.getBoundingBox() == null ? "" : npfc.getBoundingBox().toString2());
-        //sf.format("  dates = %s %n", npfc.getDateRange() == null ? "" : npfc.getDateRange().toString());
+        // sf.format("  dates = %s %n", npfc.getDateRange() == null ? "" : npfc.getDateRange().toString());
       }
     }
   }

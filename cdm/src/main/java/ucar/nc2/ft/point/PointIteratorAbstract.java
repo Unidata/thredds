@@ -55,7 +55,7 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator {
   private double minTime = Double.MAX_VALUE;
   private double maxTime = -Double.MAX_VALUE;
   private DateUnit timeUnit;
-  private int npts;
+  private int count;
 
   protected PointIteratorAbstract() {
   }
@@ -66,8 +66,9 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator {
   }
 
   protected void calcBounds(PointFeature pf) {
-    npts++;
+    count++;
     if (!calcBounds) return;
+    if (pf == null) return;
 
     if (bb == null)
       bb = new LatLonRect(pf.getLocation().getLatLon(), .001, .001);
@@ -98,7 +99,7 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator {
       if ((collection.getDateRange() == null) && (dr != null))
         collection.setDateRange(dr);
       if (collection.size() <= 0)
-        collection.setSize(npts);
+        collection.setSize(count);
     }
   }
 
@@ -112,7 +113,7 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator {
     return new DateRange(timeUnit.makeDate(minTime), timeUnit.makeDate(maxTime));
   }
 
-  public int getCount() { return npts; }
+  public int getCount() { return count; }
 
   static public class Filter implements PointFeatureIterator.Filter {
 

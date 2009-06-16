@@ -44,13 +44,13 @@ import java.util.Iterator;
 import java.util.Formatter;
 
 /**
- * Class Description
+ * PointCollection composed of other PointCollections
  *
  * @author caron
  * @since May 19, 2009
  */
 public class CompositePointCollection extends PointCollectionImpl {
-  TimedCollection pointCollections;
+  private TimedCollection pointCollections;
 
   protected CompositePointCollection(String name, TimedCollection pointCollections) {
     super(name);
@@ -58,26 +58,30 @@ public class CompositePointCollection extends PointCollectionImpl {
   }
 
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-    return new CompositePointFeatureIterator();
+    CompositePointFeatureIterator iter = new CompositePointFeatureIterator();
+    if ((boundingBox == null) || (dateRange == null) || (npts < 0))
+      iter.setCalculateBounds(this);
+    return iter;
   }
 
   private class CompositePointFeatureIterator extends PointIteratorAbstract {
-    int bufferSize = -1;
-    Iterator<TimedCollection.Dataset> iter;
-    FeatureDatasetPoint currentDataset;
-    PointFeatureIterator pfIter = null;
+    private boolean finished = false;
+    private int bufferSize = -1;
+    private Iterator<TimedCollection.Dataset> iter;
+    private FeatureDatasetPoint currentDataset;
+    private PointFeatureIterator pfIter = null;
 
     CompositePointFeatureIterator() {
-       iter = pointCollections.getIterator();
+      iter = pointCollections.getIterator();
     }
 
-    PointFeatureIterator getNextIterator() throws IOException {
+    private PointFeatureIterator getNextIterator() throws IOException {
       if (!iter.hasNext()) return null;
       TimedCollection.Dataset td = iter.next();
       Formatter errlog = new Formatter();
       currentDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.POINT, td.getLocation(), null, errlog);
-      if (currentDataset == null)
-        System.out.printf("HEY%n");
+      if (CompositeDatasetFactory.debug)
+        System.out.printf("CompositePointFeatureIterator open dataset%s%n", td.getLocation());
       List<FeatureCollection> fcList = currentDataset.getPointFeatureCollectionList();
       PointFeatureCollection pc = (PointFeatureCollection) fcList.get(0);
       return pc.getPointFeatureIterator(bufferSize);
@@ -86,13 +90,16 @@ public class CompositePointCollection extends PointCollectionImpl {
     public boolean hasNext() throws IOException {
       if (pfIter == null) {
         pfIter = getNextIterator();
-        if (pfIter == null) return false;
+        if (pfIter == null) {
+          finish();
+          return false;
+        }
       }
 
       if (!pfIter.hasNext()) {
         pfIter.finish();
         currentDataset.close();
-        pfIter = getNextIterator();        
+        pfIter = getNextIterator();
         return hasNext();
       }
 
@@ -104,8 +111,11 @@ public class CompositePointCollection extends PointCollectionImpl {
     }
 
     public void finish() {
+      if (finished) return;
+
       if (pfIter != null)
         pfIter.finish();
+      finishCalcBounds();
 
       if (currentDataset != null)
         try {
@@ -113,6 +123,8 @@ public class CompositePointCollection extends PointCollectionImpl {
         } catch (IOException e) {
           throw new RuntimeException(e);
         }
+
+      finished = true;
     }
 
     public void setBufferSize(int bytes) {

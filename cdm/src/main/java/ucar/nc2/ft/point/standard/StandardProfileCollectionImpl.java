@@ -121,7 +121,10 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       Cursor cursorIter = cursor.copy();
       StructureDataIterator siter = ft.getFeatureObsDataIterator( cursorIter, bufferSize);
-      return new StandardPointFeatureIterator(ft, timeUnit, siter, cursorIter);
+      StandardPointFeatureIterator iter = new StandardPointFeatureIterator(ft, timeUnit, siter, cursorIter);
+      if ((boundingBox == null) || (dateRange == null) || (npts < 0))
+        iter.setCalculateBounds(this);
+      return iter;
     }
   }
 

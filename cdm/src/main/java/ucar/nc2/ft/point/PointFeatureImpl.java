@@ -67,7 +67,7 @@ public abstract class PointFeatureImpl implements PointFeature, Comparable<Point
   public double getNominalTime() { return nomTime; }
   public double getObservationTime() { return obsTime; }
 
-  // LOOK
+  // LOOK WRONG
   public String getZcoordUnits() {
     return "meters";
   }

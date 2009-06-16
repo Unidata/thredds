@@ -56,6 +56,7 @@ public abstract class PointIteratorFromStructureData extends PointIteratorAbstra
   private StructureDataIterator structIter;
   private int count = 0;
   private PointFeature feature = null; // hasNext must cache
+  private boolean finished = false;
 
   public PointIteratorFromStructureData(StructureDataIterator structIter, Filter filter) throws IOException {
     this.structIter = structIter;
@@ -77,8 +78,8 @@ public abstract class PointIteratorFromStructureData extends PointIteratorAbstra
     }
 
     // all done
-    finishCalcBounds();
     feature = null;
+    finish();
     return false;
   }
 
@@ -94,6 +95,9 @@ public abstract class PointIteratorFromStructureData extends PointIteratorAbstra
   }
 
   public void finish() {
+    if (finished) return;
+    finishCalcBounds();
+    finished = true;
   }
 
   // so subclasses can override

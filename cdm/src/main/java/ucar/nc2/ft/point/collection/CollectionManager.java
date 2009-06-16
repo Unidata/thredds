@@ -83,6 +83,8 @@ public class CollectionManager implements TimedCollection {
     if (posWildcard < collectionDesc.length() - 2)
       filter = collectionDesc.substring(posWildcard + 1);
 
+    if (show) System.out.printf("CollectionManager collectionDesc=%s filter=%s dateFormatMark=%s %n", collectionDesc, filter, dateFormatMark);
+
     // sort
     File[] files = (filter == null) ? dir.listFiles() : dir.listFiles(new WildcardMatchOnNameFilter( filter));
     List<File> fileList = Arrays.asList(files);

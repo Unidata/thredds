@@ -48,15 +48,13 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * Class Description
+ * StationTimeSeries composed of a collection of individual files. "Composite" pattern.
  *
  * @author caron
  * @since May 19, 2009
  */
 public class CompositeStationCollection extends StationTimeSeriesCollectionImpl {
   private TimedCollection stnCollections;
-  private FeatureDatasetPoint openDataset;
-  private boolean debug = false;
 
   protected CompositeStationCollection(String name, TimedCollection stnCollections) throws IOException {
     super(name);
@@ -64,31 +62,48 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     TimedCollection.Dataset td = stnCollections.getPrototype();
 
     Formatter errlog = new Formatter();
-    openDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.STATION, td.getLocation(), null, errlog);
+    FeatureDatasetPoint openDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.STATION, td.getLocation(), null, errlog);
     List<FeatureCollection> fcList = openDataset.getPointFeatureCollectionList();
     StationTimeSeriesCollectionImpl openCollection = (StationTimeSeriesCollectionImpl) fcList.get(0);
 
     // construct list of stations
     stationHelper = new StationHelper();
     for (Station s : openCollection.getStations()) {
-      stationHelper.addStation(new CompositeStationFeature(s, null));
+      stationHelper.addStation(new CompositeStationFeature(s, null, stnCollections));
     }
+
+    openDataset.close();
+  }
+
+  // Must override default subsetting implementation for efficiency
+  // StationTimeSeriesFeatureCollection
+
+  @Override
+  public StationTimeSeriesFeatureCollection subset(List<Station> stations) throws IOException {
+    if (stations == null) return this;
+    StationHelper sh = new StationHelper();
+    sh.setStations(stations);
+    CompositeStationCollection subset = new CompositeStationCollection(getName(), stnCollections);
+    subset.stationHelper = sh;
+    return subset;
+  }
+
+  @Override
+  public StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
+    if (boundingBox == null) return this;
+    StationHelper sh = new StationHelper();
+    sh.setStations(this.stationHelper.getStations(boundingBox));
+    CompositeStationCollection subset = new CompositeStationCollection(getName(), stnCollections);
+    subset.stationHelper = sh;
+    return subset;
   }
 
   @Override
   public StationTimeSeriesFeature getStationFeature(Station s) throws IOException {
-    return new CompositeStationFeature(s, null);
+    return new CompositeStationFeature(s, null, stnCollections);
   }
 
-  @Override
-  public StationTimeSeriesFeatureCollection subset(List<Station> stations) throws IOException {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
-
-  @Override
-  public StationTimeSeriesFeatureCollection subset(LatLonRect boundingBox) throws IOException {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
+  // NestedPointFeatureCollection
 
   @Override
   public PointFeatureCollection flatten(LatLonRect boundingBox, DateRange dateRange) throws IOException {
@@ -110,43 +125,59 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
         return (PointFeatureCollection) stationIter.next();
       }
 
-      public void setBufferSize(int bytes) { }
-      public void finish() { }
+      public void setBufferSize(int bytes) {
+      }
+
+      public void finish() {
+      }
     };
   }
 
   private class CompositeStationFeature extends StationFeatureImpl {
+    private TimedCollection collForFeature;
 
-    CompositeStationFeature(Station s, DateUnit dateUnit) {
-      super(s, dateUnit, -1);
+    CompositeStationFeature(Station s, DateUnit timeUnit, TimedCollection collForFeature) {
+      super(s, timeUnit, -1);
+      setDateRange(collForFeature.getDateRange());
+      this.collForFeature = collForFeature;
     }
 
     // an iterator over the observations for this station
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      return new CompositeStationFeatureIterator();
-    }
-
-    @Override
-    public PointFeatureCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
-      return null;  //To change body of implemented methods use File | Settings | File Templates.
+      CompositeStationFeatureIterator iter = new CompositeStationFeatureIterator();
+      if ((boundingBox == null) || (dateRange == null) || (npts < 0))
+        iter.setCalculateBounds(this);
+      return iter;
     }
 
     @Override
     public StationTimeSeriesFeature subset(DateRange dateRange) throws IOException {
-      return null;  //To change body of implemented methods use File | Settings | File Templates.
+      if (dateRange == null) return this;
+      CompositeStationFeature stnSubset = new CompositeStationFeature(s, timeUnit, collForFeature.subset(dateRange));
+      return stnSubset.subset(dateRange);
+    }
+
+    @Override
+    public PointFeatureCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
+      if (boundingBox != null) {
+        if (!boundingBox.contains(s.getLatLon())) return null;
+        if (dateRange == null) return this;
+      }
+      return subset(dateRange);
     }
 
     private class CompositeStationFeatureIterator extends PointIteratorAbstract {
-      int bufferSize = -1;
-      Iterator<TimedCollection.Dataset> iter;
-      FeatureDatasetPoint currentDataset;
-      PointFeatureIterator pfIter = null;
+      private int bufferSize = -1;
+      private Iterator<TimedCollection.Dataset> iter;
+      private FeatureDatasetPoint currentDataset;
+      private PointFeatureIterator pfIter = null;
+      private boolean finished = false;
 
       CompositeStationFeatureIterator() {
-        iter = stnCollections.getIterator();
+        iter = collForFeature.getIterator();
       }
 
-      PointFeatureIterator getNextIterator() throws IOException {
+      private PointFeatureIterator getNextIterator() throws IOException {
         if (!iter.hasNext()) return null;
         TimedCollection.Dataset td = iter.next();
         Formatter errlog = new Formatter();
@@ -155,20 +186,24 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
         StationTimeSeriesFeatureCollection stnCollection = (StationTimeSeriesFeatureCollection) fcList.get(0);
         Station s = stnCollection.getStation(getName());
         if (s == null) {
-         System.out.printf("CompositeStationFeatureIterator dataset%s missing station %s%n", 
+          System.out.printf("CompositeStationFeatureIterator dataset%s missing station %s%n",
                   td.getLocation(), getName());
           return getNextIterator();
         }
 
         StationTimeSeriesFeature stnFeature = stnCollection.getStationFeature(s);
-        if (debug) System.out.printf("CompositeStationFeatureIterator open dataset%s%n", td.getLocation());
+        if (CompositeDatasetFactory.debug)
+          System.out.printf("CompositeStationFeatureIterator open dataset%s%n", td.getLocation());
         return stnFeature.getPointFeatureIterator(bufferSize);
       }
 
       public boolean hasNext() throws IOException {
         if (pfIter == null) {
           pfIter = getNextIterator();
-          if (pfIter == null) return false;
+          if (pfIter == null) {
+            finish();
+            return false;
+          }
         }
 
         if (!pfIter.hasNext()) {
@@ -187,6 +222,8 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
       }
 
       public void finish() {
+        if (finished) return;
+
         if (pfIter != null)
           pfIter.finish();
 
@@ -197,8 +234,10 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
             throw new RuntimeException(e);
           }
 
-        if (CompositeStationFeature.this.npts < 0)
-          CompositeStationFeature.this.npts = getCount();
+        finishCalcBounds();
+        finished = true;
+        //if (CompositeStationFeature.this.npts < 0) // LOOK needed ?
+        //  CompositeStationFeature.this.npts = getCount();
       }
 
       public void setBufferSize(int bytes) {

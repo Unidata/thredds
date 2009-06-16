@@ -101,6 +101,15 @@ public class DateUnit { // extends SimpleUnit {
   private TimeUnit timeUnit = null;
   private Unit uu;
 
+  static public DateUnit getUnixDateUnit() {
+    try {
+      return new DateUnit("secs since 1970-00-00:00.00");
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
   /**
    * Constructor.
    * @param text udunits String, eg 3 secs since 1991-01-01T03:12

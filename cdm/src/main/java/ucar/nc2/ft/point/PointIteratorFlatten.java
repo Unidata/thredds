@@ -55,7 +55,7 @@ public class PointIteratorFlatten extends PointIteratorAbstract {
 
   private PointFeatureIterator pfiter; // iterator over the current PointFeatureCollection
   private PointFeature pointFeature; // current PointFeature in the current PointFeatureCollection
-  private boolean done = false;
+  private boolean finished = false;
 
   /**
    * Constructor.
@@ -74,20 +74,21 @@ public class PointIteratorFlatten extends PointIteratorAbstract {
   }
 
   public void finish() {
+    if (finished) return;
     if (pfiter != null) pfiter.finish();
     collectionIter.finish();
+    finishCalcBounds();
+    finished = true;
   }
 
   public boolean hasNext() throws IOException {
-    if (done) return false;
-
+    
     pointFeature = nextFilteredDataPoint();
     if (pointFeature != null) return true;
 
     PointFeatureCollection feature = nextCollection();
     if (feature == null) {
-      finishCalcBounds();
-      done = true;
+      finish();
       return false;
     }
 
@@ -96,7 +97,7 @@ public class PointIteratorFlatten extends PointIteratorAbstract {
   }
 
   public PointFeature next() throws IOException {
-    if (done) return null;
+    if (pointFeature == null) return null;
     calcBounds(pointFeature);
     return pointFeature;
   }

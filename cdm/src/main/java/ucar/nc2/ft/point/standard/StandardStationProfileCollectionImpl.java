@@ -175,10 +175,13 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     // iterate over obs in the profile
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       StructureDataIterator structIter = ft.getStationProfileObsDataIterator(cursor, bufferSize);
-      return new StandardStationProfilePointIterator(structIter, cursor.copy());
+      StandardPointFeatureIterator iter = new StandardPointFeatureIterator(ft, timeUnit, structIter, cursor.copy());
+      if ((boundingBox == null) || (dateRange == null) || (npts < 0))
+        iter.setCalculateBounds(this);
+      return iter;
     }
 
-    // the iterator over the observations
+    /* the iterator over the observations
     private class StandardStationProfilePointIterator extends StandardPointFeatureIterator {
       StationFeatureImpl station;
 
@@ -194,7 +197,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
           setNumberPoints(getCount());
         return result;
       }
-    }
+    } */
 
   }
 

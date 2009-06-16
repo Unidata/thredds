@@ -203,7 +203,7 @@ public class FeatureDatasetFactoryManager {
 
       // special processing for collection: datasets
     } else if (location.startsWith(ucar.nc2.ft.point.collection.CompositeDatasetFactory.SCHEME)) {
-      return CompositeDatasetFactory.factory(wantFeatureType, location, errlog);
+      return CompositeDatasetFactory.factory(location, wantFeatureType, location, errlog);
     }
 
     NetcdfDataset ncd = NetcdfDataset.acquireDataset(location, task);

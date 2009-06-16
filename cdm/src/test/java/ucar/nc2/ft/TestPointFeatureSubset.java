@@ -64,7 +64,7 @@ public class TestPointFeatureSubset extends TestCase {
   }
 
   public void testProblem() throws IOException {
-    testFeatureDataset(TestAll.cdmUnitTestDir+"formats/gempak/surface/19580807_sao.gem", FeatureType.STATION, true);
+    testFeatureDataset("D:/work/arnaud/sampleDataset.nc", FeatureType.ANY_POINT, true);
   }
 
   public void utestCdmRemote() throws IOException {
