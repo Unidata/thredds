@@ -34,7 +34,12 @@
  */
 
 
+
 package ucar.nc2.iosp.mcidas;
+
+
+import ucar.grid.GridIndex;
+import ucar.grid.GridRecord;
 
 
 import ucar.ma2.*;
@@ -47,8 +52,6 @@ import ucar.nc2.iosp.grid.*;
 import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.io.RandomAccessFile;
-import ucar.grid.GridIndex;
-import ucar.grid.GridRecord;
 
 import java.io.IOException;
 
@@ -75,19 +78,30 @@ public class McIDASGridServiceProvider extends GridServiceProvider {
      */
     public boolean isValidFile(RandomAccessFile raf) throws IOException {
         try {
-            mcGridReader = new McIDASGridReader(raf);
+            mcGridReader = new McIDASGridReader();
+            mcGridReader.init(raf, false);
         } catch (IOException ioe) {
             return false;
         }
         return true;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getFileTypeId() {
-      return "McIDASGrid";
+        return "McIDASGrid";
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getFileTypeDescription() {
-      return "McIDAS Grid file";
+        return "McIDAS Grid file";
     }
 
     /**
@@ -143,7 +157,9 @@ public class McIDASGridServiceProvider extends GridServiceProvider {
      */
     public boolean sync() {
         try {
-            mcGridReader.init();
+            if ( !mcGridReader.init()) {
+                return false;
+            }
             GridIndex index =
                 ((McIDASGridReader) mcGridReader).getGridIndex();
             // reconstruct the ncfile objects
@@ -181,11 +197,11 @@ public class McIDASGridServiceProvider extends GridServiceProvider {
         NetcdfFile ncfile = new MakeNetcdfFile(mciosp, rf, args[0], null);
     }
 
-  /**
-     * Not sure why we need this
-     *
-     * @author IDV Development Team
-     * @version $Revision: 1.3 $
+    /**
+     *   Not sure why we need this
+     *  
+     *   @author IDV Development Team
+     *   @version $Revision: 1.3 $
      */
     static class MakeNetcdfFile extends NetcdfFile {
 

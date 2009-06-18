@@ -1,5 +1,5 @@
 /*
- * 
+ *
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
@@ -33,15 +33,17 @@
  */
 
 
+
 package ucar.nc2.iosp.mcidas;
 
 
 import edu.wisc.ssec.mcidas.*;
 
+import ucar.grid.GridIndex;
+
 import ucar.nc2.iosp.grid.*;
 
 import ucar.unidata.io.RandomAccessFile;
-import ucar.grid.GridIndex;
 
 import java.io.IOException;
 
@@ -68,6 +70,10 @@ public class McIDASGridReader {
     /** hashMap of GridDefRecords */
     private HashMap<String, McGridDefRecord> gdsMap = new HashMap<String,
                                                           McGridDefRecord>();
+
+    /** maximum number of grids in a file */
+    // is this the right number?
+    private static final int MAX_GRIDS = 999999;
 
     /**
      * Bean ctor
@@ -104,9 +110,22 @@ public class McIDASGridReader {
      * @throws IOException   problem reading file
      */
     public final void init(RandomAccessFile raf) throws IOException {
+        init(raf, true);
+    }
+
+    /**
+     * Initialize the file, read in all the metadata (ala DM_OPEN)
+     *
+     * @param  fullCheck  for a full check reading grids
+     * @param raf   RandomAccessFile to read.
+     *
+     * @throws IOException   problem reading file
+     */
+    public final void init(RandomAccessFile raf, boolean fullCheck)
+            throws IOException {
         rf = raf;
         raf.order(RandomAccessFile.BIG_ENDIAN);
-        boolean ok = init();
+        boolean ok = init(fullCheck);
         if ( !ok) {
             throw new IOException("Unable to open McIDAS Grid file: "
                                   + errorMessage);
@@ -121,6 +140,19 @@ public class McIDASGridReader {
      * @throws IOException  problem reading the data
      */
     protected boolean init() throws IOException {
+        return init(true);
+    }
+
+    /**
+     * Initialize this reader.  Get the Grid specific info
+     *
+     * @param  fullCheck  for a full check reading grids
+     *
+     * @return true if successful
+     *
+     * @throws IOException  problem reading the data
+     */
+    protected boolean init(boolean fullCheck) throws IOException {
         if (rf == null) {
             logError("File is null");
             return false;
@@ -129,27 +161,37 @@ public class McIDASGridReader {
 
         rf.order(RandomAccessFile.BIG_ENDIAN);
         int numEntries = Math.abs(readInt(10));
-        if (numEntries > 10000000) {
+        if (numEntries > 1000000) {
             needToSwap = true;
             numEntries = Math.abs(McIDASUtil.swbyt4(numEntries));
-            if (numEntries > 10000000) {
-                return false;
-            }
         }
-        // System.out.println("need to Swap = " + needToSwap);
-        // System.out.println("number entries="+numEntries);
+        if (numEntries > MAX_GRIDS) {
+            return false;
+        }
+        //System.out.println("need to Swap = " + needToSwap);
+        //System.out.println("number entries="+numEntries);
 
         // go back to the beginning
         rf.seek(0);
         // read the fileheader
         String label = rf.readString(32);
-        //System.out.println("label = " + label);
+        // GEMPAK too closely like McIDAS
+        if (label.indexOf("GEMPAK DATA MANAGEMENT FILE") >= 0) {
+            logError("label indicates this is a GEMPAK grid");
+            return false;
+        }
+        // System.out.println("label = " + label);
 
         int project = readInt(8);
-        //System.out.println("Project = " + project);
+        // System.out.println("Project = " + project);
 
         int date = readInt(9);
-        //System.out.println("date = " + date);
+        // dates are supposed to be yyyddd, but account for ccyyddd up to year 4000
+        if ((date < 1000) || (date > 4000000)) {
+            logError("not a McIDAS grid");
+            return false;
+        }
+        // System.out.println("date = " + date);
 
         int[] entries = new int[numEntries];
         for (int i = 0; i < numEntries; i++) {
@@ -159,6 +201,9 @@ public class McIDASGridReader {
                 logError("bad grid offset " + i + ": " + entries[i]);
                 return false;
             }
+        }
+        if ( !fullCheck) {
+            return true;
         }
 
         // Don't swap:
@@ -178,16 +223,16 @@ public class McIDASGridReader {
                 McIDASGridRecord gr = new McIDASGridRecord(entries[i],
                                           header);
                 //if (gr.getGridDefRecordId().equals("CONF X:93 Y:65")) {
-                    //if (gr.getGridDefRecordId().equals("CONF X:54 Y:47")) {
-                    // figure out how to handle Mercator projections
-                    // if ( !(gr.getGridDefRecordId().startsWith("MERC"))) {
-                    gridIndex.addGridRecord(gr);
-                    if (gdsMap.get(gr.getGridDefRecordId()) == null) {
-                        McGridDefRecord mcdef = gr.getGridDefRecord();
-                        //System.out.println("new nav " + mcdef.toString());
-                        gdsMap.put(mcdef.toString(), mcdef);
-                        gridIndex.addHorizCoordSys(mcdef);
-                    }
+                //if (gr.getGridDefRecordId().equals("CONF X:54 Y:47")) {
+                // figure out how to handle Mercator projections
+                // if ( !(gr.getGridDefRecordId().startsWith("MERC"))) {
+                gridIndex.addGridRecord(gr);
+                if (gdsMap.get(gr.getGridDefRecordId()) == null) {
+                    McGridDefRecord mcdef = gr.getGridDefRecord();
+                    //System.out.println("new nav " + mcdef.toString());
+                    gdsMap.put(mcdef.toString(), mcdef);
+                    gridIndex.addHorizCoordSys(mcdef);
+                }
                 //}
             } catch (McIDASException me) {
                 logError("problem creating grid dir");
