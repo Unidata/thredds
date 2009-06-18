@@ -36,12 +36,11 @@ package ucar.nc2.iosp.mcidas;
 
 
 import edu.wisc.ssec.mcidas.McIDASUtil;
-import ucar.grid.GridTableLookup;
+
 import ucar.grid.GridDefRecord;
 import ucar.grid.GridParameter;
 import ucar.grid.GridRecord;
-
-//import ucar.nc2.iosp.grid.*;
+import ucar.grid.GridTableLookup;
 
 
 /**
@@ -92,7 +91,7 @@ public final class McIDASLookup implements GridTableLookup {
         if (desc.trim().equals("")) {
             desc = name;
         }
-        String unit = mgr.getParamUnitName();
+        String unit = visad.jmet.MetUnits.makeSymbol(mgr.getParamUnitName());
         return new GridParameter(0, name, desc, unit);
     }
 
