@@ -5,6 +5,9 @@ Build Date = @BUILDTIME@
 Changes in version 4.0
 
  Release Details:
+  47:
+   NcMLReader.merge -> mergeNcML : create new Dataset
+   setValues.setValues (NcmlReader) : scalar Array need to be reshaped
   46:
    udunit fixes for logarithmic units
    StructurePsuedo: bug in _read(section), returning wrong ArrayStructure.getShape().

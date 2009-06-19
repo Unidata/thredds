@@ -1393,7 +1393,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (npts != v.getSize())
       throw new IllegalArgumentException("bad npts = " + npts + " should be " + v.getSize());
     Array data = Array.makeArray(v.getDataType(), npts, start, incr);
-    if (v.getRank() > 1)
+    if (v.getRank() != 1)
       data = data.reshape(v.getShape());
     v.setCachedData(data, true);
   }
@@ -1412,7 +1412,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       throw new IllegalArgumentException("Incorrect number of values specified for the Variable " + v.getName() +
               " needed= " + v.getSize() + " given=" + data.getSize());
 
-    if (v.getRank() > 1) // dont have to reshape for rank < 2
+    if (v.getRank() != 1) // dont have to reshape for rank 1
       data = data.reshape(v.getShape());
 
     v.setCachedData(data, true);

@@ -568,31 +568,25 @@ public abstract class Aggregation implements ProxyReader {
       if (debugOpenFile) System.out.println(" try to acquire " + cacheLocation);
       long start = System.currentTimeMillis();
 
-      NetcdfFile ncfile;
-      // no enhance
+      NetcdfFile ncfile = NetcdfDataset.acquireFile(reader, null, cacheLocation, -1, cancelTask, spiObject);
+      if (mergeNcml != null)
+        ncfile = NcMLReader.mergeNcML(ncfile, mergeNcml); // create new dataset
       if (enhance == null || enhance.isEmpty()) {
-        if (mergeNcml == null)
-          ncfile = NetcdfDataset.acquireFile(reader, null, cacheLocation, -1, cancelTask, spiObject);
-        else {
-          ncfile = NetcdfDataset.acquireDataset(reader, cacheLocation, null, -1, cancelTask, spiObject);
-          new NcMLReader().merge((NetcdfDataset) ncfile, mergeNcml);
-        }
-
-        // yes enhance : used by Fmrc
-      } else {
-        if (mergeNcml == null) {
-          ncfile = NetcdfDataset.acquireDataset(reader, cacheLocation, enhance, -1, cancelTask, spiObject);
-        } else {
-          // wait till merge to enhance
-          NetcdfDataset ncd = NetcdfDataset.acquireDataset(reader, cacheLocation, null, -1, cancelTask, spiObject);
-          new NcMLReader().merge(ncd, mergeNcml);
-          ncd.enhance( enhance);
-          ncfile = ncd;
-        }
+        if (debugOpenFile) System.out.println(" acquire (no enhance) " + cacheLocation + " took " + (System.currentTimeMillis() - start));
+        return ncfile;
       }
 
-      if (debugOpenFile) System.out.println(" acquire " + cacheLocation + " took " + (System.currentTimeMillis() - start));
-      return ncfile;
+      // must enhance
+      NetcdfDataset ds;
+      if (ncfile instanceof NetcdfDataset) {
+        ds = (NetcdfDataset) ncfile;
+        ds.enhance(enhance); // enhance "in place", ie modify the NetcdfDataset
+      } else {
+        ds = new NetcdfDataset(ncfile, enhance); // enhance when wrapping
+      }
+
+      if (debugOpenFile) System.out.println(" acquire (enhance) " + cacheLocation + " took " + (System.currentTimeMillis() - start));
+      return ds;
     }
 
     protected void close(NetcdfFile ncfile) throws IOException {

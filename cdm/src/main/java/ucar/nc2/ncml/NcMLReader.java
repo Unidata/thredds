@@ -151,6 +151,25 @@ public class NcMLReader {
     if (debugOpen) System.out.println("***NcMLReader.wrapNcML result= \n" + ncDataset);
   }
 
+  /**
+   * Use NCML to modify the referenced dataset, create a new dataset with the merged info
+   * Used to wrap each dataset of an aggregation before its aggregated
+   *
+   * @param ref          referenced dataset
+   * @param parentElem   parent element - usually the aggregation element of the ncml
+   * @return new dataset with the merged info
+   * @throws IOException on read error
+   */
+  static public NetcdfDataset mergeNcML(NetcdfFile ref, Element parentElem) throws IOException {
+    NetcdfDataset targetDS = new NetcdfDataset(ref, null); // no enhance
+
+    NcMLReader reader = new NcMLReader();
+    reader.readGroup(targetDS, targetDS, null, null, parentElem);
+    targetDS.finish();
+
+    return targetDS;
+  }
+
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -419,12 +438,12 @@ public class NcMLReader {
    *
    * @param ncmlLocation NcML URL location, or may be just a unique name for caching purposes.
    * @param targetDS     add the info to this one, never null
-   * @param refds        the referenced datset; may equal newds, never null
+   * @param refds        the referenced dataset; may equal newds, never null
    * @param netcdfElem   JDOM netcdf element
    * @param cancelTask   allow user to cancel the task; may be null
    * @throws IOException on read error
    */
-  public void readNetcdf(String ncmlLocation, NetcdfDataset targetDS, NetcdfDataset refds, Element netcdfElem, CancelTask cancelTask) throws IOException {
+  public void readNetcdf(String ncmlLocation, NetcdfDataset targetDS, NetcdfFile refds, Element netcdfElem, CancelTask cancelTask) throws IOException {
 
     if (debugOpen)
       System.out.println("NcMLReader.readNetcdf ncml= " + ncmlLocation + " referencedDatasetUri= " + refds.getLocation());
@@ -469,12 +488,12 @@ public class NcMLReader {
 
   }
 
-  public void merge(NetcdfDataset targetDS, Element parentElem) throws IOException {
+  /* public void merge(NetcdfDataset targetDS, Element parentElem) throws IOException {
     // the root group
     readGroup(targetDS, targetDS, null, null, parentElem);
     // transfer from groups to global containers
     targetDS.finish();
-  }
+  } */
 
 
   ////////////////////////////////////////////////////////////////////////
@@ -670,7 +689,7 @@ public class NcMLReader {
    * @param refParent parent Group in referenced dataset
    * @param groupElem ncml group element
    */
-  private void readGroup(NetcdfDataset newds, NetcdfDataset refds, Group parent, Group refParent, Element groupElem) throws IOException {
+  private void readGroup(NetcdfDataset newds, NetcdfFile refds, Group parent, Group refParent, Element groupElem) throws IOException {
 
     Group g, refg;
     if (parent == null) { // this is the <netcdf> element

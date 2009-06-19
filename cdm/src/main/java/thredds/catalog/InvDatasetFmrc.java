@@ -550,7 +550,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
   // fmrc has state that can change.
 
   /**
-   * Get the dataset namedd by the path
+   * Get the dataset named by the path
    * @param path URL path
    * @return requested dataset
    * @throws IOException if read error

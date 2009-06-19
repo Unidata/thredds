@@ -1822,11 +1822,12 @@ public class ToolsUI extends JPanel {
         ta.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
         err = true;
 
-      } catch (Exception e) {
+      } catch (Throwable e) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
-        e.printStackTrace();
         e.printStackTrace(new PrintStream(bos));
-        ta.setText(bos.toString());
+        detailTA.setText(bos.toString());
+        detailTA.gotoTop();
+        detailWindow.show();
         err = true;
       }
 

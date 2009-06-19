@@ -280,7 +280,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
       parseExceptionHandler(pe, response);
 
       // 403 - request too big
-    } catch (IllegalArgumentException e) {
+    } catch (UnsupportedOperationException e) {
       sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN, e.getMessage());
 
     } catch (java.net.SocketException e) {
@@ -525,7 +525,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
       ce.send(myDDS.getName(), sink, ds);
       sink.flush();
 
-      // Finish up tsending the compressed stuff, but don't
+      // Finish up sending the compressed stuff, but don't
       // close the stream (who knows what the Servlet may expect!)
       if (null != dOut)
         dOut.finish();
@@ -766,7 +766,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
       double maxSize = isAscii ? ascLimit : binLimit ; // Mbytes
       if (dsize > maxSize) {
         log.info("Reject request size = {} Mbytes", dsize);
-        throw new IllegalArgumentException("Request too big=" + dsize+" Mbytes, max="+maxSize);
+        throw new UnsupportedOperationException("Request too big=" + dsize+" Mbytes, max="+maxSize);
       }
 
     } catch (InvalidRangeException e) {
