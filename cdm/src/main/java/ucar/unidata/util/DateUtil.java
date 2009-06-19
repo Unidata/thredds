@@ -1,4 +1,4 @@
- /*
+/*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
@@ -30,6 +30,8 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
+
 
 
 package ucar.unidata.util;
@@ -252,7 +254,6 @@ public class DateUtil {
             try {
                 Date dttm = sdfs[i].parse(dateString);
                 lastSdf = sdfs[i];
-                System.err.println("got one:" + formats[i] + " " + dttm);
                 return sdfs[i];
             } catch (ParseException pe) {}
         }
