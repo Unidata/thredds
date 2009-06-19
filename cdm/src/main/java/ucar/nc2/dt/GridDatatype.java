@@ -285,7 +285,7 @@ public interface GridDatatype extends Comparable<GridDatatype> {
    * If not a product set, reorder to (z,i,j), where i, j are from the
    * original
    *
-   * @param t_index time index; ignored if no time axis.
+   * @param t_index time index; ignored if no time axis. you can set to -1 to read all times.
    * @return data[z,y,x] or data[y,x] if no z axis.
    * @throws java.io.IOException on io error
    */

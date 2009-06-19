@@ -8,6 +8,9 @@ Changes in version 4.0
   47:
    NcMLReader.merge -> mergeNcML : create new Dataset
    setValues.setValues (NcmlReader) : scalar Array need to be reshaped
+   new IOSP:  ucar.nc2.iosp.mcidas.McIDASGridServiceProvider
+   CF1Convention.getZisPositive() - use in WriterCFPointObsDataset
+   atmosphere_hybrid_sigma_pressure_coordinate: ap(z) + b(z)*surfacePressure(x,y)
   46:
    udunit fixes for logarithmic units
    StructurePsuedo: bug in _read(section), returning wrong ArrayStructure.getShape().

@@ -85,9 +85,14 @@ public class GeoGridTable extends JPanel {
     csPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         GeogridBean vb = (GeogridBean) varTable.getSelectedBean();
-        Variable v = ds.findVariable( NetcdfFile.escapeName( vb.getName()));
+        Variable v = ds.findVariable( vb.getName()); // LOOK cant just do NetcdfFile.escapeName()
         infoTA.clear();
-        infoTA.appendLine( v.toString());
+        if (v == null)
+          infoTA.appendLine( "Cant find variable "+vb.getName()+" escaped= ("+NetcdfFile.escapeName( vb.getName())+")");
+        else {
+          infoTA.appendLine( "Variable "+ v.getName()+" :");
+          infoTA.appendLine( v.toString());
+        }
         infoTA.gotoTop();
         infoWindow.showIfNotIconified();
       }

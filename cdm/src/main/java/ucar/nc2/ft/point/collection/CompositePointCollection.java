@@ -81,7 +81,7 @@ public class CompositePointCollection extends PointCollectionImpl {
       Formatter errlog = new Formatter();
       currentDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.POINT, td.getLocation(), null, errlog);
       if (CompositeDatasetFactory.debug)
-        System.out.printf("CompositePointFeatureIterator open dataset%s%n", td.getLocation());
+        System.out.printf("CompositePointFeatureIterator open dataset %s%n", td.getLocation());
       List<FeatureCollection> fcList = currentDataset.getPointFeatureCollectionList();
       PointFeatureCollection pc = (PointFeatureCollection) fcList.get(0);
       return pc.getPointFeatureIterator(bufferSize);

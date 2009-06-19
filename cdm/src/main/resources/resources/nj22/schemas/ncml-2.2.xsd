@@ -79,7 +79,8 @@
         <xsd:element ref="attribute" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element ref="values" minOccurs="0"/>
         <xsd:element ref="variable" minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element ref="logicalView" minOccurs="0"/>
+        <xsd:element ref="logicalSection" minOccurs="0"/>
+        <xsd:element ref="logicalSlice" minOccurs="0"/>
         <xsd:element ref="remove" minOccurs="0" maxOccurs="unbounded"/>
       </xsd:sequence>
       <xsd:attribute name="name" type="xsd:token" use="required"/>

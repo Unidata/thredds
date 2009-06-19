@@ -1445,6 +1445,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     f.format("NetcdfDataset location= %s%n", getLocation());
     f.format("  title= %s%n", getTitle());
     f.format("  id= %s%n", getId());
+    f.format("  fileType= %s%n", getFileTypeId());
+    f.format("  fileDesc= %s%n", getFileTypeDescription());
 
     f.format("  class= %s%n", getClass().getName());
     if (orgFile == null) {
@@ -1520,13 +1522,17 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     ncd.dumpClasses(ncd.getRootGroup(), out);
   }
 
+  @Override
   public String getFileTypeId() {
     if (orgFile != null) return orgFile.getFileTypeId();
+    if (agg != null) return agg.getFileTypeId();
     return "N/A";
   }
 
+  @Override
   public String getFileTypeDescription() {
     if (orgFile != null) return orgFile.getFileTypeDescription();
+    if (agg != null) return agg.getFileTypeDescription();
     return "N/A";
   }
 

@@ -1296,14 +1296,14 @@ public class NcMLReader {
       String olderS = scanElem.getAttributeValue("olderThan");
 
       String dateFormatMark = scanElem.getAttributeValue("dateFormatMark");
-      Set<NetcdfDataset.Enhance> mode = NetcdfDataset.parseEnhanceMode(scanElem.getAttributeValue("enhance"));
+      Set<NetcdfDataset.Enhance> enhanceMode = NetcdfDataset.parseEnhanceMode(scanElem.getAttributeValue("enhance"));
 
       // possible relative location
       dirLocation = URLnaming.resolve(ncmlLocation, dirLocation);
 
       // can embed a full-blown crawlableDatasetImpl element
       Element cdElement = scanElem.getChild("crawlableDatasetImpl", ncNS);  // ok if null
-      agg.addDatasetScan(cdElement, dirLocation, suffix, regexpPatternString, dateFormatMark, mode, subdirs, olderS);
+      agg.addDatasetScan(cdElement, dirLocation, suffix, regexpPatternString, dateFormatMark, enhanceMode, subdirs, olderS);
 
       if ((cancelTask != null) && cancelTask.isCancel())
         return null;

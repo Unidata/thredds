@@ -101,7 +101,7 @@ public class CoordSysTable extends JPanel {
     varPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         VariableBean vb = (VariableBean) varTable.getSelectedBean();
-        Variable v = ds.findVariable( NetcdfFile.escapeName( vb.getName()));
+        Variable v = ds.findVariable( vb.getName());
         if (v == null) return;
         infoTA.clear();
         infoTA.appendLine(v.toString());
@@ -113,7 +113,7 @@ public class CoordSysTable extends JPanel {
     varPopup.addAction("Try as Grid", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         VariableBean vb = (VariableBean) varTable.getSelectedBean();
-        VariableEnhanced v = (VariableEnhanced) ds.findVariable( NetcdfFile.escapeName( vb.getName()));
+        VariableEnhanced v = (VariableEnhanced) ds.findVariable( vb.getName());
         if (v == null) return;
         infoTA.clear();
         infoTA.appendLine(tryGrid(v));
@@ -157,10 +157,22 @@ public class CoordSysTable extends JPanel {
     });
 
     thredds.ui.PopupMenu axisPopup = new thredds.ui.PopupMenu(axisTable.getJTable(), "Options");
+    axisPopup.addAction("Show Declaration", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        AxisBean bean = (AxisBean) axisTable.getSelectedBean();
+        CoordinateAxis axis = (CoordinateAxis) ds.findVariable( bean.getName());
+        if (axis == null) return;
+        infoTA.clear();
+        infoTA.appendLine(axis.toString());
+        infoTA.gotoTop();
+        infoWindow.showIfNotIconified();
+      }
+    });
+
     axisPopup.addAction("Show Values", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         AxisBean bean = (AxisBean) axisTable.getSelectedBean();
-        CoordinateAxis axis = (CoordinateAxis) ds.findVariable( NetcdfFile.escapeName( bean.getName()));
+        CoordinateAxis axis = (CoordinateAxis) ds.findVariable( bean.getName());
         infoTA.clear();
         try {
           infoTA.appendLine(NCdumpW.printVariableData(axis, null));
@@ -184,7 +196,7 @@ public class CoordSysTable extends JPanel {
     axisPopup.addAction("Show Value Differences", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         AxisBean bean = (AxisBean) axisTable.getSelectedBean();
-        CoordinateAxis axis = (CoordinateAxis) ds.findVariable( NetcdfFile.escapeName( bean.getName()));
+        CoordinateAxis axis = (CoordinateAxis) ds.findVariable( bean.getName());
         infoTA.clear();
         try {
           if (axis instanceof CoordinateAxis1D && axis.isNumeric()) {
@@ -214,17 +226,20 @@ public class CoordSysTable extends JPanel {
         try {
           infoTA.appendLine(units);
           infoTA.appendLine(NCdumpW.printVariableData(axis, null));
-          DateFormatter format = new DateFormatter();
-          DateUnit du = new DateUnit(units);
-          Array data = axis.read();
-          IndexIterator ii = data.getIndexIterator();
-          while (ii.hasNext()) {
-            double val = ii.getDoubleNext();
-            if (Double.isNaN(val)) {
-              infoTA.appendLine(" N/A");
-            } else {
-              Date date = du.makeDate(val);
-              infoTA.appendLine(" " + format.toDateTimeString(date));
+
+          if (axis.getDataType().isNumeric()) {
+            DateFormatter format = new DateFormatter();
+            DateUnit du = new DateUnit(units);
+            Array data = axis.read();
+            IndexIterator ii = data.getIndexIterator();
+            while (ii.hasNext()) {
+              double val = ii.getDoubleNext();
+              if (Double.isNaN(val)) {
+                infoTA.appendLine(" N/A");
+              } else {
+                Date date = du.makeDate(val);
+                infoTA.appendLine(" " + format.toDateTimeString(date));
+              }
             }
           }
         } catch (Exception ex) {

@@ -46,6 +46,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.iosp.netcdf3.N3outputStreamWriter;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.conv.CF1Convention;
 import ucar.ma2.*;
 import ucar.ma2.DataType;
 import ucar.unidata.geoloc.EarthLocation;
@@ -140,7 +141,7 @@ public class WriterCFPointObsDataset {
       altVar.addAttribute(new Attribute("units", altUnits));
       altVar.addAttribute(new Attribute("long_name", "altitude of observation"));
       altVar.addAttribute(new Attribute("standard_name", "longitude"));
-      altVar.addAttribute(new Attribute("positive", "down")); // LOOK
+      altVar.addAttribute(new Attribute("positive", CF1Convention.getZisPositive(altName, altUnits))); 
       recordVars.add(altVar);
     }
 

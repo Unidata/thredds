@@ -204,12 +204,12 @@ public abstract class Aggregation implements ProxyReader {
    * @param suffix              filter on this suffix (may be null)
    * @param regexpPatternString include if full name matches this regular expression (may be null)
    * @param dateFormatMark      create dates from the filename (may be null)
-   * @param mode                how should files be enhanced
+   * @param enhanceMode         how should files be enhanced
    * @param subdirs             equals "false" if should not descend into subdirectories
    * @param olderThan           files must be older than this time (now - lastModified >= olderThan); must be a time unit, may ne bull
    */
   public void addDatasetScan(Element crawlableDatasetElement, String dirName, String suffix,
-          String regexpPatternString, String dateFormatMark, Set<NetcdfDataset.Enhance> mode, String subdirs, String olderThan) {
+          String regexpPatternString, String dateFormatMark, Set<NetcdfDataset.Enhance> enhanceMode, String subdirs, String olderThan) {
     this.dateFormatMark = dateFormatMark;
     //this.enhance = mode; // LOOK enhance
 
@@ -449,6 +449,48 @@ public abstract class Aggregation implements ProxyReader {
       select = (n < 2) ? 0 : new Random().nextInt(n);
 
     return nestedDatasets.get(select);
+  }
+
+  public String getFileTypeId() { // LOOK - should cache ??
+    Dataset ds = null;
+    NetcdfFile ncfile = null;
+    try {
+      ds = getTypicalDataset();
+      ncfile = ds.acquireFile(null);
+      return ncfile.getFileTypeId();
+
+    } catch (IOException e) {
+      logger.error("failed to open "+ds);
+
+    } finally {
+      if (ds != null) try {
+        ds.close(ncfile);
+      } catch (IOException e) {
+        logger.error("failed to close "+ds);
+      }
+    }
+    return "N/A";
+  }
+
+  public String getFileTypeDescription() { // LOOK - should cache ??
+    Dataset ds = null;
+    NetcdfFile ncfile = null;
+    try {
+      ds = getTypicalDataset();
+      ncfile = ds.acquireFile(null);
+      return ncfile.getFileTypeDescription();
+
+    } catch (IOException e) {
+      logger.error("failed to open "+ds);
+
+    } finally {
+      if (ds != null) try {
+        ds.close(ncfile);
+      } catch (IOException e) {
+        logger.error("failed to close "+ds);
+      }
+    }
+    return "N/A";
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////

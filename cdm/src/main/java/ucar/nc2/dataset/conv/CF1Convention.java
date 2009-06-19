@@ -35,6 +35,7 @@ package ucar.nc2.dataset.conv;
 import ucar.nc2.*;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CF;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
@@ -64,6 +65,24 @@ import java.io.IOException;
 
 public class CF1Convention extends CSMConvention {
 
+  /**
+   * Guess the value of ZisPositive based on z axis name and units
+   * @param zaxisName  z coordinate axis name
+   * @param vertCoordUnits z coordinate axis name
+   * @return CF.POSITIVE_UP or CF.POSITIVE_DOWN
+   */
+  public static String getZisPositive( String zaxisName, String vertCoordUnits) {
+    if (vertCoordUnits == null) return CF.POSITIVE_UP;
+
+    if (SimpleUnit.isCompatible("millibar", vertCoordUnits))
+      return CF.POSITIVE_DOWN;
+
+    if (SimpleUnit.isCompatible("m", vertCoordUnits))
+      return CF.POSITIVE_UP;
+
+      // dunno - make it up
+    return CF.POSITIVE_UP;
+  }
 
   private static String[] vertical_coords = {
           "atmosphere_sigma_coordinate",

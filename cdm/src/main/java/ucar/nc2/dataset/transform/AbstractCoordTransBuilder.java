@@ -150,8 +150,8 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
     boolean ok = true;
     for (int i=0; i<values.length; i++) {
       if (values[i] == null) {
-        log.warn("Missing term="+terms[i]+" in the formula '"+formula_terms+
-              "' for the vertical transform= "+getTransformName());
+        if (null != errBuffer)
+          errBuffer.format("Missing term=%s in the formula '%s' for the vertical transform= %s%n", terms[i], formula_terms, getTransformName());
         ok = false;
       }
     }
