@@ -2,7 +2,7 @@
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
 
 	<aggregation dimName="time" type="joinExisting">
-    <scan location="//newshemp/data/testdata/ncml/nc/seawifs/" suffix=".nc"/>
+    <scan location="//shemp/data/testdata/ncml/nc/seawifs/" suffix=".nc"/>
   </aggregation>
 
 </netcdf>

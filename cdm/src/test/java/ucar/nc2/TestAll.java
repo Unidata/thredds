@@ -58,13 +58,13 @@ public class TestAll {
 
   /**
    * Old test data directory. may have cruft in it
-   * Unidata "newshemp:/data/testdata" directory.
+   * Unidata "shemp:/data/testdata" directory.
    */
   public static String testdataDir = null;
 
   /**
    * New test data directory. do not put temprory files in here. migrate all test data here eventually
-   * Unidata "newshemp:/data/testdata/cdmUnitTest" directory.
+   * Unidata "shemp:/data/testdata/cdmUnitTest" directory.
    */
   public static String cdmUnitTestDir = null;
 
@@ -80,8 +80,8 @@ public class TestAll {
 
   //////////////////////////////////////////////////////////////////////
   /** Property name for the path to the Unidata test data directory,
-   * e.g unidata.testdata.path=//newshemp/data/testdata/
-   * the real directory is at newshemp:/data/testdata
+   * e.g unidata.testdata.path=//shemp/data/testdata/
+   * the real directory is at shemp:/data/testdata
    */
   private static String testdataDirPropName ="unidata.testdata.path";
 

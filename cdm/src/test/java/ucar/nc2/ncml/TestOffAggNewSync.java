@@ -49,7 +49,7 @@ public class TestOffAggNewSync extends TestCase {
     super(name);
   }
 
-  String dataDir = "//newshemp/data/testdata/image/testSync/";
+  String dataDir = "//shemp/data/testdata/image/testSync/";
 
   public void testMove() throws IOException, InterruptedException {
     move(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
@@ -72,7 +72,7 @@ public class TestOffAggNewSync extends TestCase {
             "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
             "  <aggregation  dimName='time' type='joinExisting' recheckEvery='1 sec' >\n" +
             "    <variableAgg name='IR_WV'/>\n" +
-            "    <scan location='//newshemp/data/testdata/image/testSync' suffix='.gini' dateFormatMark='SUPER-NATIONAL_8km_WV_#yyyyMMdd_HHmm'/>\n" +
+            "    <scan location='//shemp/data/testdata/image/testSync' suffix='.gini' dateFormatMark='SUPER-NATIONAL_8km_WV_#yyyyMMdd_HHmm'/>\n" +
             "  </aggregation>\n" +
             "</netcdf>";
 

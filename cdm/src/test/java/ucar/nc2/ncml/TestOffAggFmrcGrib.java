@@ -56,7 +56,7 @@ public class TestOffAggFmrcGrib extends TestCase {
     String xml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
       "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
       "  <aggregation dimName='run' type='forecastModelRunCollection' timeUnitsChange='true'>" +
-      "    <scan location='//newshemp/data/testdata/ncml/nc/nam_c20s/' suffix='.grib1' " +
+      "    <scan location='//shemp/data/testdata/ncml/nc/nam_c20s/' suffix='.grib1' " +
             "dateFormatMark='NAM_CONUS_20km_surface_#yyyyMMdd_HHmm'/>\n" +
       "  </aggregation>\n" +
       "</netcdf>";
@@ -86,8 +86,8 @@ public class TestOffAggFmrcGrib extends TestCase {
     String xml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
       "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
       "  <aggregation dimName='run' type='forecastModelRunCollection' timeUnitsChange='true' " +
-            "fmrcDefinition='//newshemp/data/testdata/ncml/nc/c20ss/fmrcDefinition.xml'>\n" +
-      "    <scan location='//newshemp/data/testdata/ncml/nc/c20ss/' suffix='.grib1' enhance='true' " +
+            "fmrcDefinition='//shemp/data/testdata/ncml/nc/c20ss/fmrcDefinition.xml'>\n" +
+      "    <scan location='//shemp/data/testdata/ncml/nc/c20ss/' suffix='.grib1' enhance='true' " +
             "dateFormatMark='NAM_CONUS_20km_selectsurface_#yyyyMMdd_HHmm'/>\n" +
       "  </aggregation>\n" +
       "</netcdf>";

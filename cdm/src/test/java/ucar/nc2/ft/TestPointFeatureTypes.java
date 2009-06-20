@@ -157,11 +157,11 @@ public class TestPointFeatureTypes extends TestCase {
     testPointDataset("collection:D:/datasets/metars/*.nc?Surface_METAR_#yyyyMMdd_HHmm", FeatureType.STATION, true);
   }
 
-  public void testCdmRemote() throws IOException {
+  public void utestCdmRemote() throws IOException {
     testPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/station/testCdmRemote/gempak/19580807_sao.gem", FeatureType.STATION, true);
   }
 
-  public void testCdmRemoteCollection() throws IOException {
+  public void utestCdmRemoteCollection() throws IOException {
     testPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/gempakSurface.xml/collection", FeatureType.STATION, true);
   }
 

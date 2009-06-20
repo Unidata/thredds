@@ -3,7 +3,7 @@
 
     <aggregation dimName="time" type="joinExisting" recheckEvery="15 min">
       <variableAgg name="ATssta" />
-      <scan dateFormatMark="AT#yyyyDDD_HHmmss" location="//newshemp/data/testdata/ncml/nc/pfeg/" suffix=".nc" />
+      <scan dateFormatMark="AT#yyyyDDD_HHmmss" location="//shemp/data/testdata/ncml/nc/pfeg/" suffix=".nc" />
     </aggregation>
 
 </netcdf>

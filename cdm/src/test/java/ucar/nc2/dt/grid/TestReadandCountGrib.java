@@ -85,8 +85,8 @@ public class TestReadandCountGrib extends TestCase {
    public static void main( String arg[]) throws Exception {
      //TestReadandCount.doOne("Q:/grid/grib/grib1/data/", "ukm.wmo", -1, -1, -1, -1);
 
-     NetcdfFile ncfile = NetcdfFile.open("//newshemp/testdata/grid/grib/grib1/data/ukm.wmo", null);
-     NetcdfFile ncfile1 = NetcdfFile.open("//newshemp/testdata/grid/grib/grib1/data/ukm1.wmo", null);
+     NetcdfFile ncfile = NetcdfFile.open("//shemp/testdata/grid/grib/grib1/data/ukm.wmo", null);
+     NetcdfFile ncfile1 = NetcdfFile.open("//shemp/testdata/grid/grib/grib1/data/ukm1.wmo", null);
      TestCompare.compareFiles(ncfile, ncfile1, false, false, false);
   }
 
