@@ -56,8 +56,9 @@ import ucar.nc2.util.IO;
  */
 public class TdsContext
 {
-  private static org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger( TdsContext.class );
+//  ToDo Once Log4j config is called by Spring listener instead of ours, use this logger instead of System.out.println.
+//  private org.slf4j.Logger logServerStartup =
+//          org.slf4j.LoggerFactory.getLogger( "serverStartup" );
 
   private String webappName;
   private String webappVersion;
@@ -162,12 +163,22 @@ public class TdsContext
     // Check the version.
     if ( this.webappVersion != null
          && ! webappVersion.startsWith( this.webappVersionBrief + "." ))
-      throw new IllegalStateException( "Full version [" + this.webappVersion + "] must start with version [" + this.webappVersionBrief + "].");
+    {
+      String msg = "Full version [" + this.webappVersion + "] must start with version [" + this.webappVersionBrief + "].";
+      System.out.println( "ERROR - TdsContext.init(): " + msg );
+      //logServerStartup.error( "TdsContext.init(): " + msg );
+      throw new IllegalStateException( msg );
+    }
 
     // Set the root directory and source.
     String rootPath = servletContext.getRealPath( "/" );
     if ( rootPath == null )
-      throw new IllegalStateException( "Webapp [" + this.webappName + "] must run with exploded deployment directory (not from .war).");
+    {
+      String msg = "Webapp [" + this.webappName + "] must run with exploded deployment directory (not from .war).";
+      System.out.println( "ERROR - TdsContext.init(): " + msg );
+      //logServerStartup.error( "TdsContext.init(): " + msg );
+      throw new IllegalStateException( msg );
+    }
     this.rootDirectory = new File( rootPath );
     this.rootDirSource = new BasicDescendantFileSource( this.rootDirectory );
     this.rootDirectory = this.rootDirSource.getRootDirectory();
@@ -180,17 +191,31 @@ public class TdsContext
     this.startupContentDirectory = this.startupContentDirSource.getRootDirectory();
 
     // set the tomcat logging directory
-    try {
+    try
+    {
       String base = System.getProperty("catalina.base");
-      if (base != null) {
+      if (base != null)
+      {
         this.tomcatLogDir = new File( base, "logs").getCanonicalFile();
         if ( !this.tomcatLogDir.exists() )
-          log.error( "init(): 'catalina.base' directory not found");
-      } else
-        log.warn( "init(): 'catalina.base' property not found - probably not a tomcat server");
+        {
+          String msg = "'catalina.base' directory not found";
+          System.out.println( "WARN - TdsContext.init(): " + msg );
+          //logServerStartup.error( "TdsContext.init(): " + msg );
+        }
+      }
+      else
+      {
+        String msg = "'catalina.base' property not found - probably not a tomcat server";
+        System.out.println( "WARN - TdsContext.init(): " + msg );
+        //logServerStartup.warn( "TdsContext.init(): " + msg );
+      }
 
-    } catch (IOException e) {
-      log.error( "init(): tomcatLogDir could not be created");
+    } catch (IOException e)
+    {
+      String msg = "tomcatLogDir could not be created";
+      System.out.println( "WARN - TdsContext.init(): " + msg );
+      //logServerStartup.error( "TdsContext.init(): " + msg );
     }
 
     // Set the content directory and source.
@@ -202,7 +227,12 @@ public class TdsContext
       if ( contentRootDir.isDirectory() )
         this.contentDirectory = new File( contentRootDir, this.contentPath );
       else
-        throw new IllegalStateException( "Content root directory [" + this.contentRootPath + "] not a directory.");
+      {
+        String msg = "Content root directory [" + this.contentRootPath + "] not a directory.";
+        System.out.println( "ERROR - TdsContext.init(): " + msg );
+        //logServerStartup.error( "TdsContext.init(): " + msg );
+        throw new IllegalStateException( msg );
+      }
     }
     // If the content directory doesn't exist, try to copy startup content directory.
     if ( ! this.contentDirectory.exists() )
@@ -214,8 +244,8 @@ public class TdsContext
       catch ( IOException e )
       {
         String tmpMsg = "Content directory does not exist and could not be created";
-        log.error( "init(): " + tmpMsg + " [" + this.contentDirectory.getAbsolutePath() + "]" );
         System.out.println( "ERROR - TdsContext.init(): " + tmpMsg + " [" + this.contentDirectory.getAbsolutePath() + "]." );
+        //logServerStartup.error( "TdsContext.init(): " + tmpMsg + " [" + this.contentDirectory.getAbsolutePath() + "]" );
         throw new IllegalStateException( tmpMsg );
       }
     }
@@ -229,8 +259,8 @@ public class TdsContext
     else
     {
       String tmpMsg = "Content directory not a directory";
-      log.error( "init(): " + tmpMsg + " [" + this.contentDirectory.getAbsolutePath() + "]" );
       System.out.println( "ERROR - TdsContext.init(): " + tmpMsg + " [" + this.contentDirectory.getAbsolutePath() + "]." );
+      //logServerStartup.error( "TdsContext.init(): " + tmpMsg + " [" + this.contentDirectory.getAbsolutePath() + "]" );
       throw new IllegalStateException( tmpMsg );
     }
     ServletUtil.setContentPath( this.contentDirSource.getRootDirectoryPath());
@@ -245,7 +275,10 @@ public class TdsContext
     {
       if ( ! logDir.mkdirs())
       {
-        System.out.println( "ERROR - TdsContext.init(): Couldn't create TDS log directory [" + logDir.getPath() + "]." );
+        String msg = "Couldn't create TDS log directory [" + logDir.getPath() + "].";
+        System.out.println( "ERROR - TdsContext.init(): " + msg);
+        //logServerStartup.error( "TdsContext.init(): " + msg  );
+        // ToDo thow an IllegalStateException() ????
       }
     }
     System.setProperty( "tds.log.dir", logDir.getPath() ); // variable substitution
@@ -278,7 +311,9 @@ public class TdsContext
         }
         catch ( IllegalArgumentException e )
         {
-          System.out.println( "WARN - TdsContext.init(): Couldn't add content root [" + curContentRoot + "]: " + e.getMessage() );
+          String msg = "Couldn't add content root [" + curContentRoot + "]: " + e.getMessage();
+          System.out.println( "WARN - TdsContext.init(): " + msg );
+          //logServerStartup.warn( "TdsContext.init(): " + msg, e );
         }
       }
     }

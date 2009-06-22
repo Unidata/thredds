@@ -53,8 +53,6 @@ import thredds.servlet.UsageLog;
 public class TdsConfigContextListener
         implements ServletContextListener
 {
-  private org.slf4j.Logger logger =
-          org.slf4j.LoggerFactory.getLogger( TdsConfigContextListener.class );
   private org.slf4j.Logger logServerStartup =
           org.slf4j.LoggerFactory.getLogger( "serverStartup" );
 
