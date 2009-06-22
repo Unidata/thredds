@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>TDS FAQ</title></head>
+
+<body>
+<h1><img src="../images/unidataLogo.png" alt="Unidata" align="middle" height="75" width="75">TDS FAQ</h1>
+
+<hr width="100%">
+
+<ul>
+  <li>Non-HTTP response codes in threddsServlet.log</li>
+</ul>
+
+<hr width="100%">
+
+<p>
+  <strong>What do the status codes in the <code>threddsServlet.log</code> files mean?</strong>
+</p>
+
+<p>
+  The "Request Completed" messages in the <code>threddsServlet.log</code> files contain
+  several fields including a status code.
+  the HTTP status code returned in a completed response. If a request is forwarded to
+  another internal service, a "1000 (Forwarded)" or "1001 (
+</p>
+<pre>
+2009-06-17T13:25:54.451 -0600 [     28949][      11] INFO
+  - thredds.server.catalogservice.LocalCatalogServiceController
+  - handlePublicDocumentRequest(): Request Completed - 1001 - -1 - 32
+</pre>
+
+<hr width="100%">
+<address>
+<img src="../images/thread.png" alt="THREDDS" height="108" width="110">
+  This document is maintained by Unidata and was last updated June 2009.
+  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
+</address>
+
+</body>
+</html>
