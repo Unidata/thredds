@@ -33,17 +33,14 @@
 package thredds.catalog2.xml.parser.stax;
 
 import thredds.catalog2.builder.*;
-import thredds.catalog2.xml.util.CatalogNamespace;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
-import thredds.catalog2.xml.util.AccessElementUtils;
+import thredds.catalog2.xml.names.AccessElementNames;
 import thredds.catalog.DataFormatType;
 
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.XMLEventReader;
-import javax.xml.namespace.QName;
-import javax.xml.XMLConstants;
 
 /**
  * _more_
@@ -55,32 +52,23 @@ public class AccessElementParser extends AbstractElementParser
 {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
-  private final static QName elementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
-                                                      AccessElementUtils.ELEMENT_NAME );
-  private final static QName serviceNameAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                             AccessElementUtils.SERVICE_NAME_ATTRIBUTE_NAME );
-  private final static QName urlPathAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                         AccessElementUtils.URL_PATH_ATTRIBUTE_NAME );
-  private final static QName dataFormatAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                            AccessElementUtils.DATA_FORMAT_ATTRIBUTE_NAME );
-
   private final DatasetBuilder datasetBuilder;
 
   public AccessElementParser( XMLEventReader reader, DatasetBuilder datasetBuilder )
           throws ThreddsXmlParserException
   {
-    super( reader, elementName );
+    super( reader, AccessElementNames.AccessElement );
     this.datasetBuilder = datasetBuilder;
   }
 
   protected static boolean isSelfElementStatic( XMLEvent event )
   {
-    return isSelfElement( event, elementName );
+    return isSelfElement( event, AccessElementNames.AccessElement );
   }
 
   protected boolean isSelfElement( XMLEvent event )
   {
-    return isSelfElement( event, elementName );
+    return isSelfElement( event, AccessElementNames.AccessElement );
   }
 
   protected AccessBuilder parseStartElement()
@@ -94,18 +82,18 @@ public class AccessElementParser extends AbstractElementParser
     else
       throw new ThreddsXmlParserException( "" );
 
-    Attribute serviceNameAtt = startElement.getAttributeByName( serviceNameAttName );
+    Attribute serviceNameAtt = startElement.getAttributeByName( AccessElementNames.AccessElement_ServiceName );
     String serviceName = serviceNameAtt.getValue();
     // ToDo This only gets top level services, need findServiceBuilderByName() to crawl services
     ServiceBuilder serviceBuilder = this.datasetBuilder.getParentCatalogBuilder().findServiceBuilderByNameGlobally( serviceName );
 
-    Attribute urlPathAtt = startElement.getAttributeByName( urlPathAttName );
+    Attribute urlPathAtt = startElement.getAttributeByName( AccessElementNames.AccessElement_UrlPath );
     String urlPath = urlPathAtt.getValue();
 
     builder.setServiceBuilder( serviceBuilder );
     builder.setUrlPath( urlPath );
 
-    Attribute dataFormatAtt = startElement.getAttributeByName( dataFormatAttName );
+    Attribute dataFormatAtt = startElement.getAttributeByName( AccessElementNames.AccessElement_DataFormat );
     if ( dataFormatAtt != null )
     {
       builder.setDataFormat( DataFormatType.getType( dataFormatAtt.getValue() ) );

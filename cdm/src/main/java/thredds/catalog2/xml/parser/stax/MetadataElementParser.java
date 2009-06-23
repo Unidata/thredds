@@ -56,31 +56,31 @@ public class MetadataElementParser extends AbstractElementParser
   private final DatasetNodeBuilder datasetBuilder;
   private final ThreddsBuilderFactory catBuilderFactory;
 
-  private final DatasetNodeElementParserUtils datasetNodeElementParserUtils;
+  private final DatasetNodeElementParserHelper datasetNodeElementParserHelper;
 
   private boolean isMetadataElementInherited;
 
   public MetadataElementParser( XMLEventReader reader,
                                 DatasetNodeBuilder datasetNodeBuilder,
-                                DatasetNodeElementParserUtils datasetNodeElementParserUtils )
+                                DatasetNodeElementParserHelper datasetNodeElementParserHelper )
           throws ThreddsXmlParserException
   {
     super( reader, MetadataElementNames.MetadataElement );
     this.datasetBuilder = datasetNodeBuilder;
     this.catBuilderFactory = null;
-    this.datasetNodeElementParserUtils = datasetNodeElementParserUtils;
+    this.datasetNodeElementParserHelper = datasetNodeElementParserHelper;
     this.isMetadataElementInherited = false;
   }
 
   public MetadataElementParser( XMLEventReader reader,
                                 ThreddsBuilderFactory catBuilderFactory,
-                                DatasetNodeElementParserUtils datasetNodeElementParserUtils)
+                                DatasetNodeElementParserHelper datasetNodeElementParserHelper )
           throws ThreddsXmlParserException
   {
     super( reader, MetadataElementNames.MetadataElement );
     this.datasetBuilder = null;
     this.catBuilderFactory = catBuilderFactory;
-    this.datasetNodeElementParserUtils = datasetNodeElementParserUtils;
+    this.datasetNodeElementParserHelper = datasetNodeElementParserHelper;
     this.isMetadataElementInherited = false;
   }
 
@@ -156,7 +156,7 @@ public class MetadataElementParser extends AbstractElementParser
 
     if ( ThreddsMetadataElementParser.isSelfElementStatic( startElement ) )
     {
-      ThreddsMetadataElementParser parser = new ThreddsMetadataElementParser( this.reader, this.datasetBuilder, this.datasetNodeElementParserUtils, this.isMetadataElementInherited );
+      ThreddsMetadataElementParser parser = new ThreddsMetadataElementParser( this.reader, this.datasetBuilder, this.datasetNodeElementParserHelper, this.isMetadataElementInherited );
       parser.parse();
     }
     else

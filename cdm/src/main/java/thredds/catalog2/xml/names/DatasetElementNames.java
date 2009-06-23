@@ -23,19 +23,6 @@ public class DatasetElementNames
   public static final QName DatasetElement_Name
           = new QName( XMLConstants.NULL_NS_URI,
                        "name" );
-  public static final QName DatasetElement_Id
-          = new QName( XMLConstants.NULL_NS_URI,
-                       "ID" );
-
-  /**
-   * @deprecated Use metadata/authority element instead.
-   */
-  public static final QName DatasetElement_Authority
-          = new QName( XMLConstants.NULL_NS_URI,
-                       "authority" );
-  public static final QName DatasetElement_CollectionType
-          = new QName( XMLConstants.NULL_NS_URI,
-                       "collectionType" );
 
   /**
    * @deprecated Use metadata/dataType element instead.
@@ -43,9 +30,6 @@ public class DatasetElementNames
   public static final QName DatasetElement_DataType
           = new QName( XMLConstants.NULL_NS_URI,
                        "dataType" );
-  public static final QName DatasetElement_Harvest
-          = new QName( XMLConstants.NULL_NS_URI,
-                       "harvest" );
   public static final QName DatasetElement_ResourceControl
           = new QName( XMLConstants.NULL_NS_URI,
                        "resourceControl" );

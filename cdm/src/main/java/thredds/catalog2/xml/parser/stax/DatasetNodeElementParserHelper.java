@@ -33,14 +33,13 @@
 package thredds.catalog2.xml.parser.stax;
 
 import thredds.catalog2.builder.*;
-import thredds.catalog2.xml.util.DatasetElementUtils;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
+import thredds.catalog2.xml.names.DatasetNodeElementNames;
+import thredds.catalog2.xml.names.DatasetElementNames;
 
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.XMLEventReader;
-import javax.xml.namespace.QName;
-import javax.xml.XMLConstants;
 
 /**
  * _more_
@@ -48,27 +47,21 @@ import javax.xml.XMLConstants;
  * @author edavis
  * @since 4.0
  */
-public class DatasetNodeElementParserUtils
+public class DatasetNodeElementParserHelper
 {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
-  protected final static QName nameAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                        DatasetElementUtils.NAME_ATTRIBUTE_NAME );
-  protected final static QName idAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                      DatasetElementUtils.ID_ATTRIBUTE_NAME );
-  protected final static QName authorityAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                             DatasetElementUtils.AUTHORITY_ATTRIBUTE_NAME );
-
-  private final DatasetNodeElementParserUtils parentDatasetNodeElementParserUtils;
+  private final DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper;
 
   private ThreddsMetadataElementParser threddsMetadataElementParser;
 
-  DatasetNodeElementParserUtils( DatasetNodeElementParserUtils parentDatasetNodeElementParserUtils )
+  DatasetNodeElementParserHelper( DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
   {
-    this.parentDatasetNodeElementParserUtils = parentDatasetNodeElementParserUtils;
+    this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
   }
 
   private String idAuthorityThatGetsInherited;
+
   public void setIdAuthorityThatGetsInherited( String idAuthorityThatGetsInherited)
   {
     this.idAuthorityThatGetsInherited = idAuthorityThatGetsInherited;
@@ -82,7 +75,7 @@ public class DatasetNodeElementParserUtils
   public void parseStartElementNameAttribute( StartElement startElement,
                                                      DatasetNodeBuilder dsNodeBuilder )
   {
-    Attribute att = startElement.getAttributeByName( nameAttName );
+    Attribute att = startElement.getAttributeByName( DatasetElementNames.DatasetElement_Name );
     if ( att != null )
       dsNodeBuilder.setName( att.getValue() );
   }
@@ -90,7 +83,7 @@ public class DatasetNodeElementParserUtils
   public void parseStartElementIdAttribute( StartElement startElement,
                                                    DatasetNodeBuilder dsNodeBuilder )
   {
-    Attribute att = startElement.getAttributeByName( idAttName );
+    Attribute att = startElement.getAttributeByName( DatasetNodeElementNames.DatasetNodeElement_Id );
     if ( att != null )
       dsNodeBuilder.setId( att.getValue() );
   }
@@ -98,7 +91,7 @@ public class DatasetNodeElementParserUtils
   public void parseStartElementIdAuthorityAttribute( StartElement startElement,
                                                             DatasetNodeBuilder dsNodeBuilder )
   {
-    Attribute att = startElement.getAttributeByName( authorityAttName );
+    Attribute att = startElement.getAttributeByName( DatasetNodeElementNames.DatasetNodeElement_Authority );
     if ( att != null )
       dsNodeBuilder.setId( att.getValue() );
   }
@@ -188,13 +181,13 @@ public class DatasetNodeElementParserUtils
     return this.defaultServiceNameThatGetsInherited;
   }
 
-  private String getInheritedDefaultServiceName( DatasetNodeElementParserUtils selfOrAncestor )
+  private String getInheritedDefaultServiceName( DatasetNodeElementParserHelper selfOrAncestor )
   {
     if ( selfOrAncestor == null )
       return null;
     String curDefServiceName = selfOrAncestor.getDefaultServiceNameThatGetsInherited();
     if ( curDefServiceName == null )
-      curDefServiceName = this.getInheritedDefaultServiceName( selfOrAncestor.parentDatasetNodeElementParserUtils );
+      curDefServiceName = this.getInheritedDefaultServiceName( selfOrAncestor.parentDatasetNodeElementParserHelper );
     return curDefServiceName;
   }
 }

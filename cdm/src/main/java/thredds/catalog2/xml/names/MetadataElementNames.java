@@ -29,7 +29,10 @@ public class MetadataElementNames
   public static final QName MetadataElement_XlinkHref
           = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
                        "href");
-  public static final QName MetadataElement_DataFormat
+  public static final QName MetadataElement_XlinkType
+          = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
+                       "type");
+  public static final QName MetadataElement_metadataType
           = new QName( XMLConstants.NULL_NS_URI,
-                       "dataFormat");
+                       "metadataType");
 }

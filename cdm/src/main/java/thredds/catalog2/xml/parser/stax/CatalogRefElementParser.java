@@ -33,15 +33,13 @@
 package thredds.catalog2.xml.parser.stax;
 
 import thredds.catalog2.builder.*;
-import thredds.catalog2.xml.util.CatalogNamespace;
-import thredds.catalog2.xml.util.CatalogRefElementUtils;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
+import thredds.catalog2.xml.names.CatalogRefElementNames;
 
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.XMLEventReader;
-import javax.xml.namespace.QName;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -55,67 +53,57 @@ public class CatalogRefElementParser extends AbstractElementParser
 {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
-  protected final static QName elementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
-                                                        CatalogRefElementUtils.ELEMENT_NAME );
-  protected final static QName xlinkTitleAttName = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
-                                                              CatalogRefElementUtils.XLINK_TITLE_ATTRIBUTE_NAME );
-  protected final static QName xlinkHrefAttName = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
-                                                             CatalogRefElementUtils.XLINK_HREF_ATTRIBUTE_NAME );
-  protected final static QName xlinkTypeAttName = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
-                                                             CatalogRefElementUtils.XLINK_TYPE_ATTRIBUTE_NAME );
-
-
   private final CatalogBuilder catBuilder;
   private final DatasetNodeBuilder datasetNodeBuilder;
   private final ThreddsBuilderFactory catBuilderFactory;
 
-  private final DatasetNodeElementParserUtils datasetNodeElementParserUtils;
+  private final DatasetNodeElementParserHelper datasetNodeElementParserHelper;
 
 
   public CatalogRefElementParser( XMLEventReader reader,
                                   CatalogBuilder catBuilder,
-                                  DatasetNodeElementParserUtils parentDatasetNodeElementParserUtils )
+                                  DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
           throws ThreddsXmlParserException
   {
-    super( reader, elementName );
+    super( reader, CatalogRefElementNames.CatalogRefElement );
     this.catBuilder = catBuilder;
     this.datasetNodeBuilder = null;
     this.catBuilderFactory = null;
-    this.datasetNodeElementParserUtils = new DatasetNodeElementParserUtils( parentDatasetNodeElementParserUtils );
+    this.datasetNodeElementParserHelper = new DatasetNodeElementParserHelper( parentDatasetNodeElementParserHelper );
   }
 
   public CatalogRefElementParser( XMLEventReader reader,
                                   DatasetNodeBuilder datasetNodeBuilder,
-                                  DatasetNodeElementParserUtils parentDatasetNodeElementParserUtils )
+                                  DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
           throws ThreddsXmlParserException
   {
-    super( reader, elementName );
+    super( reader, CatalogRefElementNames.CatalogRefElement );
     this.catBuilder = null;
     this.datasetNodeBuilder = datasetNodeBuilder;
     this.catBuilderFactory = null;
-    this.datasetNodeElementParserUtils = new DatasetNodeElementParserUtils( parentDatasetNodeElementParserUtils );
+    this.datasetNodeElementParserHelper = new DatasetNodeElementParserHelper( parentDatasetNodeElementParserHelper );
   }
 
   public CatalogRefElementParser( XMLEventReader reader,
                                   ThreddsBuilderFactory catBuilderFactory,
-                                  DatasetNodeElementParserUtils parentDatasetNodeElementParserUtils )
+                                  DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
           throws ThreddsXmlParserException
   {
-    super( reader, elementName );
+    super( reader, CatalogRefElementNames.CatalogRefElement );
     this.catBuilder = null;
     this.datasetNodeBuilder = null;
     this.catBuilderFactory = catBuilderFactory;
-    this.datasetNodeElementParserUtils = new DatasetNodeElementParserUtils( parentDatasetNodeElementParserUtils );
+    this.datasetNodeElementParserHelper = new DatasetNodeElementParserHelper( parentDatasetNodeElementParserHelper );
   }
 
   protected static boolean isSelfElementStatic( XMLEvent event )
   {
-    return isSelfElement( event, elementName );
+    return isSelfElement( event, CatalogRefElementNames.CatalogRefElement );
   }
 
   protected boolean isSelfElement( XMLEvent event )
   {
-    return isSelfElement( event, elementName );
+    return isSelfElement( event, CatalogRefElementNames.CatalogRefElement );
   }
 
   protected DatasetNodeBuilder parseStartElement()
@@ -124,9 +112,9 @@ public class CatalogRefElementParser extends AbstractElementParser
     StartElement startElement = this.getNextEventIfStartElementIsMine();
 
     // Get required attributes.
-    Attribute titleAtt = startElement.getAttributeByName( xlinkTitleAttName );
+    Attribute titleAtt = startElement.getAttributeByName( CatalogRefElementNames.CatalogRefElement_XlinkTitle );
     String title = titleAtt.getValue();
-    Attribute hrefAtt = startElement.getAttributeByName( xlinkHrefAttName );
+    Attribute hrefAtt = startElement.getAttributeByName( CatalogRefElementNames.CatalogRefElement_XlinkHref );
     String href = hrefAtt.getValue();
     URI hrefUri = null;
     try
@@ -151,8 +139,8 @@ public class CatalogRefElementParser extends AbstractElementParser
       throw new ThreddsXmlParserException( "" );
 
     // Set optional attributes
-    this.datasetNodeElementParserUtils.parseStartElementIdAttribute( startElement, catalogRefBuilder );
-    this.datasetNodeElementParserUtils.parseStartElementIdAuthorityAttribute( startElement, catalogRefBuilder );
+    this.datasetNodeElementParserHelper.parseStartElementIdAttribute( startElement, catalogRefBuilder );
+    this.datasetNodeElementParserHelper.parseStartElementIdAuthorityAttribute( startElement, catalogRefBuilder );
 
     return catalogRefBuilder;
   }
@@ -164,7 +152,7 @@ public class CatalogRefElementParser extends AbstractElementParser
 
     StartElement startElement = this.peekAtNextEventIfStartElement();
 
-    if ( this.datasetNodeElementParserUtils.handleBasicChildStartElement( startElement, this.reader, (CatalogRefBuilder) builder ))
+    if ( this.datasetNodeElementParserHelper.handleBasicChildStartElement( startElement, this.reader, (CatalogRefBuilder) builder ))
       return;
     else
       // ToDo Save the results in a ThreddsXmlParserIssue (Warning) and report.

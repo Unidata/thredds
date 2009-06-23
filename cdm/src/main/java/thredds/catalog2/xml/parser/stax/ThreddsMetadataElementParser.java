@@ -33,9 +33,7 @@
 package thredds.catalog2.xml.parser.stax;
 
 import thredds.catalog2.builder.*;
-import thredds.catalog2.xml.util.CatalogNamespace;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
-import thredds.catalog2.xml.util.ThreddsMetadataElementUtils;
 import thredds.catalog2.xml.names.ThreddsMetadataElementNames;
 
 import javax.xml.stream.events.StartElement;
@@ -58,7 +56,7 @@ public class ThreddsMetadataElementParser extends AbstractElementParser
   private final static Map<QName, AbstractElementParser> selfElements = new HashMap<QName, AbstractElementParser>();
   private final DatasetNodeBuilder datasetNodeBuilder;
 
-  private final DatasetNodeElementParserUtils parentDatasetNodeElementParserUtils;
+  private final DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper;
 
   private final boolean inheritedByDescendants;
 
@@ -66,13 +64,13 @@ public class ThreddsMetadataElementParser extends AbstractElementParser
 
   public ThreddsMetadataElementParser( XMLEventReader reader,
                                        DatasetNodeBuilder datasetNodeBuilder,
-                                       DatasetNodeElementParserUtils parentDatasetNodeElementParserUtils,
+                                       DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper,
                                        boolean inheritedByDescendants )
           throws ThreddsXmlParserException
   {
     super( reader, ThreddsMetadataElementNames.ThreddsMetadataElement );
     this.datasetNodeBuilder = datasetNodeBuilder;
-    this.parentDatasetNodeElementParserUtils = parentDatasetNodeElementParserUtils;
+    this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
     this.inheritedByDescendants = inheritedByDescendants;
   }
 
@@ -110,7 +108,7 @@ public class ThreddsMetadataElementParser extends AbstractElementParser
 
     if ( ServiceNameElementParser.isSelfElementStatic( startElement ) )
     {
-      ServiceNameElementParser parser = new ServiceNameElementParser( this.reader, this.resultThreddsMetadataBuilder, this.parentDatasetNodeElementParserUtils, this.inheritedByDescendants );
+      ServiceNameElementParser parser = new ServiceNameElementParser( this.reader, this.resultThreddsMetadataBuilder, this.parentDatasetNodeElementParserHelper, this.inheritedByDescendants );
       parser.parse();
     }
     else if ( DataFormatElementParser.isSelfElementStatic(  startElement ))
@@ -146,25 +144,22 @@ public class ThreddsMetadataElementParser extends AbstractElementParser
   {
     private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
-    private final static QName elementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
-                                                        ThreddsMetadataElementUtils.SERVICE_NAME_ELEMENT_NAME );
-
     private final ThreddsMetadataBuilder threddsMetadataBuilder;
     private DatasetNodeBuilder datasetNodeBuilder;
 
-    private final DatasetNodeElementParserUtils parentDatasetNodeElementParserUtils;
+    private final DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper;
 
     private final boolean inheritedByDescendants;
 
     public ServiceNameElementParser( XMLEventReader reader,
                                      ThreddsMetadataBuilder threddsMetadataBuilder,
-                                     DatasetNodeElementParserUtils parentDatasetNodeElementParserUtils,
+                                     DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper,
                                      boolean inheritedByDescendants )
             throws ThreddsXmlParserException
     {
       super( reader, ThreddsMetadataElementNames.ServiceNameElement );
       this.threddsMetadataBuilder = threddsMetadataBuilder;
-      this.parentDatasetNodeElementParserUtils = parentDatasetNodeElementParserUtils;
+      this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
       this.inheritedByDescendants = inheritedByDescendants;
     }
 
@@ -184,10 +179,10 @@ public class ThreddsMetadataElementParser extends AbstractElementParser
     {
       this.getNextEventIfStartElementIsMine();
       // ToDo Save the results in a ThreddsXmlParserIssue (Warning) and report.
-      this.serviceName = StaxThreddsXmlParserUtils.getCharacterContent( this.reader, elementName );
+      this.serviceName = StaxThreddsXmlParserUtils.getCharacterContent( this.reader, ThreddsMetadataElementNames.ServiceNameElement );
 
       // Set default service name on parent dataset.
-      this.parentDatasetNodeElementParserUtils.setDefaultServiceName( this.serviceName );
+      this.parentDatasetNodeElementParserHelper.setDefaultServiceName( this.serviceName );
 
       return null;
     }
@@ -200,9 +195,9 @@ public class ThreddsMetadataElementParser extends AbstractElementParser
     protected void postProcessing( ThreddsBuilder builder ) throws ThreddsXmlParserException
     {
       if ( this.inheritedByDescendants )
-        this.parentDatasetNodeElementParserUtils.setDefaultServiceNameThatGetsInherited( this.serviceName );
+        this.parentDatasetNodeElementParserHelper.setDefaultServiceNameThatGetsInherited( this.serviceName );
       else
-        this.parentDatasetNodeElementParserUtils.setDefaultServiceName( this.serviceName );
+        this.parentDatasetNodeElementParserHelper.setDefaultServiceName( this.serviceName );
     }
   }
 
@@ -211,22 +206,19 @@ public class ThreddsMetadataElementParser extends AbstractElementParser
    */
   public static class DataFormatElementParser extends AbstractElementParser
   {
-    private final static QName elementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
-                                                        ThreddsMetadataElementUtils.DATA_FORMAT_ELEMENT_NAME );
-
     private final ThreddsMetadataBuilder threddsMetadataBuilder;
 
     public DataFormatElementParser( XMLEventReader reader,
                                     ThreddsMetadataBuilder threddsMetadataBuilder )
             throws ThreddsXmlParserException
     {
-      super( reader, elementName );
+      super( reader, ThreddsMetadataElementNames.DataFormatElement );
       this.threddsMetadataBuilder = threddsMetadataBuilder;
     }
 
     protected static boolean isSelfElementStatic( XMLEvent event )
     {
-      return isSelfElement( event, elementName );
+      return isSelfElement( event, ThreddsMetadataElementNames.DataFormatElement );
     }
 
     protected boolean isSelfElement( XMLEvent event )
@@ -239,7 +231,7 @@ public class ThreddsMetadataElementParser extends AbstractElementParser
     {
       StartElement startElement = this.getNextEventIfStartElementIsMine();
 
-      String dataFormat = StaxThreddsXmlParserUtils.getCharacterContent( this.reader, elementName );
+      String dataFormat = StaxThreddsXmlParserUtils.getCharacterContent( this.reader, ThreddsMetadataElementNames.DataFormatElement );
       this.threddsMetadataBuilder.setDataFormat( dataFormat );
 
       return null;
