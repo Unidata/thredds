@@ -55,11 +55,33 @@ requester and 2) the request being made. For example:</p><pre style="margin-left
 main message in an end of transaction log message includes: 1) the
 status code for the response; 2) the size of the response body in
 bytes; and 3) the time in milliseconds to handle the request. For
-example:</p><pre style="margin-left: 40px;">... Request Completed - <strong>200</strong> - <strong>3403</strong> - <strong>1</strong></pre><p>the catalog request above returned with a <strong>200</strong> response code, a catalog HTML page <strong>3403</strong> bytes long, and only took one (<strong>1</strong>) millisecond to handle.</p><h4>End of Transaction Status Codes</h4><p>Most
+example:</p>
+<pre style="margin-left: 40px;">... Request Completed - <strong>200</strong> - <strong>3403</strong> - <strong>1</strong></pre><p>the catalog request above returned with a <strong>200</strong> response code, a catalog HTML page <strong>3403</strong> bytes long, and only took one (<strong>1</strong>) millisecond to handle.</p><h4>End of Transaction - Status Codes</h4><p>Most
 end of transaction messages include a status code that matches a
 standard HTTP status code. However, when the client breaks the
 connection or a request is forwarded to another TDS internal service,
-one of three TDS specific status codes are used:</p><ul><li>"1000 (Client Abort)" - the connection to the client was broken;</li><li>"1001 (Forwarded)" - the request was forwarded to another TDS internal service; or</li><li>"1002 (Forward Failed)" - an attempt was made but failed to forward the request to another TDS internal service.</li></ul><h4>Transaction Bracketing Example</h4><p>Here is an example of&nbsp;the log messages from a request that resulted in&nbsp; error messages:</p><pre style="margin-left: 40px;">2009-06-03T21:49:07.147 -0600 [ 104481318][   <strong>27031</strong>] INFO  - thredds.server.opendap.OpendapServlet - Remote host: 128.117.140.75 - Request: "GET /thredds/dodsC/nexrad/level2/KFTG/20090602/Level2_KFTG_20090602_0346.ar2v.dds HTTP/1.1"<br>2009-06-03T21:49:07.415 -0600 [ 104481586][   <strong>27031</strong>] ERROR - thredds.server.opendap.OpendapServlet - path= /nexrad/level2/KFTG/20090602/Level2_KFTG_20090602_0346.ar2v.dds<br>java.io.IOException: Cant read /data/ldm/pub/native/radar/level2/KFTG/20090602/Level2_KFTG_20090602_0346.ar2v: not a valid NetCDF file.<br>        at ucar.nc2.NetcdfFile.open(NetcdfFile.java:716)<br>        at ucar.nc2.NetcdfFile.open(NetcdfFile.java:381)<br> ...<br>        at org.apache.tomcat.util.net.JIoEndpoint$Worker.run(JIoEndpoint.java:447)<br>        at java.lang.Thread.run(Thread.java:619)<br>2009-06-03T21:49:07.416 -0600 [ 104481587][   <strong>27031</strong>] INFO  - thredds.server.opendap.OpendapServlet - Request Completed - <strong>500</strong> - -1 - 269</pre><p>Notice that 1) the request ID (<strong>27031</strong>)
+one of three TDS specific status codes are used:</p>
+
+<ul>
+  <li>"1000 (Client Abort)" - the connection to the client was broken;</li>
+  <li>"1001 (Forwarded)" - the request was forwarded to another TDS internal service; or</li>
+  <li>"1002 (Forward Failed)" - an attempt was made but failed to forward the request to another TDS internal service.</li>
+</ul>
+
+<p>If the request is forwarded successfully, another set of transaction
+messages should be initiated with the ending message containing a
+standard HTTP status code. If forwarding the request fails, another set
+of transaction message may or may not be initiated and the entry in the
+access log will probably either log a 400 (Not Found) or a 500
+(Internal Server Error) HTTP status code.</p>
+
+<h4>Transaction Bracketing Example</h4>
+
+<p>Here is an example of the log messages from a request that resulted
+  in error messages:</p>
+<pre style="margin-left: 40px;">2009-06-03T21:49:07.147 -0600 [ 104481318][   <strong>27031</strong>] INFO  - thredds.server.opendap.OpendapServlet - Remote host: 128.117.140.75 - Request: "GET /thredds/dodsC/nexrad/level2/KFTG/20090602/Level2_KFTG_20090602_0346.ar2v.dds HTTP/1.1"<br>2009-06-03T21:49:07.415 -0600 [ 104481586][   <strong>27031</strong>] ERROR - thredds.server.opendap.OpendapServlet - path= /nexrad/level2/KFTG/20090602/Level2_KFTG_20090602_0346.ar2v.dds<br>java.io.IOException: Cant read /data/ldm/pub/native/radar/level2/KFTG/20090602/Level2_KFTG_20090602_0346.ar2v: not a valid NetCDF file.<br>        at ucar.nc2.NetcdfFile.open(NetcdfFile.java:716)<br>        at ucar.nc2.NetcdfFile.open(NetcdfFile.java:381)<br> ...<br>        at org.apache.tomcat.util.net.JIoEndpoint$Worker.run(JIoEndpoint.java:447)<br>        at java.lang.Thread.run(Thread.java:619)<br>2009-06-03T21:49:07.416 -0600 [ 104481587][   <strong>27031</strong>] INFO  - thredds.server.opendap.OpendapServlet - Request Completed - <strong>500</strong> - -1 - 269</pre>
+
+<p>Notice that 1) the request ID (<strong>27031</strong>)
 matches in all messages; 2) the ERROR message contains a stack trace;
 and 3) the status code in the end of transaction message is<strong> 500</strong> (Internal Server Error).</p>
 
