@@ -33,17 +33,22 @@
 package thredds.catalog2.xml.parser.stax;
 
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
+import thredds.util.HttpUriResolver;
+import thredds.util.HttpUriResolverFactory;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.events.StartElement;
 import javax.xml.namespace.QName;
-import java.io.Writer;
-import java.io.StringWriter;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
+import java.net.URI;
 
 /**
  * _more_
@@ -55,19 +60,21 @@ public class StaxThreddsXmlParserUtils
 {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( StaxThreddsXmlParserUtils.class );
   
-  public static String readElementAndAnyContent( XMLEventReader xmlEventReader )
+  public static String consumeElementAndConvertToXmlString( XMLEventReader xmlEventReader )
           throws ThreddsXmlParserException
   {
     if ( xmlEventReader == null )
       throw new IllegalArgumentException( "XMLEventReader may not be null." );
-    Writer writer = null;
+
+    // ToDo Capture as valid XML since writeAsEncodedUnicode() isn't impl-ed in Sun's JDK 6u14.
+    StringWriter writerUsingWriteAsEncodedUnicode = new StringWriter();
+    StringWriter writerUsingToString = new StringWriter();
     Location startLocation = null;
     try
     {
       XMLEvent event = xmlEventReader.peek();
-      if ( !event.isStartElement() )
+      if ( ! event.isStartElement() )
         throw new IllegalArgumentException( "Next event in reader must be start element." );
-      writer = new StringWriter();
       startLocation = event.getLocation();
 
       // Track start and end elements so know when done.
@@ -90,12 +97,13 @@ public class StaxThreddsXmlParserUtils
           {
             // Parser should have had FATAL error for this.
             String msg = "Badly formed XML? End element [" + endElemName.getLocalPart() + "] doesn't match expected start element [" + lastName.getLocalPart() + "].";
-            log.error( "readElementAndAnyContent(): " + msg );
+            log.error( "consumeElementAndConvertToXmlString(): " + msg );
             throw new ThreddsXmlParserException( "FATAL? " + msg );
           }
         }
 
-        event.writeAsEncodedUnicode( writer );
+        event.writeAsEncodedUnicode( writerUsingWriteAsEncodedUnicode );
+        writerUsingToString.write( event.toString());
         if ( nameList.isEmpty() )
           break;
       }
@@ -105,39 +113,44 @@ public class StaxThreddsXmlParserUtils
       throw new ThreddsXmlParserException( "Problem reading unknown element [" + startLocation + "]. Underlying cause: " + e.getMessage(), e );
     }
 
-    return writer.toString();
+    String result = writerUsingWriteAsEncodedUnicode.toString();
+    if ( result == null || result.equals( "" ))
+      result = writerUsingToString.toString();
+
+    return result;
   }
-  public static String readCharacterContent( StartElement startElement,
-                                             XMLEventReader xmlEventReader )
+  public static String getCharacterContent( XMLEventReader xmlEventReader, QName containingElementName )
           throws ThreddsXmlParserException
   {
-    if ( startElement == null )
-      throw new IllegalArgumentException( "Start element may not be null." );
     if ( xmlEventReader == null )
       throw new IllegalArgumentException( "XMLEventReader may not be null." );
+    if ( ! xmlEventReader.hasNext())
+      throw new IllegalArgumentException( "XMLEventReader must have next.");
 
-    QName startElementName = startElement.getName();
-    Writer writer = new StringWriter();
+    if ( containingElementName == null )
+      throw new IllegalArgumentException( "Containing element name may not be null.");
+
+    StringBuilder stringBuilder = new StringBuilder();
     Location location = null;
     try
     {
       while ( xmlEventReader.hasNext() )
       {
         XMLEvent event = xmlEventReader.peek();
-        location = startElement.getLocation();
+        location = event.getLocation();
 
         if ( event.isCharacters())
         {
           event = xmlEventReader.nextEvent();
-          event.writeAsEncodedUnicode( writer );
+          stringBuilder.append( event.asCharacters().getData());
         }
         else if ( event.isEndElement())
         {
-          if ( event.asEndElement().getName().equals( startElementName ))
+          if ( event.asEndElement().getName().equals( containingElementName ))
           {
-            return writer.toString();
+            return stringBuilder.toString();
           }
-          throw new IllegalStateException( "Badly formed XML? Unexpected end element [" + event.asEndElement().getName().getLocalPart() + "]["+location+"] doesn't match expected start element [" + startElementName.getLocalPart() + "].");
+          throw new IllegalStateException( "Badly formed XML? Unexpected end element [" + event.asEndElement().getName().getLocalPart() + "]["+location+"] doesn't match expected start element [" + containingElementName.getLocalPart() + "].");
         }
         else if ( event.isStartElement() )
         {
@@ -145,8 +158,7 @@ public class StaxThreddsXmlParserUtils
         }
         else
         {
-          event = xmlEventReader.nextEvent();
-          event.writeAsEncodedUnicode( writer );
+          xmlEventReader.next();
         }
       }
     }
@@ -155,6 +167,91 @@ public class StaxThreddsXmlParserUtils
       throw new ThreddsXmlParserException( "Problem reading unknown event [" + location + "]. Underlying cause: " + e.getMessage(), e );
     }
 
-    return writer.toString();
+    throw new ThreddsXmlParserException( "Unexpected end of XMLEventReader.");
+  }
+
+  /**
+   * Return a StreamSource given a URI.
+   *
+   * @param documentUri the target URI.
+   * @return a StreamSource for the resource located at the given URI.
+   * @throws ThreddsXmlParserException if there is a problem reading from the URI.
+   */
+  public static Source getSourceFromUri( URI documentUri )
+          throws ThreddsXmlParserException
+  {
+    HttpUriResolver httpUriResolver = HttpUriResolverFactory.getDefaultHttpUriResolver( documentUri );
+    InputStream is = null;
+    try
+    {
+      httpUriResolver.makeRequest();
+      is = httpUriResolver.getResponseBodyAsInputStream();
+    }
+    catch ( IOException e )
+    {
+      throw new ThreddsXmlParserException( "Problem accessing resource [" + documentUri.toString() + "].", e );
+    }
+
+    return new StreamSource( is, documentUri.toString() );
+  }
+
+  /**
+   * Return a StreamSource given a File.
+   *
+   * @param file the target File.
+   * @param docBaseUri the document base URI to use for this resource or null to use the File as docBase.
+   * @return a StreamSource for the resource located at the given File.
+   * @throws ThreddsXmlParserException if there is a problem reading from the File.
+   */
+  public static Source getSourceFromFile( File file, URI docBaseUri )
+          throws ThreddsXmlParserException
+  {
+    if ( file == null )
+      throw new IllegalArgumentException( "File may not be null." );
+    Source source = null;
+    if ( docBaseUri == null )
+      source = new StreamSource( file );
+    else
+    {
+      InputStream is = null;
+      try
+      {
+        is = new FileInputStream( file );
+      }
+      catch ( FileNotFoundException e )
+      {
+        String message = "Couldn't find file [" + file.getPath() + "].";
+        log.error( "parseIntoBuilder(): " + message, e );
+        throw new ThreddsXmlParserException( message, e );
+      }
+      source = new StreamSource( is, docBaseUri.toString() );
+    }
+
+    return source;
+  }
+
+  /**
+   * Return an XMLEventReader given a Source and an XMLInputFactory.
+   *
+   * @param source the source.
+   * @param factory the factory to be used.
+   * @return an XMLEventReader for the given Source.
+   * @throws ThreddsXmlParserException if have problems reading the source.
+   */
+  public static XMLEventReader getEventReaderFromSource( Source source, XMLInputFactory factory )
+          throws ThreddsXmlParserException
+  {
+    XMLEventReader reader;
+    try
+    {
+      reader = factory.createXMLEventReader( source );
+    }
+    catch( XMLStreamException e )
+    {
+      String message = "Problems reading stream [" + source.getSystemId() + "].";
+      log.error( "getEventReaderFromSource(): " + message, e );
+      throw new ThreddsXmlParserException( message, e );
+    }
+    return reader;
   }
 }

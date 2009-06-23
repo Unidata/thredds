@@ -36,8 +36,8 @@ import thredds.catalog2.Catalog;
 import thredds.catalog2.Service;
 import thredds.catalog2.Property;
 import thredds.catalog2.xml.writer.ThreddsXmlWriterException;
-import thredds.catalog2.xml.util.CatalogElementUtils;
 import thredds.catalog2.xml.util.CatalogNamespace;
+import thredds.catalog2.xml.names.CatalogElementNames;
 
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLStreamException;
@@ -92,9 +92,9 @@ public class CatalogElementWriter implements AbstractElementWriter
                                && catalog.getProperties().isEmpty()
                                && catalog.getDatasets().isEmpty();
       if ( isEmptyElement )
-        writer.writeEmptyElement( CatalogElementUtils.ELEMENT_NAME );
+        writer.writeEmptyElement( CatalogElementNames.CatalogElement.toString() );
       else
-        writer.writeStartElement( CatalogElementUtils.ELEMENT_NAME );
+        writer.writeStartElement( CatalogElementNames.CatalogElement.toString() );
       if ( nestLevel == 0 )
       {
         writer.writeNamespace( CatalogNamespace.CATALOG_1_0.getStandardPrefix(),
@@ -103,19 +103,19 @@ public class CatalogElementWriter implements AbstractElementWriter
                                CatalogNamespace.XLINK.getNamespaceUri() );
       }
       if ( catalog.getName() != null )
-        writer.writeAttribute( CatalogElementUtils.NAME_ATTRIBUTE_NAME, catalog.getName() );
+        writer.writeAttribute( CatalogElementNames.CatalogElement_Name.toString(), catalog.getName() );
       if ( catalog.getVersion() != null )
-        writer.writeAttribute( CatalogElementUtils.VERSION_ATTRIBUTE_NAME, catalog.getVersion() );
+        writer.writeAttribute( CatalogElementNames.CatalogElement_Version.toString(), catalog.getVersion() );
 
       DateFormatter df = new DateFormatter();
       if ( catalog.getExpires() != null )
       {
-        writer.writeAttribute( CatalogElementUtils.EXPIRES_ATTRIBUTE_NAME,
+        writer.writeAttribute( CatalogElementNames.CatalogElement_Expires.toString(),
                                df.toDateTimeStringISO( catalog.getExpires() ));
       }
       if ( catalog.getLastModified() != null )
       {
-        writer.writeAttribute( CatalogElementUtils.LAST_MODIFIED_ATTRIBUTE_NAME,
+        writer.writeAttribute( CatalogElementNames.CatalogElement_LastModified.toString(),
                                df.toDateTimeStringISO( catalog.getLastModified() ));
       }
       writer.writeCharacters( "\n" );

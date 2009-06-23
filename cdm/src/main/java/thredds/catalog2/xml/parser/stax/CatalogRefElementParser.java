@@ -67,7 +67,7 @@ public class CatalogRefElementParser extends AbstractElementParser
 
   private final CatalogBuilder catBuilder;
   private final DatasetNodeBuilder datasetNodeBuilder;
-  private final CatalogBuilderFactory catBuilderFactory;
+  private final ThreddsBuilderFactory catBuilderFactory;
 
   private final DatasetNodeElementParserUtils datasetNodeElementParserUtils;
 
@@ -97,7 +97,7 @@ public class CatalogRefElementParser extends AbstractElementParser
   }
 
   public CatalogRefElementParser( XMLEventReader reader,
-                                  CatalogBuilderFactory catBuilderFactory,
+                                  ThreddsBuilderFactory catBuilderFactory,
                                   DatasetNodeElementParserUtils parentDatasetNodeElementParserUtils )
           throws ThreddsXmlParserException
   {
@@ -118,11 +118,10 @@ public class CatalogRefElementParser extends AbstractElementParser
     return isSelfElement( event, elementName );
   }
 
-  protected DatasetNodeBuilder parseStartElement( StartElement startElement )
+  protected DatasetNodeBuilder parseStartElement()
           throws ThreddsXmlParserException
   {
-    if ( ! startElement.getName().equals( elementName ))
-      throw new IllegalArgumentException( "Start element not 'catalogRef' element.");
+    StartElement startElement = this.getNextEventIfStartElementIsMine();
 
     // Get required attributes.
     Attribute titleAtt = startElement.getAttributeByName( xlinkTitleAttName );
@@ -157,17 +156,19 @@ public class CatalogRefElementParser extends AbstractElementParser
 
     return catalogRefBuilder;
   }
-  protected void handleChildStartElement( StartElement startElement, ThreddsBuilder builder )
+  protected void handleChildStartElement( ThreddsBuilder builder )
           throws ThreddsXmlParserException
   {
     if ( !( builder instanceof CatalogRefBuilder ) )
       throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetBuilder." );
 
+    StartElement startElement = this.peekAtNextEventIfStartElement();
+
     if ( this.datasetNodeElementParserUtils.handleBasicChildStartElement( startElement, this.reader, (CatalogRefBuilder) builder ))
       return;
     else
       // ToDo Save the results in a ThreddsXmlParserIssue (Warning) and report.
-      StaxThreddsXmlParserUtils.readElementAndAnyContent( this.reader );
+      StaxThreddsXmlParserUtils.consumeElementAndConvertToXmlString( this.reader );
   }
 
   protected void postProcessing( ThreddsBuilder builder )

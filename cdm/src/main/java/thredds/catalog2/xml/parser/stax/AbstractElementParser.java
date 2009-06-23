@@ -77,10 +77,10 @@ public abstract class AbstractElementParser
 
   protected abstract boolean isSelfElement( XMLEvent event );
 
-  protected abstract ThreddsBuilder parseStartElement( StartElement startElement )
+  protected abstract ThreddsBuilder parseStartElement()
           throws ThreddsXmlParserException;
 
-  protected abstract void handleChildStartElement( StartElement startElement, ThreddsBuilder builder )
+  protected abstract void handleChildStartElement( ThreddsBuilder builder )
           throws ThreddsXmlParserException;
 
   protected abstract void postProcessing( ThreddsBuilder builder )
@@ -91,17 +91,14 @@ public abstract class AbstractElementParser
   {
     try
     {
-      XMLEvent event = this.reader.nextEvent();
-      if ( ! event.isStartElement() )
-        throw new ThreddsXmlParserException( "Next XML event not a start element.");
-      ThreddsBuilder builder = this.parseStartElement( event.asStartElement() );
+      ThreddsBuilder builder = this.parseStartElement();
 
       while ( this.reader.hasNext() )
       {
-        event = this.reader.peek();
+        XMLEvent event = this.reader.peek();
         if ( event.isStartElement() )
         {
-          this.handleChildStartElement( event.asStartElement(), builder );
+          this.handleChildStartElement( builder );
         }
         else if ( event.isEndElement() )
         {
@@ -134,5 +131,53 @@ public abstract class AbstractElementParser
       throw new ThreddsXmlParserException( "Failed to parse " + this.elementName + " element: " + e.getMessage(), e );
     }
 
+  }
+
+  StartElement getNextEventIfStartElementIsMine()
+          throws ThreddsXmlParserException
+  {
+    if ( ! this.reader.hasNext() )
+      throw new ThreddsXmlParserException( "XMLEventReader has no further events." );
+
+    StartElement startElement = null;
+    try
+    {
+      XMLEvent event = this.reader.peek();
+      if ( ! event.isStartElement() )
+        throw new ThreddsXmlParserException( "Next event must be StartElement." );
+
+      if ( ! event.asStartElement().getName().equals( elementName ) )
+        throw new ThreddsXmlParserException( "Start element must be an '" + elementName.getLocalPart() + "' element." );
+
+      startElement = this.reader.nextEvent().asStartElement();
+    }
+    catch ( XMLStreamException e )
+    {
+      throw new ThreddsXmlParserException( "Problem reading from XMLEventReader." );
+    }
+
+    return startElement;
+  }
+
+  StartElement peekAtNextEventIfStartElement()
+          throws ThreddsXmlParserException
+  {
+    if ( ! this.reader.hasNext() )
+      throw new ThreddsXmlParserException( "XMLEventReader has no further events." );
+
+    StartElement startElement = null;
+    try
+    {
+      XMLEvent event = this.reader.peek();
+      if ( ! event.isStartElement() )
+        throw new ThreddsXmlParserException( "Next event must be StartElement." );
+      startElement = event.asStartElement();
+    }
+    catch ( XMLStreamException e )
+    {
+      throw new ThreddsXmlParserException( "Problem reading from XMLEventReader." );
+    }
+
+    return startElement;
   }
 }

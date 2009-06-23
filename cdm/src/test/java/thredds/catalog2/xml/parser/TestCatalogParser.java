@@ -39,12 +39,16 @@ import thredds.catalog2.xml.parser.stax.StaxThreddsXmlParser;
 import thredds.catalog2.xml.writer.ThreddsXmlWriterFactory;
 import thredds.catalog2.xml.writer.ThreddsXmlWriter;
 import thredds.catalog2.xml.writer.ThreddsXmlWriterException;
-import thredds.catalog2.Catalog;
-import thredds.catalog2.Metadata;
+import thredds.catalog2.*;
+import thredds.catalog2.builder.CatalogBuilder;
+import thredds.catalog2.builder.DatasetNodeBuilder;
+import thredds.catalog2.builder.ThreddsMetadataBuilder;
+import thredds.catalog.ServiceType;
 
 import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 /**
  * _more_
@@ -75,19 +79,19 @@ public class TestCatalogParser extends TestCase
   {
     String docBaseUriString = "http://test/thredds/catalog2/xml/parser/TestCatalogParser/testCatalogSingleDatasetAccessAttributes.xml";
 
-    StringBuilder doc = new StringBuilder( "<?xml version='1.0' encoding='UTF-8'?>\n" )
-            .append( "<catalog xmlns='http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0'" )
-            .append( " xmlns:xlink='http://www.w3.org/1999/xlink'" )
-            .append( " version='1.0.1'>\n" )
-            .append( "  <service name='odap' serviceType='OPENDAP' base='/thredds/dodsC/' />\n" )
-            .append( "  <dataset name='Test1' urlPath='test/test1.nc' serviceName='odap' />" )
-            .append( "</catalog>" );
+    String catXml = CatalogXmlUtils.getCatalogWithSingleAccessibleDataset();
 
-    Catalog cat = this.parseCatalog( doc.toString(), docBaseUriString );
+    Catalog cat = this.parseCatalog( catXml, docBaseUriString );
 
-    // ToDo some tests
-
-    writeCatalogXml( cat );
+    List<DatasetNode> dsNodes = cat.getDatasets();
+    assertTrue( dsNodes.size() == 1 );
+    DatasetNode dsn = dsNodes.get( 0 );
+    assertTrue( dsn instanceof Dataset );
+    List<Access> accesses = ( (Dataset) dsn ).getAccesses();
+    assertTrue( accesses.size() == 1);
+    Access access = accesses.get( 0 );
+    assertEquals( access.getService().getType(), ServiceType.OPENDAP );
+    assertEquals( access.getUrlPath(), "test/test1.nc");
   }
 
   public void testCatalog()
@@ -137,20 +141,26 @@ public class TestCatalogParser extends TestCase
   }
 
   public void testThreddsMetadata()
+          throws URISyntaxException,
+                 ThreddsXmlParserException
   {
     String docBaseUriString = "http://test.catalog.parser/threddsMetadata.xml";
+    String catXml = CatalogXmlUtils.wrapThreddsXmlInCatalogDatasetMetadata( "<serviceName>odap</serviceName>\n" );
 
-    StringBuilder doc = new StringBuilder( "<?xml version='1.0' encoding='UTF-8'?>\n" )
-            .append( "<metadata xmlns='http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0'" )
-            .append( "          xmlns:xlink='http://www.w3.org/1999/xlink'>\n" )
-            .append( "  <serviceName>odap</serviceName>\n" )
-            .append( "</metadata>" );
+    URI docBaseUri = new URI( docBaseUriString);
+    ThreddsXmlParser cp = StaxThreddsXmlParser.newInstance();
+    CatalogBuilder catBuilder = cp.parseIntoBuilder( new StringReader( catXml), docBaseUri );
 
-    Metadata md = this.parseMetadata( doc.toString(), docBaseUriString );
+    assertNotNull( catBuilder );
 
-    assertTrue( md.isContainedContent());
+    List<DatasetNodeBuilder> dsBuilders = catBuilder.getDatasetNodeBuilders();
+    assertTrue( dsBuilders.size() == 1 );
+    DatasetNodeBuilder dsnBuilder = dsBuilders.get( 0 );
+    ThreddsMetadataBuilder tmdb = dsnBuilder.getThreddsMetadataBuilder();
 
-    this.writeMetadataXml( md );
+//    assertTrue( md.isContainedContent());
+//
+//    this.writeMetadataXml( md );
   }
 
   private Catalog parseCatalog( String docAsString, String docBaseUriString )
@@ -159,38 +169,22 @@ public class TestCatalogParser extends TestCase
     try
     { docBaseUri = new URI( docBaseUriString ); }
     catch ( URISyntaxException e )
-    { fail( "Syntax problem with URI [" + docBaseUriString + "]." ); return null; }
+    {
+      fail( "Syntax problem with URI [" + docBaseUriString + "]." ); return null;
+    }
 
     Catalog cat;
     ThreddsXmlParser cp = StaxThreddsXmlParser.newInstance();
     try
     { cat = cp.parse( new StringReader( docAsString ), docBaseUri ); }
     catch ( ThreddsXmlParserException e )
-    { fail( "Failed to parse catalog: " + e.getMessage() ); return null; }
+    {
+      fail( "Failed to parse catalog: " + e.getMessage() ); return null;
+    }
 
     assertNotNull( "Result of parse was null catalog [" + docBaseUriString + "].",
                    cat );
     return cat;
-  }
-
-  private Metadata parseMetadata( String docAsString, String docBaseUriString )
-  {
-    URI docBaseUri;
-    try
-    { docBaseUri = new URI( docBaseUriString ); }
-    catch ( URISyntaxException e )
-    { fail( "Syntax problem with URI [" + docBaseUriString + "]." ); return null; }
-
-    Metadata md;
-    ThreddsXmlParser cp = StaxThreddsXmlParser.newInstance();
-    try
-    { md = cp.parseMetadata( new StringReader( docAsString ), docBaseUri ); }
-    catch ( ThreddsXmlParserException e )
-    { fail( "Failed to parse catalog: " + e.getMessage() ); return null; }
-
-    assertNotNull( "Result of parse was null metadata [" + docBaseUriString + "].",
-                   md );
-    return md;
   }
 
   private void writeCatalogXml( Catalog cat )

@@ -110,11 +110,10 @@ public class PropertyElementParser extends AbstractElementParser
     return isSelfElement( event, elementName );
   }
 
-  protected ThreddsBuilder parseStartElement( StartElement startElement )
+  protected ThreddsBuilder parseStartElement()
           throws ThreddsXmlParserException
   {
-    if ( ! startElement.getName().equals( elementName ) )
-      throw new IllegalArgumentException( "Start element must be a 'property' element.");
+    StartElement startElement = this.getNextEventIfStartElementIsMine();
 
     Attribute nameAtt = startElement.getAttributeByName( nameAttName );
     String name = nameAtt.getValue();
@@ -133,12 +132,14 @@ public class PropertyElementParser extends AbstractElementParser
     return null;
   }
 
-  protected void handleChildStartElement( StartElement startElement, ThreddsBuilder builder )
+  protected void handleChildStartElement( ThreddsBuilder builder )
           throws ThreddsXmlParserException
   {
+    StartElement startElement = this.peekAtNextEventIfStartElement();
+
     if ( ! isChildElement( startElement ) )
       // ToDo Save the results in a ThreddsXmlParserIssue (Warning) and report.
-      StaxThreddsXmlParserUtils.readElementAndAnyContent( this.reader );
+      StaxThreddsXmlParserUtils.consumeElementAndConvertToXmlString( this.reader );
   }
 
   protected void postProcessing( ThreddsBuilder builder )

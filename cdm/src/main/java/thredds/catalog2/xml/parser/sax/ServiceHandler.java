@@ -74,7 +74,7 @@ public class ServiceHandler extends DefaultHandler
     Date lastModified = null;
 
 
-//    this.service = new CatalogBuilderFactoryImpl()
+//    this.service = new ThreddsBuilderFactoryImpl()
 //            .newCatalogBuilder( name, docBaseUri, version, expires, lastModified );
 
     this.top = top;

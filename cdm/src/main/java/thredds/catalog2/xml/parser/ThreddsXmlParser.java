@@ -64,23 +64,23 @@ public interface ThreddsXmlParser
   public CatalogBuilder parseIntoBuilder( Reader reader, URI docBaseUri ) throws ThreddsXmlParserException;
   public CatalogBuilder parseIntoBuilder( InputStream is, URI docBaseUri ) throws ThreddsXmlParserException;
 
-  public Dataset parseDataset( URI documentUri ) throws ThreddsXmlParserException;
-  public Dataset parseDataset( File file, URI docBaseUri ) throws ThreddsXmlParserException;
-  public Dataset parseDataset( Reader reader, URI docBaseUri ) throws ThreddsXmlParserException;
-  public Dataset parseDataset( InputStream is, URI docBaseUri ) throws ThreddsXmlParserException;
-
-  public DatasetBuilder parseDatasetIntoBuilder( URI documentUri ) throws ThreddsXmlParserException;
-  public DatasetBuilder parseDatasetIntoBuilder( File file, URI docBaseUri ) throws ThreddsXmlParserException;
-  public DatasetBuilder parseDatasetIntoBuilder( Reader reader, URI docBaseUri ) throws ThreddsXmlParserException;
-  public DatasetBuilder parseDatasetIntoBuilder( InputStream is, URI docBaseUri ) throws ThreddsXmlParserException;
-
-  public Metadata parseMetadata( URI documentUri ) throws ThreddsXmlParserException;
-  public Metadata parseMetadata( File file, URI docBaseUri ) throws ThreddsXmlParserException;
-  public Metadata parseMetadata( Reader reader, URI docBaseUri ) throws ThreddsXmlParserException;
-  public Metadata parseMetadata( InputStream is, URI docBaseUri ) throws ThreddsXmlParserException;
-
-  public MetadataBuilder parseMetadataIntoBuilder( URI documentUri ) throws ThreddsXmlParserException;
-  public MetadataBuilder parseMetadataIntoBuilder( File file, URI docBaseUri ) throws ThreddsXmlParserException;
-  public MetadataBuilder parseMetadataIntoBuilder( Reader reader, URI docBaseUri ) throws ThreddsXmlParserException;
-  public MetadataBuilder parseMetadataIntoBuilder( InputStream is, URI docBaseUri ) throws ThreddsXmlParserException;
+//  public Dataset parseDataset( URI documentUri ) throws ThreddsXmlParserException;
+//  public Dataset parseDataset( File file, URI docBaseUri ) throws ThreddsXmlParserException;
+//  public Dataset parseDataset( Reader reader, URI docBaseUri ) throws ThreddsXmlParserException;
+//  public Dataset parseDataset( InputStream is, URI docBaseUri ) throws ThreddsXmlParserException;
+//
+//  public DatasetBuilder parseDatasetIntoBuilder( URI documentUri ) throws ThreddsXmlParserException;
+//  public DatasetBuilder parseDatasetIntoBuilder( File file, URI docBaseUri ) throws ThreddsXmlParserException;
+//  public DatasetBuilder parseDatasetIntoBuilder( Reader reader, URI docBaseUri ) throws ThreddsXmlParserException;
+//  public DatasetBuilder parseDatasetIntoBuilder( InputStream is, URI docBaseUri ) throws ThreddsXmlParserException;
+//
+//  public Metadata parseMetadata( URI documentUri ) throws ThreddsXmlParserException;
+//  public Metadata parseMetadata( File file, URI docBaseUri ) throws ThreddsXmlParserException;
+//  public Metadata parseMetadata( Reader reader, URI docBaseUri ) throws ThreddsXmlParserException;
+//  public Metadata parseMetadata( InputStream is, URI docBaseUri ) throws ThreddsXmlParserException;
+//
+//  public MetadataBuilder parseMetadataIntoBuilder( URI documentUri ) throws ThreddsXmlParserException;
+//  public MetadataBuilder parseMetadataIntoBuilder( File file, URI docBaseUri ) throws ThreddsXmlParserException;
+//  public MetadataBuilder parseMetadataIntoBuilder( Reader reader, URI docBaseUri ) throws ThreddsXmlParserException;
+//  public MetadataBuilder parseMetadataIntoBuilder( InputStream is, URI docBaseUri ) throws ThreddsXmlParserException;
 }

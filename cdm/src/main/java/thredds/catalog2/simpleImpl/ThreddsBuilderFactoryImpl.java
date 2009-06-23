@@ -30,11 +30,15 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.catalog2;
+package thredds.catalog2.simpleImpl;
 
-import junit.framework.*;
-import thredds.catalog2.simpleImpl.*;
-import thredds.catalog2.xml.parser.TestCatalogParser;
+import thredds.catalog2.*;
+import thredds.catalog2.builder.*;
+import thredds.catalog2.simpleImpl.ServiceImpl;
+import thredds.catalog.ServiceType;
+
+import java.util.Date;
+import java.net.URI;
 
 /**
  * _more_
@@ -42,32 +46,57 @@ import thredds.catalog2.xml.parser.TestCatalogParser;
  * @author edavis
  * @since 4.0
  */
-public class TestAll extends TestCase
+public class ThreddsBuilderFactoryImpl implements ThreddsBuilderFactory
 {
-  public TestAll( String name )
+  public CatalogBuilder newCatalogBuilder( String name, URI docBaseUri, String version, Date expires, Date lastModified )
   {
-    super( name );
+    return new CatalogImpl( name, docBaseUri, version, expires, lastModified );
   }
 
-  public static Test suite()
+  public CatalogBuilder newCatalogBuilder( Catalog catalog )
   {
-    TestSuite suite = new TestSuite();
-    // Tests in thredds.catalog2.simpleImpl
-    suite.addTestSuite( TestPropertyImpl.class );
-    suite.addTestSuite( TestPropertyContainer.class );
-    suite.addTestSuite( TestServiceImpl.class );
-    suite.addTestSuite( TestServiceContainer.class );
-    suite.addTestSuite( TestAccessImpl.class );
-    suite.addTestSuite( TestMetadataImpl.class );
-    suite.addTestSuite( TestThreddsMetadataImpl.class );
-    suite.addTestSuite( TestDatasetNodeImpl.class );
-    suite.addTestSuite( TestDatasetImpl.class );
-    suite.addTestSuite( TestCatalogRefImpl.class );
-    suite.addTestSuite( TestCatalogImpl.class );
+//    if ( catalog instanceof CatalogImpl )
+//    {
+//      CatalogBuilder cb = (CatalogBuilder) catalog;
+//      cb.unfinish();
+//      return cb;
+//    }
+//    throw new IllegalArgumentException( "Given catalog not correct implementation for this ThreddsBuilderFactory.");
+    return null;
+  }
 
-    // Tests in thredds.catalog2.xml
-    suite.addTestSuite( TestCatalogParser.class );
+  public ServiceBuilder newServiceBuilder( String name, ServiceType type, URI baseUri )
+  {
+    return new ServiceImpl( name, type, baseUri, null );
+  }
 
-    return suite;
+  public ServiceBuilder newServiceBuilder( Service service )
+  {
+    return null;
+  }
+
+  public DatasetBuilder newDatasetBuilder( String name )
+  {
+    return new DatasetImpl( name, null, null );
+  }
+
+  public DatasetBuilder newDatasetBuilder( Dataset dataset )
+  {
+    return null;
+  }
+
+  public CatalogRefBuilder newCatalogRefBuilder( String name, URI reference )
+  {
+    return new CatalogRefImpl( name, reference, null, null );
+  }
+
+  public CatalogRefBuilder newCatalogRefBuilder( CatalogRef catRef )
+  {
+    return null;
+  }
+
+  public MetadataBuilder newMetadataBuilder()
+  {
+    return new MetadataImpl( );
   }
 }

@@ -32,24 +32,19 @@
  */
 package thredds.catalog2.xml.parser.stax;
 
-import thredds.catalog2.builder.CatalogBuilderFactory;
+import thredds.catalog2.builder.ThreddsBuilderFactory;
 import thredds.catalog2.builder.CatalogBuilder;
 import thredds.catalog2.builder.ThreddsBuilder;
-import thredds.catalog2.xml.util.CatalogNamespace;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
-import thredds.catalog2.xml.util.CatalogElementUtils;
+import thredds.catalog2.xml.names.CatalogElementNames;
 
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.XMLEventReader;
-import javax.xml.namespace.QName;
-import javax.xml.XMLConstants;
 import java.util.Date;
 import java.net.URI;
 import java.net.URISyntaxException;
-
-import ucar.nc2.units.DateType;
 
 /**
  * _more_
@@ -59,55 +54,48 @@ import ucar.nc2.units.DateType;
  */
 public class CatalogElementParser extends AbstractElementParser
 {
+  public static class Factory
+  {
+
+  }
+
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
-  private final static QName elementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
-                                                      CatalogElementUtils.ELEMENT_NAME );
-  private final static QName nameAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                      CatalogElementUtils.NAME_ATTRIBUTE_NAME );
-  private final static QName versionAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                         CatalogElementUtils.VERSION_ATTRIBUTE_NAME );
-  private final static QName expiresAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                         CatalogElementUtils.EXPIRES_ATTRIBUTE_NAME );
-  private final static QName lastModifiedAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                              CatalogElementUtils.LAST_MODIFIED_ATTRIBUTE_NAME );
-
   private final String docBaseUriString;
-  private final CatalogBuilderFactory catBuilderFactory;
+  private final ThreddsBuilderFactory catBuilderFactory;
 
-  public CatalogElementParser( String docBaseUriString, XMLEventReader reader,  CatalogBuilderFactory catBuilderFactory )
+  public CatalogElementParser( String docBaseUriString, XMLEventReader reader,  ThreddsBuilderFactory catBuilderFactory )
           throws ThreddsXmlParserException
   {
-    super( reader, elementName );
+    super( reader, CatalogElementNames.CatalogElement );
     this.docBaseUriString = docBaseUriString;
     this.catBuilderFactory = catBuilderFactory;
   }
 
   protected static boolean isSelfElementStatic( XMLEvent event )
   {
-    return isSelfElement( event, elementName );
+    return isSelfElement( event, CatalogElementNames.CatalogElement );
   }
 
   protected boolean isSelfElement( XMLEvent event )
   {
-    return isSelfElement( event, elementName );
+    return isSelfElement( event, CatalogElementNames.CatalogElement );
   }
 
-  protected CatalogBuilder parseStartElement( StartElement startElement )
+  protected CatalogBuilder parseStartElement( )
           throws ThreddsXmlParserException
   {
-    if ( ! startElement.getName().equals( elementName ))
-      throw new IllegalArgumentException( "Start element not 'catalog' element.");
+    StartElement startElement = this.getNextEventIfStartElementIsMine();
 
-    Attribute nameAtt = startElement.getAttributeByName( nameAttName );
+    Attribute nameAtt = startElement.getAttributeByName( CatalogElementNames.CatalogElement_Name );
     String nameString = nameAtt != null ? nameAtt.getValue() : null ;
 
-    Attribute versionAtt = startElement.getAttributeByName( versionAttName );
+    Attribute versionAtt = startElement.getAttributeByName( CatalogElementNames.CatalogElement_Version );
     String versionString = versionAtt != null ? versionAtt.getValue() : null;
-    Attribute expiresAtt = startElement.getAttributeByName( expiresAttName );
+    Attribute expiresAtt = startElement.getAttributeByName( CatalogElementNames.CatalogElement_Expires );
     // ToDo Date expiresDate = expiresAtt != null ? new DateType( expiresAtt.getValue(), null, null).getDate() : null;
     Date expiresDate = null;
-    Attribute lastModifiedAtt = startElement.getAttributeByName( lastModifiedAttName );
+    Attribute lastModifiedAtt = startElement.getAttributeByName( CatalogElementNames.CatalogElement_LastModified );
     // ToDo Date lastModifiedDate = lastModifiedAtt != null ? new DateType( lastModifiedAtt.getValue(), null, null).getDate() : null;
     Date lastModifiedDate = null;
     URI docBaseUri = null;
@@ -123,12 +111,14 @@ public class CatalogElementParser extends AbstractElementParser
     return catBuilderFactory.newCatalogBuilder( nameString, docBaseUri, versionString, expiresDate, lastModifiedDate );
   }
 
-  protected void handleChildStartElement( StartElement startElement, ThreddsBuilder builder )
+  protected void handleChildStartElement( ThreddsBuilder builder )
           throws ThreddsXmlParserException
   {
     if ( !( builder instanceof CatalogBuilder ) )
-      throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetBuilder." );
+      throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of CatalogBuilder." );
     CatalogBuilder catalogBuilder = (CatalogBuilder) builder;
+
+    StartElement startElement = this.peekAtNextEventIfStartElement();
 
     if ( ServiceElementParser.isSelfElementStatic( startElement ) )
     {
@@ -148,7 +138,7 @@ public class CatalogElementParser extends AbstractElementParser
     else
     {
       // ToDo Save the results in a ThreddsXmlParserIssue (Warning) and report.
-      StaxThreddsXmlParserUtils.readElementAndAnyContent( this.reader );
+      StaxThreddsXmlParserUtils.consumeElementAndConvertToXmlString( this.reader );
     }
   }
 

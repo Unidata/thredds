@@ -83,11 +83,10 @@ public class AccessElementParser extends AbstractElementParser
     return isSelfElement( event, elementName );
   }
 
-  protected AccessBuilder parseStartElement( StartElement startElement )
+  protected AccessBuilder parseStartElement()
           throws ThreddsXmlParserException
   {
-    if ( !startElement.getName().equals( elementName ) )
-      throw new IllegalArgumentException( "Start element must be an 'access' element." );
+    StartElement startElement = this.getNextEventIfStartElementIsMine();
 
     AccessBuilder builder = null;
     if ( this.datasetBuilder != null )
@@ -115,11 +114,11 @@ public class AccessElementParser extends AbstractElementParser
     return builder;
   }
 
-  protected void handleChildStartElement( StartElement startElement, ThreddsBuilder builder )
+  protected void handleChildStartElement( ThreddsBuilder builder )
           throws ThreddsXmlParserException
   {
     // ToDo Save the results in a ThreddsXmlParserIssue (Warning) and report.
-    StaxThreddsXmlParserUtils.readElementAndAnyContent( this.reader );
+    StaxThreddsXmlParserUtils.consumeElementAndConvertToXmlString( this.reader );
   }
 
   protected void postProcessing( ThreddsBuilder builder )

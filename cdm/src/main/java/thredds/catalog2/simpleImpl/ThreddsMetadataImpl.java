@@ -503,6 +503,10 @@ public class ThreddsMetadataImpl
       throw new IllegalStateException( "This Builder has been built." );
     this.dataFormat = dataFormat;
   }
+  public void setDataFormat( String dataFormat )
+  {
+    this.setDataFormat( DataFormatType.getType( dataFormat));
+  }
 
   public DataFormatType getDataFormat()
   {

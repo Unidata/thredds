@@ -153,9 +153,8 @@ public class MetadataImpl implements Metadata, MetadataBuilder
       throw new IllegalStateException( "This Builder has already been built." );
     if ( ! this.isContainedContent )
       throw new IllegalStateException( "This MetadataBuilder has external reference, cannot set content." );
-    if ( externalReference == null )
-      throw new IllegalArgumentException( "External reference may not be null." );
 
+    this.content = content;
   }
 
   public String getContent()

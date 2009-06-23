@@ -110,6 +110,7 @@ public interface ThreddsMetadataBuilder extends ThreddsBuilder
   public long getDataSizeInBytes();
 
   public void setDataFormat( DataFormatType dataFormat);
+  public void setDataFormat( String dataFormat );
   public DataFormatType getDataFormat();
 
   public void setDataType( FeatureType dataType );

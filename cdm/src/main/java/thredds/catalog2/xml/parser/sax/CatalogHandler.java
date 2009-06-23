@@ -35,15 +35,13 @@ package thredds.catalog2.xml.parser.sax;
 import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
 
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Date;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import thredds.catalog2.builder.CatalogBuilder;
-import thredds.catalog2.simpleImpl.CatalogBuilderFactoryImpl;
+import thredds.catalog2.simpleImpl.ThreddsBuilderFactoryImpl;
 
 /**
  * _more_
@@ -79,7 +77,7 @@ public class CatalogHandler extends DefaultHandler
     Date lastModified = null;
 
 
-    this.catalog = new CatalogBuilderFactoryImpl()
+    this.catalog = new ThreddsBuilderFactoryImpl()
             .newCatalogBuilder( name, uri, version, expires, lastModified );
 
     this.top = top;

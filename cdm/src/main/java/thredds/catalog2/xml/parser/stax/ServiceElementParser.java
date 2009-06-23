@@ -32,7 +32,7 @@
  */
 package thredds.catalog2.xml.parser.stax;
 
-import thredds.catalog2.builder.CatalogBuilderFactory;
+import thredds.catalog2.builder.ThreddsBuilderFactory;
 import thredds.catalog2.builder.CatalogBuilder;
 import thredds.catalog2.builder.ServiceBuilder;
 import thredds.catalog2.builder.ThreddsBuilder;
@@ -75,7 +75,7 @@ public class ServiceElementParser extends AbstractElementParser
 
   private final CatalogBuilder catBuilder;
   private final ServiceBuilder serviceBuilder;
-  private final CatalogBuilderFactory catBuilderFactory;
+  private final ThreddsBuilderFactory catBuilderFactory;
 
   public ServiceElementParser( XMLEventReader reader,  CatalogBuilder catBuilder )
           throws ThreddsXmlParserException
@@ -95,7 +95,7 @@ public class ServiceElementParser extends AbstractElementParser
     this.catBuilderFactory = null;
   }
 
-  public ServiceElementParser( XMLEventReader reader, CatalogBuilderFactory catBuilderFactory )
+  public ServiceElementParser( XMLEventReader reader, ThreddsBuilderFactory catBuilderFactory )
           throws ThreddsXmlParserException
   {
     super( reader, elementName );
@@ -114,11 +114,10 @@ public class ServiceElementParser extends AbstractElementParser
     return isSelfElement( event, elementName );
   }
 
-  protected ServiceBuilder parseStartElement( StartElement startElement )
+  protected ServiceBuilder parseStartElement()
           throws ThreddsXmlParserException
   {
-    if ( !startElement.getName().equals( elementName ) )
-      throw new IllegalArgumentException( "Start element must be a 'service' element." );
+    StartElement startElement = this.getNextEventIfStartElementIsMine();
 
     Attribute nameAtt = startElement.getAttributeByName( nameAttName );
     String name = nameAtt.getValue();
@@ -161,12 +160,14 @@ public class ServiceElementParser extends AbstractElementParser
     return serviceBuilder;
   }
 
-  protected void handleChildStartElement( StartElement startElement, ThreddsBuilder builder )
+  protected void handleChildStartElement( ThreddsBuilder builder )
           throws ThreddsXmlParserException
   {
     if ( !( builder instanceof ServiceBuilder ) )
       throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetBuilder." );
     ServiceBuilder serviceBuilder = (ServiceBuilder) builder;
+
+    StartElement startElement = this.peekAtNextEventIfStartElement();
 
     if ( ServiceElementParser.isSelfElementStatic( startElement ) )
     {
@@ -181,7 +182,7 @@ public class ServiceElementParser extends AbstractElementParser
     else
     {
       // ToDo Save the results in a ThreddsXmlParserIssue (Warning) and report.
-      StaxThreddsXmlParserUtils.readElementAndAnyContent( this.reader );
+      StaxThreddsXmlParserUtils.consumeElementAndConvertToXmlString( this.reader );
     }
   }
 

@@ -123,7 +123,7 @@ public class DatasetNodeElementParserUtils
     else if ( ThreddsMetadataElementParser.isSelfElementStatic( startElement ))
     {
       if ( this.threddsMetadataElementParser == null )
-        this.threddsMetadataElementParser = new ThreddsMetadataElementParser( reader, dsNodeBuilder, this);
+        this.threddsMetadataElementParser = new ThreddsMetadataElementParser( reader, dsNodeBuilder, this, false );
       this.threddsMetadataElementParser.parse();
       return true;
     }

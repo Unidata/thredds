@@ -32,8 +32,14 @@
 
 package thredds.catalog;
 
+import thredds.catalog2.Catalog;
+import thredds.catalog2.xml.parser.ThreddsXmlParser;
+import thredds.catalog2.xml.parser.ThreddsXmlParserException;
+import thredds.catalog2.xml.parser.stax.StaxThreddsXmlParser;
+
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.io.StringReader;
 
 /**
  * _more_
@@ -46,13 +52,15 @@ public class TimeLargeCatalogRead
   static final String catURL = "http://motherlode.ucar.edu:9080/thredds/radarServer/nexrad/level2/IDD?stn=KARX&time_start=2009-04-07T:00:00:00Z&time_end=2009-05-22T16:44:39Z";
   //static final String catURL = "http://motherlode.ucar.edu:9080/thredds/radarServer/nexrad/level2/IDD?stn=KARX&time_start=2009-04-07T:00:00:00Z&time_end=2009-05-22T16:44:39Z";
 
-  public static void main( String[] args ) throws URISyntaxException
+  public static void main( String[] args )
+          throws URISyntaxException, ThreddsXmlParserException
   {
     InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
     String catAsString = gatCat();
     URI uri = new URI( catURL);
     InvCatalogImpl cat = null;
     long cum = 0;
+    long cum2 = 0;
     int numAttempts = 100;
     for ( int i = 0; i < numAttempts; i++ )
     {
@@ -61,11 +69,19 @@ public class TimeLargeCatalogRead
       // cat = fac.readXML( catURL );
       long done = System.currentTimeMillis();
       long elapsed = done - start;
+      start = System.currentTimeMillis();
+      Catalog cat2 = parseCatalog( catAsString, catURL );
+
+      done = System.currentTimeMillis();
+      long elapsed2 = done - start;
       cum+=elapsed;
-      System.out.println( "Read catalog ["+i+"]: " + elapsed + "\n" );
+      cum2+=elapsed2;
+      System.out.println( "Read catalog ["+i+"]: InvCat=" + elapsed + " stax=" + elapsed2 + "\n" );
     }
     System.out.println( "Cum=" + cum );
     System.out.println( "Avg=" + cum/ numAttempts );
+    System.out.println( "CumStax=" + cum2 );
+    System.out.println( "AvgStax=" + cum2/ numAttempts );
 
     StringBuilder sb = new StringBuilder();
     if ( cat.check( sb ) )
@@ -75,6 +91,37 @@ public class TimeLargeCatalogRead
 
     System.out.println( "Done" );
 
+  }
+
+  private static Catalog parseCatalog( String docAsString, String docBaseUriString )
+          throws URISyntaxException, ThreddsXmlParserException
+  {
+    URI docBaseUri;
+//    try
+//    {
+      docBaseUri = new URI( docBaseUriString );
+//    }
+//    catch ( URISyntaxException e )
+//    {
+//      fail( "Syntax problem with URI [" + docBaseUriString + "]." );
+//      return null;
+//    }
+
+    Catalog cat;
+    ThreddsXmlParser cp = StaxThreddsXmlParser.newInstance();
+//    try
+//    {
+      cat = cp.parse( new StringReader( docAsString ), docBaseUri );
+//    }
+//    catch ( ThreddsXmlParserException e )
+//    {
+//      fail( "Failed to parse catalog: " + e.getMessage() );
+//      return null;
+//    }
+
+//    assertNotNull( "Result of parse was null catalog [" + docBaseUriString + "].",
+//                   cat );
+    return cat;
   }
 
   private static String gatCat()

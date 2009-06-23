@@ -71,10 +71,12 @@ public class DatasetElementParser extends AbstractElementParser
                                                          DatasetElementUtils.HARVEST_ATTRIBUTE_NAME );
   private final static QName restrictedAccessAttName = new QName( XMLConstants.NULL_NS_URI,
                                                                   DatasetElementUtils.RESOURCE_CONTROL_ATTRIBUTE_NAME );
+  /** Document base URI for documents with dataset as the root element. */
+  private final String docBaseUriString;
 
   private final CatalogBuilder catBuilder;
   private final DatasetNodeBuilder datasetNodeBuilder;
-  private final CatalogBuilderFactory catBuilderFactory;
+  private final ThreddsBuilderFactory catBuilderFactory;
 
   private final DatasetNodeElementParserUtils datasetNodeElementParserUtils;
 
@@ -84,6 +86,7 @@ public class DatasetElementParser extends AbstractElementParser
           throws ThreddsXmlParserException
   {
     super( reader, elementName );
+    this.docBaseUriString = null;
     this.catBuilder = catBuilder;
     this.datasetNodeBuilder = null;
     this.catBuilderFactory = null;
@@ -97,6 +100,7 @@ public class DatasetElementParser extends AbstractElementParser
           throws ThreddsXmlParserException
   {
     super( reader, elementName );
+    this.docBaseUriString = null;
     this.catBuilder = null;
     this.datasetNodeBuilder = datasetNodeBuilder;
     this.catBuilderFactory = null;
@@ -105,16 +109,31 @@ public class DatasetElementParser extends AbstractElementParser
   }
 
   public DatasetElementParser( XMLEventReader reader,
-                               CatalogBuilderFactory catBuilderFactory,
+                               ThreddsBuilderFactory catBuilderFactory,
                                DatasetNodeElementParserUtils parentDatasetNodeElementParserUtils )
           throws ThreddsXmlParserException
   {
     super( reader, elementName );
+    this.docBaseUriString = null;
     this.catBuilder = null;
     this.datasetNodeBuilder = null;
     this.catBuilderFactory = catBuilderFactory;
 
     this.datasetNodeElementParserUtils = new DatasetNodeElementParserUtils( parentDatasetNodeElementParserUtils);
+  }
+
+  public DatasetElementParser( String docBaseUriString,
+                               XMLEventReader reader,
+                               ThreddsBuilderFactory catBuilderFactory )
+          throws ThreddsXmlParserException
+  {
+    super( reader, elementName );
+    this.docBaseUriString = docBaseUriString;
+    this.catBuilder = null;
+    this.datasetNodeBuilder = null;
+    this.catBuilderFactory = catBuilderFactory;
+
+    this.datasetNodeElementParserUtils = new DatasetNodeElementParserUtils( null);
   }
 
   protected void setDefaultServiceName( String defaultServiceName )
@@ -137,11 +156,10 @@ public class DatasetElementParser extends AbstractElementParser
     return isSelfElement( event, elementName );
   }
 
-  protected DatasetBuilder parseStartElement( StartElement startElement )
+  protected DatasetBuilder parseStartElement()
           throws ThreddsXmlParserException
   {
-    if ( ! startElement.getName().equals( elementName ))
-      throw new IllegalArgumentException( "Start element is not 'dataset' element.");
+    StartElement startElement = this.getNextEventIfStartElementIsMine();
 
     Attribute nameAtt = startElement.getAttributeByName( nameAttName );
     String name = nameAtt.getValue();
@@ -174,11 +192,13 @@ public class DatasetElementParser extends AbstractElementParser
     return datasetBuilder;
   }
 
-  protected void handleChildStartElement( StartElement startElement, ThreddsBuilder builder ) throws ThreddsXmlParserException
+  protected void handleChildStartElement( ThreddsBuilder builder ) throws ThreddsXmlParserException
   {
     if ( !( builder instanceof DatasetBuilder ) )
       throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetBuilder." );
     DatasetBuilder datasetBuilder = (DatasetBuilder) builder;
+
+    StartElement startElement = this.peekAtNextEventIfStartElement();
 
     if ( this.datasetNodeElementParserUtils.handleBasicChildStartElement( startElement, this.reader, datasetBuilder ))
       return;
@@ -192,7 +212,7 @@ public class DatasetElementParser extends AbstractElementParser
     }
     else
       // ToDo Save the results in a ThreddsXmlParserIssue (Warning) and report.
-      StaxThreddsXmlParserUtils.readElementAndAnyContent( this.reader );
+      StaxThreddsXmlParserUtils.consumeElementAndConvertToXmlString( this.reader );
   }
 
   protected void postProcessing( ThreddsBuilder builder )
