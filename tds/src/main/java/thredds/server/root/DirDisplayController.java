@@ -34,16 +34,14 @@ package thredds.server.root;
 
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletContext;
 
 import thredds.servlet.HtmlWriter;
 import thredds.servlet.UsageLog;
-import thredds.servlet.ServletUtil;
 import thredds.server.config.TdsContext;
+import thredds.util.RequestForwardUtils;
 
 import java.io.File;
 
@@ -92,9 +90,9 @@ public class DirDisplayController extends AbstractController {
       file = new File(tdsContext.getTomcatLogDirectory(), path.substring(6));
     }
 
-    if (file == null) {
-      tdsContext.getDefaultRequestDispatcher().forward(req, res);
-      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( ServletUtil.STATUS_FORWARDED, -1 ) );
+    if (file == null)
+    {
+      RequestForwardUtils.forwardRequest( path, tdsContext.getDefaultRequestDispatcher(), req, res );
       return null;
     }
 

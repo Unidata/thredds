@@ -41,6 +41,7 @@ import thredds.server.config.TdsContext;
 import thredds.util.PathAliasReplacement;
 import thredds.util.StartsWithPathAliasReplacement;
 import thredds.util.TdsPathUtils;
+import thredds.util.RequestForwardUtils;
 import ucar.nc2.units.DateType;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.DateUtil;
@@ -49,7 +50,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletException;
-import javax.servlet.RequestDispatcher;
 import java.util.*;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -1149,10 +1149,7 @@ public class DataRootHandler {
     if ( catPath.equals( "catalog.html") || catPath.equals( "catalog.xml"))
       path = "/" + catPath;
 
-    log.info( "processReqForCatalog(): forwarding request to " + path );
-    RequestDispatcher rd = req.getRequestDispatcher( path );
-    rd.forward( req, res);
-    log.info( "processReqForCatalog(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
+    RequestForwardUtils.forwardRequestRelativeToCurrentContext( path, req, res );
 
     return true;
   }

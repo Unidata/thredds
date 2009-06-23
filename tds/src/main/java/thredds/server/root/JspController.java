@@ -39,6 +39,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import thredds.server.config.TdsContext;
+import thredds.util.RequestForwardUtils;
+import thredds.util.TdsPathUtils;
 
 /**
  * _more_
@@ -61,7 +63,8 @@ public class JspController extends AbstractController
   protected ModelAndView handleRequestInternal( HttpServletRequest req, HttpServletResponse res )
           throws Exception
   {
-    tdsContext.getJspRequestDispatcher().forward( req, res);
+    String path = TdsPathUtils.extractPath( req );
+    RequestForwardUtils.forwardRequest( path, tdsContext.getJspRequestDispatcher(), req, res );
     return null;
   }
 }

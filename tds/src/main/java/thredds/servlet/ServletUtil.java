@@ -44,6 +44,7 @@ import ucar.unidata.util.StringUtil;
 import ucar.nc2.util.cache.FileCacheRaf;
 import ucar.nc2.util.IO;
 import thredds.catalog.XMLEntityResolver;
+import thredds.util.RequestForwardUtils;
 
 public class ServletUtil {
 
@@ -712,16 +713,7 @@ public class ServletUtil {
     log.info("forwardToCatalogServices(): request string = \"/catalog.html?" + reqs + "\"");
 
     // dispatch to CatalogHtml servlet
-    // "The pathname specified may be relative, although it cannot extend outside the current servlet context.
-    // "If the path begins with a "/" it is interpreted as relative to the current context root."
-    RequestDispatcher dispatch = req.getRequestDispatcher("/catalog.html?" + reqs);
-    if (dispatch != null) {
-      dispatch.forward(req, res);
-      log.info( UsageLog.closingMessageForRequestContext( STATUS_FORWARDED, 0 ) );
-    } else {
-      res.sendError(HttpServletResponse.SC_NOT_FOUND);
-      log.info( UsageLog.closingMessageForRequestContext(STATUS_FORWARD_FAILURE, 0));
-    }
+    RequestForwardUtils.forwardRequestRelativeToCurrentContext( "/catalog.html?" + reqs, req, res );
   }
 
 

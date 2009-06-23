@@ -35,20 +35,16 @@ package thredds.server.root;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.mvc.LastModified;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletContext;
 
-import thredds.servlet.ServletUtil;
 import thredds.servlet.UsageLog;
 import thredds.server.config.TdsContext;
 import thredds.util.TdsPathUtils;
+import thredds.util.RequestForwardUtils;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * _more_
@@ -84,8 +80,7 @@ public class RootController extends AbstractController implements LastModified
     File file = tdsContext.getPublicDocFileSource().getFile( path );
     if ( file == null )
     {
-      tdsContext.getDefaultRequestDispatcher().forward( req, res );
-      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( ServletUtil.STATUS_FORWARDED, -1 ) );
+      RequestForwardUtils.forwardRequest( path, tdsContext.getDefaultRequestDispatcher(), req, res );
       return null;
     }
     log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );

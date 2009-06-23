@@ -34,9 +34,9 @@
 package thredds.dqc.server;
 
 import thredds.servlet.UsageLog;
+import thredds.util.RequestForwardUtils;
 
 import javax.servlet.ServletException;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -186,27 +186,16 @@ public class DqcServletRedirect extends HttpServlet
     ServletContext targetContext = context.getContext( useTestContext ? this.testTargetContextPath : this.targetContextPath );
     if ( targetContext == null )
     {
-      String tmpMsg = "Null ServletContext for \"" + ( useTestContext ? this.testTargetContextPath : this.targetContextPath ) + "\".";
-      log.warn( "doDispatch(): " + tmpMsg );
+      String tmpMsg = "Null ServletContext for \"" + ( useTestContext ? this.testTargetContextPath : this.targetContextPath ) + "\"";
+      log.warn( "doDispatch(): " + tmpMsg + ": "
+                + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, tmpMsg.length() ) );
       res.sendError( HttpServletResponse.SC_NOT_FOUND, tmpMsg );
-      log.info( "doDispatch(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, tmpMsg.length() ));
-      return;
-    }
-    RequestDispatcher dispatcher =
-            targetContext.getRequestDispatcher( targetURIPathNoContext );
-    if ( dispatcher == null )
-    {
-      String tmpMsg = "Null RequestDispatcher for \"" + targetURIPath + "\".";
-      log.warn( "doDispatch(): " + tmpMsg );
-      res.sendError( HttpServletResponse.SC_NOT_FOUND, tmpMsg );
-      log.info( "doDispatch(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, tmpMsg.length() ));
       return;
     }
 
-    dispatcher.forward( req, res );
-    log.info( "doDispatch(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ));
-
-    return;
+    RequestForwardUtils.forwardRequestRelativeToGivenContext( targetURIPathNoContext,
+                                                              targetContext,
+                                                              req, res );
   }
 
   private void handleGetRequestForRedirectTest( HttpServletResponse res, HttpServletRequest req )

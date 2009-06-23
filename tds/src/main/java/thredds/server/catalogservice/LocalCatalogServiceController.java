@@ -34,7 +34,6 @@ package thredds.server.catalogservice;
 
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.util.HtmlUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 
@@ -45,12 +44,12 @@ import javax.servlet.ServletException;
 import thredds.servlet.DataRootHandler;
 import thredds.servlet.HtmlWriter;
 import thredds.servlet.UsageLog;
-import thredds.servlet.ServletUtil;
 import thredds.server.config.TdsContext;
 import thredds.catalog.InvCatalog;
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvDataset;
+import thredds.util.RequestForwardUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -286,9 +285,9 @@ public class LocalCatalogServiceController extends AbstractController
       return new ModelAndView( "threddsFileView", "file", publicFile );
     }
 
-    // If request doesn't match a public document, hand to default.
-    tdsContext.getDefaultRequestDispatcher().forward( request, response );
-    log.info( "handlePublicDocumentRequest(): " + UsageLog.closingMessageForRequestContext( ServletUtil.STATUS_FORWARDED, -1 ) );
+    // If request doesn't match a public document, forward to default dispatcher.
+    RequestForwardUtils.forwardRequest( path, tdsContext.getDefaultRequestDispatcher(),
+                                        request, response );
     return null;
   }
 }

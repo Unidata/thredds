@@ -200,9 +200,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
           return;
         }
         
-        if ( DataRootHandler.getInstance().processReqForCatalog( request, response ) )
-          log.info( "doGet(): " + UsageLog.closingMessageForRequestContext( ServletUtil.STATUS_FORWARDED, -1 ) );
-        else
+        if ( ! DataRootHandler.getInstance().processReqForCatalog( request, response ) )
           log.error( "doGet(): " + UsageLog.closingMessageForRequestContext( ServletUtil.STATUS_FORWARD_FAILURE, -1 ) );
 
         return;
