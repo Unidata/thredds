@@ -1,6 +1,6 @@
 package thredds.catalog2.xml.names;
 
-import thredds.catalog2.xml.util.CatalogNamespace;
+import thredds.catalog2.xml.names.CatalogNamespace;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;

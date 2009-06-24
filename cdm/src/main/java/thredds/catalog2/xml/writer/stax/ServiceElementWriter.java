@@ -33,7 +33,7 @@
 package thredds.catalog2.xml.writer.stax;
 
 import thredds.catalog2.xml.writer.ThreddsXmlWriterException;
-import thredds.catalog2.xml.util.CatalogNamespace;
+import thredds.catalog2.xml.names.CatalogNamespace;
 import thredds.catalog2.xml.names.ServiceElementNames;
 import thredds.catalog2.Service;
 import thredds.catalog2.Property;

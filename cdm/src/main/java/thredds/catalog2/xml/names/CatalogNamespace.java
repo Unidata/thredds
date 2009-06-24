@@ -30,7 +30,7 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.catalog2.xml.util;
+package thredds.catalog2.xml.names;
 
 import thredds.util.HttpUriResolver;
 import thredds.util.HttpUriResolverFactory;
