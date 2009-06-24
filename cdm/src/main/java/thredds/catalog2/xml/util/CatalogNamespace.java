@@ -47,7 +47,9 @@ import java.net.URISyntaxException;
 import org.xml.sax.SAXException;
 
 /**
- * _more_
+ * Represent an XML namespace inlucing, if available, the location of the
+ * XML Schema for the namespace as both a local resource name and as a
+ * remote resource URL.
  *
  * @author edavis
  * @since 4.0
@@ -68,23 +70,41 @@ public enum CatalogNamespace
          // "/resources/schemas/xlink/1.0.0/xlinks.xsd", // OGC version
          "");
 
+  public static CatalogNamespace getNamespace( String namespaceUri )
+  {
+    if ( namespaceUri == null )
+      return null;
+    for ( CatalogNamespace curNs : CatalogNamespace.values() )
+    {
+      if ( curNs.namespaceUri.equals( namespaceUri ) )
+        return curNs;
+    }
+    return null;
+  }
+
   private String standardPrefix;
   private String namespaceUri;
-  private String resourceName;
-  private URI resourceUri;
+  private String schemaLocalResourceName;
+  private URI schemaRemoteResourceUri;
 
-  CatalogNamespace( String standardPrefix, String namespaceUri, String resourceName, String resourceUri )
+  CatalogNamespace( String standardPrefix, String namespaceUri,
+                    String schemaLocalResourceName, String schemaRemoteResourceUri )
   {
+    if ( namespaceUri == null )
+      throw new IllegalArgumentException( "The XML Namespace URI may not be null.");
+    if ( schemaRemoteResourceUri == null )
+      throw new IllegalArgumentException( "The remote resourc URL for the XML Schema may not be null.");
+
     this.standardPrefix = standardPrefix;
     this.namespaceUri = namespaceUri;
-    this.resourceName = resourceName;
+    this.schemaLocalResourceName = schemaLocalResourceName;
     try
     {
-      this.resourceUri = new URI( resourceUri);
+      this.schemaRemoteResourceUri = new URI( schemaRemoteResourceUri );
     }
     catch ( URISyntaxException e )
     {
-      throw new IllegalArgumentException( "Badly formed resource URI [" + resourceUri + "].", e);
+      throw new IllegalArgumentException( "Badly formed resource URI [" + schemaRemoteResourceUri + "].", e);
     }
   }
 
@@ -98,36 +118,25 @@ public enum CatalogNamespace
     return this.namespaceUri;
   }
 
-  public String getResourceName()
+  public String getSchemaLocalResourceName()
   {
-    return this.resourceName;
+    return this.schemaLocalResourceName;
   }
 
-  public URI getResourceUri()
+  public URI getSchemaRemoteResourceUri()
   {
-    return this.resourceUri;
+    return this.schemaRemoteResourceUri;
   }
 
-  public static CatalogNamespace getNamespace( String namespaceUri )
-  {
-    if ( namespaceUri == null ) return null;
-    for ( CatalogNamespace curNs : CatalogNamespace.values() )
-    {
-      if ( curNs.namespaceUri.equals( namespaceUri ) )
-        return curNs;
-    }
-    return null;
-  }
-
-  public InputStream resolveNamespace()
+  public InputStream getSchemaAsInputStream()
           throws IOException
   {
     InputStream inStream = null;
-    if ( this.getResourceName() != null )
-      inStream = this.getClass().getClassLoader().getResourceAsStream( this.getResourceName() );
-    if ( inStream == null && this.getResourceUri() != null )
+    if ( this.getSchemaLocalResourceName() != null )
+      inStream = this.getClass().getClassLoader().getResourceAsStream( this.getSchemaLocalResourceName() );
+    if ( inStream == null && this.getSchemaRemoteResourceUri() != null )
     {
-      HttpUriResolver httpUriResolver = HttpUriResolverFactory.getDefaultHttpUriResolver( this.getResourceUri() );
+      HttpUriResolver httpUriResolver = HttpUriResolverFactory.getDefaultHttpUriResolver( this.getSchemaRemoteResourceUri() );
       httpUriResolver.makeRequest();
       inStream = httpUriResolver.getResponseBodyAsInputStream();
     }
@@ -135,12 +144,12 @@ public enum CatalogNamespace
     return inStream;
   }
 
-  public Schema resolveNamespaceAsSchema()
+  public Schema getSchema()
           throws IOException, SAXException
   {
     SchemaFactory schemaFactory = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
-    StreamSource source = new StreamSource( this.resolveNamespace() );
-    source.setSystemId( this.getResourceUri().toString() );
+    StreamSource source = new StreamSource( this.getSchemaAsInputStream() );
+    source.setSystemId( this.getSchemaRemoteResourceUri().toString() );
     return schemaFactory.newSchema( source );
   }
 }

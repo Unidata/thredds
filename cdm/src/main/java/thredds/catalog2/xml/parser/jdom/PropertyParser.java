@@ -32,7 +32,7 @@
  */
 package thredds.catalog2.xml.parser.jdom;
 
-import thredds.catalog2.xml.util.PropertyElementUtils;
+import thredds.catalog2.xml.names.PropertyElementNames;
 import thredds.catalog2.Property;
 
 import java.net.URI;
@@ -81,7 +81,7 @@ public class PropertyParser
   {
     Document doc = this.saxBuilder.build( uri.toURL() );
     Element propElem = doc.getRootElement();
-    if ( propElem.getName() != PropertyElementUtils.ELEMENT_NAME )
+    if ( propElem.getName() != PropertyElementNames.PropertyElement.getLocalPart() )
     {
 
     }

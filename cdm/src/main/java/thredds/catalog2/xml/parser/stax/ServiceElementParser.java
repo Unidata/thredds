@@ -36,17 +36,14 @@ import thredds.catalog2.builder.ThreddsBuilderFactory;
 import thredds.catalog2.builder.CatalogBuilder;
 import thredds.catalog2.builder.ServiceBuilder;
 import thredds.catalog2.builder.ThreddsBuilder;
-import thredds.catalog2.xml.util.CatalogNamespace;
-import thredds.catalog2.xml.util.ServiceElementUtils;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
+import thredds.catalog2.xml.names.ServiceElementNames;
 import thredds.catalog.ServiceType;
 
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.XMLEventReader;
-import javax.xml.namespace.QName;
-import javax.xml.XMLConstants;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -60,19 +57,6 @@ public class ServiceElementParser extends AbstractElementParser
 {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
-  private final static QName elementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
-                                                        ServiceElementUtils.ELEMENT_NAME );
-  private final static QName nameAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                      ServiceElementUtils.NAME_ATTRIBUTE_NAME );
-  private final static QName baseAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                      ServiceElementUtils.BASE_ATTRIBUTE_NAME );
-  private final static QName serviceTypeAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                             ServiceElementUtils.SERVICE_TYPE_ATTRIBUTE_NAME );
-  private final static QName descriptionAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                             ServiceElementUtils.DESCRIPTION_ATTRIBUTE_NAME );
-  private final static QName suffixAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                             ServiceElementUtils.SUFFIX_ATTRIBUTE_NAME );
-
   private final CatalogBuilder catBuilder;
   private final ServiceBuilder serviceBuilder;
   private final ThreddsBuilderFactory catBuilderFactory;
@@ -80,7 +64,7 @@ public class ServiceElementParser extends AbstractElementParser
   public ServiceElementParser( XMLEventReader reader,  CatalogBuilder catBuilder )
           throws ThreddsXmlParserException
   {
-    super( reader, elementName);
+    super( reader, ServiceElementNames.ServiceElement);
     this.catBuilder = catBuilder;
     this.serviceBuilder = null;
     this.catBuilderFactory = null;
@@ -89,7 +73,7 @@ public class ServiceElementParser extends AbstractElementParser
   public ServiceElementParser( XMLEventReader reader,  ServiceBuilder serviceBuilder )
           throws ThreddsXmlParserException
   {
-    super( reader, elementName );
+    super( reader, ServiceElementNames.ServiceElement );
     this.catBuilder = null;
     this.serviceBuilder = serviceBuilder;
     this.catBuilderFactory = null;
@@ -98,7 +82,7 @@ public class ServiceElementParser extends AbstractElementParser
   public ServiceElementParser( XMLEventReader reader, ThreddsBuilderFactory catBuilderFactory )
           throws ThreddsXmlParserException
   {
-    super( reader, elementName );
+    super( reader, ServiceElementNames.ServiceElement );
     this.catBuilder = null;
     this.serviceBuilder = null;
     this.catBuilderFactory = catBuilderFactory;
@@ -106,12 +90,12 @@ public class ServiceElementParser extends AbstractElementParser
 
   protected static boolean isSelfElementStatic( XMLEvent event )
   {
-    return isSelfElement( event, elementName );
+    return isSelfElement( event, ServiceElementNames.ServiceElement );
   }
 
   protected boolean isSelfElement( XMLEvent event )
   {
-    return isSelfElement( event, elementName );
+    return isSelfElement( event, ServiceElementNames.ServiceElement );
   }
 
   protected ServiceBuilder parseStartElement()
@@ -119,11 +103,11 @@ public class ServiceElementParser extends AbstractElementParser
   {
     StartElement startElement = this.getNextEventIfStartElementIsMine();
 
-    Attribute nameAtt = startElement.getAttributeByName( nameAttName );
+    Attribute nameAtt = startElement.getAttributeByName( ServiceElementNames.ServiceElement_Name );
     String name = nameAtt.getValue();
-    Attribute serviceTypeAtt = startElement.getAttributeByName( serviceTypeAttName );
+    Attribute serviceTypeAtt = startElement.getAttributeByName( ServiceElementNames.ServiceElement_ServiceType );
     ServiceType serviceType = ServiceType.getType( serviceTypeAtt.getValue() );
-    Attribute baseUriAtt = startElement.getAttributeByName( baseAttName );
+    Attribute baseUriAtt = startElement.getAttributeByName( ServiceElementNames.ServiceElement_Base );
     String baseUriString = baseUriAtt.getValue();
     URI baseUri = null;
     try
@@ -145,13 +129,13 @@ public class ServiceElementParser extends AbstractElementParser
     else
       throw new ThreddsXmlParserException( "" );
 
-    Attribute suffixAtt = startElement.getAttributeByName( suffixAttName );
+    Attribute suffixAtt = startElement.getAttributeByName( ServiceElementNames.ServiceElement_Suffix );
     if ( suffixAtt != null )
     {
       serviceBuilder.setSuffix( suffixAtt.getValue() );
     }
 
-    Attribute descriptionAtt = startElement.getAttributeByName( descriptionAttName );
+    Attribute descriptionAtt = startElement.getAttributeByName( ServiceElementNames.ServiceElement_Description );
     if ( descriptionAtt != null )
     {
       serviceBuilder.setSuffix( descriptionAtt.getValue() );

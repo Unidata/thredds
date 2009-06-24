@@ -36,12 +36,8 @@ import thredds.catalog2.xml.parser.ThreddsXmlParser;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 import thredds.catalog2.xml.util.CatalogNamespace;
 import thredds.catalog2.Catalog;
-import thredds.catalog2.Dataset;
-import thredds.catalog2.Metadata;
 import thredds.catalog2.builder.CatalogBuilder;
 import thredds.catalog2.builder.BuilderException;
-import thredds.catalog2.builder.DatasetBuilder;
-import thredds.catalog2.builder.MetadataBuilder;
 
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.SAXParser;
@@ -81,7 +77,7 @@ public class SAXCatalogParser implements ThreddsXmlParser
     {
       try
       {
-        this.schema = CatalogNamespace.CATALOG_1_0.resolveNamespaceAsSchema();
+        this.schema = CatalogNamespace.CATALOG_1_0.getSchema();
       }
       catch ( IOException e )
       {

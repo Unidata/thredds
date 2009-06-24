@@ -36,16 +36,13 @@ import thredds.catalog2.builder.CatalogBuilder;
 import thredds.catalog2.builder.ServiceBuilder;
 import thredds.catalog2.builder.DatasetNodeBuilder;
 import thredds.catalog2.builder.ThreddsBuilder;
-import thredds.catalog2.xml.util.CatalogNamespace;
-import thredds.catalog2.xml.util.PropertyElementUtils;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
+import thredds.catalog2.xml.names.PropertyElementNames;
 
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.XMLEventReader;
-import javax.xml.namespace.QName;
-import javax.xml.XMLConstants;
 
 /**
  * _more_
@@ -58,13 +55,6 @@ public class PropertyElementParser extends AbstractElementParser
   private org.slf4j.Logger log =
           org.slf4j.LoggerFactory.getLogger( getClass() );
 
-  private final static QName elementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
-                                                      PropertyElementUtils.ELEMENT_NAME );
-  private final static QName nameAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                      PropertyElementUtils.NAME_ATTRIBUTE_NAME );
-  private final static QName valueAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                       PropertyElementUtils.VALUE_ATTRIBUTE_NAME );
-
   public boolean isChildElement( XMLEvent event )
   { return false; //property doesn't contain any children
   }
@@ -76,7 +66,7 @@ public class PropertyElementParser extends AbstractElementParser
   public PropertyElementParser( XMLEventReader reader,  CatalogBuilder catBuilder )
           throws ThreddsXmlParserException
   {
-    super( reader, elementName);
+    super( reader, PropertyElementNames.PropertyElement);
     this.catBuilder = catBuilder;
     this.datasetNodeBuilder = null;
     this.serviceBuilder = null;
@@ -85,7 +75,7 @@ public class PropertyElementParser extends AbstractElementParser
   public PropertyElementParser( XMLEventReader reader,  DatasetNodeBuilder datasetNodeBuilder )
           throws ThreddsXmlParserException
   {
-    super( reader, elementName );
+    super( reader, PropertyElementNames.PropertyElement );
     this.catBuilder = null;
     this.datasetNodeBuilder = datasetNodeBuilder;
     this.serviceBuilder = null;
@@ -94,7 +84,7 @@ public class PropertyElementParser extends AbstractElementParser
   public PropertyElementParser( XMLEventReader reader, ServiceBuilder serviceBuilder )
           throws ThreddsXmlParserException
   {
-    super( reader, elementName );
+    super( reader, PropertyElementNames.PropertyElement );
     this.catBuilder = null;
     this.datasetNodeBuilder = null;
     this.serviceBuilder = serviceBuilder;
@@ -102,12 +92,12 @@ public class PropertyElementParser extends AbstractElementParser
 
   protected static boolean isSelfElementStatic( XMLEvent event )
   {
-    return isSelfElement( event, elementName );
+    return isSelfElement( event, PropertyElementNames.PropertyElement );
   }
 
   protected boolean isSelfElement( XMLEvent event )
   {
-    return isSelfElement( event, elementName );
+    return isSelfElement( event, PropertyElementNames.PropertyElement );
   }
 
   protected ThreddsBuilder parseStartElement()
@@ -115,9 +105,9 @@ public class PropertyElementParser extends AbstractElementParser
   {
     StartElement startElement = this.getNextEventIfStartElementIsMine();
 
-    Attribute nameAtt = startElement.getAttributeByName( nameAttName );
+    Attribute nameAtt = startElement.getAttributeByName( PropertyElementNames.PropertyElement_Name );
     String name = nameAtt.getValue();
-    Attribute valueAtt = startElement.getAttributeByName( valueAttName );
+    Attribute valueAtt = startElement.getAttributeByName( PropertyElementNames.PropertyElement_Value );
     String value = valueAtt.getValue();
 
     if ( this.catBuilder != null )

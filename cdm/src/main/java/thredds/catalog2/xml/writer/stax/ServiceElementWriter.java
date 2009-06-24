@@ -34,7 +34,7 @@ package thredds.catalog2.xml.writer.stax;
 
 import thredds.catalog2.xml.writer.ThreddsXmlWriterException;
 import thredds.catalog2.xml.util.CatalogNamespace;
-import thredds.catalog2.xml.util.ServiceElementUtils;
+import thredds.catalog2.xml.names.ServiceElementNames;
 import thredds.catalog2.Service;
 import thredds.catalog2.Property;
 
@@ -69,9 +69,9 @@ public class ServiceElementWriter implements AbstractElementWriter
 
       boolean isEmptyElement = service.getProperties().isEmpty() && service.getServices().isEmpty();
       if ( isEmptyElement )
-        writer.writeEmptyElement( ServiceElementUtils.ELEMENT_NAME );
+        writer.writeEmptyElement( ServiceElementNames.ServiceElement.getLocalPart() );
       else
-        writer.writeStartElement( ServiceElementUtils.ELEMENT_NAME );
+        writer.writeStartElement( ServiceElementNames.ServiceElement.getLocalPart() );
       if ( nestLevel == 0 )
       {
         writer.writeNamespace( CatalogNamespace.CATALOG_1_0.getStandardPrefix(),
@@ -79,17 +79,22 @@ public class ServiceElementWriter implements AbstractElementWriter
         writer.writeNamespace( CatalogNamespace.XLINK.getStandardPrefix(),
                                CatalogNamespace.XLINK.getNamespaceUri() );
       }
-      writer.writeAttribute( ServiceElementUtils.NAME_ATTRIBUTE_NAME, service.getName() );
-      writer.writeAttribute( ServiceElementUtils.SERVICE_TYPE_ATTRIBUTE_NAME, service.getType().toString() );
-      writer.writeAttribute( ServiceElementUtils.BASE_ATTRIBUTE_NAME, service.getBaseUri().toString() );
+      writer.writeAttribute( ServiceElementNames.ServiceElement_Name.getLocalPart(),
+                             service.getName() );
+      writer.writeAttribute( ServiceElementNames.ServiceElement_ServiceType.getLocalPart(),
+                             service.getType().toString() );
+      writer.writeAttribute( ServiceElementNames.ServiceElement_Base.getLocalPart(),
+                             service.getBaseUri().toString() );
 
       if ( service.getSuffix() != null && ! service.getSuffix().equals( ""))
       {
-        writer.writeAttribute( ServiceElementUtils.SUFFIX_ATTRIBUTE_NAME, service.getSuffix() );
+        writer.writeAttribute( ServiceElementNames.ServiceElement_Suffix.getLocalPart(),
+                               service.getSuffix() );
       }
       if ( service.getDescription() != null && ! service.getDescription().equals( "" ) )
       {
-        writer.writeAttribute( ServiceElementUtils.DESCRIPTION_ATTRIBUTE_NAME, service.getDescription() );
+        writer.writeAttribute( ServiceElementNames.ServiceElement_Description.getLocalPart(),
+                               service.getDescription() );
       }
 
       writer.writeCharacters( "\n" );

@@ -35,7 +35,7 @@ package thredds.catalog2.xml.writer.stax;
 import thredds.catalog2.Property;
 import thredds.catalog2.xml.writer.ThreddsXmlWriterException;
 import thredds.catalog2.xml.util.CatalogNamespace;
-import thredds.catalog2.xml.util.PropertyElementUtils;
+import thredds.catalog2.xml.names.PropertyElementNames;
 
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLStreamException;
@@ -66,7 +66,7 @@ public class PropertyElementWriter implements AbstractElementWriter
       else
         writer.writeCharacters( indentString );
 
-      writer.writeEmptyElement( PropertyElementUtils.ELEMENT_NAME );
+      writer.writeEmptyElement( PropertyElementNames.PropertyElement.getLocalPart() );
       if ( nestLevel == 0 )
       {
         writer.writeNamespace( CatalogNamespace.CATALOG_1_0.getStandardPrefix(),
@@ -74,8 +74,10 @@ public class PropertyElementWriter implements AbstractElementWriter
         writer.writeNamespace( CatalogNamespace.XLINK.getStandardPrefix(),
                                CatalogNamespace.XLINK.getNamespaceUri() );
       }
-      writer.writeAttribute( PropertyElementUtils.NAME_ATTRIBUTE_NAME, property.getName() );
-      writer.writeAttribute( PropertyElementUtils.VALUE_ATTRIBUTE_NAME, property.getValue() );
+      writer.writeAttribute( PropertyElementNames.PropertyElement_Name.getLocalPart(),
+                             property.getName() );
+      writer.writeAttribute( PropertyElementNames.PropertyElement_Value.getLocalPart(),
+                             property.getValue() );
 
       writer.writeCharacters( "\n" );
       if ( nestLevel == 0 )
