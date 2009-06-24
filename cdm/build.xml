@@ -64,7 +64,7 @@
   <property name="jdom.jar" value="jdom.jar"/>
   <property name="jgoodies.jar" value="forms-1.0.7.jar"/>
   <property name="jpeg2000.jar" value="jpeg2000.jar"/>
-  <property name="junit.jar" value="junit.jar"/>
+  <property name="junit.jar" value="junit-4.5.jar"/>
   <property name="loggingAPI.jar" value="slf4j-api-1.5.6.jar"/>
   <property name="logging-minimal.jar" value="slf4j-jdk14-1.5.6.jar"/>
   <property name="logging-maximal.jar" value="slf4j-log4j12-1.5.6.jar"/>
