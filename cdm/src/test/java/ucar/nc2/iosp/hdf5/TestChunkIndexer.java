@@ -39,7 +39,7 @@ import ucar.nc2.iosp.Indexer;
 import ucar.nc2.Variable;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Group;
-import ucar.nc2.TestCompare;
+import ucar.nc2.util.CompareNetcdf;
 
 import java.io.IOException;
 
@@ -90,7 +90,7 @@ public class TestChunkIndexer extends TestCase {
     Section section = new Section(origin, shape);
     Array dataSection = v2.read(section);
     System.out.println("dataSection.section ="+dataSection.shapeToString());
-    TestCompare.compareData(dataSection, allData.section( section.getRanges()));
+    CompareNetcdf.compareData(dataSection, allData.section( section.getRanges()));
 
     int[] origin2 = new int[]{100, 100};
     int[] shape2 = new int[]{130, 97};
@@ -98,7 +98,7 @@ public class TestChunkIndexer extends TestCase {
     Section sectionStrided = new Section(origin2, shape2, stride2);
     Array dataSection2 = v2.read(sectionStrided);
     System.out.println("dataSection.sectionStrided ="+dataSection2.shapeToString());
-    TestCompare.compareData(dataSection2, allData.section( sectionStrided.getRanges()));
+    CompareNetcdf.compareData(dataSection2, allData.section( sectionStrided.getRanges()));
   }
 
   public void readSectionStrided() throws InvalidRangeException, IOException {

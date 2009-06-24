@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="tds" default="compile" basedir=".">
   <property name="release.version" value="4.0"/>
-  <property name="release.version.minor" value="${release.version}.17"/>
+  <property name="release.version.minor" value="${release.version}.18"/>
   <tstamp>
     <format property="buildtime" pattern="yyyy-MM-dd HH:mm:ss" timezone="GMT"/>
   </tstamp>
@@ -34,6 +34,7 @@
   <property name="uni.ftp.dir" value="O:"/>
   <property name="uni.www.dir" value="Z:"/>
   <property name="release.dir" value="${uni.ftp.dir}/pub/thredds/${release.version}/"/>
+  <property name="releaseTest.dir" value="${uni.ftp.dir}/pub/thredds/${release.version}/test/"/>
 
   <!-- Information about the servlet context and such. -->
   <property name="context.name" value="thredds"/>
@@ -732,11 +733,20 @@
     </copy>
   </target>
 
+  <!-- release war file to test directory -->
+  <target name="releaseTest" description="Release war files to releaseTest directory: do 'ant makeWar' first">
+    <copy todir="${releaseTest.dir}" overwrite="true">
+      <fileset dir="${build.dir}" includes="${warfile}"/>
+    </copy>
+    <copy todir="${releaseTest.dir}" overwrite="true">
+      <fileset file="${war.dir}/docs/CHANGES.txt"/>
+    </copy>
+  </target>
+
   <!-- Release catalog manual. (target from thredds/catalog/build.xml) -->
   <!--target name="releaseManual" description="Copy manual to release directory">
     <copy todir="${release.library.dir}" overwrite="true" file="./docs/CatalogManual.doc"/>
   </target-->
-
 
   <!-- TESTING  -->
   <property name="test.src.dir" location="${root.dir}/src/test/java"/>

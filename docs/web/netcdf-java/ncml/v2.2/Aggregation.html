@@ -12,9 +12,10 @@
 <ol>
   <li><strong><a href="#Union">Union</a></strong>: The union of all the dimensions, attributes, and variables in multiple NetCDF files.</li>
   <li><strong><a href="#joinExisting">JoinExisting</a></strong>: Variables of the same name (in different files) are connected  along their existing, outer dimension, called the <em>aggregation dimension</em>. A coordinate variable must exist for the dimension.</li>
-  <li><strong><a href="#joinNew">JoinNew</a></strong>: Variables of the same name (in different files) are connected  along a new outer dimension. Each file becomes one . A new coordinate variable is created for the dimension. </li>
+  <li><strong><a href="#joinNew">JoinNew</a></strong>: Variables of the same name (in different files) are connected  along a new outer dimension. Each file becomes one . A new coordinate variable is created for the dimension.</li>
+  <li><a href="FmrcAggregation.html"><strong>ForecastModelRunCollection</strong></a> (FMRC): A collection of forecast model runs wthhe two time coordinates: a <em><strong>run time</strong></em> and a <em><strong>forecast time</strong></em>.</li>
 </ol>
-<p>See also: <a href="AnnotatedSchema.html">Annotated NcML Schema</a> </p>
+<p>See also: <a href="AnnotatedSchema4.html">Annotated NcML Schema</a> </p>
 <h2>Union<a name="Union"></a> of NetCDF files</h2>
 <p>The following NcML constructs a dataset by creating the union of two netCDF files (note there is no <em>location</em> attribute in the outer netcdf element).</p>
 <pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
@@ -111,6 +112,11 @@ netcdf TestUnion.ncml {
   <li>If there is exactly one time slice in each file of the <strong>JoinExisting</strong> aggregation, and you are using a <a href="#scan">scan</a> element to dynamically scan the files in a directory, then you can use the <a href="#dateFormatMark">dateFormatMark</a> attribute to derive the date from the filename. </li>
   <li>If you do not specify a coordinate variable, one must exist in each of the nested datasets, and the coordinate values will be read from it, just like any other aggregation variable. </li>
 </ol>
+<p><em><strong>When the units of the aggregation coordinate change on the  existing coordinate variables, you must add </strong></em><strong>timeUnitsChange=&quot;true&quot;</strong><em><strong> on the aggregation element:</strong></em></p>
+<pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br> &lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot; <strong>timeUnitsChange=&quot;true&quot;</strong>&gt;<br>      &lt;scan location=&quot;D:/test/aggExisting/&quot; suffix=&quot;.grb2&quot; /&gt;<br> &lt;/aggregation&gt;<br>&lt;/netcdf&gt;
+</pre>
+<p>This feature means that all the aggregation coordinate values must be read in when the dataset is opened, otherwise, the values are only read in when requested.<br>
+</p>
 <h2><a name="joinNew"></a>Aggregation on a new dimension</h2>
 <p>The previous example &quot;joined&quot; variables along their existing outer dimension. Another common case is to aggregate variables by creating a new outer dimension. Each existing variable becomes one &quot;slice&quot; of the compound variable (a <i>slice</i> holds the index of one dimension constant, e.g. <b>humidity(3, *, *, *)</b>). The following NcML joins variables from three separate files into a single variable, by creating a new dimension of length 3:</p>
 <pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;</pre>
@@ -260,7 +266,7 @@ DateFormatMark: SUPER-NATIONAL_1km_SFC-T_#yyyyMMdd_HHmm</pre>
 <p>Next: <a href="FmrcAggregation.html">FMRC Aggregation</a> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 20, 2008
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 24, 2009
 </address>
 <p>&nbsp;</p>
 </body>

@@ -38,6 +38,7 @@ import java.io.*;
 
 import ucar.nc2.iosp.netcdf3.N3channelWriter;
 import ucar.nc2.iosp.netcdf3.N3outputStreamWriter;
+import ucar.nc2.util.CompareNetcdf;
 import ucar.ma2.InvalidRangeException;
 
 /**
@@ -70,7 +71,7 @@ public class TestStreamWriter extends TestCase {
     System.out.println("N3streamWriter took " + took + " msecs");
 
     NetcdfFile file2 = NetcdfFile.open("C:/data/testStream.nc");
-    ucar.nc2.TestCompare.compareFiles(fileIn, file2, true, true, false);
+    CompareNetcdf.compareFiles(fileIn, file2, true, true, false);
 
     fileIn.close();
     file2.close();
@@ -86,7 +87,7 @@ public class TestStreamWriter extends TestCase {
     System.out.println("N3streamWriter took " + took + " msecs");
 
     NetcdfFile file2 = NetcdfFile.open("C:/data/testStream.nc");
-    ucar.nc2.TestCompare.compareFiles(fileIn, file2, true, true, false);
+    CompareNetcdf.compareFiles(fileIn, file2, true, true, false);
 
     fileIn.close();
     file2.close();

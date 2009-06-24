@@ -5,6 +5,14 @@ Build Date = @BUILDTIME@
 Changes in version 4.0
 
  Release Details:
+  48:
+   improve M3IO CoordSysBuilder, from Qun He
+   Stereographic Projection, from the "natural origin" and the tangent point, calculating the scale factor.
+   ToolsUI: Viewer: compare two files
+   ToolsUI: NcML Aggregation tab: check for homogeneity.
+   AggFmrc: ragged, set missing values to NaN
+   DConnect2: allowSessions now defaults to true, so "X-Accept-Session: true" header is sent
+     (can use ucar.nc2.dods.DODSNetcdfFile.setAllowSessions() to change)
   47:
    NcMLReader.merge -> mergeNcML : create new Dataset
    setValues.setValues (NcmlReader) : scalar Array need to be reshaped

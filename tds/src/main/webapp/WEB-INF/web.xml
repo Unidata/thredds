@@ -58,6 +58,11 @@
     </init-param>
   </filter>
 
+  <filter>
+    <filter-name>CookieFilter</filter-name>
+    <filter-class>thredds.servlet.filter.CookieFilter</filter-class>
+  </filter>
+
   <!-- filter>
     <filter-name>Cams</filter-name>
     <filter-class>com.cafesoft.security.webagent.servletFilter.CamsServletFilterWebAgent</filter-class>
@@ -188,6 +193,14 @@
     <servlet-name>catalogGen</servlet-name>
   </filter-mapping>
 
+  <!--
+  Filter opendap cookies
+  -->
+  <filter-mapping>
+    <filter-name>CookieFilter</filter-name>
+    <servlet-name>Opendap</servlet-name>
+  </filter-mapping>
+
   <!--filter-mapping>
     <filter-name>Cache10dayFilter</filter-name>
     <url-pattern>/folder.gif</url-pattern>
@@ -242,9 +255,9 @@
     <listener-class>thredds.server.config.TdsConfigContextListener</listener-class>
   </listener>
 
-  <!-- listener>
-    <listener-class>dods.servers.netcdf.NcDODSSessionAttributeListener</listener-class>
-  </listener> -->
+  <listener>
+    <listener-class>thredds.server.opendap.OpendapSessionAttributeListener</listener-class>
+  </listener>
 
   <!-- Some possible ways to deal with error handling. -->
   <!--

@@ -120,6 +120,14 @@
      :units = &quot;&quot;;<br>     :positive = &quot;down&quot;;<br>     :_CoordinateAxisType = &quot;GeoZ&quot;;<br>     :_CoordinateZisPositive = &quot;down;
 
      :<strong>standard_name</strong> = &quot;atmosphere_hybrid_sigma_pressure_coordinate&quot;;<br>     :<strong>formula_terms</strong> = &quot;a: hyam b: hybm p0: P0 ps: PS&quot;;<br>     :<strong>_CoordinateTransformType</strong> = &quot;Vertical&quot;;<br>     :<strong>_CoordinateAxes</strong> = &quot;lev&quot;;
+</pre>
+<p>  or<br>
+</p>
+<pre>
+  double lev(lev=26);<br>     :long_name = &quot;hybrid level at midpoints (1000*(A+B))&quot;;
+     :units = &quot;&quot;;<br>     :positive = &quot;down&quot;;<br>     :_CoordinateAxisType = &quot;GeoZ&quot;;<br>     :_CoordinateZisPositive = &quot;down;
+
+     :<strong>standard_name</strong> = &quot;atmosphere_hybrid_sigma_pressure_coordinate&quot;;<br>     :<strong>formula_terms</strong> = &quot;ap: hyam b: hybm p0: P0&quot;;<br>     :<strong>_CoordinateTransformType</strong> = &quot;Vertical&quot;;<br>     :<strong>_CoordinateAxes</strong> = &quot;lev&quot;;
 
 </pre>
 <h3>atmosphere_sigma_coordinate</h3>
@@ -150,7 +158,7 @@
 <p>This is not part of CF, but a way to mark an existing 3D (4D if time dependent) field as the vertical coordinate.     </p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Apr 30, 2009 
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 18, 2009 
 </address>
 <p>&nbsp;</p>
 </body>

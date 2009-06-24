@@ -37,6 +37,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Array;
 import ucar.ma2.Section;
 import ucar.ma2.Range;
+import ucar.nc2.util.CompareNetcdf;
 
 import java.io.IOException;
 import java.util.Random;
@@ -123,7 +124,7 @@ public class TestIosp {
       for (int i = 0; i < ashape.length; i++)
         assert sshape[i] == ashape[i];
 
-      TestCompare.compareData(sdata, Asection);
+      CompareNetcdf.compareData(sdata, Asection);
   }
 
   private static Section randomSubset(Section all, int stride) throws InvalidRangeException {

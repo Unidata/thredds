@@ -34,7 +34,7 @@ package ucar.nc2.ncml;
 
 import junit.framework.*;
 
-import ucar.nc2.*;
+import ucar.nc2.util.CompareNetcdf;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.TestNcML;
@@ -67,7 +67,7 @@ public class TestNcMLequals extends TestCase {
     String locref  = ncd.getReferencedFile().getLocation();
     NetcdfDataset ncdref = NetcdfDataset.openDataset(locref, false, null);
 
-    TestCompare.compareFiles(ncd, ncdref, false, true, false);
+    CompareNetcdf.compareFiles(ncd, ncdref, false, true, false);
 
     ncd.close();
     ncdref.close();
@@ -81,7 +81,7 @@ public class TestNcMLequals extends TestCase {
     String locref  = ncml.getReferencedFile().getLocation();
     NetcdfDataset ncdrefEnhanced = NetcdfDataset.openDataset(locref, true, null);
 
-    TestCompare.compareFiles(ncmlEnhanced, ncdrefEnhanced, false, true, false);
+    CompareNetcdf.compareFiles(ncmlEnhanced, ncdrefEnhanced, false, true, false);
 
     ncml.close();
     ncdrefEnhanced.close();

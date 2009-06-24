@@ -40,52 +40,54 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
 import ucar.unidata.geoloc.projection.*;
+import ucar.unidata.geoloc.ProjectionRect;
 
 import java.util.*;
 
 /**
  * Models-3/EDSS Input/Output netcf format.
- *
- *  The Models-3/EDSS Input/Output Applications Programming Interface (I/O API)
- *  is the standard data access library for both NCSC's EDSS project and EPA's Models-3.
+ * <p/>
+ * The Models-3/EDSS Input/Output Applications Programming Interface (I/O API)
+ * is the standard data access library for both NCSC's EDSS project and EPA's Models-3.
+ * <p/>
+ * 6/24/09: Modified to support multiple projection types of data by Qun He <qunhe@unc.edu> and Alexis Zubrow <azubrow@unc.edu>
+ * added makePolarStereographicProjection, UTM, and modified latlon
  *
  * @author caron
  * @see <a href="http://www.baronams.com/products/ioapi/index.html">http://www.baronams.com/products/ioapi/index.html</a>
  */
 
 public class M3IOConvention extends CoordSysBuilder {
-  static private java.text.SimpleDateFormat dateFormatOut;
-  static {
-    dateFormatOut = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    dateFormatOut.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
-  }
 
   /**
+   * Do we think this is a M3IO file.
+   *
    * @param ncfile the NetcdfFile to test
    * @return true if we think this is a M3IO file.
    */
-  public static boolean isMine( NetcdfFile ncfile) {
+  public static boolean isMine(NetcdfFile ncfile) {
     return (null != ncfile.findGlobalAttribute("XORIG"))
-      && (null != ncfile.findGlobalAttribute("YORIG"))
-      && (null != ncfile.findGlobalAttribute("XCELL"))
-      && (null != ncfile.findGlobalAttribute("YCELL"))
-      && (null != ncfile.findGlobalAttribute("NCOLS"))
-      && (null != ncfile.findGlobalAttribute("NROWS"));
+            && (null != ncfile.findGlobalAttribute("YORIG"))
+            && (null != ncfile.findGlobalAttribute("XCELL"))
+            && (null != ncfile.findGlobalAttribute("YCELL"))
+            && (null != ncfile.findGlobalAttribute("NCOLS"))
+            && (null != ncfile.findGlobalAttribute("NROWS"));
   }
 
   public M3IOConvention() {
     this.conventionName = "M3IO";
   }
 
-  public void augmentDataset( NetcdfDataset ncd, CancelTask cancelTask) {
+  public void augmentDataset(NetcdfDataset ncd, CancelTask cancelTask) {
     if (null != ncd.findVariable("x")) return; // check if its already been done - aggregating enhanced datasets.
     if (null != ncd.findVariable("lon")) return; // check if its already been done - aggregating enhanced datasets.
 
-    constructCoordAxes( ncd);
+    constructCoordAxes(ncd);
     ncd.finish();
   }
 
   private CoordinateTransform ct = null;
+
   protected void constructCoordAxes(NetcdfDataset ds) {
 
     Dimension dimx = ds.findDimension("COL");
@@ -95,13 +97,22 @@ public class M3IOConvention extends CoordSysBuilder {
     int ny = dimy.getLength();
 
     int projType = findAttributeInt(ds, "GDTYP");
-    boolean latLon = (projType == 1);
-    if (latLon) {
-      ds.addCoordinateAxis(  makeCoordAxis( ds, "lon", "COL", nx, "XORIG", "XCELL", "degrees east"));
-      ds.addCoordinateAxis(  makeCoordAxis( ds, "lat", "ROW", ny, "YORIG", "YCELL", "degrees north"));
+    boolean isLatLon = (projType == 1);
+    if (isLatLon) {
+      //ds.addCoordinateAxis(  makeCoordAxis( ds, "lon", "COL", nx, "XORIG", "XCELL", "degrees east"));
+      //ds.addCoordinateAxis(  makeCoordAxis( ds, "lat", "ROW", ny, "YORIG", "YCELL", "degrees north"));
+
+      ds.addCoordinateAxis(makeCoordLLAxis(ds, "lon", "COL", nx, "XORIG", "XCELL", "degrees east"));
+      ds.addCoordinateAxis(makeCoordLLAxis(ds, "lat", "ROW", ny, "YORIG", "YCELL", "degrees north"));
+      ct = makeLatLongProjection(ds);
+
+      VariableDS v = makeCoordinateTransformVariable(ds, ct);
+      ds.addVariable(null, v);
+      v.addAttribute(new Attribute(_Coordinate.Axes, "lon lat"));
+
     } else {
-      ds.addCoordinateAxis(  makeCoordAxis( ds, "x", "COL", nx, "XORIG", "XCELL", "km"));
-      ds.addCoordinateAxis(  makeCoordAxis( ds, "y", "ROW", ny, "YORIG", "YCELL", "km"));
+      ds.addCoordinateAxis(makeCoordAxis(ds, "x", "COL", nx, "XORIG", "XCELL", "km"));
+      ds.addCoordinateAxis(makeCoordAxis(ds, "y", "ROW", ny, "YORIG", "YCELL", "km"));
 
       if (projType == 2)
         ct = makeLCProjection(ds);
@@ -109,69 +120,86 @@ public class M3IOConvention extends CoordSysBuilder {
         ct = makeTMProjection(ds);
       else if (projType == 4)
         ct = makeSTProjection(ds);
+      else if (projType == 5)
+        ct = makeUTMProjection(ds);
+      else if (projType == 6) // Was 7. See http://www.baronams.com/products/ioapi/GRIDS.html
+        ct = makePolarStereographicProjection(ds);
 
       if (ct != null) {
         VariableDS v = makeCoordinateTransformVariable(ds, ct);
         ds.addVariable(null, v);
-        v.addAttribute( new Attribute(_Coordinate.Axes, "x y"));
+        v.addAttribute(new Attribute(_Coordinate.Axes, "x y"));
       }
     }
 
-    makeZCoordAxis( ds, "LAY", "VGLVLS", "sigma");
-    makeTimeCoordAxis( ds, "TSTEP");
+    makeZCoordAxis(ds, "LAY", "VGLVLS", "sigma");
+    makeTimeCoordAxis(ds, "TSTEP");
   }
 
-  private CoordinateAxis makeCoordAxis( NetcdfDataset ds, String name, String dimName, int n,
-    String startName, String incrName, String unitName) {
+  private CoordinateAxis makeCoordAxis(NetcdfDataset ds, String name, String dimName, int n,
+                                       String startName, String incrName, String unitName) {
 
-    double start = .001 * findAttributeDouble( ds, startName); // km
-    double incr = .001 * findAttributeDouble( ds, incrName); // km
+    double start = .001 * findAttributeDouble(ds, startName); // km
+    double incr = .001 * findAttributeDouble(ds, incrName); // km
 
-    CoordinateAxis v = new CoordinateAxis1D( ds, null, name, DataType.DOUBLE, dimName, unitName,
-        "synthesized coordinate from "+startName+" "+incrName+" global attributes");
-    ds.setValues( v, n, start, incr);
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, name, DataType.DOUBLE, dimName, unitName,
+            "synthesized coordinate from " + startName + " " + incrName + " global attributes");
+    ds.setValues(v, n, start, incr);
     return v;
   }
 
-  private void makeZCoordAxis( NetcdfDataset ds, String dimName, String levelsName, String unitName) {
+  private CoordinateAxis makeCoordLLAxis(NetcdfDataset ds, String name, String dimName, int n,
+                                         String startName, String incrName, String unitName) {
+    // Makes coordinate axes for Lat/Lon
+    double start = findAttributeDouble(ds, startName); // degrees
+    double incr = findAttributeDouble(ds, incrName); // degrees
+
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, name, DataType.DOUBLE, dimName, unitName,
+            "synthesized coordinate from " + startName + " " + incrName + " global attributes");
+    ds.setValues(v, n, start, incr);
+    return v;
+  }
+
+  private void makeZCoordAxis(NetcdfDataset ds, String dimName, String levelsName, String unitName) {
     Dimension dimz = ds.findDimension(dimName);
     int nz = dimz.getLength();
     ArrayDouble.D1 dataLev = new ArrayDouble.D1(nz);
-    ArrayDouble.D1 dataLayers = new ArrayDouble.D1(nz+1);
+    ArrayDouble.D1 dataLayers = new ArrayDouble.D1(nz + 1);
 
     // layer values are a numeric global attribute array !!
-    Attribute layers = ds.findGlobalAttribute( "VGLVLS");
-    for (int i=0; i<=nz; i++)
-      dataLayers.set( i, layers.getNumericValue(i).doubleValue());
+    Attribute layers = ds.findGlobalAttribute("VGLVLS");
+    for (int i = 0; i <= nz; i++)
+      dataLayers.set(i, layers.getNumericValue(i).doubleValue());
 
-    for (int i=0; i<nz; i++) {
-      double midpoint = (dataLayers.get(i) + dataLayers.get(i+1))/2;
-      dataLev.set( i, midpoint);
+    for (int i = 0; i < nz; i++) {
+      double midpoint = (dataLayers.get(i) + dataLayers.get(i + 1)) / 2;
+      dataLev.set(i, midpoint);
     }
 
-    CoordinateAxis v = new CoordinateAxis1D( ds, null, "level", DataType.DOUBLE, dimName, unitName,
-       "synthesized coordinate from "+levelsName+" global attributes");
-    v.setCachedData( dataLev, true);
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, "level", DataType.DOUBLE, dimName, unitName,
+            "synthesized coordinate from " + levelsName + " global attributes");
+    v.setCachedData(dataLev, true);
     v.addAttribute(new Attribute("positive", "down"));
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.GeoZ.toString()));
 
     // layer edges
     String edge_name = "layer";
-    Dimension lay_edge = new Dimension( edge_name, nz+1);
-    ds.addDimension( null, lay_edge);
-    CoordinateAxis vedge = new CoordinateAxis1D( ds, null, edge_name, DataType.DOUBLE, edge_name, unitName,
-       "synthesized coordinate from "+levelsName+" global attributes");
-    vedge.setCachedData( dataLayers, true);
-    v.setBoundaryRef( edge_name);
+    Dimension lay_edge = new Dimension(edge_name, nz + 1);
 
-    ds.addCoordinateAxis( v);
-    ds.addCoordinateAxis( vedge);
+    ds.addDimension(null, lay_edge);
+    CoordinateAxis vedge = new CoordinateAxis1D(ds, null, edge_name, DataType.DOUBLE, edge_name, unitName,
+            "synthesized coordinate from " + levelsName + " global attributes");
+    vedge.setCachedData(dataLayers, true);
+    v.setBoundaryRef(edge_name);
+
+    ds.addCoordinateAxis(v);
+    ds.addCoordinateAxis(vedge);
   }
 
-  private void makeTimeCoordAxis( NetcdfDataset ds, String timeName) {
-    int start_date = findAttributeInt(ds,  "SDATE");
-    int start_time = findAttributeInt(ds,  "STIME");
-    int time_step = findAttributeInt(ds,  "TSTEP");
+  private void makeTimeCoordAxis(NetcdfDataset ds, String timeName) {
+    int start_date = findAttributeInt(ds, "SDATE");
+    int start_time = findAttributeInt(ds, "STIME");
+    int time_step = findAttributeInt(ds, "TSTEP");
 
     int year = start_date / 1000;
     int doy = start_date % 1000;
@@ -189,7 +217,10 @@ public class M3IOConvention extends CoordSysBuilder {
     cal.set(Calendar.SECOND, sec);
     //cal.setTimeZone( new SimpleTimeZone(0, "GMT"));
 
-    String units = "seconds since "+dateFormatOut.format( cal.getTime())+" UTC";
+    java.text.SimpleDateFormat dateFormatOut = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    dateFormatOut.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+
+    String units = "seconds since " + dateFormatOut.format(cal.getTime()) + " UTC";
 
     // parse the time step
     hour = time_step / 10000;
@@ -201,36 +232,87 @@ public class M3IOConvention extends CoordSysBuilder {
     Dimension dimt = ds.findDimension(timeName);
     int nt = dimt.getLength();
     ArrayInt.D1 data = new ArrayInt.D1(nt);
-    for (int i=0; i<nt; i++) {
+    for (int i = 0; i < nt; i++) {
       data.set(i, i * time_step);
     }
 
     // create the coord axis
-    CoordinateAxis1D timeCoord = new CoordinateAxis1D( ds, null, "time", DataType.INT, timeName, units,
-       "synthesized time coordinate from SDATE, STIME, STEP global attributes");
-    timeCoord.setCachedData( data, true);
+    CoordinateAxis1D timeCoord = new CoordinateAxis1D(ds, null, "time", DataType.INT, timeName, units,
+            "synthesized time coordinate from SDATE, STIME, STEP global attributes");
+    timeCoord.setCachedData(data, true);
     timeCoord.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 
-    ds.addCoordinateAxis( timeCoord);
+    ds.addCoordinateAxis(timeCoord);
   }
 
+  private CoordinateTransform makeLatLongProjection(NetcdfDataset ds) {
+    //double lat0 = findAttributeDouble(ds,  "YCENT");
+
+    // Get lower left and upper right corners of domain in lat/lon
+    double x1 = findAttributeDouble(ds, "XORIG");
+    double y1 = findAttributeDouble(ds, "YORIG");
+    double x2 = x1 + findAttributeDouble(ds, "XCELL") * findAttributeDouble(ds, "NCOLS");
+    double y2 = y1 + findAttributeDouble(ds, "YCELL") * findAttributeDouble(ds, "NROWS");
+
+    LatLonProjection ll = new LatLonProjection("LatitudeLongitudeProjection", new ProjectionRect(x1, y1, x2, y2));
+    return new ProjectionCT("LatitudeLongitudeProjection", "FGDC", ll);
+  }
 
   private CoordinateTransform makeLCProjection(NetcdfDataset ds) {
-    double par1 = findAttributeDouble(ds,  "P_ALP");
-    double par2 = findAttributeDouble(ds,  "P_BET");
-    double lon0 = findAttributeDouble(ds,  "XCENT");
-    double lat0 = findAttributeDouble(ds,  "YCENT");
+    double par1 = findAttributeDouble(ds, "P_ALP");
+    double par2 = findAttributeDouble(ds, "P_BET");
+    double lon0 = findAttributeDouble(ds, "XCENT");
+    double lat0 = findAttributeDouble(ds, "YCENT");
 
     LambertConformal lc = new LambertConformal(lat0, lon0, par1, par2);
 
     return new ProjectionCT("LambertConformalProjection", "FGDC", lc);
   }
 
+  private CoordinateTransform makePolarStereographicProjection(NetcdfDataset ds) {
+    boolean n_polar = (findAttributeDouble(ds, "P_ALP") == 1.0);
+    double centeral_meridian = findAttributeDouble(ds, "P_GAM");
+    double lon0 = findAttributeDouble(ds, "XCENT");
+    double lat0 = findAttributeDouble(ds, "YCENT");
+    double latts = findAttributeDouble(ds, "P_BET");
+
+    Stereographic sg = new Stereographic(latts, lat0, lon0, n_polar);
+    sg.setCentralMeridian(centeral_meridian);
+
+    CoordinateTransform ct = new ProjectionCT("PolarStereographic", "FGDC", sg);
+
+    return ct;
+  }
+
+
+  private CoordinateTransform makeSTProjection(NetcdfDataset ds) {
+    double latt = findAttributeDouble(ds, "PROJ_ALPHA");
+    if (Double.isNaN(latt))
+      latt = findAttributeDouble(ds, "P_ALP");
+
+    double lont = findAttributeDouble(ds, "PROJ_BETA");
+    if (Double.isNaN(lont))
+      lont = findAttributeDouble(ds, "P_BET");
+
+    /**
+     * Construct a Stereographic Projection.
+     * @param latt tangent point of projection, also origin of projecion coord system
+     * @param lont tangent point of projection, also origin of projecion coord system
+     * @param scale scale factor at tangent point, "normally 1.0 but may be reduced"
+     */
+    Stereographic st = new Stereographic(latt, lont, 1.0);
+
+    return new ProjectionCT("StereographicProjection", "FGDC", st);
+  }
+
   private CoordinateTransform makeTMProjection(NetcdfDataset ds) {
-    double lat0 = findAttributeDouble(ds,  "P_ALP");
-    double tangentLon = findAttributeDouble(ds,  "P_BET");
-    //double lon0 = findAttributeDouble( "X_CENT");
-    //double lat0 = findAttributeDouble( "Y_CENT");
+    double lat0 = findAttributeDouble(ds, "PROJ_ALPHA");
+    if (Double.isNaN(lat0))
+      lat0 = findAttributeDouble(ds, "P_ALP");
+
+    double tangentLon = findAttributeDouble(ds, "PROJ_BETA");
+    if (Double.isNaN(tangentLon))
+      tangentLon = findAttributeDouble(ds, "P_BET");
 
     /**
      * Construct a TransverseMercator Projection.
@@ -243,65 +325,75 @@ public class M3IOConvention extends CoordSysBuilder {
     return new ProjectionCT("MercatorProjection", "FGDC", tm);
   }
 
-  private CoordinateTransform makeSTProjection(NetcdfDataset ds) {
-    double latt = findAttributeDouble(ds,  "P_ALP");
-    double lont = findAttributeDouble(ds,  "P_BET");
+  /**
+   * Intend to use EPSG system parameters
+   *
+   * @param ds dataset
+   * @return CoordinateTransform
+   */
+  private CoordinateTransform makeUTMProjection(NetcdfDataset ds) {
+    int zone = (int) findAttributeDouble(ds, "P_ALP");
+    double ycent = findAttributeDouble(ds, "YCENT");
     //double lon0 = findAttributeDouble( "X_CENT");
     //double lat0 = findAttributeDouble( "Y_CENT");
 
     /**
-     * Construct a Stereographic Projection.
-     * @param latt tangent point of projection, also origin of projecion coord system
-     * @param lont tangent point of projection, also origin of projecion coord system
-     * @param scale scale factor at tangent point, "normally 1.0 but may be reduced"
+     * Construct a UTM Projection.
+     * @param zone - UTM zone
+     * @param if ycent < 0, then isNorth = False
      */
-    Stereographic st= new Stereographic(latt, lont, 1.0);
+    boolean isNorth = true;
+    if (ycent < 0)
+      isNorth = false;
+    UtmProjection utm = new UtmProjection(zone, isNorth);
+    CoordinateTransform ct = new ProjectionCT("UTM", "EPSG", utm);
 
-    return new ProjectionCT("StereographicProjection", "FGDC", st);
+    return ct;
   }
 
   /////////////////////////////////////////////////////////////////////////
 
-    protected AxisType getAxisType( NetcdfDataset ds, VariableEnhanced ve) {
-      Variable v = (Variable) ve;
-      String vname = v.getName();
+  protected AxisType getAxisType(NetcdfDataset ds, VariableEnhanced ve) {
+    Variable v = (Variable) ve;
+    String vname = v.getName();
 
-      if (vname.equalsIgnoreCase("x"))
-        return AxisType.GeoX;
+    if (vname.equalsIgnoreCase("x"))
+      return AxisType.GeoX;
 
-      if (vname.equalsIgnoreCase("y"))
-        return AxisType.GeoY;
+    if (vname.equalsIgnoreCase("y"))
+      return AxisType.GeoY;
 
-      if (vname.equalsIgnoreCase("lat"))
-        return AxisType.Lat;
+    if (vname.equalsIgnoreCase("lat"))
+      return AxisType.Lat;
 
-      if (vname.equalsIgnoreCase("lon"))
-        return AxisType.Lon;
+    if (vname.equalsIgnoreCase("lon"))
+      return AxisType.Lon;
 
-      if (vname.equalsIgnoreCase("time"))
-        return AxisType.Time;
+    if (vname.equalsIgnoreCase("time"))
+      return AxisType.Time;
 
-      if (vname.equalsIgnoreCase("level"))
-        return AxisType.GeoZ;
+    if (vname.equalsIgnoreCase("level"))
+      return AxisType.GeoZ;
 
-      return null;
+    return null;
   }
 
-   protected void makeCoordinateTransforms( NetcdfDataset ds) {
-     if (ct != null) {
+  protected void makeCoordinateTransforms(NetcdfDataset ds) {
+    if (ct != null) {
       VarProcess vp = findVarProcess(ct.getName());
       if (vp != null)
         vp.ct = ct;
-     }
-     super.makeCoordinateTransforms(  ds);
-   }
+    }
+    super.makeCoordinateTransforms(ds);
+  }
 
-  private double findAttributeDouble( NetcdfDataset ds, String attname) {
+  private double findAttributeDouble(NetcdfDataset ds, String attname) {
     Attribute att = ds.findGlobalAttributeIgnoreCase(attname);
+    if ((att == null) || (att.isString())) return Double.NaN;
     return att.getNumericValue().doubleValue();
   }
 
-  private int findAttributeInt( NetcdfDataset ds, String attname) {
+  private int findAttributeInt(NetcdfDataset ds, String attname) {
     Attribute att = ds.findGlobalAttributeIgnoreCase(attname);
     return att.getNumericValue().intValue();
   }

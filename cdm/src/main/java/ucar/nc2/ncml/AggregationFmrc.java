@@ -590,7 +590,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
 
     int[] shape = timeAxis.getShape();
     int ntimes = shape[1];
-    if (ntimes != maxTimes) {  // make max lengt for time dimension
+    if (ntimes != maxTimes) {  // make max length for time dimension
       shape[1] = maxTimes;
       Dimension d = timeAxis.getDimension(1);
       d.setLength(maxTimes);
@@ -628,6 +628,9 @@ public class AggregationFmrc extends AggregationOuterDimension {
           Date date = dates[j];
           double val = du.makeValue(date);
           timeCoordVals.setDouble(ima.set(i, j), val);
+        }
+        for (int j=dates.length; j<maxTimes; j++ ) {  // ragged data
+          timeCoordVals.setDouble(ima.set(i, j), Double.NaN); // LOOK: is time always a double?
         }
       }
     }

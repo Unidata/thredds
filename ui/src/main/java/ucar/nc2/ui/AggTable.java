@@ -35,18 +35,14 @@ package ucar.nc2.ui;
 
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
-import ucar.unidata.io.RandomAccessFile;
-import ucar.nc2.iosp.bufr.Message;
-import ucar.nc2.iosp.bufr.MessageScanner;
 import ucar.nc2.iosp.bufr.DataDescriptor;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
-import ucar.nc2.Structure;
-import ucar.nc2.Attribute;
+import ucar.nc2.*;
+import ucar.nc2.util.CompareNetcdf;
+import ucar.nc2.util.CancelTask;
 import ucar.nc2.ncml.Aggregation;
-import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureData;
+import ucar.ma2.Array;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -58,12 +54,10 @@ import thredds.ui.BAMutil;
 import thredds.ui.FileManager;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
-import java.util.List;
-import java.nio.ByteBuffer;
-import java.nio.channels.WritableByteChannel;
 
 /**
  * ToolsUI/NcML/Aggregation
@@ -82,9 +76,10 @@ public class AggTable extends JPanel {
 
   private StructureTable dataTable;
   private IndependentWindow dataWindow;
-  private FileManager fileChooser;
 
-  public AggTable(PreferencesExt prefs) {
+  private NetcdfDataset current;
+
+  public AggTable(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
     messageTable = new BeanTableSorted(DatasetBean.class, (PreferencesExt) prefs.node("DatasetBean"), false);
@@ -136,6 +131,20 @@ public class AggTable extends JPanel {
       }
     });
 
+    AbstractButton compareButton = BAMutil.makeButtcon("Select", "Check files", false);
+    compareButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        Formatter f = new Formatter();
+        compare(f);
+        checkAggCoordinate(f);
+
+        infoTA.setText(f.toString());
+        infoTA.gotoTop();
+        infoWindow.show();
+      }
+    });
+    buttPanel.add(compareButton);
+
 
     // the info window
     infoTA = new TextHistoryPane();
@@ -171,17 +180,76 @@ public class AggTable extends JPanel {
   }
 
   public void setAggDataset(NetcdfDataset ncd) throws IOException {
+    current = ncd;
+
     Aggregation agg = ncd.getAggregation();
     java.util.List<DatasetBean> beanList = new ArrayList<DatasetBean>();
     for (Aggregation.Dataset dataset : agg.getDatasets()) {
-      beanList.add( new DatasetBean(dataset));
+      beanList.add(new DatasetBean(dataset));
     }
 
     messageTable.setBeans(beanList);
 
     Formatter f = new Formatter();
     agg.detail(f);
-    aggTA.setText( f.toString());
+    aggTA.setText(f.toString());
+  }
+
+  private void checkAggCoordinate(Formatter f) {
+    if (null == current) return;
+
+    try {
+      Aggregation agg = current.getAggregation();
+      String aggDimName = agg.getDimensionName();
+      Variable aggCoord = current.findVariable(aggDimName);
+      Array data = aggCoord.read();
+      f.format("   Aggregated coordinate variable %s%n", aggCoord);
+      f.format(NCdumpW.printArray(data, aggDimName, null));
+
+      for (Object bean : messageTable.getBeans()) {
+        DatasetBean dbean = (DatasetBean) bean;
+        Aggregation.Dataset ads = dbean.ds;
+
+        NetcdfFile aggFile = ads.acquireFile(null);
+        f.format("   Component file %s%n", aggFile.getLocation());
+        Variable aggCoordp = aggFile.findVariable(aggDimName);
+        if (aggCoordp == null) {
+          f.format("   doesnt have coordinate variable%n");
+        } else {
+          data = aggCoordp.read();
+          f.format(NCdumpW.printArray(data, aggCoordp.getNameAndDimensions() +" ("+aggCoordp.getUnitsString()+")", null));
+        }
+      }
+    } catch (Throwable t) {
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      t.printStackTrace(new PrintStream(bos));
+      f.format(bos.toString());
+    }
+  }
+
+  private void compare(Formatter f) {
+    try {
+      NetcdfFile org = null;
+      for (Object bean : messageTable.getBeans()) {
+        DatasetBean dbean = (DatasetBean) bean;
+        Aggregation.Dataset ads = dbean.ds;
+
+        NetcdfFile ncd = ads.acquireFile(null);
+        if (org == null)
+          org = ncd;
+        else {
+          CompareNetcdf cn = new CompareNetcdf(false, false, false);
+          cn.compare(org, ncd, f);
+          ncd.close();
+          f.format("--------------------------------%n");
+        }
+      }
+      if (org != null) org.close();
+    } catch (Throwable t) {
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      t.printStackTrace(new PrintStream(bos));
+      f.format(bos.toString());
+    }
   }
 
   public class DatasetBean {
@@ -282,105 +350,113 @@ public class AggTable extends JPanel {
     // create from a dataset
     public ObsBean(Structure obs, StructureData sdata) {
       // first choice
-       for (Variable v : obs.getVariables()) {
-         Attribute att = v.findAttribute("BUFR:TableB_descriptor");
-         if (att == null) continue;
-         String val = att.getStringValue();
-         if (val.equals("0-5-1") && Double.isNaN(lat)) {
-           lat = sdata.convertScalarDouble(v.getShortName());
-         } else if (val.equals("0-6-1") && Double.isNaN(lon)) {
-           lon = sdata.convertScalarDouble(v.getShortName());
-         } else if (val.equals("0-7-30") && Double.isNaN(alt)) {
+      for (Variable v : obs.getVariables()) {
+        Attribute att = v.findAttribute("BUFR:TableB_descriptor");
+        if (att == null) continue;
+        String val = att.getStringValue();
+        if (val.equals("0-5-1") && Double.isNaN(lat)) {
+          lat = sdata.convertScalarDouble(v.getShortName());
+        } else if (val.equals("0-6-1") && Double.isNaN(lon)) {
+          lon = sdata.convertScalarDouble(v.getShortName());
+        } else if (val.equals("0-7-30") && Double.isNaN(alt)) {
 
-           alt = sdata.convertScalarDouble(v.getShortName());
-         } else if (val.equals("0-4-1") && (year<0)) {
-           year = sdata.convertScalarInt(v.getShortName());
-         } else if (val.equals("0-4-2")&& (month<0)) {
-           month = sdata.convertScalarInt(v.getShortName());
-         } else if (val.equals("0-4-3")&& (day<0)) {
-           day = sdata.convertScalarInt(v.getShortName());
-         } else if (val.equals("0-4-4")&& (hour<0)) {
-           hour = sdata.convertScalarInt(v.getShortName());
-         } else if (val.equals("0-4-5")&& (minute<0)) {
-           minute = sdata.convertScalarInt(v.getShortName());
-         } else if (val.equals("0-4-6")&& (sec<0)) {
-           sec = sdata.convertScalarInt(v.getShortName());
+          alt = sdata.convertScalarDouble(v.getShortName());
+        } else if (val.equals("0-4-1") && (year < 0)) {
+          year = sdata.convertScalarInt(v.getShortName());
+        } else if (val.equals("0-4-2") && (month < 0)) {
+          month = sdata.convertScalarInt(v.getShortName());
+        } else if (val.equals("0-4-3") && (day < 0)) {
+          day = sdata.convertScalarInt(v.getShortName());
+        } else if (val.equals("0-4-4") && (hour < 0)) {
+          hour = sdata.convertScalarInt(v.getShortName());
+        } else if (val.equals("0-4-5") && (minute < 0)) {
+          minute = sdata.convertScalarInt(v.getShortName());
+        } else if (val.equals("0-4-6") && (sec < 0)) {
+          sec = sdata.convertScalarInt(v.getShortName());
 
-         } else if (val.equals("0-1-1")&& (wmo_block<0)) {
-           wmo_block = sdata.convertScalarInt(v.getShortName());
-         } else if (val.equals("0-1-2")&& (wmo_id<0)) {
-           wmo_id = sdata.convertScalarInt(v.getShortName());
+        } else if (val.equals("0-1-1") && (wmo_block < 0)) {
+          wmo_block = sdata.convertScalarInt(v.getShortName());
+        } else if (val.equals("0-1-2") && (wmo_id < 0)) {
+          wmo_id = sdata.convertScalarInt(v.getShortName());
 
-         } else if ((stn == null) &&
-             (val.equals("0-1-7") || val.equals("0-1-194") || val.equals("0-1-11") || val.equals("0-1-18") )) {
-           if (v.getDataType().isString())
-             stn = sdata.getScalarString(v.getShortName());
-           else
-             stn = Integer.toString( sdata.convertScalarInt(v.getShortName()));
-         }
-       }
+        } else if ((stn == null) &&
+                (val.equals("0-1-7") || val.equals("0-1-194") || val.equals("0-1-11") || val.equals("0-1-18"))) {
+          if (v.getDataType().isString())
+            stn = sdata.getScalarString(v.getShortName());
+          else
+            stn = Integer.toString(sdata.convertScalarInt(v.getShortName()));
+        }
+      }
 
       // second choice
-       for (Variable v : obs.getVariables()) {
-         Attribute att = v.findAttribute("BUFR:TableB_descriptor");
-         if (att == null) continue;
-         String val = att.getStringValue();
-         if (val.equals("0-5-2") && Double.isNaN(lat)) {
-           lat = sdata.convertScalarDouble(v.getShortName());
-         } else if (val.equals("0-6-2") && Double.isNaN(lon)) {
-           lon = sdata.convertScalarDouble(v.getShortName());
-         } else if (val.equals("0-7-1") && Double.isNaN(alt)) {
-           alt = sdata.convertScalarDouble(v.getShortName());
-         } else if ((val.equals("0-4-7")) && (sec<0)) {
-           sec = sdata.convertScalarInt(v.getShortName());
-         }
-       }
+      for (Variable v : obs.getVariables()) {
+        Attribute att = v.findAttribute("BUFR:TableB_descriptor");
+        if (att == null) continue;
+        String val = att.getStringValue();
+        if (val.equals("0-5-2") && Double.isNaN(lat)) {
+          lat = sdata.convertScalarDouble(v.getShortName());
+        } else if (val.equals("0-6-2") && Double.isNaN(lon)) {
+          lon = sdata.convertScalarDouble(v.getShortName());
+        } else if (val.equals("0-7-1") && Double.isNaN(alt)) {
+          alt = sdata.convertScalarDouble(v.getShortName());
+        } else if ((val.equals("0-4-7")) && (sec < 0)) {
+          sec = sdata.convertScalarInt(v.getShortName());
+        }
+      }
 
       // third choice
-       for (Variable v : obs.getVariables()) {
-         Attribute att = v.findAttribute("BUFR:TableB_descriptor");
-         if (att == null) continue;
-         String val = att.getStringValue();
-         if (val.equals("0-7-10") && Double.isNaN(alt)) {
-           alt = sdata.convertScalarDouble(v.getShortName());
-         } else if (val.equals("0-7-2") && Double.isNaN(alt)) {
-           alt = sdata.convertScalarDouble(v.getShortName());
-         }
+      for (Variable v : obs.getVariables()) {
+        Attribute att = v.findAttribute("BUFR:TableB_descriptor");
+        if (att == null) continue;
+        String val = att.getStringValue();
+        if (val.equals("0-7-10") && Double.isNaN(alt)) {
+          alt = sdata.convertScalarDouble(v.getShortName());
+        } else if (val.equals("0-7-2") && Double.isNaN(alt)) {
+          alt = sdata.convertScalarDouble(v.getShortName());
+        }
 
-       }
+      }
 
     }
 
     public double getLat() {
       return lat;
     }
+
     public double getLon() {
       return lon;
     }
+
     public double getHeight() {
       return alt;
     }
+
     public int getYear() {
       return year;
     }
+
     public int getMonth() {
       return month;
     }
+
     public int getDay() {
       return day;
     }
+
     public int getHour() {
       return hour;
     }
+
     public int getMinute() {
       return minute;
     }
+
     public int getSec() {
       return sec;
     }
 
     public String getWmoId() {
-      return wmo_block+"/"+wmo_id;
+      return wmo_block + "/" + wmo_id;
     }
 
     public String getStation() {

@@ -52,6 +52,7 @@ import java.util.zip.DeflaterOutputStream;
 import java.net.URI;
 
 import thredds.servlet.*;
+import thredds.servlet.filter.CookieFilter;
 import ucar.ma2.DataType;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
@@ -68,7 +69,7 @@ import ucar.nc2.NetcdfFile;
  * @since Apr 27, 2009 (branched)
  */
 public class OpendapServlet extends javax.servlet.http.HttpServlet {
-  static private final String GDATASET = "guarded_dataset";
+  static final String GDATASET = "guarded_dataset";
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OpendapServlet.class);
 
   private boolean allowDeflate = false; // handled by Tomcat
@@ -86,7 +87,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
     super.init();
 
     org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
-    logServerStartup.info( getClass().getName() + " initialization start - " + UsageLog.setupNonRequestContext() );
+    logServerStartup.info(getClass().getName() + " initialization start - " + UsageLog.setupNonRequestContext());
 
     this.ascLimit = ThreddsConfig.getInt("ascLimit", ascLimit);
     this.binLimit = ThreddsConfig.getInt("binLimit", binLimit);
@@ -96,7 +97,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
     // debugging actions
     makeDebugActions();
 
-    logServerStartup.info( getClass().getName() + " initialization done - " + UsageLog.closingMessageNonRequestContext() );
+    logServerStartup.info(getClass().getName() + " initialization done - " + UsageLog.closingMessageNonRequestContext());
   }
 
   private String getServerVersion() {
@@ -149,16 +150,18 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
     log.info("doGet(): " + UsageLog.setupRequestContext(request));
+    // System.out.printf("opendap doGet: req=%s%n%s%n", ServletUtil.getRequest(request), ServletUtil.showRequestDetail(this, request));
+
     String path = null;
 
     try {
-       path = request.getPathInfo();
+      path = request.getPathInfo();
       log.debug("doGet path={}", path);
       if (thredds.servlet.Debug.isSet("showRequestDetail"))
         log.debug(ServletUtil.showRequestDetail(this, request));
 
       if (path == null) {
-        log.info( "doGet(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
+        log.info("doGet(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
         response.sendError(HttpServletResponse.SC_NOT_FOUND);
         return;
       }
@@ -167,36 +170,25 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
         URI reqURI = ServletUtil.getRequestURI(request);
         baseURI = reqURI.resolve("/thredds/dodsC/");
         //rootCatalog.setBaseURI( baseURI);
-        log.debug( "doGet(): baseURI was set = {}", baseURI);
+        log.debug("doGet(): baseURI was set = {}", baseURI);
       }
 
-      if (path.endsWith(".close")) {
-        closeSession(request, response);
-        response.setContentLength(0);
-        log.info( "doGet(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, 0));
-        return;
-
-      } else if (path.endsWith("latest.xml")) {
+      if (path.endsWith("latest.xml")) {
         DataRootHandler.getInstance().processReqForLatestDataset(this, request, response);
         return;
       }
+
       // Redirect all catalog requests at the root level.
-      else if ( path.equals( "/" )
-                || path.equals( "/catalog.html" )
-                || path.equals( "/catalog.xml" ) )
-      {
-        ServletUtil.sendPermanentRedirect( ServletUtil.getContextPath() + path, request, response );
+      if (path.equals("/") || path.equals("/catalog.html") || path.equals("/catalog.xml")) {
+        ServletUtil.sendPermanentRedirect(ServletUtil.getContextPath() + path, request, response);
         return;
       }
+
       // Make sure catalog requests match a dataRoot before trying to handle.
-      else if ( path.endsWith( "/" )
-                || path.endsWith( "/catalog.html" )
-                || path.endsWith( "/catalog.xml" ) )
-      {
-        if ( ! DataRootHandler.getInstance().hasDataRootMatch( path ))
-        {
-          log.info( "doGet(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, -1 ) );
-          response.sendError( HttpServletResponse.SC_NOT_FOUND );
+      if (path.endsWith("/") || path.endsWith("/catalog.html") || path.endsWith("/catalog.xml")) {
+        if (!DataRootHandler.getInstance().hasDataRootMatch(path)) {
+          log.info("doGet(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
+          response.sendError(HttpServletResponse.SC_NOT_FOUND);
           return;
         }
         
@@ -214,20 +206,16 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
 
         if ((dataSet == null) || dataSet.equals("/") || dataSet.equals("")) {
           doGetDIR(request, response, rs);
-        } else if (dataSet.equalsIgnoreCase("/version") || dataSet.equalsIgnoreCase("/version/")) {
-          doGetVER(request, response, rs);
-        } else if (dataSet.equalsIgnoreCase("/help") || dataSet.equalsIgnoreCase("/help/")) {
-          doGetHELP(request, response);
-        } else if (dataSet.equalsIgnoreCase("/" + requestSuffix)) {
-          doGetHELP(request, response);
+        } else if (requestSuffix.equalsIgnoreCase("blob")) {
+          doGetBLOB(request, response, rs);
+        } else if (requestSuffix.equalsIgnoreCase("close")) {
+          doClose(request, response, rs);
         } else if (requestSuffix.equalsIgnoreCase("dds")) {
           doGetDDS(request, response, rs);
         } else if (requestSuffix.equalsIgnoreCase("das")) {
           doGetDAS(request, response, rs);
         } else if (requestSuffix.equalsIgnoreCase("ddx")) {
           doGetDDX(request, response, rs);
-        } else if (requestSuffix.equalsIgnoreCase("blob")) {
-          doGetBLOB(request, response, rs);
         } else if (requestSuffix.equalsIgnoreCase("dods")) {
           doGetDAP2Data(request, response, rs);
         } else if (requestSuffix.equalsIgnoreCase("asc") || requestSuffix.equalsIgnoreCase("ascii")) {
@@ -236,9 +224,11 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
           doGetINFO(request, response, rs);
         } else if (requestSuffix.equalsIgnoreCase("html") || requestSuffix.equalsIgnoreCase("htm")) {
           doGetHTML(request, response, rs);
-        } else if (requestSuffix.equalsIgnoreCase("ver") || requestSuffix.equalsIgnoreCase("version")) {
+        } else if (requestSuffix.equalsIgnoreCase("ver") || requestSuffix.equalsIgnoreCase("version") ||
+                dataSet.equalsIgnoreCase("/version") || dataSet.equalsIgnoreCase("/version/")) {
           doGetVER(request, response, rs);
-        } else if (requestSuffix.equalsIgnoreCase("help")) {
+        } else if (dataSet.equalsIgnoreCase("/help") || dataSet.equalsIgnoreCase("/help/") ||
+                dataSet.equalsIgnoreCase("/" + requestSuffix) || requestSuffix.equalsIgnoreCase("help")) {
           doGetHELP(request, response);
         } else {
           sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Unrecognized request");
@@ -293,12 +283,12 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
         return;
       }
 
-      log.error("path= "+path, e);
+      log.error("path= " + path, e);
       sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
 
       // everything else
     } catch (Throwable t) {
-      log.error("path= "+path, t);
+      log.error("path= " + path, t);
       sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, t.getMessage());
     }
 
@@ -414,7 +404,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
       OutputStream out = new BufferedOutputStream(response.getOutputStream());
 
       ServerDDS myDDS = ds.getDDS();
-      myDDS.ingestDAS( ds.getDAS());
+      myDDS.ingestDAS(ds.getDAS());
 
       if (rs.getConstraintExpression().equals("")) { // No Constraint Expression?
         // Send the whole DDS
@@ -479,6 +469,23 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
       if (ds != null) ds.release();
     }
 
+  }
+
+  private void doClose(HttpServletRequest request, HttpServletResponse response, ReqState rs) throws Exception {
+    String reqPath = rs.getDataSet();
+    HttpSession session = request.getSession();
+    session.removeAttribute(reqPath); // work done in the listener
+
+    /* if (path.endsWith(".close")) {
+      closeSession(request, response);
+      response.setContentLength(0);
+      log.info("doGet(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, 0));
+      return;
+
+    }
+
+    // so we need to worry about deleting sessions?
+    session.invalidate();  */
   }
 
   private void doGetDAP2Data(HttpServletRequest request, HttpServletResponse response, ReqState rs) throws Exception {
@@ -713,12 +720,6 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
   ///////////////////////////////////////////////////////
   // utils
 
-
-  private void closeSession(HttpServletRequest req, HttpServletResponse res) {
-    HttpSession session = req.getSession();
-    session.invalidate();
-  }
-
   private void checkSize(ServerDDS dds, boolean isAscii) {
     try {
 
@@ -760,11 +761,11 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
         }
       }
       log.debug("total size={}", size);
-      double dsize = size/(1000 * 1000);
-      double maxSize = isAscii ? ascLimit : binLimit ; // Mbytes
+      double dsize = size / (1000 * 1000);
+      double maxSize = isAscii ? ascLimit : binLimit; // Mbytes
       if (dsize > maxSize) {
         log.info("Reject request size = {} Mbytes", dsize);
-        throw new UnsupportedOperationException("Request too big=" + dsize+" Mbytes, max="+maxSize);
+        throw new UnsupportedOperationException("Request too big=" + dsize + " Mbytes, max=" + maxSize);
       }
 
     } catch (InvalidRangeException e) {
@@ -784,6 +785,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
   // optionally, a session may be established, which allows us to reserve the dataset for that session.
   private GuardedDataset getDataset(ReqState preq) throws Exception {
     HttpServletRequest req = preq.getRequest();
+    String reqPath = preq.getDataSet();
 
     // see if the client wants sessions
     boolean acceptSession = false;
@@ -793,55 +795,38 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
 
     HttpSession session = null;
     if (acceptSession) {
-      // see if theres already a session established
+      // see if theres already a session established, create one if not
       session = req.getSession();
       if (!session.isNew()) {
-        GuardedDatasetImpl gdataset = (GuardedDatasetImpl) session.getAttribute(GDATASET);
+        GuardedDatasetImpl gdataset = (GuardedDatasetImpl) session.getAttribute(reqPath);
         if (null != gdataset) {
+          System.out.printf(" found gdataset %s in session %s %n", reqPath, session.getId());
           if (log.isDebugEnabled()) log.debug(" found gdataset " + gdataset + " in session " + session.getId());
           return gdataset;
         }
       }
     }
 
-    /* debug
-    System.out.println("NcDODSServlet getDataset = "+preq.getRequestSuffix());
-    String reqdetail = ServletUtil.showRequestDetail(this, req);
-    System.out.println( reqdetail);
-    ServletUtil.showSession( req, System.out);  */
-
-    // canonicalize the path
-    /* String spath = req.getServletPath();
-    if (spath.length() > 0) {
-      if (spath.startsWith("/"))
-        spath = spath.substring(1);
-      if (!spath.endsWith("/"))
-        spath = spath + "/";
-    } */
-
-    NetcdfFile ncd;
-    String reqPath = preq.getDataSet(); // was spath + preq.getDataSet();
-    //try {
-      ncd = DatasetHandler.getNetcdfFile(req, preq.getResponse(), reqPath);
-    /* } catch (FileNotFoundException fne) {
-      throw new DAP2Exception(DAP2Exception.NO_SUCH_FILE, "Cant find " + reqPath);
-    } catch (Throwable e) {
-      log.error("Error ", e);
-      throw new DAP2Exception(DAP2Exception.UNDEFINED_ERROR, "Server Error on dataset " + reqPath);
-    } */
-
+    NetcdfFile ncd = DatasetHandler.getNetcdfFile(req, preq.getResponse(), reqPath);
     if (null == ncd) return null;
+
     GuardedDatasetImpl gdataset = new GuardedDatasetImpl(reqPath, ncd, acceptSession);
 
     if (acceptSession) {
-      session.setAttribute(GDATASET, gdataset);
-      session.setAttribute("dataset", ncd.getLocation());
+      String cookiePath = req.getRequestURI();
+      String suffix = "."+preq.getRequestSuffix();
+      if (cookiePath.endsWith(suffix)) // snip off the suffix
+        cookiePath = cookiePath.substring( 0, cookiePath.length() - suffix.length());
+      session.setAttribute(reqPath, gdataset);
+      session.setAttribute(CookieFilter.SESSION_PATH, cookiePath);
+      //session.setAttribute("dataset", ncd.getLocation());  // for UsageValve
       // session.setMaxInactiveInterval(30); // 30 second timeout !!
+      System.out.printf(" added gdataset %s in session %s cookiePath %s %n", reqPath, session.getId(), cookiePath);
       if (log.isDebugEnabled()) log.debug(" added gdataset " + gdataset + " in session " + session.getId());
-    } else {
+    } /* else {
       session = req.getSession();
-      session.setAttribute("dataset", ncd.getLocation()); // see UsageValve
-    }
+      session.setAttribute("dataset", ncd.getLocation()); // for UsageValve
+    } */
 
     return gdataset;
   }
@@ -868,7 +853,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
   private void sendErrorResponse(HttpServletResponse response, int errorCode, String errorMessage) throws IOException {
     log.info(UsageLog.closingMessageForRequestContext(errorCode, -1));
     response.setStatus(errorCode);
-    response.setHeader( "Content-Description", "dods-error" );
+    response.setHeader("Content-Description", "dods-error");
     response.setContentType("text/plain");
 
     PrintWriter pw = new PrintWriter(response.getOutputStream());

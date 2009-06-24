@@ -35,7 +35,7 @@ package ucar.nc2.dt.grid;
 import junit.framework.*;
 import ucar.nc2.TestAll;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.TestCompare;
+import ucar.nc2.util.CompareNetcdf;
 
 /** Count geogrid objects - sanity check when anything changes. */
 
@@ -87,7 +87,7 @@ public class TestReadandCountGrib extends TestCase {
 
      NetcdfFile ncfile = NetcdfFile.open("//shemp/testdata/grid/grib/grib1/data/ukm.wmo", null);
      NetcdfFile ncfile1 = NetcdfFile.open("//shemp/testdata/grid/grib/grib1/data/ukm1.wmo", null);
-     TestCompare.compareFiles(ncfile, ncfile1, false, false, false);
+     CompareNetcdf.compareFiles(ncfile, ncfile1, false, false, false);
   }
 
 }

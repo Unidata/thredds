@@ -14,7 +14,7 @@
   <li>Variables to be renamed, added, deleted and restructured.</li>
   <li>Data from multiple NetCDF files to be combined.</li>
 </ol>
-<p>See also: <a href="AnnotatedSchema.html">Annotated NcML Schema</a> </p>
+<p>See also: <a href="AnnotatedSchema4.html">Annotated NcML Schema</a> </p>
 <h2><b>1. Completely specify the NetCDF Dataset Metadata</b></h2>
 <p>In this example, the use of the <strong>&lt;explicit/&gt;</strong> element means that all of the metadata is specified in the XML, and the referenced dataset is used only for data access. If there are any other attributes, variables 
   or dimensions in the referenced dataset, they are ignored.</p>
@@ -79,7 +79,7 @@ the netCDF file to be read in. In this case, the NcML dataset and the referenced
       location=&quot;file:C:/dev/netcdf-java-2.2/test/data/example1.nc&quot;&gt;
 <br><strong>(1)</strong>&lt;attribute name=&quot;title&quot; type=&quot;String&quot; value=&quot;Example Data using CF&quot; /&gt;
 <strong>(2)</strong>&lt;attribute name=&quot;Conventions&quot; value=&quot;CF-1.0&quot; /&gt;
-<br><strong>(3)</strong>&lt;variable name=&quot;ReletiveHumidity&quot; orgName=&quot;rh&quot;&gt;<br>(<strong>4)</strong>  &lt;attribute name=&quot;standard_name&quot; type=&quot;String&quot; value=&quot;relative humidity&quot; /&gt;<br>   &lt;/variable&gt;
+<br><strong>(3)</strong>&lt;variable name=&quot;RelativeHumidity&quot; orgName=&quot;rh&quot;&gt;<br>(<strong>4)</strong>  &lt;attribute name=&quot;standard_name&quot; type=&quot;String&quot; value=&quot;relative humidity&quot; /&gt;<br>   &lt;/variable&gt;
 <br>   &lt;variable name=&quot;T&quot;&gt;<br><strong>(5) </strong> &lt;attribute name=&quot;standard_name&quot; type=&quot;String&quot; value=&quot;temperature&quot; /&gt;<br><strong>(6) </strong> &lt;attribute name=&quot;units&quot; type=&quot;String&quot; value=&quot;degreesC&quot; /&gt;<br>   &lt;/variable&gt;
 
 <strong>(7)</strong>&lt;variable name=&quot;deltaLat&quot; type=&quot;double&quot; shape=&quot;lat&quot;&gt;
@@ -92,7 +92,7 @@ the netCDF file to be read in. In this case, the NcML dataset and the referenced
   <li>The global attribute named &quot;title&quot; is given a new value.</li>
   <li> 
   A global attribute named &quot;Conventions&quot; is added.</li>
-  <li>The variable &quot;rh&quot; is renamed to &quot;ReletiveHumidity&quot;</li>
+  <li>The variable &quot;rh&quot; is renamed to &quot;RelativeHumidity&quot;</li>
   <li>A variable attribute  &quot;standard_name&quot; is added</li>
   <li>A variable attribute &quot;standard_name&quot; is added</li>
   <li>The variable attribute &quot;units&quot; is given a new value.</li>
@@ -107,7 +107,7 @@ the netCDF file to be read in. In this case, the NcML dataset and the referenced
 
   variables:
     double deltaLat(lat);
-    int ReletiveHumidity(time, lat, lon);
+    int RelativeHumidity(time, lat, lon);
       :long_name = &quot;relative humidity&quot;;
       :standard_name = &quot;relative humidity&quot;;
       :units = &quot;percent&quot;;

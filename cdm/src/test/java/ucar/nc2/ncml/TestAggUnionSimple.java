@@ -36,6 +36,7 @@ import junit.framework.*;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.util.CompareNetcdf;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.ncml.TestNcML;
@@ -334,7 +335,7 @@ public class TestAggUnionSimple extends TestCase {
   public void testScan() throws IOException {
     String filename = "file:./" + TestNcML.topDir + "aggUnionScan.xml";
     NetcdfDataset scanFile = NetcdfDataset.openDataset(filename, false, null);
-    TestCompare.compareFiles(ncfile, scanFile, true, true, false);
+    CompareNetcdf.compareFiles(ncfile, scanFile, true, true, false);
     scanFile.close();
   }
 

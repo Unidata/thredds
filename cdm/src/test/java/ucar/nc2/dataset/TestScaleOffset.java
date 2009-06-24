@@ -33,6 +33,7 @@
 package ucar.nc2.dataset;
 
 import ucar.nc2.*;
+import ucar.nc2.util.CompareNetcdf;
 import ucar.ma2.*;
 
 import junit.framework.TestCase;
@@ -98,7 +99,7 @@ public class TestScaleOffset extends TestCase {
     Variable v = ncfileRead.findVariable("packed");
     assert v != null;
     Array readPacked = v.read();
-    TestCompare.compareData(readPacked, packed);
+    CompareNetcdf.compareData(readPacked, packed);
     ncfileRead.close();
 
     // read the packed form, enhance using scale/offset, compare to original

@@ -34,6 +34,7 @@ package ucar.nc2.iosp.hdf4;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.util.CompareNetcdf;
 
 import java.io.IOException;
 
@@ -83,7 +84,7 @@ public class TestH4subset extends TestCase {
     for (int i = 0; i < 3; i++)
       assert Asection.getShape()[i] == dshape[i];
 
-    TestCompare.compareData(data, Asection);
+    CompareNetcdf.compareData(data, Asection);
   }
 
   public void testSubsetting() throws IOException, InvalidRangeException {

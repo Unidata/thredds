@@ -36,6 +36,8 @@ import junit.framework.*;
 import java.io.*;
 import java.util.*;
 
+import ucar.nc2.util.CompareNetcdf;
+
 /** test FileWriting, then reading back and comparing to original. */
 
 public class TestCompareFileWriter extends TestCase {
@@ -78,7 +80,7 @@ public class TestCompareFileWriter extends TestCase {
   private void doOne(String datasetIn, String filenameOut) throws IOException {
     NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, null);
     NetcdfFile ncfileOut = FileWriter.writeToFile( ncfileIn, filenameOut);
-    TestCompare.compareFiles(ncfileIn, ncfileOut);
+    CompareNetcdf.compareFiles(ncfileIn, ncfileOut);
 
     ncfileIn.close();
     ncfileOut.close();

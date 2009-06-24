@@ -35,6 +35,7 @@ package ucar.nc2.ncml;
 import junit.framework.*;
 
 import ucar.nc2.*;
+import ucar.nc2.util.CompareNetcdf;
 import ucar.nc2.dataset.*;
 import ucar.unidata.util.StringUtil;
 
@@ -118,7 +119,7 @@ public class TestOffNcMLWriteReadwithCoords extends TestCase {
 
     // read it back in
     NetcdfDataset new_ncd = NetcdfDataset.openDataset(ncmlOut, true, null);
-    TestCompare.compareFiles( org_ncd, new_ncd);
+    CompareNetcdf.compareFiles( org_ncd, new_ncd);
 
     org_ncd.close();
     new_ncd.close();

@@ -1,7 +1,7 @@
 package ucar.nc2.stream;
 
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.TestCompare;
+import ucar.nc2.util.CompareNetcdf;
 import ucar.nc2.TestAll;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.StringUtil;
@@ -59,9 +59,9 @@ public class TestNetcdfStream extends TestCase {
     System.out.printf("---------------------------\n");
     NetcdfFile ncfile = NetcdfDataset.openFile(file, null);
     NetcdfFile ncfileRemote = new NcStreamRemote(remote, null);
-    TestCompare.compareFiles(ncfile, ncfileRemote, false, false, false);
+    CompareNetcdf.compareFiles(ncfile, ncfileRemote, false, false, false);
     System.out.printf("compare %s ok %n", file);
-    TestCompare.compareFiles(ncfile, ncfileRemote, true, true, true);
+    CompareNetcdf.compareFiles(ncfile, ncfileRemote, true, true, true);
     System.out.printf("compare data %s ok %n", file);
     ncfile.close();
     ncfileRemote.close();
@@ -84,7 +84,7 @@ public class TestNetcdfStream extends TestCase {
       NcStreamReader reader = new NcStreamReader();      
       InputStream is = new BufferedInputStream( new FileInputStream(file));
       NetcdfFile ncfileBack = reader.readStream(is, null);
-      TestCompare.compareFiles(ncfile, ncfileBack, false, true, false);
+      CompareNetcdf.compareFiles(ncfile, ncfileBack, false, true, false);
 
       /*
 

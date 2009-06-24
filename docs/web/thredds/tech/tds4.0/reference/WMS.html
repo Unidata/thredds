@@ -39,7 +39,7 @@ services).</p>
 <p>You can specify your own OGC metadata file  in the <strong>threddsConfig.xml</strong> file:</p>
 <pre style="margin-left: 40px;">&lt;WMS&gt;<br>  ...<br>  &lt;ogcMetaXML&gt;OGCMeta.xml&lt;/ogcMetaXML&gt; <br>&lt;/WMS&gt;</pre>
 <p>Use an absolute file path, or a path reletive to <strong>${tomcat_home}/content/thredds/</strong>. Otherwise the default file <strong>WEB-INF/OGCMeta.xml</strong>. is used.</p>
-<h3>Add a new JVM option to Tomcat Startup</h3>
+<h3><a name="jvmOption"></a>Add a new JVM option to Tomcat Startup</h3>
 <p>You should  add the following definition to the JVM command line when starting:</p>
 <pre wrap="">-Djava.awt.headless=true
 </pre>

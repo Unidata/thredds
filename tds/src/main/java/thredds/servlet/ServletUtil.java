@@ -1012,7 +1012,7 @@ public class ServletUtil {
     sbuff.append(" req.getPathInfo:").append(req.getPathInfo()).append("\n");
     sbuff.append(" req.getQueryString:").append(req.getQueryString()).append("\n");
     sbuff.append(" req.getRequestURI:").append(req.getRequestURI()).append("\n");
-    sbuff.append(" req.getRequestBase:").append(getRequestBase(req)).append("\n");
+    sbuff.append(" getRequestBase:").append(getRequestBase(req)).append("\n");
     sbuff.append(" getRequestServer:").append(getRequestServer(req)).append("\n");
     sbuff.append(" getRequest:").append(getRequest(req)).append("\n");
     sbuff.append("\n");

@@ -41,6 +41,7 @@
 package ucar.nc2;
 
 import ucar.nc2.iosp.IOServiceProvider;
+import ucar.nc2.util.CompareNetcdf;
 
 import java.io.IOException;
 import java.io.File;
@@ -119,7 +120,7 @@ public class TestGridGribIosp extends TestCase {
     //  (System.currentTimeMillis() - start) );
     // org,  copy,  _compareData,  _showCompare,  _showEach
     //ucar.nc2.TestCompare.compareFiles(ncfileBinary, ncfileText, true, true, true);
-     TestCompare.compareFiles(ncfileBinary, ncfileText, false, true, false);
+     CompareNetcdf.compareFiles(ncfileBinary, ncfileText, false, true, false);
      ncfileBinary.close();
      ncfileText.close();
   }

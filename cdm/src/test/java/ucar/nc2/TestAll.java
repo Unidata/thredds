@@ -47,6 +47,7 @@ import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.TestOffAggForecastModel;
+import ucar.nc2.iosp.grib.TestBinaryTextIndexes;
 
 /**
  * TestSuite that runs all nj22 unit tests.

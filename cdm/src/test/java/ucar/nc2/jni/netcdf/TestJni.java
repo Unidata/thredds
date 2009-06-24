@@ -34,6 +34,7 @@
 package ucar.nc2.jni.netcdf;
 
 import ucar.nc2.*;
+import ucar.nc2.util.CompareNetcdf;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Array;
@@ -329,7 +330,7 @@ group: group-2 {
       try {
         ncfileC = iosp.open(filename);
         ncfile = NetcdfFile.open(filename);
-        TestCompare.compareFiles(ncfile, ncfileC, true, false, false);
+        CompareNetcdf.compareFiles(ncfile, ncfileC, true, false, false);
 
       } catch (Throwable e) {
         e.printStackTrace();

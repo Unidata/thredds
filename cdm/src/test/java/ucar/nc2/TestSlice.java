@@ -42,6 +42,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriteable;
 import ucar.nc2.Variable;
+import ucar.nc2.util.CompareNetcdf;
 import junit.framework.TestCase;
 
 
@@ -142,6 +143,6 @@ public class TestSlice extends TestCase {
 
     Array org = var.read("3,3,:,:");
     Array data = sliced2.read();
-    TestCompare.compareData(org, data);
+    CompareNetcdf.compareData(org, data);
   }
 }

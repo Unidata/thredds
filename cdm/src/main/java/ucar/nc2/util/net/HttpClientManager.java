@@ -52,6 +52,7 @@ import org.apache.commons.httpclient.auth.CredentialsProvider;
 import java.io.*;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.GZIPInputStream;
+import java.util.Formatter;
 
 import ucar.nc2.util.IO;
 
@@ -314,6 +315,36 @@ public class HttpClientManager {
 
      return nbytes;
    }
+
+  static public void showHttpRequestInfo(Formatter f, HttpMethodBase m) {
+    f.format("HttpClient request %s %s %n", m.getName(), m.getPath());
+    f.format("   do Authentication=%s%n", m.getDoAuthentication());
+    f.format("   follow Redirects =%s%n", m.getFollowRedirects());
+    f.format("   effectiveVersion =%s%n", m.getEffectiveVersion());
+    f.format("   hostAuthState    =%s%n", m.getHostAuthState());
+
+    HttpMethodParams p = m.getParams();
+    f.format("   cookie policy    =%s%n", p.getCookiePolicy());
+    f.format("   http version     =%s%n", p.getVersion());
+    f.format("   timeout (msecs)  =%d%n", p.getSoTimeout());
+    f.format("   virtual host     =%s%n", p.getVirtualHost());
+
+    f.format("Request Headers = %n");
+    Header[] heads = m.getRequestHeaders();
+    for (int i = 0; i < heads.length; i++)
+      f.format("  %s", heads[i]);
+
+    f.format("%n");
+  }
+
+  static public void showHttpResponseInfo(Formatter f, HttpMethodBase m) {
+    f.format("HttpClient response status = %s%n", m.getStatusLine());
+    f.format("Reponse Headers = %n");
+    Header[] heads = m.getResponseHeaders();
+    for (int i = 0; i < heads.length; i++)
+      f.format("  %s", heads[i]);
+    f.format("%n");
+  }
 
 
 }

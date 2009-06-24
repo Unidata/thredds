@@ -35,6 +35,7 @@ package ucar.nc2.ncml;
 import junit.framework.*;
 
 import ucar.nc2.*;
+import ucar.nc2.util.CompareNetcdf;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.TestDataset;
 import ucar.unidata.util.StringUtil;
@@ -164,7 +165,7 @@ public class TestOffNcMLWriteRead extends TestCase {
     if (useRecords)
       new_ncd.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
-    TestCompare.compareFiles( org_ncd, new_ncd);
+    CompareNetcdf.compareFiles( org_ncd, new_ncd);
     //assert cat.equals( catV1);
 
     org_ncd.close();
@@ -208,7 +209,7 @@ public class TestOffNcMLWriteRead extends TestCase {
     if (useRecords)
       new_ncd.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
-    TestCompare.compareFiles( org_ncd, new_ncd);
+    CompareNetcdf.compareFiles( org_ncd, new_ncd);
     //assert cat.equals( catV1);
 
     org_ncd.close();
@@ -248,7 +249,7 @@ public class TestOffNcMLWriteRead extends TestCase {
     if (useRecords)
       new_ncd.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
-    TestCompare.compareFiles( org_ncd, new_ncd);
+    CompareNetcdf.compareFiles( org_ncd, new_ncd);
     //assert cat.equals( catV1);
 
     org_ncd.close();

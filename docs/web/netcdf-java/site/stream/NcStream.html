@@ -94,11 +94,12 @@
 <h2>CdmRemote Web Service</h2>
 <p>CdmRemote is an experimental web service implemented in the TDS, providing remote access to CDM datasets, using ncstream as the on-the-wire protocol. It provides access at the  NetcdfDataset, and Feature Type levels of the CDM. The TDS catalog uses <strong>ServiceType.CdmRemote</strong> service type.</p>
 <h3>NetcdfDataset (Data Access and Coordinate Systems)</h3>
+<p>The protobuf messages are defined by <strong>thredds\cdm\src\main\java\ucar\nc2\stream\ncStream.proto</strong></p>
 <p>Datasets can be accessed in index space, similar to netCDF or OPeNDAP. The Coordinate Systems are created on the server, and passed to the client.</p>
-<table width="831" border="1">
+<table width="1028" border="1">
 <tr>
         <th width="595" scope="col">Request</th>
-    <th width="220" scope="col">Response</th>
+    <th width="417" scope="col">Response</th>
   </tr>
       <tr>
         <td><p>
@@ -131,6 +132,7 @@
 </ul>
 <h3>&nbsp;</h3>
 <h3>FeatureType Dataset</h3>
+<p>The protobuf messages are defined by <strong>thredds\cdm\src\main\java\ucar\nc2\ft\point\remote\pointStream.proto</strong></p>
 <p>Datasets can be accessed in coordinate space, similar to the  Netcdf Subset Service, WCS and WMS. </p>
 <h4>PointDataset</h4>
 <table width="867" border="1">
