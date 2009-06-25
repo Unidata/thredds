@@ -46,9 +46,9 @@ import javax.swing.event.ChangeEvent;
 import thredds.ui.TextHistoryPane;
 import thredds.ui.IndependentWindow;
 import thredds.ui.BAMutil;
-import thredds.filesystem.server.AccessLogParser;
-import thredds.filesystem.server.TestFileSystem;
-import thredds.filesystem.server.LogReader;
+import thredds.logs.AccessLogParser;
+import thredds.logs.TestFileSystem;
+import thredds.logs.LogReader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,7 +64,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
-import java.beans.PropertyChangeEvent;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;

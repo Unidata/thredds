@@ -6,9 +6,10 @@ Changes in version 4.0
 
  Release Details:
   48:
+   WRF Conventions looks for GRIDTYPE if it cant find DYN_OPT
    improve M3IO CoordSysBuilder, from Qun He
    Stereographic Projection, from the "natural origin" and the tangent point, calculating the scale factor.
-   ToolsUI: Viewer: compare two files
+   ToolsUI: Viewer: compare two files, global attributes table
    ToolsUI: NcML Aggregation tab: check for homogeneity.
    AggFmrc: ragged, set missing values to NaN
    DConnect2: allowSessions now defaults to true, so "X-Accept-Session: true" header is sent

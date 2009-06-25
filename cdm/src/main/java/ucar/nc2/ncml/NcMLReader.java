@@ -1341,7 +1341,9 @@ public class NcMLReader {
 
     public NetcdfFile open(String cacheName, int buffer_size, CancelTask cancelTask, Object spiObject) throws IOException {
       if (debugAggDetail) System.out.println(" NcmlElementReader open nested dataset " + cacheName);
-      return readNcML(ncmlLocation, location, netcdfElem, cancelTask);
+      NetcdfFile result =  readNcML(ncmlLocation, location, netcdfElem, cancelTask);
+      result.setLocation(ncmlLocation+"#"+location);
+      return result;
     }
   }
 

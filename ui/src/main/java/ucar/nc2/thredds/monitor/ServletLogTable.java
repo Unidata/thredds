@@ -45,9 +45,9 @@ import javax.swing.event.ChangeEvent;
 import thredds.ui.TextHistoryPane;
 import thredds.ui.IndependentWindow;
 import thredds.ui.BAMutil;
-import thredds.filesystem.server.LogReader;
-import thredds.filesystem.server.ServletLogParser;
-import thredds.filesystem.server.TestFileSystem;
+import thredds.logs.LogReader;
+import thredds.logs.ServletLogParser;
+import thredds.logs.TestFileSystem;
 
 import java.util.*;
 import java.util.List;

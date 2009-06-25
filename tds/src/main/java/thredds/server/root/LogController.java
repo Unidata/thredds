@@ -5,8 +5,8 @@ import org.springframework.web.servlet.ModelAndView;
 import thredds.server.config.TdsContext;
 import thredds.servlet.UsageLog;
 import thredds.servlet.ServletUtil;
-import thredds.filesystem.server.LogReader;
-import thredds.filesystem.server.AccessLogParser;
+//import thredds.filesystem.server.LogReader;
+//import thredds.filesystem.server.AccessLogParser;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -50,13 +50,13 @@ public class LogController extends AbstractController {
     }
   }
 
-  private void read(String afterDate) throws IOException {
+  /* private void read(String afterDate) throws IOException {
     LogReader reader = new LogReader(new AccessLogParser());
 
     ArrayList<LogReader.Log> completeLogs = new ArrayList<LogReader.Log>(30000);
     for (File f : accessLogFiles)
       reader.scanLogFile(f, new MyClosure(), new MyLogFilter(afterDate), null);
-  }
+  } 
 
   private class MyLogFilter implements LogReader.LogFilter {
     String afterDate;
@@ -75,7 +75,7 @@ public class LogController extends AbstractController {
     public void process(LogReader.Log log) throws IOException {
       System.out.printf("%s%n", log.toString());
     }
-  }
+  } */
 
   ////////
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {

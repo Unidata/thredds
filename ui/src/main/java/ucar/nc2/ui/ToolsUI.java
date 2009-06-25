@@ -2844,6 +2844,14 @@ public class ToolsUI extends JPanel {
       });
       buttPanel.add(compareButton);
 
+      AbstractAction attAction = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        dsViewer.showAtts();
+      }
+    };
+    BAMutil.setActionProperties(attAction, "FontDecr", "global attributes", false, 'A', -1);
+    BAMutil.addActionToContainer(buttPanel, attAction);
+
       /* AbstractAction syncAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         NetcdfFile ds = dsViewer.getDataset();

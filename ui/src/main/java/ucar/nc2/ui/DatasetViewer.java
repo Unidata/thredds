@@ -37,6 +37,7 @@ import ucar.nc2.*;
 
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
+import ucar.ma2.Array;
 import thredds.ui.*;
 
 import java.awt.BorderLayout;
@@ -47,6 +48,7 @@ import java.beans.PropertyChangeEvent;
 import java.util.*;
 import java.io.StringWriter;
 import java.io.PrintWriter;
+import java.io.IOException;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -67,6 +69,7 @@ public class DatasetViewer extends JPanel {
   private NetcdfFile ds;
 
   private List<NestedTable> nestedTableList = new ArrayList<NestedTable>();
+  private BeanTableSorted attTable;
 
   private JPanel tablePanel;
   private JSplitPane mainSplit;
@@ -77,7 +80,7 @@ public class DatasetViewer extends JPanel {
 
   private TextHistoryPane infoTA;
   private StructureTable dataTable;
-  private IndependentWindow infoWindow, dataWindow, dumpWindow;
+  private IndependentWindow infoWindow, dataWindow, dumpWindow, attWindow;
 
   private boolean eventsOK = true;
 
@@ -117,6 +120,23 @@ public class DatasetViewer extends JPanel {
     dumpPane = new NCdumpPane((PreferencesExt) prefs.node("dumpPane"));
     dumpWindow = new IndependentWindow("NCDump Variable Data", BAMutil.getImage( "netcdfUI"), dumpPane);
     dumpWindow.setBounds( (Rectangle) prefs.getBean("DumpWindowBounds", new Rectangle( 300, 300, 300, 200)));
+  }
+
+  public void showAtts() {
+    if (ds == null) return;
+    if (attTable == null) {
+      // global attributes
+      attTable = new BeanTableSorted(AttributeBean.class, (PreferencesExt) prefs.node("AttributeBeans"), false);
+      attWindow = new IndependentWindow("Global Attribuutes", BAMutil.getImage( "netcdfUI"), attTable);
+      attWindow.setBounds( (Rectangle) prefs.getBean("AttWindowBounds", new Rectangle( 300, 100, 500, 800)));
+    }
+
+    List<AttributeBean> attlist = new ArrayList<AttributeBean>();
+    for (Attribute att : ds.getGlobalAttributes()) {
+      attlist.add(new AttributeBean(att));      
+    }
+    attTable.setBeans(attlist);
+    attWindow.show();    
   }
 
   public NetcdfFile getDataset() {
@@ -473,6 +493,7 @@ public class DatasetViewer extends JPanel {
     }
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     prefs.putBeanObject("DumpWindowBounds", dumpWindow.getBounds());
+    prefs.putBeanObject("AttWindowBounds", attWindow.getBounds());
 
     prefs.putInt("mainSplit", mainSplit.getDividerLocation());
   }
@@ -586,6 +607,30 @@ public class DatasetViewer extends JPanel {
    // public void setHasMissing( boolean hasMissing) { this.hasMissing = hasMissing; }
 
   }
+
+  public class AttributeBean {
+    private Attribute att;
+
+    // no-arg constructor
+    public AttributeBean() {}
+
+    // create from a dataset
+    public AttributeBean( Attribute att) {
+      this.att = att;
+    }
+
+    public String getName() { return att.getName(); }
+    public String getValue() {
+      Array value = att.getValues();
+      try {
+        return NCdumpW.printArray(value, null, null);
+      } catch (IOException e) {
+        return e.getMessage();
+      }
+    }
+
+  }
+
 
   /* public class StructureBean {
     // static public String editableProperties() { return "title include logging freq"; }

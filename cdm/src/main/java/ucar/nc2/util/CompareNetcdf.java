@@ -113,8 +113,9 @@ public class CompareNetcdf {
       if (copyVar == null) {
         f.format(" cant find variable %s in 2nd file%n", orgV.getName());
         ok = false;
+      } else {
+        ok &= compareVariables(orgV, copyVar, compareData, f);
       }
-      ok &= compareVariables(orgV, copyVar, compareData, f);
     }
 
     for (Variable copyV : copy.getVariables()) {

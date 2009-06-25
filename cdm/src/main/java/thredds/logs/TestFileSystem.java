@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.filesystem.server;
+package thredds.logs;
 
 import thredds.filesystem.CacheDirectory;
 import thredds.filesystem.CacheManager;

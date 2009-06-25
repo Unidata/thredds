@@ -70,11 +70,17 @@ public class WRFConvention extends CoordSysBuilder {
   }
 
   public static boolean isMine(NetcdfFile ncfile) {
-    Attribute att = ncfile.findGlobalAttribute("DYN_OPT");
-    if ((att == null) || (att.getNumericValue().intValue() != 2)) // ARW only
-      return false;
-
     if (null == ncfile.findDimension("south_north")) return false;
+
+    // ARW only
+    Attribute att = ncfile.findGlobalAttribute("DYN_OPT");
+    if (att != null) {
+      if (att.getNumericValue().intValue() != 2) return false;
+    } else {
+      att = ncfile.findGlobalAttribute("GRIDTYPE");
+      if (att == null) return false;
+      if (!att.getStringValue().equalsIgnoreCase("C")) return false;
+    }
 
     att = ncfile.findGlobalAttribute("MAP_PROJ");
     if (att == null) return false;
