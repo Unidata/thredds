@@ -33,8 +33,8 @@
 
 package thredds.filesystem.server;
 
-import thredds.filesystem.MDirectory;
-import thredds.filesystem.Manager;
+import thredds.filesystem.CacheDirectory;
+import thredds.filesystem.CacheManager;
 
 import java.io.*;
 
@@ -333,7 +333,7 @@ public class TestFileSystem {
         remaining = remaining.substring(1);
 
       String dirName = match.dir + remaining;
-      MDirectory mdir = manager.get(dirName);
+      CacheDirectory mdir = manager.get(dirName);
       if (mdir == null)
         if (show) System.out.printf("Dir %s from path %s doesnt exist%n", dirName, log.path);
         else if (show)
@@ -372,10 +372,10 @@ public class TestFileSystem {
                   "            />\n" +
                   "</ehcache>";
 
-  Manager manager;
+  CacheManager manager;
 
   TestFileSystem() {
-    manager = nocache ? new Manager() : new Manager(new StringBufferInputStream(config));
+    manager = nocache ? new CacheManager() : new CacheManager(new StringBufferInputStream(config));
     System.out.printf(" Ehcache at %s%n", ehLocation);
 
     if (pathMatcher == null)

@@ -32,7 +32,6 @@
  */
 package thredds.filesystem;
 
-import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.Statistics;
@@ -40,7 +39,6 @@ import net.jcip.annotations.ThreadSafe;
 
 import java.io.*;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.Iterator;
 
 /**
  * Manage filesystem info, with optional caching.
@@ -49,26 +47,26 @@ import java.util.Iterator;
  * @since Mar 21, 2009
  */
 @ThreadSafe
-public class Manager {
+public class CacheManager {
   public boolean debug = false;
 
-  private CacheManager cacheManager;
+  private net.sf.ehcache.CacheManager cacheManager;
   private Cache cache;
   private AtomicLong addDir = new AtomicLong();
   private AtomicLong hits = new AtomicLong();
   private AtomicLong requests = new AtomicLong();
 
   // no cache - just pass through to OS
-  public Manager() {
+  public CacheManager() {
   }
 
-  public Manager(String ehconfig) {
-    cacheManager = new CacheManager(ehconfig);
+  public CacheManager(String ehconfig) {
+    cacheManager = new net.sf.ehcache.CacheManager(ehconfig);
     cache = cacheManager.getCache("directory");
   }
 
-  public Manager(InputStream ehconfig) {
-    cacheManager = new CacheManager(ehconfig);
+  public CacheManager(InputStream ehconfig) {
+    cacheManager = new net.sf.ehcache.CacheManager(ehconfig);
     cache = cacheManager.getCache("directory");
   }
 
@@ -79,7 +77,7 @@ public class Manager {
     addDir.incrementAndGet();    
   }
 
-  public MDirectory get(String path) {
+  public CacheDirectory get(String path) {
     requests.incrementAndGet();
 
     if (cache != null) {
@@ -87,7 +85,7 @@ public class Manager {
       if (e != null) {
         if (debug) System.out.printf(" InCache %s%n", path);
 
-        MDirectory m = (MDirectory) e.getValue();
+        CacheDirectory m = (CacheDirectory) e.getValue();
         if (m.notModified()) {
           if (debug) System.out.printf(" Hit %s%n", path);
           hits.incrementAndGet();
@@ -102,7 +100,7 @@ public class Manager {
     if (!p.exists()) return null;
 
     if (debug) System.out.printf(" Read file system %s%n", path);
-    MDirectory m = new MDirectory(p);
+    CacheDirectory m = new CacheDirectory(p);
     add(path, m);
     return m;
   }
@@ -114,9 +112,8 @@ public class Manager {
   }
 
   public void show() {
-    Iterator iter = cache.getKeys().iterator();
-    while (iter.hasNext())
-      System.out.printf(" %s%n", iter.next());
+    for (Object o : cache.getKeys())
+      System.out.printf(" %s%n", o);
   }
 
   public void populate() {
@@ -124,7 +121,7 @@ public class Manager {
 
     long startCount = addDir.get();
     long start = System.nanoTime();
-    add( root, new MDirectory(this, new File(root)));
+    add( root, new CacheDirectory(this, new File(root)));
     long end = System.nanoTime();
     long total = addDir.get() - startCount;
     System.out.printf("populate %n%-20s total %d took %d msecs %n", root, total, (end - start) / 1000 / 1000);
@@ -146,7 +143,7 @@ public class Manager {
   }
 
   static public void main( String args[]) throws IOException {
-    Manager man = new Manager("C:/dev/tds/fileManager/src/main/ehcache.xml");
+    CacheManager man = new CacheManager("C:/dev/tds/fileManager/src/main/ehcache.xml");
 
     DataInputStream in = new DataInputStream( System.in);
     while (true) {
@@ -163,7 +160,7 @@ public class Manager {
       }
 
       long start = System.nanoTime();
-      MDirectory dir = man.get(line);
+      CacheDirectory dir = man.get(line);
       long end = System.nanoTime();
       System.out.printf("%n%-20s took %d usecs %n", line, (end - start) / 1000);
       System.out.printf(" man.size=%s%n", dir.getChildren().length);

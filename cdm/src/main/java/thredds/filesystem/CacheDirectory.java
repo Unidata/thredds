@@ -1,8 +1,9 @@
 /*
- * Copyright (c) 1998 - 2009. University Corporation for Atmospheric Research/Unidata
- * Portions of this software were developed by the Unidata Program at the
+ * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * 
+ * Portions of this software were developed by the Unidata Program at the 
  * University Corporation for Atmospheric Research.
- *
+ * 
  * Access and use of this software shall impose the following obligations
  * and understandings on the user. The user is granted the right, without
  * any fee or cost, to use, copy, modify, alter, enhance and distribute
@@ -19,7 +20,7 @@
  * any support, consulting, training or assistance of any kind with regard
  * to the use, operation and performance of this software nor to provide
  * the user with any updates, revisions, new versions or "bug fixes."
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -31,17 +32,62 @@
  */
 package thredds.filesystem;
 
+import java.io.File;
+import java.io.Serializable;
+
 /**
- * Managed File
- *
+ * Lightweight, serializable representation of a java.io.File directory
  * @author caron
- * @since Jun 25, 2009
+ * @since Mar 21, 2009
  */
+public class CacheDirectory extends CacheFile implements Serializable {
+  private String parent;
+  private CacheFile[] children;
 
+  public CacheDirectory(CacheManager m, File dir) {
+    super(dir);
+    this.parent = dir.getParent();
 
-public class MFile {
+    File[] subs = dir.listFiles();
+    if (subs == null) subs = new File[0];
 
-  public String getLocation() {
-    return null;
+    children = new CacheFile[subs.length];
+    int count = 0;
+    for (File f : subs) {
+      children[count++] = new CacheFile(f);
+    }
+
+    for (File f : subs) {
+      if (f.isDirectory()) {
+        CacheDirectory mdir = new CacheDirectory(m, f);
+        m.add(mdir.getPath(), mdir);
+      }
+    }
+  }
+
+  public CacheDirectory(File dir) {
+    super(dir);
+    this.parent = dir.getParent();
+
+    File[] subs = dir.listFiles();
+    if (subs == null) subs = new File[0];
+    children = new CacheFile[subs.length];
+    int count = 0;
+    for (File f : subs) {
+      children[count++] = new CacheFile(f);
+    }
+  }
+
+  public boolean notModified() {
+    File f = new File(name);
+    return f.lastModified() <= lastModified;
+  }
+
+  public String getPath() {
+    return parent +"/" + name;
+  }
+
+  public CacheFile[] getChildren() {
+    return children;
   }
 }

@@ -1,6 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
- *
+ * Copyright (c) 1998 - 2009. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -32,67 +31,53 @@
  */
 package thredds.filesystem;
 
-import ucar.nc2.units.DateFromString;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.io.FileFilter;
-import java.io.File;
-
+import java.util.Iterator;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
- * A managed collection of files.
+ * Class Description
  *
  * @author caron
+ * @since Jun 25, 2009
  */
-public class MCollection {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MCollection.class);
-  private List<CacheFile> list = new ArrayList<CacheFile>();
-  private Date last = null, first = null;
-  private String name;
-  private String rootDir;
 
-  public MCollection(String name, String dirName, FileFilter ff, String dateFormatString) {
-    this.name = name;
-    this.rootDir = dirName;
-    File dir = new File(dirName);
-    File[] files = dir.listFiles(ff);
-    for (File f : files) {
-      Date d = DateFromString.getDateUsingSimpleDateFormat(f.getName(), dateFormatString);
-      add(f, d);
-    }
+
+public class Controller {
+
+  public enum SyncPolicy { demand, manual, periodic}
+  public enum Purge { none, manual, periodic}
+  public enum PurgePolicy { maxAge}
+
+  ////////////////////////////////////////
+  private CacheManager manager;
+  private Map<String, MCollection> map = new HashMap<String, MCollection>();
+
+  public Controller( CacheManager manager) {
+    this.manager = manager;
   }
 
-  public String getName() {
-    return name;
+  public void addCollection(MCollection mc) {
+    map.put(mc.getName(), mc);
   }
 
-  public List<CacheFile> getList() {
-    return list;
+  public Iterator<MFile> getInventory(String collectionName) {
+    return null;
   }
 
-  public Date getLast() {
-    return last;
+  public void sync(String collectionName) {
   }
 
-  public Date getFirst() {
-    return first;
+  // locking
+  public Object lockCollection(String collectionName) {
+    return null;
   }
 
-  public void add(File file, Date d) {
-    CacheFile m = new CacheFile(file);
-    list.add(m);
-    m.setAttribute("date", d);
-    if ((last == null) || d.after(last))
-      last = d;
-    if ((first == null) || d.before(first))
-      first = d;
+  public void unlockCollection(Object lock) {
   }
 
-  public boolean remove(CacheFile file) {
-    return list.remove(file);
+  public boolean renewLock(Object lock) {
+    return false;
   }
-
 
 }

@@ -124,7 +124,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
   }
 
   /**
-   * For regular Grids
+   * Normal case: do something reasonable in deciding on the edges when we have the midpoints of a 2D coordinate.
    * @param midx x coordinates of midpoints
    * @return x coordinates of edges with shape (ny+1, nx+1)
    */
@@ -165,7 +165,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
   }
 
   /**
-   * For regular Grids
+   * Normal case: do something reasonable in deciding on the edges when we have the midpoints of a 2D coordinate.
    * @param midy y coordinates of midpoints
    * @return y coordinates of edges with shape (ny+1, nx+1)
    */
@@ -208,7 +208,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
 
 
   /**
-   * For staggered Grids
+   * Experimental: for WRF rotated (staggered) Grids
    * @param midx x coordinates of midpoints
    * @return x coordinates of edges with shape (ny+2, nx+1)
    */
@@ -242,7 +242,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
   }
 
   /**
-   * For staggered Grids
+   * Experimental: for WRF rotated (staggered) Grids
    * @param midy y coordinates of midpoints
    * @return y coordinates of edges with shape (ny+2, nx+1)
    */

@@ -34,60 +34,30 @@ package thredds.filesystem;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.HashMap;
 
 /**
- * Lightweight, serializable representation of a java.io.File directory
+ * Lightweight, serializable representation of a java.io.File with arbitrary attributes
  * @author caron
  * @since Mar 21, 2009
  */
-public class MDirectory extends MFile implements Serializable {
-  private String parent;
-  private MFile[] children;
+public class CacheFile implements Serializable {
+  public String name; 
+  public long lastModified;
+  public long length;
+  public boolean isDirectory;
 
-  public MDirectory(Manager m, File dir) {
-    super(dir);
-    this.parent = dir.getParent();
+  public HashMap<String, Object> att;
 
-    File[] subs = dir.listFiles();
-    if (subs == null) subs = new File[0];
-
-    children = new MFile[subs.length];
-    int count = 0;
-    for (File f : subs) {
-      children[count++] = new MFile(f);
-    }
-
-    for (File f : subs) {
-      if (f.isDirectory()) {
-        MDirectory mdir = new MDirectory(m, f);
-        m.add(mdir.getPath(), mdir);
-      }
-    }
+  public CacheFile( File f) {
+    this.name = f.getName();
+    this.lastModified = f.lastModified();
+    this.length = f.length();
+    this.isDirectory = f.isDirectory();
   }
 
-  public MDirectory(File dir) {
-    super(dir);
-    this.parent = dir.getParent();
-
-    File[] subs = dir.listFiles();
-    if (subs == null) subs = new File[0];
-    children = new MFile[subs.length];
-    int count = 0;
-    for (File f : subs) {
-      children[count++] = new MFile(f);
-    }
-  }
-
-  public boolean notModified() {
-    File f = new File(name);
-    return f.lastModified() <= lastModified;
-  }
-
-  public String getPath() {
-    return parent +"/" + name;
-  }
-
-  public MFile[] getChildren() {
-    return children;
+  public void setAttribute(String key, Object value) {
+    if (att == null) att = new HashMap<String, Object>(5);
+    att.put(key,value);
   }
 }
