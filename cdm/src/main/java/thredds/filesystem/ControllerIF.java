@@ -30,28 +30,42 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.ft.point.collection;
-
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.units.DateRange;
+package thredds.filesystem;
 
 import java.util.Iterator;
 
 /**
- * Interface for a collection of Datasets that each have a DateRange and location.
- * The location can be passed to FeatureDatasetFactoryManager.open()
+ * Describe
  *
  * @author caron
- * @since May 19, 2009
+ * @since Jun 25, 2009
  */
-public interface TimedCollection {
-  Dataset getPrototype();
-  Iterator<Dataset> getIterator();
-  TimedCollection subset(DateRange range);
-  DateRange getDateRange();
+public interface ControllerIF {
 
-  public interface Dataset {
-    String getLocation();
-    DateRange getDateRange();
+  public enum SyncPolicy {
+    demand, manual, periodic
   }
+
+  public enum Purge {
+    none, manual, periodic
+  }
+
+  public enum PurgePolicy {
+    maxAge
+  }
+
+  public void addCollection(MCollection mc);
+
+  public Iterator<MFile> getInventory(String collectionName);
+
+  public Iterator<MFile> getInventory(MCollection mc);
+
+  public void sync(String collectionName);// locking
+
+  public Object lockCollection(String collectionName);
+
+  public void unlockCollection(Object lock);
+
+  public boolean renewLock(Object lock);
+
 }

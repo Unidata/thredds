@@ -39,37 +39,36 @@ import java.util.Date;
 import java.util.List;
 import java.io.FileFilter;
 import java.io.File;
+import java.io.FilenameFilter;
 
 
 /**
- * A managed collection of files.
+ * Configuration object for a collection of files.
  *
  * @author caron
  */
 public class MCollection {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MCollection.class);
-  private List<CacheFile> list = new ArrayList<CacheFile>();
-  private Date last = null, first = null;
+
   private String name;
   private String rootDir;
+  private FilenameFilter ff;
+  private String dateFormatString;
+  private Date last = null, first = null;
 
-  public MCollection(String name, String dirName, FileFilter ff, String dateFormatString) {
+  public MCollection(String name, String dirName, FilenameFilter ff, String dateFormatString) {
     this.name = name;
     this.rootDir = dirName;
-    File dir = new File(dirName);
-    File[] files = dir.listFiles(ff);
-    for (File f : files) {
-      Date d = DateFromString.getDateUsingSimpleDateFormat(f.getName(), dateFormatString);
-      add(f, d);
-    }
+    this.ff = ff;
+    this.dateFormatString = dateFormatString;
   }
 
   public String getName() {
     return name;
   }
 
-  public List<CacheFile> getList() {
-    return list;
+  public String getDirectoryName() {
+    return rootDir;
   }
 
   public Date getLast() {
@@ -80,19 +79,17 @@ public class MCollection {
     return first;
   }
 
-  public void add(File file, Date d) {
-    CacheFile m = new CacheFile(file);
-    list.add(m);
-    m.setAttribute("date", d);
+  public boolean accept(MFile file) {
+    if ((ff != null) && !ff.accept(null, file.getLocation()))
+        return false;
+
+    Date d = DateFromString.getDateUsingSimpleDateFormat(file.getLocation(), dateFormatString);
     if ((last == null) || d.after(last))
       last = d;
     if ((first == null) || d.before(first))
       first = d;
-  }
 
-  public boolean remove(CacheFile file) {
-    return list.remove(file);
+    return true;
   }
-
 
 }

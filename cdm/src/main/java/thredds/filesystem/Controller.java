@@ -29,11 +29,10 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package thredds.filesystem;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Class Description
@@ -43,18 +42,14 @@ import java.util.HashMap;
  */
 
 
-public class Controller {
-
-  public enum SyncPolicy { demand, manual, periodic}
-  public enum Purge { none, manual, periodic}
-  public enum PurgePolicy { maxAge}
+public class Controller implements ControllerIF {
 
   ////////////////////////////////////////
-  private CacheManager manager;
+  private CacheManager cacheManager;
   private Map<String, MCollection> map = new HashMap<String, MCollection>();
 
-  public Controller( CacheManager manager) {
-    this.manager = manager;
+  public Controller(CacheManager cacheManager) {
+    this.cacheManager = cacheManager;
   }
 
   public void addCollection(MCollection mc) {
@@ -62,8 +57,84 @@ public class Controller {
   }
 
   public Iterator<MFile> getInventory(String collectionName) {
-    return null;
+    MCollection mc = map.get(collectionName);
+    if (mc == null) return null;
+    return getInventory(mc);
   }
+
+  public Iterator<MFile> getInventory(MCollection mc) {
+    CacheDirectory cd = cacheManager.get(mc.getDirectoryName()); // check in cache, else call File.listFiles()
+    if (cd == null) return null;
+    return new FilteredIterator(mc, cd);
+  }
+
+  ////////////////////////////////////////////////////////////
+
+  private class FilteredIterator implements Iterator<MFile> {
+    private Iterator<MFile> orgIter;
+    private MCollection mc;
+
+    private MFile next;
+
+    FilteredIterator(MCollection mc, CacheDirectory cd) {
+      this.orgIter = new MFileIterator(mc, cd);
+      this.mc = mc;
+    }
+
+    public boolean hasNext() {
+      next = nextFilteredDataPoint();
+      return (next != null);
+    }
+
+    public MFile next() {
+      return next;
+    }
+
+    public void remove() {
+      throw new UnsupportedOperationException();
+    }
+
+    private MFile nextFilteredDataPoint() {
+      if (orgIter == null) return null;
+      if (!orgIter.hasNext()) return null;
+
+      MFile pdata = orgIter.next();
+      while (!mc.accept(pdata)) {
+        if (!orgIter.hasNext()) return null;
+        pdata = orgIter.next();
+      }
+      return pdata;
+    }
+  }
+
+  private class MFileIterator implements Iterator<MFile> {
+    MCollection mc;
+    CacheDirectory cd;
+    CacheFile[] files;
+    int count = 0;
+
+    MFileIterator(MCollection mc, CacheDirectory cd) {
+      this.mc = mc;
+      this.cd = cd;
+      files = cd.getChildren();
+    }
+
+    public boolean hasNext() {
+      return count < files.length;
+    }
+
+    public MFile next() {
+      CacheFile cfile = files[count++];
+      return new MFile(cd.getPath() + "/" + cfile.name);
+    }
+
+    public void remove() {
+      throw new UnsupportedOperationException();
+    }
+  }
+
+
+  //////////////////////
 
   public void sync(String collectionName) {
   }

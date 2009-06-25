@@ -38,8 +38,13 @@ import java.util.*;
 import java.io.File;
 import java.io.FilenameFilter;
 
+import thredds.filesystem.ControllerIF;
+import thredds.filesystem.MFile;
+import thredds.filesystem.MCollection;
+
 /**
  * Manages feature dataset collections.
+ * Look; not updating the collection.
  *
  * collection URI syntax:
  *   directory/filter?dateFormatMark
@@ -49,20 +54,22 @@ import java.io.FilenameFilter;
  */
 
 
-public class CollectionManager implements TimedCollection {
-  private boolean show = true;
+public class CollectionManager2 implements TimedCollection {
+  private static boolean show = true;
+
   private List<TimedCollection.Dataset> c;
   private DateRange dateRange;
 
-  static public CollectionManager factory(String collectionDesc, Formatter errlog) {
-    return new CollectionManager(collectionDesc, errlog);
+  static public CollectionManager2 factory(ControllerIF cache, String collectionDesc, Formatter errlog) {
+    return new CollectionManager2(cache, collectionDesc, errlog);
   }
 
-  private  CollectionManager(String collectionDesc, Formatter errlog) {
+  private CollectionManager2(ControllerIF cache, String collectionDesc, Formatter errlog) {
+
     // first part is the directory
     int posWildcard = collectionDesc.lastIndexOf('/');
     String dirName = collectionDesc.substring(0, posWildcard);
-    File dir = new File(dirName);
+
     File locFile = new File( dirName);
     if (!locFile.exists()) {
       errlog.format(" Directory %s does not exist %n", dirName);
@@ -84,13 +91,15 @@ public class CollectionManager implements TimedCollection {
 
     if (show) System.out.printf("CollectionManager collectionDesc=%s filter=%s dateFormatMark=%s %n", collectionDesc, filter, dateFormatMark);
 
-    // sort
-    File[] files = (filter == null) ? dir.listFiles() : dir.listFiles(new WildcardMatchOnNameFilter( filter));
-    List<File> fileList = Arrays.asList(files);
+    // get the inventory, sort
+    List<MFile> fileList = new ArrayList<MFile>();
+    Iterator<MFile> invIter = cache.getInventory( new MCollection(null, dirName, new WildcardMatchOnNameFilter( filter), dateFormatMark));
+    while (invIter.hasNext())
+      fileList.add(invIter.next());
     Collections.sort(fileList);
 
     c = new ArrayList<TimedCollection.Dataset>(fileList.size());
-    for (File f : fileList)
+    for (MFile f : fileList)
       c.add(new Dataset(f, dateFormatMark));
 
     if (dateFormatMark != null) {
@@ -109,7 +118,7 @@ public class CollectionManager implements TimedCollection {
     if (show) System.out.printf("%s %n", this);
   }
 
-  CollectionManager(CollectionManager from, DateRange want) {
+  CollectionManager2(CollectionManager2 from, DateRange want) {
     c = new ArrayList<TimedCollection.Dataset>(from.c.size());
     for (TimedCollection.Dataset d : from.c)
       if (want.intersects(d.getDateRange()))
@@ -125,7 +134,7 @@ public class CollectionManager implements TimedCollection {
   }
 
   public TimedCollection subset(DateRange range) {
-    return new CollectionManager(this, range);
+    return new CollectionManager2(this, range);
   }
 
   public DateRange getDateRange() {
@@ -147,8 +156,8 @@ public class CollectionManager implements TimedCollection {
     DateRange dateRange;
     Date start;
 
-    Dataset(File  f, String dateFormatMark) {
-      this.location = f.getPath();
+    Dataset(MFile f, String dateFormatMark) {
+      this.location = f.getLocation();
       if (dateFormatMark != null)
         start = DateFromString.getDateUsingDemarkatedCount(f.getName(), dateFormatMark, '#');
     }

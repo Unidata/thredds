@@ -165,7 +165,7 @@ public class TestPointFeatureTypes extends TestCase {
     testPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/gempakSurface.xml/collection", FeatureType.STATION, true);
   }
 
-  public void testCdmRemoteCollectionSubsets() throws IOException {
+  public void utestCdmRemoteCollectionSubsets() throws IOException {
     Formatter f = new Formatter();
     String location = "cdmremote:http://localhost:8080/thredds/cdmremote/gempakSurface.xml/collection";
     FeatureDataset fdataset = FeatureDatasetFactoryManager.open(FeatureType.STATION, location, null, f);

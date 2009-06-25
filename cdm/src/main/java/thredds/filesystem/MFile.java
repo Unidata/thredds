@@ -39,9 +39,23 @@ package thredds.filesystem;
  */
 
 
-public class MFile {
+public class MFile implements Comparable<MFile> {
+  private String location;
+
+  MFile(String  location) {
+    this.location = location;
+  }
 
   public String getLocation() {
-    return null;
+    return location;
+  }
+
+  public String getName() {
+    int pos = location.lastIndexOf('/');
+    return (pos < 0) ? location : location.substring(pos+1);
+  }
+
+  public int compareTo(MFile o) {
+    return location.compareTo( o.getLocation());
   }
 }

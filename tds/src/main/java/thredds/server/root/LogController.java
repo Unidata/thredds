@@ -5,14 +5,11 @@ import org.springframework.web.servlet.ModelAndView;
 import thredds.server.config.TdsContext;
 import thredds.servlet.UsageLog;
 import thredds.servlet.ServletUtil;
-import thredds.filesystem.MCollection;
 import thredds.filesystem.server.LogReader;
 import thredds.filesystem.server.AccessLogParser;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import ucar.nc2.units.DateFormatter;
 
 import java.util.*;
 import java.io.File;
@@ -28,7 +25,6 @@ import java.io.PrintWriter;
  */
 public class LogController extends AbstractController {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
-  private MCollection collection;
   private File accessLogDirectory;
   private List<File> accessLogFiles = new ArrayList<File>(10);
 
