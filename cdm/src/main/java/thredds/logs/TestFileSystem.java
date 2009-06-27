@@ -34,7 +34,7 @@
 package thredds.logs;
 
 import thredds.filesystem.CacheDirectory;
-import thredds.filesystem.CacheManager;
+import thredds.filesystem.CacheManagerOld;
 
 import java.io.*;
 
@@ -372,10 +372,10 @@ public class TestFileSystem {
                   "            />\n" +
                   "</ehcache>";
 
-  CacheManager manager;
+  CacheManagerOld manager;
 
   TestFileSystem() {
-    manager = nocache ? new CacheManager() : new CacheManager(new StringBufferInputStream(config));
+    manager = nocache ? new CacheManagerOld() : new CacheManagerOld(new StringBufferInputStream(config));
     System.out.printf(" Ehcache at %s%n", ehLocation);
 
     if (pathMatcher == null)

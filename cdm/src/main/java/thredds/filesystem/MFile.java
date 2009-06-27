@@ -40,22 +40,36 @@ package thredds.filesystem;
 
 
 public class MFile implements Comparable<MFile> {
-  private String location;
+  private String parentDirName;
+  private CacheFile cfile;
 
-  MFile(String  location) {
-    this.location = location;
+  MFile(String parentDirName, CacheFile cfile) {
+    this.parentDirName = parentDirName;
+    this.cfile = cfile;
   }
 
-  public String getLocation() {
-    return location;
+  public long getLastModified() {
+    return cfile.lastModified;
+  }
+
+  public long getLength() {
+    return cfile.length;
+  }
+
+  public boolean isDirectory() {
+    return cfile.isDirectory;
+  }
+
+  public String getPath() {
+    return parentDirName + "/" + cfile.getShortName();
   }
 
   public String getName() {
-    int pos = location.lastIndexOf('/');
-    return (pos < 0) ? location : location.substring(pos+1);
+    return cfile.getShortName();
   }
 
   public int compareTo(MFile o) {
-    return location.compareTo( o.getLocation());
+    return getPath().compareTo( o.getPath());
   }
+
 }

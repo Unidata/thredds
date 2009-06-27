@@ -1,6 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
- *
+ * Copyright (c) 1998 - 2009. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -30,83 +29,28 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package thredds.filesystem;
 
 import ucar.nc2.units.DateFromString;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.io.FileFilter;
-import java.io.File;
-import java.io.FilenameFilter;
-
 
 /**
- * Configuration object for a collection of files.
+ * Extract Date from filename, using DateFromString.getDateUsingSimpleDateFormat on the name (not path)
  *
  * @author caron
+ * @since Jun 26, 2009
  */
-public class MCollection {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MCollection.class);
+public class DateExtractorFromFilename implements DateExtractor {
 
-  private String name;
-  private String dirName;
-  private MFileFilter ff;
-  private DateExtractor dateExtractor;
-  private Date last = null, first = null;
+  private String dateFormatString;
 
-  /**
-   *
-   * @param name name of collection
-   * @param dirName directory name
-   * @param ff optional FilenameFilter (may be null) - applies only to non-directories
-   * @param dateExtractor optional DateExtractor (may be null) - applies only to non-directories (?)
-   */
-  public MCollection(String name, String dirName, MFileFilter ff, DateExtractor dateExtractor) {
-    this.name = name;
-    this.dirName = dirName;
-    this.ff = ff;
-    this.dateExtractor = dateExtractor;
+  public DateExtractorFromFilename(String dateFormatString) {
+    this.dateFormatString = dateFormatString;
   }
 
-  public MCollection subdir(MFile child) {
-    return new MCollection( name+"/"+child.getName(), dirName+"/"+child.getName(), ff, dateExtractor);
+  public Date getDate(MFile mfile) {
+    return DateFromString.getDateUsingSimpleDateFormat(mfile.getName(), dateFormatString);
   }
-
-
-  public String getName() {
-    return name;
-  }
-
-  public String getDirectoryName() {
-    return dirName;
-  }
-
-  public Date getLast() {
-    return last;
-  }
-
-  public Date getFirst() {
-    return first;
-  }
-
-  public boolean accept(MFile file) {
-    if ((ff != null) && !ff.accept(file))
-        return false;
-
-    if (null != dateExtractor) {
-      Date d = dateExtractor.getDate(file);
-
-      if (d != null) {
-        if ((last == null) || d.after(last))
-          last = d;
-        if ((first == null) || d.before(first))
-          first = d;
-      }
-    }
-
-    return true;
-  }
-
 }

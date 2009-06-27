@@ -17,6 +17,8 @@ Changes in version 4.0
   * netcdf-java 4.0
 
 Release Details:
+ 18:
+  Opendap - NcSDString: bug in scalar ArrayChar
  17:
   Add file size limit to NetcdfCFWriter.
   Minor bug fixes.

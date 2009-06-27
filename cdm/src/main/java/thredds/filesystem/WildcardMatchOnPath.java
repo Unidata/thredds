@@ -1,6 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
- *
+ * Copyright (c) 1998 - 2009. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -30,83 +29,32 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package thredds.filesystem;
 
-import ucar.nc2.units.DateFromString;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.io.FileFilter;
-import java.io.File;
-import java.io.FilenameFilter;
-
-
 /**
- * Configuration object for a collection of files.
+ * Describe
  *
  * @author caron
+ * @since Jun 26, 2009
  */
-public class MCollection {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MCollection.class);
+public class WildcardMatchOnPath implements MFileFilter {
+  protected String wildcardString;
+  protected java.util.regex.Pattern pattern;
 
-  private String name;
-  private String dirName;
-  private MFileFilter ff;
-  private DateExtractor dateExtractor;
-  private Date last = null, first = null;
+  public WildcardMatchOnPath(String wildcardString) {
+    this.wildcardString = wildcardString;
 
-  /**
-   *
-   * @param name name of collection
-   * @param dirName directory name
-   * @param ff optional FilenameFilter (may be null) - applies only to non-directories
-   * @param dateExtractor optional DateExtractor (may be null) - applies only to non-directories (?)
-   */
-  public MCollection(String name, String dirName, MFileFilter ff, DateExtractor dateExtractor) {
-    this.name = name;
-    this.dirName = dirName;
-    this.ff = ff;
-    this.dateExtractor = dateExtractor;
-  }
+    String regExp = wildcardString.replaceAll("\\.", "\\\\."); // Replace "." with "\.".
+    regExp = regExp.replaceAll("\\*", ".*"); // Replace "*" with ".*".
+    regExp = regExp.replaceAll("\\?", ".?"); // Replace "?" with ".?".
 
-  public MCollection subdir(MFile child) {
-    return new MCollection( name+"/"+child.getName(), dirName+"/"+child.getName(), ff, dateExtractor);
-  }
-
-
-  public String getName() {
-    return name;
-  }
-
-  public String getDirectoryName() {
-    return dirName;
-  }
-
-  public Date getLast() {
-    return last;
-  }
-
-  public Date getFirst() {
-    return first;
+    // Compile regular expression pattern
+    this.pattern = java.util.regex.Pattern.compile(regExp);
   }
 
   public boolean accept(MFile file) {
-    if ((ff != null) && !ff.accept(file))
-        return false;
-
-    if (null != dateExtractor) {
-      Date d = dateExtractor.getDate(file);
-
-      if (d != null) {
-        if ((last == null) || d.after(last))
-          last = d;
-        if ((first == null) || d.before(first))
-          first = d;
-      }
-    }
-
-    return true;
+    java.util.regex.Matcher matcher = this.pattern.matcher(file.getPath());
+    return matcher.matches();
   }
-
 }

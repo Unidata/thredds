@@ -45,10 +45,10 @@ import java.util.*;
 public class Controller implements ControllerIF {
 
   ////////////////////////////////////////
-  private CacheManager cacheManager;
+  private CacheManagerOld cacheManager;
   private Map<String, MCollection> map = new HashMap<String, MCollection>();
 
-  public Controller(CacheManager cacheManager) {
+  public Controller(CacheManagerOld cacheManager) {
     this.cacheManager = cacheManager;
   }
 
@@ -125,7 +125,7 @@ public class Controller implements ControllerIF {
 
     public MFile next() {
       CacheFile cfile = files[count++];
-      return new MFile(cd.getPath() + "/" + cfile.name);
+      return new MFile(cd.getPath(), cfile);
     }
 
     public void remove() {

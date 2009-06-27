@@ -41,15 +41,30 @@ import java.util.HashMap;
  * @since Mar 21, 2009
  */
 public class CacheFile implements Serializable {
-  public String name; 
-  public long lastModified;
-  public long length;
-  public boolean isDirectory;
+  protected String shortName;
+  protected long lastModified;
+  protected long length;
+  protected boolean isDirectory;
+  private HashMap<String, Object> att; // does this need to be concurrent?
 
-  public HashMap<String, Object> att;
+  public String getShortName() {
+    return shortName;
+  }
+
+  public long getLastModified() {
+    return lastModified;
+  }
+
+  public long getLength() {
+    return length;
+  }
+
+  public boolean isDirectory() {
+    return isDirectory;
+  }
 
   public CacheFile( File f) {
-    this.name = f.getName();
+    this.shortName = f.getName();
     this.lastModified = f.lastModified();
     this.length = f.length();
     this.isDirectory = f.isDirectory();
@@ -59,4 +74,12 @@ public class CacheFile implements Serializable {
     if (att == null) att = new HashMap<String, Object>(5);
     att.put(key,value);
   }
+
+  public Object getAttribute(String key) {
+    if (att == null) return null;
+    return att.get(key);
+  }
+
+
+
 }

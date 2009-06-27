@@ -40,10 +40,10 @@ import java.io.Serializable;
  * @since Mar 21, 2009
  */
 public class CacheDirectory extends CacheFile implements Serializable {
-  private String parent;
+  private String parentDirName;
   private CacheFile[] children;
 
-  public CacheDirectory(CacheManager m, File dir) {
+  /* public CacheDirectory(CacheManager m, File dir) {
     super(dir);
     this.parent = dir.getParent();
 
@@ -62,11 +62,11 @@ public class CacheDirectory extends CacheFile implements Serializable {
         m.add(mdir.getPath(), mdir);
       }
     }
-  }
+  } */
 
   public CacheDirectory(File dir) {
     super(dir);
-    this.parent = dir.getParent();
+    this.parentDirName = dir.getParent();
 
     File[] subs = dir.listFiles();
     if (subs == null) subs = new File[0];
@@ -78,12 +78,12 @@ public class CacheDirectory extends CacheFile implements Serializable {
   }
 
   public boolean notModified() {
-    File f = new File(name);
+    File f = new File(getPath());
     return f.lastModified() <= lastModified;
   }
 
   public String getPath() {
-    return parent +"/" + name;
+    return parentDirName +"/" + getPath();
   }
 
   public CacheFile[] getChildren() {

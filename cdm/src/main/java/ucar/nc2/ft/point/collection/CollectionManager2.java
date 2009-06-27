@@ -36,11 +36,8 @@ import ucar.nc2.units.DateFromString;
 
 import java.util.*;
 import java.io.File;
-import java.io.FilenameFilter;
 
-import thredds.filesystem.ControllerIF;
-import thredds.filesystem.MFile;
-import thredds.filesystem.MCollection;
+import thredds.filesystem.*;
 
 /**
  * Manages feature dataset collections.
@@ -91,9 +88,13 @@ public class CollectionManager2 implements TimedCollection {
 
     if (show) System.out.printf("CollectionManager collectionDesc=%s filter=%s dateFormatMark=%s %n", collectionDesc, filter, dateFormatMark);
 
+    MFileFilter mfilter = (null == filter) ? null : new WildcardMatchOnPath(filter);
+    DateExtractor dateExtractor = (dateFormatMark == null) ? null : new DateExtractorFromFilename(dateFormatMark);
+    MCollection mc = new MCollection(dirName, dirName, mfilter, dateExtractor);
+
     // get the inventory, sort
     List<MFile> fileList = new ArrayList<MFile>();
-    Iterator<MFile> invIter = cache.getInventory( new MCollection(null, dirName, new WildcardMatchOnNameFilter( filter), dateFormatMark));
+    Iterator<MFile> invIter = cache.getInventory( mc);
     while (invIter.hasNext())
       fileList.add(invIter.next());
     Collections.sort(fileList);
@@ -157,7 +158,7 @@ public class CollectionManager2 implements TimedCollection {
     Date start;
 
     Dataset(MFile f, String dateFormatMark) {
-      this.location = f.getLocation();
+      this.location = f.getPath();
       if (dateFormatMark != null)
         start = DateFromString.getDateUsingDemarkatedCount(f.getName(), dateFormatMark, '#');
     }
@@ -183,34 +184,4 @@ public class CollectionManager2 implements TimedCollection {
     }
   }
 
-  private class WildcardMatchOnNameFilter implements FilenameFilter {
-    protected java.util.regex.Pattern pattern;
-
-    public WildcardMatchOnNameFilter(String wildcardString) {
-      // Map wildcard to regular expresion.
-      String regExp = mapWildcardToRegExp(wildcardString);
-
-      // Compile regular expression pattern
-      this.pattern = java.util.regex.Pattern.compile(regExp);
-    }
-
-    private String mapWildcardToRegExp(String wildcardString) {
-      // Replace "." with "\.".
-      wildcardString = wildcardString.replaceAll("\\.", "\\\\.");
-
-      // Replace "*" with ".*".
-      wildcardString = wildcardString.replaceAll("\\*", ".*");
-
-      // Replace "?" with ".?".
-      wildcardString = wildcardString.replaceAll("\\?", ".?");
-
-      return wildcardString;
-    }
-
-    public boolean accept(File dir, String name) {
-      java.util.regex.Matcher matcher = this.pattern.matcher(name);
-      return matcher.matches();
-    }
-
-  }
 }

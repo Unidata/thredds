@@ -97,13 +97,13 @@ public class NcSDString extends SDString implements HasNetcdfVariable {
 
       if (ncVar.getRank() == 0) {
         // scalar char - convert to a String
-        ArrayChar.D0 a = (ArrayChar.D0) data;
+        ArrayChar a = (ArrayChar) data;
         byte[] b = new byte[1];
-        b[0] = (byte) a.get();
+        b[0] = (byte) a.getChar(0);
         localVal = new String(b);
       } else {
         // 1D
-        ArrayChar.D1 a = (ArrayChar.D1) data;
+        ArrayChar a = (ArrayChar) data;
         localVal = a.getString(a.getIndex()); // fetches the entire String
       }
     }

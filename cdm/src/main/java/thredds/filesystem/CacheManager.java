@@ -40,13 +40,15 @@ import java.io.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Manage filesystem info, with optional caching.
- * Must be thread safe. Uses ehcache underneath.
+ * Cache filesystem info.
+ * Must be thread safe.
+ * Uses ehcache underneath.
+ *
  * @author caron
  * @since Mar 21, 2009
  */
 @ThreadSafe
-public class CacheManager {
+class CacheManager {
   public boolean debug = false;
 
   private net.sf.ehcache.CacheManager cacheManager;
@@ -54,10 +56,6 @@ public class CacheManager {
   private AtomicLong addDir = new AtomicLong();
   private AtomicLong hits = new AtomicLong();
   private AtomicLong requests = new AtomicLong();
-
-  // no cache - just pass through to OS
-  public CacheManager() {
-  }
 
   public CacheManager(String ehconfig) {
     cacheManager = new net.sf.ehcache.CacheManager(ehconfig);
@@ -69,11 +67,11 @@ public class CacheManager {
     cache = cacheManager.getCache("directory");
   }
 
-  public void add(Object key, Object value) {
+  public void add(String path, Object value) {
     if (cache == null) return;
 
-    cache.put(new Element(key, value));
-    addDir.incrementAndGet();    
+    cache.put(new Element(path, value));
+    addDir.incrementAndGet();
   }
 
   public CacheDirectory get(String path) {
@@ -110,6 +108,8 @@ public class CacheManager {
     cacheManager = null;
   }
 
+  ////////////////////////////////////////////////////////////////
+
   public void show() {
     for (Object o : cache.getKeys())
       System.out.printf(" %s%n", o);
@@ -120,7 +120,7 @@ public class CacheManager {
 
     long startCount = addDir.get();
     long start = System.nanoTime();
-    add( root, new CacheDirectory(this, new File(root)));
+    //add( root, new CacheDirectory(this, new File(root)));
     long end = System.nanoTime();
     long total = addDir.get() - startCount;
     System.out.printf("populate %n%-20s total %d took %d msecs %n", root, total, (end - start) / 1000 / 1000);
@@ -139,6 +139,38 @@ public class CacheManager {
       Statistics stats = cache.getStatistics();
       System.out.printf(" stats= %s%n", stats.toString());
     }
+  }
+
+  private static String ehLocation = "/data/thredds/ehcache/";
+  private static String config =
+          "<ehcache>\n" +
+                  "    <diskStore path='" + ehLocation + "'/>\n" +
+                  "    <defaultCache\n" +
+                  "              maxElementsInMemory='10000'\n" +
+                  "              eternal='false'\n" +
+                  "              timeToIdleSeconds='120'\n" +
+                  "              timeToLiveSeconds='120'\n" +
+                  "              overflowToDisk='true'\n" +
+                  "              maxElementsOnDisk='10000000'\n" +
+                  "              diskPersistent='false'\n" +
+                  "              diskExpiryThreadIntervalSeconds='120'\n" +
+                  "              memoryStoreEvictionPolicy='LRU'\n" +
+                  "              />\n" +
+                  "    <cache name='directory'\n" +
+                  "            maxElementsInMemory='1000'\n" +
+                  "            eternal='false'\n" +
+                  "            timeToIdleSeconds='864000'\n" +
+                  "            timeToLiveSeconds='0'\n" +
+                  "            overflowToDisk='true'\n" +
+                  "            maxElementsOnDisk='0'\n" +
+                  "            diskPersistent='true'\n" +
+                  "            diskExpiryThreadIntervalSeconds='3600'\n" +
+                  "            memoryStoreEvictionPolicy='LRU'\n" +
+                  "            />\n" +
+                  "</ehcache>";
+
+  void TestFileSystem() {
+    CacheManager manager = new CacheManager(new StringBufferInputStream(config));
   }
 
   static public void main( String args[]) throws IOException {
