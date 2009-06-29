@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema
-        targetNamespace="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
-        xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
-        xmlns:cat="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+        targetNamespace="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v2.0"
+        xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v2.0"
+        xmlns:cat="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v2.0"
         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
         xmlns:xlink="http://www.w3.org/1999/xlink"
         xmlns:ncml="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
         elementFormDefault="qualified"
-        attributeFormDefault="unqualified" version="1.0.3">
+        attributeFormDefault="unqualified" version="2.0">
 
   <!-- include all objects from core netcdf schema and allow redefinition -->
-  <xsd:redefine schemaLocation="InvCatalog.1.0.3.xsd">
+  <xsd:redefine schemaLocation="InvCatalog.2.0.xsd">
     <xsd:complexType name="tdsConfigType">
       <xsd:complexContent>
         <xsd:extension base="cat:catalogType">
           <xsd:sequence>
-            <xsd:element ref="datasetScan" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element ref="datasetCollection" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element ref="datasetFmrc" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element ref="datasetRoot" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element ref="datasetScan" minOccurs="0" maxOccurs="unbounded"/>
           </xsd:sequence>
         </xsd:extension>
       </xsd:complexContent>
@@ -215,12 +216,25 @@
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="cat:DatasetType">
+          <xsd:sequence>
+            <xsd:element ref="collection" minOccurs="1"/>
+            <xsd:element name="fmrcDefinition" minOccurs="0"/>
+          </xsd:sequence>
           <xsd:attribute name="featureType" type="xsd:string" use="required"/>
           <xsd:attribute name="path" type="xsd:string" use="required"/>
-          <xsd:attribute name="location" type="xsd:string" use="required"/>
-          <xsd:attribute name="dateFormatMark" type="xsd:string" />
         </xsd:extension>
       </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="collection">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="fmrcDefinition" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attribute name="spec" type="xsd:string" use="required"/>
+      <xsd:attribute name="recheckEvery" type="xsd:string"/>
+      <xsd:attribute name="olderThan" type="xsd:string"/>
     </xsd:complexType>
   </xsd:element>
 

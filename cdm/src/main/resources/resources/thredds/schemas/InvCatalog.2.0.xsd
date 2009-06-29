@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema
-  targetNamespace="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
-  xmlns:cat="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+  targetNamespace="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v2.0"
+  xmlns:cat="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v2.0"
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
   xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:ncml="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
   elementFormDefault="qualified"
-  attributeFormDefault="unqualified" version="1.0.3">
+  attributeFormDefault="unqualified" version="v2.0">
 
   <!-- import other namespaces -->
   <xsd:import namespace="http://www.w3.org/1999/xlink" schemaLocation="http://www.unidata.ucar.edu/schemas/other/xlink.xsd"/>
   <xsd:import namespace="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" schemaLocation="http://www.unidata.ucar.edu/schemas/netcdf/ncml-2.2.xsd"/>
 
   <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+  <!--SEPERATE CLIENT AND SERVER CATALOGS -->
   <!-- Catalog element -->
   <xsd:complexType name="catalogType">
 
