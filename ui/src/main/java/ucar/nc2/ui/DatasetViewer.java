@@ -493,7 +493,7 @@ public class DatasetViewer extends JPanel {
     }
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     prefs.putBeanObject("DumpWindowBounds", dumpWindow.getBounds());
-    prefs.putBeanObject("AttWindowBounds", attWindow.getBounds());
+    if (attWindow != null) prefs.putBeanObject("AttWindowBounds", attWindow.getBounds());
 
     prefs.putInt("mainSplit", mainSplit.getDividerLocation());
   }
