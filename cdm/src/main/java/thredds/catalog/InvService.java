@@ -306,7 +306,8 @@ public class InvService {
    * @return true if the service Base is reletive
    */
   public boolean isRelativeBase() {
-    if (getServiceType() == ServiceType.COMPOUND) return false;
+    if (getServiceType() == ServiceType.COMPOUND)
+      return true;
 
     if (uri == null) {
       try {

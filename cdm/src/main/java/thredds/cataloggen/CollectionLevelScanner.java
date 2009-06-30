@@ -826,18 +826,23 @@ public class CollectionLevelScanner
   //   - baseID + "/" + node.getPath().substring( collectionLevel.length) [when ID added at catalog construction using node info]
   private String getID( CrawlableDataset dataset )
   {
-    if ( dataset == null ) return null;
-    if ( collectionId == null ) return null;
+    if ( dataset == null )
+      return null;
+    if ( collectionId == null )
+      return null;
+
     int i = collectionLevel.getPath().length();
-    // Deal with case where paths match.
-    String id = i < dataset.getPath().length()
-                ? dataset.getPath().substring( i + 1 ) : "";
+    String id = dataset.getPath().substring( i );
+    if ( id.startsWith( "/" ))
+      id = id.substring( 1 );
     if ( collectionId.equals( "" ) )
     {
-      if ( id.equals( "")) return null;
+      if ( id.equals( ""))
+        return null;
       return id;
     }
-    if ( id.equals( "") ) return collectionId;
+    if ( id.equals( "") )
+      return collectionId;
 
     return( collectionId + "/" + id );
   }
@@ -853,27 +858,29 @@ public class CollectionLevelScanner
          && ! serviceForThisDs.getServiceType().equals( ServiceType.COMPOUND ) )
     {
       // Service is relative to the catalog URL.
-      // @todo Remove alias until sure how to handle things like ".scour*" being a regular file.
-//      if ( ! CrawlableDatasetAlias.isAlias( catalogLevel.getPath() ) )
-//      {
-        return( dataset.getPath().substring( catalogLevel.getPath().length() + 1 ) );
-//      }
-//      else
-//      {
-//        // @todo Move this functionality into CrawlableDatasetAlias
-//        String path = dataset.getPath();
-//        int curIndex = path.length();
-//        for ( int i = 0; i < catalogLevel.getName().split( "/" ).length; i++ )
-//        {
-//          curIndex = dataset.getPath().lastIndexOf( "/", curIndex -1 );
-//        }
-//        return ( dataset.getPath().substring( curIndex + 1 ) );
-//      }
+      String urlPath = dataset.getPath().substring( catalogLevel.getPath().length() );
+      if ( urlPath.startsWith( "/" ))
+        urlPath = urlPath.substring( 1 );
+      return urlPath;
     }
     else
     {
-      // Service is relative to the collection root.
-      return( ( collectionPath.equals( "") ? "" : collectionPath + "/") + dataset.getPath().substring( collectionLevel.getPath().length() + 1 ) );
+      if ( serviceForThisDs.isRelativeBase() )
+      {
+        // Service is relative to the collection root.
+        String relPath = dataset.getPath().substring( collectionLevel.getPath().length() );
+        if ( relPath.startsWith( "/" ) )
+          relPath = relPath.substring( 1 );
+        return ( ( collectionPath.equals( "" ) ? "" : collectionPath + "/" ) + relPath );
+      }
+      else
+      {
+        // Service base URI is Absolute so don't use collectionPath.
+        String relPath = dataset.getPath().substring( collectionLevel.getPath().length() );
+        if ( relPath.startsWith( "/" ) )
+          relPath = relPath.substring( 1 );
+        return relPath;
+      }
     }
   }
 
@@ -884,7 +891,15 @@ public class CollectionLevelScanner
     // @todo Remove alias until sure how to handle things like ".scour*" being a regular file.
 //    if ( ! CrawlableDatasetAlias.isAlias( catalogLevel.getPath()) )
 //    {
-      return( dataset.getPath().substring( catalogLevel.getPath().length() + 1 ) + "/catalog.xml" );
+    String path = dataset.getPath().substring( catalogLevel.getPath().length() );
+    if ( path.startsWith( "/" ))
+      path = path.substring( 1);
+    if ( path.endsWith( "/"))
+      path += "catalog.xml";
+    else
+      path += "/catalog.xml";
+
+    return path;
 //    }
 //    else
 //    {

@@ -83,7 +83,10 @@ class CatalogBuilderHelper
 
     // Crawl into the dataset collection through each level of the given path
     // checking that each level is accepted by the given CrawlableDatasetFilter.
-    String remainingPath = path.substring( ancestorCrDs.getPath().length() + 1 );
+    String remainingPath = path.substring( ancestorCrDs.getPath().length() );
+    if ( remainingPath.startsWith( "/" ) )
+      remainingPath = remainingPath.substring( 1 );
+
     String[] pathSegments = remainingPath.split( "/" );
     CrawlableDataset curCrDs = ancestorCrDs;
     for ( int i = 0; i < pathSegments.length; i++ )

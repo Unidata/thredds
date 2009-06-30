@@ -146,9 +146,9 @@ public class CrawlableDatasetDods implements CrawlableDataset {
 	private String getName(String path) {
 		// Attempt to return the last name in the path name sequence.
 		if (!path.equals("/")) {
-			String tmpName = path.endsWith("/") ? path.substring(0, path
-					.length() - 1) : path;
-			int index = tmpName.lastIndexOf("/");
+			String tmpName = path.endsWith("/")
+                       ? path.substring(0, path.length() - 1) : path;
+      int index = tmpName.lastIndexOf("/");
 			if (index != -1)
 				tmpName = tmpName.substring(index + 1);
 			return tmpName;
