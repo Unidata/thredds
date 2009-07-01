@@ -100,31 +100,8 @@ public class ThreddsBuilderFactoryImpl implements ThreddsBuilderFactory
     return new MetadataImpl();
   }
 
-  public MetadataBuilder copyIntoNewMetadataBuilder( MetadataBuilder source,
-                                                     ThreddsBuilderFactory builderFactory )
-  {
-    MetadataBuilder result = builderFactory.newMetadataBuilder();
-    result.setContainedContent( source.isContainedContent() );
-    if ( result.isContainedContent() )
-      result.setContent( source.getContent() );
-    else
-    {
-      result.setTitle( source.getTitle() );
-      result.setExternalReference( source.getExternalReference() );
-    }
-
-    return result;
-  }
-
   public ThreddsMetadataBuilder newThreddsMetadataBuilder()
   {
     return new ThreddsMetadataImpl();
-  }
-
-  public ThreddsMetadataBuilder copyIntoNewThreddsMetadataBuilder( ThreddsMetadataBuilder threddsMetadataBuilder,
-                                                                   ThreddsBuilderFactory builderFactory )
-  {
-    return ThreddsMetadataBuilderUtils.copyIntoNewThreddsMetadataBuilder( threddsMetadataBuilder,
-                                                                          builderFactory);
   }
 }

@@ -59,10 +59,6 @@ public interface ThreddsBuilderFactory
   public CatalogRefBuilder newCatalogRefBuilder( CatalogRef catRef);
 
   public MetadataBuilder newMetadataBuilder();
-  public MetadataBuilder copyIntoNewMetadataBuilder( MetadataBuilder metadataBuilder,
-                                                     ThreddsBuilderFactory builderFactory );
 
   public ThreddsMetadataBuilder newThreddsMetadataBuilder();
-  public ThreddsMetadataBuilder copyIntoNewThreddsMetadataBuilder( ThreddsMetadataBuilder threddsMetadataBuilder,
-                                                                   ThreddsBuilderFactory builderFactory );
 }
