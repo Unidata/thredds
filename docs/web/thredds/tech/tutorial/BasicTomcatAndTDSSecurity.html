@@ -369,14 +369,20 @@ drwxr-xr-x  3 thredds Unidata 4096 2008-10-28 16:45 ROOT
   </dl>
    <dl>
 
-    <dt><h3>Caveat of using the <code>manager</code> application</h3></dt>
+    <dt><a name="PermGenProblem"></a><h3>Caveat of using the <code>manager</code> application</h3></dt>
        <p>The dreaded <code>java.lang.OutOfMemoryError: PermGen space failure</code> error:</p>
       <ul>
         <li><b>The issue: </b> The "PermGen" error happens when the JVM runs out of memory in the permanent generation.</li>
         <li><b>The cause: </b> Objects in the permanent generation are never garbage collected.  When redeploying your web application using the Tomcat <code>manager</code> application, your WAR file is unpacked and its class files loaded into the JVM - which almost always ends up in the permanent generation. </li>
         <li><b>The symptom:</b> The PermGen error will manifest itself in a sluggish Tomcat <code>manager</code> application that never completes a task, and the <code>java.lang.OutOfMemoryError: PermGen space failure</code> error being displayed in <code>$TOMCAT_HOME/logs/catalina.out</code></li>
          <li><b>The fix:</b> You can add the <code>-XX:MaxPermSize</code> switch to <code>$JAVA_OPTS</code> to increase the amount of memory allocated for the permanent generation,  However this is only postponed the inevitable, as even an increased memory in permanent generation will eventually fill up.  You will need to stop/start Tomcat at this point. </li>
-         <li>For a really good description of the issue, see: <a href="http://my.opera.com/karmazilla/blog/2007/03/13/good-riddance-permgen-outofmemoryerror">http://my.opera.com/karmazilla/blog/2007/03/13/good-riddance-permgen-outofmemoryerror</a> </li>
+         <li>For a really good description of the issue, see this series of three articles:
+           <ul>
+             <li>"<a href="http://my.opera.com/karmazilla/blog/2007/09/29/return-of-the-permgen">Return of the PermGen</a>" (2007-09-29)</li>
+             <li>"<a href="http://my.opera.com/karmazilla/blog/2007/03/15/permgen-strikes-back">PermGen Strikes Back</a>" (2007-03-15)</li>
+             <li>"<a href="http://my.opera.com/karmazilla/blog/2007/03/13/good-riddance-permgen-outofmemoryerror">Good Riddance PermGen OutOfMemoryError</a>" (2007-03-13)</li>
+           </ul>
+         </li>
 
       </ul>
       <p class="note">For more information about the Tomcat <code>manager</code> application, see the Tomcat <a href="http://tomcat.apache.org/tomcat-6.0-doc/manager-howto.html">Manager App HOW-TO</a> documentation.</p>
