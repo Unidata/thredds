@@ -34,6 +34,7 @@ package thredds.catalog2.xml.parser.stax;
 
 import thredds.catalog2.builder.*;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
+import thredds.catalog2.xml.parser.ThreddsXmlParserIssue;
 import thredds.catalog2.xml.names.MetadataElementNames;
 
 import javax.xml.stream.events.StartElement;
@@ -42,6 +43,7 @@ import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.XMLEventReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 /**
  * _more_
@@ -51,133 +53,191 @@ import java.net.URISyntaxException;
  */
 public class MetadataElementParser extends AbstractElementParser
 {
-  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
-
-  private final DatasetNodeBuilder datasetBuilder;
-  private final ThreddsBuilderFactory catBuilderFactory;
-
   private final DatasetNodeElementParserHelper datasetNodeElementParserHelper;
+  private final DatasetNodeBuilder parentDatasetNodeBuilder;
 
-  private boolean isMetadataElementInherited;
+  private final MetadataBuilder selfBuilder;
+
+  private boolean isInheritedByDescendants = false;
+  private boolean containsThreddsMetadata = false;
+  private String title;
+  private URI externalRefUri;
+  private boolean isContainedContent = false;
+  private StringBuilder content;
+
+  private ThreddsMetadataElementParser threddsMetadataElementParser;
 
   public MetadataElementParser( XMLEventReader reader,
-                                DatasetNodeBuilder datasetNodeBuilder,
+                                ThreddsBuilderFactory builderFactory,
+                                DatasetNodeBuilder parentDatasetNodeBuilder,
                                 DatasetNodeElementParserHelper datasetNodeElementParserHelper )
           throws ThreddsXmlParserException
   {
-    super( reader, MetadataElementNames.MetadataElement );
-    this.datasetBuilder = datasetNodeBuilder;
-    this.catBuilderFactory = null;
+    super( reader, MetadataElementNames.MetadataElement, builderFactory );
+    this.parentDatasetNodeBuilder = parentDatasetNodeBuilder;
     this.datasetNodeElementParserHelper = datasetNodeElementParserHelper;
-    this.isMetadataElementInherited = false;
+
+    this.selfBuilder = builderFactory.newMetadataBuilder();
   }
 
   public MetadataElementParser( XMLEventReader reader,
-                                ThreddsBuilderFactory catBuilderFactory,
+                                ThreddsBuilderFactory builderFactory,
                                 DatasetNodeElementParserHelper datasetNodeElementParserHelper )
           throws ThreddsXmlParserException
   {
-    super( reader, MetadataElementNames.MetadataElement );
-    this.datasetBuilder = null;
-    this.catBuilderFactory = catBuilderFactory;
-    this.datasetNodeElementParserHelper = datasetNodeElementParserHelper;
-    this.isMetadataElementInherited = false;
+    this( reader, builderFactory, null, datasetNodeElementParserHelper);
   }
 
-  protected static boolean isSelfElementStatic( XMLEvent event )
-  {
+  protected static boolean isSelfElementStatic( XMLEvent event ) {
     return isSelfElement( event, MetadataElementNames.MetadataElement );
   }
 
-  protected boolean isSelfElement( XMLEvent event )
-  {
+  protected boolean isSelfElement( XMLEvent event ) {
     return isSelfElement( event, MetadataElementNames.MetadataElement );
   }
 
-  public boolean doesMetadataElementGetInherited()
-  {
-    return this.isMetadataElementInherited;
+  protected MetadataBuilder getSelfBuilder() {
+    if ( this.isContainsThreddsMetadata())
+      return null;
+    return this.selfBuilder;
   }
 
-  protected MetadataBuilder parseStartElement()
+  public boolean doesMetadataElementGetInherited() {
+    return this.isInheritedByDescendants;
+  }
+
+  public boolean isContainsThreddsMetadata() {
+    return containsThreddsMetadata;
+  }
+
+  public ThreddsMetadataBuilder getThreddsMetadataBuilder()
+  {
+    if ( ! this.containsThreddsMetadata )
+      return this.builderFactory.newThreddsMetadataBuilder();
+    return this.threddsMetadataElementParser.getSelfBuilder();
+  }
+
+  public boolean addThreddsMetadataBuilderToList( List<ThreddsMetadataBuilder> tmBuilders ) {
+    if ( this.getSelfBuilder() != null )
+      return tmBuilders.add(this.threddsMetadataElementParser.getSelfBuilder());
+    return false;
+  }
+
+  protected void parseStartElement()
           throws ThreddsXmlParserException
   {
     StartElement startElement = this.getNextEventIfStartElementIsMine();
 
-    MetadataBuilder builder = null;
-    if ( this.datasetBuilder != null )
-      builder = this.datasetBuilder.addMetadata();
-    else if ( catBuilderFactory != null )
-      builder = catBuilderFactory.newMetadataBuilder();
-    else
-      throw new ThreddsXmlParserException( "" );
-
     // Determine if this metadata element gets inherited.
     Attribute inheritedAtt = startElement.getAttributeByName( MetadataElementNames.MetadataElement_Inherited );
-    if ( inheritedAtt != null && inheritedAtt.getValue().equalsIgnoreCase( "true" ))
-      this.isMetadataElementInherited = true;
+    if ( inheritedAtt != null && inheritedAtt.getValue().equalsIgnoreCase( "true" ) )
+      this.isInheritedByDescendants = true;
+
+    // If contains "threddsMetadataGroup" elements, drop metadata wrapper
+    StartElement nextElement = this.peekAtNextEventIfStartElement();
+
+    if ( ThreddsMetadataElementParser.isSelfElementStatic( nextElement ) )
+    {
+      this.containsThreddsMetadata = true;
+      return;
+    }
 
     Attribute titleAtt = startElement.getAttributeByName( MetadataElementNames.MetadataElement_XlinkTitle );
     Attribute externalRefAtt = startElement.getAttributeByName( MetadataElementNames.MetadataElement_XlinkHref );
     if ( titleAtt == null && externalRefAtt == null )
     {
-      builder.setContainedContent( true );
-      return builder;
+      this.selfBuilder.setContainedContent( true );
+      return;
     }
     if ( titleAtt == null || externalRefAtt == null )
-      throw new ThreddsXmlParserException( "MetadataBuilder with link has a null title or link URL ");
-    String title = titleAtt.getValue();
+    {
+      String msg = "External reference metadata element has null title or URI.";
+      ThreddsXmlParserIssue issue = StaxThreddsXmlParserUtils.createIssueForUnexpectedElement( msg, this.reader );
+      log.warn( "parseStartElement(): " + issue.getMessage());
+      // ToDo Gather issues rather than throw exception.
+      throw new ThreddsXmlParserException( issue);
+    }
+
+    this.selfBuilder.setTitle( titleAtt.getValue() );
+
     String uriString = externalRefAtt.getValue();
-    URI uri = null;
     try
     {
-      uri = new URI( uriString );
+      this.selfBuilder.setExternalReference( new URI( uriString ));
     }
     catch ( URISyntaxException e )
     {
-      throw new ThreddsXmlParserException( "MetadataBuilder with link has link with bad URI syntax.", e);
+      String msg = "External reference metadata element with bad URI syntax [" + uriString + "].";
+      ThreddsXmlParserIssue issue = StaxThreddsXmlParserUtils.createIssueForException( msg, this.reader, e );
+      log.warn( "parseStartElement(): " + issue.getMessage(), e );
+      // ToDo Gather issues rather than throw exception.
+      throw new ThreddsXmlParserException( issue );
     }
-
-    builder.setContainedContent( false );
-    builder.setTitle( title );
-    builder.setExternalReference( uri );
-
-    return builder;
   }
-  private StringBuilder content = null;
-  protected void handleChildStartElement( ThreddsBuilder builder )
+
+  protected void handleChildStartElement()
           throws ThreddsXmlParserException
   {
-    if ( !( builder instanceof DatasetNodeBuilder ) )
-      throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetNodeBuilder." );
-    DatasetNodeBuilder dsNodeBuilder = (DatasetNodeBuilder) builder;
-
     StartElement startElement = this.peekAtNextEventIfStartElement();
 
-    if ( ThreddsMetadataElementParser.isSelfElementStatic( startElement ) )
+    if ( this.containsThreddsMetadata )
     {
-      ThreddsMetadataElementParser parser = new ThreddsMetadataElementParser( this.reader, this.datasetBuilder, this.datasetNodeElementParserHelper, this.isMetadataElementInherited );
-      parser.parse();
+      if ( ThreddsMetadataElementParser.isSelfElementStatic( startElement ) )
+      {
+        if ( this.threddsMetadataElementParser == null )
+          this.threddsMetadataElementParser
+                  = new ThreddsMetadataElementParser( this.reader,
+                                                      this.builderFactory,
+                                                      this.parentDatasetNodeBuilder,
+                                                      this.datasetNodeElementParserHelper,
+                                                      this.isInheritedByDescendants );
+        this.threddsMetadataElementParser.parse();
+        
+      }
+      else
+      {
+        String msg = "Unexpected non-THREDDS Metadata";
+        ThreddsXmlParserIssue issue = StaxThreddsXmlParserUtils.createIssueForUnexpectedElement( msg, this.reader );
+        // ToDo Instead of throwing exception, gather issues and continue.
+        throw new ThreddsXmlParserException( issue );
+      }
+
     }
     else
     {
-      if ( this.content == null )
-        this.content = new StringBuilder();
-      //if ( !isChildElement( startElement ) )
-      // ToDo Save the results in a ThreddsXmlParserIssue (Warning) and report.
-      this.content.append( StaxThreddsXmlParserUtils.consumeElementAndConvertToXmlString( this.reader ));
+      if ( ThreddsMetadataElementParser.isSelfElementStatic( startElement ) )
+      {
+        String msg = "Unexpected THREDDS Metadata";
+        ThreddsXmlParserIssue issue = StaxThreddsXmlParserUtils.createIssueForUnexpectedElement( msg, this.reader );
+        // ToDo Instead of throwing exception, gather issues and continue.
+        throw new ThreddsXmlParserException( issue);
+      }
+      else
+      {
+        if ( this.isContainedContent )
+        {
+          if ( this.content == null )
+            this.content = new StringBuilder();
+          this.content.append( StaxThreddsXmlParserUtils.consumeElementAndConvertToXmlString( this.reader ) );
+        }
+        else
+        {
+          String msg = "Unexpected content";
+          ThreddsXmlParserIssue issue = StaxThreddsXmlParserUtils.createIssueForUnexpectedElement( msg, this.reader );
+          // ToDo Instead of throwing exception, gather issues and continue.
+          throw new ThreddsXmlParserException( issue );
+        }
+      }
     }
   }
 
-  protected void postProcessing( ThreddsBuilder builder )
+  protected void postProcessingAfterEndElement()
           throws ThreddsXmlParserException
   {
-    if ( ! ( builder instanceof MetadataBuilder ) )
-      throw new IllegalArgumentException( "Builder must be a MetadataBuilder.");
-    MetadataBuilder mdBldr = (MetadataBuilder) builder;
-    if ( this.content != null )
-      mdBldr.setContent( this.content.toString() );
-    
-    return;
+    if ( ! this.containsThreddsMetadata )
+    {
+      if ( this.content != null )
+        this.selfBuilder.setContent( this.content.toString() );
+    }
   }
 }

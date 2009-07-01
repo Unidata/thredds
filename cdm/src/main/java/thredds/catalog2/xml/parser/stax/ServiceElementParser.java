@@ -32,10 +32,9 @@
  */
 package thredds.catalog2.xml.parser.stax;
 
-import thredds.catalog2.builder.ThreddsBuilderFactory;
 import thredds.catalog2.builder.CatalogBuilder;
 import thredds.catalog2.builder.ServiceBuilder;
-import thredds.catalog2.builder.ThreddsBuilder;
+import thredds.catalog2.builder.ThreddsBuilderFactory;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 import thredds.catalog2.xml.names.ServiceElementNames;
 import thredds.catalog.ServiceType;
@@ -55,37 +54,29 @@ import java.net.URISyntaxException;
  */
 public class ServiceElementParser extends AbstractElementParser
 {
-  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+  private final CatalogBuilder catalogBuilder;
+  private final ServiceBuilder parentServiceBuilder;
 
-  private final CatalogBuilder catBuilder;
-  private final ServiceBuilder serviceBuilder;
-  private final ThreddsBuilderFactory catBuilderFactory;
+  private ServiceBuilder selfBuilder;
 
-  public ServiceElementParser( XMLEventReader reader,  CatalogBuilder catBuilder )
+  public ServiceElementParser( XMLEventReader reader,
+                               ThreddsBuilderFactory builderFactory,
+                               CatalogBuilder catalogBuilder )
           throws ThreddsXmlParserException
   {
-    super( reader, ServiceElementNames.ServiceElement);
-    this.catBuilder = catBuilder;
-    this.serviceBuilder = null;
-    this.catBuilderFactory = null;
+    super( reader, ServiceElementNames.ServiceElement, builderFactory);
+    this.catalogBuilder = catalogBuilder;
+    this.parentServiceBuilder = null;
   }
 
-  public ServiceElementParser( XMLEventReader reader,  ServiceBuilder serviceBuilder )
+  public ServiceElementParser( XMLEventReader reader,
+                               ThreddsBuilderFactory builderFactory,
+                               ServiceBuilder parentServiceBuilder )
           throws ThreddsXmlParserException
   {
-    super( reader, ServiceElementNames.ServiceElement );
-    this.catBuilder = null;
-    this.serviceBuilder = serviceBuilder;
-    this.catBuilderFactory = null;
-  }
-
-  public ServiceElementParser( XMLEventReader reader, ThreddsBuilderFactory catBuilderFactory )
-          throws ThreddsXmlParserException
-  {
-    super( reader, ServiceElementNames.ServiceElement );
-    this.catBuilder = null;
-    this.serviceBuilder = null;
-    this.catBuilderFactory = catBuilderFactory;
+    super( reader, ServiceElementNames.ServiceElement, builderFactory );
+    this.catalogBuilder = null;
+    this.parentServiceBuilder = parentServiceBuilder;
   }
 
   protected static boolean isSelfElementStatic( XMLEvent event )
@@ -98,7 +89,11 @@ public class ServiceElementParser extends AbstractElementParser
     return isSelfElement( event, ServiceElementNames.ServiceElement );
   }
 
-  protected ServiceBuilder parseStartElement()
+  protected ServiceBuilder getSelfBuilder() {
+    return this.selfBuilder;
+  }
+
+  protected void parseStartElement()
           throws ThreddsXmlParserException
   {
     StartElement startElement = this.getNextEventIfStartElementIsMine();
@@ -119,48 +114,39 @@ public class ServiceElementParser extends AbstractElementParser
       log.error( "parseElement(): Bad service base URI [" + baseUriString + "]: " + e.getMessage(), e );
       throw new ThreddsXmlParserException( "Bad service base URI [" + baseUriString + "]", e );
     }
-    ServiceBuilder serviceBuilder = null;
-    if ( this.catBuilder != null )
-      serviceBuilder = this.catBuilder.addService( name, serviceType, baseUri );
-    else if ( this.serviceBuilder != null )
-      serviceBuilder = this.serviceBuilder.addService( name, serviceType, baseUri );
-    else if ( catBuilderFactory != null )
-      serviceBuilder = catBuilderFactory.newServiceBuilder( name, serviceType, baseUri );
+    if ( this.catalogBuilder != null )
+      this.selfBuilder = this.catalogBuilder.addService( name, serviceType, baseUri );
+    else if ( this.parentServiceBuilder != null )
+      this.selfBuilder = this.parentServiceBuilder.addService( name, serviceType, baseUri );
     else
       throw new ThreddsXmlParserException( "" );
 
     Attribute suffixAtt = startElement.getAttributeByName( ServiceElementNames.ServiceElement_Suffix );
     if ( suffixAtt != null )
     {
-      serviceBuilder.setSuffix( suffixAtt.getValue() );
+      this.selfBuilder.setSuffix( suffixAtt.getValue() );
     }
 
     Attribute descriptionAtt = startElement.getAttributeByName( ServiceElementNames.ServiceElement_Description );
     if ( descriptionAtt != null )
     {
-      serviceBuilder.setSuffix( descriptionAtt.getValue() );
+      this.selfBuilder.setSuffix( descriptionAtt.getValue() );
     }
-
-    return serviceBuilder;
   }
 
-  protected void handleChildStartElement( ThreddsBuilder builder )
+  protected void handleChildStartElement()
           throws ThreddsXmlParserException
   {
-    if ( !( builder instanceof ServiceBuilder ) )
-      throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetBuilder." );
-    ServiceBuilder serviceBuilder = (ServiceBuilder) builder;
-
     StartElement startElement = this.peekAtNextEventIfStartElement();
 
     if ( ServiceElementParser.isSelfElementStatic( startElement ) )
     {
-      ServiceElementParser serviceElemParser = new ServiceElementParser( reader, serviceBuilder );
+      ServiceElementParser serviceElemParser = new ServiceElementParser( reader, this.builderFactory, this.selfBuilder );
       serviceElemParser.parse();
     }
     else if ( PropertyElementParser.isSelfElementStatic( startElement ))
     {
-      PropertyElementParser parser = new PropertyElementParser( reader, serviceBuilder);
+      PropertyElementParser parser = new PropertyElementParser( reader, this.builderFactory, this.selfBuilder);
       parser.parse();
     }
     else
@@ -170,7 +156,7 @@ public class ServiceElementParser extends AbstractElementParser
     }
   }
 
-  protected void postProcessing( ThreddsBuilder builder )
+  protected void postProcessingAfterEndElement()
           throws ThreddsXmlParserException
   {
     return;

@@ -51,49 +51,38 @@ import java.net.URISyntaxException;
  */
 public class CatalogRefElementParser extends AbstractElementParser
 {
-  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
-
-  private final CatalogBuilder catBuilder;
-  private final DatasetNodeBuilder datasetNodeBuilder;
-  private final ThreddsBuilderFactory catBuilderFactory;
+  private final CatalogBuilder parentCatalogBuilder;
+  private final DatasetNodeBuilder parentDatasetNodeBuilder;
 
   private final DatasetNodeElementParserHelper datasetNodeElementParserHelper;
 
+  private CatalogRefBuilder selfBuilder;
+
 
   public CatalogRefElementParser( XMLEventReader reader,
-                                  CatalogBuilder catBuilder,
+                                  ThreddsBuilderFactory builderFactory,
+                                  CatalogBuilder parentCatalogBuilder,
                                   DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
           throws ThreddsXmlParserException
   {
-    super( reader, CatalogRefElementNames.CatalogRefElement );
-    this.catBuilder = catBuilder;
-    this.datasetNodeBuilder = null;
-    this.catBuilderFactory = null;
-    this.datasetNodeElementParserHelper = new DatasetNodeElementParserHelper( parentDatasetNodeElementParserHelper );
+    super( reader, CatalogRefElementNames.CatalogRefElement, builderFactory );
+    this.parentCatalogBuilder = parentCatalogBuilder;
+    this.parentDatasetNodeBuilder = null;
+    this.datasetNodeElementParserHelper = new DatasetNodeElementParserHelper( parentDatasetNodeElementParserHelper,
+                                                                              this.builderFactory );
   }
 
   public CatalogRefElementParser( XMLEventReader reader,
-                                  DatasetNodeBuilder datasetNodeBuilder,
+                                  ThreddsBuilderFactory builderFactory,
+                                  DatasetNodeBuilder parentDatasetNodeBuilder,
                                   DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
           throws ThreddsXmlParserException
   {
-    super( reader, CatalogRefElementNames.CatalogRefElement );
-    this.catBuilder = null;
-    this.datasetNodeBuilder = datasetNodeBuilder;
-    this.catBuilderFactory = null;
-    this.datasetNodeElementParserHelper = new DatasetNodeElementParserHelper( parentDatasetNodeElementParserHelper );
-  }
-
-  public CatalogRefElementParser( XMLEventReader reader,
-                                  ThreddsBuilderFactory catBuilderFactory,
-                                  DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
-          throws ThreddsXmlParserException
-  {
-    super( reader, CatalogRefElementNames.CatalogRefElement );
-    this.catBuilder = null;
-    this.datasetNodeBuilder = null;
-    this.catBuilderFactory = catBuilderFactory;
-    this.datasetNodeElementParserHelper = new DatasetNodeElementParserHelper( parentDatasetNodeElementParserHelper );
+    super( reader, CatalogRefElementNames.CatalogRefElement, builderFactory );
+    this.parentCatalogBuilder = null;
+    this.parentDatasetNodeBuilder = parentDatasetNodeBuilder;
+    this.datasetNodeElementParserHelper = new DatasetNodeElementParserHelper( parentDatasetNodeElementParserHelper,
+                                                                              this.builderFactory );
   }
 
   protected static boolean isSelfElementStatic( XMLEvent event )
@@ -106,7 +95,11 @@ public class CatalogRefElementParser extends AbstractElementParser
     return isSelfElement( event, CatalogRefElementNames.CatalogRefElement );
   }
 
-  protected DatasetNodeBuilder parseStartElement()
+  protected CatalogRefBuilder getSelfBuilder() {
+    return this.selfBuilder;
+  }
+
+  protected void parseStartElement()
           throws ThreddsXmlParserException
   {
     StartElement startElement = this.getNextEventIfStartElementIsMine();
@@ -128,41 +121,36 @@ public class CatalogRefElementParser extends AbstractElementParser
     }
 
     // Construct builder.
-    CatalogRefBuilder catalogRefBuilder = null;
-    if ( this.catBuilder != null )
-      catalogRefBuilder = this.catBuilder.addCatalogRef( title, hrefUri );
-    else if ( this.datasetNodeBuilder != null )
-      catalogRefBuilder = this.datasetNodeBuilder.addCatalogRef( title, hrefUri );
-    else if ( catBuilderFactory != null )
-      catalogRefBuilder = catBuilderFactory.newCatalogRefBuilder( title, hrefUri );
+    if ( this.parentCatalogBuilder != null )
+      this.selfBuilder = this.parentCatalogBuilder.addCatalogRef( title, hrefUri );
+    else if ( this.parentDatasetNodeBuilder != null )
+      this.selfBuilder = this.parentDatasetNodeBuilder.addCatalogRef( title, hrefUri );
     else
       throw new ThreddsXmlParserException( "" );
 
     // Set optional attributes
-    this.datasetNodeElementParserHelper.parseStartElementIdAttribute( startElement, catalogRefBuilder );
-    this.datasetNodeElementParserHelper.parseStartElementIdAuthorityAttribute( startElement, catalogRefBuilder );
-
-    return catalogRefBuilder;
+    this.datasetNodeElementParserHelper.parseStartElementIdAttribute( startElement, this.selfBuilder );
+    this.datasetNodeElementParserHelper.parseStartElementIdAuthorityAttribute( startElement, this.selfBuilder );
   }
-  protected void handleChildStartElement( ThreddsBuilder builder )
+
+  protected void handleChildStartElement()
           throws ThreddsXmlParserException
   {
-    if ( !( builder instanceof CatalogRefBuilder ) )
-      throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetBuilder." );
-
     StartElement startElement = this.peekAtNextEventIfStartElement();
 
-    if ( this.datasetNodeElementParserHelper.handleBasicChildStartElement( startElement, this.reader, (CatalogRefBuilder) builder ))
+    if ( this.datasetNodeElementParserHelper.handleBasicChildStartElement( startElement, this.reader, this.selfBuilder ))
       return;
     else
       // ToDo Save the results in a ThreddsXmlParserIssue (Warning) and report.
       StaxThreddsXmlParserUtils.consumeElementAndConvertToXmlString( this.reader );
   }
 
-  protected void postProcessing( ThreddsBuilder builder )
+  protected void postProcessingAfterEndElement()
           throws ThreddsXmlParserException
   {
-    // ToDo Deal with inherited metadata
-    return;
+    this.datasetNodeElementParserHelper.postProcessingAfterEndElement();
+
+    this.datasetNodeElementParserHelper.addFinalThreddsMetadataToDatasetNodeBuilder( this.selfBuilder );
+    this.datasetNodeElementParserHelper.addFinalMetadataToDatasetNodeBuilder( this.selfBuilder );
   }
 }

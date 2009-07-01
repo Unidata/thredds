@@ -49,71 +49,52 @@ import javax.xml.stream.XMLEventReader;
  */
 public class DatasetElementParser extends AbstractElementParser
 {
-  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
-  
-  /** Document base URI for documents with dataset as the root element. */
-  private final String docBaseUriString;
-
-  private final CatalogBuilder catBuilder;
-  private final DatasetNodeBuilder datasetNodeBuilder;
-  private final ThreddsBuilderFactory catBuilderFactory;
+  private final CatalogBuilder parentCatalogBuilder;
+  private final DatasetNodeBuilder parentDatasetNodeBuilder;
 
   private final DatasetNodeElementParserHelper datasetNodeElementParserHelper;
 
+  private DatasetBuilder selfBuilder;
+
   public DatasetElementParser( XMLEventReader reader,
-                               CatalogBuilder catBuilder,
+                               ThreddsBuilderFactory builderFactory,
+                               CatalogBuilder parentCatalogBuilder,
                                DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
           throws ThreddsXmlParserException
   {
-    super( reader, DatasetElementNames.DatasetElement );
-    this.docBaseUriString = null;
-    this.catBuilder = catBuilder;
-    this.datasetNodeBuilder = null;
-    this.catBuilderFactory = null;
+    super( reader, DatasetElementNames.DatasetElement, builderFactory );
+    this.parentCatalogBuilder = parentCatalogBuilder;
+    this.parentDatasetNodeBuilder = null;
 
-    this.datasetNodeElementParserHelper = new DatasetNodeElementParserHelper( parentDatasetNodeElementParserHelper );
+    this.datasetNodeElementParserHelper = new DatasetNodeElementParserHelper( parentDatasetNodeElementParserHelper,
+                                                                              this.builderFactory );
   }
 
   public DatasetElementParser( XMLEventReader reader,
-                               DatasetNodeBuilder datasetNodeBuilder,
+                               ThreddsBuilderFactory builderFactory,
+                               DatasetNodeBuilder parentDatasetNodeBuilder,
                                DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
           throws ThreddsXmlParserException
   {
-    super( reader, DatasetElementNames.DatasetElement );
-    this.docBaseUriString = null;
-    this.catBuilder = null;
-    this.datasetNodeBuilder = datasetNodeBuilder;
-    this.catBuilderFactory = null;
+    super( reader, DatasetElementNames.DatasetElement, builderFactory );
+    this.parentCatalogBuilder = null;
+    this.parentDatasetNodeBuilder = parentDatasetNodeBuilder;
 
-    this.datasetNodeElementParserHelper = new DatasetNodeElementParserHelper( parentDatasetNodeElementParserHelper );
+    this.datasetNodeElementParserHelper = new DatasetNodeElementParserHelper( parentDatasetNodeElementParserHelper,
+                                                                              this.builderFactory);
   }
 
   public DatasetElementParser( XMLEventReader reader,
-                               ThreddsBuilderFactory catBuilderFactory,
+                               ThreddsBuilderFactory builderFactory,
                                DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
           throws ThreddsXmlParserException
   {
-    super( reader, DatasetElementNames.DatasetElement );
-    this.docBaseUriString = null;
-    this.catBuilder = null;
-    this.datasetNodeBuilder = null;
-    this.catBuilderFactory = catBuilderFactory;
+    super( reader, DatasetElementNames.DatasetElement, builderFactory );
+    this.parentCatalogBuilder = null;
+    this.parentDatasetNodeBuilder = null;
 
-    this.datasetNodeElementParserHelper = new DatasetNodeElementParserHelper( parentDatasetNodeElementParserHelper );
-  }
-
-  public DatasetElementParser( String docBaseUriString,
-                               XMLEventReader reader,
-                               ThreddsBuilderFactory catBuilderFactory )
-          throws ThreddsXmlParserException
-  {
-    super( reader, DatasetElementNames.DatasetElement );
-    this.docBaseUriString = docBaseUriString;
-    this.catBuilder = null;
-    this.datasetNodeBuilder = null;
-    this.catBuilderFactory = catBuilderFactory;
-
-    this.datasetNodeElementParserHelper = new DatasetNodeElementParserHelper( null);
+    this.datasetNodeElementParserHelper = new DatasetNodeElementParserHelper( parentDatasetNodeElementParserHelper,
+                                                                              this.builderFactory );
   }
 
   protected void setDefaultServiceName( String defaultServiceName )
@@ -136,7 +117,11 @@ public class DatasetElementParser extends AbstractElementParser
     return isSelfElement( event, DatasetElementNames.DatasetElement );
   }
 
-  protected DatasetBuilder parseStartElement()
+  protected DatasetBuilder getSelfBuilder() {
+    return this.selfBuilder;
+  }
+
+  protected void parseStartElement()
           throws ThreddsXmlParserException
   {
     StartElement startElement = this.getNextEventIfStartElementIsMine();
@@ -144,18 +129,17 @@ public class DatasetElementParser extends AbstractElementParser
     Attribute nameAtt = startElement.getAttributeByName( DatasetElementNames.DatasetElement_Name );
     String name = nameAtt.getValue();
 
-    DatasetBuilder datasetBuilder = null;
-    if ( this.catBuilder != null )
-      datasetBuilder = this.catBuilder.addDataset( name );
-    else if ( this.datasetNodeBuilder != null )
-      datasetBuilder = this.datasetNodeBuilder.addDataset( name );
-    else if ( catBuilderFactory != null )
-      datasetBuilder = catBuilderFactory.newDatasetBuilder( name );
+    if ( this.parentCatalogBuilder != null )
+      this.selfBuilder = this.parentCatalogBuilder.addDataset( name );
+    else if ( this.parentDatasetNodeBuilder != null )
+      this.selfBuilder = this.parentDatasetNodeBuilder.addDataset( name );
+    else if ( builderFactory != null )
+      this.selfBuilder = builderFactory.newDatasetBuilder( name );
     else
       throw new ThreddsXmlParserException( "" );
 
-    this.datasetNodeElementParserHelper.parseStartElementIdAttribute( startElement, datasetBuilder );
-    this.datasetNodeElementParserHelper.parseStartElementIdAuthorityAttribute( startElement, datasetBuilder );
+    this.datasetNodeElementParserHelper.parseStartElementIdAttribute( startElement, this.selfBuilder );
+    this.datasetNodeElementParserHelper.parseStartElementIdAuthorityAttribute( startElement, this.selfBuilder );
 
     Attribute serviceNameAtt = startElement.getAttributeByName( DatasetElementNames.DatasetElement_ServiceName );
     if ( serviceNameAtt != null )
@@ -164,29 +148,25 @@ public class DatasetElementParser extends AbstractElementParser
     Attribute urlPathAtt = startElement.getAttributeByName( DatasetElementNames.DatasetElement_UrlPath );
     if ( urlPathAtt != null )
     {
-      // Add AccessBuilder and set urlPath, set ServiceBuilder in postProcessing().
-      AccessBuilder accessBuilder = datasetBuilder.addAccessBuilder();
+      // Add AccessBuilder and set urlPath, set ServiceBuilder in postProcessingAfterEndElement().
+      AccessBuilder accessBuilder = this.selfBuilder.addAccessBuilder();
       accessBuilder.setUrlPath( urlPathAtt.getValue() );
     }
-
-    return datasetBuilder;
   }
 
-  protected void handleChildStartElement( ThreddsBuilder builder ) throws ThreddsXmlParserException
+  protected void handleChildStartElement() throws ThreddsXmlParserException
   {
-    if ( !( builder instanceof DatasetBuilder ) )
-      throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetBuilder." );
-    DatasetBuilder datasetBuilder = (DatasetBuilder) builder;
-
     StartElement startElement = this.peekAtNextEventIfStartElement();
 
-    if ( this.datasetNodeElementParserHelper.handleBasicChildStartElement( startElement, this.reader, datasetBuilder ))
+    if ( this.datasetNodeElementParserHelper.handleBasicChildStartElement( startElement, this.reader, this.selfBuilder ))
       return;
-    else if ( this.datasetNodeElementParserHelper.handleCollectionChildStartElement( startElement, this.reader, datasetBuilder ))
+    else if ( this.datasetNodeElementParserHelper.handleCollectionChildStartElement( startElement, this.reader, this.selfBuilder ))
       return;
     else if ( AccessElementParser.isSelfElementStatic( startElement ) )
     {
-      AccessElementParser parser = new AccessElementParser( this.reader, datasetBuilder );
+      AccessElementParser parser = new AccessElementParser( this.reader,
+                                                            this.builderFactory,
+                                                            this.selfBuilder );
       parser.parse();
       return;
     }
@@ -195,28 +175,25 @@ public class DatasetElementParser extends AbstractElementParser
       StaxThreddsXmlParserUtils.consumeElementAndConvertToXmlString( this.reader );
   }
 
-  protected void postProcessing( ThreddsBuilder builder )
+  protected void postProcessingAfterEndElement()
           throws ThreddsXmlParserException
   {
-    if ( ! ( builder instanceof DatasetBuilder) )
-      throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetBuilder.");
-    DatasetBuilder datasetBuilder = (DatasetBuilder) builder;
-
-    this.datasetNodeElementParserHelper.postProcessing( builder );
+    this.datasetNodeElementParserHelper.postProcessingAfterEndElement();
 
     // In any AccessBuilders that don't have a ServiceBuilder, set it with the default service.
     if ( this.getDefaultServiceName() != null
-         && ! datasetBuilder.getAccessBuilders().isEmpty() )
+         && ! this.selfBuilder.getAccessBuilders().isEmpty() )
     {
-      ServiceBuilder defaultServiceBuilder = datasetBuilder.getParentCatalogBuilder().findServiceBuilderByNameGlobally( this.getDefaultServiceName() );
+      ServiceBuilder defaultServiceBuilder = this.selfBuilder.getParentCatalogBuilder().findServiceBuilderByNameGlobally( this.getDefaultServiceName() );
 
-      for ( AccessBuilder curAB : datasetBuilder.getAccessBuilders() )
+      for ( AccessBuilder curAB : this.selfBuilder.getAccessBuilders() )
       {
         if ( curAB.getServiceBuilder() == null )
           curAB.setServiceBuilder( defaultServiceBuilder );
       }
     }
 
-    // ToDo Deal with inherited metadata
+    this.datasetNodeElementParserHelper.addFinalThreddsMetadataToDatasetNodeBuilder( this.selfBuilder );
+    this.datasetNodeElementParserHelper.addFinalMetadataToDatasetNodeBuilder( this.selfBuilder );
   }
 }

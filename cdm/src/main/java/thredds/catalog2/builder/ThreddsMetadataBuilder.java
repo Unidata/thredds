@@ -49,6 +49,8 @@ import thredds.catalog.DataFormatType;
  */
 public interface ThreddsMetadataBuilder extends ThreddsBuilder
 {
+  public boolean isEmpty();
+  
   public DocumentationBuilder addDocumentation( String docType, String title, URI externalReference );
   public DocumentationBuilder addDocumentation( String docType, String content );
   public boolean removeDocumentation( DocumentationBuilder docBuilder );

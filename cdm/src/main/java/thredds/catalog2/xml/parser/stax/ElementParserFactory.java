@@ -46,8 +46,8 @@ public class ElementParserFactory
     StartElement startElem = event.asStartElement();
     if ( startElem.getName().equals( CatalogElementNames.CatalogElement ))
       return new CatalogElementParser( baseDocUri, reader, factory );
-    else if ( startElem.getName().equals( DatasetElementNames.DatasetElement ))
-      return new DatasetElementParser( baseDocUri, reader, factory );
+//    else if ( startElem.getName().equals( DatasetElementNames.DatasetElement ))
+//      return new DatasetElementParser( baseDocUri, reader, factory );
     else
       throw new ThreddsXmlParserException( "");
   }

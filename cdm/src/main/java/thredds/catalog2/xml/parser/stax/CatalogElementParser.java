@@ -34,7 +34,6 @@ package thredds.catalog2.xml.parser.stax;
 
 import thredds.catalog2.builder.ThreddsBuilderFactory;
 import thredds.catalog2.builder.CatalogBuilder;
-import thredds.catalog2.builder.ThreddsBuilder;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 import thredds.catalog2.xml.names.CatalogElementNames;
 
@@ -54,22 +53,17 @@ import java.net.URISyntaxException;
  */
 public class CatalogElementParser extends AbstractElementParser
 {
-  public static class Factory
-  {
-
-  }
-
-  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
-
   private final String docBaseUriString;
-  private final ThreddsBuilderFactory catBuilderFactory;
 
-  public CatalogElementParser( String docBaseUriString, XMLEventReader reader,  ThreddsBuilderFactory catBuilderFactory )
+  private CatalogBuilder selfBuilder;
+
+  public CatalogElementParser( String docBaseUriString,
+                               XMLEventReader reader,
+                               ThreddsBuilderFactory builderFactory )
           throws ThreddsXmlParserException
   {
-    super( reader, CatalogElementNames.CatalogElement );
+    super( reader, CatalogElementNames.CatalogElement, builderFactory );
     this.docBaseUriString = docBaseUriString;
-    this.catBuilderFactory = catBuilderFactory;
   }
 
   protected static boolean isSelfElementStatic( XMLEvent event )
@@ -82,7 +76,11 @@ public class CatalogElementParser extends AbstractElementParser
     return isSelfElement( event, CatalogElementNames.CatalogElement );
   }
 
-  protected CatalogBuilder parseStartElement( )
+  protected CatalogBuilder getSelfBuilder() {
+    return this.selfBuilder;
+  }
+
+  protected void parseStartElement( )
           throws ThreddsXmlParserException
   {
     StartElement startElement = this.getNextEventIfStartElementIsMine();
@@ -108,31 +106,31 @@ public class CatalogElementParser extends AbstractElementParser
       log.error( "parseElement(): Bad catalog base URI [" + docBaseUriString + "]: " + e.getMessage(), e );
       throw new ThreddsXmlParserException( "Bad catalog base URI [" + docBaseUriString + "]: " + e.getMessage(), e );
     }
-    return catBuilderFactory.newCatalogBuilder( nameString, docBaseUri, versionString, expiresDate, lastModifiedDate );
+    this.selfBuilder = builderFactory.newCatalogBuilder( nameString, docBaseUri, versionString, expiresDate, lastModifiedDate );
   }
 
-  protected void handleChildStartElement( ThreddsBuilder builder )
+  protected void handleChildStartElement()
           throws ThreddsXmlParserException
   {
-    if ( !( builder instanceof CatalogBuilder ) )
-      throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of CatalogBuilder." );
-    CatalogBuilder catalogBuilder = (CatalogBuilder) builder;
-
     StartElement startElement = this.peekAtNextEventIfStartElement();
 
     if ( ServiceElementParser.isSelfElementStatic( startElement ) )
     {
-      ServiceElementParser serviceElemParser = new ServiceElementParser( this.reader, catalogBuilder );
+      ServiceElementParser serviceElemParser = new ServiceElementParser( this.reader,
+                                                                         this.builderFactory,
+                                                                         this.selfBuilder );
       serviceElemParser.parse();
     }
     else if ( PropertyElementParser.isSelfElementStatic( startElement ) )
     {
-      PropertyElementParser parser = new PropertyElementParser( this.reader, catalogBuilder );
+      PropertyElementParser parser = new PropertyElementParser( this.reader,
+                                                                this.builderFactory,
+                                                                this.selfBuilder );
       parser.parse();
     }
     else if ( DatasetElementParser.isSelfElementStatic( startElement ) )
     { // ToDo Not sure about the null parameter?
-      DatasetElementParser parser = new DatasetElementParser( this.reader, catalogBuilder, null );
+      DatasetElementParser parser = new DatasetElementParser( this.reader, this.builderFactory,  this.selfBuilder, null );
       parser.parse();
     }
     else
@@ -142,7 +140,7 @@ public class CatalogElementParser extends AbstractElementParser
     }
   }
 
-  protected void postProcessing( ThreddsBuilder builder )
+  protected void postProcessingAfterEndElement()
           throws ThreddsXmlParserException
   {
 //    if ( !( builder instanceof CatalogBuilder ) )

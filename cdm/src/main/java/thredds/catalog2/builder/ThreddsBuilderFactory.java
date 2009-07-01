@@ -54,8 +54,15 @@ public interface ThreddsBuilderFactory
 
   public DatasetBuilder newDatasetBuilder( String name );
   public DatasetBuilder newDatasetBuilder( Dataset dataset );
+  
   public CatalogRefBuilder newCatalogRefBuilder( String name, URI reference );
   public CatalogRefBuilder newCatalogRefBuilder( CatalogRef catRef);
 
   public MetadataBuilder newMetadataBuilder();
+  public MetadataBuilder copyIntoNewMetadataBuilder( MetadataBuilder metadataBuilder,
+                                                     ThreddsBuilderFactory builderFactory );
+
+  public ThreddsMetadataBuilder newThreddsMetadataBuilder();
+  public ThreddsMetadataBuilder copyIntoNewThreddsMetadataBuilder( ThreddsMetadataBuilder threddsMetadataBuilder,
+                                                                   ThreddsBuilderFactory builderFactory );
 }

@@ -34,7 +34,7 @@ package thredds.catalog2.simpleImpl;
 
 import thredds.catalog2.*;
 import thredds.catalog2.builder.*;
-import thredds.catalog2.simpleImpl.ServiceImpl;
+import thredds.catalog2.builder.util.ThreddsMetadataBuilderUtils;
 import thredds.catalog.ServiceType;
 
 import java.util.Date;
@@ -62,7 +62,7 @@ public class ThreddsBuilderFactoryImpl implements ThreddsBuilderFactory
 //      return cb;
 //    }
 //    throw new IllegalArgumentException( "Given catalog not correct implementation for this ThreddsBuilderFactory.");
-    return null;
+    throw new UnsupportedOperationException( "Not yet implemented.");
   }
 
   public ServiceBuilder newServiceBuilder( String name, ServiceType type, URI baseUri )
@@ -72,7 +72,7 @@ public class ThreddsBuilderFactoryImpl implements ThreddsBuilderFactory
 
   public ServiceBuilder newServiceBuilder( Service service )
   {
-    return null;
+    throw new UnsupportedOperationException( "Not yet implemented." );
   }
 
   public DatasetBuilder newDatasetBuilder( String name )
@@ -82,7 +82,7 @@ public class ThreddsBuilderFactoryImpl implements ThreddsBuilderFactory
 
   public DatasetBuilder newDatasetBuilder( Dataset dataset )
   {
-    return null;
+    throw new UnsupportedOperationException( "Not yet implemented." );
   }
 
   public CatalogRefBuilder newCatalogRefBuilder( String name, URI reference )
@@ -92,11 +92,39 @@ public class ThreddsBuilderFactoryImpl implements ThreddsBuilderFactory
 
   public CatalogRefBuilder newCatalogRefBuilder( CatalogRef catRef )
   {
-    return null;
+    throw new UnsupportedOperationException( "Not yet implemented." );
   }
 
   public MetadataBuilder newMetadataBuilder()
   {
-    return new MetadataImpl( );
+    return new MetadataImpl();
+  }
+
+  public MetadataBuilder copyIntoNewMetadataBuilder( MetadataBuilder source,
+                                                     ThreddsBuilderFactory builderFactory )
+  {
+    MetadataBuilder result = builderFactory.newMetadataBuilder();
+    result.setContainedContent( source.isContainedContent() );
+    if ( result.isContainedContent() )
+      result.setContent( source.getContent() );
+    else
+    {
+      result.setTitle( source.getTitle() );
+      result.setExternalReference( source.getExternalReference() );
+    }
+
+    return result;
+  }
+
+  public ThreddsMetadataBuilder newThreddsMetadataBuilder()
+  {
+    return new ThreddsMetadataImpl();
+  }
+
+  public ThreddsMetadataBuilder copyIntoNewThreddsMetadataBuilder( ThreddsMetadataBuilder threddsMetadataBuilder,
+                                                                   ThreddsBuilderFactory builderFactory )
+  {
+    return ThreddsMetadataBuilderUtils.copyIntoNewThreddsMetadataBuilder( threddsMetadataBuilder,
+                                                                          builderFactory);
   }
 }

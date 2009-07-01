@@ -33,6 +33,7 @@
 package thredds.catalog2.xml.parser.stax;
 
 import thredds.catalog2.builder.ThreddsBuilder;
+import thredds.catalog2.builder.ThreddsBuilderFactory;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 
 import javax.xml.stream.events.XMLEvent;
@@ -49,15 +50,22 @@ import javax.xml.namespace.QName;
  */
 public abstract class AbstractElementParser
 {
-  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+  protected org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
   protected final XMLEventReader reader;
   protected final QName elementName;
+  protected final ThreddsBuilderFactory builderFactory;
 
-  AbstractElementParser( XMLEventReader reader, QName elementName )
+  AbstractElementParser( XMLEventReader reader,
+                         QName elementName,
+                         ThreddsBuilderFactory builderFactory )
   {
+    if ( reader == null || elementName == null || builderFactory == null )
+      throw new IllegalArgumentException( "XMLEventReader, element name, and BuilderFactory may not be null.");
+    
     this.reader = reader;
     this.elementName = elementName;
+    this.builderFactory = builderFactory;
   }
 
   protected static boolean isSelfElement( XMLEvent event, QName selfElementName )
@@ -77,28 +85,30 @@ public abstract class AbstractElementParser
 
   protected abstract boolean isSelfElement( XMLEvent event );
 
-  protected abstract ThreddsBuilder parseStartElement()
+  protected abstract void parseStartElement()
           throws ThreddsXmlParserException;
 
-  protected abstract void handleChildStartElement( ThreddsBuilder builder )
+  protected abstract void handleChildStartElement()
           throws ThreddsXmlParserException;
 
-  protected abstract void postProcessing( ThreddsBuilder builder )
+  protected abstract void postProcessingAfterEndElement()
           throws ThreddsXmlParserException;
+
+  protected abstract ThreddsBuilder getSelfBuilder();
 
   public final ThreddsBuilder parse()
           throws ThreddsXmlParserException
   {
     try
     {
-      ThreddsBuilder builder = this.parseStartElement();
+      this.parseStartElement();
 
       while ( this.reader.hasNext() )
       {
         XMLEvent event = this.reader.peek();
         if ( event.isStartElement() )
         {
-          this.handleChildStartElement( builder );
+          this.handleChildStartElement();
         }
         else if ( event.isEndElement() )
         {
@@ -122,8 +132,8 @@ public abstract class AbstractElementParser
         }
       }
 
-      this.postProcessing( builder );
-      return builder;
+      this.postProcessingAfterEndElement();
+      return this.getSelfBuilder();
     }
     catch ( XMLStreamException e )
     {
@@ -146,8 +156,8 @@ public abstract class AbstractElementParser
       if ( ! event.isStartElement() )
         throw new ThreddsXmlParserException( "Next event must be StartElement." );
 
-      if ( ! event.asStartElement().getName().equals( elementName ) )
-        throw new ThreddsXmlParserException( "Start element must be an '" + elementName.getLocalPart() + "' element." );
+      if ( ! event.asStartElement().getName().equals( this.elementName ) )
+        throw new ThreddsXmlParserException( "Start element must be an '" + this.elementName.getLocalPart() + "' element." );
 
       startElement = this.reader.nextEvent().asStartElement();
     }

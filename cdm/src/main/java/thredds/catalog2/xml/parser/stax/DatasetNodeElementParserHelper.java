@@ -33,6 +33,8 @@
 package thredds.catalog2.xml.parser.stax;
 
 import thredds.catalog2.builder.*;
+import thredds.catalog2.builder.util.ThreddsMetadataBuilderUtils;
+import thredds.catalog2.builder.util.MetadataBuilderUtils;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 import thredds.catalog2.xml.names.DatasetNodeElementNames;
 import thredds.catalog2.xml.names.DatasetElementNames;
@@ -40,9 +42,13 @@ import thredds.catalog2.xml.names.DatasetElementNames;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.XMLEventReader;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
- * _more_
+ * Helper class for DatasetNodeElementParser that deals with metadata and other
+ * information inherited from ancestor DatasetNodes.
  *
  * @author edavis
  * @since 4.0
@@ -51,29 +57,93 @@ public class DatasetNodeElementParserHelper
 {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
-  private final DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper;
+  private final ThreddsBuilderFactory builderFactory;
+
+  private String defaultServiceName;
+  private String defaultServiceNameInheritedByDescendants;
+  private String idAuthorityInheritedByDescendants;
+
+  // All metadata applicable to this dataset.
+  private List<MetadataElementParser> metadataForThisDataset;
+  // All metadata inherited by descendant datasets.
+  private List<MetadataElementParser> metadataInheritedByDescendants;
 
   private ThreddsMetadataElementParser threddsMetadataElementParser;
 
-  DatasetNodeElementParserHelper( DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
+  private SplitMetadata finalSplitMetadata;
+
+  DatasetNodeElementParserHelper( DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper,
+                                  ThreddsBuilderFactory builderFactory )
   {
-    this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
+    if ( parentDatasetNodeElementParserHelper != null)
+    {
+      List<MetadataElementParser> metadataInheritedFromAncestors
+              = parentDatasetNodeElementParserHelper.getMetadataInheritedByDescendants();
+
+      if ( metadataInheritedFromAncestors != null
+           && ! metadataInheritedFromAncestors.isEmpty() )
+      {
+        // Add to list of metadata inherited by descendant datasets.
+        this.metadataInheritedByDescendants = new ArrayList<MetadataElementParser>();
+        this.metadataInheritedByDescendants.addAll( metadataInheritedFromAncestors);
+
+        // Add to list of metadata applicable to this dataset.
+        this.metadataForThisDataset = new ArrayList<MetadataElementParser>();
+        this.metadataForThisDataset.addAll( metadataInheritedFromAncestors);
+      }
+
+      this.defaultServiceNameInheritedByDescendants = parentDatasetNodeElementParserHelper.getDefaultServiceNameInheritedByDescendants();
+      this.idAuthorityInheritedByDescendants = parentDatasetNodeElementParserHelper.getIdAuthorityInheritedByDescendants();
+    }
+
+    this.builderFactory = builderFactory;
   }
 
-  private String idAuthorityThatGetsInherited;
-
-  public void setIdAuthorityThatGetsInherited( String idAuthorityThatGetsInherited)
-  {
-    this.idAuthorityThatGetsInherited = idAuthorityThatGetsInherited;
+  void setIdAuthorityInheritedByDescendants( String idAuthorityInheritedByDescendants ) {
+    this.idAuthorityInheritedByDescendants = idAuthorityInheritedByDescendants;
   }
 
-  public String getIdAuthorityThatGetsInherited()
-  {
-    return this.idAuthorityThatGetsInherited;
+  public String getIdAuthorityInheritedByDescendants() {
+    return this.idAuthorityInheritedByDescendants;
+  }
+
+  /** Return the name of the service used by any access of this datasetNode
+   * that does not explicitly specify a service. */
+  public String getDefaultServiceName() {
+    return this.defaultServiceName != null
+           ? this.defaultServiceName
+           : this.defaultServiceNameInheritedByDescendants;
+  }
+
+  /** Set the default service name. */
+  void setDefaultServiceName( String defaultServiceName ) {
+    this.defaultServiceName = defaultServiceName;
+  }
+
+  /** Return the name of the service used by any access of this datasetNode
+   * that does not explicitly specify a service. */
+  public String getDefaultServiceNameInheritedByDescendants() {
+    return this.defaultServiceNameInheritedByDescendants;
+  }
+
+  void setDefaultServiceNameInheritedByDescendants( String defaultServiceNameInheritedByDescendants ) {
+    this.defaultServiceNameInheritedByDescendants = defaultServiceNameInheritedByDescendants;
+  }
+
+  public List<MetadataElementParser> getMetadataForThisDataset() {
+    if ( this.metadataForThisDataset == null )
+      return Collections.emptyList();
+    return Collections.unmodifiableList( this.metadataForThisDataset);
+  }
+
+  public List<MetadataElementParser> getMetadataInheritedByDescendants() {
+    if ( this.metadataInheritedByDescendants == null )
+      return Collections.emptyList();
+    return Collections.unmodifiableList( this.metadataInheritedByDescendants);
   }
 
   public void parseStartElementNameAttribute( StartElement startElement,
-                                                     DatasetNodeBuilder dsNodeBuilder )
+                                              DatasetNodeBuilder dsNodeBuilder )
   {
     Attribute att = startElement.getAttributeByName( DatasetElementNames.DatasetElement_Name );
     if ( att != null )
@@ -81,7 +151,7 @@ public class DatasetNodeElementParserHelper
   }
 
   public void parseStartElementIdAttribute( StartElement startElement,
-                                                   DatasetNodeBuilder dsNodeBuilder )
+                                            DatasetNodeBuilder dsNodeBuilder )
   {
     Attribute att = startElement.getAttributeByName( DatasetNodeElementNames.DatasetNodeElement_Id );
     if ( att != null )
@@ -89,7 +159,7 @@ public class DatasetNodeElementParserHelper
   }
 
   public void parseStartElementIdAuthorityAttribute( StartElement startElement,
-                                                            DatasetNodeBuilder dsNodeBuilder )
+                                                     DatasetNodeBuilder dsNodeBuilder )
   {
     Attribute att = startElement.getAttributeByName( DatasetNodeElementNames.DatasetNodeElement_Authority );
     if ( att != null )
@@ -97,26 +167,42 @@ public class DatasetNodeElementParserHelper
   }
 
   public boolean handleBasicChildStartElement( StartElement startElement,
-                                                      XMLEventReader reader,
-                                                      DatasetNodeBuilder dsNodeBuilder )
+                                               XMLEventReader reader,
+                                               DatasetNodeBuilder dsNodeBuilder )
           throws ThreddsXmlParserException
   {
     if ( PropertyElementParser.isSelfElementStatic( startElement ))
     {
-      PropertyElementParser parser = new PropertyElementParser( reader, dsNodeBuilder);
+      PropertyElementParser parser = new PropertyElementParser( reader, this.builderFactory, dsNodeBuilder );
       parser.parse();
       return true;
     }
     else if ( MetadataElementParser.isSelfElementStatic( startElement ))
     {
-      MetadataElementParser parser = new MetadataElementParser( reader, dsNodeBuilder, this );
+      MetadataElementParser parser = new MetadataElementParser( reader, this.builderFactory,
+                                                                dsNodeBuilder, this );
       parser.parse();
+
+      if ( this.metadataForThisDataset == null )
+        this.metadataForThisDataset = new ArrayList<MetadataElementParser>();
+      this.metadataForThisDataset.add( parser);
+
+      if ( parser.doesMetadataElementGetInherited())
+      {
+        if ( this.metadataInheritedByDescendants == null )
+          this.metadataInheritedByDescendants = new ArrayList<MetadataElementParser>();
+        this.metadataInheritedByDescendants.add( parser );
+      }
+
       return true;
     }
     else if ( ThreddsMetadataElementParser.isSelfElementStatic( startElement ))
     {
       if ( this.threddsMetadataElementParser == null )
-        this.threddsMetadataElementParser = new ThreddsMetadataElementParser( reader, dsNodeBuilder, this, false );
+        this.threddsMetadataElementParser = new ThreddsMetadataElementParser( reader,
+                                                                              this.builderFactory,
+                                                                              dsNodeBuilder,
+                                                                              this, false );
       this.threddsMetadataElementParser.parse();
       return true;
     }
@@ -124,19 +210,21 @@ public class DatasetNodeElementParserHelper
       return false;
   }
   public boolean handleCollectionChildStartElement( StartElement startElement,
-                                                           XMLEventReader reader,
-                                                           DatasetNodeBuilder dsNodeBuilder )
+                                                    XMLEventReader reader,
+                                                    DatasetNodeBuilder dsNodeBuilder )
           throws ThreddsXmlParserException
   {
     if ( DatasetElementParser.isSelfElementStatic( startElement ))
     {
-      DatasetElementParser parser = new DatasetElementParser( reader, dsNodeBuilder, this);
+      DatasetElementParser parser = new DatasetElementParser( reader, this.builderFactory,
+                                                              dsNodeBuilder, this);
       parser.parse();
       return true;
     }
     else if ( CatalogRefElementParser.isSelfElementStatic( startElement ))
     {
-      CatalogRefElementParser parser = new CatalogRefElementParser( reader, dsNodeBuilder, this);
+      CatalogRefElementParser parser = new CatalogRefElementParser( reader, this.builderFactory,
+                                                                    dsNodeBuilder, this);
       parser.parse();
       return true;
     }
@@ -144,50 +232,81 @@ public class DatasetNodeElementParserHelper
       return false;
   }
 
-  public void postProcessing( ThreddsBuilder builder )
+  public void postProcessingAfterEndElement()
+          throws ThreddsXmlParserException
   {
-    if ( !( builder instanceof DatasetNodeBuilder ) )
-      throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetNodeBuilder." );
-    DatasetNodeBuilder datasetNodeBuilder = (DatasetNodeBuilder) builder;
+    this.threddsMetadataElementParser.postProcessingAfterEndElement();
 
-    // ToDo Deal with inherited metadata. Crawl up DatasetNodeBuilder heirarchy and gather inherited metadata.
-    if ( this.defaultServiceName == null )
-      this.defaultServiceName = this.getInheritedDefaultServiceName( this );
+    this.finalSplitMetadata = new SplitMetadata( this.metadataForThisDataset);
   }
 
   /**
-   * The name of the service used by any access of this datasetNode
-   * that does not explicitly specify a service.
+   * Add to the target DatasetNodeBuilder a ThreddsMetadataBuilder that contains
+   * all the ThreddsMetadata for the target. The ThreddsMetadataBuilder merges
+   * together:
+   * 1) the local ThreddsMetadata that was not wrapped in a metadata element,
+   * 2) all local ThreddsMetadata that was wrapped in a metadata element, and
+   * 3) all inherited ThreddsMetadata.
+   *
+   * @param dsNodeBuilder the target DatasetNodeBuilder.
    */
-  private String defaultServiceName;
-  String getDefaultServiceName()
-  { return this.defaultServiceName; }
-
-  void setDefaultServiceName( String defaultServiceName )
-  { this.defaultServiceName = defaultServiceName; }
+  public void addFinalThreddsMetadataToDatasetNodeBuilder( DatasetNodeBuilder dsNodeBuilder)
+  {
+    ThreddsMetadataBuilder unwrappedThreddsMetadataBuilder
+            = this.threddsMetadataElementParser.getSelfBuilder();
+    boolean isUnwrappedEmpty = unwrappedThreddsMetadataBuilder.isEmpty();
+    if ( ! isUnwrappedEmpty && ! this.finalSplitMetadata.threddsMetadata.isEmpty())
+    {
+      ThreddsMetadataBuilder result = dsNodeBuilder.setNewThreddsMetadataBuilder();
+      if ( ! isUnwrappedEmpty )
+        ThreddsMetadataBuilderUtils.copyThreddsMetadataBuilder( unwrappedThreddsMetadataBuilder, result );
+      for ( MetadataElementParser mdElemParser : this.finalSplitMetadata.threddsMetadata )
+        ThreddsMetadataBuilderUtils.copyThreddsMetadataBuilder( mdElemParser.getThreddsMetadataBuilder(), result );
+      //return true;
+    }
+    //return false;
+  }
 
   /**
-   * The default serviceName
+   * Add to the target DatasetNodeBuilder the list of MetadataBuilders for the target
+   * including all inherited and local metadata.
+   *
+   * @param dsNodeBuilder the target DatasetNodeBuilder.
    */
-  private String defaultServiceNameThatGetsInherited;
-
-  protected void setDefaultServiceNameThatGetsInherited( String defaultServiceNameThatGetsInherited )
+  public void addFinalMetadataToDatasetNodeBuilder( DatasetNodeBuilder dsNodeBuilder )
   {
-    this.defaultServiceNameThatGetsInherited = defaultServiceNameThatGetsInherited;
+    for ( MetadataElementParser currentMetadataElemParser : this.finalSplitMetadata.nonThreddsMetadata )
+    {
+      MetadataBuilder newMetadataBuilder = dsNodeBuilder.addMetadata();
+      MetadataBuilderUtils.copyMetadataBuilder( currentMetadataElemParser.getSelfBuilder(), newMetadataBuilder);
+    }
   }
 
-  protected String getDefaultServiceNameThatGetsInherited()
+  private class SplitMetadata
   {
-    return this.defaultServiceNameThatGetsInherited;
+    final List<MetadataElementParser> threddsMetadata;
+    final List<MetadataElementParser> nonThreddsMetadata;
+
+    SplitMetadata( List<MetadataElementParser> metadata )
+    {
+      if ( metadata == null || metadata.isEmpty())
+      {
+        this.threddsMetadata = Collections.emptyList();
+        this.nonThreddsMetadata = Collections.emptyList();
+        return;
+      }
+
+      this.threddsMetadata = new ArrayList<MetadataElementParser>();
+      this.nonThreddsMetadata = new ArrayList<MetadataElementParser>();
+
+      for ( MetadataElementParser current : metadata )
+      {
+        if ( current.isContainsThreddsMetadata())
+          this.threddsMetadata.add( current);
+        else
+          this.nonThreddsMetadata.add( current);
+      }
+    }
   }
 
-  private String getInheritedDefaultServiceName( DatasetNodeElementParserHelper selfOrAncestor )
-  {
-    if ( selfOrAncestor == null )
-      return null;
-    String curDefServiceName = selfOrAncestor.getDefaultServiceNameThatGetsInherited();
-    if ( curDefServiceName == null )
-      curDefServiceName = this.getInheritedDefaultServiceName( selfOrAncestor.parentDatasetNodeElementParserHelper );
-    return curDefServiceName;
-  }
 }

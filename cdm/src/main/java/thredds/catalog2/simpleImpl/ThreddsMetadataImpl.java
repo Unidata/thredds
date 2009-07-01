@@ -58,7 +58,7 @@ public class ThreddsMetadataImpl
         implements ThreddsMetadata, ThreddsMetadataBuilder
 {
   private boolean isBuilt;
-  
+
   private List<DocumentationImpl> docs;
   private List<KeyphraseImpl> keyphrases;
   private List<ContributorImpl> creators;
@@ -86,6 +86,35 @@ public class ThreddsMetadataImpl
   public ThreddsMetadataImpl()
   {
     this.isBuilt = false;
+    this.dataSizeInBytes = -1;
+  }
+
+  public boolean isEmpty()
+  {
+    if ( this.docs != null && ! this.docs.isEmpty() )
+      return false;
+    if ( this.keyphrases != null && ! this.keyphrases.isEmpty() )
+      return false;
+    if ( this.creators != null && ! this.creators.isEmpty() )
+      return false;
+    if ( this.contributors != null && ! this.contributors.isEmpty() )
+      return false;
+    if ( this.publishers != null && ! this.publishers.isEmpty() )
+      return false;
+
+    if ( this.projectTitle != null || this.dateCreated != null || this.dateModified != null
+         || this.dateIssued != null || this.dateValid != null || this.dateAvailable != null
+         || this.dateMetadataCreated != null || this.dateMetadataModified != null
+         || this.geospatialCoverage != null || this.temporalCoverage != null )
+      return false;
+
+    if ( this.variables != null && ! this.variables.isEmpty() )
+      return false;
+
+    if ( this.dataSizeInBytes != -1 || this.dataFormat != null || this.dataType != null || this.collectionType != null )
+      return false;
+
+    return true;
   }
 
   public DocumentationBuilder addDocumentation( String docType, String title, URI externalReference )

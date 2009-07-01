@@ -50,15 +50,17 @@ import javax.xml.stream.XMLEventReader;
  */
 public class AccessElementParser extends AbstractElementParser
 {
-  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+  private final DatasetBuilder parentDatasetBuilder;
 
-  private final DatasetBuilder datasetBuilder;
+  private AccessBuilder selfBuilder;
 
-  public AccessElementParser( XMLEventReader reader, DatasetBuilder datasetBuilder )
+  public AccessElementParser( XMLEventReader reader,
+                              ThreddsBuilderFactory builderFactory,
+                              DatasetBuilder parentDatasetBuilder )
           throws ThreddsXmlParserException
   {
-    super( reader, AccessElementNames.AccessElement );
-    this.datasetBuilder = datasetBuilder;
+    super( reader, AccessElementNames.AccessElement, builderFactory );
+    this.parentDatasetBuilder = parentDatasetBuilder;
   }
 
   protected static boolean isSelfElementStatic( XMLEvent event )
@@ -71,45 +73,48 @@ public class AccessElementParser extends AbstractElementParser
     return isSelfElement( event, AccessElementNames.AccessElement );
   }
 
-  protected AccessBuilder parseStartElement()
+  protected AccessBuilder getSelfBuilder() {
+    return this.selfBuilder;
+  }
+
+  protected void parseStartElement()
           throws ThreddsXmlParserException
   {
     StartElement startElement = this.getNextEventIfStartElementIsMine();
-
-    AccessBuilder builder = null;
-    if ( this.datasetBuilder != null )
-      builder = this.datasetBuilder.addAccessBuilder();
+       
+    if ( this.parentDatasetBuilder != null )
+      this.selfBuilder = this.parentDatasetBuilder.addAccessBuilder();
     else
       throw new ThreddsXmlParserException( "" );
 
     Attribute serviceNameAtt = startElement.getAttributeByName( AccessElementNames.AccessElement_ServiceName );
     String serviceName = serviceNameAtt.getValue();
     // ToDo This only gets top level services, need findServiceBuilderByName() to crawl services
-    ServiceBuilder serviceBuilder = this.datasetBuilder.getParentCatalogBuilder().findServiceBuilderByNameGlobally( serviceName );
+    ServiceBuilder serviceBuilder = this.parentDatasetBuilder.getParentCatalogBuilder().findServiceBuilderByNameGlobally( serviceName );
 
     Attribute urlPathAtt = startElement.getAttributeByName( AccessElementNames.AccessElement_UrlPath );
     String urlPath = urlPathAtt.getValue();
 
-    builder.setServiceBuilder( serviceBuilder );
-    builder.setUrlPath( urlPath );
+    this.selfBuilder.setServiceBuilder( serviceBuilder );
+    this.selfBuilder.setUrlPath( urlPath );
 
     Attribute dataFormatAtt = startElement.getAttributeByName( AccessElementNames.AccessElement_DataFormat );
     if ( dataFormatAtt != null )
     {
-      builder.setDataFormat( DataFormatType.getType( dataFormatAtt.getValue() ) );
+      this.selfBuilder.setDataFormat( DataFormatType.getType( dataFormatAtt.getValue() ) );
     }
 
-    return builder;
+    return;
   }
 
-  protected void handleChildStartElement( ThreddsBuilder builder )
+  protected void handleChildStartElement()
           throws ThreddsXmlParserException
   {
     // ToDo Save the results in a ThreddsXmlParserIssue (Warning) and report.
     StaxThreddsXmlParserUtils.consumeElementAndConvertToXmlString( this.reader );
   }
 
-  protected void postProcessing( ThreddsBuilder builder )
+  protected void postProcessingAfterEndElement()
           throws ThreddsXmlParserException
   {
     return;

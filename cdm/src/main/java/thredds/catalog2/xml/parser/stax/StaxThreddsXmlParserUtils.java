@@ -33,6 +33,7 @@
 package thredds.catalog2.xml.parser.stax;
 
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
+import thredds.catalog2.xml.parser.ThreddsXmlParserIssue;
 import thredds.util.HttpUriResolver;
 import thredds.util.HttpUriResolverFactory;
 
@@ -41,7 +42,6 @@ import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.events.XMLEvent;
-import javax.xml.stream.events.StartElement;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -59,7 +59,68 @@ import java.net.URI;
 public class StaxThreddsXmlParserUtils
 {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( StaxThreddsXmlParserUtils.class );
-  
+
+  private StaxThreddsXmlParserUtils() {}
+
+  public static String getLocationInfo( XMLEventReader xmlEventReader )
+  {
+    Location location = getLocation( xmlEventReader);
+    StringBuilder sb = new StringBuilder()
+            .append( "Location: SysId[")
+            .append( location.getSystemId())
+            .append( "] line[")
+            .append( location.getLineNumber())
+            .append( "] column[" )
+            .append( location.getColumnNumber())
+            .append( "] charOffset[" )
+            .append( location.getCharacterOffset())
+            .append( "]." );
+    return sb.toString();
+  }
+
+  public static Location getLocation( XMLEventReader xmlEventReader)
+  {
+    if ( xmlEventReader == null )
+      throw new IllegalArgumentException( "XMLEventReader may not be null.");
+    if ( ! xmlEventReader.hasNext() )
+      throw new IllegalArgumentException( "XMLEventReader must have next event.");
+
+    XMLEvent nextEvent = null;
+    try
+    {
+      nextEvent = xmlEventReader.peek();
+    }
+    catch ( XMLStreamException e )
+    {
+      throw new IllegalArgumentException( "Could not peek() next event.");
+    }
+
+    return nextEvent.getLocation();
+  }
+
+  public static ThreddsXmlParserIssue createIssueForException( String message, XMLEventReader xmlEventReader, Exception e )
+          throws ThreddsXmlParserException
+  {
+    String locationInfo = getLocationInfo( xmlEventReader);
+    String msg = message + ":\n    " + locationInfo + ": " + e.getMessage();
+    log.debug( "createIssueForException(): " + msg );
+    ThreddsXmlParserIssue issue = new ThreddsXmlParserIssue( ThreddsXmlParserIssue.Severity.WARNING,
+                                                             msg, null, e );
+    return issue;
+  }
+
+  public static ThreddsXmlParserIssue createIssueForUnexpectedElement( String message, XMLEventReader xmlEventReader )
+          throws ThreddsXmlParserException
+  {
+    String locationInfo = getLocationInfo( xmlEventReader);
+    String unexpectedElemAsString = StaxThreddsXmlParserUtils.consumeElementAndConvertToXmlString( xmlEventReader );
+    String msg = message + ":\n    " + locationInfo + ":\n" + unexpectedElemAsString;
+    log.debug( "createIssueForUnexpectedElement(): " + msg );
+    ThreddsXmlParserIssue issue = new ThreddsXmlParserIssue( ThreddsXmlParserIssue.Severity.WARNING,
+                                                             msg, null, null );
+    return issue;
+  }
+
   public static String consumeElementAndConvertToXmlString( XMLEventReader xmlEventReader )
           throws ThreddsXmlParserException
   {
