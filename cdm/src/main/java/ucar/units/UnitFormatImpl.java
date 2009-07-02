@@ -36,6 +36,8 @@ package ucar.units;
 
 /**
  * Provides support for classes that parse and format unit specifications.
+ *
+ * Instances are thread-safe.
  * 
  * @author Steven R. Emmerson
  * @version $Id: UnitFormatImpl.java 64 2006-07-12 22:30:50Z edavis $
@@ -46,7 +48,7 @@ public abstract class UnitFormatImpl implements UnitFormat {
 	private static Object		MUTEX				= new Object();
 
 	/**
-	 * Parses a unit specification.
+	 * Parses a unit specification.  This method is thread-safe.
 	 * 
 	 * @param spec
 	 *            The unit specification (e.g. "m/s");
