@@ -409,8 +409,13 @@ PARSER_BEGIN(StandardUnitFormat)
 	        myAssert(parser, "s@19700101T000000.00", epoch);
 	        myAssert(parser, "s @ 1970-01-01T00:00:00.00", epoch);
 	        myAssert(parser, "s @ 1970-01-01 00:00:00.00", epoch);
+	        myAssert(parser, "s @ 1970-01-01 00:00:00.00 +0", epoch);
 	        myAssert(parser, "s @ 1970-01-01T00:00:00.00 -12", epoch
 	                .shiftTo(new Date(12 * 60 * 60 * 1000)));
+		    if (!parser.parse("days since 2009-06-14 04:00:00").equals(
+			     parser.parse("days since 2009-06-14 04:00:00 +00:00"))) {
+			    throw new AssertionError();
+		    }
 	        myAssert(parser, "lg(re: 1)", DerivedUnitImpl.DIMENSIONLESS.log(10));
 	        myAssert(parser, "0.1 lg(re 1 mm)", m.multiplyBy(1e-3).log(10)
 	                .multiplyBy(0.1));
