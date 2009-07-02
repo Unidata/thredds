@@ -36,8 +36,9 @@ import thredds.catalog2.Catalog;
 import thredds.catalog.ServiceType;
 
 import java.net.URI;
-import java.util.Date;
 import java.util.List;
+
+import ucar.nc2.units.DateType;
 
 /**
  * _more_
@@ -56,11 +57,11 @@ public interface CatalogBuilder extends ThreddsBuilder
   public String getVersion();
   public void setVersion( String version );
 
-  public Date getExpires();
-  public void setExpires( Date expires );
+  public DateType getExpires();
+  public void setExpires( DateType expires );
 
-  public Date getLastModified();
-  public void setLastModified( Date lastModified );
+  public DateType getLastModified();
+  public void setLastModified( DateType lastModified );
 
   // * @throws IllegalStateException this CatalogBuilder has already been finished or already contains a ServiceBuilder with the given name.
   public ServiceBuilder addService( String name, ServiceType type, URI baseUri );

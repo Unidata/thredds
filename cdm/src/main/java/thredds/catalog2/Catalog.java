@@ -32,11 +32,10 @@
  */
 package thredds.catalog2;
 
-import thredds.catalog.ServiceType;
-
 import java.net.URI;
-import java.util.Date;
 import java.util.List;
+
+import ucar.nc2.units.DateType;
 
 /**
  * Represents a hierarchical collection of datasets.
@@ -59,8 +58,8 @@ public interface Catalog
   public String getName();
   public URI getDocBaseUri();
   public String getVersion();
-  public Date getExpires();
-  public Date getLastModified();
+  public DateType getExpires();
+  public DateType getLastModified();
 
   public List<Service> getServices();
   public Service getServiceByName( String name );

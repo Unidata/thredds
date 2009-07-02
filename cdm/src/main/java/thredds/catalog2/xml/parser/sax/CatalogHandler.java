@@ -42,6 +42,7 @@ import java.net.URISyntaxException;
 
 import thredds.catalog2.builder.CatalogBuilder;
 import thredds.catalog2.simpleImpl.ThreddsBuilderFactoryImpl;
+import ucar.nc2.units.DateType;
 
 /**
  * _more_
@@ -72,9 +73,9 @@ public class CatalogHandler extends DefaultHandler
     String name = atts.getValue( "", "name");
     String version = atts.getValue( "", "version");
     String expiresDateString = atts.getValue( "", "expires");
-    Date expires = null;
+    DateType expires = null;
     String lastModifiedDateString = atts.getValue( "", "lastModified" );
-    Date lastModified = null;
+    DateType lastModified = null;
 
 
     this.catalog = new ThreddsBuilderFactoryImpl()

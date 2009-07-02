@@ -35,6 +35,7 @@ package thredds.catalog2.xml.parser.stax;
 import thredds.catalog2.builder.ThreddsBuilder;
 import thredds.catalog2.builder.ThreddsBuilderFactory;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
+import thredds.catalog2.xml.parser.ThreddsXmlParserIssue;
 
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.events.StartElement;
@@ -119,14 +120,34 @@ public abstract class AbstractElementParser
           }
           else
           {
-            log.error( "parse(): Unrecognized end element [" + event.asEndElement().getName() + "]." );
-            this.reader.next();
-            continue;
+            if ( this instanceof ThreddsMetadataElementParser )
+            {
+              if ( log.isDebugEnabled())
+              {
+                String msg = "End element probably parent of ThreddsMetadata [" + event.asEndElement().getName() + "].";
+                ThreddsXmlParserIssue issue = StaxThreddsXmlParserUtils
+                        .createIssueForUnexpectedEvent( msg, ThreddsXmlParserIssue.Severity.WARNING,
+                                                        this.reader, event );
+                // ToDo Figure out a better way to deal with this situation.
+                log.debug( "parse(): " + issue.getMessage() );
+              }
+              break;
+            }
+            else
+            {
+              String msg = "Unrecognized end element [" + event.asEndElement().getName() + "].";
+              ThreddsXmlParserIssue issue = StaxThreddsXmlParserUtils
+                      .createIssueForUnexpectedEvent( msg, ThreddsXmlParserIssue.Severity.FATAL,
+                                                      this.reader, event );
+              log.error( this.getClass().getName() + ".parse(): " + issue.getMessage() );
+              // ToDo Gather issues (and "this.reader.next(); continue;") rather than throw exception.
+              throw new ThreddsXmlParserException( issue );
+            }
           }
         }
         else
         {
-          log.debug( "parse(): Unhandled event [" + event.getLocation() + "--" + event + "]." );
+          log.debug( this.getClass().getName() + ".parse(): Unhandled event [" + event.getLocation() + "--" + event + "]." );
           this.reader.next();
           continue;
         }

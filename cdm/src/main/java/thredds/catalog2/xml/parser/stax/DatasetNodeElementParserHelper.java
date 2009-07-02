@@ -209,6 +209,7 @@ public class DatasetNodeElementParserHelper
     else
       return false;
   }
+
   public boolean handleCollectionChildStartElement( StartElement startElement,
                                                     XMLEventReader reader,
                                                     DatasetNodeBuilder dsNodeBuilder )

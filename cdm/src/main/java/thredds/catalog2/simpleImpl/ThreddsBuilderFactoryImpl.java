@@ -34,11 +34,11 @@ package thredds.catalog2.simpleImpl;
 
 import thredds.catalog2.*;
 import thredds.catalog2.builder.*;
-import thredds.catalog2.builder.util.ThreddsMetadataBuilderUtils;
 import thredds.catalog.ServiceType;
 
-import java.util.Date;
 import java.net.URI;
+
+import ucar.nc2.units.DateType;
 
 /**
  * _more_
@@ -48,7 +48,7 @@ import java.net.URI;
  */
 public class ThreddsBuilderFactoryImpl implements ThreddsBuilderFactory
 {
-  public CatalogBuilder newCatalogBuilder( String name, URI docBaseUri, String version, Date expires, Date lastModified )
+  public CatalogBuilder newCatalogBuilder( String name, URI docBaseUri, String version, DateType expires, DateType lastModified )
   {
     return new CatalogImpl( name, docBaseUri, version, expires, lastModified );
   }

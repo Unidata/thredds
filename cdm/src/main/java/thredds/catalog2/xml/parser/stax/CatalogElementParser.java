@@ -35,6 +35,7 @@ package thredds.catalog2.xml.parser.stax;
 import thredds.catalog2.builder.ThreddsBuilderFactory;
 import thredds.catalog2.builder.CatalogBuilder;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
+import thredds.catalog2.xml.parser.ThreddsXmlParserIssue;
 import thredds.catalog2.xml.names.CatalogElementNames;
 
 import javax.xml.stream.events.StartElement;
@@ -44,6 +45,9 @@ import javax.xml.stream.XMLEventReader;
 import java.util.Date;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.ParseException;
+
+import ucar.nc2.units.DateType;
 
 /**
  * _more_
@@ -91,11 +95,35 @@ public class CatalogElementParser extends AbstractElementParser
     Attribute versionAtt = startElement.getAttributeByName( CatalogElementNames.CatalogElement_Version );
     String versionString = versionAtt != null ? versionAtt.getValue() : null;
     Attribute expiresAtt = startElement.getAttributeByName( CatalogElementNames.CatalogElement_Expires );
-    // ToDo Date expiresDate = expiresAtt != null ? new DateType( expiresAtt.getValue(), null, null).getDate() : null;
-    Date expiresDate = null;
+    String expiresString = expiresAtt != null ? expiresAtt.getValue() : null;
+    DateType expires = null;
+    try
+    {
+      expires = expiresString != null ? new DateType( expiresString, null, null ) : null;
+    }
+    catch ( ParseException e )
+    {
+      String msg = "Failed to parse catalog expires date [" + expiresString + "].";
+      ThreddsXmlParserIssue issue = StaxThreddsXmlParserUtils.createIssueForException( msg, this.reader, e );
+      log.warn( "parseStartElement(): " + issue.getMessage(), e );
+      // ToDo Gather issues rather than throw exception.
+      throw new ThreddsXmlParserException( issue );
+    }
     Attribute lastModifiedAtt = startElement.getAttributeByName( CatalogElementNames.CatalogElement_LastModified );
-    // ToDo Date lastModifiedDate = lastModifiedAtt != null ? new DateType( lastModifiedAtt.getValue(), null, null).getDate() : null;
-    Date lastModifiedDate = null;
+    String lastModifiedString = lastModifiedAtt != null ? lastModifiedAtt.getValue() : null;
+    DateType lastModified = null;
+    try
+    {
+      lastModified = lastModifiedString != null ? new DateType( lastModifiedString, null, null ) : null;
+    }
+    catch ( ParseException e )
+    {
+      String msg = "Failed to parse catalog lastModified date [" + lastModifiedString + "].";
+      ThreddsXmlParserIssue issue = StaxThreddsXmlParserUtils.createIssueForException( msg, this.reader, e );
+      log.warn( "parseStartElement(): " + issue.getMessage(), e );
+      // ToDo Gather issues rather than throw exception.
+      throw new ThreddsXmlParserException( issue );
+    }
     URI docBaseUri = null;
     try
     {
@@ -103,10 +131,13 @@ public class CatalogElementParser extends AbstractElementParser
     }
     catch ( URISyntaxException e )
     {
-      log.error( "parseElement(): Bad catalog base URI [" + docBaseUriString + "]: " + e.getMessage(), e );
-      throw new ThreddsXmlParserException( "Bad catalog base URI [" + docBaseUriString + "]: " + e.getMessage(), e );
+      String msg = "Bad catalog base URI [" + docBaseUriString + "].";
+      ThreddsXmlParserIssue issue = StaxThreddsXmlParserUtils.createIssueForException( msg, this.reader, e );
+      log.warn( "parseStartElement(): " + issue.getMessage(), e );
+      // ToDo Gather issues rather than throw exception.
+      throw new ThreddsXmlParserException( issue );
     }
-    this.selfBuilder = builderFactory.newCatalogBuilder( nameString, docBaseUri, versionString, expiresDate, lastModifiedDate );
+    this.selfBuilder = builderFactory.newCatalogBuilder( nameString, docBaseUri, versionString, expires, lastModified );
   }
 
   protected void handleChildStartElement()

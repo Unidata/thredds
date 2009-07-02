@@ -79,7 +79,7 @@ public class TestCatalogParser extends TestCase
   {
     String docBaseUriString = "http://test/thredds/catalog2/xml/parser/TestCatalogParser/testCatalogSingleDatasetAccessAttributes.xml";
 
-    String catXml = CatalogXmlUtils.getCatalogWithSingleAccessibleDataset();
+    String catXml = CatalogXmlUtils.getCatalogWithSingleAccessDatasetOldStyle();
 
     Catalog cat = this.parseCatalog( catXml, docBaseUriString );
 

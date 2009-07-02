@@ -40,8 +40,10 @@ import thredds.catalog.ServiceType;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.text.ParseException;
+
+import ucar.nc2.units.DateType;
+import ucar.nc2.units.TimeDuration;
 
 /**
  * _more_
@@ -83,15 +85,15 @@ public class TestCatalogImpl extends TestCase
     fail( "No IllegalArgumentException.");
   }
 
-  public void testConstructorNormal()
+  public void testConstructorNormal() throws ParseException
   {
     String name = "cat";
     String verString = "v1";
-    Calendar cal = new GregorianCalendar();
-    Date lastModTime = cal.getTime();
-    cal.add( Calendar.YEAR, 1 );
-    Date expiresTime = cal.getTime();
-    CatalogBuilder cb = new CatalogImpl( name, docBaseUri, verString, expiresTime, lastModTime );
+    long curTime = System.currentTimeMillis();
+    DateType lastModified = new DateType( false, new Date( curTime) );
+    DateType expires = new DateType( lastModified ).add( new TimeDuration( "P5D"));
+
+    CatalogBuilder cb = new CatalogImpl( name, docBaseUri, verString, expires, lastModified );
 
     assertFalse( cb.isBuilt() );
 
@@ -101,10 +103,10 @@ public class TestCatalogImpl extends TestCase
                 cb.getDocBaseUri().equals( docBaseUri ) );
     assertTrue( "Version [" + cb.getVersion() + "] not as expected [" + verString + "].",
                 cb.getVersion().equals( verString ) );
-    assertTrue( "Expires time [" + cb.getExpires() + "] not as expected [" + expiresTime + "].",
-                cb.getExpires().equals( expiresTime ) );
-    assertTrue( "Last modified time [" + cb.getLastModified() + "] not as expected [" + lastModTime + "].",
-                cb.getLastModified().equals( lastModTime ) );
+    assertTrue( "Expires time [" + cb.getExpires() + "] not as expected [" + expires + "].",
+                cb.getExpires().equals( expires) );
+    assertTrue( "Last modified time [" + cb.getLastModified() + "] not as expected [" + lastModified + "].",
+                cb.getLastModified().equals( lastModified ) );
 
   }
 

@@ -107,16 +107,15 @@ public class CatalogElementWriter implements AbstractElementWriter
       if ( catalog.getVersion() != null )
         writer.writeAttribute( CatalogElementNames.CatalogElement_Version.toString(), catalog.getVersion() );
 
-      DateFormatter df = new DateFormatter();
       if ( catalog.getExpires() != null )
       {
         writer.writeAttribute( CatalogElementNames.CatalogElement_Expires.toString(),
-                               df.toDateTimeStringISO( catalog.getExpires() ));
+                               catalog.getExpires().toDateTimeStringISO());
       }
       if ( catalog.getLastModified() != null )
       {
         writer.writeAttribute( CatalogElementNames.CatalogElement_LastModified.toString(),
-                               df.toDateTimeStringISO( catalog.getLastModified() ));
+                               catalog.getLastModified().toDateTimeStringISO());
       }
       writer.writeCharacters( "\n" );
       for ( Service curService : catalog.getServices() )

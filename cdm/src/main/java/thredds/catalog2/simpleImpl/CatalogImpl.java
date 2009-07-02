@@ -39,6 +39,8 @@ import thredds.catalog.ServiceType;
 import java.net.URI;
 import java.util.*;
 
+import ucar.nc2.units.DateType;
+
 /**
  * _more_
  *
@@ -52,8 +54,8 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   private String name;
   private URI docBaseUri;
   private String version;
-  private Date expires;
-  private Date lastModified;
+  private DateType expires;
+  private DateType lastModified;
 
   private ServiceContainer serviceContainer;
 
@@ -64,7 +66,7 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   private boolean isBuilt = false;
 
 
-  public CatalogImpl( String name, URI docBaseUri, String version, Date expires, Date lastModified )
+  public CatalogImpl( String name, URI docBaseUri, String version, DateType expires, DateType lastModified )
   {
     if ( docBaseUri == null ) throw new IllegalArgumentException( "Catalog base URI must not be null.");
     this.name = name;
@@ -119,24 +121,24 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     return this.version;
   }
 
-  public void setExpires( Date expires )
+  public void setExpires( DateType expires )
   {
     if ( isBuilt ) throw new IllegalStateException( "This CatalogBuilder has been built." );
     this.expires = expires;
   }
 
-  public Date getExpires()
+  public DateType getExpires()
   {
     return this.expires;
   }
 
-  public void setLastModified( Date lastModified )
+  public void setLastModified( DateType lastModified )
   {
     if ( isBuilt ) throw new IllegalStateException( "This CatalogBuilder has been built." );
     this.lastModified = lastModified;
   }
 
-  public Date getLastModified()
+  public DateType getLastModified()
   {
     return this.lastModified;
   }

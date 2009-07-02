@@ -104,9 +104,7 @@ public class StaxThreddsXmlParserUtils
     String locationInfo = getLocationInfo( xmlEventReader);
     String msg = message + ":\n    " + locationInfo + ": " + e.getMessage();
     log.debug( "createIssueForException(): " + msg );
-    ThreddsXmlParserIssue issue = new ThreddsXmlParserIssue( ThreddsXmlParserIssue.Severity.WARNING,
-                                                             msg, null, e );
-    return issue;
+    return new ThreddsXmlParserIssue( ThreddsXmlParserIssue.Severity.WARNING, msg, null, e );
   }
 
   public static ThreddsXmlParserIssue createIssueForUnexpectedElement( String message, XMLEventReader xmlEventReader )
@@ -116,9 +114,18 @@ public class StaxThreddsXmlParserUtils
     String unexpectedElemAsString = StaxThreddsXmlParserUtils.consumeElementAndConvertToXmlString( xmlEventReader );
     String msg = message + ":\n    " + locationInfo + ":\n" + unexpectedElemAsString;
     log.debug( "createIssueForUnexpectedElement(): " + msg );
-    ThreddsXmlParserIssue issue = new ThreddsXmlParserIssue( ThreddsXmlParserIssue.Severity.WARNING,
-                                                             msg, null, null );
-    return issue;
+    return new ThreddsXmlParserIssue( ThreddsXmlParserIssue.Severity.WARNING, msg, null, null );
+  }
+
+  public static ThreddsXmlParserIssue createIssueForUnexpectedEvent( String message,
+                                                                     ThreddsXmlParserIssue.Severity severity,
+                                                                     XMLEventReader xmlEventReader, XMLEvent event )
+          throws ThreddsXmlParserException
+  {
+    String locationInfo = getLocationInfo( xmlEventReader);
+    String msg = message + " [" + severity.toString() + "]:\n    " + locationInfo + ":\n";
+    log.debug( "createIssueForUnexpectedElement(): " + msg );
+    return new ThreddsXmlParserIssue( severity, msg, null, null );
   }
 
   public static String consumeElementAndConvertToXmlString( XMLEventReader xmlEventReader )
