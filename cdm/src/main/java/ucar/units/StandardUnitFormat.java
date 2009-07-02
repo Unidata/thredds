@@ -1095,7 +1095,7 @@
                 {
                     {if (true) throw new ParseException("invalid time-zone in timestamp");}
                 }
-                timeZone = TimeZone.getDefault();
+                timeZone = TimeZone.getTimeZone("UTC");
                 timeZone.setRawOffset(sign*(zoneHour*60 + zoneMinute)*60*1000);
       break;
     case NAME:
