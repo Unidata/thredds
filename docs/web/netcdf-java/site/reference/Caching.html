@@ -89,17 +89,6 @@ You might want to always write temporary files to the cache directory, in order 
 <pre><strong>  NetcdfDataset.initNetcdfFileCache(int minElementsInMemory, int maxElementsInMemory, int period);</strong></pre>
 <p> where <em>minElementsInMemory</em> are the number of objects to keep in the cache when cleaning up, <em>maxElementsInMemory</em> triggers a cleanup if the cache size goes over it, and <em>period</em> specifies the time in seconds to do periodic cleanups.</p>
 <hr width="100%" />
-<h2>FileSystem Inventory (4.1)</h2>
-<h3>Aggregation, PointFeature Collections</h3>
-<p>Constructing an aggregation/collection involves scanning all the files in one or more directories.</p>
-<p>We typically want to associate with each file the list of coordinate values along the aggregation dimension.</p>
-<p>For PointFeature Collections, we need to know the time range for each file.</p>
-<h3>TDS Catalogs</h3>
-<p>Dynamic generation of catalogs with DatasetScan involves scanning all the files in one or more directories.</p>
-<p>We can open files open in a background thread and add discovery metadata automatically.</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<hr width="100%" />
 <address>
 <img src="../nc.gif" width="64" height="64" /> This document is maintained by John Caron and was last updated on Jun 26, 2009
 </address>

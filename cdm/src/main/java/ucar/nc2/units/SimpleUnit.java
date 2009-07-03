@@ -53,18 +53,18 @@ public class SimpleUnit {
   public static final SimpleUnit pressureUnit;
 
   //static protected UnitFormat format;
-  static protected Unit secsUnit, dateUnit;
+  static protected Unit secsUnit, dateReferenceUnit;
   static protected boolean debugParse = false;
 
   static {
     try {
-      UnitFormat format = UnitFormatManager.instance();
-      secsUnit = format.parse("sec");
-      dateUnit = format.parse("secs since 1970-01-01 00:00:00");
+      UnitFormat udunit = UnitFormatManager.instance();
+      secsUnit = udunit.parse("sec");
+      dateReferenceUnit = udunit.parse("ms since 1970-01-01");
 
       // aliasing
       UnitDB unitDB = UnitDBManager.instance();
-      Unit u = format.parse("millibar");
+      Unit u = udunit.parse("millibar");
       Unit alias = u.clone(UnitName.newUnitName("mb"));
       unitDB.addUnit(alias);
 
@@ -168,10 +168,10 @@ public class SimpleUnit {
    * @return true if its a Date
    */
   static public boolean isDateUnit(ucar.units.Unit uu) {
-    boolean ok = uu.isCompatible(dateUnit);
+    boolean ok = uu.isCompatible(dateReferenceUnit);
     if (!ok) return false;
     try {
-      uu.getConverterTo(dateUnit);
+      uu.getConverterTo(dateReferenceUnit);
       return true;
     } catch (ConversionException e) {
       return false;

@@ -38,7 +38,7 @@ import ucar.nc2.units.TimeUnit;
 import java.util.*;
 import java.io.IOException;
 
-import thredds.filesystem.MFile;
+import thredds.inventory.MFile;
 
 /**
  * Manage a list of Scanners that find Files (actually finds MFile).
@@ -50,6 +50,8 @@ import thredds.filesystem.MFile;
 public class DatasetCollectionManager2 {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DatasetCollectionManager2.class);
   static private boolean debugSyncDetail = false;
+
+  ////////////////////////////////////////////////////////////////////
 
   private List<DatasetScanner2> scanList = new ArrayList<DatasetScanner2>();
   private Map<String, MFile> map; // current map of MFile

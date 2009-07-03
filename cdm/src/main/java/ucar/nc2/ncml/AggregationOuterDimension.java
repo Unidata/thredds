@@ -43,7 +43,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 
-import thredds.crawlabledataset.CrawlableDataset;
+import thredds.inventory.MFile;
 
 /**
  * Superclass for Aggregations on the outer dimension: joinNew, joinExisting, Fmrc, FmrcSingle
@@ -202,6 +202,15 @@ public abstract class AggregationOuterDimension extends Aggregation {
       Array data = pv.read(typicalDataset);
       pv.dtype = DataType.getType(data.getElementType());
       VariableDS promotedVar = new VariableDS(ncDataset, null, null, pv.varName, pv.dtype, dimName, null, null);
+      if (data.getSize() > 1) {
+        Dimension outer = ncDataset.getRootGroup().findDimension(dimName);
+        Dimension inner = new Dimension("", (int) data.getSize(), false); //anonymous
+        List<Dimension> dims = new ArrayList<Dimension>(2);
+        dims.add(outer);
+        dims.add(inner);
+        promotedVar.setDimensions(dims);       
+      }
+
       ncDataset.addVariable(null, promotedVar);
       promotedVar.setProxyReader(this);
       promotedVar.setSPobject(pv);
@@ -531,7 +540,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
   }
 
   @Override
-  protected Dataset makeDataset(CrawlableDataset dset) {
+  protected Dataset makeDataset(MFile dset) {
     return new DatasetOuterDimension(dset);
   }
 
@@ -600,7 +609,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
       }
     }
 
-    DatasetOuterDimension(CrawlableDataset cd) {
+    DatasetOuterDimension(MFile cd) {
       super(cd);
 
       if ((type == Type.joinNew) || (type == Type.joinExistingOne)) {
@@ -869,7 +878,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
             ((innerSection != null) && (varData.getSize() != innerSection.computeSize()))) {
           varData = varData.section(innerSection.getRanges());
 
-        } else if (varData.getSize() != nestedJoinRange.length()) {
+        } else if ((innerSection == null) && (varData.getSize() != nestedJoinRange.length())) {
           List<Range> nestedSection = new ArrayList<Range>(ranges); // make copy
           nestedSection.set(0, nestedJoinRange);
           varData = varData.section( nestedSection);
@@ -1059,7 +1068,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
       if (dtype == null)
         dtype = DataType.getType(data.getElementType());
 
-      if (dset.ncoord == 1)
+      if (dset.ncoord == 1) // LOOK ??
         setData(dset, data);
       else {
         // duplicate the value to each of the coordinates

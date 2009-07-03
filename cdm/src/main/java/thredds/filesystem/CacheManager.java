@@ -38,6 +38,8 @@ import net.jcip.annotations.ThreadSafe;
 
 import java.io.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.List;
+import java.util.Collections;
 
 /**
  * Cache filesystem info.
@@ -103,6 +105,7 @@ class CacheManager {
   }
 
   public void close() {
+    stats();
     if (cacheManager != null)
       cacheManager.shutdown();
     cacheManager = null;
@@ -158,7 +161,7 @@ class CacheManager {
                   "              />\n" +
                   "    <cache name='directory'\n" +
                   "            maxElementsInMemory='1000'\n" +
-                  "            eternal='false'\n" +
+                  "            eternal='true'\n" +
                   "            timeToIdleSeconds='864000'\n" +
                   "            timeToLiveSeconds='0'\n" +
                   "            overflowToDisk='true'\n" +
@@ -169,35 +172,23 @@ class CacheManager {
                   "            />\n" +
                   "</ehcache>";
 
-  void TestFileSystem() {
-    CacheManager manager = new CacheManager(new StringBufferInputStream(config));
+  public static CacheManager makeStandardCacheManager() {
+    CacheManager cm = new CacheManager(new StringBufferInputStream(config));
+    System.out.printf("Open StandardCacheManager %s%n", cm.cacheManager);
+    return cm;
   }
 
   static public void main( String args[]) throws IOException {
-    CacheManager man = new CacheManager("C:/dev/tds/fileManager/src/main/ehcache.xml");
+    CacheManager cm = new CacheManager(new StringBufferInputStream(config));
+    net.sf.ehcache.Cache cache = cm.cacheManager.getCache("directory");
 
-    DataInputStream in = new DataInputStream( System.in);
-    while (true) {
-      System.out.printf("dir: ");
-      String line = in.readLine();
-      if ((line == null) || (line.length() == 0)) break;
-      if (line.equals("show")) {
-        man.show();
-        continue;
-      }
-      if (line.equals("populate")) {
-        man.populate();
-        continue;
-      }
-
-      long start = System.nanoTime();
-      CacheDirectory dir = man.get(line);
-      long end = System.nanoTime();
-      System.out.printf("%n%-20s took %d usecs %n", line, (end - start) / 1000);
-      System.out.printf(" man.size=%s%n", dir.getChildren().length);
+    System.out.printf("Cache %s%n", cache);
+    List keys = cache.getKeys();
+    Collections.sort(keys);
+    for (Object key : keys) {
+      Element elem = cache.get(key);
+      System.out.printf(" %40s == %s%n", key, elem);
     }
-
-    man.stats();
-    man.close();
+    cm.close();
   }
 }

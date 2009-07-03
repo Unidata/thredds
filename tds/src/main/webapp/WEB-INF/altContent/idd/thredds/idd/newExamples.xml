@@ -85,7 +85,7 @@
             </documentation>
           </metadata>
 
-          <documentation type="title">${@title}</documentation>
+          <documentation type="title">${@title} also this text ${@title2}</documentation>
 
           <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/GFS_Alaska_191km_#yyyyMMdd_HHmm#.grib1"
                       recheckEvery="15 min" olderThan="5 min" />

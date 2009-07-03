@@ -42,12 +42,12 @@ import java.util.StringTokenizer;
  *  "1203 days since 1970-01-01 00:00:00".
  * <p>
  * This is a wrapper around ucar.units package.
- * It tracks the value, the base time unit, and the date origin seperately.
  *
  * @author caron
  */
 
-public class DateUnit { // extends SimpleUnit {
+public class DateUnit {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DateUnit.class);
 
   /**
    * Create a java.util.Date from this udunits String.
@@ -56,28 +56,15 @@ public class DateUnit { // extends SimpleUnit {
    * @return Date or null if not date unit.
    */
   static public Date getStandardDate(String text) {
-    double value;
-    String udunitString;
-
-    text = text.trim();
-    StringTokenizer stoker = new StringTokenizer(text);
-    String firstToke = stoker.nextToken();
-    try {
-      value = Double.parseDouble(firstToke);
-      udunitString = text.substring( firstToke.length());
-    } catch (NumberFormatException e) { // stupid way to test if it starts with a number
-      value = 0.0;
-      udunitString = text;
-    }
 
     DateUnit du;
     try {
-      du = new DateUnit( udunitString);
+      du = new DateUnit( text);
     } catch (Exception e) {
-      return null;
+      return null; // bad input
     }
 
-    return du.makeDate( value);
+    return du.getDate();
   }
 
   /** Create a java.util.Date from a udunit or ISO String.
@@ -95,20 +82,25 @@ public class DateUnit { // extends SimpleUnit {
     return result;
   }
 
-  ////////////////////////////////////////////////////////////////////////
-  private double value;
-  private String udunitString;
-  private TimeUnit timeUnit = null;
-  private Unit uu;
 
   static public DateUnit getUnixDateUnit() {
     try {
       return new DateUnit("secs since 1970-00-00:00.00");
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error("Error parsing UnixDateUnit", e);
       return null;
     }
   }
+
+  ////////////////////////////////////////////////////////////////////////
+  //private double value;
+  private String orgText, udunitString;
+
+  // private TimeUnit timeUnit = null;
+  private Unit uu;
+  private Converter converter = null;
+  private Converter converterInverse = null;
+
 
   /**
    * Constructor.
@@ -116,9 +108,12 @@ public class DateUnit { // extends SimpleUnit {
    * @throws Exception if malformed String.
    */
   public DateUnit(String text) throws Exception {
-    super();
+    this.orgText = text;
+    UnitFormat format = UnitFormatManager.instance();
+    uu = format.parse( text);
+    udunitString = uu.getCanonicalString();
 
-    String timeUnitString;
+    /* String timeUnitString;
 
     text = text.trim();
     StringTokenizer stoker = new StringTokenizer(text);
@@ -136,9 +131,32 @@ public class DateUnit { // extends SimpleUnit {
       timeUnitString = firstToke;
     }
 
-    uu = SimpleUnit.makeUnit( udunitString); // always a base unit
-    timeUnit = new TimeUnit( timeUnitString);
+    uu = SimpleUnit.makeUnit( udunitString); // always a base unit */
   }
+
+  private Converter getConverter() {
+   if (converter == null)  {
+     try {
+       Unit ref = SimpleUnit.dateReferenceUnit;
+       converter = uu.getConverterTo(ref);
+     } catch (Exception e) {
+       e.printStackTrace();
+     }
+   }
+   return converter;
+ }
+
+  private Converter getConverterInverse() {
+   if (converterInverse == null)  {
+     try {
+       Unit ref = SimpleUnit.dateReferenceUnit;
+       converterInverse = ref.getConverterTo(uu);
+     } catch (Exception e) {
+       e.printStackTrace();
+     }
+   }
+   return converterInverse;
+ }
 
   /**
    * Constructor that takes a value and a "base" udunit string.
@@ -161,23 +179,11 @@ public class DateUnit { // extends SimpleUnit {
     return tu.getOrigin();
   }
 
-  /**
-   * For udunit dates, get the time unit only, as a String, eg "secs" or "days"
-   * @return  time unit as a string
-   */
-  public String getTimeUnitString() { return timeUnit.getUnitString(); }
-   /**
-   * For udunit dates, get the time unit.
-    * @return time unit
-    */
-   public TimeUnit getTimeUnit() { return timeUnit; }
-
   /** Get the equivilent java.util.Date.
    * @return Date or null if failure
    */
   public Date getDate() {
-    double secs = timeUnit.getValueInSeconds(value);
-    return new Date( getDateOrigin().getTime() + (long)(1000*secs));
+    return new Date( (long) getConverter().convert(1.0));
   }
 
   /** Create a Date from this base unit and the given value.
@@ -185,8 +191,10 @@ public class DateUnit { // extends SimpleUnit {
    * @return Date .
    */
   public Date makeDate(double val) {
-    double secs = timeUnit.getValueInSeconds(val); //
-    return new Date( getDateOrigin().getTime() + (long)(1000*secs));
+    return new Date( (long) getConverter().convert(val));
+
+    //double secs = timeUnit.getValueInSeconds(val); //
+    //return new Date( getDateOrigin().getTime() + (long)(1000*secs));
   }
 
  /** Create the equivilent value from this base unit and the given Date.
@@ -195,16 +203,7 @@ public class DateUnit { // extends SimpleUnit {
    * @return value in units of this base unit.
    */
   public double makeValue(Date date) {
-    double secs = date.getTime() / 1000;
-    double origin_secs =  getDateOrigin().getTime() / 1000;
-    double diff = secs - origin_secs;
-
-   try {
-     timeUnit.setValueInSeconds( diff);
-   } catch (Exception e) {
-     throw new RuntimeException( e.getMessage());
-   }
-   return timeUnit.getValue();
+    return (double) getConverterInverse().convert(date.getTime());
   }
 
   /** Make a standard GMT string representation from this unit and given value.
@@ -219,7 +218,7 @@ public class DateUnit { // extends SimpleUnit {
   }
 
   public String toString() {
-    return value + " "+udunitString;
+    return orgText;
   }
 
   /**
@@ -228,6 +227,32 @@ public class DateUnit { // extends SimpleUnit {
    */
   public String getUnitsString() {
     return udunitString;
+  }
+
+  // testing
+  public static void main(String[] args) throws Exception {
+    UnitFormat udunit = UnitFormatManager.instance();
+    //String text = "days since 2009-06-14 04:00:00";
+    String text2 = "days since 2009-06-14 04:00:00 +00:00";
+    Unit uu2 = udunit.parse(text2);
+    System.out.printf("%s == %s %n", text2, uu2);
+
+    String text = "days since 2009-06-14 04:00:00";
+    Unit uu = udunit.parse(text);
+    System.out.printf("%s == %s %n", text, uu);
+
+    Unit ref = udunit.parse("ms since 1970-01-01");
+    Converter converter = uu.getConverterTo(ref);
+    DateFormatter formatter = new DateFormatter();
+    
+    double val = converter.convert(1.0);
+    Date d = new Date( (long) val);
+    System.out.printf(" val=%f date=%s (%s)%n", 1.0, d, formatter.toDateTimeStringISO(d));
+
+    double val2 = converter.convert(2.0);
+    Date d2 = new Date( (long) val2);
+    System.out.printf(" val=%f date=%s (%s)%n", 2.0, d, formatter.toDateTimeStringISO(d2));
+
   }
 
 }

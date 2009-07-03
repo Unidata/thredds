@@ -37,7 +37,10 @@ import ucar.nc2.units.DateFromString;
 import java.util.*;
 import java.io.File;
 
-import thredds.filesystem.*;
+import thredds.inventory.*;
+import thredds.inventory.WildcardMatchOnPath;
+import thredds.inventory.DateExtractorFromFilename;
+import thredds.filesystem.ControllerOS;
 
 /**
  * Manages feature dataset collections.
@@ -52,16 +55,24 @@ import thredds.filesystem.*;
 
 
 public class CollectionManager2 implements TimedCollection {
-  private static boolean show = true;
+  static private boolean show = true;
+  static private MController controller;
+
+  static public void setController(MController _controller) {
+    controller = _controller;
+  }
+
+  ////////////////////////////////
 
   private List<TimedCollection.Dataset> c;
   private DateRange dateRange;
 
-  static public CollectionManager2 factory(ControllerIF cache, String collectionDesc, Formatter errlog) {
-    return new CollectionManager2(cache, collectionDesc, errlog);
+  static public CollectionManager2 factory(String collectionDesc, Formatter errlog) {
+    if (null == controller) controller = new ControllerOS();  // default 
+    return new CollectionManager2(collectionDesc, errlog);
   }
 
-  private CollectionManager2(ControllerIF cache, String collectionDesc, Formatter errlog) {
+  private CollectionManager2(String collectionDesc, Formatter errlog) {
 
     // first part is the directory
     int posWildcard = collectionDesc.lastIndexOf('/');
@@ -90,11 +101,11 @@ public class CollectionManager2 implements TimedCollection {
 
     MFileFilter mfilter = (null == filter) ? null : new WildcardMatchOnPath(filter);
     DateExtractor dateExtractor = (dateFormatMark == null) ? null : new DateExtractorFromFilename(dateFormatMark);
-    MCollection mc = new MCollection(dirName, dirName, mfilter, dateExtractor);
+    MCollection mc = new thredds.inventory.MCollection(dirName, dirName, mfilter, dateExtractor);
 
     // get the inventory, sort
     List<MFile> fileList = new ArrayList<MFile>();
-    Iterator<MFile> invIter = cache.getInventory( mc);
+    Iterator<MFile> invIter = controller.getInventory( mc);
     while (invIter.hasNext())
       fileList.add(invIter.next());
     Collections.sort(fileList);

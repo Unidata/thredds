@@ -40,7 +40,7 @@ import java.util.HashMap;
  * @author caron
  * @since Mar 21, 2009
  */
-public class CacheFile implements Serializable {
+class CacheFile implements Serializable {
   protected String shortName;
   protected long lastModified;
   protected long length;

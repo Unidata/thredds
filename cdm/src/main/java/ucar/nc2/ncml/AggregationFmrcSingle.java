@@ -50,7 +50,7 @@ import ucar.ma2.*;
 import java.io.IOException;
 import java.util.*;
 
-import thredds.crawlabledataset.CrawlableDataset;
+import thredds.inventory.MFile;
 
 /**
  * Implement NcML Forecast Model Run Collection Aggregation
@@ -89,8 +89,9 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     // this.enhance = NetcdfDataset.getDefaultEnhanceMode();
     isDate = true;
 
-    DatasetScanner d = new DatasetScanner(null, dirName, suffix, regexpPatternString, subdirs, olderThan);
-    datasetManager.addDirectoryScan(d);
+    //DatasetScanner d = new DatasetScanner(null, dirName, suffix, regexpPatternString, subdirs, olderThan);
+    //datasetManager.addDirectoryScan(d);
+    datasetManager.addDirectoryScan(dirName, suffix, regexpPatternString, subdirs, olderThan, null);
   }
 
   @Override
@@ -129,7 +130,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     runHash = new HashMap<Date, List<DatasetFmrcSingle>>();
 
     Dataset typDataset = null;
-    for (CrawlableDataset cd : datasetManager.getFiles()) {
+    for (MFile cd : datasetManager.getFiles()) {
       // create the dataset wrapping this file, each is 1 forecast time coordinate of the nested aggregation
       DatasetFmrcSingle ds = new DatasetFmrcSingle(cd);
       if (typDataset == null) // grab the first one
@@ -314,7 +315,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     Date runDate;
     Double offset;
 
-    DatasetFmrcSingle(CrawlableDataset cd) {
+    DatasetFmrcSingle(MFile cd) {
       super(cd.getPath());
       this.cacheLocation = this.location;
       this.enhance = fmrcEnhanceMode;

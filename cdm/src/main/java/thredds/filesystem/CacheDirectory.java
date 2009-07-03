@@ -33,6 +33,7 @@ package thredds.filesystem;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * Lightweight, serializable representation of a java.io.File directory
@@ -83,10 +84,18 @@ public class CacheDirectory extends CacheFile implements Serializable {
   }
 
   public String getPath() {
-    return parentDirName +"/" + getPath();
+    return parentDirName +"/" + getShortName();
   }
 
   public CacheFile[] getChildren() {
     return children;
+  }
+
+  @Override
+  public String toString() {
+    return "CacheDirectory{" +
+            "parentDirName='" + parentDirName + '\'' +
+            ", num children=" + (children == null ? 0 : children.length) +
+            '}';
   }
 }

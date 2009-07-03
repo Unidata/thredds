@@ -32,7 +32,11 @@
  */
 package ucar.nc2.ncml;
 
-import thredds.filesystem.*;
+import thredds.inventory.*;
+import thredds.inventory.RegExpMatchOnName;
+import thredds.inventory.WildcardMatchOnPath;
+import thredds.inventory.DateExtractorFromFilename;
+import thredds.filesystem.ControllerOS;
 
 import java.util.*;
 import java.io.IOException;
@@ -41,30 +45,30 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.units.TimeUnit;
 
 /**
- * DatasetScanner implements the scan element, using thredds.filesystem.
+ * DatasetScanner implements the scan element, using thredds.inventory.ControllerIF.
  *
  * @author caron
  * @since June 26, 2009
  */
 public class DatasetScanner2 {
   static protected org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DatasetScanner.class);
-  static private thredds.filesystem.Controller controller;
+  static private MController controller;
 
-  static void setController(thredds.filesystem.Controller _controller) {
+  static public void setController(MController _controller) {
     controller = _controller;
   }
 
   /////////////////////////////////////////////////////////////////////////////////////
   private MCollection mc;
-
   private boolean wantSubdirs = true;
 
   // filters
   private long olderThan_msecs; // files must not have been modified for this amount of time (msecs)
-
   private boolean debugScan = false;
 
   DatasetScanner2(String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS, String dateFormatString) {
+    if (null == controller) controller = new ControllerOS();  // default
+
     MFileFilter filter = null;
     if (null != regexpPatternString)
       filter = new RegExpMatchOnName(regexpPatternString);
@@ -73,7 +77,7 @@ public class DatasetScanner2 {
 
     DateExtractor dateExtractor = (dateFormatString == null) ? null : new DateExtractorFromFilename(dateFormatString);
 
-    mc = new MCollection(dirName, dirName, filter, dateExtractor);
+    mc = new thredds.inventory.MCollection(dirName, dirName, filter, dateExtractor);
 
     if ((subdirsS != null) && subdirsS.equalsIgnoreCase("false"))
       wantSubdirs = false;
@@ -97,6 +101,10 @@ public class DatasetScanner2 {
   private void scanDirectory(MCollection mc, long now, List<MFile> result, CancelTask cancelTask) throws IOException {
 
     Iterator<MFile> iter = controller.getInventory(mc);
+    if (iter == null) {
+      logger.error("Invalid collection= "+mc);
+      return;
+    }
 
     while (iter.hasNext()) {
       MFile child = iter.next();

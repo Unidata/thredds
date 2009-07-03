@@ -44,11 +44,9 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import java.io.IOException;
 import java.io.File;
 import java.util.Formatter;
-import java.util.ArrayList;
 
 import org.jdom.input.SAXBuilder;
 import org.jdom.*;
-import thredds.catalog.ThreddsMetadata;
 
 /**
  * Factory for feature dataset collections.
@@ -58,7 +56,6 @@ import thredds.catalog.ThreddsMetadata;
  * @author caron
  * @since May 20, 2009
  */
-
 
 public class CompositeDatasetFactory {
   static public final String SCHEME = "collection:";
@@ -153,7 +150,7 @@ public class CompositeDatasetFactory {
     if (wildcard.startsWith(SCHEME))
       wildcard = wildcard.substring(SCHEME.length());
 
-    TimedCollection datasets = CollectionManager.factory(wildcard, errlog);
+    TimedCollection datasets = CollectionManager2.factory(wildcard, errlog);
     if (datasets == null) return null;
 
     FeatureCollection pfc = null;

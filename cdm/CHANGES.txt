@@ -5,6 +5,10 @@ Build Date = @BUILDTIME@
 Changes in version 4.0
 
  Release Details:
+  49:
+   filesystem caching in Aggregation, PointCOllection
+   DateUnit refactor - use udunit.convert() instead of TimeUnit as base time
+   udunits numeric timezone bug
   48:
    WRF Conventions looks for GRIDTYPE if it cant find DYN_OPT
    improve M3IO CoordSysBuilder, from Qun He

@@ -45,7 +45,7 @@ import java.util.concurrent.Executor;
 import java.io.*;
 
 import org.jdom.Element;
-import thredds.crawlabledataset.CrawlableDataset;
+import thredds.inventory.MFile;
 
 /**
  * Superclass for NcML Aggregation.
@@ -145,7 +145,7 @@ public abstract class Aggregation implements ProxyReader {
 
   protected List<Aggregation.Dataset> explicitDatasets = new ArrayList<Aggregation.Dataset>(); // explicitly created Dataset objects from netcdf elements
   protected List<Aggregation.Dataset> datasets = new ArrayList<Aggregation.Dataset>(); // all : explicit and scanned
-  protected DatasetCollectionManager datasetManager; // manages scanning
+  protected DatasetCollectionManager2 datasetManager; // manages scanning
   protected boolean cacheDirty = true; // aggCache persist file needs updating
 
   protected String dimName; // the aggregation dimension name
@@ -170,7 +170,7 @@ public abstract class Aggregation implements ProxyReader {
     this.ncDataset = ncd;
     this.dimName = dimName;
     this.type = type;
-    datasetManager = new DatasetCollectionManager(recheckS);
+    datasetManager = new DatasetCollectionManager2(recheckS);
   }
 
   /**
@@ -218,9 +218,11 @@ public abstract class Aggregation implements ProxyReader {
       if (type == Type.joinExisting) type = Type.joinExistingOne; // tricky
     }
 
-    DatasetScanner d = new DatasetScanner(crawlableDatasetElement, dirName, suffix, regexpPatternString, subdirs, olderThan);
-    datasetManager.addDirectoryScan(d);
-  }
+    //DatasetScanner2  d = new DatasetScanner(crawlableDatasetElement, dirName, suffix, regexpPatternString, subdirs, olderThan);
+    //datasetManager.addDirectoryScan(d);
+    // String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS, String dateFormatString)
+    datasetManager.addDirectoryScan(dirName, suffix, regexpPatternString, subdirs, olderThan, dateFormatMark);
+ }
 
   private Element mergeNcml = null;
   public void setModifications(Element ncmlMods) {
@@ -313,7 +315,7 @@ public abstract class Aggregation implements ProxyReader {
 
     // convert a MyCrawlableDataset into an Aggregation.Dataset
     // we really just need the location, assumed to work in the FileFactory
-    for (CrawlableDataset cd : datasetManager.getFiles()) {
+    for (MFile cd : datasetManager.getFiles()) {
       datasets.add( makeDataset(cd));
     }
 
@@ -536,7 +538,7 @@ public abstract class Aggregation implements ProxyReader {
     return new Dataset(cacheName, location, id, enhance, reader); // overridden in OuterDim, tiled
   }
 
-  protected Dataset makeDataset(CrawlableDataset dset) {
+  protected Dataset makeDataset(MFile dset) {
     return new Dataset(dset);
   }
 
@@ -563,7 +565,7 @@ public abstract class Aggregation implements ProxyReader {
       this.location = (location == null) ? null : StringUtil.substitute(location, "\\", "/");
     }
 
-    protected Dataset(CrawlableDataset cd) {
+    protected Dataset(MFile cd) {
       this( cd.getPath());
       this.cacheLocation = location;
     }

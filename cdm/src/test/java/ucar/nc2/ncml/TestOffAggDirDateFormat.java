@@ -80,7 +80,7 @@ public class TestOffAggDirDateFormat extends TestCase {
     Dimension timeDim = ncfile.findDimension("time");
     assert null != timeDim;
     assert timeDim.getName().equals("time");
-    assert timeDim.getLength() == 12;
+    assert timeDim.getLength() == 12 : timeDim.getLength() +"!="+ 12;
   }
 
 
