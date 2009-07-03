@@ -6,6 +6,7 @@ Changes in version 4.0
 
  Release Details:
   49:
+   NcML: values can be specified by fromAttribute
    filesystem caching in Aggregation, PointCOllection
    DateUnit refactor - use udunit.convert() instead of TimeUnit as base time
    udunits numeric timezone bug

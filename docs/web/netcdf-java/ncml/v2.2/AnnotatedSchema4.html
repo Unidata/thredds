@@ -122,15 +122,16 @@ files.</p>
   <LI>The mandatory <I><strong>type</strong></I> attribute is one of the enumerated <a href="#DataType">DataTypes</a>.
   <LI>The <em><strong>shape</strong></em> attribute   lists the names of the dimensions the variable depends on. For a scalar variable, the list will be empty. The 
   dimension names must be ordered with the slowest varying dimension first  (same as in the CDL description). 
-  For backwards compatibility, scalar variables may omit this attribute, although this is deprecated.
+  Anonymous dimensions are specified with just the integer length. For backwards compatibility, scalar variables may omit this attribute, although this is deprecated.
   <LI>The optional attribute <em><strong>orgName</strong></em> is used when renaming a variable. .  
 </OL>
 <h3><B>values Element </B></h3>
 <P> A <em><strong>values</strong></em> element specifies the data values of a variable, either by listing them for example:        <strong>&lt;values&gt;-109.0 -107.0 -115.0 93.923230&lt;/values&gt;</strong> or by specifying a start and increment, for example: <strong>&lt;values start=&quot;-109.5&quot; increment=&quot;2.0&quot; /&gt;</strong>. For a multi-dimensional variable, the values must be listed compatibly with the size and shape of the variable (slowest varying dimension first). </P>
-<pre>  &lt;xsd:element name=&quot;values&quot;&gt;<br>    &lt;xsd:complexType mixed=&quot;true&quot;&gt;<br> (1)  &lt;xsd:attribute name=&quot;start&quot; type=&quot;xsd:float&quot;/&gt;<br>      &lt;xsd:attribute name=&quot;increment&quot; type=&quot;xsd:float&quot;/&gt;<br>      &lt;xsd:attribute name=&quot;npts&quot; type=&quot;xsd:int&quot;/&gt;<br> (2)  &lt;xsd:attribute name=&quot;separator&quot; type=&quot;xsd:string&quot; /&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;</pre>
+<pre>  &lt;xsd:element name=&quot;values&quot;&gt;<br>    &lt;xsd:complexType mixed=&quot;true&quot;&gt;<br> (1)  &lt;xsd:attribute name=&quot;start&quot; type=&quot;xsd:float&quot;/&gt;<br>      &lt;xsd:attribute name=&quot;increment&quot; type=&quot;xsd:float&quot;/&gt;<br>      &lt;xsd:attribute name=&quot;npts&quot; type=&quot;xsd:int&quot;/&gt;<br> (2)  &lt;xsd:attribute name=&quot;separator&quot; type=&quot;xsd:string&quot; /&gt;<br> (3)  &lt;xsd:attribute name=&quot;fromAttribute&quot; type=&quot;xsd:string&quot;/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;</pre>
 <OL>
   <LI>The values can be specified with a <em><strong>start</strong></em> and <em><strong>increment</strong></em> attributes, if they are numeric  and  evenly spaced. You can enter these as  integers or floating point numbers, and they will be converted to the data type of the variable. The number of points will be taken from the shape of the variable. (For backwards compatibility, an <em><strong>npts</strong></em> attribute is allowed, although this is deprecated and ignored).
   <LI>By default, the list of values are separated by whitespace but  a different token can be specified using the <em><strong>separator</strong></em> attribute. This is useful if you are entering String values, e.g. &lt;values separator=&quot;*&quot;&gt;My dog*has*fleas&lt;/values&gt; defines three Strings. </LI>
+  <LI>The values can be specified from a global or variable attribute. To specify a global attribute, use <em><strong>@gattname</strong></em>. For a variable attibute use <em><strong>varName@attName</strong></em>. The data type and the shape of the variable must agree with the attribute.</LI>
 </OL>
 <h3><B>attribute Element </B></h3>
 <P>  The 
@@ -531,7 +532,7 @@ forecastOffsetMatcher:                     HHH#.grb#</pre>
 <hr WIDTH="100%">
 <p>&nbsp;</p>
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Apr 16, 2009
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on July 3, 2009
 </address>
 <p>&nbsp;</p>
 </BODY>

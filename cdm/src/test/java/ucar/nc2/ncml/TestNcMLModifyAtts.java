@@ -36,8 +36,6 @@ import junit.framework.*;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.ncml.NcMLReader;
-import ucar.nc2.ncml.TestNcML;
 
 import java.io.IOException;
 
@@ -151,9 +149,9 @@ public class TestNcMLModifyAtts extends TestCase {
       assert data.getElementType() == float.class;
 
       IndexIterator dataI = data.getIndexIterator();
-      assert close(dataI.getDoubleNext(), 41.0);
-      assert close(dataI.getDoubleNext(), 40.0);
-      assert close(dataI.getDoubleNext(), 39.0);
+      assert TestAll.closeEnough(dataI.getDoubleNext(), 41.0);
+      assert TestAll.closeEnough(dataI.getDoubleNext(), 40.0);
+      assert TestAll.closeEnough(dataI.getDoubleNext(), 39.0);
     } catch (IOException io) {}
 
   }
@@ -293,18 +291,18 @@ public class TestNcMLModifyAtts extends TestCase {
       assert data.getElementType() == double.class;
 
       IndexIterator dataI = data.getIndexIterator();
-      assert close( dataI.getDoubleNext(),1.0);
-      assert close( dataI.getDoubleNext(),2.0);
-      assert close( dataI.getDoubleNext(),3.0);
-      assert close( dataI.getDoubleNext(),4.0);
-      assert close( dataI.getDoubleNext(),2.0);
+      assert TestAll.closeEnough( dataI.getDoubleNext(),1.0);
+      assert TestAll.closeEnough( dataI.getDoubleNext(),2.0);
+      assert TestAll.closeEnough( dataI.getDoubleNext(),3.0);
+      assert TestAll.closeEnough( dataI.getDoubleNext(),4.0);
+      assert TestAll.closeEnough( dataI.getDoubleNext(),2.0);
     } catch (IOException io) {}
   }
 
-  boolean close( double d1, double d2) {
+ /* boolean close( double d1, double d2) {
     //System.out.println(d1+" "+d2);
     return Math.abs((d1-d2)/d1) < 1.0e-5;
-  }
+  } */
 
   public static void main(String[] args) {
     try {

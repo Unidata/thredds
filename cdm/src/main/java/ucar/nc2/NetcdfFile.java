@@ -230,6 +230,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
     try {
+      NetcdfFile.class.getClassLoader().loadClass("edu.wisc.ssec.mcidas.GridDirectory"); // only load if visad.jar is present
       registerIOProvider("ucar.nc2.iosp.mcidas.McIDASGridServiceProvider");
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);

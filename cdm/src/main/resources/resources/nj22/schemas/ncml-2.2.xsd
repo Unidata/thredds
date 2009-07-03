@@ -97,6 +97,7 @@
       <xsd:attribute name="increment" type="xsd:float"/>
       <xsd:attribute name="npts" type="xsd:int"/>
       <xsd:attribute name="separator" type="xsd:string"/>
+      <xsd:attribute name="fromAttribute" type="xsd:string"/>
     </xsd:complexType>
   </xsd:element>
 

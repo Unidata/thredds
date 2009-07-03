@@ -1122,9 +1122,36 @@ public class NcMLReader {
   }
 
   private void readValues(NetcdfDataset ds, Variable v, Element varElem, Element valuesElem) {
-    List<String> valList = new ArrayList<String>();
 
-    // should really be a seperate element
+    // check if values are specified by attribute
+    String fromAttribute = valuesElem.getAttributeValue("fromAttribute");
+    if (fromAttribute != null) {
+      Attribute att = null;
+      int pos = fromAttribute.indexOf('@'); // varName@attName
+      if (pos > 0) {
+        String varName = fromAttribute.substring(0, pos);
+        String attName = fromAttribute.substring(pos+1);
+        Variable vFrom = ds.getRootGroup().findVariable(varName); // LOOK groups
+         if (vFrom == null) {
+          errlog.format("Cant find variable %s %n", fromAttribute);
+          return;
+        }
+        att = vFrom.findAttribute(attName);
+
+      } else {  // attName or @attName
+        String attName = (pos == 0) ?  fromAttribute.substring(1) : fromAttribute;
+        att = ds.getRootGroup().findAttribute(attName);
+      }
+      if (att == null) {
+        errlog.format("Cant find attribute %s %n", fromAttribute);
+        return;
+      }
+      Array data = att.getValues();
+      v.setCachedData(data, true);
+      return;
+    }
+
+    // check if values are specified by start / increment
     String startS = valuesElem.getAttributeValue("start");
     String incrS = valuesElem.getAttributeValue("increment");
     String nptsS = valuesElem.getAttributeValue("npts");
@@ -1138,6 +1165,7 @@ public class NcMLReader {
       return;
     }
 
+    // otherwise values are listed in text
     String values = varElem.getChildText("values", ncNS);
     String sep = valuesElem.getAttributeValue("separator");
     if (sep == null) sep = " ";
@@ -1155,6 +1183,7 @@ public class NcMLReader {
 
     } else {
       // or a list of values
+      List<String> valList = new ArrayList<String>();
       StringTokenizer tokn = new StringTokenizer(values, sep);
       while (tokn.hasMoreTokens())
         valList.add(tokn.nextToken());
