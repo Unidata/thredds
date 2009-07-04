@@ -58,6 +58,7 @@ import org.jdom.Element;
 public class HdfEos {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HdfEos.class);
   static private boolean showTypes = false;
+  static public boolean showWork = false;
 
   /**
    * Amend the given NetcdfFile with metadata from HDF-EOS structMetadata.
@@ -193,11 +194,13 @@ public class HdfEos {
       if (length > 0) {
         Dimension dim = new Dimension(name, length);
         parent.addDimension(dim);
+        if (showWork) System.out.printf(" Add dimension %s %n",dim);
       } else {
         log.warn("Dimension "+name+" has size "+sizeS);
         Dimension udim = new Dimension(name, 1);
         udim.setGroup(parent);
         unknownDims.add( udim);
+        if (showWork) System.out.printf(" Add dimension %s %n", udim);
       }
     }
 
@@ -221,6 +224,7 @@ public class HdfEos {
       v.setCachedData(data, true);
       v.addAttribute(new Attribute("_DimensionMap", ""));
       parent.addVariable(v);
+      if (showWork) System.out.printf(" Add dimensionMap %s %n", v);
     }
 
     // Geolocation Variables
@@ -240,6 +244,7 @@ public class HdfEos {
         Element dimList = elem.getChild("DimList");
         List<Element> values = (List<Element>) dimList.getChildren("value");
         setSharedDimensions( v, values, unknownDims);
+        if (showWork) System.out.printf(" set coordinate %s %n", v);
       }
       if ((latAxis != null) && (lonAxis != null)) {
         List<Dimension> xyDomain = CoordinateSystem.makeDomain(new Variable[] {latAxis, lonAxis});
@@ -329,11 +334,13 @@ public class HdfEos {
         if (length > 0) {
           Dimension dim = new Dimension(name, length);
           parent.addDimension(dim);
+          if (showWork) System.out.printf(" Add dimension %s %n", dim);
         } else {
           log.warn("Dimension "+name+" has size "+sizeS);
           Dimension udim = new Dimension(name, 1);
           udim.setGroup(parent);
           unknownDims.add( udim);
+          if (showWork) System.out.printf(" Add dimension %s %n", udim);
         }
       }
     }
@@ -419,6 +426,7 @@ public class HdfEos {
       newDims.add(dim);
     }
     v.setDimensions(newDims);
+    if (showWork) System.out.printf(" set shared dimensions for %s %n", v.getName());
   }
 
   // look if the wanted dimension is in the  unknownDims list.

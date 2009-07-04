@@ -37,6 +37,7 @@ import ucar.ma2.*;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.iosp.*;
 import ucar.nc2.iosp.hdf4.HdfEos;
+import ucar.nc2.iosp.hdf4.H4header;
 import ucar.nc2.*;
 
 import java.io.IOException;
@@ -76,6 +77,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     debugVlen = debugFlag.isSet("H5iosp/vlen");
 
     H5header.setDebugFlags(debugFlag);
+    H4header.setDebugFlags(debugFlag);
   }
 
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {

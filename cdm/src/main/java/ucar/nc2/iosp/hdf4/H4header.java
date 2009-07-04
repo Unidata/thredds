@@ -95,7 +95,7 @@ public class H4header {
   private static boolean debugTracker = false; // memory tracker
   private static boolean warnings = true; // log messages
 
-  static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
+  public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debugTag1 = debugFlag.isSet("H4header/tag1");
     debugTag2 = debugFlag.isSet("H4header/tag2");
     debugTagDetail = debugFlag.isSet("H4header/tagDetail");
@@ -105,6 +105,7 @@ public class H4header {
     debugChunkTable = debugFlag.isSet("H4header/chunkTable");
     debugChunkDetail = debugFlag.isSet("H4header/chunkDetail");
     debugTracker = debugFlag.isSet("H4header/memTracker");
+    HdfEos.showWork = debugFlag.isSet("HdfEos/showWork");
   }
 
   void read(RandomAccessFile myRaf, ucar.nc2.NetcdfFile ncfile) throws IOException {

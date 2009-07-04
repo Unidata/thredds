@@ -208,4 +208,11 @@ public class TestDateUnits extends TestCase {
 
   }
 
+  public void testUdunitBug2() throws UnitDBException, UnitSystemException, SpecificationException, PrefixDBException, UnitParseException {
+    UnitFormat format = UnitFormatManager.instance();
+    String unit = "0.0 secs since 1985-02-02 12:00:00";
+    Unit uu = format.parse(unit);
+    System.out.printf("%s == %s %n", unit, uu);
+  }
+
 }

@@ -2,21 +2,9 @@ CHANGES for THREDDS Data Server (TDS)
 Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
-Changes in version 4.0
- Features
-  * WMS service
-  * Configuration in threddsConfig.xml required to enable the following services:
-      * CatalogGen, DLwriter, and DqcService: <allow>true</allow>; and
-      * CatalogServices, DLwriter, and WCS: <allowRemote>false<allowRemote>.
-  * Spring configuration
-  * chained "content roots"
- Libraries
-  * commons-fileUpload 1.2.1
-  * commons-io 1.4
-  * log4j-1.2.15 (remove nlog4j)
-  * netcdf-java 4.0
-
-Release Details:
+Release Details 4.0:
+ 20:
+  fix wms capabilities jsp
  18:
   Opendap - NcSDString: bug in scalar ArrayChar
  17:
