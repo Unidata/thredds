@@ -36,7 +36,6 @@ import thredds.inventory.*;
 import thredds.inventory.RegExpMatchOnName;
 import thredds.inventory.WildcardMatchOnPath;
 import thredds.inventory.DateExtractorFromFilename;
-import thredds.filesystem.ControllerOS;
 
 import java.util.*;
 import java.io.IOException;
@@ -45,7 +44,7 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.units.TimeUnit;
 
 /**
- * DatasetScanner implements the scan element, using thredds.inventory.ControllerIF.
+ * DatasetScanner implements the scan element, using thredds.inventory.MController.
  *
  * @author caron
  * @since June 26, 2009
@@ -67,7 +66,7 @@ public class DatasetScanner2 {
   private boolean debugScan = false;
 
   DatasetScanner2(String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS, String dateFormatString) {
-    if (null == controller) controller = new ControllerOS();  // default
+    if (null == controller) controller = new thredds.filesystem.ControllerOS();  // default
 
     MFileFilter filter = null;
     if (null != regexpPatternString)
@@ -77,10 +76,10 @@ public class DatasetScanner2 {
 
     DateExtractor dateExtractor = (dateFormatString == null) ? null : new DateExtractorFromFilename(dateFormatString);
 
-    mc = new thredds.inventory.MCollection(dirName, dirName, filter, dateExtractor);
-
     if ((subdirsS != null) && subdirsS.equalsIgnoreCase("false"))
       wantSubdirs = false;
+
+    mc = new thredds.inventory.MCollection(dirName, dirName, wantSubdirs, filter, dateExtractor);
 
     if (olderS != null) {
       try {

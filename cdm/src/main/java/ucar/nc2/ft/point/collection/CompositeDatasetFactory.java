@@ -146,20 +146,20 @@ public class CompositeDatasetFactory {
     }
   }
 
-  static public FeatureDataset factory(String location, FeatureType wantFeatureType, String wildcard, Formatter errlog) throws IOException {
-    if (wildcard.startsWith(SCHEME))
-      wildcard = wildcard.substring(SCHEME.length());
+  static public FeatureDataset factory(String location, FeatureType wantFeatureType, String spec, Formatter errlog) throws IOException {
+    if (spec.startsWith(SCHEME))
+      spec = spec.substring(SCHEME.length());
 
-    TimedCollection datasets = CollectionManager2.factory(wildcard, errlog);
+    TimedCollection datasets = CollectionManager2.factory(spec, errlog);
     if (datasets == null) return null;
 
     FeatureCollection pfc = null;
     switch (wantFeatureType) {
       case POINT:
-        pfc = new CompositePointCollection(wildcard, datasets);
+        pfc = new CompositePointCollection(spec, datasets);
         break;
       case STATION:
-        pfc = new CompositeStationCollection(wildcard, datasets);
+        pfc = new CompositeStationCollection(spec, datasets);
         break;
      default:
        return null;
@@ -167,6 +167,7 @@ public class CompositeDatasetFactory {
 
     return new CompositePointDataset(location, wantFeatureType, pfc, datasets);
   }
+
 
   private static class CompositePointDataset extends PointDatasetImpl {
     private TimedCollection datasets;

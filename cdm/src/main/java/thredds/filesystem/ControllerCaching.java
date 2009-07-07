@@ -38,7 +38,7 @@ import thredds.inventory.*;
 import java.util.*;
 
 /**
- * Inventory Management Controller that caches OS Files
+ * Inventory File Management Controller, with caching
  *
  * @author caron
  * @since Jun 25, 2009
@@ -47,57 +47,69 @@ import java.util.*;
 
 public class ControllerCaching implements MController {
 
+  public static MController makeStandard(String cacheDir) {
+    CacheManager.makeStandardCacheManager(cacheDir);
+    CacheManager cm = new CacheManager("directories");
+    return new ControllerCaching(cm);
+  }
+
   ////////////////////////////////////////
   private CacheManager cacheManager;
-  private Map<String, MCollection> map = new HashMap<String, thredds.inventory.MCollection>();
 
   public ControllerCaching(CacheManager cacheManager) {
     this.cacheManager = cacheManager;
   }
 
-  public void addCollection(MCollection mc) {
-    map.put(mc.getName(), mc);
-  }
-
-  public Iterator<MFile> getInventory(String collectionName) {
-    MCollection mc = map.get(collectionName);
-    if (mc == null) return null;
-    return getInventory(mc);
-  }
+  ////////////////////////////////////////
 
   @Override
   public Iterator<MFile> getInventory(MCollection mc) {
     String path = mc.getDirectoryName();
-    if ( path.startsWith( "file:" ) ) {
+    if (path.startsWith("file:")) {
       path = path.substring(5);
     }
 
     CacheDirectory cd = cacheManager.get(path); // check in cache, else call File.listFiles()
     if (cd == null) return null;
-    return new FilteredIterator(mc, cd);
+    if (!cd.isDirectory()) return null;
+    return new FilteredIterator(mc, new MFileIteratorWithSubdirs(cd));
   }
 
+  @Override
+  public Iterator<MFile> getInventoryNoSubdirs(MCollection mc) {
+    String path = mc.getDirectoryName();
+    if (path.startsWith("file:")) {
+      path = path.substring(5);
+    }
+
+    CacheDirectory cd = cacheManager.get(path); // check in cache, else call File.listFiles()
+    if (cd == null) return null;
+    if (!cd.isDirectory()) return null;
+    return new FilteredIterator(mc, new MFileIterator(cd));
+  }
+
+  @Override
   public void close() {
-    cacheManager.close();
+    if (cacheManager != null) cacheManager.close();
     cacheManager = null;
   }
 
-
   ////////////////////////////////////////////////////////////
 
+  // handles filtering and removing subdirectories
   private class FilteredIterator implements Iterator<MFile> {
     private Iterator<MFile> orgIter;
     private MCollection mc;
 
     private MFile next;
 
-    FilteredIterator(MCollection mc, CacheDirectory cd) {
-      this.orgIter = new MFileIterator(cd);
+    FilteredIterator(MCollection mc, Iterator<MFile> iter) {
+      this.orgIter = iter;
       this.mc = mc;
     }
 
     public boolean hasNext() {
-      next = nextFilteredDataPoint();
+      next = nextFilteredFile();
       return (next != null);
     }
 
@@ -109,12 +121,12 @@ public class ControllerCaching implements MController {
       throw new UnsupportedOperationException();
     }
 
-    private MFile nextFilteredDataPoint() {
+    private MFile nextFilteredFile() {
       if (orgIter == null) return null;
       if (!orgIter.hasNext()) return null;
 
       MFile pdata = orgIter.next();
-      while (!mc.accept(pdata)) {
+      while (pdata.isDirectory() || !mc.accept(pdata)) {  // skip directories, and filter
         if (!orgIter.hasNext()) return null;
         pdata = orgIter.next();
       }
@@ -124,20 +136,24 @@ public class ControllerCaching implements MController {
 
   private class MFileIterator implements Iterator<MFile> {
     CacheDirectory cd;
-    CacheFile[] files;
+    List<CacheFile> files;
     int count = 0;
 
     MFileIterator(CacheDirectory cd) {
       this.cd = cd;
-      files = cd.getChildren();
+      files = Arrays.asList(cd.getChildren());
+    }
+
+    MFileIterator(List<CacheFile> files) {
+      this.files = files;
     }
 
     public boolean hasNext() {
-      return count < files.length;
+      return count < files.size();
     }
 
     public MFile next() {
-      CacheFile cfile = files[count++];
+      CacheFile cfile = files.get(count++);
       return new MFileCached(cd.getPath(), cfile);
     }
 
@@ -146,8 +162,89 @@ public class ControllerCaching implements MController {
     }
   }
 
-  public static MController makeStandard() {
-    return new ControllerCaching(CacheManager.makeStandardCacheManager());
+  // recursively scans everything in the directory and in subdirectories, depth first, leaves before subdirs
+  private class MFileIteratorWithSubdirs implements Iterator<MFile> {
+    Queue<Traversal> traverse;
+    Traversal currTraversal;
+    Iterator<MFile> currIter;
+
+    MFileIteratorWithSubdirs(CacheDirectory top) {
+      traverse = new LinkedList<Traversal>();
+      currTraversal = new Traversal(top);
+    }
+
+    public boolean hasNext() {
+      if (currIter == null) {
+        currIter = getNextIterator();
+        if (currIter == null) {
+          return false;
+        }
+      }
+
+      if (!currIter.hasNext()) {
+        currIter = getNextIterator();
+        return hasNext();
+      }
+
+      return true;
+    }
+
+    public MFile next() {
+      return currIter.next();
+    }
+
+    private Iterator<MFile> getNextIterator() {
+
+      if (!currTraversal.leavesAreDone) {
+        currTraversal.leavesAreDone = true;
+        return new MFileIterator(currTraversal.fileList); // look for leaves in the current directory
+
+      } else {
+        if ((currTraversal.subdirIterator != null) && currTraversal.subdirIterator.hasNext()) { // has subdirs
+          CacheFile nextDir = currTraversal.subdirIterator.next();
+          CacheDirectory cd = cacheManager.get(currTraversal.dir.getPath() + "/" + nextDir.getShortName()); // fetch subdirectory
+          if (cd == null) {  // subdir has disappeared - skip it
+            return getNextIterator();
+          }
+
+          traverse.add(currTraversal); // keep track of current traversal on queue
+          currTraversal = new Traversal(cd); // new traversal
+          return getNextIterator();
+
+        } else {
+          if (traverse.peek() == null) return null; // all done
+          currTraversal = traverse.remove();
+          return getNextIterator();
+        }
+      }
+    }
+
+    public void remove() {
+      throw new UnsupportedOperationException();
+    }
+  }
+
+   private class Traversal {
+    CacheDirectory dir;
+    List<CacheFile> fileList;
+    Iterator<CacheFile> subdirIterator;
+    boolean leavesAreDone = false;
+
+    Traversal(CacheDirectory dir) {
+      this.dir = dir;
+
+      fileList = new ArrayList<CacheFile>();
+      List<CacheFile> subdirList = new ArrayList<CacheFile>();
+      for (CacheFile f : dir.getChildren()) {
+        if (f.isDirectory())
+          subdirList.add(f);
+        else
+          fileList.add(f);
+      }
+
+      if (subdirList.size() > 0)
+        this.subdirIterator = subdirList.iterator();
+    }
   }
 
 }

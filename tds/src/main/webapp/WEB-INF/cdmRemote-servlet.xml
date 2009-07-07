@@ -29,6 +29,13 @@
     <property name="allow" value="true"/>
     <property name="supportedMethods" value="GET"/>
     <property name="configDirectory" value="GET"/>
+    <property name="collections">
+      <list>
+        <ref bean="ncMetars" />
+        <ref bean="gempakMetars" />
+        <ref bean="quickScatWinds" />
+      </list>
+    </property>
   </bean>
 
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
@@ -40,6 +47,27 @@
         /**=cdmremoteController
       </value>
     </property>
+  </bean>
+
+  <bean id="ncMetars" class="thredds.server.cdmremote.CollectionBean">
+    <property name="path" value="idd/metar/decoded"/>
+    <property name="spec" value="/data/ldm/pub/decoded/netcdf/surface/metar/**/Surface_METAR_#yyyyMMdd_HHmm#.nc"/>
+    <property name="recheck" value="15 min"/>
+    <property name="featureType" value="STATION"/>
+  </bean>
+
+  <bean id="gempakMetars" class="thredds.server.cdmremote.CollectionBean">
+    <property name="path" value="idd/metar/gempak"/>
+    <property name="spec" value="/data/ldm/gempak/surface/**/#yyyyMMdd#.gem"/>
+    <property name="recheck" value="15 min"/>
+    <property name="featureType" value="STATION"/>
+  </bean>
+
+  <bean id="quickScatWinds" class="thredds.server.cdmremote.CollectionBean">
+    <property name="path" value="idd/bufr/quickScat"/>
+    <property name="spec" value="/data/ldm/gempak/surface/**/#yyyyMMdd#.gem"/>
+    <property name="recheck" value="15 min"/>
+    <property name="featureType" value="STATION"/>
   </bean>
 
 </beans>

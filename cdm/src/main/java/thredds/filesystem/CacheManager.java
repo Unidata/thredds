@@ -40,6 +40,9 @@ import java.io.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.List;
 import java.util.Collections;
+import java.util.Formatter;
+
+import ucar.unidata.util.StringUtil;
 
 /**
  * Cache filesystem info.
@@ -50,30 +53,25 @@ import java.util.Collections;
  * @since Mar 21, 2009
  */
 @ThreadSafe
-class CacheManager {
-  public boolean debug = false;
+public class CacheManager {
 
-  private net.sf.ehcache.CacheManager cacheManager;
+  static public net.sf.ehcache.CacheManager cacheManager;
+  static private boolean debug = false;
+
   private Cache cache;
-  private AtomicLong addDir = new AtomicLong();
+  private AtomicLong addElements = new AtomicLong();
   private AtomicLong hits = new AtomicLong();
   private AtomicLong requests = new AtomicLong();
 
-  public CacheManager(String ehconfig) {
-    cacheManager = new net.sf.ehcache.CacheManager(ehconfig);
-    cache = cacheManager.getCache("directory");
+  public CacheManager(String cacheName) {
+    cache = cacheManager.getCache(cacheName);
   }
 
-  public CacheManager(InputStream ehconfig) {
-    cacheManager = new net.sf.ehcache.CacheManager(ehconfig);
-    cache = cacheManager.getCache("directory");
-  }
-
-  public void add(String path, Object value) {
+  public void add(Serializable path, Serializable value) {
     if (cache == null) return;
 
     cache.put(new Element(path, value));
-    addDir.incrementAndGet();
+    addElements.incrementAndGet();
   }
 
   public CacheDirectory get(String path) {
@@ -105,7 +103,6 @@ class CacheManager {
   }
 
   public void close() {
-    stats();
     if (cacheManager != null)
       cacheManager.shutdown();
     cacheManager = null;
@@ -114,24 +111,16 @@ class CacheManager {
   ////////////////////////////////////////////////////////////////
 
   public void show() {
-    for (Object o : cache.getKeys())
-      System.out.printf(" %s%n", o);
-  }
-
-  public void populate() {
-    String root = "C:/";
-
-    long startCount = addDir.get();
-    long start = System.nanoTime();
-    //add( root, new CacheDirectory(this, new File(root)));
-    long end = System.nanoTime();
-    long total = addDir.get() - startCount;
-    System.out.printf("populate %n%-20s total %d took %d msecs %n", root, total, (end - start) / 1000 / 1000);
-
+    List keys = cache.getKeys();
+    Collections.sort(keys);
+    for (Object key : keys) {
+      Element elem = cache.get(key);
+      System.out.printf(" %40s == %s%n", key, elem);
+    }
   }
 
   public void stats() {
-    System.out.printf(" dirs added= %s%n", addDir.get());
+    System.out.printf(" elems added= %s%n", addElements.get());
     System.out.printf(" reqs= %d%n", requests.get());
     System.out.printf(" hits= %d%n", hits.get());
 
@@ -144,51 +133,178 @@ class CacheManager {
     }
   }
 
-  private static String ehLocation = "/data/thredds/ehcache/";
-  private static String config =
-          "<ehcache>\n" +
-                  "    <diskStore path='" + ehLocation + "'/>\n" +
-                  "    <defaultCache\n" +
-                  "              maxElementsInMemory='10000'\n" +
-                  "              eternal='false'\n" +
-                  "              timeToIdleSeconds='120'\n" +
-                  "              timeToLiveSeconds='120'\n" +
-                  "              overflowToDisk='true'\n" +
-                  "              maxElementsOnDisk='10000000'\n" +
-                  "              diskPersistent='false'\n" +
-                  "              diskExpiryThreadIntervalSeconds='120'\n" +
-                  "              memoryStoreEvictionPolicy='LRU'\n" +
-                  "              />\n" +
-                  "    <cache name='directory'\n" +
-                  "            maxElementsInMemory='1000'\n" +
-                  "            eternal='true'\n" +
-                  "            timeToIdleSeconds='864000'\n" +
-                  "            timeToLiveSeconds='0'\n" +
-                  "            overflowToDisk='true'\n" +
-                  "            maxElementsOnDisk='0'\n" +
-                  "            diskPersistent='true'\n" +
-                  "            diskExpiryThreadIntervalSeconds='3600'\n" +
-                  "            memoryStoreEvictionPolicy='LRU'\n" +
-                  "            />\n" +
-                  "</ehcache>";
+  public void populateFiles(String root) {
 
-  public static CacheManager makeStandardCacheManager() {
-    CacheManager cm = new CacheManager(new StringBufferInputStream(config));
-    System.out.printf("Open StandardCacheManager %s%n", cm.cacheManager);
-    return cm;
+    long startCount = addElements.get();
+    long start = System.nanoTime();
+    addRecursiveFiles(new File(root));
+    long end = System.nanoTime();
+    long total = addElements.get() - startCount;
+    System.out.printf("populate %n%-20s total %d took %d msecs %n", root, total, (end - start) / 1000 / 1000);
   }
 
-  static public void main( String args[]) throws IOException {
-    CacheManager cm = new CacheManager(new StringBufferInputStream(config));
-    net.sf.ehcache.Cache cache = cm.cacheManager.getCache("directory");
-
-    System.out.printf("Cache %s%n", cache);
-    List keys = cache.getKeys();
-    Collections.sort(keys);
-    for (Object key : keys) {
-      Element elem = cache.get(key);
-      System.out.printf(" %40s == %s%n", key, elem);
+  private void addRecursiveFiles(File dir) {
+    for (File f : dir.listFiles()) {
+      if (f.isDirectory()) addRecursiveFiles(f);
+      else add(f.getPath(), new CacheFile(f));
     }
-    cm.close();
+  }
+
+  public void populateFilesProto(String root) {
+
+    long startCount = addElements.get();
+    long start = System.nanoTime();
+    addRecursiveFilesProto(new File(root));
+    long end = System.nanoTime();
+    long total = addElements.get() - startCount;
+    System.out.printf("populate %n%-20s total %d took %d msecs %n", root, total, (end - start) / 1000 / 1000);
+  }
+
+  private void addRecursiveFilesProto(File dir) {
+    for (File f : dir.listFiles()) {
+      if (f.isDirectory()) addRecursiveFilesProto(f);
+      else add(f.getPath(), new CacheFileProto(f));
+    }
+  }
+
+  public void populateDirs(String root) {
+
+    long startCount = addElements.get();
+    long start = System.nanoTime();
+    addRecursiveDirs(new File(root));
+    long end = System.nanoTime();
+    long total = addElements.get() - startCount;
+    System.out.printf("populate %n%-20s total %d took %d msecs %n", root, total, (end - start) / 1000 / 1000);
+  }
+
+  private void addRecursiveDirs(File dir) {
+    add(dir.getPath(), new CacheDirectory(dir));
+    for (File f : dir.listFiles()) {
+      if (f.isDirectory()) addRecursiveDirs(f);
+    }
+  }
+
+  public void populateDirsProto(String root) {
+
+    long startCount = addElements.get();
+    long start = System.nanoTime();
+    addRecursiveDirsProto(new File(root));
+    long end = System.nanoTime();
+    long total = addElements.get() - startCount;
+    System.out.printf("populate %n%-20s total %d took %d msecs %n", root, total, (end - start) / 1000 / 1000);
+  }
+
+  private void addRecursiveDirsProto(File dir) {
+    add(dir.getPath(), new CacheDirectoryProto(dir));
+    for (File f : dir.listFiles()) {
+      if (f.isDirectory()) addRecursiveDirsProto(f);
+    }
+  }
+
+///////////////////////////////////////////////////////////////////////////////
+
+  //private static String ehLocation = "/data/thredds/ehcache/";
+  private static String config =
+      "<ehcache>\n" +
+          "    <diskStore path='${cacheDir}' />\n" +
+          "    <defaultCache\n" +
+          "              maxElementsInMemory='10000'\n" +
+          "              eternal='false'\n" +
+          "              timeToIdleSeconds='120'\n" +
+          "              timeToLiveSeconds='120'\n" +
+          "              overflowToDisk='true'\n" +
+          "              maxElementsOnDisk='10000000'\n" +
+          "              diskPersistent='false'\n" +
+          "              diskExpiryThreadIntervalSeconds='120'\n" +
+          "              memoryStoreEvictionPolicy='LRU'\n" +
+          "              />\n" +
+          "    <cache name='directories'\n" +
+          "            maxElementsInMemory='1000'\n" +
+          "            eternal='true'\n" +
+          "            timeToIdleSeconds='864000'\n" +
+          "            timeToLiveSeconds='0'\n" +
+          "            overflowToDisk='true'\n" +
+          "            maxElementsOnDisk='0'\n" +
+          "            diskPersistent='true'\n" +
+          "            diskExpiryThreadIntervalSeconds='3600'\n" +
+          "            memoryStoreEvictionPolicy='LRU'\n" +
+          "            />\n" +
+          "    <cache name='files'\n" +
+          "            maxElementsInMemory='1000'\n" +
+          "            eternal='true'\n" +
+          "            timeToIdleSeconds='864000'\n" +
+          "            timeToLiveSeconds='0'\n" +
+          "            overflowToDisk='true'\n" +
+          "            maxElementsOnDisk='0'\n" +
+          "            diskPersistent='true'\n" +
+          "            diskExpiryThreadIntervalSeconds='3600'\n" +
+          "            memoryStoreEvictionPolicy='LRU'\n" +
+          "            />\n" +
+          "    <cache name='filesProto'\n" +
+          "            maxElementsInMemory='1000'\n" +
+          "            eternal='true'\n" +
+          "            timeToIdleSeconds='864000'\n" +
+          "            timeToLiveSeconds='0'\n" +
+          "            overflowToDisk='true'\n" +
+          "            maxElementsOnDisk='0'\n" +
+          "            diskPersistent='true'\n" +
+          "            diskExpiryThreadIntervalSeconds='3600'\n" +
+          "            memoryStoreEvictionPolicy='LRU'\n" +
+          "            />\n" +
+          "    <cache name='dirsProto'\n" +
+          "            maxElementsInMemory='1000'\n" +
+          "            eternal='true'\n" +
+          "            timeToIdleSeconds='864000'\n" +
+          "            timeToLiveSeconds='0'\n" +
+          "            overflowToDisk='true'\n" +
+          "            maxElementsOnDisk='0'\n" +
+          "            diskPersistent='true'\n" +
+          "            diskExpiryThreadIntervalSeconds='3600'\n" +
+          "            memoryStoreEvictionPolicy='LRU'\n" +
+          "            />\n" +
+          "</ehcache>";
+
+  public static void makeStandardCacheManager(String cacheDir) {
+    String configString = StringUtil.substitute(config, "${cacheDir}", cacheDir);
+    // System.out.printf("configString=%n %s %n",configString);
+    cacheManager = new net.sf.ehcache.CacheManager(new StringBufferInputStream(configString));
+  }
+
+  public static void shutdown() {
+    if (cacheManager != null)
+      cacheManager.shutdown();
+  }
+
+  static public void main(String args[]) throws IOException {
+    //makeStandardCacheManager("C:/Documents and Settings/caron/.unidata/ehcache/");
+    makeStandardCacheManager("C:/data/ehcache/");
+
+    /* CacheManager cm = new CacheManager("files");
+    cm.populateFiles( "C:/data/");
+    cm.stats();
+    
+    System.out.printf("=====================%n");
+    CacheManager cmDir = new CacheManager("directories");
+    cmDir.populateDirs( "C:/data/");
+    cmDir.stats();
+
+    System.out.printf("=====================%n");
+    CacheManager cmProto = new CacheManager("filesProto");
+    cmProto.populateFilesProto("C:/data/");
+    cmProto.stats(); */
+
+    System.out.printf("=====================%n");
+    CacheManager dirProto = new CacheManager("dirsProto");
+    dirProto.populateDirsProto("C:/data/");
+    dirProto.stats();
+
+    shutdown();
+
+
+    Formatter f = new Formatter(System.out);
+    f.format(" Proto count = %d size = %d %n", CacheFileProto.countWrite, CacheFileProto.countWriteSize);
+    int avg = CacheFileProto.countWrite == 0 ? 0 : CacheFileProto.countWriteSize / CacheFileProto.countWrite;
+    f.format("       avg = %d %n", avg);
+    f.flush();
   }
 }

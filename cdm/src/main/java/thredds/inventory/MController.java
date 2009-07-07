@@ -58,6 +58,8 @@ public interface MController {
 
   public Iterator<MFile> getInventory(MCollection mc);
 
+  public Iterator<MFile> getInventoryNoSubdirs(MCollection mc);
+
   public void close();
 
   // public void sync(String collectionName);

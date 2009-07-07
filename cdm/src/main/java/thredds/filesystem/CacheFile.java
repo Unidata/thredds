@@ -63,6 +63,9 @@ class CacheFile implements Serializable {
     return isDirectory;
   }
 
+  public CacheFile() {
+  }
+
   public CacheFile( File f) {
     this.shortName = f.getName();
     this.lastModified = f.lastModified();
@@ -80,6 +83,14 @@ class CacheFile implements Serializable {
     return att.get(key);
   }
 
-
-
+  @Override
+  public String toString() {
+    return "CacheFile{" +
+        "shortName='" + shortName + '\'' +
+        ", lastModified=" + lastModified +
+        ", length=" + length +
+        ", isDirectory=" + isDirectory +
+        ", att=" + att +
+        '}';
+  }
 }

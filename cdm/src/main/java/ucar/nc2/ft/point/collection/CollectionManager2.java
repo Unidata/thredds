@@ -35,23 +35,22 @@ import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateFromString;
 
 import java.util.*;
-import java.io.File;
 
 import thredds.inventory.*;
 import thredds.inventory.WildcardMatchOnPath;
 import thredds.inventory.DateExtractorFromFilename;
-import thredds.filesystem.ControllerOS;
 
 /**
  * Manages feature dataset collections.
- * Look; not updating the collection.
  *
- * collection URI syntax:
- *   directory/filter?dateFormatMark
+ * The idea is that you can cut and paste an actual file path, then edit it:
+ *   spec="/data/ldm/pub/decoded/netcdf/surface/metar/** /Surface_METAR_#yyyyMMdd_HHmm#.nc
  *
+ * @see CollectionSpecParser
  * @author caron
  * @since May 20, 2009
  */
+
 
 
 public class CollectionManager2 implements TimedCollection {
@@ -67,41 +66,19 @@ public class CollectionManager2 implements TimedCollection {
   private List<TimedCollection.Dataset> c;
   private DateRange dateRange;
 
-  static public CollectionManager2 factory(String collectionDesc, Formatter errlog) {
-    if (null == controller) controller = new ControllerOS();  // default 
-    return new CollectionManager2(collectionDesc, errlog);
+  static public CollectionManager2 factory(String collectionSpec, Formatter errlog) {
+    if (null == controller) controller = new thredds.filesystem.ControllerOS();  // default
+    return new CollectionManager2(collectionSpec, errlog);
   }
 
-  private CollectionManager2(String collectionDesc, Formatter errlog) {
+  //  collectionSpec="/data/ldm/pub/decoded/netcdf/surface/metar/**/Surface_METAR_#yyyyMMdd_HHmm#.nc
+  private CollectionManager2(String collectionSpec, Formatter errlog) {
+    CollectionSpecParser sp = new CollectionSpecParser(collectionSpec, errlog);
+    if (show) System.out.printf("CollectionManager collectionDesc=%s result=%s %n", collectionSpec, sp);
 
-    // first part is the directory
-    int posWildcard = collectionDesc.lastIndexOf('/');
-    String dirName = collectionDesc.substring(0, posWildcard);
-
-    File locFile = new File( dirName);
-    if (!locFile.exists()) {
-      errlog.format(" Directory %s does not exist %n", dirName);
-      return;
-    }
-
-    // optional dateFormatMark
-    String dateFormatMark = null;
-    int posFormat = collectionDesc.lastIndexOf('?');
-    if (posFormat > 0) {
-      dateFormatMark = collectionDesc.substring(posFormat+1); // after the ?
-      collectionDesc = collectionDesc.substring(0,posFormat); // before the ?
-    }
-
-    // filter
-    String filter = null;
-    if (posWildcard < collectionDesc.length() - 2)
-      filter = collectionDesc.substring(posWildcard + 1);
-
-    if (show) System.out.printf("CollectionManager collectionDesc=%s filter=%s dateFormatMark=%s %n", collectionDesc, filter, dateFormatMark);
-
-    MFileFilter mfilter = (null == filter) ? null : new WildcardMatchOnPath(filter);
-    DateExtractor dateExtractor = (dateFormatMark == null) ? null : new DateExtractorFromFilename(dateFormatMark);
-    MCollection mc = new thredds.inventory.MCollection(dirName, dirName, mfilter, dateExtractor);
+    MFileFilter mfilter = (null == sp.getFilter()) ? null : new WildcardMatchOnPath(sp.getFilter());
+    DateExtractor dateExtractor = (sp.getDateFormatMark() == null) ? null : new DateExtractorFromFilename(sp.getDateFormatMark());
+    MCollection mc = new thredds.inventory.MCollection(sp.getTopDir(), sp.getTopDir(), sp.wantSubdirs(), mfilter, dateExtractor);
 
     // get the inventory, sort
     List<MFile> fileList = new ArrayList<MFile>();
@@ -112,9 +89,9 @@ public class CollectionManager2 implements TimedCollection {
 
     c = new ArrayList<TimedCollection.Dataset>(fileList.size());
     for (MFile f : fileList)
-      c.add(new Dataset(f, dateFormatMark));
+      c.add(new Dataset(f, sp.getDateFormatMark()));
 
-    if (dateFormatMark != null) {
+    if (sp.getDateFormatMark() != null) {
       for (int i=0; i<c.size()-1; i++) {
         Dataset d1 = (Dataset) c.get(i);
         Dataset d2 = (Dataset) c.get(i+1);

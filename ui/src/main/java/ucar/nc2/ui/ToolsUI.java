@@ -41,6 +41,7 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.point.writer.WriterCFPointObsDataset;
 import ucar.nc2.ft.point.PointDatasetImpl;
+import ucar.nc2.ft.point.collection.CollectionManager2;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.ncml.NcMLWriter;
@@ -48,6 +49,7 @@ import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.thredds.DqcRadarDatasetCollection;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.Aggregation;
+import ucar.nc2.ncml.DatasetScanner2;
 import ucar.nc2.dt.*;
 import ucar.nc2.dt.radial.StationRadarCollectionImpl;
 import ucar.nc2.dt.fmrc.FmrcDefinition;
@@ -63,20 +65,20 @@ import ucar.nc2.util.net.HttpClientManager;
 import ucar.nc2.util.xml.RuntimeConfigParser;
 import ucar.nc2.units.*;
 
-import ucar.util.prefs.*;
-import ucar.util.prefs.ui.*;
-
-import thredds.ui.*;
-import ucar.nc2.ui.util.Resource;
-
 import ucar.nc2.ui.grid.GridUI;
 import ucar.nc2.ui.image.ImageViewPanel;
 import ucar.nc2.ui.util.*;
+
 import ucar.unidata.io.http.HTTPRandomAccessFile;
+
+import ucar.util.prefs.*;
+import ucar.util.prefs.ui.*;
 
 import thredds.catalog.query.DqcFactory;
 import thredds.wcs.v1_0_0_1.GetCapabilities;
 import thredds.wcs.v1_0_0_1.WcsException;
+import thredds.inventory.MController;
+import thredds.ui.*;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -3830,6 +3832,8 @@ public class ToolsUI extends JPanel {
     if (cache != null)
       cache.clearCache(true);
     NetcdfDataset.shutdown(); // shutdown threads
+    cacheManager.close(); // shutdown ehcache
+
     System.exit(0);
   }
 
@@ -3839,6 +3843,7 @@ public class ToolsUI extends JPanel {
   private static PreferencesExt prefs;
   private static XMLStore store;
   private static boolean done = false;
+  private static MController cacheManager;
 
   private static String wantDataset = null;
 
@@ -3963,7 +3968,12 @@ public class ToolsUI extends JPanel {
 
     // initializations
     BAMutil.setResourcePath("/resources/nj22/ui/icons/");
-// initCaches();
+
+    // filesystem caching
+    DiskCache2 cacheDir = new DiskCache2(".unidata/ehcache", true, -1, -1);
+    cacheManager = thredds.filesystem.ControllerCaching.makeStandard(cacheDir.getRootDirectory());
+    DatasetScanner2.setController(cacheManager);
+    CollectionManager2.setController(cacheManager);
 
 // for efficiency, persist aggregations. every hour, delete stuff older than 30 days
     Aggregation.setPersistenceCache(new DiskCache2("/.unidata/cachePersist", true, 60 * 24 * 30, 60));

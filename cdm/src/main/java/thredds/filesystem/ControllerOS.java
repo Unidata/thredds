@@ -39,7 +39,7 @@ import java.util.*;
 import java.io.File;
 
 /**
- * Inventory Management Controller that caches OS Files
+ * Inventory Management Controller directly reading OS Files, no caching
  *
  * @author caron
  * @since Jun 25, 2009
@@ -56,33 +56,49 @@ public class ControllerOS implements MController {
   @Override
   public Iterator<MFile> getInventory(MCollection mc) {
     String path = mc.getDirectoryName();
-    if ( path.startsWith( "file:" ) ) {
+    if (path.startsWith("file:")) {
       path = path.substring(5);
     }
 
     File cd = new File(path);
     if (!cd.exists()) return null;
-    return new FilteredIterator(mc, cd);
+    if (!cd.isDirectory()) return null;
+    return new FilteredIterator(mc, new MFileIteratorWithSubdirs(cd));
   }
 
-  public void close() {} // NOOP
+  @Override
+  public Iterator<MFile> getInventoryNoSubdirs(MCollection mc) {
+    String path = mc.getDirectoryName();
+    if (path.startsWith("file:")) {
+      path = path.substring(5);
+    }
+
+    File cd = new File(path);
+    if (!cd.exists()) return null;
+    if (!cd.isDirectory()) return null;
+    return new FilteredIterator(mc, new MFileIterator(cd));
+  }
+
+  public void close() {
+  } // NOOP
 
 
   ////////////////////////////////////////////////////////////
 
+  // handles filtering and removing subdirectories
   private class FilteredIterator implements Iterator<MFile> {
     private Iterator<MFile> orgIter;
     private MCollection mc;
 
     private MFile next;
 
-    FilteredIterator(MCollection mc, File cd) {
-      this.orgIter = new MFileIterator(cd);
+    FilteredIterator(MCollection mc, Iterator<MFile> iter) {
+      this.orgIter = iter;
       this.mc = mc;
     }
 
     public boolean hasNext() {
-      next = nextFilteredDataPoint();
+      next = nextFilteredFile();
       return (next != null);
     }
 
@@ -94,12 +110,12 @@ public class ControllerOS implements MController {
       throw new UnsupportedOperationException();
     }
 
-    private MFile nextFilteredDataPoint() {
+    private MFile nextFilteredFile() {
       if (orgIter == null) return null;
       if (!orgIter.hasNext()) return null;
 
       MFile pdata = orgIter.next();
-      while (!mc.accept(pdata)) {
+      while (pdata.isDirectory() || !mc.accept(pdata)) {  // skip directories, and filter
         if (!orgIter.hasNext()) return null;
         pdata = orgIter.next();
       }
@@ -107,25 +123,111 @@ public class ControllerOS implements MController {
     }
   }
 
+  // returns everything in the directory
   private class MFileIterator implements Iterator<MFile> {
-    File[] files;
+    List<File> files;
     int count = 0;
 
-    MFileIterator(File cd) {
-      files = cd.listFiles();
+    MFileIterator(File dir) {
+      files = Arrays.asList(dir.listFiles());
+    }
+
+    MFileIterator(List<File> files) {
+      this.files = files;
     }
 
     public boolean hasNext() {
-      return count < files.length;
+      return count < files.size();
     }
 
     public MFile next() {
-      File cfile = files[count++];
+      File cfile = files.get(count++);
       return new MFileOS(cfile);
     }
 
     public void remove() {
       throw new UnsupportedOperationException();
+    }
+  }
+
+  // recursively scans everything in the directory and in subdirectories, depth first, leaves before subdirs
+  private class MFileIteratorWithSubdirs implements Iterator<MFile> {
+    Queue<Traversal> traverse;
+    Traversal currTraversal;
+    Iterator<MFile> currIter;
+
+    MFileIteratorWithSubdirs(File top) {
+      traverse = new LinkedList<Traversal>();
+      currTraversal = new Traversal(top);
+    }
+
+    public boolean hasNext() {
+      if (currIter == null) {
+        currIter = getNextIterator();
+        if (currIter == null) {
+          return false;
+        }
+      }
+
+      if (!currIter.hasNext()) {
+        currIter = getNextIterator();
+        return hasNext();
+      }
+
+      return true;
+    }
+
+    public MFile next() {
+      return currIter.next();
+    }
+
+    private Iterator<MFile> getNextIterator() {
+
+      if (!currTraversal.leavesAreDone) {
+        currTraversal.leavesAreDone = true;
+        return new MFileIterator(currTraversal.fileList); // look for leaves in the current directory
+
+      } else {
+        if ((currTraversal.subdirIterator != null) && currTraversal.subdirIterator.hasNext()) { // has subdirs
+          File nextDir = currTraversal.subdirIterator.next();
+
+          traverse.add(currTraversal); // keep track of current traversal
+          currTraversal = new Traversal(nextDir);
+          return getNextIterator();
+
+        } else {
+          if (traverse.peek() == null) return null;
+          currTraversal = traverse.remove();
+          return getNextIterator();
+        }
+      }
+    }
+
+    public void remove() {
+      throw new UnsupportedOperationException();
+    }
+  }
+
+   private class Traversal {
+    File dir;
+    List<File> fileList;
+    Iterator<File> subdirIterator;
+    boolean leavesAreDone = false;
+
+    Traversal(File dir) {
+      this.dir = dir;
+
+      fileList = new ArrayList<File>();
+      List<File> subdirList = new ArrayList<File>();
+      for (File f : dir.listFiles()) {
+        if (f.isDirectory())
+          subdirList.add(f);
+        else
+          fileList.add(f);
+      }
+
+      if (subdirList.size() > 0)
+        this.subdirIterator = subdirList.iterator();
     }
   }
 

@@ -44,6 +44,7 @@ public class MCollection {
 
   private String name;
   private String dirName;
+  private boolean wantSubdirs;
   private MFileFilter ff;
   private DateExtractor dateExtractor;
   private Date last = null, first = null;
@@ -52,18 +53,20 @@ public class MCollection {
    *
    * @param name name of collection
    * @param dirName directory name
+   * @param wantSubdirs if want subdirectories
    * @param ff optional FilenameFilter (may be null) - applies only to non-directories
    * @param dateExtractor optional DateExtractor (may be null) - applies only to non-directories (?)
    */
-  public MCollection(String name, String dirName, MFileFilter ff, DateExtractor dateExtractor) {
+  public MCollection(String name, String dirName, boolean wantSubdirs, MFileFilter ff, DateExtractor dateExtractor) {
     this.name = name;
     this.dirName = dirName;
+    this.wantSubdirs = wantSubdirs;
     this.ff = ff;
     this.dateExtractor = dateExtractor;
   }
 
   public thredds.inventory.MCollection subdir(MFile child) {
-    return new MCollection( name+"/"+child.getName(), dirName+"/"+child.getName(), ff, dateExtractor);
+    return new MCollection( name+"/"+child.getName(), dirName+"/"+child.getName(), wantSubdirs, ff, dateExtractor);
   }
 
   public String getName() {
@@ -100,10 +103,17 @@ public class MCollection {
     return true;
   }
 
+
   @Override
   public String toString() {
     return "MCollection{" +
-            "dirName='" + dirName + '\'' +
-            '}';
+        "name='" + name + '\'' +
+        ", dirName='" + dirName + '\'' +
+        ", wantSubdirs=" + wantSubdirs +
+        ", ff=" + ff +
+        ", dateExtractor=" + dateExtractor +
+        ", last=" + last +
+        ", first=" + first +
+        '}';
   }
 }

@@ -78,6 +78,10 @@ public class CollectionController extends AbstractCommandController implements L
 
   private String prefix = "/collection"; // LOOK how do we obtain this?
   private TdsContext tdsContext;
+  private boolean allow = true;
+  private String configDirectory;
+  private HashMap<String, CollectionBean> collectionDatasets = new HashMap<String, CollectionBean>();
+  private HashMap<String, FeatureDatasetPoint> fdmap = new HashMap<String, FeatureDatasetPoint>();
 
   public CollectionController() {
     setCommandClass(PointQueryBean.class);
@@ -88,17 +92,17 @@ public class CollectionController extends AbstractCommandController implements L
     this.tdsContext = tdsContext;
   }
 
-  private boolean allow = true;
-
   public void setAllow(boolean allow) {
     this.allow = allow;
   }
 
-
-  private String configDirectory;
-
   public void setConfigDirectory(String configDirectory) {
     this.configDirectory = configDirectory;
+  }
+
+  public void setCollections(List<CollectionBean> beans) {
+    for (CollectionBean bean : beans)
+      collectionDatasets.put(bean.getPath(), bean);       
   }
 
   public long getLastModified(HttpServletRequest req) {
@@ -249,9 +253,28 @@ public class CollectionController extends AbstractCommandController implements L
     if (debug) System.out.printf(" sent %d features to %s %n ", count, location);
   }
 
-  private HashMap<String, FeatureDatasetPoint> fdmap = new HashMap<String, FeatureDatasetPoint>();
+  /////////////////////////////////////////////////////////////////
 
   private FeatureDatasetPoint getFeatureCollectionDataset(String path) throws IOException {
+
+    FeatureDatasetPoint fd = fdmap.get(path);
+    if (fd == null) {
+      CollectionBean config = collectionDatasets.get(path);
+      if (config == null) return null;
+
+      Formatter errlog = new Formatter();
+      fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(path, config.getFeatureType(), config.getSpec(), errlog);
+      if (fd == null) {
+        log.error("Error opening dataset error =", errlog);
+        return null;
+      }
+      fdmap.put(path, fd);
+    }
+    return fd;
+  }
+
+  private FeatureDatasetPoint getFeatureCollectionDatasetOld(String path) throws IOException {
+
     FeatureDatasetPoint fd = fdmap.get(path);
     if (fd == null) {
       File content = tdsContext.getContentDirectory();
@@ -260,7 +283,6 @@ public class CollectionController extends AbstractCommandController implements L
         log.error("Config file %s doesnt exists %n", config);
         return null;
       }
-
       //fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(FeatureType.STATION, "D:/formats/gempak/surface/*.gem?#yyyyMMdd");
       Formatter errlog = new Formatter();
       fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(path, config, errlog);

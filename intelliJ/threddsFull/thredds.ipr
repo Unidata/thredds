@@ -562,10 +562,14 @@
     </library>
     <library name="ehcache">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../../lib/external/ehcache-1.6.0-beta3.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../../lib/external/ehcache-1.6.0.jar!/" />
       </CLASSES>
-      <JAVADOC />
-      <SOURCES />
+      <JAVADOC>
+        <root url="jar://$PROJECT_DIR$/../../lib/external/source/ehcache-1.6.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$PROJECT_DIR$/../../lib/external/source/ehcache-1.6.0-sources.jar!/" />
+      </SOURCES>
     </library>
     <library name="catalina">
       <CLASSES>

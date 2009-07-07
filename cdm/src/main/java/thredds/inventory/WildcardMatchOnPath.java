@@ -32,6 +32,8 @@
 
 package thredds.inventory;
 
+import java.util.regex.Pattern;
+
 /**
  * Describe
  *
@@ -51,6 +53,10 @@ public class WildcardMatchOnPath implements MFileFilter {
 
     // Compile regular expression pattern
     this.pattern = java.util.regex.Pattern.compile(regExp);
+  }
+
+  public WildcardMatchOnPath(Pattern pattern) {
+    this.pattern = pattern;
   }
 
   public boolean accept(MFile file) {

@@ -29,45 +29,54 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+package thredds.server.cdmremote;
 
-package ucar.nc2.ncml;
-
-import ucar.nc2.TestAll;
-import ucar.nc2.ft.point.collection.CollectionManager2;
-import junit.framework.TestSuite;
-import junit.extensions.TestSetup;
-import thredds.inventory.MController;
+import ucar.nc2.constants.FeatureType;
 
 /**
- * Describe
+ * Class Description
  *
  * @author caron
- * @since Jun 30, 2009
+ * @since Jul 6, 2009
  */
-public class TestNcMLcaching {
-  public static String topDir = TestAll.cdmLocalTestDataDir + "ncml/";
-  static MController mc = thredds.filesystem.ControllerCaching.makeStandard("/data/thredds/ehcache/");
-
-  public static junit.framework.Test suite ( ) {
-    TestSuite suite= new TestSuite();
-
-    // aggregation, with cache
-    //ucar.nc2.dataset.NetcdfDataset.initNetcdfFileCache(10,100,60*60);
-
-    // filesystem caching test
-    DatasetScanner2.setController(mc);
-    CollectionManager2.setController(mc);
-
-    suite.addTest( ucar.nc2.ncml.TestNcML.suite());
-    suite.addTest( ucar.nc2.ncml.TestNcMLoffsite.suite());  // */
-    suite.addTest( new TestSuite(TestOffAggForecastModel.class));  // */
 
 
-    return new TestSetup(suite) {
-      protected void tearDown() {
-        mc.close();
-      }
-    };
+public class CollectionBean {
+
+  private String path;
+  private String spec;
+  private String recheck;
+  private String featureType;
+
+  public String getPath() {
+    return path;
   }
 
+  public void setPath(String path) {
+    this.path = path;
+  }
+
+  public String getSpec() {
+    return spec;
+  }
+
+  public void setSpec(String spec) {
+    this.spec = spec;
+  }
+
+  public String getRecheck() {
+    return recheck;
+  }
+
+  public void setRecheck(String recheck) {
+    this.recheck = recheck;
+  }
+
+  public FeatureType getFeatureType() {
+    return FeatureType.getType(featureType);
+  }
+
+  public void setFeatureType(String featureType) {
+    this.featureType = featureType;
+  }
 }
