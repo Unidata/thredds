@@ -74,7 +74,7 @@ public class CacheViewer extends JPanel {
     this.mainPrefs = prefs;
     this.parentFrame = parentFrame;
 
-    thredds.filesystem.CacheManager.makeStandardCacheManager("C:/data/ehcache/");
+    thredds.filesystem.CacheManager.makeTestCacheManager("C:/data/ehcache/");
 
 
     fileChooser = new FileManager(parentFrame, null, null, (PreferencesExt) prefs.node("FileManager"));
@@ -232,7 +232,7 @@ public class CacheViewer extends JPanel {
       boolean err = false;
 
       try {
-        cacheTable.setCache(thredds.filesystem.CacheManager.cacheManager);
+        cacheTable.setCache(thredds.filesystem.CacheManager.getEhcache());
 
       } catch (Exception e) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);

@@ -37,7 +37,7 @@
   </appender>
 
   <!-- serverStartup.log is recreated each time Tomcat is started -->
-  <appender name="serverStartup" class="org.apache.log4j.FileAppender">
+  <appender name="serverStartupAppender" class="org.apache.log4j.FileAppender">
     <param name="File" value="${tds.log.dir}/serverStartup.log"/>
     <param name="Append" value="false"/>
     <layout class="org.apache.log4j.PatternLayout">
@@ -97,7 +97,7 @@
 
   <logger name="serverStartup" additivity="false">
     <level value="INFO"/>
-    <appender-ref ref="serverStartup"/>
+    <appender-ref ref="serverStartupAppender"/>
   </logger>
 
   <!-- grib debugging -->

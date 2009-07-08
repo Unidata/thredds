@@ -72,8 +72,8 @@ public class CollectionBean {
     this.recheck = recheck;
   }
 
-  public FeatureType getFeatureType() {
-    return FeatureType.getType(featureType);
+  public String getFeatureType() {
+    return featureType;
   }
 
   public void setFeatureType(String featureType) {

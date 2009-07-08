@@ -38,6 +38,8 @@ import junit.framework.TestSuite;
 import junit.extensions.TestSetup;
 import thredds.inventory.MController;
 
+import java.io.IOException;
+
 /**
  * Describe
  *
@@ -46,15 +48,16 @@ import thredds.inventory.MController;
  */
 public class TestNcMLcaching {
   public static String topDir = TestAll.cdmLocalTestDataDir + "ncml/";
-  static MController mc = thredds.filesystem.ControllerCaching.makeStandard("/data/thredds/ehcache/");
+  public static MController mc;
 
-  public static junit.framework.Test suite ( ) {
+  public static junit.framework.Test suite ( ) throws IOException {
     TestSuite suite= new TestSuite();
 
     // aggregation, with cache
     //ucar.nc2.dataset.NetcdfDataset.initNetcdfFileCache(10,100,60*60);
 
     // filesystem caching test
+    mc = thredds.filesystem.ControllerCaching.makeTestController("/data/thredds/ehcache/");
     DatasetScanner2.setController(mc);
     CollectionManager2.setController(mc);
 

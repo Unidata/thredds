@@ -34,7 +34,7 @@
 package thredds.logs;
 
 import thredds.filesystem.CacheDirectory;
-import thredds.filesystem.CacheManagerOld;
+import thredds.filesystem.CacheManager;
 
 import java.io.*;
 
@@ -344,38 +344,12 @@ public class TestFileSystem {
 
   //////////////////////////////////////////////////////
 
-  private static String ehLocation = "/data/thredds/ehcache/";
-  private static String config =
-          "<ehcache>\n" +
-                  "    <diskStore path='" + ehLocation + "'/>\n" +
-                  "    <defaultCache\n" +
-                  "              maxElementsInMemory='10000'\n" +
-                  "              eternal='false'\n" +
-                  "              timeToIdleSeconds='120'\n" +
-                  "              timeToLiveSeconds='120'\n" +
-                  "              overflowToDisk='true'\n" +
-                  "              maxElementsOnDisk='10000000'\n" +
-                  "              diskPersistent='false'\n" +
-                  "              diskExpiryThreadIntervalSeconds='120'\n" +
-                  "              memoryStoreEvictionPolicy='LRU'\n" +
-                  "              />\n" +
-                  "    <cache name='directory'\n" +
-                  "            maxElementsInMemory='1000'\n" +
-                  "            eternal='false'\n" +
-                  "            timeToIdleSeconds='864000'\n" +
-                  "            timeToLiveSeconds='0'\n" +
-                  "            overflowToDisk='true'\n" +
-                  "            maxElementsOnDisk='0'\n" +
-                  "            diskPersistent='true'\n" +
-                  "            diskExpiryThreadIntervalSeconds='3600'\n" +
-                  "            memoryStoreEvictionPolicy='LRU'\n" +
-                  "            />\n" +
-                  "</ehcache>";
-
-  CacheManagerOld manager;
+  String ehLocation = "C:/data/ehcache/";
+  CacheManager manager;
 
   TestFileSystem() {
-    manager = nocache ? new CacheManagerOld() : new CacheManagerOld(new StringBufferInputStream(config));
+    CacheManager.makeTestCacheManager(ehLocation);
+    manager = new CacheManager("directories");
     System.out.printf(" Ehcache at %s%n", ehLocation);
 
     if (pathMatcher == null)

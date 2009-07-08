@@ -44,27 +44,6 @@ public class CacheDirectory extends CacheFile implements Serializable {
   private String parentDirName;
   private CacheFile[] children;
 
-  /* public CacheDirectory(CacheManager m, File dir) {
-    super(dir);
-    this.parent = dir.getParent();
-
-    File[] subs = dir.listFiles();
-    if (subs == null) subs = new File[0];
-
-    children = new CacheFile[subs.length];
-    int count = 0;
-    for (File f : subs) {
-      children[count++] = new CacheFile(f);
-    }
-
-    for (File f : subs) {
-      if (f.isDirectory()) {
-        CacheDirectory mdir = new CacheDirectory(m, f);
-        m.add(mdir.getPath(), mdir);
-      }
-    }
-  } */
-
   public CacheDirectory(File dir) {
     super(dir);
     this.parentDirName = dir.getParent();
@@ -76,11 +55,6 @@ public class CacheDirectory extends CacheFile implements Serializable {
     for (File f : subs) {
       children[count++] = new CacheFile(f);
     }
-  }
-
-  public boolean notModified() {
-    File f = new File(getPath());
-    return f.lastModified() <= lastModified;
   }
 
   public String getPath() {

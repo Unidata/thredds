@@ -125,4 +125,8 @@
     <maxAge>30 days</maxAge>
   </AggregationCache>
 
+  <cache>
+    <directory>C:/data/ehcache</directory>
+  </cache>
+
 </threddsConfig>

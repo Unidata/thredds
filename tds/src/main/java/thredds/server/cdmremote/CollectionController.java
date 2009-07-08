@@ -263,7 +263,7 @@ public class CollectionController extends AbstractCommandController implements L
       if (config == null) return null;
 
       Formatter errlog = new Formatter();
-      fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(path, config.getFeatureType(), config.getSpec(), errlog);
+      fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(path, FeatureType.getType(config.getFeatureType()), config.getSpec(), errlog);
       if (fd == null) {
         log.error("Error opening dataset error =", errlog);
         return null;

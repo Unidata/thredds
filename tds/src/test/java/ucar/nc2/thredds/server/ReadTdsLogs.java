@@ -369,10 +369,10 @@ public class ReadTdsLogs {
         continue;
       }
 
-      if (!(log.path.indexOf("ncss/grid") > 0))  {    // ncss only
+     /* if (!(log.path.indexOf("ncss/grid") > 0))  {    // ncss only
         skip++;
         continue;
-      }
+      } */
 
       if (log.path.indexOf("fileServer") > 0) {
         // System.out.println(" *** skip fmrc " + log);

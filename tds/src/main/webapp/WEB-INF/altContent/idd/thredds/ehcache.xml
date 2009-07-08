@@ -1,0 +1,25 @@
+<ehcache>
+    <diskStore path='${cacheDir}' />
+    <defaultCache
+              maxElementsInMemory='10000'
+              eternal='false'
+              timeToIdleSeconds='120'
+              timeToLiveSeconds='120'
+              overflowToDisk='true'
+              maxElementsOnDisk='10000000'
+              diskPersistent='false'
+              diskExpiryThreadIntervalSeconds='120'
+              memoryStoreEvictionPolicy='LRU'
+              />
+    <cache name='directories'
+            maxElementsInMemory='1000'
+            eternal='false'
+            timeToIdleSeconds='864000'
+            timeToLiveSeconds='0'
+            overflowToDisk='true'
+            maxElementsOnDisk='100000'
+            diskPersistent='true'
+            diskExpiryThreadIntervalSeconds='3600'
+            memoryStoreEvictionPolicy='LRU'
+            />
+</ehcache>

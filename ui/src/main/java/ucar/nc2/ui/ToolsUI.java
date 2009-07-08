@@ -3971,9 +3971,14 @@ public class ToolsUI extends JPanel {
 
     // filesystem caching
     DiskCache2 cacheDir = new DiskCache2(".unidata/ehcache", true, -1, -1);
-    cacheManager = thredds.filesystem.ControllerCaching.makeStandard(cacheDir.getRootDirectory());
-    DatasetScanner2.setController(cacheManager);
-    CollectionManager2.setController(cacheManager);
+    try {
+      cacheManager = thredds.filesystem.ControllerCaching.makeTestController(cacheDir.getRootDirectory());
+      DatasetScanner2.setController(cacheManager);
+      CollectionManager2.setController(cacheManager);
+    } catch (IOException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    }
+
 
 // for efficiency, persist aggregations. every hour, delete stuff older than 30 days
     Aggregation.setPersistenceCache(new DiskCache2("/.unidata/cachePersist", true, 60 * 24 * 30, 60));

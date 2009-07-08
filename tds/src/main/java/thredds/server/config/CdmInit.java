@@ -48,23 +48,39 @@ import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.io.File;
+import java.io.IOException;
 
 /**
  * A Singleton class to initialize the CDM, instantiated by Spring.
+ * Called from TdsConfigContextListener.
+ *
  * @author caron
  * @since Feb 20, 2009
  */
 public class CdmInit {
+  org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
+
   private DiskCache2 aggCache;
   private Timer timer;
-  String fmrcDefinitionDirectory;
+  private String fmrcDefinitionDirectory;
+  private thredds.inventory.MController cacheManager;
 
   public void setFmrcDefinitionDirectory(String dir) {
     fmrcDefinitionDirectory = dir;
   }
 
-
   void init(TdsContext tdsContext) {
+    // new for 4.1 - ehcache object caching
+    String ehConfig = ThreddsConfig.get("cache.configFile", tdsContext.getContentDirectory().getPath() + "/ehcache.xml");
+    String ehDirectory = ThreddsConfig.get("cache.directory", tdsContext.getContentDirectory().getPath() + "/ehcache/");
+    try {
+      cacheManager = thredds.filesystem.ControllerCaching.makeStandardController(ehConfig, ehDirectory);
+      ucar.nc2.ncml.DatasetScanner2.setController(cacheManager);
+      ucar.nc2.ft.point.collection.CollectionManager2.setController(cacheManager);
+    } catch (IOException ioe) {
+      logServerStartup.error("Cant read ehcache config file "+ehConfig, ioe);
+    }
+
     AggregationFmrc.setDefinitionDirectory(new File(tdsContext.getRootDirectory(), fmrcDefinitionDirectory));
     FmrcInventoryServlet.setDefinitionDirectory(new File(tdsContext.getRootDirectory(), fmrcDefinitionDirectory));
 
@@ -130,6 +146,7 @@ public class CdmInit {
     if (timer != null) timer.cancel();
     NetcdfDataset.shutdown();
     if (aggCache != null) aggCache.exit();
+    if (cacheManager != null) cacheManager.close();
   }
 
   private class CacheScourTask extends TimerTask {

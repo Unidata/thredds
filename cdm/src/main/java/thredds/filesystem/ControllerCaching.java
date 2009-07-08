@@ -36,6 +36,7 @@ import thredds.inventory.MCollection;
 import thredds.inventory.*;
 
 import java.util.*;
+import java.io.IOException;
 
 /**
  * Inventory File Management Controller, with caching
@@ -47,8 +48,14 @@ import java.util.*;
 
 public class ControllerCaching implements MController {
 
-  public static MController makeStandard(String cacheDir) {
-    CacheManager.makeStandardCacheManager(cacheDir);
+  public static MController makeStandardController(String configFile, String cacheDir) throws IOException {
+    CacheManager.makeStandardCacheManager(configFile, cacheDir);
+    CacheManager cm = new CacheManager("directories");
+    return new ControllerCaching(cm);
+  }
+
+  public static MController makeTestController(String cacheDir) throws IOException {
+    CacheManager.makeTestCacheManager( cacheDir);
     CacheManager cm = new CacheManager("directories");
     return new ControllerCaching(cm);
   }
