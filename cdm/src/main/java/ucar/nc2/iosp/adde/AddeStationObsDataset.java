@@ -35,7 +35,6 @@ package ucar.nc2.iosp.adde;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.units.JavaDateUnit;
 import ucar.unidata.geoloc.Station;
 import ucar.nc2.dt.point.StationObsDatasetImpl;
 import ucar.nc2.dt.point.StationObsDatatypeImpl;
@@ -54,6 +53,7 @@ import thredds.catalog.InvDataset;
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.ThreddsMetadata;
 import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateUnit;
 
 /**
  * An adde "point" dataset.
@@ -159,8 +159,7 @@ public class AddeStationObsDataset extends StationObsDatasetImpl {
     calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
 
         // time unit
-    timeUnit = JavaDateUnit.getJavaDateUnit();
-
+    timeUnit = DateUnit.getUnixDateUnit();
 
     try {
       AddePointDataReader reader = callAdde( addeURL);

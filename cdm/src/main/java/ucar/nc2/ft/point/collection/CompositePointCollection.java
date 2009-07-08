@@ -72,7 +72,7 @@ public class CompositePointCollection extends PointCollectionImpl {
     private PointFeatureIterator pfIter = null;
 
     CompositePointFeatureIterator() {
-      iter = pointCollections.getIterator();
+      iter = pointCollections.getDatasets().iterator();
     }
 
     private PointFeatureIterator getNextIterator() throws IOException {

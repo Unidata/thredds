@@ -78,7 +78,7 @@ public class TestDate extends TestCase {
     Date d = DateUnit.getStandardDate("25 days since 1985-02-02 00:00:00");
     System.out.println(" d="+formatter.toDateTimeStringISO(d));
 
-    d = DateUnit.getStandardDate("0.0 secs since 1985-02-02 12:00:00");
+    d = DateUnit.getStandardDate("1000.0 secs since 1985-02-02 12:00:00");
     System.out.println(" d="+formatter.toDateTimeStringISO(d));
 
     d = DateUnit.getStandardDate("1.0 secs since 1985-02-02 12:00:00");
@@ -149,7 +149,7 @@ public class TestDate extends TestCase {
 
   public void testStandardDatePrecision2() throws Exception {
     DateUnit du = new DateUnit("days since 1858-11-17 00:00:00 UTC");
-    System.out.println(" date= "+formatter.toDateTimeStringISO(du.getDate()));
+    System.out.println(" date= "+formatter.toDateTimeStringISO(du.makeDate(0)));
     System.out.println(" dateOrigin= "+formatter.toDateTimeStringISO(du.getDateOrigin()));
 
     Date isoDate = formatter.getISODate( "1989-12-05T19:00:00Z" );

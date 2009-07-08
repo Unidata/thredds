@@ -83,9 +83,13 @@ public class DateUnit {
   }
 
 
+  /**
+   * Unit of msecs since 1970-00-00:00.00
+   * @return new DateUnit("msecs since 1970-00-00:00.00")
+   */
   static public DateUnit getUnixDateUnit() {
     try {
-      return new DateUnit("secs since 1970-00-00:00.00");
+      return new DateUnit("msecs since 1970-00-00:00.00");
     } catch (Exception e) {
       log.error("Error parsing UnixDateUnit", e);
       return null;

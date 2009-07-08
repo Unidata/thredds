@@ -41,7 +41,6 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.point.writer.WriterCFPointObsDataset;
 import ucar.nc2.ft.point.PointDatasetImpl;
-import ucar.nc2.ft.point.collection.CollectionManager2;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.ncml.NcMLWriter;
@@ -3972,8 +3971,7 @@ public class ToolsUI extends JPanel {
     DiskCache2 cacheDir = new DiskCache2(".unidata/ehcache", true, -1, -1);
     try {
       cacheManager = thredds.filesystem.ControllerCaching.makeTestController(cacheDir.getRootDirectory());
-      ucar.nc2.ncml.DatasetScanner.setController(cacheManager);
-      CollectionManager2.setController(cacheManager);
+      thredds.inventory.DatasetCollectionManager.setController(cacheManager);
     } catch (IOException e) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }

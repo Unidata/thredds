@@ -66,9 +66,9 @@ public class CompositeDatasetFactory {
     SAXBuilder builder = new SAXBuilder();
     Document configDoc;
     try {
-      configDoc = builder.build( configFile );
-    } catch ( JDOMException e ) {
-      errlog.format( "CompositeDatasetFactory failed to read config document %s err= %s %n", configFile.getPath(), e.getMessage());
+      configDoc = builder.build(configFile);
+    } catch (JDOMException e) {
+      errlog.format("CompositeDatasetFactory failed to read config document %s err= %s %n", configFile.getPath(), e.getMessage());
       return null;
     }
 
@@ -89,19 +89,20 @@ public class CompositeDatasetFactory {
     LatLonRect llbb = new LatLonRect(new LatLonPointImpl(latStart, lonStart), latSize, lonSize);
 
     Element timeCoverage = root.getChild("timeCoverage");
-    DateType start = readDate( timeCoverage.getChild("start"), errlog);
-    DateType end = readDate( timeCoverage.getChild("end"), errlog);
-    TimeDuration duration = readDuration( timeCoverage.getChild("duration"), errlog);
+    DateType start = readDate(timeCoverage.getChild("start"), errlog);
+    DateType end = readDate(timeCoverage.getChild("end"), errlog);
+    TimeDuration duration = readDuration(timeCoverage.getChild("duration"), errlog);
 
     DateRange dateRange = null;
     try {
-      dateRange = new DateRange( start, end, duration, null);
+      dateRange = new DateRange(start, end, duration, null);
     } catch (java.lang.IllegalArgumentException e) {
-      errlog.format(" ** warning: TimeCoverage error = %s%n",e.getMessage());
+      errlog.format(" ** warning: TimeCoverage error = %s%n", e.getMessage());
       return null;
     }
 
-    CompositePointDataset fd = (CompositePointDataset) factory(locationURI, wantFeatureType, location +"?"+dateFormatMark, errlog);
+    // LOOK : WRONG
+    CompositePointDataset fd = (CompositePointDataset) factory(locationURI, wantFeatureType, location + "?" + dateFormatMark, errlog);
     if (fd == null) return null;
 
     fd.setBoundingBox(llbb);
@@ -109,11 +110,11 @@ public class CompositeDatasetFactory {
     return fd;
   }
 
-   static  double readDouble(Element elem, Formatter errlog) {
+  static double readDouble(Element elem, Formatter errlog) {
     if (elem == null) return Double.NaN;
     String text = elem.getText();
     try {
-      return Double.parseDouble( text);
+      return Double.parseDouble(text);
     } catch (NumberFormatException e) {
       errlog.format(" ** Parse error: Bad double format %s%n", text);
       return Double.NaN;
@@ -122,12 +123,12 @@ public class CompositeDatasetFactory {
 
   static DateType readDate(Element elem, Formatter errlog) {
     if (elem == null) return null;
-    String format =  elem.getAttributeValue("format");
-    String type =  elem.getAttributeValue("type");
+    String format = elem.getAttributeValue("format");
+    String type = elem.getAttributeValue("type");
     String text = elem.getText();
     if (text == null) return null;
     try {
-      return new DateType( text, format, type);
+      return new DateType(text, format, type);
     } catch (java.text.ParseException e) {
       errlog.format(" ** Parse error: Bad date format = %s%n", text);
       return null;
@@ -139,7 +140,7 @@ public class CompositeDatasetFactory {
     String text = null;
     try {
       text = elem.getText();
-      return new TimeDuration( text);
+      return new TimeDuration(text);
     } catch (java.text.ParseException e) {
       errlog.format(" ** Parse error: Bad duration format = %s%n", text);
       return null;
@@ -150,7 +151,7 @@ public class CompositeDatasetFactory {
     if (spec.startsWith(SCHEME))
       spec = spec.substring(SCHEME.length());
 
-    TimedCollection datasets = CollectionManager2.factory(spec, errlog);
+    TimedCollection datasets = new TimedCollectionImpl(spec, errlog);
     if (datasets == null) return null;
 
     FeatureCollection pfc = null;
@@ -161,8 +162,8 @@ public class CompositeDatasetFactory {
       case STATION:
         pfc = new CompositeStationCollection(spec, datasets);
         break;
-     default:
-       return null;
+      default:
+        return null;
     }
 
     return new CompositePointDataset(location, wantFeatureType, pfc, datasets);
@@ -171,16 +172,16 @@ public class CompositeDatasetFactory {
 
   private static class CompositePointDataset extends PointDatasetImpl {
     private TimedCollection datasets;
-    private FeatureDatasetPoint proto;
+    //private FeatureDatasetPoint proto;
 
     public CompositePointDataset(String location, FeatureType featureType, FeatureCollection pfc, TimedCollection datasets) {
       super(featureType);
       setLocationURI(location);
-      setPointFeatureCollection( pfc);
+      setPointFeatureCollection(pfc);
       this.datasets = datasets;
 
       if (dateRange != null)
-        setDateRange( datasets.getDateRange());
+        setDateRange(datasets.getDateRange());
     }
 
     @Override
@@ -196,18 +197,21 @@ public class CompositeDatasetFactory {
 
     @Override
     public NetcdfFile getNetcdfFile() {
+      FeatureDatasetPoint proto;
 
-      if (proto == null) {
-        String loc = datasets.getPrototype().getLocation();
-        Formatter errlog = new Formatter();
-        try {
-          proto = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.STATION, loc, null, errlog); // LOOK kludge
-        } catch (IOException e) {
-          log.error(errlog.toString());
-          e.printStackTrace();
-        }
+      TimedCollection.Dataset td = datasets.getPrototype();
+      if (td == null) return null;
+
+      String loc = td.getLocation();
+      Formatter errlog = new Formatter();
+      try {
+        proto = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.STATION, loc, null, errlog); // LOOK kludge
+        return proto.getNetcdfFile();
+      } catch (IOException e) {
+        log.error(errlog.toString());
+        e.printStackTrace();
       }
-      return proto.getNetcdfFile();
+      return null;
     }
 
   }

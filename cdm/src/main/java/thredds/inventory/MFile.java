@@ -43,6 +43,8 @@ public interface MFile extends Comparable<MFile> {
   // < 0 means dont know
   long getLastModified();
 
+  // size of file
+  // < 0 means dont know
   long getLength();
 
   boolean isDirectory();

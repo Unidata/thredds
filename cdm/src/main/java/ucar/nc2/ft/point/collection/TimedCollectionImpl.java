@@ -37,93 +37,72 @@ import ucar.nc2.units.DateFromString;
 import java.util.*;
 
 import thredds.inventory.*;
-import thredds.inventory.filter.WildcardMatchOnPath;
-import thredds.inventory.DateExtractorFromName;
 
 /**
- * Manages feature dataset collections.
+ * Manages feature dataset collections. Do not cache, just recreate each time. Not updating the list of datasets.
  *
- * The idea is that you can cut and paste an actual file path, then edit it:
- *   spec="/data/ldm/pub/decoded/netcdf/surface/metar/** /Surface_METAR_#yyyyMMdd_HHmm#.nc
- *
- * @see CollectionSpecParser
  * @author caron
  * @since May 20, 2009
  */
 
 
+public class TimedCollectionImpl implements TimedCollection {
 
-public class CollectionManager2 implements TimedCollection {
-  static private boolean show = true;
-  static private MController controller;
-
-  static public void setController(MController _controller) {
-    controller = _controller;
-  }
-
-  ////////////////////////////////
-
-  private List<TimedCollection.Dataset> c;
+  private CollectionSpecParser sp;
+  private List<TimedCollection.Dataset> datasets;
   private DateRange dateRange;
 
-  static public CollectionManager2 factory(String collectionSpec, Formatter errlog) {
-    if (null == controller) controller = new thredds.filesystem.ControllerOS();  // default
-    return new CollectionManager2(collectionSpec, errlog);
-  }
 
-  //  collectionSpec="/data/ldm/pub/decoded/netcdf/surface/metar/**/Surface_METAR_#yyyyMMdd_HHmm#.nc
-  private CollectionManager2(String collectionSpec, Formatter errlog) {
-    CollectionSpecParser sp = new CollectionSpecParser(collectionSpec, errlog);
-    if (show) System.out.printf("CollectionManager collectionDesc=%s result=%s %n", collectionSpec, sp);
+  /**
+   * * The idea is that you can cut and paste an actual file path, then edit it:
+   * spec="/data/ldm/pub/decoded/netcdf/surface/metar/** /Surface_METAR_#yyyyMMdd_HHmm#.nc
+   *
+   * @param collectionSpec the collection spec
+   * @param errlog         put error messsages here
+   * @see CollectionSpecParser
+   */
+  public TimedCollectionImpl(String collectionSpec, Formatter errlog) {
+    sp = new CollectionSpecParser(collectionSpec, errlog);
+    DatasetCollectionManager manager = new DatasetCollectionManager(sp, errlog);
 
-    MFileFilter mfilter = (null == sp.getFilter()) ? null : new WildcardMatchOnPath(sp.getFilter());
-    DateExtractor dateExtractor = (sp.getDateFormatMark() == null) ? null : new DateExtractorFromName(sp.getDateFormatMark());
-    MCollection mc = new thredds.inventory.MCollection(sp.getTopDir(), sp.getTopDir(), sp.wantSubdirs(), mfilter, dateExtractor);
-
-    // get the inventory, sort
-    List<MFile> fileList = new ArrayList<MFile>();
-    Iterator<MFile> invIter = controller.getInventory( mc);
-    while (invIter.hasNext())
-      fileList.add(invIter.next());
-    Collections.sort(fileList);
-
-    c = new ArrayList<TimedCollection.Dataset>(fileList.size());
+    // get the inventory, sorted by path
+    List<MFile> fileList = manager.getFiles();
+    List<TimedCollection.Dataset> c = new ArrayList<TimedCollection.Dataset>(fileList.size());
     for (MFile f : fileList)
-      c.add(new Dataset(f, sp.getDateFormatMark()));
+      c.add(new Dataset(f));
 
     if (sp.getDateFormatMark() != null) {
-      for (int i=0; i<c.size()-1; i++) {
+      for (int i = 0; i < c.size() - 1; i++) {
         Dataset d1 = (Dataset) c.get(i);
-        Dataset d2 = (Dataset) c.get(i+1);
+        Dataset d2 = (Dataset) c.get(i + 1);
         d1.setDateRange(new DateRange(d1.start, d2.start));
-        if (i == c.size()-2)
-          d2.setDateRange( new DateRange(d2.start, d1.getDateRange().getDuration()));
+        if (i == c.size() - 2)
+          d2.setDateRange(new DateRange(d2.start, d1.getDateRange().getDuration()));
       }
       Dataset first = (Dataset) c.get(0);
-      Dataset last = (Dataset) c.get(c.size()-1);
+      Dataset last = (Dataset) c.get(c.size() - 1);
       dateRange = new DateRange(first.getDateRange().getStart().getDate(), last.getDateRange().getEnd().getDate());
     }
 
-    if (show) System.out.printf("%s %n", this);
   }
 
-  CollectionManager2(CollectionManager2 from, DateRange want) {
-    c = new ArrayList<TimedCollection.Dataset>(from.c.size());
-    for (TimedCollection.Dataset d : from.c)
+  private TimedCollectionImpl(TimedCollectionImpl from, DateRange want) {
+    datasets = new ArrayList<TimedCollection.Dataset>(from.datasets.size());
+    for (TimedCollection.Dataset d : from.datasets)
       if (want.intersects(d.getDateRange()))
-        c.add(d);
+        datasets.add(d);
   }
 
   public TimedCollection.Dataset getPrototype() {
-    return c.get(0);
+    return (datasets.size() > 0 ) ? datasets.get(0) : null;
   }
 
-  public Iterator<TimedCollection.Dataset> getIterator() {
-    return c.iterator();
+  public List<TimedCollection.Dataset> getDatasets() {
+    return datasets;
   }
 
   public TimedCollection subset(DateRange range) {
-    return new CollectionManager2(this, range);
+    return new TimedCollectionImpl(this, range);
   }
 
   public DateRange getDateRange() {
@@ -134,7 +113,7 @@ public class CollectionManager2 implements TimedCollection {
   public String toString() {
     Formatter f = new Formatter();
     f.format("CollectionManager{%n");
-    for (TimedCollection.Dataset d : c)
+    for (TimedCollection.Dataset d : datasets)
       f.format(" %s%n", d);
     f.format("}%n");
     return f.toString();
@@ -145,10 +124,10 @@ public class CollectionManager2 implements TimedCollection {
     DateRange dateRange;
     Date start;
 
-    Dataset(MFile f, String dateFormatMark) {
+    Dataset(MFile f) {
       this.location = f.getPath();
-      if (dateFormatMark != null)
-        start = DateFromString.getDateUsingDemarkatedCount(f.getName(), dateFormatMark, '#');
+      if (sp.getDateFormatMark() != null)
+        start = DateFromString.getDateUsingDemarkatedCount(f.getName(), sp.getDateFormatMark(), '#');
     }
 
     public String getLocation() {
@@ -166,9 +145,9 @@ public class CollectionManager2 implements TimedCollection {
     @Override
     public String toString() {
       return "Dataset{" +
-          "location='" + location + '\'' +
-          ", dateRange=" + dateRange +
-          '}';
+              "location='" + location + '\'' +
+              ", dateRange=" + dateRange +
+              '}';
     }
   }
 

@@ -229,7 +229,7 @@ public class TestAggExistingCoordVars extends TestCase {
     ncfile.close();
   }
 
-  public void testWithDateFormatMark() throws Exception, InvalidRangeException {
+  public void testWithDateFormatMark() throws Exception {
     String filename = "file:"+TestNcML.topDir + "aggExistingOne.xml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);

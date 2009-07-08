@@ -60,6 +60,8 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     super(name);
     this.stnCollections = stnCollections;
     TimedCollection.Dataset td = stnCollections.getPrototype();
+    if (td == null)
+      throw new RuntimeException("No datasets in the collection");
 
     Formatter errlog = new Formatter();
     FeatureDatasetPoint openDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.STATION, td.getLocation(), null, errlog);
@@ -174,7 +176,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
       private boolean finished = false;
 
       CompositeStationFeatureIterator() {
-        iter = collForFeature.getIterator();
+        iter = collForFeature.getDatasets().iterator();
       }
 
       private PointFeatureIterator getNextIterator() throws IOException {

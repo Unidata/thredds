@@ -37,6 +37,7 @@ import junit.framework.*;
 import java.util.*;
 
 import ucar.units.*;
+import ucar.nc2.TestAll;
 
 public class TestDateUnits extends TestCase {
 
@@ -62,7 +63,7 @@ public class TestDateUnits extends TestCase {
 
   public void testDate() throws Exception {
     System.out.println();
-    doit(new DateUnit("0 secs since 1972-01-01T00:00:00Z"));
+    doit(new DateUnit("2 secs since 1972-01-01T00:00:00Z"));
 
     doit(new DateUnit("3600 secs since 1972-01-01T00:00:00Z"));
     doit(new DateUnit("24 hours since 1972-01-01T00:00:00Z"));
@@ -81,27 +82,25 @@ public class TestDateUnits extends TestCase {
     System.out.println("\ntestStandardDate");
     DateUnit du = new DateUnit( "secs since 1972-01-01T00:00:00Z");
     Date d = du.makeDate( 36000);
-    System.out.println(" "+du.toString()+" == "+formatter.toDateTimeStringISO(d));
+    System.out.println(36000+" "+du.toString()+" == "+formatter.toDateTimeStringISO(d)+" == "+d.getTime());
     //assert du.getTimeUnitString().equals("secs");
     //showUnitInfo( du.getUnit());
 
     du = new DateUnit( "hours since 1972-01-01T00:00:00Z");
     Date d2 = du.makeDate( 10);
-    System.out.println(" "+du.toString()+" == "+formatter.toDateTimeStringISO(d));
+    System.out.println(10+" "+du.toString()+" == "+formatter.toDateTimeStringISO(d2)+" == "+d2.getTime());
     //assert du.getTimeUnitString().equals("hours");
     // showUnitInfo( du.getUnit());
 
-    assert d2.equals(d);
+    assert d2.equals(d) : d2.getTime() +"!= "+ d.getTime();
 
-    // value
-     // doesnt matter
-    du = new DateUnit( "36 hours since 1972-01-01T00:00:00Z");
-    d2 = du.makeDate( 10);
-    System.out.println(" "+du.toString()+" == "+formatter.toDateTimeStringISO(d));
+    du = new DateUnit( "10 hours since 1972-01-01T00:00:00Z");
+    d2 = du.makeDate( 1);
+    System.out.println(" "+du.toString()+" == "+formatter.toDateTimeStringISO(d2)+" == "+d2.getTime());
     //assert du.getTimeUnitString().equals("hours");
     //showUnitInfo( du.getUnit());
 
-    assert d2.equals(d);
+    assert d2.equals(d) : d2.getTime() +"!= "+ d.getTime();
   }
 
   private void tryMakeValue(String unit, double value) throws Exception {
@@ -109,7 +108,7 @@ public class TestDateUnits extends TestCase {
     Date d = du.makeDate(value);
 
     double value2 = du.makeValue(d);
-    System.out.println(" " + value + " == " + formatter.toDateTimeStringISO(d));
+    System.out.println(" " + value + " "+ unit+  " == " + formatter.toDateTimeStringISO(d));
     assert value == value2 : value + " " + value2;
   }
 
@@ -118,8 +117,8 @@ public class TestDateUnits extends TestCase {
     tryMakeValue("secs since 1970-01-02T00:00:00Z", 3600);
     tryMakeValue("hours since 1970-01-02T00:00:00Z", 3600);
 
-    tryMakeValue("secs since 1900-01-01T00:00:00Z", 36000);
-    tryMakeValue("hours since 1900-01-01T00:00:00Z", 12);
+    tryMakeValue("secs since 1970-01-01T00:00:00Z", 36000);
+    tryMakeValue("hours since 1970-01-01T00:00:00Z", 12);
   }
 
   public void testDateValue() throws Exception {
@@ -135,14 +134,14 @@ public class TestDateUnits extends TestCase {
 
     value = du.makeValue(d);
     System.out.println("testDateValue " + value + " == " + formatter.toDateTimeStringISO(d));
-    assert value == 240 : value;
+    assert TestAll.closeEnough(value, 240) : value;
 
     du = new DateUnit("days since 1965-01-01T00:00:00Z");
     d = DateUnit.getStandardDate("days since 1966-01-01T00:00:00Z");
 
     value = du.makeValue(d);
     System.out.println("testDateValue " + value + " == " + formatter.toDateTimeStringISO(d));
-    assert ucar.nc2.TestLocal.closeEnough(value, 365) : value;
+    assert ucar.nc2.TestLocal.closeEnough(value, 366) : value;
   }
 
   private void showUnitInfo(Unit uu) {
@@ -202,7 +201,7 @@ public class TestDateUnits extends TestCase {
     uu = format.parse(unit);
     System.out.printf("%s == %s %n", unit, uu);
 
-    unit = "0 days since 2009-06-14 04:00:00 +00:00";
+    unit = "3 days since 2009-06-14 04:00:00 +00:00";
     uu = format.parse(unit);
     System.out.printf("%s == %s %n", unit, uu);
 
@@ -210,7 +209,7 @@ public class TestDateUnits extends TestCase {
 
   public void testUdunitBug2() throws UnitDBException, UnitSystemException, SpecificationException, PrefixDBException, UnitParseException {
     UnitFormat format = UnitFormatManager.instance();
-    String unit = "0.0 secs since 1985-02-02 12:00:00";
+    String unit = "2.0 secs since 1985-02-02 12:00:00";
     Unit uu = format.parse(unit);
     System.out.printf("%s == %s %n", unit, uu);
   }

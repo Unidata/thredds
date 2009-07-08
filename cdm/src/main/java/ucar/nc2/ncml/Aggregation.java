@@ -46,6 +46,7 @@ import java.io.*;
 
 import org.jdom.Element;
 import thredds.inventory.MFile;
+import thredds.inventory.DatasetCollectionManager;
 
 /**
  * Superclass for NcML Aggregation.
@@ -145,7 +146,7 @@ public abstract class Aggregation implements ProxyReader {
 
   protected List<Aggregation.Dataset> explicitDatasets = new ArrayList<Aggregation.Dataset>(); // explicitly created Dataset objects from netcdf elements
   protected List<Aggregation.Dataset> datasets = new ArrayList<Aggregation.Dataset>(); // all : explicit and scanned
-  protected DatasetCollectionManager2 datasetManager; // manages scanning
+  protected DatasetCollectionManager datasetManager; // manages scanning
   protected boolean cacheDirty = true; // aggCache persist file needs updating
 
   protected String dimName; // the aggregation dimension name
@@ -170,7 +171,7 @@ public abstract class Aggregation implements ProxyReader {
     this.ncDataset = ncd;
     this.dimName = dimName;
     this.type = type;
-    datasetManager = new DatasetCollectionManager2(recheckS);
+    datasetManager = new DatasetCollectionManager(recheckS);
   }
 
   /**

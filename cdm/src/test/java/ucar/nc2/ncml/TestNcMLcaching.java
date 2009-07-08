@@ -33,7 +33,7 @@
 package ucar.nc2.ncml;
 
 import ucar.nc2.TestAll;
-import ucar.nc2.ft.point.collection.CollectionManager2;
+import ucar.nc2.ft.point.collection.TimedCollectionImpl;
 import junit.framework.TestSuite;
 import junit.extensions.TestSetup;
 import thredds.inventory.MController;
@@ -59,7 +59,6 @@ public class TestNcMLcaching {
     // filesystem caching test
     mc = thredds.filesystem.ControllerCaching.makeTestController("/data/thredds/ehcache/");
     DatasetScanner.setController(mc);
-    CollectionManager2.setController(mc);
 
     suite.addTest( ucar.nc2.ncml.TestNcML.suite());
     suite.addTest( ucar.nc2.ncml.TestNcMLoffsite.suite());  // */

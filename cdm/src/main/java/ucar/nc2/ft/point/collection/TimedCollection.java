@@ -36,6 +36,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.units.DateRange;
 
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Interface for a collection of Datasets that each have a DateRange and location.
@@ -46,7 +47,7 @@ import java.util.Iterator;
  */
 public interface TimedCollection {
   Dataset getPrototype();
-  Iterator<Dataset> getIterator();
+  List<Dataset> getDatasets();
   TimedCollection subset(DateRange range);
   DateRange getDateRange();
 

@@ -75,8 +75,7 @@ public class CdmInit {
     String ehDirectory = ThreddsConfig.get("cache.directory", tdsContext.getContentDirectory().getPath() + "/ehcache/");
     try {
       cacheManager = thredds.filesystem.ControllerCaching.makeStandardController(ehConfig, ehDirectory);
-      ucar.nc2.ncml.DatasetScanner.setController(cacheManager);
-      ucar.nc2.ft.point.collection.CollectionManager2.setController(cacheManager);
+      thredds.inventory.DatasetCollectionManager.setController(cacheManager);
     } catch (IOException ioe) {
       logServerStartup.error("Cant read ehcache config file "+ehConfig, ioe);
     }

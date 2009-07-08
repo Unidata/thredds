@@ -49,16 +49,16 @@ import java.io.FilenameFilter;
  */
 
 
-public class CollectionManager implements TimedCollection {
+public class CollectionManagerOld {
   private boolean show = true;
   private List<TimedCollection.Dataset> c;
   private DateRange dateRange;
 
-  static public CollectionManager factory(String collectionDesc, Formatter errlog) {
-    return new CollectionManager(collectionDesc, errlog);
+  static public CollectionManagerOld factory(String collectionDesc, Formatter errlog) {
+    return new CollectionManagerOld(collectionDesc, errlog);
   }
 
-  private  CollectionManager(String collectionDesc, Formatter errlog) {
+  private CollectionManagerOld(String collectionDesc, Formatter errlog) {
     // first part is the directory
     int posWildcard = collectionDesc.lastIndexOf('/');
     String dirName = collectionDesc.substring(0, posWildcard);
@@ -109,7 +109,7 @@ public class CollectionManager implements TimedCollection {
     if (show) System.out.printf("%s %n", this);
   }
 
-  CollectionManager(CollectionManager from, DateRange want) {
+  CollectionManagerOld(CollectionManagerOld from, DateRange want) {
     c = new ArrayList<TimedCollection.Dataset>(from.c.size());
     for (TimedCollection.Dataset d : from.c)
       if (want.intersects(d.getDateRange()))
@@ -124,8 +124,8 @@ public class CollectionManager implements TimedCollection {
     return c.iterator();
   }
 
-  public TimedCollection subset(DateRange range) {
-    return new CollectionManager(this, range);
+  public CollectionManagerOld subset(DateRange range) {
+    return new CollectionManagerOld(this, range);
   }
 
   public DateRange getDateRange() {

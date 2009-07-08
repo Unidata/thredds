@@ -40,8 +40,6 @@ import java.util.Date;
  * @author caron
  */
 public class MCollection {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MCollection.class);
-
   private String name;
   private String dirName;
   private boolean wantSubdirs;
@@ -86,8 +84,6 @@ public class MCollection {
   }
 
   public boolean accept(MFile file) {
-    if ((ff != null) && !ff.accept(file))
-        return false;
 
     if (null != dateExtractor) {
       Date d = dateExtractor.getDate(file);
@@ -100,7 +96,7 @@ public class MCollection {
       }
     }
 
-    return true;
+    return ((ff == null) || ff.accept(file));
   }
 
 
