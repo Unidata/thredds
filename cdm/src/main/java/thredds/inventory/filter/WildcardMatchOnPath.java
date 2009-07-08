@@ -30,20 +30,40 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.inventory;
+package thredds.inventory.filter;
+
+import thredds.inventory.MFileFilter;
+import thredds.inventory.MFile;
+
+import java.util.regex.Pattern;
 
 /**
- * Describe
+ * A wildcard expression that matches on the MFile path.
  *
  * @author caron
  * @since Jun 26, 2009
  */
-public class WildcardMatchOnName extends WildcardMatchOnPath {
-  public WildcardMatchOnName(String wildcardString) {
-    super(wildcardString);
+public class WildcardMatchOnPath implements MFileFilter {
+  protected String wildcardString;
+  protected java.util.regex.Pattern pattern;
+
+  public WildcardMatchOnPath(String wildcardString) {
+    this.wildcardString = wildcardString;
+
+    String regExp = wildcardString.replaceAll("\\.", "\\\\."); // Replace "." with "\.".
+    regExp = regExp.replaceAll("\\*", ".*"); // Replace "*" with ".*".
+    regExp = regExp.replaceAll("\\?", ".?"); // Replace "?" with ".?".
+
+    // Compile regular expression pattern
+    this.pattern = java.util.regex.Pattern.compile(regExp);
   }
-    public boolean accept(MFile file) {
-    java.util.regex.Matcher matcher = this.pattern.matcher(file.getName());
+
+  public WildcardMatchOnPath(Pattern pattern) {
+    this.pattern = pattern;
+  }
+
+  public boolean accept(MFile file) {
+    java.util.regex.Matcher matcher = this.pattern.matcher(file.getPath());
     return matcher.matches();
   }
 }

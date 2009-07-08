@@ -98,7 +98,14 @@ public class CacheManager {
     addElements.incrementAndGet();
   }
 
-  public CacheDirectory get(String path) {
+  /**
+   * Get a CacheDirectory from the path. If not in cache, read OS and put in cache.
+   * 
+   * @param path file path
+   * @param recheck if true, check that directory hasnt changed, otherwise ok to use cached element without chcking
+   * @return  CacheDirectory
+   */
+  public CacheDirectory get(String path, boolean recheck) {
     requests.incrementAndGet();
 
     Element e = cache.get(path);
@@ -106,6 +113,8 @@ public class CacheManager {
       if (debug) System.out.printf(" InCache %s%n", path);
 
       CacheDirectory m = (CacheDirectory) e.getValue();
+      if (!recheck) return m;
+
       File f = new File(m.getPath()); // check if file exists and when last modified
       if (!f.exists()) {
         cache.put(new Element(path, null));

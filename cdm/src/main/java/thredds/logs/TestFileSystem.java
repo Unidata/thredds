@@ -333,7 +333,7 @@ public class TestFileSystem {
         remaining = remaining.substring(1);
 
       String dirName = match.dir + remaining;
-      CacheDirectory mdir = manager.get(dirName);
+      CacheDirectory mdir = manager.get(dirName, true);
       if (mdir == null)
         if (show) System.out.printf("Dir %s from path %s doesnt exist%n", dirName, log.path);
         else if (show)

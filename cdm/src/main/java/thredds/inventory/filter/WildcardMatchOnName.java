@@ -30,25 +30,23 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.inventory;
+package thredds.inventory.filter;
+
+import thredds.inventory.MFile;
 
 /**
- * Describe
+ * A wildcard expression that matches on the MFile name.
  *
  * @author caron
  * @since Jun 26, 2009
  */
-public  class RegExpMatchOnName implements MFileFilter {
-    private String regExpString;
-    private java.util.regex.Pattern pattern;
-
-    public RegExpMatchOnName(String regExpString) {
-      this.regExpString = regExpString;
-      this.pattern = java.util.regex.Pattern.compile(regExpString);
-    }
-
-    public boolean accept(MFile file) {
-      java.util.regex.Matcher matcher = this.pattern.matcher(file.getName());
-      return matcher.matches();
-    }
+public class WildcardMatchOnName extends WildcardMatchOnPath {
+  public WildcardMatchOnName(String wildcardString) {
+    super(wildcardString);
   }
+
+  public boolean accept(MFile file) {
+    java.util.regex.Matcher matcher = this.pattern.matcher(file.getName());
+    return matcher.matches();
+  }
+}

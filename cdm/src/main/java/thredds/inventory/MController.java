@@ -60,6 +60,11 @@ public interface MController {
 
   public Iterator<MFile> getInventoryNoSubdirs(MCollection mc);
 
+  // if recheck = false, can use cached results. otherwise must sync with File OS
+  public Iterator<MFile> getInventory(MCollection mc, boolean recheck);
+
+  public Iterator<MFile> getInventoryNoSubdirs(MCollection mc, boolean recheck);
+
   public void close();
 
   // public void sync(String collectionName);

@@ -52,10 +52,10 @@ public class MCollection {
   /**
    *
    * @param name name of collection
-   * @param dirName directory name
+   * @param dirName top directory name
    * @param wantSubdirs if want subdirectories
    * @param ff optional FilenameFilter (may be null) - applies only to non-directories
-   * @param dateExtractor optional DateExtractor (may be null) - applies only to non-directories (?)
+   * @param dateExtractor optional DateExtractor (may be null) - applies only to non-directories
    */
   public MCollection(String name, String dirName, boolean wantSubdirs, MFileFilter ff, DateExtractor dateExtractor) {
     this.name = name;

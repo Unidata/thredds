@@ -32,64 +32,54 @@
  */
 package ucar.nc2.ncml;
 
-import thredds.crawlabledataset.CrawlableDataset;
-import thredds.crawlabledataset.CrawlableDatasetFactory;
-import thredds.crawlabledataset.CrawlableDatasetFilter;
-import thredds.crawlabledataset.filter.RegExpMatchOnPathFilter;
-import thredds.crawlabledataset.filter.WildcardMatchOnPathFilter;
-import thredds.catalog.ServiceType;
+import thredds.inventory.*;
+import thredds.inventory.filter.RegExpMatchOnName;
+import thredds.inventory.filter.WildcardMatchOnPath;
+import thredds.inventory.DateExtractorFromName;
 
 import java.util.*;
 import java.io.IOException;
 
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.units.TimeUnit;
-import org.jdom.Element;
 
 /**
- * DatasetScanner implements the datasetScan element, to scan for datasets, using a CrawlableDataset.
+ * DatasetScanner implements the scan element, using thredds.inventory.MController.
  *
  * @author caron
- * @since Aug 10, 2007
+ * @since June 26, 2009
  */
-public class DatasetScanner implements Scanner {
-  static protected org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DatasetScanner.class);
+public class DatasetScanner {
+  static protected org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DatasetScannerOld.class);
+  static private MController controller;
 
-  private CrawlableDataset crawler;
-  private CrawlableDatasetFilter filter;
+  static public void setController(MController _controller) {
+    controller = _controller;
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////
+  private MCollection mc;
   private boolean wantSubdirs = true;
 
   // filters
   private long olderThan_msecs; // files must not have been modified for this amount of time (msecs)
-
   private boolean debugScan = false;
 
-  DatasetScanner(Element crawlableDatasetElement, String dirName, String suffix, String regexpPatternString,
-                 String subdirsS, String olderS) {
+  DatasetScanner(String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS, String dateFormatString) {
+    if (null == controller) controller = new thredds.filesystem.ControllerOS();  // default
 
-    String crawlerClassName;
-    Object crawlerObject = null;
-
-    if (null != crawlableDatasetElement) {
-      crawlerClassName = crawlableDatasetElement.getAttributeValue("className");
-      crawlerObject = crawlableDatasetElement;
-    } else {
-      crawlerClassName = "thredds.crawlabledataset.CrawlableDatasetFile";
-    }
-
-    try {
-      crawler = CrawlableDatasetFactory.createCrawlableDataset(dirName, crawlerClassName, crawlerObject);
-    } catch (Exception e) {
-      throw new RuntimeException(e.getCause());
-    }
-
+    MFileFilter filter = null;
     if (null != regexpPatternString)
-      filter = new RegExpMatchOnPathFilter(regexpPatternString);
+      filter = new RegExpMatchOnName(regexpPatternString);
     else if (suffix != null)
-      filter = new WildcardMatchOnPathFilter("*" + suffix);
+      filter = new WildcardMatchOnPath("*" + suffix);
+
+    DateExtractor dateExtractor = (dateFormatString == null) ? null : new DateExtractorFromName(dateFormatString);
 
     if ((subdirsS != null) && subdirsS.equalsIgnoreCase("false"))
       wantSubdirs = false;
+
+    mc = new thredds.inventory.MCollection(dirName, dirName, wantSubdirs, filter, dateExtractor);
 
     if (olderS != null) {
       try {
@@ -101,40 +91,38 @@ public class DatasetScanner implements Scanner {
     }
   }
 
-  //NetcdfDataset.EnhanceMode getEnhanceMode() { return mode; }
-
-  public void scanDirectory(Map<String, CrawlableDataset> map, CancelTask cancelTask) throws IOException {
-    scanDirectory(crawler, new Date().getTime(), map, cancelTask);
+  public List<MFile> scanDirectory(CancelTask cancelTask) throws IOException {
+    List<MFile> result = new ArrayList<MFile>();
+    scanDirectory(mc, new Date().getTime(), result, cancelTask);
+    return result;
   }
 
-  private void scanDirectory(CrawlableDataset cd, long now, Map<String, CrawlableDataset> map, CancelTask cancelTask) throws IOException {
-    if (!cd.exists() || !cd.isCollection()) {
-      logger.error("scanDirectory(): the crawlableDataset to be scanned [" + cd.getPath() + "] does not exist or is not a collection.");
+  private void scanDirectory(MCollection mc, long now, List<MFile> result, CancelTask cancelTask) throws IOException {
+
+    Iterator<MFile> iter = controller.getInventory(mc);
+    if (iter == null) {
+      logger.error("Invalid collection= "+mc);
       return;
     }
-    List<CrawlableDataset> children = cd.listDatasets();
 
-    for (CrawlableDataset child : children) {
-      if (debugScan && filter != null) System.out.println("filter " + child);
+    while (iter.hasNext()) {
+      MFile child = iter.next();
 
-      if (child.isCollection() && child.exists()) {
-        if (wantSubdirs) scanDirectory(child, now, map, cancelTask);
+      if (child.isDirectory()) {
+        if (wantSubdirs) scanDirectory(mc.subdir(child), now, result, cancelTask);
 
-      } else if ((filter == null) || filter.accept(child)) {
+      } else {
 
-        // dont allow recently modified
+        // dont allow recently modified (LOOK move to MCollection ??)
         if (olderThan_msecs > 0) {
-          Date lastModifiedDate = child.lastModified();
-          if (lastModifiedDate != null) {
-            long lastModifiedMsecs = lastModifiedDate.getTime();
-            if (now - lastModifiedMsecs < olderThan_msecs)
-              continue;
-          }
+          long lastModifiedMsecs = child.getLastModified();
+          if (now - lastModifiedMsecs < olderThan_msecs)
+            continue;
         }
 
         // add to result
-        map.put(child.getPath(), child);
-        if (debugScan) System.out.println(" accept " + child.getPath());
+        result.add(child);
+        if (debugScan) System.out.println(" accept " + child);
       }
 
       if ((cancelTask != null) && cancelTask.isCancel())
@@ -142,17 +130,4 @@ public class DatasetScanner implements Scanner {
     }
   }
 
-  static public void main(String args[]) throws IOException {
-    String cat = "http://motherlode.ucar.edu:8080/thredds/catalog/satellite/12.0/WEST-CONUS_4km/20070825/catalog.xml";
-    Element config = new Element("config");
-    config.setAttribute("className", "thredds.catalog.CrawlableCatalog");
-
-    Element serviceType = new Element("serviceType");
-    serviceType.addContent(ServiceType.OPENDAP.toString());
-
-    config.addContent(serviceType);
-
-    DatasetScanner crawl = new DatasetScanner(config, cat, null, null, "true", null);
-    crawl.scanDirectory(new HashMap<String, CrawlableDataset>(), null);
-  }
 }

@@ -30,31 +30,28 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.inventory;
+package thredds.inventory.filter;
 
-import ucar.nc2.units.DateFromString;
-
-import java.util.Date;
-
-import thredds.inventory.DateExtractor;
+import thredds.inventory.MFileFilter;
 import thredds.inventory.MFile;
 
 /**
- * Extract Date from filename, using DateFromString.getDateUsingSimpleDateFormat on the name (not path)
+ * A regular expression that matches on the MFile name.
  *
  * @author caron
  * @since Jun 26, 2009
  */
-public class DateExtractorFromFilename implements DateExtractor {
+public  class RegExpMatchOnName implements MFileFilter {
+    private String regExpString;
+    private java.util.regex.Pattern pattern;
 
-  private String dateFormatMark;
+    public RegExpMatchOnName(String regExpString) {
+      this.regExpString = regExpString;
+      this.pattern = java.util.regex.Pattern.compile(regExpString);
+    }
 
-  public DateExtractorFromFilename(String dateFormatMark) {
-    this.dateFormatMark = dateFormatMark;
+    public boolean accept(MFile file) {
+      java.util.regex.Matcher matcher = this.pattern.matcher(file.getName());
+      return matcher.matches();
+    }
   }
-
-  public Date getDate(MFile mfile) {
-    return DateFromString.getDateUsingDemarkatedCount(mfile.getName(), dateFormatMark, '#');
-    // return DateFromString.getDateUsingSimpleDateFormat(mfile.getName(), dateFormatString);
-  }
-}

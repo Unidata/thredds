@@ -165,28 +165,32 @@
    // Note the outer dimension has shape 1, since we will write one record at a time
 <strong>3)</strong> ArrayInt rhData = new ArrayInt.D3(1, latDim.getLength(), lonDim.getLength());
    ArrayDouble.D3 tempData = new ArrayDouble.D3(1, latDim.getLength(), lonDim.getLength());
-   Array timeData = Array.factory( DataType.INT, new int[] {1});</pre>
+   Array timeData = Array.factory( DataType.INT, new int[] {1});
+   Index ima = rhData.getIndex();
+</pre>
 <pre>   int[] origin = new int[] {0, 0, 0};
-   int[] time_origin = new int[] {0};</pre>
-<pre>   // loop over each record
-<strong>4)</strong> for (int time=0; time&lt;10; time++) {
 
-    // make up some data for this record, using different ways to fill the data arrays.
-<strong>5.1)</strong>timeData.setInt(timeData.getIndex(), time * 12);
-    Index ima = rhData.getIndex();
-    for (int lat=0; lat&lt;latDim.getLength(); lat++) {
-     for (int lon=0; lon&lt;lonDim.getLength(); lon++) {
-<strong>5.2)</strong> rhData.setInt(ima.set(0, lat, lon), time * lat * lon);
-<strong>5.3)</strong> tempData.set(0, lat, lon, time * lat * lon / 3.14159);
-     }
-    }</pre>
-<pre>   // write the data out for this record
-<strong>6)</strong> time_origin[0] = time;
-   origin[0] = time;</pre>
-<pre><strong>7)</strong> writeableFile.write(&quot;rh&quot;, origin, rhData);
-   writeableFile.write(&quot;T&quot;, origin, tempData);
-   writeableFile.write(&quot;time&quot;, time_origin, timeData);
-  }</pre>
+   int[] time_origin = new int[] {0};</pre>
+<pre>
+   // loop over each record
+<strong>4)</strong> for (int time=0; time&lt;10; time++) {
+     // make up some data for this record, using different ways to fill the data arrays.
+<strong>5.1) </strong>timeData.setInt(timeData.getIndex(), time * 12);
+
+     for (int lat=0; lat&lt;latDim.getLength(); lat++) {
+       for (int lon=0; lon&lt;lonDim.getLength(); lon++) {
+<strong>5.2)</strong>     rhData.setInt(ima.set(0, lat, lon), time * lat * lon);
+<strong>5.3)</strong>     tempData.set(0, lat, lon, time * lat * lon / 3.14159);
+       }
+     }</pre>
+<pre>     // write the data out for one record<br>     // set the origin here
+<strong>6)</strong>   time_origin[0] = time;
+     origin[0] = time;</pre>
+<pre><strong>7)</strong>   writeableFile.write(&quot;rh&quot;, origin, rhData);
+     writeableFile.write(&quot;T&quot;, origin, tempData);
+     writeableFile.write(&quot;time&quot;, time_origin, timeData);
+
+   } // loop over record</pre>
 <pre>  // all done
   writeableFile.close();
 }</pre>

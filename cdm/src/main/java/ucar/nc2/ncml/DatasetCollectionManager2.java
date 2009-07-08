@@ -53,7 +53,7 @@ public class DatasetCollectionManager2 {
 
   ////////////////////////////////////////////////////////////////////
 
-  private List<DatasetScanner2> scanList = new ArrayList<DatasetScanner2>();
+  private List<DatasetScanner> scanList = new ArrayList<DatasetScanner>();
   private Map<String, MFile> map; // current map of MFile
 
   private TimeUnit recheck; // how often to recheck
@@ -70,7 +70,7 @@ public class DatasetCollectionManager2 {
   }
 
   public void addDirectoryScan(String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS, String dateFormatString) {
-    scanList.add( new DatasetScanner2(dirName, suffix, regexpPatternString, subdirsS, olderS, dateFormatString));
+    scanList.add( new DatasetScanner(dirName, suffix, regexpPatternString, subdirsS, olderS, dateFormatString));
   }
 
   /**
@@ -193,7 +193,7 @@ public class DatasetCollectionManager2 {
 
   private void scan(java.util.Map<String, MFile> map, CancelTask cancelTask) throws IOException {
     // run through all scanners and collect MFile instances
-    for (DatasetScanner2 scanner : scanList) {
+    for (DatasetScanner scanner : scanList) {
       List<MFile> result = scanner.scanDirectory(cancelTask);
       for (MFile mfile : result)
         map.put(mfile.getPath(), mfile);

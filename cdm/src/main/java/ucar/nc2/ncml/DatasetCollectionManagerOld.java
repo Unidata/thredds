@@ -47,8 +47,8 @@ import thredds.crawlabledataset.CrawlableDataset;
  * @author caron
  * @since Aug 10, 2007
  */
-public class DatasetCollectionManager {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DatasetCollectionManager.class);
+public class DatasetCollectionManagerOld {
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DatasetCollectionManagerOld.class);
   static private boolean debugSyncDetail = false;
 
   private List<Scanner> scanList = new ArrayList<Scanner>();
@@ -57,7 +57,7 @@ public class DatasetCollectionManager {
   private TimeUnit recheck; // how often to recheck
   private long lastScanned; // last time scanned
 
-  public DatasetCollectionManager(String recheckS) {
+  public DatasetCollectionManagerOld(String recheckS) {
     if (recheckS != null) {
       try {
         this.recheck = new TimeUnit(recheckS);

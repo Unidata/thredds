@@ -49,7 +49,6 @@ import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.thredds.DqcRadarDatasetCollection;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.Aggregation;
-import ucar.nc2.ncml.DatasetScanner2;
 import ucar.nc2.dt.*;
 import ucar.nc2.dt.radial.StationRadarCollectionImpl;
 import ucar.nc2.dt.fmrc.FmrcDefinition;
@@ -3973,7 +3972,7 @@ public class ToolsUI extends JPanel {
     DiskCache2 cacheDir = new DiskCache2(".unidata/ehcache", true, -1, -1);
     try {
       cacheManager = thredds.filesystem.ControllerCaching.makeTestController(cacheDir.getRootDirectory());
-      DatasetScanner2.setController(cacheManager);
+      ucar.nc2.ncml.DatasetScanner.setController(cacheManager);
       CollectionManager2.setController(cacheManager);
     } catch (IOException e) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

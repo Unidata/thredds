@@ -37,8 +37,8 @@ import ucar.nc2.units.DateFromString;
 import java.util.*;
 
 import thredds.inventory.*;
-import thredds.inventory.WildcardMatchOnPath;
-import thredds.inventory.DateExtractorFromFilename;
+import thredds.inventory.filter.WildcardMatchOnPath;
+import thredds.inventory.DateExtractorFromName;
 
 /**
  * Manages feature dataset collections.
@@ -77,7 +77,7 @@ public class CollectionManager2 implements TimedCollection {
     if (show) System.out.printf("CollectionManager collectionDesc=%s result=%s %n", collectionSpec, sp);
 
     MFileFilter mfilter = (null == sp.getFilter()) ? null : new WildcardMatchOnPath(sp.getFilter());
-    DateExtractor dateExtractor = (sp.getDateFormatMark() == null) ? null : new DateExtractorFromFilename(sp.getDateFormatMark());
+    DateExtractor dateExtractor = (sp.getDateFormatMark() == null) ? null : new DateExtractorFromName(sp.getDateFormatMark());
     MCollection mc = new thredds.inventory.MCollection(sp.getTopDir(), sp.getTopDir(), sp.wantSubdirs(), mfilter, dateExtractor);
 
     // get the inventory, sort

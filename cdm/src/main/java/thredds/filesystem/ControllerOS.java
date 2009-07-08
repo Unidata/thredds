@@ -39,7 +39,7 @@ import java.util.*;
 import java.io.File;
 
 /**
- * Inventory Management Controller directly reading OS Files, no caching
+ * Inventory Management Controller directly reading OS Files, no caching. recheck is ignored (always true)
  *
  * @author caron
  * @since Jun 25, 2009
@@ -55,6 +55,16 @@ public class ControllerOS implements MController {
 
   @Override
   public Iterator<MFile> getInventory(MCollection mc) {
+    return getInventory(mc, true);
+  }
+
+  @Override
+  public Iterator<MFile> getInventoryNoSubdirs(MCollection mc) {
+    return getInventoryNoSubdirs(mc, true);
+  }
+
+  @Override
+  public Iterator<MFile> getInventory(MCollection mc, boolean recheck) {
     String path = mc.getDirectoryName();
     if (path.startsWith("file:")) {
       path = path.substring(5);
@@ -63,11 +73,10 @@ public class ControllerOS implements MController {
     File cd = new File(path);
     if (!cd.exists()) return null;
     if (!cd.isDirectory()) return null;
-    return new FilteredIterator(mc, new MFileIteratorWithSubdirs(cd));
-  }
+    return new FilteredIterator(mc, new MFileIteratorWithSubdirs(cd));  }
 
   @Override
-  public Iterator<MFile> getInventoryNoSubdirs(MCollection mc) {
+  public Iterator<MFile> getInventoryNoSubdirs(MCollection mc, boolean recheck) {
     String path = mc.getDirectoryName();
     if (path.startsWith("file:")) {
       path = path.substring(5);

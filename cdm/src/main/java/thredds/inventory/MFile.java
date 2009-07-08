@@ -33,12 +33,14 @@
 package thredds.inventory;
 
 /**
- * Inventory "Managed File"
+ * Inventory "Managed File". An abstraction for java.io.File.
  *
  * @author caron
  * @since Jun 30, 2009
  */
 public interface MFile extends Comparable<MFile> {
+  // time of last modification in Unix time (msecs since reference)
+  // < 0 means dont know
   long getLastModified();
 
   long getLength();

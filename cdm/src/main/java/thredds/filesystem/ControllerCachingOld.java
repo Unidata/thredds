@@ -71,7 +71,7 @@ public class ControllerCachingOld {
       path = path.substring(5);
     }
 
-    CacheDirectory cd = cacheManager.get(path); // check in cache, else call File.listFiles()
+    CacheDirectory cd = cacheManager.get(path, true); // check in cache, else call File.listFiles()
     if (cd == null) return null;
     return new FilteredIterator(mc, cd);
   }

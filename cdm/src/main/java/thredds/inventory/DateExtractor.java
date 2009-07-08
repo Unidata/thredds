@@ -35,7 +35,7 @@ package thredds.inventory;
 import java.util.Date;
 
 /**
- * Describe
+ * Knows how to extract a date from a MFile.
  *
  * @author caron
  * @since Jun 26, 2009

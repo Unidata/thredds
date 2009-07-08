@@ -29,22 +29,42 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+package thredds.inventory.filter;
 
-package thredds.inventory;
+import thredds.inventory.MFileFilter;
+import thredds.inventory.MFile;
+
+import java.util.List;
+import java.util.ArrayList;
 
 /**
- * Filter on MFiles
+ * Composite of MFileFilter, all must be true.
  *
  * @author caron
- * @since Jun 26, 2009
+ * @since Jul 8, 2009
  */
-public interface MFileFilter {
-  /**
-   * Tests if a specified MFile should be included in a file collection.
-   *
-   * @param mfile the MFile
-   * @return <code>true</code> if and only if the name should be
-   *         included in the file collection; <code>false</code> otherwise.
-   */
-  boolean accept(MFile mfile);
+
+
+public class Composite implements MFileFilter {
+  private List<MFileFilter> filters;
+
+  public Composite() {
+    this.filters = new ArrayList<MFileFilter>();
+  }
+
+  public Composite(List<MFileFilter> filters) {
+    this.filters = new ArrayList<MFileFilter>(filters);
+  }
+
+  public void addFilter(MFileFilter filter) {
+    this.filters.add(filter);
+  }
+
+  public boolean accept(MFile mfile) {
+    for (MFileFilter filter : filters) {
+      if (!filter.accept(mfile)) return false;
+    }
+    return true;
+  }
+
 }

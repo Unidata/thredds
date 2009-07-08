@@ -29,22 +29,44 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+package thredds.inventory.filter;
 
-package thredds.inventory;
+import thredds.inventory.MFileFilter;
+import thredds.inventory.MFile;
 
 /**
- * Filter on MFiles
+ * Accept datasets whose last modified date is at least the given amount of time in the past.
  *
- * @author caron
- * @since Jun 26, 2009
+ * @author edavis
+ * @author jcaron
+ * @since Jul 8, 2009
  */
-public interface MFileFilter {
+
+
+public class LastModifiedLimit implements MFileFilter {
+  private long lastModifiedLimitInMillis;
+
   /**
-   * Tests if a specified MFile should be included in a file collection.
+   * Constructor.
    *
-   * @param mfile the MFile
-   * @return <code>true</code> if and only if the name should be
-   *         included in the file collection; <code>false</code> otherwise.
+   * @param lastModifiedLimitInMillis accept datasets whose lastModified() time is at least this many msecs in the past
    */
-  boolean accept(MFile mfile);
+  public LastModifiedLimit(long lastModifiedLimitInMillis) {
+    this.lastModifiedLimitInMillis = lastModifiedLimitInMillis;
+  }
+
+  public boolean accept(MFile dataset) {
+    long lastModified = dataset.getLastModified();
+    if (lastModified < 0) return true;  // means dont know - can happen for remote files
+
+    long now = System.currentTimeMillis();
+    if (now - lastModified > lastModifiedLimitInMillis)
+      return true;
+    return false;
+  }
+
+  public long getLastModifiedLimitInMillis() {
+    return lastModifiedLimitInMillis;
+  }
+
 }
