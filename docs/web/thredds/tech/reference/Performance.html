@@ -19,10 +19,13 @@
   <h3>Use a high-performance file system</h3>
   <p>If you have system admin resources, examine the possible file systems available for your OS, eg on Linux or Solaris. We are using the <a href="http://en.wikipedia.org/wiki/ZFS">ZFS file system</a> on Solaris-X86 and it is very fast. We use ZFS software RAID, which replaces hardware RAID.</p>
   <h4><strong>Resources:</strong></h4>
-  <p>&nbsp;&nbsp;&nbsp; <a href="http://www.solarisinternals.com/wiki/index.php/ZFS_Evil_Tuning_Guide">http://www.solarisinternals.com/wiki/index.php/ZFS_Evil_Tuning_Guide</a> <br>
-  &nbsp;&nbsp;&nbsp; <a href="http://blogs.sun.com/realneel/entry/zfs_and_databases">http://blogs.sun.com/realneel/entry/zfs_and_databases</a> <br>
-&nbsp;&nbsp;&nbsp; <a href="http://www.solarisinternals.com/wiki/index.php/ZFS_Best_Practices_Guide">http://www.solarisinternals.com/wiki/index.php/ZFS_Best_Practices_Guide</a><br>
-</p>
+  <ul>
+    <li><a href="http://www.solarisinternals.com/wiki/index.php/ZFS_Evil_Tuning_Guide">http://www.solarisinternals.com/wiki/index.php/ZFS_Evil_Tuning_Guide</a></li>
+    <li><a href="http://blogs.sun.com/realneel/entry/zfs_and_databases">http://blogs.sun.com/realneel/entry/zfs_and_databases</a></li>
+    <li><a href="http://www.solarisinternals.com/wiki/index.php/ZFS_Best_Practices_Guide">http://www.solarisinternals.com/wiki/index.php/ZFS_Best_Practices_Guide</a></li>
+    <li><a href="http://www.redhat.com/gfs/">http://www.redhat.com/gfs/</a><br>
+      </li>
+  </ul>
 <h3>Setting the number of file handles</h3>
   <p> The OS typically limits the number of open file handles per process. To check this value on Unix, use:</p>
   <pre> ulimit -n </pre>
@@ -89,7 +92,7 @@ export JAVA_OPT</pre></blockquote>
 <p>&nbsp;</p>
 <hr WIDTH="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 22, 2008
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on July 09, 2009
 </address>
 <h3>&nbsp;</h3>
 </body>

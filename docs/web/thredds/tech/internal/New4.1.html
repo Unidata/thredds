@@ -87,7 +87,7 @@
   <li>    subdirs=yes</li>
   <li>    dateFormatMark=GFS_Alaska_191km_#yyyyMMdd_HHmm</li>
   <li>    onName=yes</li>
-  <li>    filter=*.grib1 or GFS_Alaska_191km..........grib1 (?)</li>
+  <li>    filter= GFS_Alaska_191km.........\.grib1</li>
 </ul>
 <p>the idea of spec is that one copies the fill path of an example dataset, then edits it</p>
 <p>&nbsp;</p>
@@ -171,7 +171,7 @@ include files that end in &quot;.grib1&quot; and exclude any file that ends with
 <pre>    &lt;/xsd:sequence&gt;</pre>
 <pre><strong>(16)</strong> &lt;xsd:attribute name=&quot;type&quot; type=&quot;AggregationType&quot; use=&quot;required&quot;/&gt;
 <strong>(17)</strong> &lt;xsd:attribute name=&quot;dimName&quot; type=&quot;xsd:token&quot; /&gt;
-<strong>(18)</strong> &lt;xsd:attribute name=&quot;recheckEvery&quot; type=&quot;xsd:string&quot; /&gt;
+<strong>(18)</strong> &lt;xsd:attribute name=&quot;<strong>recheckEvery</strong>&quot; type=&quot;xsd:string&quot; /&gt;
 <strong>(19)</strong> &lt;xsd:attribute name=&quot;timeUnitsChange&quot; type=&quot;xsd:boolean&quot;/&gt;
 <br />
       &lt;!-- fmrc only  --&gt;<br /><strong>(20)</strong> &lt;xsd:attribute name=&quot;fmrcDefinition&quot; type=&quot;xsd:string&quot; /&gt;<br />
@@ -201,6 +201,26 @@ include files that end in &quot;.grib1&quot; and exclude any file that ends with
   <li>A specialized scanFmrc element can be used for a <em><strong><a href="FmrcAggregation.html#forecastModelRunSingleCollection">forecastModelRunSingleCollection</a> </strong></em>aggregation, where forecast model run data is stored in multiple files, with one forecast time per file.</li>
   <li> For scanFmrc, the run date and the forecast date is extracted from the file pathname using a <strong>runDateMatcher </strong>and either a <strong>forecastDateMatcher </strong>or a<strong> forecastOffsetMatcher </strong>attribute<strong>. </strong>All of these require matching a specific string in the file's pathname and then matching a date or hour offset immediately before or after the match. The match is specified by placing it between '#' marking characters. The <strong>runDateMatcher </strong>and <strong>forecastDateMatcher </strong>has a java.text.<a href="#SimpleDateFormat">SimpleDateFormat</a> string before or after the match, while a <strong>forecastOffsetMatcher</strong> counts the number of 'H' characters, and extracts an hour offset from the run date. For example: </li>
 </ol>
-<h2>&nbsp;</h2>
+<hr />
+<h2>Managing Collections</h2>
+<p>keep in session OR in cache. Requires client to return session cookie. opendap, cdmRemote, wcs/wms ??</p>
+<pre>&lt;NetcdfDataset&gt;
+
+  &lt;Aggregation&gt;
+
+    &lt;Collection&gt;
+
+  &lt;Aggregation&gt;
+&lt;NetcdfDataset&gt;
+</pre>
+<p>&nbsp;</p>
+<p>Can we make this thread-safe ?? Not if the underlying files are not? Open files for each request.<br>
+</p>
+<pre>
+
+&lt;PointCollectionDataset&gt;
+
+ &lt;Collection&gt;</pre>
+<p>&nbsp;</p>
 </body>
 </html>
