@@ -197,16 +197,36 @@ public abstract class AbstractElementParser
       throw new ThreddsXmlParserException( "XMLEventReader has no further events." );
 
     StartElement startElement = null;
-    try
+    while ( this.reader.hasNext() )
     {
-      XMLEvent event = this.reader.peek();
-      if ( ! event.isStartElement() )
-        throw new ThreddsXmlParserException( "Next event must be StartElement." );
-      startElement = event.asStartElement();
-    }
-    catch ( XMLStreamException e )
-    {
-      throw new ThreddsXmlParserException( "Problem reading from XMLEventReader." );
+      XMLEvent event = null;
+      try
+      {
+        event = this.reader.peek();
+      }
+      catch (XMLStreamException e)
+      {
+        String msg = "Problem reading from XMLEventReader.";
+        ThreddsXmlParserIssue issue = StaxThreddsXmlParserUtils
+                .createIssueForException( msg, this.reader, e);
+        log.error("peekAtNextEventIfStartElement(): " + issue.getMessage());
+        // ToDo Gather issues rather than throw exception.
+        throw new ThreddsXmlParserException(issue);
+      }
+
+      if (event.isStartElement())
+        break; // This is what we want.
+      else if( event.isCharacters() && event.asCharacters().isWhiteSpace())
+        this.reader.next(); // Skip all whitespace characters.
+      else
+      {
+        String msg = "Expecting StartElement for next event [" + event.getClass().getName() + "]";
+        ThreddsXmlParserIssue issue = StaxThreddsXmlParserUtils
+                .createIssueForUnexpectedEvent( msg, ThreddsXmlParserIssue.Severity.FATAL, this.reader,event );
+        log.error( "peekAtNextEventIfStartElement(): " + issue.getMessage());
+          // ToDo Gather issues rather than throw exception.
+        throw new ThreddsXmlParserException( issue );
+      }
     }
 
     return startElement;
