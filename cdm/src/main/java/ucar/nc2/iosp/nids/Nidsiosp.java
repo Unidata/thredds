@@ -59,7 +59,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
   // private Nidsheader.Vinfo myInfo;
   protected Nidsheader headerParser;
 
-  private static int pcode;
+  private int pcode;
 
   final static int Z_DEFLATED = 8;
   final static int DEF_WBITS = 15;
