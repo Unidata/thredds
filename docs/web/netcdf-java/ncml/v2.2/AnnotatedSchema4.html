@@ -242,7 +242,7 @@ files.</p>
   <li>Nested netcdf datasets can be implictly specified with a <strong>scan</strong> element.</li>
   <li>The scan directory <strong>location</strong>. </li>
   <li>If you specify a <strong>regExp</strong>, only files with whose full pathnames match the <a href="#regexp">regular expression</a> will be included.</li>
-  <li>If you specify a <strong>suffix</strong>, only files with that ending will be included. You must not specify a <strong>regExp</strong> attribute. </li>
+  <li>If you specify a <strong>suffix</strong>, only files with that ending will be included. A <strong>regExp</strong> attribute will override, that is, you cant specify both.</li>
   <li>You can optionally specify if the scan should  descend into <strong>subdir</strong>ectories (default true).</li>
   <li>If <strong>olderThan</strong> attribute is present, only files whose last modified date are older than this amount of time will be included. This is a way to exclude files that are still being written. This must be a <a href="http://www.unidata.ucar.edu/software/udunits/">udunit</a> time such as &quot;5 min&quot; or &quot;1 hour&quot;. </li>
   <li>A <strong>dateFormatMark</strong>  is used on <strong><em>joinNew</em></strong> types to create date coordinate values out of the filename. It consists of a section of text, a '#' marking character, then a java.text.<a href="#SimpleDateFormat">SimpleDateFormat</a> string. The number of characters before the # is skipped in the filename, then the next part of the filename must match the SimpleDateFormat string. You can ignore trailing text. For example:
