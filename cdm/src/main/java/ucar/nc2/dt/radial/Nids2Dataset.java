@@ -309,6 +309,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
     private class Nids2Sweep implements RadialDatasetSweep.Sweep {
       double meanElevation = Double.NaN;
       double meanAzimuth = Double.NaN;
+      double gateSize = Double.NaN;
       int sweepno, nrays, ngates;
       Variable sweepVar;
       NetcdfDataset ds;
@@ -506,7 +507,10 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
 
       public float getGateSize() {
         try {
-          return getRadialDistance(1) - getRadialDistance(0);
+            if (Double.isNaN(gateSize))
+               gateSize = getRadialDistance(1) - getRadialDistance(0);
+            return (float) gateSize;
+
         } catch (IOException e) {
           e.printStackTrace();
           return 0.0f;
@@ -555,7 +559,9 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
 
     sw = rv.getSweep(0);
     float[] ddd = sw.readData();
-    assert (null != ddd);
+    float gsize = sw.getGateSize();
+     System.out.println("*** radar Sweep gate is: \n" + gsize);
+   /* assert (null != ddd);
     int nrays = sw.getRadialNumber();
     for (int i = 0; i < nrays; i++) {
       float t = sw.getTime(i);
@@ -574,15 +580,16 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
       assert (lo > 0);
       float al = (float) sw.getOrigin(i).getAltitude();
       assert (al > 0);
-    }
+    } */
   }
 
   public static void main(String args[]) throws Exception, IOException, InstantiationException, IllegalAccessException {
-    String fileIn = "/home/yuanho/NIDS/Level3_BBB_N3R_20050119_1548.nids";
-    //String fileIn = "/home/yuanho/NIDS/Level3_BYX_N1V_20051012_0000.nids";
+    String fileIn1 = "/home/yuanho/Desktop/TBWI/TBWI.78ohp.20080829_1619";
+    String fileIn = "/home/yuanho/Desktop/TBWI/TBWI.181r0.20080829_1620";
     //RadialDatasetSweepFactory datasetFactory = new RadialDatasetSweepFactory();
     //RadialDatasetSweep rds = datasetFactory.open(fileIn, null);
     RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open(FeatureType.RADIAL, fileIn, null, new StringBuilder());
+    RadialDatasetSweep rds1 = (RadialDatasetSweep) TypedDatasetFactory.open(FeatureType.RADIAL, fileIn1, null, new StringBuilder());
     String st = rds.getStartDate().toString();
     String et = rds.getEndDate().toString();
     String id = rds.getRadarID();
@@ -590,19 +597,19 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
     rds.getRadarID();
     //List rvars = rds.getDataVariables();
     RadialDatasetSweep.RadialVariable rf = (RadialDatasetSweep.RadialVariable) rds.getDataVariable("BaseReflectivity");
-    rf.getSweep(0);
+   // rf.getSweep(0);
     testRadialVariable(rf);
 
-    String fileIn1 = "/home/yuanho/NIDS/Level3_BYX_N0V_20051013_0908.nids";
+    //String fileIn1 = "/home/yuanho/NIDS/Level3_BYX_N0V_20051013_0908.nids";
     //RadialDatasetSweepFactory datasetFactory1 = new RadialDatasetSweepFactory();
     //RadialDatasetSweep rds1 = datasetFactory1.open(fileIn1, null);
-    RadialDatasetSweep rds1 = (RadialDatasetSweep) TypedDatasetFactory.open(FeatureType.RADIAL, fileIn1, null, new StringBuilder());
+   // RadialDatasetSweep rds1 = (RadialDatasetSweep) TypedDatasetFactory.open(FeatureType.RADIAL, fileIn1, null, new StringBuilder());
 
     //List rvars1 = rds1.getDataVariables();
-    RadialDatasetSweep.RadialVariable rf1 = (RadialDatasetSweep.RadialVariable) rds1.getDataVariable("RadialVelocity");
-    rf1.getSweep(0);
+    RadialDatasetSweep.RadialVariable rf1 = (RadialDatasetSweep.RadialVariable) rds1.getDataVariable("Precip1hr");
+    //rf1.getSweep(0);
 
-    testRadialVariable(rf);
+    testRadialVariable(rf1);
 
   }
 
