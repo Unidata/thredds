@@ -45,6 +45,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.ma2.Array;
 
 /**
+ * A factory for buffered images
  * @author caron
  */
 public class ImageDatasetFactory {

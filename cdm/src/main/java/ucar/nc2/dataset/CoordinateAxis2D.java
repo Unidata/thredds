@@ -283,8 +283,6 @@ public class CoordinateAxis2D extends CoordinateAxis {
     return edgey;
   }
 
-
-
   /* Given a coordinate position, find what grid element contains it.
     This means that
     <pre>
