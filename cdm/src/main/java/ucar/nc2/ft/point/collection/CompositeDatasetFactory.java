@@ -154,19 +154,24 @@ public class CompositeDatasetFactory {
     TimedCollection datasets = new TimedCollectionImpl(spec, errlog);
     if (datasets == null) return null;
 
-    FeatureCollection pfc = null;
+    LatLonRect bb = null;
+    FeatureCollection fc = null;
     switch (wantFeatureType) {
       case POINT:
-        pfc = new CompositePointCollection(spec, datasets);
+        PointFeatureCollection pfc = new CompositePointCollection(spec, datasets);
+        bb = pfc.getBoundingBox();
+        fc = pfc;
         break;
       case STATION:
-        pfc = new CompositeStationCollection(spec, datasets);
+        StationTimeSeriesFeatureCollection sfc = new CompositeStationCollection(spec, datasets);
+        bb = sfc.getBoundingBox();
+        fc = sfc;
         break;
       default:
         return null;
     }
 
-    return new CompositePointDataset(location, wantFeatureType, pfc, datasets);
+    return new CompositePointDataset(location, wantFeatureType, fc, datasets, bb);
   }
 
 
@@ -174,15 +179,18 @@ public class CompositeDatasetFactory {
     private TimedCollection datasets;
     //private FeatureDatasetPoint proto;
 
-    public CompositePointDataset(String location, FeatureType featureType, FeatureCollection pfc, TimedCollection datasets) {
+    public CompositePointDataset(String location, FeatureType featureType, FeatureCollection pfc, TimedCollection datasets, LatLonRect bb) {
       super(featureType);
       setLocationURI(location);
       setPointFeatureCollection(pfc);
       this.datasets = datasets;
 
-      if (dateRange != null)
-        setDateRange(datasets.getDateRange());
-    }
+      if (datasets.getDateRange() != null)
+         setDateRange(datasets.getDateRange());
+
+      if (bb != null)
+         setBoundingBox(bb);
+     }
 
     @Override
     protected void setDateRange(DateRange dateRange) {

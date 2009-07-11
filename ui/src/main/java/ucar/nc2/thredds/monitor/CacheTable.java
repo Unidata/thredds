@@ -124,7 +124,6 @@ public class CacheTable extends JPanel {
     infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), infoTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 800, 100)));
 
-
     AbstractButton infoButton = BAMutil.makeButtcon("Info", "Info", false);
     infoButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -158,6 +157,7 @@ public class CacheTable extends JPanel {
     ArrayList<CacheBean> beans = new ArrayList<CacheBean>();
     for (String cacheName : cacheNames) {
       Cache cache = ehcache.getCache(cacheName);
+      System.out.printf("Open Cache %s%n %s%n", cache, cache.getStatistics().toString());
       beans.add(new CacheBean(cache));
     }
     cacheTable.setBeans(beans);

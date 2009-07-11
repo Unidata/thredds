@@ -86,9 +86,9 @@
   <p>Netcdf-Java library has very limited  support for writing files.. The only supported <em>output</em> format is the netCDF-3 &quot;classic&quot; file format. See the <strong>ucar.nc2.NetcdfFileWriteable</strong> javadoc.</p>
   <p><strong>ucar.nc2.FileWriter </strong>writes CDM files to netCDF-3 format. However, currently it does not try very hard to capture new features in this limited format. <strong>ucar.nc2.dataset.NetcdfDataset</strong>.<strong>main</strong>() is a cover for <strong>FileWriter</strong>, but you can also open NcML, OPeNDAP, and other datasets accessible with NetcdfDataset.openFile().</p>
 </blockquote>
-<p><strong>Q: What about writing Netcdf-4 format?</strong></p>
+<p><strong>Q: What about writing NetCDF-4<a name="netcdf4" id="netcdf4"></a> format?</strong></p>
 <blockquote>
-  <p>NetCDF-4 format is built on top of the <a href="http://www.hdfgroup.org/HDF5/">HDF5 file format</a>. It adds shared dimensions, so it is unfortunately not a strict subset of HDF5. HDF5 is a very complicated format, and at this time we do not have resources to write a 100% Java version for writing (we do have a 100% Java version for reading). We are considering a <a href="http://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a> interface to the NetCDF-4 C library, but there is no current timeline for that. </p>
+  <p>NetCDF-4 format is built on top of the <a href="http://www.hdfgroup.org/HDF5/">HDF5 file format</a>. It adds shared dimensions, so it is unfortunately not a strict subset of HDF5. HDF5 is a very complicated format, and at this time we do not have resources to write a 100% Java version for writing (we do have a 100% Java version for reading). We are considering a <a href="http://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a> interface to the NetCDF-4 C library, but there is no current timeline for that. So for now, you can only use the <a href="http://www.unidata.ucar.edu/software/netcdf/">NetCDF-4 C library</a> to write NetCDF-4 format files.</p>
 </blockquote>
 <p><strong>Q: <a name="writeGuide" id="writeGuide"></a>What kind of information should I put into my netCDF file to help others read it? </strong></p>
 <blockquote>

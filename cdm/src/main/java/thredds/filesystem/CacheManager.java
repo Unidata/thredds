@@ -56,7 +56,7 @@ import ucar.nc2.util.IO;
 @ThreadSafe
 public class CacheManager {
   static private net.sf.ehcache.CacheManager cacheManager;
-  static private boolean debug = true;
+  static private boolean debug = true, debugConfig = true, debugHits = true;
 
   static public net.sf.ehcache.CacheManager getEhcache() {
     return cacheManager;
@@ -65,13 +65,20 @@ public class CacheManager {
   static public void makeStandardCacheManager(String configFile, String cacheDir) throws IOException {
     String config = IO.readFile(configFile);
     String configString = StringUtil.substitute(config, "${cacheDir}", cacheDir);
-    if (debug) System.out.printf("configString=%n %s %n", configString);
+    if (debugConfig) System.out.printf("configString=%n %s %n", configString);
     cacheManager = new net.sf.ehcache.CacheManager(new StringBufferInputStream(configString));
   }
 
   static public void makeTestCacheManager(String cacheDir) {
     String configString = StringUtil.substitute(config, "${cacheDir}", cacheDir);
-    if (debug) System.out.printf("configString=%n %s %n", configString);
+    if (debugConfig) System.out.printf("configString=%n %s %n", configString);
+    cacheManager = new net.sf.ehcache.CacheManager(new StringBufferInputStream(configString));
+  }
+
+  static public void makeReadOnlyCacheManager(String cacheDir, String cacheName) {
+    String configString = StringUtil.substitute(configReadOnly, "${cacheDir}", cacheDir);
+    configString = StringUtil.substitute(configString, "${cacheName}", cacheName);
+    if (debugConfig) System.out.printf("configString=%n %s %n", configString);
     cacheManager = new net.sf.ehcache.CacheManager(new StringBufferInputStream(configString));
   }
 
@@ -89,6 +96,7 @@ public class CacheManager {
 
   public CacheManager(String cacheName) {
     cache = cacheManager.getCache(cacheName);
+    if (debug) System.out.printf("Open Cache %s%n %s%n", cache, cache.getStatistics().toString());
   }
 
   public void add(Serializable path, Serializable value) {
@@ -110,7 +118,7 @@ public class CacheManager {
 
     Element e = cache.get(path);
     if (e != null) {
-      if (debug) System.out.printf(" InCache %s%n", path);
+      if (debugHits) System.out.printf(" InCache %s%n", path);
 
       CacheDirectory m = (CacheDirectory) e.getValue();
       if (!recheck) return m;
@@ -123,7 +131,7 @@ public class CacheManager {
 
       boolean modified = (f.lastModified() > m.lastModified);
       if (!modified) {
-        if (debug) System.out.printf(" Hit %s%n", path);
+        if (debugHits) System.out.printf(" Hit %s%n", path);
         hits.incrementAndGet();
         return m;
       }
@@ -134,7 +142,7 @@ public class CacheManager {
     File p = new File(path);
     if (!p.exists()) return null;
 
-    if (debug) System.out.printf(" Read file system %s%n", path);
+    if (debugHits) System.out.printf(" Read file system %s%n", path);
     CacheDirectory m = new CacheDirectory(p);
     add(path, m);
     return m;
@@ -241,7 +249,33 @@ public class CacheManager {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-  //private static String ehLocation = "/data/thredds/ehcache/";
+  private static String configReadOnly =
+          "<ehcache>\n" +
+                  "    <diskStore path='${cacheDir}' />\n" +
+                  "    <defaultCache\n" +
+                  "              maxElementsInMemory='10000'\n" +
+                  "              eternal='false'\n" +
+                  "              timeToIdleSeconds='120'\n" +
+                  "              timeToLiveSeconds='120'\n" +
+                  "              overflowToDisk='true'\n" +
+                  "              maxElementsOnDisk='10000000'\n" +
+                  "              diskPersistent='false'\n" +
+                  "              diskExpiryThreadIntervalSeconds='120'\n" +
+                  "              memoryStoreEvictionPolicy='LRU'\n" +
+                  "              />\n" +
+                  "    <cache name='${cacheName}'\n" +
+                  "            maxElementsInMemory='10000'\n" +
+                  "            eternal='false'\n" +
+                  "            timeToIdleSeconds='864000'\n" +
+                  "            timeToLiveSeconds='0'\n" +
+                  "            overflowToDisk='true'\n" +
+                  "            maxElementsOnDisk='100000'\n" +
+                  "            diskPersistent='true'\n" +
+                  "            diskExpiryThreadIntervalSeconds='3600'\n" +
+                  "            memoryStoreEvictionPolicy='LRU'\n" +
+                  "            />\n" +
+                  "</ehcache>";
+
   private static String config =
           "<ehcache>\n" +
                   "    <diskStore path='${cacheDir}' />\n" +

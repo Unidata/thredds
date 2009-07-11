@@ -135,7 +135,7 @@ public class CollectionController extends AbstractCommandController implements L
     FeatureDatasetPoint fd = null;
 
     try {
-      fd = getFeatureCollectionDataset(path);
+      fd = getFeatureCollectionDataset( ServletUtil.getRequest(req) , path);
       if (fd == null) {
         res.sendError(HttpServletResponse.SC_NOT_FOUND);
         log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
@@ -252,7 +252,7 @@ public class CollectionController extends AbstractCommandController implements L
   /////////////////////////////////////////////////////////////////
 
   // create it each time for thread safety
-  private FeatureDatasetPoint getFeatureCollectionDataset(String path) throws IOException {
+  private FeatureDatasetPoint getFeatureCollectionDataset(String uri, String path) throws IOException {
 
     //FeatureDatasetPoint fd = fdmap.get(path);
     //if (fd == null) {
@@ -260,7 +260,7 @@ public class CollectionController extends AbstractCommandController implements L
       if (config == null) return null;
 
       Formatter errlog = new Formatter();
-      FeatureDatasetPoint fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(path, FeatureType.getType(config.getFeatureType()), config.getSpec(), errlog);
+      FeatureDatasetPoint fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(uri, FeatureType.getType(config.getFeatureType()), config.getSpec(), errlog);
       if (fd == null) {
         log.error("Error opening dataset error =", errlog);
         return null;

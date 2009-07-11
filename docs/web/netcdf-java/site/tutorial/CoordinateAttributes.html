@@ -194,7 +194,7 @@ dimensions:<br>   y = 428;<br>   x = 614;<br>   time = 2;<br>   depth_below_surf
    lev:positive = "down" ;
    lev:standard_name = "atmosphere_sigma_coordinate" ;
    lev:formula_terms = "sigma: lev ps: PS ptop: PTOP" ;</strong></pre>
-<p class="CDL">Generally the set of valid transforms are not specified by this <strong>_Coordinates</strong> Convention. The <a href="StandardCoordinateTransforms.html">transforms that the nj22 library recognizes</a> come from the CF grid mappings and vertical transforms, so these are recommended, when possible, for the actual transform content. </p>
+<p class="CDL">Generally the set of valid transforms are not specified by this <strong>_Coordinates</strong> Convention. The <a href="../reference/StandardCoordinateTransforms.html">transforms that the nj22 library recognizes</a> come from the CF grid mappings and vertical transforms, so these are recommended, when possible, for the actual transform content. </p>
 <p class="CDL">It is often convenient to define the Coordinate Transform Variable and have it point to the Coordinate Systems that use it. For this purpose, you can use the <strong>_CoordinateSystems</strong> attribute on a Coordinate Transform Variable. You also need to add the <strong>_CoordinateTransformType</strong> attribute to make sure it is interpreted as a Coordinate Transform variable instead of a data variable. </p>
 <pre class="CDL"><strong> int Lambert_Conformal;
    Lambert_Conformal:grid_mapping_name = "lambert_conformal_conic";

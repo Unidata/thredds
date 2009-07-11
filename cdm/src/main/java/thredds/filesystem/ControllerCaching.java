@@ -154,16 +154,17 @@ public class ControllerCaching implements MController {
   }
 
   private class MFileIterator implements Iterator<MFile> {
-    CacheDirectory cd;
+    String path;
     List<CacheFile> files;
     int count = 0;
 
     MFileIterator(CacheDirectory cd) {
-      this.cd = cd;
-      files = Arrays.asList(cd.getChildren());
+      this.path = cd.getPath();
+      this.files = Arrays.asList(cd.getChildren());
     }
 
-    MFileIterator(List<CacheFile> files) {
+    MFileIterator(String path, List<CacheFile> files) {
+      this.path = path;
       this.files = files;
     }
 
@@ -173,7 +174,7 @@ public class ControllerCaching implements MController {
 
     public MFile next() {
       CacheFile cfile = files.get(count++);
-      return new MFileCached(cd.getPath(), cfile);
+      return new MFileCached(path, cfile);
     }
 
     public void remove() {
@@ -218,7 +219,7 @@ public class ControllerCaching implements MController {
 
       if (!currTraversal.leavesAreDone) {
         currTraversal.leavesAreDone = true;
-        return new MFileIterator(currTraversal.fileList); // look for leaves in the current directory
+        return new MFileIterator(currTraversal.dir.getPath(), currTraversal.fileList); // look for leaves in the current directory
 
       } else {
         if ((currTraversal.subdirIterator != null) && currTraversal.subdirIterator.hasNext()) { // has subdirs

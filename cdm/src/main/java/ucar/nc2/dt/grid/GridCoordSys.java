@@ -151,12 +151,12 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     }
 
     // check that the x,y have at least 2 dimensions between them ( this eliminates point data)
-    List<Dimension> xyDomain = CoordinateSystem.makeDomain(new CoordinateAxis[] {xaxis, yaxis});
+    List<Dimension> xyDomain = CoordinateSystem.makeDomain(new CoordinateAxis[]{xaxis, yaxis});
     if (xyDomain.size() < 2) {
       if (sbuff != null)
         sbuff.format("%s: X and Y axis must have 2 or more dimensions%n", cs.getName());
       return false;
-    }    
+    }
 
     //int countRangeRank = 2;
 
@@ -224,7 +224,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     if (sbuff != null) {
       sbuff.format(" ");
       v.getNameAndDimensions(sbuff, false, true);
-      sbuff.format(" check CS %s: ",cs.getName());
+      sbuff.format(" check CS %s: ", cs.getName());
     }
     if (isGridCoordSys(sbuff, cs)) {
       GridCoordSys gcs = new GridCoordSys(cs, sbuff);  // LOOK inefficient !!!
@@ -242,7 +242,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
   /////////////////////////////////////////////////////////////////////////////
   private ProjectionImpl proj;
-  // private CoordinateSystem cs;
+  private GridCoordinate2D g2d;
   private CoordinateAxis horizXaxis, horizYaxis;
   private CoordinateAxis1D vertZaxis, ensembleAxis;
   private CoordinateAxis1DTime timeTaxis, runTimeAxis;
@@ -327,7 +327,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
         } catch (Exception e) {
           if (sbuff != null)
-            sbuff.format("Error reading time coord= %s err= %s\n",t.getName(), e.getMessage());
+            sbuff.format("Error reading time coord= %s err= %s\n", t.getName(), e.getMessage());
         }
 
       } else { // 2d
@@ -407,13 +407,13 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * Create a GridCoordSys as a section of an existing GridCoordSys.
    * This will create sections of the corresponding CoordinateAxes.
    *
-   * @param from    copy this GridCoordSys
+   * @param from     copy this GridCoordSys
    * @param rt_range subset the runtime dimension, or null if you want all of it
-   * @param e_range subset the ensemble dimension, or null if you want all of it
-   * @param t_range subset the time dimension, or null if you want all of it
-   * @param z_range subset the vertical dimension, or null if you want all of it
-   * @param y_range subset the y dimension, or null if you want all of it
-   * @param x_range subset the x dimension, or null if you want all of it
+   * @param e_range  subset the ensemble dimension, or null if you want all of it
+   * @param t_range  subset the time dimension, or null if you want all of it
+   * @param z_range  subset the vertical dimension, or null if you want all of it
+   * @param y_range  subset the y dimension, or null if you want all of it
+   * @param x_range  subset the x dimension, or null if you want all of it
    * @throws InvalidRangeException if any of the ranges are illegal
    */
   public GridCoordSys(GridCoordSys from, Range rt_range, Range e_range, Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException {
@@ -435,6 +435,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
       horizXaxis = lon_axis.section(y_range, x_range);
       horizYaxis = lat_axis.section(y_range, x_range);
+
     } else
       throw new IllegalArgumentException("must be 1D or 2D/LatLon ");
 
@@ -547,6 +548,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
   /**
    * Get the vertical transform function, or null if none
+   *
    * @return the vertical transform function, or null if none
    */
   public VerticalTransform getVerticalTransform() {
@@ -555,6 +557,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
   /**
    * Get the Coordinate Transform description.
+   *
    * @return Coordinate Transform description, or null if none
    */
   public VerticalCT getVerticalCT() {
@@ -569,7 +572,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     vt = vCT.makeVerticalTransform(gds.getNetcdfDataset(), timeDim);
 
     if (vt == null) {
-      if (parseInfo != null) parseInfo.format("  - ERR can't make VerticalTransform = %s\n", vCT.getVerticalTransformType());
+      if (parseInfo != null)
+        parseInfo.format("  - ERR can't make VerticalTransform = %s\n", vCT.getVerticalTransformType());
     } else {
       if (parseInfo != null) parseInfo.format("  - VerticalTransform = %s\n", vCT.getVerticalTransformType());
     }
@@ -712,7 +716,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    *
    * @param x_coord position in x coordinate space.
    * @param y_coord position in y coordinate space.
-   * @param result  put result in here, may be null
+   * @param result  put result (x,y) index in here, may be null
    * @return int[2], 0=x,1=y indices in the coordinate system of the point. These will be -1 if out of range.
    */
   public int[] findXYindexFromCoord(double x_coord, double y_coord, int[] result) {
@@ -723,11 +727,20 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       result[0] = ((CoordinateAxis1D) horizXaxis).findCoordElement(x_coord);
       result[1] = ((CoordinateAxis1D) horizYaxis).findCoordElement(y_coord);
       return result;
+
     } else if ((horizXaxis instanceof CoordinateAxis2D) && (horizYaxis instanceof CoordinateAxis2D)) {
-      result[0] = -1;
-      result[1] = -1;
+      if (g2d == null)
+        g2d = new GridCoordinate2D((CoordinateAxis2D) horizYaxis, (CoordinateAxis2D) horizXaxis);
+      int[] result2 = new int[2];
+      boolean found = g2d.findCoordElement(y_coord, x_coord, result2);
+      if (found) {
+        result[0] = result2[1];
+        result[1] = result2[0];
+      } else {
+        result[0] = -1;
+        result[1] = -1;
+      }
       return result;
-      //return ((CoordinateAxis2D) xaxis).findXYindexFromCoord( xpos, ypos, result);
     }
 
     // cant happen
@@ -752,11 +765,16 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       result[0] = ((CoordinateAxis1D) horizXaxis).findCoordElementBounded(x_coord);
       result[1] = ((CoordinateAxis1D) horizYaxis).findCoordElementBounded(y_coord);
       return result;
+
     } else if ((horizXaxis instanceof CoordinateAxis2D) && (horizYaxis instanceof CoordinateAxis2D)) {
-      result[0] = -1;
-      result[1] = -1;
+      if (g2d == null)
+        g2d = new GridCoordinate2D((CoordinateAxis2D) horizYaxis, (CoordinateAxis2D) horizXaxis);
+
+      int[] result2 = new int[2];
+      g2d.findCoordElement(y_coord, x_coord, result2); // returns best guess
+      result[0] = result2[1];
+      result[1] = result2[0];
       return result;
-      //return ((CoordinateAxis2D) xaxis).findXYindexFromCoord( xpos, ypos, result);
     }
 
     // cant happen
@@ -981,7 +999,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       // x,y may be 2D
       if (!(horizXaxis instanceof CoordinateAxis1D) || !(horizYaxis instanceof CoordinateAxis1D)) {
         mapArea = new ProjectionRect(horizXaxis.getMinValue(), horizYaxis.getMinValue(),
-            horizXaxis.getMaxValue(), horizYaxis.getMaxValue());
+                horizXaxis.getMaxValue(), horizYaxis.getMaxValue());
 
       } else {
 
@@ -1000,8 +1018,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
             yaxis1.getCoordEdge((int) yaxis1.getSize()) + dy); */
 
         mapArea = new ProjectionRect(xaxis1.getCoordEdge(0), yaxis1.getCoordEdge(0),
-            xaxis1.getCoordEdge((int) xaxis1.getSize()),
-            yaxis1.getCoordEdge((int) yaxis1.getSize()));
+                xaxis1.getCoordEdge((int) xaxis1.getSize()),
+                yaxis1.getCoordEdge((int) yaxis1.getSize()));
       }
     }
 
@@ -1296,19 +1314,18 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * String representation.
    */
   public String toString() {
-    StringBuilder buff = new StringBuilder(200);
-    buff.setLength(0);
-    buff.append("(").append(getName()).append(") ");
+    Formatter buff = new Formatter();
+    buff.format("(%s) ", getName());
 
-    if (runTimeAxis != null) buff.append("rt="+runTimeAxis.getName()+",");
-    if (ensembleAxis != null) buff.append("ens="+ensembleAxis.getName()+",");
-    if (timeTaxis != null) buff.append("t="+timeTaxis.getName()+",");
-    if (vertZaxis != null) buff.append("z="+vertZaxis.getName()+",");
-    if (horizYaxis != null) buff.append("y="+horizYaxis.getName()+",");
-    if (horizXaxis != null) buff.append("x="+horizXaxis.getName()+",");
+    if (runTimeAxis != null) buff.format("rt=%s,", runTimeAxis.getName());
+    if (ensembleAxis != null) buff.format("ens=%s,", ensembleAxis.getName());
+    if (timeTaxis != null) buff.format("t=%s,", timeTaxis.getName());
+    if (vertZaxis != null) buff.format("z=%s,", vertZaxis.getName());
+    if (horizYaxis != null) buff.format("y=%s,", horizYaxis.getName());
+    if (horizXaxis != null) buff.format("x=%s,", horizXaxis.getName());
 
     if (proj != null)
-      buff.append("  Projection:" + proj.getName() + " " + proj.getClassName());
+      buff.format("  Projection: %s %s", proj.getName(), proj.getClassName());
     return buff.toString();
   }
 

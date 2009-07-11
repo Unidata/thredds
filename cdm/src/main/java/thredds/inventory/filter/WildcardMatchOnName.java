@@ -34,6 +34,8 @@ package thredds.inventory.filter;
 
 import thredds.inventory.MFile;
 
+import java.util.regex.Pattern;
+
 /**
  * A wildcard expression that matches on the MFile name.
  *
@@ -43,6 +45,10 @@ import thredds.inventory.MFile;
 public class WildcardMatchOnName extends WildcardMatchOnPath {
   public WildcardMatchOnName(String wildcardString) {
     super(wildcardString);
+  }
+
+  public WildcardMatchOnName(Pattern pattern) {
+    super(pattern);
   }
 
   public boolean accept(MFile file) {

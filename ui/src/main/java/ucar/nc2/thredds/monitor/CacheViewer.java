@@ -74,10 +74,9 @@ public class CacheViewer extends JPanel {
     this.mainPrefs = prefs;
     this.parentFrame = parentFrame;
 
-    thredds.filesystem.CacheManager.makeTestCacheManager("C:/data/ehcache/");
-
-
     fileChooser = new FileManager(parentFrame, null, null, (PreferencesExt) prefs.node("FileManager"));
+    fileChooser.getFileChooser().setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+    fileChooser.getFileChooser().setDialogTitle("Ehcache Directory");
 
     // the top UI
     tabbedPane = new JTabbedPane(JTabbedPane.TOP);
@@ -132,7 +131,7 @@ public class CacheViewer extends JPanel {
       this.prefs = prefs;
       ta = new TextHistoryPane(true);
 
-      fileCB = new ComboBox((PreferencesExt)prefs.node("files"));
+      fileCB = new ComboBox((PreferencesExt) prefs.node("files"));
       fileCB.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           if ((e.getWhen() != lastEvent) && eventOK) { // eliminate multiple events from same selection
@@ -214,15 +213,15 @@ public class CacheViewer extends JPanel {
       super(p);
       cacheTable = new CacheTable((PreferencesExt) mainPrefs.node("CacheTable"), buttPanel);
       cacheTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-         public void propertyChange(java.beans.PropertyChangeEvent e) {
-           if (e.getPropertyName().equals("UrlDump")) {
-             String path = (String) e.getNewValue();
-             if (logManager != null)
-               path = logManager.makePath(path);
-             //gotoUrlDump(path);
-           }
-         }
-       });
+        public void propertyChange(java.beans.PropertyChangeEvent e) {
+          if (e.getPropertyName().equals("UrlDump")) {
+            String path = (String) e.getNewValue();
+            if (logManager != null)
+              path = logManager.makePath(path);
+            //gotoUrlDump(path);
+          }
+        }
+      });
 
       add(cacheTable, BorderLayout.CENTER);
     }
@@ -232,6 +231,7 @@ public class CacheViewer extends JPanel {
       boolean err = false;
 
       try {
+        thredds.filesystem.CacheManager.makeReadOnlyCacheManager(command, "directories");
         cacheTable.setCache(thredds.filesystem.CacheManager.getEhcache());
 
       } catch (Exception e) {
@@ -268,7 +268,7 @@ public class CacheViewer extends JPanel {
     // initializations
     BAMutil.setResourcePath("/resources/nj22/ui/icons/");
 
-     // put UI in a JFrame
+    // put UI in a JFrame
     frame = new JFrame("Cache Viewer");
     ui = new CacheViewer(prefs, frame);
 

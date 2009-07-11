@@ -35,6 +35,7 @@ import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateFromString;
 
 import java.util.*;
+import java.io.IOException;
 
 import thredds.inventory.*;
 
@@ -60,28 +61,32 @@ public class TimedCollectionImpl implements TimedCollection {
    * @param collectionSpec the collection spec
    * @param errlog         put error messsages here
    * @see CollectionSpecParser
+   * @throws java.io.IOException on read error
    */
-  public TimedCollectionImpl(String collectionSpec, Formatter errlog) {
+  public TimedCollectionImpl(String collectionSpec, Formatter errlog) throws IOException {
     sp = new CollectionSpecParser(collectionSpec, errlog);
     DatasetCollectionManager manager = new DatasetCollectionManager(sp, errlog);
 
     // get the inventory, sorted by path
+    manager.scan(null);
     List<MFile> fileList = manager.getFiles();
-    List<TimedCollection.Dataset> c = new ArrayList<TimedCollection.Dataset>(fileList.size());
+    datasets = new ArrayList<TimedCollection.Dataset>(fileList.size());
     for (MFile f : fileList)
-      c.add(new Dataset(f));
+      datasets.add(new Dataset(f));
 
     if (sp.getDateFormatMark() != null) {
-      for (int i = 0; i < c.size() - 1; i++) {
-        Dataset d1 = (Dataset) c.get(i);
-        Dataset d2 = (Dataset) c.get(i + 1);
+      for (int i = 0; i < datasets.size() - 1; i++) {
+        Dataset d1 = (Dataset) datasets.get(i);
+        Dataset d2 = (Dataset) datasets.get(i + 1);
         d1.setDateRange(new DateRange(d1.start, d2.start));
-        if (i == c.size() - 2)
+        if (i == datasets.size() - 2)
           d2.setDateRange(new DateRange(d2.start, d1.getDateRange().getDuration()));
       }
-      Dataset first = (Dataset) c.get(0);
-      Dataset last = (Dataset) c.get(c.size() - 1);
-      dateRange = new DateRange(first.getDateRange().getStart().getDate(), last.getDateRange().getEnd().getDate());
+      if (datasets.size() > 0) {
+        Dataset first = (Dataset) datasets.get(0);
+        Dataset last = (Dataset) datasets.get(datasets.size() - 1);
+        dateRange = new DateRange(first.getDateRange().getStart().getDate(), last.getDateRange().getEnd().getDate());
+      }
     }
 
   }

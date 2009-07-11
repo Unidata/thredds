@@ -32,6 +32,8 @@
 
 package thredds.inventory;
 
+import net.jcip.annotations.Immutable;
+
 import java.util.Date;
 
 /**
@@ -39,13 +41,13 @@ import java.util.Date;
  *
  * @author caron
  */
+@Immutable
 public class MCollection {
-  private String name;
-  private String dirName;
-  private boolean wantSubdirs;
-  private MFileFilter ff;
-  private DateExtractor dateExtractor;
-  private Date last = null, first = null;
+  private final String name;
+  private final String dirName;
+  private final boolean wantSubdirs;
+  private final MFileFilter ff;
+  private final DateExtractor dateExtractor;
 
   /**
    *
@@ -75,27 +77,19 @@ public class MCollection {
     return dirName;
   }
 
-  public Date getLast() {
-    return last;
+  public boolean wantSubdirs() {
+    return wantSubdirs;
   }
 
-  public Date getFirst() {
-    return first;
+  public MFileFilter getFileFilter() {
+    return ff;
+  }
+
+  public DateExtractor getDateExtractor() {
+    return dateExtractor;
   }
 
   public boolean accept(MFile file) {
-
-    if (null != dateExtractor) {
-      Date d = dateExtractor.getDate(file);
-
-      if (d != null) {
-        if ((last == null) || d.after(last))
-          last = d;
-        if ((first == null) || d.before(first))
-          first = d;
-      }
-    }
-
     return ((ff == null) || ff.accept(file));
   }
 
@@ -108,8 +102,6 @@ public class MCollection {
         ", wantSubdirs=" + wantSubdirs +
         ", ff=" + ff +
         ", dateExtractor=" + dateExtractor +
-        ", last=" + last +
-        ", first=" + first +
         '}';
   }
 }

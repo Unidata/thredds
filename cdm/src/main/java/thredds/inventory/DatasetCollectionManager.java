@@ -38,10 +38,7 @@ import ucar.nc2.util.CancelTask;
 import java.util.*;
 import java.io.IOException;
 
-import thredds.inventory.filter.RegExpMatchOnName;
-import thredds.inventory.filter.WildcardMatchOnPath;
-import thredds.inventory.filter.LastModifiedLimit;
-import thredds.inventory.filter.Composite;
+import thredds.inventory.filter.*;
 
 /**
  * Manage a list of Scanners that find MFiles
@@ -70,13 +67,13 @@ public class DatasetCollectionManager {
   public DatasetCollectionManager(String collectionSpec, Formatter errlog) {
     CollectionSpecParser sp = new CollectionSpecParser(collectionSpec, errlog);
 
-    MFileFilter mfilter = (null == sp.getFilter()) ? null : new WildcardMatchOnPath(sp.getFilter());
+    MFileFilter mfilter = (null == sp.getFilter()) ? null : new WildcardMatchOnName(sp.getFilter());
     DateExtractor dateExtractor = (sp.getDateFormatMark() == null) ? null : new DateExtractorFromName(sp.getDateFormatMark());
     scanList.add(new MCollection(sp.getTopDir(), sp.getTopDir(), sp.wantSubdirs(), mfilter, dateExtractor));
   }
 
   public DatasetCollectionManager(CollectionSpecParser sp, Formatter errlog) {
-    MFileFilter mfilter = (null == sp.getFilter()) ? null : new WildcardMatchOnPath(sp.getFilter());
+    MFileFilter mfilter = (null == sp.getFilter()) ? null : new WildcardMatchOnName(sp.getFilter());
     DateExtractor dateExtractor = (sp.getDateFormatMark() == null) ? null : new DateExtractorFromName(sp.getDateFormatMark());
     scanList.add(new MCollection(sp.getTopDir(), sp.getTopDir(), sp.wantSubdirs(), mfilter, dateExtractor));
   }
