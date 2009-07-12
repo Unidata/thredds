@@ -377,7 +377,7 @@ public class ServerMethods {
      * @throws IOException           problem opening stream
      */
     public static InputStream getInputStream(String filename)
-            throws FileNotFoundException, IOException {
+            throws  IOException {
         return getInputStream(filename, null);
     }
 
@@ -391,7 +391,7 @@ public class ServerMethods {
      * @throws IOException           problem opening stream
      */
     public static InputStream getInputStream(String filename, Class origin)
-            throws FileNotFoundException, IOException {
+            throws  IOException {
         InputStream s = null;
         while (origin != null) {
             s = origin.getResourceAsStream(filename);

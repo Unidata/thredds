@@ -174,15 +174,16 @@ public class RadarMethods {
      }
   }
 
-  public Document stationsXML( RadarServer.RadarType radarType, Document doc, Element rootElem, String path ) {
-    // stations in this dataset, set by path
-    String[] stations = stationsDS( radarType, RadarServer.dataLocation.get(path ));
-    if( path.contains( "level3") && stations[ 0 ].length() == 4 ) {
-        for( int i = 0; i < stations.length; i++ )
-             stations[ i ] = stations[ i ].substring( 1 );
-    }
-    doc = makeStationDocument( doc, rootElem, stations );
-    return doc;
+  public Document stationsXML( RadarServer.RadarType radarType, Document doc, Element rootElem, String path )
+    throws Exception {
+      // stations in this dataset, set by path
+      String[] stations = stationsDS( radarType, RadarServer.dataLocation.get(path ));
+      if( path.contains( "level3") && stations[ 0 ].length() == 4 ) {
+          for( int i = 0; i < stations.length; i++ )
+               stations[ i ] = stations[ i ].substring( 1 );
+      }
+      doc = makeStationDocument( doc, rootElem, stations );
+      return doc;
   }
 
   // must end with "/"
@@ -236,8 +237,10 @@ public class RadarMethods {
         serviceBase = "/thredds/dodsC/"+ pathInfo +"/";
       }
       // writes first part of catalog
-      if( ! writeHeader( radarType,  qp, pathInfo, pw) )
+      if( ! writeHeader( radarType,  qp, pathInfo, pw) ) {
+        qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
         return;
+      }
 //      endms = System.currentTimeMillis();
 //      System.out.println( "after writeHeader "+ (endms - startms));
 //      startms = System.currentTimeMillis();
@@ -273,254 +276,259 @@ public class RadarMethods {
   // check that parms have valid stations, vars or times
   private Boolean checkQueryParms(RadarServer.RadarType radarType, QueryParams qp, Boolean level2 )
     throws IOException {
-
-    if (qp.hasBB) {
-      if( radarType.equals( RadarServer.RadarType.nexrad ) )
-        qp.stns = sm.getStationNames(qp.getBB(), nexradList );
-      else
-        qp.stns = sm.getStationNames(qp.getBB(), terminalList );
-      if( ! level2 )
-          qp.stns = sm.convert4to3stations( qp.stns );
-      if (qp.stns.size() == 0) {
-        qp.errs.append("<documentation>ERROR: Bounding Box contains no stations</documentation>\n");
-        //qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-        return false;
+    try {
+      if (qp.hasBB) {
+        if( radarType.equals( RadarServer.RadarType.nexrad ) )
+          qp.stns = sm.getStationNames(qp.getBB(), nexradList );
+        else
+          qp.stns = sm.getStationNames(qp.getBB(), terminalList );
+        if( ! level2 )
+            qp.stns = sm.convert4to3stations( qp.stns );
+        if (qp.stns.size() == 0) {
+          qp.errs.append("<documentation>ERROR: Bounding Box contains no stations</documentation>\n");
+          //qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+          return false;
+        }
       }
-    }
 
-    if (qp.hasStns ) {
-      if( sm.isStationListEmpty(qp.stns, nexradMap ) &&
-        ( sm.isStationListEmpty(qp.stns, terminalMap ) )) {
+      if (qp.hasStns ) {
+        if( sm.isStationListEmpty(qp.stns, nexradMap ) &&
+          ( sm.isStationListEmpty(qp.stns, terminalMap ) )) {
+          qp.errs.append("<documentation>ERROR: No valid stations specified</documentation>\n");
+          //qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+          return false;
+        }
+      }
+
+      if (qp.hasLatlonPoint) {
+        qp.stns = new ArrayList<String>();
+        if( radarType.equals( RadarServer.RadarType.nexrad ) )
+          qp.stns.add( sm.findClosestStation(qp.lat, qp.lon, nexradList ));
+        else
+          qp.stns.add( sm.findClosestStation(qp.lat, qp.lon, terminalList ));
+        if( ! level2 )
+            qp.stns = sm.convert4to3stations( qp.stns );
+      } else if (qp.fatal) {
         qp.errs.append("<documentation>ERROR: No valid stations specified</documentation>\n");
         //qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
         return false;
       }
-    }
 
-    if (qp.hasLatlonPoint) {
-      qp.stns = new ArrayList<String>();
-      if( radarType.equals( RadarServer.RadarType.nexrad ) )
-        qp.stns.add( sm.findClosestStation(qp.lat, qp.lon, nexradList ));
-      else
-        qp.stns.add( sm.findClosestStation(qp.lat, qp.lon, terminalList ));
-      if( ! level2 )
-          qp.stns = sm.convert4to3stations( qp.stns );
-    } else if (qp.fatal) {
-      qp.errs.append("<documentation>ERROR: No valid stations specified</documentation>\n");
-      //qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-      return false;
-    }
+      // qp.stns could be null, ouch
+      boolean useAllStations = ( qp.stns.get( 0 ).toUpperCase().equals( "ALL"));
+      if (useAllStations) {
+        if( radarType.equals( RadarServer.RadarType.nexrad ) )
+          qp.stns = sm.getStationNames( nexradList ); //need station names
+        else
+          qp.stns = sm.getStationNames( terminalList ); //need station names
+        if( ! level2 )
+            qp.stns = sm.convert4to3stations( qp.stns );
+      }
 
-    // qp.stns could be null, ouch
-    boolean useAllStations = ( qp.stns.get( 0 ).toUpperCase().equals( "ALL"));
-    if (useAllStations) {
-      if( radarType.equals( RadarServer.RadarType.nexrad ) )
-        qp.stns = sm.getStationNames( nexradList ); //need station names
-      else
-        qp.stns = sm.getStationNames( terminalList ); //need station names
-      if( ! level2 )
-          qp.stns = sm.convert4to3stations( qp.stns );
-    }
-
-    /*
-    if (qp.hasTimePoint && ( sm.filterDataset(qp.time) == null)) {
-      qp.errs.append("<documentation>ERROR: This dataset does not contain the time point= " + qp.time + " </documentation>\n");
-      //qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-      return;
-    }
-    */
-    /*
-    // needs work start and end aren't set, too expensive to set
-    if (qp.hasDateRange) {
-      DateRange dr = qp.getDateRange();
-      if (! sm.intersect(dr, start, end)) {
-        qp.errs.append("<documentation>ERROR: This dataset does not contain the time range= " + qp.time + " </documentation>\n");
+      /*
+      if (qp.hasTimePoint && ( sm.filterDataset(qp.time) == null)) {
+        qp.errs.append("<documentation>ERROR: This dataset does not contain the time point= " + qp.time + " </documentation>\n");
         //qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
         return;
       }
-    }
-    */
-    /*
-    if (useAllStations && useAllTimes) {
-      qp.errs.append("<documentation>ERROR: You must subset by space or time</documentation>\n");
-      //qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-      return;
-    }
-    */
-    // if time in not set, return latest
-    if( qp.hasTimePoint ) {
-        if( qp.time.isPresent() ) {
-            try {
-                qp.time_end = new DateType( "present", null, null);
-                qp.time_start = new DateType(ServerMethods.epic, null, null);
-            } catch (java.text.ParseException e) {
-                qp.errs.append("Illegal param= 'time' must be valid ISO Duration\n");
-            }
-        } else {
-            qp.time_end = qp.time;
-            qp.time_start = qp.time;
-        }
-    } else if( qp.hasDateRange ) {
+      */
+      /*
+      // needs work start and end aren't set, too expensive to set
+      if (qp.hasDateRange) {
         DateRange dr = qp.getDateRange();
-        qp.time_start = dr.getStart();
-        qp.time_end = dr.getEnd();
-    // return latest // TODO: changed default to all times
-    } else {
-       //qp.hasTimePoint = true;
-       try {
-           qp.time = new DateType( "present", null, null);
-           qp.time_end = new DateType( "present", null, null);
-           qp.time_start = new DateType(ServerMethods.epic, null, null);
-       } catch (java.text.ParseException e) {
-           qp.errs.append("Illegal param= 'time' must be valid ISO Duration\n");
-       }
-    }
-
-    if(  level2 ) {
-        qp.vars = null; // level2 can't select vars
-    } else {
-        if( qp.vars != null ) { // remove desc from vars
-          ArrayList<String> tmp = new ArrayList<String>();
-          for ( String var:  qp.vars ) {
-              tmp.add( var.replaceFirst( "/.*", "" ) );
-          }
-          qp.vars = tmp;
+        if (! sm.intersect(dr, start, end)) {
+          qp.errs.append("<documentation>ERROR: This dataset does not contain the time range= " + qp.time + " </documentation>\n");
+          //qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+          return;
         }
+      }
+      */
+      /*
+      if (useAllStations && useAllTimes) {
+        qp.errs.append("<documentation>ERROR: You must subset by space or time</documentation>\n");
+        //qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+        return;
+      }
+      */
+      // if time in not set, return latest
+      if( qp.hasTimePoint ) {
+          if( qp.time.isPresent() ) {
+              try {
+                  qp.time_end = new DateType( "present", null, null);
+                  qp.time_start = new DateType(ServerMethods.epic, null, null);
+              } catch (java.text.ParseException e) {
+                  qp.errs.append("Illegal param= 'time' must be valid ISO Duration\n");
+              }
+          } else {
+              qp.time_end = qp.time;
+              qp.time_start = qp.time;
+          }
+      } else if( qp.hasDateRange ) {
+          DateRange dr = qp.getDateRange();
+          qp.time_start = dr.getStart();
+          qp.time_end = dr.getEnd();
+      } else {
+         //qp.hasTimePoint = true;
+         try {
+             qp.time = new DateType( "present", null, null);
+             qp.time_end = new DateType( "present", null, null);
+             qp.time_start = new DateType(ServerMethods.epic, null, null);
+         } catch (java.text.ParseException e) {
+             qp.errs.append("Illegal param= 'time' must be valid ISO Duration\n");
+         }
+      }
+
+      if(  level2 ) {
+          qp.vars = null; // level2 can't select vars
+      } else {
+          if( qp.vars != null ) { // remove desc from vars
+            ArrayList<String> tmp = new ArrayList<String>();
+            for ( String var:  qp.vars ) {
+                tmp.add( var.replaceFirst( "/.*", "" ) );
+            }
+            qp.vars = tmp;
+          }
+      }
+    } catch ( Exception e ) {
+      return false;
     }
     return true;
   }
+
   // write out catalog Header
-  private Boolean writeHeader(RadarServer.RadarType radarType, QueryParams qp, String pathInfo, PrintWriter pw) {
-    // accept = XML inplies OPENDAY server
-    Boolean level2 = pathInfo.contains( "level2");
-    int level = (level2) ? 2 : 3;
-    String serviceBase = "";
-    if ( ServerMethods.p_xml_i.matcher(qp.acceptType).find()) {
-      serviceBase = "/thredds/dodsC/"+ pathInfo +"/";
-      pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-      pw.print("<catalog xmlns=\"http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0\"");
-      pw.println(" xmlns:xlink=\"http://www.w3.org/1999/xlink\" name=\"Radar Level"+ level +" datasets in near real time\" version=\""+
-              "1.0.1\">");
-      pw.println("");
-      pw.print("  <service name=\""+ serviceName +"\" serviceType=\""+ serviceType +"\"");
-      pw.println(" base=\"" + serviceBase + "\"/>");
-      pw.print("    <dataset name=\"RadarLevel"+ level +" datasets for available stations and times\" collectionType=\"TimeSeries\" ID=\""+
-"accept=" + qp.acceptType + "&amp;");
+  private Boolean writeHeader(RadarServer.RadarType radarType, QueryParams qp, String pathInfo, PrintWriter pw)
+    throws IOException {
+    try {
+      // accept = XML inplies OPeNDAP server
+      Boolean level2 = pathInfo.contains( "level2");
+      int level = (level2) ? 2 : 3;
+      String serviceBase = "";
+      if ( ServerMethods.p_xml_i.matcher(qp.acceptType).find()) {
+        serviceBase = "/thredds/dodsC/"+ pathInfo +"/";
+        pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        pw.print("<catalog xmlns=\"http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0\"");
+        pw.println(" xmlns:xlink=\"http://www.w3.org/1999/xlink\" name=\"Radar Level"+ level +" datasets in near real time\" version=\""+
+                "1.0.1\">");
+        pw.println("");
+        pw.print("  <service name=\""+ serviceName +"\" serviceType=\""+ serviceType +"\"");
+        pw.println(" base=\"" + serviceBase + "\"/>");
+        pw.print("    <dataset name=\"RadarLevel"+ level +" datasets for available stations and times\" collectionType=\"TimeSeries\" ID=\""+
+  "accept=" + qp.acceptType + "&amp;");
 
-      if( ! level2 && qp.vars != null ) { // add vars
-          pw.print("var=");
-          for (int i = 0; i < qp.vars.size(); i++ ) {
-              pw.print( qp.vars.get( i ) );
-              if( i < qp.vars.size() -1 )
-                  pw.print( "," );
-          }
-          pw.print("&amp;");
-      }
-      // use all stations
-      if( qp.stns.get( 0 ).toUpperCase().equals( "ALL") ) {
-          pw.print("stn=ALL&amp;");
-      } else if (qp.hasStns ) { //&& ! sm.isStationListEmpty(qp.stns, nexradMap )) {
-          for (String station : qp.stns) {
-              pw.print("stn=" + station +"&amp;");
-          }
-      } else if (qp.hasBB) {
-          pw.print("south="+ qp.south +"&amp;north="+ qp.north +"&amp;" );
-          pw.print("west="+ qp.west +"&amp;east="+ qp.east +"&amp;" );
-      }
-
-      if( qp.hasDateRange ) {
-        if( qp.time_start.getDate() == null || qp.time_start.isBlank() ||
-          qp.time_end.getDate() == null || qp.time_end.isBlank() ) {
-          pw.println("time_start=" + qp.time_start.toString()
-                  +"&amp;time_end=" + qp.time_end.toString() +"\">");
-          pw.println( "<documentation>need ISO time</documentation>\n" );
-          pw.println("    </dataset>");
-          pw.println("</catalog>");
-          return false;
-        } else {
-          pw.println("time_start=" + qp.time_start.toDateTimeStringISO()
-                  +"&amp;time_end=" + qp.time_end.toDateTimeStringISO() +"\">");
+        if( ! level2 && qp.vars != null ) { // add vars
+            pw.print("var=");
+            for (int i = 0; i < qp.vars.size(); i++ ) {
+                pw.print( qp.vars.get( i ) );
+                if( i < qp.vars.size() -1 )
+                    pw.print( "," );
+            }
+            pw.print("&amp;");
         }
-      } else if( qp.time.isPresent() ) {
-          pw.println("time=present\">");
-      } else if( qp.hasTimePoint ) {
-        if( qp.time.getDate() == null || qp.time.isBlank()) {
-          pw.println("time=" + qp.time.toString() +"\">");
-          pw.println( "<documentation>need ISO time</documentation>\n" );
-          pw.println("    </dataset>");
-          pw.println("</catalog>");
-          return false;
-        } else {
-          pw.println("time=" + qp.time.toDateTimeStringISO() +"\">");
+        // use all stations
+        if( qp.stns.get( 0 ).toUpperCase().equals( "ALL") ) {
+            pw.print("stn=ALL&amp;");
+        } else if (qp.hasStns ) { //&& ! sm.isStationListEmpty(qp.stns, nexradMap )) {
+            for (String station : qp.stns) {
+                pw.print("stn=" + station +"&amp;");
+            }
+        } else if (qp.hasBB) {
+            pw.print("south="+ qp.south +"&amp;north="+ qp.north +"&amp;" );
+            pw.print("west="+ qp.west +"&amp;east="+ qp.east +"&amp;" );
         }
-      } else {
-          pw.println( "\">" );
-      }
-      pw.println("    <metadata inherited=\"true\">");
-      pw.println("      <dataType>Radial</dataType>");
-      pw.print("      <dataFormat>" );
-      if( level2 ) {
-          pw.print( "NEXRAD2" );
-      } else if( radarType.equals( RadarServer.RadarType.nexrad ) ){
-          pw.print( "NIDS" );
-      } else {
-          pw.print( "TDWR" );
-      }
-      pw.println( "</dataFormat>");
-      pw.println("      <serviceName>" + serviceName + "</serviceName>");
-      pw.println("    </metadata>");
-      pw.println();
 
-    } else if ( ServerMethods.p_html_i.matcher(qp.acceptType).find()) { // accept html
-      pw.println("<Head><Title>THREDDS RadarNexrad Server</Title></Head>");
-      pw.println("<body>"); // link=\"red\" alink=\"red\" vlink=\"red\">");
-      pw.println("<center><H1>Nexrad Level"+ level +" Radar Results</H1></center>");
-      pw.println("  <table align=\"center\" border cellpadding=\"5\" width=\"90%\">");
-      pw.println("    <tr>");
-      pw.println("    <th scope=\"col\"><u>OPENDAP</u></th>");
-      pw.println("    <th scope=\"col\"><u>HTTPServer</u></th>");
-      pw.println("    </tr>");
-      serviceBase = pathInfo +"/";
+        if( qp.hasDateRange ) {
+          if( qp.time_start.getDate() == null || qp.time_start.isBlank() ||
+            qp.time_end.getDate() == null || qp.time_end.isBlank() ) {
+            pw.println("time_start=" + qp.time_start.toString()
+                    +"&amp;time_end=" + qp.time_end.toString() +"\">");
+            pw.println( "<documentation>need ISO time</documentation>\n" );
+            pw.println("    </dataset>");
+            pw.println("</catalog>");
+            return false;
+          } else {
+            pw.println("time_start=" + qp.time_start.toDateTimeStringISO()
+                    +"&amp;time_end=" + qp.time_end.toDateTimeStringISO() +"\">");
+          }
+        } else if( qp.time.isPresent() ) {
+            pw.println("time=present\">");
+        } else if( qp.hasTimePoint ) {
+          if( qp.time.getDate() == null || qp.time.isBlank()) {
+            pw.println("time=" + qp.time.toString() +"\">");
+            pw.println( "<documentation>need ISO time</documentation>\n" );
+            pw.println("    </dataset>");
+            pw.println("</catalog>");
+            return false;
+          } else {
+            pw.println("time=" + qp.time.toDateTimeStringISO() +"\">");
+          }
+        } else {
+            pw.println( "\">" );
+        }
+        pw.println("    <metadata inherited=\"true\">");
+        pw.println("      <dataType>Radial</dataType>");
+        pw.print("      <dataFormat>" );
+        if( level2 ) {
+            pw.print( "NEXRAD2" );
+        } else if( radarType.equals( RadarServer.RadarType.nexrad ) ){
+            pw.print( "NIDS" );
+        } else {
+            pw.print( "TDWR" );
+        }
+        pw.println( "</dataFormat>");
+        pw.println("      <serviceName>" + serviceName + "</serviceName>");
+        pw.println("    </metadata>");
+        pw.println();
 
-    } else if ( ServerMethods.p_ascii_i.matcher(qp.acceptType).find()) {
-      pw.println( "<documentation>\n" );
-      pw.println( "Request not implemented: "+ pathInfo );
-      pw.println( "</documentation>\n" );
-      pw.println( "<documentation>need ISO time</documentation>\n" );
-      pw.println("    </dataset>");
-      pw.println("</catalog>");
-      return false;
-    }
-    // at this point must have stations
-    if (  sm.isStationListEmpty(qp.stns, nexradMap ) &&
-      sm.isStationListEmpty(qp.stns, terminalMap )) {
-      pw.println("      <documentation>No data available for station(s) "+
-          "and time range</documentation>");
-      pw.println("    </dataset>");
-      pw.println("</catalog>");
+      } else if ( ServerMethods.p_html_i.matcher(qp.acceptType).find()) { // accept html
+        pw.println("<Head><Title>THREDDS RadarNexrad Server</Title></Head>");
+        pw.println("<body>"); // link=\"red\" alink=\"red\" vlink=\"red\">");
+        pw.println("<center><H1>Nexrad Level"+ level +" Radar Results</H1></center>");
+        pw.println("  <table align=\"center\" border cellpadding=\"5\" width=\"90%\">");
+        pw.println("    <tr>");
+        pw.println("    <th scope=\"col\"><u>OPENDAP</u></th>");
+        pw.println("    <th scope=\"col\"><u>HTTPServer</u></th>");
+        pw.println("    </tr>");
+        serviceBase = pathInfo +"/";
+
+      } else if ( ServerMethods.p_ascii_i.matcher(qp.acceptType).find()) {
+        pw.println( "<documentation>\n" );
+        pw.println( "Request not implemented: "+ pathInfo );
+        pw.println( "</documentation>\n" );
+        pw.println( "<documentation>need ISO time</documentation>\n" );
+        pw.println("    </dataset>");
+        pw.println("</catalog>");
+        return false;
+      }
+      // at this point must have stations
+      if (  sm.isStationListEmpty(qp.stns, nexradMap ) &&
+        sm.isStationListEmpty(qp.stns, terminalMap )) {
+        pw.println("      <documentation>No data available for station(s) "+
+            "and time range</documentation>");
+        pw.println("    </dataset>");
+        pw.println("</catalog>");
+        return false;
+      }
+    } catch (Exception e ) {
       return false;
     }
     return true;
   }
 
-  // This routine is very complex cuz if figures out different paths to
+  // This routine is very complex because if figures out different paths to
   // actual products ie stn/var/time stn/time/var  var/stn/time etc.
   // processQuery is limited by the stns, dates and vars in the query
   private Boolean processQuery( String tdir, QueryParams qp, PrintWriter pw,
     String serviceBase ) throws IOException {
 
-    // set date info
-    String yyyymmddStart = qp.time_start.toDateString();
-    yyyymmddStart = yyyymmddStart.replace( "-", "");
-    String yyyymmddEnd = qp.time_end.toDateString();
-    yyyymmddEnd = yyyymmddEnd.replace( "-", "");
-    String dateStart =  yyyymmddStart +"_"+ sm.hhmm( qp.time_start.toDateTimeString() );
-    String dateEnd =  yyyymmddEnd +"_"+ sm.hhmm( qp.time_end.toDateTimeString() );
-
     int numProds = 0;
-
     try { // could have null pointer exceptions on dirs & checks
-
+      // set date info
+      String yyyymmddStart = qp.time_start.toDateString();
+      yyyymmddStart = yyyymmddStart.replace( "-", "");
+      String yyyymmddEnd = qp.time_end.toDateString();
+      yyyymmddEnd = yyyymmddEnd.replace( "-", "");
+      String dateStart =  yyyymmddStart +"_"+ sm.hhmm( qp.time_start.toDateTimeString() );
+      String dateEnd =  yyyymmddEnd +"_"+ sm.hhmm( qp.time_end.toDateTimeString() );
       // top dir has to point to stns, vars, or date dir
       File files = new File( tdir );
       String[] tdirs = files.list();
@@ -672,7 +680,7 @@ public class RadarMethods {
   // check if product has valid time then creates a dataset for product
   private int processProducts( String[] products, String rPath,
     String dateStart, String dateEnd, QueryParams qp,
-    PrintWriter pw, String serviceBase ) {
+    PrintWriter pw, String serviceBase ) throws Exception {
 
     Boolean latest = qp.hasTimePoint;
 
@@ -715,7 +723,7 @@ public class RadarMethods {
   }
 
   // create a XML dataset entry for a catalog
-  public void XMLdataset(String product, String rPath, PrintWriter pw ) {
+  public void XMLdataset(String product, String rPath, PrintWriter pw ) throws IOException {
 
     pw.println("      <dataset name=\""+ product +"\" ID=\""+
           product.hashCode() +"\"" );
@@ -729,7 +737,8 @@ public class RadarMethods {
   } // end datasetOut
 
   // create a HTML dataset entry for a catalog
-  public void HTMLdataset(String product, String rPath, PrintWriter pw, String serviceBase ) {
+  public void HTMLdataset(String product, String rPath, PrintWriter pw, String serviceBase )
+      throws IOException {
 
     pw.println( "  <tr>" );
     pw.println("    <td align=center valign=center><a href=\"/thredds/dodsC/"+
@@ -747,7 +756,7 @@ public class RadarMethods {
    * @param stations
    * @return Document
   */
-  public Document makeStationDocument( Document doc, Element rootElem, String[] stations ) {
+  public Document makeStationDocument( Document doc, Element rootElem, String[] stations ) throws Exception {
 
     for (String s : stations ) {
       Station stn;
@@ -792,7 +801,7 @@ public class RadarMethods {
     return doc;
   }
 
-  public String[] stationsDS( RadarServer.RadarType radarType, String path ) {
+  public String[] stationsDS( RadarServer.RadarType radarType, String path ) throws Exception {
     String[] stations = null;
 
     if( path != null ) {
@@ -830,7 +839,7 @@ public class RadarMethods {
    * @param stations
    * @param pw 
   */
-  public void printStations( String[] stations, PrintWriter pw ) {
+  public void printStations( String[] stations, PrintWriter pw ) throws Exception {
     for (String s : stations ) {
       Station stn;
       if( s.length() == 3 ) { // level3 station
@@ -867,7 +876,7 @@ public class RadarMethods {
     }
   }
 
-  public String getStartDateTime( String path ) {
+  public String getStartDateTime( String path ) throws Exception {
     String timeDir =  RadarServer.dataLocation.get( path );
     log.debug( "timeDir ="+ timeDir );
     // hard coded, otherwise not sure one get a valid station ID
