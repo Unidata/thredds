@@ -2,15 +2,57 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Untitled Document</title>
+<title>CDM/Netcdf4 Mapping</title>
 </head>
 
 <body>
-<p>The CDM data model is close to, but not identical to the <a href="http://www.google.com/url?sa=t&amp;source=web&amp;ct=res&amp;cd=1&amp;url=http%3A%2F%2Fwww.unidata.ucar.edu%2Fpresentations%2FRew%2Fnc4-iips.ppt&amp;ei=_CgXSf6TCImMsAOQqKH7Cg&amp;usg=AFQjCNHkGLUOBZlsXG3JNWfZ1mchBGM7kA&amp;sig2=dBd8COl1oJYc7iQQSfYZaQ">netCDF-4 data model</a>. Generally the CDM is a (slight) superset of netCDF-4. However there is a complete 2-way mapping between the two models.</p>
-<h3>opaque</h3>
-<p>CDM allows variable length blobs. nc4 are fixed length. since we know the length, we could map to bytes, or we could ignore the fixed length</p>
-<h3>vlen</h3>
-<p>nc4 allows arbitrary composition of vlen. cdm tries to map these to a variable length dimension, to get a ragged array, not part of the data type. But Arrays are rectangular, so its a difficult fit. </p>
+<h1>Mapping between CDM and netCDF-4 Data Models </h1>
+<p><em>Draft July 13, 2009</em></p>
+<p>The CDM data model is close to, but not identical to the <a href="http://www.unidata.ucar.edu/software/netcdf/workshops/2008/netcdf4/Nc4DataModel.html">netCDF-4 data model</a>. However there is a complete 2-way mapping between the two models.</p>
+<h2>DataTypes</h2>
+<h3>From netCDF-4 to CDM</h3>
+<ul>
+  <li>A netCDF-4 <em>Compound</em> is a CDM <em>Structure</em>. Both can be arbitrarily nested.</li>
+  <li>A netCDF-4 <em>Enum</em> is a CDM <em>enum1, enum2, </em>or<em> enum4</em> and references a <em>EnumTypedef</em> which holds the (enum, String) map.</li>
+  <li>A netCDF-4 <em>Vlen</em> is mapped to a CDM <em>variable length Dimension</em>.</li>
+  <li>A netCDF-4 <em>Opaque </em>type  is  a CDM <em>opaque </em>type, but the length of the data cannot be found until you read the data. </li>
+  <li>NetCDF-4 signed and unsigned <em>byte, short, int, long</em> are mapped to CDM <em>byte, short, int, long</em>. If unsigned, the attribute <strong>_Unsigned = &quot;true&quot; </strong>is added to the CDM Variable.</li>
+</ul>
+<h3><strong>From CDM to netCDF-4</strong></h3>
+<ul>
+  <li>A CDM array of Opaque may have a different length for each Opaque object. May have to read to find maximum length, or ???</li>
+</ul>
+<h2>Type Definitions</h2>
+<h3>From netCDF-4 to CDM</h3>
+<ul>
+  <li>A netCDF-4 <em>Enumeration Type </em>becomes a CDM<em> EnumTypedef</em>.</li>
+  <li>All other  netCDF-4 type definitions are repeated for each CDM variable that uses them. The attribute <strong>_Typedef = &quot;<em>typename</em>&quot;</strong><strong> </strong>is added to the CDM Variable, where typename is the name of the netCDF-4 type.</li>
+</ul>
+<h3><strong>From CDM to netCDF-4</strong></h3>
+<ul>
+  <li>A CDM<em> EnumTypedef</em> becomes a netCDF-4 <em>Enumeration Type.</em></li>
+  <li>If a CDM Variable has an attribute <strong>_Typedef = &quot;<em>typename</em>&quot;, </strong>then the Variables' definition is made into a netCDF-4 type.</li>
+</ul>
+<h2>Attributes</h2>
+<p>In CDM, an attribute type may only be a scalar or 1D array of signed <em>byte, short, int, long, float, double, </em>or<em> String</em>. <strong>ENUMS?</strong></p>
+<h3>From netCDF-4 to CDM</h3>
+<ul>
+  <li>An attribute of <em>compound</em> type in netCDF-4 is <em>flattened</em>, by making each field a seperate attribute, with name <em>attName.fieldName</em> in the CDM. </li>
+  <li>If the compound attribute is for a compound variable, and the field name of the attribute matches a field name of the variable, the attribute is added to that field instead of being flattened.</li>
+  <li>An attribute of <em>enum</em> type in netCDF-4 becomes a <em>String</em> type in the CDM. <strong>???</strong></li>
+  <li>An attribute of <em>opaque</em> type in netCDF-4 becomes a <em>byte</em> type in the CDM.</li>
+  <li>An attribute of <em>vlen of type</em> in netCDF-4 becomes an array of <em>type</em> in the CDM.</li>
+  <li>An attribute of an unsigned <em>byte, short, int</em> in netCDF-4 is promoted to a signed <em>short, int, or long</em> in the CDM.</li>
+</ul>
+<h3><strong>From CDM to netCDF-4</strong></h3>
+<ul>
+  <li>Attributes on member variables of Structures are made into a compound attribute on the parent Structure.</li>
+</ul>
+<p>&nbsp;</p>
+<h2>Notes</h2>
+<p><br />
+1) char arrays are interpeted as UTF-8 bytes array (Strings) when they are attributes . but data arrays are not, they are run through unsignedToShort() and cast to char. this seems like trouble.</p>
+<p>2) nc4 allows arbitrary composition of vlen. cdm tries to map these to a variable length dimension, to get a ragged array, not part of the data type. But Arrays are rectangular, so its a difficult fit. </p>
 <p>could define ArrayRagged which maps to C multidim arrays.</p>
 <p>its natural to map</p>
 <pre> int data(x,y,*) -&gt; int(*) data(x,y)</pre>
@@ -37,18 +79,9 @@ struct {
 is like float(3,*) -> ArrayObject(3) with ArrayFloat(*), inside the ArrayStructure.
 this is getting out of control
 </pre>
-<h3>Compound</h3>
-<p>straightforward  mapping to Structures. main problem is that cant put attributes on indicidual members, solution is compound attributes. we unwind the compoind attrinute to put attributes on the members.</p>
-<p>Structure members are first class Variables, although you cant call v.read() on them anymore. But you can call ncfile.readSection().</p>
-<h3>enum</h3>
-<p> CDM promotes the emum maps to an enumTypedef, that can be shared, so this follows nc4. not currrently naming the enum (probably should) on the variable.</p>
-<p>enum attributes are converted to Strings.</p>
-<h3>unsigned</h3>
-<p>Arrays now know they are unsigned, and conversions take that into account. no seperate DataType, this is a property of the Variable and Array.</p>
-<h3>Attributes</h3>
-<p>n4 : can be user defined types</p>
-<p>cdm: 1 dim array of primitive or String.</p>
-<pre> 
+<h3>&nbsp;</h3>
+<p>3) attributes : n4 can be user defined types, cdm: 1 dim array of primitive or String.</p>
+<pre>
 netcdf tst_enums {
   types:
     ubyte enum Bradys {Mike = 8, Carol = 7, Greg = 6, Marsha = 5, Peter = 4, Jan = 3, Bobby = 2, Whats-her-face = 1, Alice = 0} ;
@@ -68,8 +101,7 @@ netcdf R:/testdata/netcdf4/nc4/tst_enums.nc {
 }
 
 </pre>
-<p><br>
-  char arrays are interpeted as UTF-8 bytes array (Strings) when they are attributes . but data arrays are not, they are run through unsignedToShort() and cast to char. this seems like trouble.<br>
-</p>
+<h2><br>
+</h2>
 </body>
 </html>

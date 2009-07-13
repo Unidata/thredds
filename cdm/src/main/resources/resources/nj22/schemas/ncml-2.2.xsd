@@ -31,12 +31,12 @@
       <xsd:attribute name="enhance" type="xsd:string"/>
       <xsd:attribute name="addRecords" type="xsd:boolean"/>
 
-      <xsd:attribute name="iosp" type="xsd:string"/>
       <!-- iosp class name -->
-      <xsd:attribute name="iospParam" type="xsd:string"/>
+      <xsd:attribute name="iosp" type="xsd:string"/>
       <!-- iosp parameter -->
-      <xsd:attribute name="bufferSize" type="xsd:int"/>
+      <xsd:attribute name="iospParam" type="xsd:string"/>
       <!-- raf buffer size -->
+      <xsd:attribute name="bufferSize" type="xsd:int"/>
 
       <!-- for aggregations -->
       <xsd:attribute name="ncoords" type="xsd:string"/>
@@ -53,6 +53,7 @@
         <xsd:element ref="variable"/>
         <xsd:element ref="attribute"/>
         <xsd:element ref="group"/>
+        <xsd:element ref="enumTypedef"/>
         <xsd:element ref="remove"/>
       </xsd:choice>
       <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -125,8 +126,29 @@
       <xsd:enumeration value="String"/>
       <xsd:enumeration value="string"/>
       <xsd:enumeration value="Structure"/>
+      <xsd:enumeration value="Sequence"/>
+      <xsd:enumeration value="opaque"/>
+      <xsd:enumeration value="enum1"/>
+      <xsd:enumeration value="enum2"/>
+      <xsd:enumeration value="enum4"/>
     </xsd:restriction>
   </xsd:simpleType>
+
+  <!-- XML encoding of enum typedef object -->
+ <xsd:element name="enumTypedef">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="map" minOccurs="1" maxOccurs="unbounded">
+          <xsd:complexType mixed="true">
+            <xsd:attribute name="value" type="xsd:string" use="required"/>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="name" type="xsd:token" use="required"/>
+      <xsd:attribute name="type" type="DataType" default="enum1"/>
+    </xsd:complexType>
+  </xsd:element>
+
 
   <!-- Dataset **********************************************************************-->
 

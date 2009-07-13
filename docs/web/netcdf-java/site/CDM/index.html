@@ -39,8 +39,8 @@
   <p>An <strong>opaque</strong> type stores uninterpreted blobs of bytes. The length of the blob is not known until it is read. An array of opaque objects may have different lengths for each of the blobs. </p>
 </blockquote>
 <p>An <strong>Object name</strong> refers to the name of a Group, Dimension, Variable,  Attribute, or EnumTypedef. An object name is a String,  a variable length array of Unicode characters. The <a href="Identifiers.html">set of allowed characters</a> is still being considered. </p>
-<h3>Comparision to netCDF-4</h3>
-<p>The CDM data model is close to, but not identical to the <a href="http://www.google.com/url?sa=t&source=web&ct=res&cd=1&url=http%3A//www.unidata.ucar.edu/presentations/Rew/nc4-iips.ppt&ei=_CgXSf6TCImMsAOQqKH7Cg&usg=AFQjCNHkGLUOBZlsXG3JNWfZ1mchBGM7kA&sig2=dBd8COl1oJYc7iQQSfYZaQ">netCDF-4 data model</a>. However there is a complete 2-way mapping between the two models. In the CDM:</p>
+<h3>Comparision to netCDF-4<a name="netcdf4"></a></h3>
+<p>The CDM data model is close to, but not identical to the <a href="http://www.unidata.ucar.edu/software/netcdf/workshops/2008/netcdf4/Nc4DataModel.html">netCDF-4 data model</a>. However there is a complete 2-way mapping between the two models. In the CDM:</p>
 <ul>
   <li>An attribute type may only be a scalar or 1D array of byte, short, int, long, float, double, or String.</li>
   <li>Variables that are members of Structures may have attributes attached directly to them.</li>
@@ -55,6 +55,7 @@
     </ul>
   </li>
 </ul>
+<p>See <a href="Netcdf4.html">here</a> for two way mapping between netCDF-4 and CDM data models.</p>
 <h3><a name="dods"></a>Comparision to OPeNDAP (DAP 2)</h3>
 <ul>
   <li>OPeNDAP allows nested attributes, but in the CDM, attributes  may only be a scalar or 1D array of byte, short, int, long, float, double, or String. </li>
