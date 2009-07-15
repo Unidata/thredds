@@ -794,9 +794,10 @@
           description="create a full distribution"/>
 
   <!-- release library -->
-  <target name="releaseInternal" depends="makeMain" description="internal release to lib">
+  <target name="releaseInternal" depends="makeMain, makeIDVjar" description="internal release to lib">
     <copy todir="${lib.dir}/release" overwrite="true">
       <fileset dir="${build.dir}" includes="${jarMain}"/>
+      <fileset dir="${build.dir}" includes="${jarIdv}"/>
     </copy>
   </target>
 
@@ -911,7 +912,8 @@
     <fileset refid="test.libraries"/>
   </path>
 
-  <target name="test-setup" depends="compile" description="setup for running junit tests">
+  <property name="cdmTestClasses.jar" value="cdmTestClasses.jar"/>
+  <target name="test-setup" depends="compile" description="compile and package test classes">
     <mkdir dir="${test.dir}"/>
     <mkdir dir="${test.classes.dir}"/>
 
@@ -926,6 +928,17 @@
       <classpath refid="test.classpath"/>
     </javac>
 
+    <jar jarfile="${build.dir}/${cdmTestClasses.jar}" index="true" duplicate="preserve">
+      <fileset dir="${test.classes.dir}" />
+
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Built-On" value="${buildtime2}"/>
+        <attribute name="Implementation-Title" value="CDM Test Classes"/>
+        <attribute name="Implementation-Version" value="${release.version.minor}"/>
+        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
+      </manifest>
+    </jar>
   </target>
 
   <target name="unit-test" depends="compile, test-setup" description="run nc unit tests">
