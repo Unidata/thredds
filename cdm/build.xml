@@ -57,7 +57,7 @@
   <!-- property name="gnu-regexp.jar" value="gnu-regexp-1.1.4.jar"/ -->
   <property name="bufrTables.jar" value="bufrTables-1.5.jar"/>
   <property name="ehcache.jar" value="ehcache-1.6.0.jar"/>
-  <property name="grib.jar" value="grib-6.0.jar"/>
+  <property name="grib.jar" value="grib-7.1.jar"/>
   <property name="httpclient.jar" value="commons-httpclient-3.1.jar"/>
   <property name="http-logging.jar" value="commons-logging-1.1.jar"/>
   <property name="http-codec.jar" value="commons-codec-1.3.jar"/>
