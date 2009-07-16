@@ -755,8 +755,7 @@
   <property name="test.reports.dir" value="${build.dir}/test/reports"/>
 
   <property name="cdm.test.classes.dir" value="${root.dir}/../cdm/target/build/test/classes" />
-  <property  name="cdmTestClasses.jar" value="release/cdmTestClasses.jar" />
-  
+
   <path id="test.classpath">
     <path refid="compile.classpath"/>
     <fileset refid="runtime.libraries"/>
@@ -764,7 +763,6 @@
       <include name="${spring-test.jar}" />
       <include name="${junit.jar}" />
       <include name="${httpunit.jar}" />
-      <include name="${cdmTestClasses.jar}" />
     </fileset>
     <pathelement location="${build.classes.dir}"/>
     <pathelement location="${test.classes.dir}"/>
