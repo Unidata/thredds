@@ -888,7 +888,7 @@
 
   <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
   <property name="test.src.dir" location="${root.dir}/src/test/java"/>
-  <property name="test.dir" value="${build.dir}/build/test"/>
+  <property name="test.dir" value="${build.dir}/test"/>
   <property name="test.classes.dir" value="${test.dir}/classes"/>
   <property name="test.reports.dir" value="${test.dir}/reports"/>
 
