@@ -912,7 +912,7 @@
     <fileset refid="test.libraries"/>
   </path>
 
-  <property name="cdmTestClasses.jar" value="cdmTestClasses.jar"/>
+  <property name="testClasses.jar" value="cdmTestClasses.jar"/>
   <target name="test-setup" depends="compile" description="compile and package test classes">
     <mkdir dir="${test.dir}"/>
     <mkdir dir="${test.classes.dir}"/>
@@ -928,7 +928,7 @@
       <classpath refid="test.classpath"/>
     </javac>
 
-    <jar jarfile="${build.dir}/${cdmTestClasses.jar}" index="true" duplicate="preserve">
+    <jar jarfile="${build.dir}/${testClasses.jar}" index="true" duplicate="preserve">
       <fileset dir="${test.classes.dir}" />
 
       <manifest>
