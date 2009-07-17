@@ -906,13 +906,12 @@
     <fileset refid="compileUI.libraries"/>
     <fileset refid="runtime.libraries"/>
     <pathelement location="${build.classes.dir}"/>
-    <pathelement location="${test.classes.dir}"/>
     <pathelement location="${resources.dir}"/>
     <pathelement location="${resourcesUI.dir}"/>
     <fileset refid="test.libraries"/>
   </path>
 
-  <property name="testClasses.jar" value="cdmTestClasses.jar"/>
+  <property name="test.classes.jar" value="${build.dir}/cdmTestClasses.jar"/>
   <target name="test-setup" depends="compile" description="compile and package test classes">
     <mkdir dir="${test.dir}"/>
     <mkdir dir="${test.classes.dir}"/>
@@ -928,7 +927,7 @@
       <classpath refid="test.classpath"/>
     </javac>
 
-    <jar jarfile="${build.dir}/${testClasses.jar}" index="true" duplicate="preserve">
+    <jar jarfile="${test.classes.jar}" index="true" duplicate="preserve">
       <fileset dir="${test.classes.dir}" />
 
       <manifest>
@@ -962,7 +961,11 @@
   <target name="unit-test-base" description="run junit tests">
     <mkdir dir="${test.reports.dir}/${unit.test.name}"/>
     <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on" dir="${root.dir}">
-      <classpath refid="test.classpath"/>
+      <classpath>
+        <path refid="test.classpath" />
+        <pathelement location="${test.classes.jar}" />
+      </classpath>
+
       <jvmarg value="-ea"/>
       <jvmarg value="-Xmx1024m"/>
       <formatter type="xml"/>

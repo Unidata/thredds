@@ -754,8 +754,8 @@
   <property name="test.classes.dir" value="${build.dir}/test/classes"/>
   <property name="test.reports.dir" value="${build.dir}/test/reports"/>
 
-  <property name="cdm.test.classes.dir" value="${root.dir}/../cdm/target/build/test/classes" />
-  <property name="testClasses.jar" value="${build.dir}/tdsTestClasses.jar"/>
+  <property name="cdm.test.classes.jar" value="${root.dir}/../cdm/target/cdmTestClasses.jar" />
+  <property name="test.classes.jar" value="${build.dir}/tdsTestClasses.jar"/>
 
   <path id="test.classpath">
     <path refid="compile.classpath"/>
@@ -766,9 +766,7 @@
       <include name="${httpunit.jar}" />
     </fileset>
     <pathelement location="${build.classes.dir}"/>
-    <pathelement location="${test.classes.dir}"/>
-    <pathelement location="${cdm.test.classes.dir}"/>
-    <fileset file="${testClasses.jar}" />
+    <fileset file="${cdm.test.classes.jar}"/>
   </path>
 
   <target name="test-setup" description="compile and setup for tests">
@@ -789,7 +787,7 @@
       <fileset dir="${test.data.dir}"/>
     </copy>
 
-    <jar jarfile="${testClasses.jar}" index="true" duplicate="preserve">
+    <jar jarfile="${test.classes.jar}" index="true" duplicate="preserve">
       <fileset dir="${test.classes.dir}" />
 
       <manifest>
@@ -1001,7 +999,11 @@
     
     <mkdir dir="${test.reports.dir}/${thredds.tds.test.id}"/>
     <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on"  dir="${root.dir}">
-      <classpath refid="test.classpath"/>
+      <classpath>
+        <path refid="test.classpath" />
+        <pathelement location="${test.classes.jar}" />
+      </classpath>
+
       <jvmarg value="-ea"/>
       <jvmarg value="-Dthredds.tds.test.server=${thredds.tds.test.server}"/>
       <jvmarg value="-Dthredds.tds.test.level=${thredds.tds.test.level}"/>
@@ -1045,7 +1047,11 @@
 
     <mkdir dir="${test.reports.dir}/${test.id}"/>
     <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on"  dir="${root.dir}">
-      <classpath refid="test.classpath"/>
+      <classpath>
+        <path refid="test.classpath" />
+        <pathelement location="${test.classes.jar}" />
+      </classpath>
+
       <jvmarg value="-ea"/>
       <formatter type="xml"/>
       <formatter type="brief" usefile="false"/>
