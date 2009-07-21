@@ -78,7 +78,7 @@ public class Cosmic extends TableConfigurerImpl {
 
     profile.addChild(obs);
 
-    return obs;
+    return profile;
   }
 
   Date makeTime( NetcdfDataset ds) {
