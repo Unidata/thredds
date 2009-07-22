@@ -6,15 +6,12 @@
 
 <h1><img src="../images/THREDDSlogo.jpg" height="54" width="67">
   TDS Catalog Configuration Tutorial </h1>
-<div class="head">
-<address>
-  </address>
   <hr>
   <p>THREDDS Catalogs were originally designed for <em>client</em>s
 to use to access remote data. They have been extended to allow the TDS
 to use them for its own configuration. In this mode they are called <em><strong>TDS Configuration Catalo</strong></em><strong><em>g</em></strong><em><strong>s, or server-side Catalogs. </strong></em>They contain information needed
 only on the server, which  is removed when the TDS sends the catalog to the client, called the <em><strong>client-side </strong></em>or<em><strong> client-view catalog</strong></em>. </p>
-  <div class="head">  
+
     <h2>Explicit Data Roots : DatasetRoot</h2>
     <p>Revisting our simple example, we modify it to be used as a <em><strong>TDS Configuration Catalog</strong></em>: </p>
     <pre>    &lt;?xml version="1.0" ?&gt;<br>    &lt;catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" &gt;<br>      &lt;service name="dodsServer" serviceType="OpenDAP"  base="/thredds/dodsC/" /&gt;<br>      <strong>&lt;datasetRoot path="sage" location="/data/idd/satellite/" /&gt;</strong>
