@@ -34,11 +34,13 @@ package thredds.server.wms.responses;
 
 import uk.ac.rdg.resc.ncwms.controller.RequestParams;
 import uk.ac.rdg.resc.ncwms.metadata.LayerImpl;
+import uk.ac.rdg.resc.ncwms.metadata.VectorLayerImpl;
 import uk.ac.rdg.resc.ncwms.datareader.DataReader;
 import uk.ac.rdg.resc.ncwms.usagelog.UsageLogEntry;
 import ucar.nc2.dt.GridDataset;
 
 import java.util.Map;
+import java.util.HashMap;
 
 import org.springframework.web.servlet.ModelAndView;
 
@@ -72,8 +74,67 @@ abstract public class FileBasedResponse
        reader = DataReader.getDataReader("uk.ac.rdg.resc.ncwms.datareader.DefaultDataReader", dataset);
 
        layers = reader.getAllLayers(dataset);
+
+       findVectorQuantities( dataset, layers );
+    }
+
+    /**
+     * Searches through the collection of Layer objects, looking for
+     * pairs of quantities that represent the components of a vector, e.g.
+     * northward/eastward_sea_water_velocity.  Modifies the given Hashtable
+     * in-place.
+     *
+     * @todo Only works for northward/eastward and x/y components so far
+     */
+    private static void findVectorQuantities( GridDataset ds, Map<String, LayerImpl> layers )
+    {
+        // This hashtable will store pairs of components in eastward-northward
+        // order, keyed by the standard name for the vector quantity
+        Map<String, LayerImpl[]> components = new HashMap<String, LayerImpl[]>();
+        for ( LayerImpl layer : layers.values() )
+        {
+            if ( layer.getTitle().contains( "eastward" ) )
+            {
+                String vectorKey = layer.getTitle().replaceFirst( "eastward_", "" );
+                // Look to see if we've already found the northward component
+                if ( !components.containsKey( vectorKey ) )
+                {
+                    // We haven't found the northward component yet
+                    components.put( vectorKey, new LayerImpl[2] );
+                }
+                components.get( vectorKey )[0] = layer;
+            }
+            else if ( layer.getTitle().contains( "northward" ) )
+            {
+                String vectorKey = layer.getTitle().replaceFirst( "northward_", "" );
+                // Look to see if we've already found the eastward component
+                if ( !components.containsKey( vectorKey ) )
+                {
+                    // We haven't found the eastward component yet
+                    components.put( vectorKey, new LayerImpl[2] );
+                }
+                components.get( vectorKey )[1] = layer;
+            }
+        }
+
+        // Now add the vector quantities to the collection of Layer objects
+        for ( String key : components.keySet() )
+        {
+            LayerImpl[] comps = components.get( key );
+
+            if ( comps[0] != null && comps[1] != null )
+            {
+                comps[0].setDataset( ds );
+                comps[1].setDataset( ds );
+                // We've found both components.  Create a new Layer object
+                LayerImpl vec = new VectorLayerImpl( key, comps[0], comps[1] );
+                // Use the title as the unique ID for this variable
+                vec.setId( key );
+                layers.put( key, vec );
+            }
+        }
     }
 
     abstract public ModelAndView processRequest(HttpServletResponse res, HttpServletRequest req) throws Exception;
-    
+
 }

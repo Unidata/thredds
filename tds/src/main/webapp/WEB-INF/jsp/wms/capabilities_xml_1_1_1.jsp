@@ -105,7 +105,7 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
             <Layer>
                 <Title>${datasetTitle}</Title>
                 <c:forEach var="layer" items="${layers}">
-                <Layer<c:if test="${config.server.allowFeatureInfo} and ${layer.queryable}"> queryable="1"</c:if>>
+                <Layer<c:if test="${config.server.allowFeatureInfo and layer.queryable}"> queryable="1"</c:if>>
                     <Name>${layer.layerName}</Name>
                     <Title><c:out value="${layer.title}"/></Title>
                     <Abstract><c:out value="${layer.abstract}"/></Abstract>
