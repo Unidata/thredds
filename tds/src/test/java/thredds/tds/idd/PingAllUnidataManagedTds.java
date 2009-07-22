@@ -10,9 +10,7 @@ import org.junit.runner.RunWith;
  * @since 4.0
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
-        TestMotherlodeGribVarNames.class,
-        PingMotherlodeTdsTest.class
-})
-public class TestMotherlodeTds
-{ }
+@Suite.SuiteClasses({PingTdsOnMotherlode8080.class, PingTdsAtNsf.class})
+public class PingAllUnidataManagedTds
+{
+}

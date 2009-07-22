@@ -34,7 +34,33 @@ created).</p><p>The following static methods are provided:</p><ul><li>closeEnoug
 <h3>CDM ucar.unidata.utils.TestDiskCacheUtils</h3><p>Static utility methods for setup and emptying ucar.nc2.util.DiskCache and ucar.nc2.util.DiskCache2.</p><h3>TDS thredds.tds.idd.TdsTestUtils</h3><p>Static utility methods for setup for testing of TDS.</p><ul><li>getTargetTdsUrl():String
 - Uses system properties "thredds.tds.test.server" and
 "thredds.tds.test.port" to construct the base TDS URL. The default
-value is "http://motherlode.ucar.edu:8080/thredds/".</li></ul><h3>TDS thredds.tds.idd.GridDatasetTestUtils</h3>Static utility methods ...<h3>TDS thredds.tds.idd.StandardCatalogUtils</h3><p>Static methods that return Object[][] listing catalog URLs for use in JUnit parameterized tests.</p><ul><li>getIddMainCatalogUrls():Object[][]</li><li>getIddDeepCatalogUrls():Object[][]</li><li>getMlodeMainCatalogUrls():Object[][]</li></ul><p>For instance, to use the main IDD catalogs as parameters for a test, include the following method in your test calls:</p><pre style="margin-left: 40px;">@Parameterized.Parameters<br>public static Collection&lt;Object[]&gt; getCatalogUrls()<br>{<br>  List&lt;Object[]&gt; catUrls = new ArrayList&lt;Object[]&gt;(<br>          Arrays.asList( StandardCatalogUtils.getIddMainCatalogUrls()));<br>  return catUrls;<br>}</pre><h3>TDS thredds.tds.idd.IddModelDatasetsUtils</h3><p>Static methods that return Object[][] that list IDs for model datasets for use in JUnit parameterized tests:</p><ul><li>getModelIds():Object[][]</li></ul><p>For instance, to use the model IDs as parameters for a test, include the following method in your test calls:</p><pre style="margin-left: 40px;">@Parameterized.Parameters<br>public static Collection&lt;Object[]&gt; getModelIds()<br>{<br>  List&lt;Object[]&gt; catUrls = new ArrayList&lt;Object[]&gt;(<br>          Arrays.asList( IddModelDatasetsUtils.getModelIds()));<br>  return catUrls;<br>}</pre><h3>TDS thredds.TestAll</h3>
+value is "http://motherlode.ucar.edu:8080/thredds/".</li></ul>
+
+<h3>TDS thredds.tds.idd.GridDatasetTestUtils</h3>
+Static utility methods ...
+
+<h3>TDS thredds.tds.idd.CompareGridVarNamesUtils</h3>
+Static utility methods ...
+
+<h3>TDS thredds.tds.idd.StandardCatalogUtils</h3>
+
+<p>Static methods that return Object[][] listing catalog URLs for use in JUnit parameterized tests.</p>
+
+<ul><li>getIddMainCatalogUrls():Object[][]</li><li>getIddDeepCatalogUrls():Object[][]</li><li>getMlodeMainCatalogUrls():Object[][]</li></ul>
+
+<p>For instance, to use the main IDD catalogs as parameters for a test, include the following method in your test calls:</p>
+
+<pre style="margin-left: 40px;">@Parameterized.Parameters<br>public static Collection&lt;Object[]&gt; getCatalogUrls()<br>{<br>  List&lt;Object[]&gt; catUrls = new ArrayList&lt;Object[]&gt;(<br>          Arrays.asList( StandardCatalogUtils.getIddMainCatalogUrls()));<br>  return catUrls;<br>}</pre>
+
+<h3>TDS thredds.tds.idd.IddModelDatasetsUtils</h3>
+
+<p>Static methods that return Object[][] that list IDs for model datasets for use in JUnit parameterized tests:</p>
+
+<ul><li>getModelIds():Object[][]</li></ul><p>For instance, to use the model IDs as parameters for a test, include the following method in your test calls:</p>
+
+<pre style="margin-left: 40px;">@Parameterized.Parameters<br>public static Collection&lt;Object[]&gt; getModelIds()<br>{<br>  List&lt;Object[]&gt; catUrls = new ArrayList&lt;Object[]&gt;(<br>          Arrays.asList( IddModelDatasetsUtils.getModelIds()));<br>  return catUrls;<br>}</pre>
+
+<h3>TDS thredds.TestAll</h3>
 
 <p>test</p>
 <p>cdm/src/test/java/ucar/nc2/TestAll</p>

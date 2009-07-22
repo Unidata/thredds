@@ -868,7 +868,7 @@
     </antcall>
   </target>
 
-  <target name="test-TDS-ping-overlode-8080" description="ping TDS on overlode:8080">
+  <target name="test-TDS-ping-overlode-8080" description="ping TDS at NSF">
     <antcall target="test-TDS">
       <param name="thredds.tds.test.id" value="ping-overlode-8080" />
       <param name="thredds.tds.test.server" value="thredds.cise-nsf.gov:8080" />
@@ -876,7 +876,7 @@
     </antcall>
   </target>
 
-  <target name="test-TDS-crawl-overlode-8080" description="crawl TDS on overlode:8080">
+  <target name="test-TDS-crawl-overlode-8080" description="crawl TDS at NSF">
     <antcall target="test-TDS">
       <param name="thredds.tds.test.id" value="crawl-overlode-8080" />
       <param name="thredds.tds.test.server" value="thredds.cise-nsf.gov:8080" />
@@ -921,33 +921,6 @@
   <property name="tdsNewMlodeAll" value="${tdsIddCat-sample}" />
   <!--property name="tdsNewMlodeAll" value="${tdsIddCat-models},${tdsMlodeIdvCat},${tdsMlodeCatGen},${tdsIddCat-sample}" /-->
 
-
-  <target name="test-TDS-ping-newmotherlode-8080" description="ping TDS on newmotherlode:8080">
-    <antcall target="test-TDS">
-      <param name="thredds.tds.test.id" value="ping-newmotherlode-8080" />
-      <param name="thredds.tds.test.server" value="newmotherlode.ucar.edu:8080" />
-      <param name="thredds.tds.test.level" value="ping-catalogs" />
-      <param name="thredds.tds.test.catalogs" value="${tdsNewMlodeAll}" />
-    </antcall>
-  </target>
-
-  <target name="test-TDS-crawl-newmotherlode-8080" description="crawl TDS on newmotherlode:8080">
-    <antcall target="test-TDS">
-      <param name="thredds.tds.test.id" value="crawl-newmotherlode-8080" />
-      <param name="thredds.tds.test.server" value="newmotherlode.ucar.edu:8080" />
-      <param name="thredds.tds.test.level" value="crawl-catalogs" />
-      <param name="thredds.tds.test.catalogs" value="${tdsNewMlodeAll}" />
-    </antcall>
-  </target>
-
-  <target name="test-TDS-crawlLimitedCat1Ds-newmotherlode-8080">
-    <antcall target="test-TDS">
-      <param name="thredds.tds.test.id" value="crawlLimitedCat1Ds-newmlode-8080" />
-      <param name="thredds.tds.test.server" value="newmotherlode.ucar.edu:8080" />
-      <param name="thredds.tds.test.level" value="crawl-catalogs-and1DsPerCollection"  />
-      <param name="thredds.tds.test.catalogs" value="${tdsNewMlodeAll}" />
-    </antcall>
-  </target>
 <!-- =========================== -->
 
   <!-- -->
@@ -1030,10 +1003,17 @@
   </target>
 
 
-  <target name="testMotherlodeTds">
+  <target name="test-crawl-random-dataset-on-all-unidata-managed-TDS">
     <antcall target="run-unit-test">
-      <param name="test.id" value="testMotherlodeTds"/>
-      <param name="test.class" value="thredds.tds.idd.TestMotherlodeTds"/>
+      <param name="test.id" value="CrawlAndCompareDatasetsOnAllUnidataManagedTds"/>
+      <param name="test.class" value="thredds.tds.idd.CrawlAndCompareDatasetsOnAllUnidataManagedTds"/>
+    </antcall>
+  </target>
+
+  <target name="test-ping-all-unidata-managed-TDS">
+    <antcall target="run-unit-test">
+      <param name="test.id" value="PingAllUnidataManagedTds"/>
+      <param name="test.class" value="thredds.tds.idd.PingAllUnidataManagedTds"/>
     </antcall>
   </target>
 

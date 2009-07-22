@@ -3,12 +3,8 @@ package thredds.tds.idd;
 import org.junit.runners.Parameterized;
 import org.junit.runner.RunWith;
 import org.junit.Test;
-import org.junit.Before;
 
 import java.util.Collection;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayList;
 
 import thredds.tds.ethan.TestAll;
 import thredds.catalog.InvCatalogImpl;
@@ -24,7 +20,7 @@ import static org.junit.Assert.*;
 @RunWith(Parameterized.class)
 public class PingMotherlodeTdsTest
 {
-  private String tdsUrl;
+  private String tdsUrl = "http://motherlode.ucar.edu/thredds/";
 
   private String catUrl;
 
@@ -34,19 +30,11 @@ public class PingMotherlodeTdsTest
     this.catUrl = catUrl;
   }
 
-  @Before
-  public void init()
-  {
-    this.tdsUrl = TdsTestUtils.getTargetTdsUrl();
-  }
-
-
   @Parameterized.Parameters
   public static Collection<Object[]> getCatalogUrls()
   {
-    List<Object[]> catUrls = new ArrayList<Object[]>(
-            Arrays.asList( StandardCatalogUtils.getIddMainCatalogUrls()));
-    catUrls.addAll( Arrays.asList( StandardCatalogUtils.getMlodeMainCatalogUrls() ));
+    Collection<Object[]> catUrls = StandardCatalogUtils.getIddMainCatalogUrlArrayCollection();
+    catUrls.addAll( StandardCatalogUtils.getMlodeMainCatalogUrlArrayCollection() );
     return catUrls;
   }
 
