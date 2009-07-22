@@ -8,7 +8,16 @@
 <body>
 <h1>Netcdf-Java FAQ</h1>
 <hr />
-<h3>Caching</h3>
+<ul>
+  <li><a href="#Caching">Caching</a></li>
+  <li><a href="#IOSP">IOSP</a></li>
+  <li><a href="#Logging">Logging</a></li>
+  <li><a href="#Multithreading">Multithreading</a></li>
+  <li><a href="#ncml">NcML</a></li>
+  <li><a href="#Unsigned">Unsigned types</a></li>
+  <li><a href="#Writing">Writing</a></li>
+</ul>
+<h3><a name="Caching" id="Caching"></a>Caching</h3>
 <p><strong>Q: How do I use NetcdfFile object caching</strong>?</p>
 <blockquote>
   <p>Initialize the object cache by calling <strong>NetcdfDataset.initNetcdfFileCache()</strong>, then open files through <strong>NetcdfDataset.acquireFile() </strong>and<strong> NetcdfDataset.acquireDataset()</strong>. Note that you always close a file in the normal way, ie through <strong>NetcdfFile.close()</strong>. See the javadoc for those methods for more details. </p>
@@ -19,7 +28,7 @@
   <p>See <a href="Caching.html">Disk Caching</a>.</p>
 </blockquote>
 </blockquote> 
-<h3>I/O Service Provider<a name="IOSP" id="IOSP"></a></h3>
+<h3><a name="IOSP" id="IOSP"></a>I/O Service Provider</h3>
 <p><strong>Q: I have lots of data in a proprietary format. How do I  read it into the CDM?</strong></p>
 <blockquote>
   <p>You write a class that implements the IO Service Provider interface. See section 4 of the <a href="http://www.unidata.ucar.edu/software/netcdf-java/tutorial/index.html">tutorial</a>.</p>
@@ -43,7 +52,7 @@
   <p>If you look at <strong>ucar.nc2.iosp.IOServiceProviderWriter</strong>, you can see the start of a possible standard mechanism for writing to different file formats. But it isnt used anywhere that would likely be useful to you. You probably just want to write your own class that takes a NetcdfFile object, and writes it to your file format, in whatever way suits you best. You might find the code at <strong>ucar.nc2.FileWriter </strong>useful to look at.</p>
   <p>&nbsp;</p>
 </blockquote>
-<h3>Logging</h3>
+<h3><a name="Logging" id="Logging"></a>Logging</h3>
 <p><strong>Q: How do I get rid of the message &quot;log4j:WARN No appenders could be found for logger (ucar.nc2.NetcdfFile).  log4j:WARN Please initialize the log4j system properly&quot; ?</strong></p>
 <blockquote>
   <p>Add the following to your startup code:</p>
@@ -52,7 +61,7 @@
     org.apache.log4j.Logger logger = org.apache.log4j.Logger.getRootLogger();
     logger.setLevel(org.apache.log4j.Level.OFF)</pre>
 </blockquote>
-<h3>Multithreading</h3>
+<h3><a name="Multithreading" id="Multithreading"></a>Multithreading</h3>
 <p><strong>Q: Is the Netcdf-Java library thread-safe?</strong></p>
 <blockquote>
   <p> Underneath a <strong>Variable/NetcdfFile</strong> is (usually) a <strong>java.io.RandomAccessFile</strong> object, which is not thread-safe, because  it keeps the state of the file position. So even if all you want to do is read data in multiple threads, you need to synchronize, typically on the <strong>NetcdFile</strong> object. Alternatively, open a new <strong>NetcdfFile</strong> for each thread. The THREDDS Data Server (TDS) uses a cache of open <strong>NetcdfFile</strong> files by using the <strong>NetcdfDataset.acquireFile() </strong>method, which allows stateless handling of data requests minimizing file opening and closing.</p>
@@ -61,8 +70,8 @@
 <blockquote>
   <p wrap="">The way that the cache is designed to work is that you get back a NetcdfFile object, which should then be used only in a single thread so that you dont need synchronization (&quot;thread-confinement&quot;), eg to answer a single request in a server. Until you release that NetcdfFile object, no one else can get it from the cache. If another request is made for that same NetcdfFile while its locked, a new NetcdfFile is opened.     And of course, the cache itself is thread-safe. So if you use it properly, you never have to do synchronization yourself.</p>
 </blockquote>
-<h3>NcML</h3>
-<p><strong>Q<a name="ncml" id="ncml"></a>: The NcML in my TDS is not working. What should I do?</strong></p>
+<h3><strong><a name="ncml" id="ncml"></a></strong>NcML</h3>
+<p><strong>Q: The NcML in my TDS is not working. What should I do?</strong></p>
 <blockquote>
   <p>Generally its much easier to debug NcML outside of the TDS. Here are some guidelines on how to do that.</p>
   <ol>
@@ -80,12 +89,20 @@
       <li>Open your TDS catalog in ToolsUI/Thredds. Navigate to the dataset, and &quot;open as file&quot; or &quot;open as dataset&quot; (at bottom). You should see the same results as in steps 2 or 3, except with all of the files.</li>
   </ol>
 </blockquote>
-<h3>Writing</h3>
+<h3><a name="Unsigned" id="Unsigned"></a>Unsigned Types</h3>
+<p><strong>Q: How do I work with unsigned integer types?</strong></p>
+<blockquote>
+  <p>When accessing a file through the &quot;raw interface&quot;, by opening the file through <em>NetcdfFile.open() </em>or<em> NetcdfDataset.openFile(),</em> you may see unsigned data types. See <a href="DataType.html#integer">CDM Datatypes</a> for more details on how to work with unsigned data arrays.</p>
+  <p>When accessing a file through the &quot;dataset interface&quot;, by opening the file through <em>NetcdfDataset.openDataset(),</em> if there is a scale/offset attribute set on a Variable, the variable will be widended to the type of the scale/offset attribute, typically a float. In this case the unsigned data will be correctly handled, and doesnt need special handling.</p>
+  <p>&nbsp;</p>
+</blockquote>
+<h3><a name="Writing" id="Writing2"></a>Writing</h3>
 <p><strong>Q: Ok, so you read a lot of files, what about writing?</strong></p>
 <blockquote>
   <p>Netcdf-Java library has very limited  support for writing files.. The only supported <em>output</em> format is the netCDF-3 &quot;classic&quot; file format. See the <strong>ucar.nc2.NetcdfFileWriteable</strong> javadoc.</p>
   <p><strong>ucar.nc2.FileWriter </strong>writes CDM files to netCDF-3 format. However, currently it does not try very hard to capture new features in this limited format. <strong>ucar.nc2.dataset.NetcdfDataset</strong>.<strong>main</strong>() is a cover for <strong>FileWriter</strong>, but you can also open NcML, OPeNDAP, and other datasets accessible with NetcdfDataset.openFile().</p>
 </blockquote>
+<p>&nbsp;</p>
 <p><strong>Q: What about writing NetCDF-4<a name="netcdf4" id="netcdf4"></a> format?</strong></p>
 <blockquote>
   <p>NetCDF-4 format is built on top of the <a href="http://www.hdfgroup.org/HDF5/">HDF5 file format</a>. It adds shared dimensions, so it is unfortunately not a strict subset of HDF5. HDF5 is a very complicated format, and at this time we do not have resources to write a 100% Java version for writing (we do have a 100% Java version for reading). We are considering a <a href="http://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a> interface to the NetCDF-4 C library, but there is no current timeline for that. So for now, you can only use the <a href="http://www.unidata.ucar.edu/software/netcdf/">NetCDF-4 C library</a> to write NetCDF-4 format files.</p>

@@ -94,9 +94,15 @@
   </tr>
 </table>
 <p>&nbsp; </p>
-<h2>Integer Types</h2>
-<p>The CDM integer types are <strong>byte, short, int, </strong>and<strong> long</strong>. Each are mapped to the corresponding Java primitive type. </p>
-<p>Java does not have unsigned types, and because  we do not automatically widen unsigned integers, handling unsigned values requires some attention. Unsigned integer types are stored in the corresponding signed types. You can detect this by calling <strong>Array.isUnsigned()</strong> or <strong>Variable.isUnsigned().</strong> An unsigned Variable will also have an attribute <strong>_unsigned</strong> whose String value is <strong>true</strong>. </p>
+<h2><a name="integer" id="integer"></a>Integer Types</h2>
+<p>The CDM integer types are <strong>byte, short, int, </strong>and<strong> long</strong>. Each are mapped to the corresponding Java primitive type, which are 1,2,4, and 8 bytes wide, respectively.</p>
+<p>When the underlying file format stores data as unsigned integers, an IOSP may decide to widen the type to a signed type, eg </p>
+<ul>
+  <li>unsigned byte &gt; signed short</li>
+  <li>unsigned short &gt; signed int</li>
+  <li>unsigned int &gt; signed long</li>
+</ul>
+<p>Otherwise, the the variable is kept as an unsigned integer type and  the attribute <em><strong>_Unsigned = &quot;true&quot;</strong></em> is added to the variable. Since Java does not have unsigned integer types, handling unsigned values requires some attention. Unsigned integer data are stored in the corresponding signed primitive types. You can detect this by calling <strong>Array.isUnsigned()</strong> or <strong>Variable.isUnsigned().</strong></p>
 <p>You may use static methods in <strong>ucar.ma2.DataType</strong> to convert one value at a time: </p>
 <pre>
   static public long <strong>unsignedIntToLong</strong>(int i);
@@ -106,10 +112,11 @@
 <p>You may use this static method in <strong>ucar.ma2.MAMath </strong> to widen all the values in an Array:</p>
 <pre><strong>   public static Array convertUnsigned( Array unsigned);</strong></pre>
 <p>Theres not much to do in a general way with unsigned longs, as there is no primitive type that can hold 64 bits of precision. </p>
-<p>ArrayByte, ArrayShort and ArrayInt will widen an unsigned value when  casting to wider type like float or double, for example, calling</p>
+<p><strong>ArrayByte, ArrayShort </strong>and<strong> ArrayInt</strong> will widen an unsigned value when  casting to wider type like float or double. For example, calling</p>
 <pre>  data.getDouble()
 </pre>
-<p>on an unsigned integer type will return the  widened value cast to a double.<br>
+<p>on an unsigned integer type will return the  widened value cast to a double.</p>
+<p><br>
 </p>
 <h2>Floating Point Types</h2>
 <p>The CDM integer types are <strong>float and double </strong><strong></strong>. Each are mapped to the corresponding Java primitive type. </p>
@@ -161,7 +168,7 @@
 <address>
 </address>
 <address>
-<img src="../nc.gif" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 13, 2008
+<img src="../nc.gif" width="64" height="64" /> This document is maintained by John Caron and was last updated July 2009
 </address>
 </body>
 </html>
