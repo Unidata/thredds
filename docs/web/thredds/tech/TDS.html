@@ -9,7 +9,7 @@
 <h2> Overview</h2>
 <p>The THREDDS Data Server (TDS) is a web server that provides metadata
 and data access for scientific datasets, using OPeNDAP, OGC WMS and
-WCS, HTTP, and other data access protocols. The TDS is developed and
+WCS, HTTP, and other remote data access protocols. The TDS is developed and
 supported by Unidata, a division of the University Corporation for
 Atmospheric Research (<a href="http://www.ucar.edu/">UCAR</a>), and is sponsored by the National Science Foundation.</p>
 <p>Some of the technology in the TDS:</p>
@@ -42,7 +42,7 @@ under the (MIT-style)  netCDF library <a href="http://www.unidata.ucar.edu/softw
 <p>Much of the realtime data available over the Unidata <a href="http://www.unidata.ucar.edu/software/idd/index.html">Internet Data Distribution</a> (IDD) is available through a THREDDS Data Server hosted at Unidata on <a href="http://motherlode.ucar.edu:8080/thredds/">motherlode.ucar.edu</a>.
 You are welcome to browse and access these meteorological datasets. If
 you need regular access to large amounts of data, please contact <a href="mailto:support-idd@unidata.ucar.edu.">support-idd@unidata.ucar.edu.</a></p>
-<h2>System Requirements</h2>
+<h3>System Requirements</h3>
 <ul>
   <li><a href="http://java.sun.com/">Java</a> 1.6 or above.</li>
   <li><a href="http://tomcat.apache.org/">Tomcat</a> 5.5 or above, we recommend the latest version of Tomcat 6.x </li>
@@ -69,25 +69,29 @@ Service) who did the hard work. </p>
 <ul>
   <li><a href="tutorial/index.html">TDS Installation and Administration Tutorial</a></li>
   <li>TDS Reference Documentation <a href="tds4.0/reference/index.html">version 4.0</a></li>
-  <li>TDS Reference Documentation <a href="reference/index.html">version 3.17</a></li>
-  <li><a href="interfaceSpec/NetcdfSubsetService.html">Netcdf Subset Service</a> (experimental)
-    <ul>
-      <li><a href="interfaceSpec/StationDataSubsetService.html">Station Subset Service</a></li>
-      <li><a href="interfaceSpec/GridDataSubsetService.html">Gridded Data Subset Service</a></li>
-    </ul>
-  </li>
-  <li>Radar Subset Service (experimental)
-    <ul>
-      <li><a href="interfaceSpec/RadarLevel2SubsetService.html">NEXRAD Level 2</a></li>
-      <li><a href="interfaceSpec/RadarLevel3SubsetService.html">NEXRAD Level 3 </a></li>
-    </ul>
-  </li>
-  <li><a href="StatusReport.html">THREDDS Status Report </a></li>
-  <li>THREDDS Fact Sheet
+  <li>TDS Reference Documentation <a href="tds3.17/reference/index.html">version 3.17</a></li>
+  <li><a href="faq/index.html">FAQ</a></li>
+  <li><a href="StatusReport.html"> Status Report </a></li>
+  <li> Fact Sheet
     [<a href="/publications/factsheets/2007sheets/threddsFactSheet-1.doc">Word Doc</a>]
     [<a href="/publications/factsheets/2007sheets/threddsFactSheet-1.pdf">PDF</a>]  </li>
 </ul>
-<h2><b>THREDDS Catalogs<a name="Catalogs" id="Catalogs"></a> </b></h2>
+<h3>Experimental TDS Services</h3>
+<ul>
+  <li><a href="interfaceSpec/NetcdfSubsetService.html">Netcdf Subset Service</a>
+    <ul>
+        <li><a href="interfaceSpec/StationDataSubsetService.html">Station Subset Service</a></li>
+      <li><a href="interfaceSpec/GridDataSubsetService.html">Gridded Data Subset Service</a></li>
+    </ul>
+  </li>
+  <li>Radar Subset Service 
+    <ul>
+        <li><a href="interfaceSpec/RadarLevel2SubsetService.html">NEXRAD Level 2</a></li>
+      <li><a href="interfaceSpec/RadarLevel3SubsetService.html">NEXRAD Level 3 </a></li>
+    </ul>
+  </li>
+</ul>
+<h3><b>THREDDS Catalogs<a name="Catalogs" id="Catalogs"></a> </b></h3>
 <p>THREDDS Catalogs are logical directories of on-line data resources, encoded as <a href="http://www.w3.org/TR/REC-xml/">XML documents</a>,
 which provide a place for annotations and other metadata about the data
 resources to reside. This is how THREDDS-enabled data consumers find
@@ -108,22 +112,28 @@ use them for its own configuration. In this mode they are called <em><strong>TDS
   <li>The XML Schema document: <a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.2.xsd">Online catalog  schema</a> . </li>
   <li><a href="catalog/v1.0.2/Changes.html">Catalog 1.0.2 changes.</a></li>
   <li><a href="tutorial/CatalogPrimer.html">Catalog Primer</a></li>
-</ul><h2>Other TDS Services</h2>
+</ul>
+<p>&nbsp;</p>
+<h2>Other TDS Services</h2>
+<h3>Show Remote Catalog as HTML</h3>
 <ul>
   
-  <li><a href="http://motherlode.ucar.edu:8080/thredds/showHtmlForm.html">Show catalog as HTML form.</a> </li>
+  <li><a href="http://motherlode.ucar.edu:8080/thredds/showHtmlForm.html">Show catalog as HTML form.</a></li>
 </ul>
+<h3><a name="CDM_Coordinate_System_Validator"></a>CDM Coordinate System Validator</h3><p>The
+Common Data Model (CDM) coordinate system validator is no longer part
+of the TDS distribution. Instead it comes as a separate distribution.</p><ul><li><a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.0/cdmvalidator.war">Download</a> the latest cdmvalidator.war file.</li><li><a href="tds4.0/cdmValidator.html">Documentation</a></li><li><a href="http://motherlode.ucar.edu:8080/cdmvalidator/validate.html">CDM Validator</a> on the Unidata server.</li>
+  </ul>
+<p>&nbsp;</p>
 <h2>Other ways to use TDS</h2>
 <ul>
   <li>
     <p class="documentFirstHeading"><a href="http://ferret.pmel.noaa.gov/LAS/documentation/the-ferret-thredds-data-server-f-tds/">The Ferret-THREDDS Data Server</a></p>
   </li>
 </ul>
-<h2>Related Services</h2><h3><a name="CDM_Coordinate_System_Validator"></a>CDM Coordinate System Validator</h3><p>The
-Common Data Model (CDM) coordinate system validator is no longer part
-of the TDS distribution. Instead it comes as a separate distribution.</p><ul><li><a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.0/cdmvalidator.war">Download</a> the latest cdmvalidator.war file.</li><li><a href="tds4.0/cdmValidator.html">Documentation</a></li><li><a href="http://motherlode.ucar.edu:8080/cdmvalidator/validate.html">CDM Validator</a> on the Unidata server.</li></ul>
+<p>&nbsp;</p>
 <hr width="100%">
 <address>
-<img src="images/thread.png" height="108" width="110">This document is maintained by John Caron and was last updated June 2009
+<img src="images/thread.png" height="108" width="110">This document is maintained by John Caron and was last updated July 2009
 </address>
 </body></html>
