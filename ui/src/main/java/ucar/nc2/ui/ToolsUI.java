@@ -127,6 +127,7 @@ public class ToolsUI extends JPanel {
   private GeoGridPanel gridPanel;
   private GribPanel gribPanel;
   private Hdf5Panel hdf5Panel;
+  private Hdf4Panel hdf4Panel;
   private ImagePanel imagePanel;
   private NCdumpPanel ncdumpPanel;
   private OpPanel ncmlPanel, geotiffPanel;
@@ -219,6 +220,7 @@ public class ToolsUI extends JPanel {
     iospTabPane.addTab("BUFR", new JLabel("BUFR"));
     iospTabPane.addTab("GRIB", new JLabel("GRIB"));
     iospTabPane.addTab("HDF5", new JLabel("HDF5"));
+    iospTabPane.addTab("HDF4", new JLabel("HDF4"));
     iospTabPane.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         Component c = iospTabPane.getSelectedComponent();
@@ -342,6 +344,10 @@ public class ToolsUI extends JPanel {
     } else if (title.equals("HDF5")) {
       hdf5Panel = new Hdf5Panel((PreferencesExt) mainPrefs.node("hdf5"));
       c = hdf5Panel;
+
+    } else if (title.equals("HDF4")) {
+      hdf4Panel = new Hdf4Panel((PreferencesExt) mainPrefs.node("hdf4"));
+      c = hdf4Panel;
 
     } else if (title.equals("Images")) {
       imagePanel = new ImagePanel((PreferencesExt) mainPrefs.node("images"));
@@ -776,6 +782,7 @@ public class ToolsUI extends JPanel {
     if (gribPanel != null) gribPanel.save();
     if (gridPanel != null) gridPanel.save();
     if (hdf5Panel != null) hdf5Panel.save();
+    if (hdf4Panel != null) hdf4Panel.save();
     if (imagePanel != null) imagePanel.save();
     if (ncdumpPanel != null) ncdumpPanel.save();
     if (ncmlPanel != null) ncmlPanel.save();
@@ -1250,7 +1257,6 @@ public class ToolsUI extends JPanel {
 
     void save() {
       cb.save();
-      //if (v3Butt != null) prefs.putBoolean("nc3useRecords", v3Butt.getModel().isSelected());
       if (coordButt != null) prefs.putBoolean("coordState", coordButt.getModel().isSelected());
       if (detailWindow != null) prefs.putBeanObject(FRAME_SIZE, detailWindow.getBounds());
     }
@@ -1947,11 +1953,6 @@ public class ToolsUI extends JPanel {
     ucar.unidata.io.RandomAccessFile raf = null;
     Hdf5Table hdf5Table;
 
-    boolean useDefinition = false;
-    JComboBox defComboBox;
-    IndependentWindow defWindow;
-    AbstractButton defButt;
-
     Hdf5Panel(PreferencesExt p) {
       super(p, "file:", true, false);
       hdf5Table = new Hdf5Table(prefs);
@@ -1987,6 +1988,51 @@ public class ToolsUI extends JPanel {
 
     void save() {
       hdf5Table.save();
+      super.save();
+    }
+
+  }
+
+  /////////////////////////////////////////////////////////////////////
+  private class Hdf4Panel extends OpPanel {
+    ucar.unidata.io.RandomAccessFile raf = null;
+    Hdf4Table hdf4Table;
+
+    Hdf4Panel(PreferencesExt p) {
+      super(p, "file:", true, false);
+      hdf4Table = new Hdf4Table(prefs);
+      add(hdf4Table, BorderLayout.CENTER);
+    }
+
+    boolean process(Object o) {
+      String command = (String) o;
+      boolean err = false;
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        if (raf != null)
+          raf.close();
+        raf = new ucar.unidata.io.RandomAccessFile(command, "r");
+
+        hdf4Table.setHdf4File(raf);
+
+      } catch (FileNotFoundException ioe) {
+        JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
+        ta.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
+        err = true;
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        e.printStackTrace(new PrintStream(bos));
+        ta.setText(bos.toString());
+        err = true;
+      }
+
+      return !err;
+    }
+
+    void save() {
+      hdf4Table.save();
       super.save();
     }
 

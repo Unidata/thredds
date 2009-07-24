@@ -439,7 +439,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   public Object sendIospMessage(Object message) {
     if (message.toString().equals("header"))
       return headerParser;
-    return null;
+    return super.sendIospMessage(message);
   }
 
 }

@@ -2,6 +2,10 @@ CHANGES for Netcdf-Java library
 Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
+Changes in version 4.1
+ 0:
+  ToolsUI/IOSP/HDF4
+
 Changes in version 4.0
 
  Release Details:

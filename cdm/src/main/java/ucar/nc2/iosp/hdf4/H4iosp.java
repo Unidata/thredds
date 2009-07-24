@@ -479,5 +479,12 @@ public class H4iosp extends AbstractIOServiceProvider {
 
   }
 
+    // debug
+  public Object sendIospMessage(Object message) {
+    if (message.toString().equals("header"))
+      return header;
+    return super.sendIospMessage(message);
+  }
+
 
 }

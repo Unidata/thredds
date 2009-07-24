@@ -77,16 +77,18 @@
   <ol>
       <li>Go to the TDS configuration catalog and extract the NcML:
         <ol>
-          <li>Find the problem dataset. Inside the &lt;dataset&gt; element will be a &lt;netcdf&gt; element, that is the NcML aggregation. Cut and paste into a file, say its called <strong>test.ncml</strong> (it must have suffix <strong>ncml</strong> or <strong>xml</strong>).</li>
-          <li>Add the XML header to the top of it: &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</li>
+          <li>Find the problem dataset. Inside the &lt;dataset&gt; element will be a &lt;netcdf&gt; element, that is the NcML. Cut and paste into a file, say its called <strong>test.ncml</strong> (it must have suffix <strong>ncml</strong> or <strong>xml</strong>).</li>
+          <li>Add the XML header to the top of it: <strong>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</strong></li>
           <li>Remove the <strong>recheckEvery</strong> attribute if present on the &lt;scan&gt; element.</li>
-          <li>Make sure the datasets are available. If its an aggregation, a simple thing to do is to copy two or more of the files and put them in the same directory as test.ncml. Use a scan element or explicitly list them in a &lt;netcdf&gt; element, with the location attribute being the reletive path name.</li>
+          <li>Make sure the referenced datasets are available. If its an aggregation, a simple thing to do is to copy two or more of the files and put them in the same directory as test.ncml. Use a scan element or explicitly list them in a &lt;netcdf&gt; element, with the <strong>location</strong> attribute being the reletive path name.</li>
         </ol>
     </li>
-      <li>Open test.ncml in the viewer tab of ToolsUI, to check for NcML errors. You  now see directly what the modified dataset looks like. Modify test.ncml and ropen it until you get it right.</li>
-      <li>If its a grid dataset,open it in FeatureTypes/Grid tab to make sure you see grids, to check for complete coordinate system. If you dont see the grids you expect, the CoordSys tab might be helpful. It takes some expertise to understand <a href="../CDM/index.html">how Coordinate systems work</a>. When all else fails, follow the <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/">CF specification</a>.</li>
-      <li>Now put your changes back into TDS catalog and restart the server </li>
-      <li>Open your TDS catalog in ToolsUI/Thredds. Navigate to the dataset, and &quot;open as file&quot; or &quot;open as dataset&quot; (at bottom). You should see the same results as in steps 2 or 3, except with all of the files.</li>
+      <li>Open test.ncml in the viewer tab of ToolsUI, to check for NcML errors. You  now see directly what the modified dataset looks like. Modify test.ncml and re-open it until you get it right. The NcML tab allows you to edit and save the NcML file, but it is a very primitive editor.</li>
+      <li>If its a grid dataset,open it in the FeatureTypes/Grid tab to make sure you see grids, to check for complete coordinate system. If you dont see the grids you expect, the CoordSys tab might be helpful. It takes some expertise to understand <a href="../CDM/index.html">how Coordinate systems work</a>. When all else fails, follow the <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/">CF specification</a>.</li>
+      <li>If its an aggregation, the NcML/Aggregation tab will show you the individual file in the aggregation. </li>
+      <li>If its an FMRC aggregation, the Fmrc/FmrcImpl tab will show you the various datasets found. </li>
+      <li>Onec things are working correctly,  put your changes back into TDS catalog and restart the server </li>
+      <li>Open your TDS catalog in the ToolsUI/THREDDS tab. Navigate to the dataset, and &quot;open as file&quot; or &quot;open as dataset&quot; (at bottom). You should see the same results as in steps 2 and 3.</li>
   </ol>
 </blockquote>
 <h3><a name="Unsigned" id="Unsigned"></a>Unsigned Types</h3>
@@ -107,6 +109,11 @@
 <blockquote>
   <p>NetCDF-4 format is built on top of the <a href="http://www.hdfgroup.org/HDF5/">HDF5 file format</a>. It adds shared dimensions, so it is unfortunately not a strict subset of HDF5. HDF5 is a very complicated format, and at this time we do not have resources to write a 100% Java version for writing (we do have a 100% Java version for reading). We are considering a <a href="http://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a> interface to the NetCDF-4 C library, but there is no current timeline for that. So for now, you can only use the <a href="http://www.unidata.ucar.edu/software/netcdf/">NetCDF-4 C library</a> to write NetCDF-4 format files.</p>
 </blockquote>
+<p><strong>Q: Can I stream a NetcdfFile object to a client?</strong></p>
+<blockquote>
+  <p> NetCDF is a random access format, so streaming is not always possible. The standard way to do this is to write to a disk file  (so that you have random access), using <strong>ucar.nc2.FileWriter</strong>, then copy the file to the client. Note  that you must stay within the &quot;classic model&quot; to write  a netCDF-3 file.</p>
+  <p>There are  experimental classes based on <strong>ucar.nc2.iosp.netcdf3.N3streamWriter</strong>, but these  shouldnt be used in production without extensive testing. If you want to experiment, <strong>ucar.nc2.ft.point.writer.WriterCFPointObsDataset</strong> is an example class that uses  stream writing. <em>Stream writing is experimental and the APIs may change or be withdrawn in  future releases.</em></p>
+</blockquote>
 <p><strong>Q: <a name="writeGuide" id="writeGuide"></a>What kind of information should I put into my netCDF file to help others read it? </strong></p>
 <blockquote>
   <p>Thank you for asking, See: </p>
@@ -118,7 +125,7 @@
 </blockquote>
 <hr />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Feb 13, 2009
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on July 13, 2009
 </address>
 </body>
 </html>

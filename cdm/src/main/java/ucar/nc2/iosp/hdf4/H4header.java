@@ -75,38 +75,42 @@ public class H4header {
     return false;
   }
 
+  private static boolean debugDD = false; // DDH/DD
+   private static boolean debugTag1 = false; // show tags after read(), before read2().
+   private static boolean debugTag2 = false;  // show tags after everything is done.
+   private static boolean debugTagDetail = false; // when showing tags, show detail or not
+   private static boolean debugConstruct = false; // show CDM objects as they are constructed
+   private static boolean debugAtt = false; // show CDM attributes as they are constructed
+   private static boolean debugLinked = false; // linked data
+   private static boolean debugChunkTable = false; // chunked data
+   private static boolean debugChunkDetail = false; // chunked data
+   private static boolean debugTracker = false; // memory tracker
+   private static boolean warnings = true; // log messages
+
+   public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
+     debugTag1 = debugFlag.isSet("H4header/tag1");
+     debugTag2 = debugFlag.isSet("H4header/tag2");
+     debugTagDetail = debugFlag.isSet("H4header/tagDetail");
+     debugConstruct = debugFlag.isSet("H4header/construct");
+     debugAtt = debugFlag.isSet("H4header/att");
+     debugLinked = debugFlag.isSet("H4header/linked");
+     debugChunkTable = debugFlag.isSet("H4header/chunkTable");
+     debugChunkDetail = debugFlag.isSet("H4header/chunkDetail");
+     debugTracker = debugFlag.isSet("H4header/memTracker");
+     HdfEos.showWork = debugFlag.isSet("HdfEos/showWork");
+   }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
   private ucar.nc2.NetcdfFile ncfile;
   private RandomAccessFile raf;
 
+  private List<Tag> alltags;
   private Map<Integer, Tag> tagMap = new HashMap<Integer, Tag>();
   private Map<Short, Vinfo> refnoMap = new HashMap<Short, Vinfo>();
 
   private MemTracker memTracker;
   private PrintStream debugOut = System.out;
-  private static boolean debugDD = false; // DDH/DD
-  private static boolean debugTag1 = false; // show tags after read(), before read2().
-  private static boolean debugTag2 = false;  // show tags after everything is done.
-  private static boolean debugTagDetail = false; // when showing tags, show detail or not
-  private static boolean debugConstruct = false; // show CDM objects as they are constructed
-  private static boolean debugAtt = false; // show CDM attributes as they are constructed
-  private static boolean debugLinked = false; // linked data
-  private static boolean debugChunkTable = false; // chunked data
-  private static boolean debugChunkDetail = false; // chunked data
-  private static boolean debugTracker = false; // memory tracker
-  private static boolean warnings = true; // log messages
-
-  public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
-    debugTag1 = debugFlag.isSet("H4header/tag1");
-    debugTag2 = debugFlag.isSet("H4header/tag2");
-    debugTagDetail = debugFlag.isSet("H4header/tagDetail");
-    debugConstruct = debugFlag.isSet("H4header/construct");
-    debugAtt = debugFlag.isSet("H4header/att");
-    debugLinked = debugFlag.isSet("H4header/linked");
-    debugChunkTable = debugFlag.isSet("H4header/chunkTable");
-    debugChunkDetail = debugFlag.isSet("H4header/chunkDetail");
-    debugTracker = debugFlag.isSet("H4header/memTracker");
-    HdfEos.showWork = debugFlag.isSet("HdfEos/showWork");
-  }
 
   void read(RandomAccessFile myRaf, ucar.nc2.NetcdfFile ncfile) throws IOException {
     this.raf = myRaf;
@@ -127,7 +131,7 @@ public class H4header {
       debugOut.println("H4header 0pened file to read:'" + raf.getLocation() + "', size=" + actualSize / 1000 + " Kb");
 
     // read the DDH and DD records
-    List<Tag> alltags = new ArrayList<Tag>();
+    alltags = new ArrayList<Tag>();
     long link = raf.getFilePointer();
     while (link > 0)
       link = readDDH(alltags, link);
@@ -386,7 +390,7 @@ public class H4header {
           String lowername = vh.name.toLowerCase();
           if ((vh.nfields == 1) && (H4type.setDataType(vh.fld_type[0], null) == DataType.CHAR) &&
               ((vh.fld_isize[0] > 4000) || lowername.startsWith("archivemetadata") || lowername.startsWith("coremetadata")
-                || lowername.startsWith("productmetadata") || lowername.startsWith("structmetadata"))) {
+                  || lowername.startsWith("productmetadata") || lowername.startsWith("structmetadata"))) {
             ncfile.addVariable(null, makeVariable(vh)); // // large EOS metadata - make into variable in root group
           } else {
             Attribute att = makeAttribute(vh);
@@ -425,9 +429,9 @@ public class H4header {
           att = new Attribute(name, readString(size));
         else {
           String[] vals = new String[nelems];
-          for (int i=0; i<nelems; i++)
+          for (int i = 0; i < nelems; i++)
             vals[i] = readString(size);
-          att = new Attribute(name, Array.factory(DataType.STRING.getPrimitiveClassType(), new int[] { nelems}, vals));
+          att = new Attribute(name, Array.factory(DataType.STRING.getPrimitiveClassType(), new int[]{nelems}, vals));
         }
         break;
       case 5:
@@ -435,9 +439,9 @@ public class H4header {
           att = new Attribute(name, raf.readFloat());
         else {
           float[] vals = new float[nelems];
-          for (int i=0; i<nelems; i++)
+          for (int i = 0; i < nelems; i++)
             vals[i] = raf.readFloat();
-          att = new Attribute(name, Array.factory(DataType.FLOAT.getPrimitiveClassType(), new int[] { nelems}, vals));
+          att = new Attribute(name, Array.factory(DataType.FLOAT.getPrimitiveClassType(), new int[]{nelems}, vals));
         }
         break;
       case 6:
@@ -445,9 +449,9 @@ public class H4header {
           att = new Attribute(name, raf.readDouble());
         else {
           double[] vals = new double[nelems];
-          for (int i=0; i<nelems; i++)
+          for (int i = 0; i < nelems; i++)
             vals[i] = raf.readDouble();
-          att = new Attribute(name, Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] { nelems}, vals));
+          att = new Attribute(name, Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[]{nelems}, vals));
         }
         break;
       case 20:
@@ -456,20 +460,20 @@ public class H4header {
           att = new Attribute(name, raf.readByte());
         else {
           byte[] vals = new byte[nelems];
-          for (int i=0; i<nelems; i++)
+          for (int i = 0; i < nelems; i++)
             vals[i] = raf.readByte();
-          att = new Attribute(name, Array.factory(DataType.BYTE.getPrimitiveClassType(), new int[] { nelems}, vals));
+          att = new Attribute(name, Array.factory(DataType.BYTE.getPrimitiveClassType(), new int[]{nelems}, vals));
         }
         break;
       case 22:
       case 23:
-       if (nelems == 1)
+        if (nelems == 1)
           att = new Attribute(name, raf.readShort());
         else {
           short[] vals = new short[nelems];
-          for (int i=0; i<nelems; i++)
+          for (int i = 0; i < nelems; i++)
             vals[i] = raf.readShort();
-          att = new Attribute(name, Array.factory(DataType.SHORT.getPrimitiveClassType(), new int[] { nelems}, vals));
+          att = new Attribute(name, Array.factory(DataType.SHORT.getPrimitiveClassType(), new int[]{nelems}, vals));
         }
         break;
       case 24:
@@ -478,9 +482,9 @@ public class H4header {
           att = new Attribute(name, raf.readInt());
         else {
           int[] vals = new int[nelems];
-          for (int i=0; i<nelems; i++)
+          for (int i = 0; i < nelems; i++)
             vals[i] = raf.readInt();
-          att = new Attribute(name, Array.factory(DataType.INT.getPrimitiveClassType(), new int[] { nelems}, vals));
+          att = new Attribute(name, Array.factory(DataType.INT.getPrimitiveClassType(), new int[]{nelems}, vals));
         }
         break;
       case 26:
@@ -489,9 +493,9 @@ public class H4header {
           att = new Attribute(name, raf.readLong());
         else {
           long[] vals = new long[nelems];
-          for (int i=0; i<nelems; i++)
+          for (int i = 0; i < nelems; i++)
             vals[i] = raf.readLong();
-          att = new Attribute(name, Array.factory(DataType.LONG.getPrimitiveClassType(), new int[] { nelems}, vals));
+          att = new Attribute(name, Array.factory(DataType.LONG.getPrimitiveClassType(), new int[]{nelems}, vals));
         }
         break;
     }
@@ -511,7 +515,7 @@ public class H4header {
     for (int i = 0; i < tagGroup.nelems; i++) {
       Tag tag = tagMap.get(tagid(tagGroup.elem_ref[i], tagGroup.elem_tag[i]));
       if (tag == null) {
-        log.error("Reference tag missing= " + tagGroup.elem_ref[i] + "/" + tagGroup.elem_tag[i]);
+        log.error("Reference tag missing= " + tagGroup.elem_ref[i] + "/" + tagGroup.elem_tag[i] +" for group "+tagGroup.refno);
         continue;
       }
 
@@ -521,7 +525,7 @@ public class H4header {
           if (v != null)
             addVariableToGroup(group, v, tag);
           else
-            log.error("Missing variable "+tag.refno);
+            log.error("Missing variable " + tag.refno);
         }
       }
 
@@ -613,11 +617,11 @@ public class H4header {
     vinfo.tags.add(data);
     vinfo.tags.add(ntag);
 
-    // assume dimensions are shared for now
+    // assume dimensions are not shared for now
     if (dimTag.dims == null) {
       dimTag.dims = new ArrayList<Dimension>();
-      dimTag.dims.add(ncfile.addDimension(null, new Dimension("ydim", dimTag.ydim)));
-      dimTag.dims.add(ncfile.addDimension(null, new Dimension("xdim", dimTag.xdim)));
+      dimTag.dims.add(makeDimensionUnshared("ydim", dimTag.ydim));
+      dimTag.dims.add(makeDimensionUnshared("xdim", dimTag.xdim));
     }
 
     Variable v = new Variable(ncfile, null, null, "Image-" + group.refno);
@@ -626,6 +630,28 @@ public class H4header {
     vinfo.setVariable(v);
 
     return v;
+  }
+
+  private Dimension makeDimensionUnshared(String dimName, int len) {
+    // create new dimension and add it
+    return new Dimension(dimName, len, false);
+  }
+
+  private Dimension makeDimensionShared(String dimName, int len) {
+    Group root = ncfile.getRootGroup();
+    Dimension d = root.findDimension(dimName);
+    if ((d != null) && (d.getLength() == len))
+      return d;
+
+    if (d != null) { // different length
+      dimName = dimName + len;
+      d = root.findDimension(dimName);
+      if ((d != null) && (d.getLength() == len))
+        return d;
+    }
+
+    // create new dimension and add it
+    return ncfile.addDimension(null, new Dimension(dimName, len));
   }
 
   private Variable makeVariable(TagVH vh) throws IOException {
@@ -658,12 +684,12 @@ public class H4header {
           if (vh.fld_order[0] > 1)
             v.setDimensionsAnonymous(new int[]{vh.nvert, vh.fld_order[0]});
           else if (vh.fld_order[0] < 0)
-             v.setDimensionsAnonymous(new int[]{vh.nvert, vh.fld_isize[0]});
+            v.setDimensionsAnonymous(new int[]{vh.nvert, vh.fld_isize[0]});
           else
             v.setDimensionsAnonymous(new int[]{vh.nvert});
 
         } else {
-          
+
           if (vh.fld_order[0] > 1)
             v.setDimensionsAnonymous(new int[]{vh.fld_order[0]});
           else if (vh.fld_order[0] < 0)
@@ -779,7 +805,7 @@ public class H4header {
       return null;
     }
     if (data == null) {
-      log.warn("data tag missing vgroup= " + group.refno+" "+group.name);
+      log.warn("data tag missing vgroup= " + group.refno + " " + group.name);
       //return null;
     }
     Variable v = new Variable(ncfile, null, null, group.name);
@@ -792,9 +818,9 @@ public class H4header {
     // apparently the 701 SDdimension tag overrides the VGroup dimensions
     assert dim.shape.length == v.getRank();
     boolean ok = true;
-    for (int i=0; i<dim.shape.length; i++)
-      if(dim.shape[i] != v.getDimension(i).getLength()) {
-        if (warnings) log.warn( dim.shape[i] + " != "+ v.getDimension(i).getLength()+" for "+v.getName());
+    for (int i = 0; i < dim.shape.length; i++)
+      if (dim.shape[i] != v.getDimension(i).getLength()) {
+        if (warnings) log.warn(dim.shape[i] + " != " + v.getDimension(i).getLength() + " for " + v.getName());
         ok = false;
       }
 
@@ -967,7 +993,7 @@ public class H4header {
       hasNoData = (data == null);
     }
 
-    void setFillValue( Attribute att) {
+    void setFillValue(Attribute att) {
       // see IospHelper.makePrimitiveArray(int size, DataType dataType, Object fillValue)
       fillValue = (v.getDataType() == DataType.STRING) ? att.getStringValue() : att.getNumericValue();
     }
@@ -976,7 +1002,7 @@ public class H4header {
     // this allows us to defer getting layout info until then
     void setLayoutInfo() throws IOException {
       if (data == null) return;
-      
+
       if (null != data.linked) {
         isLinked = true;
         setDataBlocks(data.linked.getLinkedDataBlocks(), elemSize);
@@ -1038,11 +1064,10 @@ public class H4header {
         sbuff.format(" %s%n", t.detail());
       return sbuff.toString();
     }
-  
+
   }
 
   //////////////////////////////////////////////////////////////////////
-
 
 
   private long readDDH(List<Tag> alltags, long start) throws IOException {
@@ -1116,7 +1141,7 @@ public class H4header {
   }
 
   // Tag == "Data Descriptor" (DD) and (usually) a "Data Element" that the offset/length points to
-  private class Tag {
+  public class Tag {
     short code;
     short refno;
     boolean extended;
@@ -1150,6 +1175,38 @@ public class H4header {
 
     public String toString() {
       return (used ? " " : "*") + "refno=" + refno + " tag= " + t + (extended ? " EXTENDED" : "" + " length=" + length);
+    }
+
+    public short getCode() {
+      return code;
+    }
+
+    public short getRefno() {
+      return refno;
+    }
+
+    public boolean isExtended() {
+      return extended;
+    }
+
+    public int getOffset() {
+      return offset;
+    }
+
+    public int getLength() {
+      return length;
+    }
+
+    public String getType() {
+      return t.toString();
+    }
+
+    public boolean isUsed() {
+      return used;
+    }
+
+    public String getVinfo() {
+      return (vinfo == null) ? "" : vinfo.toString();
     }
   }
 
@@ -1266,10 +1323,10 @@ public class H4header {
         StructureMembers.Member tagM = members.findMember("chk_tag");
         StructureMembers.Member refM = members.findMember("chk_ref");
         int n = (int) sdata.getSize();
-        if (debugChunkTable) System.out.println(" Reading "+n+" DataChunk tags");
+        if (debugChunkTable) System.out.println(" Reading " + n + " DataChunk tags");
         for (int i = 0; i < n; i++) {
           //if (i == 341)
-            //System.out.println("HEYA");
+          //System.out.println("HEYA");
 
           int[] origin = sdata.getJavaArrayInt(i, originM);
           short tag = sdata.getScalarShort(i, tagM);
@@ -1278,8 +1335,8 @@ public class H4header {
           if (null == data)
             System.out.println("HEY");
           //else
-            //System.out.println(i+" origin="+printa(origin)+" data="+data.detail());
-          dataChunks.add( new DataChunk(origin, chunk_length, data));
+          //System.out.println(i+" origin="+printa(origin)+" data="+data.detail());
+          dataChunks.add(new DataChunk(origin, chunk_length, data));
           data.used = true;
           if (data.compress != null) isCompressed = true;
         }
@@ -1315,7 +1372,7 @@ public class H4header {
     DataChunk(int[] origin, int[] chunk_length, TagData data) {
       // origin is in units of chunks - convert to indices
       assert origin.length == chunk_length.length;
-      for (int i=0; i<origin.length; i++)
+      for (int i = 0; i < origin.length; i++)
         origin[i] *= chunk_length[i];
       this.origin = origin;
 
@@ -2000,6 +2057,10 @@ public class H4header {
     }
   }
 
+  public List<Tag> getTags() {
+    return alltags;
+  }
+
   ///////////////////////////////////////////////////
   /// testing
 
@@ -2043,12 +2104,12 @@ public class H4header {
   }
 
   static void testTagid(short tag, short refno) throws IOException {
-    System.out.format(" tag= %#x refno=%#x tagid=%#x \n",tag,refno,tagid(refno,tag));
+    System.out.format(" tag= %#x refno=%#x tagid=%#x \n", tag, refno, tagid(refno, tag));
   }
 
   static public void main(String args[]) throws IOException {
-    testTagid((short)123, (short)-12);
-    testTagid((short)123, (short)-5385);
+    testTagid((short) 123, (short) -12);
+    testTagid((short) 123, (short) -5385);
 
     /* H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/tag1 H4header/tagDetail")); // H4header/construct"));
     String filename1 = "eos/modis/MOD04_243.1850.hdf";
