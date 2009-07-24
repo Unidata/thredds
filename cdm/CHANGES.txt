@@ -2,19 +2,16 @@ CHANGES for Netcdf-Java library
 Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
-Changes in version 4.1
+Changes in version 4.1:
  0:
   ToolsUI/IOSP/HDF4
+  GridCoordSys: 2D Coordinate Systems now can find index (i,j) from (lat, lon) coord
+  NcML: values can be specified by fromAttribute
+  filesystem caching in Aggregation, PointCOllection
+  DateUnit refactor - use udunit.convert() instead of TimeUnit as base time
+  udunits numeric timezone bug
 
-Changes in version 4.0
-
- Release Details:
-  49:
-   GridCoordSys: 2D Coordinate Systems now can find index (i,j) from (lat, lon) coord
-   NcML: values can be specified by fromAttribute
-   filesystem caching in Aggregation, PointCOllection
-   DateUnit refactor - use udunit.convert() instead of TimeUnit as base time
-   udunits numeric timezone bug
+Changes in version 4.0:
   48:
    WRF Conventions looks for GRIDTYPE if it cant find DYN_OPT
    improve M3IO CoordSysBuilder, from Qun He
