@@ -42,7 +42,6 @@ import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.point.writer.WriterCFPointObsDataset;
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.thredds.DqcRadarDatasetCollection;
@@ -58,7 +57,6 @@ import ucar.nc2.dataset.*;
 
 import ucar.nc2.geotiff.GeoTiff;
 import ucar.nc2.util.*;
-import ucar.nc2.util.net.URLStreamHandlerFactory;
 import ucar.nc2.util.net.HttpClientManager;
 import ucar.nc2.util.xml.RuntimeConfigParser;
 import ucar.nc2.units.*;
@@ -101,8 +99,6 @@ import org.bounce.text.xml.XMLStyleConstants;
 import org.bounce.text.xml.XMLDocument;
 import org.bounce.text.xml.XMLEditorKit;
 
-import opendap.dap.DConnect2;
-
 /**
  * Netcdf Tools user interface.
  *
@@ -116,7 +112,6 @@ public class ToolsUI extends JPanel {
   static private final String USMap = "/optional/nj22/maps/US.zip";
 
   static private final String FRAME_SIZE = "FrameSize";
-  static private final String DEBUG_FRAME_SIZE = "DebugWindowSize";
   static private final String GRIDVIEW_FRAME_SIZE = "GridUIWindowSize";
   static private final String GRIDIMAGE_FRAME_SIZE = "GridImageWindowSize";
   static private boolean debugListen = false;
@@ -168,10 +163,6 @@ public class ToolsUI extends JPanel {
   // debugging
   private JMenu debugFlagMenu;
   private DebugFlags debugFlags;
-  // private AbstractAction useDebugWindowAction;
-  //private IndependentWindow debugWindow;
-  //private TextOutputStreamPane debugPane;
-  //  private PrintStream debugOS;
   private boolean debug = false, debugTab = false, debugNcmlWrite = false, debugCB = false;
 
 
@@ -237,7 +228,7 @@ public class ToolsUI extends JPanel {
         }
       }
     });
-    iospTabPane.addComponentListener( new ComponentAdapter() {
+    iospTabPane.addComponentListener(new ComponentAdapter() {
       public void componentShown(ComponentEvent e) {
         Component c = iospTabPane.getSelectedComponent();
         if (c instanceof JLabel) {
@@ -269,7 +260,7 @@ public class ToolsUI extends JPanel {
         }
       }
     });
-    ftTabPane.addComponentListener( new ComponentAdapter() {
+    ftTabPane.addComponentListener(new ComponentAdapter() {
       public void componentShown(ComponentEvent e) {
         Component c = ftTabPane.getSelectedComponent();
         if (c instanceof JLabel) {
@@ -294,7 +285,7 @@ public class ToolsUI extends JPanel {
         }
       }
     });
-    fmrcTabPane.addComponentListener( new ComponentAdapter() {
+    fmrcTabPane.addComponentListener(new ComponentAdapter() {
       public void componentShown(ComponentEvent e) {
         Component c = fmrcTabPane.getSelectedComponent();
         if (c instanceof JLabel) {
@@ -320,7 +311,7 @@ public class ToolsUI extends JPanel {
         }
       }
     });
-    ncmlTabPane.addComponentListener( new ComponentAdapter() {
+    ncmlTabPane.addComponentListener(new ComponentAdapter() {
       public void componentShown(ComponentEvent e) {
         Component c = ncmlTabPane.getSelectedComponent();
         if (c instanceof JLabel) {
@@ -407,9 +398,9 @@ public class ToolsUI extends JPanel {
       ncdumpPanel = new NCdumpPanel((PreferencesExt) mainPrefs.node("NCDump"));
       c = ncdumpPanel;
 
-    //} else if (title.equals("NcML")) {
-     // ncmlPanel = new NcmlPanel((PreferencesExt) mainPrefs.node("NcML"));
-     // c = ncmlPanel;
+      //} else if (title.equals("NcML")) {
+      // ncmlPanel = new NcmlPanel((PreferencesExt) mainPrefs.node("NcML"));
+      // c = ncmlPanel;
 
     } else if (title.equals("NcmlEditor")) {
       ncmlEditorPanel = new NcmlEditorPanel((PreferencesExt) mainPrefs.node("NcmlEditor"));
@@ -577,7 +568,7 @@ public class ToolsUI extends JPanel {
         viewerPanel.detailTA.setText("System Properties\n");
         Properties sysp = System.getProperties();
         java.util.Enumeration eprops = sysp.propertyNames();
-        ArrayList list = Collections.list(eprops);
+        ArrayList<String> list = Collections.list(eprops);
         Collections.sort(list);
 
         for (Object aList : list) {
@@ -1462,7 +1453,8 @@ public class ToolsUI extends JPanel {
         ncfile = NetcdfDataset.openDataset(command, addCoords, null);
 
         ta.setText("Variables for " + command + ":");
-        for (Iterator iter = ncfile.getVariables().iterator(); iter.hasNext();) {
+        Iterator iter = ncfile.getVariables().iterator();
+        while (iter.hasNext()) {
           VariableEnhanced vs = (VariableEnhanced) iter.next();
           String units = vs.getUnitsString();
           StringBuilder sb = new StringBuilder();
@@ -2288,13 +2280,13 @@ public class ToolsUI extends JPanel {
       editor.setFont(new Font("Courier", Font.PLAIN, 12));
 
       // Set the tab size
-      editor.getDocument().putProperty(PlainDocument.tabSizeAttribute,  2);
+      editor.getDocument().putProperty(PlainDocument.tabSizeAttribute, 2);
 
       // Enable auto indentation.
-      editor.getDocument().putProperty(XMLDocument.AUTO_INDENTATION_ATTRIBUTE,  true);
+      editor.getDocument().putProperty(XMLDocument.AUTO_INDENTATION_ATTRIBUTE, true);
 
       // Enable tag completion.
-      editor.getDocument().putProperty(XMLDocument.TAG_COMPLETION_ATTRIBUTE,  true);
+      editor.getDocument().putProperty(XMLDocument.TAG_COMPLETION_ATTRIBUTE, true);
 
       // Initialise the folding
       kit.setFolding(true);
@@ -2462,7 +2454,6 @@ public class ToolsUI extends JPanel {
     }
 
 
-
   }
 
   private class FmrcPanel extends OpPanel {
@@ -2582,8 +2573,8 @@ public class ToolsUI extends JPanel {
           String currentFile = (String) cb.getSelectedItem();
           File file = new File(currentFile + ".gbx");
           if (file.exists()) {
-            file.delete();
-            JOptionPane.showMessageDialog(null, "Index deleted, reopen= " + currentFile);
+            boolean ok = file.delete();
+            JOptionPane.showMessageDialog(null, "Index deleted " + ok + ", reopen= " + currentFile);
             process(currentFile);
           }
         }
@@ -2591,13 +2582,6 @@ public class ToolsUI extends JPanel {
       BAMutil.setActionProperties(deleteAction, "Delete", "Delete Grib Index", false, 'T', -1);
       BAMutil.addActionToContainer(buttPanel, deleteAction);
     }
-
-    private String[] catalogURLS = {
-        "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/NAM/CONUS_12km/files/catalog.xml",
-        "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/NAM/CONUS_12km_conduit/files/catalog.xml",
-        "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/GFS/Global_0p5deg/files/catalog.xml"
-    };
-
 
     private void makeCatalogDefaults(JComboBox cb) {
       String server = "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/";
@@ -2673,7 +2657,7 @@ public class ToolsUI extends JPanel {
 
         FmrcDefinition fmrc_def = new FmrcDefinition();
         fmrc_def.readDefinitionXML(currentDef);
-        NetcdfDataset ds = NetcdfDataset.openDataset(currentFilename, true, -1, null, fmrc_def);
+        NetcdfDataset.openDataset(currentFilename, true, -1, null, fmrc_def);
 
       } catch (Exception ioe) {
         ioe.printStackTrace();
@@ -4159,6 +4143,7 @@ public class ToolsUI extends JPanel {
 
   public static void main(String args[]) {
 
+    // get a splash screen up right away
     final SplashScreen splash = new SplashScreen();
 
     if (debugListen) {
@@ -4182,11 +4167,11 @@ public class ToolsUI extends JPanel {
       String arguments = sbuff.toString();
       System.out.println("ToolsUI arguments=" + arguments);
 
-// LOOK - why does it have to start with http ??
+      // LOOK - why does it have to start with http ??
       if (arguments.startsWith("http:")) {
         wantDataset = arguments;
 
-// see if another version is running, if so send it the message
+       // see if another version is running, if so send it the message
         sm = new SocketMessage(14444, wantDataset);
         if (sm.isAlreadyRunning()) {
           System.out.println("ToolsUI already running - pass argument= '" + wantDataset + "' to it and exit");
@@ -4213,12 +4198,11 @@ public class ToolsUI extends JPanel {
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
+    // spring initialization
     ApplicationContext springContext =
         new ClassPathXmlApplicationContext("classpath:resources/nj22/ui/spring/application-config.xml");
 
-    DODSNetcdfFile.setAllowCompression(true);
-
-// look for run line arguments
+    // look for run line arguments
     boolean configRead = false;
     for (int i = 0; i < args.length; i++) {
       if (args[i].equalsIgnoreCase("-nj22Config") && (i < args.length - 1)) {
@@ -4262,7 +4246,7 @@ public class ToolsUI extends JPanel {
       System.out.println("XMLStore Creation failed " + e);
     }
 
-    // initializations
+    // misc initializations
     BAMutil.setResourcePath("/resources/nj22/ui/icons/");
 
     // filesystem caching
@@ -4271,18 +4255,17 @@ public class ToolsUI extends JPanel {
       cacheManager = thredds.filesystem.ControllerCaching.makeTestController(cacheDir.getRootDirectory());
       thredds.inventory.DatasetCollectionManager.setController(cacheManager);
     } catch (IOException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      e.printStackTrace();
     }
 
-
-// for efficiency, persist aggregations. every hour, delete stuff older than 30 days
+    // for efficiency, persist aggregations. every hour, delete stuff older than 30 days
     Aggregation.setPersistenceCache(new DiskCache2("/.unidata/cachePersist", true, 60 * 24 * 30, 60));
     DqcFactory.setPersistenceCache(new DiskCache2("/.unidata/dqc", true, 60 * 24 * 365, 60));
 
-// test
-// java.util.logging.Logger.getLogger("ucar.nc2").setLevel( java.util.logging.Level.SEVERE);
+    // test
+    // java.util.logging.Logger.getLogger("ucar.nc2").setLevel( java.util.logging.Level.SEVERE);
 
-// put UI in a JFrame
+    // put UI in a JFrame
     frame = new JFrame("NetCDF (4.0) Tools");
     ui = new ToolsUI(prefs, frame);
 
@@ -4307,26 +4290,27 @@ public class ToolsUI extends JPanel {
     frame.setBounds(bounds);
     frame.setVisible(true);
 
-// set Authentication for accessing passsword protected services like TDS PUT
+    // set Authentication for accessing passsword protected services like TDS PUT
     java.net.Authenticator.setDefault(new thredds.ui.UrlAuthenticatorDialog(frame));
 
-// use HTTPClient - could use bean wiring here
+    // open dap initializations
+    ucar.nc2.dods.DODSNetcdfFile.setAllowCompression(true);
+    ucar.nc2.dods.DODSNetcdfFile.setAllowSessions(true);
+
+    // use HTTPClient - could use bean wiring here
     CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(frame);
     HttpClient client = HttpClientManager.init(provider, "ToolsUI");
-    DConnect2.setHttpClient(client);
+    opendap.dap.DConnect2.setHttpClient(client);
     HTTPRandomAccessFile.setHttpClient(client);
     NcStreamRemote.setHttpClient(client);
     NetcdfDataset.setHttpClient(client);
     WmsViewer.setHttpClient(client);
 
-// open dap initializations
-    ucar.nc2.dods.DODSNetcdfFile.setAllowSessions(true);
+    // load protocol for ADDE URLs  - not used right now
+    //URLStreamHandlerFactory.install();
+    //URLStreamHandlerFactory.register("adde", new edu.wisc.ssec.mcidas.adde.AddeURLStreamHandler());
 
-// load protocol for ADDE URLs
-    URLStreamHandlerFactory.install();
-    URLStreamHandlerFactory.register("adde", new edu.wisc.ssec.mcidas.adde.AddeURLStreamHandler());
-
-// in case a dataset was on the command line
+    // in case a dataset was on the command line
     if (wantDataset != null)
       setDataset();
   }
