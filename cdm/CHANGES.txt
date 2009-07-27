@@ -4,10 +4,15 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  0:
+  Cosmic data - FeatureType plug
+  AggregationOuterDimension.rebuildDatasets(): bug on updating datasets, assuming agg vars are 1D (!)
+  HDF4 images use unshared dimensions
   ToolsUI/IOSP/HDF4
+  CFConventions look for standard name attribute for latitude / longitude    
   GridCoordSys: 2D Coordinate Systems now can find index (i,j) from (lat, lon) coord
+  CoordinateAxis2D: do not cache data, messes up strided data access
   NcML: values can be specified by fromAttribute
-  filesystem caching in Aggregation, PointCOllection
+  filesystem caching in Aggregation, PointCollection
   DateUnit refactor - use udunit.convert() instead of TimeUnit as base time
   udunits numeric timezone bug
 

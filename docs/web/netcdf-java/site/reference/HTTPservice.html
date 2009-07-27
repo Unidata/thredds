@@ -12,7 +12,7 @@
 </head>
 
 <body>
-<h1>Reading NetCDF from an HTTP Server </h1>
+<h1>Remote CDM files from an HTTP Server </h1>
 <hr WIDTH="100%">
 <p> NetcdfFile can open remote files served over HTTP, if the  HTTP server  allows <em><strong>range requests</strong></em> for a resource, indicated by the  <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.5">Accept-Ranges</a> header (optional), and returns a <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.13">Content-Length</a> header (required). Therefore, the server must not return the data as "chunked" transfer-coding, such as gzip. Note this must happen for both the GET and the HEAD HTTP requests.</p>
 <p>Performance will be strongly affected by the file format and the data access pattern. This is because each request for data will incur one or more file access requests. <em>Each</em> file acccess request becomes an HTTP request, incurring the cost of one round-trip message to the server. Generally, the netcdf-3 format (not netcdf-4) is most likely to give good performance, especially when reading large amounts of non-record data per request. Use OPeNDAP for more consistent performance. </p>

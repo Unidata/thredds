@@ -43,7 +43,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
 /**
- * Class Description.
+ * Test promoteGlobalAttribute
  *
  * @author caron
  * @since Jan 13, 2009

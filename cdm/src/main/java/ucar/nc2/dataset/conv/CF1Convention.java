@@ -67,11 +67,12 @@ public class CF1Convention extends CSMConvention {
 
   /**
    * Guess the value of ZisPositive based on z axis name and units
-   * @param zaxisName  z coordinate axis name
+   *
+   * @param zaxisName      z coordinate axis name
    * @param vertCoordUnits z coordinate axis name
    * @return CF.POSITIVE_UP or CF.POSITIVE_DOWN
    */
-  public static String getZisPositive( String zaxisName, String vertCoordUnits) {
+  public static String getZisPositive(String zaxisName, String vertCoordUnits) {
     if (vertCoordUnits == null) return CF.POSITIVE_UP;
 
     if (SimpleUnit.isCompatible("millibar", vertCoordUnits))
@@ -80,7 +81,7 @@ public class CF1Convention extends CSMConvention {
     if (SimpleUnit.isCompatible("m", vertCoordUnits))
       return CF.POSITIVE_UP;
 
-      // dunno - make it up
+    // dunno - make it up
     return CF.POSITIVE_UP;
   }
 
@@ -230,6 +231,12 @@ public class CF1Convention extends CSMConvention {
     String sname = ncDataset.findAttValueIgnoreCase((Variable) v, "standard_name", null);
     if (sname != null) {
       sname = sname.trim();
+
+      if (sname.equalsIgnoreCase("latitude"))
+        return AxisType.Lat;
+
+      if (sname.equalsIgnoreCase("longitude"))
+        return AxisType.Lon;
 
       if (sname.equalsIgnoreCase("projection_x_coordinate") || sname.equalsIgnoreCase("grid_longitude"))
         return AxisType.GeoX;

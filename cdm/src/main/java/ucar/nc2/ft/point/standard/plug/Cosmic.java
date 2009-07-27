@@ -37,19 +37,16 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.ft.point.standard.TableConfig;
 import ucar.nc2.ft.point.standard.Table;
 import ucar.nc2.ft.point.standard.TableConfigurerImpl;
-import ucar.nc2.ft.point.standard.Evaluator;
 import ucar.nc2.*;
 import ucar.nc2.units.SimpleUnit;
 import ucar.ma2.StructureDataScalar;
 import ucar.ma2.DataType;
 
 import java.util.*;
-import java.io.IOException;
 
 /**
  * Class Description.
@@ -73,31 +70,58 @@ public class Cosmic extends TableConfigurerImpl {
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
 
-   TableConfig profile = new TableConfig(Table.Type.Singleton, "profile");
-    profile.featureType = FeatureType.PROFILE;
+     TableConfig traj = new TableConfig(Table.Type.Singleton, "traj");
+     traj.featureType = FeatureType.TRAJECTORY;
 
-    StructureDataScalar sdata = new StructureDataScalar("profile");
-    sdata.addMember("lat", "Latitude (avg)", "degrees_north", ds.readAttributeDouble(null, "lat", Double.NaN));
-    sdata.addMember("lon", "Longitude (avg)", "degrees_east", ds.readAttributeDouble(null, "lon", Double.NaN));
-    Date time = makeTime(ds);
-    sdata.addMember("time", "Time (avg)", "seconds since 1970-01-01 00:00", time.getTime()/1000);
-     
-    profile.sdata = sdata;
-    profile.lat = "lat";
-    profile.lon = "lon";
-    profile.time = "time";
+     StructureDataScalar sdata = new StructureDataScalar("profile");
+     //sdata.addMember("lat", "Latitude (avg)", "degrees_north", ds.readAttributeDouble(null, "lat", Double.NaN));
+     //sdata.addMember("lon", "Longitude (avg)", "degrees_east", ds.readAttributeDouble(null, "lon", Double.NaN));
+     Date time = makeTime(ds);
+     sdata.addMember("time", "Time (avg)", "seconds since 1970-01-01 00:00", time.getTime()/1000);
 
-    TableConfig obs = new TableConfig(Table.Type.Structure, "levels");
-    obs.isPsuedoStructure = true;
-    obs.dim = ds.findDimension("MSL_alt");
-    obs.elev = "MSL_alt";
+     traj.sdata = sdata;
+     //traj.lat = "lat";
+     //traj.lon = "lon";
+     traj.time = "time";
 
-    profile.addChild(obs);
+     TableConfig obs = new TableConfig(Table.Type.Structure, "point");
+     obs.isPsuedoStructure = true;
+     obs.dim = ds.findDimension("MSL_alt");
+     obs.lat = "Lat";
+     obs.lon = "Lon";
+     //obs.time = "time";
+     obs.elev = "MSL_alt";
 
-    return profile;
+     traj.addChild(obs);
 
-   /*
-    TableConfig obsTable = new TableConfig(Table.Type.Structure, "obsRecord");
+     return traj;  // */
+
+
+    /* TableConfig profile = new TableConfig(Table.Type.Singleton, "profile");
+     profile.featureType = FeatureType.PROFILE;
+
+     StructureDataScalar sdata = new StructureDataScalar("profile");
+     sdata.addMember("lat", "Latitude (avg)", "degrees_north", ds.readAttributeDouble(null, "lat", Double.NaN));
+     sdata.addMember("lon", "Longitude (avg)", "degrees_east", ds.readAttributeDouble(null, "lon", Double.NaN));
+     Date time = makeTime(ds);
+     sdata.addMember("time", "Time (avg)", "seconds since 1970-01-01 00:00", time.getTime()/1000);
+
+     profile.sdata = sdata;
+     profile.lat = "lat";
+     profile.lon = "lon";
+     profile.time = "time";
+
+     TableConfig obs = new TableConfig(Table.Type.Structure, "levels");
+     obs.isPsuedoStructure = true;
+     obs.dim = ds.findDimension("MSL_alt");
+     obs.elev = "MSL_alt";
+
+     profile.addChild(obs);
+
+     return profile;  // */
+
+
+    /* TableConfig obsTable = new TableConfig(Table.Type.Structure, "obsRecord");
     Structure obsStruct = buildStructure( ds, "obsRecord" );
     obsTable.featureType = FeatureType.TRAJECTORY;
     obsTable.structName = obsStruct.getName();
@@ -107,7 +131,7 @@ public class Cosmic extends TableConfigurerImpl {
     obsTable.elev = Evaluator.getVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Height.toString());
     obsTable.time = Evaluator.getVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Time.toString());
 
-    return obsTable;    */
+    return obsTable;    // */
   }
 
     private  Structure buildStructure( NetcdfDataset ncd, String structureId )

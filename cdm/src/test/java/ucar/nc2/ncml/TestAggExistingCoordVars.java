@@ -44,7 +44,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Date;
 
-/** Test NcML AggExisting ways to define coordinate variable calues
+/** Test NcML AggExisting ways to define coordinate variable values
  * @see "http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/Aggregation.html#JoinExistingTypes"
  **/
 

@@ -292,6 +292,8 @@ public class HdfEos {
 
     } else if (name.equalsIgnoreCase("Time")) {
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
+      if (v.findAttribute("units") == null)
+        v.addAttribute(new Attribute("units", "secs since 1970-01-01 00:00:00")); // default units I hope
       return AxisType.Time;
 
     } else if (name.equalsIgnoreCase("Pressure")) {

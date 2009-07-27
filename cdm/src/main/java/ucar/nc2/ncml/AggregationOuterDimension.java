@@ -231,7 +231,8 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
     // reset agg variables
     for (Variable aggVar : aggVars) {
-      aggVar.setDimensions(dimName); // reset its dimension
+      //aggVar.setDimensions(dimName); // reset its dimension
+      aggVar.resetDimensions(); // reset its dimensions
       aggVar.invalidateCache(); // get rid of any cached data, since its now wrong
     }
 

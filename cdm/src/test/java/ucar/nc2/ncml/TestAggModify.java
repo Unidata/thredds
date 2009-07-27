@@ -30,47 +30,56 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.inventory.filter;
+package ucar.nc2.ncml;
 
-import thredds.inventory.MFileFilter;
-import thredds.inventory.MFile;
+import junit.framework.TestCase;
 
-import java.util.regex.Pattern;
+import java.io.IOException;
+import java.io.StringReader;
+
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.DataType;
+import ucar.ma2.Array;
+import ucar.ma2.IndexIterator;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 
 /**
- * A wildcard expression that matches on the MFile path.
+ * Describe
  *
  * @author caron
- * @since Jun 26, 2009
+ * @since Jul 22, 2009
  */
-public class WildcardMatchOnPath implements MFileFilter {
-  protected String wildcardString;
-  protected java.util.regex.Pattern pattern;
+public class TestAggModify extends TestCase {
 
-  public WildcardMatchOnPath(String wildcardString) {
-    this.wildcardString = wildcardString;
-
-    String regExp = wildcardString.replaceAll("\\.", "\\\\."); // Replace "." with "\.".
-    regExp = regExp.replaceAll("\\*", ".*"); // Replace "*" with ".*".
-    regExp = regExp.replaceAll("\\?", ".?"); // Replace "?" with ".?".
-
-    // Compile regular expression pattern
-    this.pattern = java.util.regex.Pattern.compile(regExp);
+  public TestAggModify(String name) {
+    super(name);
   }
 
-  public WildcardMatchOnPath(Pattern pattern) {
-    this.pattern = pattern;
+
+  String ncml =
+    "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
+    "  <remove type='variable' name='P'/>\n" +
+    "  <aggregation dimName='time' type='joinExisting'>\n" +
+    "    <netcdf location='file:src/test/data/ncml/nc/jan.nc'/>\n" +
+    "    <netcdf location='file:src/test/data/ncml/nc/feb.nc'/>\n" +
+    "  </aggregation>\n" +
+    "</netcdf>";
+
+  public void testWithDateFormatMark() throws Exception {
+    System.out.printf("ncml=%s%n", ncml);
+    String filename = "file:" + TestNcML.topDir + "testAggModify.ncml";
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null);
+    System.out.println(" TestNcmlAggExisting.open " + filename + "\n" + ncfile);
+
+    Variable v = ncfile.findVariable("T");
+    assert null != v;
+
+    v = ncfile.findVariable("P");
+    assert null == v;
+
+    ncfile.close();
   }
 
-  public boolean accept(MFile file) {
-    java.util.regex.Matcher matcher = this.pattern.matcher(file.getPath());
-    return matcher.matches();
-  }
 
-  @Override
-  public String toString() {
-    return "WildcardMatchOnPath{" +
-            "wildcardString='" + wildcardString +
-            '}';
-  }
 }

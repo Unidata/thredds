@@ -314,8 +314,6 @@ public abstract class Aggregation implements ProxyReader {
     // heres where the results will go
     datasets = new ArrayList<Dataset>();
 
-    // convert a MyCrawlableDataset into an Aggregation.Dataset
-    // we really just need the location, assumed to work in the FileFactory
     for (MFile cd : datasetManager.getFiles()) {
       datasets.add( makeDataset(cd));
     }
@@ -365,6 +363,10 @@ public abstract class Aggregation implements ProxyReader {
       if (dset.contains(dataset.cacheLocation))
         logger.warn("Duplicate dataset in aggregation = "+dataset.cacheLocation);
       dset.add(dataset.cacheLocation);
+    }
+
+    if (datasets.size() == 0) {
+      throw new IllegalStateException("There are no datasets in the aggregation");
     }
   }
 

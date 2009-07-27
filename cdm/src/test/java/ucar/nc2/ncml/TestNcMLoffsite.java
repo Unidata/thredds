@@ -33,14 +33,12 @@
 package ucar.nc2.ncml;
 
 import junit.framework.*;
-import ucar.nc2.TestAll;
 
 /**
  * TestSuite that runs all the sample tests
  *
  */
 public class TestNcMLoffsite {
-  public static String topDir = TestAll.cdmLocalTestDataDir + "ncml/";
 
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();
@@ -56,6 +54,7 @@ public class TestNcMLoffsite {
     suite.addTest(new TestSuite(TestOffAggReadGridDataset.class)); // */
 
     //suite.addTest(new TestSuite(TestOffAggNewSync.class));  // */
+    suite.addTest(new TestSuite(TestOffAggUpdating.class));  
 
     suite.addTest(new TestSuite(TestOffAggFmrcNetcdf.class));  //
     suite.addTest(new TestSuite(TestOffAggFmrcGrib.class));  //

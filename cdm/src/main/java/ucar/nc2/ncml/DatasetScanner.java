@@ -101,7 +101,7 @@ public class DatasetScanner {
 
     Iterator<MFile> iter = controller.getInventory(mc);
     if (iter == null) {
-      logger.error("Invalid collection= "+mc);
+      logger.error("DatasetScanner Invalid collection= "+mc);
       return;
     }
 

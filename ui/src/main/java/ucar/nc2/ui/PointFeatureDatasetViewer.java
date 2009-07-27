@@ -742,6 +742,10 @@ public class PointFeatureDatasetViewer extends JPanel {
     public int compareTo(Station so) {
       return getName().compareTo(so.getName());
     }
+
+    public boolean isMissing() {
+      return false;
+    }
   }
 
   public class ProfileFeatureBean extends StationBean {

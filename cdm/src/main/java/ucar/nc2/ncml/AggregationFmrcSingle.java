@@ -149,6 +149,10 @@ public class AggregationFmrcSingle extends AggregationFmrc {
             + " run date= " + dateFormatter.toDateTimeStringISO(ds.runDate));
     }
 
+    if (typDataset == null) {
+      throw new IllegalStateException("There are no datasets in the aggregation");
+    }
+
     // LOOK - should cache the GridDataset directly    
     // open a "typical" dataset and make a GridDataset
     NetcdfFile typFile = typDataset.acquireFile(cancelTask);

@@ -78,7 +78,7 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
     Array data = v.read();
     NCdumpW.printArray(data, "time", new PrintWriter(System.out), null);
     while (data.hasNext()) {
-      assert data.nextInt() == (count + 1) * 3;
+      assert TestAll.closeEnough(data.nextInt(), (count + 1) * 3);
       count++;
     }
 
