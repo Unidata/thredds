@@ -21,12 +21,15 @@
       </div>
 
 
+
+
        <ul>        
-        <li>Sun Java 1.6 or above</li>       
-        <li>Apache Tomcat 5.5 or above<br/>
-        (we recommend the latest version of Tomcat 6.0)</li>  
+        <li>Sun Java 1.6</li>       
+        <li>Apache Tomcat 5.5 or above         (we recommend the latest version of Tomcat 6.0)</li>  
        </ul>
        <p>While there are different distributors of Java and servlet containers, Unidata develops, uses and tests the THREDDS Data Server using <i>Sun Java</i> and the <i>Apache Tomcat</i> servlet container.</p>
+
+
 
      </div> <!-- end subsection -->
 
@@ -122,7 +125,7 @@ drwxr-xr-x 9 thredds workshop 4096 2009-07-09 15:05 apache-tomcat-6.0.20
 
 
      </div> <!-- end subsection -->
-      <div id="exercise">
+      <div id="subsection" class="exercise">
        <h3>Exercise One: Install Java and Tomcat</h3>
        <ol>
         <li>Using the steps outlined in the above sections, install the JDK and Tomcat in <code>/home/thredds</code>.</li>
@@ -179,7 +182,7 @@ drwxr-xr-x 2 thredds workshop  4096 2009-05-13 17:15 work
          <ul class="little">
           <li><i>Tomcat log files</i> are here by default.</li>
           <li>This is one of the directories you will be looking for log files (the TDS logs elsewhere by default).</li>
-          <li><i>The log files should be your first stop for troubleshooting Tomcat and TDS issues</i> (hint, hint).</li>
+          <li><i>The log files should be your first stop for troubleshooting Tomcat and TDS issues</i> (Hint. Hint.)</li>
           <li>Logs files may contain useful information for assessing the security of your system.</li>
           <li>You will become very familiar with <code><small>catalina.out</small></code> and <code><small>access.YYYY-MM-DD.log</small></code> by the end of this workshop.</li>
          </ul>
@@ -229,7 +232,7 @@ thredds  32018     1  1 15:38 pts/3    00:00:03 /home/thredds/jdk1.6.0_14/bin/ja
 
         <p>Open a new browser window/tab and go to <a href="http://localhost:8080/">http://localhost:8080/</a> to verify Tomcat is running:</p>
 
-     <img src="images/tomcat_default_page.gif" alt="Tomcat Default Home Page" />
+     <img src="../images/tomcat_default_page.gif" alt="Tomcat Default Home Page" />
 
        <li>See if you can shutdown Tomcat.</li>
         <p>Run the <code><small>$TOMCAT_HOME/bin/shutdown.sh</small></code> script:</p>
@@ -257,7 +260,7 @@ thredds  32018     1  1 15:38 pts/3    00:00:03 /home/thredds/jdk1.6.0_14/bin/ja
        <p>We are going to create a file called <code><small>setenv.sh</small></code> in the <code><small>$TOMCAT_HOME/bin</small></code> directory to:</p>
       <ul class="little">
        <li>allow Tomcat to reference/find the location of <code><small>$JAVA_HOME</small></code>  and <code><small>$TOMCAT_HOME</small></code>  (aka <code><small>$CATALINA_HOME</small></code>) during startup and shutdown; and </li>
-       <li>increase the amount of memory allocated to the JVM to enhance performance by setting <code><small>$JAVA_OPTS</small></code> 
+       <li>increase the amount of memory allocated to the JVM to enhance performance by setting <code><small>$JAVA_OPTS</small>.</code> 
       </ul>
 
       <div id="expanded" class="question">
@@ -296,9 +299,9 @@ export CATALINA_HOME
          <li><code><small>-Xms</small></code> is the initial allocated memory of the JVM (for performance).</li>
          <li><code><small>-Xmx</small></code> the maximum allocated memory of the JVM (for performance).</li>
          <li><code><small>-server</small></code> tells the Hostspot compiler to run the JVM in "server" mode.</li>
-         <li><code><small>-Djava.awt.headless=true</small></code> enables headless mode capabilities in the JVM for graphics rendering in the TDS.</li>
+         <li><code><small>-Djava.awt.headless=true</small></code> eis needed to prevent graphics rendering code to assume that a graphics console exists. Without this, WMS code will crash the server in some circumstances.</li>
         </ul>
-
+ 
        <li>Restart Tomcat to implement your changes.</li>
         <p>Restart Tomcat and examine the output generated to the terminal window by the startup script:</p>
 <pre>
@@ -328,7 +331,7 @@ thredds  5623     1  1 15:40 pts/3    00:00:23 /home/thredds/jdk1.6.0_14/bin/jav
 
 
 
-      <div id="exercise">
+      <div id="subsection" class="exercise">
        <h3>Exercise Two: Set <code>$JAVA_HOME</code>, <code>$JAVA_OPTS</code> and <code>$CATALINA_HOME</code></h3>
        <ol>
         <li>Create a <code>setenv.sh</code> file in <code>$TOMCAT_HOME/bin/</code> to set <code>$JAVA_HOME</code>, <code>$JAVA_OPTS</code> and <code>$CATALINA_HOME</code>.</li>
@@ -399,27 +402,27 @@ drwxr-xr-x  7 thredds workshop     4096 2009-05-13 17:23 thredds
 
  <p>Go to <a href="http://localhost:8080/thredds/">http://localhost:8080/thredds/</a> in your browser to verify the TDS has been deployed:</p>
 
-     <img src="images/distribution_catalog.gif" alt="THREDDS Distribution Catalog" />
+     <img src="../images/distribution_catalog.gif" alt="THREDDS Distribution Catalog" />
 
       </ol>
       <div id="expanded" class="troubleshooting">
        <h4>Troubleshooting Tips</h4>
        <ul>
-        <li>Any error in the deployment it will be repored in <code><small>$TOMCAT_HOME/logs/catalina.out</small></code>. </li>
-
+        <li>Any error in the deployment will be reported in <code><small>$TOMCAT_HOME/logs/catalina.out</small></code>. </li>
+        <li>Be sure you have downloaded and deployed the TDS 4.0 development version for this workshop (the version number will appear in the blue bar at the bottom of TDS catalog pages).</li>
        </ul>
       </div>
 
      </div> <!-- end subsection -->
 
 
-      <div id="exercise">
+      <div id="subsection" class="exercise">
        <h3>Exercise Three: Deploy your own instance of the THREDDS Data Server</h3>
        <ol>
         <li>Deploy the TDS in your newly-installed Tomcat.</li>
         <li>Once deployed, browse the test catalogs & datasets that come with the distribution.</li>
         <li>Look at the directory contents of <code>$TOMCAT_HOME</code>.</li>
-      <div class="exercisequestion">
+      <div class="exercise_question">
        <p>Do you notice anything new?</p>
       </div>
 
@@ -479,8 +482,8 @@ total 10284
       </div>
 
       <div id="info">
-       <h4>Tomcat Users List</h4>
-       <p>The <a href="http://marc.info/?l=tomcat-user&w=2&r=1&s=catalina.out+rotate&q=b">Tomcat Users mailing list</a> has seen a lot of traffic dedicated to proper logging and the rotation of <code><small>catalina.out</small></code>.</p>
+       <h4>About <code>catalina.out</code></h4>
+       <p>The <a href="http://marc.info/?l=tomcat-user&w=2&r=1&s=catalina.out+rotate&q=b">Tomcat Users mailing list</a> has seen a lot of traffic dedicated to <code><small>catalina.out</small></code> logging and rotation.</p>
       </div>
 
         <p>A few things to know about <code><small>catalina.out</small></code>:</p>
@@ -495,6 +498,16 @@ total 10284
      </div> <!-- end subsection -->
 
    </div> <!-- end section -->
+
+
+
+
+
+
+
+
+
+
    <p><img src="../images/thread.png" height="60" alt="THREDDS" valign="top" align="left" vspace="0" hspace="10" />  This document is maintained by Unidata and was last updated 
    
 <script language="JavaScript" type="text/JavaScript">
