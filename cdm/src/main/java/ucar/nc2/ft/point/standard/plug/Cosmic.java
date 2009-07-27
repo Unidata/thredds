@@ -34,13 +34,22 @@
 package ucar.nc2.ft.point.standard.plug;
 
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.constants._Coordinate;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.ft.point.standard.TableConfig;
 import ucar.nc2.ft.point.standard.Table;
 import ucar.nc2.ft.point.standard.TableConfigurerImpl;
+import ucar.nc2.ft.point.standard.Evaluator;
+import ucar.nc2.*;
+import ucar.nc2.units.SimpleUnit;
 import ucar.ma2.StructureDataScalar;
+import ucar.ma2.DataType;
 
 import java.util.*;
+import java.io.IOException;
 
 /**
  * Class Description.
@@ -49,7 +58,13 @@ import java.util.*;
  * @since Jan 26, 2009
  */
 public class Cosmic extends TableConfigurerImpl {
+  private static String dimName = "MSL_alt";
+  private static String dimVarName = "MSL_alt";
+  private static String latVarName = "Lat";
+  private static String lonVarName = "Lon";
+  private static String elevVarName = "MSL_alt";
 
+  private static String trajId = "trajectory data";
     // :title = "WPDN data : selected by ob time : time range from 1207951200 to 1207954800";
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     String center = ds.findAttValueIgnoreCase(null, "center", null);
@@ -57,7 +72,8 @@ public class Cosmic extends TableConfigurerImpl {
   }
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
-    TableConfig profile = new TableConfig(Table.Type.Singleton, "profile");
+
+   TableConfig profile = new TableConfig(Table.Type.Singleton, "profile");
     profile.featureType = FeatureType.PROFILE;
 
     StructureDataScalar sdata = new StructureDataScalar("profile");
@@ -65,7 +81,7 @@ public class Cosmic extends TableConfigurerImpl {
     sdata.addMember("lon", "Longitude (avg)", "degrees_east", ds.readAttributeDouble(null, "lon", Double.NaN));
     Date time = makeTime(ds);
     sdata.addMember("time", "Time (avg)", "seconds since 1970-01-01 00:00", time.getTime()/1000);
-
+     
     profile.sdata = sdata;
     profile.lat = "lat";
     profile.lon = "lon";
@@ -79,8 +95,114 @@ public class Cosmic extends TableConfigurerImpl {
     profile.addChild(obs);
 
     return profile;
+
+   /*
+    TableConfig obsTable = new TableConfig(Table.Type.Structure, "obsRecord");
+    Structure obsStruct = buildStructure( ds, "obsRecord" );
+    obsTable.featureType = FeatureType.TRAJECTORY;
+    obsTable.structName = obsStruct.getName();
+    obsTable.nestedTableName = obsStruct.getShortName();
+    obsTable.lat = Evaluator.getVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Lat.toString());
+    obsTable.lon = Evaluator.getVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Lon.toString());
+    obsTable.elev = Evaluator.getVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Height.toString());
+    obsTable.time = Evaluator.getVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Time.toString());
+
+    return obsTable;    */
   }
 
+    private  Structure buildStructure( NetcdfDataset ncd, String structureId )
+    {
+        // Check that only one dimension and that it is named "time".
+        Structure trajStructure = new Structure(ncd, null, null, structureId);
+        List list = ncd.getRootGroup().getDimensions();
+        if ( list.size() != 1) return null;
+        Dimension d = (Dimension) list.get(0);
+        if ( ! d.getName().equals( dimName)) return null;
+
+
+        trajStructure.setDimensions("");
+
+        // Check that have variable time(time) with units that are udunits time
+        Variable dimVar = ncd.getRootGroup().findVariable( dimVarName);
+        if ( dimVar == null) return null;
+        list = dimVar.getDimensions();
+        if ( list.size() != 1) return null;
+        d = (Dimension) list.get(0);
+        if ( ! d.getName().equals( dimName)) return null;
+        String units = dimVar.findAttribute( "units").getStringValue();
+        if ( ! SimpleUnit.isCompatible( units, "km")) return null;
+
+        trajStructure.addMemberVariable( dimVar);
+
+        // Check for variable latitude(time) with units of "deg".
+        Variable latVar = ncd.getRootGroup().findVariable( latVarName);
+        if ( latVar == null ) return null;
+        list = latVar.getDimensions();
+        if ( list.size() != 1) return null;
+        d = (Dimension) list.get(0);
+        if ( ! d.getName().equals( dimName)) return null;
+        units = latVar.findAttribute( "units").getStringValue();
+        if ( ! SimpleUnit.isCompatible( units, "deg")) return null;
+
+        trajStructure.addMemberVariable( latVar);
+
+        // Check for variable longitude(time) with units of "deg".
+        Variable lonVar = ncd.getRootGroup().findVariable( lonVarName);
+        if ( lonVar == null ) return null;
+        list = lonVar.getDimensions();
+        if ( list.size() != 1) return null;
+        d = (Dimension) list.get(0);
+        if ( ! d.getName().equals( dimName)) return null;
+        units = lonVar.findAttribute( "units").getStringValue();
+        if ( ! SimpleUnit.isCompatible( units, "deg")) return null;
+
+        trajStructure.addMemberVariable( lonVar);
+
+        // Check for variable altitude(time) with units of "m".
+        Variable elevVar = ncd.getRootGroup().findVariable( elevVarName);
+        if ( elevVar == null) return null;
+        list = elevVar.getDimensions();
+        if ( list.size() != 1) return null;
+        d = (Dimension) list.get(0);
+        if ( ! d.getName().equals( dimName)) return null;
+        units = elevVar.findAttribute( "units").getStringValue();
+        if ( ! SimpleUnit.isCompatible( units, "km")) return null;
+
+        trajStructure.addMemberVariable( elevVar);
+
+        Variable timeVar = new Variable(ncd, null, null, "time");
+        timeVar.setDataType(DataType.DOUBLE);
+        timeVar.setDimensions(list);
+
+        Date time = makeTime(ncd);
+        ncd.setValues(timeVar, d.getLength(), time.getTime(), 0);
+        timeVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
+        timeVar.addAttribute( new Attribute("units", "milliseconds since 1970-01-01 00:00 UTC"));
+//        ncd.addVariable(null, timeVar);
+
+        trajStructure.addMemberVariable( timeVar);
+
+        for (Iterator it =
+                ncd.getVariables().iterator();
+                it.hasNext(); ) {
+            Variable curVar = (Variable) it.next();
+            if ((curVar.getRank() > 0) && !curVar.equals(dimVar)
+                    && !curVar.equals(latVar)
+                    && !curVar.equals(lonVar)
+                    && !curVar.equals(elevVar)
+                    && ((trajStructure == null)
+                        ? true
+                        : !curVar.equals(trajStructure))) {
+
+                trajStructure.addMemberVariable(curVar);
+
+            }
+        }
+        ncd.addVariable(null, new StructureDS(null, trajStructure)) ;
+        return trajStructure;
+    }
+
+     
   Date makeTime( NetcdfDataset ds) {
     int year = ds.readAttributeInteger(null, "year", 0);
     int month = ds.readAttributeInteger(null, "month", 0);
