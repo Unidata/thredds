@@ -16,7 +16,7 @@ a:hover {
 }
 
 small {
-    font-size: 9pt;
+    font-size: 10pt;
 }
 
 code {
@@ -55,86 +55,111 @@ h1 {
 }
 
 #section #subsection {
-    padding: 0px 0px 0px 0px;
+    padding: 0px 20px 0px 20px;
     margin: 20px 18px 40px 18px;
-    overflow: hidden;
 }
 
+#section #subsection.exercise {
+    background: #EFEFEF url('../images/exercise.gif') no-repeat 0px 0px;
+    border: 3px solid #00B2EE;
+    padding: 20px 15px 10px 100px;
+    margin: -20px 30px 30px 30px;
+}
+
+
 #section #subsection h3 {
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 20px -20px;  
+    font-size: 14pt;
+    color: #000000;
+}
+
+
+
+#section #subsection.exercise h3 {
     padding: 0px 0px 0px 0px;
     margin: 0px 0px 20px 0px;  
     font-size: 14pt;
     color: #000000;
 }
 
+#section #subsection.exercise ol {
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 0px 20px;
+}
+
+#section #subsection.exercise ol li {
+    padding: 0px 0px 0px 0px;
+    margin: 20px 0px 5px 0px; 
+    font-size: 11pt;
+}
+
+#section #subsection.exercise p {
+    padding: 0px 0px 0px 10px;
+    margin: -10px 0px 0px 0px;  
+}
+
+#section #subsection.exercise .exercise_question {
+    background: transparent url('../images/question.gif') no-repeat 10px 0px;
+    padding: 20px 15px 10px 50px;
+    margin: 0px 0px 0px 0px;
+
+}
+
+
 
 #section #subsection p {
     padding: 0px 0px 0px 0px;
-    margin: 10px 0px 10px 20px; 
-    position: relative;
+    margin: 10px 0px 10px 0px; 
     font-size: 10pt;
 }
 
 
 #section #subsection pre  {
-    white-space: pre-line;
+    white-space: pre-wrap;
     position: relative;
-    font-family: monospace;
-    margin: 0px 0px 20px 20px;
+    font-family: "Lucida Console", "Courier New", monospace;
+    margin: 0px 0px 20px 0px;
     padding: 5px 10px 5px 10px; 
     background: #FAF8F0;  
     border: 1px solid #BEBAB0;
+    font-size: 9pt;
 }
 
 
 
 #section #subsection ul {
-/*    list-style-type: none;*/
-    position: relative;
+    list-style-type: none;
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;  
 }
 
 
 #section #subsection ul li {
-    padding: 0px 0px 0px 0px;
-    margin: 20px 0px 5px 0px;  
+    padding: 2px 0px 2px 25px;
+    margin: 10px 0px 0px 0px;  
     font-size: 12pt;
+    background: #FFFFFF url('../images/check.gif') no-repeat 0px 0px;
 }
 
-#section #subsection ul p {
-    padding: 0px 0px 0px 0px;
-    margin: 10px 0px 10px 0px; 
-    position: relative;
-    font-size: 10pt;
-}
-
-#section #subsection ul pre  {
-    white-space: pre-line;
-    position: relative;
- /*   display: inline;*/
-    font-family: monospace;
-    margin: 0px 0px 20px 0px;
-    padding: 5px 10px 5px 10px; 
-     background: #FAF8F0;  
-    border: 1px solid #BEBAB0;
-
-}
 
 #section #subsection ul.little {
-/*    list-style-type: none;*/
-    position: relative;
+    list-style-type: disc;
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 0px 25px;  
 }
 
 #section #subsection ul.little li {
     padding: 0px 0px 0px 0px;
     margin: 0px 0px 5px 0px;  
     font-size: 10pt;
+    background-image: none;
 }
 
 
-
-
 #section #subsection ol {
-    position: relative;
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 0px 20px;  
 }
 
 
@@ -144,36 +169,70 @@ h1 {
     font-size: 12pt;
 }
 
-#section #subsection ol p {
+
+
+
+
+
+#section #subsection #expanded {
+    padding: 0px 10px 0px 48px;
+    margin: 0px 0px 10px 18px;
+}
+
+#section #subsection #expanded h4 {
+    font-weight: normal;
+    padding: 0px 0px 0px 35px;
+    margin: 20px 0px 10px 0px;   
+    font-size: 12pt;
+}
+
+
+
+#section #subsection #expanded ul {
+    list-style-type: disc;
     padding: 0px 0px 0px 0px;
-    margin: 10px 0px 10px 0px; 
-    position: relative;
+    margin: 0px 0px 0px 50px;  
+}
+
+
+#section #subsection #expanded ul li {
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 5px 0px;  
     font-size: 10pt;
+    background-image: none;
 }
 
-#section #subsection ol pre  {
-    white-space: pre-line;
-    position: relative;
- /*   display: inline;*/
-    font-family: monospace;
-    margin: 0px 0px 20px 0px;
-    padding: 5px 10px 5px 10px; 
-     background: #FAF8F0;  
-    border: 1px solid #BEBAB0;
 
+#section #subsection #expanded p {
+    padding: 10px 0px 10px 10px;
+    margin: 0px 0px 0px 0px;  
 }
+
+
+
+
+.troubleshooting {
+    background: #FFFFFF url('../images/troubleshooting.gif') no-repeat 0px 0px;
+}
+
+.question {
+    background: #FFFFFF url('../images/question.gif') no-repeat 10px 0px;
+}
+
 
 
 
 #section #subsection #info {
-    border: 1px solid #CFCFCF;
+    z-index: 10;
+    border: 1px dashed #CFCFCF;
     padding: 10px 10px 10px 10px;
-    margin: 0px 0px 10px 20px;
+    margin: -30px 0px 10px 50px;
     float: right;
+    position: relative;
     width: 250px;
-    right: 32px; 
+    right: 2px; 
     background: #EFEFEF url('../images/info.gif') no-repeat 10px 5px;
-    font-size: 9pt;
+
 }
 
 
@@ -197,92 +256,10 @@ h1 {
 
 
 #section #subsection #info p {
-    min-width: 0;
-    padding: 5px 0px 0px 0px;
-    margin: 0px 0px 5px 0px;  
-}
-
-
-
-
-#section #subsection #expanded {
-    padding: 20px 10px 10px 48px;
-    margin: 0px 0px 10px 18px;
-}
-
-#section #subsection #expanded h4 {
-    font-weight: normal;
-    padding: 0px 0px 0px 25px;
-    margin: 0px 0px 0px 0px;   
-    font-size: 12pt;
-}
-
-
-
-#section #subsection #expanded ul {
-    position: relative;
-}
-
-
-#section #subsection #expanded ul li {
     padding: 0px 0px 0px 0px;
-    margin: 0px 0px 5px 0px;  
-    font-size: 10pt;
+    margin: 5px 0px 5px 0px;  
 }
 
-
-#section #subsection #expanded p {
-    padding: 0px 0px 0px 10px;
-    margin: -10px 0px 0px 0px;  
-}
-
-
-.troubleshooting {
-    background: #FFFFFF url('../images/troubleshooting.gif') no-repeat 0px 15px;
-}
-
-.question {
-    background: #FFFFFF url('../images/question.gif') no-repeat 10px 0px;
-}
-
-
-#section #exercise {
-    background: #EFEFEF url('../images/exercise.gif') no-repeat 0px 0px;
-    border: 3px solid #00B2EE;
-    padding: 20px 15px 10px 100px;
-    margin: -20px 30px 30px 30px;
-
-}
-
-#section #exercise .exercisequestion {
-    background: transparent url('../images/question.gif') no-repeat 10px 0px;
-    padding: 20px 15px 10px 50px;
-    margin: 0px 0px 0px 0px;
-
-}
-
-
-#section #exercise h3 {
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 0px;    
-    font-size: 12pt;
-}
-
-
-#section #exercise ol {
-    position: relative;
-}
-
-#section #exercise ol li {
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 5px -18px;  
-    font-size: 11pt;
-}
-
-#section #exercise p {
-    padding: 0px 0px 0px 10px;
-    margin: -10px 0px 0px 0px;  
-}
 
 
 
