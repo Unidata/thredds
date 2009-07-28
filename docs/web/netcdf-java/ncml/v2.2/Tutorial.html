@@ -23,7 +23,7 @@ dl {margin: 10px 5px 5px 15px;)
 <h2><b>Exercise 1. Completely specify the NetCDF Dataset Metadata</b></h2>
 <p>In this example, the use of the <strong>&lt;explicit/&gt;</strong> element means that all of the metadata is specified in the XML, and the referenced dataset is used only for data access. If there are any other attributes, variables 
   or dimensions in the referenced dataset, they are ignored.</p>
-<p>Download example1.nc and exercise1.ncml and place them in the same directory. Open exercise1.ncml in the ToolsUI Viewer tab, and in the NcML tab.</p>
+<p>Download <a href="examples/example1.nc">example1.nc</a> and <a href="examples/exercise1.ncml">exercise1.ncml</a> and place them in the same directory. Open exercise1.ncml in the ToolsUI Viewer tab, and in the NcML tab.</p>
 <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;  location=&quot;example1.nc&quot;&gt;
 
   &lt;explicit/&gt;
@@ -80,7 +80,7 @@ the netCDF file to be read in. In this case, the NcML dataset and the referenced
 <h2><b>Exercise 3. Read in metadata from existing NetCDF file and modify:</b> </h2>
 <p>In this example, we read in all of the metadata from the underlying file, and modify it 
   through elements in the NcML.</p>
-<p>Download exercise3.ncml and place it in the same directory as example1.nc. Open exercise3.ncml in the ToolsUI Viewer tab, and in the NcML tab.</p>
+<p>Download <a href="examples/exercise3.ncml">exercise3.ncml</a> and place it in the same directory as example1.nc. Open exercise3.ncml in the ToolsUI Viewer tab, and in the NcML tab.</p>
 <pre>
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; location=&quot;example1.nc&quot;&gt;
 <br><strong>(1)</strong>&lt;attribute name=&quot;title&quot; type=&quot;String&quot; value=&quot;Example Data using CF&quot; /&gt;
@@ -141,10 +141,10 @@ the netCDF file to be read in. In this case, the NcML dataset and the referenced
 </pre>
 <h2><br>
   Exercise 4. Using  ToolsUI to generate NcML</h2>
-<p>You can use  the ToolsUI NcML Tab to generate NcML from a CDM file (enter a dataset URL or browse for a local file). You can save the NcML to disk <img src="TUIncmlSaveButton.jpg" width="30" height="27">. </p>
-<p><img src="TUIncml.jpg" width="1082" height="559"></p>
+<p>You can use  the <a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.0/webstart/netCDFtools.jnlp">ToolsUI</a> NcML Tab to generate NcML from a CDM file (enter a dataset URL or browse for a local file). You can save the NcML to disk <img src="images/Save.jpg" width="32" height="32">. </p>
+<p><img src="images/ncmlTab.jpg" width="769" height="505"></p>
 <h3>Writing out  files modified with NcML</h3>
-<p>You can also generate a NetCDF-3 file from the NcML <img src="TUIncmlSaveAsNetcdf.jpg" width="30" height="27">, and the equivalent binary NetCDF file will be created corresponding to the NcML dataset, and all the original data will be copied to it. Since the binary data is taken from the original file, this is efficient for even large files. </p>
+<p>You can also generate a NetCDF-3 file from the NcML <img src="images/WriteNetcdf.jpg" width="32" height="32">, and the equivalent binary NetCDF file will be created corresponding to the NcML dataset, and all the original data will be copied to it. Since the binary data is taken from the original file, this is efficient for even large files. </p>
 <p>This works as long as you are using only netCDF-3 compatible features. In practice this means no Structures or Groups. Strings are ok, and are converted to type char. The equivilent Java code to do this is:</p>
 <pre>    NetcdfDataset ncd = NcMLReader.readNcML (ncml_filename, null);<br>    NetcdfFile ncdnew = <strong>ucar.nc2.FileWriter.writeToFile</strong>(ncd, fileout_name, true);
     ncd.close();

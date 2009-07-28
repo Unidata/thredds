@@ -684,7 +684,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       return getName().compareTo(so.getName());
     }
   }
-
+                                   
   public static class TrajectoryFeatureBean extends StationBean {
     int npts;
     TrajectoryFeature pfc;

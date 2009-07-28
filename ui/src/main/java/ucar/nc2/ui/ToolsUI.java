@@ -4266,7 +4266,7 @@ public class ToolsUI extends JPanel {
     // java.util.logging.Logger.getLogger("ucar.nc2").setLevel( java.util.logging.Level.SEVERE);
 
     // put UI in a JFrame
-    frame = new JFrame("NetCDF (4.0) Tools");
+    frame = new JFrame("NetCDF (4.1) Tools");
     ui = new ToolsUI(prefs, frame);
 
     frame.setIconImage(BAMutil.getImage("netcdfUI"));
