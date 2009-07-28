@@ -1,22 +1,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
+<html><head>
   <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-  <title>THREDDS Group - Product Backlog</title>
-</head>
+  <title>THREDDS Group - Product Backlog</title></head>
+
 <body>
 
 <h1>THREDDS Group - Backlog</h1>
 
 <hr style="width: 100%; height: 2px;">
 
-<h2>4.1 Iteration Backlog</h2>
+<h2>4.1 Iteration Backlog [Sept 15]</h2>
 
 <ul>
   <li>[<a href="threddsCatalog2/backlogs.html">thredds.catalog2</a>] Cleanup
     THREDDS Catalog API for access, creation, improved XML parsing, and
     smaller memory footprint. </li>
-  <li>[PointObsCollectionServer]</li>
+  <li>[PointObsCollectionServer] Support spatial and temporal queries over collections of point data.</li><li>[GEMPAK Point Data]</li>
   <li>[FileSystem] Efficient tracking of files on disk with caching etc.</li>
   <li>[FileSystem Aggregation] Use FileSystem for tracking collections of
     datasets used in aggregations.</li>
@@ -27,20 +26,15 @@
     datasets for DatasetScan/CatalogGen.</li>
   <li>[GRIB PDS/GDS Index] New GRIB index scheme that includes PDS and
     GDS.</li>
-  <li>[GRIB Ensemble] Improve GRIB library handling of ensemble data
-    (SREF, ...)</li>
-  <li>[CF Attribute Namespaces]</li>
-  <li>[CF URN Namespace]</li>
-  <li>[CF Vertical CRS]</li>
-</ul>
+  <li>[GRIB Ensemble Data] Improve GRIB library handling of ensemble data
+    (SREF, ...)</li></ul>
 
-<h2>4.2 Iteration Backlog</h2>
+<h2>4.2 Iteration Backlog [Dec 15]</h2>
 <ul>
   <li>[DatasetSource] Extract and use new interface for locating datasets given
-    an ID. (GOAL: separate data location from HTTP request processing; allow
-    TDS, ncWMS, RAMADDA to use same interface. Handle restricted data?
-    Metadata?)
-  </li>
+    an ID.</li><ul><li>GOAL: separate data location from HTTP request processing; allow
+    TDS, ncWMS, RAMADDA to use same interface. ("<code>TDS Services -&gt;|&lt;- DatasetSource interface -&gt;|&lt;- TDS State</code>")</li><li>Register IDs or ID groups that are handled (state impl side of things)</li><li>Handle restricted data?
+    Metadata?</li></ul>
   <li>[AutoMetadataExtraction] Add automated metadata harvesting (extract from
     dataset and insert into catalog).
   </li>
@@ -52,12 +46,11 @@
       as plug-in for catalog builder/source [DatasetCollection?]
     </li>
     <li>[AutoMetadataExtraction FeatureType] Use FeatureType API to get
-      certain metadata (BBox, etc)
-    </li>
-  </ul>
+      certain metadata (BBox, etc)</li>
+  </ul><li>[GEMPAK Sounding Data] CDM local and remote access (w/ collection queries) to GEMPAK Soundings.</li>
 </ul>
 
-<h2>Product Backlog</h2>
+<h2>4.3 Iteration Backlog []</h2><ul><li>[TDS Config State]</li><li>[FMRC Refactor] ???</li></ul><h2>Product Backlog</h2>
 
 <ul>
   <li>[FileSystem Updater] Extend FileSystem to support pluggable update
@@ -95,7 +88,7 @@
     ID for use by TDS, ncWMS, and RAMADDA.
   </li>
   <li>[WCS RAMADDA] Pull WCS Servlet code apart for use by RAMADDA</li>
-  <li>[TDS Config State]</li>
+  
   <li>[TDS Config WebUI]</li>
   <li>[PointObs CF]</li>
   <li>[Ensemble GRIB]</li>
@@ -139,5 +132,4 @@
   <li>Lightning data on motherlode ?</li>
 </ul>
 
-</body>
-</html>
+</body></html>
