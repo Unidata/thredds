@@ -1,16 +1,14 @@
 <?xml version="1.0"?>
-<project name="tds" default="compile" basedir=".">
+<project name="tds" default="makeWar" basedir=".">
+  <tstamp>
+    <format property="build.time" pattern="yyyy-MM-dd HH:mm:ss" timezone="GMT"/>
+    <format property="build.time.number" pattern="yyyyMMdd.HHmm" timezone="GMT"/>
+  </tstamp>
+
   <property name="release.version" value="4.1"/>
-  <property name="release.version.minor" value="${release.version}.0"/>
-  <tstamp>
-    <format property="buildtime" pattern="yyyy-MM-dd HH:mm:ss" timezone="GMT"/>
-  </tstamp>
-  <tstamp>
-    <format property="buildtime2" pattern="yyyy-MM-dd'T'HH.mm.ss" timezone="GMT"/>
-  </tstamp>
-  <tstamp>
-    <format property="buildtime.number" pattern="yyyyMMdd.HHmm" timezone="GMT"/>
-  </tstamp>
+  <!-- TeamCity sets "build.number" property to value of its build counter. -->
+  <property name="build.number" value="${build.time.number}" />
+  <property name="release.version.minor" value="${release.version}.${build.number}"/>
 
   <!-- Load environment and user properties. -->
   <property environment="env"/>
@@ -211,7 +209,7 @@
 
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Built-On" value="${build.time}"/>
         <attribute name="Implementation-Title" value="THREDDS Servlet Framework (TSF)"/>
         <attribute name="Implementation-Version" value="${release.version.minor}"/>
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
@@ -229,7 +227,7 @@
 
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Built-On" value="${build.time}"/>
         <attribute name="Implementation-Title" value="TDS classes must be put into tomcat"/>
         <attribute name="Implementation-Version" value="${release.version.minor}"/>
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
@@ -253,7 +251,7 @@
       <filterset>
         <filter token="VERSION" value="${release.version}"/>
         <filter token="VERSION.MINOR" value="${release.version.minor}"/>
-        <filter token="BUILDTIME" value="${buildtime.number}"/>
+        <filter token="BUILDTIME" value="${build.time.number}"/>
         <filter token="HEADER" value="${tds.properties.header}" />
       </filterset>
     </copy>
@@ -267,7 +265,7 @@
     <mkdir dir="${war.dir}"/>
     <copy file="README.TEMPLATE" tofile="${war.dir}/docs/README.txt" overwrite="true">
       <filterset>
-        <filter token="BUILDTIME" value="${buildtime}"/>
+        <filter token="BUILDTIME" value="${build.time}"/>
         <filter token="VERSION" value="${release.version.minor}"/>
         <filter token="VERSION.MINOR" value="${release.version.minor}"/>
       </filterset>
@@ -275,7 +273,7 @@
 
     <copy file="CHANGES.txt" tofile="${war.dir}/docs/CHANGES.txt" overwrite="true">
       <filterset>
-        <filter token="BUILDTIME" value="${buildtime}"/>
+        <filter token="BUILDTIME" value="${build.time}"/>
         <filter token="VERSION" value="${release.version}"/>
         <filter token="VERSION.MINOR" value="${release.version.minor}"/>
       </filterset>
@@ -315,7 +313,7 @@
 
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Built-On" value="${build.time}"/>
         <attribute name="Implementation-Title" value="THREDDS Data Server"/>
         <attribute name="Implementation-Version" value="${release.version.minor}"/>
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
@@ -345,7 +343,7 @@
 
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Built-On" value="${build.time}"/>
         <attribute name="Implementation-Title" value="CDM Validator"/>
         <attribute name="Implementation-Version" value="${release.version.minor}"/>
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
@@ -363,7 +361,7 @@
     <mkdir dir="${cdmvalidator.war.dir}"/>
     <copy file="README.cdmvalidator.txt" tofile="${cdmvalidator.war.dir}/README.txt" overwrite="true">
       <filterset>
-        <filter token="BUILDTIME" value="${buildtime}"/>
+        <filter token="BUILDTIME" value="${build.time}"/>
         <filter token="VERSION" value="${release.version.minor}"/>
         <filter token="VERSION.MINOR" value="${release.version.minor}"/>
       </filterset>
@@ -371,7 +369,7 @@
 
     <copy file="CHANGES.cdmvalidator.txt" tofile="${cdmvalidator.war.dir}/CHANGES.txt" overwrite="true">
       <filterset>
-        <filter token="BUILDTIME" value="${buildtime}"/>
+        <filter token="BUILDTIME" value="${build.time}"/>
         <filter token="VERSION" value="${release.version}"/>
         <filter token="VERSION.MINOR" value="${release.version.minor}"/>
       </filterset>
@@ -425,7 +423,7 @@
       <filterset>
         <filter token="VERSION" value="${release.version}"/>
         <filter token="VERSION.MINOR" value="${release.version.minor}"/>
-        <filter token="BUILDTIME" value="${buildtime.number}"/>
+        <filter token="BUILDTIME" value="${build.time.number}"/>
         <filter token="HEADER" value="${cdmvalidator.properties.header}" />
       </filterset>
     </copy>
@@ -451,7 +449,7 @@
 
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Built-On" value="${build.time}"/>
         <attribute name="Implementation-Title" value="Example THREDDS Server"/>
         <attribute name="Implementation-Version" value="${release.version.minor}"/>
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
@@ -477,7 +475,7 @@
     <!-- create README file with time and version -->
     <copy file="README.TEMPLATE" tofile="${war.dir}/docs/README.txt" overwrite="true">
       <filterset>
-        <filter token="BUILDTIME" value="${buildtime}"/>
+        <filter token="BUILDTIME" value="${build.time}"/>
         <filter token="VERSION" value="${release.version}"/>
         <filter token="VERSION.MINOR" value="${release.version.minor}"/>
       </filterset>
@@ -526,7 +524,7 @@
 
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Built-On" value="${build.time}"/>
         <attribute name="Implementation-Title" value="DqcServletRedirect - test"/>
         <attribute name="Implementation-Version" value="${release.version.minor}"/>
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
@@ -556,7 +554,7 @@
 
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime2}"/>
+        <attribute name="Built-On" value="${build.time}"/>
         <attribute name="Implementation-Title" value="THREDDS Data Server (TDS) Source"/>
         <attribute name="Implementation-Version" value="${release.version.minor}"/>
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
@@ -792,7 +790,7 @@
 
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime2}"/>
+        <attribute name="Built-On" value="${build.time}"/>
         <attribute name="Implementation-Title" value="TDS Test Classes"/>
         <attribute name="Implementation-Version" value="${release.version.minor}"/>
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>

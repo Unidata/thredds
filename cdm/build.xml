@@ -1,24 +1,17 @@
 <?xml version="1.0"?>
 <project name="cdm" default="makeMain" basedir=".">
-  <property name="release.version" value="4.1"/>
-  <property name="minor" value="0" />
-  <!-- "build.number" is already set for TeamCity builds. -->
   <tstamp>
+    <format property="build.time" pattern="yyyy-MM-dd HH:mm:ss" timezone="GMT"/>
     <format property="build.time.number" pattern="yyyyMMdd.HHmm" timezone="GMT"/>
   </tstamp>
-  <condition property="release.version.minor"
-             value="${release.version}.${minor}.${build.number}"
-             else="${release.version}.${minor}.${build.time.number}" >
-    <isset property="build.number" />
-  </condition>
+
+  <property name="release.version" value="4.1"/>
+  <!-- TeamCity sets "build.number" property to value of its build counter. -->
+  <property name="build.number" value="${build.time.number}" />
+  <property name="release.version.minor" value="${release.version}.${build.number}"/>
+
   <property name="build.debug" value="on"/>
   <property name="build.release" value="false"/>
-  <tstamp>
-    <format property="buildtime" pattern="yyyy-MM-dd HH:mm:ss" timezone="GMT"/>
-  </tstamp>
-  <tstamp>
-    <format property="buildtime2" pattern="yyyy-MM-dd'T'HH.mm.ss" timezone="GMT"/>
-  </tstamp>
 
   <!-- Load environment and user properties. -->
   <property environment="env"/>
@@ -203,7 +196,7 @@
 
     <copy file="README.TEMPLATE" tofile="${build.dir}/README" overwrite="true">
       <filterset>
-        <filter token="BUILDTIME" value="${buildtime}"/>
+        <filter token="BUILDTIME" value="${build.time}"/>
         <filter token="VERSION" value="${release.version}"/>
         <filter token="VERSION.MINOR" value="${release.version.minor}"/>
       </filterset>
@@ -211,7 +204,7 @@
 
     <copy file="CHANGES.txt" tofile="${build.dir}/CHANGES" overwrite="true">
       <filterset>
-        <filter token="BUILDTIME" value="${buildtime}"/>
+        <filter token="BUILDTIME" value="${build.time}"/>
         <filter token="VERSION" value="${release.version}"/>
         <filter token="VERSION.MINOR" value="${release.version.minor}"/>
       </filterset>
@@ -225,7 +218,7 @@
 
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Built-On" value="${build.time}"/>
         <attribute name="Implementation-Title" value="NetCDF-Java-MinimalLibrary"/>
         <attribute name="Implementation-Version" value="${release.version.minor}"/>
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
@@ -272,7 +265,7 @@
   <target name="makeMain" depends="compile" description="make library jars">
     <copy file="README.TEMPLATE" tofile="${build.dir}/README" overwrite="true">
       <filterset>
-        <filter token="BUILDTIME" value="${buildtime}"/>
+        <filter token="BUILDTIME" value="${build.time}"/>
         <filter token="VERSION" value="${release.version}"/>
         <filter token="VERSION.MINOR" value="${release.version.minor}"/>
       </filterset>
@@ -280,7 +273,7 @@
 
     <copy file="CHANGES.txt" tofile="${build.dir}/CHANGES" overwrite="true">
       <filterset>
-        <filter token="BUILDTIME" value="${buildtime}"/>
+        <filter token="BUILDTIME" value="${build.time}"/>
         <filter token="VERSION" value="${release.version}"/>
         <filter token="VERSION.MINOR" value="${release.version.minor}"/>
       </filterset>
@@ -302,7 +295,7 @@
 
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Built-On" value="${build.time}"/>
         <attribute name="Implementation-Title" value="NetCDF-Java-Library"/>
         <attribute name="Implementation-Version" value="${release.version.minor}"/>
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
@@ -344,7 +337,7 @@
 
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Built-On" value="${build.time}"/>
         <attribute name="Implementation-Title" value="NetCDF-Java-Library Complete"/>
         <attribute name="Implementation-Version" value="${release.version.minor}"/>
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
@@ -374,7 +367,7 @@
 
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Built-On" value="${build.time}"/>
         <attribute name="Implementation-Title" value="test Jar"/>
         <attribute name="Implementation-Version" value="${release.version.minor}"/>
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
@@ -419,7 +412,7 @@
 
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Built-On" value="${build.time}"/>
         <attribute name="Implementation-Title" value="NetCDF-Java-IDV-library"/>
         <attribute name="Implementation-Version" value="${release.version.minor}"/>
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
@@ -446,7 +439,7 @@
       
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime2}"/>
+        <attribute name="Built-On" value="${build.time}"/>
         <attribute name="Implementation-Title" value="netCDF-Java/CDM and ToolsUI Source"/>
         <attribute name="Implementation-Version" value="${release.version.minor}"/>
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
@@ -469,7 +462,7 @@
 
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime2}"/>
+        <attribute name="Built-On" value="${build.time}"/>
         <attribute name="Implementation-Title" value="THREDDS Source (CDM, TDS, ToolsUI)"/>
         <attribute name="Implementation-Version" value="${release.version.minor}"/>
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
@@ -549,7 +542,7 @@
 
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Built-On" value="${build.time}"/>
         <attribute name="Implementation-Title" value="Public Javadoc for NetCDF-Java-library "/>
         <attribute name="Implementation-Version" value="${release.version.minor}"/>
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
@@ -583,7 +576,7 @@
 
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Built-On" value="${build.time}"/>
         <attribute name="Implementation-Title" value="All Javadoc for NetCDF-Java-library "/>
         <attribute name="Implementation-Version" value="${release.version.minor}"/>
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
@@ -670,7 +663,7 @@
   <target name="makeUI" depends="compile, compileUI" description="make toolsUI jar">
     <copy file="README.TEMPLATE" tofile="${build.dir}/README" overwrite="true">
       <filterset>
-        <filter token="BUILDTIME" value="${buildtime}"/>
+        <filter token="BUILDTIME" value="${build.time}"/>
         <filter token="VERSION" value="${release.version}"/>
         <filter token="VERSION.MINOR" value="${release.version.minor}"/>
       </filterset>
@@ -678,7 +671,7 @@
 
     <copy file="CHANGES.txt" tofile="${build.dir}/CHANGES" overwrite="true">
       <filterset>
-        <filter token="BUILDTIME" value="${buildtime}"/>
+        <filter token="BUILDTIME" value="${build.time}"/>
         <filter token="VERSION" value="${release.version}"/>
         <filter token="VERSION.MINOR" value="${release.version.minor}"/>
       </filterset>
@@ -696,7 +689,7 @@
         <attribute name="Main-Class" value="ucar.nc2.ui.ToolsUI"/>
         <attribute name="Class-Path" value="${Class-Path}"/>
         <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Built-On" value="${build.time}"/>
         <attribute name="Implementation-Title" value="NetCDF-Java-UITools"/>
         <attribute name="Implementation-Version" value="${release.version.minor}"/>
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
@@ -750,7 +743,7 @@
       <manifest>
         <attribute name="Main-Class" value="ucar.nc2.ui.ToolsUI"/>
         <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Built-On" value="${build.time}"/>
         <attribute name="Implementation-Title" value="NetCDF-Java-ToolsUI"/>
         <attribute name="Implementation-Version" value="${release.version.minor}"/>
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
@@ -769,7 +762,7 @@
 
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Built-On" value="${build.time}"/>
         <attribute name="Implementation-Title" value="NetCDF-Java Optional Resources"/>
         <attribute name="Implementation-Version" value="${release.version.minor}"/>
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
@@ -928,7 +921,7 @@
 
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime2}"/>
+        <attribute name="Built-On" value="${build.time}"/>
         <attribute name="Implementation-Title" value="CDM Test Classes"/>
         <attribute name="Implementation-Version" value="${release.version.minor}"/>
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
