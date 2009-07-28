@@ -64,6 +64,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
   private long rafLength;    // length of the file when opened - used for syncing
   private long indexLength;  // length of the index in getIndex - used for syncing
   private int saveEdition = 0;
+  private float version = 0;
 
   private Grib1Data dataReaderGrib1;
   private Grib2Data dataReaderGrib2;
@@ -102,6 +103,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
     GridIndex index = getIndex(raf.getLocation());
     Map<String, String> attr = index.getGlobalAttributes();
     saveEdition = attr.get("grid_edition").equals("2") ? 2 : 1;
+    version = Float.parseFloat(attr.get("index_version"));
 
     GridTableLookup lookup;
     if (saveEdition == 2) {
@@ -407,7 +409,9 @@ public class GribGridServiceProvider extends GridServiceProvider {
     GribGridRecord ggr = (GribGridRecord) gr;
     if (saveEdition == 2) {
       return dataReaderGrib2.getData(ggr.offset1, ggr.offset2);
-    } else {
+    } else if (version >= 8 ) {
+      return dataReaderGrib1.getData(ggr.offset1, ggr.offset2, ggr.decimalScale, ggr.bmsExists);
+    } else {  
       return dataReaderGrib1.getData(ggr.offset1, ggr.decimalScale, ggr.bmsExists);
     }
   }
