@@ -195,7 +195,7 @@ netcdf feb.nc {
 <p>So a new dimension and coordinate variable<em><strong> time(time)</strong></em> has been added, and the aggregation variable T uses time as its outer dimension. The data for T from the nested files are logically concatenated together.</p>
 <p><i>A <strong>JoinNew</strong> dataset is constructed by transferring objects (dimensions, attributes, groups, and variables) from the nested datasets in the order the nested datasets are listed. All variables that are listed as aggregation variables are logically concatenated along a new dimension, in the order of the nested datasets. A coordinate Variable is created for the new dimension. Non-aggregation variables are treated as in a Union dataset, i.e. skipped if one of that name already exists.</i></p>
 <h3>Defining coordinates on a JoinNew aggregation </h3>
-<p>A <em><strong>JoinNew</strong></em> aggregation has to create a new coordinate variable. In the above example, one was automatically created with type double, to match the coordValues specified on the netcdf elements. However, it has no units or other attributes. To specify attibutes on the coordinate system, you can use the following (Download <a href="examples/aggNewCoord.xml">aggNewCoord.ncm)</a></p>
+<p>A <em><strong>JoinNew</strong></em> aggregation has to create a new coordinate variable. In the above example, one was automatically created with type double, to match the coordValues specified on the netcdf elements. However, it has no units or other attributes. To specify attibutes on the coordinate system, you can use the following (Download <a href="examples/aggNewCoord.ncml">aggNewCoord.ncm)</a></p>
 <pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
 <strong>(1)</strong>&lt;variable name=&quot;time&quot; type=&quot;int&quot; &gt;
      &lt;attribute name=&quot;units&quot; value=&quot;months since 2000-6-16 6:00&quot;/&gt;
@@ -253,15 +253,17 @@ netcdf feb.nc {
 <strong>    &lt;scan location=&quot;/data/goes/&quot; suffix=&quot;.gini&quot; /&gt;</strong>
   &lt;/aggregation&gt;
 &lt;/netcdf&gt;</pre>
-<p>  In a joinNew aggregation, the problem is how to assign coordinate values to each step? If you do nothing, a String-valued coordinate variable will be defined, whose values are the filenames. If you know the number of files, you can specifiy the coordinate variable yourself and  assign it values: </p>
+<p>  In a joinNew aggregation, the problem is how to assign coordinate values to each step? If you do nothing, a String-valued coordinate variable will be defined, whose values are the filenames. Better is to specifiy the coordinate variable  and  assign it values: </p>
 <pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
-<strong>  </strong>&lt;dimension name=&quot;time&quot; length=&quot;48&quot;/&gt;
+<strong>
+</strong>
   &lt;variable name=&quot;time&quot; type=&quot;int&quot; shape=&quot;time&quot;&gt;
     &lt;attribute name=&quot;units&quot; value=&quot;hours since 2000-01-01 00:00&quot;/&gt;
     &lt;attribute name=&quot;_CoordinateAxisType&quot; value=&quot;Time&quot; /&gt;
-<strong>	  &lt;values start=&quot;0&quot; increment=&quot;1&quot; npts=&quot;48&quot; /&gt;</strong>
+<strong>	   &lt;values start=&quot;0&quot; increment=&quot;1&quot; /&gt;</strong>
   &lt;/variable&gt;
-  <strong>  </strong>&lt;aggregation dimName=&quot;time&quot; type=&quot;joinNew&quot;&gt;
+  <strong>  
+  </strong>&lt;aggregation dimName=&quot;time&quot; type=&quot;joinNew&quot;&gt;
     &lt;variableAgg name=&quot;T&quot;/&gt;
     &lt;scan location=&quot;/data/goes/&quot; suffix=&quot;.gini&quot; /&gt;<strong>
 </strong>  &lt;/aggregation&gt;
@@ -270,8 +272,8 @@ netcdf feb.nc {
 <pre><strong>  &lt;values&gt;12.0 27.0 39.0 51.0&lt;/values&gt;</strong> </pre>
 <p>If the values are evenly spaced, you can use the start/increment form, and you dont need to know the number of files:</p>
 <pre><strong> &lt;values start=&quot;12.0&quot; increment=&quot;25.0&quot;/&gt;</strong></pre>
-<h3>Extracting date coordinates from the filename (joinNew) </h3>
-<p>For the common case that you want to assign a date/time coordinate by parsing the filename, you can use the <strong>dateFormatMark</strong> attribute:</p>
+<h3>Extracting date coordinates from the filename</h3>
+<p>For the common case that the filename contains date information from which you can derive a time coordinate, you can use the <strong>dateFormatMark</strong> attribute (download <a href="examples/aggDateFormat.ncml">aggDateFormat</a>.ncml and <a href="examples/wrf.zip">wrf.zip</a>, unzip the latter and place in your data directory).</p>
 <pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
   &lt;aggregation dimName=&quot;time&quot; type=&quot;joinNew&quot;&gt;
     &lt;variableAgg name=&quot;T&quot;/&gt;
