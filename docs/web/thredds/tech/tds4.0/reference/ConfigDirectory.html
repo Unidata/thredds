@@ -15,51 +15,64 @@ dl {margin: 10px 5px 5px 15px;)
 <body>
 <h1><img alt="THREDDS" src="../../images/THREDDSlogo.jpg" height="54" width="67">THREDDS Reference: TDS Configuration Directory</h1>
 <hr>
-  <p>
-    All TDS configuration information is stored in a directory
-    that is created the first time the TDS is run. The
-    configuration directory, generally
-  </p>
-  <pre>${TOMCAT_HOME}/content/thredds,</pre>
-  <p>
-    is created and populated with default files the first time
-    a TDS installation is run. It is persistent even when a TDS
-    installation is upgraded or re-deployed. All your configuration,
-    modifications, and additions should be made in this directory.
-    Do not place files containing passwords or anything else with
-    security issues in this directory. Typically you will only be
-    adding and modifying catalogs and configuration files.
-  </p>
+
+<p>
+  All TDS configuration information is stored in the TDS configuration directory.
+  The default location for the TDS configuration directory is
+</p>
+<pre style="margin-left: 40px;">${TOMCAT_HOME}/content/thredds</pre>
+<p>The TDS configuration directory is created and populated with default files
+  the first time the TDS is deployed. It is persistent even when a TDS
+  installation is upgraded or re-deployed. All modifications and
+  additions to the TDS configuration should be made in this directory. Do not place files containing
+  passwords or anything else with security issues in this directory. Typically
+  you will only be adding and modifying catalogs and configuration files.
+</p>
+
 
 <h2>Content of Configuration Directory</h2>
   <p>
-    For now, we will focus on the following subset of the content directory:
+    When the TDS is first deployed, the TDS configuration directory looks like:
   </p>
-   <pre style="margin-left: 40px;">
-     * ${TOMCAT_HOME}/content/thredds/
-           o .INIT - the presence of this file indicates whether the default files have been copied - it is important not to delete this file.
-           o catalog.xml - the main TDS configuration catalog (root catalog for TDS configuration)
-           o enhancedCatalog.xml - an example catalog [Note: It is referenced from catalog.xml.]
-           o logs/
-                 + catalogErrors.xml - messages from TDS configuration contains information on the TDS configuration catalogs
-                 + threddsServlet.log
-   </pre>
+  <ul>
+    <li><code>${TOMCAT_HOME}/content/thredds/</code>
+      <ul>
+        <li><code>catalog.xml </code> - the main TDS configuration catalog
+          (root catalog for TDS configuration)
+        </li>
+        <li><code>enhancedCatalog.xml</code> - an example catalog [Note: It
+          is referenced from <code>catalog.xml</code>.]
+        </li>
+        <li><code>threddsConfig.xml</code> - configuration
+          file for allowing non-default services, configuring caching, etc
+          (<a href="ThreddsConfigXMLFile.html">more detailed information</a>).
+        </li>
+        <li><code>logs/</code>
+          <ul>
+            <li><code>catalogInit.log</code> - log file for messages generated while reading TDS
+              configuration catalogs during TDS initialization and reinitialization.
+            </li>
+            <li><code>threddsServlet.log</code> - TDS error log file.</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
 
-
-<h2>Changing the Default Location of Configuration Directory</h2>
+<h2><a name="ChangeTdsContentDir">Changing the Default Location of Configuration Directory</a></h2>
 <p>
-  TDS 4.0 (now in alpha release) supports configuring the location
+  TDS 4.0 supports configuring the location
   of the "content/thredds" directory by setting the "tds.content.root.path"
   system property. For instance, by adding the following to JAVA_OPTS
   in your startup script:
 </p>
 
 <pre style="margin-left: 40px;">
--Dtds.content.root.path=&lt;some_absolute_path&gt;
+-Dtds.content.root.path=/some/absolute/path;
 </pre>
 
-The TDS will look for the config catalog files in the directory
-<pre style="margin-left: 40px;">&lt;some_absolute_path&gt;/thredds</pre>
+<p>The TDS will use the configuration files in:</p>
+<pre style="margin-left: 40px;">/some/absolute/path/thredds</pre>
 
 
 
