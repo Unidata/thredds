@@ -15,6 +15,7 @@ a:hover {
     text-decoration: underline;
 }
 
+
 small {
     font-size: 10pt;
 }
@@ -23,6 +24,8 @@ code {
     font-size: 11pt;
     font-family: "Lucida Console", "Courier New", monospace;
     white-space: nowrap;
+    color: #708090;
+    font-weight: bold;
 }
 
 
@@ -69,7 +72,7 @@ h1 {
 
 #section #subsection h3 {
     padding: 0px 0px 0px 0px;
-    margin: 0px 0px 20px -20px;  
+    margin: 0px 0px 20px -18px;  
     font-size: 14pt;
     color: #000000;
 }
@@ -90,7 +93,7 @@ h1 {
 
 #section #subsection.exercise ol li {
     padding: 0px 0px 0px 0px;
-    margin: 20px 0px 5px 0px; 
+    margin: 10px 0px 5px 0px; 
     font-size: 11pt;
 }
 
@@ -222,7 +225,7 @@ h1 {
 
 
 
-#section #subsection #info {
+#section #subsection #note {
     z-index: 10;
     border: 1px dashed #CFCFCF;
     padding: 10px 10px 10px 10px;
@@ -231,36 +234,65 @@ h1 {
     position: relative;
     width: 250px;
     right: 2px; 
-    background: #EFEFEF url('../images/info.gif') no-repeat 10px 5px;
-
 }
 
 
-#section #subsection #info h4 {
+#section #subsection #note h4 {
     padding: 10px 0px 0px 55px;
     margin: 0px 0px 15px 0px;    
     font-size: 12pt;
 }
 
-#section #subsection #info ul {
-    list-style-type: none;
+#section #subsection #note ul {
+    list-style-type: disc;
     padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 0px;    
+    margin: 0px 0px 0px 20px;    
 }
 
-#section #subsection #info ul li {
-    padding: 0px 0px 0px 20px;
+#section #subsection #note ul li {
+    padding: 0px 0px 0px 0px;
     margin: 0px 0px 5px 0px;  
-    background: transparent url('../images/arrow.gif') no-repeat 0px 1px;
+    font-size: 9pt;
+    background: none;
 }
 
 
-#section #subsection #info p {
+#section #subsection #note p {
     padding: 0px 0px 0px 0px;
     margin: 5px 0px 5px 0px;  
 }
 
 
+.info {
+    background: #EFEFEF url('../images/info.gif') no-repeat 10px 5px;
+}
+
+.reminder {
+    background: #EFEFEF url('../images/reminder.gif') no-repeat 10px 5px;
+}
+
+.ahead {
+    background: #EFEFEF url('../images/bulb.gif') no-repeat 10px 5px;
+}
+
+
+
+
+
+
+
+     table {table-layout: auto; border-collapse: separate; font-size: 10pt; }
+     th {text-align: left; background-color: #E7E7E7; border-spacing: 2px; border: 1px solid #CFCFCF; padding: 2px 5px 2px 5px; vertical-align: top;}
+     td {text-align: left; background-color: #F7F7F7; border-spacing: 2px; border: 1px solid #CFCFCF; padding: 2px 5px 2px 5px; vertical-align: top;}
+     table code {font-size: 10pt;}
+     /* tooltips */
+     a.tooltip {color:#0000FF; text-decoration: none;}
+     a.tooltip b {display:none;}
+     a.tooltip:hover {border:0px; position:relative; z-index:500; text-decoration:none;}
+     a.tooltip:hover b {display:block; position:absolute; top:20px; left:-25px; padding:5px; font-weight:normal; color:#000; border:1px solid #000000; background:#FFFFFF; width:300px;}
+     a.tooltip:hover b em.outer {position:absolute; left:20px; top:-8px; width:0; height:0; display:block; background:transparent; border-left:7px dashed transparent; border-right:7px dashed transparent; border-bottom:7px solid #000000; overflow:hidden; z-index:100;}
+     a.tooltip:hover b em.inner {position:absolute; left:20px; top:-7px; width:0; height:0; display:block; background:transparent; border-left:7px dashed transparent; border-right:7px dashed transparent; border-bottom:7px solid #FFFFFF; overflow:hidden; z-index:100}
+     .clear {clear:both;}
 
 
 
