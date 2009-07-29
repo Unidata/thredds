@@ -169,6 +169,23 @@ public class MAMath {
   }
 
   /**
+   * Convert original array to desired type
+   *
+   * @param org original array
+   * @param wantType desired type
+   * @return converted data of desired type, or original array if it is already
+   */
+  public static Array convert( Array org, DataType wantType) {
+    Class wantClass = wantType.getPrimitiveClassType();
+    if (org.getElementType().equals(wantClass))
+      return org;
+
+    Array result = Array.factory(wantType, org.getShape());
+    copy(wantType, org.getIndexIterator(), result.getIndexIterator());
+    return result;
+  }
+
+  /**
    * Copy using iterators. Will copy until !from.hasNext().
    *
    * @param dataType use this operation type (eg DataType.DOUBLE uses getDoubleNext())

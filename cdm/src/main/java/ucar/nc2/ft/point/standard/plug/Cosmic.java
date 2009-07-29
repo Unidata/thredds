@@ -70,26 +70,26 @@ public class Cosmic extends TableConfigurerImpl {
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
 
-     TableConfig traj = new TableConfig(Table.Type.Singleton, "traj");
+     TableConfig traj = new TableConfig(Table.Type.Top, "traj");
      traj.featureType = FeatureType.TRAJECTORY;
 
-     StructureDataScalar sdata = new StructureDataScalar("profile");
+     //StructureDataScalar sdata = new StructureDataScalar("profile");
      //sdata.addMember("lat", "Latitude (avg)", "degrees_north", ds.readAttributeDouble(null, "lat", Double.NaN));
      //sdata.addMember("lon", "Longitude (avg)", "degrees_east", ds.readAttributeDouble(null, "lon", Double.NaN));
-     Date time = makeTime(ds);
-     sdata.addMember("time", "Time (avg)", "seconds since 1970-01-01 00:00", time.getTime()/1000);
+     //Date time = makeTime(ds);
+     //sdata.addMember("time", "Time (avg)", "seconds since 1970-01-01 00:00", time.getTime()/1000);
 
-     traj.sdata = sdata;
+     //traj.sdata = sdata;
      //traj.lat = "lat";
      //traj.lon = "lon";
-     traj.time = "time";
+     //traj.time = "time";
 
      TableConfig obs = new TableConfig(Table.Type.Structure, "point");
      obs.isPsuedoStructure = true;
      obs.dim = ds.findDimension("MSL_alt");
      obs.lat = "Lat";
      obs.lon = "Lon";
-     //obs.time = "time";
+     obs.time = "time";
      obs.elev = "MSL_alt";
 
      traj.addChild(obs);

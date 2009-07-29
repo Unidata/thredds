@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  0:
+  AggregationOuterDimension.cacheVar may keep data as different tyoe, make sure to convert to correct type in read()
   Cosmic data - FeatureType plug
   AggregationOuterDimension.rebuildDatasets(): bug on updating datasets, assuming agg vars are 1D (!)
   HDF4 images use unshared dimensions
