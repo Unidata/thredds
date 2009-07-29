@@ -123,18 +123,15 @@ public class AggregationExisting extends AggregationOuterDimension {
     }
 
     if (type == Type.joinExistingOne) {
-      // ok if cordinate doesnt exist for a "join existing one", since we have to create it anyway
-      if (joinAggCoord == null) {
-        joinAggCoord = new VariableDS(ncDataset, null, null, dimName, DataType.STRING, dimName, null, null);
-        joinAggCoord.setProxyReader(this); // do the reading here
-        ncDataset.getRootGroup().addVariable(joinAggCoord);
-        aggVars.add(joinAggCoord);
-
-      } else {
+      if (joinAggCoord != null) {
         // replace aggregation coordinate variable
-        //joinAggCoord.setDataType(DataType.STRING);
-        //joinAggCoord.getAttributes().clear(); // why ?
+        ncDataset.getRootGroup().removeVariable(joinAggCoord.getShortName());
       }
+      
+      joinAggCoord = new VariableDS(ncDataset, null, null, dimName, DataType.STRING, dimName, null, null);
+      joinAggCoord.setProxyReader(this); // do the reading here
+      ncDataset.getRootGroup().addVariable(joinAggCoord);
+      aggVars.add(joinAggCoord);
       
       joinAggCoord.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, "Time"));
       joinAggCoord.addAttribute(new Attribute("long_name", "time coordinate"));
