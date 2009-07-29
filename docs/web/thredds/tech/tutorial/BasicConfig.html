@@ -50,39 +50,41 @@
   &lt;/catalog&gt;
 </pre>
 
-<p>Notes:</p>
-<ul>
-<li>The service element defines an OPeNDAP service and has the
-name "odap".</li>
-<li>The first dataset is a container dataset.</li>
-<li>Each child dataset has an access method due to
-its&nbsp;urlPath attribute and child serviceName element.</li>
-<li>The catalogRef elements link to a relative catalog and a
-remote catalog.</li>
-</ul>
+    <p>Notes:</p>
+    <ul>
+      <li>The service element defines an OPeNDAP service and has the
+        name "odap". </li>
+      <li>The first dataset is a container dataset.</li>
+      <li>Each child dataset has an access method due to
+        its urlPath attribute and child serviceName element.
+      </li>
+      <li>The catalogRef elements link to a relative catalog and a
+        remote catalog.</li>
+    </ul>
 
-<h4>Constructing an access URL</h4>
-<ol>
-<li>Find the service element referenced by the dataset:
+    <h4>Constructing an access URL</h4>
+    <ol>
+      <li>Find the service element referenced by the dataset:
 <pre>&lt;service name="odap" serviceType="OPENDAP" base="/thredds/dodsC/" /&gt;</pre>
-</li>
-<li>Get the base URL of the service element:
+      </li>
+      <li>Get the base URL of the service element:
 <pre>/thredds/dodsC/</pre>
-</li>
-<li>If it is a relative URL, resolve against the catalog's URL:
+      </li>
+      <li>If it is a relative URL, resolve against the catalog's URL:
 <pre>http://my.server/thredds/catalog.xml      <var>// Catalog URL</var></pre>
 <pre>http://my.server/thredds/dodsC/           <var>// Service base URL</var></pre>
-</li>
-<li>Find the urlPath attribute for the accessible dataset:
+      </li>
+      <li>Find the urlPath attribute for the accessible dataset:
 <pre>urlPath="test/example3.nc"</pre>
-</li>
-<li>Append the value of the urlPath attribute to the base
-service URL:<br>
+      </li>
+      <li>Append the value of the urlPath attribute to the base
+        service URL:
 <pre>http://my.server/thredds/dodsC/test/example3.nc</pre>
-</li>
-</ol>
-<p>More information is available on <a href="../catalog/v1.0.2/InvCatalogSpec.html#constructingURLs">constructing
-access URLs</a>. </p>
+      </li>
+    </ol>
+    <p>More information is available on
+      <a href="../catalog/v1.0.2/InvCatalogSpec.html#constructingURLs">constructing access URLs</a>.
+    </p>
 
   </div>
   <div id="subsection"> <h3>Example Catalog - shared service name</h3>
@@ -110,11 +112,11 @@ access URLs</a>. </p>
   &lt;/catalog&gt;
 </pre>
 
-        <p>Notes:</p>
-<ul>
-<li>The serviceName element is inherited by each child dataset
-from the containing dataset.</li>
-</ul>
+    <p>Notes:</p>
+    <ul>
+      <li>The serviceName element is inherited by each child dataset from the containing
+        dataset.</li>
+    </ul>
 
   </div>
 </div>
@@ -144,22 +146,30 @@ from the containing dataset.</li>
   </div>
   <div id="subsection"><h3><code>datasetRoot</code> Element</h3>
 
-  <p>Each <code>datasetRoot</code>
-element defines a single mapping between a URL base path and a
-directory.&nbsp;The URL base path so defined can then be used in accessible
-datasets for files under the mapped directory. For instance, if you
-have a directory /my/data/testdata that contains:</p>
+    <p>Each <code>datasetRoot</code> element defines a single mapping between a URL base
+      path and a directory. The URL base path so defined can then be used in accessible
+      datasets for files under the mapped directory. For instance, if you have a directory
+      /my/data/testdata that contains:</p>
+
 <pre>afile.nc<br>testData.nc<br>junk.nc<br>grib/<br>  data1.grib2<br>  data2.grib2</pre>
-<p>You can serve the "testData.nc" and "grib1/data1.grib2" files with the following:</p>
+
+    <p>You can serve the "testData.nc" and "grib1/data1.grib2" files with the following:</p>
+
 <pre>...<br>      &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br><br><strong>1)</strong>    &lt;datasetRoot path="<strong>my/test</strong>" location="/my/data/testdata/" /&gt;<br><br><strong>2)</strong>    &lt;dataset name="A Test Dataset" ID="testDataset" urlPath="<strong>my/test</strong>/testData.nc" &gt;<br>        &lt;serviceName&gt;odap&lt;/serviceName&gt;<br>      &lt;/dataset&gt;<br><strong>3)</strong>    &lt;dataset name="A Test Dataset 2" ID="testDataset2" urlPath="<strong>my/test</strong>/grib/data1.grib2" &gt;<br>        &lt;serviceName&gt;odap&lt;/serviceName&gt;<br>      &lt;/dataset&gt;<br>...</pre>
-<p>The datasetRoot element above (1) maps the "<strong><code>my/test</code></strong>" path to the "<strong><code>/my/data/testdata/</code></strong>" directory. The URLs to access the datasets (2 &amp; 3) are</p>
+
+    <p>The datasetRoot element above (1) maps the "<strong><code>my/test</code></strong>" path
+      to the "<strong><code>/my/data/testdata/</code></strong>" directory. The URLs to access
+      the datasets (2 &amp; 3) are</p>
+
 <pre>http://my.server/thredds/dodsC/<strong>my/test</strong>/testData.nc <br>http://my.server/thredds/dodsC/<strong>my/test</strong>/grib/data1.grib2</pre>
-<p>When
-the server receives a request for one of the above URLs, it uses the URL path
-to look for a matching dataset root. In this case it finds the mapping
-provided by the&nbsp;datasetRoot element above and looks in the
-/my/data/testdata directory for the file.</p>
-<p>The client catalog that results from this catalog is the same as the above without the datasetRoot element.</p>
+
+    <p>When the server receives a request for one of the above URLs, it uses the URL path to
+      look for a matching dataset root. In this case it finds the mapping provided by the
+      datasetRoot element above and looks in the /my/data/testdata directory for the file.
+    </p>
+
+    <p>The client catalog that results from this catalog is the same as the above without
+      the datasetRoot element.</p>
 
   </div>
   <div id="subsection"> <h3><code>datasetScan</code> Element</h3>
