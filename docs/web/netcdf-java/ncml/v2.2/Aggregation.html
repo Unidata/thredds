@@ -2,6 +2,11 @@
 <head>
 <title>Aggregating netCDF files with netCDF Datasets</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<style type="text/css">
+pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
+code {font-size: 11pt;}
+dl {margin: 10px 5px 5px 15px;)
+</style>
 </head>
 
 <body bgcolor="#FFFFFF" text="#000000">
@@ -15,78 +20,95 @@
   <li><strong><a href="#joinNew">JoinNew</a></strong>: Variables of the same name (in different files) are connected  along a new outer dimension. Each file becomes one . A new coordinate variable is created for the dimension.</li>
   <li><a href="FmrcAggregation.html"><strong>ForecastModelRunCollection</strong></a> (FMRC): A collection of forecast model runs wthhe two time coordinates: a <em><strong>run time</strong></em> and a <em><strong>forecast time</strong></em>.</li>
 </ol>
-<p>See also: <a href="AnnotatedSchema4.html">Annotated NcML Schema</a> </p>
-<h2>Union<a name="Union"></a> of NetCDF files</h2>
-<p>The following NcML constructs a dataset by creating the union of two netCDF files (note there is no <em>location</em> attribute in the outer netcdf element).</p>
+<p>&nbsp;</p>
+<h2>Exercise 1: Union<a name="Union"></a> of NetCDF files</h2>
+<p>Download  <a href="examples/aggUnionSimple.ncml">aggUnionSimple.ncml</a>, <a href="examples/cldc.mean.nc">cldc.mean.nc</a> and<a href="examples/lflx.mean.nc"> lflx.mean.nc</a> and place them together in a single directory. In the ToolsUI <strong>NcML Tab</strong>, open <strong>aggUnionSimple.ncml</strong> and examine it:</p>
 <pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
   &lt;<strong>aggregation</strong> type=&quot;<strong>union</strong>&quot;&gt;    
-    &lt;<strong>netcdf</strong> location=&quot;C:/test/path/rh.nc&quot;/&gt;<br>    &lt;<strong>netcdf</strong> location=&quot;C:/test/path/temp.nc&quot;/&gt;
+    &lt;netcdf location=&quot;cldc.mean.nc&quot;/&gt;<br>    &lt;netcdf location=&quot;lflx.mean.nc&quot;/&gt;
   &lt;/aggregation&gt; 
 &lt;/netcdf&gt;</pre>
-<p>Supposing that the nested files look like: </p>
-<pre>
-netcdf rh.nc {
- dimensions:
-  time = 12;   
-  lat = 64;   
-  lon = 128; 
- variables:  
-  float rh(time, lat, lon);  
- }
+<p>This NcML constructs a dataset by creating the union of two netCDF files (note there is no <em>location</em> attribute in the outer netcdf element). </p>
+<p>Open the nested files in the ToolsUI <strong>NCDump Tab</strong>. They look like the following (details omitted):</p>
+<pre>netcdf cldc.mean.nc {
+  dimensions:<br>   time = UNLIMITED;   // (456 currently)<br>   lat = 21;<br>   lon = 360;<br> variables:<br>   float lat(lat=21);<br>   float lon(lon=360);<br>   double time(time=456);<br>   short <strong>cldc</strong>(time=456, lat=21, lon=360);
+}
 
 
-netcdf temp.nc {
- dimensions:
-  time = 12;   
-  lat = 64;   
-  lon = 128; 
 
- variables:  
-  float Temperature(time, lat, lon);  
- }
-</pre>
-<p>Then the aggregation dataset looks like:</p>
-<pre>
-netcdf TestUnion.ncml {
- dimensions:
-  time = 12;   
-  lat = 64;   
-  lon = 128; 
 
- variables:  
-  float rh(time, lat, lon);  
-  float Temperature(time, lat, lon);
- }</pre>
+
+netcdf lflx.mean.nc {
+  dimensions:<br>   time = UNLIMITED;   // (456 currently)<br>   lat = 21;<br>   lon = 360;<br> variables:<br>   float lat(lat=21);<br>   float lon(lon=360);<br>   double time(time=456);<br>   short <strong>lflx</strong>(time=456, lat=21, lon=360);
+}</pre>
+<p> In the ToolsUI <strong>Viewer Tab</strong>, open <strong>aggUnionSimple.ncml</strong> and examine it:</p>
+<pre>netcdf aggUnionSimple.xml {
+  dimensions:<br>   time = UNLIMITED;   // (456 currently)<br>   lat = 21;<br>   lon = 360;<br> variables:<br>   float lat(lat=21);<br>   float lon(lon=360);<br>   double time(time=456);<br>
+   short <strong>cldc</strong>(time=456, lat=21, lon=360);
+   short <strong>lflx</strong>(time=456, lat=21, lon=360);
+}</pre>
  
-<p>The <b>rh</b> variable will be read from <em>C:/test/path/rh.nc</em>, while 
-  the <b>Temperature</b> variable will be read from <i>C:/test/path/temp.nc. </i>One can also specify the referenced dataset reletive to the working path or reletive to the Ncml, see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/DatasetUrls.html">Dataset URLs</a>.</p>
+<p>The <strong>cldc</strong> variable will be read from <em>cldc.mean.nc</em>, while 
+  the <b>lflx</b> variable will be read from <i>lflx.mean.nc. </i>All the other variables, dimensions, and attributes are taken from the first file that declares them.</p>
 <p><i>A <strong>Union</strong> dataset is constructed by transferring objects (dimensions, attributes, groups, and variables) from the nested datasets in the order the nested datasets are listed. If an object with the same name already exists, it is skipped. </i><strong><em>You need to pay close attention to  dimensions and coordinate variables, which must match exactly across nested files. </em></strong></p>
-<p><strong>Example file </strong>: <a href="examples/aggUnionSimple.ncml.txt">aggUnionSimple.ncml</a></p>
-<h2> <a name="joinExisting"></a>Aggregation on an existing dimension</h2>
-<p>The following NcML constructs a dataset by declaring &quot;time&quot; an <strong><em>aggregation 
+<h2> <a name="joinExisting"></a>Exercise 2: Aggregation on an existing dimension</h2>
+<p>Download <a href="examples/aggExisting.ncml">aggExisting.ncml</a>, <a href="examples/jan.nc">jan.nc</a> and<a href="examples/feb.nc"> feb.nc</a> and place them together in a single directory. In the ToolsUI <strong>NcML Tab</strong>, open <strong>aggExisting.ncml</strong> and examine it:</p>
+<p>The following NcML constructs a dataset by declaring &quot;time&quot; the <strong><em>aggregation 
   dimension</em></strong>. Any variable that has that dimension as its outer dimension is an <strong><i>aggregation variable</i></strong>. 
   The dimension must be the outer (slowest varying) dimension. There must be an existing coordinate variable named time. </p>
-<pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br>  &lt;<strong>aggregation</strong> dimName=&quot;time&quot; type=&quot;<strong>joinExisting</strong>&quot;&gt;
-    &lt;<strong>netcdf</strong> location=&quot;file:/test/temperature/jan.nc&quot; /&gt;
-    &lt;<strong>netcdf</strong> location=&quot;file:/test/temperature/feb.nc&quot; /&gt;
-  &lt;/aggregation&gt;<br>&lt;/netcdf&gt;</pre>
-<p> The variable <b>T</b> is an aggregation variable with the first data values taken from the file <i>jan.nc</i> and the next data values are taken from <i>feb.nc</i>. The dataset CDL will look like this to the client:</p>
-<pre>netcdf aggExisting.ncml {<br> dimensions:<br>  lat = 64;<br>  lon = 128;<br>  time = 59;
- variables:
-  float T(time, lat, lon);
-}</pre>
-<p>When the library opens the above NcML dataset, it has to read through all nested datasets, in order to find out the length of the time dimension. For large aggregations, this can be slow. In the example below, we have added the optional <em>ncoords</em> attribute on the nested datasets. In this case, only one dataset has to be opened immediatley, and the others as needed for a data read request.</p>
-<pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br>  &lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot;&gt;
-    &lt;netcdf location=&quot;file:/test/temperature/jan.nc&quot; <strong>ncoords=&quot;31&quot;</strong>/&gt;
-    &lt;netcdf location=&quot;file:/test/temperature/feb.nc&quot; <strong>ncoords=&quot;28&quot;</strong>/&gt;
+<pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br>  &lt;<strong>aggregation</strong> <strong>dimName=&quot;time&quot;</strong> type=&quot;<strong>joinExisting</strong>&quot;&gt;
+    &lt;<strong>netcdf</strong> location=&quot;jan.nc&quot; /&gt;
+    &lt;<strong>netcdf</strong> location=&quot;feb.nc&quot; /&gt;
   &lt;/aggregation&gt;<br>&lt;/netcdf&gt;
 </pre>
+<p> Open the nested files in the ToolsUI <strong>NCDump Tab</strong>. They look like the following (details omitted):</p>
+<pre>netcdf jan.nc {
+   dimensions:
+     lat = 3;
+     lon = 4;
+     time = 31;
+   variables:
+     double P(time=31, lat=3, lon=4);
+     double T(time=31, lat=3, lon=4);
+
+     float lat(lat=3);
+
+     float lon(lon=4);
+     <strong>int time(time=31);</strong>
+ }
+
+netcdf feb.nc {
+   dimensions:
+     lat = 3;
+     lon = 4;
+     time = 28;
+   variables:
+     double P(time=28, lat=3, lon=4);
+     double T(time=28, lat=3, lon=4);
+     float lat(lat=3);
+     float lon(lon=4);
+     <strong>int time(time=28);</strong>
+ }
+ </pre>
+<p>In the ToolsUI <strong>Viewer Tab</strong>, open <strong>aggExisting.ncml</strong> and examine it:</p>
+<pre>netcdf aggExisting.xml {
+   dimensions:
+     lat = 3;
+     lon = 4;
+     time = 59;
+   variables:
+     double <strong>P</strong>(time=59, lat=3, lon=4);
+     double <strong>T</strong>(time=59, lat=3, lon=4);
+     float lat(lat=3);
+     float lon(lon=4);
+     <strong>int time(time=59);</strong>
+ }</pre>
+<p>The variables <strong>P, T, </strong>and<strong> time</strong> are aggregation variables with the first 31 data values taken from the file <i>jan.nc</i> and the next 28 data values  taken from <i>feb.nc</i>. All the other variables, dimensions, and attributes are taken from the first file that declares them.</p>
 <p><i>A <strong>JoinExisting</strong> dataset is constructed by transferring objects (dimensions, attributes, groups, and variables) from the nested datasets in the order the nested datasets are listed. All variables that use the aggregation dimension are logically concatenated, in the order of the nested datasets. Variables that don't use the aggregation dimension are treated as in a Union dataset, i.e. skipped if one with that name already exists.</i></p>
-<p><strong>Example file </strong>: <a href="examples/aggExisting.ncml.txt">aggExisting.ncml</a></p>
 <h3>Defining coordinates on a JoinExisting aggregation </h3>
-<p>Typically the coordinates for a <em><strong>JoinExisting</strong></em> aggregation are taken from the existing coordinate variables, as in the above example. If it is missing, you must define it in the NcML: </p>
-<pre> &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;</pre>
-<pre><strong>(1)</strong>&lt;variable name=&quot;time&quot; shape=&quot;time&quot; type=&quot;int&quot;&gt;
+<p>Typically the coordinates for a <em><strong>JoinExisting</strong></em> aggregation are taken from the existing coordinate variables, as in the above example. If the time coordinate is missing, you must define it in the NcML: </p>
+<pre> &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+<strong>(1)</strong>&lt;variable name=&quot;time&quot; shape=&quot;time&quot; type=&quot;int&quot;&gt;
      &lt;attribute name=&quot;units&quot; value=&quot;days since 2000-01-01&quot;/&gt;
      &lt;attribute name=&quot;_CoordinateAxisType&quot; value=&quot;Time&quot; /&gt;
 <strong>(2)</strong>  &lt;values start=&quot;0&quot; increment=&quot;1&quot; /&gt;
@@ -112,43 +134,76 @@ netcdf TestUnion.ncml {
   <li>If there is exactly one time slice in each file of the <strong>JoinExisting</strong> aggregation, and you are using a <a href="#scan">scan</a> element to dynamically scan the files in a directory, then you can use the <a href="#dateFormatMark">dateFormatMark</a> attribute to derive the date from the filename. </li>
   <li>If you do not specify a coordinate variable, one must exist in each of the nested datasets, and the coordinate values will be read from it, just like any other aggregation variable. </li>
 </ol>
+<h3><strong>Coordinate units that change across files</strong></h3>
 <p><em><strong>When the units of the aggregation coordinate change on the  existing coordinate variables, you must add </strong></em><strong>timeUnitsChange=&quot;true&quot;</strong><em><strong> on the aggregation element:</strong></em></p>
 <pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br> &lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot; <strong>timeUnitsChange=&quot;true&quot;</strong>&gt;<br>      &lt;scan location=&quot;D:/test/aggExisting/&quot; suffix=&quot;.grb2&quot; /&gt;<br> &lt;/aggregation&gt;<br>&lt;/netcdf&gt;
 </pre>
-<p>This feature means that all the aggregation coordinate values must be read in when the dataset is opened, otherwise, the values are only read in when requested.<br>
+<p>This feature means that all the aggregation coordinate values must be read in when the dataset is opened, otherwise, the values are only read in when requested.</p>
+<h3>Specify number of coordinates</h3>
+<p>When the library opens the above NcML dataset, it has to read through all nested datasets, in order to find out the length of the time dimension. For large aggregations, this can be slow. In the example below, we have added the optional <em>ncoords</em> attribute on the nested datasets. In this case, only one dataset has to be opened immediatley, and the others as needed for a data read request.</p>
+<pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br>  &lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot;&gt;
+    &lt;netcdf location=&quot;file:/test/temperature/jan.nc&quot; <strong>ncoords=&quot;31&quot;</strong>/&gt;
+    &lt;netcdf location=&quot;file:/test/temperature/feb.nc&quot; <strong>ncoords=&quot;28&quot;</strong>/&gt;
+  &lt;/aggregation&gt;<br>&lt;/netcdf&gt;
+</pre>
+<p><br>
 </p>
-<h2><a name="joinNew"></a>Aggregation on a new dimension</h2>
-<p>The previous example &quot;joined&quot; variables along their existing outer dimension. Another common case is to aggregate variables by creating a new outer dimension. Each existing variable becomes one &quot;slice&quot; of the compound variable (a <i>slice</i> holds the index of one dimension constant, e.g. <b>humidity(3, *, *, *)</b>). The following NcML joins variables from three separate files into a single variable, by creating a new dimension of length 3:</p>
-<pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;</pre>
-<pre><strong>(1)</strong>&lt;aggregation dimName=&quot;time&quot; type=&quot;joinNew&quot;&gt;
+<h2><a name="joinNew"></a>Exercise 3: Aggregation on a new dimension</h2>
+<p>The previous example &quot;joined&quot; variables along their existing outer dimension. Another common case is to aggregate variables by creating a new outer dimension. Each existing variable becomes one &quot;slice&quot; of the compound variable (a <i>slice</i> holds the index of one dimension constant, e.g. <b>humidity(3,:,:,:)</b>). The following NcML joins variables from three separate files into a single variable, by creating a new dimension of length 3:</p>
+<p>Download <a href="examples/aggNew.ncml">aggNew.ncml</a>, <a href="examples/time0.nc">time0.nc,</a> <a href="examples/time1.nc">time1.nc</a> and<a href="examples/time2.nc"> time2.nc</a> and place them together in a single directory. In the ToolsUI <strong>NcML Tab</strong>, open <strong>aggNew.ncml</strong> and examine it:</p>
+<pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+<strong>(1)</strong>&lt;aggregation dimName=&quot;<strong>time</strong>&quot; type=&quot;<strong>joinNew</strong>&quot;&gt;
 <strong>(2)</strong>  &lt;variableAgg name=&quot;T&quot;/&gt;
-     &lt;variableAgg name=&quot;RH&quot;/&gt;
-<strong>(3)</strong>  &lt;netcdf location=&quot;file:/test/data/ncml/nc/time0.nc&quot; coordValue=&quot;0&quot;/&gt;
-     &lt;netcdf location=&quot;file:/test/data/ncml/nc/time1.nc&quot; coordValue=&quot;1&quot;/&gt;
-     &lt;netcdf location=&quot;file:/test/data/ncml/nc/time2.nc&quot; coordValue=&quot;2&quot;/&gt;
-   &lt;/aggregation&gt;</pre>
-<pre>&lt;/netcdf&gt;</pre>
+<strong>(3)</strong>  &lt;netcdf location=&quot;time0.nc&quot; coordValue=&quot;0&quot;/&gt;
+     &lt;netcdf location=&quot;time1.nc&quot; coordValue=&quot;10&quot;/&gt;
+     &lt;netcdf location=&quot;time2.nc&quot; coordValue=&quot;99&quot;/&gt;
+   &lt;/aggregation&gt;
+&lt;/netcdf&gt;</pre>
+
 <ol>
-  <li>The aggregation is defined as type <em><strong>joinNew</strong></em> on the time dimension. </li>
-  <li>The variables named <em><strong>T</strong></em> and <em><strong>RH</strong></em> will be made into aggregation variables; you can list as many variables as needed.</li>
+  <li>The aggregation is defined as type <em><strong>joinNew</strong></em> on the <strong><em>time</em></strong> dimension. </li>
+  <li>The variable named <em><strong>T</strong></em> will be made into aggregation variable; you can list as many variables as needed.</li>
   <li>The list of files to use, in order. Each one has a coordinate value assigned to it, whose type must be compatible with the coordinate variable type, if you have created one. </li>
 </ol>
+<p>Open the nested files in the ToolsUI <strong>NCDump Tab</strong>. They all look like the following (details omitted):</p>
+<pre>netcdf time0.nc {
+ dimensions:
+   lat = 3;
+   lon = 4;
+ variables:
+   double T(lat=3, lon=4);
+
+   float lat(lat=3);
+
+   float lon(lon=4);
+}</pre>
 <p>This will create the following dataset:</p>
-<pre>netcdf aggSynthetic.xml {<br> dimensions:<br>   time = 3;   // (has coord.var)<br>   lat = 3;   // (has coord.var)<br>   lon = 4;   // (has coord.var)<br> variables:<br>   double time(time);<br>   float lat(lat);<br>     :units = &quot;degrees_north&quot;;<br>   float lon(lon);<br>     :units = &quot;degrees_east&quot;;<br>   double T(time, lat, lon);<br>     :long_name = &quot;surface temperature&quot;;<br>     :units = &quot;degC&quot;;</pre>
-<pre> :title = &quot;Example Data - Type 1 aggregation&quot;;
-}
+<pre>netcdf file:C:/dev/tds/thredds/docs/web/netcdf-java/ncml/v2.2/examples/aggNew.ncml {
+ dimensions:
+   lat = 3;
+   lon = 4;
+   time = 3;
+ variables:
+   float lat(lat=3);
+
+   float lon(lon=4);
+
+   int time(time=3);
+   double T(time=3, lat=3, lon=4);
+ data:<br>   time = {0, 10, 99}
+ }
 </pre>
-<p><i>A <strong>JoinNew</strong> dataset is constructed by transferring objects (dimensions, attributes, groups, and variables) from the nested datasets in the order the nested datasets are listed. All variables that are listed as aggregation variables are logically concatenated along a new dimension, in the order of the nested datasets. A coordinate Variable is created for the new dimension. Non-aggregation variables are treated as in a Union dataset, i.e. skipped if one of that name already exists.</i> </p>
-<p><strong>Example file </strong>: <a href="examples/aggSynthetic.ncml.txt">aggSynthetic.ncml</a></p>
+<p>So a new dimension and coordinate variable<em><strong> time(time)</strong></em> has been added, and the aggregation variable T uses time as its outer dimension. The data for T from the nested files are logically concatenated together.</p>
+<p><i>A <strong>JoinNew</strong> dataset is constructed by transferring objects (dimensions, attributes, groups, and variables) from the nested datasets in the order the nested datasets are listed. All variables that are listed as aggregation variables are logically concatenated along a new dimension, in the order of the nested datasets. A coordinate Variable is created for the new dimension. Non-aggregation variables are treated as in a Union dataset, i.e. skipped if one of that name already exists.</i></p>
 <h3>Defining coordinates on a JoinNew aggregation </h3>
 <p>A <em><strong>JoinNew</strong></em> aggregation has to create a new coordinate variable. In the above example, one was automatically created with type double, to match the coordValues specified on the netcdf elements. However, it has no units or other attributes. To specify attibutes on the coordinate system, you can use the following:</p>
-<pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;</pre>
-<pre><strong>(1)</strong>&lt;variable name=&quot;time&quot; type=&quot;int&quot; &gt;
+<pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+<strong>(1)</strong>&lt;variable name=&quot;time&quot; type=&quot;int&quot; &gt;
      &lt;attribute name=&quot;units&quot; value=&quot;months since 2000-6-16 6:00&quot;/&gt;
      &lt;attribute name=&quot;_CoordinateAxisType&quot; value=&quot;Time&quot; /&gt;
      &lt;values&gt;0 1 2&lt;/values&gt;
-   &lt;/variable&gt;</pre>
-<pre><strong>(2)</strong>&lt;aggregation dimName=&quot;time&quot; type=&quot;joinNew&quot;&gt;
+   &lt;/variable&gt;
+<strong>(2)</strong>&lt;aggregation dimName=&quot;time&quot; type=&quot;joinNew&quot;&gt;
 <strong>  </strong>  &lt;variableAgg name=&quot;T&quot;/&gt;
 <strong>  </strong>  &lt;netcdf location=&quot;file:/test/data/ncml/nc/time0.nc&quot; /&gt;
     &lt;netcdf location=&quot;file:/test/data/ncml/nc/time1.nc&quot; /&gt;
@@ -263,10 +318,11 @@ DateFormatMark: SUPER-NATIONAL_1km_SFC-T_#yyyyMMdd_HHmm</pre>
 <pre> &lt;/aggregation&gt; </pre>
 <pre>&lt;/netcdf&gt;</pre>
 <p></p>
+<p>See also: <a href="AnnotatedSchema4.html">Annotated NcML Schema</a></p>
 <p>Next: <a href="FmrcAggregation.html">FMRC Aggregation</a> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 24, 2009
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  July, 2009
 </address>
 <p>&nbsp;</p>
 </body>

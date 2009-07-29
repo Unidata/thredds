@@ -10,23 +10,25 @@ dl {margin: 10px 5px 5px 15px;)
 </head>
 
 <body bgcolor="#FFFFFF" text="#000000">
-<h1>NcML Tutorial </h1>
+<h1>Basic NcML Tutorial </h1>
 <h2>Introduction</h2>
-<p>A <em><strong>netCDF-3 file</strong></em> is a physical file that uses the netCDF file format (version 1). A <em><strong>netCDF-4 file</strong></em> is a physical file that uses a specialized version of the HDF-5 file format, called the netCDF-4 file format. The NetCDF-Java library can read a number of other binary file formats, such as GRIB and NEXRAD radar files, and make the data accessible through the standard netCDF API. A <b><i>netCDF dataset</i></b>, then, is any scientific data collection which is accessible through the  netCDF API. </p>
-<p>The <em><strong>NetCDF Markup Language (NcML)</strong></em> is an XML dialect that allows you to create netCDF datasets. An <em><strong>NcML document</strong></em> is an XML document that uses NcML, and defines a netCDF dataset. Commonly, the NcML document refers  to another netCDF dataset called the <em><strong>referenced netCDF dataset</strong></em>. The purpose of NcML is to allow: </p>
+<p>The NetCDF-Java / CDM library can read many different binary file formats, such as netCDF, HDF, GRIB, NEXRAD, etc, and makes the data accessible through a standard  API. It can also read remote datasets through OPeNDAP and other remote access protocols. As we will see, by using NcML one can also create virtual datasets by modifying and aggregating other datasets. In the general case, we will call any collection of scientific data  which can be accessed through the NetCDF-Java / CDM library a <em><strong>CDM dataset</strong></em>.</p>
+<p>The <em><strong>NetCDF Markup Language (NcML)</strong></em> is an XML dialect that allows you to create CDM datasets. An <em><strong>NcML document</strong></em> is an XML document that uses NcML, and defines a CDM dataset. Commonly, the NcML document refers  to another  dataset called the <em><strong>referenced CDM dataset</strong></em>. The purpose of NcML is to allow: </p>
 <ol>
-  <li>Metadata to be added, deleted, changed and in general redefined.</li>
+  <li>Metadata to be added, deleted, and changed.</li>
   <li>Variables to be renamed, added, deleted and restructured.</li>
-  <li>Data from multiple NetCDF files to be combined.</li>
+  <li>Data from multiple CDM files to be combined.</li>
 </ol>
-<p>See also: <a href="AnnotatedSchema4.html">Annotated NcML Schema</a> </p>
-<h2><b>Exercise 1. Completely specify the NetCDF Dataset Metadata</b></h2>
-<p>In this example, the use of the <strong>&lt;explicit/&gt;</strong> element means that all of the metadata is specified in the XML, and the referenced dataset is used only for data access. If there are any other attributes, variables 
-  or dimensions in the referenced dataset, they are ignored.</p>
-<p>Download <a href="examples/example1.nc">example1.nc</a> and <a href="examples/exercise1.ncml">exercise1.ncml</a> and place them in the same directory. Open exercise1.ncml in the ToolsUI Viewer tab, and in the NcML tab.</p>
+<p>In the following, we will use  the <a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.0/webstart/netCDFtools.jnlp">ToolsUI</a> application to work with NcML datasets.You may also want to use a specialized XML editor like Oxygen or XML Spy, or an IDE like IntelliJ, Eclipse, or NetBeans that have context-sensitive XML editing. </p>
+For these exercises, you should <a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.0/webstart/netCDFtools.jnlp">run ToolsUI from webstart</a>. You can also <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/toolsUI-4.0.jar">download the ToolsUI application</a> if you know how to run a Java applications from a jar.Use the ToolsUI <strong>NcML Tab</strong> to generate NcML from a CDM file by entering the the URL of a local or remote CDM dataset, or browse <img src="images/Browse.jpg" alt="Browse" width="32" height="32">to a local file. The NcML of the dataset is generated and displayed:
+<p><img src="images/ncmlTab.jpg" alt="" width="769" height="505"></p>
+<p>Entering a file that ends with <strong>xml</strong> or <strong>ncml</strong> simply displays the NcML file directly.</p>
+<p>&nbsp;</p>
+<h2><b>Exercise 1. Working with NcML files</b> in ToolsUI</h2>
+<p>Download <a href="examples/example1.nc">example1.nc</a> and <a href="examples/exercise1.ncml">exercise1.ncml</a> and place them in the same directory. Open <strong>exercise1.ncml</strong> in the  in the NcML tab:</p>
 <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;  location=&quot;example1.nc&quot;&gt;
 
-  &lt;explicit/&gt;
+
 <br>  &lt;dimension name=&quot;time&quot; length=&quot;2&quot; isUnlimited=&quot;true&quot; /&gt;<br>  &lt;dimension name=&quot;lat&quot; length=&quot;3&quot; /&gt;<br>  &lt;dimension name=&quot;lon&quot; length=&quot;4&quot; /&gt;
 <br>  &lt;attribute name=&quot;title&quot; type=&quot;String&quot; value=&quot;Example Data&quot; /&gt;
 <br>  &lt;variable name=&quot;rh&quot; shape=&quot;time lat lon&quot; type=&quot;int&quot;&gt;<br>    &lt;attribute name=&quot;long_name&quot; type=&quot;String&quot; value=&quot;relative humidity&quot; /&gt;<br>    &lt;attribute name=&quot;units&quot; type=&quot;String&quot; value=&quot;percent&quot; /&gt;<br>  &lt;/variable&gt;
@@ -39,46 +41,39 @@ dl {margin: 10px 5px 5px 15px;)
     &lt;values&gt;6 18&lt;/values&gt;<br>  &lt;/variable&gt;<br>&lt;/netcdf&gt;
 </pre>
   
-<p>Data for the <b>lat</b>, <b>lon</b> and <b>time</b> coordinate variables comes 
+<p>In this example, data for the <b>lat</b>, <b>lon</b> and <b>time</b> coordinate variables comes 
     from the NcML document, while the data for the <b>rh</b> and <b>T</b> variables 
     will be obtained from the referenced dataset  <i>example1.nc.</i></p>
-<p>This creates the following NetCDF Dataset, in CDL notation:</p>
-<pre>netcdf testRead.ncml {<br>
+<p>Open <strong>exercise1.ncml</strong>   in the ToolsUI <strong>NCDump</strong> Tab. This creates the following NetCDF Dataset, in CDL notation:</p>
+<pre>netcdf file:C:/temp/exercise1.ncml {<br>
  dimensions:<br>  time = UNLIMITED;   // (2 currently)  <br>  lat = 3;   <br>  lon = 4;   <br>
  variables:<br>  int rh(time, lat, lon);<br>   :long_name = &quot;relative humidity&quot;;<br>   :units = &quot;percent&quot;;<br>  double T(time, lat, lon);<br>   :long_name = &quot;surface temperature&quot;;<br>   :units = &quot;C&quot;;<br>  float lat(lat);<br>   :units = &quot;degrees_north&quot;;<br>  float lon(lon);<br>   :units = &quot;degrees_east&quot;;<br>  int time(time);<br>   :units = &quot;hours&quot;;<p> // Global Attributes:<br>  :title = &quot;Example Data&quot;;</p><p> data:<br>  lat = 41.0, 40.0, 39.0;<br>  lon = -109.0, -107.0, -105.0, -103.0;<br>  time = 6, 18;
 }</pre> 
-Note that the name of the netCDF dataset is  the name of the NcML file, not the referenced dataset.
+Note that the name of the dataset is  the name of the NcML file, not the referenced dataset.
 <p>Allowable forms of the  referenced dataset location  are: </p>
 <ul>
   <li>an absolute HTTP URL (eg <strong>http://server/myfile.nc</strong>)</li>
   <li>An absolute file URL with an absolute path (eg <strong>file:/usr/local/data/mine.nc</strong>). You can sometimes omit the <strong>file:</strong> prefix, but not always, so we recommend using the <strong>file:</strong> prefix. </li>
   <li>An absolute file URL with a relative path (eg <strong>file:data/mine.nc</strong>). The file will be opened reletive to the working directory. </li>
-  <li> A relative URL resolved against the NcML location (eg <strong>subdir/mydata.nc</strong>). You must <strong>not</strong> use a <em>file:</em> prefix in this case. </li>
+  <li> A relative URL resolved against the NcML location (eg <strong>subdir/mydata.nc</strong>). You must <strong>not</strong> use a <em>file:</em> prefix in this case. This is what we are using in this example, since the data file is in the same directory as the NcML file.</li>
 </ul>
-<p>&nbsp;</p>
-<h2><b>Exercise 2. Use the metadata in the existing file</b>
+<p>Open <strong>exercise1.ncml</strong> in the  in the ToolsUI <strong>Viewer</strong> tab: Select a variable by left clicking on it, then right click to get the context menu.</p>
+<p><img src="images/Viewer.jpg" alt="Viewer" width="980" height="335"></p>
+<p>From the context menu, select <strong>NCdump Data</strong>, which brings up a popup window. Click the <strong>NCdump</strong> button to show the variable's data:</p>
+<p><img src="images/NCDump.jpg" alt="NCDump" width="577" height="402"></p>
+<p>The expression <strong>T(0:1:1, 0:2:1, 0:3:1) </strong>shows the limits of the T variable's data array in <a href="http://en.wikipedia.org/wiki/Array_slicing#1992:_Fortran_90_and_above">Fortran 90 notation</a>.  For example, <strong>0:3:1</strong> means that the index starts at 0, ends at 3 (inclusive) with stride 1. You can use a single value to <em><strong>slice</strong></em> at that index, eg <strong>T(1, 0:2:1, 0:3:1)</strong> means to show the T array for index=1 on the first (time) dimension. For large data arrays, it is often useful to edit this expression, especially the stride, to examine  subsets of the data.</p>
+<p>Repeat this for  other variables to familiarize yourself with examing data values. </p>
+<h2><b>Exercise 2. Generate NcML from CDM file</b>
 </h2>
-<p>In this example, all of the metadata is read in from the underlying file. </p>
-<pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; location=&quot;file:/data/myfile.nc&quot;&gt;
-
-  &lt;readMetadata/&gt;
-&lt;/netcdf&gt;
-</pre>
-<p>Here, the <i>&lt;readMetadata/&gt;</i> element causes all of the metadata from 
-the netCDF file to be read in. In this case, the NcML dataset and the referenced dataset are identical. </p>
-<p>Since <i>&lt;readMetadata/&gt;</i> is the default, you can leave it out: </p>
-<pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; location=&quot;file:/data/myfile.nc&quot; /&gt;
-</pre>
-<p>You must declare the ncml namespace in the top netcdf element. You can use a namespace prefix like <strong>nc </strong>or not:</p>
-<ol>
-  <li><strong>No prefix: </strong><i>xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; </i></li>
-  <li><strong>Use &quot;nc&quot; prefix<em>: </em></strong><i> xmlns:nc=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;</i></li>
-</ol>
-<p>In this exercise, you are wrapping the original file <em>file:/data/myfile.nc</em> in NcML, but not otherwise modifying it. This is useful in aggregations but not much else.</p>
+<p>In the ToolsUI <strong>NcML Tab</strong>, browse to your data directory and open the data file <strong>example.nc</strong> directly (not the NcML file <strong>exercise1.ncml)</strong>. The NcML is generated directly from the CDM file itself:</p>
+<p><img src="images/Exercise2.jpg" alt="Exercise2" width="815" height="566"></p>
+<p>Since this NcML is generated from the file itself, it is equivilent to just naming the file and allowing all of the metadata to be taken from it:</p>
+<pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; location=&quot;C:/temp/example1.nc&quot;&gt;</pre>
+<p>This form is useful in aggregations but not for much else.</p>
 <p><br>
 </p>
 <h2><b>Exercise 3. Read in metadata from existing NetCDF file and modify:</b> </h2>
-<p>In this example, we read in all of the metadata from the underlying file, and modify it 
+<p>In this example, we read in all of the metadata from the referenced dataset, and modify it 
   through elements in the NcML.</p>
 <p>Download <a href="examples/exercise3.ncml">exercise3.ncml</a> and place it in the same directory as example1.nc. Open exercise3.ncml in the ToolsUI Viewer tab, and in the NcML tab.</p>
 <pre>
@@ -88,12 +83,11 @@ the netCDF file to be read in. In this case, the NcML dataset and the referenced
 <br><strong>(3)</strong>&lt;variable name=&quot;RelativeHumidity&quot; orgName=&quot;rh&quot;&gt;<br>(<strong>4)</strong>  &lt;attribute name=&quot;standard_name&quot; type=&quot;String&quot; value=&quot;relative humidity&quot; /&gt;<br>   &lt;/variable&gt;
 <br>   &lt;variable name=&quot;T&quot;&gt;<br><strong>(5) </strong> &lt;attribute name=&quot;standard_name&quot; type=&quot;String&quot; value=&quot;temperature&quot; /&gt;<br><strong>(6) </strong> &lt;attribute name=&quot;units&quot; type=&quot;String&quot; value=&quot;degreesC&quot; /&gt;<br>   &lt;/variable&gt;
 
+
 <strong>(7)</strong>&lt;variable name=&quot;deltaLat&quot; type=&quot;double&quot; shape=&quot;lat&quot;&gt;
      &lt;values&gt;.1 .1 .01&lt;/values&gt;
    &lt;/variable&gt;
-<br>&lt;/netcdf&gt;
-</pre>
-<p>The absence of the <strong>&lt;explicit/&gt;</strong> element means that all the metadata in the referenced dataset is read in. Then:</p>
+<br>&lt;/netcdf&gt;</pre>
 <ol>
   <li>The global attribute named &quot;title&quot; is given a new value.</li>
   <li> 
@@ -105,51 +99,56 @@ the netCDF file to be read in. In this case, the NcML dataset and the referenced
   <li>A new variable is &quot;deltaLat&quot; added. Since it doesnt exist in the referenced dataset, you must also define its data values.</li>
 </ol>
 <p>This creates the following NetCDF Dataset. </p>
-<pre>netcdf replace.xml {
+<pre>netcdf file:C:/temp/exercise3.ncml {
   dimensions:
-    time = UNLIMITED;   // (2 currently)   
-    lat = 3;   
-    lon = 4;   
-
+   time = UNLIMITED;   // (2 currently)
+   lat = 3;
+   lon = 4;
+ 
   variables:
-    double deltaLat(lat);
-    int RelativeHumidity(time, lat, lon);
-      :long_name = &quot;relative humidity&quot;;
-      :standard_name = &quot;relative humidity&quot;;
-      :units = &quot;percent&quot;;
-    double T(time, lat, lon);
-      :long_name = &quot;surface temperature&quot;;
-      :standard_name = &quot;temperature&quot;; 
-      :units = &quot;degreesC&quot;;
-    float lat(lat);
-      :units = &quot;degrees_north&quot;;
-    float lon(lon);
-      :units = &quot;degrees_east&quot;;
-    int time(time);
-      :units = &quot;hours&quot;;
-	  
-  // Global Attributes:
-  :Conventions = &quot;CF-1.0&quot;;
-  :title = &quot;Example Data using CF&quot;;
+   int RelativeHumidity(time=2, lat=3, lon=4);
+     :long_name = &quot;relative humidity&quot;;
+     :units = &quot;percent&quot;;
+     :standard_name = &quot;relative humidity&quot;;
+   double T(time=2, lat=3, lon=4);
+     :long_name = &quot;surface temperature&quot;;
+     :units = &quot;degreesC&quot;;
+     :standard_name = &quot;temperature&quot;;
+   float lat(lat=3);
+     :units = &quot;degrees_north&quot;;
+   float lon(lon=4);
+     :units = &quot;degrees_east&quot;;
+   int time(time=2);
+     :units = &quot;hours&quot;;
+   double deltaLat(lat=3);
 
-  data:
-    deltaLat = 0.1, 0.1, 0.01;
+
+ :title = &quot;Example Data using CF&quot;;
+ :Conventions = &quot;CF-1.0&quot;;
 }
-
-
-
 </pre>
+<p>Using NcML in this way to modify the contents of a CDM dataset is a kind of <a href="http://en.wikipedia.org/wiki/Declarative_programming">declarative programming.</a> We say that the NcML <em><strong>wraps</strong></em> the referenced dataset. Note that you can't tell what the resulting dataset looks like without also examining the referenced dataset. If one adds an <strong>&lt;explicit/&gt;</strong> element to the NcML, then the metadata in the referenced dataset is not read in, the result dataset is defined entirely by whats in the NcML, and the referenced dataset is only used for data values. However in practice <strong>&lt;explicit/&gt;</strong> is not used much.</p>
 <h2><br>
-  Exercise 4. Using  ToolsUI to generate NcML</h2>
-<p>You can use  the <a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.0/webstart/netCDFtools.jnlp">ToolsUI</a> NcML Tab to generate NcML from a CDM file (enter a dataset URL or browse for a local file). You can save the NcML to disk <img src="images/Save.jpg" width="32" height="32">. </p>
-<p><img src="images/ncmlTab.jpg" width="769" height="505"></p>
+  Exercise 4. Other  ToolsUI features</h2>
+<h3>Modify  and Save</h3>
+<p>A typical scenario is to modify an existing dataset with NcML, save the NcML, and use it instead of the original dataset.</p>
+<p>In the ToolsUI <strong>NcML Tab</strong>, browse to your data directory and again open the data file <strong>example.nc</strong> directly. The NcML is generated and displayed. Make some simple modifications, changing an attribute value or adding a new attribute. Save the NcML to disk <img src="images/Save.jpg" alt="" width="32" height="32">. Note that the default NcML filename will be the original file name with the extension changed to <strong>ncml</strong>. Save the NcML to <em>example.ncml</em>. </p>
+<p>In the ToolsUI <strong>Viewer Tab</strong>, open  <strong>example.ncml</strong> and examine it. Does it look like you expect? Try making different kinds of mistakes to see what error messages (if any) that you get. By switching between the Viewer tab and the NcML tab, you can quickly try out different things.</p>
+<ul>
+  <li>create malformed XML by leaving off a closing element bracket</li>
+  <li>misspell an element name, eg <em>&lt;atribute&gt;</em> instead of <em>&lt;attribute&gt;</em></li>
+  <li>change the <em>name</em> of an existing attribute, and examine the resulting dataset to see what happens.</li>
+</ul>
+<p>The NcML tab offers no error checking, its really just a text editor. You may find XML-aware editors very useful for finding syntax mistakes in your NcML.</p>
 <h3>Writing out  files modified with NcML</h3>
-<p>You can also generate a NetCDF-3 file from the NcML <img src="images/WriteNetcdf.jpg" width="32" height="32">, and the equivalent binary NetCDF file will be created corresponding to the NcML dataset, and all the original data will be copied to it. Since the binary data is taken from the original file, this is efficient for even large files. </p>
-<p>This works as long as you are using only netCDF-3 compatible features. In practice this means no Structures or Groups. Strings are ok, and are converted to type char. The equivilent Java code to do this is:</p>
+<p>You can also generate a NetCDF-3 file from the NcML , and the equivalent binary NetCDF file will be created corresponding to the NcML dataset, and all the original data will be copied to it. Since the binary data is taken from the original file, this is efficient for even large files. </p>
+<p>In the ToolsUI <strong>NcML Tab</strong>, bring up one of your NcML files that doesnt have any mistakes in it. Generate a NetCDF-3 file from the NcML <img src="images/WriteNetcdf.jpg" alt="" width="32" height="32">, saving it to some new and uniquely named file. Now bring up that file in the  ToolsUI <strong>Viewer Tab</strong> and examine it. It should be identical to the NcML file that generated it.</p>
+<p>This feature works as long as you are using only netCDF-3 compatible features (aka netCDF classic model). In practice this mostly means no Structures or Groups. Strings are ok, and are converted to type char. The equivilent Java code to do this is: </p>
 <pre>    NetcdfDataset ncd = NcMLReader.readNcML (ncml_filename, null);<br>    NetcdfFile ncdnew = <strong>ucar.nc2.FileWriter.writeToFile</strong>(ncd, fileout_name, true);
     ncd.close();
     ncdnew.close();</pre>
 <p>&nbsp;</p>
+<p>See also: <a href="AnnotatedSchema4.html">Annotated NcML Schema</a></p>
 <p>Next: <a href="Aggregation.html">Aggregation</a> </p>
 <hr WIDTH="100%">
 <address>
