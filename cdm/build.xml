@@ -48,6 +48,7 @@
 
   <!-- property name="bzip2.jar" value="bzip2.jar"/ -->
   <!-- property name="gnu-regexp.jar" value="gnu-regexp-1.1.4.jar"/ -->
+  <property name="bounce.jar" value="bounce-0.14.jar"/>
   <property name="bufrTables.jar" value="bufrTables-1.5.jar"/>
   <property name="ehcache.jar" value="ehcache-1.6.0.jar"/>
   <property name="grib.jar" value="grib-7.1.jar"/>
@@ -601,6 +602,7 @@
   <property name="resourcesUI.dir" location="${root.dir}/../ui/src/main/resources"/>
 
   <fileset id="compileUI.libraries" dir="${lib.dir}">
+    <include name="external/${bounce.jar}"/>
     <include name="external/${jgoodies.jar}"/>
     <include name="external/${lucene.jar}"/>
     <include name="external/${spring.jar}"/>
