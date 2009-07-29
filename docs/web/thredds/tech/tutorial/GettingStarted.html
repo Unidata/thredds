@@ -12,25 +12,22 @@
    <div id="section">
     <h2><a name="install">Installing Java &amp; Tomcat</a></h2>
 
-     <div id="subsection">
-      <h3>System Requirements</h3>
 
-      <div id="info">
+
+
+     <div id="subsection">
+      <h3>System requirements</h3>
+
+      <div id="note" class="info">
        <h4>Installation Help</h4>
        <p>Users of GCJ and OS-provided packages (linux) for Java and/or Tomcat may want to reference the <a href="http://www.unidata.ucar.edu/mailing_lists/archives/thredds/2009/msg00130.html">THREDDS mailing list</a> for installation help.</p>
-      </div>
-
-
-
+      </div> 
 
        <ul>        
         <li>Sun Java 1.6</li>       
         <li>Apache Tomcat 5.5 or above         (we recommend the latest version of Tomcat 6.0)</li>  
        </ul>
        <p>While there are different distributors of Java and servlet containers, Unidata develops, uses and tests the THREDDS Data Server using <i>Sun Java</i> and the <i>Apache Tomcat</i> servlet container.</p>
-
-
-
      </div> <!-- end subsection -->
 
 
@@ -85,10 +82,10 @@
        </ul>
       </div>
 
-
-
-
      </div> <!-- end subsection -->
+
+
+
 
 
      <div id="subsection">
@@ -122,24 +119,32 @@ drwxr-xr-x 9 thredds workshop 4096 2009-07-09 15:05 apache-tomcat-6.0.20
 </pre>
 
       </ol>
-
-
      </div> <!-- end subsection -->
+
+
+
+
       <div id="subsection" class="exercise">
        <h3>Exercise One: Install Java and Tomcat</h3>
        <ol>
         <li>Using the steps outlined in the above sections, install the JDK and Tomcat in <code>/home/thredds</code>.</li>
 
        </ol>
-      </div>
+      </div>  <!-- end exercise one -->
 
 
-   </div> <!-- end section -->
+   </div> <!-- end Installing Java & Tomcat section -->
+
+
+
+
+
 
 
 
    <div id="section">
     <h2><a name="tour">Tomcat Directory Structure: Quick Tour</a></h2>
+
 
      <div id="subsection">
       <h3>Exploring <code>$TOMCAT_HOME</code></h3>
@@ -193,20 +198,22 @@ drwxr-xr-x 2 thredds workshop  4096 2009-05-13 17:15 work
           <li>This is where we will be putting the TDS web application.</li>
           <li>You will also be using the <code><small>manager</small></code> application that comes with Tomcat during this workshop.</li>
          </ul>
-
       </ol>
-
      </div> <!-- end subsection -->
 
 
-   </div> <!-- end section -->
+   </div> <!-- end Tomcat Directory Structure: Quick Tour section -->
+
+
+
 
 
    <div id="section">
     <h2><a name="running">Running Tomcat</a></h2>
 
+
      <div id="subsection">
-      <h3>Starting &amp; Stopping Tomcat</h3>
+      <h3>Starting &amp; stopping Tomcat</h3>
       <ol>
        <li>Tomcat isn't currently running so we need to start it up.</li>
         <p>Move into the <code><small>$TOMCAT_HOME/bin/</small></code> directory and run the <code><small>startup.sh</small></code> script:</p>
@@ -214,9 +221,6 @@ drwxr-xr-x 2 thredds workshop  4096 2009-05-13 17:15 work
 <b>$</b> cd $TOMCAT_HOME/bin
 <b>$</b>  ./startup.sh
 </pre>
-
-
-
 
        <li>Verify Tomcat is running.</li>
         <p>Look and see if you have a Tomcat process running:</p>
@@ -226,9 +230,6 @@ drwxr-xr-x 2 thredds workshop  4096 2009-05-13 17:15 work
 thredds  32018     1  1 15:38 pts/3    00:00:03 /home/thredds/jdk1.6.0_14/bin/java 
 -Djava.util.logging.config.file=/home/thredds/apache-tomcat-6.0.20/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/thredds/apache-tomcat-6.0.20/endorsed -classpath :/home/thredds/apache-tomcat-6.0.20/bin/bootstrap.jar -Dcatalina.base=/home/thredds/apache-tomcat-6.0.20 -Dcatalina.home=/home/thredds/apache-tomcat-6.0.20 -Djava.io.tmpdir=/home/thredds/apache-tomcat-6.0.20/temp org.apache.catalina.startup.Bootstrap start 
 </pre>
-
-
-
 
         <p>Open a new browser window/tab and go to <a href="http://localhost:8080/">http://localhost:8080/</a> to verify Tomcat is running:</p>
 
@@ -250,13 +251,15 @@ thredds  32018     1  1 15:38 pts/3    00:00:03 /home/thredds/jdk1.6.0_14/bin/ja
        </ul>
       </div>
 
-
      </div> <!-- end subsection -->
+
 
 
 
      <div id="subsection">
       <h3>Setting <code>$JAVA_HOME</code>, <code>$JAVA_OPTS</code> and <code>$CATALINA_HOME</code></h3>
+
+
        <p>We are going to create a file called <code><small>setenv.sh</small></code> in the <code><small>$TOMCAT_HOME/bin</small></code> directory to:</p>
       <ul class="little">
        <li>allow Tomcat to reference/find the location of <code><small>$JAVA_HOME</small></code>  and <code><small>$TOMCAT_HOME</small></code>  (aka <code><small>$CATALINA_HOME</small></code>) during startup and shutdown; and </li>
@@ -331,6 +334,7 @@ thredds  5623     1  1 15:40 pts/3    00:00:23 /home/thredds/jdk1.6.0_14/bin/jav
 
 
 
+
       <div id="subsection" class="exercise">
        <h3>Exercise Two: Set <code>$JAVA_HOME</code>, <code>$JAVA_OPTS</code> and <code>$CATALINA_HOME</code></h3>
        <ol>
@@ -340,20 +344,32 @@ thredds  5623     1  1 15:40 pts/3    00:00:23 /home/thredds/jdk1.6.0_14/bin/jav
       </div>
 
 
-   </div> <!-- end section -->
+   </div> <!-- end Running Tomcat section -->
+
+
+
 
 
    <div id="section">
     <h2><a name="deploying">Deploying the TDS</a></h2>
 
      <div id="subsection">
-      <h3>Downloading &amp; Deploying <code>thredds.war</code></h3>
+      <h3>About WAR files</h3>
+       <ul>
+        <li>WAR is short for <b>W</b>eb <b>AR</b>chive.</li>
+        <li><i>If configured</i> Tomcat will automatically unpack the WAR distribution into directory of the same name upon deployment.</li>
+        <li>Note: the unpacked directory is overwritten each time a new WAR file is deployed.</li>
+        </ul>
+     </div> <!-- end subsection -->
 
-      <div id="info">
+
+     <div id="subsection">
+      <h3>Downloading &amp; deploying <code>thredds.war</code></h3>
+
+      <div id="note" class="info">
        <h4>Upgrading the TDS</h4>
        <p>The <a href="">reference</a> documentation contains information on <a href="">upgrading</a> the TDS. </p>
       </div>
-
 
       <ol>
        <li>Download the TDS WAR file from Unidata's web site.</li>
@@ -376,13 +392,6 @@ drwxr-xr-x  3 thredds workshop     4096 2009-05-13 17:15 ROOT
 -rw-r--r--  1 thredds workshop 23288479 2009-05-13 17:23 thredds.war
 </pre>
 
-        <p>About WAR files:</p>
-
-       <ul class="little">
-        <li>WAR is short for Web ARchive</li>
-        <li><i>If configured</i> Tomcat will automatically unpack the WAR distribution into directory of the same name upon deployment</li>
-        <li>Note: the unpacked directory is overwritten each time a new WAR file is deployed.</li>
-        </ul>
        <li>Confirm the TDS has been deployed.</li>
         <p>Restart Tomcat and confirm the <code><small>thredds.war</small></code> file was unpacked in the <code><small>webapps/</small></code> directory:</p>
 
@@ -416,28 +425,27 @@ drwxr-xr-x  7 thredds workshop     4096 2009-05-13 17:23 thredds
      </div> <!-- end subsection -->
 
 
+
       <div id="subsection" class="exercise">
        <h3>Exercise Three: Deploy your own instance of the THREDDS Data Server</h3>
        <ol>
         <li>Deploy the TDS in your newly-installed Tomcat.</li>
         <li>Once deployed, browse the test catalogs & datasets that come with the distribution.</li>
         <li>Look at the directory contents of <code>$TOMCAT_HOME</code>.</li>
-      <div class="exercise_question">
-       <p>Do you notice anything new?</p>
-      </div>
-
+         <div class="exercise_question">
+          <p>Do you notice anything new?</p>
+         </div>
        </ol>
       </div>
 
 
-   </div> <!-- end section -->
+
+   </div> <!-- end Deploying the TDS section -->
 
  
    <div id="section">
 
-    <h2><a name="deploying">A Cursory Look at Log Files</a></h2>
-
-
+    <h2><a name="cursory">A Cursory Look at Log Files</a></h2>
 
 
      <div id="subsection">
@@ -481,15 +489,21 @@ total 10284
        <p>What messages in <code><small>catalina.out</small></code> are from the TDS?</p>
       </div>
 
-      <div id="info">
-       <h4>About <code>catalina.out</code></h4>
+     </div> <!-- end subsection -->
+
+
+
+     <div id="subsection">
+      <h3>Things to know about <code>catalina.out</code></h3>
+
+      <div id="note" class="info">
+       <h4>Help With <code>catalina.out</code></h4>
        <p>The <a href="http://marc.info/?l=tomcat-user&w=2&r=1&s=catalina.out+rotate&q=b">Tomcat Users mailing list</a> has seen a lot of traffic dedicated to <code><small>catalina.out</small></code> logging and rotation.</p>
       </div>
 
-        <p>A few things to know about <code><small>catalina.out</small></code>:</p>
 
-       <ul class="little">
-        <li>Tomcat <code><small>System.out</small></code> and <code><small>System.err</small></code> gets appended to <code><small>catalina.out</small></code>.  </li>
+       <ul>
+        <li>Tomcat <code><small>System.out</small></code> and <code><small>System.err</small></code> gets appended to <code><small>catalina.out</small></code>  </li>
         <li><code><small>catalina.out</small></code> can quicly grow large if the hosted web applications are not specifically catching and logging <code><small>System.out</small></code> and <code><small>System.err</small></code> to designated files.</li>
         <li><code><small>catalina.out</small></code> is not automatically rotated in Tomcat.</li>
         <li>You will need to employ an outside log rotation program (e.g., <code><small>logadm</small></code> or <code><small>logrotate</small></code>) to rotate <code><small>catalina.out</small></code>.</li>
@@ -497,7 +511,7 @@ total 10284
         </ul>
      </div> <!-- end subsection -->
 
-   </div> <!-- end section -->
+   </div> <!-- end A Cursory Look at Log Files section -->
 
 
 
