@@ -69,20 +69,4 @@ public class PingTdsAtNsf
 
         CatalogValidityTestUtils.assertCatalogIsAccessibleValidAndNotExpired( tdsUrl + catalogUrl );
     }
-
-    @Test
-    public void pingNsfOverlodeTds()
-    {
-        String tdsUrl = "http://overlode.cise-nsf.gov:8080/thredds/";
-
-        CatalogValidityTestUtils.assertCatalogIsAccessibleValidAndNotExpired( tdsUrl + catalogUrl );
-    }
-
-    @Test
-    public void pingNsfOredealTds()
-    {
-        String tdsUrl = "http://oredeal.cise-nsf.gov:8080/thredds/";
-
-        CatalogValidityTestUtils.assertCatalogIsAccessibleValidAndNotExpired( tdsUrl + catalogUrl );
-    }
 }
