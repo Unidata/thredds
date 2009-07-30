@@ -64,7 +64,7 @@ h1 {
 }
 
 #section #subsection.exercise {
-    background: transparent url('../images/exercise.gif') no-repeat 0px 0px;
+    background: #EFEFEF url('../images/exercise.gif') no-repeat 0px 0px;
     border: 3px solid #00B2EE;
     padding: 20px 15px 10px 100px;
     margin: -20px 30px 30px 30px;
@@ -278,15 +278,15 @@ h1 {
 
 
 .info {
-    background: transparent url('../images/info.gif') no-repeat 10px 5px;
+    background: #EFEFEF url('../images/info.gif') no-repeat 10px 5px;
 }
 
 .reminder {
-    background: transparent url('../images/reminder.gif') no-repeat 10px 5px;
+    background: #EFEFEF url('../images/reminder.gif') no-repeat 10px 5px;
 }
 
 .ahead {
-    background: transparent url('../images/bulb.gif') no-repeat 10px 5px;
+    background: #EFEFEF url('../images/bulb.gif') no-repeat 10px 5px;
 }
 
 
