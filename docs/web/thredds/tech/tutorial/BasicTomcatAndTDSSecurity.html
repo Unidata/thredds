@@ -576,6 +576,446 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
 
 
 
+   <div id="section">
+    <h2><a name="ssl">Enabling SSL Encryption</a></h2>
+
+
+     <div id="subsection">
+      <h3>About Secure Sockets Layer (SSL)</h3>
+      <div id="note" class="info">
+       <h4>How SSL Works</h4>
+       <p>For more information on how SSL works, Wikipedia details the <a href="http://en.wikipedia.org/wiki/Transport_Layer_Security#How_it_works">steps involved</a> during an SSL transaction.</p>
+      </div> 
+
+      <ul>
+       <li>Secure Sockets Layer (SSL) is a cryptographic protocol that provides security and data integrity for communications over TCP/IP networks.</li>
+       <li>SSL allows applications to communicate across a network in a way designed to prevent eavesdropping, tampering, and message forgery. </li>
+       <li>SSL uses a cryptographic system that uses two keys to encrypt data: a public key known to everyone and a private or secret key known only to the recipient of the message.</li>
+       <li>By convention, URLs that require an SSL connection start with <code>https</code> instead of <code>http</code>.</lI>
+      </ul>
+
+
+
+     </div> <!-- end subsection -->
+
+
+     <div id="subsection">
+      <h3>SSL certificates</h3>
+      <ul>
+       <li>A public key certificate is an electronic document which incorporates a digital signature to bind together a public key with identity information of the certificate user.</li>
+       <li>The certificate can be used to verify that a public key belongs to an individual.</li>
+       <li>The digital signature can be signed by a Certificate Authority (CA) or the certificate user (a self-signed certificate).</li>
+       <li>Unidata recommends the use of a certificate signed by a Certificate Authority (CA).</li>
+      <ul>
+     </div> <!-- end subsection -->
+
+
+     <div id="subsection">
+      <h3>Accessing the TDS remote management tool</h3>
+       <p>Other than the obvious compelling security reasons, you will want to enable SSL to take advantage of the TDS remote management tool which (out-of-the-box) requires SSL in order to access:
+      <a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a></p>
+      <ol>
+       <li>Create a self-signed certificate and store it in <code>$TOMCAT_HOME/conf/keystore</code>.</li>
+        <p>Run the <code><small>$JAVA_HOME/bin/keytool</small></code> command:</p>
+
+<pre>
+<b>$</b> cd /home/thredds/jdk1.6.0_14/bin/
+<b>$</b> ./keytool -genkey -alias tomcat -keyalg RSA -keystore /home/thredds/apache-tomcat-6.0.20/conf/keystore
+</pre>
+        <p>Meaning of the <code><small>keytool</small></code> options:</p>
+        <table>
+         <tr>
+          <th>  
+           Command
+          </th>
+          <th> 
+           Purpose
+          </th> 
+         </tr>
+         <tr>
+          <td>  
+           <code><small>$JAVA_HOME/bin/keytool</small></code>
+          </td>
+          <td> 
+           Java provides a tool, called <code><small>keytool</small></code>, that generates a self-signed certificate and puts in a keystore file.
+          </td> 
+         </tr>
+         <tr>
+          <td>  
+           <code><small>-genkey</small></code>
+          </td>
+          <td> 
+           The <code><small>-genkey</small></code> option specifies that a key pair (private key and public key) needs to be created.  This key pair will be enclosed in the self-signed certificate.
+          </td> 
+         </tr>
+         <tr>
+          <td>  
+           <code><small>-alias tomcat</small></code>
+          </td>
+          <td>  
+           The <code><small>-alias tomcat</small></code> option creates an entry in the keystore file identified by the alias "tomcat" (which Tomcat will use to find your entry).
+          </td> 
+         </tr>
+         <tr>
+          <td>  
+           <code><small>-keyalg RSA</small></code>
+          </td>
+          <td> 
+           The <code><small>-keyalg RSA</small></code> option specifies the algorithm (in this case is RSA) to be used for the creation the key pair. 
+          </td> 
+         </tr>
+         <tr>
+          <td>  
+           <code><small>-keystore $TOMCAT_HOME/conf/keystore</small></code>
+          </td>
+          <td> 
+           <code><small>-keystore $TOMCAT_HOME/conf/keystore</small></code> is location of where want to put our keystore.  Otherwise, the default keystore is <code><small>$user_home/.keystore</small></code>. 
+          </td> 
+         </tr>
+        </table>
+
+        <p>Create the self-signed certificate identity.  While you are filling out the identity fields for your certificate, keep in mind:</p>
+        <ul class="little"> 
+         <li>Although it is not obvious, the <code><small>first and last name</small></code>, or <code><small>CN</small></code>, should be the host name</li>
+         <li>The <code><small>keystore password</small></code> (the first password you are prompted to enter) is alway <code><small>changeit</small></code></li>
+         <li>The last password (the <code><small>key password</small></code>) and <code><small>keystore password</small></code> should be the same (<code><small>changeit</small></code>). If they differ, Tomcat cannot open the keystore and you will get this error: <code><small>java.io.IOException: Cannot recover key</small></code></li>
+        </ul>
+
+<pre>
+Enter keystore password: changeit
+Re-enter new password: changeit
+What is your first and last name?
+  [Unknown]:  localhost
+What is the name of your organizational unit?
+  [Unknown]: THREDDS
+What is the name of your organization?
+  [Unknown]:  Unidata
+What is the name of your City or Locality?
+  [Unknown]:  Boulder
+What is the name of your State or Province?
+  [Unknown]:  Colorado
+What is the two-letter country code for this unit?
+  [Unknown]:  US
+Is CN=unidata.ucar.edu, OU=THREDDS, O=Unidata, L=Boulder, ST=Colorado, C=US correct?
+  [no]:  y
+
+Enter key password for <tomcat>
+        (RETURN if same as keystore password): 
+</pre>
+    
+       <li>Configure Tomcat to enable SSL and use the self-signed certificate.</li>
+       <div id="expanded" class="question">
+        <p>Based on what we know about Tomcat configuration, which file in <code><small>$TOMCAT_HOME/conf/</small></code> should we edit to to enable SSL?</p>
+       </div>
+        <p>Open <code><small>$TOMCAT_HOME/conf/server.xml</small></code> with your favorite editor:</p>
+
+<pre>
+<b>$</b> vi server.xml
+</pre>
+        <p>Locate the <code><small>Java HTTP/1.1 Connector</small></code> listening on port 8080 and verify it is redirecting SSL traffic to port 8443:</p>
+<pre>
+&lt;Connector port="8080" protocol="HTTP/1.1"
+              connectionTimeout="20000"
+              redirectPort="8443" /&gt;
+</pre>
+        <p>Find and uncomment the <code><small>SSL HTTP/1.1 Connector</small></code> listening on port 8443 to activate this connector:</p>
+<pre>
+&lt;Connector port="8443" protocol="HTTP/1.1" SSLEnabled="true"
+              maxThreads="150" scheme="https" secure="true"
+              clientAuth="false" sslProtocol="TLS" /&gt;
+</pre>
+        <p>Add a <code><small>keystoreFile</small></code> attribute to the <code><small>SSL HTTP/1.1 Connector</small></code> to tell Tomcat where to find the keystore:</p>
+<pre>
+&lt;Connector port="8443" protocol="HTTP/1.1" SSLEnabled="true"
+              maxThreads="150" scheme="https" secure="true"
+              clientAuth="false" sslProtocol="TLS" <b>keystoreFile="/home/thredds/apache-tomcat-6.0.20/conf/keystore"</b> /&gt;
+</pre>
+
+
+        <p>Finally, verify the <code><small>AprLifecycleListener</small></code> is uncommented (found near the top of the file):</p>
+<pre>
+&lt;!--APR library loader. Documentation at /docs/apr.html --&gt;
+&lt;Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" /&gt;
+</pre>
+
+       <li>Restart Tomcat and verify SSL has been enabled.</li>
+
+
+        <p>Restart Tomcat.</p>
+<pre>
+<b>$</b> $TOMCAT_HOME/bin/shutdown.sh
+<b>$</b> $TOMCAT_HOME/bin/startup.sh
+</pre>
+
+      <div id="note" class="info">
+       <h4><code>man netstat</code></h4>
+       <p>For more information about the <code><small>netstat</small></code> command, type <code><small>man netstat</small></code> in your terminal window.</p>
+      </div> 
+        <p>Verify Tomcat is listening on port 8443 by running the <code><small>netstat</small></code> command.</p>
+
+        <p><code><small>netstat</small></code> (short for <b>net</b>work <b>stat</b>istics) is available on Unix, Unix-like, and Windows NT-based operating systems.  It is a command-line tool that displays:</p>
+        <ul class="little">
+         <li> network connections (both incoming and outgoing)</li>
+         <li> routing tables</li>
+         <li> and a number of network interface statistics</li>
+        </ul> 
+        <p>To run <code><small>netstat</small></code>, type the following: </p>
+<pre>
+<b>$</b> netstat -an | grep tcp
+</pre>
+
+
+
+
+         <p>Look for the following in the output:</p>
+<pre>
+tcp        0      0 127.0.0.1:8443               0.0.0.0:*                   LISTEN
+tcp        0      0 127.0.0.1:8080               0.0.0.0:*                   LISTEN
+</pre>
+
+        
+      </ol>
+     </div> <!-- end subsection -->
+
+
+      <div id="subsection" class="exercise">
+       <h3>Exercise Four: Grant yourself access to the TDS remote management tool</h3>
+       <ol>
+        <li>Using the steps outlined above, create a self-signed certificate and enable SSL in Tomcat.</li>
+        <li>Modify <code><small>$TOMCAT_HOME/conf/tomcat-users.xml</small></code> to add a new role with the rolename attribute of <code><small>tdsConfig</small></code>, and add this role to your list of roles:</li>
+<pre>
+&lt;tomcat-users&gt;
+    &lt;role rolename="manager"/&gt;
+    &lt;role rolename="tdsConfig"/&gt;
+    &lt;user name="admin" password="e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4" roles="manager,tdsConfig"/&gt;
+&lt;/tomcat-users&gt;
+</pre>  
+        <li>Restart Tomcat and try to access the TDS remote management tool: <a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a></li>
+       </ol>
+      </div>
+
+
+     <div id="subsection">
+      <h3>Configuring web applications for SSL</h3>
+      <div id="expanded" class="question">
+       <p>How did Tomcat know to use SSL for the TDS remote management tool?</p>
+      </div>
+      <div id="expanded" class="question">
+       <p>Where, in any of the configuration changes you made to <code><small>$TOMCAT_HOME/conf/server.xml</small></code> or <code><small>$TOMCAT_HOME/conf/tomcat-users.xml</small></code>, did you explicitly specify that TDS remote management tool <i>must</i> be accessed via SSL?</p>       
+      </div>
+
+
+     </div> <!-- end subsection -->
+
+     <div id="subsection">
+      <h3>The missing piece: <code>/WEB-INF/web.xml</code></h3>
+       <ul>
+        
+        <li>This is specified in the web application deployment descriptor, aka <code>web.xml</code></li>
+        <li>Deployment descriptors are found in the <code>WEB-INF</code> directory of the web application: <code>&lt;application name&gt;/WEB-INF/web.xml</code>. </li>
+        <li>By convention, Tomcat and other servlet containers will read the web application deployment descriptors for initialization parameters and container-managed security constraints upon application deployment.</li>
+        <li>The TDS has been preconfigured to require that SSL encryption is enabled in order to access the remote management tool.</li>
+       </ul>
+     </div> <!-- end subsection -->
+
+
+
+     <div id="subsection">
+      <h3>Looking at the TDS deployment descriptor</h3>
+
+ 
+        <ol>
+         <li>Have a look at the deployment descriptor that comes with the TDS.</li>
+          <p>Navigate to the unpacked <code><small>thredds</small></code> directory in <code><small>$TOMCAT_HOME/webapps</small></code>, and view the file: </p>
+<pre>
+<b>$</b> cd /home/thredds/apache-tomcat-6.0.20/webapps/thredds/
+<b>$</b> less WEB-INF/web.xml
+</pre>  
+       <li>Look for a reference to the TDS remote management tool's URL (<code><small>/debug</small></code>).</li>
+         <p>Near the bottom of the deployment descriptor you will find this entry:</p>
+
+<pre>
+&lt;!-- This allows "remote configuration":
+  /thredds/debug gives access to various debug and status info.
+  ThreddsDefault servlet aliases /thredds/root/ to "{tomcat_home}/webapps/thredds/"
+  ThreddsDefault servlet aliases /thredds/dataDir/path to "dirLocation/" where path is 
+   mapped to dirLocation through a datasetRoot or datasetScan element in the catalog. --&gt;
+  &lt;security-constraint&gt;
+    &lt;web-resource-collection&gt;
+      &lt;web-resource-name&gt;sensitive read access&lt;/web-resource-name&gt;
+      <b>&lt;url-pattern&gt;/debug&lt;/url-pattern&gt;</b>
+      &lt;url-pattern&gt;/root/*&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/dataDir/*&lt;/url-pattern&gt;
+      &lt;http-method&gt;GET&lt;/http-method&gt;
+    &lt;/web-resource-collection&gt;
+    &lt;auth-constraint&gt;
+      &lt;role-name&gt;tdsConfig&lt;/role-name&gt;
+    &lt;/auth-constraint&gt;
+    <b>&lt;user-data-constraint&gt;
+      &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
+    &lt;/user-data-constraint&gt;</b>
+  &lt;/security-constraint&gt;
+</pre>
+
+      <div id="note" class="info">
+       <h4>Configuration Help</h4>
+       <p>For more information on how to configure security requirements for a web application in a deployment descriptor, see: <a href="http://java.sun.com/javaee/5/docs/tutorial/doc/bncbe.html">Defining Security Requirements for Web Applications</a>.</p>
+      </div> 
+
+       
+       <ul class="little">
+        <li>The <code><small>&lt;user-data-constraint&gt;</small></code> establishes a requirement that the constrained requests be received over a protected transport layer connection. This guarantees how the data will be transported between client and server. </li>
+        <li><code><small>&lt;transport-guarantee&gt</small></code> choices for type of transport guarantee include <code><small>NONE</small></code>, <code><small>INTEGRAL</small></code>, and <code><small>CONFIDENTIAL</small></code>: </li>
+        <ol class="little">
+         <li>Specify <code><small>CONFIDENTIAL</small></code> when the application requires that data be transmitted so as to prevent other entities from observing the contents of the transmission. (E.g., via SSL.)</li>
+         <li>Specify <code><small>INTEGRAL</small></code> when the application requires that the data be sent between client and server in such a way that it cannot be changed in transit. </li>
+          <li>Specify <code><small>NONE</small></code> to indicate that the container must accept the constrained requests on any connection, including an unprotected one.</li>
+         </ol>
+        </ul>
+       </ol>
+     </div> <!-- end subsection -->
+
+
+
+     <div id="subsection">
+      <h3>Enabling SSL for the Tomcat <code>manager</code> application</h3>
+      <ol>
+       <li>Modify the deployment descriptor of the Tomcat <code>manager</code> application.</li>
+        <p>Using your favorite editor, open the deployment descriptor for the Tomcat <code><small>manager</small></code> application:</p>
+<pre>
+<b>$</b> vi /home/thredds/apache-tomcat-6.0.20/webapps/manager/WEB-INF/web.xml
+</pre>   
+        <p>Locate the <code><small>&lt;security-constraint&gt;</small></code> element (near the bottom of the file):</p>
+<pre>
+  &lt;!-- Define a Security Constraint on this Application --&gt;
+  &lt;security-constraint&gt;
+    &lt;web-resource-collection&gt;
+      &lt;web-resource-name&gt;HTMLManger and Manager command&lt;/web-resource-name&gt;
+      &lt;url-pattern&gt;/jmxproxy/*&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/html/*&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/list&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/expire&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/sessions&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/start&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/stop&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/install&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/remove&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/deploy&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/undeploy&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/reload&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/save&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/serverinfo&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/status/*&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/roles&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/resources&lt;/url-pattern&gt;
+    &lt;/web-resource-collection&gt;
+    &lt;auth-constraint&gt;
+       &lt;!-- NOTE:  This role is not present in the default users file --&gt;
+       &lt;role-name&gt;manager&lt;/role-name&gt;
+    &lt;/auth-constraint&gt;
+  &lt;/security-constraint&gt;
+</pre>
+        <p>This comment the <code><small>&lt;auth-constraint&gt;</small></code> element is no longer correct: </p>
+         <p><code><small>&lt;!-- NOTE:  This role is not present in the default users file --&gt;</small></code></p>  
+  
+        <p>Since we've already added the <code><small>role</small></code> of <code><small>manager</small></code> to the <code><small>tomcat-users.xml</small></code> file, we might as well remove the comment:</p>
+<pre>
+  &lt;!-- Define a Security Constraint on this Application --&gt;
+  &lt;security-constraint&gt;
+    &lt;web-resource-collection&gt;
+      &lt;web-resource-name&gt;HTMLManger and Manager command&lt;/web-resource-name&gt;
+      &lt;url-pattern&gt;/jmxproxy/*&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/html/*&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/list&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/expire&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/sessions&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/start&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/stop&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/install&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/remove&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/deploy&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/undeploy&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/reload&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/save&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/serverinfo&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/status/*&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/roles&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/resources&lt;/url-pattern&gt;
+    &lt;/web-resource-collection&gt;
+    &lt;auth-constraint&gt;
+       &lt;role-name&gt;manager&lt;/role-name&gt;
+    &lt;/auth-constraint&gt;
+  &lt;/security-constraint&gt;
+</pre>
+        <p>Add a <code><small>&lt;user-data-constraint&gt;</small></code> with a <code><small>&lt;transport-guarantee&gt;</small></code> of <code><small>CONFIDENTIAL</small></code> to enable port-forwarding to port 8443:</p>
+<pre>
+  &lt;!-- Define a Security Constraint on this Application --&gt;
+  &lt;security-constraint&gt;
+    &lt;web-resource-collection&gt;
+      &lt;web-resource-name&gt;HTMLManger and Manager command&lt;/web-resource-name&gt;
+      &lt;url-pattern&gt;/jmxproxy/*&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/html/*&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/list&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/expire&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/sessions&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/start&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/stop&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/install&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/remove&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/deploy&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/undeploy&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/reload&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/save&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/serverinfo&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/status/*&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/roles&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;/resources&lt;/url-pattern&gt;
+    &lt;/web-resource-collection&gt;
+    &lt;auth-constraint&gt;
+       &lt;role-name&gt;manager&lt;/role-name&gt;
+    &lt;/auth-constraint&gt;
+   <b> &lt;user-data-constraint&gt;
+       &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
+    &lt;/user-data-constraint&gt;</b>
+  &lt;/security-constraint&gt;
+</pre>
+
+      </ul>
+     <li>Verify SSL has been enabled for the Tomcat <code>manager</code> application.</li>
+      <p>Restart Tomcat and verify SSL has been enabled for the Tomcat <code>manager</code> application: <a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a></li></p>
+     </ol>
+
+
+     </div> <!-- end subsection -->
+
+
+
+      <div id="subsection" class="exercise">
+       <h3>Exercise Five: Enable SSL for the  Tomcat <code>manager</code> application.</h3>
+       <ol>
+        <li>Using the steps outlined above, enable SSL for the  Tomcat <code>manager</code> application. </li>
+        </ol>
+      </div>
+
+
+   </div> <!-- end Enabling SSL Encryption section -->
+
+
+   <div id="section">
+    <h2><a name="additional">Additional Security Configuration</a></h2>
+
+
+     <div id="subsection">
+      <h3>Additional resources</h3>
+     <p>We have compiled a list of a few <a href="AdditionalSecurityConfiguration.html">additional step</a> you should take to help secure Tomcat and your TDS server. This is not a complete laundry list of security fixes! Please use it as a starting point when securing your server.</p>
+  </div> <!-- end subsection -->
+   </div> <!-- end Additional Resources section -->
+
+
+
+
+
+
    <p><img src="../images/thread.png" height="60" alt="THREDDS" valign="top" align="left" vspace="0" hspace="10" />  This document is maintained by Unidata and was last updated 
    
 <script language="JavaScript" type="text/JavaScript">
