@@ -430,6 +430,13 @@ public class AggregationFmrc extends AggregationOuterDimension {
   @Override
   public Array read(Variable mainv, CancelTask cancelTask) throws IOException {
 
+    if (mainv instanceof VariableDS) {
+      DataType dtype = ((VariableDS) mainv).getOriginalDataType();
+      if ((dtype != null) && (dtype != mainv.getDataType())) {
+        System.out.printf("Original type = %s mainv type= %s%n", dtype, mainv.getDataType());
+      }
+    }
+
     Object spObj = mainv.getSPobject();
     if (spObj != null && spObj instanceof CacheVar) {
       CacheVar pv = (CacheVar) spObj;
@@ -478,6 +485,13 @@ public class AggregationFmrc extends AggregationOuterDimension {
    */
   @Override
   public Array read(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
+    if (mainv instanceof VariableDS) {
+      DataType dtype = ((VariableDS) mainv).getOriginalDataType();
+      if ((dtype != null) && (dtype != mainv.getDataType())) {
+        System.out.printf("Original type = %s mainv type= %s%n", dtype, mainv.getDataType());
+      }
+    }
+
     // If its full sized, then use full read, so that data gets cached.
     long size = section.computeSize();
     if (size == mainv.getSize())

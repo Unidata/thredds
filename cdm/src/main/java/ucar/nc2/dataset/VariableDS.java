@@ -88,7 +88,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     super(ds, group, parentStructure, shortName);
     setDataType(dataType);
     setDimensions( dims);
-    this.orgDataType = dataType;
+    // this.orgDataType = dataType;
 
     if (dataType == DataType.STRUCTURE)
       throw new IllegalArgumentException("VariableDS must not wrap a Structure; name="+shortName);
@@ -408,10 +408,10 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
 
   /**
    * When this wraps another Variable, get the original Variable's DataType.
-   * @return original Variable's DataType
+   * @return original Variable's DataType, or current data type if it doesnt wrap anothe rvariable
    */
   public DataType getOriginalDataType() {
-    return orgDataType;
+    return orgDataType != null ? orgDataType : getDataType();
   }
 
   /**

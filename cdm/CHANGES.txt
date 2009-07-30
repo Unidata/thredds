@@ -4,7 +4,10 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  0:
-  AggregationOuterDimension.cacheVar may keep data as different tyoe, make sure to convert to correct type in read()
+  VariableDS only sets orgDataType when its wrapping a variable.
+  AggregationOuterDimension tolerates different types between main variable and nested
+  AggregationOuterDimension.cacheVar may keep data as different type, make sure to convert to correct type in read()
+  MAMath.convert - utility routine for converting Arrays to different types.
   Cosmic data - FeatureType plug
   AggregationOuterDimension.rebuildDatasets(): bug on updating datasets, assuming agg vars are 1D (!)
   HDF4 images use unshared dimensions

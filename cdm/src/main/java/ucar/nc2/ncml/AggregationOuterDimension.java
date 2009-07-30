@@ -255,6 +255,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
   /**
    * Read an aggregation variable: A variable whose data spans multiple files.
+   * This is an implementation of ProxyReader, so must fulfill that contract.
    *
    * @param mainv      the aggregation variable
    * @param cancelTask allow the user to cancel
@@ -262,18 +263,20 @@ public abstract class AggregationOuterDimension extends Aggregation {
    * @throws IOException
    */
   public Array read(Variable mainv, CancelTask cancelTask) throws IOException {
+    if (mainv instanceof VariableDS) {
+      DataType dtype = ((VariableDS) mainv).getOriginalDataType();
+      if ((dtype != null) && (dtype != mainv.getDataType())) {
+        System.out.printf("Original type = %s mainv type= %s%n", dtype, mainv.getDataType());
+      }
+    }
 
     Object spObj = mainv.getSPobject();
     if (spObj != null && spObj instanceof CacheVar) {
       CacheVar pv = (CacheVar) spObj;
       try {
-        Array data = pv.read(mainv.getShapeAsSection(), cancelTask);
-        if (data.getElementType() != mainv.getDataType().getPrimitiveClassType()) {
-          Array newData = Array.factory(mainv.getDataType(), data.getShape());
-          MAMath.copy(newData, data);
-          return newData;
-        }
-        return data;
+        Array cacheArray = pv.read(mainv.getShapeAsSection(), cancelTask);
+        // cache may keep data as different type
+        return MAMath.convert(cacheArray, mainv.getDataType());
 
       } catch (InvalidRangeException e) {
         logger.error("readAgg " + getLocation(), e);
@@ -302,6 +305,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
         int n = nestedDatasets.size();
         for (int i = 0; i < n; ++i) {
           Result r = completionService.take().get();
+          r.data =  MAMath.convert(r.data, dtype); // just in case it need to be converted
           if (r != null) {
             int size = (int) r.data.getSize();
             Array.arraycopy(r.data, 0, allData, size * r.index, size);
@@ -319,8 +323,8 @@ public abstract class AggregationOuterDimension extends Aggregation {
         Array varData = vnested.read(mainv, cancelTask);
         if ((cancelTask != null) && cancelTask.isCancel())
           return null;
+        varData =  MAMath.convert(varData, dtype); // just in case it need to be converted
 
-        // arraycopy( Array arraySrc, int srcPos, Array arrayDst, int dstPos, int len)
         Array.arraycopy(varData, 0, allData, destPos, (int) varData.getSize());
         destPos += varData.getSize();
       }
@@ -393,23 +397,33 @@ public abstract class AggregationOuterDimension extends Aggregation {
    * @throws IOException
    */
   public Array read(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
+    if (mainv instanceof VariableDS) {
+      DataType dtype = ((VariableDS) mainv).getOriginalDataType();
+      if ((dtype != null) && (dtype != mainv.getDataType())) {
+        System.out.printf("Original type = %s mainv type= %s%n", dtype, mainv.getDataType());
+      }
+    }
+
     // If its full sized, then use full read, so that data gets cached.
     long size = section.computeSize();
     if (size == mainv.getSize())
       return read(mainv, cancelTask);
 
+    DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
+
+    // check if its cached
     Object spObj = mainv.getSPobject();
     if (spObj != null && spObj instanceof CacheVar) {
       CacheVar pv = (CacheVar) spObj;
-      // return pv.read(mainv.getShapeAsSection(), cancelTask);
-      return pv.read(section, cancelTask);
+      Array cacheArray = pv.read(section, cancelTask);
+      // cache may keep data as different type
+      return MAMath.convert(cacheArray, dtype);
     }
 
     // the case of the agg coordinate var
     //if (mainv.getShortName().equals(dimName))
     //  return readAggCoord(mainv, section, cancelTask);
 
-    DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
     Array sectionData = Array.factory(dtype, section.getShape());
     int destPos = 0;
 
@@ -440,6 +454,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
       if ((cancelTask != null) && cancelTask.isCancel())
         return null;
+      varData =  MAMath.convert(varData, dtype); // just in case it need to be converted
 
       Array.arraycopy(varData, 0, sectionData, destPos, (int) varData.getSize());
       destPos += varData.getSize();
