@@ -147,23 +147,11 @@ h1 {
 }
 
 
-#section #subsection ul.little {
-    list-style-type: disc;
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 25px;  
-}
-
-#section #subsection ul.little li {
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 5px 0px;  
-    font-size: 10pt;
-    background-image: none;
-}
 
 
 #section #subsection ol {
     padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 20px;  
+    margin: 0px 0px 0px 20px; 
 }
 
 
@@ -175,6 +163,31 @@ h1 {
 
 
 
+#section #subsection  ul.little {
+    list-style-type: disc;
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 0px 25px;  
+}
+
+#section #subsection  ul.little li {
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 5px 0px;  
+    font-size: 10pt;
+    background-image: none;
+}
+
+
+#section #subsection ol.little {
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 0px 25px;  
+}
+
+#section #subsection ol.little li {
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 5px 0px;  
+    font-size: 10pt;
+    background-image: none;
+}
 
 
 
@@ -230,7 +243,7 @@ h1 {
     z-index: 10;
     border: 1px dashed #CFCFCF;
     padding: 10px 10px 10px 10px;
-    margin: -30px 0px 10px 50px;
+    margin: 0px 0px 10px 50px;
     float: right;
     position: relative;
     width: 250px;
