@@ -64,7 +64,7 @@ h1 {
 }
 
 #section #subsection.exercise {
-    background: #EFEFEF url('../images/exercise.gif') no-repeat 0px 0px;
+    background: transparent url('../images/exercise.gif') no-repeat 0px 0px;
     border: 3px solid #00B2EE;
     padding: 20px 15px 10px 100px;
     margin: -20px 30px 30px 30px;
@@ -143,7 +143,7 @@ h1 {
     padding: 2px 0px 2px 25px;
     margin: 10px 0px 0px 0px;  
     font-size: 12pt;
-    background: #FFFFFF url('../images/check.gif') no-repeat 0px 0px;
+    background: transparent url('../images/check.gif') no-repeat 0px 0px;
 }
 
 
@@ -229,11 +229,11 @@ h1 {
 
 
 .troubleshooting {
-    background: #FFFFFF url('../images/troubleshooting.gif') no-repeat 0px 0px;
+    background: transparent url('../images/troubleshooting.gif') no-repeat 0px 0px;
 }
 
 .question {
-    background: #FFFFFF url('../images/question.gif') no-repeat 10px 0px;
+    background: transparent url('../images/question.gif') no-repeat 10px 0px;
 }
 
 
@@ -278,15 +278,15 @@ h1 {
 
 
 .info {
-    background: #EFEFEF url('../images/info.gif') no-repeat 10px 5px;
+    background: transparent url('../images/info.gif') no-repeat 10px 5px;
 }
 
 .reminder {
-    background: #EFEFEF url('../images/reminder.gif') no-repeat 10px 5px;
+    background: transparent url('../images/reminder.gif') no-repeat 10px 5px;
 }
 
 .ahead {
-    background: #EFEFEF url('../images/bulb.gif') no-repeat 10px 5px;
+    background: transparent url('../images/bulb.gif') no-repeat 10px 5px;
 }
 
 
