@@ -291,7 +291,7 @@
       <ul>
        <li>"Free" web application that comes with Tomcat distribution</li>
        <li>Lives in the <code>$TOMCAT_HOME/webapps/manager</code> directory </li>
-       <li>Allows Tomcat admins to deploy, undeploy, or reload web applications such as the TDS without having to shut down and restart Tomcat</li>
+       <li>Allows Tomcat administrators to deploy, undeploy, or reload web applications such as the TDS without having to shut down and restart Tomcat</li>
        <li>Provides server status statistics for the JVM and each connector you have configured in <code>server.xml</code></li>
       </ul>
 
@@ -306,7 +306,7 @@
         <p><img src="../images/401.gif" height="353" width="400"></p>
 
       <div id="expanded" class="question">
-       <p>Based on what we know about Tomcat configuration, which file in <code><small>$TOMCAT_HOME/conf/</small></code> should we edit to grant ourself access to the <code><small>manager</small></code> application?</p>
+       <p>Based on what we know about Tomcat configuration, which file in <code><small>$TOMCAT_HOME/conf/</small></code> should we edit to grant ourselves access to the <code><small>manager</small></code> application?</p>
       </div>
 
      </div> <!-- end subsection -->
@@ -397,7 +397,7 @@ drwxr-xr-x  5 thredds workshop     4096 2009-05-13 17:15 manager
 drwxr-xr-x  3 thredds workshop     4096 2009-05-13 17:15 ROOT
 </pre>
        <li>Deploy the TDS using the <code>manager</code> application.</li>
-       <p>Upload the TDS WAR file using the <code><small>Deploy</small></code> section of the <code><small>manager</small></code>application:</p>
+       <p>Upload the TDS WAR file using the <code><small>Deploy</small></code> section of the <code><small>manager</small></code> application:</p>
         <p><img src="../images/deploy.gif" height="306" width="738" alt="Deploy the TDS"></p>
        <p>Confirm the deployment went as planned by accessing the TDS using your browser: <a href="http://localhost:8080/thredds/">http://localhost:8080/thredds/</a></p>
        </ol>
@@ -521,7 +521,7 @@ drwxr-xr-x  3 thredds workshop     4096 2009-05-13 17:15 ROOT
        digest="SHA" /&gt;
 </pre>  
     <li>Create a SHA encrypted version of your password.</li>
-     <p>Tomcat provides a script (<code><small>$TOMCAT_HOME/bin/digest.sh</small></code>) that will encrypt a password string according to the algorithm specified.  Use this script as follows with the password you made for yourself perviously:</p>
+     <p>Tomcat provides a script (<code><small>$TOMCAT_HOME/bin/digest.sh</small></code>) that will encrypt a password string according to the algorithm specified.  Use this script as follows with the password you made for yourself previously:</p>
 
 <pre>
 <b>$</b> /home/thredds/apache-tomcat-6.0.20/bin/digest.sh -a SHA secret
@@ -555,7 +555,7 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
         <li>Check the XML syntax in <code><small>tomcat-users.xml</small></code> and <code><small>server.xml</small></code> to make sure it is well-formed and without error.</li>
         <li>Did you restart Tomcat after you made your changes to <code><small>tomcat-users.xml</small></code> and <code><small>server.xml</small></code> ?</li>
         <li>Any errors will be reported in <code><small>$TOMCAT_HOME/logs/catalina.out</small></code>. </li>
-        <li>You do not need to type the encrypted version of your password into the browser (the browser automagically encrypts your password for you before it transmits it to the server).</li>
+        <li>You do not need to type the encrypted version of your password into the browser (the browser auto-magically encrypts your password for you before it transmits it to the server).</li>
        </ul>
       </div>
 
@@ -591,7 +591,7 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
        <li>Secure Sockets Layer (SSL) is a cryptographic protocol that provides security and data integrity for communications over TCP/IP networks.</li>
        <li>SSL allows applications to communicate across a network in a way designed to prevent eavesdropping, tampering, and message forgery. </li>
        <li>SSL uses a cryptographic system that uses two keys to encrypt data: a public key known to everyone and a private or secret key known only to the recipient of the message.</li>
-       <li>By convention, URLs that require an SSL connection start with <code>https</code> instead of <code>http</code>.</lI>
+       <li>By convention, URLs that require an SSL connection start with <code>https</code> instead of <code>http</code>.</li>
       </ul>
 
 
@@ -677,7 +677,7 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
         <p>Create the self-signed certificate identity.  While you are filling out the identity fields for your certificate, keep in mind:</p>
         <ul class="little"> 
          <li>Although it is not obvious, the <code><small>first and last name</small></code>, or <code><small>CN</small></code>, should be the host name</li>
-         <li>The <code><small>keystore password</small></code> (the first password you are prompted to enter) is alway <code><small>changeit</small></code></li>
+         <li>The <code><small>keystore password</small></code> (the first password you are prompted to enter) is always <code><small>changeit</small></code></li>
          <li>The last password (the <code><small>key password</small></code>) and <code><small>keystore password</small></code> should be the same (<code><small>changeit</small></code>). If they differ, Tomcat cannot open the keystore and you will get this error: <code><small>java.io.IOException: Cannot recover key</small></code></li>
         </ul>
 
@@ -814,7 +814,7 @@ tcp        0      0 127.0.0.1:8080               0.0.0.0:*                   LIS
         <li>This is specified in the web application deployment descriptor, aka <code>web.xml</code></li>
         <li>Deployment descriptors are found in the <code>WEB-INF</code> directory of the web application: <code>&lt;application name&gt;/WEB-INF/web.xml</code>. </li>
         <li>By convention, Tomcat and other servlet containers will read the web application deployment descriptors for initialization parameters and container-managed security constraints upon application deployment.</li>
-        <li>The TDS has been preconfigured to require that SSL encryption is enabled in order to access the remote management tool.</li>
+        <li>The TDS has been pre-configured to require that SSL encryption is enabled in order to access the remote management tool.</li>
        </ul>
      </div> <!-- end subsection -->
 
