@@ -303,7 +303,7 @@ export CATALINA_HOME
          <li><code><small>-Xms</small></code> is the initial allocated memory of the JVM (for performance).</li>
          <li><code><small>-Xmx</small></code> the maximum allocated memory of the JVM (for performance).</li>
          <li><code><small>-server</small></code> tells the Hostspot compiler to run the JVM in "server" mode.</li>
-         <li><code><small>-Djava.awt.headless=true</small></code> eis needed to prevent graphics rendering code to assume that a graphics console exists. Without this, WMS code will crash the server in some circumstances.</li>
+         <li><code><small>-Djava.awt.headless=true</small></code> is needed to prevent graphics rendering code to assume that a graphics console exists. Without this, WMS code will crash the server in some circumstances.</li>
         </ul>
  
        <li>Restart Tomcat to implement your changes.</li>
@@ -478,7 +478,7 @@ total 10284
       </div>
 
        <li>Examining <code>catalina.out</code></li>
-        <p>Open another terminal window (hereafter refered to as terminal #2) and run the following command in the new terminal:</p>
+        <p>Open another terminal window (hereafter referred to as terminal #2) and run the following command in the new terminal:</p>
 <pre>
 <b>$</b> tail -f /home/thredds/apache-tomcat-6.0.20/logs/catalina.out
 </pre>
@@ -489,7 +489,7 @@ total 10284
       <div id="expanded" class="question">
        <p>What messages in <code><small>catalina.out</small></code> are from the TDS?</p>
       </div>
-
+      </ol>
      </div> <!-- end subsection -->
 
 
@@ -498,14 +498,14 @@ total 10284
       <h3>Things to know about <code>catalina.out</code></h3>
 
       <div id="note" class="info">
-       <h4>Help With <code>catalina.out</code></h4>
+       <h4>Help w/ <code>catalina.out</code></h4>
        <p>The <a href="http://marc.info/?l=tomcat-user&w=2&r=1&s=catalina.out+rotate&q=b">Tomcat Users mailing list</a> has seen a lot of traffic dedicated to <code><small>catalina.out</small></code> logging and rotation.</p>
       </div>
 
 
        <ul>
         <li>Tomcat <code><small>System.out</small></code> and <code><small>System.err</small></code> gets appended to <code><small>catalina.out</small></code>  </li>
-        <li><code><small>catalina.out</small></code> can quicly grow large if the hosted web applications are not specifically catching and logging <code><small>System.out</small></code> and <code><small>System.err</small></code> to designated files.</li>
+        <li><code><small>catalina.out</small></code> can quickly grow large if the hosted web applications are not specifically catching and logging <code><small>System.out</small></code> and <code><small>System.err</small></code> to designated files.</li>
         <li><code><small>catalina.out</small></code> is not automatically rotated in Tomcat.</li>
         <li>You will need to employ an outside log rotation program (e.g., <code><small>logadm</small></code> or <code><small>logrotate</small></code>) to rotate <code><small>catalina.out</small></code>.</li>
 
@@ -513,9 +513,6 @@ total 10284
      </div> <!-- end subsection -->
 
    </div> <!-- end A Cursory Look at Log Files section -->
-
-
-
 
 
 
