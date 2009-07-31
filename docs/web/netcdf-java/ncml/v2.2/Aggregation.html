@@ -272,17 +272,32 @@ netcdf feb.nc {
 <p>If the values are evenly spaced, you can use the start/increment form, and you dont need to know the number of files:</p>
 <pre><strong> &lt;values start=&quot;12.0&quot; increment=&quot;25.0&quot;/&gt;</strong></pre>
 <h3>Extracting date coordinates from the filename</h3>
-<p>For the common case that the filename contains date information from which you can derive a time coordinate, you can use the <strong>dateFormatMark</strong> attribute (download <a href="examples/aggDateFormat.ncml">aggDateFormat</a>.ncml and <a href="examples/wrf.zip">cg.zip</a>, unzip the latter and place in your data directory).</p>
-<pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br>  &lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot; recheckEvery=&quot;4 sec&quot;&gt;<br>    &lt;scan location=&quot;/data/examples/&quot; dateFormatMark=&quot;CG#yyyyDDD_HHmmss&quot; suffix=&quot;.nc&quot; subdirs=&quot;false&quot; /&gt;<br>  &lt;/aggregation&gt;<br>&lt;/netcdf&gt;</pre>
+<p>For the common case that the filename contains date information from which you can derive a time coordinate, you can use the <strong>dateFormatMark</strong> attribute (download <a href="examples/aggDateFormat.ncml">aggDateFormat</a>.ncml and <a href="examples/wrf.zip">cg.zip</a>, unzip the latter and place in your data directory). In the ToolsUI <strong>NcML Tab</strong>, open <strong>aggDateFormat.ncml</strong> and change the scan location to point to your data directory:</p>
+<pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br>  &lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot; recheckEvery=&quot;4 sec&quot;&gt;<br>    &lt;scan location=&quot;<strong>CHANGE THIS</strong>&quot; dateFormatMark=&quot;CG#yyyyDDD_HHmmss&quot; suffix=&quot;.nc&quot; subdirs=&quot;false&quot; /&gt;<br>  &lt;/aggregation&gt;<br>&lt;/netcdf&gt;</pre>
 <p>The <em><strong>dateFormatMark</strong></em><a name="dateFormatMark"></a> attribute is used on <strong>joinNew</strong> aggregation, as well as <strong>joinExisting</strong> if there is only one time slice in each file, to create date coordinate values out of the filename. It consists of a section of text, a '#' marking character, then a <a href="AnnotatedSchema.html#SimpleDateFormat"><strong>java.text.SimpleDateFormat</strong></a> string. The number of characters before the # is skipped in the filename, then the next part of the filename must match the SimpleDataFormat string, then it ignores any trailing text. For example: </p>
 <pre>      Filename: CG2006158_120000h_usfc.nc 
 DateFormatMark: CG#yyyyDDD_HHmmss</pre>
-<p>The net effect is to add a coordinate variable, whose values are ISO 8601 formatted date/time Strings, with a <strong>_CoordinateAxisType</strong> of &quot;Time&quot;, for example: </p>
-<pre>
-   &lt;variable name=&quot;time&quot; type=&quot;String&quot; shape=&quot;time&quot;&gt;
-     &lt;attribute name=&quot;_CoordinateAxisType&quot; value=&quot;Time&quot; /&gt;
-     <strong>&lt;values&gt;2005-11-28T21:00:00Z 2005-11-28T21:15:00Z 2005-11-28T21:30:00Z&lt;/values&gt;</strong>
-   &lt;/variable&gt;</pre>
+<p>The net effect is to add a coordinate variable, whose values are ISO 8601 formatted date/time Strings, with a <strong>_CoordinateAxisType</strong> of &quot;Time&quot;, so the example NcML will show this (details skipped):</p>
+<pre>netcdf file:C:/dev/tds/thredds/cdm/src/test/data/ncml/aggExistingOne.xml {
+ dimensions:
+   altitude = 1;
+   lat = 29;
+   lon = 26;
+   time = 3;
+ variables:
+   float altitude(altitude=1);
+   float lat(lat=29);
+   float lon(lon=26);
+   float CGusfc(time=3, altitude=1, lat=29, lon=26);
+
+   String time(time=3);
+     :_CoordinateAxisType = &quot;Time&quot;;
+     :long_name = &quot;time coordinate&quot;;
+     :standard_name = &quot;time&quot;;
+ data:
+   time =  &quot;2006-06-07T12:00:00Z&quot;,   &quot;2006-06-07T13:00:00Z&quot;,   &quot;2006-06-07T14:00:00Z&quot;
+}
+</pre>
 <p><em>The <strong>scan</strong> element allows you to specify that all of the files in a directory (and its subdirectories, with an optional suffix filter) are included in the aggregation. The files are sorted alphabetically on the filename, unless you specify a <strong>dateFormatMark</strong> attribute, in which case they are sorted by the Date derived from the filename, which is also used for the coordinate values. </em><br>
 </p>
 <h2>Aggregation on dynamic<a name="dynamic"></a> sets of files</h2>
@@ -296,20 +311,22 @@ DateFormatMark: CG#yyyyDDD_HHmmss</pre>
   <li>The TDS Server uses caching, so when defining aggregations, you should always include a <strong>recheckEvery</strong> time for any dataset that can change. </li>
 </ol>
 <p>You indicate how often the directories should be rescanned using the <strong>recheckEvery</strong> attribute:</p>
-<pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+<blockquote>
+  <pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
   &lt;aggregation dimName=&quot;time&quot; type=&quot;joinNew&quot; <strong>recheckEvery=&quot;15 min&quot;</strong> &gt;
     &lt;variableAgg name=&quot;T&quot;/&gt;
 <strong>    </strong>&lt;scan location=&quot;/data/goes/&quot; suffix=&quot;.gini&quot; /&gt;
   &lt;/aggregation&gt;
 &lt;/netcdf&gt; 
 </pre>
+</blockquote>
 <p>The value of  <strong>recheckEvery</strong> must be a <a href="http://www.unidata.ucar.edu/software/udunits/">udunit</a> time unit, e.g. uses units of <em>sec, min, hour, day</em>, etc. If you do not specify a recheckEvery attribute, the collection will be assumed to be non-changing. </p>
 <p><em>When using the <strong>scan</strong> element on directories whose contents may change, you must use  a <strong>recheckEvery</strong> attribute. It effectively specifies the maximum time before changes will be detected by a newly opened NcML dataset. An existing NcML dataset will not notice the changes, and you can get FileNotFoundException if the component files are deleted.</em></p>
 <h2>Aggregation Caching<a name="caching"></a></h2>
 <p>For large collection of files, one wants to avoid opening every single file each time the dataset is accessed. Instead we only want to open the files that are actually needed to fulfill a data request. Generally this is straightforward, except for discovering the number and values of the aggregation coordinate variable for type <strong>joinExisting. </strong>This is because we have to know the size of the aggregation dimension when we open the dataset, even before we read any data. For practical purposes, we  often need to know the coordinate values immediately also. </p>
 <p>To help solve this problem, you should enable Aggregation Caching in your application, by telling the
   ucar.nc2.ncml.Aggregation class where it can cache information, by calling the static method (see javadoc for more details): </p>
-<pre><strong>    // Enable Aggregation caching. Every hour, delete stuff older than 30 days<br>    Aggregation.setPersistenceCache( new DiskCache2(&quot;/.nj22/cachePersist&quot;, true, 60 * 24 * 30, 60));</strong></pre>
+<pre><strong>    // Enable Aggregation caching. Every hour, delete stuff older than 30 days<br>    Aggregation.setPersistenceCache( new DiskCache2(&quot;/.unidata/aggCache&quot;, true, 60 * 24 * 30, 60));</strong></pre>
 <p>When this is enabled, <strong>joinExisting</strong> aggregations will save  information to special XML files in the specified directory, in order to avoid opening every file to obtain its coordinate values, each time the dataset is opened. Instead, the first time it is opened, the values are read, then subsequent opens will use the cached values. </p>
 <p>If using a <strong>scan</strong> element on changing directories, be sure to specify the <strong>recheckEvery</strong> attribute to make sure that the cached information gets updated.</p>
 <h2>Nested Aggregation<a name="nested"></a></h2>
