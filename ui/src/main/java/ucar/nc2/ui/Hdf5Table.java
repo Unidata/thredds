@@ -159,8 +159,8 @@ public class Hdf5Table extends JPanel {
     long start = System.nanoTime();
     java.util.List<ObjectBean> beanList = new ArrayList<ObjectBean>();
 
-    NetcdfFile ncfile = new MyNetcdfFile();
     H5iosp iosp = new H5iosp();
+    NetcdfFile ncfile = new MyNetcdfFile(iosp);
     try {
       iosp.open(raf, ncfile, null);
     } catch (Throwable t) {
@@ -179,7 +179,10 @@ public class Hdf5Table extends JPanel {
   }
 
   private class MyNetcdfFile extends NetcdfFile {
-
+    private MyNetcdfFile(H5iosp iosp) {
+      super();
+      spi = iosp;
+    }
   }
 
   public class ObjectBean {

@@ -589,9 +589,17 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
   private void constructConstructors(DodsV rootDodsV, CancelTask cancelTask) throws IOException {
     List<DodsV> topVariables = rootDodsV.children;
+    // do non-grids first
     for (DodsV dodsV : topVariables) {
       if (dodsV.isDone) continue;
+      if (dodsV.bt instanceof DGrid) continue;
+      addVariable(rootGroup, null, dodsV);
+      if (cancelTask != null && cancelTask.isCancel()) return;
+    }
 
+    // then do the grids
+    for (DodsV dodsV : topVariables) {
+      if (dodsV.isDone) continue;
       addVariable(rootGroup, null, dodsV);
       if (cancelTask != null && cancelTask.isCancel()) return;
     }
@@ -656,6 +664,9 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
           Variable mapV = parentGroup.findVariable(shortName); // LOOK WRONG
           if (mapV == null) {        // if not, add it LOOK need to compare values
             mapV = addVariable(parentGroup, parentStructure, map);
+            makeCoordinateVariable(parentGroup, mapV, map.data);
+
+          } else if (!mapV.isCoordinateVariable()) { // workaround for Grid HDF4 wierdness (see note 1 below)
             makeCoordinateVariable(parentGroup, mapV, map.data);
           }
         }
@@ -1986,3 +1997,47 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   }
 
 }
+
+/* Note 1
+
+http://data.nodc.noaa.gov/opendap/pathfinder/Version5.0_Climatologies/Monthly/Day/month01_day.hdf
+
+Dataset {
+    Grid {
+      Array:
+        UInt16 Clim_SST[Latitude = 4096][Longitude = 8192];
+      Maps:
+        Float64 Latitude[4096];
+        Float64 Longitude[8192];
+    } Clim_SST;
+
+    Grid {
+      Array:
+        UInt16 Clim_StandardDeviation[Latitude = 4096][Longitude = 8192];
+      Maps:
+        Float64 Latitude[4096];
+        Float64 Longitude[8192];
+    } Clim_StandardDeviation;
+
+    Grid {
+      Array:
+        Byte Clim_Counts[Latitude = 4096][Longitude = 8192];
+      Maps:
+        Float64 Latitude[4096];
+        Float64 Longitude[8192];
+    } Clim_Counts;
+
+    Float64 Longitude[fakeDim2 = 8192];
+    Float64 Latitude[fakeDim3 = 4096];
+
+    Grid {
+      Array:
+        UInt16 Clim_SST_Filled[Latitude = 4096][Longitude = 8192];
+      Maps:
+        Float64 Latitude[4096];
+        Float64 Longitude[8192];
+    } Clim_SST_Filled;
+
+} month01_day.hdf;
+
+*/

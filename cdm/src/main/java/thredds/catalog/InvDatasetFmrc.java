@@ -297,7 +297,9 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
       InvDatasetImpl top = new InvDatasetImpl(this); // LOOK clone correct ??
       top.setParent( null);
-      top.transferMetadata( (InvDatasetImpl) this.getParent() ); // make all inherited metadata local
+      InvDatasetImpl parent = (InvDatasetImpl) this.getParent();
+      if (parent != null)
+        top.transferMetadata( parent ); // make all inherited metadata local
 
       String id = getID();
       if (id == null)

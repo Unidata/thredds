@@ -1051,6 +1051,7 @@ public class H5header {
       vinfo.btree = new DataBTree(dataAddress, v.getShape(), vinfo.storageSize);
 
     if (transformReference && (facade.dobj.mdt.type == 7) && (facade.dobj.mdt.referenceType == 0)) { // object reference
+      // System.out.println("transform object Reference: facade=" + facade.name +" variable name=" + v.getName());
       Array newData = findReferenceObjectNames(v.read());
       v.setDataType(DataType.STRING);
       v.setCachedData(newData, true); // so H5iosp.read() is never called
@@ -1058,12 +1059,18 @@ public class H5header {
     }
 
     if (transformReference && (facade.dobj.mdt.type == 7) && (facade.dobj.mdt.referenceType == 1)) { // region reference
+      System.out.println("transform region Reference: facade=" + facade.name +" variable name=" + v.getName());
       int nelems = (int) v.getSize();
       int heapIdSize = 12;
+      /* doesnt work yet
       for (int i = 0; i < nelems; i++) {
-        H5header.RegionReference heapId = new RegionReference(vinfo.dataPos + heapIdSize * i); // LOOK
-      }
+        H5header.RegionReference heapId = new RegionReference(vinfo.dataPos + heapIdSize * i); // LOOK doesnt work
+      } */
 
+      // fake data for now
+      v.setDataType(DataType.LONG);
+      Array newData = Array.factory(DataType.LONG, v.getShape());
+      v.setCachedData(newData, true); // so H5iosp.read() is never called
       v.addAttribute(new Attribute("_HDF5ReferenceType", "values are regions of referenced Variables"));
     }
 

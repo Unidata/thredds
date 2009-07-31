@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  0:
+  DODNetcdfFile: workaround for Grid HDF4 wierdness (Float64 Longitude[fakeDim2 = 8192])
+  InvDatasetImpl : check if parent is null  
   VariableDS only sets orgDataType when its wrapping a variable.
   AggregationOuterDimension tolerates different types between main variable and nested
   AggregationOuterDimension.cacheVar may keep data as different type, make sure to convert to correct type in read()

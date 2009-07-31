@@ -62,21 +62,21 @@ public class DODSGrid extends DODSVariable {
     // so we just map the netcdf grid variable to the dods grid.array
     this.dodsShortName = shortName + "." + array.bt.getName(); */
 
+    // the common case is that the map vectors already exist as a top level variables
     List<Dimension> dims = new ArrayList<Dimension>();
-    StringBuilder sbuff = new StringBuilder();
+    Formatter sbuff = new Formatter();
     for (int i = 1; i < dodsV.children.size(); i++) {
       DodsV map = dodsV.children.get(i);
       String name = DODSNetcdfFile.makeNetcdfName( map.bt.getName());
       Dimension dim = parentGroup.findDimension(name);
-      if (dim == null)
+      if (dim == null) {
         logger.warn("DODSGrid cant find dimension = <"+name+">");
-      else  {
+      } else  {
         dims.add( dim);
-        sbuff.append(name).append(" ");
+        sbuff.format("%s ", name);
       }
     }
 
-    // the common case is that the map vectors already exist as a top level variables
     setDimensions( dims);
     setDataType( DODSNetcdfFile.convertToNCType(array.bt));
     if (DODSNetcdfFile.isUnsigned( array.bt)) {
