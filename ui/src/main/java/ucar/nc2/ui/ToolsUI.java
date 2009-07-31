@@ -4259,7 +4259,7 @@ public class ToolsUI extends JPanel {
     }
 
     // for efficiency, persist aggregations. every hour, delete stuff older than 30 days
-    Aggregation.setPersistenceCache(new DiskCache2("/.unidata/cachePersist", true, 60 * 24 * 30, 60));
+    Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, 60 * 24 * 30, 60));
     DqcFactory.setPersistenceCache(new DiskCache2("/.unidata/dqc", true, 60 * 24 * 365, 60));
 
     // test

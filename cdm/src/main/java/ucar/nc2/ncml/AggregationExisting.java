@@ -76,11 +76,16 @@ public class AggregationExisting extends AggregationOuterDimension {
 
     // a little tricky to get the coord var cached if we have to read through the datasets on the buildCoords()
     String dimName = getDimensionName();
-    Variable tcv = typical.findVariable(dimName);
-    if (tcv == null)
-      throw new IllegalArgumentException("AggregationExisting: no coordinate variable for agg dimension= "+dimName);
+    CacheVar coordCacheVar;
+    if (type != Aggregation.Type.joinExistingOne) {
+      Variable tcv = typical.findVariable(dimName);
+      if (tcv == null)
+        throw new IllegalArgumentException("AggregationExisting: no coordinate variable for agg dimension= "+dimName);
+      coordCacheVar = new CoordValueVar(dimName, tcv.getDataType(), tcv.getUnitsString());
 
-    CacheVar coordCacheVar = new CoordValueVar(dimName, tcv.getDataType(), tcv.getUnitsString());
+    } else {
+      coordCacheVar = new CoordValueVar(dimName, DataType.STRING, "");      
+    }
     cacheList.add(coordCacheVar);  // coordinate variable is always cached
 
     // now find out how many coordinates we have, caching values if needed
@@ -286,7 +291,7 @@ public class AggregationExisting extends AggregationOuterDimension {
         out.print("ncoords='" + dod.getNcoords(null) + "' >\n");
 
         for (CacheVar pv : cacheList) {
-          Array data = pv.dataMap.get(dod.getId());
+          Array data = pv.getData(dod.getId());
           if (data != null) {
             out.print("    <cache varName='" + pv.varName + "' >");
             NCdumpW.printArray(data, out);
@@ -386,7 +391,7 @@ public class AggregationExisting extends AggregationOuterDimension {
               Array data = Array.makeArray(pv.dtype, vals);
               took = .001 * .001 * .001 * (System.nanoTime() - start);
               if (debugPersist) System.out.println("  makeArray took = " + took + " sec nelems= "+data.getSize());
-              pv.dataMap.put(id, data);
+              pv.putData(id, data);
             } catch (Exception e) {
               logger.warn("Error reading cached data ",e);
             }

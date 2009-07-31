@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  0:
+  AggExistingOne : make time coord into a String
   DODNetcdfFile: workaround for Grid HDF4 wierdness (Float64 Longitude[fakeDim2 = 8192])
   InvDatasetImpl : check if parent is null  
   VariableDS only sets orgDataType when its wrapping a variable.
