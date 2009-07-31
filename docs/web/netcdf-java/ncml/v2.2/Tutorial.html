@@ -133,7 +133,7 @@ Note that the name of the dataset is  the name of the NcML file, not the referen
 <h3>Modify  and Save</h3>
 <p>A typical scenario is to modify an existing dataset with NcML, save the NcML, and use it instead of the original dataset.</p>
 <p>In the ToolsUI <strong>NcML Tab</strong>, browse to your data directory and again open the data file <strong>example.nc</strong> directly. The NcML is generated and displayed. Make some simple modifications, changing an attribute value or adding a new attribute. Save the NcML to disk <img src="images/Save.jpg" alt="" width="32" height="32">. Note that the default NcML filename will be the original file name with the extension changed to <strong>ncml</strong>. Save the NcML to <em>example.ncml</em>. </p>
-<p>In the ToolsUI <strong>Viewer Tab</strong>, open  <strong>example.ncml</strong> and examine it. Does it look like you expect? Try making different kinds of mistakes to see what error messages (if any) that you get. By switching between the Viewer tab and the NcML tab, you can quickly try out different things.</p>
+<p>In the ToolsUI <strong>Viewer Tab</strong>, open  <strong>example.ncml</strong> and examine it. Does it look like what you expect? Try making different kinds of mistakes to see what error messages (if any) that you get. By switching between the Viewer tab and the NcML tab, you can quickly try out different things.</p>
 <ul>
   <li>create malformed XML by leaving off a closing element bracket</li>
   <li>misspell an element name, eg <em>&lt;atribute&gt;</em> instead of <em>&lt;attribute&gt;</em></li>
@@ -141,8 +141,8 @@ Note that the name of the dataset is  the name of the NcML file, not the referen
 </ul>
 <p>The NcML tab offers no error checking, its really just a text editor. You may find XML-aware editors very useful for finding syntax mistakes in your NcML.</p>
 <h3>Writing out  files modified with NcML</h3>
-<p>You can also generate a NetCDF-3 file from the NcML , and the equivalent binary NetCDF file will be created corresponding to the NcML dataset, and all the original data will be copied to it. Since the binary data is taken from the original file, this is efficient for even large files. </p>
-<p>In the ToolsUI <strong>NcML Tab</strong>, bring up one of your NcML files that doesnt have any mistakes in it. Generate a NetCDF-3 file from the NcML <img src="images/WriteNetcdf.jpg" alt="" width="32" height="32">, saving it to some new and uniquely named file. Now bring up that file in the  ToolsUI <strong>Viewer Tab</strong> and examine it. It should be identical to the NcML file that generated it.</p>
+<p>You can  generate a NetCDF-3 file from an NcML file, and the equivalent binary NetCDF file will be created with all the original data copied to it. Since the binary data is taken from the original file, this is an efficient way to make a copy,  even for large files. </p>
+<p>In the ToolsUI <strong>NcML Tab</strong>, bring up an NcML file that doesnt have any mistakes in it. Generate a NetCDF-3 file from the NcML <img src="images/WriteNetcdf.jpg" alt="" width="32" height="32">, saving it to some new and uniquely named file. Now bring up that file in the  ToolsUI <strong>Viewer Tab</strong> and examine it. It should be identical to the NcML file that generated it.</p>
 <p>This feature works as long as you are using only netCDF-3 compatible features (aka netCDF classic model). In practice this mostly means no Structures or Groups. Strings are ok, and are converted to type char. The equivilent Java code to do this is: </p>
 <pre>    NetcdfDataset ncd = NcMLReader.readNcML (ncml_filename, null);<br>    NetcdfFile ncdnew = <strong>ucar.nc2.FileWriter.writeToFile</strong>(ncd, fileout_name, true);
     ncd.close();

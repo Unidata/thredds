@@ -430,18 +430,22 @@ public class AggregationFmrc extends AggregationOuterDimension {
   @Override
   public Array read(Variable mainv, CancelTask cancelTask) throws IOException {
 
-    if (mainv instanceof VariableDS) {
+    if (debugConvert && mainv instanceof VariableDS) {
       DataType dtype = ((VariableDS) mainv).getOriginalDataType();
       if ((dtype != null) && (dtype != mainv.getDataType())) {
         System.out.printf("Original type = %s mainv type= %s%n", dtype, mainv.getDataType());
       }
     }
 
+    // read raw, conversion if needed done later in VariableDS
+    DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
+
     Object spObj = mainv.getSPobject();
     if (spObj != null && spObj instanceof CacheVar) {
       CacheVar pv = (CacheVar) spObj;
       try {
-        return pv.read(mainv.getShapeAsSection(), cancelTask);
+        Array cacheArray =  pv.read(mainv.getShapeAsSection(), cancelTask);
+        return MAMath.convert(cacheArray, dtype); // // cache may keep data as different type
       } catch (InvalidRangeException e) {
         logger.error("readAgg " + getLocation(), e);
         throw new IllegalArgumentException("readAgg " + getLocation(), e);
@@ -453,8 +457,6 @@ public class AggregationFmrc extends AggregationOuterDimension {
     List<Range> innerSection = ranges.subList(1, ranges.size());
     long fullSize = new Section(innerSection).computeSize(); // may not be the same as the data returned !!
 
-    // read raw, conversion if needed done later in VariableDS
-    DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
     Array allData = Array.factory(dtype, mainv.getShape());
     int destPos = 0;
 
@@ -462,13 +464,15 @@ public class AggregationFmrc extends AggregationOuterDimension {
     List<Dataset> nestedDatasets = getDatasets();
     for (Dataset vnested : nestedDatasets) {
       Array varData = vnested.read(mainv, cancelTask);
-      if ((cancelTask != null) && cancelTask.isCancel())
-        return null;
+      varData =  MAMath.convert(varData, dtype); // just in case it need to be converted
 
       Array.arraycopy(varData, 0, allData, destPos, (int) varData.getSize());
       destPos += fullSize;
       if (fullSize != varData.getSize())
         logger.info("FMRC Ragged Time " + fullSize + " != " + varData.getSize()+" dataset "+ vnested.getId()+" for variable "+mainv.getNameAndDimensions());
+
+      if ((cancelTask != null) && cancelTask.isCancel())
+        return null;
     }
 
     return allData;
@@ -485,7 +489,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
    */
   @Override
   public Array read(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
-    if (mainv instanceof VariableDS) {
+    if (debugConvert && mainv instanceof VariableDS) {
       DataType dtype = ((VariableDS) mainv).getOriginalDataType();
       if ((dtype != null) && (dtype != mainv.getDataType())) {
         System.out.printf("Original type = %s mainv type= %s%n", dtype, mainv.getDataType());
@@ -497,18 +501,20 @@ public class AggregationFmrc extends AggregationOuterDimension {
     if (size == mainv.getSize())
       return read(mainv, cancelTask);
 
+    DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
+
     Object spObj = mainv.getSPobject();
     if (spObj != null && spObj instanceof CacheVar) {
       CacheVar pv = (CacheVar) spObj;
       try {
-        return pv.read(section, cancelTask);
+        Array cacheArray = pv.read(section, cancelTask);
+        return MAMath.convert(cacheArray, dtype); // // cache may keep data as different type
       } catch (InvalidRangeException e) {
         logger.error("readAgg " + getLocation(), e);
         throw new IllegalArgumentException("readAgg " + getLocation(), e);
        }
     }
 
-    DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
     Array sectionData = Array.factory(dtype, section.getShape());
     int destPos = 0;
 
@@ -530,6 +536,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
         continue;
 
       Array varData = nested.read(mainv, cancelTask, innerSection);
+      varData =  MAMath.convert(varData, dtype); // just in case it need to be converted
 
       Array.arraycopy(varData, 0, sectionData, destPos, (int) varData.getSize());
       destPos += fullSize;

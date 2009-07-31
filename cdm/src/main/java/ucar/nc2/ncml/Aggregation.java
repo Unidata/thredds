@@ -136,7 +136,7 @@ public abstract class Aggregation implements ProxyReader {
 
 
   static protected boolean debug = false, debugOpenFile = false, debugSyncDetail = false, debugProxy = false,
-      debugRead = false, debugDateParse = false;
+      debugRead = false, debugDateParse = false, debugConvert = false;
 
   //////////////////////////////////////////////////////////////////////////////////////////
 

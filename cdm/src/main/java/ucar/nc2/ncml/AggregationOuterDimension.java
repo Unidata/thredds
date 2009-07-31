@@ -263,20 +263,22 @@ public abstract class AggregationOuterDimension extends Aggregation {
    * @throws IOException
    */
   public Array read(Variable mainv, CancelTask cancelTask) throws IOException {
-    if (mainv instanceof VariableDS) {
+    if (debugConvert && mainv instanceof VariableDS) {
       DataType dtype = ((VariableDS) mainv).getOriginalDataType();
       if ((dtype != null) && (dtype != mainv.getDataType())) {
         System.out.printf("Original type = %s mainv type= %s%n", dtype, mainv.getDataType());
       }
     }
 
+    // read the original type - if its been promoted to a new type, the conversion happens after this read
+    DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
+
     Object spObj = mainv.getSPobject();
     if (spObj != null && spObj instanceof CacheVar) {
       CacheVar pv = (CacheVar) spObj;
       try {
         Array cacheArray = pv.read(mainv.getShapeAsSection(), cancelTask);
-        // cache may keep data as different type
-        return MAMath.convert(cacheArray, mainv.getDataType());
+        return MAMath.convert(cacheArray, dtype); // // cache may keep data as different type
 
       } catch (InvalidRangeException e) {
         logger.error("readAgg " + getLocation(), e);
@@ -288,8 +290,6 @@ public abstract class AggregationOuterDimension extends Aggregation {
     //if (mainv.getShortName().equals(dimName))
     //  return readAggCoord(mainv, cancelTask);
 
-    // read the original type - if its been promoted to a new type, the conversion happens after this read
-    DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
     Array allData = Array.factory(dtype, mainv.getShape());
     int destPos = 0;
 
@@ -397,7 +397,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
    * @throws IOException
    */
   public Array read(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
-    if (mainv instanceof VariableDS) {
+    if (debugConvert && mainv instanceof VariableDS) {
       DataType dtype = ((VariableDS) mainv).getOriginalDataType();
       if ((dtype != null) && (dtype != mainv.getDataType())) {
         System.out.printf("Original type = %s mainv type= %s%n", dtype, mainv.getDataType());
@@ -409,6 +409,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
     if (size == mainv.getSize())
       return read(mainv, cancelTask);
 
+    // read the original type - if its been promoted to a new type, the conversion happens after this read
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
 
     // check if its cached
@@ -416,8 +417,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
     if (spObj != null && spObj instanceof CacheVar) {
       CacheVar pv = (CacheVar) spObj;
       Array cacheArray = pv.read(section, cancelTask);
-      // cache may keep data as different type
-      return MAMath.convert(cacheArray, dtype);
+      return MAMath.convert(cacheArray, dtype); // // cache may keep data as different type
     }
 
     // the case of the agg coordinate var
