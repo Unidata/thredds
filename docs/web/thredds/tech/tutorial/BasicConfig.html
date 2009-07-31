@@ -195,17 +195,6 @@ etc. We will go into more detail on this later.</p>
   </div>
   <div id="subsection"><h3>TDS Configuration Directory</h3>
 
-    <p>
-      All TDS configuration information is stored in the TDS configuration directory.
-      Its default location is <code>${TOMCAT_HOME}/content/thredds</code> and it is
-      created and populated with default files the first time the TDS is deployed.
-      It is persistent even when a TDS
-      installation is upgraded or re-deployed. All your configuration, modifications,
-      and additions should be made in this directory. Do not place files containing
-      passwords or anything else with security issues in this directory. Typically
-      you will only be adding and modifying catalogs and configuration files.
-    </p>
-
     <div id="note" class="info">
       <h4>Location of the TDS Configuration Directory</h4>
 
@@ -217,6 +206,17 @@ etc. We will go into more detail on this later.</p>
         of the TDS Reference for more information.
       </p>
     </div>
+
+    <p>
+      All TDS configuration information is stored in the TDS configuration directory.
+      Its default location is <code>${TOMCAT_HOME}/content/thredds</code> and it is
+      created and populated with default files the first time the TDS is deployed.
+      It is persistent even when a TDS
+      installation is upgraded or re-deployed. All your configuration, modifications,
+      and additions should be made in this directory. Do not place files containing
+      passwords or anything else with security issues in this directory. Typically
+      you will only be adding and modifying catalogs and configuration files.
+    </p>
 
     <p>For now, we will focus on the following subset of the content directory:
     </p>
@@ -318,7 +318,7 @@ cosmic  dusk.080522  forecasts    gempak  logs    madis  nam_12km  nldn   rawfil
       <pre><strong>-bash-3.2$</strong> cd ${TOMCAT_HOME}/bin<br><strong>-bash-3.2$</strong> ./shutdown.sh<br><strong>-bash-3.2$</strong> ./startup.sh</pre>
   </li>
   <li>Test that the new <code>datasetScan</code> is working:
-    <ul>
+    <ul class="little">
       <li>Bring the catalog up in a browser: <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code></li>
       <li>Click down to one of the NAM dataset pages.</li>
       <li>Select the OPeNDAP link</li>
