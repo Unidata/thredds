@@ -36,6 +36,8 @@ package ucar.nc2;
 import junit.framework.TestCase;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import ucar.ma2.*;
 
@@ -112,7 +114,7 @@ public class TestWriteMiscProblems extends TestCase {
     ncFile.create();
     long stop = System.nanoTime();
     double took = (stop - start) * .001 * .001 * .001;
-    System.out.println("That took "+took+" secs");
+    System.out.println("That took " + took + " secs");
     start = stop;
 
     System.out.println("Writing netcdf <=");
@@ -132,7 +134,7 @@ public class TestWriteMiscProblems extends TestCase {
     System.out.println("Done <=");
     stop = System.nanoTime();
     took = (stop - start) * .001 * .001 * .001;
-    System.out.println("That took "+took+" secs");
+    System.out.println("That took " + took + " secs");
     start = stop;
   }
 
@@ -146,4 +148,47 @@ public class TestWriteMiscProblems extends TestCase {
   }
 
 
+  public void testCharMultidim() throws IOException, InvalidRangeException {
+
+    /* dimension lengths */
+    final int Time_len = 0;
+    final int DateStrLen_len = 19;
+
+    /* enter define mode */
+    String filename = TestLocal.cdmTestDataDir + "testCharMultidim.nc";
+    NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(filename, true);
+
+    /* define dimensions */
+    Dimension Time_dim = ncfile.addUnlimitedDimension("Time");
+    Dimension DateStrLen_dim = ncfile.addDimension("DateStrLen", DateStrLen_len);
+
+    /* define variables */
+    List<Dimension> Times_dimlist = new ArrayList<Dimension>();
+    Times_dimlist.add(Time_dim);
+    Times_dimlist.add(DateStrLen_dim);
+    ncfile.addVariable("Times", DataType.CHAR, Times_dimlist);
+    ncfile.create();
+
+    /* assign variable data */
+    String contents = "2005-04-11_12:00:002005-04-11_13:00:00";
+    ArrayChar data = new ArrayChar(new int[]{2, 19});
+    IndexIterator iter = data.getIndexIterator();
+    int count = 0;
+    while (iter.hasNext())
+      iter.setCharNext(contents.charAt(count++));
+    ncfile.write("Times", data);
+    ncfile.close();
+
+    NetcdfFile nc = NetcdfFile.open(filename, null);
+    Variable v = nc.findTopVariable("Times");
+    Array dataRead = v.read();
+    assert dataRead instanceof ArrayChar;
+    ArrayChar dataC = (ArrayChar) dataRead;
+    for (int i=0; i<2; i++)
+      System.out.printf("%d == %s %n", i, dataC.getString(i));
+    assert dataC.getString(0).equals("2005-04-11_12:00:00");
+    assert dataC.getString(1).equals("2005-04-11_13:00:00");
+
+    nc.close();
+  }
 }

@@ -34,6 +34,7 @@
 package ucar.nc2.iosp.netcdf3;
 
 import ucar.nc2.*;
+import ucar.ma2.DataType;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -55,6 +56,7 @@ public abstract class N3streamWriter {
   protected List<Vinfo> vinfoList = new ArrayList<Vinfo>(); // output order of the variables
   protected boolean debug=false, debugPos=false, debugWriteData = false;
   protected int recStart, recSize;
+  protected boolean usePadding = true;
   protected long filePos = 0;
 
   protected N3streamWriter(ucar.nc2.NetcdfFile ncfile) {
@@ -110,7 +112,7 @@ public abstract class N3streamWriter {
     if (debug) System.out.println("vars header starts at "+count);
 
     // variables
-    List vars = ncfile.getVariables();
+    List<Variable> vars = ncfile.getVariables();
     int nvars = vars.size();
     if (nvars == 0) {
       stream.writeInt(0);
@@ -121,6 +123,14 @@ public abstract class N3streamWriter {
     }
     count += 8;
 
+    /* Note on padding: In the special case of only a single record variable of character, byte, or short
+    // type, no padding is used between data values.
+    if (nvars == 1) {
+      Variable var = vars.get(0);
+      DataType dtype = var.getDataType();
+      if ((dtype == DataType.CHAR) || (dtype == DataType.BYTE) || (dtype == DataType.SHORT))
+        usePadding = false;
+    }  */
 
     // we have to calculate how big the header is before we can actually write it
     // so we set stream = null
@@ -196,7 +206,7 @@ public abstract class N3streamWriter {
       if (!dim.isUnlimited())
         vsize *= dim.getLength();
     }
-    int pad = N3header.padding(vsize);
+    int pad =  (usePadding) ? N3header.padding(vsize) : 0;
     vsize += pad;
 
     // variable attributes

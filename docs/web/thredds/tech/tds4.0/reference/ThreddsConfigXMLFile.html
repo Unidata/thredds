@@ -113,8 +113,8 @@ exists, assuming new files are generated externally. <br>
  <pre>  &lt;<strong>nj22Config</strong>&gt;<br>    &lt;<strong>ioServiceProvider</strong> class="edu.univ.ny.stuff.FooFiles"/&gt;<br>    &lt;<strong>coordSysBuilder</strong> convention="foo" class="test.Foo"/&gt;<br>    &lt;<strong>coordTransBuilder</strong> name="atmos_ln_sigma_coordinates" type="vertical" class="my.stuff.atmosSigmaLog"/&gt;<br>    &lt;<strong>typedDatasetFactory</strong> datatype="Point" class="gov.noaa.obscure.file.Flabulate"/&gt;<br>    &lt;<strong>table</strong> type="GRIB1" filename="/home/rkambic/grib/tables/userlookup.lst"/&gt;<br>    &lt;<strong>table</strong> type="GRIB2" filename="/home/rkambic/grib/tables/grib2userparameters"/&gt;<br>  &lt;/nj22Config&gt;<br> </pre>
  <p>These elements allow you to specify <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html">Runtime parameters </a> for the Netcdf-Java library from the threddsConfig file. See the Netcdf-Java <a href="http://www.unidata.ucar.edu/software/netcdf-java/tutorial/index.html">tutorial</a> for an overview. </p>
  <hr style="width: 100%; height: 2px;">
- <h3>Options in 4.1</h3>
- <pre> &lt;<strong>cache</strong>&gt;
+ <h2>Options in 4.1 (do not use yet)</h2>
+<pre> &lt;<strong>cache</strong>&gt;
    &lt;<strong>directory</strong>&gt;/scratch/data/tds/cache&lt;/directory&gt;
    &lt;<strong>configFile</strong>&gt;/scratch/data/tds/ehcache.xml&lt;/configFile&gt;
  &lt;/cache&gt;</pre>

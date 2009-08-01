@@ -65,12 +65,6 @@
     <scour>10 min</scour>
   </NetcdfFileCache>
 
-  <NetcdfDatasetCache>
-    <minFiles>100</minFiles>
-    <maxFiles>200</maxFiles>
-    <scour>10 min</scour>
-  </NetcdfDatasetCache>
-
   <HTTPFileCache>
     <minFiles>25</minFiles>
     <maxFiles>40</maxFiles>

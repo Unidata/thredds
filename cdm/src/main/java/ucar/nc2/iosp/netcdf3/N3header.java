@@ -826,6 +826,16 @@ public class N3header {
       raf.writeInt(n);
     }
 
+    // Note on padding: In the special case of only a single record variable of character, byte, or short
+    // type, no padding is used between data values.
+    boolean usePadding = true;
+    /* if (n == 1) {
+      Variable var = vars.get(0);
+      DataType dtype = var.getDataType();
+      if ((dtype == DataType.CHAR) || (dtype == DataType.BYTE) || (dtype == DataType.SHORT))
+        usePadding = false;
+    } */
+
     for (int i = 0; i < n; i++) {
       Variable var = vars.get(i);
       writeString(var.getName());
@@ -841,7 +851,8 @@ public class N3header {
         if (!dim.isUnlimited())
           vsize *= dim.getLength();
       }
-      vsize += padding(vsize);
+      if (usePadding)
+        vsize += padding(vsize);
 
       // variable attributes
       long varAttsPos = raf.getFilePointer();
