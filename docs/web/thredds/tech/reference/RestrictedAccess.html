@@ -21,6 +21,7 @@
   &lt;security-constraint&gt;<br>    &lt;web-resource-collection&gt;<br>      &lt;web-resource-name&gt;restrict by URL&lt;/web-resource-name&gt;<br>      &lt;url-pattern&gt;<strong>/dodsC/dataRoot/*</strong>&lt;/url-pattern&gt;<br>      &lt;http-method&gt;GET&lt;/http-method&gt;<br>    &lt;/web-resource-collection&gt;<br>    &lt;auth-constraint&gt;<br>      &lt;role-name&gt;<strong>tiggeRole</strong>&lt;/role-name&gt;<br>    &lt;/auth-constraint&gt;<br>    &lt;user-data-constraint&gt;<br>      &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;<br>    &lt;/user-data-constraint&gt;<br>  &lt;/security-constraint&gt;<br></pre>
 <p>Note that you dont include  <strong>/thredds</strong> in the url-pattern. Also note that if you are using multiple data services, you must include each service's URL pattern, for example:</p>
 <pre>    &lt;web-resource-collection&gt;<br>      &lt;web-resource-name&gt;restrict by URL&lt;/web-resource-name&gt;<br>      <strong>&lt;url-pattern&gt;/dodsC/testEnhanced/*&lt;/url-pattern&gt;<br>      &lt;url-pattern&gt;/fileServer/testEnhanced/*&lt;/url-pattern&gt;</strong><br>      &lt;http-method&gt;GET&lt;/http-method&gt;<br>    &lt;/web-resource-collection&gt;<br></pre>
+<p>Using Tomcat to provide restricted access works well whan you want to restrict you entire site to a single set of users. When you want to give access to different datasets to different users, you must understand in some detail what the URLs look like.</p>
 <h2>2. Restrict by Dataset using TDS Catalog<br>
 </h2>
 <p>Alternately, you can add an attribute on a dataset or datasetScan element in the TDS catalog, eg <strong>restrictAccess=&quot;</strong><strong>roleName&quot;</strong>. All services that use that dataset will be restricted to users with the named role.</p>
@@ -121,13 +122,16 @@
 </ul>
 <h2>Unique Realm Name </h2>
  <p>If you are not using SSL, it is more secure to have a  Realm name unique to your server, then to use the default <em>THREDDS Data Server</em> Realm name, so we recommend that you change it in the web.xml file. This name is presented to the user during authentication, so it should be descriptive and include the hostname, for example:</p>
- <h1>  &lt;login-config&gt;<br>    &lt;auth-method&gt;DIGEST&lt;/auth-method&gt;<br>    &lt;realm-name&gt;<strong>Unidata IDD Server (motherload.ucar.edu</strong>)&lt;/realm-name&gt;<br>  &lt;/login-config&gt; <br>
- </h1>
- <pre>&nbsp;  </pre>
+ <pre>  &lt;login-config&gt;
+    &lt;auth-method&gt;DIGEST&lt;/auth-method&gt;
+    &lt;realm-name&gt;<strong>Unidata IDD Server (motherload.ucar.edu</strong>)&lt;/realm-name&gt;
+  &lt;/login-config&gt; 
+  </pre>
+<pre>&nbsp;  </pre>
 <hr>
  <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 06, 2008
-</address>
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated July 2009
+ </address>
 <p>&nbsp; </p>
 </body>
 </html>
