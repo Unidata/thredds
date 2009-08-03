@@ -184,13 +184,25 @@ drwxr-xr-x 2 thredds workshop  4096 2009-05-13 17:15 work
 
          </ul>
 
+
+      <div id="note" class="ahead">
+       <h4>Thinking Ahead</h4>
+       <p>There are <b>two</b> locations of log files you will reference:</p>
+       <ol class="little">
+        <li><code><small>$TOMCAT_HOME/logs/</small></code> is where you go to look at <i>Tomcat-generated</i> log files.</li>
+        <li>You will learn about where you go to look at <i>TDS-generated</i> log files later in this workshop.</li>
+       </ol>
+
+      </div>
+
+
         <p><code>$TOMCAT_HOME/logs/</code></p>
          <ul class="little">
           <li><i>Tomcat log files</i> are here by default.</li>
           <li>This is one of the directories you will be looking for log files (the TDS logs elsewhere by default).</li>
-          <li><i>The log files should be your first stop for troubleshooting Tomcat and TDS issues</i> (Hint. Hint.)</li>
+          <li><i>The log files should be your first stop for troubleshooting Tomcat and TDS issues</i> (Hint, hint.)</li>
           <li>Logs files may contain useful information for assessing the security of your system.</li>
-          <li>You will become very familiar with <code><small>catalina.out</small></code> and <code><small>access.YYYY-MM-DD.log</small></code> by the end of this workshop.</li>
+          <li>You will become very familiar with the Tomcat-generated <code><small>catalina.out</small></code> and <code><small>access.yyyy-mm-dd.log</small></code> files by the end of this workshop.</li>
          </ul>
 
         <p><code>$TOMCAT_HOME/webapps/</code></p>
@@ -471,7 +483,7 @@ total 10284
        <p>Do you see a correspondence between some of the web applications in the <code><small>$TOMCAT_HOME/webapps/</small></code> directory and the naming of certain log files?</p>
       </div>
       <div id="expanded" class="question">
-       <p>Is there a difference in information being logged to <code><small>catalina.out</small></code> verses <code><small>catalina.YYYY-MM-DD.log</small></code>?</p>
+       <p>Is there a difference in information being logged to <code><small>catalina.out</small></code> verses <code><small>catalina.yyyy-mm-dd.log</small></code>?</p>
       </div>
       <div id="expanded" class="question">
        <p>Are some log files more verbose than others?</p>
