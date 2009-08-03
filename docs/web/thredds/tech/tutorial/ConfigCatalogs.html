@@ -150,6 +150,9 @@
           files.
         </li>
       </ul>
+      <p>You can check that a data file is recognized as "gridded" with netCDF-Java ToolsUI.
+        (ToolsUI can be found on the
+        <a href="http://www.unidata.ucar.edu/software/netcdf-java/">netCDF-Java home page</a>.)</p>
     </div>
 
   </div>
@@ -256,66 +259,82 @@
   <div id="subsection"><h3>Managing <code>datasetRoot</code> and <code>datasetScan</code> Elements</h3>
 
     <p>You can have as many datasetRoot and datasetScan elements as you want, for example </p>
-  <pre><strong>&lt;datasetRoot</strong> path="<strong>model</strong>" location="<strong>/data/ncep</strong>" /&gt;<br>&lt;<strong>datasetRoot</strong> path="<strong>obs</strong>" location="<strong>/data/raw/metars</strong>" /&gt;<br>&lt;<strong>datasetRoot</strong> path="<strong>cases/001</strong>" location="<strong>C:/casestudy/data/001</strong>" /&gt;<br><strong>
-    &lt;datasetScan </strong>path<strong>="myData" </strong>location<strong>="/data/ncep/run0023" </strong>name="NCEP/RUN 23"<strong> </strong>serviceName<strong>="</strong>myserver<strong>"
-    /&gt;</strong><br><strong>&lt;datasetScan </strong>path<strong>="myData/gfs" </strong>location<strong>="/pub/ldm/gfs" </strong>name="NCEP/GFS"<strong> </strong>serviceName<strong>="</strong>myserver<strong>"
-    /&gt;</strong>
+
+<pre>
+&lt;datasetRoot path="<strong>model</strong>" location="<strong>/data/ncep</strong>" /&gt;
+&lt;datasetRoot path="<strong>obs</strong>" location="<strong>/data/raw/metars</strong>" /&gt;
+&lt;datasetRoot path="<strong>cases/001</strong>" location="<strong>C:/casestudy/data/001</strong>" /&gt;
+&lt;datasetScan path="<strong>myData</strong>" location="<strong>/data/ncep/run0023</strong>" name="NCEP/RUN 23" serviceName="myserver" /&gt;
+&lt;datasetScan path="<strong>myData/gfs</strong>" location="<strong>/pub/ldm/gfs</strong>" name="NCEP/GFS" serviceName="myserver" /&gt;
 </pre>
-    <p>The datasetRoot and datasetScan are said to define a <strong>data root</strong>. The rules for data roots: </p>
-    <ol>
-      <li>Each accessible dataset must be associated with a data root, i.e.
-        the beginning part of its path must match a data root path. If there
-        are multiple matches, the longest match is used.
-      </li>
-      <li><strong><big>Each data root must have a unique <code>path</code> for all catalogs used by the
-        TDS</big></strong>.
-      </li>
+    
+    <p>The datasetRoot and datasetScan are said to define a
+      <strong>data root</strong>.</p>
+    
+    <div id="expanded" class="troubleshooting">
+
+      <h4>The Rules for Data Roots</h4>
       <ul>
-        <li>Note: Because the TDS uses the set of all given path values
-          to map URLs to datasets, each path value MUST be unique across all
-          config catalogs on a given TDS installation. Duplicates will cause
-          warning messages in the <code>catalogErrors.log</code> file.
+        <li>Each accessible dataset must be associated with a data root, i.e.
+          the beginning part of its path must match a data root path. If there
+          are multiple matches, the longest match is used.
         </li>
+        <li><strong>Each data root must have a unique <code>path</code> for
+          all catalogs used by the TDS.</strong>
+          <p>
+            Note: Because the TDS uses the set of all given path values
+            to map URLs to datasets, each path value MUST be unique across all
+            config catalogs on a given TDS installation. Duplicates will cause
+            warning messages in the <code>catalogErrors.log</code> file.
+          </p>
+        </li>
+        <li>The directory pointed to by <strong>location</strong> should be absolute</li>
+        <li>The locations may be used in multiple data roots</li>
       </ul>
-      <li>The directory pointed to by <strong>location</strong> should be absolute</li>
-      <li>The locations may be used in multiple data roots</li>
-    </ol>
+    </div>
 
     <p>For example, using the above data roots, the following matches would be made:</p>
 
-    <div style="margin-left: 40px;">
-      <table style="width: 611px; height: 150px;" border="1">
-        <tbody>
-        <tr>
-          <th scope="col" width="238">urlPath</th>
-          <th scope="col" width="357">file</th>
-        </tr>
-        <tr>
-          <td><code><strong>model</strong>/run0023/mydata.nc</code></td>
-          <td><code><strong>/data/ncep</strong>/run0023/mydata.nc</code></td>
-        </tr>
-        <tr>
-          <td><code><strong>obs</strong>/test.nc</code></td>
-          <td><code><strong>/data/raw/metars</strong>/test.nc</code></td>
-        </tr>
-        <tr>
-          <td><code><strong>myData</strong>/mydata.nc</code></td>
-          <td><code><strong>/data/ncep/run0023</strong>/mydata.nc</code></td>
-        </tr>
-        <tr>
-          <td><code><strong>myData/gfs</strong>/mydata.nc</code></td>
-          <td><code><strong>/pub/ldm/gfs</strong>/mydata.nc</code></td>
-        </tr>
-        <tr>
-          <td><code><strong>cases/001</strong>/test/area/two</code></td>
-          <td><code><strong>C:/casestudy/data/001</strong>/test/area/two</code></td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
+    <table style="width: 611px; height: 150px;" border="1">
+      <tbody>
+      <tr>
+        <th scope="col" width="238">urlPath</th>
+        <th scope="col" width="357">file</th>
+      </tr>
+      <tr>
+        <td><code><strong>model</strong>/run0023/mydata.nc</code></td>
+        <td><code><strong>/data/ncep</strong>/run0023/mydata.nc</code></td>
+      </tr>
+      <tr>
+        <td><code><strong>obs</strong>/test.nc</code></td>
+        <td><code><strong>/data/raw/metars</strong>/test.nc</code></td>
+      </tr>
+      <tr>
+        <td><code><strong>myData</strong>/mydata.nc</code></td>
+        <td><code><strong>/data/ncep/run0023</strong>/mydata.nc</code></td>
+      </tr>
+      <tr>
+        <td><code><strong>myData/gfs</strong>/mydata.nc</code></td>
+        <td><code><strong>/pub/ldm/gfs</strong>/mydata.nc</code></td>
+      </tr>
+      <tr>
+        <td><code><strong>cases/001</strong>/test/area/two</code></td>
+        <td><code><strong>C:/casestudy/data/001</strong>/test/area/two</code></td>
+      </tr>
+      </tbody>
+    </table>
 
-    <p>The structure of a full OPeNDAP URL for the first urlPath above would look like:</p>
-    <pre>http://hostname:port/thredds/dodsC/model/run0023/mydata.nc<br>|&lt;--  server     --&gt;&lt;--|---&gt;&lt;--|-&gt; &lt;-|-&gt;&lt;-   filename  -&gt;|<br>                       |       |     |<br>          webapp name -|       |     |- data root<br>                               |<br>                      service -| </pre>
+    <p>The structure of a full OPeNDAP URL for the first urlPath above would
+      look like:</p>
+
+<pre>
+http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
+|&lt;---  server   ---&gt;|&lt;-----&gt;|&lt;---&gt;|&lt;---&gt;|&lt;-   filename  -&gt;|
+                        |      |     |
+           webapp name -|      |     |- data root
+                               |
+                      service -|
+</pre>
 
     <h4>TDS Remote Management - List of Dataset Roots</h4>
 
@@ -328,7 +347,7 @@
 
         <div style="margin-left: 40px;"><img style="width: 635px; height: 359px;"
                                              alt="TDS Remote Management - List of Data Roots"
-                                             src="TdsRemoteManager-dataRoots.png"></div>
+                                             src="../images/TdsRemoteManager_dataRoots.png"></div>
       </li>
     </ul>
 
@@ -352,25 +371,27 @@
       </li>
       <li>And similarly for MADIS and Suomi data</li>
       <li><strong>Reinitialize the TDS configuration catalogs</strong> from the Remote Management page - <a
-              href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a></li>
-      <ul>
-        <li>Click on the "Reinitialize" link</li>
-      </ul>
-      <li>Test that the new <code>datasetScan</code> elements are working:</li>
-      <ul>
-        <li>Bring the catalog up in a browser: <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code>
-        </li>
-        <li>Click down to one of the dataset pages in each new collections.
-        </li>
-        <li>Select the OPeNDAP link</li>
-        <ul>
-          <li>OR Copy the link location, paste into browser, replace suffix ".html" with ".dds"</li>
-        </ul>
-      </ul>
+              href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>
+         by clicking on the "Reinitialize" link
+      </li>
+      <li>Test that the new <code>datasetScan</code> elements are working:
+        <ol>
+          <li>Bring the catalog up in a browser:
+            <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code>
+          </li>
+          <li>Click down to one of the dataset pages in each new collections.
+          </li>
+          <li>Select the OPeNDAP link</li>
+          <ul class="little">
+            <li><big>OR Copy the link location, paste into browser, replace suffix
+              ".html" with ".dds"</big></li>
+          </ul>
+        </ol>
+      </li>
       <li>Check the list of dataset roots:</li>
       <ol>
         <li>TDS Remote Management page - <a
-                href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a>
+                href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>
         </li>
         <li>"Show data roots" link - <a href="https://localhost:8443/thredds/debug?catalogs/showRoots">https://localhost:8443/thredds/debug?catalogs/showRoots</a>
         </li>
@@ -655,26 +676,17 @@
         expression</a> match to the dataset name. If the match succeeds,
       any regular expression <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/Pattern.html#cg">capturing
         groups</a> are used in the start time replacement string to build
-      the start time string.These attributes values are used to
+      the start time string. The values of the following attributes are used to
       determine the time coverage: </p>
     <ol>
-      <li>The <code>datasetNameMatchPattern</code>
-        attribute value is used for a regular expression match on the dataset
-        name. If a match is found, a <strong>timeCoverage</strong>
-        element is added to the dataset. The match pattern should include <a
-                href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/Pattern.html#cg">capturing
-          groups</a> which allow the match to save substrings from the
+      <li>Either the <code>datasetNameMatchPattern</code> or the
+        <code>datasetPathMatchPattern</code> attribute gives a regular expression
+        used to match on the dataset name or path, respectively. If a match is
+        found, a <strong>timeCoverage</strong> element is added to the dataset.
+        The match pattern should include <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/Pattern.html#cg"
+                >capturing groups</a> which allow the match to save substrings from the
         dataset name.
       </li>
-      <ul>
-        <li>A new (2009-05-06, TDS 4.0) variation is the addition of the <code>datasetPathMatchPattern</code> attribute.
-          It
-          can be used instead of the <code>datasetNameMatchPattern</code> attribute and changes the target of the match
-          from
-          the dataset name to the dataset path. If both attributes are used, the <code>datasetNameMatchPattern</code>
-          attribute takes precedence.
-        </li>
-      </ul>
       <li>The <code>startTimeSubstitutionPattern</code>
         attribute value has all capture group references ("$n") replaced by the
         corresponding substring that was captured during the match. The
@@ -686,29 +698,34 @@
         element.<br>
       </li>
     </ol>
-    <p>Adding<br>
-    </p>
-    <pre>&lt;addTimeCoverage datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})f[0-9]{3}.grib2"<br>                 startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"<br>                 duration="60 hours" /&gt;</pre>
-    <p>to a <code>datasetScan</code> element results in
-      the following <code>timeCoverage</code> element:</p>
-    <pre>&lt;timeCoverage&gt;<br>    &lt;start&gt;2005-07-18T12:00:00&lt;/start&gt;<br>    &lt;duration&gt;60 hours&lt;/duration&gt;<br>&lt;/timeCoverage&gt;<br></pre>
+    <p>For instance, adding</p>
+
+<pre>&lt;addTimeCoverage datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})f[0-9]{3}.grib2"<br>                 startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"<br>                 duration="60 hours" /&gt;</pre>
+
+    <p>to a <code>datasetScan</code> element and given a data file named</p>
+
+<pre>2005071812f006.grib2</pre>
+
+    <p>results in the following <code>timeCoverage</code> element:</p>
+
+<pre>&lt;timeCoverage&gt;<br>    &lt;start&gt;2005-07-18T12:00:00&lt;/start&gt;<br>    &lt;duration&gt;60 hours&lt;/duration&gt;<br>&lt;/timeCoverage&gt;<br></pre>
+
   </div>
-  <div id="subsection" class="exercise"><h3>Exercise: Experiment with the above on the NAM, FSL, MODIS, and Suomi <code>datasetScan</code>
-    Elements </h3>
+  <div id="subsection" class="exercise"><h3>Exercise: Experiment with the above on
+    the NAM, FSL, MODIS, and Suomi <code>datasetScan</code> Elements </h3>
     <ol>
       <li>Edit the main TDS configuration catalog as desired:
+
     <pre><strong>-bash-3.2$</strong> cd ${TOMCAT_HOME}/content/thredds<br><strong>-bash-3.2$</strong> vi catalog.xml                     <var>//
       Use the editor of your choice</var></pre>
       </li>
       <li>Reinitialize the TDS configuration catalogs from the Remote Management page - <a
-              href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a></li>
-      <ul>
-        <li>Click on the "Reinitialize" link</li>
-      </ul>
+              href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>
+      - by clicking on the "Reinitialize" link.</li>
       <li>Check the catalogErrors.log - <a
-              href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a>
+              href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>
       </li>
-      <li>Check the list of dataset roots - <a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a>
+      <li>Check the list of dataset roots - <a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>
       </li>
       <li>Browse the catalogs to see how the modified <code>datasetScan</code> elements are working - <code><a
               href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code>

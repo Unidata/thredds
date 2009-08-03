@@ -289,48 +289,108 @@ etc. We will go into more detail on this later.</p>
 
         </div>
 
-        <div id="subsection" class="exercise"><h3>Exercise: Add NCEP NAM model data</h3>
+  <div id="subsection" class="exercise"><h3>Exercise: Add NCEP NAM model data</h3>
 
-<p>Modify the main TDS configuration catalog to include
-some model data.
-</p>
+    <p>Modify the main TDS configuration catalog to include
+      some model data.
+    </p>
 
-<ol>
-  <li>Take a look at the data:
-    <pre>
-<strong>-bash-3.2$</strong> ls /data/ldm
+    <ol>
+      <li>Take a look at the data:
+
+<pre>
+<strong>[thredds@workshop00 ~]$</strong> ls /data/ldm
 bufr    dusk         dusk.080527  fsl     ldm.pq  ltng   mcidas    ngrid  nogaps    rcm      severe  surface   wseta
 cosmic  dusk.080522  forecasts    gempak  logs    madis  nam_12km  nldn   rawfiles  rtmodel  suomi   upperair
-<strong>-bash-3.2$</strong> ls /data/ldm/nam_12km
+<strong>[thredds@workshop00 ~]$</strong> ls /data/ldm/nam_12km
 2008110312f000.grib2  2008110318f045.grib2  2008110406f003.grib2  2008110412f048.grib2  2008110500f006.grib2  2008110506f051.grib2
 2008110312f003.grib2  2008110318f048.grib2  2008110406f006.grib2  2008110412f051.grib2  2008110500f009.grib2  2008110506f054.grib2
 ...
 2008110318f033.grib2  2008110400f078.grib2  2008110412f036.grib2  2008110418f081.grib2  2008110506f039.grib2  2008110512f084.grib2
-    </pre>
-  </li>
-  <li>Edit the main TDS configuration catalog:
-    <pre><strong>-bash-3.2$</strong> cd ${TOMCAT_HOME}/content/thredds<br><strong>-bash-3.2$</strong> vi catalog.xml                     <var>// Use the editor of your choice</var></pre>
-  </li>
-  <li>And add a <code>datasetScan</code> element for the NAM data:
-    <pre>&lt;datasetScan name="<strong>NCEP NAM 12km</strong>" ID="<strong>NAM_12km</strong>" <br>             path="<strong>nam_12km</strong>" location="<strong>/data/ldm/nam_12km</strong>"&gt;<br><br>    &lt;metadata inherited="true"&gt;<br>        &lt;serviceName&gt;thisDODS&lt;/serviceName&gt;<br>    &lt;/metadata&gt;<br><br>    &lt;filter&gt;<br>        &lt;include wildcard="<strong>*.grib2</strong>" /&gt;<br>    &lt;/filter&gt;<br>&lt;/datasetScan&gt;<br></pre>
-  </li>
-    <li>Restart Tomcat so the TDS is reinitialized:
-      <pre><strong>-bash-3.2$</strong> cd ${TOMCAT_HOME}/bin<br><strong>-bash-3.2$</strong> ./shutdown.sh<br><strong>-bash-3.2$</strong> ./startup.sh</pre>
-  </li>
-  <li>Test that the new <code>datasetScan</code> is working:
-    <ul class="little">
-      <li>Bring the catalog up in a browser: <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code></li>
-      <li>Click down to one of the NAM dataset pages.</li>
-      <li>Select the OPeNDAP link</li>
-    </ul>
-  </li>
-  <li>Not working? Take a look at the catalogErrors.log:
-    <pre><strong>-bash-3.2$</strong> cd ${TOMCAT_HOME}/content/thredds/logs<br><strong>-bash-3.2$</strong> more catalogErrors.log</pre>
-  </li>
-</ol>
+</pre>
 
-        </div>
-    </div>
+      </li>
+      <li>Edit the main TDS configuration catalog:
+        <pre><strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds<br><strong>[thredds@workshop00 ~]$</strong> vi catalog.xml                     <var>//
+          Use the editor of your choice</var></pre>
+      </li>
+      <li>And add a <code>datasetScan</code> element for the NAM data:
+<pre>&lt;datasetScan name="<strong>NCEP NAM 12km</strong>" ID="<strong>NAM_12km</strong>"
+             path="<strong>nam_12km</strong>" location="<strong>/data/ldm/nam_12km</strong>"&gt;
+
+    &lt;metadata inherited="true"&gt;
+        &lt;serviceName&gt;thisDODS&lt;/serviceName&gt;
+    &lt;/metadata&gt;
+
+    &lt;filter&gt;
+        &lt;include wildcard="<strong>*.grib2</strong>" /&gt;
+    &lt;/filter&gt;
+&lt;/datasetScan&gt;
+</pre>
+      </li>
+      <li>Restart Tomcat so the TDS is reinitialized:
+        <pre><strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/bin<br><strong>[thredds@workshop00 ~]$</strong> ./shutdown.sh<br><strong>[thredds@workshop00 ~]$</strong> ./startup.sh</pre>
+      </li>
+      <li>Test that the new <code>datasetScan</code> is working:
+        <ol>
+          <li>Bring the catalog up in a browser: <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code>
+          </li>
+          <li>Click down to one of the NAM dataset pages.</li>
+          <li>Select the OPeNDAP link</li>
+        </ol>
+      </li>
+      <li>Not working? Take a look at the catalogErrors.log:
+        <pre><strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds/logs<br><strong>[thredds@workshop00 ~]$</strong> more catalogErrors.log</pre>
+      </li>
+    </ol>
+
+  </div>
+
+  <div id="subsection" class="exercise"><h3>Exercise: Additional Services for NCEP NAM model data</h3>
+
+    <p>The default catalog is setup with HTTP and OPeNDAP access to the data. Here we will
+      add NetCDF Subset Service (ncss), OGC WCS, and OGC WMS services.</p>
+    <ol>
+      <li>Edit the main TDS configuration catalog:
+<pre><strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds
+<strong>[thredds@workshop00 ~]$</strong> vi catalog.xml                     <var>// Use the editor of your choice</var>
+</pre>
+      </li>
+      <li>And add a <code>datasetScan</code> element for the NAM data:
+<pre>
+&lt;service name="all" serviceType="Compound" base="" &gt;
+    &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
+    &lt;service name="wcs" serviceType="WCS" base="/thredds/wcs/" /&gt;
+    &lt;service name="wms" serviceType="WMS" base="/thredds/wms/" /&gt;
+    &lt;service name="http" serviceType="HTTPServer" base="/thredds/fileServer/" /&gt;
+&lt;/service&gt;
+</pre>
+      </li>
+      <li>Restart Tomcat so the TDS is reinitialized:
+<pre>
+<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/bin
+<strong>[thredds@workshop00 ~]$</strong> ./shutdown.sh
+<strong>[thredds@workshop00 ~]$</strong> ./startup.sh
+</pre>
+      </li>
+      <li>Test that the new services are working:
+        <ol>
+          <li>Bring the catalog up in a browser: <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code>
+          </li>
+          <li>Click down to one of the NAM dataset pages.</li>
+          <li>Select one of the new access links</li>
+        </ol>
+      </li>
+      <li>Not working? Take a look at the catalogErrors.log:
+<pre>
+<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds/logs
+<strong>[thredds@workshop00 ~]$</strong> more catalogErrors.log
+</pre>
+      </li>
+      
+    </ol>    
+  </div>
+</div>
 
 <p>
   <img src="../images/thread.png" height="60" alt="THREDDS" valign="top" align="left" vspace="0" hspace="10" />
