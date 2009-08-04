@@ -16,14 +16,14 @@
       <h3>About <code>server.xml</code> </h3>
 
       <div id="note" class="reminder">
-       <h4>Keep in Mind</h4>
-       <p>Tomcat's configuration files, including  <code><small>server.xml</small></code> can be found in: <code><small>$TOMCAT_HOME/conf/</small></code></p>
+       <h4>Keep in mind</h4>
+       <p>Tomcat's configuration files, including  <code><small>server.xml</small></code> can be found in: <code><small>$TOMCAT_HOME/conf</small></code></p>
       </div>
       <ul>
-       <li>XML file (well-formed syntax is important)</li>
-       <li>Tomcat's main configuration file</li>
-       <li>Changes to <code><small>server.xml</small></code> do not take effect until Tomcat is restarted</li>
-       <li>Where we make changes to enhance TDS security</li>
+       <li>XML file (well-formed syntax is important).</li>
+       <li>Tomcat's main configuration file.</li>
+       <li>Changes to <code><small>server.xml</small></code> do not take effect until Tomcat is restarted.</li>
+       <li>Where we make changes to enhance TDS security.</li>
 
       </ul>
      </div> <!-- end  subsection -->
@@ -34,10 +34,10 @@
      <div id="subsection">
       <h3>Important elements in <code>server.xml</code></h3>
        <ol>
-        <li>Examine the Elements in <code>server.xml</code></li>
+        <li>Examine the Elements in <code>server.xml</code>.</li>
          <p>Move into the Tomcat <code><small>conf/</small></code> directory and examine the <code><small>server.xml</small></code> file:</p>
 <pre>
-<b>$</b> cd $TOMCAT_HOME/conf/
+<b>$</b> cd $TOMCAT_HOME/conf
 <b>$</b> less server.xml
 </pre>  
 
@@ -193,10 +193,10 @@
      <div id="subsection">
       <h3>About <code>tomcat-users.xml</code> </h3>
       <ul>
-       <li>XML file (well-formed syntax is important)</li>
-       <li>Stores user names, passwords and roles</li>
-       <li>Changes to <code>tomcat-users.xml</code> do not take effect until Tomcat is restarted</li>
-       <li>What the TDS uses for user authentication and access control</li>
+       <li>XML file (well-formed syntax is important).</li>
+       <li>Stores user names, passwords and roles.</li>
+       <li>Changes to <code>tomcat-users.xml</code> do not take effect until Tomcat is restarted.</li>
+       <li>What the TDS uses for user authentication and access control.</li>
       </ul>
      </div> <!-- end  subsection -->
 
@@ -206,7 +206,7 @@
      <div id="subsection">
       <h3>Important elements in <code>tomcat-users.xml</code></h3>
        <ol>
-        <li>Examine the Elements in <code>tomcat-users.xml</code></li>
+        <li>Examine the Elements in <code>tomcat-users.xml</code>.</li>
          <p>Open the <code><small>$TOMCAT_HOME/conf/tomcat-users.xml</small></code> file:</p>
 <pre>
 <b>$</b> less $TOMCAT_HOME/conf/tomcat-users.xml
@@ -282,17 +282,17 @@
      <div id="subsection">
       <h3>About the <code>manager</code> application</h3>
       <div id="note" class="info">
-       <h4>More About <code>manager</code></h4>
+       <h4>More about <code>manager</code></h4>
        <p>For more information about the Tomcat <code><small>manager</small></code> application, see the Tomcat <a href="http://tomcat.apache.org/tomcat-6.0-doc/manager-howto.html">Manager App HOW-TO</a> documentation.</p>
       </div>
 
 
 
       <ul>
-       <li>"Free" web application that comes with Tomcat distribution</li>
-       <li>Lives in the <code>$TOMCAT_HOME/webapps/manager</code> directory </li>
-       <li>Allows Tomcat administrators to deploy, undeploy, or reload web applications such as the TDS without having to shut down and restart Tomcat</li>
-       <li>Provides server status statistics for the JVM and each connector you have configured in <code>server.xml</code></li>
+       <li>"Free" web application that comes with Tomcat distribution.</li>
+       <li>Lives in the <code>$TOMCAT_HOME/webapps/manager</code> directory. </li>
+       <li>Allows Tomcat administrators to deploy, undeploy, or reload web applications such as the TDS without having to shut down and restart Tomcat.</li>
+       <li>Provides server status statistics for the JVM and each connector you have configured in <code>server.xml</code>.</li>
       </ul>
 
      </div> <!-- end subsection -->
@@ -301,12 +301,12 @@
      <div id="subsection">
       <h3>Accessing the Tomcat <code>manager</code> application</h3>
 
-      <p>Attempt to access the Tomcat <code><small>manager</small></code> application in your browser: <a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a>. You will be prompted to login via BASIC authentication, which will end in failure since we do not yet have permission to access the <code><small>manager</small></code> application.</p>
-        
-        <p><img src="../images/401.gif" height="353" width="400"></p>
+      <p>Attempt to access the Tomcat <code><small>manager</small></code> application in your browser: <a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a>. You will be prompted to login via BASIC authentication, which will end in failure since we do not yet have permission to access the <code><small>manager</small></code> application:</p>
+
+        <p><a href="../images/manager401.png"><img src="../images/manager401.png" width="400" height="433" alt="Manager app with 401 response code"></a></p>
 
       <div id="expanded" class="question">
-       <p>Based on what we know about Tomcat configuration, which file in <code><small>$TOMCAT_HOME/conf/</small></code> should we edit to grant ourselves access to the <code><small>manager</small></code> application?</p>
+       <p>Based on what we know about Tomcat configuration, which file in <code><small>$TOMCAT_HOME/conf</small></code> should we edit to grant ourselves access to the <code><small>manager</small></code> application?</p>
       </div>
 
      </div> <!-- end subsection -->
@@ -340,16 +340,16 @@
         <li>Restart Tomcat and log into the <code>manager</code> application.</li>
 
       <div id="note" class="reminder">
-       <h4>Keep in Mind</h4>
+       <h4>Keep in mind</h4>
        <p>Changes to <code><small>tomcat-users.xml</small></code> do not take effect until Tomcat is restarted.</p>
       </div>
 
-           <p>Attempt to access the <code><small>manager</small></code> application again, this time logging in using the <code><small>name</small></code> and <code><small>password</small></code> specified in <code><small>tomcat-users.xml</small></code>:  </p>
+           <p>Attempt to access the <code><small>manager</small></code> application again (<a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a>), this time logging in using the <code><small>name</small></code> and <code><small>password</small></code> specified in <code><small>tomcat-users.xml</small></code>:  </p>
 
-         <p><img src="../images/tomcat_manager.gif" height="449" width="400" alt="Tomcat manager application"></p>
+         <p><a href="../images/manager.png"><img src="../images/manager.png" width="400" height="433" alt="Tomcat manager application"></a></p>
 
       <div id="note" class="ahead">
-       <h4>Thinking Ahead</h4>
+       <h4>Thinking ahead</h4>
        <p>To gain access to restricted parts of the TDS, you will perform the same steps you used to grant yourself access to the <code><small>manager</small></code> application.</p>
       </div>
 
@@ -359,7 +359,7 @@
        </ol>
 
       <div id="expanded" class="troubleshooting">
-       <h4>Troubleshooting Tips</h4>
+       <h4>Troubleshooting tips</h4>
        <ul>
         <li>Check the XML syntax in <code><small>tomcat-users.xml</small></code> to make sure it is well-formed and without error.</li>
         <li>Did you restart Tomcat after you made your changes to <code><small>tomcat-users.xml</small></code>?</li>
@@ -398,7 +398,7 @@ drwxr-xr-x  3 thredds workshop     4096 2009-05-13 17:15 ROOT
 </pre>
        <li>Deploy the TDS using the <code>manager</code> application.</li>
        <p>Upload the TDS WAR file using the <code><small>Deploy</small></code> section of the <code><small>manager</small></code> application:</p>
-        <p><img src="../images/deploy.gif" height="306" width="738" alt="Deploy the TDS"></p>
+        <p><a href="../images/deploy.png"><img src="../images/deploy.png" height="182" width="500" alt="Deploy the TDS"></a></p>
        <p>Confirm the deployment went as planned by accessing the TDS using your browser: <a href="http://localhost:8080/thredds/">http://localhost:8080/thredds/</a></p>
        </ol>
      </div> <!-- end subsection -->
@@ -419,7 +419,7 @@ drwxr-xr-x  3 thredds workshop     4096 2009-05-13 17:15 ROOT
 
 
       <div id="note" class="info">
-       <h4><code>PermGen</code> on the Web</h4>
+       <h4><code>PermGen</code> info</h4>
        <p>For a really good description of the issue, see this series of three articles:</p>
            <ul>
              <li>"<a href="http://my.opera.com/karmazilla/blog/2007/09/29/return-of-the-permgen">Return of the PermGen</a>" (2007-09-29)</li>
@@ -454,7 +454,7 @@ drwxr-xr-x  3 thredds workshop     4096 2009-05-13 17:15 ROOT
       <h3>The problem of passwords in clear text</h3>
 
       <div id="note" class="info">
-       <h4>Due Diligence</h4>
+       <h4>Due diligence</h4>
        <p>For added incentive to use encrypted passwords, read about the <a href="http://en.wikipedia.org/wiki/Man-in-the-middle_attack">man-in-the-middle attack</a>.</p>
       </div>
 
@@ -462,7 +462,7 @@ drwxr-xr-x  3 thredds workshop     4096 2009-05-13 17:15 ROOT
        <ul>
         <li>Passwords stored in clear text are a vulnerability if the host is compromised.</li>
         <li>Worse yet, these passwords are being sent from the client to the server (Tomcat) in clear text.  Anyone eavesdropping on the electronic conversation has easy access to the passwords.</li>
-        <li>Better to have the passwords encrypted using a cryptographic hash functions (SHA, MD2, or MD5) and then stored in <code><small>tomcat-users.xml</small></code> </li>
+        <li>Better to have the passwords encrypted using a cryptographic hash functions (SHA, MD2, or MD5) and then stored in <code><small>tomcat-users.xml</small></code>. </li>
         <li>Tomcat can be configured to support digested passwords (this is not the default setting). </li>
         <li>How it works: When a client makes a request Tomcat will tell the client that a digested password is required. Based on this dialog, the client will automatically digest the password entered by the user.</li>
        </ul>
@@ -486,10 +486,10 @@ drwxr-xr-x  3 thredds workshop     4096 2009-05-13 17:15 ROOT
      resources under the key "UserDatabase".  Any edits
      that are performed against this UserDatabase are immediately
      available for use by the Realm.  --&gt;
-&lt;!-- 
+<b>&lt;!--</b> 
 &lt;Realm className="org.apache.catalina.realm.UserDatabaseRealm"
        resourceName="UserDatabase"/&gt;
---&gt;
+<b>--&gt;</b>
 &lt;!-- Define the default virtual host
      Note: XML Schema validation will not work with Xerces 2.2.
 --&gt;
@@ -517,8 +517,8 @@ drwxr-xr-x  3 thredds workshop     4096 2009-05-13 17:15 ROOT
       unpackWARs="true" autoDeploy="true"
       xmlValidation="false" xmlNamespaceAware="false"&gt;
 
-&lt;Realm className="org.apache.catalina.realm.MemoryRealm" 
-       digest="SHA" /&gt;
+<b>&lt;Realm className="org.apache.catalina.realm.MemoryRealm" 
+       digest="SHA" /&gt;</b>
 </pre>  
     <li>Create a SHA encrypted version of your password.</li>
      <p>Tomcat provides a script (<code><small>$TOMCAT_HOME/bin/digest.sh</small></code>) that will encrypt a password string according to the algorithm specified.  Use this script as follows with the password you made for yourself previously:</p>
@@ -534,14 +534,14 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
 <pre>
 &lt;tomcat-users&gt;
     &lt;role rolename="manager"/&gt;
-    &lt;user name="admin" password="e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4" roles="manager"/&gt;
+    &lt;user name="admin" password="<b>e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4</b>" roles="manager"/&gt;
 &lt;/tomcat-users&gt;
 </pre>  
      <li>Verify digest passwords have been successfully enabled in Tomcat.</li>
 
 
       <div id="note" class="info">
-       <h4>BASIC Authentication</h4>
+       <h4>BASIC authentication</h4>
        <p>Since we are using BASIC authentication, you will need to clear any authenticated sessions in your browser to test whether digested passwords have been enabled.</p>
       </div>
 
@@ -550,7 +550,7 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
 
 
       <div id="expanded" class="troubleshooting">
-       <h4>Troubleshooting Tips</h4>
+       <h4>Troubleshooting tips</h4>
        <ul>
         <li>Check the XML syntax in <code><small>tomcat-users.xml</small></code> and <code><small>server.xml</small></code> to make sure it is well-formed and without error.</li>
         <li>Did you restart Tomcat after you made your changes to <code><small>tomcat-users.xml</small></code> and <code><small>server.xml</small></code> ?</li>
@@ -583,7 +583,7 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
      <div id="subsection">
       <h3>About Secure Sockets Layer (SSL)</h3>
       <div id="note" class="info">
-       <h4>How SSL Works</h4>
+       <h4>How SSL works</h4>
        <p>For more information on how SSL works, Wikipedia details the <a href="http://en.wikipedia.org/wiki/Transport_Layer_Security#How_it_works">steps involved</a> during an SSL transaction.</p>
       </div> 
 
@@ -612,14 +612,14 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
 
      <div id="subsection">
       <h3>Accessing the TDS remote management tool</h3>
-       <p>Other than the obvious compelling security reasons, you will want to enable SSL to take advantage of the TDS remote management tool which (out-of-the-box) requires SSL in order to access:
+       <p>Other than the compelling security reasons, you will want to enable SSL to take advantage of the TDS remote management tool which (out-of-the-box) requires SSL in order to access:
       <a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a></p>
       <ol>
        <li>Create a self-signed certificate and store it in <code>$TOMCAT_HOME/conf/keystore</code>.</li>
         <p>Run the <code><small>$JAVA_HOME/bin/keytool</small></code> command:</p>
 
 <pre>
-<b>$</b> cd /home/thredds/jdk1.6.0_14/bin/
+<b>$</b> cd /home/thredds/jdk1.6.0_14/bin
 <b>$</b> ./keytool -genkey -alias tomcat -keyalg RSA -keystore /home/thredds/apache-tomcat-6.0.20/conf/keystore
 </pre>
         <p>Meaning of the <code><small>keytool</small></code> options:</p>
@@ -678,7 +678,7 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
         <ul class="little"> 
          <li>Although it is not obvious, the <code><small>first and last name</small></code>, or <code><small>CN</small></code>, should be the host name</li>
          <li>The <code><small>keystore password</small></code> (the first password you are prompted to enter) is always <code><small>changeit</small></code></li>
-         <li>The last password (the <code><small>key password</small></code>) and <code><small>keystore password</small></code> should be the same (<code><small>changeit</small></code>). If they differ, Tomcat cannot open the keystore and you will get this error: <code><small>java.io.IOException: Cannot recover key</small></code></li>
+         <li>The last password (the <code><small>key password</small></code>) and <code><small>keystore password</small></code> need to be the same (<code><small>changeit</small></code>). </li>
         </ul>
 
 <pre>
@@ -702,10 +702,28 @@ Is CN=unidata.ucar.edu, OU=THREDDS, O=Unidata, L=Boulder, ST=Colorado, C=US corr
 Enter key password for <tomcat>
         (RETURN if same as keystore password): 
 </pre>
+       <p>Verify the new <code><small>keystore</small></code> file has been generated in <code><small>$TOMCAT_HOME/conf</small></code>:</p>
+
+
+<pre>
+<b>$</b> cd /home/thredds/apache-tomcat-6.0.20/conf
+thredds@workshop03 conf]$ ls -l
+total 100
+drwxr-xr-x 3 thredds workshop  4096 2009-08-03 16:08 Catalina
+-rw------- 1 thredds workshop  8690 2009-05-13 17:15 catalina.policy
+-rw------- 1 thredds workshop  3665 2009-05-13 17:15 catalina.properties
+-rw------- 1 thredds workshop  1396 2009-05-13 17:15 context.xml
+-rw-r--r-- 1 thredds workshop  1360 2009-08-03 16:42 keystore
+-rw------- 1 thredds workshop  3257 2009-05-13 17:15 logging.properties
+-rw------- 1 thredds workshop  6576 2009-08-03 16:36 server.xml
+-rw------- 1 thredds workshop  1231 2009-08-03 16:37 tomcat-users.xml
+-rw------- 1 thredds workshop 50757 2009-05-13 17:15 web.xml
+</pre>
+
     
        <li>Configure Tomcat to enable SSL and use the self-signed certificate.</li>
        <div id="expanded" class="question">
-        <p>Based on what we know about Tomcat configuration, which file in <code><small>$TOMCAT_HOME/conf/</small></code> should we edit to to enable SSL?</p>
+        <p>Based on what we know about Tomcat configuration, which file in <code><small>$TOMCAT_HOME/conf</small></code> should we edit to to enable SSL?</p>
        </div>
         <p>Open <code><small>$TOMCAT_HOME/conf/server.xml</small></code> with your favorite editor:</p>
 
@@ -716,7 +734,7 @@ Enter key password for <tomcat>
 <pre>
 &lt;Connector port="8080" protocol="HTTP/1.1"
               connectionTimeout="20000"
-              redirectPort="8443" /&gt;
+              <b>redirectPort="8443"</b> /&gt;
 </pre>
         <p>Find and uncomment the <code><small>SSL HTTP/1.1 Connector</small></code> listening on port 8443 to activate this connector:</p>
 <pre>
@@ -738,20 +756,24 @@ Enter key password for <tomcat>
 &lt;Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" /&gt;
 </pre>
 
-       <li>Restart Tomcat and verify SSL has been enabled.</li>
+       <li>Verify SSL has been enabled.</li>
 
 
-        <p>Restart Tomcat.</p>
+        <p>Restart Tomcat:</p>
 <pre>
 <b>$</b> $TOMCAT_HOME/bin/shutdown.sh
 <b>$</b> $TOMCAT_HOME/bin/startup.sh
 </pre>
 
+        <p>Verify Tomcat is listening on port 8443 by running the <code><small>netstat</small></code> command:</p>
+
+<pre>
+<b>$</b> netstat -an | grep tcp
+</pre>
       <div id="note" class="info">
        <h4><code>man netstat</code></h4>
-       <p>For more information about the <code><small>netstat</small></code> command, type <code><small>man netstat</small></code> in your terminal window.</p>
+       <p>Run <code><small>man netstat</small></code> in your terminal window to learn more about this command.</p>
       </div> 
-        <p>Verify Tomcat is listening on port 8443 by running the <code><small>netstat</small></code> command.</p>
 
         <p><code><small>netstat</small></code> (short for <b>net</b>work <b>stat</b>istics) is available on Unix, Unix-like, and Windows NT-based operating systems.  It is a command-line tool that displays:</p>
         <ul class="little">
@@ -759,19 +781,25 @@ Enter key password for <tomcat>
          <li> routing tables</li>
          <li> and a number of network interface statistics</li>
         </ul> 
-        <p>To run <code><small>netstat</small></code>, type the following: </p>
-<pre>
-<b>$</b> netstat -an | grep tcp
-</pre>
-
 
 
 
          <p>Look for the following in the output:</p>
 <pre>
-tcp        0      0 127.0.0.1:8443               0.0.0.0:*                   LISTEN
-tcp        0      0 127.0.0.1:8080               0.0.0.0:*                   LISTEN
+tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*                   LISTEN
 </pre>
+
+
+
+      <div id="expanded" class="troubleshooting">
+       <h4>Troubleshooting tips</h4>
+       <ul>
+        <li>Check the XML syntax in <code><small>server.xml</small></code> to make sure it is well-formed and without error.</li>
+        <li>When generating the self-signed certificate, the last password (the <code><small>key password</small></code>) and <code><small>keystore password</small></code> should be the same (<code><small>changeit</small></code>). If they differ, Tomcat cannot open the keystore and you will get this error: <code><small>java.io.IOException: Cannot recover key</small>.</li>
+        <li>Did you restart Tomcat after you made your changes to <code><small>server.xml</small></code>?</li>
+        <li>Did you specify the pull path to the <code><small>keystore</small></code> file in <code><small>server.xml</small></code>?</li>
+       </ul>
+      </div>
 
         
       </ol>
@@ -790,7 +818,8 @@ tcp        0      0 127.0.0.1:8080               0.0.0.0:*                   LIS
     &lt;user name="admin" password="e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4" roles="manager,tdsConfig"/&gt;
 &lt;/tomcat-users&gt;
 </pre>  
-        <li>Restart Tomcat and try to access the TDS remote management tool: <a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a></li>
+        <li>Restart Tomcat and try to access the TDS remote management tool: <a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug/</a></li>
+         <p><a href="../images/ugly.png"><img src="../images/ugly.png" width="400" height="433" alt="SSL warning for self-signed certificate"></a></p>
        </ol>
       </div>
 
@@ -811,7 +840,7 @@ tcp        0      0 127.0.0.1:8080               0.0.0.0:*                   LIS
       <h3>The missing piece: <code>/WEB-INF/web.xml</code></h3>
        <ul>
         
-        <li>This is specified in the web application deployment descriptor, aka <code>web.xml</code></li>
+        <li>This is specified in the web application deployment descriptor, aka <code>web.xml</code>.</li>
         <li>Deployment descriptors are found in the <code>WEB-INF</code> directory of the web application: <code>&lt;application name&gt;/WEB-INF/web.xml</code>. </li>
         <li>By convention, Tomcat and other servlet containers will read the web application deployment descriptors for initialization parameters and container-managed security constraints upon application deployment.</li>
         <li>The TDS has been pre-configured to require that SSL encryption is enabled in order to access the remote management tool.</li>
@@ -828,25 +857,25 @@ tcp        0      0 127.0.0.1:8080               0.0.0.0:*                   LIS
          <li>Have a look at the deployment descriptor that comes with the TDS.</li>
           <p>Navigate to the unpacked <code><small>thredds</small></code> directory in <code><small>$TOMCAT_HOME/webapps</small></code>, and view the file: </p>
 <pre>
-<b>$</b> cd /home/thredds/apache-tomcat-6.0.20/webapps/thredds/
+<b>$</b> cd /home/thredds/apache-tomcat-6.0.20/webapps/thredds
 <b>$</b> less WEB-INF/web.xml
 </pre>  
-       <li>Look for a reference to the TDS remote management tool's URL (<code><small>/debug</small></code>).</li>
+       <li>Look for a reference to the TDS remote management tool's URL (<code><small>/admin/debug</small></code>).</li>
          <p>Near the bottom of the deployment descriptor you will find this entry:</p>
 
 <pre>
-&lt;!-- This allows "remote configuration":
-  /thredds/debug gives access to various debug and status info.
-  ThreddsDefault servlet aliases /thredds/root/ to "{tomcat_home}/webapps/thredds/"
-  ThreddsDefault servlet aliases /thredds/dataDir/path to "dirLocation/" where path is 
-   mapped to dirLocation through a datasetRoot or datasetScan element in the catalog. --&gt;
+  &lt;!-- This allows "remote configuration":
+    <b>/thredds/admin/debug</b> gives access to various debug and status info.
+    /thredds/admin/content/ -&gt; "{tomcat_home}/content/thredds/"
+    /thredds/admin/root/ -&gt; "{tomcat_home}/webapps/thredds/" DISABLED
+    /thredds/admin/dataDir/path -&gt; "{dataRoot(path)}/webapps/thredds/"  DISABLED
+   --&gt;
   &lt;security-constraint&gt;
     &lt;web-resource-collection&gt;
       &lt;web-resource-name&gt;sensitive read access&lt;/web-resource-name&gt;
-      <b>&lt;url-pattern&gt;/debug&lt;/url-pattern&gt;</b>
-      &lt;url-pattern&gt;/root/*&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/dataDir/*&lt;/url-pattern&gt;
+      <b>&lt;url-pattern&gt;/admin/*&lt;/url-pattern&gt;</b>
       &lt;http-method&gt;GET&lt;/http-method&gt;
+      &lt;!-- http-method&gt;PUT&lt;/http-method --&gt;
     &lt;/web-resource-collection&gt;
     &lt;auth-constraint&gt;
       &lt;role-name&gt;tdsConfig&lt;/role-name&gt;
@@ -858,7 +887,7 @@ tcp        0      0 127.0.0.1:8080               0.0.0.0:*                   LIS
 </pre>
 
       <div id="note" class="info">
-       <h4>Configuration Help</h4>
+       <h4>Configuration help</h4>
        <p>For more information on how to configure security requirements for a web application in a deployment descriptor, see: <a href="http://java.sun.com/javaee/5/docs/tutorial/doc/bncbe.html">Defining Security Requirements for Web Applications</a>.</p>
       </div> 
 
@@ -915,38 +944,13 @@ tcp        0      0 127.0.0.1:8080               0.0.0.0:*                   LIS
     &lt;/auth-constraint&gt;
   &lt;/security-constraint&gt;
 </pre>
-        <p>This comment the <code><small>&lt;auth-constraint&gt;</small></code> element is no longer correct: </p>
+        <p>The comment in the <code><small>&lt;auth-constraint&gt;</small></code> element is no longer correct: </p>
+
          <p><code><small>&lt;!-- NOTE:  This role is not present in the default users file --&gt;</small></code></p>  
   
-        <p>Since we've already added the <code><small>role</small></code> of <code><small>manager</small></code> to the <code><small>tomcat-users.xml</small></code> file, we might as well remove the comment:</p>
-<pre>
-  &lt;!-- Define a Security Constraint on this Application --&gt;
-  &lt;security-constraint&gt;
-    &lt;web-resource-collection&gt;
-      &lt;web-resource-name&gt;HTMLManger and Manager command&lt;/web-resource-name&gt;
-      &lt;url-pattern&gt;/jmxproxy/*&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/html/*&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/list&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/expire&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/sessions&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/start&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/stop&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/install&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/remove&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/deploy&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/undeploy&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/reload&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/save&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/serverinfo&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/status/*&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/roles&lt;/url-pattern&gt;
-      &lt;url-pattern&gt;/resources&lt;/url-pattern&gt;
-    &lt;/web-resource-collection&gt;
-    &lt;auth-constraint&gt;
-       &lt;role-name&gt;manager&lt;/role-name&gt;
-    &lt;/auth-constraint&gt;
-  &lt;/security-constraint&gt;
-</pre>
+        <p>(Since we've already added the <code><small>role</small></code> of <code><small>manager</small></code> to the <code><small>tomcat-users.xml</small></code> file, we might as well remove the comment.)</p>
+
+
         <p>Add a <code><small>&lt;user-data-constraint&gt;</small></code> with a <code><small>&lt;transport-guarantee&gt;</small></code> of <code><small>CONFIDENTIAL</small></code> to enable port-forwarding to port 8443:</p>
 <pre>
   &lt;!-- Define a Security Constraint on this Application --&gt;
@@ -983,6 +987,20 @@ tcp        0      0 127.0.0.1:8080               0.0.0.0:*                   LIS
       </ul>
      <li>Verify SSL has been enabled for the Tomcat <code>manager</code> application.</li>
       <p>Restart Tomcat and verify SSL has been enabled for the Tomcat <code>manager</code> application: <a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a></li></p>
+
+         <p><a href="../images/managerssl.png"><img src="../images/managerssl.png" width="500" height="138" alt="Tomcat manager authentication prompt"></a></p>
+
+
+      <div id="expanded" class="troubleshooting">
+       <h4>Troubleshooting tips</h4>
+       <ul>
+        <li>Check the XML syntax in <code><small>web.xml</small></code> to make sure it is well-formed and without error.</li>
+        <li>Did you specify a <code><small>&lt;transport-guarantee&gt;</small></code> of <code><small>CONFIDENTIAL</small></code>? </li>
+        <li>Did you restart Tomcat after you made your changes to <code><small>web.xml</small></code>?</li>
+       </ul>
+      </div>
+ 
+
      </ol>
 
 
@@ -1016,12 +1034,14 @@ tcp        0      0 127.0.0.1:8080               0.0.0.0:*                   LIS
 
 
 
-   <p><img src="../images/thread.png" height="60" alt="THREDDS" valign="top" align="left" vspace="0" hspace="10" />  This document is maintained by Unidata and was last updated 
+
+
+   <p><img src="../images/thread.png" height="60" alt="THREDDS" valign="top" align="left" vspace="0" hspace="10" />  This document is maintained by Unidata.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.</p>
+
    
 <script language="JavaScript" type="text/JavaScript">
     document.write(date_modified);
 </script> 
-Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.</p>
   </body>
  </html>   
 
