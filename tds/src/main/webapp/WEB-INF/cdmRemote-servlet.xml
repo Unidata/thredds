@@ -78,6 +78,4 @@
     <property name="featureType" value="STATION"/>
   </bean>
 
-
-
 </beans>
