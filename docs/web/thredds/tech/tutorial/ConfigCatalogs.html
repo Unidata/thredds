@@ -365,7 +365,7 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
       <li>Edit the main TDS configuration catalog:
 <pre>
 <strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds
-<strong>[thredds@workshop00 ~]$</strong> vi catalog.xml           <var>// Use the editor of your choice</var>
+<strong>[thredds@workshop00 ~]$</strong> vi catalog.xml     <var>// Use the editor of your choice</var>
 </pre>
       </li>
       <li>And add a <code>datasetScan</code> element for the FSL data:
@@ -380,72 +380,84 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
 </pre>
       </li>
       <li>And similarly for MADIS and Suomi data</li>
-      <li><strong>Reinitialize the TDS configuration catalogs</strong> from the Remote Management page - <a
-              href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>
-         by clicking on the "Reinitialize" link
+      <li><strong>Reinitialize the TDS configuration catalogs</strong>:
+        <ol>
+          <li>
+            Go to the TDS Remote Management page:
+            <code>
+              <a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>
+            </code>
+          </li>
+          <li>Click on the "Reinitialize" link</li>  
+        </ol>
       </li>
       <li>Test that the new <code>datasetScan</code> elements are working:
         <ol>
           <li>Bring the catalog up in a browser:
             <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code>
           </li>
-          <li>Click down to one of the dataset pages in each new collections.
+          <li>Browse into the new dataset collections.
           </li>
-          <li>Select the OPeNDAP link</li>
-          <ul class="little">
-            <li><big>OR Copy the link location, paste into browser, replace suffix
-              ".html" with ".dds"</big></li>
-          </ul>
+          <li>Try an OPeNDAP access method link</li>
         </ol>
       </li>
-      <li>Check the list of dataset roots:</li>
+    </ol>
+    <h4>Now that we have multiple dataset roots ...</h4>
+    <ol>
+      <li>Lets check the list of dataset roots:</li>
       <ol>
-        <li>TDS Remote Management page - <a
-                href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>
+        <li>
+          Go back to the TDS Remote Management page:
+          <code>
+            <a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>
+          </code>
         </li>
-        <li>"Show data roots" link - <a href="https://localhost:8443/thredds/debug?catalogs/showRoots">https://localhost:8443/thredds/debug?catalogs/showRoots</a>
-        </li>
+        <li>Select the "Show data roots" link.</li>
       </ol>
-      <li>Check the catalogErrors.log:
+      <li>Check the catalogInit.log:
+        <ol>
+          <li>TDS Remote Management page
+            [<a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a>]
+          </li>
+          <li>Click the "Show TDS Logs" link.</li>
+          <li>Select the "catalogInit.log" file</li>
+        </ol>
       </li>
-      <ol>
-        <li>TDS Remote Management page - <a
-                href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a>
-        </li>
-        <li>"Show Logs" link - <a href="https://localhost:8443/thredds/content/logs/">https://localhost:8443/thredds/content/logs/</a>
-        </li>
-        <li>"catalogErrors.log" - <a href="https://localhost:8443/thredds/content/logs/catalogErrors.log">https://localhost:8443/thredds/content/logs/catalogErrors.log</a>
-        </li>
-      </ol>
     </ol>
 
   </div>
 
   <div id="subsection" class="exercise"><h3>Exercise: Duplicate Roots</h3>
 
-    <p>
-      Modify the FSL <code>datasetScan</code> element so that the value of the
-      path attribute matches the one for the NAM_12km <code>datasetScan</code>
-      element.
-    </p>
     <ol>
-      <li>Edit the main TDS root catalog and change the FSL path to <strong>nam_12km</strong>:
-        <pre><strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds<br><strong>[thredds@workshop00 ~]$</strong> vi catalog.xml                     <var>//
-          Use the editor of your choice</var></pre>
+      <li>
+        Modify the FSL <code>datasetScan</code> element so that the value of the
+        path attribute matches the one for the NAM_12km <code>datasetScan</code>
+        element.
+<pre>
+<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds
+<strong>[thredds@workshop00 ~]$</strong> vi catalog.xml     <var>// Use the editor of your choice</var>
+</pre>
       </li>
-      <li>Reinitialize the TDS configuration catalogs from the Remote Management page - <a
-              href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a>
-        - by clicking on the "Reinitialize" link.
+      <li>Reinitialize the TDS
+        [<a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>].
       </li>
-      <li>Test that the new <code>datasetScan</code> elements are working - <code><a
-              href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code>
+      <li>What happens with duplicate data roots:
+        <ol>
+          <li>
+            Browse into the FSL dataset
+            [<a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a>]
+          </li>
+          <li>Check the list of dataset roots
+            [<a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>]
+          </li>
+          <li>Check the catalogInit.log
+            [<a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a>]
+          </li>
+        </ol>
       </li>
-      <li>Check the list of dataset roots - <a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a>
-      </li>
-      <li>Check the catalogErrors.log - <a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a>
-      </li>
+      <li>Now fix the FSL datasetScan element.</li>
     </ol>
-    <p>Now fix the FSL datasetScan element by repeating steps 1-5 above.</p>
 
   </div>
 </div>
@@ -485,26 +497,53 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
   </div>
   <div id="subsection" class="exercise"><h3>Exercise: Filtering Files</h3>
 
-    <p>In any of the datasets you have added, look for a ".scour" file.
-      Try its OPeNDAP access method.</p>
-    <p>This causes an error because the netCDF-Java class can't open the non-netCDF file.</p>
-    <p>Lets exclude all non-netCDF files by adding <code>filter</code> elements
-      to our <code>datasetScan</code> elements</p>
+    <ol>
+      <li>Browse one of the datasets you just added and find a ".scour file.
+        Try the OPeNDAP access method:
+<pre>
+Error {
+    code = 500;
+    message = "Cant read /data/ldm/madis/.scour: not a valid NetCDF file.";
+};
+</pre>
+      </li>
+      <li>Now add a <code>filter</code> element to the <code>datasetScan</code>
+        elements. Something like:
 <pre>
 &lt;filter&gt;
     &lt;include wildcard="<strong>*.nc</strong>" /&gt;
+    &lt;include wildcard="<strong>*.grib1</strong>" /&gt;
+    &lt;include wildcard="<strong>*.grib2</strong>" /&gt;
 &lt;/filter&gt;
 </pre>
+      </li>
+      <li>Reinitialize the TDS
+        [<a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>].
+      </li>
+      <li>
+        Are the filters working?
+        [<a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a>]
+      </li>
+    </ol>
   </div>
   <div id="subsection" class="exercise"><h3>Exercise: Filtering Directories</h3>
 
-    <p>Lets try excluding the "06min" data from the "fsl" data by adding </p>
-    <p>This causes an error because the netCDF-Java class can't open the non-netCDF file.</p>
-    <p>Lets exclude all non-netCDF files by adding <code>filter</code> elements
-      to our <code>datasetScan</code> elements</p>
+    <ol>
+      <li>Browse around in the "FSL" dataset.</li>
+      <li>Add a <code>filter</code> element to the "FSL" <code>datasetScan</code>
+        element to exclude the "06min" directories. Something like:
 <pre>
 &lt;exclude wildcard="<strong>06min</strong>" atomic="false" collection="true" /&gt;
 </pre>
+      </li>
+      <li>Reinitialize the TDS
+        [<a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>].
+      </li>
+      <li>
+        Are the filters working?
+        [<a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a>]
+      </li>
+    </ol>
   </div>
   <div id="subsection"><h3>Generating IDs</h3>
 
@@ -579,6 +618,22 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
     </p>
 
   </div>
+  <div id="subsection" class="exercise"><h3>Exercise: Naming the Suomi Datasets</h3>
+
+    <ol>
+      <li>
+        Add a <code>namer</code> element to the Suomi <code>datasetScan</code>
+        element that extracts the date/time from the file name and uses the
+        date/time in generating a new name (similar to above)
+        
+        the value of the
+        path attribute matches the one for the NAM_12km <code>datasetScan</code>
+        element.
+      </li>
+    </ol>
+
+  </div>
+  
   <div id="subsection"><h3>Sorting Datasets</h3>
 
     <div id="note" class="info"><h4>Sorting: Underlying Implementation Details</h4>
@@ -725,7 +780,11 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
     </ol>
     <p>For instance, adding</p>
 
-<pre>&lt;addTimeCoverage datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})f[0-9]{3}.grib2"<br>                 startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"<br>                 duration="60 hours" /&gt;</pre>
+<pre>
+&lt;addTimeCoverage datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})f[0-9]{3}.grib2"
+                 startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"
+                 duration="60 hours" /&gt;
+</pre>
 
     <p>to a <code>datasetScan</code> element and given a data file named</p>
 
@@ -741,50 +800,16 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
 </pre>
 
   </div>
+  <div id="subsection" class="exercise"><h3>Exercise: Add timeCoverage to the Suomi Datasets</h3>
 
-  <div id="subsection" class="exercise"><h3>Exercise: Experiment with the above on
-    the NAM, FSL, MODIS, and Suomi <code>datasetScan</code> Elements </h3>
     <ol>
-      <li>Edit the main TDS configuration catalog as desired:
-
-    <pre><strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds<br><strong>[thredds@workshop00 ~]$</strong> vi catalog.xml                     <var>//
-      Use the editor of your choice</var></pre>
+      <li>
+        Add an <code>addTimeCoverage</code> element to the Suomi <code>datasetScan</code>
+        element that extracts the date/time from the file name and uses the
+        date/time to generate the <code>timeCoverage</code> element (similar to above).
       </li>
-      <li>Reinitialize the TDS configuration catalogs from the Remote Management page - <a
-              href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>
-      - by clicking on the "Reinitialize" link.</li>
-      <li>Check the catalogErrors.log - <a
-              href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>
-      </li>
-      <li>Check the list of dataset roots - <a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>
-      </li>
-      <li>Browse the catalogs to see how the modified <code>datasetScan</code> elements are working - <code><a
-              href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code>
-      </li>
-      <li>Repeat 1-5 making other changes.</li>
     </ol>
-  </div>
 
-  <div id="subsection" class="exercise"><h3>Exercise: Filter - Exclude Files </h3>
-    <ol>
-      <li>Edit the main TDS configuration catalog as desired:
-
-    <pre><strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds<br><strong>[thredds@workshop00 ~]$</strong> vi catalog.xml                     <var>//
-      Use the editor of your choice</var></pre>
-      </li>
-      <li>Reinitialize the TDS configuration catalogs from the Remote Management page - <a
-              href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>
-      - by clicking on the "Reinitialize" link.</li>
-      <li>Check the catalogErrors.log - <a
-              href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>
-      </li>
-      <li>Check the list of dataset roots - <a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>
-      </li>
-      <li>Browse the catalogs to see how the modified <code>datasetScan</code> elements are working - <code><a
-              href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code>
-      </li>
-      <li>Repeat 1-5 making other changes.</li>
-    </ol>
   </div>
 
 </div>

@@ -311,11 +311,14 @@ cosmic  dusk.080522  forecasts    gempak  logs    madis  nam_12km  nldn   rawfil
 
       </li>
       <li>Edit the main TDS configuration catalog:
-        <pre><strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds<br><strong>[thredds@workshop00 ~]$</strong> vi catalog.xml                     <var>//
-          Use the editor of your choice</var></pre>
+<pre>
+<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds
+<strong>[thredds@workshop00 ~]$</strong> vi catalog.xml         <var>// Use the editor of your choice</var>
+</pre>
       </li>
       <li>And add a <code>datasetScan</code> element for the NAM data:
-<pre>&lt;datasetScan name="<strong>NCEP NAM 12km</strong>" ID="<strong>NAM_12km</strong>"
+<pre>
+&lt;datasetScan name="<strong>NCEP NAM 12km</strong>" ID="<strong>NAM_12km</strong>"
              path="<strong>nam_12km</strong>" location="<strong>/data/ldm/nam_12km</strong>"&gt;
 
     &lt;metadata inherited="true"&gt;
@@ -326,7 +329,11 @@ cosmic  dusk.080522  forecasts    gempak  logs    madis  nam_12km  nldn   rawfil
 </pre>
       </li>
       <li>Restart Tomcat so the TDS is reinitialized:
-        <pre><strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/bin<br><strong>[thredds@workshop00 ~]$</strong> ./shutdown.sh<br><strong>[thredds@workshop00 ~]$</strong> ./startup.sh</pre>
+<pre>
+<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/bin
+<strong>[thredds@workshop00 ~]$</strong> ./shutdown.sh
+<strong>[thredds@workshop00 ~]$</strong> ./startup.sh
+</pre>
       </li>
       <li>Test that the new <code>datasetScan</code> is working:
         <ol>
