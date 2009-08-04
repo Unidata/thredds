@@ -1,13 +1,13 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
  <html>
   <head>
-   <title>TDS Tutorial: TDS Monitoring &amp; Debugging</title>
+   <title>TDS Tutorial: TDS Monitoring and Debugging</title>
    <link rel="stylesheet" href="tutorial.css" type="text/css" /> 
    <script language="JavaScript1.2" src="http://www.unidata.ucar.edu/acemenu/last_mod.js"></script>
    <link rel="SHORTCUT ICON" href="http://www.unidata.ucar.edu/favicon.ico" type="image/x-icon" />
   </head>
   <body>
-   <h1>TDS Tutorial: TDS Monitoring &amp; Debugging</h1>
+   <h1>TDS Tutorial: TDS Monitoring and Debugging</h1>
 
    <div id="section">
     <h2><a name="access">Access Logs</a></h2>
@@ -199,7 +199,7 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
     </tr>
     <tr>
      <td>
-      Bytes transfered
+      Bytes transferred
     </td>
      <td>
       <code><small> 13022</small></code>
@@ -269,7 +269,7 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
         <p><code><small>192.12.209.57</small></code> is the host that has made the most requests to the server during this particular access log's period. </p>
 
         <div id="expanded" class="question">
-         <p>But who is <code><small>192.12.209.57</small></code>?  (IPs are not too meaninful by themselves.) </p>
+         <p>But who is <code><small>192.12.209.57</small></code>?  (IPs are not too meaningful by themselves.) </p>
         </div>
          <p>Run <code><small>dig</small></code> to find out the host information for <code><small>192.12.209.57</small></code>:</p>
 <pre>
@@ -357,7 +357,7 @@ hirudo.nsf.gov.
 
 
         <div id="expanded" class="question">
-         <p>What was the most prevelent Referer data?  What were the corresponding User Agents for these values?  Does this make sense?</p>
+         <p>What was the most prevalent Referer data?  What were the corresponding User Agents for these values?  Does this make sense?</p>
         </div>
 
         <div id="expanded" class="question">
@@ -485,7 +485,7 @@ hirudo.nsf.gov.
   &lt;/appender&gt;     
 </pre>
         <li>Examine the log format being applied to the <code><small>threddsServlet.log</small></code> file.</li>
-        <p>The <code><small>ConversionPattern</small></code> parameter specifies the <code><small>Log4J</small></code> pattern used to format the entires of the <code><small>threddsServlet.log</small></code> file:</p>
+        <p>The <code><small>ConversionPattern</small></code> parameter specifies the <code><small>Log4J</small></code> pattern used to format the entries of the <code><small>threddsServlet.log</small></code> file:</p>
 <pre>
 value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n" 
 </pre>
@@ -781,7 +781,7 @@ Exception in thread "RMI TCP Connection(idle)" java.lang.OutOfMemoryError: PermG
 </pre>
 
 
-         <li>In the two <code><small>JConsole</small></code> screen captures below, you can see the memory usage of <code><small>PermGen</small></code> increased with every reload of the application until it reaches the point where the VM crashes with the <code><small>OutOfMemory</small></code> error. The default maximum <code><small>PermGen</small></code> amount of JVM is 64 MB.</p>
+         <li>In the two <code><small>JConsole</small></code> screen captures below, you can see the memory usage of <code><small>PermGen</small></code> increased with every reload of the application until it reaches the point where the JVM crashes with the <code><small>OutOfMemory</small></code> error. The default maximum <code><small>PermGen</small></code> amount of JVM is 64 MB.</p>
           <p><a href="../images/permgen2.png"><img src="../images/permgen2.png" width="300" height="413" alt="PermGen Error" /></a></p>
           <p><a href="../images/permgen3.png"><img src="../images/permgen3.png" width="300" height="413" alt="PermGen Error" /></a></p>
          </ol>
