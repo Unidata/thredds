@@ -20,7 +20,7 @@
       <h3>System requirements</h3>
 
       <div id="note" class="info">
-       <h4>Installation Help</h4>
+       <h4>Installation help</h4>
        <p>Users of GCJ and OS-provided packages (linux) for Java and/or Tomcat may want to reference the <a href="http://www.unidata.ucar.edu/mailing_lists/archives/thredds/2009/msg00130.html">THREDDS mailing list</a> for installation help.</p>
       </div> 
 
@@ -50,13 +50,13 @@
         <p>Change the permissions on the file to be executable:</p>  
 
 <pre>
-<b>$</b> ls -l jdk-6u14-linux-i586.bin
--rw-r--r-- 1 thredds workshop 81771117 2009-07-09 14:54 jdk-6u14-linux-i586.bin
+<b>$</b> ls -l jdk-6u14-linux-i586.bin 
+rw-r--r-- 1 thredds workshop 81771117 2009-08-03 15:56 jdk-6u14-linux-i586.bin
 
 <b>$</b> chmod 755 jdk-6u14-linux-i586.bin  
 
 <b>$</b> ls -l jdk-6u14-linux-i586.bin 
--rwxr-xr-x 1 thredds workshop 81771117 2009-07-09 14:54 jdk-6u14-linux-i586.bin 
+-rwxr-xr-x 1 thredds workshop 81771117 2009-08-03 15:56 jdk-6u14-linux-i586.bin
 </pre>
 
         <p>Run self-extracting file and agree to the terms of the code license:</p>
@@ -75,7 +75,7 @@
       </ol>
 
       <div id="expanded" class="troubleshooting">
-       <h4>Troubleshooting Tips</h4>
+       <h4>Troubleshooting tips</h4>
        <ul>
         <li>Check to make sure the JDK self-extracting file has the correct permissions and is executable.</li>
         <li>If you receive an error while running the self-extracting file, you may have downloaded the wrong type of JDK for your machine.</li>
@@ -108,8 +108,8 @@
 <pre>
 <b>$</b> tar xvzf apache-tomcat-6.0.20.tar.gz
 
-<b>$</b> ls -ld apache-tomcat*
-drwxr-xr-x 9 thredds workshop 4096 2009-07-09 15:05 apache-tomcat-6.0.20
+<b>$</b> ls -ld apache-tomcat-6.0.20
+drwxr-xr-x 9 thredds workshop    4096 2009-08-03 16:04 apache-tomcat-6.0.20
 </pre>
 
        <li>Set the <code>$TOMCAT_HOME</code> environment variable.</li>
@@ -156,15 +156,15 @@ drwxr-xr-x 9 thredds workshop 4096 2009-07-09 15:05 apache-tomcat-6.0.20
 <b>$</b> cd apache-tomcat-6.0.20/
 <b>$</b>  ls -l 
 total 88
-drwxr-xr-x 2 thredds workshop  4096 2009-07-09 15:05 bin
+drwxr-xr-x 2 thredds workshop  4096 2009-08-03 16:04 bin
 drwxr-xr-x 2 thredds workshop  4096 2009-05-13 17:15 conf
-drwxr-xr-x 2 thredds workshop  4096 2009-07-09 15:05 lib
+drwxr-xr-x 2 thredds workshop  4096 2009-08-03 16:04 lib
 -rw-r--r-- 1 thredds workshop 37951 2009-05-13 17:15 LICENSE
 drwxr-xr-x 2 thredds workshop  4096 2009-05-13 17:15 logs
 -rw-r--r-- 1 thredds workshop   556 2009-05-13 17:15 NOTICE
 -rw-r--r-- 1 thredds workshop  7317 2009-05-13 17:15 RELEASE-NOTES
 -rw-r--r-- 1 thredds workshop  6368 2009-05-13 17:15 RUNNING.txt
-drwxr-xr-x 2 thredds workshop  4096 2009-07-09 15:05 temp
+drwxr-xr-x 2 thredds workshop  4096 2009-08-03 16:04 temp
 drwxr-xr-x 7 thredds workshop  4096 2009-05-13 17:15 webapps
 drwxr-xr-x 2 thredds workshop  4096 2009-05-13 17:15 work
 </pre>
@@ -185,29 +185,20 @@ drwxr-xr-x 2 thredds workshop  4096 2009-05-13 17:15 work
          </ul>
 
 
-      <div id="note" class="ahead">
-       <h4>Thinking Ahead</h4>
-       <p>There are <b>two</b> locations of log files you will reference:</p>
-       <ol class="little">
-        <li><code><small>$TOMCAT_HOME/logs/</small></code> is where you go to look at <i>Tomcat-generated</i> log files.</li>
-        <li>You will learn about where you go to look at <i>TDS-generated</i> log files later in this workshop.</li>
-       </ol>
-
-      </div>
 
 
         <p><code>$TOMCAT_HOME/logs/</code></p>
          <ul class="little">
           <li><i>Tomcat log files</i> are here by default.</li>
           <li>This is one of the directories you will be looking for log files (the TDS logs elsewhere by default).</li>
-          <li><i>The log files should be your first stop for troubleshooting Tomcat and TDS issues</i> (Hint, hint.)</li>
+          <li><i>The log files should be your first stop for troubleshooting Tomcat and TDS issues.</i> (Hint, hint.)</li>
           <li>Logs files may contain useful information for assessing the security of your system.</li>
           <li>You will become very familiar with the Tomcat-generated <code><small>catalina.out</small></code> and <code><small>access.yyyy-mm-dd.log</small></code> files by the end of this workshop.</li>
          </ul>
 
         <p><code>$TOMCAT_HOME/webapps/</code></p>
          <ul class="little">
-          <li>Contains web applications directories and WAR files</li>
+          <li>Contains web applications directories and WAR files.</li>
           <li>This is where we will be putting the TDS web application.</li>
           <li>You will also be using the <code><small>manager</small></code> application that comes with Tomcat during this workshop.</li>
          </ul>
@@ -240,13 +231,12 @@ drwxr-xr-x 2 thredds workshop  4096 2009-05-13 17:15 work
 
 <pre>
 <b>$</b> ps -ef | grep tomcat
-thredds  32018     1  1 15:38 pts/3    00:00:03 /home/thredds/jdk1.6.0_14/bin/java 
--Djava.util.logging.config.file=/home/thredds/apache-tomcat-6.0.20/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/thredds/apache-tomcat-6.0.20/endorsed -classpath :/home/thredds/apache-tomcat-6.0.20/bin/bootstrap.jar -Dcatalina.base=/home/thredds/apache-tomcat-6.0.20 -Dcatalina.home=/home/thredds/apache-tomcat-6.0.20 -Djava.io.tmpdir=/home/thredds/apache-tomcat-6.0.20/temp org.apache.catalina.startup.Bootstrap start 
+thredds   4443     1 21 16:08 pts/0    00:00:03 /usr/bin/java -Djava.util.logging.config.file=/home/thredds/apache-tomcat-6.0.20/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/thredds/apache-tomcat-6.0.20/endorsed -classpath :/home/thredds/apache-tomcat-6.0.20/bin/bootstrap.jar -Dcatalina.base=/home/thredds/apache-tomcat-6.0.20 -Dcatalina.home=/home/thredds/apache-tomcat-6.0.20 -Djava.io.tmpdir=/home/thredds/apache-tomcat-6.0.20/temp org.apache.catalina.startup.Bootstrap start
 </pre>
 
         <p>Open a new browser window/tab and go to <a href="http://localhost:8080/">http://localhost:8080/</a> to verify Tomcat is running:</p>
 
-     <img src="../images/tomcat_default_page.gif" alt="Tomcat Default Home Page" />
+     <p><a href="../images/congrat.png"><img src="../images/congrat.png" width="400" height="415" alt="Tomcat Default Home Page" /></a></p>
 
        <li>See if you can shutdown Tomcat.</li>
         <p>Run the <code><small>$TOMCAT_HOME/bin/shutdown.sh</small></code> script:</p>
@@ -257,7 +247,7 @@ thredds  32018     1  1 15:38 pts/3    00:00:03 /home/thredds/jdk1.6.0_14/bin/ja
 
 
       <div id="expanded" class="troubleshooting">
-       <h4>Troubleshooting Tips</h4>
+       <h4>Troubleshooting tips</h4>
        <ul>
         <li>Check the logs mostly recently generated in <code><small>$TOMCAT_HOME/logs</small></code> for clues about why Tomcat failed to start or stop.</li>
         <li>Pay particular attention to what is being reported in Tomcat's main log file: <code><small>$TOMCAT_HOME/logs/catalina.out</small></code>.</li>
@@ -289,7 +279,7 @@ thredds  32018     1  1 15:38 pts/3    00:00:03 /home/thredds/jdk1.6.0_14/bin/ja
 
       <ol>
        <li>Create <code>setenv.sh</code> file.</li>
-        <p>Using your favorite text editor (gedit, vi, emacs, nano, etc.), create a new file called <code><small>setenv.sh</small></code> in <code><small>$TOMCAT_HOME/bin</small></code> and add the following information to it:</p>
+        <p>Using your favorite text editor (gedit, vi, emacs, nano, etc.), create a new file called <code><small>setenv.sh</small></code> in <code><small>$TOMCAT_HOME/bin</small></code>:</p>
 
 <pre>
 <b>$</b>  pwd 
@@ -305,7 +295,7 @@ thredds  32018     1  1 15:38 pts/3    00:00:03 /home/thredds/jdk1.6.0_14/bin/ja
 #
 JAVA_HOME="/home/thredds/jdk1.6.0_14"
 export JAVA_HOME
-JAVA_OPTS="-Xmx4080m -Xms512m -server -Djava.awt.headless=true"
+JAVA_OPTS="-Xmx356m -Xms256m -server -Djava.awt.headless=true"
 export JAVA_OPTS
 CATALINA_HOME="/home/thredds/apache-tomcat-6.0.20"
 export CATALINA_HOME
@@ -322,7 +312,7 @@ export CATALINA_HOME
         <p>Restart Tomcat and examine the output generated to the terminal window by the startup script:</p>
 <pre>
 <b>$</b> $TOMCAT_HOME/bin/startup.sh
-Using CATALINA_BASE:   /home/thredds/apache-tomcat-6.0.20
+sing CATALINA_BASE:   /home/thredds/apache-tomcat-6.0.20
 Using CATALINA_HOME:   /home/thredds/apache-tomcat-6.0.20
 Using CATALINA_TMPDIR: /home/thredds/apache-tomcat-6.0.20/temp
 Using JRE_HOME:       /home/thredds/jdk1.6.0_14
@@ -335,13 +325,25 @@ Using JRE_HOME:       /home/thredds/jdk1.6.0_14
 
 <pre>
 <b>$</b> ps -ef | grep tomcat
-thredds  5623     1  1 15:40 pts/3    00:00:23 /home/thredds/jdk1.6.0_14/bin/java 
--Djava.util.logging.config.file=/home/thredds/apache-tomcat-6.0.20/conf/logging.properties -Xmx4080m -Xms512m Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/thredds/apache-tomcat-6.0.20/endorsed -classpath :/home/thredds/apache-tomcat-6.0.20/bin/bootstrap.jar -Dcatalina.base=/home/thredds/apache-tomcat-6.0.20 -Dcatalina.home=/home/thredds/apache-tomcat-6.0.20 -Djava.io.tmpdir=/home/thredds/apache-tomcat-6.0.20/temp org.apache.catalina.startup.Bootstrap start 
+dds   4606     1 99 16:15 pts/0    00:00:03 /home/thredds/jdk1.6.0_14/bin/java -Djava.util.logging.config.file=/home/thredds/apache-tomcat-6.0.20/conf/logging.properties <b>-Xmx356m -Xms256m -server -Djava.awt.headless=true</b> -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/thredds/apache-tomcat-6.0.20/endorsed -classpath :/home/thredds/apache-tomcat-6.0.20/bin/bootstrap.jar -Dcatalina.base=/home/thredds/apache-tomcat-6.0.20 -Dcatalina.home=/home/thredds/apache-tomcat-6.0.20 -Djava.io.tmpdir=/home/thredds/apache-tomcat-6.0.20/temp org.apache.catalina.startup.Bootstrap start
+thredds   4626  4207  0 16:15 pts/0    00:00:00 grep tomcat
 </pre>
 
       <div id="expanded" class="question">
        <p>What allows us to create the <code><small>setenv.sh</small></code> file and have its contents read?   (Hint: have a look at the <code><small>$TOMCAT_HOME/bin/catalina.sh</small></code> starting around line 110).</p>
       </div>
+
+      <div id="expanded" class="troubleshooting">
+       <h4>Troubleshooting tips</h4>
+       <ul>
+        <li>You may have allocated too much memory for the JVM settings if Tomcat fails to start and you get the following error reported in the Tomcat log <code><small>catalina.out</small></code>.</li>
+<pre>
+Error occurred during initialization of VM
+Could not reserve enough space for object heap
+</pre>
+       </ul>
+      </div>
+
       </ol>
      </div> <!-- end subsection -->
 
@@ -370,7 +372,7 @@ thredds  5623     1  1 15:40 pts/3    00:00:23 /home/thredds/jdk1.6.0_14/bin/jav
       <h3>About WAR files</h3>
        <ul>
         <li>WAR is short for <b>W</b>eb <b>AR</b>chive.</li>
-        <li><i>If configured</i> Tomcat will automatically unpack the WAR distribution into directory of the same name upon deployment.</li>
+        <li>By default, Tomcat will automatically unpack the WAR distribution into directory of the same name upon deployment.</li>
         <li>Note: the unpacked directory is overwritten each time a new WAR file is deployed.</li>
         </ul>
      </div> <!-- end subsection -->
@@ -385,50 +387,50 @@ thredds  5623     1  1 15:40 pts/3    00:00:23 /home/thredds/jdk1.6.0_14/bin/jav
       </div>
 
       <ol>
-       <li>Download the TDS WAR file from Unidata's web site.</li>
-        <p>We will be using the TDS 4.0 development version for this workshop:</p>
+       <li><a href="http://www.unidata.ucar.edu/downloads/thredds/index.jsp">Download</a> the TDS WAR file from Unidata's web site.</li>
+        <p>We will be using the <i>TDS 4.0 development version</i> for this workshop:</p>
         <p><code>thredds.war</code></p>
        <li>Deploy the TDS in Tomcat.</li>
-        <p>Put <code><small>thredds.war</small></code> in the Tomcat <code><small>webapps/</small></code> directory.:</p>
+        <p>Put <code><small>thredds.war</small></code> in the Tomcat <code><small>webapps/</small></code> directory:</p>
 
 <pre>
 <b>$</b> cp thredds.war $TOMCAT_HOME/webapps
 <b>$</b> cd $TOMCAT_HOME/webapps
 
 <b>$</b> ls -l
-total 10284
-drwxr-xr-x 11 thredds workshop     4096 2009-05-13 17:15 docs
-drwxr-xr-x  5 thredds workshop     4096 2009-05-13 17:15 examples
-drwxr-xr-x  5 thredds workshop     4096 2009-05-13 17:15 host-manager
-drwxr-xr-x  5 thredds workshop     4096 2009-05-13 17:15 manager
-drwxr-xr-x  3 thredds workshop     4096 2009-05-13 17:15 ROOT
--rw-r--r--  1 thredds workshop 23288479 2009-05-13 17:23 thredds.war
+total 22820
+drwxr-xr-x 10 thredds workshop     4096 2009-08-03 16:04 docs
+drwxr-xr-x  5 thredds workshop     4096 2009-08-03 16:04 examples
+drwxr-xr-x  5 thredds workshop     4096 2009-08-03 16:04 host-manager
+drwxr-xr-x  5 thredds workshop     4096 2009-08-03 16:04 manager
+drwxr-xr-x  3 thredds workshop     4096 2009-08-03 16:04 ROOT
+-rw-r--r--  1 thredds workshop 23317222 2009-08-03 16:22 thredds.war
 </pre>
 
        <li>Confirm the TDS has been deployed.</li>
-        <p>Restart Tomcat and confirm the <code><small>thredds.war</small></code> file was unpacked in the <code><small>webapps/</small></code> directory:</p>
+        <p>If Tomcat is already running, wait a couple of seconds after placing the WAR file in <code><small>webapps/</small></code> and then verify the <code><small>thredds.war</small></code> file was unpacked:</p>
 
 <pre>
 <b>$</b> $TOMCAT_HOME/bin/startup.sh
 
 <b>$</b> ls -l
-total 10284
-drwxr-xr-x 11 thredds workshop     4096 2009-05-13 17:15 docs
-drwxr-xr-x  5 thredds workshop     4096 2009-05-13 17:15 examples
-drwxr-xr-x  5 thredds workshop     4096 2009-05-13 17:15 host-manager
-drwxr-xr-x  5 thredds workshop     4096 2009-05-13 17:15 manager
-drwxr-xr-x  3 thredds workshop     4096 2009-05-13 17:15 ROOT
-drwxr-xr-x  7 thredds workshop     4096 2009-05-13 17:23 thredds
--rw-r--r--  1 thredds workshop 23288479 2009-05-13 17:23 thredds.war
+total 22824
+drwxr-xr-x 10 thredds workshop     4096 2009-08-03 16:04 docs
+drwxr-xr-x  5 thredds workshop     4096 2009-08-03 16:04 examples
+drwxr-xr-x  5 thredds workshop     4096 2009-08-03 16:04 host-manager
+drwxr-xr-x  5 thredds workshop     4096 2009-08-03 16:04 manager
+drwxr-xr-x  3 thredds workshop     4096 2009-08-03 16:04 ROOT
+drwxr-xr-x  5 thredds workshop     4096 2009-08-03 16:23 thredds
+-rw-r--r--  1 thredds workshop 23317222 2009-08-03 16:22 thredds.war
 </pre>
 
  <p>Go to <a href="http://localhost:8080/thredds/">http://localhost:8080/thredds/</a> in your browser to verify the TDS has been deployed:</p>
 
-     <img src="../images/distribution_catalog.gif" alt="THREDDS Distribution Catalog" />
+     <p><a href="../images/tds.png"><img src="../images/tds.png" width="400" width="433" alt="THREDDS Distribution Catalog" /></a></p>
 
       </ol>
       <div id="expanded" class="troubleshooting">
-       <h4>Troubleshooting Tips</h4>
+       <h4>Troubleshooting tips</h4>
        <ul>
         <li>Any error in the deployment will be reported in <code><small>$TOMCAT_HOME/logs/catalina.out</small></code>. </li>
         <li>Be sure you have downloaded and deployed the TDS 4.0 development version for this workshop (the version number will appear in the blue bar at the bottom of TDS catalog pages).</li>
@@ -458,7 +460,7 @@ drwxr-xr-x  7 thredds workshop     4096 2009-05-13 17:23 thredds
  
    <div id="section">
 
-    <h2><a name="cursory">A Cursory Look at Log Files</a></h2>
+    <h2><a name="logs">Tomcat Log Files</a></h2>
 
 
      <div id="subsection">
@@ -470,26 +472,25 @@ drwxr-xr-x  7 thredds workshop     4096 2009-05-13 17:23 thredds
 <pre>
 <b>$</b> cd $TOMCAT_HOME/logs
 <b>$</b> ls -l
-total 10284
--rw-r--r-- 1 thredds workshop     0 2009-05-13 17:35 admin.2008-11-06.log
--rw-r--r-- 1 thredds workshop 10050 2009-05-13 17:41 catalina.2008-11-06.log
--rw-r--r-- 1 thredds workshop 10610 2009-05-13 17:41 catalina.out
--rw-r--r-- 1 thredds workshop     0 2009-05-13 17:35 host-manager.2008-11-06.log
--rw-r--r-- 1 thredds workshop  2760 2009-05-13 17:41 localhost.2008-11-06.log
--rw-r--r-- 1 thredds workshop     0 2009-05-13 17:35 manager.2008-11-06.log
+total 12
+-rw-r--r-- 1 thredds workshop 2952 2009-08-03 16:23 catalina.2009-08-03.log
+-rw-r--r-- 1 thredds workshop 3331 2009-08-03 16:23 catalina.out
+-rw-r--r-- 1 thredds workshop    0 2009-08-03 16:08 host-manager.2009-08-03.log
+-rw-r--r-- 1 thredds workshop 2030 2009-08-03 16:23 localhost.2009-08-03.log
+-rw-r--r-- 1 thredds workshop    0 2009-08-03 16:08 manager.2009-08-03.log
 </pre>
 
       <div id="expanded" class="question">
        <p>Do you see a correspondence between some of the web applications in the <code><small>$TOMCAT_HOME/webapps/</small></code> directory and the naming of certain log files?</p>
       </div>
       <div id="expanded" class="question">
-       <p>Is there a difference in information being logged to <code><small>catalina.out</small></code> verses <code><small>catalina.yyyy-mm-dd.log</small></code>?</p>
+       <p>Is there a difference in the information being logged to <code><small>catalina.out</small></code> verses <code><small>catalina.yyyy-mm-dd.log</small></code>?</p>
       </div>
       <div id="expanded" class="question">
        <p>Are some log files more verbose than others?</p>
       </div>
 
-       <li>Examining <code>catalina.out</code></li>
+       <li>Examining <code>catalina.out</code>.</li>
         <p>Open another terminal window (hereafter referred to as terminal #2) and run the following command in the new terminal:</p>
 <pre>
 <b>$</b> tail -f /home/thredds/apache-tomcat-6.0.20/logs/catalina.out
@@ -510,13 +511,13 @@ total 10284
       <h3>Things to know about <code>catalina.out</code></h3>
 
       <div id="note" class="info">
-       <h4>Help w/ <code>catalina.out</code></h4>
+       <h4><code>catalina.out</code></h4>
        <p>The <a href="http://marc.info/?l=tomcat-user&w=2&r=1&s=catalina.out+rotate&q=b">Tomcat Users mailing list</a> has seen a lot of traffic dedicated to <code><small>catalina.out</small></code> logging and rotation.</p>
       </div>
 
 
        <ul>
-        <li>Tomcat <code><small>System.out</small></code> and <code><small>System.err</small></code> gets appended to <code><small>catalina.out</small></code>  </li>
+        <li>Tomcat <code><small>System.out</small></code> and <code><small>System.err</small></code> gets appended to <code><small>catalina.out</small></code>.  </li>
         <li><code><small>catalina.out</small></code> can quickly grow large if the hosted web applications are not specifically catching and logging <code><small>System.out</small></code> and <code><small>System.err</small></code> to designated files.</li>
         <li><code><small>catalina.out</small></code> is not automatically rotated in Tomcat.</li>
         <li>You will need to employ an outside log rotation program (e.g., <code><small>logadm</small></code> or <code><small>logrotate</small></code>) to rotate <code><small>catalina.out</small></code>.</li>
@@ -532,11 +533,14 @@ total 10284
 
 
 
-   <p><img src="../images/thread.png" height="60" alt="THREDDS" valign="top" align="left" vspace="0" hspace="10" />  This document is maintained by Unidata and was last updated 
+   <p><img src="../images/thread.png" height="60" alt="THREDDS" valign="top" align="left" vspace="0" hspace="10" />  This document is maintained by Unidata.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.</p>
+
    
 <script language="JavaScript" type="text/JavaScript">
     document.write(date_modified);
 </script> 
-Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.</p>
+
+
+
   </body>
  </html>   
