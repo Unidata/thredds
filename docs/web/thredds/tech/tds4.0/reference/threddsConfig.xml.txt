@@ -12,6 +12,47 @@
   <catalogRoot>idd/catalog.xml</catalogRoot>
   <catalogRoot>catgen/subdir/enhancedCatalog-1.0.xml</catalogRoot>
 
+  <!--
+   * Setup for generated HTML pages.
+   *
+   * NOTE: URLs may be absolute or relative, relative URLs must be relative
+   * to the webapp URL, i.e., http://server:port/thredds/.
+    -->
+  <htmlSetup>
+    <!--
+     * CSS documents used in generated HTML pages.
+     * The CSS document given in the "catalogCssUrl" element is used for all pages
+     * that are HTML catalog views. The CSS document given in the "standardCssUrl"
+     * element is used in all other generated HTML pages.
+     * -->
+    <standardCssUrl>tds.css</standardCssUrl>
+    <catalogCssUrl>tdsCat.css</catalogCssUrl>
+
+    <!--
+     * The URLs (relative to "/thredds/") and alternate text for both
+     * folder and dataset icons used in HTML catalog views.
+     * -->
+    <folderIconUrl>folder.gif</folderIconUrl>
+    <folderIconAlt>Folder</folderIconAlt>
+    <datasetIconUrl>dataset.gif</datasetIconUrl>
+    <datasetIconAlt>Dataset</datasetIconAlt>
+
+    <!--
+     * Name and logo for this installation.
+     * -->
+    <installName>Initial Installation</installName>
+    <installLogoUrl>yourLogo.gif</installLogoUrl>
+    <installLogoAlt>Initial Install</installLogoAlt>
+
+    <!--
+     * Name, URL, and logo for the institution hosting this installation.
+     * -->
+    <hostInstName>My Group</hostInstName>
+    <hostInstUrl>http://www.my.site/</hostInstUrl>
+    <hostInstLogoUrl>myGroup.gif</hostInstLogoUrl>
+    <hostInstLogoAlt>My Group</hostInstLogoAlt>
+  </htmlSetup>
+
   <!-- CDM uses the DiskCache directory to store temporary files, like uncompressed files.  -->
   <DiskCache>
     <alwaysUse>false</alwaysUse>
@@ -57,15 +98,6 @@
     <typicalDataset>random</typicalDataset>
   </Aggregation>
 
-  <!-- The CoordSys Validator Service is off by default.   -->
-  <CdmValidatorService>
-    <allow>false</allow>
-    <dir>/data/tmp/thredds/cdmValidateCache/</dir>
-    <maxFileUploadSize>1 Gb</maxFileUploadSize>
-    <scour>10 mins</scour>
-    <maxAge>-1 days</maxAge>
-  </CdmValidatorService>
-  
   <Opendap>
     <ascLimit>50</ascLimit>
     <binLimit>500</binLimit>
@@ -75,6 +107,7 @@
   <!-- The WCS Service is off by default. -->
   <WCS>
     <allow>false</allow> 
+    <allowRemote>false</allowRemote>
     <dir>/data/tmp/thredds/wcsCache/</dir>
     <scour>15 min</scour>
     <maxAge>30 min</maxAge>
