@@ -20,7 +20,7 @@ Changes in version 4.1:
   CoordinateAxis2D: do not cache data, messes up strided data access
   NcML: values can be specified by fromAttribute
   filesystem caching in Aggregation, PointCollection
-  DateUnit refactor - use udunit.convert() instead of TimeUnit as base time
+  DateUnit refactor - use udunit.conveCoordSysrt() instead of TimeUnit as base time
   udunits numeric timezone bug
 
 Changes in version 4.0:
