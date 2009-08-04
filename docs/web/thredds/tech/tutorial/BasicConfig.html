@@ -322,9 +322,6 @@ cosmic  dusk.080522  forecasts    gempak  logs    madis  nam_12km  nldn   rawfil
         &lt;serviceName&gt;thisDODS&lt;/serviceName&gt;
     &lt;/metadata&gt;
 
-    &lt;filter&gt;
-        &lt;include wildcard="<strong>*.grib2</strong>" /&gt;
-    &lt;/filter&gt;
 &lt;/datasetScan&gt;
 </pre>
       </li>
@@ -339,13 +336,25 @@ cosmic  dusk.080522  forecasts    gempak  logs    madis  nam_12km  nldn   rawfil
           <li>Select the OPeNDAP link</li>
         </ol>
       </li>
-      <li>Not working? Take a look at the catalogErrors.log:
-        <pre><strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds/logs<br><strong>[thredds@workshop00 ~]$</strong> more catalogErrors.log</pre>
+    </ol>
+
+    <h4>Not working?</h4>
+    <ol>
+      <li>Take a look at the catalogInit.log:
+<pre>
+<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds/logs
+<strong>[thredds@workshop00 ~]$</strong> more catalogInit.log
+</pre>
+      </li>
+      <li>Take a look at the threddsServlet.log:
+<pre>
+<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds/logs
+<strong>[thredds@workshop00 ~]$</strong> more threddsServlet.log
+</pre>
       </li>
     </ol>
 
   </div>
-
 </div>
 
 <p>

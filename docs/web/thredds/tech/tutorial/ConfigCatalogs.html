@@ -363,11 +363,21 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
         <pre><strong>[thredds@workshop00 ~]$</strong> ls /data/ldm/suomi<br>CsuPWVh_2008.308.18.00.0060_nc  CsuPWVh_2008.309.07.00.0060_nc  CsuPWVh_2008.309.20.00.0060_nc  CsuPWVh_2008.310.09.00.0060_nc<br>...<br>CsuPWVh_2008.309.04.00.0060_nc  CsuPWVh_2008.309.17.00.0060_nc  CsuPWVh_2008.310.06.00.0060_nc  CsuPWVh_2008.310.19.00.0060_nc</pre>
       </li>
       <li>Edit the main TDS configuration catalog:
-    <pre><strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds<br><strong>[thredds@workshop00 ~]$</strong> vi catalog.xml                     <var>//
-      Use the editor of your choice</var></pre>
+<pre>
+<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds
+<strong>[thredds@workshop00 ~]$</strong> vi catalog.xml           <var>// Use the editor of your choice</var>
+</pre>
       </li>
       <li>And add a <code>datasetScan</code> element for the FSL data:
-        <pre>&lt;datasetScan name="<strong>FSL</strong>" ID="<strong>FSL</strong>" <br>             path="<strong>fsl</strong>" location="<strong>/data/ldm/fsl</strong>"&gt;<br><br>    &lt;metadata inherited="true"&gt;<br>        &lt;serviceName&gt;thisDODS&lt;/serviceName&gt;<br>    &lt;/metadata&gt;<br><br>    &lt;filter&gt;<br>        &lt;include wildcard="<strong>*.nc</strong>" /&gt;<br>    &lt;/filter&gt;<br>&lt;/datasetScan&gt;<br></pre>
+<pre>
+&lt;datasetScan name="<strong>FSL</strong>" ID="<strong>FSL</strong>"
+             path="<strong>fsl</strong>" location="<strong>/data/ldm/fsl</strong>"&gt;
+
+    &lt;metadata inherited="true"&gt;
+        &lt;serviceName&gt;thisDODS&lt;/serviceName&gt;
+    &lt;/metadata&gt;<br>
+&lt;/datasetScan&gt;
+</pre>
       </li>
       <li>And similarly for MADIS and Suomi data</li>
       <li><strong>Reinitialize the TDS configuration catalogs</strong> from the Remote Management page - <a
@@ -435,7 +445,7 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
       <li>Check the catalogErrors.log - <a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a>
       </li>
     </ol>
-    <p>No fix the FSL datasetScan element by repeating steps 1-5 above.</p>
+    <p>Now fix the FSL datasetScan element by repeating steps 1-5 above.</p>
 
   </div>
 </div>
@@ -472,6 +482,29 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
       directory, I could exclude it by adding the following to the filter:<br>
     </p>
     <pre>&lt;exclude wildcard="badData" atomic="false" collection="true" /&gt;</pre>
+  </div>
+  <div id="subsection" class="exercise"><h3>Exercise: Filtering Files</h3>
+
+    <p>In any of the datasets you have added, look for a ".scour" file.
+      Try its OPeNDAP access method.</p>
+    <p>This causes an error because the netCDF-Java class can't open the non-netCDF file.</p>
+    <p>Lets exclude all non-netCDF files by adding <code>filter</code> elements
+      to our <code>datasetScan</code> elements</p>
+<pre>
+&lt;filter&gt;
+    &lt;include wildcard="<strong>*.nc</strong>" /&gt;
+&lt;/filter&gt;
+</pre>
+  </div>
+  <div id="subsection" class="exercise"><h3>Exercise: Filtering Directories</h3>
+
+    <p>Lets try excluding the "06min" data from the "fsl" data by adding </p>
+    <p>This causes an error because the netCDF-Java class can't open the non-netCDF file.</p>
+    <p>Lets exclude all non-netCDF files by adding <code>filter</code> elements
+      to our <code>datasetScan</code> elements</p>
+<pre>
+&lt;exclude wildcard="<strong>06min</strong>" atomic="false" collection="true" /&gt;
+</pre>
   </div>
   <div id="subsection"><h3>Generating IDs</h3>
 
