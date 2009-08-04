@@ -100,7 +100,7 @@ h1 {
 
 #section #subsection.exercise p {
     padding: 0px 0px 0px 10px;
-    margin: -10px 0px 0px 0px;  
+    margin: 5px 0px 0px 0px;  
 }
 
 #section #subsection.exercise .exercise_question {
@@ -110,7 +110,10 @@ h1 {
 
 }
 
-
+#section #subsection.exercise .exercise_question p {
+     padding: 0px 0px 0px 10px;
+     margin: -10px 0px 0px 0px;  
+}
 
 #section #subsection p {
     padding: 0px 0px 0px 0px;
