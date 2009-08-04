@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+  <title>TDS Tutorial: TDS Configuration</title>
+  <link rel="stylesheet" href="tutorial.css" type="text/css">
+  <script language="JavaScript1.2" src="http://www.unidata.ucar.edu/acemenu/last_mod.js"></script>
+  <link rel="SHORTCUT ICON" href="http://www.unidata.ucar.edu/favicon.ico" type="image/x-icon">
+</head>
+<body>
+
+<h1>TDS Tutorial: TDS Configuration</h1>
+
+<div id="section"><h2><a name="CatReview">THREDDS Catalog Review</a></h2>
+
+
+  <div id="subsection" class="exercise"><h3>Exercise: Additional Services for NCEP NAM model data</h3>
+
+    <p>The default catalog is setup with HTTP and OPeNDAP access to the data. Here we will
+      add NetCDF Subset Service (ncss), OGC WCS, and OGC WMS services.</p>
+    <ol>
+      <li>Edit the threddsConfig.xml file and allow both WMS and WCS.
+        <ol>
+          <li>Add WMS section:</li>
+          <li>Add WCS section:</li>
+        </ol>
+      </li>
+      <li>Edit the main TDS configuration catalog:
+<pre><strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds
+<strong>[thredds@workshop00 ~]$</strong> vi catalog.xml                     <var>// Use the editor of your choice</var>
+</pre>
+      </li>
+      <li>And add a <code>datasetScan</code> element for the NAM data:
+<pre>
+&lt;service name="all" serviceType="Compound" base="" &gt;
+    &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
+    &lt;service name="wcs" serviceType="WCS" base="/thredds/wcs/" /&gt;
+    &lt;service name="wms" serviceType="WMS" base="/thredds/wms/" /&gt;
+    &lt;service name="http" serviceType="HTTPServer" base="/thredds/fileServer/" /&gt;
+&lt;/service&gt;
+</pre>
+      </li>
+      <li>Restart Tomcat so the TDS is reinitialized:
+<pre>
+<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/bin
+<strong>[thredds@workshop00 ~]$</strong> ./shutdown.sh
+<strong>[thredds@workshop00 ~]$</strong> ./startup.sh
+</pre>
+      </li>
+      <li>Test that the new services are working:
+        <ol>
+          <li>Bring the catalog up in a browser: <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code>
+          </li>
+          <li>Click down to one of the NAM dataset pages.</li>
+          <li>Select one of the new access links</li>
+        </ol>
+      </li>
+      <li>Not working? Take a look at the catalogErrors.log:
+<pre>
+<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds/logs
+<strong>[thredds@workshop00 ~]$</strong> more catalogErrors.log
+</pre>
+      </li>
+
+    </ol>
+  </div>
+
+
+</div>
+
+<p>
+  <img src="../images/thread.png" height="60" alt="THREDDS" valign="top" align="left" vspace="0" hspace="10" />
+  This document is maintained by Unidata and was last updated
+  <script language="JavaScript" type="text/JavaScript">
+    document.write(date_modified);
+  </script>
+  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
+</p>
+
+</body>
+</html>

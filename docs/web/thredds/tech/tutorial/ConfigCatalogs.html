@@ -357,13 +357,13 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
   <div id="subsection" class="exercise"><h3>Exercise: Managing multiple roots</h3>
     <ol>
       <li>Add a few more datasetScan elements (/data/ldm/fsl, /data/ldm/madis, /data/ldm/suomi):
-        <pre><strong>-bash-3.2$</strong> ls /data/ldm<br>bufr    dusk         dusk.080527  fsl     ldm.pq  ltng   mcidas    ngrid  nogaps    rcm      severe  surface   wseta<br>cosmic  dusk.080522  forecasts    gempak  logs    madis  nam_12km  nldn   rawfiles  rtmodel  suomi   upperair</pre>
-        <pre><strong>-bash-3.2$</strong> ls /data/ldm/fsl<br>01hr  06min  RASS<br><strong>-bash-3.2$</strong> ls /data/ldm/fsl/01hr<br>20082962000.nc  20082981400.nc  20083000800.nc  20083020200.nc  20083032000.nc  20083051400.nc  20083071000.nc  20083090400.nc<br>...<br>20082981200.nc  20083000600.nc  20083020000.nc  20083031800.nc  20083051200.nc  20083070800.nc  20083090200.nc  20083102100.nc</pre>
-        <pre><strong>-bash-3.2$</strong> ls /data/ldm/madis<br>20081022_0700.nc  20081024_1000.nc  20081026_1300.nc  20081028_1600.nc  20081030_1900.nc  20081101_2200.nc  20081104_0100.nc<br>...<br>20081024_0300.nc  20081026_0600.nc  20081028_0900.nc  20081030_1200.nc  20081101_1500.nc  20081103_1800.nc  20081105_2100.nc</pre>
-        <pre><strong>-bash-3.2$</strong> ls /data/ldm/suomi<br>CsuPWVh_2008.308.18.00.0060_nc  CsuPWVh_2008.309.07.00.0060_nc  CsuPWVh_2008.309.20.00.0060_nc  CsuPWVh_2008.310.09.00.0060_nc<br>...<br>CsuPWVh_2008.309.04.00.0060_nc  CsuPWVh_2008.309.17.00.0060_nc  CsuPWVh_2008.310.06.00.0060_nc  CsuPWVh_2008.310.19.00.0060_nc</pre>
+        <pre><strong>[thredds@workshop00 ~]$</strong> ls /data/ldm<br>bufr    dusk         dusk.080527  fsl     ldm.pq  ltng   mcidas    ngrid  nogaps    rcm      severe  surface   wseta<br>cosmic  dusk.080522  forecasts    gempak  logs    madis  nam_12km  nldn   rawfiles  rtmodel  suomi   upperair</pre>
+        <pre><strong>[thredds@workshop00 ~]$</strong> ls /data/ldm/fsl<br>01hr  06min  RASS<br><strong>[thredds@workshop00 ~]$</strong> ls /data/ldm/fsl/01hr<br>20082962000.nc  20082981400.nc  20083000800.nc  20083020200.nc  20083032000.nc  20083051400.nc  20083071000.nc  20083090400.nc<br>...<br>20082981200.nc  20083000600.nc  20083020000.nc  20083031800.nc  20083051200.nc  20083070800.nc  20083090200.nc  20083102100.nc</pre>
+        <pre><strong>[thredds@workshop00 ~]$</strong> ls /data/ldm/madis<br>20081022_0700.nc  20081024_1000.nc  20081026_1300.nc  20081028_1600.nc  20081030_1900.nc  20081101_2200.nc  20081104_0100.nc<br>...<br>20081024_0300.nc  20081026_0600.nc  20081028_0900.nc  20081030_1200.nc  20081101_1500.nc  20081103_1800.nc  20081105_2100.nc</pre>
+        <pre><strong>[thredds@workshop00 ~]$</strong> ls /data/ldm/suomi<br>CsuPWVh_2008.308.18.00.0060_nc  CsuPWVh_2008.309.07.00.0060_nc  CsuPWVh_2008.309.20.00.0060_nc  CsuPWVh_2008.310.09.00.0060_nc<br>...<br>CsuPWVh_2008.309.04.00.0060_nc  CsuPWVh_2008.309.17.00.0060_nc  CsuPWVh_2008.310.06.00.0060_nc  CsuPWVh_2008.310.19.00.0060_nc</pre>
       </li>
       <li>Edit the main TDS configuration catalog:
-    <pre><strong>-bash-3.2$</strong> cd ${TOMCAT_HOME}/content/thredds<br><strong>-bash-3.2$</strong> vi catalog.xml                     <var>//
+    <pre><strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds<br><strong>[thredds@workshop00 ~]$</strong> vi catalog.xml                     <var>//
       Use the editor of your choice</var></pre>
       </li>
       <li>And add a <code>datasetScan</code> element for the FSL data:
@@ -413,38 +413,30 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
 
   <div id="subsection" class="exercise"><h3>Exercise: Duplicate Roots</h3>
 
+    <p>
+      Modify the FSL <code>datasetScan</code> element so that the value of the
+      path attribute matches the one for the NAM_12km <code>datasetScan</code>
+      element.
+    </p>
     <ol>
-      <li>
-        Modify the FSL <code>datasetScan</code> element so that the value of the
-        path attribute matches the one for the NAM_12km <code>datasetScan</code>
-        element.
-        <ol>
-          <li>Edit the main TDS root catalog and change the FSL path to <strong>nam_12km</strong>:
-        <pre><strong>-bash-3.2$</strong> cd ${TOMCAT_HOME}/content/thredds<br><strong>-bash-3.2$</strong> vi catalog.xml                     <var>//
+      <li>Edit the main TDS root catalog and change the FSL path to <strong>nam_12km</strong>:
+        <pre><strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds<br><strong>[thredds@workshop00 ~]$</strong> vi catalog.xml                     <var>//
           Use the editor of your choice</var></pre>
-          </li>
-          <li>Reinitialize the TDS configuration catalogs from the Remote Management page - <a
-                  href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a></li>
-          <ul>
-            <li>Click on the "Reinitialize" link</li>
-          </ul>
-          <li>Test that the new <code>datasetScan</code> elements are working - <code><a
-                  href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code>
-          </li>
-          <li>Check the list of dataset roots - <a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a>
-          </li>
-          <li>Check the catalogErrors.log - <a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a>
-          </li>
-        </ol>
       </li>
-      <li>Fix the FSL datasetScan element.
-        <ol>
-          <li>Repeat steps 1-5 above.</li>
-        </ol>
+      <li>Reinitialize the TDS configuration catalogs from the Remote Management page - <a
+              href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a>
+        - by clicking on the "Reinitialize" link.
+      </li>
+      <li>Test that the new <code>datasetScan</code> elements are working - <code><a
+              href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code>
+      </li>
+      <li>Check the list of dataset roots - <a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a>
+      </li>
+      <li>Check the catalogErrors.log - <a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a>
       </li>
     </ol>
+    <p>No fix the FSL datasetScan element by repeating steps 1-5 above.</p>
 
-    <br>
   </div>
 </div>
 <div id="section"><h2><a name="DatasetScan">More <code>datasetScan</code> Element</a></h2>
@@ -708,15 +700,43 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
 
     <p>results in the following <code>timeCoverage</code> element:</p>
 
-<pre>&lt;timeCoverage&gt;<br>    &lt;start&gt;2005-07-18T12:00:00&lt;/start&gt;<br>    &lt;duration&gt;60 hours&lt;/duration&gt;<br>&lt;/timeCoverage&gt;<br></pre>
+<pre>
+&lt;timeCoverage&gt;
+    &lt;start&gt;2005-07-18T12:00:00&lt;/start&gt;
+    &lt;duration&gt;60 hours&lt;/duration&gt;
+&lt;/timeCoverage&gt;
+</pre>
 
   </div>
+
   <div id="subsection" class="exercise"><h3>Exercise: Experiment with the above on
     the NAM, FSL, MODIS, and Suomi <code>datasetScan</code> Elements </h3>
     <ol>
       <li>Edit the main TDS configuration catalog as desired:
 
-    <pre><strong>-bash-3.2$</strong> cd ${TOMCAT_HOME}/content/thredds<br><strong>-bash-3.2$</strong> vi catalog.xml                     <var>//
+    <pre><strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds<br><strong>[thredds@workshop00 ~]$</strong> vi catalog.xml                     <var>//
+      Use the editor of your choice</var></pre>
+      </li>
+      <li>Reinitialize the TDS configuration catalogs from the Remote Management page - <a
+              href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>
+      - by clicking on the "Reinitialize" link.</li>
+      <li>Check the catalogErrors.log - <a
+              href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>
+      </li>
+      <li>Check the list of dataset roots - <a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>
+      </li>
+      <li>Browse the catalogs to see how the modified <code>datasetScan</code> elements are working - <code><a
+              href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code>
+      </li>
+      <li>Repeat 1-5 making other changes.</li>
+    </ol>
+  </div>
+
+  <div id="subsection" class="exercise"><h3>Exercise: Filter - Exclude Files </h3>
+    <ol>
+      <li>Edit the main TDS configuration catalog as desired:
+
+    <pre><strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds<br><strong>[thredds@workshop00 ~]$</strong> vi catalog.xml                     <var>//
       Use the editor of your choice</var></pre>
       </li>
       <li>Reinitialize the TDS configuration catalogs from the Remote Management page - <a
