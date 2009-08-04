@@ -3,70 +3,100 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-  <title>TDS Tutorial: TDS Configuration</title>
+  <title>TDS Tutorial: Serving Data with OGC Services (WCS and WMS)</title>
   <link rel="stylesheet" href="tutorial.css" type="text/css">
   <script language="JavaScript1.2" src="http://www.unidata.ucar.edu/acemenu/last_mod.js"></script>
   <link rel="SHORTCUT ICON" href="http://www.unidata.ucar.edu/favicon.ico" type="image/x-icon">
 </head>
 <body>
 
-<h1>TDS Tutorial: TDS Configuration</h1>
+<h1>TDS Tutorial: Serving Data with OGC Services (WCS and WMS)</h1>
 
-<div id="section"><h2><a name="CatReview">THREDDS Catalog Review</a></h2>
+<div id="section"><h2><a name="Setup">Setting  up WCS and WMS</a></h2>
 
+  <div id="subsection"><h3>Allowing WCS and WMS</h3>
 
-  <div id="subsection" class="exercise"><h3>Exercise: Additional Services for NCEP NAM model data</h3>
+    <p>Both WCS and WMS must be explicitly allowed in the threddsConfig.xml file.</p>
 
-    <p>The default catalog is setup with HTTP and OPeNDAP access to the data. Here we will
-      add NetCDF Subset Service (ncss), OGC WCS, and OGC WMS services.</p>
-    <ol>
-      <li>Edit the threddsConfig.xml file and allow both WMS and WCS.
-        <ol>
-          <li>Add WMS section:</li>
-          <li>Add WCS section:</li>
-        </ol>
-      </li>
-      <li>Edit the main TDS configuration catalog:
-<pre><strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds
-<strong>[thredds@workshop00 ~]$</strong> vi catalog.xml                     <var>// Use the editor of your choice</var>
-</pre>
-      </li>
-      <li>And add a <code>datasetScan</code> element for the NAM data:
+    <h4>WCS Configuration</h4>
+
+    <p>The threddsConfig.xml file that is distributed with the TDS (and you
+      should be using now) has the WCS section commented out. [More details on WCS
+      configuration are available in the
+      <a href="../tds4.0/reference/ThreddsConfigXMLFile.html#WCS">WCS section</a> of
+      the threddsConfig.xml file documentation.]
+    </p>
+
+    <p>To enable WCS, the WCS section must be uncommented and the content of
+      the allow <code>element</code> changed to "true". Default values will be
+      used if the <code>dir</code> element is commented out.</p>
+
+    <h4>WMS Configuration</h4>
+
+    <p>The WMS section should look something like:</p>
 <pre>
-&lt;service name="all" serviceType="Compound" base="" &gt;
+&lt;WMS&gt;
+    &lt;allow&gt;false&lt;/allow&gt;
+    &lt;paletteLocationDir&gt;/data/my/pallettes/&lt;/paletteLocationDir&gt;
+    &lt;ogcMetaXML&gt;OGCMeta.xml&lt;/ogcMetaXML&gt;
+    &lt;dir&gt;/temp/ncache/&lt;/dir&gt;
+    &lt;scour&gt;15 min&lt;/scour&gt;
+    &lt;maxAge&gt;30 min&lt;/maxAge&gt;
+&lt;/WMS&gt;
+</pre>
+    <p>[More details on WMS configuration are available in the
+      <a href="../tds4.0/reference/ThreddsConfigXMLFile.html#WMS">WMS section</a> of
+      the threddsConfig.xml file documentation.
+    </p>
+
+    <p>To enable WMS, add a WMS section similar to the above and change the content of
+      the allow <code>element</code> to "true". Default values will be used if the
+      <code>paletteLocationDir</code> and <code>dir</code> elements are commented out.</p>
+
+  </div>
+  <div id="subsection" class="exercise"><h3>Exercise: Allow WCS and WMS Services</h3>
+    <ol>
+      <li>Edit the <strong>threddsConfig.xml</strong> file and allow WCS and
+        WMS services as discussed above.</li>
+    </ol>
+  </div>
+  <div id="subsection"><h3>Adding WCS and WMS Services</h3>
+
+    <p>Once the WCS and WMS services are enabled, all that is required for the
+      TDS to provide WCS and WMS access to datasets is for those datasets to
+      reference WCS and WMS service elements. The simplest way to add WCS and WMS
+      services is to add WCS and WMS service elements to an existing compound service.
+      For instance:
+    </p>
+<pre>
+&lt;service name="grid" serviceType="Compound" base="" &gt;
     &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
-    &lt;service name="wcs" serviceType="WCS" base="/thredds/wcs/" /&gt;
-    &lt;service name="wms" serviceType="WMS" base="/thredds/wms/" /&gt;
+    <strong>&lt;service name="wcs" serviceType="WCS" base="/thredds/wcs/" /&gt;</strong>
+    <strong>&lt;service name="wms" serviceType="WMS" base="/thredds/wms/" /&gt;</strong>
     &lt;service name="http" serviceType="HTTPServer" base="/thredds/fileServer/" /&gt;
 &lt;/service&gt;
 </pre>
-      </li>
-      <li>Restart Tomcat so the TDS is reinitialized:
-<pre>
-<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/bin
-<strong>[thredds@workshop00 ~]$</strong> ./shutdown.sh
-<strong>[thredds@workshop00 ~]$</strong> ./startup.sh
-</pre>
-      </li>
-      <li>Test that the new services are working:
-        <ol>
-          <li>Bring the catalog up in a browser: <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code>
-          </li>
-          <li>Click down to one of the NAM dataset pages.</li>
-          <li>Select one of the new access links</li>
-        </ol>
-      </li>
-      <li>Not working? Take a look at the catalogErrors.log:
-<pre>
-<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds/logs
-<strong>[thredds@workshop00 ~]$</strong> more catalogErrors.log
-</pre>
-      </li>
 
+  </div>
+
+  <div id="subsection" class="exercise"><h3>Exercise: Add WCS and WMS Services to NAM data</h3>
+
+    <ol>
+      <li>Edit the <strong>catalog.xml</strong> file and add WCS and
+        WMS services to the NAM dataset.</li>
     </ol>
+
   </div>
 
 
+</div>
+<div id="section"><h2><a name="Using">Using WCS and WMS</a></h2>
+  <div id="subsection"><h3>WMS Clients</h3>
+
+  </div>
+  <div id="subsection"><h3>WCS Clients</h3>
+
+  </div>
 </div>
 
 <p>
