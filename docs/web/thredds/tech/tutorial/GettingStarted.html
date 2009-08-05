@@ -38,38 +38,38 @@
       <ol>
        <li><a href="http://java.sun.com/javase/downloads/">Download</a> current Java SE Developer Kit (JDK) from Sun.</li>
         <p>We will be using the Linux x32-bit, <i>non-rpm</i>, self-extracting file for this workshop:</p>
-        <p><code>jdk-6u14-linux-i586.bin</code></p>
+        <p><code>jdk-6u15-linux-i586.bin</code></p>
        <li>Install the JDK as per the Sun <a href="http://java.sun.com/javase/6/webnotes/install/">installation instructions</a>.</li>
         <p>Copy the self-extracting file to the installation directory (our home directory is the installation directory in this example):</p>
 
 <pre>
-<b>$</b> cp jdk-6u14-linux-i586.bin ~
+<b>$</b> cp jdk-6u15-linux-i586.bin ~
 <b>$</b> cd
 </pre>
 
         <p>Change the permissions on the file to be executable:</p>  
 
 <pre>
-<b>$</b> ls -l jdk-6u14-linux-i586.bin 
-rw-r--r-- 1 thredds workshop 81771117 2009-08-03 15:56 jdk-6u14-linux-i586.bin
+<b>$</b> ls -l jdk-6u15-linux-i586.bin 
+rw-r--r-- 1 thredds workshop 81771117 2009-08-03 15:56 jdk-6u15-linux-i586.bin
 
-<b>$</b> chmod 755 jdk-6u14-linux-i586.bin  
+<b>$</b> chmod 755 jdk-6u15-linux-i586.bin  
 
-<b>$</b> ls -l jdk-6u14-linux-i586.bin 
--rwxr-xr-x 1 thredds workshop 81771117 2009-08-03 15:56 jdk-6u14-linux-i586.bin
+<b>$</b> ls -l jdk-6u15-linux-i586.bin 
+-rwxr-xr-x 1 thredds workshop 81771117 2009-08-03 15:56 jdk-6u15-linux-i586.bin
 </pre>
 
         <p>Run self-extracting file and agree to the terms of the code license:</p>
 
 <pre>
-<b>$</b> ./jdk-6u14-linux-i586.bin
+<b>$</b> ./jdk-6u15-linux-i586.bin
 </pre>
 
        <li>Set the <code>$JAVA_HOME</code> environment variable.</li>
 <pre>
-<b>$</b> set JAVA_HOME=/home/thredds/jdk1.6.0_14  
+<b>$</b> set JAVA_HOME=/home/thredds/jdk1.6.0_15  
 <b>$</b> echo $JAVA_HOME 
-/home/thredds/jdk1.6.0_14 
+/home/thredds/jdk1.6.0_15 
 </pre>
 
       </ol>
@@ -293,7 +293,7 @@ thredds   4443     1 21 16:08 pts/0    00:00:03 /usr/bin/java -Djava.util.loggin
 #
 # ENVARS for Tomcat and TDS environment
 #
-JAVA_HOME="/home/thredds/jdk1.6.0_14"
+JAVA_HOME="/home/thredds/jdk1.6.0_15"
 export JAVA_HOME
 JAVA_OPTS="-Xmx256m -Xms256m -server -Djava.awt.headless=true"
 export JAVA_OPTS
@@ -315,7 +315,7 @@ export CATALINA_HOME
 sing CATALINA_BASE:   /home/thredds/apache-tomcat-6.0.20
 Using CATALINA_HOME:   /home/thredds/apache-tomcat-6.0.20
 Using CATALINA_TMPDIR: /home/thredds/apache-tomcat-6.0.20/temp
-Using JRE_HOME:       /home/thredds/jdk1.6.0_14
+Using JRE_HOME:       /home/thredds/jdk1.6.0_15
 </pre>
       <div id="expanded" class="question">
        <p>Did you notice any difference in the what is being reported to <code><small>STDOUT</small></code> during startup?</p>
@@ -325,7 +325,7 @@ Using JRE_HOME:       /home/thredds/jdk1.6.0_14
 
 <pre>
 <b>$</b> ps -ef | grep tomcat
-dds   4606     1 99 16:15 pts/0    00:00:03 /home/thredds/jdk1.6.0_14/bin/java -Djava.util.logging.config.file=/home/thredds/apache-tomcat-6.0.20/conf/logging.properties <b>-Xmx256m -Xms256m -server -Djava.awt.headless=true</b> -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/thredds/apache-tomcat-6.0.20/endorsed -classpath :/home/thredds/apache-tomcat-6.0.20/bin/bootstrap.jar -Dcatalina.base=/home/thredds/apache-tomcat-6.0.20 -Dcatalina.home=/home/thredds/apache-tomcat-6.0.20 -Djava.io.tmpdir=/home/thredds/apache-tomcat-6.0.20/temp org.apache.catalina.startup.Bootstrap start
+dds   4606     1 99 16:15 pts/0    00:00:03 /home/thredds/jdk1.6.0_15/bin/java -Djava.util.logging.config.file=/home/thredds/apache-tomcat-6.0.20/conf/logging.properties <b>-Xmx256m -Xms256m -server -Djava.awt.headless=true</b> -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/thredds/apache-tomcat-6.0.20/endorsed -classpath :/home/thredds/apache-tomcat-6.0.20/bin/bootstrap.jar -Dcatalina.base=/home/thredds/apache-tomcat-6.0.20 -Dcatalina.home=/home/thredds/apache-tomcat-6.0.20 -Djava.io.tmpdir=/home/thredds/apache-tomcat-6.0.20/temp org.apache.catalina.startup.Bootstrap start
 thredds   4626  4207  0 16:15 pts/0    00:00:00 grep tomcat
 </pre>
 
