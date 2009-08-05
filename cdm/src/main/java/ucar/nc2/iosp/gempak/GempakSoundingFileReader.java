@@ -191,7 +191,7 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
                 ivert = PRES_COORD;
             } else if (vertName.equals("THTA")) {
                 ivert = THTA_COORD;
-            } else if (vertName.equals("THTA") || vertName.equals("MHGT")
+            } else if (vertName.equals("HGHT") || vertName.equals("MHGT")
                        || vertName.equals("DHGT")) {
                 ivert = HGHT_COORD;
             } else {
@@ -339,7 +339,7 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
      */
     public static void main(String[] args) throws IOException {
         if (args.length == 0) {
-            System.out.println("need to supply a GEMPAK surface file name");
+            System.out.println("need to supply a GEMPAK sounding file name");
             System.exit(1);
         }
         try {
