@@ -327,18 +327,18 @@ hirudo.nsf.gov.
       <h3>Exercise Three: Using parsed access log data.</h3>       
        <ol>
         <li>Parse log data.</li>
-         <p>Run <code>/opt/bin/parse_logs.pl</code> to parse the <code><small>access.2009.07.30.log</small></code> file:</p> 
+         <p>Run <code>/usr/bin/parse_logs.pl</code> to parse the <code><small>access.2009.07.30.log</small></code> file:</p> 
 <pre>
-<b>$</b> /opt/bin/parse_logs.pl
+<b>$</b> /usr/bin/parse_logs.pl
 </pre> 
-         <p>The resulting file <code><small>logdata.txt</small></code> will contain the log data in <i>tab-delimited format</i> that will have a <code>.txt</code> extension:</p>
+         <p>The resulting file <code><small>logdata.csv</small></code> will contain the log data in <i>tab-delimited format</i> that will have a <code>.txt</code> extension:</p>
 <pre>
 <b>$</b> ls -l *log* 
 -rw-r--r-- 1 thredds workshop 350361 2009-08-04 13:14 access.2009-07-27.log
--rw-r--r-- 1 thredds workshop 339731 2009-08-04 13:28 logdata.txt
+-rw-r--r-- 1 thredds workshop 339731 2009-08-04 13:28 logdata.csv
 </pre>  
        <li>Examine the log data.</li>
-        <p>Open the <code><small>logdata.txt</small></code> file in the OpenOffice spreadsheet utility.</p> 
+        <p>Open the <code><small>logdata.csv</small></code> file in the OpenOffice spreadsheet utility.</p> 
 
         <div id="expanded" class="question">
          <p>What Requested URL took the most time to process?</p>
