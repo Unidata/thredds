@@ -13,7 +13,7 @@
 
 
    <div id="section">
-    <h2><a name="install">Installing Java &amp; Tomcat</a></h2>
+    <h2><a name="install">Installing Java and Tomcat</a></h2>
 
 
      <div id="subsection">
@@ -153,7 +153,7 @@ drwxr-xr-x 9 thredds workshop    4096 2009-08-03 16:04 apache-tomcat-6.0.20
        <li>Examine the Tomcat directory structure.</li>
         <p>Move into the new Tomcat directory and do a long listing:</p>
 <pre>
-<b>$</b> cd apache-tomcat-6.0.20/
+<b>$</b> cd apache-tomcat-6.0.20
 <b>$</b>  ls -l 
 total 88
 drwxr-xr-x 2 thredds workshop  4096 2009-08-03 16:04 bin
@@ -171,12 +171,12 @@ drwxr-xr-x 2 thredds workshop  4096 2009-05-13 17:15 work
 
        <li>Familiarize yourself with the following important directories.</li>
 
-        <p><code>$TOMCAT_HOME/bin/</code></p>
+        <p><code>$TOMCAT_HOME/bin</code></p>
          <ul class="little">
           <li>Contains <code><small>startup.sh</small></code>, <code><small>shutdown.sh</small></code> and other scripts/programs.</li>
           <li>The <code><small>*.sh files</small></code>  (for Unix systems) are functional duplicates of the <code><small>*.bat</small></code>  files (for Windows systems).</li>
          </ul>
-        <p><code>$TOMCAT_HOME/conf/</code></p>
+        <p><code>$TOMCAT_HOME/conf</code></p>
          <ul class="little">
           <li><i>Server-wide</i> Tomcat configuration.</li>
           <li>You will modify <code><small>server.xml</small></code> and <code><small>tomcat-users.xml</small></code> to adjust logging, authentication and access control, enable SSL, etc.</li>
@@ -187,7 +187,7 @@ drwxr-xr-x 2 thredds workshop  4096 2009-05-13 17:15 work
 
 
 
-        <p><code>$TOMCAT_HOME/logs/</code></p>
+        <p><code>$TOMCAT_HOME/logs</code></p>
          <ul class="little">
           <li><i>Tomcat log files</i> are here by default.</li>
           <li>This is one of the directories you will be looking for log files (the TDS logs elsewhere by default).</li>
@@ -196,7 +196,7 @@ drwxr-xr-x 2 thredds workshop  4096 2009-05-13 17:15 work
           <li>You will become very familiar with the Tomcat-generated <code><small>catalina.out</small></code> and <code><small>access.yyyy-mm-dd.log</small></code> files by the end of this workshop.</li>
          </ul>
 
-        <p><code>$TOMCAT_HOME/webapps/</code></p>
+        <p><code>$TOMCAT_HOME/webapps</code></p>
          <ul class="little">
           <li>Contains web applications directories and WAR files.</li>
           <li>This is where we will be putting the TDS web application.</li>
@@ -295,7 +295,7 @@ thredds   4443     1 21 16:08 pts/0    00:00:03 /usr/bin/java -Djava.util.loggin
 #
 JAVA_HOME="/home/thredds/jdk1.6.0_14"
 export JAVA_HOME
-JAVA_OPTS="-Xmx356m -Xms256m -server -Djava.awt.headless=true"
+JAVA_OPTS="-Xmx256m -Xms256m -server -Djava.awt.headless=true"
 export JAVA_OPTS
 CATALINA_HOME="/home/thredds/apache-tomcat-6.0.20"
 export CATALINA_HOME
@@ -325,7 +325,7 @@ Using JRE_HOME:       /home/thredds/jdk1.6.0_14
 
 <pre>
 <b>$</b> ps -ef | grep tomcat
-dds   4606     1 99 16:15 pts/0    00:00:03 /home/thredds/jdk1.6.0_14/bin/java -Djava.util.logging.config.file=/home/thredds/apache-tomcat-6.0.20/conf/logging.properties <b>-Xmx356m -Xms256m -server -Djava.awt.headless=true</b> -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/thredds/apache-tomcat-6.0.20/endorsed -classpath :/home/thredds/apache-tomcat-6.0.20/bin/bootstrap.jar -Dcatalina.base=/home/thredds/apache-tomcat-6.0.20 -Dcatalina.home=/home/thredds/apache-tomcat-6.0.20 -Djava.io.tmpdir=/home/thredds/apache-tomcat-6.0.20/temp org.apache.catalina.startup.Bootstrap start
+dds   4606     1 99 16:15 pts/0    00:00:03 /home/thredds/jdk1.6.0_14/bin/java -Djava.util.logging.config.file=/home/thredds/apache-tomcat-6.0.20/conf/logging.properties <b>-Xmx256m -Xms256m -server -Djava.awt.headless=true</b> -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/thredds/apache-tomcat-6.0.20/endorsed -classpath :/home/thredds/apache-tomcat-6.0.20/bin/bootstrap.jar -Dcatalina.base=/home/thredds/apache-tomcat-6.0.20 -Dcatalina.home=/home/thredds/apache-tomcat-6.0.20 -Djava.io.tmpdir=/home/thredds/apache-tomcat-6.0.20/temp org.apache.catalina.startup.Bootstrap start
 thredds   4626  4207  0 16:15 pts/0    00:00:00 grep tomcat
 </pre>
 
@@ -336,10 +336,15 @@ thredds   4626  4207  0 16:15 pts/0    00:00:00 grep tomcat
       <div id="expanded" class="troubleshooting">
        <h4>Troubleshooting tips</h4>
        <ul>
-        <li>You may have allocated too much memory for the JVM settings if Tomcat fails to start and you get the following error reported in the Tomcat log <code><small>catalina.out</small></code>.</li>
+        <li>You may have allocated too much memory for the JVM settings if Tomcat fails to start and you get the following error reported in the Tomcat log <code><small>catalina.out</small></code>:</li>
 <pre>
 Error occurred during initialization of VM
 Could not reserve enough space for object heap
+</pre>
+        <li>Likewise, if  there is an error with your JVM memory allocation syntax in the <code><small>setenv.sh</small></code> file, it will be reported to <code><small>catalina.out</small></code>:</li>
+<pre>
+Error occurred during initialization of VM
+Incompatible minimum and maximum heap sizes specified
 </pre>
        </ul>
       </div>
@@ -383,12 +388,12 @@ Could not reserve enough space for object heap
 
       <div id="note" class="info">
        <h4>Upgrading the TDS</h4>
-       <p>The <a href="">reference</a> documentation contains information on <a href="">upgrading</a> the TDS. </p>
+       <p>The <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.0/reference/index.html">reference</a> documentation contains information on <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.0/UpgradingTo4.0.html">upgrading</a> the TDS. </p>
       </div>
 
       <ol>
        <li><a href="http://www.unidata.ucar.edu/downloads/thredds/index.jsp">Download</a> the TDS WAR file from Unidata's web site.</li>
-        <p>We will be using the <i>TDS 4.0 development version</i> for this workshop:</p>
+        <p>We will be using the current <i>TDS 4.0 (stable) version</i> for this workshop:</p>
         <p><code>thredds.war</code></p>
        <li>Deploy the TDS in Tomcat.</li>
         <p>Put <code><small>thredds.war</small></code> in the Tomcat <code><small>webapps/</small></code> directory:</p>
@@ -464,9 +469,9 @@ drwxr-xr-x  5 thredds workshop     4096 2009-08-03 16:23 thredds
 
 
      <div id="subsection">
-      <h3><code>$TOMCAT_HOME/logs/</code></h3>
+      <h3><code>$TOMCAT_HOME/logs</code></h3>
       <ol>
-       <li>Look at the different types of log files being generated in <code>$TOMCAT_HOME/logs/</code>.</li>
+       <li>Look at the different types of log files being generated in <code>$TOMCAT_HOME/logs</code>.</li>
         <p>Move into the <code><small>logs</small></code> directory to see the type of information being logged:</p>
 
 <pre>
@@ -481,7 +486,7 @@ total 12
 </pre>
 
       <div id="expanded" class="question">
-       <p>Do you see a correspondence between some of the web applications in the <code><small>$TOMCAT_HOME/webapps/</small></code> directory and the naming of certain log files?</p>
+       <p>Do you see a correspondence between some of the web applications in the <code><small>$TOMCAT_HOME/webapps</small></code> directory and the naming of certain log files?</p>
       </div>
       <div id="expanded" class="question">
        <p>Is there a difference in the information being logged to <code><small>catalina.out</small></code> verses <code><small>catalina.yyyy-mm-dd.log</small></code>?</p>
