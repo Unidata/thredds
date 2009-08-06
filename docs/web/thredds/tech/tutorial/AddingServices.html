@@ -82,6 +82,9 @@
   <div id="subsection" class="exercise"><h3>Exercise: Add WCS and WMS Services to NAM data</h3>
 
     <ol>
+      <li>Open a NAM dataset in ToolsUI
+        [<a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.0/webstart/netCDFtools.jnlp">webstart</a>]
+        and make sure it is recognized as gridded data.</li>
       <li>Edit the <strong>catalog.xml</strong> file and add WCS and
         WMS services to the NAM dataset.</li>
     </ol>
@@ -92,11 +95,55 @@
 </div>
 <div id="section"><h2><a name="Using">Using WCS and WMS</a></h2>
   <div id="subsection"><h3>WMS Clients</h3>
+    <ul>
+      <li>NASA WorldWind</li>
+      <li>GoogleEarth</li>
+      <li>IDV</li>
+      <li>ToolsUI</li>
+    </ul>
 
   </div>
   <div id="subsection"><h3>WCS Clients</h3>
+    <ul>
+      <li>OWSlib [free] -
+        <a href="http://pypi.python.org/pypi/OWSLib/">http://pypi.python.org/pypi/OWSLib/</a>
+      </li>
+      <li>GI-go [free]
+        - <a href="http://zeus.pin.unifi.it/cgi-bin/twiki/view/GIgo/WebHome">http://zeus.pin.unifi.it/cgi-bin/twiki/view/GIgo/WebHome</a>
+      </li>
+      <li>CADCorp [commercial]
+        - <a href="http://www.cadcorp.com/">http://www.cadcorp.com/</a>
+        - has a "no cost" product called
+        <a href="http://www.cadcorp.com/products_geographical_information_systems/map_browser.htm">Map Browser</a>
+      </li>
+      <li>IDL [commercial]
+        - <a href="http://www.ittvis.com/ProductServices/IDL.aspx">http://www.ittvis.com/ProductServices/IDL.aspx</a>
+      </li>
+      <li>gvSIG [free] - <a href="http://www.gvsig.gva.es/">http://www.gvsig.gva.es/</a>
+        [<a href="http://www.gvsig.gva.es/index.php?id=gvsig&L=2">en</a>]
+      </li>
+    </ul>
+  </div>
+  <div id="subsection" class="exercise"><h3>Exercise: Look at WMS and WCS</h3>
+
+    <ol>
+      <li>Browse to a NAM dataset</li>
+      <li>Click on the WMS access URL.</li>
+      <li>Click on the WCS access URL.</li>
+      <li>Try WMS access in the IDV:
+        <ol>
+          <li>Open IDV
+            [<a href="http://www.unidata.ucar.edu/software/idv/release/nightly/webstart/IDV/idv.jnlp">webstart</a>]
+          </li>
+          <li>In the Dashboard "Data Chooser" tab, select "Catalogs"</li>
+          <li>Cut and Paste the GetCapabilities URL into the selector</li>
+          <li>Browse to the layers, select, and "Add Source"</li>
+        </ol>
+      </li>
+    </ol>
 
   </div>
+
 </div>
 
 <p>
