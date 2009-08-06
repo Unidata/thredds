@@ -727,15 +727,7 @@ java.io.IOException: Cant read /data/ldm/pub/native/radar/level2/KFTG/20090602/L
 
       <div id="subsection" class="exercise">
        <h3>Exercise Five: Use Live HTTP Headers.</h3>
-     <div id="note" class="info">
-
-       <h4><code>Log4J</code> library</h4>
-       <p>More information on these JVM monitoring tools:</p>
-        <ul class="little">
-         <li><a href="http://java.sun.com/javase/6/docs/technotes/tools/share/jvisualvm.html"><code><small>JVisualVM</small></code></a>  - Java Virtual Machine Monitoring, Troubleshooting and Profiling Tool.</li>
-       <li><a href="http://java.sun.com/developer/technicalArticles/J2SE/jconsole.html"><code><small>JConsole</small></code></a>  - Java Monitoring and Management Console.</li>
-        </ul>
-      </div> 
+ 
 
        <ol>
         <li>Clear any authenticated browser sessions you may have running.</li>
@@ -751,6 +743,15 @@ java.io.IOException: Cant read /data/ldm/pub/native/radar/level2/KFTG/20090602/L
 
      <div id="subsection">
       <h3>Tools that come with the JDK: <code>JConsole</code> and <code>JVisualVM</code></h3>    
+    <div id="note" class="info">
+
+       <h4><code>JVM</code> monitoring tools</h4>
+       
+        <ul class="little">
+         <li><a href="http://java.sun.com/javase/6/docs/technotes/tools/share/jvisualvm.html"><code><small>JVisualVM</small></code></a>  - Java Virtual Machine Monitoring, Troubleshooting and Profiling Tool.</li>
+       <li><a href="http://java.sun.com/developer/technicalArticles/J2SE/jconsole.html"><code><small>JConsole</small></code></a>  - Java Monitoring and Management Console.</li>
+        </ul>
+      </div> 
        <ul>
         <li>Both come packaged with the JDK (found in <code><small>$JAVA_HOME/bin</small></code>).</li>
         <li>Both GUI tools to provide information about the JVM  in a visual format.</li>
@@ -793,7 +794,9 @@ Exception in thread "RMI TCP Connection(idle)" java.lang.OutOfMemoryError: PermG
 
          <li>In the two <code><small>JConsole</small></code> screen captures below, you can see the memory usage of <code><small>PermGen</small></code> increased with every reload of the application until it reaches the point where the JVM crashes with the <code><small>OutOfMemory</small></code> error. The default maximum <code><small>PermGen</small></code> amount of JVM is 64 MB.</p>
           <p><a href="../images/permgen2.png"><img src="../images/permgen2.png" width="300" height="413" alt="PermGen Error" /></a></p>
+
           <p><a href="../images/permgen3.png"><img src="../images/permgen3.png" width="300" height="413" alt="PermGen Error" /></a></p>
+
          </ol>
      </ol>
 
