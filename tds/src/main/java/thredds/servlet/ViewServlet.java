@@ -255,11 +255,11 @@ public class ViewServlet extends AbstractServlet {
     public String  getViewerLinkHtml( InvDatasetImpl ds, HttpServletRequest req) {
       String viewer = ds.findProperty("viewer");
       String[] parts = viewer.split(",");
-      String link = StringUtil.quoteHtmlContent( sub(parts[0], ds));
+      String link = StringUtil.quoteHtmlContent( sub(parts[0], ds, req));
       return "<a href='"+link+"'>"+parts[1]+"</a>";
     }
 
-    public String sub(String org, InvDatasetImpl ds) {
+    public String sub(String org, InvDatasetImpl ds, HttpServletRequest req) {
       List<InvAccess> access = ds.getAccess();
       if (access.size() == 0) return org;
 
@@ -267,13 +267,16 @@ public class ViewServlet extends AbstractServlet {
       for (InvAccess acc : access) {
         String sname = "{"+acc.getService().getServiceType()+"}";
         if (org.indexOf(sname) >= 0) {
-          return StringUtil.substitute(org, sname, acc.getStandardUri().toString());
+          String relUrl = acc.getStandardUri().toString();
+          String server = ServletUtil.getRequestServer(req);
+
+          return StringUtil.substitute(org, sname, server + relUrl);
         }
       }
 
       String sname = "{url}";
-      if (org.indexOf(sname) >= 0) {
-        InvAccess acc = access.get(0);
+      if ((org.indexOf(sname) >= 0) && (access.size() > 0)) {
+        InvAccess acc = access.get(0); // just use the first one
         return StringUtil.substitute(org, sname, acc.getStandardUri().toString());
       }
 

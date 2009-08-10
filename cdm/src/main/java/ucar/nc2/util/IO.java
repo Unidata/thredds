@@ -42,6 +42,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Formatter;
 import java.util.zip.GZIPInputStream;
+import java.nio.channels.FileChannel;
+import java.nio.ByteBuffer;
 
 /**
  * Input/Output utilities.
@@ -121,13 +123,66 @@ public class IO {
       int n = in.read(buffer);
       if (n == -1) break;
       totalBytesRead += n;
-      /* if (fout != null) {
-        fout.format(" read %d, accum=%d %n", n, totalBytesRead);
-        fout.flush();
-      } */
     }
     // if (fout != null) fout.format("done=%d %n",totalBytesRead);
     return totalBytesRead;
+  }
+
+  static public long touch(InputStream in, int buffersize) throws IOException {
+    long touch = 0;
+    if (buffersize <= 0) buffersize = default_file_buffersize;
+    byte[] buffer = new byte[buffersize];
+    while (true) {
+      int n = in.read(buffer);
+      if (n == -1) break;
+      for (int i=0; i<buffersize; i++)
+        touch += buffer[i];
+    }
+    // if (fout != null) fout.format("done=%d %n",totalBytesRead);
+    return touch;
+  }
+
+  /**
+   * copy all bytes from in and throw them away.
+   *
+   * @param in  FileChannel
+   * @param buffersize size of buffer to use, if -1 uses default value (9200)
+   * @return number of bytes copied
+   * @throws java.io.IOException on io error
+   */
+  static public long copy2null(FileChannel in, int buffersize) throws IOException {
+    long totalBytesRead = 0;
+    if (buffersize <= 0) buffersize = default_file_buffersize;
+    ByteBuffer buffer = ByteBuffer.allocate( buffersize);
+    while (true) {
+      int n = in.read(buffer);
+      if (n == -1) break;
+      totalBytesRead += n;
+      buffer.flip();
+    }
+    return totalBytesRead;
+  }
+
+  static public long touch(FileChannel in, int buffersize) throws IOException {
+    long touch = 0;
+    if (buffersize <= 0) buffersize = default_file_buffersize;
+    ByteBuffer buffer = ByteBuffer.allocate( buffersize);
+    while (true) {
+      int n = in.read(buffer);
+      if (n == -1) break;
+
+      // touch all the bytes
+      //buffer.rewind();
+      //for (int i=0; i<buffersize; i++)
+      //  touch += buffer.get();
+
+      byte[] result = buffer.array();
+      for (int i=0; i<buffersize; i++)
+        touch += result[i];
+
+      buffer.flip();
+    }
+    return touch;
   }
 
   /**

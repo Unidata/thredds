@@ -40,14 +40,20 @@ links for all children datasets:</p><pre style="margin-left: 40px;">&lt;dataset 
 <p>Adding the same viewer link to all your dataset pages may
 not be what you want. The TDS also supports inserting a dataset access
 URL into the viewer link URL. If your dataset has a single service, you
-can place "<strong>{url}</strong>" into your viewer link. The datasets access URL will be substituted in place of the "<strong>{url}</strong>" string. For instance, the following:</p><pre style="margin-left: 40px;">&lt;dataset name="Test Viewer2" ID="testViewer2" serviceName="dapService" urlPath="test/testData.nc" dataType="Grid"<br>  &lt;property name="viewer" value="http://localhost:8080/cdmValidator/validate?dataset=<strong>{url}</strong>,Validation Service"/&gt;<br>&lt;/dataset&gt;<br></pre>
-<p>results in the following viewer link:</p><pre style="margin-left: 40px;">&lt;a href="http://localhost:8080/cdmValidator/validate?dataset=http://localhost:8080/thredds/dodsC/test/testData.nc"&gt;<br>  Validation Service&lt;/a&gt;</pre>
+can place "<strong>{url}</strong>" into your viewer link. The datasets access URL will be substituted in place of the "<strong>{url}</strong>" string. For instance, the following:</p><pre style="margin-left: 40px;">&lt;dataset name="Test Viewer2" ID="testViewer2" serviceName="dapService" urlPath="test/testData.nc" dataType="Grid"<br>  &lt;property name="viewer" value="http://motherlode.ucar.edu:8080/cdmValidator/validate?URL=<strong>{url}</strong>,Validation Service"/&gt;<br>&lt;/dataset&gt;<br></pre>
+<p>results in the following viewer link:</p>
+<pre style="margin-left: 40px;">&lt;a href="http://motherlode.ucar.edu:8080/cdmValidator/validate?URL==http://myhost:8080/thredds/dodsC/test/testData.nc"&gt;<br>  Validation Service&lt;/a&gt;</pre>
 <p>Which looks like this on the TDS page:</p>
-<pre style="margin-left: 40px;"><a href="http://localhost:8080/cdmValidator/validate?dataset=http://localhost:8080/thredds/dodsC/test/testData.nc">Validation Service</a></pre>
+<pre style="margin-left: 40px;"><a href="http://motherlode.ucar.edu:8080/cdmValidator/validate?URL==http://myhost:8080/thredds/dodsC/test/testData.nc">Validation Service</a></pre>
 <h3>Selecting the Dataset access URL used in the Viewer Link</h3>
 <p>When a Dataset has more than one kind of access, each access will
 have a seperate URL. Use the service type inside of curly brackets to
-select which access URL to use.</p><p>For example, the following:</p><pre style="margin-left: 40px;">&lt;service name="all" type="Compound" base=""&gt;<br>  &lt;service name="dap" type="<strong>OPENDAP</strong>" base="<strong>/thredds/dodsC/</strong>" /&gt;<br>  &lt;service name="wcs" type="<strong>WCS</strong>" base="<strong>/thredds/wcs/</strong>" /&gt;<br>&lt;/service&gt;<br>&lt;dataset name="test viewer select service" ID="tvss"&gt;<br>  &lt;metadata inherited="true"&gt;<br>    &lt;serviceName&gt;all&lt;/serviceName&gt;<br>  &lt;/metadata&gt;<br><br>  &lt;dataset name="test viewer select service ds 1" ID="tvss/ds1" urlPath="tvss/ds1.nc"&gt;<br>    &lt;property name="viewer" value="http://localhost:8080/cdmValidator/validate?dataset={<strong>OPENDAP</strong>},Validation Service" /&gt;<br>  &lt;/dataset&gt;<br>  &lt;dataset name="test viewer select service ds 2" ID="tvss/ds2" urlPath="tvss/ds2.nc"&gt;<br>    &lt;property name="viewer" value="http://localhost:8080/cdmValidator/validate?dataset={<strong>WCS</strong>},Validation Service" /&gt;<br>  &lt;/dataset&gt;<br>&lt;/dataset&gt;</pre><p>generates a viewer link URL for the first dataset of:</p><pre style="margin-left: 40px;">http://localhost:8080/cdmValidator/validate?dataset=http://localhost:8080<strong>/thredds/dodsC/</strong>tvss/ds1.nc</pre><p>and for the second dataset:</p><pre style="margin-left: 40px;">http://localhost:8080/cdmValidator/validate?dataset=http://localhost:8080<strong>/thredds/wcs/</strong>tvss/ds2.nc<br></pre><hr style="width: 100%; height: 2px;"><h2><a name="Returning_a_JNLP_file_"></a>Returning a JNLP file</h2><p>Viewer
+select which access URL to use.</p><p>For example, the following:</p><pre style="margin-left: 40px;">&lt;service name="all" type="Compound" base=""&gt;<br>  &lt;service name="dap" type="<strong>OPENDAP</strong>" base="<strong>/thredds/dodsC/</strong>" /&gt;<br>  &lt;service name="wcs" type="<strong>WCS</strong>" base="<strong>/thredds/wcs/</strong>" /&gt;<br>&lt;/service&gt;<br>&lt;dataset name="test viewer select service" ID="tvss"&gt;<br>  &lt;metadata inherited="true"&gt;<br>    &lt;serviceName&gt;all&lt;/serviceName&gt;<br>  &lt;/metadata&gt;<br><br>  &lt;dataset name="test viewer select service ds 1" ID="tvss/ds1" urlPath="tvss/ds1.nc"&gt;<br>    &lt;property name="viewer" value="http://motherlode.ucar.edu:8080/cdmValidator/validate?URL={<strong>OPENDAP</strong>},Validation Service" /&gt;<br>  &lt;/dataset&gt;<br>  &lt;dataset name="test viewer select service ds 2" ID="tvss/ds2" urlPath="tvss/ds2.nc"&gt;<br>    &lt;property name="viewer" value="http://myhost:8080/wmsView/show?dataset={<strong>WCS</strong>},Validation Service" /&gt;<br>  &lt;/dataset&gt;<br>&lt;/dataset&gt;</pre>
+<p>generates a viewer link URL for the first dataset of:</p>
+<pre style="margin-left: 40px;">http://motherlode.ucar.edu:8080/cdmValidator/validate?URL=http://myhost:8080<strong>/thredds/dodsC/</strong>tvss/ds1.nc</pre>
+<p>If your server is publically accessible, this URL will call the motherlode validator service for your dataset, using opendap. For the second dataset, the viewer link is:</p>
+<pre style="margin-left: 40px;">http://myhost:8080/wmsView/show?dataset=http://myhost:8080<strong>/thredds/wcs/</strong>tvss/ds2.nc<br></pre>
+<hr style="width: 100%; height: 2px;"><h2><a name="Returning_a_JNLP_file_"></a>Returning a JNLP file</h2><p>Viewer
 links can also support on the fly generation of JNLP files. This can be
 very useful when using data viewing software that can be
 started&nbsp;with a JNLP file (i.e., running under <a href="http://java.sun.com/products/javawebstart/">Java Webstart</a>).
@@ -107,7 +113,7 @@ IDV implementation above we see it enforces two requirements:</p><ol><li>the dat
 <address>
   <img src="../images/thread.png" height="108" width="110">
   This document is maintained by Unidata and was last updated
-  March 2009. Send comments to
+  August 2009. Send comments to
   <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
 </body></html>
