@@ -47,10 +47,10 @@ import javax.xml.stream.XMLEventReader;
  * @author edavis
  * @since 4.0
  */
-public class PropertyElementParser extends AbstractElementParser
+class PropertyElementParser extends AbstractElementParser
 {
   
-  public boolean isChildElement( XMLEvent event ) {
+  boolean isChildElement( XMLEvent event ) {
     return false; //property doesn't contain any children
   }
 
@@ -58,7 +58,7 @@ public class PropertyElementParser extends AbstractElementParser
   private final DatasetNodeBuilder datasetNodeBuilder;
   private final ServiceBuilder serviceBuilder;
 
-  public PropertyElementParser( XMLEventReader reader,
+  PropertyElementParser( XMLEventReader reader,
                                 ThreddsBuilderFactory builderFactory,
                                 CatalogBuilder catBuilder )
           throws ThreddsXmlParserException
@@ -69,7 +69,7 @@ public class PropertyElementParser extends AbstractElementParser
     this.serviceBuilder = null;
   }
 
-  public PropertyElementParser( XMLEventReader reader,
+  PropertyElementParser( XMLEventReader reader,
                                 ThreddsBuilderFactory builderFactory,
                                 DatasetNodeBuilder datasetNodeBuilder )
           throws ThreddsXmlParserException
@@ -80,7 +80,7 @@ public class PropertyElementParser extends AbstractElementParser
     this.serviceBuilder = null;
   }
 
-  public PropertyElementParser( XMLEventReader reader,
+  PropertyElementParser( XMLEventReader reader,
                                 ThreddsBuilderFactory builderFactory,
                                 ServiceBuilder serviceBuilder )
           throws ThreddsXmlParserException
@@ -91,21 +91,21 @@ public class PropertyElementParser extends AbstractElementParser
     this.serviceBuilder = serviceBuilder;
   }
 
-  protected static boolean isSelfElementStatic( XMLEvent event )
+  static boolean isSelfElementStatic( XMLEvent event )
   {
     return isSelfElement( event, PropertyElementNames.PropertyElement );
   }
 
-  protected boolean isSelfElement( XMLEvent event )
+  boolean isSelfElement( XMLEvent event )
   {
     return isSelfElement( event, PropertyElementNames.PropertyElement );
   }
 
-  protected ThreddsBuilder getSelfBuilder() {
+  ThreddsBuilder getSelfBuilder() {
     return null;
   }
 
-  protected void parseStartElement()
+  void parseStartElement()
           throws ThreddsXmlParserException
   {
     StartElement startElement = this.getNextEventIfStartElementIsMine();
@@ -125,7 +125,7 @@ public class PropertyElementParser extends AbstractElementParser
       throw new ThreddsXmlParserException( "Unknown builder - for addProperty()." );
   }
 
-  protected void handleChildStartElement()
+  void handleChildStartElement()
           throws ThreddsXmlParserException
   {
     StartElement startElement = this.peekAtNextEventIfStartElement();
@@ -135,7 +135,7 @@ public class PropertyElementParser extends AbstractElementParser
       StaxThreddsXmlParserUtils.consumeElementAndConvertToXmlString( this.reader );
   }
 
-  protected void postProcessingAfterEndElement()
+  void postProcessingAfterEndElement()
           throws ThreddsXmlParserException
   {
     return;

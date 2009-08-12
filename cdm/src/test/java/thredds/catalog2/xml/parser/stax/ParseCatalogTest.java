@@ -58,7 +58,7 @@ public class ParseCatalogTest
     String baseUriString = "http://cat2.stax.ParseCatalogTest/CatalogWithService.xml";
     URI docBaseUri = new URI( baseUriString );
     DateType expires = new DateType( false, new Date( System.currentTimeMillis() + 60*60*1000));
-    String xml = CatalogXmlUtils.wrapThreddsXmlInCatalogWithService( "", expires);
+    String xml = CatalogXmlUtils.getCatalogWithService( expires);
 
     ThreddsXmlParser cp = StaxThreddsXmlParser.newInstance();
     CatalogBuilder catBuilder = cp.parseIntoBuilder( new StringReader( xml ),
@@ -77,7 +77,7 @@ public class ParseCatalogTest
     String baseUriString = "http://cat2.stax.ParseCatalogTest/CatalogWithCompoundService.xml";
     URI docBaseUri = new URI( baseUriString );
     DateType expires = new DateType( false, new Date( System.currentTimeMillis() + 60*60*1000));
-    String xml = CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( "", expires);
+    String xml = CatalogXmlUtils.getCatalogWithCompoundService( expires);
 
     ThreddsXmlParser cp = StaxThreddsXmlParser.newInstance();
     CatalogBuilder catBuilder = cp.parseIntoBuilder( new StringReader( xml ),
@@ -121,5 +121,115 @@ public class ParseCatalogTest
     assertNotNull( catBuilder );
 
     CatalogXmlUtils.assertCatalogHasSingleAccessDataset( catBuilder, docBaseUri );
+  }
+
+  @Test
+  public void parseAccessibleDatasetWithInheritedMetadataServiceName()
+          throws URISyntaxException,
+                 XMLStreamException,
+                 ThreddsXmlParserException
+  {
+    String xml = CatalogXmlUtils.getCatalogWithSingleAccessDatasetWithInheritedMetadataServiceName();
+    String baseUriString = "http://cat2.stax.ParseAccessibleDatasetTest/InheritedMetadataServiceName.xml";
+
+    ThreddsXmlParser cp = StaxThreddsXmlParser.newInstance();
+    URI docBaseUri = new URI( baseUriString );
+    CatalogBuilder catBuilder = cp.parseIntoBuilder( new StringReader( xml ),
+                                                     docBaseUri );
+    assertNotNull( catBuilder );
+
+    CatalogXmlUtils.assertCatalogHasSingleAccessDataset( catBuilder, docBaseUri );
+  }
+
+  @Test
+  public void parseAccessibleDatasetOldStyle()
+          throws URISyntaxException,
+                 XMLStreamException,
+                 ThreddsXmlParserException
+  {
+    String xml = CatalogXmlUtils.getCatalogWithSingleAccessDatasetOldStyle();
+    String baseUriString = "http://cat2.stax.ParseAccessibleDatasetTest/OldStyleAccess.xml";
+
+    ThreddsXmlParser cp = StaxThreddsXmlParser.newInstance();
+    URI docBaseUri = new URI( baseUriString );
+    CatalogBuilder catBuilder = cp.parseIntoBuilder( new StringReader( xml ),
+                                                     docBaseUri );
+    assertNotNull( catBuilder );
+
+    CatalogXmlUtils.assertCatalogHasSingleAccessDataset( catBuilder, docBaseUri );
+  }
+
+  @Test
+  public void parseNestedDatasetWithRawServiceName()
+          throws URISyntaxException,
+                 XMLStreamException,
+                 ThreddsXmlParserException
+  {
+    String xml = CatalogXmlUtils.getNestedDatasetWithRawServiceName();
+    String baseUriString = "http://cat2.stax.ParseNestedDatasetTest/RawServiceNameNotAccessible.xml";
+      System.out.println( "Catalog ["+baseUriString+"]:\n" + xml );
+
+
+      ThreddsXmlParser cp = StaxThreddsXmlParser.newInstance();
+    URI docBaseUri = new URI( baseUriString );
+    CatalogBuilder catBuilder = cp.parseIntoBuilder( new StringReader( xml ),
+                                                     docBaseUri );
+    assertNotNull( catBuilder );
+
+    CatalogXmlUtils.assertNestedDatasetIsNotAccessible( catBuilder, docBaseUri );
+  }
+
+  @Test
+  public void parseNestedDatasetWithMetadataServiceName()
+          throws URISyntaxException,
+                 XMLStreamException,
+                 ThreddsXmlParserException
+  {
+    String xml = CatalogXmlUtils.getNestedDatasetWithMetadataServiceName();
+    String baseUriString = "http://cat2.stax.ParseNestedDatasetTest/MetadataServiceNameNotAccessible.xml";
+
+    ThreddsXmlParser cp = StaxThreddsXmlParser.newInstance();
+    URI docBaseUri = new URI( baseUriString );
+    CatalogBuilder catBuilder = cp.parseIntoBuilder( new StringReader( xml ),
+                                                     docBaseUri );
+    assertNotNull( catBuilder );
+
+    CatalogXmlUtils.assertNestedDatasetIsNotAccessible( catBuilder, docBaseUri );
+  }
+
+  @Test
+  public void parseNestedDatasetWithUninheritedMetadataServiceName()
+          throws URISyntaxException,
+                 XMLStreamException,
+                 ThreddsXmlParserException
+  {
+    String xml = CatalogXmlUtils.getNestedDatasetWithUninheritedMetadataServiceName();
+    String baseUriString = "http://cat2.stax.ParseNestedDatasetTest/UninheritedMetadataServiceNameNotAccessible.xml";
+
+    ThreddsXmlParser cp = StaxThreddsXmlParser.newInstance();
+    URI docBaseUri = new URI( baseUriString );
+    CatalogBuilder catBuilder = cp.parseIntoBuilder( new StringReader( xml ),
+                                                     docBaseUri );
+    assertNotNull( catBuilder );
+
+    CatalogXmlUtils.assertNestedDatasetIsNotAccessible( catBuilder, docBaseUri );
+  }
+
+  @Test
+  public void parseNestedDatasetWithInheritedMetadataServiceName()
+          throws URISyntaxException,
+                 XMLStreamException,
+                 ThreddsXmlParserException
+  {
+    String xml = CatalogXmlUtils.getNestedDatasetWithInheritedMetadataServiceName();
+    String baseUriString = "http://cat2.stax.ParseNestedDatasetTest/InheritedMetadataServiceNameNotAccessible.xml";
+
+    ThreddsXmlParser cp = StaxThreddsXmlParser.newInstance();
+    URI docBaseUri = new URI( baseUriString );
+    CatalogBuilder catBuilder = cp.parseIntoBuilder( new StringReader( xml ),
+                                                     docBaseUri );
+    assertNotNull( catBuilder );
+
+    CatalogXmlUtils.assertNestedDatasetIsAccessible( catBuilder, docBaseUri );
   }
 }

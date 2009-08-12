@@ -53,7 +53,7 @@ import java.util.Collections;
  * @author edavis
  * @since 4.0
  */
-public class DatasetNodeElementParserHelper
+class DatasetNodeElementParserHelper
 {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
@@ -103,13 +103,13 @@ public class DatasetNodeElementParserHelper
     this.idAuthorityInheritedByDescendants = idAuthorityInheritedByDescendants;
   }
 
-  public String getIdAuthorityInheritedByDescendants() {
+  String getIdAuthorityInheritedByDescendants() {
     return this.idAuthorityInheritedByDescendants;
   }
 
   /** Return the name of the service used by any access of this datasetNode
    * that does not explicitly specify a service. */
-  public String getDefaultServiceName() {
+  String getDefaultServiceName() {
     return this.defaultServiceName != null
            ? this.defaultServiceName
            : this.defaultServiceNameInheritedByDescendants;
@@ -122,7 +122,7 @@ public class DatasetNodeElementParserHelper
 
   /** Return the name of the service used by any access of this datasetNode
    * that does not explicitly specify a service. */
-  public String getDefaultServiceNameInheritedByDescendants() {
+  String getDefaultServiceNameInheritedByDescendants() {
     return this.defaultServiceNameInheritedByDescendants;
   }
 
@@ -136,13 +136,13 @@ public class DatasetNodeElementParserHelper
     return Collections.unmodifiableList( this.metadataForThisDataset);
   }
 
-  public List<MetadataElementParser> getMetadataInheritedByDescendants() {
+  List<MetadataElementParser> getMetadataInheritedByDescendants() {
     if ( this.metadataInheritedByDescendants == null )
       return Collections.emptyList();
     return Collections.unmodifiableList( this.metadataInheritedByDescendants);
   }
 
-  public void parseStartElementNameAttribute( StartElement startElement,
+  void parseStartElementNameAttribute( StartElement startElement,
                                               DatasetNodeBuilder dsNodeBuilder )
   {
     Attribute att = startElement.getAttributeByName( DatasetElementNames.DatasetElement_Name );
@@ -150,7 +150,7 @@ public class DatasetNodeElementParserHelper
       dsNodeBuilder.setName( att.getValue() );
   }
 
-  public void parseStartElementIdAttribute( StartElement startElement,
+  void parseStartElementIdAttribute( StartElement startElement,
                                             DatasetNodeBuilder dsNodeBuilder )
   {
     Attribute att = startElement.getAttributeByName( DatasetNodeElementNames.DatasetNodeElement_Id );
@@ -158,7 +158,7 @@ public class DatasetNodeElementParserHelper
       dsNodeBuilder.setId( att.getValue() );
   }
 
-  public void parseStartElementIdAuthorityAttribute( StartElement startElement,
+  void parseStartElementIdAuthorityAttribute( StartElement startElement,
                                                      DatasetNodeBuilder dsNodeBuilder )
   {
     Attribute att = startElement.getAttributeByName( DatasetNodeElementNames.DatasetNodeElement_Authority );
@@ -166,7 +166,7 @@ public class DatasetNodeElementParserHelper
       dsNodeBuilder.setId( att.getValue() );
   }
 
-  public boolean handleBasicChildStartElement( StartElement startElement,
+  boolean handleBasicChildStartElement( StartElement startElement,
                                                XMLEventReader reader,
                                                DatasetNodeBuilder dsNodeBuilder )
           throws ThreddsXmlParserException
@@ -210,7 +210,7 @@ public class DatasetNodeElementParserHelper
       return false;
   }
 
-  public boolean handleCollectionChildStartElement( StartElement startElement,
+  boolean handleCollectionChildStartElement( StartElement startElement,
                                                     XMLEventReader reader,
                                                     DatasetNodeBuilder dsNodeBuilder )
           throws ThreddsXmlParserException
@@ -233,10 +233,11 @@ public class DatasetNodeElementParserHelper
       return false;
   }
 
-  public void postProcessingAfterEndElement()
+  void postProcessingAfterEndElement()
           throws ThreddsXmlParserException
   {
-    this.threddsMetadataElementParser.postProcessingAfterEndElement();
+    if ( this.threddsMetadataElementParser != null )
+      this.threddsMetadataElementParser.postProcessingAfterEndElement();
 
     this.finalSplitMetadata = new SplitMetadata( this.metadataForThisDataset);
   }
@@ -251,21 +252,24 @@ public class DatasetNodeElementParserHelper
    *
    * @param dsNodeBuilder the target DatasetNodeBuilder.
    */
-  public void addFinalThreddsMetadataToDatasetNodeBuilder( DatasetNodeBuilder dsNodeBuilder)
+  void addFinalThreddsMetadataToDatasetNodeBuilder( DatasetNodeBuilder dsNodeBuilder)
   {
-    ThreddsMetadataBuilder unwrappedThreddsMetadataBuilder
-            = this.threddsMetadataElementParser.getSelfBuilder();
-    boolean isUnwrappedEmpty = unwrappedThreddsMetadataBuilder.isEmpty();
-    if ( ! isUnwrappedEmpty && ! this.finalSplitMetadata.threddsMetadata.isEmpty())
+    ThreddsMetadataBuilder unwrappedThreddsMetadataBuilder = null;
+    boolean isUnwrappedEmpty = true;
+    if ( this.threddsMetadataElementParser != null )
+    {
+      unwrappedThreddsMetadataBuilder = this.threddsMetadataElementParser.getSelfBuilder();
+      isUnwrappedEmpty = unwrappedThreddsMetadataBuilder.isEmpty();
+    }
+
+    if ( ! isUnwrappedEmpty || ! this.finalSplitMetadata.threddsMetadata.isEmpty())
     {
       ThreddsMetadataBuilder result = dsNodeBuilder.setNewThreddsMetadataBuilder();
       if ( ! isUnwrappedEmpty )
         ThreddsMetadataBuilderUtils.copyThreddsMetadataBuilder( unwrappedThreddsMetadataBuilder, result );
       for ( MetadataElementParser mdElemParser : this.finalSplitMetadata.threddsMetadata )
         ThreddsMetadataBuilderUtils.copyThreddsMetadataBuilder( mdElemParser.getThreddsMetadataBuilder(), result );
-      //return true;
     }
-    //return false;
   }
 
   /**
@@ -274,7 +278,7 @@ public class DatasetNodeElementParserHelper
    *
    * @param dsNodeBuilder the target DatasetNodeBuilder.
    */
-  public void addFinalMetadataToDatasetNodeBuilder( DatasetNodeBuilder dsNodeBuilder )
+  void addFinalMetadataToDatasetNodeBuilder( DatasetNodeBuilder dsNodeBuilder )
   {
     for ( MetadataElementParser currentMetadataElemParser : this.finalSplitMetadata.nonThreddsMetadata )
     {

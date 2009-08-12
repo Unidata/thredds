@@ -49,7 +49,7 @@ import java.net.URISyntaxException;
  * @author edavis
  * @since 4.0
  */
-public class CatalogRefElementParser extends AbstractElementParser
+class CatalogRefElementParser extends AbstractElementParser
 {
   private final CatalogBuilder parentCatalogBuilder;
   private final DatasetNodeBuilder parentDatasetNodeBuilder;
@@ -59,7 +59,7 @@ public class CatalogRefElementParser extends AbstractElementParser
   private CatalogRefBuilder selfBuilder;
 
 
-  public CatalogRefElementParser( XMLEventReader reader,
+  CatalogRefElementParser( XMLEventReader reader,
                                   ThreddsBuilderFactory builderFactory,
                                   CatalogBuilder parentCatalogBuilder,
                                   DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
@@ -72,7 +72,7 @@ public class CatalogRefElementParser extends AbstractElementParser
                                                                               this.builderFactory );
   }
 
-  public CatalogRefElementParser( XMLEventReader reader,
+  CatalogRefElementParser( XMLEventReader reader,
                                   ThreddsBuilderFactory builderFactory,
                                   DatasetNodeBuilder parentDatasetNodeBuilder,
                                   DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
@@ -85,21 +85,21 @@ public class CatalogRefElementParser extends AbstractElementParser
                                                                               this.builderFactory );
   }
 
-  protected static boolean isSelfElementStatic( XMLEvent event )
+  static boolean isSelfElementStatic( XMLEvent event )
   {
     return isSelfElement( event, CatalogRefElementNames.CatalogRefElement );
   }
 
-  protected boolean isSelfElement( XMLEvent event )
+  boolean isSelfElement( XMLEvent event )
   {
     return isSelfElement( event, CatalogRefElementNames.CatalogRefElement );
   }
 
-  protected CatalogRefBuilder getSelfBuilder() {
+  CatalogRefBuilder getSelfBuilder() {
     return this.selfBuilder;
   }
 
-  protected void parseStartElement()
+  void parseStartElement()
           throws ThreddsXmlParserException
   {
     StartElement startElement = this.getNextEventIfStartElementIsMine();
@@ -133,7 +133,7 @@ public class CatalogRefElementParser extends AbstractElementParser
     this.datasetNodeElementParserHelper.parseStartElementIdAuthorityAttribute( startElement, this.selfBuilder );
   }
 
-  protected void handleChildStartElement()
+  void handleChildStartElement()
           throws ThreddsXmlParserException
   {
     StartElement startElement = this.peekAtNextEventIfStartElement();
@@ -145,7 +145,7 @@ public class CatalogRefElementParser extends AbstractElementParser
       StaxThreddsXmlParserUtils.consumeElementAndConvertToXmlString( this.reader );
   }
 
-  protected void postProcessingAfterEndElement()
+  void postProcessingAfterEndElement()
           throws ThreddsXmlParserException
   {
     this.datasetNodeElementParserHelper.postProcessingAfterEndElement();

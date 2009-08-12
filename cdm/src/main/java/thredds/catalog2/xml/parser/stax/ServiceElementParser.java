@@ -52,14 +52,14 @@ import java.net.URISyntaxException;
  * @author edavis
  * @since 4.0
  */
-public class ServiceElementParser extends AbstractElementParser
+class ServiceElementParser extends AbstractElementParser
 {
   private final CatalogBuilder catalogBuilder;
   private final ServiceBuilder parentServiceBuilder;
 
   private ServiceBuilder selfBuilder;
 
-  public ServiceElementParser( XMLEventReader reader,
+  ServiceElementParser( XMLEventReader reader,
                                ThreddsBuilderFactory builderFactory,
                                CatalogBuilder catalogBuilder )
           throws ThreddsXmlParserException
@@ -69,7 +69,7 @@ public class ServiceElementParser extends AbstractElementParser
     this.parentServiceBuilder = null;
   }
 
-  public ServiceElementParser( XMLEventReader reader,
+  ServiceElementParser( XMLEventReader reader,
                                ThreddsBuilderFactory builderFactory,
                                ServiceBuilder parentServiceBuilder )
           throws ThreddsXmlParserException
@@ -79,21 +79,21 @@ public class ServiceElementParser extends AbstractElementParser
     this.parentServiceBuilder = parentServiceBuilder;
   }
 
-  protected static boolean isSelfElementStatic( XMLEvent event )
+  static boolean isSelfElementStatic( XMLEvent event )
   {
     return isSelfElement( event, ServiceElementNames.ServiceElement );
   }
 
-  protected boolean isSelfElement( XMLEvent event )
+  boolean isSelfElement( XMLEvent event )
   {
     return isSelfElement( event, ServiceElementNames.ServiceElement );
   }
 
-  protected ServiceBuilder getSelfBuilder() {
+  ServiceBuilder getSelfBuilder() {
     return this.selfBuilder;
   }
 
-  protected void parseStartElement()
+  void parseStartElement()
           throws ThreddsXmlParserException
   {
     StartElement startElement = this.getNextEventIfStartElementIsMine();
@@ -134,7 +134,7 @@ public class ServiceElementParser extends AbstractElementParser
     }
   }
 
-  protected void handleChildStartElement()
+  void handleChildStartElement()
           throws ThreddsXmlParserException
   {
     StartElement startElement = this.peekAtNextEventIfStartElement();
@@ -156,7 +156,7 @@ public class ServiceElementParser extends AbstractElementParser
     }
   }
 
-  protected void postProcessingAfterEndElement()
+  void postProcessingAfterEndElement()
           throws ThreddsXmlParserException
   {
     return;

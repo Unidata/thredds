@@ -48,13 +48,13 @@ import javax.xml.stream.XMLEventReader;
  * @author edavis
  * @since 4.0
  */
-public class AccessElementParser extends AbstractElementParser
+class AccessElementParser extends AbstractElementParser
 {
   private final DatasetBuilder parentDatasetBuilder;
 
   private AccessBuilder selfBuilder;
 
-  public AccessElementParser( XMLEventReader reader,
+  AccessElementParser( XMLEventReader reader,
                               ThreddsBuilderFactory builderFactory,
                               DatasetBuilder parentDatasetBuilder )
           throws ThreddsXmlParserException
@@ -63,21 +63,21 @@ public class AccessElementParser extends AbstractElementParser
     this.parentDatasetBuilder = parentDatasetBuilder;
   }
 
-  protected static boolean isSelfElementStatic( XMLEvent event )
+  static boolean isSelfElementStatic( XMLEvent event )
   {
     return isSelfElement( event, AccessElementNames.AccessElement );
   }
 
-  protected boolean isSelfElement( XMLEvent event )
+  boolean isSelfElement( XMLEvent event )
   {
     return isSelfElement( event, AccessElementNames.AccessElement );
   }
 
-  protected AccessBuilder getSelfBuilder() {
+  AccessBuilder getSelfBuilder() {
     return this.selfBuilder;
   }
 
-  protected void parseStartElement()
+  void parseStartElement()
           throws ThreddsXmlParserException
   {
     StartElement startElement = this.getNextEventIfStartElementIsMine();
@@ -107,14 +107,14 @@ public class AccessElementParser extends AbstractElementParser
     return;
   }
 
-  protected void handleChildStartElement()
+  void handleChildStartElement()
           throws ThreddsXmlParserException
   {
     // ToDo Save the results in a ThreddsXmlParserIssue (Warning) and report.
     StaxThreddsXmlParserUtils.consumeElementAndConvertToXmlString( this.reader );
   }
 
-  protected void postProcessingAfterEndElement()
+  void postProcessingAfterEndElement()
           throws ThreddsXmlParserException
   {
     return;

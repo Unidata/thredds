@@ -51,7 +51,7 @@ import java.util.List;
  * @author edavis
  * @since 4.0
  */
-public class MetadataElementParser extends AbstractElementParser
+class MetadataElementParser extends AbstractElementParser
 {
   private final DatasetNodeElementParserHelper datasetNodeElementParserHelper;
   private final DatasetNodeBuilder parentDatasetNodeBuilder;
@@ -67,7 +67,7 @@ public class MetadataElementParser extends AbstractElementParser
 
   private ThreddsMetadataElementParser threddsMetadataElementParser;
 
-  public MetadataElementParser( XMLEventReader reader,
+  MetadataElementParser( XMLEventReader reader,
                                 ThreddsBuilderFactory builderFactory,
                                 DatasetNodeBuilder parentDatasetNodeBuilder,
                                 DatasetNodeElementParserHelper datasetNodeElementParserHelper )
@@ -80,7 +80,7 @@ public class MetadataElementParser extends AbstractElementParser
     this.selfBuilder = builderFactory.newMetadataBuilder();
   }
 
-  public MetadataElementParser( XMLEventReader reader,
+  MetadataElementParser( XMLEventReader reader,
                                 ThreddsBuilderFactory builderFactory,
                                 DatasetNodeElementParserHelper datasetNodeElementParserHelper )
           throws ThreddsXmlParserException
@@ -88,42 +88,42 @@ public class MetadataElementParser extends AbstractElementParser
     this( reader, builderFactory, null, datasetNodeElementParserHelper);
   }
 
-  protected static boolean isSelfElementStatic( XMLEvent event ) {
+  static boolean isSelfElementStatic( XMLEvent event ) {
     return isSelfElement( event, MetadataElementNames.MetadataElement );
   }
 
-  protected boolean isSelfElement( XMLEvent event ) {
+  boolean isSelfElement( XMLEvent event ) {
     return isSelfElement( event, MetadataElementNames.MetadataElement );
   }
 
-  protected MetadataBuilder getSelfBuilder() {
+  MetadataBuilder getSelfBuilder() {
     if ( this.isContainsThreddsMetadata())
       return null;
     return this.selfBuilder;
   }
 
-  public boolean doesMetadataElementGetInherited() {
+  boolean doesMetadataElementGetInherited() {
     return this.isInheritedByDescendants;
   }
 
-  public boolean isContainsThreddsMetadata() {
+  boolean isContainsThreddsMetadata() {
     return containsThreddsMetadata;
   }
 
-  public ThreddsMetadataBuilder getThreddsMetadataBuilder()
+  ThreddsMetadataBuilder getThreddsMetadataBuilder()
   {
     if ( ! this.containsThreddsMetadata )
       return this.builderFactory.newThreddsMetadataBuilder();
     return this.threddsMetadataElementParser.getSelfBuilder();
   }
 
-  public boolean addThreddsMetadataBuilderToList( List<ThreddsMetadataBuilder> tmBuilders ) {
+  boolean addThreddsMetadataBuilderToList( List<ThreddsMetadataBuilder> tmBuilders ) {
     if ( this.getSelfBuilder() != null )
       return tmBuilders.add(this.threddsMetadataElementParser.getSelfBuilder());
     return false;
   }
 
-  protected void parseStartElement()
+  void parseStartElement()
           throws ThreddsXmlParserException
   {
     StartElement startElement = this.getNextEventIfStartElementIsMine();
@@ -175,7 +175,7 @@ public class MetadataElementParser extends AbstractElementParser
     }
   }
 
-  protected void handleChildStartElement()
+  void handleChildStartElement()
           throws ThreddsXmlParserException
   {
     StartElement startElement = this.peekAtNextEventIfStartElement();
@@ -231,7 +231,7 @@ public class MetadataElementParser extends AbstractElementParser
     }
   }
 
-  protected void postProcessingAfterEndElement()
+  void postProcessingAfterEndElement()
           throws ThreddsXmlParserException
   {
     if ( ! this.containsThreddsMetadata )

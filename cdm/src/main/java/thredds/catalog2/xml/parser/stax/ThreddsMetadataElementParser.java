@@ -46,7 +46,7 @@ import javax.xml.stream.XMLEventReader;
  * @author edavis
  * @since 4.0
  */
-public class ThreddsMetadataElementParser extends AbstractElementParser
+class ThreddsMetadataElementParser extends AbstractElementParser
 {
   private final DatasetNodeBuilder parentDatasetNodeBuilder;
 
@@ -56,11 +56,13 @@ public class ThreddsMetadataElementParser extends AbstractElementParser
 
   private final ThreddsMetadataBuilder selfBuilder;
 
-  public ThreddsMetadataElementParser( XMLEventReader reader,
-                                       ThreddsBuilderFactory builderFactory,
-                                       DatasetNodeBuilder parentDatasetNodeBuilder,
-                                       DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper,
-                                       boolean inheritedByDescendants )
+  private AbstractElementParser delegate;
+
+  ThreddsMetadataElementParser( XMLEventReader reader,
+                                ThreddsBuilderFactory builderFactory,
+                                DatasetNodeBuilder parentDatasetNodeBuilder,
+                                DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper,
+                                boolean inheritedByDescendants )
           throws ThreddsXmlParserException
   {
     super( reader, ThreddsMetadataElementNames.ThreddsMetadataElement, builderFactory );
@@ -71,7 +73,7 @@ public class ThreddsMetadataElementParser extends AbstractElementParser
     this.selfBuilder = builderFactory.newThreddsMetadataBuilder();
   }
 
-  protected static boolean isSelfElementStatic( XMLEvent event )
+  static boolean isSelfElementStatic( XMLEvent event )
   {
     if ( ServiceNameElementParser.isSelfElementStatic( event ))
       return true;
@@ -80,16 +82,16 @@ public class ThreddsMetadataElementParser extends AbstractElementParser
     return false;
   }
 
-  protected boolean isSelfElement( XMLEvent event )
+  boolean isSelfElement( XMLEvent event )
   {
     return isSelfElementStatic( event );
   }
 
-  protected ThreddsMetadataBuilder getSelfBuilder() {
+  ThreddsMetadataBuilder getSelfBuilder() {
     return this.selfBuilder;
   }
 
-  protected void parseStartElement()
+  void parseStartElement()
           throws ThreddsXmlParserException
   {
     // ThreddsMetadata container object only, no self element exists!
@@ -119,7 +121,7 @@ public class ThreddsMetadataElementParser extends AbstractElementParser
       throw new ThreddsXmlParserException( "");
   }
 
-  protected void handleChildStartElement()
+  void handleChildStartElement()
           throws ThreddsXmlParserException
   {
     StartElement startElement = this.peekAtNextEventIfStartElement();
@@ -131,13 +133,13 @@ public class ThreddsMetadataElementParser extends AbstractElementParser
       StaxThreddsXmlParserUtils.consumeElementAndConvertToXmlString( this.reader );
   }
 
-  protected void postProcessingAfterEndElement()
+  void postProcessingAfterEndElement()
           throws ThreddsXmlParserException
   {
     return;
   }
 
-  public static class ServiceNameElementParser extends AbstractElementParser
+  static class ServiceNameElementParser extends AbstractElementParser
   {
     private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
@@ -151,7 +153,7 @@ public class ThreddsMetadataElementParser extends AbstractElementParser
     private String serviceName;
 
 
-    public ServiceNameElementParser( XMLEventReader reader,
+    ServiceNameElementParser( XMLEventReader reader,
                                      ThreddsBuilderFactory builderFactory,
                                      ThreddsMetadataBuilder threddsMetadataBuilder,
                                      DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper,
@@ -164,21 +166,21 @@ public class ThreddsMetadataElementParser extends AbstractElementParser
       this.inheritedByDescendants = inheritedByDescendants;
     }
 
-    protected static boolean isSelfElementStatic( XMLEvent event )
+    static boolean isSelfElementStatic( XMLEvent event )
     {
       return isSelfElement( event, ThreddsMetadataElementNames.ServiceNameElement );
     }
 
-    protected boolean isSelfElement( XMLEvent event )
+    boolean isSelfElement( XMLEvent event )
     {
       return isSelfElementStatic( event );
     }
 
-    protected ThreddsBuilder getSelfBuilder() {
+    ThreddsBuilder getSelfBuilder() {
       return null;
     }
 
-    protected void parseStartElement()
+    void parseStartElement()
             throws ThreddsXmlParserException
     {
       this.getNextEventIfStartElementIsMine();
@@ -186,13 +188,13 @@ public class ThreddsMetadataElementParser extends AbstractElementParser
       this.serviceName = StaxThreddsXmlParserUtils.getCharacterContent( this.reader, ThreddsMetadataElementNames.ServiceNameElement );
     }
 
-    protected void handleChildStartElement()
+    void handleChildStartElement()
             throws ThreddsXmlParserException {
       // Should not have child elements.
     }
 
-      protected void postProcessingAfterEndElement()
-              throws ThreddsXmlParserException
+    void postProcessingAfterEndElement()
+            throws ThreddsXmlParserException
     {
       this.parentDatasetNodeElementParserHelper.setDefaultServiceName( this.serviceName );
       if ( this.inheritedByDescendants )
@@ -203,11 +205,11 @@ public class ThreddsMetadataElementParser extends AbstractElementParser
   /**
    * Parser for THREDDS metadata DataFormat elements.
    */
-  public static class DataFormatElementParser extends AbstractElementParser
+  static class DataFormatElementParser extends AbstractElementParser
   {
     private final ThreddsMetadataBuilder threddsMetadataBuilder;
 
-    public DataFormatElementParser( XMLEventReader reader,
+    DataFormatElementParser( XMLEventReader reader,
                                     ThreddsBuilderFactory builderFactory,
                                     ThreddsMetadataBuilder threddsMetadataBuilder )
             throws ThreddsXmlParserException
@@ -216,21 +218,21 @@ public class ThreddsMetadataElementParser extends AbstractElementParser
       this.threddsMetadataBuilder = threddsMetadataBuilder;
     }
 
-    protected static boolean isSelfElementStatic( XMLEvent event )
+    static boolean isSelfElementStatic( XMLEvent event )
     {
       return isSelfElement( event, ThreddsMetadataElementNames.DataFormatElement );
     }
 
-    protected boolean isSelfElement( XMLEvent event )
+    boolean isSelfElement( XMLEvent event )
     {
       return isSelfElementStatic( event );
     }
 
-    protected ThreddsBuilder getSelfBuilder() {
+    ThreddsBuilder getSelfBuilder() {
       return null;
     }
 
-    protected void parseStartElement()
+    void parseStartElement()
             throws ThreddsXmlParserException
     {
       StartElement startElement = this.getNextEventIfStartElementIsMine();
@@ -239,11 +241,11 @@ public class ThreddsMetadataElementParser extends AbstractElementParser
       this.threddsMetadataBuilder.setDataFormat( dataFormat );
     }
 
-    protected void handleChildStartElement()
+    void handleChildStartElement()
             throws ThreddsXmlParserException
     { }
 
-    protected void postProcessingAfterEndElement()
+    void postProcessingAfterEndElement()
             throws ThreddsXmlParserException
     { }
   }

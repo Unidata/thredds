@@ -23,10 +23,6 @@ public class CatalogXmlUtils
 
   private CatalogXmlUtils(){}
 
-  public static String getCatalog() {
-    return getCatalog( null );
-  }
-
   public static String getCatalog( DateType expires ) {
     return wrapThreddsXmlInCatalog( "", expires );
   }
@@ -55,6 +51,10 @@ public class CatalogXmlUtils
       assertEquals( catBuilder.getExpires().toString(), expires.toString());
   }
 
+  public static String getCatalogWithService( DateType expires ) {
+    return wrapThreddsXmlInCatalogWithService( "", expires );
+  }
+
   public static String wrapThreddsXmlInCatalogWithService( String threddsXml, DateType expires )
   {
     StringBuilder sb = new StringBuilder()
@@ -75,6 +75,10 @@ public class CatalogXmlUtils
     assertEquals( serviceBldr.getName(), "odap" );
     assertEquals( serviceBldr.getType(), ServiceType.OPENDAP );
     assertEquals( serviceBldr.getBaseUri().toString(), "/thredds/dodsC/" );
+  }
+
+  public static String getCatalogWithCompoundService( DateType expires ) {
+    return wrapThreddsXmlInCatalogWithCompoundService( "", expires );
   }
 
   public static String wrapThreddsXmlInCatalogWithCompoundService( String threddsXml, DateType expires )
@@ -199,12 +203,121 @@ public class CatalogXmlUtils
 
   public static String wrapThreddsXmlInCatalogDatasetMetadata( String threddsXml )
   {
-    return wrapThreddsXmlInCatalogDataset( "<metadata>" + threddsXml + "</metadata>" );
+    return wrapThreddsXmlInCatalogDataset( "<metadata>" + threddsXml + "</metadata>\n" );
   }
 
   public static String wrapThreddsXmlInCatalogDatasetMetadataInherited( String threddsXml )
   {
-    return wrapThreddsXmlInCatalogDataset( "<metadata inherited='true'>" + threddsXml + "</metadata>" );
+    return wrapThreddsXmlInCatalogDataset( "<metadata inherited='true'>" + threddsXml + "</metadata>\n" );
   }
+
+  public static String getNestedDatasetWithRawServiceName()
+  {
+    StringBuilder sb = new StringBuilder()
+            .append( "  <dataset name='ds1'>\n")
+            .append( "    <serviceName>odap</serviceName>\n")
+            .append( "    <dataset name='ds2' urlPath='test/test1.nc' />\n")
+            .append( "  </dataset>\n");
+
+    return wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+  }
+
+  public static String getNestedDatasetWithMetadataServiceName()
+  {
+    StringBuilder sb = new StringBuilder()
+            .append( "  <dataset name='ds1'>\n")
+            .append( "    <metadata><serviceName>odap</serviceName></metadata>\n")
+            .append( "    <dataset name='ds2' urlPath='test/test1.nc' />\n")
+            .append( "  </dataset>\n");
+
+    return wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+  }
+
+  public static String getNestedDatasetWithUninheritedMetadataServiceName()
+  {
+    StringBuilder sb = new StringBuilder()
+            .append( "  <dataset name='ds1'>\n")
+            .append( "    <metadata inherited='false'><serviceName>odap</serviceName></metadata>\n")
+            .append( "    <dataset name='ds2' urlPath='test/test1.nc' />\n")
+            .append( "  </dataset>\n");
+
+    return wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+  }
+
+  public static String getNestedDatasetWithInheritedMetadataServiceName()
+  {
+    StringBuilder sb = new StringBuilder()
+            .append( "  <dataset name='ds1'>\n")
+            .append( "    <metadata inherited='true'><serviceName>odap</serviceName></metadata>\n")
+            .append( "    <dataset name='ds2' urlPath='test/test1.nc' />\n")
+            .append( "  </dataset>\n");
+
+    return wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+  }
+
+  public static void assertNestedDatasetIsAccessible( CatalogBuilder catBuilder,
+                                                      URI docBaseUri )
+  {
+    DatasetBuilder dsBldr = getAndAssertNestedDataset( catBuilder, docBaseUri );
+
+    List<AccessBuilder> accesses = dsBldr.getAccessBuilders();
+    assertFalse( accesses.isEmpty() );
+    assertTrue( accesses.size() == 1 );
+    AccessBuilder access = accesses.get( 0 );
+    assertEquals( access.getUrlPath(), "test/test1.nc" );
+    assertEquals( access.getServiceBuilder().getType(), ServiceType.OPENDAP );
+    assertEquals( access.getServiceBuilder().getBaseUri().toString(), "/thredds/dodsC/" );
+  }
+
+  public static void assertNestedDatasetIsNotAccessible( CatalogBuilder catBuilder,
+                                                         URI docBaseUri )
+  {
+    DatasetBuilder dsBldr = getAndAssertNestedDataset( catBuilder, docBaseUri );
+
+    List<AccessBuilder> accesses = dsBldr.getAccessBuilders();
+    assertTrue( accesses.isEmpty() );
+  }
+
+  public static DatasetBuilder getAndAssertNestedDataset( CatalogBuilder catBuilder,
+                                                          URI docBaseUri )
+  {
+    assertCatalogWithCompoundServiceAsExpected( catBuilder, docBaseUri, null );
+
+    // Get first dataset.
+    List<DatasetNodeBuilder> dsBuilders = catBuilder.getDatasetNodeBuilders();
+    assertTrue( dsBuilders.size() == 1 );
+    DatasetNodeBuilder dsnBuilder = dsBuilders.get( 0 );
+
+    // Get nested dataset.
+    dsBuilders = dsnBuilder.getDatasetNodeBuilders();
+    assertTrue( dsBuilders.size() == 1 );
+    dsnBuilder = dsBuilders.get( 0 );
+
+    if ( !( dsnBuilder instanceof DatasetBuilder ) )
+    {
+      fail( "DatasetNode [" + dsnBuilder.getName() + "] not a Dataset." );
+      return null;
+    }
+
+    return (DatasetBuilder) dsnBuilder;
+  }
+
+  public static String getCatalogWithNestedDatasetInheritedMetadata()
+  {
+    StringBuilder sb = new StringBuilder()
+            .append( "  <dataset name='ds1'>\n")
+            .append( "    <metadata inherited='true'><serviceName>odap</serviceName></metadata>\n")
+            .append( "    <dataset name='ds2'>\n")
+            .append( "      <serviceName>wcs</serviceName>\n")
+            .append( "      <dataset name='Test1' urlPath='test/test1.nc' />\n" )
+            .append( "      <dataset name='Test2' urlPath='test/test2.nc'>\n" )
+            .append( "        <serviceName>wms</serviceName>\n" )
+            .append( "      </dataset>\n" )
+            .append( "    </dataset>")
+            .append( "  </dataset>");
+
+    return wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+  }
+
 
 }

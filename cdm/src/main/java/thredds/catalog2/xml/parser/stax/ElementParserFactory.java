@@ -17,15 +17,15 @@ import javax.xml.stream.events.StartElement;
  * @author edavis
  * @since 4.0
  */
-public class ElementParserFactory
+class ElementParserFactory
 {
   //private Map<QName,>
-  public ElementParserFactory() {}
+  ElementParserFactory() {}
   // ToDo Need to do some registration of elements
 
 
 
-  public AbstractElementParser getDocRootElementParser(
+  AbstractElementParser getDocRootElementParser(
           String baseDocUri, XMLEventReader reader,
           ThreddsBuilderFactory factory
   )
@@ -52,7 +52,7 @@ public class ElementParserFactory
       throw new ThreddsXmlParserException( "");
   }
 
-  public AbstractElementParser getElementParser(
+  AbstractElementParser getElementParser(
           ThreddsBuilder parentBuilder,
           XMLEventReader reader )
           throws ThreddsXmlParserException,

@@ -49,13 +49,13 @@ import javax.xml.namespace.QName;
  * @author edavis
  * @since 4.0
  */
-public abstract class AbstractElementParser
+abstract class AbstractElementParser
 {
-  protected org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+  org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
-  protected final XMLEventReader reader;
-  protected final QName elementName;
-  protected final ThreddsBuilderFactory builderFactory;
+  final XMLEventReader reader;
+  final QName elementName;
+  final ThreddsBuilderFactory builderFactory;
 
   AbstractElementParser( XMLEventReader reader,
                          QName elementName,
@@ -69,7 +69,7 @@ public abstract class AbstractElementParser
     this.builderFactory = builderFactory;
   }
 
-  protected static boolean isSelfElement( XMLEvent event, QName selfElementName )
+  static boolean isSelfElement( XMLEvent event, QName selfElementName )
   {
     QName elemName = null;
     if ( event.isStartElement() )
@@ -84,20 +84,20 @@ public abstract class AbstractElementParser
     return false;
   }
 
-  protected abstract boolean isSelfElement( XMLEvent event );
+  abstract boolean isSelfElement( XMLEvent event );
 
-  protected abstract void parseStartElement()
+  abstract void parseStartElement()
           throws ThreddsXmlParserException;
 
-  protected abstract void handleChildStartElement()
+  abstract void handleChildStartElement()
           throws ThreddsXmlParserException;
 
-  protected abstract void postProcessingAfterEndElement()
+  abstract void postProcessingAfterEndElement()
           throws ThreddsXmlParserException;
 
-  protected abstract ThreddsBuilder getSelfBuilder();
+  abstract ThreddsBuilder getSelfBuilder();
 
-  public final ThreddsBuilder parse()
+  final ThreddsBuilder parse()
           throws ThreddsXmlParserException
   {
     try
@@ -215,9 +215,15 @@ public abstract class AbstractElementParser
       }
 
       if (event.isStartElement())
-        break; // This is what we want.
+      {
+        startElement = event.asStartElement();
+        break;
+      }
       else if( event.isCharacters() && event.asCharacters().isWhiteSpace())
-        this.reader.next(); // Skip all whitespace characters.
+      {
+        // Skip any whitespace characters.
+        this.reader.next();
+      }
       else
       {
         String msg = "Expecting StartElement for next event [" + event.getClass().getName() + "]";

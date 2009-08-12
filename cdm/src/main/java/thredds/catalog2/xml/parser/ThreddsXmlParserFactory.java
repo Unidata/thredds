@@ -42,21 +42,16 @@ import thredds.catalog2.xml.parser.stax.StaxThreddsXmlParser;
  */
 public class ThreddsXmlParserFactory
 {
-  public static ThreddsXmlParser newCatalogParser( boolean wantValidating)
-  {
-    StaxThreddsXmlParser catParser = StaxThreddsXmlParser.newInstance();
-    //catParser.wantValidating( wantValidating );
-    return catParser;
-  }
-
   private ThreddsXmlParserFactory(){}
-  public static ThreddsXmlParserFactory newFactory()
-  { return new ThreddsXmlParserFactory(); }
+  
+  public static ThreddsXmlParserFactory newFactory() {
+    return new ThreddsXmlParserFactory();
+  }
 
   private boolean wantValidating = false;
 
   public boolean getWantValidating() {
-      return this.wantValidating;
+    return this.wantValidating;
   }
 
   public void setWantValidating( boolean wantValidating ) {
@@ -64,7 +59,7 @@ public class ThreddsXmlParserFactory
   }
 
   public ThreddsXmlParser getCatalogParser() {
-      StaxThreddsXmlParser catParser = StaxThreddsXmlParser.newInstance();
-      return catParser;
+    StaxThreddsXmlParser catParser = StaxThreddsXmlParser.newInstance();
+    return catParser;
   }
 }

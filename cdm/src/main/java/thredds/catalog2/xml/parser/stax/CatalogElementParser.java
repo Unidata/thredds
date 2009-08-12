@@ -55,13 +55,13 @@ import ucar.nc2.units.DateType;
  * @author edavis
  * @since 4.0
  */
-public class CatalogElementParser extends AbstractElementParser
+class CatalogElementParser extends AbstractElementParser
 {
   private final String docBaseUriString;
 
-  private CatalogBuilder selfBuilder;
+  CatalogBuilder selfBuilder;
 
-  public CatalogElementParser( String docBaseUriString,
+  CatalogElementParser( String docBaseUriString,
                                XMLEventReader reader,
                                ThreddsBuilderFactory builderFactory )
           throws ThreddsXmlParserException
@@ -70,21 +70,21 @@ public class CatalogElementParser extends AbstractElementParser
     this.docBaseUriString = docBaseUriString;
   }
 
-  protected static boolean isSelfElementStatic( XMLEvent event )
+  static boolean isSelfElementStatic( XMLEvent event )
   {
     return isSelfElement( event, CatalogElementNames.CatalogElement );
   }
 
-  protected boolean isSelfElement( XMLEvent event )
+  boolean isSelfElement( XMLEvent event )
   {
     return isSelfElement( event, CatalogElementNames.CatalogElement );
   }
 
-  protected CatalogBuilder getSelfBuilder() {
+  CatalogBuilder getSelfBuilder() {
     return this.selfBuilder;
   }
 
-  protected void parseStartElement( )
+  void parseStartElement( )
           throws ThreddsXmlParserException
   {
     StartElement startElement = this.getNextEventIfStartElementIsMine();
@@ -140,7 +140,7 @@ public class CatalogElementParser extends AbstractElementParser
     this.selfBuilder = builderFactory.newCatalogBuilder( nameString, docBaseUri, versionString, expires, lastModified );
   }
 
-  protected void handleChildStartElement()
+  void handleChildStartElement()
           throws ThreddsXmlParserException
   {
     StartElement startElement = this.peekAtNextEventIfStartElement();
@@ -171,7 +171,7 @@ public class CatalogElementParser extends AbstractElementParser
     }
   }
 
-  protected void postProcessingAfterEndElement()
+  void postProcessingAfterEndElement()
           throws ThreddsXmlParserException
   {
 //    if ( !( builder instanceof CatalogBuilder ) )

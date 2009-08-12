@@ -56,13 +56,13 @@ import java.net.URI;
  * @author edavis
  * @since 4.0
  */
-public class StaxThreddsXmlParserUtils
+class StaxThreddsXmlParserUtils
 {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( StaxThreddsXmlParserUtils.class );
 
   private StaxThreddsXmlParserUtils() {}
 
-  public static String getLocationInfo( XMLEventReader xmlEventReader )
+  static String getLocationInfo( XMLEventReader xmlEventReader )
   {
     Location location = getLocation( xmlEventReader);
     StringBuilder sb = new StringBuilder()
@@ -78,7 +78,7 @@ public class StaxThreddsXmlParserUtils
     return sb.toString();
   }
 
-  public static Location getLocation( XMLEventReader xmlEventReader)
+  static Location getLocation( XMLEventReader xmlEventReader)
   {
     if ( xmlEventReader == null )
       throw new IllegalArgumentException( "XMLEventReader may not be null.");
@@ -98,7 +98,7 @@ public class StaxThreddsXmlParserUtils
     return nextEvent.getLocation();
   }
 
-  public static ThreddsXmlParserIssue createIssueForException( String message, XMLEventReader xmlEventReader, Exception e )
+  static ThreddsXmlParserIssue createIssueForException( String message, XMLEventReader xmlEventReader, Exception e )
           throws ThreddsXmlParserException
   {
     String locationInfo = getLocationInfo( xmlEventReader);
@@ -107,7 +107,7 @@ public class StaxThreddsXmlParserUtils
     return new ThreddsXmlParserIssue( ThreddsXmlParserIssue.Severity.WARNING, msg, null, e );
   }
 
-  public static ThreddsXmlParserIssue createIssueForUnexpectedElement( String message, XMLEventReader xmlEventReader )
+  static ThreddsXmlParserIssue createIssueForUnexpectedElement( String message, XMLEventReader xmlEventReader )
           throws ThreddsXmlParserException
   {
     String locationInfo = getLocationInfo( xmlEventReader);
@@ -117,7 +117,7 @@ public class StaxThreddsXmlParserUtils
     return new ThreddsXmlParserIssue( ThreddsXmlParserIssue.Severity.WARNING, msg, null, null );
   }
 
-  public static ThreddsXmlParserIssue createIssueForUnexpectedEvent( String message,
+  static ThreddsXmlParserIssue createIssueForUnexpectedEvent( String message,
                                                                      ThreddsXmlParserIssue.Severity severity,
                                                                      XMLEventReader xmlEventReader, XMLEvent event )
           throws ThreddsXmlParserException
@@ -128,7 +128,7 @@ public class StaxThreddsXmlParserUtils
     return new ThreddsXmlParserIssue( severity, msg, null, null );
   }
 
-  public static String consumeElementAndConvertToXmlString( XMLEventReader xmlEventReader )
+  static String consumeElementAndConvertToXmlString( XMLEventReader xmlEventReader )
           throws ThreddsXmlParserException
   {
     if ( xmlEventReader == null )
@@ -187,7 +187,8 @@ public class StaxThreddsXmlParserUtils
 
     return result;
   }
-  public static String getCharacterContent( XMLEventReader xmlEventReader, QName containingElementName )
+
+  static String getCharacterContent( XMLEventReader xmlEventReader, QName containingElementName )
           throws ThreddsXmlParserException
   {
     if ( xmlEventReader == null )
@@ -245,7 +246,7 @@ public class StaxThreddsXmlParserUtils
    * @return a StreamSource for the resource located at the given URI.
    * @throws ThreddsXmlParserException if there is a problem reading from the URI.
    */
-  public static Source getSourceFromUri( URI documentUri )
+  static Source getSourceFromUri( URI documentUri )
           throws ThreddsXmlParserException
   {
     HttpUriResolver httpUriResolver = HttpUriResolverFactory.getDefaultHttpUriResolver( documentUri );
@@ -271,7 +272,7 @@ public class StaxThreddsXmlParserUtils
    * @return a StreamSource for the resource located at the given File.
    * @throws ThreddsXmlParserException if there is a problem reading from the File.
    */
-  public static Source getSourceFromFile( File file, URI docBaseUri )
+  static Source getSourceFromFile( File file, URI docBaseUri )
           throws ThreddsXmlParserException
   {
     if ( file == null )
@@ -306,7 +307,7 @@ public class StaxThreddsXmlParserUtils
    * @return an XMLEventReader for the given Source.
    * @throws ThreddsXmlParserException if have problems reading the source.
    */
-  public static XMLEventReader getEventReaderFromSource( Source source, XMLInputFactory factory )
+  static XMLEventReader getEventReaderFromSource( Source source, XMLInputFactory factory )
           throws ThreddsXmlParserException
   {
     XMLEventReader reader;
