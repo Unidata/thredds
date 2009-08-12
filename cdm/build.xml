@@ -951,7 +951,7 @@
 
   <target name="unit-test-base" description="run junit tests">
     <mkdir dir="${test.reports.dir}/${unit.test.name}"/>
-    <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on" dir="${root.dir}">
+    <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="true" forkmode="once" dir="${root.dir}">
       <classpath>
         <path refid="test.classpath" />
         <pathelement location="${test.classes.jar}" />
