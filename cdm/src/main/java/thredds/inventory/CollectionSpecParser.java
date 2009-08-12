@@ -88,7 +88,7 @@ public class CollectionSpecParser {
     if (filter != null) {
       // optional dateFormatMark
       int posFormat = filter.indexOf('#');
-      if (posFormat > 0) {
+      if (posFormat >= 0) {
         // check for two hash marks
         int posFormat2 = filter.lastIndexOf('#');
 
@@ -109,7 +109,6 @@ public class CollectionSpecParser {
 
       } else { // no hash (dateFormatMark)
         pattern = java.util.regex.Pattern.compile(filter);
-
       }
     }
   }
@@ -154,6 +153,12 @@ public class CollectionSpecParser {
   }
 
   public static void main(String arg[]) {
+    doit("D:/formats/gempak/surface/#yyyyMMdd#_sao.gem", new Formatter());
+    doit("D:/formats/gempak/surface/#yyyyMMdd#_sao\\.gem", new Formatter());
+    doit("Q:/station/ldm/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc", new Formatter());
+  }
+
+  public static void main2(String arg[]) {
     doit("/data/ldm/pub/decoded/netcdf/surface/metar/**/Surface_METAR_#yyyyMMdd_HHmm#\\.nc", new Formatter());
     doit("/data/ldm/pub/decoded/netcdf/surface/metar/**/Surface_METAR_#yyyyMMdd_HHmm#.nc", new Formatter());
     doit("/data/ldm/pub/decoded/netcdf/surface/metar/**/Surface_METAR_#yyyyMMdd_HHmm", new Formatter());

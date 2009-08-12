@@ -34,7 +34,8 @@
         <ref bean="ncMetars" />
         <ref bean="gempakMetars" />
         <ref bean="quickScatWinds" />
-        <ref bean="localMetars" />
+        <ref bean="ncMetarsLocal" />
+        <ref bean="gempakMetarsLocal" />
       </list>
     </property>
   </bean>
@@ -57,9 +58,23 @@
     <property name="featureType" value="STATION"/>
   </bean>
 
+  <bean id="ncMetarsLocal" class="thredds.server.cdmremote.CollectionBean">
+    <property name="path" value="/idd/metar/decoded"/>
+    <property name="spec" value="Q:/station/ldm/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc"/>
+    <property name="recheck" value="15 min"/>
+    <property name="featureType" value="STATION"/>
+  </bean>
+
   <bean id="gempakMetars" class="thredds.server.cdmremote.CollectionBean">
     <property name="path" value="/idd/metar/gempak"/>
-    <property name="spec" value="/data/ldm/gempak/surface/**/#yyyyMMdd#.gem"/>
+    <property name="spec" value="/data/ldm/gempak/surface/**/#yyyyMMdd#_sao.gem"/>
+    <property name="recheck" value="15 min"/>
+    <property name="featureType" value="STATION"/>
+  </bean>
+
+  <bean id="gempakMetarsLocal" class="thredds.server.cdmremote.CollectionBean">
+    <property name="path" value="/idd/metar/gempak"/>
+    <property name="spec" value="D:/formats/gempak/surface/#yyyyMMdd#_sao.gem"/>
     <property name="recheck" value="15 min"/>
     <property name="featureType" value="STATION"/>
   </bean>
@@ -67,13 +82,6 @@
   <bean id="quickScatWinds" class="thredds.server.cdmremote.CollectionBean">
     <property name="path" value="/idd/bufr/quickScat"/>
     <property name="spec" value="/data/ldm/gempak/surface/**/#yyyyMMdd#.gem"/>
-    <property name="recheck" value="15 min"/>
-    <property name="featureType" value="STATION"/>
-  </bean>
-
-  <bean id="localMetars" class="thredds.server.cdmremote.CollectionBean">
-    <property name="path" value="/local/metars"/>
-    <property name="spec" value="Q:/station/ldm/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc"/>
     <property name="recheck" value="15 min"/>
     <property name="featureType" value="STATION"/>
   </bean>

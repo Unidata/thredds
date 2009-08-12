@@ -161,8 +161,8 @@ public class TestPointFeatureTypes extends TestCase {
     testPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/station/testCdmRemote/gempak/19580807_sao.gem", FeatureType.STATION, true);
   }
 
-  public void utestCdmRemoteCollection() throws IOException {
-    testPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/gempakSurface.xml/collection", FeatureType.STATION, true);
+  public void testCdmRemoteCollection() throws IOException {
+    testPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/gempak/collection", FeatureType.STATION, true);
   }
 
   public void utestCdmRemoteCollectionSubsets() throws IOException {

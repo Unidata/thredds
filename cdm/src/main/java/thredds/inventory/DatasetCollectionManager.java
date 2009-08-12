@@ -43,6 +43,7 @@ import thredds.inventory.filter.*;
 /**
  * Manage a list of Scanners that find MFiles
  * Tracks when they need to be rescanned.
+ * replaces older version in ncml.Aggregation
  *
  * @author caron
  * @since Jul 8, 2009
