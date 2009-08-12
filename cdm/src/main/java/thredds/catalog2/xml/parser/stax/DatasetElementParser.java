@@ -175,25 +175,34 @@ class DatasetElementParser extends AbstractElementParser
       StaxThreddsXmlParserUtils.consumeElementAndConvertToXmlString( this.reader );
   }
 
-  void postProcessingAfterEndElement()
-          throws ThreddsXmlParserException
-  {
-    this.datasetNodeElementParserHelper.postProcessingAfterEndElement();
-
-    // In any AccessBuilders that don't have a ServiceBuilder, set it with the default service.
-    if ( this.getDefaultServiceName() != null
-         && ! this.selfBuilder.getAccessBuilders().isEmpty() )
+    void postProcessingAfterEndElement()
+            throws ThreddsXmlParserException
     {
-      ServiceBuilder defaultServiceBuilder = this.selfBuilder.getParentCatalogBuilder().findServiceBuilderByNameGlobally( this.getDefaultServiceName() );
+        this.datasetNodeElementParserHelper.postProcessingAfterEndElement();
 
-      for ( AccessBuilder curAB : this.selfBuilder.getAccessBuilders() )
-      {
-        if ( curAB.getServiceBuilder() == null )
-          curAB.setServiceBuilder( defaultServiceBuilder );
-      }
+        // For each AccessBuilders that doesn't have a ServiceBuilder, either set its
+        // ServiceBuilder to the default service or, if there is no default service,
+        // remove it from this dataset builder.
+        if ( ! this.selfBuilder.getAccessBuilders().isEmpty() )
+        {
+            ServiceBuilder defaultServiceBuilder = null;
+            if ( this.getDefaultServiceName() != null )
+                defaultServiceBuilder = this.selfBuilder.getParentCatalogBuilder()
+                        .findServiceBuilderByNameGlobally( this.getDefaultServiceName() );
+
+            for ( AccessBuilder curAB : this.selfBuilder.getAccessBuilders() )
+            {
+                if ( curAB.getServiceBuilder() == null )
+                {
+                    if ( defaultServiceBuilder != null )
+                        curAB.setServiceBuilder( defaultServiceBuilder );
+                    else
+                        this.selfBuilder.removeAccessBuilder( curAB );
+                }
+            }
+        }
+
+        this.datasetNodeElementParserHelper.addFinalThreddsMetadataToDatasetNodeBuilder( this.selfBuilder );
+        this.datasetNodeElementParserHelper.addFinalMetadataToDatasetNodeBuilder( this.selfBuilder );
     }
-
-    this.datasetNodeElementParserHelper.addFinalThreddsMetadataToDatasetNodeBuilder( this.selfBuilder );
-    this.datasetNodeElementParserHelper.addFinalMetadataToDatasetNodeBuilder( this.selfBuilder );
-  }
 }

@@ -56,7 +56,7 @@ class ThreddsMetadataElementParser extends AbstractElementParser
 
   private final ThreddsMetadataBuilder selfBuilder;
 
-  private AbstractElementParser delegate;
+  private AbstractElementParser delegate = null;
 
   ThreddsMetadataElementParser( XMLEventReader reader,
                                 ThreddsBuilderFactory builderFactory,
@@ -73,71 +73,72 @@ class ThreddsMetadataElementParser extends AbstractElementParser
     this.selfBuilder = builderFactory.newThreddsMetadataBuilder();
   }
 
-  static boolean isSelfElementStatic( XMLEvent event )
-  {
-    if ( ServiceNameElementParser.isSelfElementStatic( event ))
-      return true;
-    if ( DataFormatElementParser.isSelfElementStatic( event ))
-      return true;
-    return false;
-  }
-
-  boolean isSelfElement( XMLEvent event )
-  {
-    return isSelfElementStatic( event );
-  }
-
-  ThreddsMetadataBuilder getSelfBuilder() {
-    return this.selfBuilder;
-  }
-
-  void parseStartElement()
-          throws ThreddsXmlParserException
-  {
-    // ThreddsMetadata container object only, no self element exists!
-    // So peek at next event to see how to route it.
-    StartElement startElement = this.peekAtNextEventIfStartElement();
-
-    if ( ! this.isSelfElement( startElement ) )
-      throw new IllegalArgumentException( "Start element [" + startElement.getName().getLocalPart()
-                                          + "] must be one of the THREDDS metadata element." );
-
-    if ( ServiceNameElementParser.isSelfElementStatic( startElement ) )
-    {
-      ServiceNameElementParser parser
-              = new ServiceNameElementParser( this.reader,
-                                              this.builderFactory,
-                                              this.selfBuilder,
-                                              this.parentDatasetNodeElementParserHelper,
-                                              this.inheritedByDescendants );
-      parser.parse();
+    static boolean isSelfElementStatic( XMLEvent event ) {
+        if ( ServiceNameElementParser.isSelfElementStatic( event ) )
+            return true;
+        if ( DataFormatElementParser.isSelfElementStatic( event ) )
+            return true;
+        return false;
     }
-    else if ( DataFormatElementParser.isSelfElementStatic(  startElement ))
-    {
-      DataFormatElementParser parser = new DataFormatElementParser( this.reader, this.builderFactory, this.selfBuilder );
-      parser.parse();
+
+    boolean isSelfElement( XMLEvent event ) {
+        if ( delegate != null )
+            return delegate.isSelfElement( event );
+        return isSelfElementStatic( event );
     }
-    else
-      throw new ThreddsXmlParserException( "");
-  }
 
-  void handleChildStartElement()
-          throws ThreddsXmlParserException
-  {
-    StartElement startElement = this.peekAtNextEventIfStartElement();
+    ThreddsMetadataBuilder getSelfBuilder() {
+        return this.selfBuilder;
+    }
 
-    if ( ServiceNameElementParser.isSelfElementStatic( startElement ) )
-      return;
-    else
-      // ToDo Save the results in a ThreddsXmlParserIssue (Warning) and report.
-      StaxThreddsXmlParserUtils.consumeElementAndConvertToXmlString( this.reader );
-  }
+    void parseStartElement()
+            throws ThreddsXmlParserException
+    {
+        // ThreddsMetadata container object only, no self element exists!
+        // So peek at next event to see how to route it.
+        StartElement startElement = this.peekAtNextEventIfStartElement();
 
-  void postProcessingAfterEndElement()
-          throws ThreddsXmlParserException
-  {
-    return;
-  }
+        if ( ! isSelfElementStatic( startElement ) )
+            throw new IllegalArgumentException( "Start element [" + startElement.getName().getLocalPart()
+                                                + "] must be one of the THREDDS metadata element." );
+
+        if ( ServiceNameElementParser.isSelfElementStatic( startElement ) )
+        {
+            this.delegate = new ServiceNameElementParser( this.reader,
+                                                          this.builderFactory,
+                                                          this.selfBuilder,
+                                                          this.parentDatasetNodeElementParserHelper,
+                                                          this.inheritedByDescendants );
+        }
+        else if ( DataFormatElementParser.isSelfElementStatic( startElement ) )
+        {
+            this.delegate = new DataFormatElementParser( this.reader, this.builderFactory, this.selfBuilder );
+        }
+        else
+            throw new ThreddsXmlParserException( "" );
+
+        this.delegate.parseStartElement();
+    }
+
+    void handleChildStartElement()
+            throws ThreddsXmlParserException
+    {
+        if ( this.delegate == null )
+            throw new IllegalStateException( "Proxy delegate is null: "
+                                             + StaxThreddsXmlParserUtils.getLocationInfo( this.reader ) );
+
+        this.delegate.handleChildStartElement();
+    }
+
+    void postProcessingAfterEndElement()
+            throws ThreddsXmlParserException
+    {
+        if ( this.delegate == null )
+            throw new IllegalStateException( "Proxy delegate is null: "
+                                             + StaxThreddsXmlParserUtils.getLocationInfo( this.reader ) );
+
+        this.delegate.postProcessingAfterEndElement();
+    }
 
   static class ServiceNameElementParser extends AbstractElementParser
   {
