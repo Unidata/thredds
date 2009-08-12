@@ -349,7 +349,10 @@ public class NestedTable {
   // use recursion so that parent variables come first
   private void addDataVariables(List<VariableSimpleIF> list, Table t) {
     if (t.parent != null) addDataVariables(list, t.parent);
-    list.addAll(t.cols);
+    for (VariableSimpleIF col : t.cols) {
+      if (!t.nondataVars.contains(col.getShortName()))
+        list.add(col);
+    }
   }
 
   public String getName() {

@@ -39,6 +39,7 @@ import ucar.nc2.ft.*;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.VariableSimpleIF;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 
@@ -46,6 +47,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Formatter;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * StationTimeSeries composed of a collection of individual files. "Composite" pattern.
@@ -55,6 +57,7 @@ import java.util.List;
  */
 public class CompositeStationCollection extends StationTimeSeriesCollectionImpl {
   private TimedCollection stnCollections;
+  protected List<? extends VariableSimpleIF> dataVariables;
 
   protected CompositeStationCollection(String name, TimedCollection stnCollections) throws IOException {
     super(name);
@@ -74,7 +77,13 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
       stationHelper.addStation(new CompositeStationFeature(s, null, stnCollections));
     }
 
+    dataVariables = openDataset.getDataVariables();
+
     openDataset.close();
+  }
+
+  public List<? extends VariableSimpleIF> getDataVariables() {
+    return dataVariables;
   }
 
   // Must override default subsetting implementation for efficiency

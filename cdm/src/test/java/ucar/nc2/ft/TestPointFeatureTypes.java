@@ -150,11 +150,14 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   public void testCollectionGempak() throws IOException {
-    testPointDataset("collection:D:/formats/gempak/surface/*.gem?#yyyyMMdd", FeatureType.STATION, true);
+    testPointDataset("collection:C:/data/formats/gempak/surface/#yyyyMMdd#_sao\\.gem", FeatureType.STATION, true);
+    // testPointDataset("collection:D:/formats/gempak/surface/*.gem?#yyyyMMdd", FeatureType.STATION, true);
   }
 
   public void testCollection() throws IOException {
-    testPointDataset("collection:D:/datasets/metars/*.nc?Surface_METAR_#yyyyMMdd_HHmm", FeatureType.STATION, true);
+                                                       //Surface_METAR_20070326_0000.nc
+    testPointDataset("collection:C:/data/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc", FeatureType.STATION, true);
+    //testPointDataset("collection:D:/datasets/metars/*.nc?Surface_METAR_#yyyyMMdd_HHmm", FeatureType.STATION, true);
   }
 
   public void utestCdmRemote() throws IOException {

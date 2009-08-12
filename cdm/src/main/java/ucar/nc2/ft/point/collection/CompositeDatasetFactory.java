@@ -38,12 +38,14 @@ import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.VariableSimpleIF;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 
 import java.io.IOException;
 import java.io.File;
 import java.util.Formatter;
+import java.util.List;
 
 import org.jdom.input.SAXBuilder;
 import org.jdom.*;
@@ -156,22 +158,25 @@ public class CompositeDatasetFactory {
 
     LatLonRect bb = null;
     FeatureCollection fc = null;
+    List<? extends VariableSimpleIF> dataVariables = null;
     switch (wantFeatureType) {
       case POINT:
-        PointFeatureCollection pfc = new CompositePointCollection(spec, datasets);
+        CompositePointCollection pfc = new CompositePointCollection(spec, datasets);
         bb = pfc.getBoundingBox();
         fc = pfc;
+        dataVariables = pfc.getDataVariables();
         break;
       case STATION:
-        StationTimeSeriesFeatureCollection sfc = new CompositeStationCollection(spec, datasets);
+        CompositeStationCollection sfc = new CompositeStationCollection(spec, datasets);
         bb = sfc.getBoundingBox();
         fc = sfc;
+        dataVariables = sfc.getDataVariables();
         break;
       default:
         return null;
     }
 
-    return new CompositePointDataset(location, wantFeatureType, fc, datasets, bb);
+    return new CompositePointDataset(location, wantFeatureType, fc, dataVariables, datasets, bb);
   }
 
 
@@ -179,7 +184,8 @@ public class CompositeDatasetFactory {
     private TimedCollection datasets;
     //private FeatureDatasetPoint proto;
 
-    public CompositePointDataset(String location, FeatureType featureType, FeatureCollection pfc, TimedCollection datasets, LatLonRect bb) {
+    public CompositePointDataset(String location, FeatureType featureType, FeatureCollection pfc, List<? extends VariableSimpleIF> dataVariables,
+                                 TimedCollection datasets, LatLonRect bb) {
       super(featureType);
       setLocationURI(location);
       setPointFeatureCollection(pfc);
@@ -190,7 +196,9 @@ public class CompositeDatasetFactory {
 
       if (bb != null)
          setBoundingBox(bb);
-     }
+
+      this.dataVariables.addAll( dataVariables);
+    }
 
     @Override
     protected void setDateRange(DateRange dateRange) {

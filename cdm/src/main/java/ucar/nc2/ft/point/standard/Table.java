@@ -117,7 +117,7 @@ public abstract class Table {
   //public int nstations;
 
   List<VariableSimpleIF> cols = new ArrayList<VariableSimpleIF>();    // all variables
-  List<String> coordVars = new ArrayList<String>(); // just the coord axes names
+  List<String> nondataVars = new ArrayList<String>(); // exclude these from the getDataVariables() list
 
   protected Table(NetcdfDataset ds, TableConfig config) {
     this.name = config.name;
@@ -140,6 +140,23 @@ public abstract class Table {
       parent = Table.factory(ds, config.parent);
 
     this.extraJoins = config.extraJoin;
+
+    // try to exclude coordinate vars and "structural data" from the list of data variables
+    checkNonDataVariable(config.lat);
+    checkNonDataVariable(config.lon);
+    checkNonDataVariable(config.elev);
+    checkNonDataVariable(config.timeNominal);
+    checkNonDataVariable(config.stnId);
+    checkNonDataVariable(config.stnDesc);
+    checkNonDataVariable(config.stnNpts);
+    checkNonDataVariable(config.stnWmoId);
+    checkNonDataVariable(config.stnAlt);
+    checkNonDataVariable(config.limit);
+  }
+
+  protected void checkNonDataVariable(String name) {
+    if (name != null)
+      nondataVars.add(name);
   }
 
   /**
@@ -346,6 +363,9 @@ public abstract class Table {
       super(ds, config);
       this.start = config.start;
       this.numRecords = config.numRecords;
+
+      checkNonDataVariable(config.start);
+      checkNonDataVariable(config.numRecords);
     }
 
     @Override
@@ -380,6 +400,8 @@ public abstract class Table {
       super(ds, config);
       this.indexMap = config.indexMap;
       this.parentIndexName = config.parentIndex;
+
+      checkNonDataVariable(config.parentIndex);
     }
 
     @Override
@@ -412,6 +434,9 @@ public abstract class Table {
       super(ds, config);
       this.start = config.start;
       this.next = config.next;
+
+      checkNonDataVariable(config.start);
+      checkNonDataVariable(config.next);
     }
 
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
@@ -829,9 +854,9 @@ public abstract class Table {
     return featureType;
   }
 
-  public List<? super VariableSimpleIF> getDataVariables() {
+  /* public List<? super VariableSimpleIF> getDataVariables() {
     return cols;
-  }
+  } */
 
   // LOOK others should override
   public Variable findVariable(String axisName) {

@@ -48,7 +48,8 @@ import thredds.inventory.*;
 
 
 public class TimedCollectionImpl implements TimedCollection {
-
+  private static final boolean debug = true;
+  
   private CollectionSpecParser sp;
   private List<TimedCollection.Dataset> datasets;
   private DateRange dateRange;
@@ -87,6 +88,14 @@ public class TimedCollectionImpl implements TimedCollection {
         Dataset last = (Dataset) datasets.get(datasets.size() - 1);
         dateRange = new DateRange(first.getDateRange().getStart().getDate(), last.getDateRange().getEnd().getDate());
       }
+    }
+
+    if (debug) {
+      System.out.printf("Datasets in collection%n");
+      for (TimedCollection.Dataset d: datasets) {
+        System.out.printf(" %s %n",d);
+      }
+      System.out.printf("%n");
     }
 
   }

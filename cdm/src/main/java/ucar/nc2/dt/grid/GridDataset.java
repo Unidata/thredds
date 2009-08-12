@@ -221,7 +221,12 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
   }
 
   public List<VariableSimpleIF> getDataVariables() {
-    return new ArrayList<VariableSimpleIF>(ds.getVariables());
+    List<VariableSimpleIF> result = new ArrayList<VariableSimpleIF>( grids.size());
+    for (GridDatatype grid : getGrids()) {
+      if (grid.getVariable() != null) // LOOK could make Adaptor if no variable
+        result.add( grid.getVariable());
+    }
+    return result;
   }
 
   public VariableSimpleIF getDataVariable(String shortName) {

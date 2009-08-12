@@ -36,12 +36,14 @@ import ucar.nc2.ft.point.PointIteratorAbstract;
 import ucar.nc2.ft.*;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.VariableSimpleIF;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Formatter;
+import java.util.ArrayList;
 
 /**
  * PointCollection composed of other PointCollections
@@ -51,10 +53,30 @@ import java.util.Formatter;
  */
 public class CompositePointCollection extends PointCollectionImpl {
   private TimedCollection pointCollections;
+  protected List<? extends VariableSimpleIF> dataVariables;
 
-  protected CompositePointCollection(String name, TimedCollection pointCollections) {
+  protected CompositePointCollection(String name, TimedCollection pointCollections) throws IOException {
     super(name);
     this.pointCollections = pointCollections;
+
+    // must open a prototype in order to get the data variable
+    TimedCollection.Dataset td = pointCollections.getPrototype();
+    if (td == null)
+      throw new RuntimeException("No datasets in the collection");
+
+    Formatter errlog = new Formatter();
+    FeatureDatasetPoint openDataset = null;
+    try {
+      openDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.POINT, td.getLocation(), null, errlog);
+      dataVariables = openDataset.getDataVariables();
+    } finally {
+      if (openDataset != null)
+        openDataset.close();
+    }
+  }
+
+  public List<? extends VariableSimpleIF> getDataVariables() {
+    return dataVariables;
   }
 
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {

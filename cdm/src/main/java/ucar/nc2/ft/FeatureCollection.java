@@ -34,6 +34,7 @@ package ucar.nc2.ft;
 
 /**
  * A collection of FeatureTypes.
+ * 
  * @author caron
  * @since Mar 20, 2008
  */
