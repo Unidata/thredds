@@ -32,7 +32,7 @@
  */
 package thredds.catalog2.xml.parser;
 
-import thredds.catalog2.xml.parser.sax.SAXCatalogParser;
+import thredds.catalog2.xml.parser.stax.StaxThreddsXmlParser;
 
 /**
  * _more_
@@ -44,8 +44,8 @@ public class ThreddsXmlParserFactory
 {
   public static ThreddsXmlParser newCatalogParser( boolean wantValidating)
   {
-    SAXCatalogParser catParser = SAXCatalogParser.getInstance();
-    catParser.wantValidating( wantValidating );
+    StaxThreddsXmlParser catParser = StaxThreddsXmlParser.newInstance();
+    //catParser.wantValidating( wantValidating );
     return catParser;
   }
 
@@ -55,18 +55,16 @@ public class ThreddsXmlParserFactory
 
   private boolean wantValidating = false;
 
-  public boolean getWantValidating()
-  { return this.wantValidating; }
+  public boolean getWantValidating() {
+      return this.wantValidating;
+  }
 
-  public void setWantValidating( boolean wantValidating )
-  {
+  public void setWantValidating( boolean wantValidating ) {
     this.wantValidating = wantValidating;
   }
 
-  public ThreddsXmlParser getCatalogParser()
-  {
-    SAXCatalogParser catParser = SAXCatalogParser.getInstance();
-    catParser.wantValidating( this.wantValidating );
-    return catParser;
+  public ThreddsXmlParser getCatalogParser() {
+      StaxThreddsXmlParser catParser = StaxThreddsXmlParser.newInstance();
+      return catParser;
   }
 }
