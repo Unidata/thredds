@@ -931,21 +931,22 @@
     </jar>
   </target>
 
-  <target name="unit-test" depends="compile, test-setup" description="run nc unit tests">
+  <target name="unit-test-all" depends="compile, test-setup" description="run nc unit tests">
     <antcall target="unit-test-nc" />
+    <antcall target="unit-test-thredds" />
   </target>
 
   <target name="unit-test-nc" description="run nc unit tests">
     <antcall target="unit-test-base">
       <param name="unit.test.name" value="unit-test-nc" />
-      <param name="unit.test" value="ucar.nc2.TestAll" />
+      <param name="unit.test.class.name" value="ucar.nc2.TestAll" />
     </antcall>
   </target>
 
   <target name="unit-test-thredds" description="run thredds unit tests">
     <antcall target="unit-test-base">
       <param name="unit.test.name" value="unit-test-thredds" />
-      <param name="unit.test" value="thredds.catalog.TestCatalogAll" />
+      <param name="unit.test.class.name" value="thredds.catalog.TestCatalogAll" />
     </antcall>
   </target>
 
@@ -961,7 +962,7 @@
       <jvmarg value="-Xmx1024m"/>
       <formatter type="xml"/>
       <formatter type="brief" usefile="false"/>
-      <test todir="${test.reports.dir}/${unit.test.name}" name="${unit.test}"/>
+      <test todir="${test.reports.dir}/${unit.test.name}" name="${unit.test.class.name}"/>
     </junit>
 
     <!-- #Generate test reports -->
