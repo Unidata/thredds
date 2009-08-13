@@ -112,9 +112,7 @@ public class TestIndexUpdating extends TestCase
   public void testExistingUpdatingIndex_ServerWithExternalIndexer_NcFile_NewGribIosp()
   {
     // Setup for "Server with external indexer" user story.
-    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
     ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
-    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
     ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
 
     runTestExistingUpdatingIndex( NcObjectType.FILE, GribIospVersion.NEW );
@@ -127,9 +125,7 @@ public class TestIndexUpdating extends TestCase
   public void testExistingUpdatingIndex_ServerWithExternalIndexer_NcDataset_NewGribIosp()
   {
     // Setup for "Server with external indexer" user story.
-    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
     ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
-    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
     ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
 
     runTestExistingUpdatingIndex( NcObjectType.DATASET, GribIospVersion.NEW );
@@ -142,9 +138,7 @@ public class TestIndexUpdating extends TestCase
 //  public void testExistingUpdatingIndex_ServerWithExternalIndexer_NcFile_OldGribIosp()
 //  {
 //    // Setup for "Server with external indexer" user story.
-//    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
 //    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
-//    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
 //    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
 //
 //    runTestExistingUpdatingIndex( NcObjectType.FILE, GribIospVersion.OLD );
@@ -157,9 +151,7 @@ public class TestIndexUpdating extends TestCase
 //  public void testExistingUpdatingIndex_ServerWithExternalIndexer_NcDataset_OldGribIosp()
 //  {
 //    // Setup for "Server with external indexer" user story.
-//    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
 //    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
-//    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
 //    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
 //
 //    runTestExistingUpdatingIndex( NcObjectType.DATASET, GribIospVersion.OLD );
@@ -253,9 +245,7 @@ public class TestIndexUpdating extends TestCase
   public void testExistingOutOfDateIndex_ServerWithExternalIndexer_NcFile_NewGribIosp()
   {
     // Setup for "Server with external indexer" user story.
-    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
     ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
-    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
     ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
 
     runTestExistingOutOfDateIndex( NcObjectType.FILE, GribIospVersion.NEW );
@@ -268,9 +258,7 @@ public class TestIndexUpdating extends TestCase
   public void testExistingOutOfDateIndex_ServerWithExternalIndexer_NcDataset_NewGribIosp()
   {
     // Setup for "Server with external indexer" user story.
-    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
     ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
-    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
     ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
 
     runTestExistingOutOfDateIndex( NcObjectType.DATASET, GribIospVersion.NEW );
@@ -322,9 +310,7 @@ public class TestIndexUpdating extends TestCase
   public void testInitiallyMissingUpdatingIndex_ServerWithExternalIndexer_NcFile_NewGribIosp()
   {
     // Setup for "Server with external indexer" user story.
-    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
     ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
-    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
     ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
 
     runTestInitiallyMissingUpdatingIndex( NcObjectType.FILE, GribIospVersion.NEW );
@@ -337,9 +323,7 @@ public class TestIndexUpdating extends TestCase
   public void testInitiallyMissingUpdatingIndex_ServerWithExternalIndexer_NcDataset_NewGribIosp()
   {
     // Setup for "Server with external indexer" user story.
-    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
     ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
-    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
     ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
 
     runTestInitiallyMissingUpdatingIndex( NcObjectType.DATASET, GribIospVersion.NEW );
@@ -352,9 +336,7 @@ public class TestIndexUpdating extends TestCase
 //  public void testInitiallyMissingUpdatingIndex_ServerWithExternalIndexer_NcFile_OldGribIosp()
 //  {
 //    // Setup for "Server with external indexer" user story.
-//    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
 //    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
-//    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
 //    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
 //
 //    runTestInitiallyMissingUpdatingIndex( NcObjectType.FILE, GribIospVersion.OLD );
@@ -367,9 +349,7 @@ public class TestIndexUpdating extends TestCase
 //  public void testInitiallyMissingUpdatingIndex_ServerWithExternalIndexer_NcDataset_OldGribIosp()
 //  {
 //    // Setup for "Server with external indexer" user story.
-//    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
 //    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
-//    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
 //    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
 //
 //    runTestInitiallyMissingUpdatingIndex( NcObjectType.DATASET, GribIospVersion.OLD );
@@ -444,27 +424,26 @@ public class TestIndexUpdating extends TestCase
    * Test missing index/updating data in "Server with External Indexer" user story
    * with NetcdfFile using the GribGrid IOSP (new).
    */
+  /*
   public void testMissingIndexUpdatingData_ServerWithExternalIndexer_NcFile_NewGribIosp()
   {
     // Setup for "Server with external indexer" user story.
-    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
     ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
-    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
     ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
 
     runTestMissingIndexUpdatingData( NcObjectType.FILE, GribIospVersion.NEW );
   }
-
+  */
+  
   /**
    * Test missing index/updating data in "Server with External Indexer" user story
    * with NetcdfDataset using the GribGrid IOSP (new).
    */
+  /*
   public void testMissingIndexUpdatingData_ServerWithExternalIndexer_NcDataset_NewGribIosp()
   {
     // Setup for "Server with external indexer" user story.
-    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
     ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
-    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
     ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
 
     runTestMissingIndexUpdatingData( NcObjectType.DATASET, GribIospVersion.NEW );
@@ -502,7 +481,8 @@ public class TestIndexUpdating extends TestCase
 
     return true;
   }
-  
+  */
+
   /**
    * Test missing index/updating data in "Server with External Indexer" user story
    * with NetcdfFile using the GribGrid IOSP (new).
@@ -510,9 +490,7 @@ public class TestIndexUpdating extends TestCase
   public void testMissingIndexUpdatedThenAlternate_ServerWithExternalIndexer_NcFile_NewGribIosp()
   {
     // Setup for "Server with external indexer" user story.
-    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
     ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
-    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
     ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
 
     runTestMissingIndexUpdatedThenAlternate( NcObjectType.FILE, GribIospVersion.NEW );
@@ -525,9 +503,7 @@ public class TestIndexUpdating extends TestCase
   public void testMissingIndexUpdatedThenAlternate_ServerWithExternalIndexer_NcDataset_NewGribIosp()
   {
     // Setup for "Server with external indexer" user story.
-    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
     ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
-    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
     ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
 
     runTestMissingIndexUpdatedThenAlternate( NcObjectType.DATASET, GribIospVersion.NEW );
@@ -626,9 +602,7 @@ public class TestIndexUpdating extends TestCase
 //  public void testMissingIndexAdded_ServerWithExternalIndexer_NcFile_NewGribIosp()
 //  {
 //    // Setup for "Server with external indexer" user story.
-//    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
 //    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
-//    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
 //    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
 //
 //    runTestMissingIndexAdded( NcObjectType.FILE, GribIospVersion.NEW );
@@ -641,9 +615,7 @@ public class TestIndexUpdating extends TestCase
 //  public void testMissingIndexAdded_ServerWithExternalIndexer_NcDataset_NewGribIosp()
 //  {
 //    // Setup for "Server with external indexer" user story.
-//    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
 //    ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
-//    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
 //    ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
 //
 //    runTestMissingIndexAdded( NcObjectType.DATASET, GribIospVersion.NEW );
@@ -680,12 +652,10 @@ public class TestIndexUpdating extends TestCase
 //
 //    return true;
 //  }
-
+ /*
   public void testBadIndexFileWithExtendModeFalse()
   {
-    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
     ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
-    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false );
     ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
 
     // Setup dataset to use partial GRIB index file.
@@ -711,7 +681,7 @@ public class TestIndexUpdating extends TestCase
     }
 
   }
-
+  */
   /**
    * tests the TDS configuration : there is no index available on first access to the Grib file, so
    * an index is created in the cache directory because the TDS doesn't have write permission in the
@@ -720,9 +690,7 @@ public class TestIndexUpdating extends TestCase
    */
   public void testNoIndexTDS()
   {
-    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
     ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
-    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false);
     ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( false );
 
     // Setup dataset to use partial GRIB index file.
@@ -773,9 +741,7 @@ public class TestIndexUpdating extends TestCase
      */
     public void testNoIndexNextToGrib()
     {
-      ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
       ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
-      ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( true );
       ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( true  );
 
       // Setup dataset to use partial GRIB index file.
@@ -820,9 +786,7 @@ public class TestIndexUpdating extends TestCase
    */
   public void testExtendModeTrue()
   {
-    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( false );
     ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( false );
-    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( true);
     ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( true );
 
     // Setup dataset to use partial GRIB index file.
@@ -860,12 +824,10 @@ public class TestIndexUpdating extends TestCase
     assertTrue( "Time dimension [" + timeNew.getLength() + "] not as expected [21].", timeNew.getLength() == 21 );
 
   }
-
+  /*
   public void testAlwaysInCacheAndExtendModeTrue()
   {
-    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( true );
     ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( true );
-    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( true);
     ucar.nc2.iosp.grid.GridServiceProvider.setExtendIndex( true );
 
     // Setup dataset to use partial GRIB index file.
@@ -903,7 +865,8 @@ public class TestIndexUpdating extends TestCase
 
     assertTrue( "Time dimension [" + timeNew.getLength() + "] not as expected [21].", timeNew.getLength() == 21 );
   }
-
+  */
+  
   private boolean setupGribAndPartialIndex0()
   {
     // Locate the source data file and check that it exists and can be read.
@@ -1126,7 +1089,7 @@ public class TestIndexUpdating extends TestCase
 
   enum GribIospVersion
   {
-    OLD( "ucar.nc2.iosp.grib.GribServiceProvider" ),
+    //OLD( "ucar.nc2.iosp.grib.GribServiceProvider" ),
     NEW( "ucar.nc2.iosp.grib.GribGridServiceProvider" );
 
     private String className;
