@@ -100,6 +100,15 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
   }
 
   /**
+   * Set whether to force new index or not
+   *
+   * @param b true to use
+   */
+  static public void forceNewIndex(boolean b) {
+    forceNewIndex = b;
+  }
+  
+  /**
    * Set the debug flags
    *
    * @param debugFlag debug flags
