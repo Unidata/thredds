@@ -87,33 +87,18 @@ public class TestGridGribIosp extends TestCase {
 
     start = System.currentTimeMillis();
 
-    Class cT1 = ucar.nc2.iosp.grib.Grib1ServiceProvider.class;
-    Class cT2 = ucar.nc2.iosp.grib.Grib2ServiceProvider.class;
     IOServiceProvider spiT = null;
     try {
-      spiT = (IOServiceProvider) cT2.newInstance();
+      spiT = (IOServiceProvider) c.newInstance();
     } catch (InstantiationException e) {
-      throw new IOException("IOServiceProvider " + cT2.getName() + "must have no-arg constructor.");
+      throw new IOException("IOServiceProvider " + c.getName() + "must have no-arg constructor.");
     } catch (IllegalAccessException e) {
-      throw new IOException("IOServiceProvider " + cT2.getName() + " IllegalAccessException: " + e.getMessage());
+      throw new IOException("IOServiceProvider " + c.getName() + " IllegalAccessException: " + e.getMessage());
     }
     ucar.unidata.io.RandomAccessFile rafT = new ucar.unidata.io.RandomAccessFile(fileText, "r");
     rafT.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
-    NetcdfFile ncfileText;
-    if( spiT.isValidFile( rafT )) {
-      rafT.seek( 0L );
-      ncfileText = new NetcdfFile(spiT, rafT, fileText, null);
-    } else {
-      rafT.seek( 0L );
-      try {
-        spiT = (IOServiceProvider) cT1.newInstance();
-      } catch (InstantiationException e) {
-        throw new IOException("IOServiceProvider " + cT1.getName() + "must have no-arg constructor.");
-      } catch (IllegalAccessException e) {
-        throw new IOException("IOServiceProvider " + cT1.getName() + " IllegalAccessException: " + e.getMessage());
-      }
-      ncfileText = new NetcdfFile(spiT, rafT, fileText, null);
-    }
+    NetcdfFile ncfileText = new NetcdfFile(spiT, rafT, fileText, null);
+
     System.out.println( "Text Netcdf created" );
 
       //System.out.println( "Time to create Netcdf object using Grid1 Grib2 Iosp "+
@@ -144,17 +129,9 @@ public class TestGridGribIosp extends TestCase {
         File aChild = new File(dir, child);
         //System.out.println( "child ="+ child.getName() );
         if (aChild.isDirectory()) {
-          continue;
           // skip index *gbx and inventory *xml files
         } else if (
-            // can't be displayed by Grib(1|2) iosp
-            child.contains( "Ensemble") ||
-            child.contains( "SREF") ||
-            child.contains( "GFS_Spectral") || //uses >1 parameter tables
-            child.contains( "SPECTRAL") || //uses >1 parameter tables
-            child.contains( "ECMWF") || //uses >1 groups    
-            child.contains( "GFS_Global_1p25deg") || //uses >1 groups    
-            child.contains( "UKMET") || //uses >1 groups
+            child.contains( "Ensemble") || // Generating Process ID are Strings
             child.endsWith("gbx") ||
             child.endsWith("xml") ||
             child.endsWith("tmp") || //index in creation process
