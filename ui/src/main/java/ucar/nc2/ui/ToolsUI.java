@@ -726,7 +726,7 @@ public class ToolsUI extends JPanel {
     ucar.nc2.iosp.hdf5.H5iosp.setDebugFlags(debugFlags);
     ucar.nc2.ncml.NcMLReader.setDebugFlags(debugFlags);
     ucar.nc2.dods.DODSNetcdfFile.setDebugFlags(debugFlags);
-    ucar.nc2.iosp.grib.GribServiceProvider.setDebugFlags(debugFlags);
+    ucar.nc2.iosp.grib.GribGridServiceProvider.setDebugFlags(debugFlags);
     ucar.nc2.thredds.ThreddsDataFactory.setDebugFlags(debugFlags);
 
     ucar.nc2.FileWriter.setDebugFlags(debugFlags);
