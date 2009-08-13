@@ -390,7 +390,7 @@ public class GridVariable {
         new Attribute(
             "missing_value", new Float(lookup.getFirstMissingValue())));
     if (!hcs.isLatLon()) {
-      if (ucar.nc2.iosp.grib.GribServiceProvider.addLatLon) {
+      if (ucar.nc2.iosp.grib.GribGridServiceProvider.addLatLon) {
         v.addAttribute(new Attribute("coordinates", "lat lon"));
       }
       v.addAttribute(new Attribute("grid_mapping", hcs.getGridName()));

@@ -33,7 +33,7 @@
 package ucar.nc2.dt.grid;
 
 import junit.framework.*;
-import ucar.nc2.iosp.grib.GribServiceProvider;
+import ucar.nc2.iosp.grib.GribGridServiceProvider;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.AxisType;
@@ -129,12 +129,12 @@ public class TestReadandCount extends TestCase {
     doOne(TestAll.testdataDir + "grid/grib/grib1/data/","radar_regional.grib", 1, 1, 3, 0);
 
     // redo grib files, forcing new index
-    GribServiceProvider.forceNewIndex = true;
+    GribGridServiceProvider.forceNewIndex( true );
     doOne(TestAll.testdataDir + "grid/grib/grib1/data/","AVN.wmo", 22, -1, -1, -1);
     doOne(TestAll.testdataDir + "grid/grib/grib1/data/","RUC_W.wmo", 44, -1, -1, -1);
     doOne(TestAll.testdataDir + "grid/grib/grib2/data/","eta2.wmo", 35, -1, -1, -1);
     doOne(TestAll.testdataDir + "grid/grib/grib2/data/","ndfd.wmo", 1, -1, -1, -1);
-    GribServiceProvider.forceNewIndex = false;
+    GribGridServiceProvider.forceNewIndex( false );
   }
 
   static void doOne(String dir, String filename, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes) throws Exception {
