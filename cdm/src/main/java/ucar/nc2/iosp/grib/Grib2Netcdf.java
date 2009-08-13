@@ -36,10 +36,8 @@ package ucar.nc2.iosp.grib;
 
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.*;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.util.CancelTask;
-import ucar.grib.*;
 
 import java.lang.*;     // Standard java functions
 import java.util.*;
