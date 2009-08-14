@@ -5,46 +5,9 @@
       <configuration />
     </facet>
   </component>
-  <component name="NewModuleRootManager" inherit-compiler-output="false">
-    <output url="file://$MODULE_DIR$/../../ldm/target/classes" />
-    <output-test url="file://$MODULE_DIR$/../../ldm/target/test/classes" />
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
-    <content url="file://$MODULE_DIR$/../../ldm">
-      <sourceFolder url="file://$MODULE_DIR$/../../ldm/src/main" isTestSource="false" />
-    </content>
-    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="cdm" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/je-3.3.62.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/lucene-core-2.3.2.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="library" name="Spring" level="project" />
-    <orderEntry type="module-library">
-      <library name="Babudb">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/babudb.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="file://$MODULE_DIR$/../../../../lib/babudb/babudb-read-only/java/src" />
-        </SOURCES>
-      </library>
-    </orderEntry>
   </component>
 </module>
 

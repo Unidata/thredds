@@ -1,0 +1,259 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+</head>
+
+<body>
+<h1>CdmRemote Web Service</h1>
+<p>CdmRemote is an experimental web service implemented in the CDM library (client) and TDS (server), providing remote access to CDM datasets, using <a href="NcStream.html">ncstream</a> as the on-the-wire protocol. It provides access at the  NetcdfDataset, and Feature Type levels of the CDM. The TDS catalog uses <strong>ServiceType.CdmRemote</strong> service type.</p>
+<p>&nbsp;</p>
+<h2>CDM 4.1 client library</h2>
+<p><strong>NetcdfDataset.openOrAcquireFile()</strong> looks for <em><strong>cdmremote:url</strong></em> prefix, and calls <strong>new</strong> <strong>NcStreamRemote(url, cancelTask)</strong> if found, which returns a NetcdfDataset. The url must be an endpoint for a cdmremote service.</p>
+<p><strong>FeatureDatasetFactoryManager.open()</strong> looks for <em><strong>cdmremote:url</strong></em> prefix, and calls <strong>CdmRemoteDatasetFactory.factory()</strong>  if found, which returns a FeatureDataset. The url must be an endpoint for a cdmremote service.</p>
+<p>cdmremote:http://localhost:8080/thredds/cdmremote/local/metars/collection </p>
+<p>&nbsp;</p>
+<h2>TDS 4.1 request sytax</h2>
+<p>&nbsp;</p>
+<h3>NetcdfDataset (Data Access and Coordinate Systems)</h3>
+<p>The protobuf messages are defined by <strong>thredds\cdm\src\main\java\ucar\nc2\stream\ncStream.proto</strong></p>
+<p>Datasets can be accessed in index space, similar to netCDF or OPeNDAP. The Coordinate Systems are created on the server, and passed to the client.</p>
+<table width="1028" border="1">
+  <tr>
+    <th width="595" scope="col">Request</th>
+    <th width="417" scope="col">Response</th>
+  </tr>
+  <tr>
+    <td><p> http://server:8080/thredds/cdmremote/data.nc?<strong>view=CDL</strong> </p></td>
+    <td> dataset CDL</td>
+  </tr>
+  <tr>
+    <td>http://server:8080/thredds/cdmremote/data.nc?<strong>view=NcML</strong></td>
+    <td>dataset NcML</td>
+  </tr>
+  <tr>
+    <td>http://server:8080/thredds/cdmremote/data.nc?<strong>getCapabilities</strong></td>
+    <td>capabilities XML</td>
+  </tr>
+  <tr>
+    <td>http://server:8080/thredds/cdmremote/data.nc?<strong>header</strong></td>
+    <td>header ncstream message, contains the structural metadata</td>
+  </tr>
+  <tr>
+    <td>http://server:8080/thredds/cdmremote/data.nc?<strong>Temp(0:100:10,0:127,0:163),lat,lon</strong></td>
+    <td>data ncstream message</td>
+  </tr>
+</table>
+<ul>
+  <li>Data request  uses Section specification (same as Fortran-90 array notation) to ask for a subset in index space.</li>
+  <li> Variable names must be UTF8-escape encoded. In Java we use URLEncode.encode() and URLDecode().decode. This creates a <em><strong>application/x-www-form-urlencoded</strong></em> MIME encoding.</li>
+  <li>GetCapabilities indicates which (if any) feature types the dataset can be opened as, along with the URLs of those services. TBD.</li>
+</ul>
+<h3>&nbsp;</h3>
+<h3>FeatureType Dataset</h3>
+<p>The protobuf messages are defined by <strong>thredds\cdm\src\main\java\ucar\nc2\ft\point\remote\pointStream.proto</strong></p>
+<p>Datasets can be accessed in coordinate space, similar to the  Netcdf Subset Service, WCS and WMS. </p>
+<h4>PointDataset</h4>
+<table width="867" border="1">
+  <tr>
+    <th width="658" scope="col">Request</th>
+    <th width="193" scope="col">Response</th>
+  </tr>
+  <tr>
+    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>header</strong></td>
+    <td>header ncstream message</td>
+  </tr>
+  <tr>
+    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>all</strong></td>
+    <td>pointData ncstream message</td>
+  </tr>
+  <tr>
+    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
+    <td>pointData ncstream message</td>
+  </tr>
+  <tr>
+    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>bbox=-105,-80,22,40</strong></td>
+    <td>pointData ncstream message</td>
+  </tr>
+  <tr>
+    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>time_start=&amp;time_end=</strong></td>
+    <td>pointData ncstream message</td>
+  </tr>
+  <tr>
+    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>time=</strong></td>
+    <td>pointData ncstream message</td>
+  </tr>
+</table>
+<ul>
+  <li>bbox same as WCS, whatever that is</li>
+  <li>data requests return an unordered list of observation as StructureData</li>
+</ul>
+<h4>StationTimeSeries</h4>
+<table width="961" border="1">
+  <tr>
+    <th width="741" scope="col">Request</th>
+    <th width="204" scope="col">Response</th>
+  </tr>
+  <tr>
+    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>header</strong></td>
+    <td>header ncstream message</td>
+  </tr>
+  <tr>
+    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>stations</strong></td>
+    <td>stationList ncstream message</td>
+  </tr>
+  <tr>
+    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>stations&amp;north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
+    <td>stationList ncstream message</td>
+  </tr>
+  <tr>
+    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>time_start=&amp;time_end=</strong></td>
+    <td>pointData ncstream message</td>
+  </tr>
+  <tr>
+    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>time=</strong></td>
+    <td>pointData ncstream message</td>
+  </tr>
+  <tr>
+    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>stations&amp;north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
+    <td>stationList ncstream message</td>
+  </tr>
+  <tr>
+    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>stn=KDEN,KLOG,MOAS</strong></td>
+    <td>pointData ncstream message</td>
+  </tr>
+</table>
+<ul>
+  <li>data requests return an unordered list of observation as StructureData</li>
+</ul>
+<hr width="100%" />
+<h2>Current notes on motherlode dev</h2>
+<h3>August-10-2009</h3>
+<p>1) web.xml has a <strong>org.springframework.web.servlet.DispatcherServlet</strong> cdmRemote with a mapping:<br />
+</p>
+<pre>
+ &lt;servlet-mapping&gt;
+   &lt;servlet-name&gt;<strong>cdmRemote</strong>&lt;/servlet-name&gt;
+   &lt;url-pattern&gt;/cdmremote/*&lt;/url-pattern&gt;
+ &lt;/servlet-mapping&gt;</pre>
+<p>2) Temporarily, we have the configuration of the datasets  in <strong>thredds\tds\src\main\webapp\WEB-INF\cdmRemote-servlet.xml</strong>: which configures the collectionController. We will replacce this with pure catalog configuration in 4.2.<br />
+</p>
+<pre>  &lt;bean id=&quot;<strong>collectionController</strong>&quot; class=&quot;thredds.server.cdmremote.CollectionController&quot;&gt;<br />    &lt;property name=&quot;tdsContext&quot; ref=&quot;tdsContext&quot;/&gt;<br />    &lt;property name=&quot;allow&quot; value=&quot;true&quot;/&gt;<br />    &lt;property name=&quot;supportedMethods&quot; value=&quot;GET&quot;/&gt;<br />    &lt;property name=&quot;configDirectory&quot; value=&quot;GET&quot;/&gt;<br />    &lt;property name=&quot;collections&quot;&gt;<br />      &lt;list&gt;<br />        &lt;ref bean=&quot;ncMetars&quot; /&gt;<br />        &lt;ref bean=&quot;<strong>gempakMetars</strong>&quot; /&gt;<br />        &lt;ref bean=&quot;quickScatWinds&quot; /&gt;<br />        &lt;ref bean=&quot;localMetars&quot; /&gt;<br />      &lt;/list&gt;<br />    &lt;/property&gt;<br />  &lt;/bean&gt;
+  
+  &lt;bean id=&quot;<strong>gempakMetars</strong>&quot; class=&quot;thredds.server.cdmremote.CollectionBean&quot;&gt;
+   &lt;property name=&quot;path&quot; value=&quot;/idd/metar/gempak&quot;/&gt;
+    &lt;property name=&quot;spec&quot; value=&quot;/data/ldm/gempak/surface/**/#yyyyMMdd#.gem&quot;/&gt;
+   &lt;property name=&quot;recheck&quot; value=&quot;15 min&quot;/&gt;
+   &lt;property name=&quot;featureType&quot; value=&quot;STATION&quot;/&gt;
+ &lt;/bean&gt;
+</pre>
+<p>and the mapping:</p>
+<pre> /**/collection=collectionController
+</pre>
+<p>So the URL is </p>
+<pre> http://motherlode.ucar.edu:9080/thredds/cdmremote/<strong><em>path</em></strong>/collection
+
+eg:
+ http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak/collection
+ http://localhost:8080/thredds/cdmremote/local/metars/collection
+</pre>
+<p><strong>3) The default output is the dataset description: should be getCapabilities ????</strong><br />
+</p>
+<pre>
+FeatureDataset on location= http://localhost:8080/thredds/cdmremote/local/metars/collection
+  featureType= STATION
+  title= null
+  desc= null
+  range= start= 2006-03-25 00:00:00Z end= 2006-09-25 00:00:00Z duration= 6.0453 months resolution= null
+  start= 2006-03-25 00:00:00Z
+  end  = 2006-09-25 00:00:00Z
+  bb   =  ll: 90.0S 180.0W+ ur: 82.51N 180.0E
+  bb   =  lat= [-90.00,82.51] lon= [-180.00,180.00]
+  has netcdf = true
+  Data Variables (0)
+
+parseInfo=
+
+
+FeatureCollection 0 
+ STATION Q:/station/ldm/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc
+   npts = -1 
+     bb =  lat= [-90.00,82.51] lon= [-180.00,180.00] 
+
+
+</pre>
+<p>  4) In ToolsUI, FeatureType/PointFeature Tab:</p>
+<p><strong>cdmremote:http://localhost:8080/thredds/cdmremote/local/metars/collection </strong></p>
+<pre>&nbsp;
+FeatureDataset on location= cdmremote:http://localhost:8080/thredds/cdmremote/local/metars/collection
+  featureType= STATION
+  title= METAR Data from NWS
+  desc= Metar Data from NWS distributed through the Unidata IDD
+    realtime datastream. 1 day's worth of data
+  range= null
+  start= Unknown
+  end  = Unknown
+  bb   = null
+  has netcdf = true
+  Attributes
+    title = &quot;METAR Data from NWS&quot;
+    version = 2.3
+    processor = &quot;metar2nc  version v1.2&quot;
+    Conventions = &quot;Unidata Observation Dataset v1.0&quot;
+    standard_name_vocabulary = &quot;CF-1.0&quot;
+    description = &quot;Metar Data from NWS distributed through the Unidata IDD\n    realtime datastream. 1 day\'s worth of data&quot;
+    time_coordinate = &quot;time_observation&quot;
+    cdm_datatype = &quot;Station&quot;
+    stationDimension = &quot;station&quot;
+    station_id = &quot;station_id&quot;
+    station_description = &quot;station_description&quot;
+    latitude_coordinate = &quot;latitude&quot;
+    longitude_coordinate = &quot;longitude&quot;
+    altitude_coordinate = &quot;altitude&quot;
+    geospatial_lat_max = &quot;90.0&quot;
+    geospatial_lat_min = &quot;-90.0&quot;
+    geospatial_lon_max = &quot;360.0&quot;
+    geospatial_lon_min = &quot;0.0&quot;
+    time_coverage_start = &quot;1143243900&quot;
+    time_coverage_end = &quot;1143330240&quot;
+    observationDimension = &quot;recNum&quot;
+    notes = &quot;\n    The metar2nc decoder creates a netCDF file based on a set of variables \n    that are commonly used in display programs. Since not all the variables\n    that are possible(over 135) are written, the raw METAR report is stored \n    for future decoding of variables not explicited specified. The \n    lastChild variable gives the record number of the most recent report \n    for a particular station and the prevChild variable is the record \n    number of the next most recent. By following the links, all the reports\n    for a particular station can be extracted.&quot;
+ <strong> Data Variables (0)</strong>
+
+parseInfo=
+
+
+FeatureCollection 0 
+ STATION cdmremote:http://localhost:8080/thredds/cdmremote/local/metars/collection
+   npts = -1 
+     bb =  lat= [-90.00,82.51] lon= [-180.00,180.00] 
+<strong>
+(Need to add Data variables)</strong></pre>
+<p>Ask for station data, on the server, its rather slow:</p>
+<pre>
+CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060325_0000.nc
+CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060326_0000.nc
+CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060327_0000.nc
+CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060328_0000.nc
+CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060329_0000.nc
+CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060330_0000.nc
+CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060331_0000.nc
+CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060401_0000.nc
+CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060402_0000.nc
+CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060629_0000.nc
+ sent 481 features to 20V 
+ 
+<strong>
+(check to see what the strategy is for stations: coomplete scan or ??)</strong>
+
+</pre>
+<p>5) cdmremoteCatalog.xml defines datasets for the collections we have working so far.<br>
+</p>
+<hr width="100%" />
+<address>
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated August 14, 2009
+</address>
+<p>&nbsp;</p>
+</body>
+</html>

@@ -648,7 +648,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       return acquireDODS(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through DODS
 
     } else if (location.startsWith(NcStreamRemote.SCHEME)) {
-      return acquireRemote(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through netcdf remote
+      return acquireRemote(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through ncstream
 
     } else if (location.startsWith("thredds:")) {
       Formatter log = new Formatter();

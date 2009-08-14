@@ -52,8 +52,8 @@
   </bean>
 
   <bean id="ncMetars" class="thredds.server.cdmremote.CollectionBean">
-    <property name="path" value="/idd/metar/decoded"/>
-    <property name="spec" value="/data/ldm/pub/decoded/netcdf/surface/metar/**/Surface_METAR_#yyyyMMdd_HHmm#.nc"/>
+    <property name="path" value="/idd/metar/ncdecoded"/>
+    <property name="spec" value="/data/ldm/pub/decoded/netcdf/surface/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc"/>
     <property name="recheck" value="15 min"/>
     <property name="featureType" value="STATION"/>
   </bean>
@@ -67,7 +67,7 @@
 
   <bean id="gempakMetars" class="thredds.server.cdmremote.CollectionBean">
     <property name="path" value="/idd/metar/gempak"/>
-    <property name="spec" value="/data/ldm/gempak/surface/**/#yyyyMMdd#_sao.gem"/>
+    <property name="spec" value="/data/ldm/gempak/surface/#yyyyMMdd#_sao.gem"/>
     <property name="recheck" value="15 min"/>
     <property name="featureType" value="STATION"/>
   </bean>

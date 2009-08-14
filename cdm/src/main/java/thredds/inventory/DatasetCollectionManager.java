@@ -43,7 +43,11 @@ import thredds.inventory.filter.*;
 /**
  * Manage a list of Scanners that find MFiles
  * Tracks when they need to be rescanned.
- * replaces older version in ncml.Aggregation
+ * Used in:
+ * <ul>
+ *  <li> replaces older version in ncml.Aggregation
+ *  <li> ucar.nc2.ft.point.collection.TimedCollectionImpl
+ * </.ul>
  *
  * @author caron
  * @since Jul 8, 2009

@@ -51,9 +51,9 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.*;
 
 /**
- * Factory for feature dataset collections.
+ * Factory for feature dataset collections (CompositePointDataset).
  * Uses Composite pattern, more or less.
- * URI is [collection:]dir/filter?dateFormatMark
+ * Standard factory uses a "collection specification" string, see thredds.inventory.CollectionSpecParser
  *
  * @author caron
  * @since May 20, 2009
