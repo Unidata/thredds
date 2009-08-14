@@ -50,6 +50,7 @@ import java.util.*;
  * Create a Netcdf File from a ucar.grib.Index
  *
  * @author caron
+ * @deprecated
  */
 public class Index2NC  {
 

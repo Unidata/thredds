@@ -56,7 +56,7 @@ import java.util.*;
  * This value frequently is assigned to eliminate negative numbers.
  * Expressed in the unit of measure identified in Planar Coordinate Units.
  * <li>We dont currently use, assuming that the x and y are just fine as negetive numbers.
- *
+ * @deprecated
  * @author caron
  */
 public class GribHorizCoordSys {

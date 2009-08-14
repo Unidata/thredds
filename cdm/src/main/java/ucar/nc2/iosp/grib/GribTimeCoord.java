@@ -49,6 +49,7 @@ import java.io.IOException;
 /**
  * A Time Coordinate for a Grib dataset.
  * @author caron
+ * @deprecated
  */
 public class GribTimeCoord {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GribTimeCoord.class);

@@ -44,16 +44,13 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-
-// Name:  	GribIndexer.pl
-// 
+/**
+  Name:  	GribIndexer.pl
 // Author: 	Robb Kambic
 // Date  : 	Mar 22, 2007
-// 
 // Purpose: 	walks directory structure making Grib Indexes as needed.
-//    
-// Description:  
-//
+ * @deprecated
+*/
 
 public final class GribIndexer {
 

@@ -40,6 +40,7 @@ import ucar.grib.Index;
  *
  * @author caron
  * @since Sep 25, 2008
+ * @deprecated
  */
 public class GribRecordLW {
   long offset1, offset2;

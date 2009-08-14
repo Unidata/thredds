@@ -50,6 +50,7 @@ import java.util.List;
  * A Variable for a Grib dataset.
  *
  * @author caron
+ * @deprecated
  */
 public class GribVariable {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GribVariable.class);

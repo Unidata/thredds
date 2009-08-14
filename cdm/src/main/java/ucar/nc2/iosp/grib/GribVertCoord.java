@@ -47,6 +47,7 @@ import java.util.*;
  * A Vertical Coordinate variable for a Grib variable.
  *
  * @author caron
+ * @deprecated
  */
 public class GribVertCoord implements Comparable {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribVertCoord.class);

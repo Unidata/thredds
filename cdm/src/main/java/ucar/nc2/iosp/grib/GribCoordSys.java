@@ -45,6 +45,7 @@ import java.util.*;
 /**
  * A Coordinate System for a Grib variable.
  * @author john
+ * @deprecated
  */
 public class GribCoordSys {
   private GribHorizCoordSys hcs;
