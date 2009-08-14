@@ -112,15 +112,18 @@ public class TestGridGribIosp extends TestCase {
 
   void doAll(String args[]) throws IOException {
 
-    String dirB, dirT;
+    String dirB1, dirB2;
     if ( args == null || args.length < 1 ) {
-      dirB = TestAll.testdataDir +"test/motherlode/grid/grib/binary";
-      dirT = TestAll.testdataDir +"test/motherlode/grid/grib/3_17text";
+      // TODO: fix and uncomment
+      //dirB1 = TestAll.testdataDir +"test/motherlode/grid/grib/binary70";
+      dirB1 = TestAll.testdataDir +"test/motherlode/grid/grib/binary";
+      //dirB2 = TestAll.testdataDir +"test/motherlode/grid/grib/binary80";
+      dirB2 = TestAll.testdataDir +"test/motherlode/grid/grib/text";
     } else {
-      dirB = args[ 0 ] +"/binary"; // "/local/robb/data/grib/idd/binary";
-      dirT = args[ 0 ] +"/text"; // "/local/robb/data/grib/idd/text";
+      dirB1 = args[ 0 ] +"/binary70";
+      dirB2 = args[ 0 ] +"/binary80";
     }
-    File dir = new File( dirB );
+    File dir = new File( dirB1 );
     if (dir.isDirectory()) {
       System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
       String[] children = dir.list();
@@ -131,6 +134,13 @@ public class TestGridGribIosp extends TestCase {
         if (aChild.isDirectory()) {
           // skip index *gbx and inventory *xml files
         } else if (
+            child.contains( "ECMWF") ||
+            child.contains( "1p25") ||
+            child.contains( "OCEAN") ||  
+            child.contains( "SPECTRAL") ||  
+            child.contains( "SST") ||  
+            child.contains( "ukm") ||  
+            child.contains( "UKM") ||  
             child.contains( "Ensemble") || // Generating Process ID are Strings
             child.endsWith("gbx") ||
             child.endsWith("xml") ||
@@ -138,7 +148,7 @@ public class TestGridGribIosp extends TestCase {
             child.length() == 0) { // zero length file, ugh...
         } else {
           System.out.println( "\n\nComparing File "+ child );
-          compareNC( dirB +"/"+ child, dirT +"/"+ child);
+          compareNC( dirB1 +"/"+ child, dirB2 +"/"+ child);
         }
       }
     } else {
