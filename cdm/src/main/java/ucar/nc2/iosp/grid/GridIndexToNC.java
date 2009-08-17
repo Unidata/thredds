@@ -334,7 +334,7 @@ public class GridIndexToNC {
   private void makeDenseCoordSys(NetcdfFile ncfile, GridTableLookup lookup, CancelTask cancelTask) throws IOException {
     List<GridTimeCoord> timeCoords = new ArrayList<GridTimeCoord>();
     List<GridVertCoord> vertCoords = new ArrayList<GridVertCoord>();
-    List<Integer> ensembleDimension = new ArrayList<Integer>();
+    List<GridEnsembleCoord> ensembleCoords = new ArrayList<GridEnsembleCoord>();
 
     // loop over HorizCoordSys
     Collection<GridHorizCoordSys> hcset = hcsHash.values();
@@ -380,6 +380,13 @@ public class GridIndexToNC {
         pv.setTimeCoord(useTimeCoord);
 
         // check for ensemble members
+        GridEnsembleCoord useEnsembleCoord = null;
+        if (useEnsembleCoord == null) {  // nope, got to create it
+          useEnsembleCoord = new GridEnsembleCoord(recordList, lookup);
+          ensembleCoords.add(useEnsembleCoord);
+        }
+
+        /*
         int ensemble = 0;
         GridRecord first =  recordList.get( 0 );
         if ( first instanceof GribGridRecord ) { // check for ensemble
@@ -393,6 +400,7 @@ public class GridIndexToNC {
           }
           ensembleDimension.add( new Integer( ensemble ));
         }
+        */
       }
 
       //// assign time coordinate names
