@@ -3371,7 +3371,7 @@ public class ToolsUI extends JPanel {
   /////////////////////////////////////////////////////////////////////
   private class FeatureScanPanel extends OpPanel {
     ucar.unidata.io.RandomAccessFile raf = null;
-    FeatureScan ftTable;
+    ucar.nc2.ui.FeatureScanPanel ftTable;
     final FileManager dirChooser = new FileManager(parentFrame);
 
     boolean useDefinition = false;
@@ -3381,7 +3381,7 @@ public class ToolsUI extends JPanel {
 
     FeatureScanPanel(PreferencesExt p) {
       super(p, "dir:", false, false);
-      ftTable = new FeatureScan(prefs);
+      ftTable = new ucar.nc2.ui.FeatureScanPanel(prefs);
       add(ftTable, BorderLayout.CENTER);
       ftTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
         public void propertyChange(java.beans.PropertyChangeEvent e) {

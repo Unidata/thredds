@@ -535,7 +535,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     }
     nstations = keys.size(); */
 
-    System.out.println("\nnreports= " + reports.size() + " nstations= " + stations.size());
+    // System.out.println("\nnreports= " + reports.size() + " nstations= " + stations.size());
   }
 
   private class Station implements Comparable<Station> {

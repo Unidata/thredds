@@ -34,11 +34,7 @@ package ucar.nc2.ui;
 
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
-import ucar.nc2.dataset.*;
-import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.scan.FeatureScan;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -50,18 +46,15 @@ import thredds.ui.BAMutil;
 
 import java.awt.event.ActionEvent;
 import java.awt.*;
-import java.io.IOException;
-import java.io.File;
-import java.io.PrintStream;
-import java.io.ByteArrayOutputStream;
 import java.util.*;
+import java.util.List;
 
 /**
  * Scan for Feature Datasets
  * @author caron
  * @since Dec 30, 2008
  */
-public class FeatureScan extends JPanel {
+public class FeatureScanPanel extends JPanel {
   private PreferencesExt prefs;
 
   private BeanTableSorted ftTable;
@@ -69,13 +62,13 @@ public class FeatureScan extends JPanel {
   private TextHistoryPane infoTA, dumpTA;
   private IndependentWindow infoWindow;
 
-  public FeatureScan(PreferencesExt prefs) {
+  public FeatureScanPanel(PreferencesExt prefs) {
     this.prefs = prefs;
 
-    ftTable = new BeanTableSorted(FeatureDatasetBean.class, (PreferencesExt) prefs.node("FeatureDatasetBeans"), false);
+    ftTable = new BeanTableSorted(FeatureScan.Bean.class, (PreferencesExt) prefs.node("FeatureDatasetBeans"), false);
     ftTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        FeatureDatasetBean ftb = (FeatureDatasetBean) ftTable.getSelectedBean();
+        FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
         setSelectedFeatureDataset(ftb);
       }
     });
@@ -83,41 +76,41 @@ public class FeatureScan extends JPanel {
     thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(ftTable.getJTable(), "Options");
     varPopup.addAction("Open as NetcdfFile", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        FeatureDatasetBean ftb = (FeatureDatasetBean) ftTable.getSelectedBean();
+        FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
         if (ftb == null) return;
-        FeatureScan.this.firePropertyChange("openNetcdfFile", null, ftb.f.getPath());
+        FeatureScanPanel.this.firePropertyChange("openNetcdfFile", null, ftb.f.getPath());
       }
     });
 
     varPopup.addAction("Check CoordSystems", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        FeatureDatasetBean ftb = (FeatureDatasetBean) ftTable.getSelectedBean();
+        FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
         if (ftb == null) return;
-        FeatureScan.this.firePropertyChange("openCoordSystems", null, ftb.f.getPath());
+        FeatureScanPanel.this.firePropertyChange("openCoordSystems", null, ftb.f.getPath());
       }
     });
 
     varPopup.addAction("Open as PointDataset", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        FeatureDatasetBean ftb = (FeatureDatasetBean) ftTable.getSelectedBean();
+        FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
         if (ftb == null) return;
-        FeatureScan.this.firePropertyChange("openPointFeatureDataset", null, ftb.f.getPath());
+        FeatureScanPanel.this.firePropertyChange("openPointFeatureDataset", null, ftb.f.getPath());
       }
     });
 
     varPopup.addAction("Open as GridDataset", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        FeatureDatasetBean ftb = (FeatureDatasetBean) ftTable.getSelectedBean();
+        FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
         if (ftb == null) return;
-        FeatureScan.this.firePropertyChange("openGridDataset", null, ftb.f.getPath());
+        FeatureScanPanel.this.firePropertyChange("openGridDataset", null, ftb.f.getPath());
       }
     });
 
     varPopup.addAction("Open as RadialDataset", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        FeatureDatasetBean ftb = (FeatureDatasetBean) ftTable.getSelectedBean();
+        FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
         if (ftb == null) return;
-        FeatureScan.this.firePropertyChange("openRadialDataset", null, ftb.f.getPath());
+        FeatureScanPanel.this.firePropertyChange("openRadialDataset", null, ftb.f.getPath());
       }
     });
 
@@ -145,41 +138,34 @@ public class FeatureScan extends JPanel {
   }
 
   public boolean setScanDirectory(String dirName) {
-    java.util.List<FeatureDatasetBean> beanList = new ArrayList<FeatureDatasetBean>();
-
-    File top = new File(dirName);
-    if (!top.exists()) return false;
-
-    if (top.isDirectory())
-      scanDirectory(top, beanList);
-    else {
-      FeatureDatasetBean fdb = new FeatureDatasetBean(top);
-      beanList.add(fdb);
-    }
-
-    ftTable.setBeans(beanList);
+    FeatureScan scanner = new FeatureScan(dirName, true);
+    List<FeatureScan.Bean> beans = scanner.scan(new Formatter());
+    ftTable.setBeans(beans);
     return true;
   }
 
-  private void scanDirectory(File dir, java.util.List<FeatureDatasetBean> beanList) {
+
+
+  private void setSelectedFeatureDataset(FeatureScan.Bean ftb) {
+    dumpTA.setText(ftb.toString());
+    dumpTA.gotoTop();
+  }
+
+  /*
+
+    private void scanDirectory(File dir, java.util.List<FeatureScan.Bean> beanList) {
 
     for (File f : dir.listFiles()) {
       if (f.isDirectory())
         scanDirectory(f, beanList);
       else {
-        FeatureDatasetBean fdb = new FeatureDatasetBean(f);
+        FeatureScan.Bean fdb = new FeatureScan.Bean(f);
         beanList.add(fdb);
       }
     }
 
   }
-
-  private void setSelectedFeatureDataset(FeatureDatasetBean ftb) {
-    dumpTA.setText(ftb.toString());
-    dumpTA.gotoTop();
-  }
-
-  public class FeatureDatasetBean {
+  public class FeatureScan.Bean {
 
     File f;
     String iospName;
@@ -191,10 +177,10 @@ public class FeatureScan extends JPanel {
     Throwable problem;
 
     // no-arg constructor
-    public FeatureDatasetBean() {
+    public FeatureScan.Bean() {
     }
 
-    public FeatureDatasetBean(File f) {
+    public FeatureScan.Bean(File f) {
       this.f = f;
 
       NetcdfDataset ds = null;
@@ -281,7 +267,7 @@ public class FeatureScan extends JPanel {
       return f.toString();
     }
 
-  }
+  }  */
 
 
 }
