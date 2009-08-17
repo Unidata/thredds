@@ -45,6 +45,7 @@ import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
 import ucar.grib.grib2.Grib2GridTableLookup;
 import ucar.grib.grib1.Grib1GridTableLookup;
+import ucar.grib.GribGridRecord;
 import ucar.unidata.util.StringUtil;
 import ucar.grid.*;
 
@@ -333,6 +334,7 @@ public class GridIndexToNC {
   private void makeDenseCoordSys(NetcdfFile ncfile, GridTableLookup lookup, CancelTask cancelTask) throws IOException {
     List<GridTimeCoord> timeCoords = new ArrayList<GridTimeCoord>();
     List<GridVertCoord> vertCoords = new ArrayList<GridVertCoord>();
+    List<Integer> ensembleDimension = new ArrayList<Integer>();
 
     // loop over HorizCoordSys
     Collection<GridHorizCoordSys> hcset = hcsHash.values();
@@ -376,6 +378,21 @@ public class GridIndexToNC {
           timeCoords.add(useTimeCoord);
         }
         pv.setTimeCoord(useTimeCoord);
+
+        // check for ensemble members
+        int ensemble = 0;
+        GridRecord first =  recordList.get( 0 );
+        if ( first instanceof GribGridRecord ) { // check for ensemble
+          GribGridRecord ggr = (GribGridRecord) first;
+          int key = ggr.getRecordKey();
+          for( int i = 1; i < recordList.size(); i++) {
+            ggr = (GribGridRecord) recordList.get( i );
+            if (key == ggr.getRecordKey() ) {
+              ensemble++;
+            }
+          }
+          ensembleDimension.add( new Integer( ensemble ));
+        }
       }
 
       //// assign time coordinate names
