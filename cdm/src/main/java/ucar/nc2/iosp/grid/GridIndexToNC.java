@@ -380,27 +380,24 @@ public class GridIndexToNC {
         pv.setTimeCoord(useTimeCoord);
 
         // check for ensemble members
+        //System.out.println( pv.getName() +"  "+ pv.getParamName() );
         GridEnsembleCoord useEnsembleCoord = null;
-        if (useEnsembleCoord == null) {  // nope, got to create it
-          useEnsembleCoord = new GridEnsembleCoord(recordList, lookup);
-          ensembleCoords.add(useEnsembleCoord);
+        GridEnsembleCoord  ensembleCoord = new GridEnsembleCoord(recordList, lookup);
+        for (GridEnsembleCoord gec : ensembleCoords) {
+          if (ensembleCoord.getNEnsembles() == gec.getNEnsembles()) {
+            useEnsembleCoord = gec;
+            break;
+          }
         }
 
-        /*
-        int ensemble = 0;
-        GridRecord first =  recordList.get( 0 );
-        if ( first instanceof GribGridRecord ) { // check for ensemble
-          GribGridRecord ggr = (GribGridRecord) first;
-          int key = ggr.getRecordKey();
-          for( int i = 1; i < recordList.size(); i++) {
-            ggr = (GribGridRecord) recordList.get( i );
-            if (key == ggr.getRecordKey() ) {
-              ensemble++;
-            }
-          }
-          ensembleDimension.add( new Integer( ensemble ));
+        if (useEnsembleCoord == null) {
+          //useEnsembleCoord = new GridEnsembleCoord(recordList, lookup);
+          useEnsembleCoord = ensembleCoord;
+          ensembleCoords.add(useEnsembleCoord);
         }
-        */
+        // only add ensemble dimensions
+        if (useEnsembleCoord.getNEnsembles() > 1)
+          pv.setEnsembleCoord(useEnsembleCoord);
       }
 
       //// assign time coordinate names
@@ -421,6 +418,14 @@ public class GridIndexToNC {
           tcs.setSequence(seqno++);
         }
         tcs.addDimensionsToNetcdfFile(ncfile, hcs.getGroup());
+      }
+
+      // add Ensemble dimensions, give Ensemble dimensions unique names
+      seqno = 0;
+      for (GridEnsembleCoord gec : ensembleCoords) {
+        gec.setSequence(seqno++);
+        if (gec.getNEnsembles() > 1)
+          gec.addDimensionsToNetcdfFile(ncfile, hcs.getGroup());
       }
 
       // add x, y dimensions
@@ -490,6 +495,12 @@ public class GridIndexToNC {
       for (GridTimeCoord tcs : timeCoords) {
         tcs.addToNetcdfFile(ncfile, hcs.getGroup());
       }
+
+      for (GridEnsembleCoord gec : ensembleCoords) {
+        if (gec.getNEnsembles() > 1)
+          gec.addToNetcdfFile(ncfile, hcs.getGroup());
+      }
+
       hcs.addToNetcdfFile(ncfile);
 
       for (GridVertCoord gvcs : vertCoords) {

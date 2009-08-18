@@ -109,6 +109,11 @@ public class GridVariable {
   private GridTimeCoord tcs;
 
   /**
+   * ensemble coord system
+   */
+  private GridEnsembleCoord ecs;
+
+  /**
    * vertical coordinate
    */
   private GridVertCoord vc;
@@ -264,6 +269,37 @@ public class GridVariable {
    */
   void setTimeCoord(GridTimeCoord tcs) {
     this.tcs = tcs;
+  }
+
+  /**
+   * Set the Ensemble coordinate
+   *
+   * @param ecs the Ensemble coordinate
+   */
+  void setEnsembleCoord(GridEnsembleCoord ecs) {
+    this.ecs = ecs;
+  }
+
+  /**
+   * Get the number of Ensemble
+   *
+   * @return the number of Ensemble
+   */
+  int getNEnsembles() {
+    return (ecs == null)
+        ? 1
+        : ecs.getNEnsembles();
+  }
+
+  /**
+   * Does this have a Ensemble dimension
+   *
+   * @return true if has a Ensemble dimension
+   */
+  boolean hasEnsemble() {
+    return (ecs == null)
+        ? false
+        : ecs.getNEnsembles() > 1;
   }
 
   /**
@@ -646,8 +682,6 @@ public class GridVariable {
     } else {
       levelName = GridIndexToNC.makeLevelName(gr, lookup);
     }
-    // TODO: correct spelling
-    //String ensembleName = GridIndexToNC.makeEnsembleName(gr, lookup);
     String ensembleName = GridIndexToNC.makeSuffixName(gr, lookup);
     String paramName = param.getDescription();
     paramName = (ensembleName.length() == 0)
