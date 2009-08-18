@@ -154,7 +154,7 @@ public class CollectionSpecParser {
 
   public static void main(String arg[]) {
     doit("C:/data/formats/gempak/surface/#yyyyMMdd#_sao.gem", new Formatter());
-    doit("C:/data/formats/gempak/surface/#yyyyMMdd#_sao\\.gem", new Formatter());
+    //doit("C:/data/formats/gempak/surface/#yyyyMMdd#_sao\\.gem", new Formatter());
     // doit("Q:/station/ldm/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc", new Formatter());
   }
 

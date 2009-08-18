@@ -91,7 +91,7 @@ public class TimedCollectionImpl implements TimedCollection {
     }
 
     if (debug) {
-      System.out.printf("Datasets in collection%n");
+      System.out.printf("Datasets in collection for spec=%s%n", sp);
       for (TimedCollection.Dataset d: datasets) {
         System.out.printf(" %s %n",d);
       }
@@ -163,6 +163,21 @@ public class TimedCollectionImpl implements TimedCollection {
               ", dateRange=" + dateRange +
               '}';
     }
+  }
+
+  public static void doit(String spec, Formatter errlog) throws IOException {
+    TimedCollectionImpl specp = new TimedCollectionImpl(spec, errlog);
+    System.out.printf("spec= %s%n%s%n", spec, specp);
+    String err = errlog.toString();
+    if (err.length() > 0)
+      System.out.printf("%s%n", err);
+    System.out.printf("-----------------------------------%n");
+  }
+
+  public static void main(String arg[]) throws IOException {
+    doit("C:/data/formats/gempak/surface/#yyyyMMdd#_sao.gem", new Formatter());
+    //doit("C:/data/formats/gempak/surface/#yyyyMMdd#_sao\\.gem", new Formatter());
+    // doit("Q:/station/ldm/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc", new Formatter());
   }
 
 }

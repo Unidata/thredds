@@ -77,7 +77,7 @@ public class CollectionController extends AbstractCommandController implements L
   private boolean allow = true;
   private String configDirectory;
   private HashMap<String, CollectionBean> collectionDatasets = new HashMap<String, CollectionBean>();
-  private HashMap<String, FeatureDatasetPoint> fdmap = new HashMap<String, FeatureDatasetPoint>();
+  //private HashMap<String, FeatureDatasetPoint> fdmap = new HashMap<String, FeatureDatasetPoint>();
 
   public CollectionController() {
     setCommandClass(PointQueryBean.class);
@@ -251,22 +251,22 @@ public class CollectionController extends AbstractCommandController implements L
 
   /////////////////////////////////////////////////////////////////
 
-  // create it each time for thread safety
+  // create it each time for thread safety, and so that collection is updated
   private FeatureDatasetPoint getFeatureCollectionDataset(String uri, String path) throws IOException {
 
-    FeatureDatasetPoint fd = fdmap.get(path);
-    if (fd == null) {
+    //FeatureDatasetPoint fd = fdmap.get(path);
+    //if (fd == null) {
       CollectionBean config = collectionDatasets.get(path);
       if (config == null) return null;
 
       Formatter errlog = new Formatter();
-      fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(uri, FeatureType.getType(config.getFeatureType()), config.getSpec(), errlog);
+      FeatureDatasetPoint fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(uri, FeatureType.getType(config.getFeatureType()), config.getSpec(), errlog);
       if (fd == null) {
         log.error("Error opening CompositeDataset path = "+path+"  errlog = ", errlog);
         return null;
       }
-      fdmap.put(path, fd);
-    }
+      //fdmap.put(path, fd);
+    //}
     return fd;
   }
 
