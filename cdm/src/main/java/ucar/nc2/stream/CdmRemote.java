@@ -49,15 +49,15 @@ import java.io.InputStream;
 import java.net.URLEncoder;
 
 /**
- * A remote NetcdfFile, using ncstream to communicate.
+ * A remote CDM dataset, using ncstream to communicate.
  *
  * @author caron
  * @since Feb 7, 2009
  */
-public class NcStreamRemote extends ucar.nc2.NetcdfFile {  
+public class CdmRemote extends ucar.nc2.NetcdfFile {
   static public final String SCHEME = "cdmremote:";
 
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcStreamRemote.class);
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmRemote.class);
   static private HttpClient httpClient;
   static private boolean showRequest = true;
 
@@ -93,7 +93,7 @@ public class NcStreamRemote extends ucar.nc2.NetcdfFile {
   //////////////////////////////////////////////////////
   private final String remoteURI;
 
-  public NcStreamRemote(String _remoteURI, CancelTask cancel) throws IOException {
+  public CdmRemote(String _remoteURI, CancelTask cancel) throws IOException {
 
     // get http URL
     String temp = _remoteURI;

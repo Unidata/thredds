@@ -10,7 +10,7 @@
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
     <service name="wms" serviceType="WMS" base="/thredds/wms/" />
     <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" />
-    <service name="ncstream" serviceType="NetcdfStream" base="/thredds/ncstream/" />
+    <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
   </service>
 
   <service name="fmrcServices" serviceType="Compound" base="">
@@ -18,6 +18,7 @@
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
     <service name="wms" serviceType="WMS" base="/thredds/wms/" />
     <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" />
+    <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
   </service>
 
   <dataset ID="NCEP" name="NCEP Model Data">

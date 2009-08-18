@@ -36,7 +36,7 @@ import ucar.nc2.ft.point.PointCollectionImpl;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.stream.NcStream;
-import ucar.nc2.stream.NcStreamRemote;
+import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -52,10 +52,10 @@ import org.apache.commons.httpclient.HttpMethod;
  * @since Jun 15, 2009
  */
 class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
-  private NcStreamRemote ncremote;
+  private CdmRemote ncremote;
   private QueryMaker queryMaker;
 
-  RemotePointCollection(String name, NcStreamRemote ncremote, QueryMaker queryMaker) {
+  RemotePointCollection(String name, CdmRemote ncremote, QueryMaker queryMaker) {
     super(name);
     this.ncremote = ncremote;
     this.queryMaker = (queryMaker == null) ? this : queryMaker;

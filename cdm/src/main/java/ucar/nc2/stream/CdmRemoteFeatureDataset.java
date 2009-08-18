@@ -20,12 +20,12 @@ import org.jdom.input.SAXBuilder;
  * @author caron
  * @since May 19, 2009
  */
-public class CdmRemoteDatasetFactory {
+public class CdmRemoteFeatureDataset {
   static private boolean showXML = true;
 
   static public FeatureDataset factory(FeatureType wantFeatureType, String endpoint) throws IOException {
-    if (endpoint.startsWith(ucar.nc2.stream.NcStreamRemote.SCHEME))
-      endpoint = endpoint.substring(ucar.nc2.stream.NcStreamRemote.SCHEME.length());
+    if (endpoint.startsWith(CdmRemote.SCHEME))
+      endpoint = endpoint.substring(CdmRemote.SCHEME.length());
 
     Document doc = getCapabilities(endpoint);
     Element root = doc.getRootElement();
@@ -36,7 +36,7 @@ public class CdmRemoteDatasetFactory {
     System.out.printf("CdmRemoteDatasetFactory endpoint %s getCapabilities= %s %s%n", endpoint, fType, datasetUri);
 
     FeatureType ft = FeatureType.valueOf(fType);
-    NcStreamRemote ncremote = new NcStreamRemote(datasetUri, null);
+    CdmRemote ncremote = new CdmRemote(datasetUri, null);
     NetcdfDataset ncd = new NetcdfDataset(ncremote, null);
 
     if (ft == null || ft == FeatureType.GRID) {
@@ -50,7 +50,7 @@ public class CdmRemoteDatasetFactory {
     org.jdom.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder(false);
-      doc = builder.build(endpoint+"?getCapabilities"); // LOOK - not useing httpclient
+      doc = builder.build(endpoint+"?getCapabilities"); // LOOK - not using httpclient
     } catch (JDOMException e) {
       throw new IOException(e.getMessage());
     }
@@ -66,7 +66,7 @@ public class CdmRemoteDatasetFactory {
 
   public static void main(String args[]) throws IOException {
     String endpoint = "http://localhost:8080/thredds/ncstream/point/data";
-    FeatureDatasetPoint fd = (FeatureDatasetPoint) CdmRemoteDatasetFactory.factory(FeatureType.ANY, endpoint);
+    FeatureDatasetPoint fd = (FeatureDatasetPoint) CdmRemoteFeatureDataset.factory(FeatureType.ANY, endpoint);
     PointFeatureCollection pc = (PointFeatureCollection) fd.getPointFeatureCollectionList().get(0);
 
     PointFeatureIterator pfIter = pc.getPointFeatureIterator(-1);

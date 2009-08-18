@@ -35,7 +35,7 @@ package ucar.nc2.ui;
 
 import ucar.nc2.*;
 import ucar.nc2.FileWriter;
-import ucar.nc2.stream.NcStreamRemote;
+import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDataset;
@@ -4302,7 +4302,7 @@ public class ToolsUI extends JPanel {
     HttpClient client = HttpClientManager.init(provider, "ToolsUI");
     opendap.dap.DConnect2.setHttpClient(client);
     HTTPRandomAccessFile.setHttpClient(client);
-    NcStreamRemote.setHttpClient(client);
+    CdmRemote.setHttpClient(client);
     NetcdfDataset.setHttpClient(client);
     WmsViewer.setHttpClient(client);
 

@@ -2,9 +2,8 @@ package ucar.nc2.ft.point.remote;
 
 import ucar.nc2.ft.point.*;
 import ucar.nc2.ft.*;
-import ucar.nc2.stream.NcStreamRemote;
+import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStream;
-import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.*;
 
@@ -21,12 +20,12 @@ import org.apache.commons.httpclient.HttpMethod;
  * @author caron
  */
 public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
-  private NcStreamRemote ncremote;
+  private CdmRemote ncremote;
   protected LatLonRect boundingBox;
   protected DateRange dateRange;
   private boolean restrictedList = false;
 
-  public RemoteStationCollection(String name, NcStreamRemote ncremote) throws IOException {
+  public RemoteStationCollection(String name, CdmRemote ncremote) throws IOException {
     super(name);
     this.ncremote = ncremote;
 
@@ -52,7 +51,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
     }
   }
 
-  protected RemoteStationCollection(String name, NcStreamRemote ncremote, StationHelper sh) throws IOException {
+  protected RemoteStationCollection(String name, CdmRemote ncremote, StationHelper sh) throws IOException {
     super(name);
     this.ncremote = ncremote;
     this.stationHelper = sh;

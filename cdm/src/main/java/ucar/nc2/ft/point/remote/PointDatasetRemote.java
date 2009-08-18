@@ -38,7 +38,7 @@ import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
-import ucar.nc2.stream.NcStreamRemote;
+import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.FeatureType;
@@ -61,7 +61,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
  */
 public class PointDatasetRemote extends PointDatasetImpl {
 
-  public PointDatasetRemote(FeatureType wantFeatureType, NetcdfDataset ncd, NcStreamRemote ncremote) throws IOException {
+  public PointDatasetRemote(FeatureType wantFeatureType, NetcdfDataset ncd, CdmRemote ncremote) throws IOException {
     super(ncd, wantFeatureType);
 
     collectionList = new ArrayList<FeatureCollection>(1);

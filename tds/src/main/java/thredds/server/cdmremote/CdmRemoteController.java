@@ -63,6 +63,7 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 
 /**
  * This is a prototype for "cdm remote service".
+ * This handles the cdmRemote service for index access to CDM datasets
  *
  * @author caron
  * @since Feb 16, 2009
@@ -117,8 +118,9 @@ public class CdmRemoteController extends AbstractController implements LastModif
     if (view == null) view = query;
     if (view == null) view = "";
 
+    // LOOK! bogus !!
     if (view.equalsIgnoreCase("getCapabilities")) {
-      sendCapabilities(req, res.getOutputStream(), FeatureType.STATION, true); // LOOK! bogus !!
+      sendCapabilities(req, res.getOutputStream(), FeatureType.STATION, true);
       res.flushBuffer();
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
       return null;

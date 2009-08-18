@@ -33,10 +33,9 @@
 package ucar.nc2.thredds;
 
 import ucar.nc2.*;
-import ucar.nc2.stream.NcStreamRemote;
-import ucar.nc2.stream.CdmRemoteDatasetFactory;
+import ucar.nc2.stream.CdmRemote;
+import ucar.nc2.stream.CdmRemoteFeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.ft.point.remote.PointDatasetRemote;
 import ucar.nc2.constants.FeatureType;
 
 import ucar.nc2.dods.DODSNetcdfFile;
@@ -294,7 +293,7 @@ public class ThreddsDataFactory {
     }
 
     if (access.getService().getServiceType() == ServiceType.CdmRemote) {
-      result.featureDataset = CdmRemoteDatasetFactory.factory(wantFeatureType, access.getStandardUrlName());
+      result.featureDataset = CdmRemoteFeatureDataset.factory(wantFeatureType, access.getStandardUrlName());
 
     } else {
 
@@ -462,7 +461,7 @@ public class ThreddsDataFactory {
 
     // open NetcdfStream
     else if (serviceType == ServiceType.NetcdfStream) {
-      String curl = NcStreamRemote.canonicalURL(datasetLocation);
+      String curl = CdmRemote.canonicalURL(datasetLocation);
       ds = acquire ? NetcdfDataset.acquireDataset(curl, task) : NetcdfDataset.openDataset(curl, true, task);
     }
 

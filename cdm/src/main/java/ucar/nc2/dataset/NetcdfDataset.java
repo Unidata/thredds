@@ -36,7 +36,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.stream.NcStreamRemote;
+import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileFactory;
@@ -647,7 +647,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (location.startsWith("dods:")) {
       return acquireDODS(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through DODS
 
-    } else if (location.startsWith(NcStreamRemote.SCHEME)) {
+    } else if (location.startsWith(CdmRemote.SCHEME)) {
       return acquireRemote(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through ncstream
 
     } else if (location.startsWith("thredds:")) {
@@ -799,7 +799,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   static private NetcdfFile acquireRemote(FileCache cache, FileFactory factory, Object hashKey,
                                           String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
-    if (cache == null) return new NcStreamRemote(location, cancelTask);
+    if (cache == null) return new CdmRemote(location, cancelTask);
 
     if (factory == null) factory = new RemoteFactory();
     return (NetcdfFile) cache.acquire(factory, hashKey, location, buffer_size, cancelTask, spiObject);
@@ -807,7 +807,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   static private class RemoteFactory implements FileFactory {
     public NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
-      return new NcStreamRemote(location, cancelTask);
+      return new CdmRemote(location, cancelTask);
     }
   }
 

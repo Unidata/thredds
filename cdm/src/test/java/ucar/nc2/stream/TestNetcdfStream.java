@@ -58,7 +58,7 @@ public class TestNetcdfStream extends TestCase {
   void compare(String file, String remote) throws IOException {
     System.out.printf("---------------------------\n");
     NetcdfFile ncfile = NetcdfDataset.openFile(file, null);
-    NetcdfFile ncfileRemote = new NcStreamRemote(remote, null);
+    NetcdfFile ncfileRemote = new CdmRemote(remote, null);
     CompareNetcdf.compareFiles(ncfile, ncfileRemote, false, false, false);
     System.out.printf("compare %s ok %n", file);
     CompareNetcdf.compareFiles(ncfile, ncfileRemote, true, true, true);
