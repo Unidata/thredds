@@ -15,31 +15,46 @@
 <p>The CDM Remote services and protocol are  experimental and should not be used outside of the CDM stack for now.</p>
 <h2>CdmRemote Protocol (Data Access and Coordinate Systems) </h2>
 <p><strong>ucar.nc2.stream.CdmRemote</strong> is a subclass of NetcdfFile which provides  index subsetting on remote CDM datasets <strong>NetcdfDataset.openOrAcquireFile()</strong> looks for <em><strong>cdmremote:url</strong></em> prefix, and calls <strong>new</strong> <strong>CdmRemote(url)</strong> if found. The url must be an endpoint for a cdmremote service.</p>
-<p>The protobuf messages are defined by <strong>thredds\cdm\src\main\java\ucar\nc2\stream\ncStream.proto</strong>.</p>
+<p>The client forms requests of the form <strong>url?query</strong>. The possible query parameters are:</p>
+<pre>  <strong>req</strong>=( <strong>CDL</strong> | <strong>NcML</strong> | <strong>getCapabilities</strong> | <strong>cdmHeader</strong> | <strong>data</strong>)
+  <strong>var</strong>=vars
+
+where:
+  vars := varspec | varspec[,varspec]
+  varspec := varname[subsetSpec]
+  varname := valid variable name
+  subsetSpec := '<strong>(</strong>' fortran-90 array spec '<strong>)</strong>'
+</pre>
+<ul>
+  <li>request names are case-insensitive</li>
+  <li>var parameter only used for data request</li>
+  <li>varnames are case-sensitive and must be UTF8-escape encoded</li>
+  <li> literals are in bold</li>
+</ul>
 <p>Example service requests are:</p>
 <table width="1028" border="1">
   <tr>
-    <th width="595" scope="col">Request</th>
-    <th width="417" scope="col">Response</th>
+    <th width="629" scope="col">Request</th>
+    <th width="383" scope="col">Response</th>
   </tr>
   <tr>
-    <td><p> http://server:8080/thredds/cdmremote/data.nc?<strong>view=CDL</strong> </p></td>
+    <td><p> http://server:8080/thredds/cdmremote/data.nc?<strong>req=CDL</strong> </p></td>
     <td> dataset CDL</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc?<strong>view=NcML</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc?<strong>req=NcML</strong></td>
     <td>dataset NcML</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc?<strong>getCapabilities</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc?<strong>req=getCapabilities</strong></td>
     <td>capabilities XML</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc?<strong>header</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc?<strong>req=cdmHeader</strong></td>
     <td>header ncstream message, contains the structural metadata</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc?<strong>Temp(0:100:10,0:127,0:163),lat,lon</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc?<strong>req=data&amp;var=Temp(0:99:10,0:127,:),lat,lon</strong></td>
     <td>data ncstream message</td>
   </tr>
 </table>
@@ -47,91 +62,120 @@
   <li>Data request  uses Section specification (same as Fortran-90 array notation) to ask for a subset in index space.</li>
   <li> Variable names must be UTF8-escape encoded. In Java we use URLEncode.encode() and URLDecode().decode. This creates a <em><strong>application/x-www-form-urlencoded</strong></em> MIME encoding.</li>
   <li>GetCapabilities indicates which (if any) feature types the dataset can be opened as, along with the URLs of those services. TBD.</li>
+  <li>The protobuf messages are defined by <strong>thredds\cdm\src\main\java\ucar\nc2\stream\ncStream.proto</strong>.</li>
 </ul>
-<h3></h3>
+<p><strong>Questions:</strong></p>
+<ul>
+  <li><strong>are all </strong><strong>CdmRemoteFeatureDataset</strong> endpoints also valid <strong>CdmRemote</strong> endpoints?</li>
+</ul>
+<p></p>
 <h2><strong>CdmRemoteFeatureDataset</strong> Protocol (Point Feature API) </h2>
-<p><strong>ucar.nc2.stream.CdmRemoteFeatureDataset.factory()</strong> makes an HTTP request to <em><strong>endpoint+&quot;?getCapabilities&quot;</strong></em> to obtain the GetCapabilities XML document. This document describes what feature type(s) the dataset supports, which determines what are the valid requests.</p>
-<p><strong>FeatureDatasetFactoryManager.open()</strong> looks for <em><strong>cdmremote:url</strong></em> prefix, and calls <strong>CdmRemoteFeatureDataset.factory(url)</strong> if found, which returns a FeatureDataset. The url must be an endpoint for a cdmremote service that supports one or more Feature Types.</p>
-<p><strong>ThreddsDataFactory.openFeatureDataset()</strong> looks for catalog InvDatasets with <em><strong>featureType.isPointFeatureType() </strong></em>and <em><strong>ServiceType.CdmRemote</strong></em>, and if found, calls <strong>CdmRemoteFeatureDataset.factory()</strong>.</p>
-<p>The protobuf messages are defined by <strong>thredds\cdm\src\main\java\ucar\nc2\ft\point\remote\pointStream.proto</strong></p>
+<p><strong>ucar.nc2.stream.CdmRemoteFeatureDataset.factory()</strong> makes an HTTP request to <em><strong>endpoint+&quot;?req=getCapabilities&quot;</strong></em> to obtain the GetCapabilities XML document. This document describes what feature type(s) the dataset supports, which determines what are the valid requests, along with the endpoints for those feature types, which may be different than the original endpoint.</p>
+<p><strong>FeatureDatasetFactoryManager.open()</strong> looks for <em><strong>cdmremote:url</strong></em> prefix, and calls <strong>CdmRemoteFeatureDataset.factory(url)</strong> if found. <strong>ThreddsDataFactory.openFeatureDataset()</strong> looks for catalog InvDatasets with <em><strong>featureType.isPointFeatureType() </strong></em>and <em><strong>ServiceType.CdmRemote</strong></em>, and if found, calls <strong>CdmRemoteFeatureDataset.factory()</strong>.</p>
+<p>Possible query parameters are:</p>
+<pre>  <strong>req</strong>=( <strong></strong><strong>getCapabilities</strong> | <strong>data</strong>)
+  <strong>time_start,time_end</strong>=time range
+  <strong>north,south,east,west</strong>=bounding box
+  <strong>var</strong>=vars
+  <strong>stn</strong>=stns
+
+where:
+  vars := varName | varName[,varName]
+  stns := stnName | stnName[,stnName]
+  varName := valid variable name
+  stnName := valid station name
+</pre>
+<ul>
+  <li>request names are case-insensitive</li>
+  <li>variable names are case-sensitive and must be UTF8-escape encoded</li>
+  <li>station names are case-sensitive and must be UTF8-escape encoded</li>
+  <li> literals are in bold</li>
+</ul>
 <h3>PointDataset</h3>
 <p>Example service requests are:</p>
-<table width="867" border="1">
+<table width="1160" border="1">
   <tr>
-    <th width="658" scope="col">Request</th>
-    <th width="193" scope="col">Response</th>
+    <th width="741" scope="col">Request</th>
+    <th width="216" scope="col">Response</th>
+    <th width="181" scope="col">Meaning</th>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>getCapabilities</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>req=getCapabilities</strong></td>
     <td>capabilities XML</td>
+    <td>describe dataset</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>header</strong></td>
-    <td>header ncstream message</td>
-  </tr>
-  <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>all</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>req=data</strong></td>
     <td>pointData ncstream message</td>
+    <td>get all the data</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>req=data&amp;north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
     <td>pointData ncstream message</td>
+    <td>get data in bounding box</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>bbox=-105,-80,22,40</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>req=data&amp;</strong><strong>time_start=&amp;time_end=</strong></td>
     <td>pointData ncstream message</td>
+    <td>get data in time range</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>time_start=&amp;time_end=</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>req=data&amp;var=Temp,lat,lon</strong></td>
     <td>pointData ncstream message</td>
-  </tr>
-  <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>time=</strong></td>
-    <td>pointData ncstream message</td>
+    <td>get data for listed variables</td>
   </tr>
 </table>
-<ul>
-  <li>bbox same as WCS, whatever that is</li>
-  <li>data requests return an unordered list of observation as StructureData</li>
+<ul><li>data requests return an unordered list of observation as StructureData</li>
+  <li>The protobuf messages are defined by <strong>thredds\cdm\src\main\java\ucar\nc2\ft\point\remote\pointStream.proto</strong></li>
 </ul>
 <h3>StationTimeSeries</h3>
 <p>Example service requests are:</p>
-<table width="961" border="1">
+<table width="1167" border="1">
   <tr>
-    <th width="741" scope="col">Request</th>
-    <th width="204" scope="col">Response</th>
+    <th width="748" scope="col">Request</th>
+    <th width="202" scope="col">Response</th>
+    <th width="195" scope="col">Meaning</th>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>getCapabilities</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=getCapabilities</strong></td>
     <td>capabilities XML</td>
+    <td>describe dataset</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>header</strong></td>
-    <td>header ncstream message</td>
-  </tr>
-  <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>stations</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=stations</strong></td>
     <td>stationList ncstream message</td>
+    <td>get all stations</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>stations&amp;north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=stations&amp;north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
     <td>stationList ncstream message</td>
+    <td>get stations in bounding box</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>time_start=&amp;time_end=</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=data&amp;time_start=&amp;time_end=&amp;</strong><strong>stn=KDEN</strong></td>
     <td>pointData ncstream message</td>
+    <td>get data in time range</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>time=</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=data&amp;</strong><strong>stn=KDEN,KLOG,MOAS</strong></td>
     <td>pointData ncstream message</td>
+    <td>get data for station list</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>stn=KDEN,KLOG,MOAS</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=data&amp;</strong><strong>north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
     <td>pointData ncstream message</td>
+    <td>get data in bounding box</td>
+  </tr>
+  <tr>
+    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=data&amp;</strong><strong>var=Temp,lat,lon&amp;</strong><strong>stn=KDEN</strong></td>
+    <td>pointData ncstream message</td>
+    <td>get data for listed variables</td>
   </tr>
 </table>
 <ul>
+  <li>a list of stations or a bounding box must always be provided (?)</li>
   <li>data requests return an unordered list of observation as StructureData</li>
+  <li>The protobuf messages are defined by <strong>thredds\cdm\src\main\java\ucar\nc2\ft\point\remote\pointStream.proto</strong></li>
 </ul>
 <p>&nbsp;</p>
 <h2> GetCapabilities XML document</h2>
@@ -141,6 +185,7 @@
 <hr width="100%" />
 <h2>Current notes on motherlode dev</h2>
 <p>cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/gempakLocal/collection</p>
+<p>cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak/collection</p>
 <h3>August-10-2009</h3>
 <p>1) web.xml has a <strong>org.springframework.web.servlet.DispatcherServlet</strong> cdmRemote with a mapping:<br />
 </p>
@@ -264,7 +309,7 @@ CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_2
 </p>
 <hr width="100%" />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated August 17, 2009
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated August 18, 2009
 </address>
 <p>&nbsp;</p>
 </body>
