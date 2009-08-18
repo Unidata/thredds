@@ -70,9 +70,10 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
    * <li> Call TableAnalyzer.factory() to create a TableAnalyzer
    * <li> TableAnalyzer must agree it can handle the requested FeatureType
    * </ol>
+   *
    * @param wantFeatureType destired feature type
-   * @param ds analyse this dataset
-   * @param errlog log error messages here (may not be null)
+   * @param ds              analyse this dataset
+   * @param errlog          log error messages here (may not be null)
    * @return if successful, return non-null. This object is then passed back into open(), so analysis can be reused.
    * @throws IOException
    */
@@ -114,7 +115,7 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
       return null;
 
     errlog.format("%s%n", analyser.errlog.toString());
-    if (!analyser.featureTypeOk( wantFeatureType, errlog)) {
+    if (!analyser.featureTypeOk(wantFeatureType, errlog)) {
       return null;
     }
 
@@ -125,21 +126,21 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
     if (analyser == null)
       analyser = TableAnalyzer.factory(null, wantFeatureType, ncd);
 
-    return new PointDatasetDefault(wantFeatureType, (TableAnalyzer) analyser, ncd, errlog);
+    return new PointDatasetStandard(wantFeatureType, (TableAnalyzer) analyser, ncd, errlog);
   }
 
   public FeatureType[] getFeatureType() {
-    return new FeatureType[] {FeatureType.ANY_POINT};
+    return new FeatureType[]{FeatureType.ANY_POINT};
   }
 
   /////////////////////////////////////////////////////////////////////
 
-  private static class PointDatasetDefault extends PointDatasetImpl {
+  private static class PointDatasetStandard extends PointDatasetImpl {
     private TableAnalyzer analyser;
     private DateUnit timeUnit;
     private FeatureType featureType = FeatureType.POINT; // default
 
-    PointDatasetDefault(FeatureType ftype, TableAnalyzer analyser, NetcdfDataset ds, Formatter errlog) throws IOException {
+    PointDatasetStandard(FeatureType ftype, TableAnalyzer analyser, NetcdfDataset ds, Formatter errlog) throws IOException {
       super(ds, null);
       parseInfo.format(" PointFeatureDatasetImpl=%s\n", getClass().getName());
       this.analyser = analyser;
@@ -187,7 +188,7 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
     }
 
     @Override
-    public void getDetailInfo( java.util.Formatter sf) {
+    public void getDetailInfo(java.util.Formatter sf) {
       super.getDetailInfo(sf);
       analyser.getDetailInfo(sf);
     }
@@ -204,4 +205,24 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
       return super.getImplementationName();
     }
   }
+
+  static void doit(PointDatasetStandardFactory fac, String filename) throws IOException {
+    System.out.println(filename);
+    Formatter errlog = new Formatter(System.out);
+    NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
+    TableAnalyzer analysis = (TableAnalyzer) fac.isMine(FeatureType.ANY_POINT, ncd, errlog);
+
+    fac.open(FeatureType.ANY_POINT, ncd, analysis, null, errlog);
+    analysis.getDetailInfo(errlog);
+    System.out.printf("\n-----------------");
+    ncd.close();
+  }
+
+
+  public static void main(String[] args) throws IOException {
+    PointDatasetStandardFactory fac = new PointDatasetStandardFactory();
+    doit(fac, "Q:/cdmUnitTest/formats/gempak/surface/20090521_sao.gem");
+    // doit(fac, "D:/datasets/metars/Surface_METAR_20070513_0000.nc");
+  }
+
 }

@@ -48,9 +48,9 @@ import java.io.IOException;
  * @since Jan 22, 2009
  */
 public class JoinParentIndex implements Join {
-  private Structure parentStructure;
-  private ArrayStructure parentData;
-  private String parentIndex;
+  Structure parentStructure;
+  ArrayStructure parentData;
+  String parentIndex;
 
   /**
    * Constructor.

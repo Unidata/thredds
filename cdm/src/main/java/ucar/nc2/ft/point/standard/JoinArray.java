@@ -51,10 +51,10 @@ public class JoinArray implements Join {
     raw   // use cursor[0]
   }
 
-  private Variable v;
-  private Array data;
-  private Type type;
-  private int param;
+  Variable v;
+  Array data;
+  Type type;
+  int param;
 
   /**
    * Constructor.

@@ -58,7 +58,7 @@ public class TableConfig {
   public List<TableConfig> children;
 
   public String structName; // full name of structure
-  public String  nestedTableName; // short name of structure
+  public String nestedTableName; // short name of structure
   public boolean isPsuedoStructure = false;
 
   // linked, contiguous  list

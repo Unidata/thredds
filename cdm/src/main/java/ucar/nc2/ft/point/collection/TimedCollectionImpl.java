@@ -48,12 +48,11 @@ import thredds.inventory.*;
 
 
 public class TimedCollectionImpl implements TimedCollection {
-  private static final boolean debug = true;
+  private static final boolean debug = false;
   
   private CollectionSpecParser sp;
   private List<TimedCollection.Dataset> datasets;
   private DateRange dateRange;
-
 
   /**
    * * The idea is that you can cut and paste an actual file path, then edit it:

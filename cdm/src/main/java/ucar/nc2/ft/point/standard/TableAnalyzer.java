@@ -33,15 +33,23 @@
 package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.*;
+import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.point.standard.plug.*;
 import ucar.nc2.dataset.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.AxisType;
+import ucar.unidata.util.Parameter;
 
 import java.util.*;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
+
+import org.jdom.output.XMLOutputter;
+import org.jdom.output.Format;
+import org.jdom.Document;
+import org.jdom.Element;
 
 /**
  * Analyzes the coordinate systems of a dataset to try to identify the Feature Type and the
@@ -578,17 +586,138 @@ public class TableAnalyzer {
   public void getDetailInfo(java.util.Formatter sf) {
     sf.format("\nTableAnalyzer on Dataset %s\n", ds.getLocation());
     if (tc != null) sf.format(" TableAnalyser = %s\n", tc.getClass().getName());
-    //showCoordSys(sf);
-    //showCoordAxes(sf);
-    //showTables(sf);
     showNestedTables(sf);
     String errlogS = errlog.toString();
     if (errlogS.length() > 0)
       sf.format("\n Errlog=\n%s",errlogS);
     String userAdviceS = userAdvice.toString();
     if (userAdviceS.length() > 0)
-      sf.format("\n userAdvice=\n%s",userAdviceS);
+      sf.format("\n userAdvice=\n%s\n",userAdviceS);
+
+    try {
+      writeConfigXML(sf);
+    } catch (IOException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    }
   }
+
+  public void writeConfigXML(java.util.Formatter sf) throws IOException {
+    if (tc != null) {
+      TableConfig config = tc.getConfig(ft, ds, errlog);
+      if (config != null) {
+        TableConfigXML tcx = new TableConfigXML(config, tc.getClass().getName());
+        tcx.writeConfigXML(sf);
+        return;
+      }
+    }
+    XMLOutputter fmt = new XMLOutputter( Format.getPrettyFormat());
+    sf.format("%s", fmt.outputString ( makeDocument()));
+  }
+
+  /** Create an XML document from this info
+   * @return netcdfDatasetInfo XML document
+   */
+  public Document makeDocument() {
+    Element rootElem = new Element("featureDataset");
+    Document doc = new Document(rootElem);
+    rootElem.setAttribute("location", ds.getLocation());
+    if (tc != null)
+      rootElem.addContent( new Element("analyser").setAttribute("class", tc.getClass().getName()));
+    if (ft != null)
+      rootElem.setAttribute("featureType", ft.toString());
+
+    for (NestedTable nt : leaves) {
+      writeTable( rootElem, nt.getLeaf());
+    }
+
+    return doc;
+  }
+
+  private Element writeTable( Element parent, Table table) {
+    if (table.parent != null) {
+      parent = writeTable( parent, table.parent);
+    }
+    Element tableElem = new Element("table");
+    parent.addContent( tableElem);
+
+    if (table.getName() != null)
+      tableElem.setAttribute("name", table.getName());
+    if (table.getFeatureType() != null)
+      tableElem.setAttribute("featureType", table.getFeatureType().toString());
+    tableElem.setAttribute("class", table.getClass().toString());
+
+    addCoordinates(tableElem, table);
+    for (VariableSimpleIF col : table.cols) {
+      if (!table.nondataVars.contains(col.getShortName()))
+        tableElem.addContent( new Element("variable").addContent(col.getName()));
+    }
+
+    if (table.extraJoins != null) {
+      for (Join j : table.extraJoins) {
+        if (j instanceof JoinArray)
+          tableElem.addContent( writeJoinArray( (JoinArray)j));
+        else if (j instanceof JoinMuiltdimStructure)
+          tableElem.addContent( writeJoinMuiltdimStructure( (JoinMuiltdimStructure) j));
+        else if (j instanceof JoinParentIndex)
+          tableElem.addContent( writeJoinParentIndex( (JoinParentIndex) j));
+      }
+    }
+    return tableElem;
+  }
+
+  private void addCoordinates( Element tableElem, Table table) {
+    addCoord(tableElem, table.lat, "lat");
+    addCoord(tableElem, table.lon, "lon");
+    addCoord(tableElem, table.elev, "elev");
+    addCoord(tableElem, table.time, "time");
+    addCoord(tableElem, table.timeNominal, "timeNominal");
+    addCoord(tableElem, table.stnId, "stnId");
+    addCoord(tableElem, table.stnDesc, "stnDesc");
+    addCoord(tableElem, table.stnNpts, "stnNpts");
+    addCoord(tableElem, table.stnWmoId, "stnWmoId");
+    addCoord(tableElem, table.stnAlt, "stnAlt");
+    addCoord(tableElem, table.limit, "limit");
+  }
+
+  private void addCoord(Element tableElem, String name, String kind) {
+    if (name != null) {
+      Element elem = new Element("coordinate").setAttribute("kind", kind);
+      elem.addContent(name);
+      tableElem.addContent(elem);
+    }
+  }
+
+  private Element writeJoinArray(JoinArray join) {
+    Element joinElem = new Element("join");
+    joinElem.setAttribute("class", join.getClass().toString());
+    if (join.type != null)
+      joinElem.setAttribute("type", join.type.toString());
+    if (join.v != null)
+      joinElem.addContent( new Element("variable").setAttribute("name", join.v.getName()));
+    joinElem.addContent( new Element("param").setAttribute("value", Integer.toString(join.param)));
+    return joinElem;
+  }
+
+  private Element writeJoinMuiltdimStructure(JoinMuiltdimStructure join) {
+    Element joinElem = new Element("join");
+    joinElem.setAttribute("class", join.getClass().toString());
+    if (join.parentStructure != null)
+      joinElem.addContent( new Element("parentStructure").setAttribute("name", join.parentStructure.getName()));
+    joinElem.addContent( new Element("dimLength").setAttribute("value", Integer.toString(join.dimLength)));
+    return joinElem;
+  }
+
+  private Element writeJoinParentIndex(JoinParentIndex join) {
+    Element joinElem = new Element("join");
+    joinElem.setAttribute("class", join.getClass().toString());
+    if (join.parentStructure != null)
+      joinElem.addContent( new Element("parentStructure").setAttribute("name", join.parentStructure.getName()));
+    if (join.parentIndex != null)
+      joinElem.addContent( new Element("parentIndex").setAttribute("name", join.parentIndex));
+    return joinElem;
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////
 
   static void doit(String filename) throws IOException {
     System.out.println(filename);
@@ -610,7 +739,8 @@ public class TableAnalyzer {
     //doit("C:/data/dt2/station/madis2.sao");
     // doit("C:/data/metars/Surface_METAR_20070326_0000.nc");  // ok
     //doit("C:/data/dt2/station/Sean_multidim_20070301.nc"); // ok
-    doit("C:/data/dt2/profile/PROFILER_3.bufr");
+    //doit("Q:/cdmUnitTest/formats/gempak/surface/20090521_sao.gem");
+    doit("D:/datasets/metars/Surface_METAR_20070513_0000.nc");
 
     //doit("C:/data/profile/PROFILER_wind_01hr_20080410_2300.nc");
     //doit("C:/data/cadis/tempting");

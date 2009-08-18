@@ -33,6 +33,7 @@
 package ucar.nc2.ft.point.standard;
 
 /**
+ * Abstract superclass for TableConfigurer implementations
  * @author caron
  * @since Jan 21, 2009
  */

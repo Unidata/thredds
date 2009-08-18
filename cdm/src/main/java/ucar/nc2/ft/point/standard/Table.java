@@ -287,7 +287,7 @@ public abstract class Table {
     TableArrayStructure(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
       this.as = config.as;
-      dim = new Dimension(config.name, (int) config.as.getSize(), false);
+      this.dim = new Dimension(config.name, (int) config.as.getSize(), false);
       assert (this.as != null);
 
       for (StructureMembers.Member m : config.as.getStructureMembers().getMembers())
@@ -914,7 +914,7 @@ public abstract class Table {
 
   protected abstract void showTableExtraInfo(String indent, Formatter f);
 
-  private String getKind(String v) {
+  String getKind(String v) {
     if (v.equals(lat)) return "[Lat]";
     if (v.equals(lon)) return "[Lon]";
     if (v.equals(elev)) return "[Elev]";

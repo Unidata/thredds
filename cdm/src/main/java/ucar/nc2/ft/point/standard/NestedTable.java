@@ -151,6 +151,10 @@ public class NestedTable {
     return p;
   }
 
+  Table getLeaf() {
+    return leaf;
+  }
+
   // look for a coord axis of the given type in the table and its parents
   private CoordVarExtractor findCoordinateAxis(Table.CoordName coordName, Table t, int nestingLevel) {
     if (t == null) return null;

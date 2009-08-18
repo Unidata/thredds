@@ -46,9 +46,9 @@ import java.io.IOException;
  * @since May 29, 2009
  */
 public class JoinMuiltdimStructure implements Join {
-  private Structure parentStructure;
-  private ArrayStructure parentData;
-  private int dimLength;
+  Structure parentStructure;
+  ArrayStructure parentData;
+  int dimLength;
 
   /**
    * Constructor.
