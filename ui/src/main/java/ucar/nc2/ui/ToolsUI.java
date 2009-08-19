@@ -39,7 +39,7 @@ import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.ft.point.writer.WriterCFPointObsDataset;
+import ucar.nc2.ft.point.writer.WriterCFPointDataset;
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ncml.NcMLWriter;
@@ -3513,7 +3513,7 @@ public class ToolsUI extends JPanel {
 
     void doWriteCF(String filename) {
       try {
-        int count = WriterCFPointObsDataset.writePointFeatureCollection(pfDataset, filename);
+        int count = WriterCFPointDataset.writePointFeatureCollection(pfDataset, filename);
         JOptionPane.showMessageDialog(this, count + " records written");
       } catch (Exception e) {
         JOptionPane.showMessageDialog(this, "ERROR: " + e.getMessage());

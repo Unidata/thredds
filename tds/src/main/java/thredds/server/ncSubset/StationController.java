@@ -39,7 +39,6 @@ import java.io.*;
 import java.util.ArrayList;
 
 import thredds.servlet.*;
-import thredds.server.ncSubset.QueryParams;
 import thredds.server.config.TdsContext;
 import ucar.nc2.units.DateRange;
 import org.jdom.transform.XSLTransformer;
@@ -56,10 +55,8 @@ import org.springframework.web.servlet.ModelAndView;
  * @since
  */
 public class StationController extends AbstractController {
-  private org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger( getClass() );
-  private static org.slf4j.Logger logServerStartup =
-          org.slf4j.LoggerFactory.getLogger("serverStartup");
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+  private static org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
   private StationObsCollection soc;
   private boolean debug = false, showTime = false;

@@ -5,10 +5,21 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
+  <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="mappings">
+      <value>
+        /**/point=pointController
+        /**/station=stationController
+        /**/collection=collectionController
+        /**/form=formsController
+        /**=cdmremoteController
+      </value>
+    </property>
+  </bean>
+
   <bean id="cdmremoteController" class="thredds.server.cdmremote.CdmRemoteController">
     <property name="tdsContext" ref="tdsContext"/>
     <property name="allow" value="true"/>
-
     <property name="supportedMethods" value="GET"/>
   </bean>
 
@@ -29,6 +40,17 @@
     <property name="allow" value="true"/>
     <property name="supportedMethods" value="GET"/>
     <property name="configDirectory" value="GET"/>
+    <property name="collections" ref="collectionManager"/>
+  </bean>
+
+  <bean id="formsController" class="thredds.server.cdmremote.FormsController">
+    <property name="tdsContext" ref="tdsContext"/>
+    <property name="allow" value="true"/>
+    <property name="supportedMethods" value="GET"/>
+    <property name="collections" ref="collectionManager"/>
+  </bean>
+
+  <bean id="collectionManager" class="thredds.server.cdmremote.CollectionManager">
     <property name="collections">
       <list>
         <ref bean="ncMetars" />
@@ -37,17 +59,6 @@
         <ref bean="ncMetarsLocal" />
         <ref bean="gempakMetarsLocal" />
       </list>
-    </property>
-  </bean>
-
-  <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-    <property name="mappings">
-      <value>
-        /**/point=pointController
-        /**/station=stationController
-        /**/collection=collectionController
-        /**=cdmremoteController
-      </value>
     </property>
   </bean>
 
@@ -60,8 +71,8 @@
 
   <bean id="ncMetarsLocal" class="thredds.server.cdmremote.CollectionBean">
     <property name="path" value="/idd/metar/ncdecodedLocal"/>
-    <!-- property name="spec" value="Q:/station/ldm/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc"/ -->
-    <property name="spec" value="C:/data/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc"/>
+    <property name="spec" value="Q:/station/ldm/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc" />
+    <!-- property name="spec" value="C:/data/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc"/ -->
     <property name="recheck" value="15 min"/>
     <property name="featureType" value="STATION"/>
   </bean>
@@ -75,8 +86,8 @@
 
   <bean id="gempakMetarsLocal" class="thredds.server.cdmremote.CollectionBean">
     <property name="path" value="/idd/metar/gempakLocal"/>
-    <!-- property name="spec" value="D:/formats/gempak/surface/#yyyyMMdd#_sao.gem"/ -->
-    <property name="spec" value="C:/data/formats/gempak/surface/#yyyyMMdd#_sao.gem"/>
+    <property name="spec" value="D:/formats/gempak/surface/#yyyyMMdd#_sao.gem" />
+    <!-- property name="spec" value="C:/data/formats/gempak/surface/#yyyyMMdd#_sao.gem"/ -->
     <property name="recheck" value="15 min"/>
     <property name="featureType" value="STATION"/>
   </bean>

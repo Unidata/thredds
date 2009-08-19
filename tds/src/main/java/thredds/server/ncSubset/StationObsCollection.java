@@ -59,7 +59,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import thredds.catalog.XMLEntityResolver;
-import thredds.server.ncSubset.QueryParams;
 import org.jdom.Document;
 import org.jdom.Element;
 

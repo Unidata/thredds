@@ -76,8 +76,7 @@ public class CollectionController extends AbstractCommandController implements L
   private TdsContext tdsContext;
   private boolean allow = true;
   private String configDirectory;
-  private HashMap<String, CollectionBean> collectionDatasets = new HashMap<String, CollectionBean>();
-  //private HashMap<String, FeatureDatasetPoint> fdmap = new HashMap<String, FeatureDatasetPoint>();
+  private CollectionManager collectionManager;
 
   public CollectionController() {
     setCommandClass(PointQueryBean.class);
@@ -96,9 +95,8 @@ public class CollectionController extends AbstractCommandController implements L
     this.configDirectory = configDirectory;
   }
 
-  public void setCollections(List<CollectionBean> beans) {
-    for (CollectionBean bean : beans)
-      collectionDatasets.put(bean.getPath(), bean);       
+  public void setCollections(CollectionManager collectionManager) {
+    this.collectionManager = collectionManager;
   }
 
   public long getLastModified(HttpServletRequest req) {
@@ -135,7 +133,7 @@ public class CollectionController extends AbstractCommandController implements L
     FeatureDatasetPoint fd = null;
 
     try {
-      fd = getFeatureCollectionDataset( ServletUtil.getRequest(req) , path);
+      fd = collectionManager.getFeatureCollectionDataset( ServletUtil.getRequest(req) , path);
       if (fd == null) {
         res.sendError(HttpServletResponse.SC_NOT_FOUND);
         log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
@@ -251,7 +249,7 @@ public class CollectionController extends AbstractCommandController implements L
 
   /////////////////////////////////////////////////////////////////
 
-  // create it each time for thread safety, and so that collection is updated
+  /* create it each time for thread safety, and so that collection is updated
   private FeatureDatasetPoint getFeatureCollectionDataset(String uri, String path) throws IOException {
 
     //FeatureDatasetPoint fd = fdmap.get(path);
@@ -290,7 +288,7 @@ public class CollectionController extends AbstractCommandController implements L
       fdmap.put(path, fd);
     }
     return fd;
-  } */
+  }
 
 
   // one could use this for non-collection datasets
@@ -328,5 +326,5 @@ public class CollectionController extends AbstractCommandController implements L
 
     if (ncd != null) ncd.close();
     return null;
-  }
+  }  */
 }

@@ -1057,6 +1057,8 @@ public class InvDatasetImpl extends InvDataset {
             fullUrlString = fullUrlString + "?showForm";
           else if (stype == ServiceType.NetcdfSubset)
             fullUrlString = fullUrlString + "/dataset.html";
+          else if (stype == ServiceType.CdmRemote)
+            fullUrlString = fullUrlString + "/form";
         }
         buff.append(" <li> <b>").append(StringUtil.quoteHtmlContent(s.getServiceType().toString()));
         buff.append(":</b> ").append(makeHref( fullUrlString, urlString)).append("</li>\n");

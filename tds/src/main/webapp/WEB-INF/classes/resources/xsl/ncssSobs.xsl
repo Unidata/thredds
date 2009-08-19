@@ -6,7 +6,7 @@
   <xsl:template match="/">
     <html>
       <head>
-        <title>NetCDF Subset Service</title>
+        <title>CDM Remote Subset Service Forms Interface</title>
       </head>
       <body bgcolor="#FFFFFF">
 
@@ -31,13 +31,13 @@
         </table>
 
         <hr/>
-        <h1>NetCDF Subset Service</h1>
+        <h1>CDM Remote Subset Service Forms Interface</h1>
         <h2>Station Dataset:
-          <xsl:value-of select="stationObsDataset/@location"/></h2>
+          <xsl:value-of select="capabilities/@location"/></h2>
         <em><a href="dataset.xml">Dataset Description</a></em>
         <hr/>
 
-        <form method="GET" action="{stationObsDataset/attribute::location}">
+        <form method="GET" action="{capabilities/attribute::location}">
           <table border="0" cellpadding="4" cellspacing="2">
             <tr valign="top">
               <td>
@@ -46,7 +46,7 @@
                 <input type="radio" name="variables" value="all" checked="checked"> <b>All</b></input><br/>
                 <input type="radio" name="variables" value="some"> <b>Only:</b></input>
                 <blockquote>
-                  <xsl:for-each select="stationObsDataset/variable">
+                  <xsl:for-each select="capabilities/variable">
                     <input type="checkbox" name="var" value="{@name}"/>
                     <xsl:value-of select="@name"/>
                     <br/>
@@ -64,16 +64,16 @@
                   <blockquote>
                     <blockquote>                   
                       <p>North</p>
-                      <p><input type="text" name="north" size="10" value="{stationObsDataset/LatLonBox/north}"/></p>
+                      <p><input type="text" name="north" size="10" value="{capabilities/LatLonBox/north}"/></p>
                     </blockquote>
                   </blockquote>                  
                   West
-                  <input type="text" name="west" size="10" value="{stationObsDataset/LatLonBox/west}"/>
-                  <input type="text" name="east" size="10" value="{stationObsDataset/LatLonBox/east}"/> East                
+                  <input type="text" name="west" size="10" value="{capabilities/LatLonBox/west}"/>
+                  <input type="text" name="east" size="10" value="{capabilities/LatLonBox/east}"/> East                
                       <blockquote>
                         <blockquote>
                           <p>              
-                            <input type="text" name="south" size="10" value="{stationObsDataset/LatLonBox/south}"/>
+                            <input type="text" name="south" size="10" value="{capabilities/LatLonBox/south}"/>
                           </p>
                           <p>South</p>
                         </blockquote>
@@ -110,10 +110,10 @@
                 <b>Time Range:</b>
                 <blockquote>
                   Starting:
-                  <input type="text" name="time_start" size="20" value="{stationObsDataset/TimeSpan/begin}"/>
+                  <input type="text" name="time_start" size="20" value="{capabilities/TimeSpan/begin}"/>
                   <br/>
                   Ending:
-                  <input type="text" name="time_end" size="20" value="{stationObsDataset/TimeSpan/end}"/>
+                  <input type="text" name="time_end" size="20" value="{capabilities/TimeSpan/end}"/>
                   <br/>
                 </blockquote>
                   </input>
@@ -122,7 +122,7 @@
                  <b>Specific Time (closest):</b>
                 <blockquote>
                   Time:
-                  <input type="text" name="time" size="20" value="{stationObsDataset/TimeSpan/begin}"/>
+                  <input type="text" name="time" size="20" value="{capabilities/TimeSpan/begin}"/>
                   <br/>
                 </blockquote>
                    </input>
@@ -131,7 +131,7 @@
                 <h3>Choose Output Format:</h3>
                 <blockquote>
                   <select name="accept" size="1">
-                    <xsl:for-each select="stationObsDataset/AcceptList/accept">
+                    <xsl:for-each select="capabilities/AcceptList/accept">
                       <option>
                         <xsl:value-of select="."/>
                       </option>

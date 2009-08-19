@@ -31,10 +31,8 @@
  */
 package thredds.server.cdmremote;
 
-import ucar.nc2.constants.FeatureType;
-
 /**
- * Class Description
+ * Define the info for a collection
  *
  * @author caron
  * @since Jul 6, 2009

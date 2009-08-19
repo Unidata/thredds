@@ -63,7 +63,7 @@ import java.util.Formatter;
  * @since Oct 22, 2008
  */
 public class CFPointObWriter {
-  private WriterCFPointObsDataset ncWriter;
+  private WriterCFPointDataset ncWriter;
 
   /**
    * Constructor
@@ -75,7 +75,7 @@ public class CFPointObWriter {
    * @throws IOException if write error
    */
   public CFPointObWriter(DataOutputStream stream, List<Attribute> globalAtts, String altUnits, List<PointObVar> dataVars, int numrec) throws IOException {
-    ncWriter = new WriterCFPointObsDataset(stream, globalAtts, altUnits);
+    ncWriter = new WriterCFPointDataset(stream, globalAtts, altUnits);
 
     List<VariableSimpleIF> vars = new ArrayList<VariableSimpleIF>(dataVars.size());
     for (PointObVar pvar : dataVars)
@@ -330,7 +330,7 @@ public class CFPointObWriter {
 
     FileOutputStream fos = new FileOutputStream(fileOut);
     DataOutputStream out = new DataOutputStream(new BufferedOutputStream(fos, 10000));
-    WriterCFPointObsDataset writer = null;
+    WriterCFPointDataset writer = null;
 
     /* LOOK BAD
     List<VariableSimpleIF> dataVars = new ArrayList<VariableSimpleIF>();
@@ -353,7 +353,7 @@ public class CFPointObWriter {
       if (count == 0) {
         EarthLocation loc = pointFeature.getLocation(); // LOOK we dont know this until we see the obs
         String altUnits = Double.isNaN(loc.getAltitude()) ? null : "meters"; // LOOK units may be wrong
-        writer = new WriterCFPointObsDataset(out, pfDataset.getGlobalAttributes(), altUnits);
+        writer = new WriterCFPointDataset(out, pfDataset.getGlobalAttributes(), altUnits);
         writer.writeHeader(pfDataset.getDataVariables(), -1);
       }
       writer.writeRecord(pointFeature, data);
