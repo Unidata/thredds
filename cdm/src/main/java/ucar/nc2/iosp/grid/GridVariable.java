@@ -276,31 +276,35 @@ public class GridVariable {
    *
    * @param ecs the Ensemble coordinate
    */
+  /*
   void setEnsembleCoord(GridEnsembleCoord ecs) {
     this.ecs = ecs;
   }
-
+  */ // TODO: Delete after checking
   /**
    * Get the number of Ensemble
    *
    * @return the number of Ensemble
    */
+  /*
   int getNEnsembles() {
     return (ecs == null)
         ? 1
         : ecs.getNEnsembles();
   }
-
+  */ // TODO: Delete after checking
   /**
    * Does this have a Ensemble dimension
    *
    * @return true if has a Ensemble dimension
    */
+  /*
   boolean hasEnsemble() {
     return (ecs == null)
         ? false
         : ecs.getNEnsembles() > 1;
   }
+  */ // TODO: Delete after checking
 
   /**
    * Get the number of vertical levels
