@@ -35,7 +35,6 @@ package thredds.server.cdmremote;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.writer.WriterCFStationDataset;
-import ucar.nc2.dt.point.WriterStationObsDataset;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
@@ -58,7 +57,8 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 
 /**
- * Describe
+ * Cdm Remote subsetting for station data.
+ * thread safety ?????
  *
  * @author caron
  * @since Aug 19, 2009
@@ -148,12 +148,26 @@ public class StationWriter {
     return true;
   }
 
-  public boolean intersect(DateRange dr) throws IOException {
-    return dr.intersects(start, end);
-  }
-
   private List<Station> getStationList() throws IOException {
     return stationList;
+  }
+
+  private List<Station> getStationList(List<String> stnNames) throws IOException {
+    getStationMap();
+    List<Station> result;
+
+    if (stnNames == null || stnNames.size() == 0) {
+      result = stationList;
+    } else {
+      result = new ArrayList<ucar.unidata.geoloc.Station>(stnNames.size());
+      for (String s : stnNames) {
+        Station stn = stationMap.get(s);
+        if (stn != null)
+          result.add(stn);
+      }
+    }
+
+    return result;
   }
 
   private HashMap<String, Station> getStationMap() throws IOException {
@@ -217,18 +231,29 @@ public class StationWriter {
     return min_station.getName();
   }
 
+  /////////////////////
+  
+  public boolean intersect(DateRange dr) throws IOException {
+    return dr.intersects(start, end);
+  }
+
   ////////////////////////////////////////////////////////
   // scanning
 
-  // scan all data in the file, records that pass the dateRange and predicate match are acted on
+  // scan collection, records that pass the predicate match are acted on, within limits
 
-  private void scanAll(StationTimeSeriesFeatureCollection collection, Predicate p, Action a, Limit limit) throws IOException {
+  private void scan(StationTimeSeriesFeatureCollection collection, DateRange range, Predicate p, Action a, Limit limit) throws IOException {
 
     while (collection.hasNext()) {
       StationTimeSeriesFeature sf = collection.next();
 
       while (sf.hasNext()) {
         PointFeature pf = sf.next();
+
+        if (range != null) {
+          Date obsDate = pf.getObservationTimeAsDate();
+          if (!range.contains(obsDate)) continue;
+        }
 
         StructureData sdata = pf.getData();
         if ((p == null) || p.match(sdata)) {
@@ -239,8 +264,15 @@ public class StationWriter {
         }
 
         limit.count++;
-        if (limit.count > limit.limit) break;
+        if (limit.count > limit.limit) {
+          sf.finish();
+          break;
+        }
         if (debug && (limit.count % 10000 == 0)) System.out.println(" did " + limit.count);
+      }
+      if (limit.count > limit.limit) {
+        collection.finish();
+        break;
       }
     }
 
@@ -471,56 +503,64 @@ public class StationWriter {
     long start = System.currentTimeMillis();
     Limit counter = new Limit();
 
-    List<String> vars = qp.vars;
-    List<String> stns = qp.stns;
+    List<String> varNames = qp.vars;
+    List<String> stnNames = qp.stns;
     DateRange range = qp.getDateRange();
     DateType time = qp.time;
     String type = qp.acceptType;
 
     Writer w;
     if (type.equals(QueryParams.RAW)) {
-      w = new WriterRaw(qp, vars, res.getWriter());
+      w = new WriterRaw(qp, varNames, res.getWriter());
     } else if (type.equals(QueryParams.XML)) {
-      w = new WriterXML(qp, vars, res.getWriter());
+      w = new WriterXML(qp, varNames, res.getWriter());
     } else if (type.equals(QueryParams.CSV)) {
-      w = new WriterCSV(qp, vars, res.getWriter());
+      w = new WriterCSV(qp, varNames, res.getWriter());
     } else if (type.equals(QueryParams.NETCDF)) {
-      w = new WriterNetcdf(qp, vars);
-    /* } else if (type.equals(QueryParams.NETCDFS)) {
-      w = new WriterNetcdfStream(qp, vars, res.getOutputStream());
-    } else if (type.equals(QueryParams.CdmRemote)) {
-      w = new WriterCdmRemote(qp, vars, res.getOutputStream()); */
+      w = new WriterNetcdf(qp, varNames);
+      /* } else if (type.equals(QueryParams.NETCDFS)) {
+w = new WriterNetcdfStream(qp, vars, res.getOutputStream());
+} else if (type.equals(QueryParams.CdmRemote)) {
+w = new WriterCdmRemote(qp, vars, res.getOutputStream()); */
     } else {
       log.error("Unknown writer type = " + type);
       return null;
     }
-
-    Collections.sort(stns);
-    w.header(stns);
-
-    counter.limit = 10;
-    boolean useAll = stns.size() == 0;
     Action act = w.getAction();
 
-    scanAll(sfc, null, act, counter);
-
-   /*  if (null == time) {
-      if (useAll) {
-        StationTimeSeriesFeatureCollection subset = sfc.subset(range);
-        scanAll(fd, subset, null, act, counter);
-      } else {
-        StationTimeSeriesFeatureCollection subset = sfc.subset(stns);
-        scanAll(fd, subset, null, act, counter);
-      }
-
+    List<Station> stns;
+    StationTimeSeriesFeatureCollection subset = sfc;
+    if (stnNames.size() > 0) {
+      Collections.sort(stnNames);
+      stns = getStationList(stnNames);
+      subset = sfc.subset(stns);
     } else {
-      // match specific time point
-      Dataset ds = filterDataset(time);
-      if (useAll)
-        scanAll(ds, time, null, act, counter);
-      else
-        scanStations(ds, stns, time, null, act, counter);
-    }  */
+      stns = getStationList(null);
+    }
+
+    w.header(stns);
+
+    counter.limit = 50;
+
+    scan(subset, range, null, act, counter);
+
+    /*  if (null == time) {
+    if (useAll) {
+      StationTimeSeriesFeatureCollection subset = sfc.subset(range);
+      scanAll(fd, subset, null, act, counter);
+    } else {
+      StationTimeSeriesFeatureCollection subset = sfc.subset(stns);
+      scanAll(fd, subset, null, act, counter);
+    }
+
+  } else {
+    // match specific time point
+    Dataset ds = filterDataset(time);
+    if (useAll)
+      scanAll(ds, time, null, act, counter);
+    else
+      scanStations(ds, stns, time, null, act, counter);
+  }  */
 
 
     w.trailer();
@@ -541,7 +581,7 @@ public class StationWriter {
   }
 
   abstract class Writer {
-    abstract void header(List<String> stns);
+    abstract void header(List<Station> stns);
 
     abstract Action getAction();
 
@@ -573,8 +613,9 @@ public class StationWriter {
   class WriterNetcdf extends Writer {
     File netcdfResult;
     WriterCFStationDataset sobsWriter;
-    List<ucar.unidata.geoloc.Station> stnList;
     List<VariableSimpleIF> varList;
+    List<Station> stnList;
+    boolean headerWritten = false;
 
     WriterNetcdf(QueryParams qp, List<String> varNames) throws IOException {
       super(qp, varNames, null);
@@ -593,24 +634,8 @@ public class StationWriter {
       }
     }
 
-    public void header(List<String> stns) {
-      try {
-        getStationMap();
-
-        if (stns.size() == 0)
-          stnList = stationList;
-        else {
-          stnList = new ArrayList<ucar.unidata.geoloc.Station>(stns.size());
-
-          for (String s : stns) {
-            stnList.add(stationMap.get(s));
-          }
-        }
-
-        sobsWriter.writeHeader(stnList, varList);
-      } catch (IOException e) {
-        log.error("WriterNetcdf.header", e);
-      }
+    public void header(List<Station> stnList) {
+      this.stnList = stnList;
     }
 
     public void trailer() {
@@ -624,6 +649,15 @@ public class StationWriter {
     Action getAction() {
       return new Action() {
         public void act(FeatureDatasetPoint fdp, StationTimeSeriesFeature s, PointFeature pf, StructureData sdata) throws IOException {
+          if (!headerWritten) {
+            try {
+              sobsWriter.writeHeader(stnList, varList, pf.getTimeUnit());
+              headerWritten = true;
+            } catch (IOException e) {
+              log.error("WriterNetcdf.header", e);
+            }
+          }
+
           sobsWriter.writeRecord(s, pf, sdata);
           count++;
         }
@@ -694,14 +728,13 @@ public class StationWriter {
   }  */
 
 
-
   class WriterRaw extends Writer {
 
     WriterRaw(QueryParams qp, List<String> vars, final java.io.PrintWriter writer) {
       super(qp, vars, writer);
     }
 
-    public void header(List<String> stns) {
+    public void header(List<Station> stns) {
     }
 
     public void trailer() {
@@ -734,7 +767,7 @@ public class StationWriter {
       }
     }
 
-    public void header(List<String> stns) {
+    public void header(List<Station> stns) {
       try {
         staxWriter.writeStartDocument("UTF-8", "1.0");
         staxWriter.writeCharacters("\n");
@@ -789,7 +822,7 @@ public class StationWriter {
               if (var.getUnitsString() != null)
                 staxWriter.writeAttribute("units", var.getUnitsString());
 
-              Array sdataArray = sdata.getArray(var.getName());
+              Array sdataArray = sdata.getArray(var.getShortName());
               String ss = sdataArray.toString();
               Class elemType = sdataArray.getElementType();
               if ((elemType == String.class) || (elemType == char.class) || (elemType == StructureData.class))
@@ -817,7 +850,7 @@ public class StationWriter {
       super(qp, stns, writer);
     }
 
-    public void header(List<String> stns) {
+    public void header(List<Station> stns) {
     }
 
     public void trailer() {
@@ -850,7 +883,7 @@ public class StationWriter {
 
           for (VariableSimpleIF var : validVars) {
             writer.print(',');
-            Array sdataArray = sdata.getArray(var.getName());
+            Array sdataArray = sdata.getArray(var.getShortName());
             writer.print(sdataArray.toString());
           }
           writer.println();

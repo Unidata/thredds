@@ -909,7 +909,7 @@ public class ArrayChar extends Array {
       IndexIterator ii = values.getIndexIterator();
       while (ii.hasNext()) {
         String s = (String) ii.next();
-        for (int k = 0; k < s.length(); k++)
+        for (int k = 0; k < s.length() && k < strlen; k++)
           cdata[start + k] = s.charAt(k);
         start += strlen;
       }

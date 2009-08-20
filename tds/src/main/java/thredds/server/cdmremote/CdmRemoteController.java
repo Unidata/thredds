@@ -1,9 +1,8 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
- * 
- * Portions of this software were developed by the Unidata Program at the 
+ * Copyright (c) 1998 - 2009. University Corporation for Atmospheric Research/Unidata
+ * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
- * 
+ *
  * Access and use of this software shall impose the following obligations
  * and understandings on the user. The user is granted the right, without
  * any fee or cost, to use, copy, modify, alter, enhance and distribute
@@ -20,7 +19,7 @@
  * any support, consulting, training or assistance of any kind with regard
  * to the use, operation and performance of this software nor to provide
  * the user with any updates, revisions, new versions or "bug fixes."
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -30,51 +29,54 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package thredds.server.cdmremote;
 
-import org.springframework.web.servlet.mvc.AbstractController;
+import org.springframework.web.servlet.mvc.AbstractCommandController;
 import org.springframework.web.servlet.mvc.LastModified;
 import org.springframework.web.servlet.ModelAndView;
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
-import org.jdom.Document;
-import org.jdom.Element;
+import org.springframework.validation.BindException;
 import thredds.server.config.TdsContext;
-import thredds.servlet.*;
+import thredds.servlet.DataRootHandler;
+import thredds.servlet.UsageLog;
+import thredds.servlet.ServletUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.Formatter;
+import java.util.List;
 import java.nio.channels.WritableByteChannel;
 import java.nio.channels.Channels;
-import java.util.StringTokenizer;
-import java.net.URLDecoder;
 
+import ucar.nc2.ft.*;
+import ucar.nc2.ft.point.remote.PointStreamProto;
+import ucar.nc2.ft.point.remote.PointStream;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.ParsedSectionSpec;
-import ucar.nc2.units.DateType;
-import ucar.nc2.units.TimeDuration;
-import ucar.nc2.units.DateRange;
-import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.stream.NcStreamWriter;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.nc2.stream.NcStream;
+import ucar.unidata.geoloc.Station;
 
 /**
- * This is a prototype for "cdm remote service".
- * This handles the cdmRemote service for index access to CDM datasets
+ * Describe
  *
  * @author caron
- * @since Feb 16, 2009
- * @see "http://www.unidata.ucar.edu/software/netcdf-java/stream/NcStream.html"
+ * @since May 28, 2009
  */
-public class CdmRemoteController extends AbstractController implements LastModified {
+public class CdmRemoteController extends AbstractCommandController implements LastModified {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
+  private boolean debug = true;
 
+  //private String prefix = "/collection"; // LOOK how do we obtain this?
   private TdsContext tdsContext;
   private boolean allow = true;
-  private boolean debug = true;
+  private String configDirectory;
+  private CollectionManager collectionManager;
+
+  public CdmRemoteController() {
+    setCommandClass(PointQueryBean.class);
+    setCommandName("PointQueryBean");
+  }
 
   public void setTdsContext(TdsContext tdsContext) {
     this.tdsContext = tdsContext;
@@ -84,56 +86,229 @@ public class CdmRemoteController extends AbstractController implements LastModif
     this.allow = allow;
   }
 
+  public void setConfigDirectory(String configDirectory) {
+    this.configDirectory = configDirectory;
+  }
+
+  public void setCollections(CollectionManager collectionManager) {
+    this.collectionManager = collectionManager;
+  }
+
   public long getLastModified(HttpServletRequest req) {
-    File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(req.getPathInfo());
+    File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(req.getPathInfo()); // LOOK
     if ((file != null) && file.exists())
       return file.lastModified();
     return -1;
   }
 
-  protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
-    if (!allow) {
-      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
-      return null;
-    }
-
+  protected ModelAndView handle(HttpServletRequest req, HttpServletResponse res, Object command, BindException errors) throws Exception {
     log.info(UsageLog.setupRequestContext(req));
 
-    String pathInfo = req.getPathInfo();
-    if (debug) System.out.println("request= " + ServletUtil.getRequest(req));
-    //System.out.println(ServletUtil.showRequestDetail(null, req));
-
-    /* String ft = ServletUtil.getParameterIgnoreCase(req, "ft");
-    if (ft != null) {
-      String newPath = req.getContextPath() + req.getServletPath() + "/" + ft + pathInfo;
-      System.out.printf("newPath=%s%n", newPath);
-      res.sendRedirect(newPath);
-      return null;
-    } */
-
-    String query = req.getQueryString();
-    //if (query != null) System.out.println(" query=" + query);
-
-    String view = ServletUtil.getParameterIgnoreCase(req, "view");
-    if (view == null) view = query;
-    if (view == null) view = "";
-
-    // LOOK! bogus !!
-    if (view.equalsIgnoreCase("getCapabilities")) {
-      sendCapabilities(req, res.getOutputStream(), FeatureType.STATION, true);
-      res.flushBuffer();
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
+    if (!allow) {
+      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, -1));
       return null;
     }
 
-    NetcdfFile ncfile = null;
+    String path = req.getPathInfo();
+    // String path = pathInfo.substring(0, pathInfo.length() - prefix.length());
+    if (debug) System.out.printf("CollectionController path= %s query= %s %n", path, req.getQueryString());
+
+    PointQueryBean query = (PointQueryBean) command;
+    if (debug) System.out.printf(" query= %s %n", query);
+    if (!query.parse()) {
+      res.sendError(HttpServletResponse.SC_BAD_REQUEST, query.getErrorMessage());
+      if (debug) System.out.printf(" query error= %s %n", query.getErrorMessage());
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
+      return null;
+    }
+
+    String queryS = req.getQueryString();
+
+    FeatureDatasetPoint fd = null;
+
     try {
-      ncfile = DatasetHandler.getNetcdfFile(req, res, pathInfo);
-      if (ncfile == null) {
-        res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+      fd = collectionManager.getFeatureCollectionDataset( ServletUtil.getRequest(req) , path);
+      if (fd == null) {
+        res.sendError(HttpServletResponse.SC_NOT_FOUND);
         log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
         return null;
       }
+
+      OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
+      if (queryS == null) {
+        res.setContentType("text/plain");
+        Formatter f = new Formatter(out);
+        fd.getDetailInfo(f);
+        f.flush();
+        out.flush();
+
+      } else if (queryS.equalsIgnoreCase("getCapabilities")) {
+        CdmRemoteControllerOld.sendCapabilities(req, out, fd, false);
+        res.flushBuffer();
+        out.flush();
+
+      } else {
+        res.setContentType("application/octet-stream");
+        res.setHeader("Content-Description", "ncstream");
+
+        List<FeatureCollection> coll = fd.getPointFeatureCollectionList();
+        StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) coll.get(0);
+
+        if (query.wantHeader()) { // just the header
+          NetcdfFile ncfile = fd.getNetcdfFile(); // LOOK will fail
+          NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(req));
+          WritableByteChannel wbc = Channels.newChannel(out);
+          ncWriter.sendHeader(wbc);
+
+        } else if (query.wantStations()) { // just the station list
+          PointStreamProto.StationList stationsp;
+          if (query.getLatLonRect() == null)
+            stationsp = PointStream.encodeStations(sfc.getStations());
+          else
+            stationsp = PointStream.encodeStations(sfc.getStations(query.getLatLonRect()));
+
+          byte[] b = stationsp.toByteArray();
+          NcStream.writeVInt(out, b.length);
+          out.write(b);
+
+        } else if (query.getStns() != null) { // a list of stations
+          String[] names = query.getStns().split(",");
+          List<Station> stns = sfc.getStations(names);
+          for (Station s : stns) {
+            StationTimeSeriesFeature series = sfc.getStationFeature(s);
+            sendData(s.getName(), series, out);
+          }
+
+        } else { // they want some data
+          PointFeatureCollection pfc = sfc.flatten(query.getLatLonRect(), query.getDateRange());
+          sendData(fd.getLocation(), pfc, out);
+        }
+
+        NcStream.writeVInt(out, 0);  // LOOK: terminator ?
+
+        out.flush();
+        res.flushBuffer();
+      }
+
+    } catch (FileNotFoundException e) {
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
+      res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
+      return null;
+
+    } catch (Throwable e) {
+      e.printStackTrace();
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
+      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+      return null;
+
+    } finally {
+      if (null != fd)
+        try {
+          fd.close();
+        } catch (IOException ioe) {
+          log.error("Failed to close = " + path);
+        }
+    }
+
+    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
+    return null;
+  }
+
+  private void sendData(String location, PointFeatureCollection pfc, OutputStream out) throws IOException {
+    int count = 0;
+    PointFeatureIterator pfIter = pfc.getPointFeatureIterator(-1);
+    try {
+      while (pfIter.hasNext()) {
+        PointFeature pf = pfIter.next();
+        if (count == 0) {  // first time
+          PointStreamProto.PointFeatureCollection proto = PointStream.encodePointFeatureCollection(location, pf);
+          byte[] b = proto.toByteArray();
+          NcStream.writeVInt(out, b.length);
+          out.write(b);
+        }
+
+        PointStreamProto.PointFeature pfp = PointStream.encodePointFeature(pf);
+        byte[] b = pfp.toByteArray();
+        NcStream.writeVInt(out, b.length);
+        out.write(b);
+        //System.out.println(" CollectionController len= " + b.length+ " count = "+count);
+
+        count++;
+      }
+    } finally {
+      pfIter.finish();
+    }
+    if (debug) System.out.printf(" sent %d features to %s %n ", count, location);
+  }
+
+  /////////////////////////////////////////////////////////////////
+
+  /* create it each time for thread safety, and so that collection is updated
+  private FeatureDatasetPoint getFeatureCollectionDataset(String uri, String path) throws IOException {
+
+    //FeatureDatasetPoint fd = fdmap.get(path);
+    //if (fd == null) {
+      CollectionBean config = collectionDatasets.get(path);
+      if (config == null) return null;
+
+      Formatter errlog = new Formatter();
+      FeatureDatasetPoint fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(uri, FeatureType.getType(config.getFeatureType()), config.getSpec(), errlog);
+      if (fd == null) {
+        log.error("Error opening CompositeDataset path = "+path+"  errlog = ", errlog);
+        return null;
+      }
+      //fdmap.put(path, fd);
+    //}
+    return fd;
+  }
+
+  /* private FeatureDatasetPoint getFeatureCollectionDatasetOld(String path) throws IOException {
+
+    FeatureDatasetPoint fd = fdmap.get(path);
+    if (fd == null) {
+      File content = tdsContext.getContentDirectory();
+      File config = new File(content, path);
+      if (!config.exists()) {
+        log.error("Config file %s doesnt exists %n", config);
+        return null;
+      }
+      //fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(FeatureType.STATION, "D:/formats/gempak/surface/*.gem?#yyyyMMdd");
+      Formatter errlog = new Formatter();
+      fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(path, config, errlog);
+      if (fd == null) {
+        log.error("Error opening dataset error =", errlog);
+        return null;
+      }
+      fdmap.put(path, fd);
+    }
+    return fd;
+  }
+
+
+  // one could use this for non-collection datasets
+  private FeatureDatasetPoint getFeatureDataset(HttpServletRequest req, HttpServletResponse res, String path) throws IOException {
+    NetcdfDataset ncd = null;
+    try {
+      NetcdfFile ncfile = DatasetHandler.getNetcdfFile(req, res, path);
+      if (ncfile == null) {
+        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
+        res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        return null;
+      }
+
+      ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getEnhanceAll());
+      Formatter errlog = new Formatter();
+      FeatureDatasetPoint fd = (FeatureDatasetPoint) FeatureDatasetFactoryManager.wrap(FeatureType.STATION, ncd, null, errlog);
+      if (fd == null) {
+        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, errlog.toString());
+        if (ncd != null) ncd.close();
+        return null;
+      }
+
+      return fd;
+
     } catch (FileNotFoundException e) {
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
@@ -144,144 +319,7 @@ public class CdmRemoteController extends AbstractController implements LastModif
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
-    try {
-      OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
-
-      if ((query == null) || view.equalsIgnoreCase("cdl")) {
-        res.setContentType("text/plain");
-        String cdl = ncfile.toString();
-        res.setContentLength(cdl.length());
-        out.write(cdl.getBytes());
-
-      } else if (view.equalsIgnoreCase("ncml")) {
-        res.setContentType("application/xml");
-        ncfile.writeNcML(out, pathInfo);
-
-      } else {
-
-        res.setContentType("application/octet-stream");
-        res.setHeader("Content-Description", "ncstream");
-
-        WritableByteChannel wbc = Channels.newChannel(out);
-        NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(req));
-        if (query.equals("header")) { // just the header
-          ncWriter.sendHeader( wbc);
-
-        } else { // they want some data
-          query = URLDecoder.decode(query, "UTF-8");
-          StringTokenizer stoke = new StringTokenizer(query, ";"); // need UTF/%decode
-          while (stoke.hasMoreTokens()) {
-            ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());
-            ncWriter.sendData( cer.v, cer.section, wbc);
-          }
-        }
-      }
-
-      out.flush();
-      res.flushBuffer();
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
-
-    } catch (IllegalArgumentException e) { // ParsedSectionSpec failed
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
-      res.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
-
-    } catch (Throwable e) {
-      e.printStackTrace();
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
-      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-
-    } finally {
-      if (null != ncfile)
-        try {
-          ncfile.close();
-        } catch (IOException ioe) {
-          log.error("Failed to close = " + pathInfo);
-        }
-    }
-
+    if (ncd != null) ncd.close();
     return null;
-  }
-
-  static void sendCapabilities(HttpServletRequest req, OutputStream os, FeatureType ft, boolean addSuffix) throws IOException {
-    Element rootElem = new Element("cdmRemoteCapabilities");
-    Document doc = new Document(rootElem);
-    rootElem.setAttribute("location", ServletUtil.getRequestBase(req));
-    Element elem = new Element("featureDataset");
-    elem.setAttribute("type", ft.toString());
-    elem.setAttribute("url", makeFeatureUri(req, ft, addSuffix));
-    rootElem.addContent(elem);
-
-    XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-    fmt.output(doc, os);
-  }
-
-  static void sendCapabilities(HttpServletRequest req, OutputStream os, FeatureDatasetPoint fd, boolean addSuffix) throws IOException {
-    Element rootElem = new Element("cdmRemoteCapabilities");
-    Document doc = new Document(rootElem);
-    rootElem.setAttribute("location", ServletUtil.getRequestBase(req));
-    Element elem = new Element("featureDataset");
-    elem.setAttribute("type", fd.getFeatureType().toString());
-    elem.setAttribute("url", makeFeatureUri(req, fd.getFeatureType(), addSuffix));
-    rootElem.addContent(elem);
-
-    LatLonRect bb = fd.getBoundingBox(); // LOOK should be a utility somewhere
-    if (bb != null) {
-      elem = new Element("geospatialCoverage");
-      rootElem.addContent(elem);
-      Element northsouth =  new Element("northsouth");
-      elem.addContent(northsouth);
-      northsouth.addContent( new Element("start").setText( Double.toString(bb.getLatMin())));
-      northsouth.addContent( new Element("size").setText( Double.toString(bb.getHeight())));
-
-      Element eastwest =  new Element("eastwest");
-      elem.addContent(eastwest);
-      eastwest.addContent( new Element("start").setText( Double.toString(bb.getLonMin())));
-      eastwest.addContent( new Element("size").setText( Double.toString(bb.getWidth())));
-    }
-
-    DateRange t = fd.getDateRange(); // LOOK should be a utility somewhere
-    if (t != null) {
-      elem = new Element("timeCoverage");
-      rootElem.addContent(elem);
-
-      DateType start = t.getStart();
-      DateType end = t.getEnd();
-      TimeDuration duration = t.getDuration();
-
-      if (t.useStart() && (start != null) && !start.isBlank()) {
-        Element startElem = new Element("start");
-        startElem.setText(start.toString());
-        elem.addContent(startElem);
-      }
-
-      if (t.useEnd() && (end != null) && !end.isBlank()) {
-        Element telem = new Element("end");
-        telem.setText(end.toString());
-        elem.addContent(telem);
-      }
-
-      if (t.useDuration() && (duration != null) && !duration.isBlank()) {
-        Element telem = new Element("duration");
-        telem.setText(duration.toString());
-        elem.addContent(telem);
-      }
-    }
-
-    XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-    fmt.output(doc, os);
-  }
-
-
-  static String makeFeatureUri(HttpServletRequest req, FeatureType ft, boolean addSuffix) {
-    /* String path = req.getPathInfo().substring(1); // remove leading '/'
-    int pos = path.indexOf("/");
-    path = path.substring(pos+1); // remove next segment '/'
-    return ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath() + "/" + ft.toString().toLowerCase() + "/" + path;
-    */
-    String url = ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath() + req.getPathInfo();
-    if (addSuffix)
-      url = url + "/"+ ft.toString().toLowerCase();
-    return url;
-  }
-
+  }  */
 }

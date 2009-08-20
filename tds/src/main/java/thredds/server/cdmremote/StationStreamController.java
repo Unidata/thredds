@@ -147,7 +147,7 @@ public class StationStreamController extends AbstractCommandController implement
         out.flush();
 
       } else if (queryS.equalsIgnoreCase("getCapabilities")) {
-        CdmRemoteController.sendCapabilities(req, out, fd.getFeatureType(), true);
+        CdmRemoteControllerOld.sendCapabilities(req, out, fd.getFeatureType(), true);
         res.flushBuffer();
         out.flush();
 

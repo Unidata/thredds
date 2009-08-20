@@ -197,14 +197,14 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
         StationTimeSeriesFeatureCollection stnCollection = (StationTimeSeriesFeatureCollection) fcList.get(0);
         Station s = stnCollection.getStation(getName());
         if (s == null) {
-          System.out.printf("CompositeStationFeatureIterator dataset%s missing station %s%n",
+          System.out.printf("CompositeStationFeatureIterator dataset: %s missing station %s%n",
                   td.getLocation(), getName());
           return getNextIterator();
         }
 
         StationTimeSeriesFeature stnFeature = stnCollection.getStationFeature(s);
         if (CompositeDatasetFactory.debug)
-          System.out.printf("CompositeStationFeatureIterator open dataset%s%n", td.getLocation());
+          System.out.printf("CompositeStationFeatureIterator open dataset: %s%n", td.getLocation());
         return stnFeature.getPointFeatureIterator(bufferSize);
       }
 
@@ -220,6 +220,8 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
         if (!pfIter.hasNext()) {
           pfIter.finish();
           currentDataset.close();
+          if (CompositeDatasetFactory.debug)
+            System.out.printf("CompositeStationFeatureIterator close dataset: %s%n", currentDataset.getLocation());
           pfIter = getNextIterator();
           return hasNext();
         }
@@ -241,7 +243,9 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
         if (currentDataset != null)
           try {
             currentDataset.close();
-          } catch (IOException e) {
+            if (CompositeDatasetFactory.debug)
+              System.out.printf("CompositeStationFeatureIterator close dataset: %s%n", currentDataset.getLocation());
+           } catch (IOException e) {
             throw new RuntimeException(e);
           }
 

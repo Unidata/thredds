@@ -8,9 +8,6 @@
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
       <value>
-        /**/point=pointController
-        /**/station=stationController
-        /**/collection=collectionController
         /**/form=formsController
         /**=cdmremoteController
       </value>
@@ -21,9 +18,10 @@
     <property name="tdsContext" ref="tdsContext"/>
     <property name="allow" value="true"/>
     <property name="supportedMethods" value="GET"/>
+    <property name="collections" ref="collectionManager"/>
   </bean>
 
-  <bean id="pointController" class="thredds.server.cdmremote.PointStreamController">
+  <!-- bean id="pointController" class="thredds.server.cdmremote.PointStreamController">
     <property name="tdsContext" ref="tdsContext"/>
     <property name="allow" value="true"/>
     <property name="supportedMethods" value="GET"/>
@@ -35,13 +33,13 @@
     <property name="supportedMethods" value="GET"/>
   </bean>
 
-  <bean id="collectionController" class="thredds.server.cdmremote.CollectionController">
+  <bean id="collectionController" class="thredds.server.cdmremote.CdmRemoteController">
     <property name="tdsContext" ref="tdsContext"/>
     <property name="allow" value="true"/>
     <property name="supportedMethods" value="GET"/>
     <property name="configDirectory" value="GET"/>
     <property name="collections" ref="collectionManager"/>
-  </bean>
+  </bean -->
 
   <bean id="formsController" class="thredds.server.cdmremote.FormsController">
     <property name="tdsContext" ref="tdsContext"/>
@@ -67,6 +65,7 @@
     <property name="spec" value="/data/ldm/pub/decoded/netcdf/surface/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc"/>
     <property name="recheck" value="15 min"/>
     <property name="featureType" value="STATION"/>
+    <property name="raw" value="report"/>
   </bean>
 
   <bean id="ncMetarsLocal" class="thredds.server.cdmremote.CollectionBean">
@@ -75,6 +74,7 @@
     <!-- property name="spec" value="C:/data/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc"/ -->
     <property name="recheck" value="15 min"/>
     <property name="featureType" value="STATION"/>
+    <property name="raw" value="report"/>
   </bean>
 
   <bean id="gempakMetars" class="thredds.server.cdmremote.CollectionBean">

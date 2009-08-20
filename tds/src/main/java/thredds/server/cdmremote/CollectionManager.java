@@ -38,6 +38,7 @@ import ucar.nc2.ft.point.collection.CompositeDatasetFactory;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.Attribute;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -81,6 +82,10 @@ public class CollectionManager {
         log.error("Error opening CompositeDataset path = "+path+"  errlog = ", errlog);
         return null;
       }
+
+    //if (config.getRaw() != null) {
+    //  fd.addGlobalAttribute(new Attribute("_raw", config.getRaw()));
+    //}
       //fdmap.put(path, fd);
     //}
     return fd;

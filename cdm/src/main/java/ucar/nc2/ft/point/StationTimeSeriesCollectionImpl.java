@@ -98,6 +98,11 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
     return localIterator.hasNext();
   }
 
+  public void finish() {
+    if (localIterator != null)
+      localIterator.finish();
+  }
+
   public StationTimeSeriesFeature next() throws IOException {
     return (StationTimeSeriesFeature) localIterator.next();
   }

@@ -45,6 +45,7 @@ public class CollectionBean {
   private String spec;
   private String recheck;
   private String featureType;
+  private String raw;
 
   public String getPath() {
     return path;
@@ -77,4 +78,14 @@ public class CollectionBean {
   public void setFeatureType(String featureType) {
     this.featureType = featureType;
   }
+
+  public String getRaw() {
+    return raw;
+  }
+
+  public void setRaw(String raw) {
+    this.raw = raw;
+  }
+
+
 }

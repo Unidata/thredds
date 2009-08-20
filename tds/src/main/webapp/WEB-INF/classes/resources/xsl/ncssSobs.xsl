@@ -31,10 +31,11 @@
         </table>
 
         <hr/>
-        <h1>CDM Remote Subset Service Forms Interface</h1>
+        <h1>CDM Remote Subset Service</h1>
         <h2>Station Dataset:
           <xsl:value-of select="capabilities/@location"/></h2>
-        <em><a href="dataset.xml">Dataset Description</a></em>
+        <em><a href="?req=getCapabilities">Dataset Description</a></em>
+        <p><em><a href="?req=stations">Station List</a></em></p>
         <hr/>
 
         <form method="GET" action="{capabilities/attribute::location}">
@@ -155,7 +156,7 @@
             </div>
         </form>
         <hr/>
-        <h3><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/interfaceSpec/StationDataSubsetService.html">NetCDF Subset Service Documentation</a></h3>
+        <h3><a href="http://www.unidata.ucar.edu/software/netcdf-java/stream/CdmRemote.html">CDM Remote Documentation</a></h3>
       </body>
     </html>
 

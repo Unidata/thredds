@@ -60,6 +60,14 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, N
   public StationTimeSeriesFeature next() throws java.io.IOException;
 
   /**
+   * Make sure that the internal iterator is complete, and recover resources.
+   * You must complete the iteration (until hasNext() returns false)
+   *  or call finish().
+   * @see PointFeatureIterator#finish
+   */
+  public void finish();
+
+  /**
    * Reset the internal iterator for another iteration over the StationTimeSeriesFeatures in this Collection.
    * @throws java.io.IOException on read error
    */

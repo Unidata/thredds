@@ -65,7 +65,7 @@ import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
 public class FormsController extends AbstractController {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
   private static org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
-  private String prefix = "/collection/form";
+  private String prefix = "/form";
 
   //private StationObsCollection soc;
   private boolean debug = true, showTime = false;
@@ -88,42 +88,6 @@ public class FormsController extends AbstractController {
     this.collectionManager = collectionManager;
   }
 
-  /* public void init() throws ServletException {
-    logServerStartup.info( getClass().getName() + " initialization start - " + UsageLog.setupNonRequestContext());
-
-    /* String metarDir = ThreddsConfig.get("NetcdfSubsetService.metarDataDir", "/opt/tomcat/content/thredds/public/stn/");
-    File dir = new File(metarDir);
-    if (!dir.exists()) {
-      allow = false;
-      return;
-    }
-
-    String metarRawDir = ThreddsConfig.get("NetcdfSubsetService.metarRawDir", null);
-    File rawDir = new File(metarRawDir);
-    if (!rawDir.exists()) {
-      metarRawDir = null;
-    }
-    soc = new StationObsCollection(metarDir, metarRawDir);
-
-    logServerStartup.info( getClass().getName() + " initialization done - " + UsageLog.closingMessageNonRequestContext() );
-  }
-
-  public void destroy() {
-    logServerStartup.info( getClass().getName() + " destroy start - " + UsageLog.setupNonRequestContext() );
-    if (null != soc)
-      soc.close();
-    logServerStartup.info( getClass().getName() + " destroy done - " + UsageLog.closingMessageNonRequestContext() );
-  }
-
-
-  public long getLastModified(HttpServletRequest req) {
-    File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(req.getPathInfo());
-    if ((file != null) && file.exists())
-      return file.lastModified();
-    return -1;
-  }    */
-
-
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
     if (!allow) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
@@ -132,10 +96,20 @@ public class FormsController extends AbstractController {
 
     log.info(UsageLog.setupRequestContext(req));
 
-    String pathInfo = req.getPathInfo();
-    if (pathInfo == null) pathInfo = "";
-    String path = pathInfo.substring(0, pathInfo.length() - prefix.length());
+    String datasetPath = req.getPathInfo();
+    if (datasetPath == null) datasetPath = "";
+    String path = datasetPath.substring(0, datasetPath.length() - prefix.length());
     if (debug) System.out.printf("CollectionController path= %s query= %s %n", path, req.getQueryString());
+
+    java.lang.String query = req.getQueryString();
+    boolean hasQuery = (query != null) && (query.length() > 0);
+    boolean wantDescXML = false;
+    boolean wantStationXML = false;
+    if (hasQuery) {
+      String reqParam = req.getParameter("req");
+      wantDescXML = (reqParam != null) && (reqParam.equalsIgnoreCase("getCapabilities"));
+      wantStationXML = (reqParam != null) && (reqParam.equalsIgnoreCase("stations"));
+    }
 
     FeatureDatasetPoint fd = null;
     try {
@@ -146,11 +120,8 @@ public class FormsController extends AbstractController {
         return null;
       }
 
-      boolean wantXML = pathInfo.endsWith("dataset.xml");
-      boolean showForm = pathInfo.endsWith("dataset.html") || pathInfo.endsWith("form");
-      boolean wantStationXML = pathInfo.endsWith("stations.xml");
-      if (wantXML || showForm || wantStationXML) {
-        showForm(req, res, wantXML, wantStationXML, fd);
+      if (!hasQuery || wantDescXML || wantStationXML) {
+        showForm(req, res, wantDescXML, wantStationXML, fd, datasetPath);
         return null;
       } else {
         processRequest(req, res, fd);
@@ -272,9 +243,9 @@ public class FormsController extends AbstractController {
   }
 
   private void showForm(HttpServletRequest req, HttpServletResponse res, boolean wantXml, boolean wantStationXml,
-                        FeatureDatasetPoint fdp) throws IOException {
+                        FeatureDatasetPoint fdp, String datasetPath) throws IOException {
 
-    String path = CdmRemoteController.makeFeatureUri(req, fdp.getFeatureType(), false);
+    String path = ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath() + datasetPath;
     FeatureDatasetPointXML xml = new FeatureDatasetPointXML(fdp, path);
 
     String infoString;

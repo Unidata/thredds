@@ -160,9 +160,9 @@ public class FeatureDatasetPointXML {
 
     // add accept list
     Element elem = new Element("AcceptList");
-    elem.addContent(new Element("accept").addContent("raw"));
-    elem.addContent(new Element("accept").addContent("xml"));
+    //elem.addContent(new Element("accept").addContent("raw"));
     elem.addContent(new Element("accept").addContent("csv"));
+    elem.addContent(new Element("accept").addContent("xml"));
     elem.addContent(new Element("accept").addContent("netcdf"));
     elem.addContent(new Element("accept").addContent("ncstream"));
     rootElem.addContent(elem);

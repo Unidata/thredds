@@ -642,8 +642,19 @@ public class Variable implements VariableIF {
   public Variable slice(int dim, int value) throws InvalidRangeException {
     if ((dim < 0) || (dim >= shape.length))
       throw new InvalidRangeException("Slice dim invalid= " + dim);
-    if ((value < 0) || (value >= shape[dim]))
-      throw new InvalidRangeException("Slice value invalid= " + value + " for dimension " + dim);
+
+    // ok to make slice of record dimension with length 0
+    boolean recordSliceOk = false;
+    if ((dim == 0) && (value == 0)) {
+      Dimension d = getDimension(0);
+      recordSliceOk = d.isUnlimited();
+    }
+
+    // otherwise check slice in range
+    if (!recordSliceOk) {
+      if ((value < 0) || (value >= shape[dim]))
+        throw new InvalidRangeException("Slice value invalid= " + value + " for dimension " + dim);
+    }
 
     // create a copy of this variable with a proxy reader
     Variable sliceV = copy(); // subclasses must override

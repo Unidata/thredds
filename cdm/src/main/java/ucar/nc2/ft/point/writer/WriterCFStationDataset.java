@@ -33,29 +33,19 @@
 package ucar.nc2.ft.point.writer;
 
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.units.DateUnit;
 import ucar.nc2.*;
 import ucar.nc2.ft.*;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dt.StationObsDatatype;
-import ucar.nc2.dt.StationObsDataset;
-import ucar.nc2.dt.TypedDatasetFactory;
-import ucar.nc2.dt.DataIterator;
-import ucar.nc2.iosp.netcdf3.N3outputStreamWriter;
-import ucar.unidata.geoloc.Station;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.ma2.*;
 
 import java.util.*;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.FileOutputStream;
-import java.io.File;
 
 /**
- * Write a CF Conventions station file. not streaming
- *
+ * Write a CF-4 Conventions station file. not streaming
+ * 
  * @author caron
  * @since Aug 19, 2009
  */
@@ -69,25 +59,16 @@ public class WriterCFStationDataset {
   private static final String idName = "station_id";
   private static final String descName = "station_description";
   private static final String wmoName = "wmo_id";
-
-  private static final String firstChildName = "firstChild";
-  private static final String lastChildName = "lastChild";
-  private static final String numChildName = "numChildren";
-  private static final String nextChildName = "nextChild";
-  private static final String prevChildName = "prevChild";
-  private static final String parentName = "parent_index";
-  // private static final String timeStrLenDim = "time_strlen";
+  private static final String stationIndexName = "stationIndex";
 
   private DateFormatter dateFormatter = new DateFormatter();
-  private int name_strlen, desc_strlen, wmo_strlen;
+  private int name_strlen = 1, desc_strlen = 1, wmo_strlen = 1;
 
   private NetcdfFileWriteable ncfile;
   private String title;
 
-  private Set<Dimension> dimSet = new HashSet<Dimension>();
-  private List<Dimension> recordDims = new ArrayList<Dimension>();
-  private List<Dimension> stationDims = new ArrayList<Dimension>();
-  private List<ucar.unidata.geoloc.Station> stnList;
+  private Set<Dimension> dimSet = new HashSet<Dimension>(20);
+  private List<Dimension> stationDims = new ArrayList<Dimension>(1);
   private Date minDate = null;
   private Date maxDate = null;
 
@@ -106,9 +87,10 @@ public class WriterCFStationDataset {
     ncfile.setLength( size);
   }
 
-  public void writeHeader(List<ucar.unidata.geoloc.Station> stns, List<VariableSimpleIF> vars) throws IOException {
+  public void writeHeader(List<ucar.unidata.geoloc.Station> stns, List<VariableSimpleIF> vars, DateUnit timeUnit) throws IOException {
     createGlobalAttributes();
     createStations(stns);
+    createObsVariables(timeUnit);
 
     // dummys, update in finish()
     ncfile.addGlobalAttribute("time_coverage_start", dateFormatter.toDateTimeStringISO(new Date()));
@@ -126,10 +108,10 @@ public class WriterCFStationDataset {
   }
 
   private void createGlobalAttributes() {
-    ncfile.addGlobalAttribute("Conventions", "Unidata Observation Dataset v1.0");
-    ncfile.addGlobalAttribute("cdm_datatype", "Station");
+    ncfile.addGlobalAttribute("Conventions", "CF-1.4");
+    ncfile.addGlobalAttribute("CF:featureType", "stationTimeSeries");
     ncfile.addGlobalAttribute("title", title);
-    ncfile.addGlobalAttribute("desc", "Extracted by THREDDS/Netcdf Subset Service");
+    ncfile.addGlobalAttribute("desc", "Written by THREDDS/CDM Remote Subset Service");
     /* ncfile.addGlobalAttribute("observationDimension", recordDimName);
     ncfile.addGlobalAttribute("stationDimension", stationDimName);
     ncfile.addGlobalAttribute("latitude_coordinate", latName);
@@ -158,7 +140,7 @@ public class WriterCFStationDataset {
       ucar.unidata.geoloc.Station station = stnList.get(i);
       name_strlen = Math.max(name_strlen, station.getName().length());
       desc_strlen = Math.max(desc_strlen, station.getDescription().length());
-      if (useWmoId) wmo_strlen = Math.max(wmo_strlen, station.getName().length());
+      if (useWmoId) wmo_strlen = Math.max(wmo_strlen, station.getWmoId().length());
     }
 
     LatLonRect llbb = getBoundingBox(stnList);
@@ -168,9 +150,7 @@ public class WriterCFStationDataset {
     ncfile.addGlobalAttribute("geospatial_lon_max", Double.toString(llbb.getUpperRightPoint().getLongitude()));
 
     // add the dimensions
-    Dimension recordDim = ncfile.addUnlimitedDimension(recordDimName);
-    recordDims.add(recordDim);
-
+    ncfile.addUnlimitedDimension(recordDimName);
     Dimension stationDim = ncfile.addDimension(stationDimName, nstns);
     stationDims.add(stationDim);
 
@@ -186,11 +166,13 @@ public class WriterCFStationDataset {
     if (useAlt) {
       v = ncfile.addVariable(altName, DataType.DOUBLE, stationDimName);
       ncfile.addVariableAttribute(v, new Attribute("units", "meters"));
+      ncfile.addVariableAttribute(v, new Attribute("positive", "up"));
       ncfile.addVariableAttribute(v, new Attribute("long_name", "station altitude"));
     }
 
     v = ncfile.addStringVariable(idName, stationDims, name_strlen);
     ncfile.addVariableAttribute(v, new Attribute("long_name", "station identifier"));
+    ncfile.addVariableAttribute(v, new Attribute("standard_name", "station_id"));
 
     v = ncfile.addStringVariable(descName, stationDims, desc_strlen);
     ncfile.addVariableAttribute(v, new Attribute("long_name", "station description"));
@@ -199,28 +181,17 @@ public class WriterCFStationDataset {
       v = ncfile.addStringVariable(wmoName, stationDims, wmo_strlen);
       ncfile.addVariableAttribute(v, new Attribute("long_name", "station WMO id"));
     }
+  }
 
-    v = ncfile.addVariable(numChildName, DataType.INT, stationDimName);
-    ncfile.addVariableAttribute(v, new Attribute("long_name", "number of children in linked list for this station"));
-
-    v = ncfile.addVariable(lastChildName, DataType.INT, stationDimName);
-    ncfile.addVariableAttribute(v, new Attribute("long_name", "record number of last child in linked list for this station"));
-
-    v = ncfile.addVariable(firstChildName, DataType.INT, stationDimName);
-    ncfile.addVariableAttribute(v, new Attribute("long_name", "record number of first child in linked list for this station"));
-
+  private void createObsVariables(DateUnit timeUnit) throws IOException {
     // time variable
-    Variable timeVar = ncfile.addStringVariable(timeName, recordDims, 20);
-    ncfile.addVariableAttribute(timeVar, new Attribute("long_name", "ISO-8601 Date"));
+    Variable timeVar = ncfile.addVariable(timeName, DataType.DOUBLE, recordDimName);
+    ncfile.addVariableAttribute(timeVar, new Attribute("units", timeUnit.getUnitsString()));
+    ncfile.addVariableAttribute(timeVar, new Attribute("long_name", "time of measurement"));
 
-    v = ncfile.addVariable(prevChildName, DataType.INT, recordDimName);
-    ncfile.addVariableAttribute(v, new Attribute("long_name", "record number of previous child in linked list"));
-
-    v = ncfile.addVariable(parentName, DataType.INT, recordDimName);
-    ncfile.addVariableAttribute(v, new Attribute("long_name", "index of parent station"));
-
-    v = ncfile.addVariable(nextChildName, DataType.INT, recordDimName);
-    ncfile.addVariableAttribute(v, new Attribute("long_name", "record number of next child in linked list"));
+    Variable v = ncfile.addVariable(stationIndexName, DataType.INT, recordDimName);
+    ncfile.addVariableAttribute(v, new Attribute("long_name", "station index for this observation record"));
+    ncfile.addVariableAttribute(v, new Attribute("standard_name", "ragged_parentIndex"));
 
   }
 
@@ -256,23 +227,11 @@ public class WriterCFStationDataset {
 
   }
 
-  private HashMap<String, StationTracker> stationMap;
-
-  private class StationTracker {
-    int numChildren = 0;
-    int lastChild = -1;
-    int parent_index;
-    List<Integer> link = new ArrayList<Integer>(); // recnums
-
-    StationTracker(int parent_index) {
-      this.parent_index = parent_index;
-    }
-  }
+  private HashMap<String, Integer> stationMap;
 
   private void writeStationData(List<ucar.unidata.geoloc.Station> stnList) throws IOException {
-    this.stnList = stnList;
     int nstns = stnList.size();
-    stationMap = new HashMap<String, StationTracker>(2 * nstns);
+    stationMap = new HashMap<String, Integer>(2 * nstns);
     if (debug) System.out.println("stationMap created");
 
     // now write the station data
@@ -285,7 +244,7 @@ public class WriterCFStationDataset {
 
     for (int i = 0; i < stnList.size(); i++) {
       ucar.unidata.geoloc.Station stn = stnList.get(i);
-      stationMap.put(stn.getName(), new StationTracker(i));
+      stationMap.put(stn.getName(), i);
 
       latArray.set(i, stn.getLatitude());
       lonArray.set(i, stn.getLongitude());
@@ -311,7 +270,7 @@ public class WriterCFStationDataset {
   }
 
   private void writeDataFinish() throws IOException {
-    ArrayInt.D1 nextChildArray = new ArrayInt.D1(recno);
+    /* ArrayInt.D1 nextChildArray = new ArrayInt.D1(recno);
 
     int nstns = stnList.size();
     ArrayInt.D1 firstArray = new ArrayInt.D1(nstns);
@@ -351,7 +310,7 @@ public class WriterCFStationDataset {
     } catch (InvalidRangeException e) {
       e.printStackTrace();
       throw new IllegalStateException(e);
-    }
+    }   */
 
     // if there is no data
     if (minDate == null) minDate = new Date();
@@ -362,18 +321,19 @@ public class WriterCFStationDataset {
   }
 
   private int recno = 0;
-  private ArrayObject.D1 timeArray = new ArrayObject.D1(String.class, 1);
-  private ArrayInt.D1 prevArray = new ArrayInt.D1(1);
+  private ArrayDouble.D1 timeArray = new ArrayDouble.D1(1);
+  //private ArrayInt.D1 prevArray = new ArrayInt.D1(1);
   private ArrayInt.D1 parentArray = new ArrayInt.D1(1);
   private int[] origin = new int[1];
-  private int[] originTime = new int[2];
 
   public void writeRecord(StationTimeSeriesFeature s, PointFeature sobs, StructureData sdata) throws IOException {
-    writeRecord(s.getName(), sobs.getObservationTimeAsDate(), sdata);
+    writeRecord(s.getName(), sobs.getObservationTime(), sobs.getObservationTimeAsDate(), sdata);
   }
 
-  public void writeRecord(String stnName, Date obsDate, StructureData sdata) throws IOException {
-    StationTracker tracker = stationMap.get(stnName);
+  public void writeRecord(String stnName, double timeCoordValue, Date obsDate, StructureData sdata) throws IOException {
+    Integer parentIndex = stationMap.get(stnName);
+    if (parentIndex == null)
+      throw new RuntimeException("Cant find station "+stnName);
 
     // needs to be wrapped as an ArrayStructure, even though we are only writing one at a time.
     ArrayStructureW sArray = new ArrayStructureW(sdata.getStructureMembers(), new int[]{1});
@@ -383,21 +343,15 @@ public class WriterCFStationDataset {
     if ((minDate == null) || minDate.after(obsDate)) minDate = obsDate;
     if ((maxDate == null) || maxDate.before(obsDate)) maxDate = obsDate;
 
-    timeArray.set(0, dateFormatter.toDateTimeStringISO(obsDate));
-    prevArray.set(0, tracker.lastChild);
-    parentArray.set(0, tracker.parent_index);
-    tracker.link.add(recno);
-    tracker.lastChild = recno;
-    tracker.numChildren++;
+    timeArray.set(0, timeCoordValue);
+    parentArray.set(0, parentIndex);
 
     // write the recno record
     origin[0] = recno;
-    originTime[0] = recno;
     try {
       ncfile.write("record", origin, sArray);
-      ncfile.writeStringData(timeName, originTime, timeArray);
-      ncfile.write(prevChildName, originTime, prevArray);
-      ncfile.write(parentName, originTime, parentArray);
+      ncfile.write(timeName, origin, timeArray);
+      ncfile.write(stationIndexName, origin, parentArray);
 
     } catch (InvalidRangeException e) {
       e.printStackTrace();
