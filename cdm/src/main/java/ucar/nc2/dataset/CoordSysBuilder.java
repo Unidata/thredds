@@ -272,14 +272,15 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   }
 
   /**
-   * Add Coordinate information to a NetcdfDataset using a registered Convention parsing class.
+   * Get a CoordSysBuilder whose job it is to add Coordinate information to a NetcdfDataset.
    *
    * @param ds         the NetcdfDataset to modify
    * @param cancelTask allow user to bail out.
    * @return the builder used
    * @throws java.io.IOException on io error
+   * @see ucar.nc2.dataset.NetcdfDataset#enhance
    */
-  static public CoordSysBuilderIF addCoordinateSystems(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+  static public CoordSysBuilderIF getCoordinateSystemBuilder(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
     // look for the Conventions attribute
     String convName = ds.findAttValueIgnoreCase(null, "Conventions", null);
     if (convName == null)
@@ -294,7 +295,6 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       if (convNcML != null) {
         CoordSysBuilder csb = new CoordSysBuilder();
         NcMLReader.wrapNcML(ds, convNcML, cancelTask);
-        csb.buildCoordinateSystems(ds);
         return csb;
       }
     }
@@ -359,7 +359,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
             break;
           }
         } catch (Exception ex) {
-          System.out.println("ERROR: Class " + c.getName() + " Exception invoking isMine method\n" + ex);
+          log.error("ERROR: Class " + c.getName() + " Exception invoking isMine method\n" + ex);
         }
       } // iterator
     } // convClass is null
@@ -382,14 +382,10 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       builder.addUserAdvice("No CoordSysBuilder found - using Default Conventions.\n");
     }
 
-    // add the coord systems
     if (convName != null) {
       builder.setConventionUsed(convName);
     } else
       builder.addUserAdvice("No 'Conventions' global attribute.\n");
-
-    builder.augmentDataset(ds, cancelTask);
-    builder.buildCoordinateSystems(ds);
 
     return builder;
   }
@@ -439,15 +435,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   // subclasses can override any of these routines
 
-  /**
-   * This is where subclasses make changes to the dataset, like adding new variables, attribuites, etc.
-   *
-   * @param ncDataset  modify this dataset
-   * @param cancelTask give user a chance to bail out
-   * @throws IOException
-   */
-  public void augmentDataset(NetcdfDataset ncDataset, CancelTask cancelTask) throws IOException {
-  }
+  public void augmentDataset(NetcdfDataset ncDataset, CancelTask cancelTask) throws IOException { }
 
   /**
    * Identify what kind of AxisType the named variable is.

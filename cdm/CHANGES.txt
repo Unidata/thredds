@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  0:
+  NetcdfDataset calls CoordSysBuilder.augmentDataset(), then processes scale/missing, then calls buildCoordSys()
   GridDataset: getVariables() only returns the grids
   AggExistingOne : make time coord into a String
   DODNetcdfFile: workaround for Grid HDF4 wierdness (Float64 Longitude[fakeDim2 = 8192])

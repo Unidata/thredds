@@ -322,5 +322,5 @@ public class DefaultConvention extends CoordSysBuilder {
       return new ProjectionCT(proj.getClassName(), "FGDC", proj);
     }
 
-  }
+}
 

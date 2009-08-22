@@ -68,7 +68,7 @@ public interface CoordSysBuilderIF {
   public String getUserAdvice();
 
   /**
-   * Make changes to the dataset, like adding new variables, attribuites, etc.
+   * Make changes to the dataset that are needed before processing scale/offset in NetcdfDataset.
    *
    * @param ncDataset modify this dataset
    * @param cancelTask give user a chance to bail out
@@ -85,5 +85,5 @@ public interface CoordSysBuilderIF {
   /** Give advice for a user trying to figure out why things arent working
    * @param advice add this advice to the User Advice String
    */
-  public void addUserAdvice( String advice);  
+  public void addUserAdvice( String advice);
 }
