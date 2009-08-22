@@ -3,8 +3,13 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.1:
- 0:
+ 1:
   NetcdfDataset calls CoordSysBuilder.augmentDataset(), then processes scale/missing, then calls buildCoordSys()
+  Variable.slice() : ok on record dimension size = 0
+  FeatureDatasetPointXML for creating capabilities document for FeatureDataset
+  Try to make nested Table configuration XML
+  NcStreamRemote -> CdmRemote
+ 0:
   GridDataset: getVariables() only returns the grids
   AggExistingOne : make time coord into a String
   DODNetcdfFile: workaround for Grid HDF4 wierdness (Float64 Longitude[fakeDim2 = 8192])
