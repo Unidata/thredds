@@ -458,15 +458,15 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     //if (ds.isEnhanceProcessed) return;
     if (mode == null) return;
 
-     // now find coord systems which may add new variables, change some Variables to axes, etc
+     // CoordSysBuilder may enhance dataset: add new variables, attributes, etc
     CoordSysBuilderIF builder = null;
     if (mode.contains(Enhance.CoordSystems) && !ds.enhanceMode.contains(Enhance.CoordSystems)) {
-      builder = ucar.nc2.dataset.CoordSysBuilder.getCoordinateSystemBuilder(ds, cancelTask);
-      builder.augmentDataset( ds);
+      builder = ucar.nc2.dataset.CoordSysBuilder.factory(ds, cancelTask);
+      builder.augmentDataset( ds, cancelTask);
       ds.convUsed = builder.getConventionUsed();
     }
 
-    // enhance scale/offset first, so its transferred to CoordinateAxes in CoordSystems
+    // now enhance scale/offset, using augmented dataset
     if (mode.contains(Enhance.ConvertEnums) || mode.contains(Enhance.ScaleMissing) || mode.contains(Enhance.ScaleMissingDefer)) {
       for (Variable v : ds.getVariables()) {
         VariableEnhanced ve = (VariableEnhanced) v;
@@ -475,9 +475,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       }
     }
 
-    // now find coord systems which may add new variables, change some Variables to axes, etc
+    // now find coord systems which may change some Variables to axes, etc
     if (builder != null) {
-       builder.augmentDataset(ds, cancelTask);
        builder.buildCoordinateSystems(ds);
     }
 

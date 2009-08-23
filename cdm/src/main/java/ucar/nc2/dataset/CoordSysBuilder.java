@@ -280,7 +280,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    * @throws java.io.IOException on io error
    * @see ucar.nc2.dataset.NetcdfDataset#enhance
    */
-  static public CoordSysBuilderIF getCoordinateSystemBuilder(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+  static public CoordSysBuilderIF factory(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
     // look for the Conventions attribute
     String convName = ds.findAttValueIgnoreCase(null, "Conventions", null);
     if (convName == null)
