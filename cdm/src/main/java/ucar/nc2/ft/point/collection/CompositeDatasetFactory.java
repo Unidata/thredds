@@ -44,6 +44,7 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 
 import java.io.IOException;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Formatter;
 import java.util.List;
 
@@ -153,21 +154,23 @@ public class CompositeDatasetFactory {
     if (spec.startsWith(SCHEME))
       spec = spec.substring(SCHEME.length());
 
-    TimedCollection datasets = new TimedCollectionImpl(spec, errlog);
-    if (datasets == null) return null;
+    TimedCollection collection = new TimedCollectionImpl(spec, errlog);
+    if (collection.getDatasets().size() == 0) {
+      throw new FileNotFoundException("Collection is empty; spec="+spec);
+    }
 
     LatLonRect bb = null;
     FeatureCollection fc = null;
     List<? extends VariableSimpleIF> dataVariables = null;
     switch (wantFeatureType) {
       case POINT:
-        CompositePointCollection pfc = new CompositePointCollection(spec, datasets);
+        CompositePointCollection pfc = new CompositePointCollection(spec, collection);
         bb = pfc.getBoundingBox();
         fc = pfc;
         dataVariables = pfc.getDataVariables();
         break;
       case STATION:
-        CompositeStationCollection sfc = new CompositeStationCollection(spec, datasets);
+        CompositeStationCollection sfc = new CompositeStationCollection(spec, collection);
         bb = sfc.getBoundingBox();
         fc = sfc;
         dataVariables = sfc.getDataVariables();
@@ -176,7 +179,7 @@ public class CompositeDatasetFactory {
         return null;
     }
 
-    return new CompositePointDataset(location, wantFeatureType, fc, dataVariables, datasets, bb);
+    return new CompositePointDataset(location, wantFeatureType, fc, dataVariables, collection, bb);
   }
 
 

@@ -88,7 +88,7 @@ public abstract class Table {
       case NestedStructure: // Structure or Sequence is nested in the parent
         return new TableNestedStructure(ds, config);
 
-      case ParentIndex: // linked list of child records, using indexes
+      case ParentIndex: // child record has the record index of the parent.
         return new TableParentIndex(ds, config);
 
       case Singleton: // singleton row, with given StructureData
@@ -384,7 +384,7 @@ public abstract class Table {
   ///////////////////////////////////////////////////////
 
   /**
-   * The children have a parentIndex, child -> parent.
+   * The children have a field containing the index of the parent.
    * For efficiency, we scan this data and construct an IndexMap( parentIndex -> list of children),
    * i.e. we compute the inverse link, parent -> children.
    * TableParentIndex is the children, config.struct describes the cols.
@@ -398,7 +398,7 @@ public abstract class Table {
 
     TableParentIndex(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
-      this.indexMap = config.indexMap;
+      this.indexMap = config.indexMap; // LOOK maybe caclulate this here?
       this.parentIndexName = config.parentIndex;
 
       checkNonDataVariable(config.parentIndex);
@@ -410,9 +410,9 @@ public abstract class Table {
     }
 
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
-      StructureData parentStruct = cursor.getParentStructure();
-      int parentIndex = parentStruct.getScalarInt(parentIndexName);
+      int parentIndex = cursor.getParentRecnum();
       List<Integer> index = indexMap.get(parentIndex);
+      if (index == null) index = new ArrayList<Integer>();
       return new StructureDataIteratorIndexed(struct, index);
     }
   }

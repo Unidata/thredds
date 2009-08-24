@@ -33,6 +33,7 @@
 package ucar.nc2.ft;
 
 import ucar.unidata.geoloc.Station;
+import ucar.nc2.units.DateRange;
 
 import java.io.IOException;
 import java.util.List;
@@ -83,13 +84,15 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, N
   public StationTimeSeriesFeatureCollection subset(List<Station> stations) throws IOException;
 
   /**
-   * Get a subsetted StationCollection based on a LatLonRect
+   * Get a subsetted StationCollection from a LatLonRect and/or a date range
    *
-   * @param boundingBox spatial subset
+   * @param boundingBox spatial subset. may be null
+   * @param range time subset. may be null
    * @return subsetted collection
    * @throws java.io.IOException on i/o error
    */
   public StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
+ // public StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox, DateRange range) throws IOException;
 
   /**
    * Get the collection of data for a particular Station.

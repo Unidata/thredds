@@ -241,27 +241,27 @@ public class CFpointObs extends TableConfigurerImpl {
     }
 
 
-    TableConfig obs = new TableConfig(obsTableType, obsDim.getName());
-    obs.dim = obsDim;
-    obs.time = time.getName();
-    stnTable.addChild(obs);
+    TableConfig obsConfig = new TableConfig(obsTableType, obsDim.getName());
+    obsConfig.dim = obsDim;
+    obsConfig.time = time.getName();
+    stnTable.addChild(obsConfig);
 
     boolean obsIsStruct = Evaluator.hasRecordStructure(ds) && obsDim.isUnlimited();
-    obs.structName = obsIsStruct ? "record" : obsDim.getName();
-    obs.isPsuedoStructure = !obsIsStruct;
+    obsConfig.structName = obsIsStruct ? "record" : obsDim.getName();
+    obsConfig.isPsuedoStructure = !obsIsStruct;
 
     if ((obsTableType == Table.Type.MultiDimInner) || (obsTableType == Table.Type.MultiDimStructurePsuedo)) {
-      obs.isPsuedoStructure = !stnIsStruct;
-      obs.dim = stationDim;
-      obs.inner = obsDim;
-      obs.structName = stnIsStruct ? "record" : stationDim.getName();
-      obs.vars = obsVars;
+      obsConfig.isPsuedoStructure = !stnIsStruct;
+      obsConfig.dim = stationDim;
+      obsConfig.inner = obsDim;
+      obsConfig.structName = stnIsStruct ? "record" : stationDim.getName();
+      obsConfig.vars = obsVars;
       if (time.getRank() == 1)
-        obs.addJoin( new JoinArray( time, JoinArray.Type.raw, 0));
+        obsConfig.addJoin( new JoinArray( time, JoinArray.Type.raw, 0));
 
     } else if (obsTableType == Table.Type.Contiguous) {
-      obs.numRecords = ragged_rowSize;
-      obs.start = "raggedStartVar";
+      obsConfig.numRecords = ragged_rowSize;
+      obsConfig.start = "raggedStartVar";
 
       // construct the start variable
       Variable v = ds.findVariable(ragged_rowSize);
@@ -279,13 +279,15 @@ public class CFpointObs extends TableConfigurerImpl {
         count += numRecords.nextLong();
       }
 
-      VariableDS startV = new VariableDS(ds,  v.getParentGroup(), v.getParentStructure(), obs.start, v.getDataType(),
+      VariableDS startV = new VariableDS(ds,  v.getParentGroup(), v.getParentStructure(), obsConfig.start, v.getDataType(),
           v.getDimensionsString(), null, "starting record number for station");
       startV.setCachedData(startRecord, false);
       ds.addVariable(v.getParentGroup(), startV);
       needFinish = true;
 
     } else if (obsTableType == Table.Type.ParentIndex) {
+      obsConfig.parentIndex = ragged_parentIndex;
+      
       // non-contiguous ragged array
       Variable rpIndex = ds.findVariable(ragged_parentIndex);
   
@@ -303,7 +305,7 @@ public class CFpointObs extends TableConfigurerImpl {
         list.add(childIndex);
         childIndex++;
       }
-      obs.indexMap = map;
+      obsConfig.indexMap = map;
     }
 
     if (needFinish) ds.finish();

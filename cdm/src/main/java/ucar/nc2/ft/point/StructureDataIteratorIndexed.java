@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Iterator;
 
 /**
+ * A StructureDataIterator which takes a list of record numbers (in a structure).
  * @author caron
  * @since Feb 11, 2009
  */

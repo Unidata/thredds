@@ -196,6 +196,7 @@ public class WriterCFStationDataset {
   }
 
   private void createDataVariables(List<VariableSimpleIF> dataVars) throws IOException {
+    String coordNames = latName +" "+ lonName +" " + altName +" " + timeName;
 
     // find all dimensions needed by the data variables
     for (VariableSimpleIF var : dataVars) {
@@ -217,13 +218,15 @@ public class WriterCFStationDataset {
         if (!d.isUnlimited())
           dimNames.append(" ").append(d.getName());
       }
-      Variable newVar = ncfile.addVariable(oldVar.getName(), oldVar.getDataType(), dimNames.toString());
+      Variable newVar = ncfile.addVariable(oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
 
       List<Attribute> atts = oldVar.getAttributes();
       for (Attribute att : atts) {
-        ncfile.addVariableAttribute(newVar, att);
+        newVar.addAttribute( att);
       }
+      newVar.addAttribute( new Attribute("coordinates", coordNames));
     }
+
 
   }
 

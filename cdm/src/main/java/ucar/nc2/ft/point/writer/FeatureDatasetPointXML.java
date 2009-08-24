@@ -182,7 +182,7 @@ public class FeatureDatasetPointXML {
   private Element writeVariable(VariableSimpleIF v) {
 
     Element varElem = new Element("variable");
-    varElem.setAttribute("name", v.getName());
+    varElem.setAttribute("name", v.getShortName());
 
     ucar.ma2.DataType dt = v.getDataType();
     if (dt != null)

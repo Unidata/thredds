@@ -55,6 +55,7 @@ import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.FeatureCollection;
 import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
 import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
+import ucar.unidata.util.StringUtil;
 
 /**
  * Describe
@@ -64,25 +65,22 @@ import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
  */
 public class FormsController extends AbstractController {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
-  private static org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
-  private String prefix = "/form";
-
-  //private StationObsCollection soc;
-  private boolean debug = true, showTime = false;
+  private static final String prefix = "/form";
 
   private TdsContext tdsContext;
+  private boolean allow = false;
+
+  private CollectionManager collectionManager;
+
+  private boolean debug = true, showTime = false;
 
   public void setTdsContext(TdsContext tdsContext) {
     this.tdsContext = tdsContext;
   }
 
-  private boolean allow = false;
-
   public void setAllow(boolean allow) {
     this.allow = allow;
   }
-
-  private CollectionManager collectionManager;
 
   public void setCollections(CollectionManager collectionManager) {
     this.collectionManager = collectionManager;
@@ -124,7 +122,7 @@ public class FormsController extends AbstractController {
         showForm(req, res, wantDescXML, wantStationXML, fd, datasetPath);
         return null;
       } else {
-        processRequest(req, res, fd);
+        processRequest(req, res, fd, path);
       }
 
     } catch (FileNotFoundException e) {
@@ -150,7 +148,7 @@ public class FormsController extends AbstractController {
     return null;
   }
 
-  private void processRequest(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fd) throws IOException {
+  private void processRequest(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fd, String path) throws IOException {
     long start = System.currentTimeMillis();
     List<FeatureCollection> coll = fd.getPointFeatureCollectionList();
     StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) coll.get(0);
@@ -220,7 +218,9 @@ public class FormsController extends AbstractController {
     res.setContentType(contentType);
 
     if (qp.acceptType.equals(QueryParams.NETCDF)) {
-      res.setHeader("Content-Disposition", "attachment; filename=metarSubset.nc");
+      if (path.startsWith("/")) path = path.substring(1);
+      path = StringUtil.replace(path, "/", "-");
+      res.setHeader("Content-Disposition", "attachment; filename="+path+".nc");
       File file = stationWriter.writeNetcdf(qp);
       ServletUtil.returnFile(req, res, file, QueryParams.NETCDF);
       file.delete();

@@ -518,10 +518,8 @@ public class StationWriter {
       w = new WriterCSV(qp, varNames, res.getWriter());
     } else if (type.equals(QueryParams.NETCDF)) {
       w = new WriterNetcdf(qp, varNames);
-      /* } else if (type.equals(QueryParams.NETCDFS)) {
-w = new WriterNetcdfStream(qp, vars, res.getOutputStream());
-} else if (type.equals(QueryParams.CdmRemote)) {
-w = new WriterCdmRemote(qp, vars, res.getOutputStream()); */
+    //} else if (type.equals(QueryParams.CdmRemote)) {
+    //  w = new WriterCdmRemote(qp, vars, res.getOutputStream());
     } else {
       log.error("Unknown writer type = " + type);
       return null;
@@ -535,12 +533,14 @@ w = new WriterCdmRemote(qp, vars, res.getOutputStream()); */
       stns = getStationList(stnNames);
       subset = sfc.subset(stns);
     } else {
+      PointFeatureCollection pfc = sfc.flatten(null, range);
+
       stns = getStationList(null);
     }
 
     w.header(stns);
 
-    counter.limit = 50;
+    counter.limit = 500;
 
     scan(subset, range, null, act, counter);
 
