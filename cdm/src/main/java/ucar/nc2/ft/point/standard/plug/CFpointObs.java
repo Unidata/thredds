@@ -261,29 +261,31 @@ public class CFpointObs extends TableConfigurerImpl {
 
     } else if (obsTableType == Table.Type.Contiguous) {
       obsConfig.numRecords = ragged_rowSize;
-      obsConfig.start = "raggedStartVar";
+      //obsConfig.start = "raggedStartVar";
 
-      // construct the start variable
+      // read numRecords
       Variable v = ds.findVariable(ragged_rowSize);
       if (!v.getDimension(0).equals(stationDim)) {
         errlog.format("Station - contiguous numRecords must use station dimension");
         return null;
       }
-
       Array numRecords = v.read();
-      Array startRecord = Array.factory(v.getDataType(), v.getShape());
+      int n = (int) v.getSize();
+
+      // construct the start variable
+      obsConfig.startIndex = new int[n];
       int i = 0;
-      long count = 0;
+      int count = 0;
       while (numRecords.hasNext()) {
-        startRecord.setLong(i++, count);
+        obsConfig.startIndex[i++] = count;
         count += numRecords.nextLong();
       }
 
-      VariableDS startV = new VariableDS(ds,  v.getParentGroup(), v.getParentStructure(), obsConfig.start, v.getDataType(),
+      /* VariableDS startV = new VariableDS(ds,  v.getParentGroup(), v.getParentStructure(), obsConfig.start, v.getDataType(),
           v.getDimensionsString(), null, "starting record number for station");
       startV.setCachedData(startRecord, false);
       ds.addVariable(v.getParentGroup(), startV);
-      needFinish = true;
+      needFinish = true; */
 
     } else if (obsTableType == Table.Type.ParentIndex) {
       obsConfig.parentIndex = ragged_parentIndex;

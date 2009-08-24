@@ -1703,7 +1703,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" exported="" name="catalina" level="project" />
-    <orderEntry type="library" exported="" name="protobuf" level="application" />
   </component>
 </module>
 

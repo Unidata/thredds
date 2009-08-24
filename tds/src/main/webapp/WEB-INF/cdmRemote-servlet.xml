@@ -70,8 +70,8 @@
 
   <bean id="ncMetarsLocal" class="thredds.server.cdmremote.CollectionBean">
     <property name="path" value="/idd/metar/ncdecodedLocal"/>
-    <!-- property name="spec" value="Q:/station/ldm/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc" / -->
-    <property name="spec" value="C:/data/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc"/>
+    <property name="spec" value="Q:/station/ldm/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc" />
+    <!--property name="spec" value="C:/data/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc"/ -->
     <property name="recheck" value="15 min"/>
     <property name="featureType" value="STATION"/>
     <property name="raw" value="report"/>
@@ -86,8 +86,8 @@
 
   <bean id="gempakMetarsLocal" class="thredds.server.cdmremote.CollectionBean">
     <property name="path" value="/idd/metar/gempakLocal"/>
-    <!--property name="spec" value="D:/formats/gempak/surface/#yyyyMMdd#_sao.gem" / -->
-    <property name="spec" value="C:/data/formats/gempak/surface/#yyyyMMdd#_sao.gem"/>
+    <property name="spec" value="D:/formats/gempak/surface/#yyyyMMdd#_sao.gem"/>
+    <!--property name="spec" value="C:/data/formats/gempak/surface/#yyyyMMdd#_sao.gem"/-->
     <property name="recheck" value="15 min"/>
     <property name="featureType" value="STATION"/>
   </bean>

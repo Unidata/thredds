@@ -358,11 +358,13 @@ public abstract class Table {
   public static class TableContiguous extends TableStructure {
     private String start; // variable name holding the starting index in parent
     private String numRecords; // variable name holding the number of children in parent
+    private int[] startIndex;
 
     TableContiguous(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
       this.start = config.start;
       this.numRecords = config.numRecords;
+      this.startIndex = config.startIndex;
 
       checkNonDataVariable(config.start);
       checkNonDataVariable(config.numRecords);
@@ -374,8 +376,14 @@ public abstract class Table {
     }
 
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+      int firstRecno;
       StructureData parentStruct = cursor.getParentStructure();
-      int firstRecno = parentStruct.getScalarInt(start);
+      if (startIndex != null) {
+        int parentIndex = cursor.getParentRecnum();
+        firstRecno = startIndex[parentIndex];
+      } else {
+        firstRecno = parentStruct.getScalarInt(start);
+      }
       int n = parentStruct.getScalarInt(numRecords);
       return new StructureDataIteratorLinked(struct, firstRecno, n, null);
     }

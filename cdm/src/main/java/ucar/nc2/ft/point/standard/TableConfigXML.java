@@ -93,15 +93,16 @@ public class TableConfigXML {
         tableElem.addContent(new Element("dimension").addContent(config.dim.getName()));
         break;
       case Construct:
-        tableElem.addContent(new Element("structure").setAttribute("name", config.structName));
+        tableElem.addContent(new Element("structure").addContent(config.structName));
         break;
       case Contiguous:
-        tableElem.addContent(new Element("start").setAttribute("varName", config.start));
-        tableElem.addContent(new Element("numRecords").setAttribute("varName", config.numRecords));
+        if (config.start != null)
+          tableElem.addContent(new Element("start").addContent(config.start));
+        tableElem.addContent(new Element("numRecords").addContent(config.numRecords));
         break;
       case LinkedList:
-        tableElem.addContent(new Element("start").setAttribute("varName", config.start));
-        tableElem.addContent(new Element("next").setAttribute("varName", config.next));
+        tableElem.addContent(new Element("start").addContent(config.start));
+        tableElem.addContent(new Element("next").addContent(config.next));
         break;
       case MultiDimInner:
         tableElem.addContent(new Element("dimension").addContent(config.dim.getName()));
@@ -111,10 +112,10 @@ public class TableConfigXML {
         tableElem.addContent(new Element("innerDimension").addContent(config.inner.getName()));
         break;
       case NestedStructure:
-        tableElem.addContent(new Element("structure").setAttribute("name", config.structName));
+        tableElem.addContent(new Element("structure").addContent(config.structName));
         break;
       case ParentIndex:
-        tableElem.addContent(new Element("parentIndex").setAttribute("varName", config.parentIndex));
+        tableElem.addContent(new Element("parentIndex").addContent(config.parentIndex));
         break;
       case Singleton:
         break;
@@ -125,7 +126,7 @@ public class TableConfigXML {
           tableElem.setAttribute("isPsuedoStructure", Boolean.toString(config.isPsuedoStructure));
         break;
       case Top:
-        tableElem.addContent(new Element("structure").setAttribute("name", config.structName));
+        tableElem.addContent(new Element("structure").addContent(config.structName));
         break;
     }
 
