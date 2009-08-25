@@ -109,7 +109,7 @@ public class StationStreamController extends AbstractCommandController implement
 
     PointQueryBean query = (PointQueryBean) command;
     if (debug) System.out.printf(" query= %s %n", query);
-    if (!query.parse()) {
+    if (!query.validate()) {
       res.sendError(HttpServletResponse.SC_BAD_REQUEST, query.getErrorMessage());
       if (debug) System.out.printf(" query error= %s %n", query.getErrorMessage());
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));

@@ -34,27 +34,59 @@ package thredds.server.cdmremote;
 
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
 
 import java.util.Formatter;
+import java.util.Date;
 
 /**
- * Parses the query parameters for cdmRemote datasets
+ * Parses the query parameters for cdmRemote datasets.
+ * This is the Model in Spring MVC
  *
  * @author caron
  * @since May 11, 2009
  */
 public class PointQueryBean {
-  public enum RequestType {capabilities, data, form, header, stations};
+  public enum RequestType {
+    capabilities, data, dataForm, form, header, stations
+  }
+
+  ;
+
+  public enum ResponseType {
+    csv, netcdf, ncstream, xml
+  }
+
+  ;
+
+  public enum SpatialSelection {
+    all, bb, point, stns
+  }
+
+  ;
+
+  public enum TemporalSelection {
+    all, range, point
+  }
+
+  ;
 
   // type of request
   private String req = "";
-  private RequestType reqType = null;
+
+  // type of response
+  private String accept = "";
 
   // comma delimited list of variable names
-  private String vars;
+  private String variables; // (forms) all some
+  private String var;
+
+  //// spatial selection
+  private String spatial; // (forms) all, bb, point, stns
+  private TemporalSelection temporalSelection;
 
   // comma delimited list of station ids
   private String stn;
@@ -64,13 +96,22 @@ public class PointQueryBean {
   private String west, east, south, north;
   private String latitude, longitude;
 
+  //// time selection
+  private String temporal; // (forms) all, range, point
+  private SpatialSelection spatialSelection;
+
   // time range
   private String time_start, time_end, time_duration;
   private String time;
 
   // parsed quantities
   private DateRange dateRange;
+  private DateType timePoint;
   private LatLonRect llbb;
+  private LatLonPoint latlonPoint;
+  private RequestType reqType = null;
+  private ResponseType resType = null;
+
   private boolean fatal = false;
   private Formatter errs = new Formatter();
 
@@ -91,21 +132,84 @@ public class PointQueryBean {
     return dateRange;
   }
 
-  boolean parse() {
-    parseSpatialExtent();
-    parseTimeExtent();
-    return !fatal;
-  }
-
   RequestType getRequestType() {
     if (reqType == null) {
       if (req.equalsIgnoreCase("capabilities")) reqType = RequestType.capabilities;
       else if (req.equalsIgnoreCase("data")) reqType = RequestType.data;
+      else if (req.equalsIgnoreCase("dataForm")) reqType = RequestType.dataForm;
       else if (req.equalsIgnoreCase("form")) reqType = RequestType.form;
-      else if (req.equalsIgnoreCase("header")) reqType = RequestType.header;
+      else if (req.equalsIgnoreCase("cdmHeader")) reqType = RequestType.header;
       else if (req.equalsIgnoreCase("stations")) reqType = RequestType.stations;
+      else reqType = RequestType.data; // default
     }
     return reqType;
+  }
+
+  ResponseType getResponseType() {
+    if (resType == null) {
+      if (accept.equalsIgnoreCase("csv")) resType = ResponseType.csv;
+      else if (accept.equalsIgnoreCase("ncstream")) resType = ResponseType.ncstream;
+      else if (accept.equalsIgnoreCase("netcdf")) resType = ResponseType.netcdf;
+      else if (accept.equalsIgnoreCase("xml")) resType = ResponseType.xml;
+      else resType = ResponseType.ncstream; // default
+    }
+    return resType;
+  }
+
+  SpatialSelection getSpatialSelection() {
+    return spatialSelection;
+  }
+
+  boolean validate() {
+    RequestType reqType = getRequestType();
+    if (reqType == RequestType.dataForm) {
+      parseVariablesForm();
+      parseSpatialExtentForm();
+      parseTemporalExtentForm();
+
+    } else {
+      parseSpatialExtent();
+      parseTimeExtent();
+
+      if ((spatialSelection == null) && (stn != null))
+        spatialSelection = SpatialSelection.stns;
+    }
+    return !fatal;
+  }
+
+  private void parseVariablesForm() {  // from the form
+    if (variables == null) {
+      errs.format("form must have variables=(all|some)%n");
+      fatal = true;
+      return;
+    }
+
+    if (variables.equalsIgnoreCase("all")) {
+      setVar(null);
+    }
+  }
+
+  private void parseSpatialExtentForm() { // from the form
+    if (spatial == null) {
+      errs.format("form must have spatial=(all|bb|point|stns)%n");
+      fatal = true;
+      return;
+    }
+
+    if (spatial.equalsIgnoreCase("all")) spatialSelection = SpatialSelection.all;
+    else if (spatial.equalsIgnoreCase("bb")) spatialSelection = SpatialSelection.bb;
+    else if (spatial.equalsIgnoreCase("point")) spatialSelection = SpatialSelection.point;
+    else if (spatial.equalsIgnoreCase("stns")) spatialSelection = SpatialSelection.stns;
+
+    if (spatial.equalsIgnoreCase("bb")) {
+      parseSpatialExtent();
+
+    } else if (spatial.equalsIgnoreCase("point")) {
+      double lat = parseLat("latitude", latitude);
+      double lon = parseLat("longitude", longitude);
+      latlonPoint = new LatLonPointImpl(lat, lon);
+    }
+
   }
 
   private void parseSpatialExtent() {
@@ -135,6 +239,7 @@ public class PointQueryBean {
 
       if (!fatal) {
         llbb = new LatLonRect(new LatLonPointImpl(southd, westd), new LatLonPointImpl(northd, eastd));
+        spatialSelection = SpatialSelection.bb;
       }
     }
   }
@@ -167,6 +272,24 @@ public class PointQueryBean {
   }
 
   ////////////////////////////////////////
+
+  private void parseTemporalExtentForm() { // from the form
+    if (temporal == null) {
+      errs.format("form must have temporal=(all|range|point)%n");
+      fatal = true;
+      return;
+    }
+
+    if (temporal.equalsIgnoreCase("all")) temporalSelection = TemporalSelection.all;
+    else if (temporal.equalsIgnoreCase("range")) temporalSelection = TemporalSelection.range;
+    else if (temporal.equalsIgnoreCase("point")) temporalSelection = TemporalSelection.point;
+
+    if (temporal.equalsIgnoreCase("range")) {
+      parseTimeExtent();
+    } else if (temporal.equalsIgnoreCase("point")) {
+      timePoint = parseDate("time", time);
+    }
+  }
 
   private void parseTimeExtent() {
     DateType startDate = parseDate("time_start", time_start);
@@ -207,27 +330,49 @@ public class PointQueryBean {
     return null;
   }
 
-
   /////////////////////////////////////
+
+  public void setAccept(String accept) {
+    this.accept = accept;
+  }
 
   public void setReq(String req) {
     this.req = req;
   }
 
-  public String getReq() {
-    return req;
+  // variable names
+  public void setVariables(String variables) {
+    this.variables = variables;
+  }
+
+  public void setVar(String var) {
+    this.var = var;
+  }
+
+  public String getVar() {
+    return var;
+  }
+
+  public String[] getVarNames() {
+    return (var == null) ? null : var.split(",");
+  }
+
+  //////// spatial
+
+  public void setSpatial(String spatial) {
+    this.spatial = spatial;
   }
 
   public void setStn(String stn) {
     this.stn = stn;
   }
 
-  public String getStns() {
+  public String getStn() {
     return stn;
   }
 
-  public void setVars(String vars) {
-    this.vars = vars;
+  public String[] getStnNames() {
+    return (stn == null) ? null : stn.split(",");
   }
 
   public void setBbox(String bbox) {
@@ -258,6 +403,12 @@ public class PointQueryBean {
     this.longitude = longitude;
   }
 
+  //////// temporal
+
+  public void setTemporal(String temporal) {
+    this.temporal = temporal;
+  }
+
   public void setTime_start(String timeStart) {
     this.time_start = timeStart;
   }
@@ -276,21 +427,25 @@ public class PointQueryBean {
 
   @Override
   public String toString() {
-    return "PointQueryBean{" +
-            "req='" + req + '\'' +
-            ", vars='" + vars + '\'' +
-            ", stn='" + stn + '\'' +
-            ", bbox='" + bbox + '\'' +
-            ", west='" + west + '\'' +
-            ", east='" + east + '\'' +
-            ", south='" + south + '\'' +
-            ", north='" + north + '\'' +
-            ", latitude='" + latitude + '\'' +
-            ", longitude='" + longitude + '\'' +
-            ", timeStart='" + time_start + '\'' +
-            ", timeEnd='" + time_end + '\'' +
-            ", timeDuration='" + time_duration + '\'' +
-            ", time='" + time + '\'' +
-            '}';
+    Formatter f = new Formatter();
+    f.format("PointQueryBean req=%s res=%s", getRequestType(), getResponseType());
+
+    if (spatialSelection == SpatialSelection.all)
+      f.format(" spatialSelection=all;");
+    else if (spatialSelection == SpatialSelection.bb)
+      f.format(" bb=%s;", getLatLonRect());
+    else if (spatialSelection == SpatialSelection.stns)
+      f.format(" stns=%s;", getStn());
+
+    if (temporalSelection == TemporalSelection.all) 
+      f.format(" temporalSelection=all;");
+    else if (temporalSelection == TemporalSelection.range)
+      f.format(" range=%s;", getDateRange());
+
+     if (var != null)
+      f.format(" vars=%s", var);
+
+    f.format(" %n");
+    return f.toString();
   }
 }

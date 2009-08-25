@@ -34,11 +34,12 @@
         <h1>CDM Remote Subset Service</h1>
         <h2>Station Dataset:
           <xsl:value-of select="capabilities/@location"/></h2>
-        <em><a href="?req=getCapabilities">Dataset Description</a></em>
+        <em><a href="?req=capabilities">Dataset Description</a></em>
         <p><em><a href="?req=stations">Station List</a></em></p>
         <hr/>
 
         <form method="GET" action="{capabilities/attribute::location}">
+          <input type="hidden" name="req" value="dataForm"/>
           <table border="0" cellpadding="4" cellspacing="2">
             <tr valign="top">
               <td>

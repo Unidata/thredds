@@ -40,24 +40,23 @@ import org.jdom.transform.XSLTransformer;
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
 import thredds.server.config.TdsContext;
+import thredds.server.ncSubset.QueryParams;
 import thredds.servlet.UsageLog;
 import thredds.servlet.ServletUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.Formatter;
 import java.util.List;
-import java.nio.channels.WritableByteChannel;
-import java.nio.channels.Channels;
+import java.util.ArrayList;
 
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.remote.PointStreamProto;
 import ucar.nc2.ft.point.remote.PointStream;
 import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.stream.NcStreamWriter;
+import ucar.nc2.units.DateRange;
 import ucar.nc2.stream.NcStream;
+import ucar.unidata.util.StringUtil;
 import ucar.unidata.geoloc.Station;
 
 /**
@@ -68,7 +67,7 @@ import ucar.unidata.geoloc.Station;
  */
 public class CdmRemoteController extends AbstractCommandController { // implements LastModified {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
-  private boolean debug = true;
+  private boolean debug = true, showTime = true;
 
   //private String prefix = "/collection"; // LOOK how do we obtain this?
   private TdsContext tdsContext;
@@ -115,21 +114,21 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
 
     String path = req.getPathInfo();
     // String path = pathInfo.substring(0, pathInfo.length() - prefix.length());
-    if (debug) System.out.printf("CollectionController path= %s query= %s %n", path, req.getQueryString());
+    if (debug) System.out.printf("CollectionController path= %s%n query= %s%n", path, req.getQueryString());
 
     PointQueryBean query = (PointQueryBean) command;
-    if (debug) System.out.printf(" query= %s %n", query);
-    if (!query.parse()) {
+    if (!query.validate()) {
       res.sendError(HttpServletResponse.SC_BAD_REQUEST, query.getErrorMessage());
       if (debug) System.out.printf(" query error= %s %n", query.getErrorMessage());
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
       return null;
     }
+    if (debug) System.out.printf("%s%n", query);
 
     //String queryS = req.getQueryString();
     FeatureDatasetPoint fd = null;
     try {
-      fd = collectionManager.getFeatureCollectionDataset( ServletUtil.getRequest(req) , path);
+      fd = collectionManager.getFeatureCollectionDataset(ServletUtil.getRequest(req), path);
       if (fd == null) {
         res.sendError(HttpServletResponse.SC_NOT_FOUND);
         log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
@@ -141,7 +140,8 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
         case capabilities:
         case form:
         case stations:
-          return processForm(req, res, fd, path, reqType);
+          return processForm(req, res, fd, path, query);
+        case dataForm:
         case data:
           return processData(req, res, fd, path, query);
       }
@@ -170,69 +170,138 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
     return null;
   }
 
-  private ModelAndView processData(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String datasetPath, PointQueryBean query) throws IOException {
+  private ModelAndView processData(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, PointQueryBean qb) throws IOException {
+    long start = System.currentTimeMillis();
+    List<FeatureCollection> coll = fdp.getPointFeatureCollectionList();
+    StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) coll.get(0);
+
+    // verify parameters match the dataset
+    List<Station> stns = null;
+    if (qb.getLatLonRect() != null) {
+      stns = sfc.getStations(qb.getLatLonRect());
+      if (stns.size() == 0) {
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: Bounding Box contains no stations; bb= " + qb.getLatLonRect());
+        return null;
+      }
+    } else if (qb.getStn() != null) {
+      stns = sfc.getStations(qb.getStnNames());
+      if (stns.size() == 0) {
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: No valid stations specified = " + qb.getStn());
+        return null;
+      }
+    }
+
+    if (qb.getDateRange() != null) {
+      DateRange wantRange = qb.getDateRange();
+      DateRange haveRange = fdp.getDateRange();
+      if (!haveRange.intersects(wantRange)) {
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: This dataset does not contain the time range= " + wantRange);
+        return null;
+      }
+      if (debug) System.out.println(" date range= " + wantRange);
+    }
+
+    // set content type
+    PointQueryBean.ResponseType resType = qb.getResponseType();
+    res.setContentType(getContentType(resType));
+
+    StationWriter stationWriter = new StationWriter(fdp, sfc, qb);
+
+    if (resType == PointQueryBean.ResponseType.netcdf) {
+      if (path.startsWith("/")) path = path.substring(1);
+      path = StringUtil.replace(path, "/", "-");
+      res.setHeader("Content-Disposition", "attachment; filename=" + path + ".nc");
+      File file = stationWriter.writeNetcdf(qb, stns);
+      ServletUtil.returnFile(req, res, file, getContentType(resType));
+      file.delete();
+
+      if (showTime) {
+        long took = System.currentTimeMillis() - start;
+        System.out.println("\ntotal response took = " + took + " msecs");
+      }
+
+      return null;
+    }
+
+    stationWriter.write(qb, stns, res);
+    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
+
+    if (showTime) {
+      long took = System.currentTimeMillis() - start;
+      System.out.println("\ntotal response took = " + took + " msecs");
+    }
+
     return null;
   }
 
+  private String getContentType(PointQueryBean.ResponseType resType) {
+    switch (resType) {
+      case csv: return "text/plain";
+      case netcdf: return "application/x-netcdf";
+      case ncstream: return "application/x-ncstream";
+      case xml: return "application/xml";
+    }
+    return "text/plain";
+  }
 
   /*
 
-      OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
-      if (queryS == null) {
-        res.setContentType("text/plain");
-        Formatter f = new Formatter(out);
-        fd.getDetailInfo(f);
-        f.flush();
-        out.flush();
+     OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
+     if (queryS == null) {
+       res.setContentType("text/plain");
+       Formatter f = new Formatter(out);
+       fd.getDetailInfo(f);
+       f.flush();
+       out.flush();
 
-      } else if (queryS.equalsIgnoreCase("getCapabilities")) {
-        CdmRemoteControllerOld.sendCapabilities(req, out, fd, false);
-        res.flushBuffer();
-        out.flush();
+     } else if (queryS.equalsIgnoreCase("getCapabilities")) {
+       CdmRemoteControllerOld.sendCapabilities(req, out, fd, false);
+       res.flushBuffer();
+       out.flush();
 
-      } else {
-        res.setContentType("application/octet-stream");
-        res.setHeader("Content-Description", "ncstream");
+     } else {
+       res.setContentType("application/octet-stream");
+       res.setHeader("Content-Description", "ncstream");
 
-        List<FeatureCollection> coll = fd.getPointFeatureCollectionList();
-        StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) coll.get(0);
+       List<FeatureCollection> coll = fd.getPointFeatureCollectionList();
+       StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) coll.get(0);
 
-        if (reqType == PointQueryBean.RequestType.header) { // just the header
-          NetcdfFile ncfile = fd.getNetcdfFile(); // LOOK will fail
-          NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(req));
-          WritableByteChannel wbc = Channels.newChannel(out);
-          ncWriter.sendHeader(wbc);
+       if (reqType == PointQueryBean.RequestType.header) { // just the header
+         NetcdfFile ncfile = fd.getNetcdfFile(); // LOOK will fail
+         NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(req));
+         WritableByteChannel wbc = Channels.newChannel(out);
+         ncWriter.sendHeader(wbc);
 
-        } else if (reqType == PointQueryBean.RequestType.stations) { // just the station list
-          PointStreamProto.StationList stationsp;
-          if (query.getLatLonRect() == null)
-            stationsp = PointStream.encodeStations(sfc.getStations());
-          else
-            stationsp = PointStream.encodeStations(sfc.getStations(query.getLatLonRect()));
+       } else if (reqType == PointQueryBean.RequestType.stations) { // just the station list
+         PointStreamProto.StationList stationsp;
+         if (query.getLatLonRect() == null)
+           stationsp = PointStream.encodeStations(sfc.getStations());
+         else
+           stationsp = PointStream.encodeStations(sfc.getStations(query.getLatLonRect()));
 
-          byte[] b = stationsp.toByteArray();
-          NcStream.writeVInt(out, b.length);
-          out.write(b);
+         byte[] b = stationsp.toByteArray();
+         NcStream.writeVInt(out, b.length);
+         out.write(b);
 
-        } else if (query.getStns() != null) { // a list of stations
-          String[] names = query.getStns().split(",");
-          List<Station> stns = sfc.getStations(names);
-          for (Station s : stns) {
-            StationTimeSeriesFeature series = sfc.getStationFeature(s);
-            sendData(s.getName(), series, out);
-          }
+       } else if (query.getStns() != null) { // a list of stations
+         String[] names = query.getStns().split(",");
+         List<Station> stns = sfc.getStations(names);
+         for (Station s : stns) {
+           StationTimeSeriesFeature series = sfc.getStationFeature(s);
+           sendData(s.getName(), series, out);
+         }
 
-        } else { // they want some data
-          PointFeatureCollection pfc = sfc.flatten(query.getLatLonRect(), query.getDateRange());
-          sendData(fd.getLocation(), pfc, out);
-        }
+       } else { // they want some data
+         PointFeatureCollection pfc = sfc.flatten(query.getLatLonRect(), query.getDateRange());
+         sendData(fd.getLocation(), pfc, out);
+       }
 
-        NcStream.writeVInt(out, 0);  // LOOK: terminator ?
+       NcStream.writeVInt(out, 0);  // LOOK: terminator ?
 
-        out.flush();
-        res.flushBuffer();
-      }
-   */
+       out.flush();
+       res.flushBuffer();
+     }
+  */
   private void sendData(String location, PointFeatureCollection pfc, OutputStream out) throws IOException {
     int count = 0;
     PointFeatureIterator pfIter = pfc.getPointFeatureIterator(-1);
@@ -343,11 +412,12 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  private ModelAndView processForm(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String datasetPath, PointQueryBean.RequestType reqType) throws IOException {
+  private ModelAndView processForm(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String datasetPath, PointQueryBean query) throws IOException {
 
     String path = ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath() + datasetPath;
     FeatureDatasetPointXML xmlWriter = new FeatureDatasetPointXML(fdp, path);
 
+    PointQueryBean.RequestType reqType = query.getRequestType();
     String infoString;
     if (reqType == PointQueryBean.RequestType.capabilities) {
       Document doc = xmlWriter.getCapabilitiesDocument();
@@ -355,7 +425,7 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
       infoString = fmt.outputString(doc);
 
     } else if (reqType == PointQueryBean.RequestType.stations) {
-      Document doc = xmlWriter.makeStationCollectionDocument();
+      Document doc = xmlWriter.makeStationCollectionDocument(query.getLatLonRect(), query.getStnNames());
       XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
       infoString = fmt.outputString(doc);
 

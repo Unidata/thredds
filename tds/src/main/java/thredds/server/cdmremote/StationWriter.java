@@ -48,7 +48,6 @@ import ucar.ma2.Array;
 import java.util.*;
 import java.io.*;
 
-import thredds.server.ncSubset.QueryParams;
 import org.jdom.Document;
 
 import javax.servlet.http.HttpServletResponse;
@@ -77,7 +76,7 @@ public class StationWriter {
   private FeatureDatasetPoint fd;
   private Date start, end;
 
-  public StationWriter(FeatureDatasetPoint fd, StationTimeSeriesFeatureCollection sfc) throws IOException {
+  public StationWriter(FeatureDatasetPoint fd, StationTimeSeriesFeatureCollection sfc, PointQueryBean qb) throws IOException {
     this.fd = fd;
     this.sfc = sfc;
 
@@ -140,7 +139,7 @@ public class StationWriter {
    * @return true if list is empty, ie no names are in the actual station list
    * @throws IOException if read error
    */
-  public boolean isStationListEmpty(List<String> stns) throws IOException {
+  private boolean isStationListEmpty(List<String> stns) throws IOException {
     HashMap<String, Station> map = getStationMap();
     for (String stn : stns) {
       if (map.get(stn) != null) return false;
@@ -494,48 +493,38 @@ public class StationWriter {
 
   //private File netcdfResult = new File("C:/temp/sobs.nc");
 
-  public File writeNetcdf(QueryParams qp) throws IOException {
-    WriterNetcdf w = (WriterNetcdf) write(qp, null);
+  public File writeNetcdf(PointQueryBean qp, List<Station> stns) throws IOException {
+    WriterNetcdf w = (WriterNetcdf) write(qp, stns, null);
     return w.netcdfResult;
   }
 
-  public Writer write(QueryParams qp, HttpServletResponse res) throws IOException {
+  public Writer write(PointQueryBean qp, List<Station> stns, HttpServletResponse res) throws IOException {
     long start = System.currentTimeMillis();
     Limit counter = new Limit();
 
-    List<String> varNames = qp.vars;
-    List<String> stnNames = qp.stns;
+    String[] vars = qp.getVarNames();
+    List<String> varNames = (vars == null) ? null : Arrays.asList(vars);
     DateRange range = qp.getDateRange();
-    DateType time = qp.time;
-    String type = qp.acceptType;
+    //DateType time = qp.time;
+
+    PointQueryBean.ResponseType resType = qp.getResponseType();
 
     Writer w;
-    if (type.equals(QueryParams.RAW)) {
-      w = new WriterRaw(qp, varNames, res.getWriter());
-    } else if (type.equals(QueryParams.XML)) {
+    if (resType == PointQueryBean.ResponseType.xml) {
       w = new WriterXML(qp, varNames, res.getWriter());
-    } else if (type.equals(QueryParams.CSV)) {
+    } else if (resType == PointQueryBean.ResponseType.csv) {
       w = new WriterCSV(qp, varNames, res.getWriter());
-    } else if (type.equals(QueryParams.NETCDF)) {
+    } else if (resType == PointQueryBean.ResponseType.netcdf) {
       w = new WriterNetcdf(qp, varNames);
-    //} else if (type.equals(QueryParams.CdmRemote)) {
-    //  w = new WriterCdmRemote(qp, vars, res.getOutputStream());
     } else {
-      log.error("Unknown writer type = " + type);
+      log.error("Unknown result type = " + resType);
       return null;
     }
     Action act = w.getAction();
 
-    List<Station> stns;
     StationTimeSeriesFeatureCollection subset = sfc;
-    if (stnNames.size() > 0) {
-      Collections.sort(stnNames);
-      stns = getStationList(stnNames);
+    if (stns.size() > 0) {
       subset = sfc.subset(stns);
-    } else {
-      PointFeatureCollection pfc = sfc.flatten(null, range);
-
-      stns = getStationList(null);
     }
 
     w.header(stns);
@@ -587,13 +576,13 @@ public class StationWriter {
 
     abstract void trailer();
 
-    QueryParams qp;
+    PointQueryBean qp;
     List<String> varNames;
     java.io.PrintWriter writer;
     DateFormatter format = new DateFormatter();
     int count = 0;
 
-    Writer(QueryParams qp, List<String> varNames, final java.io.PrintWriter writer) {
+    Writer(PointQueryBean qp, List<String> varNames, final java.io.PrintWriter writer) {
       this.qp = qp;
       this.varNames = varNames;
       this.writer = writer;
@@ -602,7 +591,7 @@ public class StationWriter {
     List<VariableSimpleIF> getVars(List<String> varNames, List<? extends VariableSimpleIF> dataVariables) {
       List<VariableSimpleIF> result = new ArrayList<VariableSimpleIF>();
       for (VariableSimpleIF v : dataVariables) {
-        if ((varNames == null) || varNames.contains(v.getName()))
+        if ((varNames == null) || varNames.contains(v.getShortName())) // LOOK N**2
           result.add(v);
       }
       return result;
@@ -617,7 +606,7 @@ public class StationWriter {
     List<Station> stnList;
     boolean headerWritten = false;
 
-    WriterNetcdf(QueryParams qp, List<String> varNames) throws IOException {
+    WriterNetcdf(PointQueryBean qp, List<String> varNames) throws IOException {
       super(qp, varNames, null);
 
       netcdfResult = File.createTempFile("ncss", ".nc");
@@ -730,7 +719,7 @@ public class StationWriter {
 
   class WriterRaw extends Writer {
 
-    WriterRaw(QueryParams qp, List<String> vars, final java.io.PrintWriter writer) {
+    WriterRaw(PointQueryBean qp, List<String> vars, final java.io.PrintWriter writer) {
       super(qp, vars, writer);
     }
 
@@ -757,7 +746,7 @@ public class StationWriter {
   class WriterXML extends Writer {
     XMLStreamWriter staxWriter;
 
-    WriterXML(QueryParams qp, List<String> vars, final java.io.PrintWriter writer) {
+    WriterXML(PointQueryBean qp, List<String> vars, final java.io.PrintWriter writer) {
       super(qp, vars, writer);
       XMLOutputFactory f = XMLOutputFactory.newInstance();
       try {
@@ -818,7 +807,7 @@ public class StationWriter {
             for (VariableSimpleIF var : vars) {
               staxWriter.writeCharacters(" ");
               staxWriter.writeStartElement("data");
-              staxWriter.writeAttribute("name", var.getName());
+              staxWriter.writeAttribute("name", var.getShortName());
               if (var.getUnitsString() != null)
                 staxWriter.writeAttribute("units", var.getUnitsString());
 
@@ -846,8 +835,8 @@ public class StationWriter {
     boolean headerWritten = false;
     List<VariableSimpleIF> validVars;
 
-    WriterCSV(QueryParams qp, List<String> stns, final java.io.PrintWriter writer) {
-      super(qp, stns, writer);
+    WriterCSV(PointQueryBean qp, List<String> varNames, final java.io.PrintWriter writer) {
+      super(qp, varNames, writer);
     }
 
     public void header(List<Station> stns) {
@@ -865,7 +854,7 @@ public class StationWriter {
             validVars = getVars(varNames, fdp.getDataVariables());
             for (VariableSimpleIF var : validVars) {
               writer.print(",");
-              writer.print(var.getName());
+              writer.print(var.getShortName());
               if (var.getUnitsString() != null)
                 writer.print("[unit=\"" + var.getUnitsString() + "\"]");
             }

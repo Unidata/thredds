@@ -33,6 +33,8 @@
 package ucar.nc2.ft.point.writer;
 
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.Attribute;
+import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.ft.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateFormatter;
@@ -49,7 +51,6 @@ import java.io.IOException;
 import java.io.FileOutputStream;
 import java.io.File;
 import java.util.*;
-import java.util.zip.GZIPOutputStream;
 
 /**
  * generate capabilities XML for a FeatureDatasetPoint
@@ -70,51 +71,60 @@ public class FeatureDatasetPointXML {
     this.sobs = (StationTimeSeriesFeatureCollection) list.get(0);
   }
 
-  /**
-   * Write stationObsDataset XML document
-   */
   public String getCapabilities() {
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
     return fmt.outputString(getCapabilitiesDocument());
-  }
+  } 
 
   public void getCapabilities(OutputStream os) throws IOException {
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
     fmt.output(getCapabilitiesDocument(), os);
   }
 
-  /**
+  /*
    * Write stationCollection XML document
-   */
-  public String writeStationCollectionXML() throws IOException {
+   *
+  public String writeStationCollectionXML(LatLonRect bb, String[] names) throws IOException {
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-    return fmt.outputString(makeStationCollectionDocument());
+    return fmt.outputString(makeStationCollectionDocument(bb, names));
   }
 
   public void writeStationCollectionXML(OutputStream os) throws IOException {
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
     fmt.output(makeStationCollectionDocument(), os);
-  }
+  } */
 
   /**
-   * Create an XML document from this info
+   * Create an XML document for the stations in this dataset.
+   * @param bb restrict stations to this bounding box, may be null
+   * @param names  restrict stations to these names, may be null
+   * @return  XML document for the stations
+   * @throws IOException on read error
    */
-  public Document makeStationCollectionDocument() throws IOException {
+  public Document makeStationCollectionDocument(LatLonRect bb, String[] names) throws IOException {
     Element rootElem = new Element("stationCollection");
     Document doc = new Document(rootElem);
 
-    for (Station s : sobs.getStations()) {
+    List<Station> stations;
+    if (bb != null)
+      stations = sobs.getStations(bb);
+    else if (names != null)
+      stations = sobs.getStations(names);
+    else
+      stations = sobs.getStations();
+
+    for (Station s : stations) {
       Element sElem = new Element("station");
       sElem.setAttribute("name", s.getName());
       if (s.getWmoId() != null)
         sElem.setAttribute("wmo_id", s.getWmoId());
-      if (s.getDescription() != null)
+      if ((s.getDescription() != null) && (s.getDescription().length() > 0))
         sElem.addContent(new Element("description").addContent(s.getDescription()));
 
-      sElem.addContent(new Element("longitude").addContent(ucar.unidata.util.Format.d(s.getLongitude(), 6)));
-      sElem.addContent(new Element("latitide").addContent(ucar.unidata.util.Format.d(s.getLatitude(), 6)));
+      sElem.addContent(new Element("longitude").addContent(Double.toString(s.getLongitude())));
+      sElem.addContent(new Element("latitide").addContent(Double.toString(s.getLatitude())));
       if (!Double.isNaN(s.getAltitude()))
-        sElem.addContent(new Element("altitude").addContent(ucar.unidata.util.Format.d(s.getAltitude(), 6)));
+        sElem.addContent(new Element("altitude").addContent(Double.toString(s.getAltitude())));
       rootElem.addContent(sElem);
     }
 
@@ -122,7 +132,8 @@ public class FeatureDatasetPointXML {
   }
 
   /**
-   * Create an XML document from this info
+   * Create the capabilities XML document for this datasets
+   * @return capabilities XML document
    */
   public Document getCapabilitiesDocument() {
     Element rootElem = new Element("capabilities");
@@ -189,19 +200,14 @@ public class FeatureDatasetPointXML {
       varElem.setAttribute("type", dt.toString());
 
     // attributes
-    Iterator atts = v.getAttributes().iterator();
-    while (atts.hasNext()) {
-      ucar.nc2.Attribute att = (ucar.nc2.Attribute) atts.next();
-      varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
+    for (Attribute att : v.getAttributes()) {
+      varElem.addContent(NcMLWriter.writeAttribute(att, "attribute", null));
     }
 
     return varElem;
   }
 
-
-  /**
-   * debug
-   */
+  // debug
   public static void main(String args[]) throws IOException {
     String location = "D:/datasets/metars/Surface_METAR_20070516_0000.nc";
     String path = "http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak/collection";

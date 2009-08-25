@@ -6,7 +6,7 @@
 </head>
 
 <body>
-<h1>CDM Remote Web Service</h1>
+<h1>CDM Remote Web Service (Experimental)</h1>
 <p>CDM Remote is an experimental web service implemented in the CDM library (client) and TDS (server), providing remote access to CDM datasets, using <a href="NcStream.html">ncstream</a> as the on-the-wire protocol. It provides access at the  NetcdfFile and FeatureDataset  levels of the CDM API., so there are two levels of services: </p>
 <ol>
   <li><em><strong>CdmRemote</strong> </em>provides  index subsetting on remote CDM datasets, with the same functionality that <strong>NetcdfFile</strong> provides for CDM local datasets and <strong>DODSNetcdfFile</strong> provides for remote OPeNDAP datasets.</li>
@@ -46,7 +46,7 @@ where:
     <td>dataset NcML</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc?<strong>req=getCapabilities</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc?<strong>req=capabilities</strong></td>
     <td>capabilities XML</td>
   </tr>
   <tr>
@@ -100,7 +100,7 @@ where:
     <th width="181" scope="col">Meaning</th>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>req=getCapabilities</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>req=capabilities</strong></td>
     <td>capabilities XML</td>
     <td>describe dataset</td>
   </tr>
@@ -137,7 +137,7 @@ where:
     <th width="195" scope="col">Meaning</th>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=getCapabilities</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=capabilities</strong></td>
     <td>capabilities XML</td>
     <td>describe dataset</td>
   </tr>
@@ -150,6 +150,11 @@ where:
     <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=stations&amp;north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
     <td>stationList ncstream message</td>
     <td>get stations in bounding box</td>
+  </tr>
+  <tr>
+    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=stations&amp;stn=KDEN,KLOG,MOAS</strong></td>
+    <td>stationList ncstream message</td>
+    <td>get stations in list</td>
   </tr>
   <tr>
     <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=data&amp;time_start=&amp;time_end=&amp;</strong><strong>stn=KDEN</strong></td>
@@ -176,6 +181,10 @@ where:
   <li>a list of stations or a bounding box must always be provided (?)</li>
   <li>data requests return an unordered list of observation as StructureData</li>
   <li>The protobuf messages are defined by <strong>thredds\cdm\src\main\java\ucar\nc2\ft\point\remote\pointStream.proto</strong></li>
+</ul>
+<p><strong>Questions:</strong></p>
+<ul>
+  <li><strong>stationList ncstream vs XML message</strong></li>
 </ul>
 <p>&nbsp;</p>
 <h2> GetCapabilities XML document</h2>
