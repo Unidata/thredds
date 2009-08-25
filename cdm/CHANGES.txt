@@ -5,6 +5,7 @@ Build Date = @BUILDTIME@
 Changes in version 4.1:
  1:
   Contiguous Table : dont add startRaggedArray variable, keep internal
+  GridCoordSys.convertUnits(): convert to DOUBLE to avoid loss of precision
   NetcdfDataset calls CoordSysBuilder.augmentDataset(), then processes scale/missing, then calls buildCoordSys()
   Variable.slice() : ok on record dimension size = 0
   FeatureDatasetPointXML for creating capabilities document for FeatureDataset

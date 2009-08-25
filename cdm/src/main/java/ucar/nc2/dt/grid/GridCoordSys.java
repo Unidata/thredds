@@ -536,14 +536,31 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       log.warn("convertUnits read failed", e);
       return axis;
     }
-    IndexIterator ii = data.getIndexIterator();
-    while (ii.hasNext())
-      ii.setDoubleCurrent(factor * ii.getDoubleNext());
 
-    CoordinateAxis newAxis = axis.copyNoCache();
-    newAxis.setCachedData(data, false);
-    newAxis.setUnitsString("km");
-    return newAxis;
+    DataType dtype = axis.getDataType();
+    if (dtype.isFloatingPoint()) {
+      IndexIterator ii = data.getIndexIterator();
+      while (ii.hasNext())
+        ii.setDoubleCurrent(factor * ii.getDoubleNext());
+
+      CoordinateAxis newAxis = axis.copyNoCache();
+      newAxis.setCachedData(data, false);
+      newAxis.setUnitsString("km");
+      return newAxis;
+
+    } else {  // convert to DOUBLE
+      Array newData = Array.factory(DataType.DOUBLE, axis.getShape());
+      IndexIterator newi = newData.getIndexIterator();
+      IndexIterator ii = data.getIndexIterator();
+      while (ii.hasNext() && newi.hasNext())
+        newi.setDoubleNext(factor * ii.getDoubleNext());
+
+      CoordinateAxis newAxis = axis.copyNoCache();
+      newAxis.setDataType(DataType.DOUBLE);
+      newAxis.setCachedData(newData, false);
+      newAxis.setUnitsString("km");
+      return newAxis;
+    }
   }
 
   /**

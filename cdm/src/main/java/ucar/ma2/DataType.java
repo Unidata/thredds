@@ -150,6 +150,15 @@ public enum DataType {
   }
 
   /**
+   * Is Float or Double
+   *
+   * @return true if floating point type
+   */
+  public boolean isFloatingPoint() {
+    return (this == DataType.FLOAT) || (this == DataType.DOUBLE);
+  }
+
+  /**
    * Is this an enumeration types?
    *
    * @return true if ENUM1, 2, or 4
