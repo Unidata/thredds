@@ -344,6 +344,9 @@ public class GempakStation implements Station {
      * @return the latitude
      */
     public double getLatitude() {
+        if (slat == GempakConstants.IMISSD) {
+            return slat;
+        }
         return slat / 100.;
     }
 
@@ -352,6 +355,9 @@ public class GempakStation implements Station {
      * @return the longitude
      */
     public double getLongitude() {
+        if (slon == GempakConstants.IMISSD) {
+            return slon;
+        }
         return slon / 100.;
     }
 

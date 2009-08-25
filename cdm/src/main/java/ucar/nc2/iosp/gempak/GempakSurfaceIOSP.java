@@ -134,12 +134,22 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                || gemreader.getSurfaceFileType().equals(gemreader.SHIP);
     }
 
+    /**
+     * Get the file type id
+     *
+     * @return file type id
+     */
     public String getFileTypeId() {
-      return "GempakSurface";
+        return "GempakSurface";
     }
 
+    /**
+     * Get the file type description
+     *
+     * @return the file type description
+     */
     public String getFileTypeDescription() {
-      return "GEMPAK Surface Obs Data";
+        return "GEMPAK Surface Obs Data";
     }
 
     /**
@@ -451,13 +461,14 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                 }
 
                 if (needToReadData) {
-
-                    // now get the obs
-                    GempakFileReader.RData vals = gemreader.DM_RDTR(1, x + 1,
-                                                      gemreader.SFDT);
+                    int column = stn.getIndex();
+                    GempakFileReader.RData vals = gemreader.DM_RDTR(1,
+                                                      column, gemreader.SFDT);
                     if (vals == null) {
-                        for (int k = 0; k < mbers.size(); k++) {
-                            buf.putFloat(GempakConstants.RMISSD);
+                        for (GempakParameter param : params) {
+                            if (members.findMember(param.getName()) != null) {
+                                buf.putFloat(GempakConstants.RMISSD);
+                            }
                         }
                     } else {
                         float[] reals = vals.data;
@@ -494,9 +505,9 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         }
     }
 
-  /**
-     * TODO:  generalize this
-     * static class for testing
+    /**
+     *   TODO:  generalize this
+     *   static class for testing
      */
     protected static class MakeNetcdfFile extends NetcdfFile {
 
@@ -717,8 +728,10 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         String fileType = "GEMPAK Surface (" + gemreader.getSurfaceFileType()
                           + ")";
         ncfile.addAttribute(null, new Attribute("file_format", fileType));
-        ncfile.addAttribute(null, new Attribute("history", "Direct read of "
-                + fileType + " into NetCDF-Java 4.0 API")); //  at " + dateFormat.toDateTimeStringISO(new Date())));
+        ncfile.addAttribute(null,
+                            new Attribute("history",
+                                          "Direct read of " + fileType
+                                          + " into NetCDF-Java 4.0 API"));  //  at " + dateFormat.toDateTimeStringISO(new Date())));
     }
 
     /**

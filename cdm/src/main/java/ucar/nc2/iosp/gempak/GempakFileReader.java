@@ -32,7 +32,6 @@
  */
 
 
-
 package ucar.nc2.iosp.gempak;
 
 
@@ -1477,26 +1476,28 @@ public class GempakFileReader implements GempakConstants {
                  + (icol - 1) * dmLabel.kprt + (iprt - 1);
 
         float[] rdata  = null;
+        int[]   header = null;
         int     istart = DM_RINT(ipoint);
         if (istart == 0) {
             return null;
         }
-        int length = DM_RINT(istart);
-        int isword = istart + 1;
-        if (length <= ilenhd) {
-            //System.out.println("length (" + length
-            //                   + ") is less than header length (" + ilenhd
-            //                   + ")");
-            return null;
-        } else if (Math.abs(length) > 10000000) {
-            //System.out.println("length is huge");
-            return null;
-        }
-        int[] header = new int[ilenhd];
-        DM_RINT(isword, header);
-        int nword = length - ilenhd;
-        isword += header.length;
+        // start catching up here because some files are incorrectly written
         try {
+            int length = DM_RINT(istart);
+            int isword = istart + 1;
+            if (length <= ilenhd) {
+                //System.out.println("length (" + length
+                //                   + ") is less than header length (" + ilenhd
+                //                   + ")");
+                return null;
+            } else if (Math.abs(length) > 10000000) {
+                //System.out.println("length is huge");
+                return null;
+            }
+            header = new int[ilenhd];
+            DM_RINT(isword, header);
+            int nword = length - ilenhd;
+            isword += header.length;
             if (part.ktyprt == MDREAL) {
                 rdata = new float[nword];
                 DM_RFLT(isword, rdata);
@@ -1508,7 +1509,7 @@ public class GempakFileReader implements GempakConstants {
                 rdata = DM_UNPK(part, idata);
             }
         } catch (EOFException eof) {
-            System.err.println("reading off end of file");
+            //System.err.println("reading off end of file");
             rdata = null;
         }
         RData rd = null;
