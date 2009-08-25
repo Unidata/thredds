@@ -674,8 +674,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       ServiceType stype = disambiguateHttp(location);
       if (stype == ServiceType.OPENDAP)
         return acquireDODS(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject); // try as a dods file
-      else if (stype == ServiceType.NetcdfStream)
-        return acquireRemote(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through netcdf remote
+      else if (stype == ServiceType.CdmRemote)
+        return acquireRemote(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through CDM remote
       // else fall through for HttpService
     }
 
@@ -721,7 +721,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       if ((h != null) && (h.getValue() != null)) {
         String v = h.getValue();
         if (v.equalsIgnoreCase("ncstream"))
-          return ServiceType.NetcdfStream;
+          return ServiceType.CdmRemote;
       }
 
       return null;

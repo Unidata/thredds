@@ -41,12 +41,17 @@ import ucar.nc2.units.TimeDuration;
 import java.util.Formatter;
 
 /**
- * Parses the query parameters for cdmRemote point features
+ * Parses the query parameters for cdmRemote datasets
  *
  * @author caron
  * @since May 11, 2009
  */
 public class PointQueryBean {
+  public enum RequestType {capabilities, data, form, header, stations};
+
+  // type of request
+  private String req = "";
+  private RequestType reqType = null;
 
   // comma delimited list of variable names
   private String vars;
@@ -62,10 +67,6 @@ public class PointQueryBean {
   // time range
   private String time_start, time_end, time_duration;
   private String time;
-
-  // type of request
-  private String header;
-  private String stations;
 
   // parsed quantities
   private DateRange dateRange;
@@ -96,12 +97,15 @@ public class PointQueryBean {
     return !fatal;
   }
 
-  boolean wantHeader() {
-    return (header != null);
-  }
-
-  boolean wantStations() {
-    return (stations != null);
+  RequestType getRequestType() {
+    if (reqType == null) {
+      if (req.equalsIgnoreCase("capabilities")) reqType = RequestType.capabilities;
+      else if (req.equalsIgnoreCase("data")) reqType = RequestType.data;
+      else if (req.equalsIgnoreCase("form")) reqType = RequestType.form;
+      else if (req.equalsIgnoreCase("header")) reqType = RequestType.header;
+      else if (req.equalsIgnoreCase("stations")) reqType = RequestType.stations;
+    }
+    return reqType;
   }
 
   private void parseSpatialExtent() {
@@ -206,6 +210,14 @@ public class PointQueryBean {
 
   /////////////////////////////////////
 
+  public void setReq(String req) {
+    this.req = req;
+  }
+
+  public String getReq() {
+    return req;
+  }
+
   public void setStn(String stn) {
     this.stn = stn;
   }
@@ -262,18 +274,11 @@ public class PointQueryBean {
     this.time = time;
   }
 
-  public void setHeader(String header) {
-    this.header = header;
-  }
-
-  public void setStations(String stations) {
-    this.stations = stations;
-  }
-
   @Override
   public String toString() {
     return "PointQueryBean{" +
-            "vars='" + vars + '\'' +
+            "req='" + req + '\'' +
+            ", vars='" + vars + '\'' +
             ", stn='" + stn + '\'' +
             ", bbox='" + bbox + '\'' +
             ", west='" + west + '\'' +
@@ -286,8 +291,6 @@ public class PointQueryBean {
             ", timeEnd='" + time_end + '\'' +
             ", timeDuration='" + time_duration + '\'' +
             ", time='" + time + '\'' +
-            ", header='" + wantHeader() + '\'' +
-            ", stations='" + wantStations() + '\'' +
             '}';
   }
 }

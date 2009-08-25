@@ -1053,12 +1053,10 @@ public class InvDatasetImpl extends InvDataset {
             fullUrlString = fullUrlString + "?service=WCS&version=1.0.0&request=GetCapabilities";
           else if (stype == ServiceType.WMS)
             fullUrlString = fullUrlString + "?service=WMS&version=1.3.0&request=GetCapabilities";
-          else if (stype == ServiceType.NetcdfStream)
-            fullUrlString = fullUrlString + "?showForm";
           else if (stype == ServiceType.NetcdfSubset)
             fullUrlString = fullUrlString + "/dataset.html";
           else if (stype == ServiceType.CdmRemote)
-            fullUrlString = fullUrlString + "/form";
+            fullUrlString = fullUrlString + "?req=form";
         }
         buff.append(" <li> <b>").append(StringUtil.quoteHtmlContent(s.getServiceType().toString()));
         buff.append(":</b> ").append(makeHref( fullUrlString, urlString)).append("</li>\n");

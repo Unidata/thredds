@@ -459,8 +459,8 @@ public class ThreddsDataFactory {
       ds = acquire ? NetcdfDataset.acquireDataset(curl, task) : NetcdfDataset.openDataset(curl, true, task);
     }
 
-    // open NetcdfStream
-    else if (serviceType == ServiceType.NetcdfStream) {
+    // open CdmRemote
+    else if (serviceType == ServiceType.CdmRemote) {
       String curl = CdmRemote.canonicalURL(datasetLocation);
       ds = acquire ? NetcdfDataset.acquireDataset(curl, task) : NetcdfDataset.openDataset(curl, true, task);
     }
@@ -523,7 +523,7 @@ public class ThreddsDataFactory {
     if (access == null)
       access = findAccessByServiceType(accessList, ServiceType.OPENDAP);
     if (access == null)
-      access = findAccessByServiceType(accessList, ServiceType.NetcdfStream);
+      access = findAccessByServiceType(accessList, ServiceType.CdmRemote);
 
     // look for HTTP with format we can read
     if (access == null) {

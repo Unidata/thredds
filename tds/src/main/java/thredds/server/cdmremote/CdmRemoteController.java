@@ -33,11 +33,13 @@
 package thredds.server.cdmremote;
 
 import org.springframework.web.servlet.mvc.AbstractCommandController;
-import org.springframework.web.servlet.mvc.LastModified;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindException;
+import org.jdom.Document;
+import org.jdom.transform.XSLTransformer;
+import org.jdom.output.XMLOutputter;
+import org.jdom.output.Format;
 import thredds.server.config.TdsContext;
-import thredds.servlet.DataRootHandler;
 import thredds.servlet.UsageLog;
 import thredds.servlet.ServletUtil;
 
@@ -52,18 +54,19 @@ import java.nio.channels.Channels;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.remote.PointStreamProto;
 import ucar.nc2.ft.point.remote.PointStream;
+import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.geoloc.Station;
 
 /**
- * Describe
+ * Controller for CdmRemote service
  *
  * @author caron
  * @since May 28, 2009
  */
-public class CdmRemoteController extends AbstractCommandController implements LastModified {
+public class CdmRemoteController extends AbstractCommandController { // implements LastModified {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
   private boolean debug = true;
 
@@ -94,12 +97,12 @@ public class CdmRemoteController extends AbstractCommandController implements La
     this.collectionManager = collectionManager;
   }
 
-  public long getLastModified(HttpServletRequest req) {
+  /* public long getLastModified(HttpServletRequest req) {
     File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(req.getPathInfo()); // LOOK
     if ((file != null) && file.exists())
       return file.lastModified();
     return -1;
-  }
+  } */
 
   protected ModelAndView handle(HttpServletRequest req, HttpServletResponse res, Object command, BindException errors) throws Exception {
     log.info(UsageLog.setupRequestContext(req));
@@ -123,10 +126,8 @@ public class CdmRemoteController extends AbstractCommandController implements La
       return null;
     }
 
-    String queryS = req.getQueryString();
-
+    //String queryS = req.getQueryString();
     FeatureDatasetPoint fd = null;
-
     try {
       fd = collectionManager.getFeatureCollectionDataset( ServletUtil.getRequest(req) , path);
       if (fd == null) {
@@ -134,6 +135,47 @@ public class CdmRemoteController extends AbstractCommandController implements La
         log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
         return null;
       }
+
+      PointQueryBean.RequestType reqType = query.getRequestType();
+      switch (reqType) {
+        case capabilities:
+        case form:
+        case stations:
+          return processForm(req, res, fd, path, reqType);
+        case data:
+          return processData(req, res, fd, path, query);
+      }
+
+    } catch (FileNotFoundException e) {
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
+      res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
+      return null;
+
+    } catch (Throwable e) {
+      e.printStackTrace();
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
+      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+      return null;
+
+    } finally {
+      if (null != fd)
+        try {
+          fd.close();
+        } catch (IOException ioe) {
+          log.error("Failed to close = " + path);
+        }
+    }
+
+    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
+    return null;
+  }
+
+  private ModelAndView processData(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String datasetPath, PointQueryBean query) throws IOException {
+    return null;
+  }
+
+
+  /*
 
       OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
       if (queryS == null) {
@@ -155,13 +197,13 @@ public class CdmRemoteController extends AbstractCommandController implements La
         List<FeatureCollection> coll = fd.getPointFeatureCollectionList();
         StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) coll.get(0);
 
-        if (query.wantHeader()) { // just the header
+        if (reqType == PointQueryBean.RequestType.header) { // just the header
           NetcdfFile ncfile = fd.getNetcdfFile(); // LOOK will fail
           NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(req));
           WritableByteChannel wbc = Channels.newChannel(out);
           ncWriter.sendHeader(wbc);
 
-        } else if (query.wantStations()) { // just the station list
+        } else if (reqType == PointQueryBean.RequestType.stations) { // just the station list
           PointStreamProto.StationList stationsp;
           if (query.getLatLonRect() == null)
             stationsp = PointStream.encodeStations(sfc.getStations());
@@ -190,31 +232,7 @@ public class CdmRemoteController extends AbstractCommandController implements La
         out.flush();
         res.flushBuffer();
       }
-
-    } catch (FileNotFoundException e) {
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
-      res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
-      return null;
-
-    } catch (Throwable e) {
-      e.printStackTrace();
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
-      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-      return null;
-
-    } finally {
-      if (null != fd)
-        try {
-          fd.close();
-        } catch (IOException ioe) {
-          log.error("Failed to close = " + path);
-        }
-    }
-
-    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
-    return null;
-  }
-
+   */
   private void sendData(String location, PointFeatureCollection pfc, OutputStream out) throws IOException {
     int count = 0;
     PointFeatureIterator pfIter = pfc.getPointFeatureIterator(-1);
@@ -322,4 +340,61 @@ public class CdmRemoteController extends AbstractCommandController implements La
     if (ncd != null) ncd.close();
     return null;
   }  */
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  private ModelAndView processForm(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String datasetPath, PointQueryBean.RequestType reqType) throws IOException {
+
+    String path = ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath() + datasetPath;
+    FeatureDatasetPointXML xmlWriter = new FeatureDatasetPointXML(fdp, path);
+
+    String infoString;
+    if (reqType == PointQueryBean.RequestType.capabilities) {
+      Document doc = xmlWriter.getCapabilitiesDocument();
+      XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+      infoString = fmt.outputString(doc);
+
+    } else if (reqType == PointQueryBean.RequestType.stations) {
+      Document doc = xmlWriter.makeStationCollectionDocument();
+      XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+      infoString = fmt.outputString(doc);
+
+    } else if (reqType == PointQueryBean.RequestType.form) {
+      InputStream xslt = getXSLT("ncssSobs.xsl");
+      Document doc = xmlWriter.getCapabilitiesDocument();
+
+      try {
+        XSLTransformer transformer = new XSLTransformer(xslt);
+        Document html = transformer.transform(doc);
+        XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+        infoString = fmt.outputString(html);
+
+      } catch (Exception e) {
+        log.error("SobsServlet internal error", e);
+        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
+        res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "SobsServlet internal error");
+        return null;
+      }
+
+    } else {
+      return null;
+    }
+
+    res.setContentLength(infoString.length());
+    if (reqType == PointQueryBean.RequestType.form)
+      res.setContentType("text/html; charset=iso-8859-1");
+    else
+      res.setContentType("text/xml; charset=iso-8859-1");
+
+    OutputStream out = res.getOutputStream();
+    out.write(infoString.getBytes());
+    out.flush();
+
+    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, infoString.length()));
+    return null;
+  }
+
+  private InputStream getXSLT(String xslName) {
+    return getClass().getResourceAsStream("/resources/xsl/" + xslName);
+  }
 }
