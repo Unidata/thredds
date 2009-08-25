@@ -47,9 +47,11 @@ import ucar.nc2.units.DateFormatter;
 import ucar.grid.GridRecord;
 import ucar.grid.GridTableLookup;
 import ucar.grid.GridParameter;
+import ucar.grid.GridDefRecord;
 import ucar.unidata.util.StringUtil;
 import ucar.grib.grib1.Grib1GridTableLookup;
 import ucar.grib.grib2.Grib2GridTableLookup;
+import ucar.grib.grib2.Grib2Tables;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -280,7 +282,7 @@ public class GridVariable {
   void setEnsembleCoord(GridEnsembleCoord ecs) {
     this.ecs = ecs;
   }
-  */ // TODO: Delete after checking
+  */ // TODO:
   /**
    * Get the number of Ensemble
    *
@@ -292,7 +294,7 @@ public class GridVariable {
         ? 1
         : ecs.getNEnsembles();
   }
-  */ // TODO: Delete after checking
+  */ // TODO:
   /**
    * Does this have a Ensemble dimension
    *
@@ -304,7 +306,7 @@ public class GridVariable {
         ? false
         : ecs.getNEnsembles() > 1;
   }
-  */ // TODO: Delete after checking
+  */ // TODO:  
 
   /**
    * Get the number of vertical levels
@@ -440,6 +442,13 @@ public class GridVariable {
     * GribVariable that adds in the specific attributes.
     *
     */
+    int icf = hcs.getGds().getInt(GridDefRecord.VECTOR_COMPONET_FLAG);
+    String flag;
+    if ( icf == 0 ) {
+       flag = Grib2Tables.VectorComponentFlag.easterlyNortherlyRelative.toString();
+    } else {
+       flag = Grib2Tables.VectorComponentFlag.gridRelative.toString();
+    }
     if (lookup instanceof Grib2GridTableLookup) {
       Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
       int[] paramId = g2lookup.getParameterId(firstRecord);
@@ -455,6 +464,7 @@ public class GridVariable {
         v.addAttribute(new Attribute("GRIB_forecasts_in_probability", g2lookup.NumberOfForecastsInProbability(firstRecord)));
       //if( firstRecord.getLevelType2() != 255)
       //   v.addAttribute( new Attribute("GRIB2_level_type2", new Integer(firstRecord.getLevelType2())));
+      v.addAttribute(new Attribute("GRIB_"+ GridDefRecord.VECTOR_COMPONET_FLAG, flag ));
     } else if (lookup instanceof Grib1GridTableLookup) {
       Grib1GridTableLookup g1lookup = (Grib1GridTableLookup) lookup;
       int[] paramId = g1lookup.getParameterId(firstRecord);
@@ -465,8 +475,10 @@ public class GridVariable {
       v.addAttribute(new Attribute("GRIB_param_id", Array.factory(int.class, new int[]{paramId.length}, paramId)));
       v.addAttribute(new Attribute("GRIB_product_definition_type", g1lookup.getProductDefinitionName(firstRecord)));
       v.addAttribute(new Attribute("GRIB_level_type", new Integer(firstRecord.getLevelType1())));
+      v.addAttribute(new Attribute("GRIB_"+ GridDefRecord.VECTOR_COMPONET_FLAG, flag ));
+    } else {
+      v.addAttribute(new Attribute( GridDefRecord.VECTOR_COMPONET_FLAG, flag ));
     }
-
     v.setSPobject(this);
 
     if (showRecords) {

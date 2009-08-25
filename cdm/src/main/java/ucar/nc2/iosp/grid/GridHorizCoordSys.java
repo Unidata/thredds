@@ -50,6 +50,7 @@ import ucar.unidata.util.StringUtil;
 import ucar.grid.GridTableLookup;
 import ucar.grid.GridDefRecord;
 import ucar.grib.grib2.Grib2GridTableLookup;
+import ucar.grib.grib2.Grib2Tables;
 import ucar.grib.grib1.Grib1GridTableLookup;
 
 import java.util.*;
@@ -582,7 +583,17 @@ public class GridHorizCoordSys {
       String vals = gds.getParam(key);
       try {
         int vali = Integer.parseInt(vals);
-        v.addAttribute(new Attribute(name, new Integer(vali)));
+        if ( key.equals( GridDefRecord.VECTOR_COMPONET_FLAG )) {
+            String cf;
+            if ( vali == 0 ) {
+               cf = Grib2Tables.VectorComponentFlag.easterlyNortherlyRelative.toString();
+            } else {
+               cf = Grib2Tables.VectorComponentFlag.gridRelative.toString();
+            }
+            v.addAttribute(new Attribute(name, cf ));
+        } else {
+          v.addAttribute(new Attribute(name, new Integer(vali)));
+        }
       } catch (Exception e) {
         try {
           double vald = Double.parseDouble(vals);
@@ -948,5 +959,10 @@ public class GridHorizCoordSys {
     return dy;
   }
 
-
+  /**
+   * returns the gds for this hcs
+   */
+  public GridDefRecord getGds() {
+    return gds;
+  }
 }
