@@ -48,7 +48,7 @@ public class TestStructureSubset extends TestCase {
 
   NetcdfFile ncfile;
   protected void setUp() throws Exception {
-    ncfile = NetcdfFile.open("C:/data/metars/Surface_METAR_20070330_0000.nc");
+    ncfile = NetcdfFile.open(TestAll.testdataDir+"/station/ldm/metar/Surface_METAR_20060328_0000.nc");
     ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
   }
   protected void tearDown() throws Exception {
@@ -69,6 +69,32 @@ public class TestStructureSubset extends TestCase {
     // read entire subset
     ArrayStructure dataAll = (ArrayStructure) subset.read();
 
+    StructureMembers sm = dataAll.getStructureMembers();
+    for(StructureMembers.Member m : sm.getMembers()) {
+      Variable v = subset.findVariable(m.getName());
+      assert v != null;
+      Array mdata = dataAll.extractMemberArray(m);
+      assert mdata.getShape()[0] == dataAll.getShape()[0];
+      assert mdata.getElementType() == m.getDataType().getPrimitiveClassType();
+      System.out.println(m.getName()+ " shape="+new Section(mdata.getShape()));
+    }
+    System.out.println("*** TestStructureSubset ok");
+  }
+
+  public void testReadStructureSection() throws IOException, InvalidRangeException {
+
+    Structure record = (Structure) ncfile.findVariable("record");
+    assert record != null;
+
+    Structure subset = (Structure) record.section(new Section("0:10"));
+    assert subset != null;
+    assert subset.getRank() == 1;
+    assert subset.getSize() == 11;
+
+    // read entire subset
+    ArrayStructure dataAll = (ArrayStructure) subset.read(new Section("0:10"));
+    assert dataAll.getSize() == 11;
+
     StructureMembers sm =dataAll.getStructureMembers();
     for(StructureMembers.Member m : sm.getMembers()) {
       Variable v = subset.findVariable(m.getName());
@@ -80,5 +106,6 @@ public class TestStructureSubset extends TestCase {
     }
     System.out.println("*** TestStructureSubset ok");
   }
+
 
 }

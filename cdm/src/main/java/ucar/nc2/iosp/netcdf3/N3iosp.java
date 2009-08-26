@@ -440,8 +440,8 @@ public String NC_check_name(String name) {
    * @throws IOException on error
    */
   private ucar.ma2.Array readRecordData(ucar.nc2.Structure s, Section section) throws java.io.IOException {
-    if (s.isSubset())
-      return readRecordDataSubset(s, section);
+    //if (s.isSubset())
+    //  return readRecordDataSubset(s, section);
 
     // has to be 1D
     Range recordRange = section.getRange(0);

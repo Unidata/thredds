@@ -120,7 +120,9 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
         return;
     }
 
-    this.isUnsigned = (orgVar != null) ? orgVar.isUnsigned() : forVar.isUnsigned();
+    // the other possibility is that you want to apply scale and offset to a signed value, then declare the result unsigned
+    // this.isUnsigned = (orgVar != null) ? orgVar.isUnsigned() : forVar.isUnsigned();
+    this.isUnsigned = forVar.isUnsigned();
     this.convertedDataType = forVar.getDataType();
 
     DataType scaleType = null, missType = null, validType = null, fillType = null;

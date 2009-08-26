@@ -92,6 +92,8 @@ public class TestLocalNC2 {
     suite.addTest( new TestSuite(TestScaleOffsetMissingForStructure.class));
     suite.addTest( new TestSuite(TestSlice.class));
 
+    suite.addTest( new TestSuite(TestUnsigned.class));
+
     return suite;
   }
 }

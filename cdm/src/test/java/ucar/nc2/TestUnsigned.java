@@ -36,6 +36,7 @@ package ucar.nc2;
 import ucar.ma2.Index;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
+import ucar.nc2.dataset.NetcdfDataset;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -45,13 +46,56 @@ import java.awt.*;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 
+import junit.framework.TestCase;
+
 /**
  * Class Description.
  *
  * @author caron
  * @since Aug 7, 2008
  */
-public class TestUnsigned {
+public class TestUnsigned extends TestCase {
+
+  public TestUnsigned( String name) {
+    super(name);
+  }
+
+  public void testSigned() throws IOException {
+    NetcdfFile ncfile = NetcdfDataset.openDataset(TestAll.cdmLocalTestDataDir + "testWrite.nc");
+
+    Variable v = null;
+    assert(null != (v = ncfile.findVariable("bvar")));
+    assert !v.isUnsigned();
+    assert v.getDataType() == DataType.BYTE;
+
+    boolean hasSigned = false;
+    Array data = v.read();
+    while (data.hasNext()) {
+      byte b = data.nextByte();
+      if (b < 0) hasSigned = true;
+    }
+    assert hasSigned;
+
+    ncfile.close();
+  }
+
+  public void testUnsigned() throws IOException {
+    NetcdfFile ncfile = NetcdfDataset.openDataset(TestAll.cdmLocalTestDataDir + "testUnsignedByte.ncml");
+
+    Variable v = null;
+    assert(null != (v = ncfile.findVariable("bvar")));
+    assert v.getDataType() == DataType.FLOAT;
+
+    boolean hasSigned = false;
+    Array data = v.read();
+    while (data.hasNext()) {
+      float b = data.nextFloat();
+      if (b < 0) hasSigned = true;
+    }
+    assert !hasSigned;
+
+    ncfile.close();
+  }
 
   public static byte[] convert(String srcPath, double a, double b) throws IOException {
     NetcdfFile ncfile = NetcdfFile.open(srcPath);

@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  1:
+  ScaleMissingEnhance: assume if forVar isUnsigned, data conversion should use unsigned data, regardless of orgVar
   Contiguous Table : dont add startRaggedArray variable, keep internal
   GridCoordSys.convertUnits(): convert to DOUBLE to avoid loss of precision
   NetcdfDataset calls CoordSysBuilder.augmentDataset(), then processes scale/missing, then calls buildCoordSys()

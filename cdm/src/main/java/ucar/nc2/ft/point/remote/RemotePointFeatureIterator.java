@@ -41,7 +41,8 @@ public class RemotePointFeatureIterator extends PointIteratorAbstract {
     if (finished) return false;
     
     int len = NcStream.readVInt(in);
-    //System.out.println(" RemotePointFeatureIterator len= " + len+ " count = "+count);
+    //if (getCount() % 100 == 0)
+    //  System.out.println(" RemotePointFeatureIterator len= " + len+ " count = "+getCount());
     if (len <= 0) {
       pf = null;
       finish();

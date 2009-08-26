@@ -281,12 +281,12 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
     }
 
     // otherwise stream it out
-    stationWriter.write(qb, stns, res);
+    StationWriter.Writer w = stationWriter.write(qb, stns, res);
     log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
 
     if (showTime) {
       long took = System.currentTimeMillis() - start;
-      System.out.println("\ntotal response took = " + took + " msecs");
+      System.out.println("\ntotal response took = " + took + " msecs count = "+w.count);
     }
 
     return null;
@@ -403,7 +403,7 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
     byte[] b = stationsp.toByteArray();
     NcStream.writeVInt(out, b.length);
     out.write(b);
-    NcStream.writeVInt(out, 0);  // LOOK: terminator ?
+    NcStream.writeVInt(out, 0); 
 
     out.flush();
     res.flushBuffer();
@@ -421,7 +421,7 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
     NcStreamWriter ncWriter = new NcStreamWriter(ncfile, absPath);
     WritableByteChannel wbc = Channels.newChannel(out);
     ncWriter.sendHeader(wbc);
-    NcStream.writeVInt(out, 0);  // LOOK: terminator ?
+    NcStream.writeVInt(out, 0);
 
     out.flush();
     res.flushBuffer();

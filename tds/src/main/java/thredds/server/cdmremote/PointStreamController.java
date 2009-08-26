@@ -155,7 +155,7 @@ public class PointStreamController extends AbstractCommandController implements 
         res.setContentType("application/octet-stream");
         res.setHeader("Content-Description", "ncstream");
 
-        if (query.wantHeader()) { // just the header
+        if (true) { // query.wantHeader()) { // just the header
           NcStreamWriter ncWriter = new NcStreamWriter(ncd, ServletUtil.getRequestBase(req));
           WritableByteChannel wbc = Channels.newChannel(out);
           ncWriter.sendHeader(wbc);

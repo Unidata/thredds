@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="C:/dev/tds/thredds/cdm/src/test/data/testWrite.nc">
+  <variable name="bvar" shape="lat" type="byte">
+  	  <attribute name="_Unsigned" value="true" />
+  	  <attribute name="scale_factor" type="float" value="2.0" />
+   </variable>
+</netcdf>
+

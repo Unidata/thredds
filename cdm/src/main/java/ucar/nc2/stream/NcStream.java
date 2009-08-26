@@ -229,10 +229,15 @@ public class NcStream {
   }
 
   static public int readVInt(InputStream is) throws IOException {
-    byte b = (byte) is.read();
+    int ib = is.read();
+    if (ib == -1) return -1;
+
+    byte b = (byte) ib;
     int i = b & 0x7F;
     for (int shift = 7; (b & 0x80) != 0; shift += 7) {
-      b = (byte) is.read();
+      ib = is.read();
+      if (ib == -1) return -1;
+      b = (byte) ib;
       i |= (b & 0x7F) << shift;
     }
     return i;

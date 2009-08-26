@@ -68,7 +68,7 @@ public class StationWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StationWriter.class);
   static private org.slf4j.Logger cacheLogger = org.slf4j.LoggerFactory.getLogger("cacheLogger");
 
-  private static boolean debug = false, debugDetail = false;
+  private static boolean debug = true, debugDetail = true;
   private static long timeToScan = 0;
 
   private List<Station> stationList;
@@ -229,7 +229,7 @@ public class StationWriter {
           sf.finish();
           break;
         }
-        if (debug && (limit.count % 10000 == 0)) System.out.println(" did " + limit.count);
+        if (debugDetail && (limit.count % 50 == 0)) System.out.println(" did " + limit.count);
       }
       if (limit.count > limit.limit) {
         collection.finish();
@@ -491,7 +491,7 @@ public class StationWriter {
 
     w.header(stns);
 
-    counter.limit = 500;
+    counter.limit = 150;
 
     scan(subset, range, null, act, counter);
 
@@ -642,6 +642,7 @@ public class StationWriter {
 
     public void trailer() {
       try {
+        NcStream.writeVInt(out, 0); // terminator        
         out.flush();
       } catch (IOException e) {
         log.error("WriterNcstream.trailer", e);

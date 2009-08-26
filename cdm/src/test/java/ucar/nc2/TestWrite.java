@@ -94,6 +94,9 @@ public class TestWrite extends TestCase {
     // how about a scalar variable?
     ncfile.addVariable("scalar", DataType.DOUBLE, new ArrayList());
 
+    // signed byte
+    ncfile.addVariable("bvar", DataType.BYTE, "lat");
+
     // add global attributes
     ncfile.addGlobalAttribute("yo", "face");
     ncfile.addGlobalAttribute("versionD", new Double(1.2));
@@ -160,6 +163,21 @@ public class TestWrite extends TestCase {
       assert (false);
     }
 
+    // write char variable
+    ArrayByte.D1 barray = new ArrayByte.D1(latDim.getLength());
+    int start = -latDim.getLength() / 2;
+    for (j = 0; j < latDim.getLength(); j++)
+      barray.setByte(j, (byte) (start + j));
+
+    try {
+      ncfile.write("bvar", barray);
+    } catch (IOException e) {
+      System.err.println("ERROR writing bvar");
+      assert (false);
+    } catch (InvalidRangeException e) {
+      e.printStackTrace();
+      assert (false);
+    }
 
     // write char variable as String
     try {
