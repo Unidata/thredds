@@ -135,7 +135,7 @@ public class MemoryCounterAgentTest {
   }
 
   static void testGrib2() throws IOException {
-    String filename = "D:\\data\\grib\\gfs\\global0p5/GFS_Global_0p5deg_20060824_0000.grib2";
+    String filename = "D:/datasets/ncep/gfs/global0p5/GFS_Global_0p5deg_20060824_0000.grib2";
     NetcdfFile ncfile = NetcdfFile.open(filename);
     measureSize(filename, ncfile, null, true);
 

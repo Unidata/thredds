@@ -202,14 +202,14 @@ public abstract class AggregationOuterDimension extends Aggregation {
       Array data = pv.read(typicalDataset);
       pv.dtype = DataType.getType(data.getElementType());
       VariableDS promotedVar = new VariableDS(ncDataset, null, null, pv.varName, pv.dtype, dimName, null, null);
-      if (data.getSize() > 1) {
+      /* if (data.getSize() > 1) { // LOOK case of non-scalar global attribute not delat with
         Dimension outer = ncDataset.getRootGroup().findDimension(dimName);
         Dimension inner = new Dimension("", (int) data.getSize(), false); //anonymous
         List<Dimension> dims = new ArrayList<Dimension>(2);
         dims.add(outer);
         dims.add(inner);
         promotedVar.setDimensions(dims);       
-      }
+      } */
 
       ncDataset.addVariable(null, promotedVar);
       promotedVar.setProxyReader(this);

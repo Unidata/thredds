@@ -106,13 +106,13 @@ public class TestAggExistingPromote extends TestCase {
     assert time.getRank() == 1;
     assert time.getSize() == 3;
     assert time.getShape()[0] == 3;
-    assert time.getDataType() == DataType.DOUBLE;
+    assert time.getDataType() == DataType.STRING;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
-    String units = time.getUnitsString();
-    DateUnit du = new DateUnit(units);
-    DateFormatter df = new DateFormatter();
+    //String units = time.getUnitsString();
+    //DateUnit du = new DateUnit(units);
+    //DateFormatter df = new DateFormatter();
 
     String[] result = new String[] {"2006-06-07T12:00:00Z",   "2006-06-07T13:00:00Z",   "2006-06-07T14:00:00Z"};
     try {
@@ -120,17 +120,17 @@ public class TestAggExistingPromote extends TestCase {
       assert data.getRank() == 1;
       assert data.getSize() == 3;
       assert data.getShape()[0] == 3;
-      assert data.getElementType() == double.class;
+      assert data.getElementType() == String.class;
 
       NCdump.printArray(data, "time coord", System.out, null);
 
       count = 0;
       dataI = data.getIndexIterator();
       while (dataI.hasNext()) {
-        double val = dataI.getDoubleNext();
-        Date dateVal = du.makeDate(val);
-        String dateS = df.toDateTimeStringISO(dateVal);
-        assert dateS.equals( result[count]) : dateS+" != "+ result[count];
+        String val = (String) dataI.getObjectNext();
+        //Date dateVal = du.makeDate(val);
+        //String dateS = df.toDateTimeStringISO(dateVal);
+        assert val.equals( result[count]) : val+" != "+ result[count];
         count++;
       }
 

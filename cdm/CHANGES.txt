@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  1:
+  Back out DateUnit changes - too many small glitches - revert to 4.0 code base
+  UAMIVServiceProvider looks for camxproj.txt for config info
   ScaleMissingEnhance: assume if forVar isUnsigned, data conversion should use unsigned data, regardless of orgVar
   Contiguous Table : dont add startRaggedArray variable, keep internal
   GridCoordSys.convertUnits(): convert to DOUBLE to avoid loss of precision
