@@ -40,7 +40,6 @@ import org.jdom.transform.XSLTransformer;
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
 import thredds.server.config.TdsContext;
-import thredds.server.ncSubset.QueryParams;
 import thredds.servlet.UsageLog;
 import thredds.servlet.ServletUtil;
 
@@ -48,7 +47,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.List;
-import java.util.ArrayList;
+import java.nio.channels.WritableByteChannel;
+import java.nio.channels.Channels;
 
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.remote.PointStreamProto;
@@ -56,8 +56,12 @@ import ucar.nc2.ft.point.remote.PointStream;
 import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.stream.NcStream;
+import ucar.nc2.stream.NcStreamWriter;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.NetcdfFile;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.geoloc.Station;
+import ucar.unidata.geoloc.LatLonRect;
 
 /**
  * Controller for CdmRemote service
@@ -112,9 +116,17 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
       return null;
     }
 
+    // absolute path of the dataset endpoint
+    String absPath = ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath() + req.getPathInfo();
+
+    FeatureType ft = null;
     String path = req.getPathInfo();
-    // String path = pathInfo.substring(0, pathInfo.length() - prefix.length());
-    if (debug) System.out.printf("CollectionController path= %s%n query= %s%n", path, req.getQueryString());
+    if (path.endsWith("station")) {
+      ft = FeatureType.STATION;
+      path = path.substring(0, path.length() - "station".length() - 1);
+    }
+    if (debug)
+      System.out.printf("CollectionController absPath= %s%n path=%s%n query=%s ft=%s%n", absPath, path, req.getQueryString(), ft);
 
     PointQueryBean query = (PointQueryBean) command;
     if (!query.validate()) {
@@ -125,7 +137,6 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
     }
     if (debug) System.out.printf("%s%n", query);
 
-    //String queryS = req.getQueryString();
     FeatureDatasetPoint fd = null;
     try {
       fd = collectionManager.getFeatureCollectionDataset(ServletUtil.getRequest(req), path);
@@ -136,14 +147,24 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
       }
 
       PointQueryBean.RequestType reqType = query.getRequestType();
+      PointQueryBean.ResponseType resType = query.getResponseType();
       switch (reqType) {
         case capabilities:
         case form:
-        case stations:
-          return processForm(req, res, fd, path, query);
+          return processXml(req, res, fd, absPath, query);
+
+        case header:
+          return processHeader(absPath, res, fd, query);
+
         case dataForm:
         case data:
           return processData(req, res, fd, path, query);
+
+        case stations:
+          if (resType == PointQueryBean.ResponseType.xml)
+            return processXml(req, res, fd, absPath, query);
+          else
+            return processStations(res, fd, query);
       }
 
     } catch (FileNotFoundException e) {
@@ -168,6 +189,35 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
 
     log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
     return null;
+  }
+
+  private String getContentType(PointQueryBean query) {
+    PointQueryBean.RequestType reqType = query.getRequestType();
+    if (reqType == PointQueryBean.RequestType.form)
+      return "text/html; charset=iso-8859-1";
+
+    PointQueryBean.ResponseType resType = query.getResponseType();
+    switch (resType) {
+      case csv:
+        return "text/plain";
+      case netcdf:
+        return "application/x-netcdf";
+      case ncstream:
+        return "application/octet-stream";
+      case xml:
+        return "application/xml";
+    }
+    return "text/plain";
+  }
+
+  private String getContentDescription(PointQueryBean query) {
+    PointQueryBean.ResponseType resType = query.getResponseType();
+    switch (resType) {
+      case ncstream:
+        return "ncstream";
+      default:
+        return null;
+    }
   }
 
   private ModelAndView processData(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, PointQueryBean qb) throws IOException {
@@ -203,17 +253,24 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
 
     // set content type
     PointQueryBean.ResponseType resType = qb.getResponseType();
-    res.setContentType(getContentType(resType));
+    res.setContentType(getContentType(qb));
+
+    // set content description
+    if (null != getContentDescription(qb))
+      res.setHeader("Content-Description", getContentDescription(qb));
 
     StationWriter stationWriter = new StationWriter(fdp, sfc, qb);
 
+    // special handling for netcdf files
     if (resType == PointQueryBean.ResponseType.netcdf) {
       if (path.startsWith("/")) path = path.substring(1);
       path = StringUtil.replace(path, "/", "-");
       res.setHeader("Content-Disposition", "attachment; filename=" + path + ".nc");
       File file = stationWriter.writeNetcdf(qb, stns);
-      ServletUtil.returnFile(req, res, file, getContentType(resType));
-      file.delete();
+      ServletUtil.returnFile(req, res, file, getContentType(qb));
+      if (!file.delete()) {
+        log.warn("file delete failed =" + file.getPath());
+      }
 
       if (showTime) {
         long took = System.currentTimeMillis() - start;
@@ -223,6 +280,7 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
       return null;
     }
 
+    // otherwise stream it out
     stationWriter.write(qb, stns, res);
     log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
 
@@ -234,15 +292,6 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
     return null;
   }
 
-  private String getContentType(PointQueryBean.ResponseType resType) {
-    switch (resType) {
-      case csv: return "text/plain";
-      case netcdf: return "application/x-netcdf";
-      case ncstream: return "application/x-ncstream";
-      case xml: return "application/xml";
-    }
-    return "text/plain";
-  }
 
   /*
 
@@ -302,7 +351,7 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
        res.flushBuffer();
      }
   */
-  private void sendData(String location, PointFeatureCollection pfc, OutputStream out) throws IOException {
+  /* private void sendData(String location, PointFeatureCollection pfc, OutputStream out) throws IOException {
     int count = 0;
     PointFeatureIterator pfIter = pfc.getPointFeatureIterator(-1);
     try {
@@ -327,95 +376,63 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
       pfIter.finish();
     }
     if (debug) System.out.printf(" sent %d features to %s %n ", count, location);
-  }
+  } */
 
   /////////////////////////////////////////////////////////////////
 
-  /* create it each time for thread safety, and so that collection is updated
-  private FeatureDatasetPoint getFeatureCollectionDataset(String uri, String path) throws IOException {
 
-    //FeatureDatasetPoint fd = fdmap.get(path);
-    //if (fd == null) {
-      CollectionBean config = collectionDatasets.get(path);
-      if (config == null) return null;
+  private ModelAndView processStations(HttpServletResponse res, FeatureDatasetPoint fdp, PointQueryBean query) throws IOException {
 
-      Formatter errlog = new Formatter();
-      FeatureDatasetPoint fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(uri, FeatureType.getType(config.getFeatureType()), config.getSpec(), errlog);
-      if (fd == null) {
-        log.error("Error opening CompositeDataset path = "+path+"  errlog = ", errlog);
-        return null;
-      }
-      //fdmap.put(path, fd);
-    //}
-    return fd;
-  }
+    OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
+    res.setContentType(getContentType(query));
+    if (null != getContentDescription(query))
+      res.setHeader("Content-Description", getContentDescription(query));
 
-  /* private FeatureDatasetPoint getFeatureCollectionDatasetOld(String path) throws IOException {
+    List<FeatureCollection> coll = fdp.getPointFeatureCollectionList();
+    StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) coll.get(0);
 
-    FeatureDatasetPoint fd = fdmap.get(path);
-    if (fd == null) {
-      File content = tdsContext.getContentDirectory();
-      File config = new File(content, path);
-      if (!config.exists()) {
-        log.error("Config file %s doesnt exists %n", config);
-        return null;
-      }
-      //fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(FeatureType.STATION, "D:/formats/gempak/surface/*.gem?#yyyyMMdd");
-      Formatter errlog = new Formatter();
-      fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(path, config, errlog);
-      if (fd == null) {
-        log.error("Error opening dataset error =", errlog);
-        return null;
-      }
-      fdmap.put(path, fd);
-    }
-    return fd;
-  }
+    List<Station> stations;
+    if (query.getLatLonRect() != null)
+      stations = sfc.getStations(query.getLatLonRect());
+    else if (query.getStnNames() != null)
+      stations = sfc.getStations(query.getStnNames());
+    else
+      stations = sfc.getStations();
 
+    PointStreamProto.StationList stationsp = PointStream.encodeStations(stations);
+    byte[] b = stationsp.toByteArray();
+    NcStream.writeVInt(out, b.length);
+    out.write(b);
+    NcStream.writeVInt(out, 0);  // LOOK: terminator ?
 
-  // one could use this for non-collection datasets
-  private FeatureDatasetPoint getFeatureDataset(HttpServletRequest req, HttpServletResponse res, String path) throws IOException {
-    NetcdfDataset ncd = null;
-    try {
-      NetcdfFile ncfile = DatasetHandler.getNetcdfFile(req, res, path);
-      if (ncfile == null) {
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
-        res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        return null;
-      }
-
-      ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getEnhanceAll());
-      Formatter errlog = new Formatter();
-      FeatureDatasetPoint fd = (FeatureDatasetPoint) FeatureDatasetFactoryManager.wrap(FeatureType.STATION, ncd, null, errlog);
-      if (fd == null) {
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
-        res.sendError(HttpServletResponse.SC_BAD_REQUEST, errlog.toString());
-        if (ncd != null) ncd.close();
-        return null;
-      }
-
-      return fd;
-
-    } catch (FileNotFoundException e) {
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
-      res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
-
-    } catch (Throwable e) {
-      e.printStackTrace();
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
-      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-    }
-
-    if (ncd != null) ncd.close();
+    out.flush();
+    res.flushBuffer();
     return null;
-  }  */
+  }
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  private ModelAndView processHeader(String absPath, HttpServletResponse res, FeatureDatasetPoint fdp, PointQueryBean query) throws IOException {
 
-  private ModelAndView processForm(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String datasetPath, PointQueryBean query) throws IOException {
+    OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
+    res.setContentType(getContentType(query));
+    if (null != getContentDescription(query))
+      res.setHeader("Content-Description", getContentDescription(query));
 
-    String path = ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath() + datasetPath;
-    FeatureDatasetPointXML xmlWriter = new FeatureDatasetPointXML(fdp, path);
+    NetcdfFile ncfile = fdp.getNetcdfFile(); // LOOK will fail
+    NcStreamWriter ncWriter = new NcStreamWriter(ncfile, absPath);
+    WritableByteChannel wbc = Channels.newChannel(out);
+    ncWriter.sendHeader(wbc);
+    NcStream.writeVInt(out, 0);  // LOOK: terminator ?
+
+    out.flush();
+    res.flushBuffer();
+
+    return null;
+  }
+
+  private ModelAndView processXml(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String absPath, PointQueryBean query) throws IOException {
+
+    //String path = ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath() + datasetPath;
+    FeatureDatasetPointXML xmlWriter = new FeatureDatasetPointXML(fdp, absPath);
 
     PointQueryBean.RequestType reqType = query.getRequestType();
     String infoString;
@@ -451,10 +468,7 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
     }
 
     res.setContentLength(infoString.length());
-    if (reqType == PointQueryBean.RequestType.form)
-      res.setContentType("text/html; charset=iso-8859-1");
-    else
-      res.setContentType("text/xml; charset=iso-8859-1");
+    res.setContentType(getContentType(query));
 
     OutputStream out = res.getOutputStream();
     out.write(infoString.getBytes());
@@ -468,3 +482,85 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
     return getClass().getResourceAsStream("/resources/xsl/" + xslName);
   }
 }
+
+
+/* create it each time for thread safety, and so that collection is updated
+private FeatureDatasetPoint getFeatureCollectionDataset(String uri, String path) throws IOException {
+
+//FeatureDatasetPoint fd = fdmap.get(path);
+//if (fd == null) {
+  CollectionBean config = collectionDatasets.get(path);
+  if (config == null) return null;
+
+  Formatter errlog = new Formatter();
+  FeatureDatasetPoint fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(uri, FeatureType.getType(config.getFeatureType()), config.getSpec(), errlog);
+  if (fd == null) {
+    log.error("Error opening CompositeDataset path = "+path+"  errlog = ", errlog);
+    return null;
+  }
+  //fdmap.put(path, fd);
+//}
+return fd;
+}
+
+/* private FeatureDatasetPoint getFeatureCollectionDatasetOld(String path) throws IOException {
+
+FeatureDatasetPoint fd = fdmap.get(path);
+if (fd == null) {
+  File content = tdsContext.getContentDirectory();
+  File config = new File(content, path);
+  if (!config.exists()) {
+    log.error("Config file %s doesnt exists %n", config);
+    return null;
+  }
+  //fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(FeatureType.STATION, "D:/formats/gempak/surface/*.gem?#yyyyMMdd");
+  Formatter errlog = new Formatter();
+  fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(path, config, errlog);
+  if (fd == null) {
+    log.error("Error opening dataset error =", errlog);
+    return null;
+  }
+  fdmap.put(path, fd);
+}
+return fd;
+}
+
+
+// one could use this for non-collection datasets
+private FeatureDatasetPoint getFeatureDataset(HttpServletRequest req, HttpServletResponse res, String path) throws IOException {
+NetcdfDataset ncd = null;
+try {
+  NetcdfFile ncfile = DatasetHandler.getNetcdfFile(req, res, path);
+  if (ncfile == null) {
+    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
+    res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+    return null;
+  }
+
+  ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getEnhanceAll());
+  Formatter errlog = new Formatter();
+  FeatureDatasetPoint fd = (FeatureDatasetPoint) FeatureDatasetFactoryManager.wrap(FeatureType.STATION, ncd, null, errlog);
+  if (fd == null) {
+    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
+    res.sendError(HttpServletResponse.SC_BAD_REQUEST, errlog.toString());
+    if (ncd != null) ncd.close();
+    return null;
+  }
+
+  return fd;
+
+} catch (FileNotFoundException e) {
+  log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
+  res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
+
+} catch (Throwable e) {
+  e.printStackTrace();
+  log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
+  res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+}
+
+if (ncd != null) ncd.close();
+return null;
+}  */
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

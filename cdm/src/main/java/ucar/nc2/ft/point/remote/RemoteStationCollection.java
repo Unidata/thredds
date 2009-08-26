@@ -33,7 +33,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
     stationHelper = new StationHelper();
     HttpMethod method = null;
     try {
-      String query = "stations";
+      String query = "req=stations";
       method = ncremote.sendQuery(query);
       InputStream in = method.getResponseBodyAsStream();
 

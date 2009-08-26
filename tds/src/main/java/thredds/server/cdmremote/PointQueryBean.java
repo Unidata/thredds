@@ -50,29 +50,22 @@ import java.util.Date;
  * @since May 11, 2009
  */
 public class PointQueryBean {
+
   public enum RequestType {
     capabilities, data, dataForm, form, header, stations
   }
 
-  ;
-
   public enum ResponseType {
-    csv, netcdf, ncstream, xml
+    csv, netcdf, ncstream, html, xml
   }
-
-  ;
 
   public enum SpatialSelection {
     all, bb, point, stns
   }
 
-  ;
-
   public enum TemporalSelection {
     all, range, point
   }
-
-  ;
 
   // type of request
   private String req = "";
@@ -125,7 +118,7 @@ public class PointQueryBean {
   }
 
   LatLonRect getLatLonRect() {
-    return llbb;
+    return (spatialSelection == SpatialSelection.bb) ? llbb : null;
   }
 
   DateRange getDateRange() {
@@ -147,12 +140,19 @@ public class PointQueryBean {
 
   ResponseType getResponseType() {
     if (resType == null) {
+      RequestType req = getRequestType();
+      if (req == RequestType.capabilities) resType = ResponseType.xml;
+      else if (req == RequestType.form) resType = ResponseType.html;
+    }
+
+    if (resType == null) {
       if (accept.equalsIgnoreCase("csv")) resType = ResponseType.csv;
       else if (accept.equalsIgnoreCase("ncstream")) resType = ResponseType.ncstream;
       else if (accept.equalsIgnoreCase("netcdf")) resType = ResponseType.netcdf;
       else if (accept.equalsIgnoreCase("xml")) resType = ResponseType.xml;
       else resType = ResponseType.ncstream; // default
     }
+
     return resType;
   }
 
@@ -372,6 +372,7 @@ public class PointQueryBean {
   }
 
   public String[] getStnNames() {
+    if (!(spatialSelection == SpatialSelection.stns)) return null;
     return (stn == null) ? null : stn.split(",");
   }
 
@@ -437,12 +438,12 @@ public class PointQueryBean {
     else if (spatialSelection == SpatialSelection.stns)
       f.format(" stns=%s;", getStn());
 
-    if (temporalSelection == TemporalSelection.all) 
+    if (temporalSelection == TemporalSelection.all)
       f.format(" temporalSelection=all;");
     else if (temporalSelection == TemporalSelection.range)
       f.format(" range=%s;", getDateRange());
 
-     if (var != null)
+    if (var != null)
       f.format(" vars=%s", var);
 
     f.format(" %n");

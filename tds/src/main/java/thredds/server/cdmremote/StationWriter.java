@@ -33,11 +33,13 @@
 package thredds.server.cdmremote;
 
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.stream.NcStream;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.writer.WriterCFStationDataset;
+import ucar.nc2.ft.point.remote.PointStreamProto;
+import ucar.nc2.ft.point.remote.PointStream;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateType;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -69,6 +71,7 @@ public class StationWriter {
   private static boolean debug = false, debugDetail = false;
   private static long timeToScan = 0;
 
+  private List<Station> stationList;
   private List<VariableSimpleIF> variableList;
   private DateFormatter format = new DateFormatter();
 
@@ -87,58 +90,17 @@ public class StationWriter {
     end = fd.getEndDate();
   }
 
-  // Dataset Description
-
-  private String datasetName = "/thredds/ncss/metars";
-  private Document datasetDesc;
-
-  /*public Document getDoc() throws IOException {
-    if (datasetDesc != null)
-      return datasetDesc;
-
-    StationObsDataset sod = ds.get();
-    StationObsDatasetInfo info = new StationObsDatasetInfo(sod, null);
-    Document doc = info.makeStationObsDatasetDocument();
-    Element root = doc.getRootElement();
-
-    // fix the location
-    root.setAttribute("location", datasetName); // LOOK
-
-    // fix the time range
-    Element timeSpan = root.getChild("TimeSpan");
-    timeSpan.removeContent();
-    DateFormatter format = new DateFormatter();
-    timeSpan.addContent(new Element("begin").addContent(format.toDateTimeStringISO(start)));
-    timeSpan.addContent(new Element("end").addContent(isRealtime ? "present" : format.toDateTimeStringISO(end)));
-
-    // add pointer to the station list XML
-    Element stnList = new Element("stationList");
-    stnList.setAttribute("title", "Available Stations", XMLEntityResolver.xlinkNS);
-    stnList.setAttribute("href", "/thredds/ncss/metars/stations.xml", XMLEntityResolver.xlinkNS);  // LOOK kludge
-    root.addContent(stnList);
-
-    datasetDesc = doc;
-    return doc;
-  }
-
-  public Document getStationDoc() throws IOException {
-    StationObsDataset sod = datasetList.get(0).get();
-    StationObsDatasetInfo info = new StationObsDatasetInfo(sod, null);
-    return info.makeStationCollectionDocument();
-  }  */
-
   ///////////////////////////////////////
-  // station handling
-  private List<Station> stationList;
+  /* station handling
   private HashMap<String, Station> stationMap;
 
-  /**
+  /*
    * Determine if any of the given station names are actually in the dataset.
    *
    * @param stns List of station names
    * @return true if list is empty, ie no names are in the actual station list
    * @throws IOException if read error
-   */
+   *
   private boolean isStationListEmpty(List<String> stns) throws IOException {
     HashMap<String, Station> map = getStationMap();
     for (String stn : stns) {
@@ -180,13 +142,13 @@ public class StationWriter {
     return stationMap;
   }
 
-  /**
+  /*
    * Get the list of station names that are contained within the bounding box.
    *
    * @param boundingBox lat/lon bounding box
    * @return list of station names contained within the bounding box
    * @throws IOException if read error
-   */
+   *
   public List<String> getStationNames(LatLonRect boundingBox) throws IOException {
     LatLonPointImpl latlonPt = new LatLonPointImpl();
     ArrayList<String> result = new ArrayList<String>();
@@ -199,9 +161,9 @@ public class StationWriter {
       }
     }
     return result;
-  }
+  } */
 
-  /**
+  /*
    * Find the station closest to the specified point.
    * The metric is (lat-lat0)**2 + (cos(lat0)*(lon-lon0))**2
    *
@@ -209,7 +171,7 @@ public class StationWriter {
    * @param lon longitude value
    * @return name of station closest to the specified point
    * @throws IOException if read error
-   */
+   *
   public String findClosestStation(double lat, double lon) throws IOException {
     double cos = Math.cos(Math.toRadians(lat));
     List<Station> stations = getStationList();
@@ -228,10 +190,10 @@ public class StationWriter {
       }
     }
     return min_station.getName();
-  }
+  }  */
 
   /////////////////////
-  
+
   public boolean intersect(DateRange dr) throws IOException {
     return dr.intersects(start, end);
   }
@@ -491,8 +453,6 @@ public class StationWriter {
   ////////////////////////////////////////////////////////////////
   // writing
 
-  //private File netcdfResult = new File("C:/temp/sobs.nc");
-
   public File writeNetcdf(PointQueryBean qp, List<Station> stns) throws IOException {
     WriterNetcdf w = (WriterNetcdf) write(qp, stns, null);
     return w.netcdfResult;
@@ -516,6 +476,8 @@ public class StationWriter {
       w = new WriterCSV(qp, varNames, res.getWriter());
     } else if (resType == PointQueryBean.ResponseType.netcdf) {
       w = new WriterNetcdf(qp, varNames);
+    } else if (resType == PointQueryBean.ResponseType.ncstream) {
+      w = new WriterNcstream(qp, varNames, res.getOutputStream());
     } else {
       log.error("Unknown result type = " + resType);
       return null;
@@ -523,7 +485,7 @@ public class StationWriter {
     Action act = w.getAction();
 
     StationTimeSeriesFeatureCollection subset = sfc;
-    if (stns.size() > 0) {
+    if ((stns != null) && (stns.size() > 0)) {
       subset = sfc.subset(stns);
     }
 
@@ -585,7 +547,7 @@ public class StationWriter {
     Writer(PointQueryBean qp, List<String> varNames, final java.io.PrintWriter writer) {
       this.qp = qp;
       this.varNames = varNames;
-      this.writer = writer;
+      this.writer = writer; // LOOK what about buffering?
     }
 
     List<VariableSimpleIF> getVars(List<String> varNames, List<? extends VariableSimpleIF> dataVariables) {
@@ -609,8 +571,8 @@ public class StationWriter {
     WriterNetcdf(PointQueryBean qp, List<String> varNames) throws IOException {
       super(qp, varNames, null);
 
-      netcdfResult = File.createTempFile("ncss", ".nc");
-      sobsWriter = new WriterCFStationDataset(netcdfResult.getAbsolutePath(), "Extracted data from Unidata/TDS Metar dataset");
+      netcdfResult = File.createTempFile("ncss", ".nc"); // LOOK : put in some specified place
+      sobsWriter = new WriterCFStationDataset(netcdfResult.getAbsolutePath(), "Extracted data from TDS using CDM remote subsetting");
 
       if ((varNames == null) || (varNames.size() == 0)) {
         varList = variableList;
@@ -654,17 +616,14 @@ public class StationWriter {
     }
   }
 
-  /* class WriterNetcdfStream extends Writer {
-    WriterCFStationObsDataset sobsWriter;
-    DataOutputStream out;
+  class WriterNcstream extends Writer {
+    OutputStream out;
     List<ucar.unidata.geoloc.Station> stnList;
     List<VariableSimpleIF> varList;
 
-    WriterNetcdfStream(QueryParams qp, List<String> varNames, OutputStream os) throws IOException {
+    WriterNcstream(PointQueryBean qp, List<String> varNames, OutputStream os) throws IOException {
       super(qp, varNames, null);
-
-      out = new DataOutputStream(os);
-      sobsWriter = new WriterCFStationObsDataset(out, "Extracted data from Unidata/TDS Metar dataset");
+      out = os;
 
       if ((varNames == null) || (varNames.size() == 0)) {
         varList = variableList;
@@ -677,44 +636,39 @@ public class StationWriter {
       }
     }
 
-    public void header(List<String> stns) {
-      try {
-        getStationMap();
-
-        if (stns.size() == 0)
-          stnList = stationList;
-        else {
-          stnList = new ArrayList<ucar.unidata.geoloc.Station>(stns.size());
-
-          for (String s : stns) {
-            stnList.add(stationMap.get(s));
-          }
-        }
-
-        sobsWriter.writeHeader(stnList, varList, -1);
-      } catch (IOException e) {
-        log.error("WriterNetcdf.header", e);
-      }
+    public void header(List<Station> stns) {
+      this.stnList = stns;
     }
 
     public void trailer() {
       try {
-        sobsWriter.finish();
         out.flush();
       } catch (IOException e) {
-        log.error("WriterNetcdf.trailer", e);
+        log.error("WriterNcstream.trailer", e);
       }
     }
 
     Action getAction() {
       return new Action() {
         public void act(FeatureDatasetPoint fdp, StationTimeSeriesFeature s, PointFeature pf, StructureData sdata) throws IOException {
-          sobsWriter.writeRecord(sobs, sdata);
+
+          if (count == 0) {  // first time : need a point feature so cant do it in header
+            PointStreamProto.PointFeatureCollection proto = PointStream.encodePointFeatureCollection(fdp.getLocation(), pf);
+            byte[] b = proto.toByteArray();
+            NcStream.writeVInt(out, b.length);
+            out.write(b);
+          }
+
+          PointStreamProto.PointFeature pfp = PointStream.encodePointFeature(pf);
+          byte[] b = pfp.toByteArray();
+          NcStream.writeVInt(out, b.length);
+          out.write(b);
+
           count++;
         }
       };
     }
-  }  */
+  }
 
 
   class WriterRaw extends Writer {
@@ -760,8 +714,8 @@ public class StationWriter {
       try {
         staxWriter.writeStartDocument("UTF-8", "1.0");
         staxWriter.writeCharacters("\n");
-        staxWriter.writeStartElement("metarCollection");
-        staxWriter.writeAttribute("dataset", datasetName);
+        staxWriter.writeStartElement("stationFeatureCollection");
+        //staxWriter.writeAttribute("dataset", datasetName);
         staxWriter.writeCharacters("\n ");
       } catch (XMLStreamException e) {
         throw new RuntimeException(e.getMessage());
@@ -788,7 +742,7 @@ public class StationWriter {
         public void act(FeatureDatasetPoint fdp, StationTimeSeriesFeature s, PointFeature pf, StructureData sdata) throws IOException {
 
           try {
-            staxWriter.writeStartElement("metar");
+            staxWriter.writeStartElement("pointFeature");
             staxWriter.writeAttribute("date", format.toDateTimeStringISO(pf.getObservationTimeAsDate()));
             staxWriter.writeCharacters("\n  ");
 

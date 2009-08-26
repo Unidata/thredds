@@ -73,7 +73,7 @@ where:
 <p><strong>ucar.nc2.stream.CdmRemoteFeatureDataset.factory()</strong> makes an HTTP request to <em><strong>endpoint+&quot;?req=getCapabilities&quot;</strong></em> to obtain the GetCapabilities XML document. This document describes what feature type(s) the dataset supports, which determines what are the valid requests, along with the endpoints for those feature types, which may be different than the original endpoint.</p>
 <p><strong>FeatureDatasetFactoryManager.open()</strong> looks for <em><strong>cdmremote:url</strong></em> prefix, and calls <strong>CdmRemoteFeatureDataset.factory(url)</strong> if found. <strong>ThreddsDataFactory.openFeatureDataset()</strong> looks for catalog InvDatasets with <em><strong>featureType.isPointFeatureType() </strong></em>and <em><strong>ServiceType.CdmRemote</strong></em>, and if found, calls <strong>CdmRemoteFeatureDataset.factory()</strong>.</p>
 <p>Possible query parameters are:</p>
-<pre>  <strong>req</strong>=( <strong></strong><strong>getCapabilities</strong> | <strong>data</strong>)
+<pre>  <strong>req</strong>=( <strong></strong><strong>capabilities</strong> | <strong>data</strong>)
   <strong>time_start,time_end</strong>=time range
   <strong>north,south,east,west</strong>=bounding box
   <strong>var</strong>=vars

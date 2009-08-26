@@ -94,9 +94,9 @@
 <h3><a name="Unsigned" id="Unsigned"></a>Unsigned Types</h3>
 <p><strong>Q: How do I work with unsigned integer types?</strong></p>
 <blockquote>
-  <p>When accessing a file through the &quot;raw interface&quot;, by opening the file through <em>NetcdfFile.open() </em>or<em> NetcdfDataset.openFile(),</em> you may see unsigned data types. See <a href="DataType.html#integer">CDM Datatypes</a> for more details on how to work with unsigned data arrays.</p>
+  <p>When accessing a file through the &quot;raw interface&quot;, by opening the file through <em>NetcdfFile.open() </em>or<em> NetcdfDataset.openFile(),</em> you may see unsigned data types. These have the attribute _Unsigned = &quot;true&quot;. See <a href="DataType.html#integer">CDM Datatypes</a> for more details on how to work with unsigned data arrays.</p>
   <p>When accessing a file through the &quot;dataset interface&quot;, by opening the file through <em>NetcdfDataset.openDataset(),</em> if there is a scale/offset attribute set on a Variable, the variable will be widended to the type of the scale/offset attribute, typically a float. In this case the unsigned data will be correctly handled, and doesnt need special handling.</p>
-  <p>&nbsp;</p>
+  <p>Classic netCDF-3 format has only signed bytes. The CDM library often sees unsigned bytes coming from other data formats, and we made the decision not to automatically widen unsigned bytes to shorts. The data is delivered using Java integer types, which are signed, so its up to the application to check <em>Variable.isUnsigned()</em> and do the right thing when doing computations with the data. The library handles the conversion correctly when the scale/offset attributes are being used.</p>
 </blockquote>
 <h3><a name="Writing" id="Writing2"></a>Writing</h3>
 <p><strong>Q: Ok, so you read a lot of files, what about writing?</strong></p>
@@ -125,7 +125,7 @@
 </blockquote>
 <hr />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on July 13, 2009
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on August 26, 2009
 </address>
 </body>
 </html>
