@@ -33,9 +33,9 @@
 package thredds.catalog2.simpleImpl;
 
 import thredds.catalog2.DatasetNode;
-import thredds.catalog2.builder.BuilderIssue;
 import thredds.catalog2.builder.BuilderException;
 import thredds.catalog2.builder.DatasetNodeBuilder;
+import thredds.catalog2.builder.BuilderIssues;
 
 import java.util.*;
 
@@ -329,12 +329,12 @@ class DatasetNodeContainer
    * @param issues a list into which any issues that come up during isBuildable() will be add.
    * @return true if this DatasetNodeContainer is in a state where build() will succeed.
    */
-  public boolean isBuildable( List<BuilderIssue> issues )
+  public boolean isBuildable( BuilderIssues issues )
   {
     if ( this.isBuilt )
       return true;
 
-    List<BuilderIssue> localIssues = new ArrayList<BuilderIssue>();
+    BuilderIssues localIssues = new BuilderIssues();
 
     // Check on contained DatasetNodeImpl objects.
     if ( this.datasetNodeImplList != null )
@@ -344,7 +344,7 @@ class DatasetNodeContainer
     if ( localIssues.isEmpty() )
       return true;
 
-    issues.addAll( localIssues );
+    issues.addAllIssues( localIssues );
     return false;
   }
 
@@ -359,7 +359,7 @@ class DatasetNodeContainer
     if ( this.isBuilt )
       return;
 
-    List<BuilderIssue> issues = new ArrayList<BuilderIssue>();
+    BuilderIssues issues = new BuilderIssues();
     if ( ! isBuildable( issues ) )
       throw new BuilderException( issues );
 

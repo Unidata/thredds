@@ -35,8 +35,6 @@ package thredds.catalog2;
 import java.net.URI;
 import java.util.List;
 
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateType;
 import ucar.nc2.constants.FeatureType;
 import thredds.catalog.DataFormatType;
 
@@ -56,18 +54,20 @@ public interface ThreddsMetadata
   public List<Contributor> getPublisher();
 
   public String getProjectTitle();
-  public DateType getDateCreated();
-  public DateType getDateModified();
-  public DateType getDateIssued();
 
-  public DateRange getDateValid();
-  public DateRange getDateAvailable();
+  public List<DatePoint> getOtherDates();
+  public DatePoint getCreatedDate();
+  public DatePoint getModifiedDate();
+  public DatePoint getIssuedDate();
 
-  public DateType getDateMetadataCreated();
-  public DateType getDateMetadataModified();
+  public DatePoint getValidDate();  // Should really be some kind of DateRange.
+  public DatePoint getAvailableDate();  // Should really be some kind of DateRange.
+
+  public DatePoint getMetadataCreatedDate();
+  public DatePoint getMetadataModifiedDate();
 
   public GeospatialCoverage getGeospatialCoverage();
-  public DateRange getTemporalCoverage();
+  public DateRange getTemporalCoverage();  
   public List<Variable> getVariables();
 
   public long getDataSizeInBytes();
@@ -75,7 +75,7 @@ public interface ThreddsMetadata
   public FeatureType getDataType();
   public String getCollectionType(); // ?????
 
-  public interface Documentation
+    public interface Documentation
   {
     public boolean isContainedContent();
 
@@ -92,6 +92,57 @@ public interface ThreddsMetadata
     public String getAuthority();
     public String getPhrase();
   }
+
+    public enum DatePointType
+    {
+
+        Created( "created"),
+        Modified( "modified"),
+        Valid( "valid"),
+        Issued( "issued"),
+        Available( "available"),
+        MetadataCreated( "metadataCreated"),
+        MetadataModified( "metadataModified"),
+
+        Other( ""),
+        Untyped( "");
+
+        private final String label;
+
+        DatePointType( String label) {
+            this.label = label;
+        }
+
+        public static DatePointType getTypeForLabel( String label) {
+            if ( label == null || label.equals( "" ))
+                return Untyped;
+            for ( DatePointType dpt : DatePointType.values())
+                if ( dpt.label.equalsIgnoreCase( label ))
+                    return dpt;
+            return Other;
+        }
+
+        public String toString() {
+            return this.label;
+        }
+    }
+
+    public interface DatePoint
+    {
+        public String getDate();
+        public String getDateFormat();
+        public boolean isTyped();
+        public String getType();
+    }
+
+    public interface DateRange
+    {
+        public String getStartDateFormat();
+        public String getStartDate();
+        public String getEndDateFormat();
+        public String getEndDate();
+        public String getDuration();
+    }
 
   public interface Contributor
   {

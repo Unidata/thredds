@@ -35,8 +35,6 @@ package thredds.catalog2.builder;
 import java.net.URI;
 import java.util.List;
 
-import ucar.nc2.units.DateType;
-import ucar.nc2.units.DateRange;
 import ucar.nc2.constants.FeatureType;
 import thredds.catalog2.ThreddsMetadata;
 import thredds.catalog.DataFormatType;
@@ -76,33 +74,39 @@ public interface ThreddsMetadataBuilder extends ThreddsBuilder
   public void setProjectTitle( String projectTitle );
   public String getProjectTitle();
 
-  public void setDateCreated( DateType dateCreated );
-  public DateType getDateCreated();
+  public DatePointBuilder addOtherDatePointBuilder( String date, String format, String type);
+  public boolean removeOtherDatePointBuilder( DatePointBuilder builder);
+  public List<DatePointBuilder> getOtherDatePointBuilders();
 
-  public void setDateModified( DateType dateModified );
-  public DateType getDateModified();
 
-  public void setDateIssued( DateType dateIssued );
-  public DateType getDateIssued();
+  public DatePointBuilder setCreatedDatePointBuilder( String date, String format );
+  public DatePointBuilder getCreatedDatePointBuilder();
 
-  public void setDateValid( DateRange dateValid );
-  public DateRange getDateValid();
+  public DatePointBuilder setModifiedDatePointBuilder( String date, String format );
+  public DatePointBuilder getModifiedDatePointBuilder();
 
-  public void setDateAvailable( DateRange dateAvailable );
-  public DateRange getDateAvailable();
+  public DatePointBuilder setIssuedDatePointBuilder( String date, String format );
+  public DatePointBuilder getIssuedDatePointBuilder();
 
-  public void setDateMetadataCreated( DateType dateMetadataCreated );
-  public DateType getDateMetadataCreated();
+  public DatePointBuilder setValidDatePointBuilder( String date, String format );
+  public DatePointBuilder getValidDatePointBuilder();
 
-  public void setDateMetadataModified( DateType dateMetadataModified );
-  public DateType getDateMetadataModified();
+  public DatePointBuilder setAvailableDatePointBuilder( String date, String format );
+  public DatePointBuilder getAvailableDatePointBuilder();
+
+  public DatePointBuilder setMetadataCreatedDatePointBuilder( String date, String format );
+  public DatePointBuilder getMetadataCreatedDatePointBuilder();
+
+  public DatePointBuilder setMetadataModifiedDatePointBuilder( String date, String format );
+  public DatePointBuilder getMetadataModifiedDatePointBuilder();
 
   public GeospatialCoverageBuilder setNewGeospatialCoverageBuilder( URI crsUri );
   public void removeGeospatialCoverageBuilder();
   public GeospatialCoverageBuilder getGeospatialCoverageBuilder();
 
-  public void setTemporalCoverage( DateRange temporalCoverage );
-  public DateRange getTemporalCoverage();
+  public DateRangeBuilder setTemporalCoverageBuilder( String startDate, String startDateFormat,
+                                                      String endDate, String endDateFormat, String duration );
+  public DateRangeBuilder getTemporalCoverageBuilder();
 
   public VariableBuilder addVariableBuilder();
   public boolean removeVariableBuilder( VariableBuilder variableBuilder );
@@ -116,6 +120,7 @@ public interface ThreddsMetadataBuilder extends ThreddsBuilder
   public DataFormatType getDataFormat();
 
   public void setDataType( FeatureType dataType );
+  public void setDataType( String dataType );
   public FeatureType getDataType();
 
   public void setCollectionType( String collectionType );
@@ -123,7 +128,7 @@ public interface ThreddsMetadataBuilder extends ThreddsBuilder
 
   ThreddsMetadata build() throws BuilderException;
 
-  public interface DocumentationBuilder extends ThreddsBuilder
+    public interface DocumentationBuilder extends ThreddsBuilder
   {
     //public void setContainedContent( boolean containedContent );
     public boolean isContainedContent();
@@ -145,16 +150,35 @@ public interface ThreddsMetadataBuilder extends ThreddsBuilder
 
   public interface KeyphraseBuilder extends ThreddsBuilder
   {
-    public void setAuthority( String authority );
     public String getAuthority();
-
-    public void setPhrase( String phrase );
     public String getPhrase();
 
     public ThreddsMetadata.Keyphrase build() throws BuilderException;
   }
 
-  public interface ContributorBuilder extends ThreddsBuilder
+    public interface DatePointBuilder extends ThreddsBuilder
+    {
+        public String getDate();
+        public String getDateFormat();
+        public boolean isTyped();
+        public String getType();
+
+        public ThreddsMetadata.DatePoint build() throws BuilderException;
+    }
+
+    public interface DateRangeBuilder extends ThreddsBuilder
+    {
+        public String getStartDateFormat();
+        public String getStartDate();
+        public String getEndDateFormat();
+        public String getEndDate();
+        public String getDuration();
+
+        public ThreddsMetadata.DateRange build() throws BuilderException;
+    }
+
+
+    public interface ContributorBuilder extends ThreddsBuilder
   {
     public String getAuthority();
     public void setAuthority( String authority );

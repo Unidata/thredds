@@ -203,11 +203,11 @@ public class TestDatasetImpl extends TestCase
   public void testBuild()
   {
     // Check if buildable
-    List<BuilderIssue> issues = new ArrayList<BuilderIssue>();
+    BuilderIssues issues = new BuilderIssues();
     if ( ! parentDatasetBldr.isBuildable( issues ) )
     {
       StringBuilder stringBuilder = new StringBuilder( "Not isBuildable(): " );
-      for ( BuilderIssue bfi : issues )
+      for ( BuilderIssue bfi : issues.getIssues() )
         stringBuilder.append( "\n    " ).append( bfi.getMessage() ).append( " [" ).append( bfi.getBuilder().getClass().getName() ).append( "]" );
       fail( stringBuilder.toString() );
     }

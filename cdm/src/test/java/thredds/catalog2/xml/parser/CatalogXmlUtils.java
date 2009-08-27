@@ -1,10 +1,17 @@
 package thredds.catalog2.xml.parser;
 
 import thredds.catalog2.builder.*;
+import thredds.catalog2.xml.parser.stax.StaxThreddsXmlParser;
+import thredds.catalog2.xml.writer.ThreddsXmlWriter;
+import thredds.catalog2.xml.writer.ThreddsXmlWriterFactory;
+import thredds.catalog2.xml.writer.ThreddsXmlWriterException;
+import thredds.catalog2.Catalog;
 import thredds.catalog.ServiceType;
 
 import java.util.List;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.io.StringReader;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
@@ -23,9 +30,29 @@ public class CatalogXmlUtils
 
   private CatalogXmlUtils(){}
 
-  public static String getCatalog( DateType expires ) {
-    return wrapThreddsXmlInCatalog( "", expires );
-  }
+    public static CatalogBuilder parseCatalogIntoBuilder( URI docBaseUri, String catalogXml )
+            throws ThreddsXmlParserException
+    {
+        ThreddsXmlParser cp = StaxThreddsXmlParser.newInstance();
+        return cp.parseIntoBuilder( new StringReader( catalogXml ), docBaseUri );
+    }
+
+    public static void writeCatalogXml( Catalog cat )
+    {
+        ThreddsXmlWriter txw = ThreddsXmlWriterFactory.newInstance().createThreddsXmlWriter();
+        try {
+            txw.writeCatalog( cat, System.out );
+        }
+        catch ( ThreddsXmlWriterException e )
+        {
+            e.printStackTrace();
+            fail( "Failed writing catalog to sout: " + e.getMessage() );
+        }
+    }
+
+    public static String getCatalog( DateType expires ) {
+        return wrapThreddsXmlInCatalog( "", expires );
+    }
 
   public static String wrapThreddsXmlInCatalog( String threddsXml, DateType expires )
   {
@@ -45,6 +72,9 @@ public class CatalogXmlUtils
 
   public static void assertCatalogAsExpected( CatalogBuilder catBuilder, URI docBaseUri, DateType expires )
   {
+      assertNotNull( "DocBase URI is null.", docBaseUri) ;
+      assertNotNull( "CatalogBuilder [" + docBaseUri + "] is null.", catBuilder) ;
+
     assertEquals( catBuilder.getDocBaseUri(), docBaseUri);
     assertEquals( catBuilder.getName(), catName);
     if ( expires != null )
@@ -190,25 +220,57 @@ public class CatalogXmlUtils
     assertEquals( access.getServiceBuilder().getBaseUri().toString(), "/thredds/dodsC/" );
   }
 
-  public static String wrapThreddsXmlInCatalogDataset( String threddsXml )
+  public static String wrapThreddsXmlInContainerDataset( String threddsXml )
   {
 
     StringBuilder sb = new StringBuilder()
-            .append( "  <dataset name='container dataset'>\n" )
+            .append( "  <dataset name='container dataset' ID='containerDs'>\n" )
             .append(      threddsXml )
             .append( "  </dataset>\n" );
 
-    return wrapThreddsXmlInCatalog( sb.toString(), null );
+    return wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
   }
+
+    public static DatasetBuilder assertCatalogWithContainerDatasetAsExpected( CatalogBuilder catBuilder,
+                                                                              URI docBaseUri)
+    {
+        assertCatalogWithCompoundServiceAsExpected( catBuilder, docBaseUri, null );
+
+        List<DatasetNodeBuilder> dsBuilders = catBuilder.getDatasetNodeBuilders();
+        assertTrue( dsBuilders.size() == 1 );
+        DatasetNodeBuilder dsnBuilder = dsBuilders.get( 0 );
+        assertNotNull( dsnBuilder);
+        if ( !( dsnBuilder instanceof DatasetBuilder ) )
+        {
+            fail( "DatasetNode [" + dsnBuilder.getName() + "] not a Dataset." );
+            return null;
+        }
+        DatasetBuilder dsBldr = (DatasetBuilder) dsnBuilder;
+
+        // Check that the container dataset isn't accessible, two methods:
+        // 1)
+        assertFalse( dsBldr.isAccessible() );
+        // 2)
+        List<AccessBuilder> accesses = dsBldr.getAccessBuilders();
+        assertTrue( accesses.isEmpty());
+
+        assertEquals( dsBldr.getName(), "container dataset" );
+        assertEquals( dsBldr.getId(), "containerDs" );
+
+        assertFalse( dsBldr.isCollection() );
+        assertFalse( dsBldr.isBuilt() );
+
+        return dsBldr;
+    }
 
   public static String wrapThreddsXmlInCatalogDatasetMetadata( String threddsXml )
   {
-    return wrapThreddsXmlInCatalogDataset( "<metadata>" + threddsXml + "</metadata>\n" );
+    return wrapThreddsXmlInContainerDataset( "<metadata>" + threddsXml + "</metadata>\n" );
   }
 
   public static String wrapThreddsXmlInCatalogDatasetMetadataInherited( String threddsXml )
   {
-    return wrapThreddsXmlInCatalogDataset( "<metadata inherited='true'>" + threddsXml + "</metadata>\n" );
+    return wrapThreddsXmlInContainerDataset( "<metadata inherited='true'>" + threddsXml + "</metadata>\n" );
   }
 
   public static String getNestedDatasetWithRawServiceName()

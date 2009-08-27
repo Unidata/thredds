@@ -34,10 +34,13 @@ package thredds.catalog2.xml.parser.stax;
 
 import thredds.catalog2.builder.*;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
+import thredds.catalog2.xml.parser.ThreddsXmlParserIssue;
 import thredds.catalog2.xml.names.ThreddsMetadataElementNames;
+import thredds.catalog2.ThreddsMetadata;
 
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
+import javax.xml.stream.events.Attribute;
 import javax.xml.stream.XMLEventReader;
 
 /**
@@ -78,6 +81,10 @@ class ThreddsMetadataElementParser extends AbstractElementParser
             return true;
         if ( DataFormatElementParser.isSelfElementStatic( event ) )
             return true;
+        if ( DataTypeElementParser.isSelfElementStatic( event ) )
+            return true;
+        if ( DateElementParser.isSelfElementStatic( event ) )
+            return true;
         return false;
     }
 
@@ -104,15 +111,21 @@ class ThreddsMetadataElementParser extends AbstractElementParser
 
         if ( ServiceNameElementParser.isSelfElementStatic( startElement ) )
         {
-            this.delegate = new ServiceNameElementParser( this.reader,
-                                                          this.builderFactory,
-                                                          this.selfBuilder,
+            this.delegate = new ServiceNameElementParser( this.reader, this.builderFactory, this.selfBuilder,
                                                           this.parentDatasetNodeElementParserHelper,
                                                           this.inheritedByDescendants );
         }
         else if ( DataFormatElementParser.isSelfElementStatic( startElement ) )
         {
             this.delegate = new DataFormatElementParser( this.reader, this.builderFactory, this.selfBuilder );
+        }
+        else if ( DataTypeElementParser.isSelfElementStatic( startElement ) )
+        {
+            this.delegate = new DataTypeElementParser( this.reader, this.builderFactory, this.selfBuilder );
+        }
+        else if ( DateElementParser.isSelfElementStatic( startElement ) )
+        {
+            this.delegate = new DateElementParser( this.reader, this.builderFactory, this.selfBuilder );
         }
         else
             throw new ThreddsXmlParserException( "" );
@@ -249,5 +262,127 @@ class ThreddsMetadataElementParser extends AbstractElementParser
     void postProcessingAfterEndElement()
             throws ThreddsXmlParserException
     { }
+  }
+
+  /**
+   * Parser for THREDDS metadata DataType elements.
+   */
+  static class DataTypeElementParser extends AbstractElementParser
+  {
+    private final ThreddsMetadataBuilder threddsMetadataBuilder;
+
+    DataTypeElementParser( XMLEventReader reader,
+                           ThreddsBuilderFactory builderFactory,
+                           ThreddsMetadataBuilder threddsMetadataBuilder )
+            throws ThreddsXmlParserException
+    {
+      super( reader, ThreddsMetadataElementNames.DataTypeElement, builderFactory );
+      this.threddsMetadataBuilder = threddsMetadataBuilder;
+    }
+
+    static boolean isSelfElementStatic( XMLEvent event ) {
+        return isSelfElement( event, ThreddsMetadataElementNames.DataTypeElement );
+    }
+
+    boolean isSelfElement( XMLEvent event ) {
+        return isSelfElementStatic( event );
+    }
+
+    ThreddsBuilder getSelfBuilder() {
+      return null;
+    }
+
+    void parseStartElement() throws ThreddsXmlParserException {
+        StartElement startElement = this.getNextEventIfStartElementIsMine();
+
+        String dataType = StaxThreddsXmlParserUtils.getCharacterContent( this.reader,
+                                                                         ThreddsMetadataElementNames.DataTypeElement );
+        this.threddsMetadataBuilder.setDataType( dataType );
+    }
+
+    void handleChildStartElement() throws ThreddsXmlParserException {
+        return;
+    }
+
+    void postProcessingAfterEndElement() throws ThreddsXmlParserException {
+        return;
+    }
+  }
+
+  /**
+   * Parser for THREDDS metadata DataType elements.
+   */
+  static class DateElementParser extends AbstractElementParser
+  {
+    private final ThreddsMetadataBuilder threddsMetadataBuilder;
+
+    DateElementParser( XMLEventReader reader,
+                       ThreddsBuilderFactory builderFactory,
+                       ThreddsMetadataBuilder threddsMetadataBuilder )
+            throws ThreddsXmlParserException
+    {
+      super( reader, ThreddsMetadataElementNames.DateElement, builderFactory );
+      this.threddsMetadataBuilder = threddsMetadataBuilder;
+    }
+
+    static boolean isSelfElementStatic( XMLEvent event ) {
+        return isSelfElement( event, ThreddsMetadataElementNames.DateElement );
+    }
+
+    boolean isSelfElement( XMLEvent event ) {
+        return isSelfElementStatic( event );
+    }
+
+    ThreddsBuilder getSelfBuilder() {
+      return null;
+    }
+
+    void parseStartElement() throws ThreddsXmlParserException {
+        StartElement startElement = this.getNextEventIfStartElementIsMine();
+
+        Attribute typeAtt = startElement.getAttributeByName( ThreddsMetadataElementNames.DateElement_Type );
+        String typeString = typeAtt != null ? typeAtt.getValue() : null;
+
+        Attribute formatAtt = startElement.getAttributeByName( ThreddsMetadataElementNames.DateElement_Format );
+        String formatString = formatAtt != null ? formatAtt.getValue() : null;
+
+
+        String date = StaxThreddsXmlParserUtils.getCharacterContent( this.reader,
+                                                                     ThreddsMetadataElementNames.DateElement );
+        ThreddsMetadata.DatePointType type = ThreddsMetadata.DatePointType.getTypeForLabel( typeString );
+        if ( type.equals( ThreddsMetadata.DatePointType.Untyped ) || type.equals( ThreddsMetadata.DatePointType.Other) )
+            this.threddsMetadataBuilder.addOtherDatePointBuilder( date, formatString, typeString );
+        else if ( type.equals( ThreddsMetadata.DatePointType.Created) )
+            this.threddsMetadataBuilder.setCreatedDatePointBuilder( date, formatString );
+        else if ( type.equals( ThreddsMetadata.DatePointType.Modified ) )
+            this.threddsMetadataBuilder.setModifiedDatePointBuilder( date, formatString );
+        else if ( type.equals( ThreddsMetadata.DatePointType.Valid ) )
+            this.threddsMetadataBuilder.setValidDatePointBuilder( date, formatString );
+        else if ( type.equals( ThreddsMetadata.DatePointType.Issued ) )
+            this.threddsMetadataBuilder.setIssuedDatePointBuilder( date, formatString );
+        else if ( type.equals( ThreddsMetadata.DatePointType.Available ) )
+            this.threddsMetadataBuilder.setAvailableDatePointBuilder( date, formatString );
+        else if ( type.equals( ThreddsMetadata.DatePointType.MetadataCreated ) )
+            this.threddsMetadataBuilder.setMetadataCreatedDatePointBuilder( date, formatString );
+        else if ( type.equals( ThreddsMetadata.DatePointType.MetadataModified ) )
+            this.threddsMetadataBuilder.setMetadataModifiedDatePointBuilder( date, formatString );
+        else
+        {
+            String msg = "Unsupported DatePointType [" + typeString + "].";
+            ThreddsXmlParserIssue parserIssue = StaxThreddsXmlParserUtils
+                    .createIssueForUnexpectedEvent( msg, ThreddsXmlParserIssue.Severity.WARNING, this.reader, startElement );
+            log.error( "parseStartElement(): " + parserIssue.getMessage() );
+            throw new ThreddsXmlParserException( parserIssue );
+        }
+
+    }
+
+    void handleChildStartElement() throws ThreddsXmlParserException {
+        return;
+    }
+
+    void postProcessingAfterEndElement() throws ThreddsXmlParserException {
+        return;
+    }
   }
 }

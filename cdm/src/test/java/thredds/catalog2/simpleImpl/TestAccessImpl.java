@@ -44,6 +44,7 @@ import thredds.catalog.DataFormatType;
 import thredds.catalog2.builder.ServiceBuilder;
 import thredds.catalog2.builder.BuilderIssue;
 import thredds.catalog2.builder.BuilderException;
+import thredds.catalog2.builder.BuilderIssues;
 import thredds.catalog2.Access;
 
 /**
@@ -141,11 +142,11 @@ public class TestAccessImpl extends TestCase
     accessImpl.setDataFormat( formatType );
 
     // Check if buildable
-    List<BuilderIssue> issues = new ArrayList<BuilderIssue>();
+    BuilderIssues issues = new BuilderIssues();
     if ( ! accessImpl.isBuildable( issues ) )
     {
       StringBuilder stringBuilder = new StringBuilder( "Not isBuildable(): " );
-      for ( BuilderIssue bfi : issues )
+      for ( BuilderIssue bfi : issues.getIssues() )
         stringBuilder.append( "\n    " ).append( bfi.getMessage() ).append( " [" ).append( bfi.getBuilder().getClass().getName() ).append( "]" );
       fail( stringBuilder.toString() );
     }

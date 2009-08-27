@@ -17,9 +17,13 @@ import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 import thredds.catalog2.xml.parser.ThreddsXmlParser;
 import thredds.catalog2.xml.parser.CatalogXmlUtils;
 import thredds.catalog2.builder.*;
+import thredds.catalog2.ThreddsMetadata;
+import thredds.catalog.DataFormatType;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
+
+import ucar.nc2.constants.FeatureType;
 
 /**
  * _more_
@@ -27,92 +31,127 @@ import javax.xml.stream.XMLStreamException;
  * @author edavis
  * @since 4.0
  */
-//@RunWith(Parameterized.class)
 public class ParseMetadataTest
 {
-  //private final String metadataXml;
-  private XMLInputFactory factory;
-
-//  public ParseMetadataTest( String metadataXml )
-//  {
-//    this.metadataXml = metadataXml;
-//  }
-
   public ParseMetadataTest() { }
 
-  @Before
-  public void init()
-  {
-    //this.tdsUrl = TdsTestUtils.getTargetTdsUrl();
-    this.factory = XMLInputFactory.newInstance();
-    this.factory.setProperty( "javax.xml.stream.isCoalescing", Boolean.TRUE );
-    this.factory.setProperty( "javax.xml.stream.supportDTD", Boolean.FALSE );
-//    this.factory.setXMLReporter(  );
-//    this.factory.setXMLResolver(  );
-
-  }
-
-//  @Parameterized.Parameters
-  public static Collection<Object[]> getCatalogUrls()
-  {
-    String[][] individualthreddsMetadataElements =
-            {
-                    { "<metadata xlink:title='good metadata' xlink:href='http://good.metadata/'/>"},
-                    { "<metadata><dataType>Radial</dataType></metadata>"},
-                    { "<metadata><serviceName>OPENDAP</serviceName></metadata>"},
-                    { "<metadata><dataType>Radial</dataType></metadata>"},
-                    { "<metadata><dataFormat>NEXRAD2</dataFormat></metadata>"}
-            };
-
-    List<Object[]> catUrls = new ArrayList<Object[]>(
-            Arrays.asList( individualthreddsMetadataElements ) );
-    return catUrls;
-  }
+    /*
+     * <serviceName>odap</serviceName>  // already done in ParseCatalogTest
+     * <dataFormat>NEXRAD2</dataFormat>
+     *
+     * <dataType>Radial</dataType>
+     * <documentation>Some interesting text.</documentation>
+     * <metadata xlink:title='good metadata' xlink:href='http://good.metadata/'/>
+     * ...
+     */
 
   @Test
-  public void parseServiceNameXml()
+  public void parseDataFormat()
           throws URISyntaxException,
                  XMLStreamException,
                  ThreddsXmlParserException
   {
-    String xml = CatalogXmlUtils.wrapThreddsXmlInCatalogDataset( "<serviceName>OPeNDAP</serviceName>");
-    // getCatalogWithSingleAccessibleDatasetServiceName()
-    String baseUriString = "http://test.metadata.parser/tmd.xml";
+      String docBaseUriString = "http://cat2.stax.ParseMetadataTest/parseDataFormat.xml";
 
-    ThreddsXmlParser cp = StaxThreddsXmlParser.newInstance();
-    CatalogBuilder catBuilder = cp.parseIntoBuilder( new StringReader( xml ),
-                                                     new URI( baseUriString ) );
-    assertNotNull( catBuilder );
+      String mdXml = "<dataFormat>NEXRAD2</dataFormat>";
 
-    List<DatasetNodeBuilder> dsBuilders = catBuilder.getDatasetNodeBuilders();
-    assertTrue( dsBuilders.size() == 1 );
-    DatasetNodeBuilder dsnBuilder = dsBuilders.get( 0 );
-    
-    //ThreddsMetadataBuilder tmdb = dsnBuilder.getThreddsMetadataBuilder();
-
-//    String catName = "Unidata THREDDS Data Server";
-//    assertTrue( "Catalog name [" + metadata.getName() + "] not as expected [" + catName + "].",
-//                metadata.getName().equals( catName ) );
-
+      parseDataFormatHelper( docBaseUriString, mdXml);
   }
 
-  @Test
-  public void parseDataFormatXml()
-          throws URISyntaxException,
-                 ThreddsXmlParserException
-  {
-    String xml = CatalogXmlUtils.wrapThreddsXmlInCatalogDataset( "<dataFormat>NEXRAD2</dataFormat>");
-    String baseUriString = "http://test.metadata.parser/tmd.xml";
+    @Test
+    public void parseDataFormatWrapped()
+            throws URISyntaxException,
+                   ThreddsXmlParserException
+    {
+        String docBaseUriString = "http://cat2.stax.ParseMetadataTest/parseDataFormatWrapped.xml";
+        String mdXml = "<metadata><dataFormat>NEXRAD2</dataFormat></metadata>";
 
-    ThreddsXmlParser cp = StaxThreddsXmlParser.newInstance();
-    CatalogBuilder catBuilder = cp.parseIntoBuilder( new StringReader( xml ),
-                                                     new URI( baseUriString ) );
+        parseDataFormatHelper( docBaseUriString, mdXml);
+    }
 
-    assertNotNull( catBuilder );
+    @Test
+    public void parseDataFormatInherited()
+            throws URISyntaxException,
+                   ThreddsXmlParserException
+    {
+        String docBaseUriString = "http://cat2.stax.ParseMetadataTest/parseDataFormatInherited.xml";
+        String mdXml = "<metadata inherited='true'><dataFormat>NEXRAD2</dataFormat></metadata>";
 
-//    String catName = "Unidata THREDDS Data Server";
-//    assertTrue( "Catalog name [" + metadata.getName() + "] not as expected [" + catName + "].",
-//                metadata.getName().equals( catName ) );
+        parseDataFormatHelper( docBaseUriString, mdXml);
+    }
 
-  }
+    private void parseDataFormatHelper( String docBaseUriString, String mdXml )
+            throws URISyntaxException,
+                   ThreddsXmlParserException
+    {
+        URI docBaseUri = new URI( docBaseUriString );
+        String catalogXml = CatalogXmlUtils.wrapThreddsXmlInContainerDataset( mdXml );
+
+        CatalogBuilder catBuilder = CatalogXmlUtils.parseCatalogIntoBuilder( docBaseUri, catalogXml );
+
+        assertNotNull( catBuilder );
+
+        DatasetBuilder dsBldr = CatalogXmlUtils.assertCatalogWithContainerDatasetAsExpected( catBuilder, docBaseUri );
+        ThreddsMetadataBuilder tmdBldr = dsBldr.getThreddsMetadataBuilder();
+        DataFormatType dataFormat = tmdBldr.getDataFormat();
+        assertEquals( dataFormat, DataFormatType.NEXRAD2 );
+    }
+
+    @Test
+    public void parseDataType()
+            throws URISyntaxException,
+                   XMLStreamException,
+                   ThreddsXmlParserException
+    {
+        String docBaseUriString = "http://cat2.stax.ParseMetadataTest/parseDataType.xml";
+
+        String mdXml = "<dataType>Radial</dataType>";
+
+        parseDataTypeHelper( docBaseUriString, mdXml );
+    }
+
+
+    private void parseDataTypeHelper( String docBaseUriString, String mdXml )
+            throws URISyntaxException,
+                   ThreddsXmlParserException
+    {
+        URI docBaseUri = new URI( docBaseUriString );
+        String catalogXml = CatalogXmlUtils.wrapThreddsXmlInContainerDataset( mdXml );
+
+        CatalogBuilder catBuilder = CatalogXmlUtils.parseCatalogIntoBuilder( docBaseUri, catalogXml );
+
+        assertNotNull( catBuilder );
+
+        DatasetBuilder dsBldr = CatalogXmlUtils.assertCatalogWithContainerDatasetAsExpected( catBuilder, docBaseUri );
+        ThreddsMetadataBuilder tmdBldr = dsBldr.getThreddsMetadataBuilder();
+        FeatureType dataType = tmdBldr.getDataType();
+        assertEquals( dataType, FeatureType.RADIAL );
+    }
+
+    @Test
+    public void checkCreateDate()
+            throws URISyntaxException,
+                   ThreddsXmlParserException
+    {
+        String docBaseUriString = "http://cat2.stax.ParseMetadataTest/parseCreatedDate.xml";
+        URI docBaseUri = new URI( docBaseUriString );
+
+        String date = "2009-08-25T12:00";
+        String type = ThreddsMetadata.DatePointType.Created.toString();
+        String mdXml = "<date type='" + type + "'>" + date + "</date>";
+        String catalogXml = CatalogXmlUtils.wrapThreddsXmlInContainerDataset( mdXml );
+
+        CatalogBuilder catBuilder = CatalogXmlUtils.parseCatalogIntoBuilder( docBaseUri, catalogXml );
+
+        assertNotNull( catBuilder );
+        DatasetBuilder dsBldr = CatalogXmlUtils.assertCatalogWithContainerDatasetAsExpected( catBuilder, docBaseUri );
+
+        ThreddsMetadataBuilder tmdBldr = dsBldr.getThreddsMetadataBuilder();
+        ThreddsMetadataBuilder.DatePointBuilder datePointBuilder = tmdBldr.getCreatedDatePointBuilder();
+
+        assertEquals( datePointBuilder.getDate(), date);
+        assertNull( datePointBuilder.getDateFormat());
+        assertEquals( ThreddsMetadata.DatePointType.getTypeForLabel( datePointBuilder.getType()),
+                      ThreddsMetadata.DatePointType.Created );
+    }
 }

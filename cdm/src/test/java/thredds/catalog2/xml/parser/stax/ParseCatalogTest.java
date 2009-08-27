@@ -12,7 +12,6 @@ import java.io.StringReader;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 import thredds.catalog2.xml.parser.ThreddsXmlParser;
 import thredds.catalog2.xml.parser.CatalogXmlUtils;
-import thredds.catalog2.xml.parser.stax.StaxThreddsXmlParser;
 import thredds.catalog2.builder.*;
 
 import javax.xml.stream.XMLStreamException;
@@ -28,9 +27,18 @@ import ucar.nc2.units.DateType;
 public class ParseCatalogTest
 {
 
-  public ParseCatalogTest() { }
+    // Do we have all these:
+    // 1) dataset with urlPath and serviceName attributes
+    // 2) dataset with urlPath att and serviceName child element
+    // 3) dataset with urlPath att and child metadata element with child serviceName element
+    // 4) same as 3 but metadata element has inherited="true" attribute
+    // 5) same as 3 but metadata element is in dataset that is parent to dataset with urlPath
+    // 6) 1-5 where serviceName points to single top-level service
+    // 7) 1-5 where serviceName points to compound service
+    // 8) 1-5 where serviceName points to a single service contained in a compound service
 
-  @Test
+
+    @Test
   public void parseCatalog()
           throws URISyntaxException,
                  XMLStreamException,
@@ -87,7 +95,20 @@ public class ParseCatalogTest
     CatalogXmlUtils.assertCatalogWithCompoundServiceAsExpected( catBuilder, docBaseUri, expires);
   }
 
-  @Test
+    @Test
+    public void parseContainerDatasetWithMetadataServicename()
+            throws URISyntaxException,
+                   ThreddsXmlParserException
+    {
+        String docBaseUriString = "http://cat2.stax.ParseContainerDatasetTest/MetadataServiceName.xml";
+        URI docBaseUri = new URI( docBaseUriString);
+        String catXml = CatalogXmlUtils.wrapThreddsXmlInCatalogDatasetMetadata( "<serviceName>odap</serviceName>\n" );
+
+        CatalogBuilder catBuilder = CatalogXmlUtils.parseCatalogIntoBuilder( docBaseUri, catXml );
+        assertNotNull( catBuilder );
+    }
+
+    @Test
   public void parseAccessibleDatasetWithRawServiceName()
           throws URISyntaxException,
                  XMLStreamException,

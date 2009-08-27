@@ -36,6 +36,7 @@ import junit.framework.*;
 import thredds.catalog2.builder.ServiceBuilder;
 import thredds.catalog2.builder.BuilderIssue;
 import thredds.catalog2.builder.BuilderException;
+import thredds.catalog2.builder.BuilderIssues;
 import thredds.catalog.ServiceType;
 
 import java.util.List;
@@ -173,11 +174,11 @@ public class TestServiceContainer extends TestCase
   public void testNewContainerBuild()
   {
     sc = new ServiceContainer( null );
-    List<BuilderIssue> issues = new ArrayList<BuilderIssue>();
+    BuilderIssues issues = new BuilderIssues();
     if ( !sc.isBuildable( issues ) )
     {
       StringBuilder stringBuilder = new StringBuilder( "Not isBuildable(): " );
-      for ( BuilderIssue bfi : issues )
+      for ( BuilderIssue bfi : issues.getIssues() )
         stringBuilder.append( "\n    " ).append( bfi.getMessage() ).append( " [" ).append( bfi.getBuilder().getClass().getName() ).append( "]" );
       fail( stringBuilder.toString() );
     }

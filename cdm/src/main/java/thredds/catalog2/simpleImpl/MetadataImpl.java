@@ -36,10 +36,9 @@ import thredds.catalog2.Metadata;
 import thredds.catalog2.builder.MetadataBuilder;
 import thredds.catalog2.builder.BuilderException;
 import thredds.catalog2.builder.BuilderIssue;
+import thredds.catalog2.builder.BuilderIssues;
 
 import java.net.URI;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * _more_
@@ -169,7 +168,7 @@ public class MetadataImpl implements Metadata, MetadataBuilder
     return this.isBuilt;
   }
 
-  public boolean isBuildable( List<BuilderIssue> issues )
+  public boolean isBuildable( BuilderIssues issues )
   {
     if ( this.isBuilt )
       return true;
@@ -178,14 +177,14 @@ public class MetadataImpl implements Metadata, MetadataBuilder
     {
       if ( this.content == null )
       {
-        issues.add( new BuilderIssue( "MetadataBuilder contains null content.", this ));
+        issues.addIssue( new BuilderIssue( "MetadataBuilder contains null content.", this ));
         return false;
       }
     }
     else
       if ( this.title == null || this.externalReference == null )
       {
-        issues.add( new BuilderIssue( "MetadataBuilder with link has null title and/or link URI.", this ) );
+        issues.addIssue( new BuilderIssue( "MetadataBuilder with link has null title and/or link URI.", this ) );
         return false;
       }
 
@@ -197,7 +196,7 @@ public class MetadataImpl implements Metadata, MetadataBuilder
     if ( this.isBuilt )
       return this;
 
-    List<BuilderIssue> issues = new ArrayList<BuilderIssue>();
+    BuilderIssues issues = new BuilderIssues();
     if ( ! this.isBuildable( issues ))
       throw new BuilderException( issues);
 

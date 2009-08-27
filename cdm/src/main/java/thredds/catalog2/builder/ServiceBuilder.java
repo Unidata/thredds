@@ -120,7 +120,7 @@ public interface ServiceBuilder extends ThreddsBuilder
   public ServiceBuilder getServiceBuilderByName( String name );
   public ServiceBuilder findServiceBuilderByNameGlobally( String name );
 
-  public boolean isBuildable( List<BuilderIssue> issues );
+  public boolean isBuildable( BuilderIssues issues );
 
   /**
    * Return the finished Service.

@@ -45,8 +45,10 @@ public class BuilderIssue
 
   public BuilderIssue( String message, ThreddsBuilder builder )
   {
-    this.message = message;
-    this.builder = builder;
+      if ( message == null || builder == null )
+          throw new IllegalArgumentException( "Null message and/or builder.");
+      this.message = message;
+      this.builder = builder;
   }
 
   public String getMessage()

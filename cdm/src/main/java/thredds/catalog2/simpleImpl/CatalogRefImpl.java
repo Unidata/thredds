@@ -36,8 +36,6 @@ import thredds.catalog2.builder.*;
 import thredds.catalog2.*;
 
 import java.net.URI;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * _more_
@@ -77,12 +75,12 @@ public class CatalogRefImpl
   }
 
   @Override
-  public boolean isBuildable( List<BuilderIssue> issues )
+  public boolean isBuildable( BuilderIssues issues )
   {
     if ( this.isBuilt )
       return true;
 
-    List<BuilderIssue> localIssues = new ArrayList<BuilderIssue>();
+    BuilderIssues localIssues = new BuilderIssues();
     super.isBuildable( issues );
 
     // ToDo Check any invariants.
@@ -90,7 +88,7 @@ public class CatalogRefImpl
     if ( localIssues.isEmpty() )
       return true;
 
-    issues.addAll( localIssues );
+    issues.addAllIssues( localIssues );
     return false;
   }
 
@@ -99,7 +97,7 @@ public class CatalogRefImpl
     if ( this.isBuilt )
       return this;
 
-    List<BuilderIssue> issues = new ArrayList<BuilderIssue>();
+    BuilderIssues issues = new BuilderIssues();
     if ( !isBuildable( issues ) )
       throw new BuilderException( issues );
 

@@ -32,7 +32,10 @@
  */
 package thredds.catalog2.xml.parser;
 
-import junit.framework.*;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
 import thredds.catalog2.xml.parser.ThreddsXmlParser;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 import thredds.catalog2.xml.parser.stax.StaxThreddsXmlParser;
@@ -43,6 +46,7 @@ import thredds.catalog2.*;
 import thredds.catalog2.builder.CatalogBuilder;
 import thredds.catalog2.builder.DatasetNodeBuilder;
 import thredds.catalog2.builder.ThreddsMetadataBuilder;
+import thredds.catalog2.builder.BuilderException;
 import thredds.catalog.ServiceType;
 
 import java.io.StringReader;
@@ -56,47 +60,21 @@ import java.util.List;
  * @author edavis
  * @since 4.0
  */
-public class TestCatalogParser extends TestCase
+public class TestCatalogParser
 {
 
 //  private ThreddsXmlParser me;
 
-  public TestCatalogParser( String name )
-  {
-    super( name );
-  }
+  public TestCatalogParser() { }
 
-  // 1) dataset with urlPath and serviceName attributes
-  // 2) dataset with urlPath att and serviceName child element
-  // 3) dataset with urlPath att and child metadata element with child serviceName element
-  // 4) same as 3 but metadata element has inherited="true" attribute
-  // 5) same as 3 but metadata element is in dataset that is parent to dataset with urlPath
-  // 6) 1-5 where serviceName points to single top-level service
-  // 7) 1-5 where serviceName points to compound service
-  // 8) 1-5 where serviceName points to a single service contained in a compound service
-
-  public void testCatalogSingleDatasetAccessAttributes()
-  {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/TestCatalogParser/testCatalogSingleDatasetAccessAttributes.xml";
-
-    String catXml = CatalogXmlUtils.getCatalogWithSingleAccessDatasetOldStyle();
-
-    Catalog cat = this.parseCatalog( catXml, docBaseUriString );
-
-    List<DatasetNode> dsNodes = cat.getDatasets();
-    assertTrue( dsNodes.size() == 1 );
-    DatasetNode dsn = dsNodes.get( 0 );
-    assertTrue( dsn instanceof Dataset );
-    List<Access> accesses = ( (Dataset) dsn ).getAccesses();
-    assertTrue( accesses.size() == 1);
-    Access access = accesses.get( 0 );
-    assertEquals( access.getService().getType(), ServiceType.OPENDAP );
-    assertEquals( access.getUrlPath(), "test/test1.nc");
-  }
-
-  public void testCatalog()
-  {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/TestCatalogParser/testCatalog.xml";
+    @Test
+    public void testCatalog()
+            throws URISyntaxException,
+                   ThreddsXmlParserException,
+                   BuilderException
+    {
+      String docBaseUriString = "http://test/thredds/catalog2/xml/parser/TestCatalogParser/testCatalog.xml";
+      URI docBaseUri = new URI( docBaseUriString);
 
     StringBuilder doc = new StringBuilder( "<?xml version='1.0' encoding='UTF-8'?>\n" )
             .append( "<catalog xmlns='http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0'" )
@@ -130,88 +108,15 @@ public class TestCatalogParser extends TestCase
             .append( "  </dataset>\n" )
             .append( "</catalog>" );
 
-    Catalog cat = this.parseCatalog( doc.toString(), docBaseUriString );
+      CatalogBuilder catBldr = CatalogXmlUtils.parseCatalogIntoBuilder( docBaseUri, doc.toString() );
 
     String catName = "Unidata THREDDS Data Server";
-    assertTrue( "Catalog name [" + cat.getName() + "] not as expected [" + catName + "].",
-                cat.getName().equals( catName ) );
+    assertTrue( "Catalog name [" + catBldr.getName() + "] not as expected [" + catName + "].",
+                catBldr.getName().equals( catName ) );
     // ToDo More testing.
 
-    writeCatalogXml( cat );
-  }
+        Catalog cat = catBldr.build();
 
-  public void testThreddsMetadata()
-          throws URISyntaxException,
-                 ThreddsXmlParserException
-  {
-    String docBaseUriString = "http://test.catalog.parser/threddsMetadata.xml";
-    String catXml = CatalogXmlUtils.wrapThreddsXmlInCatalogDatasetMetadata( "<serviceName>odap</serviceName>\n" );
-
-    URI docBaseUri = new URI( docBaseUriString);
-    ThreddsXmlParser cp = StaxThreddsXmlParser.newInstance();
-    CatalogBuilder catBuilder = cp.parseIntoBuilder( new StringReader( catXml), docBaseUri );
-
-    assertNotNull( catBuilder );
-
-    List<DatasetNodeBuilder> dsBuilders = catBuilder.getDatasetNodeBuilders();
-    assertTrue( dsBuilders.size() == 1 );
-    DatasetNodeBuilder dsnBuilder = dsBuilders.get( 0 );
-    ThreddsMetadataBuilder tmdb = dsnBuilder.getThreddsMetadataBuilder();
-
-//    assertTrue( md.isContainedContent());
-//
-//    this.writeMetadataXml( md );
-  }
-
-  private Catalog parseCatalog( String docAsString, String docBaseUriString )
-  {
-    URI docBaseUri;
-    try
-    { docBaseUri = new URI( docBaseUriString ); }
-    catch ( URISyntaxException e )
-    {
-      fail( "Syntax problem with URI [" + docBaseUriString + "]." ); return null;
-    }
-
-    Catalog cat;
-    ThreddsXmlParser cp = StaxThreddsXmlParser.newInstance();
-    try
-    { cat = cp.parse( new StringReader( docAsString ), docBaseUri ); }
-    catch ( ThreddsXmlParserException e )
-    {
-      fail( "Failed to parse catalog: " + e.getMessage() ); return null;
-    }
-
-    assertNotNull( "Result of parse was null catalog [" + docBaseUriString + "].",
-                   cat );
-    return cat;
-  }
-
-  private void writeCatalogXml( Catalog cat )
-  {
-    ThreddsXmlWriter txw = ThreddsXmlWriterFactory.newInstance().createThreddsXmlWriter();
-    try
-    {
-      txw.writeCatalog( cat, System.out );
-    }
-    catch ( ThreddsXmlWriterException e )
-    {
-      e.printStackTrace();
-      fail( "Failed writing catalog to sout: " + e.getMessage() );
-    }
-  }
-
-  private void writeMetadataXml( Metadata md )
-  {
-    ThreddsXmlWriter txw = ThreddsXmlWriterFactory.newInstance().createThreddsXmlWriter();
-    try
-    {
-      txw.writeMetadata( md, System.out );
-    }
-    catch ( ThreddsXmlWriterException e )
-    {
-      e.printStackTrace();
-      fail( "Failed writing catalog to sout: " + e.getMessage() );
-    }
+        CatalogXmlUtils.writeCatalogXml( cat );
   }
 }

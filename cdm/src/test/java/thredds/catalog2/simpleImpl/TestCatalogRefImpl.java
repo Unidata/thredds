@@ -33,10 +33,7 @@
 package thredds.catalog2.simpleImpl;
 
 import junit.framework.*;
-import thredds.catalog2.builder.CatalogRefBuilder;
-import thredds.catalog2.builder.DatasetNodeBuilder;
-import thredds.catalog2.builder.BuilderIssue;
-import thredds.catalog2.builder.BuilderException;
+import thredds.catalog2.builder.*;
 import thredds.catalog2.CatalogRef;
 
 import java.net.URI;
@@ -110,11 +107,11 @@ public class TestCatalogRefImpl extends TestCase
   public void testBuild()
   {
     // Check if buildable
-    List<BuilderIssue> issues = new ArrayList<BuilderIssue>();
+    BuilderIssues issues = new BuilderIssues();
     if ( !catRefBldr.isBuildable( issues ) )
     {
       StringBuilder stringBuilder = new StringBuilder( "Not isBuildable(): " );
-      for ( BuilderIssue bfi : issues )
+      for ( BuilderIssue bfi : issues.getIssues() )
         stringBuilder.append( "\n    " ).append( bfi.getMessage() ).append( " [" ).append( bfi.getBuilder().getClass().getName() ).append( "]" );
       fail( stringBuilder.toString() );
     }

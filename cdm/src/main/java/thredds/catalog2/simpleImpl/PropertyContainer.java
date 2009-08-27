@@ -34,6 +34,7 @@ package thredds.catalog2.simpleImpl;
 
 import thredds.catalog2.Property;
 import thredds.catalog2.builder.BuilderIssue;
+import thredds.catalog2.builder.BuilderIssues;
 
 import java.util.*;
 
@@ -192,7 +193,7 @@ class PropertyContainer
    * @param issues a list in which to add any issues that come up during isFinished()
    * @return true if this PropertyContainer is in a state where finish() will succeed.
    */
-  public boolean isBuildable( List<BuilderIssue> issues )
+  public boolean isBuildable( BuilderIssues issues )
   {
     return true;
   }
@@ -201,7 +202,7 @@ class PropertyContainer
    * Mark this PropertyContainer as unmodifiable and return "true".
    *
    * No validation is required
-   * (see {@link #isBuildable(List< thredds.catalog2.builder.BuilderIssue >) isBuildable(issues)})
+   * (see {@link #isBuildable(thredds.catalog2.builder.BuilderIssues) isBuildable(issues)})
    */
   public void build()
   {

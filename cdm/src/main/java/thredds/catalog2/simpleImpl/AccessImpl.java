@@ -37,9 +37,6 @@ import thredds.catalog2.Access;
 import thredds.catalog2.Service;
 import thredds.catalog2.builder.*;
 
-import java.util.List;
-import java.util.ArrayList;
-
 /**
  * _more_
  *
@@ -122,17 +119,17 @@ public class AccessImpl implements Access, AccessBuilder
     return this.isBuilt;
   }
 
-  public boolean isBuildable( List<BuilderIssue> issues )
+  public boolean isBuildable( BuilderIssues issues )
   {
     if ( this.isBuilt )
       return true;
 
-    List<BuilderIssue> localIssues = new ArrayList<BuilderIssue>();
+    BuilderIssues localIssues = new BuilderIssues();
 
     if ( this.service == null )
-      localIssues.add( new BuilderIssue( "Dataset[\"" + parentDs.getName() + "\"] not accessible[\"" + this.urlPath + "\"] due to null service.", this ) );
+      localIssues.addIssue( new BuilderIssue( "Dataset[\"" + parentDs.getName() + "\"] not accessible[\"" + this.urlPath + "\"] due to null service.", this ) );
     if ( this.urlPath == null )
-      localIssues.add( new BuilderIssue( "Dataset[\"" + parentDs.getName() + "\"] not accessible[\"" + this.service != null ? this.service.getName() : "" + "\"] due to null urlPath.", this ) );
+      localIssues.addIssue( new BuilderIssue( "Dataset[\"" + parentDs.getName() + "\"] not accessible[\"" + this.service != null ? this.service.getName() : "" + "\"] due to null urlPath.", this ) );
 
     // Check subordinates.
     if ( this.service != null )
@@ -141,7 +138,7 @@ public class AccessImpl implements Access, AccessBuilder
     if ( localIssues.isEmpty() )
       return true;
 
-    issues.addAll( localIssues );
+    issues.addAllIssues( localIssues );
     return false;
   }
 
@@ -150,7 +147,7 @@ public class AccessImpl implements Access, AccessBuilder
     if ( this.isBuilt )
       return this;
 
-    List<BuilderIssue> issues = new ArrayList<BuilderIssue>();
+    BuilderIssues issues = new BuilderIssues();
     if ( !isBuildable( issues ) )
       throw new BuilderException( issues );
 

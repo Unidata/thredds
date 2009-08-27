@@ -41,6 +41,7 @@ import java.util.ArrayList;
 
 import thredds.catalog2.builder.BuilderIssue;
 import thredds.catalog2.builder.BuilderException;
+import thredds.catalog2.builder.BuilderIssues;
 import thredds.catalog2.Metadata;
 
 /**
@@ -126,18 +127,18 @@ public class TestMetadataImpl extends TestCase
   public void testBuild()
   {
     // Check if buildable
-    List<BuilderIssue> issues = new ArrayList<BuilderIssue>();
+    BuilderIssues issues = new BuilderIssues();
     if ( ! mdImpl1.isBuildable( issues ) )
     {
       StringBuilder stringBuilder = new StringBuilder( "Not isBuildable(): " );
-      for ( BuilderIssue bfi : issues )
+      for ( BuilderIssue bfi : issues.getIssues() )
         stringBuilder.append( "\n    " ).append( bfi.getMessage() ).append( " [" ).append( bfi.getBuilder().getClass().getName() ).append( "]" );
       fail( stringBuilder.toString() );
     }
     if ( ! mdImpl2.isBuildable( issues ) )
     {
       StringBuilder stringBuilder = new StringBuilder( "Not isBuildable(): " );
-      for ( BuilderIssue bfi : issues )
+      for ( BuilderIssue bfi : issues.getIssues() )
         stringBuilder.append( "\n    " ).append( bfi.getMessage() ).append( " [" ).append( bfi.getBuilder().getClass().getName() ).append( "]" );
       fail( stringBuilder.toString() );
     }

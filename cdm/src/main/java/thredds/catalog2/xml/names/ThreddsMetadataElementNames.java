@@ -39,6 +39,24 @@ public class ThreddsMetadataElementNames
                        "keyword" );
   // ToDo "keyword" attributes
 
+  public static final QName DateElement
+          = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
+                       "date" );
+    public static final QName DateElement_Type
+            = new QName( XMLConstants.NULL_NS_URI,
+                         "type" );
+    public static final String DateElement_Type_Created = "created";
+    public static final String DateElement_Type_Modified = "modified";
+    public static final String DateElement_Type_Valid = "valid";
+    public static final String DateElement_Type_Issued = "issued";
+    public static final String DateElement_Type_Available = "available";
+    public static final String DateElement_Type_MetadataCreated = "metadataCreated";
+    public static final String DateElement_Type_MetadataModified = "metadataModified";
+     
+    public static final QName DateElement_Format
+            = new QName( XMLConstants.NULL_NS_URI,
+                         "format" );
+
   public static final QName CreatorElement
           = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
                        "creator" );

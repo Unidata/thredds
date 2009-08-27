@@ -4,8 +4,6 @@ import thredds.catalog2.builder.ThreddsMetadataBuilder;
 import thredds.catalog2.builder.ThreddsBuilderFactory;
 import thredds.catalog.DataFormatType;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateType;
 
 /**
  * Utility methods for copying and merging <code>ThreddsMetadataBuilder</code>s.
@@ -46,20 +44,41 @@ public class ThreddsMetadataBuilderUtils
     recipient.setDataSizeInBytes( source.getDataSizeInBytes());
     if ( source.getDataType() != null )
       recipient.setDataType( source.getDataType() );
-    if ( source.getDateAvailable() != null )
-      recipient.setDateAvailable( source.getDateAvailable() );
-    if ( source.getDateCreated() != null )
-      recipient.setDateCreated( source.getDateCreated() );
-    if ( source.getDateIssued() != null )
-      recipient.setDateIssued( source.getDateIssued() );
-    if ( source.getDateMetadataCreated() != null )
-      recipient.setDateMetadataCreated( source.getDateMetadataCreated() );
-    if ( source.getDateMetadataModified() != null )
-      recipient.setDateMetadataModified( source.getDateMetadataModified() );
-    if ( source.getDateModified() != null )
-      recipient.setDateModified( source.getDateModified() );
-    if ( source.getDateValid() != null )
-      recipient.setDateValid( source.getDateValid() );
+    if ( source.getAvailableDatePointBuilder() != null )
+    {
+        ThreddsMetadataBuilder.DatePointBuilder dpb = source.getAvailableDatePointBuilder();
+        recipient.setAvailableDatePointBuilder( dpb.getDate(), dpb.getDateFormat() );
+    }
+    if ( source.getCreatedDatePointBuilder() != null )
+    {
+        ThreddsMetadataBuilder.DatePointBuilder dpb = source.getCreatedDatePointBuilder();
+        recipient.setCreatedDatePointBuilder( dpb.getDate(), dpb.getDateFormat() );
+    }
+    if ( source.getIssuedDatePointBuilder() != null )
+    {
+        ThreddsMetadataBuilder.DatePointBuilder dpb = source.getIssuedDatePointBuilder();
+        recipient.setIssuedDatePointBuilder( dpb.getDate(), dpb.getDateFormat() );
+    }
+    if ( source.getMetadataCreatedDatePointBuilder() != null )
+    {
+        ThreddsMetadataBuilder.DatePointBuilder dpb = source.getMetadataCreatedDatePointBuilder();
+        recipient.setMetadataCreatedDatePointBuilder( dpb.getDate(), dpb.getDateFormat() );
+    }
+    if ( source.getMetadataModifiedDatePointBuilder() != null )
+    {
+        ThreddsMetadataBuilder.DatePointBuilder dpb = source.getMetadataModifiedDatePointBuilder();
+        recipient.setMetadataModifiedDatePointBuilder( dpb.getDate(), dpb.getDateFormat() );
+    }
+    if ( source.getModifiedDatePointBuilder() != null )
+    {
+        ThreddsMetadataBuilder.DatePointBuilder dpb = source.getModifiedDatePointBuilder();
+        recipient.setModifiedDatePointBuilder( dpb.getDate(), dpb.getDateFormat() );
+    }
+    if ( source.getValidDatePointBuilder() != null )
+    {
+        ThreddsMetadataBuilder.DatePointBuilder dpb = source.getValidDatePointBuilder();
+        recipient.setValidDatePointBuilder( dpb.getDate(), dpb.getDateFormat() );
+    }
     if ( source.getProjectTitle() != null )
       recipient.setProjectTitle( source.getProjectTitle() );
 
@@ -68,8 +87,13 @@ public class ThreddsMetadataBuilderUtils
       if ( geoCovBuilder.getCRS() != null )
         recipient.setNewGeospatialCoverageBuilder( geoCovBuilder.getCRS() );
 
-    if ( source.getTemporalCoverage() != null )
-      recipient.setTemporalCoverage( source.getTemporalCoverage() );
+    if ( source.getTemporalCoverageBuilder() != null )
+    {
+        ThreddsMetadataBuilder.DateRangeBuilder drb = source.getTemporalCoverageBuilder();
+        recipient.setTemporalCoverageBuilder( drb.getStartDate(), drb.getStartDateFormat(),
+                                              drb.getEndDate(), drb.getEndDateFormat(),
+                                              drb.getDuration() );
+    }
 
     // Add all Builder content.
     addCopiesOfContributorBuilders( source, recipient );
@@ -211,10 +235,13 @@ public class ThreddsMetadataBuilderUtils
                                                       ThreddsMetadataBuilder second,
                                                       ThreddsMetadataBuilder mergedThreddsMetadata )
   {
-    DateRange temporalCov = second.getTemporalCoverage() != null
-                            ? second.getTemporalCoverage() : first.getTemporalCoverage();
+    ThreddsMetadataBuilder.DateRangeBuilder temporalCov
+            = second.getTemporalCoverageBuilder() != null
+              ? second.getTemporalCoverageBuilder() : first.getTemporalCoverageBuilder();
     if ( temporalCov != null )
-      mergedThreddsMetadata.setTemporalCoverage( temporalCov );
+      mergedThreddsMetadata.setTemporalCoverageBuilder( temporalCov.getStartDate(), temporalCov.getStartDateFormat(),
+                                                        temporalCov.getEndDate(), temporalCov.getEndDateFormat(),
+                                                        temporalCov.getDuration() );
   }
 
   private static void mergeOverwriteProjectTitle( ThreddsMetadataBuilder first,
@@ -230,66 +257,77 @@ public class ThreddsMetadataBuilderUtils
                                                ThreddsMetadataBuilder second,
                                                ThreddsMetadataBuilder mergedThreddsMetadata )
   {
-    DateRange dateValid = second.getDateValid() != null ? second.getDateValid() : first.getDateValid();
-    if ( dateValid != null )
-      mergedThreddsMetadata.setDateValid( dateValid );
+    ThreddsMetadataBuilder.DatePointBuilder date
+            = second.getValidDatePointBuilder() != null
+              ? second.getValidDatePointBuilder() : first.getValidDatePointBuilder();
+    if ( date != null )
+      mergedThreddsMetadata.setValidDatePointBuilder( date.getDate(), date.getDateFormat() );
   }
 
   private static void mergeOverwriteDateModified( ThreddsMetadataBuilder first,
                                                   ThreddsMetadataBuilder second,
                                                   ThreddsMetadataBuilder mergedThreddsMetadata )
   {
-    DateType dateModified = second.getDateModified() != null
-                            ? second.getDateModified() : first.getDateModified();
-    if ( dateModified != null )
-      mergedThreddsMetadata.setDateModified( dateModified );
+      ThreddsMetadataBuilder.DatePointBuilder date
+              = second.getModifiedDatePointBuilder() != null
+                ? second.getModifiedDatePointBuilder() : first.getModifiedDatePointBuilder();
+      if ( date != null )
+          mergedThreddsMetadata.setModifiedDatePointBuilder( date.getDate(), date.getDateFormat() );
   }
 
   private static void mergeOverwriteDateMetadataModified( ThreddsMetadataBuilder first,
                                                           ThreddsMetadataBuilder second,
                                                           ThreddsMetadataBuilder mergedThreddsMetadata )
   {
-    DateType dateMetadataModified = second.getDateMetadataModified() != null
-                                   ? second.getDateMetadataModified() : first.getDateMetadataModified();
-    if ( dateMetadataModified != null )
-      mergedThreddsMetadata.setDateMetadataModified( dateMetadataModified );
+    ThreddsMetadataBuilder.DatePointBuilder date
+            = second.getMetadataModifiedDatePointBuilder() != null
+              ? second.getMetadataModifiedDatePointBuilder() : first.getMetadataModifiedDatePointBuilder();
+    if ( date != null )
+      mergedThreddsMetadata.setMetadataModifiedDatePointBuilder( date.getDate(), date.getDateFormat() );
   }
 
   private static void mergeOverwriteDateMetadataCreated( ThreddsMetadataBuilder first,
                                                          ThreddsMetadataBuilder second,
                                                          ThreddsMetadataBuilder mergedThreddsMetadata )
   {
-    DateType dateMetadataCreated = second.getDateMetadataCreated() != null
-                                   ? second.getDateMetadataCreated() : first.getDateMetadataCreated();
-    if ( dateMetadataCreated != null )
-      mergedThreddsMetadata.setDateMetadataCreated( dateMetadataCreated );
+    ThreddsMetadataBuilder.DatePointBuilder date
+            = second.getMetadataCreatedDatePointBuilder() != null
+              ? second.getMetadataCreatedDatePointBuilder() : first.getMetadataCreatedDatePointBuilder();
+    if ( date != null )
+      mergedThreddsMetadata.setMetadataCreatedDatePointBuilder( date.getDate(), date.getDateFormat() );
   }
 
   private static void mergeOverwriteDateIssued( ThreddsMetadataBuilder first,
                                                 ThreddsMetadataBuilder second,
                                                 ThreddsMetadataBuilder mergedThreddsMetadata )
   {
-    DateType dateIssued = second.getDateIssued() != null ? second.getDateIssued() : first.getDateIssued();
-    if ( dateIssued != null )
-      mergedThreddsMetadata.setDateIssued( dateIssued );
+    ThreddsMetadataBuilder.DatePointBuilder date
+            = second.getIssuedDatePointBuilder() != null
+              ? second.getIssuedDatePointBuilder() : first.getIssuedDatePointBuilder();
+    if ( date != null )
+      mergedThreddsMetadata.setIssuedDatePointBuilder( date.getDate(), date.getDateFormat() );
   }
 
   private static void mergeOverwriteDateCreated( ThreddsMetadataBuilder first,
                                                  ThreddsMetadataBuilder second,
                                                  ThreddsMetadataBuilder mergedThreddsMetadata )
   {
-    DateType dateCreated = second.getDateCreated() != null ? second.getDateCreated() : first.getDateCreated();
-    if ( dateCreated != null )
-      mergedThreddsMetadata.setDateCreated( dateCreated );
+    ThreddsMetadataBuilder.DatePointBuilder date
+            = second.getCreatedDatePointBuilder() != null
+              ? second.getCreatedDatePointBuilder() : first.getCreatedDatePointBuilder();
+    if ( date != null )
+      mergedThreddsMetadata.setCreatedDatePointBuilder( date.getDate(), date.getDateFormat() );
   }
 
   private static void mergeOverwriteDateAvailable( ThreddsMetadataBuilder first,
                                                    ThreddsMetadataBuilder second,
                                                    ThreddsMetadataBuilder mergedThreddsMetadata )
   {
-    DateRange dateAvailable = second.getDateAvailable() != null ? second.getDateAvailable() : first.getDateAvailable();
-    if ( dateAvailable != null )
-      mergedThreddsMetadata.setDateAvailable( dateAvailable );
+    ThreddsMetadataBuilder.DatePointBuilder date
+            = second.getAvailableDatePointBuilder() != null
+              ? second.getAvailableDatePointBuilder() : first.getAvailableDatePointBuilder();
+    if ( date != null )
+      mergedThreddsMetadata.setAvailableDatePointBuilder( date.getDate(), date.getDateFormat() );
   }
 
   private static void mergeOverwriteDataType( ThreddsMetadataBuilder first,

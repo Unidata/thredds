@@ -34,18 +34,14 @@ package thredds.catalog2.simpleImpl;
 
 import thredds.catalog2.ThreddsMetadata;
 import thredds.catalog2.builder.ThreddsMetadataBuilder;
-import thredds.catalog2.builder.BuilderIssue;
 import thredds.catalog2.builder.BuilderException;
+import thredds.catalog2.builder.BuilderIssues;
 import thredds.catalog.DataFormatType;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateType;
 import ucar.nc2.constants.FeatureType;
 
 /**
@@ -66,16 +62,18 @@ public class ThreddsMetadataImpl
   private List<ContributorImpl> publishers;
 
   private String projectTitle;
-  private DateType dateCreated;
-  private DateType dateModified;
-  private DateType dateIssued;
-  private DateRange dateValid;
-  private DateRange dateAvailable;
-  private DateType dateMetadataCreated;
-  private DateType dateMetadataModified;
+
+  private List<DatePointImpl> otherDates;
+  private DatePointImpl createdDate;
+  private DatePointImpl modifiedDate;
+  private DatePointImpl issuedDate;
+  private DatePointImpl validDate;
+  private DatePointImpl availableDate;
+  private DatePointImpl metadataCreatedDate;
+  private DatePointImpl metadataModifiedDate;
 
   private GeospatialCoverageImpl geospatialCoverage;
-  private DateRange temporalCoverage;
+  private DateRangeImpl temporalCoverage;
 
   private List<VariableImpl> variables;
   private long dataSizeInBytes;
@@ -83,7 +81,7 @@ public class ThreddsMetadataImpl
   private FeatureType dataType;
   private String collectionType;
 
-  public ThreddsMetadataImpl()
+    public ThreddsMetadataImpl()
   {
     this.isBuilt = false;
     this.dataSizeInBytes = -1;
@@ -102,9 +100,9 @@ public class ThreddsMetadataImpl
     if ( this.publishers != null && ! this.publishers.isEmpty() )
       return false;
 
-    if ( this.projectTitle != null || this.dateCreated != null || this.dateModified != null
-         || this.dateIssued != null || this.dateValid != null || this.dateAvailable != null
-         || this.dateMetadataCreated != null || this.dateMetadataModified != null
+    if ( this.projectTitle != null || this.createdDate != null || this.modifiedDate != null
+         || this.issuedDate != null || this.validDate != null || this.availableDate != null
+         || this.metadataCreatedDate != null || this.metadataModifiedDate != null
          || this.geospatialCoverage != null || this.temporalCoverage != null )
       return false;
 
@@ -179,9 +177,7 @@ public class ThreddsMetadataImpl
       throw new IllegalArgumentException( "Phrase may not be null.");
     if ( this.keyphrases == null )
       this.keyphrases = new ArrayList<KeyphraseImpl>();
-    KeyphraseImpl keyphrase = new KeyphraseImpl();
-    keyphrase.setAuthority( authority );
-    keyphrase.setPhrase( phrase );
+    KeyphraseImpl keyphrase = new KeyphraseImpl( authority, phrase);
     this.keyphrases.add( keyphrase );
     return keyphrase;
   }
@@ -347,91 +343,204 @@ public class ThreddsMetadataImpl
     return this.projectTitle;
   }
 
-  public void setDateCreated( DateType dateCreated )
+    public DatePointBuilder addOtherDatePointBuilder( String date, String format, String type )
+    {
+        if ( this.isBuilt )
+            throw new IllegalStateException( "This Builder has been built." );
+        DatePointType datePointType = DatePointType.getTypeForLabel( type );
+        if ( datePointType != DatePointType.Other
+             && datePointType != DatePointType.Untyped )
+            throw new IllegalArgumentException( "Must use explicit setter method for given type [" + type + "]." );
+        if ( this.otherDates == null )
+            this.otherDates = new ArrayList<DatePointImpl>();
+        DatePointImpl dp = new DatePointImpl( date, format, type);
+        this.otherDates.add( dp );
+        return dp;
+    }
+
+    public boolean removeOtherDatePointBuilder( DatePointBuilder builder )
+    {
+        if ( this.isBuilt )
+            throw new IllegalStateException( "This Builder has been built." );
+        if ( builder == null )
+            return false;
+        if ( this.otherDates == null )
+            return false;
+        return this.otherDates.remove( (DatePointImpl) builder );
+    }
+
+    public List<DatePointBuilder> getOtherDatePointBuilders()
+    {
+        if ( this.isBuilt )
+            throw new IllegalStateException( "This Builder has been built." );
+        if ( this.otherDates == null )
+            return Collections.emptyList();
+        return Collections.unmodifiableList( new ArrayList<DatePointBuilder>( this.otherDates) );
+    }
+
+    public List<DatePoint> getOtherDates()
+    {
+        if ( !this.isBuilt )
+            throw new IllegalStateException( "Sorry, I've escaped from my Builder before being built." );
+        if ( this.otherDates == null )
+            return Collections.emptyList();
+        return Collections.unmodifiableList( new ArrayList<DatePoint>( this.otherDates ) );
+    }
+
+    public DatePointBuilder setCreatedDatePointBuilder( String date, String format )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This Builder has been built." );
-    this.dateCreated = dateCreated;
+    this.createdDate = new DatePointImpl( date, format, DatePointType.Created.toString());
+    return this.createdDate;
   }
 
-  public DateType getDateCreated()
+  public DatePointBuilder getCreatedDatePointBuilder()
   {
-    return this.dateCreated;
+      if ( this.isBuilt )
+          throw new IllegalStateException( "This Builder has been built." );
+      return this.createdDate;
   }
 
-  public void setDateModified( DateType dateModified )
-  {
-    if ( this.isBuilt )
-      throw new IllegalStateException( "This Builder has been built." );
-    this.dateModified = dateModified;
-  }
+    public DatePoint getCreatedDate()
+    {
+        if ( ! this.isBuilt)
+            throw new IllegalStateException( "Sorry, I've escaped from my Builder before being built." );
+        return this.createdDate;
+    }
 
-  public DateType getDateModified()
-  {
-    return this.dateModified;
-  }
-
-  public void setDateIssued( DateType dateIssued )
+  public DatePointBuilder setModifiedDatePointBuilder( String date, String format )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This Builder has been built." );
-    this.dateIssued = dateIssued;
+    this.modifiedDate = new DatePointImpl( date, format, DatePointType.Modified.toString() );
+    return this.modifiedDate;
   }
 
-  public DateType getDateIssued()
+  public DatePointBuilder getModifiedDatePointBuilder()
   {
-    return this.dateIssued;
+      if ( this.isBuilt )
+          throw new IllegalStateException( "This Builder has been built." );
+      return this.modifiedDate;
   }
 
-  public void setDateValid( DateRange dateValid )
-  {
-    if ( this.isBuilt )
-      throw new IllegalStateException( "This Builder has been built." );
-    this.dateValid = dateValid;
-  }
+    public DatePoint getModifiedDate() {
+        if ( !this.isBuilt )
+            throw new IllegalStateException( "Sorry, I've escaped from my Builder before being built." );
+        return this.modifiedDate;
+    }
 
-  public DateRange getDateValid()
-  {
-    return this.dateValid;
-  }
-
-  public void setDateAvailable( DateRange dateAvailable )
+  public DatePointBuilder setIssuedDatePointBuilder( String date, String format )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This Builder has been built." );
-    this.dateAvailable = dateAvailable;
+    this.issuedDate = new DatePointImpl( date, format, DatePointType.Issued.toString() );
+    return this.issuedDate;
   }
 
-  public DateRange getDateAvailable()
+  public DatePointBuilder getIssuedDatePointBuilder()
   {
-    return this.dateAvailable;
+      if ( this.isBuilt )
+          throw new IllegalStateException( "This Builder has been built." );
+      return this.issuedDate;
   }
 
-  public void setDateMetadataCreated( DateType dateMetadataCreated )
-  {
-    if ( this.isBuilt )
-      throw new IllegalStateException( "This Builder has been built." );
-    this.dateMetadataCreated = dateMetadataCreated;
-  }
+    public DatePoint getIssuedDate()
+    {
+        if ( !this.isBuilt )
+            throw new IllegalStateException( "Sorry, I've escaped from my Builder before being built." );
+        return this.issuedDate;
+    }
 
-  public DateType getDateMetadataCreated()
-  {
-    return this.dateMetadataCreated;
-  }
-
-  public void setDateMetadataModified( DateType dateMetadataModified )
+    public DatePointBuilder setValidDatePointBuilder( String date, String format )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This Builder has been built." );
-    this.dateMetadataModified = dateMetadataModified;
+    this.validDate = new DatePointImpl( date, format, DatePointType.Valid.toString() );
+    return this.validDate;
   }
 
-  public DateType getDateMetadataModified()
+  public DatePointBuilder getValidDatePointBuilder()
   {
-    return this.dateMetadataModified;
+      if ( this.isBuilt )
+          throw new IllegalStateException( "This Builder has been built." );
+      return this.validDate;
   }
 
-  public GeospatialCoverageBuilder setNewGeospatialCoverageBuilder( URI crsUri )
+    public DatePoint getValidDate()
+    {
+        if ( !this.isBuilt )
+            throw new IllegalStateException( "Sorry, I've escaped from my Builder before being built." );
+        return this.validDate;
+    }
+
+  public DatePointBuilder setAvailableDatePointBuilder( String date, String format )
+  {
+    if ( this.isBuilt )
+      throw new IllegalStateException( "This Builder has been built." );
+    this.availableDate = new DatePointImpl( date, format, DatePointType.Available.toString() );
+    return this.availableDate;
+  }
+
+  public DatePointBuilder getAvailableDatePointBuilder()
+  {
+      if ( this.isBuilt )
+          throw new IllegalStateException( "This Builder has been built." );
+      return this.availableDate;
+  }
+
+    public DatePoint getAvailableDate()
+    {
+        if ( !this.isBuilt )
+            throw new IllegalStateException( "Sorry, I've escaped from my Builder before being built." );
+        return this.availableDate;
+    }
+
+  public DatePointBuilder setMetadataCreatedDatePointBuilder( String date, String format )
+  {
+    if ( this.isBuilt )
+      throw new IllegalStateException( "This Builder has been built." );
+    this.metadataCreatedDate = new DatePointImpl( date, format, DatePointType.MetadataCreated.toString() );
+    return this.metadataCreatedDate;
+  }
+
+  public DatePointBuilder getMetadataCreatedDatePointBuilder()
+  {
+      if ( this.isBuilt )
+          throw new IllegalStateException( "This Builder has been built." );
+      return this.metadataCreatedDate;
+  }
+
+    public DatePoint getMetadataCreatedDate()
+    {
+        if ( !this.isBuilt )
+            throw new IllegalStateException( "Sorry, I've escaped from my Builder before being built." );
+        return this.metadataCreatedDate;
+    }
+
+  public DatePointBuilder setMetadataModifiedDatePointBuilder( String date, String format )
+  {
+    if ( this.isBuilt )
+      throw new IllegalStateException( "This Builder has been built." );
+    this.metadataModifiedDate = new DatePointImpl( date, format, DatePointType.MetadataModified.toString() );
+    return this.metadataModifiedDate;
+  }
+
+  public DatePointBuilder getMetadataModifiedDatePointBuilder()
+  {
+      if ( this.isBuilt )
+          throw new IllegalStateException( "This Builder has been built." );
+      return this.metadataModifiedDate;
+  }
+
+    public DatePoint getMetadataModifiedDate()
+    {
+        if ( !this.isBuilt )
+            throw new IllegalStateException( "Sorry, I've escaped from my Builder before being built." );
+        return this.metadataModifiedDate;
+    }
+
+    public GeospatialCoverageBuilder setNewGeospatialCoverageBuilder( URI crsUri )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This Builder has been built." );
@@ -462,17 +571,27 @@ public class ThreddsMetadataImpl
     return this.geospatialCoverage;
   }
 
-  public void setTemporalCoverage( DateRange temporalCoverage )
+  public DateRangeBuilder setTemporalCoverageBuilder( String startDate, String startDateFormat,
+                                                      String endDate, String endDateFormat, String duration )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This Builder has been built." );
-    this.temporalCoverage = temporalCoverage;
-  }
-
-  public DateRange getTemporalCoverage()
-  {
+    this.temporalCoverage = new DateRangeImpl( startDate, startDateFormat, endDate, endDateFormat, duration );
     return this.temporalCoverage;
   }
+
+  public DateRangeBuilder getTemporalCoverageBuilder()
+  {
+      if ( this.isBuilt )
+          throw new IllegalStateException( "This Builder has been built." );
+      return this.temporalCoverage;
+  }
+
+    public DateRange getTemporalCoverage() {
+        if ( ! this.isBuilt )
+            throw new IllegalStateException( "Sorry, I've escaped from my Builder before being built.");
+        return this.temporalCoverage;
+    }
 
   public VariableBuilder addVariableBuilder()
   {
@@ -548,6 +667,10 @@ public class ThreddsMetadataImpl
       throw new IllegalStateException( "This Builder has been built." );
     this.dataType = dataType;
   }
+    public void setDataType( String dataType)
+    {
+        this.setDataType( FeatureType.getType( dataType ));
+    }
 
   public FeatureType getDataType()
   {
@@ -571,12 +694,12 @@ public class ThreddsMetadataImpl
     return this.isBuilt;
   }
 
-  public boolean isBuildable( List<BuilderIssue> issues )
+  public boolean isBuildable( BuilderIssues issues )
   {
     if ( this.isBuilt )
       return true;
 
-    List<BuilderIssue> localIssues = new ArrayList<BuilderIssue>();
+    BuilderIssues localIssues = new BuilderIssues();
 
     // Check subordinates.
     if ( this.docs != null )
@@ -589,7 +712,7 @@ public class ThreddsMetadataImpl
     if ( localIssues.isEmpty() )
       return true;
 
-    issues.addAll( localIssues );
+    issues.addAllIssues( localIssues );
     return false;
   }
 
@@ -598,7 +721,7 @@ public class ThreddsMetadataImpl
     if ( this.isBuilt )
       return this;
 
-    List<BuilderIssue> issues = new ArrayList<BuilderIssue>();
+    BuilderIssues issues = new BuilderIssues();
     if ( ! isBuildable( issues ) )
       throw new BuilderException( issues );
 
@@ -613,9 +736,11 @@ public class ThreddsMetadataImpl
     return this;
   }
 
-  public static class DocumentationImpl
+    public static class DocumentationImpl
           implements Documentation, DocumentationBuilder
   {
+    private boolean isBuilt = false;
+
     private final boolean isContainedContent;
 
     public final String docType;
@@ -677,17 +802,18 @@ public class ThreddsMetadataImpl
 
     public boolean isBuilt()
     {
-      return true;
+      return this.isBuilt;
     }
 
-    public boolean isBuildable( List<BuilderIssue> issues )
+    public boolean isBuildable( BuilderIssues issues )
     {
       return true;
     }
 
     public Documentation build() throws BuilderException
     {
-      return this;
+        this.isBuilt = true;
+        return this;
     }
   }
 
@@ -695,25 +821,26 @@ public class ThreddsMetadataImpl
           implements Keyphrase, KeyphraseBuilder
   {
     private boolean isBuilt;
-    private String authority;
-    private String phrase;
+    private final String authority;
+    private final String phrase;
 
-    public void setAuthority( String authority )
+    public KeyphraseImpl( String authority, String phrase)
     {
+        if ( phrase == null || phrase.equals( "" ))
+            throw new IllegalArgumentException( "Phrase may not be null.");
+        this.authority = authority;
+        this.phrase = phrase;
+        this.isBuilt = false;
     }
 
     public String getAuthority()
     {
-      return null;
-    }
-
-    public void setPhrase( String phrase )
-    {
+      return this.authority;
     }
 
     public String getPhrase()
     {
-      return null;
+      return this.phrase;
     }
 
     public boolean isBuilt()
@@ -721,16 +848,194 @@ public class ThreddsMetadataImpl
       return this.isBuilt;
     }
 
-    public boolean isBuildable( List<BuilderIssue> issues )
-    {
-      return false;
+    public boolean isBuildable( BuilderIssues issues ) {
+        return true;
     }
 
-    public Keyphrase build() throws BuilderException
-    {
-      return null;
+    public Keyphrase build() throws BuilderException {
+        this.isBuilt = true;
+        return this;
     }
   }
+
+    public static class DatePointImpl
+            implements DatePoint, DatePointBuilder
+    {
+        private boolean isBuilt = false;
+
+        private final String date;
+        private final String format;
+        private final String type;
+
+        public DatePointImpl( String date, String format, String type) {
+            if ( date == null )
+                throw new IllegalArgumentException( "Date may not be null.");
+
+            this.date = date;
+            this.format = format;
+            this.type = type;
+        }
+
+        public String getDate() {
+            return this.date;
+        }
+
+        public String getDateFormat() {
+            return this.format;
+        }
+
+        public boolean isTyped() {
+            return this.type != null || this.type.equals(  "" );
+        }
+
+        public String getType() {
+            return this.type;
+        }
+
+        @Override
+        public boolean equals( Object obj )
+        {
+            if ( this == obj ) return true;
+            if ( ! ( obj instanceof DatePointImpl )) return false;
+            return obj.hashCode() == this.hashCode();
+        }
+
+        @Override
+        public int hashCode()
+        {
+            int result = 17;
+            if ( this.date != null )
+                result = 37*result + this.date.hashCode();
+            if ( this.format != null )
+                result = 37*result + this.format.hashCode();
+            if ( this.type != null )
+                result = 37*result + this.type.hashCode();
+            return result;
+        }
+
+        public boolean isBuilt() {
+            return this.isBuilt;
+        }
+
+        public boolean isBuildable( BuilderIssues issues ) {
+            return true;
+        }
+
+        public DatePoint build() throws BuilderException {
+            this.isBuilt = true;
+            return this;
+        }
+    }
+
+    public static class DateRangeImpl
+            implements DateRange, DateRangeBuilder
+    {
+        private boolean isBuilt = false;
+
+        private final String startDateFormat;
+        private final String startDate;
+        private final String endDateFormat;
+        private final String endDate;
+        private final String duration;
+
+        public DateRangeImpl( String startDate, String startDateFormat,
+                              String endDate, String endDateFormat,
+                              String duration )
+        {
+            this.startDateFormat = startDateFormat;
+            this.startDate = startDate;
+            this.endDateFormat = endDateFormat;
+            this.endDate = endDate;
+            this.duration = duration;
+        }
+
+        public String getStartDateFormat()
+        {
+            return this.startDateFormat;
+        }
+
+        public String getStartDate()
+        {
+            return this.startDate;
+        }
+
+        public String getEndDateFormat()
+        {
+            return this.endDateFormat;
+        }
+
+        public String getEndDate()
+        {
+            return this.endDate;
+        }
+
+        public String getDuration()
+        {
+            return this.duration;
+        }
+
+        public String toString()
+        {
+            return (this.isBuilt ? "DateRange" : "DateRangeBuilder") +
+                   " [" + this.startDate + " <-- " + this.duration + " --> " + this.endDate + "]";
+        }
+
+        @Override
+        public boolean equals( Object obj )
+        {
+            if ( this == obj ) return true;
+            if ( !( obj instanceof DateRangeImpl ) ) return false;
+            return obj.hashCode() == this.hashCode();
+        }
+
+        @Override
+        public int hashCode()
+        {
+            int result = 17;
+            if ( this.startDate != null )
+                result = 37 * result + this.startDate.hashCode();
+            if ( this.startDateFormat != null )
+                result = 37 * result + this.startDateFormat.hashCode();
+            if ( this.endDate != null )
+                result = 37 * result + this.endDate.hashCode();
+            if ( this.endDateFormat != null )
+                result = 37 * result + this.endDateFormat.hashCode();
+            if ( this.duration != null )
+                result = 37 * result + this.duration.hashCode();
+            return result;
+        }
+
+        public boolean isBuilt() {
+            return this.isBuilt;
+        }
+
+        public boolean isBuildable( BuilderIssues issues )
+        {
+            if (this.isBuilt) return true;
+
+            int specified = 3;
+            if ( this.startDate == null || this.startDate.equals( "" ) )
+                specified--;
+            if ( this.endDate == null || this.endDate.equals( "" ) )
+                specified--;
+            if ( this.duration == null || this.duration.equals( "" ) )
+                specified--;
+
+            if ( specified == 2 )
+                return true;
+            else if ( specified < 2)
+              issues.addIssue( "Underspecified " + this.toString(), this);
+            else // if (specified > 2)
+              issues.addIssue( "Overspecified " + this.toString(), this);
+            
+            return false;
+        }
+
+        public DateRange build() throws BuilderException {
+            this.isBuilt = true;
+            return this;
+        }
+    }
 
   public static class ContributorImpl
           implements Contributor, ContributorBuilder
@@ -797,7 +1102,7 @@ public class ThreddsMetadataImpl
       return this.isBuilt;
     }
 
-    public boolean isBuildable( List<BuilderIssue> issues )
+    public boolean isBuildable( BuilderIssues issues )
     {
       return true;
     }
@@ -889,7 +1194,7 @@ public class ThreddsMetadataImpl
       return this.isBuilt;
     }
 
-    public boolean isBuildable( List<BuilderIssue> issues )
+    public boolean isBuildable( BuilderIssues issues )
     {
       return true;
     }
@@ -1010,7 +1315,7 @@ public class ThreddsMetadataImpl
       return this.isBuilt;
     }
 
-    public boolean isBuildable( List<BuilderIssue> issues )
+    public boolean isBuildable( BuilderIssues issues )
     {
       return false;
     }
@@ -1104,7 +1409,7 @@ public class ThreddsMetadataImpl
       return this.isBuilt;
     }
 
-    public boolean isBuildable( List<BuilderIssue> issues )
+    public boolean isBuildable( BuilderIssues issues )
     {
       return true;
     }

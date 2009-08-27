@@ -33,6 +33,8 @@
 package thredds.catalog;
 
 import thredds.catalog2.Catalog;
+import thredds.catalog2.builder.CatalogBuilder;
+import thredds.catalog2.builder.BuilderIssues;
 import thredds.catalog2.xml.parser.ThreddsXmlParser;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 import thredds.catalog2.xml.parser.stax.StaxThreddsXmlParser;
@@ -55,25 +57,26 @@ public class TimeLargeCatalogRead
   public static void main( String[] args )
           throws URISyntaxException, ThreddsXmlParserException
   {
-    InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
-    String catAsString = gatCat();
-    URI uri = new URI( catURL);
-    InvCatalogImpl cat = null;
+      String catAsString = LargeCatalogReadUtils.createExampleRadarServiceCatalogAsString( 9112 );
+
+      InvCatalogImpl cat = null;
+      CatalogBuilder catalogBuilder = null;
+
     long cum = 0;
     long cum2 = 0;
     int numAttempts = 100;
     for ( int i = 0; i < numAttempts; i++ )
     {
       long start = System.currentTimeMillis();
-      cat = fac.readXML( catAsString, uri );
-      // cat = fac.readXML( catURL );
+      cat = LargeCatalogReadUtils.parseCatalogIntoInvCatalogImpl( catAsString, catURL );
       long done = System.currentTimeMillis();
       long elapsed = done - start;
-      start = System.currentTimeMillis();
-      Catalog cat2 = parseCatalog( catAsString, catURL );
 
+      start = System.currentTimeMillis();
+      catalogBuilder = LargeCatalogReadUtils.parseCatalogIntoBuilder( catAsString, catURL );
       done = System.currentTimeMillis();
       long elapsed2 = done - start;
+
       cum+=elapsed;
       cum2+=elapsed2;
       System.out.println( "Read catalog ["+i+"]: InvCat=" + elapsed + " stax=" + elapsed2 + "\n" );
@@ -83,83 +86,23 @@ public class TimeLargeCatalogRead
     System.out.println( "CumStax=" + cum2 );
     System.out.println( "AvgStax=" + cum2/ numAttempts );
 
+      System.out.println( "InvCat" );
     StringBuilder sb = new StringBuilder();
     if ( cat.check( sb ) )
       System.out.println( "Failed check:\n" + sb );
     else
       System.out.println( "OK check:\n" + sb );
 
+      System.out.println( "thredds.catalog2" );
+      BuilderIssues bldIssues = new BuilderIssues();
+      if ( !catalogBuilder.isBuildable( bldIssues ) )
+          System.out.println( "Can't build catalog: " + bldIssues.toString() );
+      else
+          System.out.println( "Build OK: " + ( bldIssues.isEmpty() ? "" : bldIssues.toString()) );
+
     System.out.println( "Done" );
 
   }
 
-  private static Catalog parseCatalog( String docAsString, String docBaseUriString )
-          throws URISyntaxException, ThreddsXmlParserException
-  {
-    URI docBaseUri;
-//    try
-//    {
-      docBaseUri = new URI( docBaseUriString );
-//    }
-//    catch ( URISyntaxException e )
-//    {
-//      fail( "Syntax problem with URI [" + docBaseUriString + "]." );
-//      return null;
-//    }
 
-    Catalog cat;
-    ThreddsXmlParser cp = StaxThreddsXmlParser.newInstance();
-//    try
-//    {
-      cat = cp.parse( new StringReader( docAsString ), docBaseUri );
-//    }
-//    catch ( ThreddsXmlParserException e )
-//    {
-//      fail( "Failed to parse catalog: " + e.getMessage() );
-//      return null;
-//    }
-
-//    assertNotNull( "Result of parse was null catalog [" + docBaseUriString + "].",
-//                   cat );
-    return cat;
-  }
-
-  private static String gatCat()
-  {
-    StringBuilder sb = new StringBuilder();
-    sb.append( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-               "<catalog xmlns=\"http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" name=\"Radar Level2 datasets in near real time\" version=\"1.0.1\">\n" +
-               "\n" +
-               "  <service name=\"OPENDAP\" serviceType=\"OPENDAP\" base=\"/thredds/dodsC/nexrad/level2/IDD/\"/>\n" +
-               "    <dataset name=\"RadarLevel2 datasets for available stations and times\" collectionType=\"TimeSeries\" ID=\"accept=xml&amp;stn=KARX&amp;time_start=2009-04-07T00:00:00Z&amp;time_end=2009-05-22T16:44:39Z\">\n" +
-               "    <metadata inherited=\"true\">\n" +
-               "      <dataType>Radial</dataType>\n" +
-               "      <dataFormat>NEXRAD2</dataFormat>\n" +
-               "      <serviceName>OPENDAP</serviceName>\n" +
-               "\n" +
-               "    </metadata>\n" +
-               "\n" +
-               "      <dataset name=\"Level2_KARX_20090522_1518.ar2v\" ID=\"1209322007\"\n" +
-               "        urlPath=\"KARX/20090522/Level2_KARX_20090522_1518.ar2v\">\n" +
-               "        <date type=\"start of ob\">2009-05-22T15:18:00</date>\n" +
-               "      </dataset>");
-
-    for (int i=0; i<9111; i++)
-    {
-      sb.append( "      <dataset name=\"Level2_KARX_20090522_1518.ar2v\" ID=\"").append( 1209322007 + i).append("\"\n")
-              .append(   "        urlPath=\"KARX/20090522/Level2_KARX_20090522_1518.ar2v\">\n")
-              .append(   "        <date type=\"start of ob\">2009-05-22T15:18:00</date>\n")
-              .append(   "      </dataset>");
-    }
-
-    sb.append( "      <dataset name=\"Level2_KARX_20090407_0007.ar2v\" ID=\"1616941921\"\n" +
-               "        urlPath=\"KARX/20090407/Level2_KARX_20090407_0007.ar2v\">\n" +
-               "        <date type=\"start of ob\">2009-04-07T00:07:00</date>\n" +
-               "\n" +
-               "      </dataset>\n" +
-               "    </dataset>\n" +
-               "</catalog>");
-
-    return sb.toString();
-  }
 }

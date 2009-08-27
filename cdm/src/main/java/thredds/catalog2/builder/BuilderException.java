@@ -43,43 +43,43 @@ import java.util.Collections;
  */
 public class BuilderException extends Exception
 {
-  private final List<BuilderIssue> issues;
+  private final BuilderIssues issues;
 
   public BuilderException( BuilderIssue issue )
   {
-    super();
-    this.issues = Collections.singletonList( issue );
+      super();
+      if ( issue == null )
+          throw new IllegalArgumentException( "Issue may not be null.");
+      this.issues = new BuilderIssues( issue );
   }
 
-  public BuilderException( List<BuilderIssue> issues )
+  public BuilderException( BuilderIssues issues )
   {
     super();
+    if ( issues == null )
+        throw new IllegalArgumentException( "Issues may not be null." );
     this.issues = issues;
   }
 
   public BuilderException( BuilderIssue issue, Throwable cause )
   {
-    super( cause );
-    this.issues = Collections.singletonList( issue );
+      super( cause );
+      this.issues = new BuilderIssues( issue );
   }
 
-  public BuilderException( List<BuilderIssue> issues, Throwable cause )
+  public BuilderException( BuilderIssues issues, Throwable cause )
   {
     super( cause );
     this.issues = issues;
   }
 
-  public List<BuilderIssue> getSources()
+  public BuilderIssues getIssues()
   {
-    return Collections.unmodifiableList( this.issues );
+    return this.issues;
   }
 
   @Override
-  public String getMessage()
-  {
-    StringBuilder sb = new StringBuilder();
-    for ( BuilderIssue bfi : this.issues )
-      sb.append( bfi.getMessage() ).append( "\n");
-    return sb.toString();
+  public String getMessage() {
+      return this.issues.toString();
   }
 }
