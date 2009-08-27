@@ -160,7 +160,12 @@ public class PointQueryBean {
     return spatialSelection;
   }
 
-  boolean validate() {
+
+  TemporalSelection getTemporalSelection() {
+    return temporalSelection;
+  }
+
+   boolean validate() {
     RequestType reqType = getRequestType();
     if (reqType == RequestType.dataForm) {
       parseVariablesForm();

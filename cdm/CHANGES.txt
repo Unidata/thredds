@@ -3,7 +3,11 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.1:
+ 2:
+  StationPointFeature, StationCollection.flatten
+  catalog2 refactor
  1:
+  GRIB library 8.0
   Back out DateUnit changes - too many small glitches - revert to 4.0 code base
   UAMIVServiceProvider looks for camxproj.txt for config info
   ScaleMissingEnhance: assume if forVar isUnsigned, data conversion should use unsigned data, regardless of orgVar

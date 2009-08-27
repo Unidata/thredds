@@ -41,16 +41,12 @@ import ucar.nc2.ft.point.remote.PointStream;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.Station;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.util.Format;
 import ucar.ma2.StructureData;
 import ucar.ma2.Array;
 
 import java.util.*;
 import java.io.*;
-
-import org.jdom.Document;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamWriter;
@@ -66,28 +62,147 @@ import javax.xml.stream.XMLStreamException;
  */
 public class StationWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StationWriter.class);
-  static private org.slf4j.Logger cacheLogger = org.slf4j.LoggerFactory.getLogger("cacheLogger");
 
   private static boolean debug = true, debugDetail = true;
   private static long timeToScan = 0;
 
-  private List<Station> stationList;
-  private List<VariableSimpleIF> variableList;
-  private DateFormatter format = new DateFormatter();
-
-  private StationTimeSeriesFeatureCollection sfc;
   private FeatureDatasetPoint fd;
+  private StationTimeSeriesFeatureCollection sfc;
+  private PointQueryBean qb;
+
   private Date start, end;
+
+  private List<Station> wantStations;
+  private List<VariableSimpleIF> wantVars;
+  private DateRange wantRange;
+  private PointFeatureCollection pfc;
 
   public StationWriter(FeatureDatasetPoint fd, StationTimeSeriesFeatureCollection sfc, PointQueryBean qb) throws IOException {
     this.fd = fd;
     this.sfc = sfc;
-
-    stationList = new ArrayList<Station>(sfc.getStations());
-    variableList = new ArrayList<VariableSimpleIF>(fd.getDataVariables());
+    this.qb = qb;
 
     start = fd.getStartDate();
     end = fd.getEndDate();
+  }
+
+  boolean validate(HttpServletResponse res) throws IOException {
+
+    // verify SpatialSelection has some stations
+    if (qb.getSpatialSelection() == PointQueryBean.SpatialSelection.bb) {
+      wantStations = sfc.getStations(qb.getLatLonRect());
+      if (wantStations.size() == 0) {
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: Bounding Box contains no stations; bb= " + qb.getLatLonRect());
+        return false;
+      }
+    } else if (qb.getSpatialSelection() == PointQueryBean.SpatialSelection.stns) {
+      wantStations = sfc.getStations(qb.getStnNames());
+      if (wantStations.size() == 0) {
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: No valid stations specified = " + qb.getStn());
+        return false;
+      }
+    } else {
+      wantStations = sfc.getStations();
+    }
+
+    // verify TemporalSelection intersects
+    if (qb.getTemporalSelection() == PointQueryBean.TemporalSelection.range) {
+      wantRange = qb.getDateRange();
+      DateRange haveRange = fd.getDateRange();
+      if (!haveRange.intersects(wantRange)) {
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: This dataset does not contain the time range= " + wantRange);
+        return false;
+      }
+    }
+
+    // restrict to these variables
+    List<? extends VariableSimpleIF> dataVars = fd.getDataVariables();
+    String[] vars = qb.getVarNames();
+    List<String> varNames = (vars == null) ? null : Arrays.asList(vars);
+    if ((varNames == null) || (varNames.size() == 0)) {
+      wantVars = new ArrayList<VariableSimpleIF>(dataVars);
+    } else {
+      wantVars = new ArrayList<VariableSimpleIF>();
+      for (VariableSimpleIF v : dataVars) {
+        if ((varNames == null) || varNames.contains(v.getShortName())) // LOOK N**2
+          wantVars.add(v);
+      }
+    }
+
+    // heres the set of wanted point features
+    pfc = sfc.flatten( wantStations, wantRange, null);
+
+    return true;
+  }
+
+
+   ////////////////////////////////////////////////////////////////
+  // writing
+
+  public File writeNetcdf() throws IOException {
+    WriterNetcdf w = (WriterNetcdf) write(null);
+    return w.netcdfResult;
+  }
+
+  public Writer write(HttpServletResponse res) throws IOException {
+    long start = System.currentTimeMillis();
+    Limit counter = new Limit();
+    counter.limit = 150;
+
+    // which writer, based on desired response
+    PointQueryBean.ResponseType resType = qb.getResponseType();
+    Writer w;
+    if (resType == PointQueryBean.ResponseType.xml) {
+      w = new WriterXML( res.getWriter());
+    } else if (resType == PointQueryBean.ResponseType.csv) {
+      w = new WriterCSV( res.getWriter());
+    } else if (resType == PointQueryBean.ResponseType.netcdf) {
+      w = new WriterNetcdf();
+    } else if (resType == PointQueryBean.ResponseType.ncstream) {
+      w = new WriterNcstream( res.getOutputStream());
+    } else {
+      log.error("Unknown result type = " + resType);
+      return null;
+    }
+
+    Action act = w.getAction();
+    w.header();
+    scan(pfc, wantRange, null, act, counter);
+
+    /*  if (null == time) {
+    if (useAll) {
+      StationTimeSeriesFeatureCollection subset = sfc.subset(range);
+      scanAll(fd, subset, null, act, counter);
+    } else {
+      StationTimeSeriesFeatureCollection subset = sfc.subset(stns);
+      scanAll(fd, subset, null, act, counter);
+    }
+
+  } else {
+    // match specific time point
+    Dataset ds = filterDataset(time);
+    if (useAll)
+      scanAll(ds, time, null, act, counter);
+    else
+      scanStations(ds, stns, time, null, act, counter);
+  }  */
+
+
+    w.trailer();
+
+    if (debug) {
+      long took = System.currentTimeMillis() - start;
+      System.out.println("\nread " + counter.count + " records; match and write " + counter.matches + " raw records");
+      System.out.println("that took = " + took + " msecs");
+
+      if (timeToScan > 0) {
+        long writeTime = took - timeToScan;
+        double mps = 1000 * counter.matches / writeTime;
+        System.out.println("  writeTime = " + writeTime + " msecs; write messages/sec = " + mps);
+      }
+    }
+
+    return w;
   }
 
   ///////////////////////////////////////
@@ -203,6 +318,32 @@ public class StationWriter {
 
   // scan collection, records that pass the predicate match are acted on, within limits
 
+  private void scan(PointFeatureCollection collection, DateRange range, Predicate p, Action a, Limit limit) throws IOException {
+
+     while (collection.hasNext()) {
+         PointFeature pf = collection.next();
+
+         if (range != null) {
+           Date obsDate = pf.getObservationTimeAsDate(); // LOOK: needed?
+           if (!range.contains(obsDate)) continue;
+         }
+         limit.count++;
+
+         StructureData sdata = pf.getData();
+         if ((p == null) || p.match(sdata)) {
+           a.act( pf, sdata);
+           limit.matches++;
+         }
+
+         if (limit.matches > limit.limit) {
+           collection.finish();
+           break;
+         }
+         if (debugDetail && (limit.matches % 50 == 0)) System.out.println(" matches " + limit.matches);
+     }
+
+   }
+
   private void scan(StationTimeSeriesFeatureCollection collection, DateRange range, Predicate p, Action a, Limit limit) throws IOException {
 
     while (collection.hasNext()) {
@@ -215,23 +356,22 @@ public class StationWriter {
           Date obsDate = pf.getObservationTimeAsDate();
           if (!range.contains(obsDate)) continue;
         }
+        limit.count++;
 
         StructureData sdata = pf.getData();
         if ((p == null) || p.match(sdata)) {
-          //     void act(FeatureDatasetPoint fdp, StationTimeSeriesFeature s, PointFeature pf) throws IOException;
-
-          a.act(fd, sf, pf, sdata);
+          a.act( pf, sdata);
           limit.matches++;
         }
 
-        limit.count++;
-        if (limit.count > limit.limit) {
+        if (limit.matches > limit.limit) {
           sf.finish();
           break;
         }
-        if (debugDetail && (limit.count % 50 == 0)) System.out.println(" did " + limit.count);
+        if (debugDetail && (limit.matches % 50 == 0)) System.out.println(" matches " + limit.matches);
       }
-      if (limit.count > limit.limit) {
+
+      if (limit.matches > limit.limit) {
         collection.finish();
         break;
       }
@@ -405,20 +545,6 @@ public class StationWriter {
 
   }  */
 
-  private interface Predicate {
-    boolean match(StructureData sdata);
-  }
-
-  private interface Action {
-    void act(FeatureDatasetPoint fdp, StationTimeSeriesFeature s, PointFeature pf, StructureData sdata) throws IOException;
-  }
-
-  private class Limit {
-    int count;
-    int limit = Integer.MAX_VALUE;
-    int matches;
-  }
-
   ////////////////////////////////////////////////////////////////
   /* date filter
 
@@ -450,148 +576,54 @@ public class StationWriter {
     return null;
   }  */
 
-  ////////////////////////////////////////////////////////////////
-  // writing
+  private interface Predicate {
+     boolean match(StructureData sdata);
+   }
 
-  public File writeNetcdf(PointQueryBean qp, List<Station> stns) throws IOException {
-    WriterNetcdf w = (WriterNetcdf) write(qp, stns, null);
-    return w.netcdfResult;
-  }
+   private interface Action {
+     void act(PointFeature pf, StructureData sdata) throws IOException;
+   }
 
-  public Writer write(PointQueryBean qp, List<Station> stns, HttpServletResponse res) throws IOException {
-    long start = System.currentTimeMillis();
-    Limit counter = new Limit();
-
-    String[] vars = qp.getVarNames();
-    List<String> varNames = (vars == null) ? null : Arrays.asList(vars);
-    DateRange range = qp.getDateRange();
-    //DateType time = qp.time;
-
-    PointQueryBean.ResponseType resType = qp.getResponseType();
-
-    Writer w;
-    if (resType == PointQueryBean.ResponseType.xml) {
-      w = new WriterXML(qp, varNames, res.getWriter());
-    } else if (resType == PointQueryBean.ResponseType.csv) {
-      w = new WriterCSV(qp, varNames, res.getWriter());
-    } else if (resType == PointQueryBean.ResponseType.netcdf) {
-      w = new WriterNetcdf(qp, varNames);
-    } else if (resType == PointQueryBean.ResponseType.ncstream) {
-      w = new WriterNcstream(qp, varNames, res.getOutputStream());
-    } else {
-      log.error("Unknown result type = " + resType);
-      return null;
-    }
-    Action act = w.getAction();
-
-    StationTimeSeriesFeatureCollection subset = sfc;
-    if ((stns != null) && (stns.size() > 0)) {
-      subset = sfc.subset(stns);
-    }
-
-    w.header(stns);
-
-    counter.limit = 150;
-
-    scan(subset, range, null, act, counter);
-
-    /*  if (null == time) {
-    if (useAll) {
-      StationTimeSeriesFeatureCollection subset = sfc.subset(range);
-      scanAll(fd, subset, null, act, counter);
-    } else {
-      StationTimeSeriesFeatureCollection subset = sfc.subset(stns);
-      scanAll(fd, subset, null, act, counter);
-    }
-
-  } else {
-    // match specific time point
-    Dataset ds = filterDataset(time);
-    if (useAll)
-      scanAll(ds, time, null, act, counter);
-    else
-      scanStations(ds, stns, time, null, act, counter);
-  }  */
-
-
-    w.trailer();
-
-    if (debug) {
-      long took = System.currentTimeMillis() - start;
-      System.out.println("\nread " + counter.count + " records; match and write " + counter.matches + " raw records");
-      System.out.println("that took = " + took + " msecs");
-
-      if (timeToScan > 0) {
-        long writeTime = took - timeToScan;
-        double mps = 1000 * counter.matches / writeTime;
-        System.out.println("  writeTime = " + writeTime + " msecs; write messages/sec = " + mps);
-      }
-    }
-
-    return w;
-  }
+   private class Limit {
+     int count;   // how many scanned
+     int limit = Integer.MAX_VALUE; // max matches
+     int matches; // how want matched
+   }
 
   abstract class Writer {
-    abstract void header(List<Station> stns);
+    abstract void header();
 
     abstract Action getAction();
 
     abstract void trailer();
 
-    PointQueryBean qp;
-    List<String> varNames;
     java.io.PrintWriter writer;
     DateFormatter format = new DateFormatter();
     int count = 0;
 
-    Writer(PointQueryBean qp, List<String> varNames, final java.io.PrintWriter writer) {
-      this.qp = qp;
-      this.varNames = varNames;
+    Writer(final java.io.PrintWriter writer) {
       this.writer = writer; // LOOK what about buffering?
-    }
-
-    List<VariableSimpleIF> getVars(List<String> varNames, List<? extends VariableSimpleIF> dataVariables) {
-      List<VariableSimpleIF> result = new ArrayList<VariableSimpleIF>();
-      for (VariableSimpleIF v : dataVariables) {
-        if ((varNames == null) || varNames.contains(v.getShortName())) // LOOK N**2
-          result.add(v);
-      }
-      return result;
     }
   }
 
-
   class WriterNetcdf extends Writer {
     File netcdfResult;
-    WriterCFStationDataset sobsWriter;
-    List<VariableSimpleIF> varList;
-    List<Station> stnList;
+    WriterCFStationDataset cfWriter;
     boolean headerWritten = false;
 
-    WriterNetcdf(PointQueryBean qp, List<String> varNames) throws IOException {
-      super(qp, varNames, null);
+    WriterNetcdf() throws IOException {
+      super(null);
 
       netcdfResult = File.createTempFile("ncss", ".nc"); // LOOK : put in some specified place
-      sobsWriter = new WriterCFStationDataset(netcdfResult.getAbsolutePath(), "Extracted data from TDS using CDM remote subsetting");
-
-      if ((varNames == null) || (varNames.size() == 0)) {
-        varList = variableList;
-      } else {
-        varList = new ArrayList<VariableSimpleIF>(varNames.size());
-        for (VariableSimpleIF v : variableList) {
-          if (varNames.contains(v.getName()))
-            varList.add(v);
-        }
-      }
+      cfWriter = new WriterCFStationDataset(netcdfResult.getAbsolutePath(), "Extracted data from TDS using CDM remote subsetting");
     }
 
-    public void header(List<Station> stnList) {
-      this.stnList = stnList;
+    public void header() {
     }
 
     public void trailer() {
       try {
-        sobsWriter.finish();
+        cfWriter.finish();
       } catch (IOException e) {
         log.error("WriterNetcdf.trailer", e);
       }
@@ -599,17 +631,17 @@ public class StationWriter {
 
     Action getAction() {
       return new Action() {
-        public void act(FeatureDatasetPoint fdp, StationTimeSeriesFeature s, PointFeature pf, StructureData sdata) throws IOException {
+        public void act(PointFeature pf, StructureData sdata) throws IOException {
           if (!headerWritten) {
             try {
-              sobsWriter.writeHeader(stnList, varList, pf.getTimeUnit());
+              cfWriter.writeHeader(wantStations, wantVars, pf.getTimeUnit());
               headerWritten = true;
             } catch (IOException e) {
               log.error("WriterNetcdf.header", e);
             }
           }
 
-          sobsWriter.writeRecord(s, pf, sdata);
+          cfWriter.writeRecord(sfc.getStation(pf), pf, sdata);
           count++;
         }
       };
@@ -618,26 +650,13 @@ public class StationWriter {
 
   class WriterNcstream extends Writer {
     OutputStream out;
-    List<ucar.unidata.geoloc.Station> stnList;
-    List<VariableSimpleIF> varList;
 
-    WriterNcstream(PointQueryBean qp, List<String> varNames, OutputStream os) throws IOException {
-      super(qp, varNames, null);
+    WriterNcstream( OutputStream os) throws IOException {
+      super(null);
       out = os;
-
-      if ((varNames == null) || (varNames.size() == 0)) {
-        varList = variableList;
-      } else {
-        varList = new ArrayList<VariableSimpleIF>(varNames.size());
-        for (VariableSimpleIF v : variableList) {
-          if (varNames.contains(v.getName()))
-            varList.add(v);
-        }
-      }
     }
 
-    public void header(List<Station> stns) {
-      this.stnList = stns;
+    public void header() {
     }
 
     public void trailer() {
@@ -651,10 +670,10 @@ public class StationWriter {
 
     Action getAction() {
       return new Action() {
-        public void act(FeatureDatasetPoint fdp, StationTimeSeriesFeature s, PointFeature pf, StructureData sdata) throws IOException {
+        public void act(PointFeature pf, StructureData sdata) throws IOException {
 
           if (count == 0) {  // first time : need a point feature so cant do it in header
-            PointStreamProto.PointFeatureCollection proto = PointStream.encodePointFeatureCollection(fdp.getLocation(), pf);
+            PointStreamProto.PointFeatureCollection proto = PointStream.encodePointFeatureCollection(fd.getLocation(), pf);
             byte[] b = proto.toByteArray();
             NcStream.writeVInt(out, b.length);
             out.write(b);
@@ -674,11 +693,11 @@ public class StationWriter {
 
   class WriterRaw extends Writer {
 
-    WriterRaw(PointQueryBean qp, List<String> vars, final java.io.PrintWriter writer) {
-      super(qp, vars, writer);
+    WriterRaw(final java.io.PrintWriter writer) {
+      super(writer);
     }
 
-    public void header(List<Station> stns) {
+    public void header() {
     }
 
     public void trailer() {
@@ -687,7 +706,7 @@ public class StationWriter {
 
     Action getAction() {
       return new Action() {
-        public void act(FeatureDatasetPoint fdp, StationTimeSeriesFeature s, PointFeature pf, StructureData sdata) throws IOException {
+        public void act(PointFeature pf, StructureData sdata) throws IOException {
           writer.print(format.toDateTimeStringISO(pf.getObservationTimeAsDate()));
           writer.print("= ");
           String report = sdata.getScalarString("report");
@@ -701,8 +720,8 @@ public class StationWriter {
   class WriterXML extends Writer {
     XMLStreamWriter staxWriter;
 
-    WriterXML(PointQueryBean qp, List<String> vars, final java.io.PrintWriter writer) {
-      super(qp, vars, writer);
+    WriterXML(final java.io.PrintWriter writer) {
+      super(writer);
       XMLOutputFactory f = XMLOutputFactory.newInstance();
       try {
         staxWriter = f.createXMLStreamWriter(writer);
@@ -711,7 +730,7 @@ public class StationWriter {
       }
     }
 
-    public void header(List<Station> stns) {
+    public void header() {
       try {
         staxWriter.writeStartDocument("UTF-8", "1.0");
         staxWriter.writeCharacters("\n");
@@ -740,7 +759,8 @@ public class StationWriter {
 
     Action getAction() {
       return new Action() {
-        public void act(FeatureDatasetPoint fdp, StationTimeSeriesFeature s, PointFeature pf, StructureData sdata) throws IOException {
+        public void act(PointFeature pf, StructureData sdata) throws IOException {
+          Station s = sfc.getStation(pf);
 
           try {
             staxWriter.writeStartElement("pointFeature");
@@ -758,8 +778,7 @@ public class StationWriter {
             staxWriter.writeEndElement();
             staxWriter.writeCharacters("\n ");
 
-            List<VariableSimpleIF> vars = getVars(varNames, fdp.getDataVariables());
-            for (VariableSimpleIF var : vars) {
+            for (VariableSimpleIF var : wantVars) {
               staxWriter.writeCharacters(" ");
               staxWriter.writeStartElement("data");
               staxWriter.writeAttribute("name", var.getShortName());
@@ -787,15 +806,21 @@ public class StationWriter {
   }
 
   class WriterCSV extends Writer {
-    boolean headerWritten = false;
-    List<VariableSimpleIF> validVars;
 
-    WriterCSV(PointQueryBean qp, List<String> varNames, final java.io.PrintWriter writer) {
-      super(qp, varNames, writer);
+    WriterCSV(final java.io.PrintWriter writer) {
+      super(writer);
     }
 
-    public void header(List<Station> stns) {
-    }
+    public void header() {
+      writer.print("time,station,latitude[unit=\"degrees_north\"],longitude[unit=\"degrees_east\"]");
+        for (VariableSimpleIF var : wantVars) {
+          writer.print(",");
+          writer.print(var.getShortName());
+          if (var.getUnitsString() != null)
+            writer.print("[unit=\"" + var.getUnitsString() + "\"]");
+        }
+        writer.println();
+     }
 
     public void trailer() {
       writer.flush();
@@ -803,19 +828,8 @@ public class StationWriter {
 
     Action getAction() {
       return new Action() {
-        public void act(FeatureDatasetPoint fdp, StationTimeSeriesFeature s, PointFeature pf, StructureData sdata) throws IOException {
-          if (!headerWritten) {
-            writer.print("time,station,latitude[unit=\"degrees_north\"],longitude[unit=\"degrees_east\"]");
-            validVars = getVars(varNames, fdp.getDataVariables());
-            for (VariableSimpleIF var : validVars) {
-              writer.print(",");
-              writer.print(var.getShortName());
-              if (var.getUnitsString() != null)
-                writer.print("[unit=\"" + var.getUnitsString() + "\"]");
-            }
-            writer.println();
-            headerWritten = true;
-          }
+        public void act(PointFeature pf, StructureData sdata) throws IOException {
+          Station s = sfc.getStation(pf);
 
           writer.print(format.toDateTimeStringISO(pf.getObservationTimeAsDate()));
           writer.print(',');
@@ -825,7 +839,7 @@ public class StationWriter {
           writer.print(',');
           writer.print(Format.dfrac(s.getLongitude(), 3));
 
-          for (VariableSimpleIF var : validVars) {
+          for (VariableSimpleIF var : wantVars) {
             writer.print(',');
             Array sdataArray = sdata.getArray(var.getShortName());
             writer.print(sdataArray.toString());

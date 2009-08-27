@@ -31,10 +31,7 @@
  */
 package ucar.nc2.ft.point.collection;
 
-import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
-import ucar.nc2.ft.point.StationFeatureImpl;
-import ucar.nc2.ft.point.PointIteratorAbstract;
-import ucar.nc2.ft.point.StationHelper;
+import ucar.nc2.ft.point.*;
 import ucar.nc2.ft.*;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateUnit;
@@ -47,7 +44,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Formatter;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * StationTimeSeries composed of a collection of individual files. "Composite" pattern.
@@ -56,13 +52,13 @@ import java.util.ArrayList;
  * @since May 19, 2009
  */
 public class CompositeStationCollection extends StationTimeSeriesCollectionImpl {
-  private TimedCollection stnCollections;
+  private TimedCollection dataCollection;
   protected List<? extends VariableSimpleIF> dataVariables;
 
-  protected CompositeStationCollection(String name, TimedCollection stnCollections) throws IOException {
+  protected CompositeStationCollection(String name, List<Station> stns, TimedCollection dataCollection) throws IOException {
     super(name);
-    this.stnCollections = stnCollections;
-    TimedCollection.Dataset td = stnCollections.getPrototype();
+    this.dataCollection = dataCollection;
+    TimedCollection.Dataset td = dataCollection.getPrototype();
     if (td == null)
       throw new RuntimeException("No datasets in the collection");
 
@@ -70,11 +66,13 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     FeatureDatasetPoint openDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.STATION, td.getLocation(), null, errlog);
     List<FeatureCollection> fcList = openDataset.getPointFeatureCollectionList();
     StationTimeSeriesCollectionImpl openCollection = (StationTimeSeriesCollectionImpl) fcList.get(0);
+    if ((stns == null) || (stns.size() == 0))
+      stns = openCollection.getStations();
 
     // construct list of stations
     stationHelper = new StationHelper();
-    for (Station s : openCollection.getStations()) {
-      stationHelper.addStation(new CompositeStationFeature(s, null, stnCollections));
+    for (Station s : stns) {
+      stationHelper.addStation(new CompositeStationFeature(s, null, this.dataCollection));
     }
 
     dataVariables = openDataset.getDataVariables();
@@ -92,36 +90,39 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   @Override
   public StationTimeSeriesFeatureCollection subset(List<Station> stations) throws IOException {
     if (stations == null) return this;
-    StationHelper sh = new StationHelper();
-    sh.setStations(stations);
-    CompositeStationCollection subset = new CompositeStationCollection(getName(), stnCollections);
-    subset.stationHelper = sh;
-    return subset;
+    return new CompositeStationCollection(getName(), stations, dataCollection);
   }
 
   @Override
   public StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
     if (boundingBox == null) return this;
-    StationHelper sh = new StationHelper();
-    sh.setStations(this.stationHelper.getStations(boundingBox));
-    CompositeStationCollection subset = new CompositeStationCollection(getName(), stnCollections);
-    subset.stationHelper = sh;
-    return subset;
+    List<Station> stations = stationHelper.getStations(boundingBox);
+    return new CompositeStationCollection(getName(), stations, dataCollection);
   }
 
   @Override
   public StationTimeSeriesFeature getStationFeature(Station s) throws IOException {
-    return new CompositeStationFeature(s, null, stnCollections);
+    return new CompositeStationFeature(s, null, dataCollection);
   }
 
-  // NestedPointFeatureCollection
+  @Override
+  public PointFeatureCollection flatten(List<Station> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException {
+    TimedCollection subsetCollection = (dateRange != null) ? dataCollection.subset(dateRange) : dataCollection;
+    CompositeStationCollection subset =  new CompositeStationCollection(getName(), stations, subsetCollection);
+    return new StationTimeSeriesCollectionFlattened( subset, dateRange);
+  }
+
 
   @Override
   public PointFeatureCollection flatten(LatLonRect boundingBox, DateRange dateRange) throws IOException {
-    CompositePointCollection flat = new CompositePointCollection(getName(), stnCollections);
-    return flat.subset(boundingBox, dateRange);
+    TimedCollection subsetCollection = (dateRange != null) ? dataCollection.subset(dateRange) : dataCollection;
+    List<Station> stations = stationHelper.getStations(boundingBox);
+    CompositeStationCollection subset =  new CompositeStationCollection(getName(), stations, subsetCollection);
+    return new StationTimeSeriesCollectionFlattened( subset, dateRange);
   }
 
+  // the iterator over StationTimeSeriesFeature
+  @Override
   public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
 
     // an anonymous class iterating over the stations
@@ -144,6 +145,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     };
   }
 
+  // the StationTimeSeriesFeature
   private class CompositeStationFeature extends StationFeatureImpl {
     private TimedCollection collForFeature;
 
@@ -177,6 +179,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
       return subset(dateRange);
     }
 
+    // the iterator over PointFeature - an iterator over iterators, one for each dataset
     private class CompositeStationFeatureIterator extends PointIteratorAbstract {
       private int bufferSize = -1;
       private Iterator<TimedCollection.Dataset> iter;

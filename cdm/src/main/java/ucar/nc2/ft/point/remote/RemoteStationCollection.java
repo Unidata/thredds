@@ -58,6 +58,8 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
     this.restrictedList = true;
   }
 
+  public Station getStation(PointFeature feature) throws IOException { return null; } // ??  
+
   public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
 
     // an anonymous class iterating over the stations
@@ -129,9 +131,11 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
 
 
   private class RemoteStationCollectionSubset extends RemoteStationCollection {
+    RemoteStationCollection from;
 
     RemoteStationCollectionSubset(RemoteStationCollection from, StationHelper sh, LatLonRect filter_bb, DateRange filter_date) throws IOException {
       super(from.getName(), from.ncremote, sh);
+      this.from = from;
 
       if (filter_bb == null)
         this.boundingBox = from.getBoundingBox();
@@ -143,6 +147,10 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
       } else {
         this.dateRange = (from.dateRange == null) ? filter_date : from.dateRange.intersect(filter_date);
       }
+    }
+
+    public Station getStation(PointFeature feature) throws IOException {
+      return from.getStation(feature);
     }
   }
 

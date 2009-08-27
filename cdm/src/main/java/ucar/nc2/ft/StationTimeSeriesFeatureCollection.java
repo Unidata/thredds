@@ -34,6 +34,7 @@ package ucar.nc2.ft;
 
 import ucar.unidata.geoloc.Station;
 import ucar.nc2.units.DateRange;
+import ucar.nc2.VariableSimpleIF;
 
 import java.io.IOException;
 import java.util.List;
@@ -84,15 +85,13 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, N
   public StationTimeSeriesFeatureCollection subset(List<Station> stations) throws IOException;
 
   /**
-   * Get a subsetted StationCollection from a LatLonRect and/or a date range
+   * Get a subsetted StationCollection from a LatLonRect
    *
    * @param boundingBox spatial subset. may be null
-   * @param range time subset. may be null
    * @return subsetted collection
    * @throws java.io.IOException on i/o error
    */
   public StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
- // public StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox, DateRange range) throws IOException;
 
   /**
    * Get the collection of data for a particular Station.
@@ -102,5 +101,25 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, N
    * @throws java.io.IOException on i/o error
    */
   public StationTimeSeriesFeature getStationFeature(Station s) throws IOException;
+
+  /**
+   * Get the station that belongs to this feature
+   *
+   * @param feature PointFeature obtained from a StationTimeSeriesFeature
+   * @return the Station is belongs to
+   * @throws java.io.IOException on i/o error
+   */
+  public Station getStation(PointFeature feature) throws IOException;
+
+  /**
+   * Flatten into a PointFeatureCollection, discarding connectedness information.
+   * 
+   * @param stations only contain these stations; if null or empty use all
+   * @param dateRange only points in this date range. may be null.
+   * @return a PointFeatureCollection, may be null if its empty.
+   * @throws IOException on read error
+   */
+  public PointFeatureCollection flatten(List<Station> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException;
+
 
 }

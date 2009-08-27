@@ -82,7 +82,7 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
   public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
     // an anonymous class iterating over the stations
     return new PointFeatureCollectionIterator() {
-      Iterator<Station> stationIter= stationHelper.getStations().iterator();
+      Iterator<Station> stationIter = stationHelper.getStations().iterator();
 
       public boolean hasNext() throws IOException {
         return stationIter.hasNext();

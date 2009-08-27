@@ -53,7 +53,7 @@ import java.io.File;
 import java.util.*;
 
 /**
- * generate capabilities XML for a FeatureDatasetPoint
+ * generate capabilities XML for a FeatureDatasetPoint / StationTimeSeriesFeatureCollection
  *
  * @author caron
  * @since Aug 19, 2009

@@ -64,7 +64,8 @@ import ucar.unidata.geoloc.Station;
 import ucar.unidata.geoloc.LatLonRect;
 
 /**
- * Controller for CdmRemote service
+ * Controller for CdmRemote service.
+ * At the moment, only handles station time series
  *
  * @author caron
  * @since May 28, 2009
@@ -119,6 +120,7 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
     // absolute path of the dataset endpoint
     String absPath = ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath() + req.getPathInfo();
 
+    // ?? needed ??
     FeatureType ft = null;
     String path = req.getPathInfo();
     if (path.endsWith("station")) {
@@ -128,6 +130,7 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
     if (debug)
       System.out.printf("CollectionController absPath= %s%n path=%s%n query=%s ft=%s%n", absPath, path, req.getQueryString(), ft);
 
+    // query validation - first pass
     PointQueryBean query = (PointQueryBean) command;
     if (!query.validate()) {
       res.sendError(HttpServletResponse.SC_BAD_REQUEST, query.getErrorMessage());
@@ -225,48 +228,25 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
     List<FeatureCollection> coll = fdp.getPointFeatureCollectionList();
     StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) coll.get(0);
 
-    // verify parameters match the dataset
-    List<Station> stns = null;
-    if (qb.getLatLonRect() != null) {
-      stns = sfc.getStations(qb.getLatLonRect());
-      if (stns.size() == 0) {
-        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: Bounding Box contains no stations; bb= " + qb.getLatLonRect());
-        return null;
-      }
-    } else if (qb.getStn() != null) {
-      stns = sfc.getStations(qb.getStnNames());
-      if (stns.size() == 0) {
-        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: No valid stations specified = " + qb.getStn());
-        return null;
-      }
+    StationWriter stationWriter = new StationWriter(fdp, sfc, qb);
+    if (!stationWriter.validate(res)) {
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
+      return null; // error was sent
     }
 
-    if (qb.getDateRange() != null) {
-      DateRange wantRange = qb.getDateRange();
-      DateRange haveRange = fdp.getDateRange();
-      if (!haveRange.intersects(wantRange)) {
-        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: This dataset does not contain the time range= " + wantRange);
-        return null;
-      }
-      if (debug) System.out.println(" date range= " + wantRange);
-    }
-
-    // set content type
-    PointQueryBean.ResponseType resType = qb.getResponseType();
+    // set content type, description
     res.setContentType(getContentType(qb));
-
-    // set content description
     if (null != getContentDescription(qb))
       res.setHeader("Content-Description", getContentDescription(qb));
 
-    StationWriter stationWriter = new StationWriter(fdp, sfc, qb);
-
     // special handling for netcdf files
+    PointQueryBean.ResponseType resType = qb.getResponseType();
     if (resType == PointQueryBean.ResponseType.netcdf) {
       if (path.startsWith("/")) path = path.substring(1);
       path = StringUtil.replace(path, "/", "-");
       res.setHeader("Content-Disposition", "attachment; filename=" + path + ".nc");
-      File file = stationWriter.writeNetcdf(qb, stns);
+
+      File file = stationWriter.writeNetcdf();
       ServletUtil.returnFile(req, res, file, getContentType(qb));
       if (!file.delete()) {
         log.warn("file delete failed =" + file.getPath());
@@ -281,8 +261,8 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
     }
 
     // otherwise stream it out
-    StationWriter.Writer w = stationWriter.write(qb, stns, res);
-    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
+    StationWriter.Writer w = stationWriter.write(res);
+    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
 
     if (showTime) {
       long took = System.currentTimeMillis() - start;
@@ -291,95 +271,6 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
 
     return null;
   }
-
-
-  /*
-
-     OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
-     if (queryS == null) {
-       res.setContentType("text/plain");
-       Formatter f = new Formatter(out);
-       fd.getDetailInfo(f);
-       f.flush();
-       out.flush();
-
-     } else if (queryS.equalsIgnoreCase("getCapabilities")) {
-       CdmRemoteControllerOld.sendCapabilities(req, out, fd, false);
-       res.flushBuffer();
-       out.flush();
-
-     } else {
-       res.setContentType("application/octet-stream");
-       res.setHeader("Content-Description", "ncstream");
-
-       List<FeatureCollection> coll = fd.getPointFeatureCollectionList();
-       StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) coll.get(0);
-
-       if (reqType == PointQueryBean.RequestType.header) { // just the header
-         NetcdfFile ncfile = fd.getNetcdfFile(); // LOOK will fail
-         NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(req));
-         WritableByteChannel wbc = Channels.newChannel(out);
-         ncWriter.sendHeader(wbc);
-
-       } else if (reqType == PointQueryBean.RequestType.stations) { // just the station list
-         PointStreamProto.StationList stationsp;
-         if (query.getLatLonRect() == null)
-           stationsp = PointStream.encodeStations(sfc.getStations());
-         else
-           stationsp = PointStream.encodeStations(sfc.getStations(query.getLatLonRect()));
-
-         byte[] b = stationsp.toByteArray();
-         NcStream.writeVInt(out, b.length);
-         out.write(b);
-
-       } else if (query.getStns() != null) { // a list of stations
-         String[] names = query.getStns().split(",");
-         List<Station> stns = sfc.getStations(names);
-         for (Station s : stns) {
-           StationTimeSeriesFeature series = sfc.getStationFeature(s);
-           sendData(s.getName(), series, out);
-         }
-
-       } else { // they want some data
-         PointFeatureCollection pfc = sfc.flatten(query.getLatLonRect(), query.getDateRange());
-         sendData(fd.getLocation(), pfc, out);
-       }
-
-       NcStream.writeVInt(out, 0);  // LOOK: terminator ?
-
-       out.flush();
-       res.flushBuffer();
-     }
-  */
-  /* private void sendData(String location, PointFeatureCollection pfc, OutputStream out) throws IOException {
-    int count = 0;
-    PointFeatureIterator pfIter = pfc.getPointFeatureIterator(-1);
-    try {
-      while (pfIter.hasNext()) {
-        PointFeature pf = pfIter.next();
-        if (count == 0) {  // first time
-          PointStreamProto.PointFeatureCollection proto = PointStream.encodePointFeatureCollection(location, pf);
-          byte[] b = proto.toByteArray();
-          NcStream.writeVInt(out, b.length);
-          out.write(b);
-        }
-
-        PointStreamProto.PointFeature pfp = PointStream.encodePointFeature(pf);
-        byte[] b = pfp.toByteArray();
-        NcStream.writeVInt(out, b.length);
-        out.write(b);
-        //System.out.println(" CollectionController len= " + b.length+ " count = "+count);
-
-        count++;
-      }
-    } finally {
-      pfIter.finish();
-    }
-    if (debug) System.out.printf(" sent %d features to %s %n ", count, location);
-  } */
-
-  /////////////////////////////////////////////////////////////////
-
 
   private ModelAndView processStations(HttpServletResponse res, FeatureDatasetPoint fdp, PointQueryBean query) throws IOException {
 

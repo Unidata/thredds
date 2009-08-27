@@ -170,7 +170,7 @@ public class CompositeDatasetFactory {
         dataVariables = pfc.getDataVariables();
         break;
       case STATION:
-        CompositeStationCollection sfc = new CompositeStationCollection(spec, collection);
+        CompositeStationCollection sfc = new CompositeStationCollection(spec, null, collection);
         bb = sfc.getBoundingBox();
         fc = sfc;
         dataVariables = sfc.getDataVariables();

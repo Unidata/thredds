@@ -34,9 +34,11 @@ package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.ft.point.PointIteratorFromStructureData;
 import ucar.nc2.ft.point.PointFeatureImpl;
+import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.units.DateUnit;
 import ucar.ma2.StructureData;
+import ucar.unidata.geoloc.Station;
 
 import java.io.IOException;
 
@@ -66,7 +68,7 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
     return new StandardPointFeature(cursor, timeUnit, recnum);
   }
 
-  private class StandardPointFeature extends PointFeatureImpl {
+  private class StandardPointFeature extends PointFeatureImpl implements StationPointFeature {
     protected int id;
     protected Cursor cursor;
 
@@ -87,6 +89,11 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
 
     public StructureData getData() {
       return ft.makeObsStructureData( cursor);
+    }
+
+    @Override
+    public Station getStation() {
+      return ft.makeStation(cursor.getParentStructure());
     }
   }
 

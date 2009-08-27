@@ -35,7 +35,7 @@
         <h2>Station Dataset:
           <xsl:value-of select="capabilities/@location"/></h2>
         <em><a href="?req=capabilities">Dataset Description</a></em>
-        <p><em><a href="?req=stations">Station List</a></em></p>
+        <p><em><a href="?req=stations&amp;accept=xml">Station List</a></em></p>
         <hr/>
 
         <form method="GET" action="{capabilities/attribute::location}">

@@ -38,6 +38,7 @@ import ucar.nc2.*;
 import ucar.nc2.ft.*;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.Station;
 import ucar.ma2.*;
 
 import java.util.*;
@@ -329,7 +330,7 @@ public class WriterCFStationDataset {
   private ArrayInt.D1 parentArray = new ArrayInt.D1(1);
   private int[] origin = new int[1];
 
-  public void writeRecord(StationTimeSeriesFeature s, PointFeature sobs, StructureData sdata) throws IOException {
+  public void writeRecord(Station s, PointFeature sobs, StructureData sdata) throws IOException {
     writeRecord(s.getName(), sobs.getObservationTime(), sobs.getObservationTimeAsDate(), sdata);
   }
 

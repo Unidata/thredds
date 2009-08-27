@@ -97,6 +97,8 @@ public class StationHelper {
   }
 
   public List<Station> getStations(LatLonRect boundingBox) throws IOException {
+    if (boundingBox == null) return stations;
+    
     LatLonPointImpl latlonPt = new LatLonPointImpl();
     List<Station> result = new ArrayList<Station>();
     for (Station s : stations) {

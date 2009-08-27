@@ -44,7 +44,7 @@ import java.io.IOException;
 
 /**
  * Adapt a PointFeatureCollectionIterator to a PointFeatureIterator, by flattening all the iterators in the collection
- *   into a single iterator over PointFeatures.
+ *   into a single iterator over PointFeatures. Optionally add date and space filters.
  *
  * @author caron
  * @since Mar 19, 2008
