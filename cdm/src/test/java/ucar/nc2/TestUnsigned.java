@@ -37,6 +37,7 @@ import ucar.ma2.Index;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.ncml.NcMLReader;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -45,11 +46,12 @@ import java.awt.image.DataBuffer;
 import java.awt.*;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
+import java.io.StringReader;
 
 import junit.framework.TestCase;
 
 /**
- * Class Description.
+ * Test that adding _Unsigned attribute in NcML works correctly
  *
  * @author caron
  * @since Aug 7, 2008
@@ -95,6 +97,33 @@ public class TestUnsigned extends TestCase {
     assert !hasSigned;
 
     ncfile.close();
+  }
+
+  public void testUnsignedWrap() throws IOException {
+    String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+        "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' location='"+TestAll.cdmLocalTestDataDir +"testWrite.nc'>\n" +
+        "  <variable name='bvar' shape='lat' type='byte'>\n" +
+        "    <attribute name='_Unsigned' value='true' />\n" +
+        "    <attribute name='scale_factor' type='float' value='2.0' />\n" +
+        "   </variable>\n" +
+        "</netcdf>";
+
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), null);
+    NetcdfFile ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getEnhanceAll());
+
+    Variable v = null;
+    assert(null != (v = ncd.findVariable("bvar")));
+    assert v.getDataType() == DataType.FLOAT;
+
+    boolean hasSigned = false;
+    Array data = v.read();
+    while (data.hasNext()) {
+      float b = data.nextFloat();
+      if (b < 0) hasSigned = true;
+    }
+    assert !hasSigned;
+
+    ncd.close();
   }
 
   public static byte[] convert(String srcPath, double a, double b) throws IOException {
