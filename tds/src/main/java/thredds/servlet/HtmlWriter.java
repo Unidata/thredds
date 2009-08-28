@@ -71,60 +71,7 @@ public class HtmlWriter {
   private TdsContext tdsContext;
   private HtmlConfig htmlConfig;
 
-  private String contextPath;
-  private String contextName;
-  private String contextVersion;
-  private String tdsPageCssPath; // relative to context path
-  private String tdsCatalogCssPath; // relative to context path
-  private String contextLogoPath;   // relative to context path
-  private String contextLogoAlt;    // Alternate text for logo
-  private String instituteLogoPath; // relative to context path
-  private String instituteLogoAlt;  // Alternate text for logo
-  private String docsPath;    // relative to context path
-  private String folderIconPath; // relative to context path
-  private String folderIconAlt; // alternate text for folder icon
-
-  private final static String defaultTdsPageCssPath = "tds.css";
-  private final static String defaultTdsCatalogCssPath = "tdsCat.css";
   private ucar.nc2.units.DateFormatter formatter = new ucar.nc2.units.DateFormatter();
-
-  /**
-   * Initialize the HtmlWriter singleton instance.
-   * <p/>
-   * Note: All paths must be relative to the context path.
-   *
-   * @param contextPath       the context path for this web app (e.g., "/thredds")
-   * @param contextName       the name of the web app (e.g., "THREDDS Data Server")
-   * @param contextVersion    the version of the web app (e.g., "3.14.00")
-   * @param docsPath          the path for the main documentation page (e.g., "docs/")
-   * @param tdsPageCssPath    the path for the CSS document used in general HTML pages (e.g., "tds.css")
-   * @param tdsCatalogCssPath the path for the CSS document used in catalog HTML pages  (e.g., "tdsCat.css")
-   * @param contextLogoPath   the path for the context logo (e.g., "thredds.jpg")
-   * @param contextLogoAlt    alternate text for the context logo (e.g., "thredds")
-   * @param instituteLogoPath the path for the institute logo (e.g., "unidataLogo.jpg")
-   * @param instituteLogoAlt  alternate text for the institute logo (e.g., "Unidata")
-   * @param folderIconPath    the path for the folder icon (e.g., "folder.gif"), try to keep small, ours is 20x22 pixels
-   * @param folderIconAlt     alternate text for the folder icon (e.g., "folder")
-   *
-   * @deprecated Instead use {@link #init(thredds.server.config.TdsContext)}
-   */
-  public static void init(String contextPath, String contextName, String contextVersion,
-                          String docsPath, String tdsPageCssPath, String tdsCatalogCssPath,
-                          String contextLogoPath, String contextLogoAlt,
-                          String instituteLogoPath, String instituteLogoAlt,
-                          String folderIconPath, String folderIconAlt) {
-    if (singleton != null) {
-      log.warn("init(): this method has already been called; it should only be called once.");
-      return;
-      //throw new IllegalStateException( "HtmlWriter.init() has already been called.");
-    }
-    singleton = new HtmlWriter(contextPath, contextName, contextVersion,
-        docsPath, tdsPageCssPath != null ? tdsPageCssPath : defaultTdsPageCssPath,
-        tdsCatalogCssPath != null ? tdsCatalogCssPath : defaultTdsCatalogCssPath,
-        contextLogoPath, contextLogoAlt,
-        instituteLogoPath, instituteLogoAlt,
-        folderIconPath, folderIconAlt);
-  }
 
   public static void init( TdsContext tdsContext )
   {
@@ -150,25 +97,6 @@ public class HtmlWriter {
   private HtmlWriter() {
   }
 
-  private HtmlWriter(String contextPath, String contextName, String contextVersion,
-                     String docsPath, String tdsPageCssPath, String tdsCatalogCssPath,
-                     String contextLogoPath, String contextLogoAlt,
-                     String instituteLogoPath, String instituteLogoAlt,
-                     String folderIconPath, String folderIconAlt) {
-    this.contextPath = contextPath;
-    this.contextName = contextName;
-    this.contextVersion = contextVersion;
-    this.docsPath = docsPath;
-    this.tdsPageCssPath = tdsPageCssPath;
-    this.tdsCatalogCssPath = tdsCatalogCssPath;
-    this.contextLogoPath = contextLogoPath;
-    this.contextLogoAlt = contextLogoAlt;
-    this.instituteLogoPath = instituteLogoPath;
-    this.instituteLogoAlt = instituteLogoAlt;
-    this.folderIconPath = folderIconPath;
-    this.folderIconAlt = folderIconAlt;
-  }
-
   private HtmlWriter( TdsContext tdsContext )
   {
     if ( tdsContext == null )
@@ -176,62 +104,22 @@ public class HtmlWriter {
 
     this.tdsContext = tdsContext;
     this.htmlConfig = this.tdsContext.getHtmlConfig();
-
-    this.contextPath = this.tdsContext.getContextPath();
-    this.contextName = this.tdsContext.getWebappName();
-    this.contextVersion = this.tdsContext.getWebappVersion();
-
-    this.docsPath = this.htmlConfig.getWebappDocsUrl();
-    this.tdsPageCssPath = this.htmlConfig.getPageCssUrl();
-    this.tdsCatalogCssPath = this.htmlConfig.getCatalogCssUrl();
-    this.contextLogoPath = this.htmlConfig.getWebappLogoUrl();
-    this.contextLogoAlt = this.htmlConfig.getWebappLogoAlt();
-    this.instituteLogoPath = this.htmlConfig.getHostInstLogoUrl();
-    this.instituteLogoAlt = this.htmlConfig.getHostInstLogoAlt();
-    this.folderIconPath = this.htmlConfig.getFolderIconUrl();
-    this.folderIconAlt = this.htmlConfig.getFolderIconAlt();
-  }
-
-  public String getContextPath() {
-    return contextPath;
-  }
-
-  public String getContextName() {
-    return contextName;
-  }
-
-  public String getContextVersion() {
-    return contextVersion;
-  }
-
-  public String getContextLogoPath() {
-    return contextLogoPath;
-  }
-
-  public String getContextLogoAlt() {
-    return contextLogoAlt;
-  }
-
-  //public String getUserCssPath() { return userCssPath; }
-  //public String getInstituteLogoPath() { return instituteLogoPath; }
-  public String getDocsPath() {
-    return docsPath;
   }
 
   public String getHtmlDoctypeAndOpenTag() {
     return new StringBuilder()
-        .append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n")
-        .append("        \"http://www.w3.org/TR/html4/loose.dtd\">\n")
+        .append("<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'\n")
+        .append("        'http://www.w3.org/TR/html4/loose.dtd'>\n")
         .append("<html>\n")
         .toString();
   }
 
   public String getXHtmlDoctypeAndOpenTag() {
     return new StringBuilder()
-        // .append( "<?xml version=\"1.0\" encoding=\"utf-8\"?>")
-        .append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n")
-        .append("        \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n")
-        .append("<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">")
+        // .append( "<?xml version='1.0' encoding='utf-8'?>")
+        .append("<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN'\n")
+        .append("        'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n")
+        .append("<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>")
         .toString();
   }
 
@@ -239,33 +127,34 @@ public class HtmlWriter {
   public String getUserCSS() {
     return new StringBuilder()
         .append("<link rel='stylesheet' href='")
-        .append(this.contextPath)
-        .append("/").append( tdsPageCssPath).append("' type='text/css' >").toString();
+        .append( this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getPageCssUrl() ) )
+        .append("' type='text/css' >").toString();
   }
 
   public String getTdsCatalogCssLink() {
     return new StringBuilder()
         .append("<link rel='stylesheet' href='")
-        .append(this.contextPath)
-        .append("/").append(tdsCatalogCssPath).append("' type='text/css' >").toString();
+        .append( this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getCatalogCssUrl() ) )
+        .append("' type='text/css' >").toString();
   }
 
   public String getTdsPageCssLink() {
     return new StringBuilder()
         .append("<link rel='stylesheet' href='")
-        .append(this.contextPath)
-        .append("/").append(tdsPageCssPath).append("' type='text/css' >").toString();
+        .append( this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getPageCssUrl() ))
+        .append("' type='text/css' >").toString();
   }
 
   //  public static final String UNIDATA_HEAD
   public String getUserHead() {
     return new StringBuilder()
-        .append("<table width=\"100%\"><tr><td>\n")
-        .append("  <img src=\"").append(contextPath).append("/").append(instituteLogoPath).append("\"\n")
-        .append("       alt=\"").append(instituteLogoAlt).append("\"\n")
-        .append("       align=\"left\" valign=\"top\"\n")
-        .append("       hspace=\"10\" vspace=\"2\">\n")
-        .append("  <h3><strong>").append(contextName).append("</strong></h3>\n")
+        .append("<table width='100%'><tr><td>\n")
+        .append("  <img src='").append( this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getHostInstLogoUrl() ))
+            .append("'\n")
+        .append("       alt='").append( this.htmlConfig.getHostInstLogoAlt()).append("'\n")
+        .append("       align='left' valign='top'\n")
+        .append("       hspace='10' vspace='2'>\n")
+        .append("  <h3><strong>").append( this.tdsContext.getWebappName()).append("</strong></h3>\n")
         .append("</td></tr></table>\n")
         .toString();
   }
@@ -293,7 +182,7 @@ public class HtmlWriter {
                                     String hostName, String hostUrl)
   {
     // Table setup.
-    sb.append( "<table width=\"100%\">\n" )
+    sb.append( "<table width='100%'>\n" )
             .append( "<tr><td>\n" );
     // Logo
     sb.append( "<img src='" ).append( logoUrl )
@@ -327,7 +216,7 @@ public class HtmlWriter {
   {
     // Table setup.
     stringBuilder
-        .append( "<table width=\"100%\">\n");
+        .append( "<table width='100%'>\n");
 
     if ( includeInstall )
     {
@@ -476,8 +365,11 @@ public class HtmlWriter {
   /**
    * Write a file directory.
    *
+   * @param res the HttpServletResponse on which to write the file directory response.
    * @param dir  directory
    * @param path the URL path reletive to the base
+   * @return the number of characters (Unicode code units) in the response.
+   * @throws java.io.IOException if an I/O exception occurs.
    */
   public int writeDirectory(HttpServletResponse res, File dir, String path)
       throws IOException {
@@ -510,7 +402,7 @@ public class HtmlWriter {
     // Render the page header
     sb.append(getHtmlDoctypeAndOpenTag()); // "<html>\n" );
     sb.append("<head>\r\n");
-    sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
+    sb.append("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>");
     sb.append("<title>");
     sb.append("Directory listing for ").append(path);
     sb.append("</title>\r\n");
@@ -529,14 +421,14 @@ public class HtmlWriter {
     int slash = parentDirectory.lastIndexOf('/');
     if (slash >= 0) {
       String parent = parentDirectory.substring(0, slash);
-      sb.append(" - <a href=\"");
+      sb.append(" - <a href='");
       if (parent.equals("")) {
         parent = "/";
       }
       sb.append("../"); // sb.append(encode(parent));
       //if (!parent.endsWith("/"))
       //  sb.append("/");
-      sb.append("\">");
+      sb.append("'>");
       sb.append("<b>");
       sb.append("Up to ").append(parent);
       sb.append("</b>");
@@ -544,20 +436,20 @@ public class HtmlWriter {
     }
 
     sb.append("</h1>\r\n");
-    sb.append("<HR size=\"1\" noshade=\"noshade\">");
+    sb.append("<HR size='1' noshade='noshade'>");
 
-    sb.append("<table width=\"100%\" cellspacing=\"0\"" +
-        " cellpadding=\"5\" align=\"center\">\r\n");
+    sb.append("<table width='100%' cellspacing='0'" +
+        " cellpadding='5' align='center'>\r\n");
 
     // Render the column headings
     sb.append("<tr>\r\n");
-    sb.append("<td align=\"left\"><font size=\"+1\"><strong>");
+    sb.append("<td align='left'><font size='+1'><strong>");
     sb.append("Filename");
     sb.append("</strong></font></td>\r\n");
-    sb.append("<td align=\"center\"><font size=\"+1\"><strong>");
+    sb.append("<td align='center'><font size='+1'><strong>");
     sb.append("Size");
     sb.append("</strong></font></td>\r\n");
-    sb.append("<td align=\"right\"><font size=\"+1\"><strong>");
+    sb.append("<td align='right'><font size='+1'><strong>");
     sb.append("Last Modified");
     sb.append("</strong></font></td>\r\n");
     sb.append("</tr>");
@@ -580,21 +472,21 @@ public class HtmlWriter {
 
       sb.append("<tr");
       if (shade) {
-        sb.append(" bgcolor=\"#eeeeee\"");
+        sb.append(" bgcolor='#eeeeee'");
       }
       sb.append(">\r\n");
       shade = !shade;
 
-      sb.append("<td align=\"left\">&nbsp;&nbsp;\r\n");
-      sb.append("<a href=\"");
+      sb.append("<td align='left'>&nbsp;&nbsp;\r\n");
+      sb.append("<a href='");
       //sb.append( encode(contextPath));
       // resourceName = encode(path + resourceName);
       sb.append(childname);
-      sb.append("\"><tt>");
+      sb.append("'><tt>");
       sb.append(childname);
       sb.append("</tt></a></td>\r\n");
 
-      sb.append("<td align=\"right\"><tt>");
+      sb.append("<td align='right'><tt>");
       if (child.isDirectory()) {
         sb.append("&nbsp;");
       } else {
@@ -602,7 +494,7 @@ public class HtmlWriter {
       }
       sb.append("</tt></td>\r\n");
 
-      sb.append("<td align=\"right\"><tt>");
+      sb.append("<td align='right'><tt>");
       sb.append(formatter.toDateTimeString(new Date(child.lastModified())));
       sb.append("</tt></td>\r\n");
 
@@ -611,7 +503,7 @@ public class HtmlWriter {
 
     // Render the page footer
     sb.append("</table>\r\n");
-    sb.append("<HR size=\"1\" noshade=\"noshade\">");
+    sb.append("<HR size='1' noshade='noshade'>");
 
     appendSimpleFooter( sb );
 
@@ -667,7 +559,7 @@ public class HtmlWriter {
     // Render the page header
     sb.append(getHtmlDoctypeAndOpenTag()); // "<html>\n" );
     sb.append("<head>\r\n");
-    sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
+    sb.append("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>");
     sb.append("<title>");
     sb.append("Catalog ").append(catname);
     sb.append("</title>\r\n");
@@ -677,20 +569,20 @@ public class HtmlWriter {
     sb.append("<h1>");
     sb.append("Catalog ").append(catname);
     sb.append("</h1>");
-    sb.append("<HR size=\"1\" noshade=\"noshade\">");
+    sb.append("<HR size='1' noshade='noshade'>");
 
-    sb.append("<table width=\"100%\" cellspacing=\"0\"" +
-        " cellpadding=\"5\" align=\"center\">\r\n");
+    sb.append("<table width='100%' cellspacing='0'" +
+        " cellpadding='5' align='center'>\r\n");
 
     // Render the column headings
     sb.append("<tr>\r\n");
-    sb.append("<th align=\"left\"><font size=\"+1\">");
+    sb.append("<th align='left'><font size='+1'>");
     sb.append("Dataset");
     sb.append("</font></th>\r\n");
-    sb.append("<th align=\"center\"><font size=\"+1\">");
+    sb.append("<th align='center'><font size='+1'>");
     sb.append("Size");
     sb.append("</font></th>\r\n");
-    sb.append("<th align=\"right\"><font size=\"+1\">");
+    sb.append("<th align='right'><font size='+1'>");
     sb.append("Last Modified");
     sb.append("</font></th>\r\n");
     sb.append("</tr>");
@@ -702,7 +594,7 @@ public class HtmlWriter {
     // Render the page footer
     sb.append("</table>\r\n");
 
-    sb.append("<HR size=\"1\" noshade=\"noshade\">");
+    sb.append("<HR size='1' noshade='noshade'>");
 
     appendSimpleFooter( sb );
 
@@ -717,7 +609,7 @@ public class HtmlWriter {
     String catHtml;
     if (!isLocalCatalog) {
       // Setup HREF url to link to HTML dataset page (more below).
-      catHtml = contextPath + "/remoteCatalogService?command=subset&catalog=" + cat.getUriString() + "&";
+      catHtml = this.tdsContext.getContextPath() + "/remoteCatalogService?command=subset&catalog=" + cat.getUriString() + "&";
       // Can't be "/catalogServices?..." because subset decides on xml or html by trailing ".html" on URL path
 
     } else { // replace xml with html
@@ -738,12 +630,12 @@ public class HtmlWriter {
 
       sb.append("<tr");
       if (shade) {
-        sb.append(" bgcolor=\"#eeeeee\"");
+        sb.append(" bgcolor='#eeeeee'");
       }
       sb.append(">\r\n");
       shade = !shade;
 
-      sb.append("<td align=\"left\">");
+      sb.append("<td align='left'>");
       for (int j = 0; j <= level; j++) {
         sb.append("&nbsp;&nbsp;&nbsp;&nbsp;");
       }
@@ -759,7 +651,7 @@ public class HtmlWriter {
         try {
           URI uri = new URI(href);
           if (uri.isAbsolute()) {
-            href = contextPath + "/remoteCatalogService?catalog=" + href;
+            href = this.tdsContext.getContextPath() + "/remoteCatalogService?catalog=" + href;
           } else {
             int pos = href.lastIndexOf('.');
             href = href.substring(0, pos) + ".html";
@@ -769,20 +661,20 @@ public class HtmlWriter {
           log.error(href, e);
         }
 
-        sb.append("<img src='").append(contextPath).append("/").append(this.folderIconPath)
-            .append("' alt='").append(this.folderIconAlt).append("'> &nbsp;");
-        sb.append("<a href=\"");
+        sb.append("<img src='").append( htmlConfig.prepareUrlStringForHtml( htmlConfig.getFolderIconUrl() ))
+            .append("' alt='").append( htmlConfig.getFolderIconAlt()).append("'> &nbsp;");
+        sb.append("<a href='");
         sb.append(StringUtil.quoteHtmlContent(href));
-        sb.append("\"><tt>");
+        sb.append("'><tt>");
         sb.append(name);
         sb.append("/</tt></a></td>\r\n");
       } else // Not an InvCatalogRef
       {
         if (ds.hasNestedDatasets())
-          sb.append("<img src='").append(contextPath).append("/").append(this.folderIconPath)
-              .append("' alt='").append(this.folderIconAlt).append("'> &nbsp;");
+            sb.append( "<img src='" ).append( htmlConfig.prepareUrlStringForHtml( htmlConfig.getFolderIconUrl() ) )
+                    .append( "' alt='" ).append( htmlConfig.getFolderIconAlt() ).append( "'> &nbsp;" );
 
-        // Check if dataset has single resolver service.
+          // Check if dataset has single resolver service.
         if (ds.getAccess().size() == 1 &&
             (ds.getAccess().get(0)).getService().getServiceType().equals(ServiceType.RESOLVER)) {
           InvAccess access = ds.getAccess().get(0);
@@ -790,9 +682,9 @@ public class HtmlWriter {
           int pos = accessUrlName.lastIndexOf(".xml");
           if (pos != -1)
             accessUrlName = accessUrlName.substring(0, pos) + ".html";
-          sb.append("<a href=\"");
+          sb.append("<a href='");
           sb.append(StringUtil.quoteHtmlContent(accessUrlName));
-          sb.append("\"><tt>");
+          sb.append("'><tt>");
           String tmpName = name;
           if (tmpName.endsWith(".xml")) {
             tmpName = tmpName.substring(0, tmpName.lastIndexOf('.'));
@@ -803,11 +695,11 @@ public class HtmlWriter {
         // Dataset with an ID.
         else if (ds.getID() != null) {
           // Write link to HTML dataset page.
-          sb.append("<a href=\"");
+          sb.append("<a href='");
           sb.append(StringUtil.quoteHtmlContent(catHtml));
           sb.append("dataset=");
           sb.append( StringUtil.replace( ds.getID(), '+', "%2B" ) );
-          sb.append("\"><tt>");
+          sb.append("'><tt>");
           sb.append(name);
           sb.append("</tt></a></td>\r\n");
         }
@@ -819,7 +711,7 @@ public class HtmlWriter {
         }
       }
 
-      sb.append("<td align=\"right\"><tt>");
+      sb.append("<td align='right'><tt>");
       double size = ds.getDataSize();
       if ((size != 0.0) && !Double.isNaN(size)) {
         sb.append(Format.formatByteSize(size));
@@ -828,7 +720,7 @@ public class HtmlWriter {
       }
       sb.append("</tt></td>\r\n");
 
-      sb.append("<td align=\"right\"><tt>");
+      sb.append("<td align='right'><tt>");
 
       // Get last modified time.
       DateType lastModDateType = ds.getLastModifiedDate();
@@ -865,7 +757,7 @@ public class HtmlWriter {
     sb.append( this.getHtmlDoctypeAndOpenTag() );
     sb.append( "<head>\r\n" );
     sb.append( "<title> Catalog Services</title>\r\n" );
-    sb.append( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\r\n" );
+    sb.append( "<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>\r\n" );
     sb.append( this.getTdsPageCssLink() );
     sb.append( "</head>\r\n" );
     sb.append( "<body>\r\n" );
@@ -931,7 +823,7 @@ public class HtmlWriter {
     // Render the page header
     sb.append(getHtmlDoctypeAndOpenTag()); // "<html>\n" );
     sb.append("<head>\r\n");
-    sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
+    sb.append("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>");
     sb.append("<title>");
     sb.append("Common Data Model");
     sb.append("</title>\r\n");
@@ -941,20 +833,20 @@ public class HtmlWriter {
     sb.append("<h1>");
     sb.append("Dataset ").append(name);
     sb.append("</h1>");
-    sb.append("<HR size=\"1\" noshade=\"noshade\">");
+    sb.append("<HR size='1' noshade='noshade'>");
 
-    sb.append("<table width=\"100%\" cellspacing=\"0\"" +
-        " cellpadding=\"5\" align=\"center\">\r\n");
+    sb.append("<table width='100%' cellspacing='0'" +
+        " cellpadding='5' align='center'>\r\n");
 
     //////// Axis
     sb.append("<tr>\r\n");
-    sb.append("<td align=\"left\"><font size=\"+1\"><strong>");
+    sb.append("<td align='left'><font size='+1'><strong>");
     sb.append("Axis");
     sb.append("</strong></font></td>\r\n");
-    sb.append("<td align=\"left\"><font size=\"+1\"><strong>");
+    sb.append("<td align='left'><font size='+1'><strong>");
     sb.append("Type");
     sb.append("</strong></font></td>\r\n");
-    sb.append("<td align=\"left\"><font size=\"+1\"><strong>");
+    sb.append("<td align='left'><font size='+1'><strong>");
     sb.append("Units");
     sb.append("</strong></font></td>\r\n");
     sb.append("</tr>");
@@ -973,13 +865,13 @@ public class HtmlWriter {
     //List gridsets = gds.getGridsets();
 
     sb.append("<tr>\r\n");
-    sb.append("<td align=\"left\"><font size=\"+1\"><strong>");
+    sb.append("<td align='left'><font size='+1'><strong>");
     sb.append("GeoGrid");
     sb.append("</strong></font></td>\r\n");
-    sb.append("<td align=\"left\"><font size=\"+1\"><strong>");
+    sb.append("<td align='left'><font size='+1'><strong>");
     sb.append("Description");
     sb.append("</strong></font></td>\r\n");
-    sb.append("<td align=\"left\"><font size=\"+1\"><strong>");
+    sb.append("<td align='left'><font size='+1'><strong>");
     sb.append("Units");
     sb.append("</strong></font></td>\r\n");
     sb.append("</tr>");
@@ -994,7 +886,7 @@ public class HtmlWriter {
     // Render the page footer
     sb.append("</table>\r\n");
 
-    sb.append("<HR size=\"1\" noshade=\"noshade\">");
+    sb.append("<HR size='1' noshade='noshade'>");
 
     appendSimpleFooter( sb );
 
@@ -1008,12 +900,12 @@ public class HtmlWriter {
 
     sb.append("<tr");
     if (shade) {
-      sb.append(" bgcolor=\"#eeeeee\"");
+      sb.append(" bgcolor='#eeeeee'");
     }
     sb.append(">\r\n");
     shade = !shade;
 
-    sb.append("<td align=\"left\">");
+    sb.append("<td align='left'>");
     sb.append("\r\n");
 
     StringBuilder sbuff = new StringBuilder();
@@ -1023,13 +915,13 @@ public class HtmlWriter {
     sb.append(name);
     sb.append("</tt></a></td>\r\n");
 
-    sb.append("<td align=\"left\"><tt>");
+    sb.append("<td align='left'><tt>");
     AxisType type = axis.getAxisType();
     String stype = (type == null) ? "" : StringUtil.quoteHtmlContent(type.toString());
     sb.append(stype);
     sb.append("</tt></td>\r\n");
 
-    sb.append("<td align=\"left\"><tt>");
+    sb.append("<td align='left'><tt>");
     String units = axis.getUnitsString();
     String sunits = (units == null) ? "" : units;
     sb.append(sunits);
@@ -1042,12 +934,12 @@ public class HtmlWriter {
 
     sb.append("<tr");
     if (shade) {
-      sb.append(" bgcolor=\"#eeeeee\"");
+      sb.append(" bgcolor='#eeeeee'");
     }
     sb.append(">\r\n");
     shade = !shade;
 
-    sb.append("<td align=\"left\">");
+    sb.append("<td align='left'>");
     sb.append("\r\n");
 
     VariableEnhanced ve = grid.getVariable();
@@ -1058,13 +950,13 @@ public class HtmlWriter {
     sb.append(name);
     sb.append("</tt></a></td>\r\n");
 
-    sb.append("<td align=\"left\"><tt>");
+    sb.append("<td align='left'><tt>");
     String desc = ve.getDescription();
     String sdesc = (desc == null) ? "" : StringUtil.quoteHtmlContent(desc);
     sb.append(sdesc);
     sb.append("</tt></td>\r\n");
 
-    sb.append("<td align=\"left\"><tt>");
+    sb.append("<td align='left'><tt>");
     String units = ve.getUnitsString();
     String sunits = (units == null) ? "" : units;
     sb.append(sunits);

@@ -36,8 +36,8 @@
      * -->
     <folderIconUrl>folder.gif</folderIconUrl>
     <folderIconAlt>Folder</folderIconAlt>
-    <datasetIconUrl>dataset.gif</datasetIconUrl>
-    <datasetIconAlt>Dataset</datasetIconAlt>
+    <datasetIconUrl>dataset.gif</datasetIconUrl> <!-- Not currently used. -->
+    <datasetIconAlt>Dataset</datasetIconAlt>     <!-- Not currently used. -->
 
     <!--
      * Name and logo for this installation.
