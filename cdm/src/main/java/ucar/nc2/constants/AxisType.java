@@ -51,11 +51,13 @@ public enum AxisType {
   /**
    * represents the ensemble coordinate
    */
-  Ensemble(1),
+  //Ensemble(1),
+  Ensemble(2),
   /**
    * represents the time coordinate
    */
-  Time(2),
+  //Time(2),
+  Time(1),
   /**
    * represents a x coordinate
    */

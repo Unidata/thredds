@@ -45,9 +45,8 @@ import ucar.grid.GridTableLookup;
 import ucar.grid.GridRecord;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
-import ucar.grib.grib2.Grib2GridTableLookup;
-import ucar.grib.grib1.Grib1GridTableLookup;
 import ucar.grib.GribGridRecord;
+import ucar.grib.GribNumbers;
 
 import java.util.*;
 
@@ -69,12 +68,15 @@ public class GridEnsembleCoord {
     private int ensembles;
 
     /** keys for the ensembles */
-    private int[] enskey;
+    //private int[] enskey;
 
     //private List<Date> times = new ArrayList<Date>();
 
     /** sequence # */
     private int seq = 0;
+
+    /** ensemble number can start with either 1 or 0  */
+    private boolean startWithOne = true;
 
 
     /**
@@ -85,7 +87,7 @@ public class GridEnsembleCoord {
      */
     GridEnsembleCoord(List<GridRecord> records, GridTableLookup lookup) {
         this.lookup = lookup;
-        calEnsembles(records);
+        ensembles = calEnsembles(records);
     }
 
 
@@ -111,6 +113,13 @@ public class GridEnsembleCoord {
     GridRecord first =  records.get( 0 );
     if ( first instanceof GribGridRecord ) { // check for ensemble
       GribGridRecord ggr = (GribGridRecord) first;
+      if (ggr.getEnsembleNumber() == GribNumbers.UNDEFINED )
+        return -1;
+
+      return ggr.getNumberForecasts();
+    }
+    return -1;
+      /*
       int key = ggr.getRecordKey(); // levelType1, levelValue1, levelType2, levelValue2,
       //double key = ggr.getRecordKey() +
       //    ggr.levelType1 + ggr.levelValue1 + ggr.levelType2 +ggr.levelValue2;
@@ -122,7 +131,9 @@ public class GridEnsembleCoord {
         if (key == ggr.getRecordKey() ) {
           ensembles++;
         }
+
       }
+      */
       // get the Ensemble keys
       //System.out.println( "Ensembles ="+ ensembles );
       /*
@@ -158,9 +169,10 @@ public class GridEnsembleCoord {
           }
           ensembleDimension.add( new Integer( ensemble ));
         }
-        */
+
     }
     return ensembles;
+    */
   }
 
     /**
@@ -229,7 +241,6 @@ public class GridEnsembleCoord {
         v.setDataType(DataType.INT);
         v.addAttribute(new Attribute("long_name", "ensemble"));
 
-        //int      ntimes   = getNTimes();
         int[]    data     = new int[ensembles];
 
         for (int i = 0; i < ensembles; i++) {
@@ -237,11 +248,11 @@ public class GridEnsembleCoord {
         }
         Array dataArray = Array.factory(DataType.INT,
                                         new int[] { ensembles }, data);
-                                       // new int[] { ntimes }, data);
 
         v.setDimensions(v.getShortName());
         v.setCachedData(dataArray, false);
 
+      /*
         if ( lookup instanceof Grib2GridTableLookup) {
           Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
           //v.addAttribute( new Attribute("GRIB_orgReferenceTime", formatter.toDateTimeStringISO( d )));
@@ -253,6 +264,8 @@ public class GridEnsembleCoord {
           //v.addAttribute( new Attribute("GRIB2_significanceOfRTName",
           //    g1lookup.getFirstSignificanceOfRTName()));
         }
+        */
+      
         v.addAttribute(new Attribute(_Coordinate.AxisType,
                                      AxisType.Ensemble.toString()));
 
@@ -266,19 +279,25 @@ public class GridEnsembleCoord {
      *
      * @return  the index or -1 if not found
      */
-//    int getIndex(GridRecord record) {
-//        Date validTime = null; //getValidTime(record, lookup);
-//        return times.indexOf(validTime);
-//    }
+    int getIndex(GridRecord record) {
 
-    /**
-     * Get the number of times
-     *
-     * @return the number of times
-     */
-//    int getNTimes() {
-//        return times.size();
-//    }
+      if ( record instanceof GribGridRecord ) {
+        GribGridRecord ggr = (GribGridRecord) record;
+        int en = ggr.getEnsembleNumber();
+        if (en == GribNumbers.UNDEFINED )
+          return 0;
+        // some ensemble numbering start with 0, others with 1
+        if ( en == 0 )
+           startWithOne = false;
+        if (startWithOne ) {
+          return en -1;
+        } else {
+          return en;
+        }
+      }
+      return -1;
+    }
+
     /**
      * Get the number of Ensembles
      *

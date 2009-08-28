@@ -45,7 +45,6 @@ import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
 import ucar.grib.grib2.Grib2GridTableLookup;
 import ucar.grib.grib1.Grib1GridTableLookup;
-import ucar.grib.GribGridRecord;
 import ucar.unidata.util.StringUtil;
 import ucar.grid.*;
 
@@ -334,8 +333,7 @@ public class GridIndexToNC {
   private void makeDenseCoordSys(NetcdfFile ncfile, GridTableLookup lookup, CancelTask cancelTask) throws IOException {
     List<GridTimeCoord> timeCoords = new ArrayList<GridTimeCoord>();
     List<GridVertCoord> vertCoords = new ArrayList<GridVertCoord>();
-    // TODO: Delete after checking
-    //List<GridEnsembleCoord> ensembleCoords = new ArrayList<GridEnsembleCoord>();
+    List<GridEnsembleCoord> ensembleCoords = new ArrayList<GridEnsembleCoord>();
 
     // loop over HorizCoordSys
     Collection<GridHorizCoordSys> hcset = hcsHash.values();
@@ -382,7 +380,6 @@ public class GridIndexToNC {
 
         // check for ensemble members
         //System.out.println( pv.getName() +"  "+ pv.getParamName() );
-        /*
         GridEnsembleCoord useEnsembleCoord = null;
         GridEnsembleCoord  ensembleCoord = new GridEnsembleCoord(recordList, lookup);
         for (GridEnsembleCoord gec : ensembleCoords) {
@@ -400,7 +397,6 @@ public class GridIndexToNC {
         // only add ensemble dimensions
         if (useEnsembleCoord.getNEnsembles() > 1)
           pv.setEnsembleCoord(useEnsembleCoord);
-        */  // TODO: Delete after checking
       }
 
       //// assign time coordinate names
@@ -424,14 +420,12 @@ public class GridIndexToNC {
       }
 
       // add Ensemble dimensions, give Ensemble dimensions unique names
-      /*
       seqno = 0;
       for (GridEnsembleCoord gec : ensembleCoords) {
         gec.setSequence(seqno++);
         if (gec.getNEnsembles() > 1)
           gec.addDimensionsToNetcdfFile(ncfile, hcs.getGroup());
       }
-      */ // TODO: Delete after checking
       // add x, y dimensions
       hcs.addDimensionsToNetcdfFile(ncfile);
 
@@ -499,12 +493,10 @@ public class GridIndexToNC {
       for (GridTimeCoord tcs : timeCoords) {
         tcs.addToNetcdfFile(ncfile, hcs.getGroup());
       }
-      /*
       for (GridEnsembleCoord gec : ensembleCoords) {
         if (gec.getNEnsembles() > 1)
           gec.addToNetcdfFile(ncfile, hcs.getGroup());
       }
-      */ // TODO: Delete after checking
       hcs.addToNetcdfFile(ncfile);
 
       for (GridVertCoord gvcs : vertCoords) {
@@ -512,7 +504,7 @@ public class GridIndexToNC {
       }
 
     } // loop over hcs
-    // TODO: check this,  in ToolsUI
+    // TODO: check this,  in ToolsUI it caused problems
     //for (GridVertCoord gvcs : vertCoords) {
     //  gvcs.empty();
     //}

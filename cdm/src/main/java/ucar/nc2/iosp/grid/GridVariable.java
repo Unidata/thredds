@@ -113,7 +113,7 @@ public class GridVariable {
   /**
    * ensemble coord system
    */
-  private GridEnsembleCoord ecs;
+  private GridEnsembleCoord ecs = null;
 
   /**
    * vertical coordinate
@@ -129,6 +129,11 @@ public class GridVariable {
    * number of levels
    */
   private int nlevels;
+
+  /**
+   * number of Ensembles
+   */
+  private int nEnsembles;
 
   /**
    * number of times
@@ -278,35 +283,51 @@ public class GridVariable {
    *
    * @param ecs the Ensemble coordinate
    */
-  /*
   void setEnsembleCoord(GridEnsembleCoord ecs) {
     this.ecs = ecs;
   }
-  */ // TODO:
+
   /**
    * Get the number of Ensemble
    *
    * @return the number of Ensemble
    */
-  /*
   int getNEnsembles() {
     return (ecs == null)
         ? 1
         : ecs.getNEnsembles();
   }
-  */ // TODO:
+
+  /**
+   * Get the Index of Ensemble
+   * @param record GridRecord
+   * @return the Index of Ensemble
+   */
+  int getEnsembleIndex( GridRecord record ) {
+    return (ecs == null)
+        ? 1
+        : ecs.getIndex( record );
+  }
+
   /**
    * Does this have a Ensemble dimension
    *
    * @return true if has a Ensemble dimension
    */
-  /*
   boolean hasEnsemble() {
     return (ecs == null)
         ? false
         : ecs.getNEnsembles() > 1;
   }
-  */ // TODO:  
+
+  /**
+   * Get the name of the ensemble dimension
+   *
+   * @return the name of the ensemble dimension
+   */
+  String getEnsembleName() {
+    return ecs.getName();
+  }
 
   /**
    * Get the number of vertical levels
@@ -392,6 +413,7 @@ public class GridVariable {
   Variable makeVariable(NetcdfFile ncfile, Group g, boolean useDesc) {
     assert records.size() > 0 : "no records for this variable";
     nlevels = getVertNlevels();
+    nEnsembles = getNEnsembles();
     ntimes = tcs.getNTimes();
 
     if (vname == null) {
@@ -407,6 +429,12 @@ public class GridVariable {
     v.setDataType(DataType.FLOAT);
 
     String dims = tcs.getName();
+
+    if ( hasEnsemble() ) {
+      dims = dims + " " + getEnsembleName();  // TODO: time first
+      //dims = getEnsembleName() + " " + dims;
+    }
+
     if (getVertIsUsed()) {
       dims = dims + " " + getVertName();
       hasVert = true;
@@ -485,7 +513,7 @@ public class GridVariable {
       System.out.println("Variable " + getName());
     }
 
-    recordTracker = new GridRecord[ntimes * nlevels];
+    recordTracker = new GridRecord[ntimes * nEnsembles * nlevels];
     for (GridRecord p : records) {
       if (showRecords) {
         System.out.println(" " + vc.getVariableName() + " (type="
@@ -525,8 +553,15 @@ public class GridVariable {
         tcs.getIndex(p);  // allow breakpoint
         continue;
       }
+      int recno;
+      if ( hasEnsemble() ) {
+        int ens = getEnsembleIndex(p);
+        recno = time * ( nEnsembles * nlevels ) + ( ens * nlevels ) + level;
+        //recno = ens * ( ntimes * nlevels ) + ( time * nlevels ) + level;
+      } else {
+        recno = time * nlevels + level;
+      }
 
-      int recno = time * nlevels + level;
       if (recordTracker[recno] == null) {
         recordTracker[recno] = p;
       } else {
