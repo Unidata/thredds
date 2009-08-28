@@ -36,18 +36,14 @@
 </pre>
 <h2>Adding Individual Files</h2>
 <ul>
-  <li>You must have a &lt;fmrcInventory&gt; element in the &lt;datasetFmrc&gt;. The <em>location</em>, <em>suffix</em>, and <em>lastModifiedLimit</em> are all passed to a dataset Scan.</li>
+  <li>You must have a &lt;fmrcInventory&gt; element in the &lt;datasetFmrc&gt;. The <em>location</em>, <em>suffix</em>, and <em>olderThan</em> attributes are all passed to a datasetScan.</li>
   <li>You must have a service named &quot;fileServices&quot; which is used for the service element on all the files.</li>
 </ul>
-<p>Example:</p>
-<pre>&nbsp; </pre>
-<pre>&lt;service name=&quot;fileServices&quot; serviceType=&quot;Compound&quot; base=&quot;&quot;&gt;
+<p>Example: </p>
+<pre>&lt;service name=&quot;<strong>fileServices</strong>&quot; serviceType=&quot;Compound&quot; base=&quot;&quot;&gt;
   &lt;service name=&quot;ncdods&quot; serviceType=&quot;OPENDAP&quot; base=&quot;/thredds/dodsC/&quot;/&gt;
   &lt;service name=&quot;HTTPServer&quot; serviceType=&quot;HTTPServer&quot; base=&quot;/thredds/fileServer/&quot;/&gt;
-  &lt;service name=&quot;wcs&quot; serviceType=&quot;WCS&quot; base=&quot;/thredds/wcs/&quot;/&gt;
-  &lt;service name=&quot;wms&quot; serviceType=&quot;WMS&quot; base=&quot;/thredds/wms/&quot; /&gt;
-  &lt;service name=&quot;ncss&quot; serviceType=&quot;NetcdfSubset&quot; base=&quot;/thredds/ncss/grid/&quot; /&gt;
-  &lt;service name=&quot;ncstream&quot; serviceType=&quot;NetcdfStream&quot; base=&quot;/thredds/ncstream/&quot; /&gt;
+
 &lt;/service&gt;</pre>
 <pre>&lt;service name=&quot;fmrcServices&quot; serviceType=&quot;Compound&quot; base=&quot;&quot;&gt;
   &lt;service name=&quot;ncdods&quot; serviceType=&quot;OPENDAP&quot; base=&quot;/thredds/dodsC/&quot; /&gt;
@@ -66,9 +62,9 @@
        &lt;scan location=&quot;/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/&quot; suffix=&quot;.grib1&quot; dateFormatMark=&quot;GFS_Alaska_191km_#yyyyMMdd_HHmm&quot; subdirs=&quot;true&quot; olderThan=&quot;5 min&quot;/&gt;
      &lt;/aggregation&gt;
    &lt;/netcdf&gt;
-   &lt;fmrcInventory location=&quot;/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/&quot; suffix=&quot;.grib1&quot; fmrcDefinition=&quot;NCEP-GFS-Alaska_191km.fmrcDefinition.xml&quot; /&gt;
-   &lt;addTimeCoverage datasetNameMatchPattern=&quot;GFS_Alaska_191km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib1$&quot;
-       startTimeSubstitutionPattern=&quot;$1-$2-$3T$4:00:00&quot; duration=&quot;120 hours&quot;/&gt;
+
+   <strong>&lt;fmrcInventory location=&quot;/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/&quot; suffix=&quot;.grib1&quot; fmrcDefinition=&quot;NCEP-GFS-Alaska_191km.fmrcDefinition.xml&quot; /&gt;
+</strong>
 
  &lt;/datasetFmrc&gt;
  </pre>
@@ -77,7 +73,7 @@
 
 <hr width="100%" />
 <address>
-<img src="../images/thread.png" height="108" width="110" />This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron </a> and was last updated on mar 20, 2009
+<img src="../images/thread.png" height="108" width="110" />This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron </a> and was last updated on Aug 28, 2009
 </address>
 <p></p>
 <p>&nbsp;</p>

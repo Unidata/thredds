@@ -95,6 +95,11 @@ public class StationWriter {
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: Bounding Box contains no stations; bb= " + qb.getLatLonRect());
         return false;
       }
+      if (debugDetail) {
+        System.out.printf("stns= ");
+        for (Station s : wantStations) System.out.printf("%s ", s.getName());
+        System.out.printf("%n");
+      }
     } else if (qb.getSpatialSelection() == PointQueryBean.SpatialSelection.stns) {
       wantStations = sfc.getStations(qb.getStnNames());
       if (wantStations.size() == 0) {
@@ -147,7 +152,7 @@ public class StationWriter {
   public Writer write(HttpServletResponse res) throws IOException {
     long start = System.currentTimeMillis();
     Limit counter = new Limit();
-    counter.limit = 150;
+    //counter.limit = 150;
 
     // which writer, based on desired response
     PointQueryBean.ResponseType resType = qb.getResponseType();

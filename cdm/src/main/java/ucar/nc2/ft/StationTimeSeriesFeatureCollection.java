@@ -116,6 +116,7 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, N
    * 
    * @param stations only contain these stations; if null or empty use all
    * @param dateRange only points in this date range. may be null.
+   * @param varList only these member variables. may be null. currently ignored
    * @return a PointFeatureCollection, may be null if its empty.
    * @throws IOException on read error
    */

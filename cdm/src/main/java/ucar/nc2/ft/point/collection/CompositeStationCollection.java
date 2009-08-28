@@ -106,22 +106,21 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   }
 
   @Override
-  public PointFeatureCollection flatten(List<Station> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException {
-    TimedCollection subsetCollection = (dateRange != null) ? dataCollection.subset(dateRange) : dataCollection;
-    CompositeStationCollection subset =  new CompositeStationCollection(getName(), stations, subsetCollection);
-    return new StationTimeSeriesCollectionFlattened( subset, dateRange);
+  public PointFeatureCollection flatten(LatLonRect boundingBox, DateRange dateRange) throws IOException {
+    return flatten(stationHelper.getStations(boundingBox), dateRange, null);
   }
-
 
   @Override
-  public PointFeatureCollection flatten(LatLonRect boundingBox, DateRange dateRange) throws IOException {
+  public PointFeatureCollection flatten(List<Station> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException {
     TimedCollection subsetCollection = (dateRange != null) ? dataCollection.subset(dateRange) : dataCollection;
-    List<Station> stations = stationHelper.getStations(boundingBox);
-    CompositeStationCollection subset =  new CompositeStationCollection(getName(), stations, subsetCollection);
-    return new StationTimeSeriesCollectionFlattened( subset, dateRange);
+    return new CompositeStationCollectionFlattened( getName(), stations, dateRange, varList, subsetCollection);
   }
 
-  // the iterator over StationTimeSeriesFeature
+  //////////////////////////////////////////////////////////
+  // the iterator over StationTimeSeriesFeature objects
+  // problematic - since each station will independently iterate over the datasets.
+  // betterto use the flatten() method, then reconstitute the station with getStation(pointFeature)
+
   @Override
   public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
 
