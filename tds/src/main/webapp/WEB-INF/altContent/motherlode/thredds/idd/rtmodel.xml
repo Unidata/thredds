@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="Unidata THREDDS Data Server" version="1.0.1">
-  <service name="fmrcServices" serviceType="Compound" base="">
-    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
+  <service name="all" serviceType="Compound" base="">
+    <service name="odap" serviceType="OPENDAP" base="/thredds/dodsC/" />
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
+    <service name="wms" serviceType="WMS" base="/thredds/wms/" />
     <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" />
+    <service name="http" serviceType="HTTPServer" base="/thredds/fileServer/"/>
   </service>
-  <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
   <dataset name="Unidata Real-Time Regional Model" ID="Unidata-Regional-Model">
 
     <metadata inherited="true">
-      <serviceName>fmrcServices</serviceName>
+      <serviceName>all</serviceName>
       <authority>edu.ucar.unidata</authority>
       <dataType>Grid</dataType>
       <dataFormat>GRIB-1</dataFormat>
@@ -35,9 +36,6 @@
     </datasetFmrc -->
 
     <datasetScan name="NMM (Primary Domain) individual files" ID="Unidata-Regional-Model/nmm/files" path="fmrc/Unidata/rtmodel/nmm/files" location="/data/ldm/pub/rtmodel/">
-      <metadata inherited="true">
-        <serviceName>HTTPServer</serviceName>
-      </metadata>
       <filter>
         <include regExp=".*nmm\.Grb.*" atomic="true" collection="false" />
       </filter>
@@ -57,9 +55,6 @@
     </datasetFmrc -->
 
     <datasetScan name="NMM (Secondary Domain) individual files" ID="Unidata-Regional-Model/nmm-alt/files" path="fmrc/Unidata/rtmodel/nmm-alt/files" location="/data/ldm/pub/rtmodel/">
-      <metadata inherited="true">
-        <serviceName>HTTPServer</serviceName>
-      </metadata>
       <filter>
         <include regExp=".*nmm_alt1\.Grb.*" atomic="true" collection="false" />
       </filter>
