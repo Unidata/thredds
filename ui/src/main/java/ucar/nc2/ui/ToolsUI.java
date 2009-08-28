@@ -923,7 +923,7 @@ public class ToolsUI extends JPanel {
       setThreddsDatatype(threddsData);
 
     } catch (IOException ioe) {
-      JOptionPane.showMessageDialog(null, "Error on setThreddsDataset = " + ioe.getMessage());
+      JOptionPane.showMessageDialog(null, "Error on setThreddsDatatype = " + ioe.getMessage());
     }
 
   }
@@ -949,7 +949,7 @@ public class ToolsUI extends JPanel {
       try {
         showInViewer(threddsDataFactory.openDataset(invAccess, true, null, null));
       } catch (IOException ioe) {
-        JOptionPane.showMessageDialog(null, "Error on setThreddsDataset = " + ioe.getMessage());
+        JOptionPane.showMessageDialog(null, "Error on setThreddsDatatype = " + ioe.getMessage());
       }
       return;
     }
@@ -959,7 +959,7 @@ public class ToolsUI extends JPanel {
       setThreddsDatatype(threddsData);
 
     } catch (IOException ioe) {
-      JOptionPane.showMessageDialog(null, "Error on setThreddsDataset = " + ioe.getMessage());
+      JOptionPane.showMessageDialog(null, "Error on setThreddsDatatype = " + ioe.getMessage());
     }
 
   }

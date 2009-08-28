@@ -52,7 +52,7 @@ import java.util.Date;
 public class PointQueryBean {
 
   public enum RequestType {
-    capabilities, data, dataForm, form, header, stations
+    capabilities, cdl, data, dataForm, form, header, ncml, stations
   }
 
   public enum ResponseType {
@@ -128,10 +128,12 @@ public class PointQueryBean {
   RequestType getRequestType() {
     if (reqType == null) {
       if (req.equalsIgnoreCase("capabilities")) reqType = RequestType.capabilities;
+      else if (req.equalsIgnoreCase("cdl")) reqType = RequestType.cdl;
       else if (req.equalsIgnoreCase("data")) reqType = RequestType.data;
       else if (req.equalsIgnoreCase("dataForm")) reqType = RequestType.dataForm;
       else if (req.equalsIgnoreCase("form")) reqType = RequestType.form;
-      else if (req.equalsIgnoreCase("cdmHeader")) reqType = RequestType.header;
+      else if (req.equalsIgnoreCase("header")) reqType = RequestType.header;
+      else if (req.equalsIgnoreCase("ncml")) reqType = RequestType.ncml;
       else if (req.equalsIgnoreCase("stations")) reqType = RequestType.stations;
       else reqType = RequestType.data; // default
     }

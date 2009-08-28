@@ -36,32 +36,37 @@ import org.springframework.web.servlet.mvc.AbstractCommandController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindException;
 import org.jdom.Document;
+import org.jdom.Element;
 import org.jdom.transform.XSLTransformer;
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
 import thredds.server.config.TdsContext;
 import thredds.servlet.UsageLog;
 import thredds.servlet.ServletUtil;
+import thredds.servlet.DatasetHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.List;
+import java.util.StringTokenizer;
+import java.util.Formatter;
 import java.nio.channels.WritableByteChannel;
 import java.nio.channels.Channels;
+import java.net.URLDecoder;
 
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.remote.PointStreamProto;
 import ucar.nc2.ft.point.remote.PointStream;
 import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
-import ucar.nc2.units.DateRange;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.ParsedSectionSpec;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.geoloc.Station;
-import ucar.unidata.geoloc.LatLonRect;
 
 /**
  * Controller for CdmRemote service.
@@ -142,11 +147,11 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
 
     FeatureDatasetPoint fd = null;
     try {
+      // try it as cdmRemoteFeatureDataset
       fd = collectionManager.getFeatureCollectionDataset(ServletUtil.getRequest(req), path);
       if (fd == null) {
-        res.sendError(HttpServletResponse.SC_NOT_FOUND);
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
-        return null;
+        // try it as cdmRemote
+        return handlCdmRequest(req, res, query, path, absPath);
       }
 
       PointQueryBean.RequestType reqType = query.getRequestType();
@@ -230,7 +235,7 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
 
     StationWriter stationWriter = new StationWriter(fdp, sfc, qb);
     if (!stationWriter.validate(res)) {
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
       return null; // error was sent
     }
 
@@ -262,11 +267,11 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
 
     // otherwise stream it out
     StationWriter.Writer w = stationWriter.write(res);
-    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
+    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
 
     if (showTime) {
       long took = System.currentTimeMillis() - start;
-      System.out.println("\ntotal response took = " + took + " msecs count = "+w.count);
+      System.out.println("\ntotal response took = " + took + " msecs count = " + w.count);
     }
 
     return null;
@@ -294,7 +299,7 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
     byte[] b = stationsp.toByteArray();
     NcStream.writeVInt(out, b.length);
     out.write(b);
-    NcStream.writeVInt(out, 0); 
+    NcStream.writeVInt(out, 0);
 
     out.flush();
     res.flushBuffer();
@@ -372,6 +377,143 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
   private InputStream getXSLT(String xslName) {
     return getClass().getResourceAsStream("/resources/xsl/" + xslName);
   }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  protected ModelAndView handlCdmRequest(HttpServletRequest req, HttpServletResponse res, PointQueryBean qb, String path,
+                                         String absPath) throws Exception {
+
+    NetcdfFile ncfile = null;
+    try {
+      ncfile = DatasetHandler.getNetcdfFile(req, res, path);
+      if (ncfile == null) {
+        res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
+        return null;
+      }
+
+      OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
+
+      if (qb.getRequestType() == PointQueryBean.RequestType.capabilities) {
+        sendCapabilities( out, FeatureType.NONE, absPath);
+        res.flushBuffer();
+        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
+        return null;
+
+      } else  if (qb.getRequestType() == PointQueryBean.RequestType.cdl) {
+        res.setContentType("text/plain");
+        String cdl = ncfile.toString();
+        res.setContentLength(cdl.length());
+        out.write(cdl.getBytes());
+
+      } else if (qb.getRequestType() == PointQueryBean.RequestType.ncml) {
+        res.setContentType("application/xml");
+        ncfile.writeNcML(out, absPath);
+
+      } else {
+
+        res.setContentType("application/octet-stream");
+        res.setHeader("Content-Description", "ncstream");
+
+        WritableByteChannel wbc = Channels.newChannel(out);
+        NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(req));
+        if (qb.getRequestType() == PointQueryBean.RequestType.header) { // just the header
+          ncWriter.sendHeader(wbc);
+
+        } else { // they want some data
+          String query = qb.getVar() != null ? qb.getVar() : req.getQueryString();
+          if ((query == null) || (query.length() == 0)) {
+            log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
+            res.sendError(HttpServletResponse.SC_BAD_REQUEST, "must have query string");
+            return null;
+          }
+          query = URLDecoder.decode(query, "UTF-8");
+          StringTokenizer stoke = new StringTokenizer(query, ";"); // need UTF/%decode
+          while (stoke.hasMoreTokens()) {
+            ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());
+            ncWriter.sendData(cer.v, cer.section, wbc);
+          }
+        }
+      }
+
+      out.flush();
+      res.flushBuffer();
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
+
+    } catch (FileNotFoundException e) {
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
+      res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
+
+    } catch (IllegalArgumentException e) { // ParsedSectionSpec failed
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
+      res.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+
+    } catch (Throwable e) {
+      e.printStackTrace();
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
+      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+
+    } finally {
+      if (null != ncfile)
+        try {
+          ncfile.close();
+        } catch (IOException ioe) {
+          log.error("Failed to close = " + path);
+        }
+    }
+
+    return null;
+  }
+
+  private void sendCapabilities(OutputStream os, FeatureType ft, String absPath) throws IOException {
+    Element rootElem = new Element("cdmRemoteCapabilities");
+    Document doc = new Document(rootElem);
+    rootElem.setAttribute("location", absPath);
+    Element elem = new Element("featureDataset");
+    elem.setAttribute("type", ft.toString());
+    elem.setAttribute("url", absPath);
+    rootElem.addContent(elem);
+
+    XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+    fmt.output(doc, os);
+  }
+
+  /*  private ModelAndView sendCapabilities(HttpServletResponse res, NetcdfFile ncfile, String absPath, PointQueryBean query) throws IOException {
+
+     NetcdfDataset ds = NetcdfDataset.wrap(ncfile, NetcdfDataset.getEnhanceAll());
+     Formatter errlog = new Formatter();
+     try {
+       FeatureDataset featureDataset = FeatureDatasetFactoryManager.wrap(null, ds, null, errlog);
+       if (featureDataset != null) {
+         FeatureType ft = featureDataset.getFeatureType();
+         if (ft != null)
+           ftype = featureType.toString();
+       }
+     } catch (Throwable t) {
+     }
+
+   this.fdp = fdp;
+
+   List<FeatureCollection> list = fdp.getPointFeatureCollectionList();
+   this.sobs = (StationTimeSeriesFeatureCollection) list.get(0);
+
+   String infoString;
+   Document doc = xmlWriter.getCapabilitiesDocument();
+   XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+   infoString = fmt.outputString(doc);
+
+   res.setContentLength(infoString.length());
+   res.setContentType(getContentType(query));
+
+   OutputStream out = res.getOutputStream();
+   out.write(infoString.getBytes());
+   out.flush();
+
+   log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, infoString.length()));
+   return null;
+ } */
+
+
 }
 
 

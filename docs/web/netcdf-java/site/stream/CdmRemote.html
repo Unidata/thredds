@@ -16,7 +16,7 @@
 <h2>CdmRemote Protocol (Data Access and Coordinate Systems) </h2>
 <p><strong>ucar.nc2.stream.CdmRemote</strong> is a subclass of NetcdfFile which provides  index subsetting on remote CDM datasets <strong>NetcdfDataset.openOrAcquireFile()</strong> looks for <em><strong>cdmremote:url</strong></em> prefix, and calls <strong>new</strong> <strong>CdmRemote(url)</strong> if found. The url must be an endpoint for a cdmremote service.</p>
 <p>The client forms requests of the form <strong>url?query</strong>. The possible query parameters are:</p>
-<pre>  <strong>req</strong>=( <strong>CDL</strong> | <strong>NcML</strong> | <strong>getCapabilities</strong> | <strong>cdmHeader</strong> | <strong>data</strong>)
+<pre>  <strong>req</strong>=( <strong>CDL</strong> | <strong>NcML</strong> | <strong>capabilities</strong> | <strong>header</strong> | <strong>data</strong>)
   <strong>var</strong>=vars
 
 where:
@@ -50,7 +50,7 @@ where:
     <td>capabilities XML</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc?<strong>req=cdmHeader</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc?<strong>req=header</strong></td>
     <td>header ncstream message, contains the structural metadata</td>
   </tr>
   <tr>

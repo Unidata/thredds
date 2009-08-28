@@ -34,6 +34,8 @@ package ucar.nc2.ft.point.writer;
 
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.Attribute;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.ft.*;
 import ucar.nc2.constants.FeatureType;

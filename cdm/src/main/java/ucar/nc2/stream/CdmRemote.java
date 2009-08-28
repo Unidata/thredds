@@ -110,7 +110,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     // get the header
     HttpMethod method = null;
     try {
-      String url = remoteURI + "?req=cdmHeader";
+      String url = remoteURI + "?req=header";
       method = new GetMethod(url);
       method.setFollowRedirects(true);
       if (showRequest) System.out.printf(" ncstream request %s %n", url);
@@ -138,7 +138,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       throw new IllegalStateException("File is unlocked - cannot use");
 
     StringBuilder sbuff = new StringBuilder(remoteURI);
-    sbuff.append("?");
+    sbuff.append("?var=");
     sbuff.append( URLEncoder.encode(v.getShortName(), "UTF-8"));
     sbuff.append("(");
     sbuff.append(section.toString());
