@@ -295,12 +295,23 @@ thredds   4443     1 21 16:08 pts/0    00:00:03 /usr/bin/java -Djava.util.loggin
 #
 JAVA_HOME="/home/thredds/jdk1.6.0_15"
 export JAVA_HOME
-JAVA_OPTS="-Xmx256m -Xms256m -server -Djava.awt.headless=true"
+JAVA_OPTS="-Xmx1500m -Xms512m -server -Djava.awt.headless=true"
 export JAVA_OPTS
 CATALINA_HOME="/home/thredds/apache-tomcat-6.0.20"
 export CATALINA_HOME
 </pre>
+
+      <div id="note" class="info">
+       <h4>Settings </h4>
+       <p>Whenever possible, Unidata recommends <code><small>-Xmx1500m</small></code> for 32-bit systems, and <code><small>-Xmx2048m</small></code> - <code><small>-Xmx4096m</small></code> for 64-bit systems.</p>
+      </div> 
+
+
+
+
         <p>The parameters we pass to <code><small>$JAVA_OPTS</small></code>:</p>
+
+
         <ul class="little">
          <li><code><small>-Xms</small></code> is the initial allocated memory of the JVM (for performance).</li>
          <li><code><small>-Xmx</small></code> the maximum allocated memory of the JVM (for performance).</li>
@@ -336,6 +347,7 @@ thredds   4626  4207  0 16:15 pts/0    00:00:00 grep tomcat
       <div id="expanded" class="troubleshooting">
        <h4>Troubleshooting tips</h4>
        <ul>
+        <li>Do not forget include the '<code><small>m</small></code>' in your <code><small>-Xms</small></code>  and <code><small>-Xmx</small></code>  settings.</li>
         <li>You may have allocated too much memory for the JVM settings if Tomcat fails to start and you get the following error reported in the Tomcat log <code><small>catalina.out</small></code>:</li>
 <pre>
 Error occurred during initialization of VM
