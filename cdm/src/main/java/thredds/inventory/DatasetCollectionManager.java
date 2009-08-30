@@ -247,7 +247,7 @@ public class DatasetCollectionManager {
     // run through all scanners and collect MFile instances ito the Map
     for (MCollection mc : scanList) {
 
-      Iterator<MFile> iter = controller.getInventory(mc);
+      Iterator<MFile> iter = (mc.wantSubdirs()) ? controller.getInventory(mc) : controller.getInventoryNoSubdirs(mc);
       if (iter == null) {
         logger.error("DatasetCollectionManager Invalid collection= " + mc);
         continue;
