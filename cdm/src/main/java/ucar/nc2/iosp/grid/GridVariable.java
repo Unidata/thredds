@@ -50,6 +50,7 @@ import ucar.grid.GridParameter;
 import ucar.grid.GridDefRecord;
 import ucar.unidata.util.StringUtil;
 import ucar.grib.grib1.Grib1GridTableLookup;
+import ucar.grib.grib1.Grib1GDSVariables;
 import ucar.grib.grib2.Grib2GridTableLookup;
 import ucar.grib.grib2.Grib2Tables;
 
@@ -470,6 +471,13 @@ public class GridVariable {
     * GribVariable that adds in the specific attributes.
     *
     */
+    GridDefRecord gdr = hcs.getGds();
+    if ( gdr.getGdsv() instanceof Grib1GDSVariables) {
+      Grib1GDSVariables g1dr = (Grib1GDSVariables) gdr.getGdsv();
+      if( g1dr.hasVerticalPressureLevels()) {
+        float[] plevels = g1dr.calculateVerticalPressureLevels( (float) firstRecord.getLevel1()  );
+      }
+    }
     int icf = hcs.getGds().getInt(GridDefRecord.VECTOR_COMPONET_FLAG);
     String flag;
     if ( icf == 0 ) {
