@@ -510,7 +510,7 @@ public class GridVariable {
       v.addAttribute(new Attribute("GRIB_"+ GridDefRecord.VECTOR_COMPONET_FLAG, flag ));
       // check for VerticalPressureLevels
       Grib1GDSVariables g1dr = (Grib1GDSVariables) gdr.getGdsv();
-      if( g1dr.hasVerticalPressureLevels()) {
+      if( g1dr != null && g1dr.hasVerticalPressureLevels()) {
         float[] plevels = g1dr.getVerticalPressureLevels( (float) firstRecord.getLevel1()  );
         Array dataArray = Array.factory(DataType.FLOAT, new int[]{plevels.length}, plevels);
          v.addAttribute(new Attribute("atmosphere_hybrid_sigma_pressure_coordinate", dataArray ));
