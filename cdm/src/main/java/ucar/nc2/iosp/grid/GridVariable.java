@@ -472,12 +472,7 @@ public class GridVariable {
     *
     */
     GridDefRecord gdr = hcs.getGds();
-    if ( gdr.getGdsv() instanceof Grib1GDSVariables) {
-      Grib1GDSVariables g1dr = (Grib1GDSVariables) gdr.getGdsv();
-      if( g1dr.hasVerticalPressureLevels()) {
-        float[] plevels = g1dr.calculateVerticalPressureLevels( (float) firstRecord.getLevel1()  );
-      }
-    }
+
     int icf = hcs.getGds().getInt(GridDefRecord.VECTOR_COMPONET_FLAG);
     String flag;
     if ( icf == 0 ) {
@@ -513,6 +508,13 @@ public class GridVariable {
       v.addAttribute(new Attribute("GRIB_product_definition_type", g1lookup.getProductDefinitionName(firstRecord)));
       v.addAttribute(new Attribute("GRIB_level_type", new Integer(firstRecord.getLevelType1())));
       v.addAttribute(new Attribute("GRIB_"+ GridDefRecord.VECTOR_COMPONET_FLAG, flag ));
+      // check for VerticalPressureLevels
+      Grib1GDSVariables g1dr = (Grib1GDSVariables) gdr.getGdsv();
+      if( g1dr.hasVerticalPressureLevels()) {
+        float[] plevels = g1dr.getVerticalPressureLevels( (float) firstRecord.getLevel1()  );
+        Array dataArray = Array.factory(DataType.FLOAT, new int[]{plevels.length}, plevels);
+         v.addAttribute(new Attribute("atmosphere_hybrid_sigma_pressure_coordinate", dataArray ));
+      }
     } else {
       v.addAttribute(new Attribute( GridDefRecord.VECTOR_COMPONET_FLAG, flag ));
     }
