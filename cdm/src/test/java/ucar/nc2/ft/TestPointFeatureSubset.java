@@ -63,7 +63,7 @@ public class TestPointFeatureSubset extends TestCase {
     super(name);
   }
 
-  public void testProblem() throws IOException {
+  public void utestProblem() throws IOException {
     testFeatureDataset("D:/work/arnaud/sampleDataset.nc", FeatureType.ANY_POINT, true);
   }
 

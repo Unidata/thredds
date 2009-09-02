@@ -39,6 +39,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.dataset.*;
 
 import ucar.util.prefs.*;
@@ -304,34 +305,25 @@ public class GeoGridTable extends JPanel {
   }
 
   public class GeoCoordinateSystemBean {
-    // static public String editableProperties() { return "title include logging freq"; }
-
-    private String name, proj, coordTrans;
-    private int domainRank, rangeRank;
-    private boolean  isLatLon, isRegular;
+    private GridCoordSystem gcs;
+    private String proj, coordTrans;
     private int ngrids = -1;
 
     // no-arg constructor
     public GeoCoordinateSystemBean() {}
 
     public GeoCoordinateSystemBean( GridDataset.Gridset gset) {
-      GridCoordSystem cs = gset.getGeoCoordSystem();
-      setName( cs.getName());
-      setLatLon( cs.isLatLon());
-      //setProductSet( cs.isProductSet());
-      setDomainRank( cs.getDomain().size());
-      setRangeRank( cs.getCoordinateAxes().size());
-      setRegularSpatial( cs.isRegularSpatial());
+      gcs = gset.getGeoCoordSystem();
 
       setNGrids( gset.getGrids().size());
 
-      ProjectionImpl proj = cs.getProjection();
+      ProjectionImpl proj = gcs.getProjection();
       if (proj != null)
         setProjection(proj.getClassName());
 
       int count = 0;
       StringBuffer buff = new StringBuffer();
-      List ctList = cs.getCoordinateTransforms();
+      List ctList = gcs.getCoordinateTransforms();
       for (int i = 0; i < ctList.size(); i++) {
         CoordinateTransform ct = (CoordinateTransform) ctList.get(i);
         if (count > 0) buff.append("; ");
@@ -351,23 +343,17 @@ public class GeoGridTable extends JPanel {
       setCoordTransforms( buff.toString());
     }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() { return gcs.getName(); }
 
-    public boolean isRegularSpatial() { return isRegular; }
-    public void setRegularSpatial(boolean isRegular) { this.isRegular = isRegular; }
-
-    public boolean isLatLon() { return isLatLon; }
-    public void setLatLon(boolean isLatLon) { this.isLatLon = isLatLon; }
+    public boolean isRegularSpatial() { return gcs.isRegularSpatial(); }
+    public boolean isLatLon() { return gcs.isLatLon(); }
+    public boolean isGeoXY() { return ((GridCoordSys) gcs).isGeoXY(); }
 
     /* public boolean isProductSet() { return isProductSet; }
     public void setProductSet(boolean isProductSet) { this.isProductSet = isProductSet; }  */
 
-    public int getDomainRank() { return domainRank; }
-    public void setDomainRank(int domainRank) { this.domainRank = domainRank; }
-
-    public int getRangeRank() { return rangeRank; }
-    public void setRangeRank(int rangeRank) { this.rangeRank = rangeRank; }
+    public int getDomainRank() { return gcs.getDomain().size(); }
+    public int getRangeRank() { return gcs.getCoordinateAxes().size(); }
 
     public int getNGrids() { return ngrids; }
     public void setNGrids(int ngrids) { this.ngrids = ngrids; }
