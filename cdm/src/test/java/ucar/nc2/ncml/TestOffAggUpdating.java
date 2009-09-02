@@ -90,13 +90,13 @@ public class TestOffAggUpdating extends TestCase {
     System.out.println(" TestOffAggExistingTimeUnitsChange.testNarrGrib=\n"+ ncml);
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), location, null);
 
-
     check(ncfile, 12);
 
     // make sure that the extra file is  in the agg
     for (File f : dirFile.listFiles()) {
       if (f.getName().equals("extra.wait")) {
-        f.renameTo( new File(dirFile, "extra.nc"));
+        if (!f.renameTo( new File(dirFile, "extra.nc")))
+          System.out.println(" rename fails on "+ f.getPath());
         break;
       }
     }
@@ -111,7 +111,7 @@ public class TestOffAggUpdating extends TestCase {
     Variable v = ncfile.findVariable("time");
     assert v != null;
     System.out.printf(" time= %s%n", v.getNameAndDimensions());
-    assert v.getSize() == n;
+    assert v.getSize() == n : v.getSize();
 
     v = ncfile.findVariable("eta");
     assert v != null;

@@ -83,10 +83,10 @@ dataset, the one it uses to populate the metadata for the resulting
 aggregated dataset. Valid values are <strong>random</strong> (default), <strong>latest</strong> and <strong>penultimate</strong> (latest but one). </p>
 <h3>OPeNDAP<a name="opendap" id="opendap"></a> Service</h3>
 <pre>  &lt;<strong>Opendap</strong>&gt;<br>    &lt;<strong>ascLimit</strong>&gt;50&lt;/ascLimit&gt;<br>    &lt;<strong>binLimit</strong>&gt;500&lt;/binLimit&gt;<br>    &lt;<strong>serverVersion</strong>&gt;opendap/3.7&lt;/serverVersion&gt;<br>  &lt;/<strong>Opendap</strong>&gt;</pre>
- <p>This controls the <em><strong>OPeNDAP </strong></em>data service.</p>
- <ol>
-   <li><strong>ascLimit</strong>: maximum size of an ascii data request , in Megabytes. </li>
-   <li><strong>binLimit</strong>: maximum size of a binary data request , in Megabytes.</li>
+ <p>This controls the <em><strong>OPeNDAP </strong></em>data service. Because its easy for a user to inadvertantly request very large amounts of data,   the TDS  limits the size of the data response. In our experience legitimate requests ask for subset sizes that are well below  the defaults.</p>
+<ol>
+   <li><strong>ascLimit</strong>: maximum size of an ascii data request , in Megabytes. Default 50 Mbytes.</li>
+   <li><strong>binLimit</strong>: maximum size of a binary data request , in Megabytes. Default is 500 Mbytes.</li>
    <li><strong>serverVersion</strong>:  this is the String thats returned by the OPeNDAP <strong>getVersion</strong> request, and also placed into the  <strong><em>XDOS-Server</em></strong> HTTP Header on all OPeNDAP responses.</li>
  </ol>
 <h3>WCS<a name="WCS"></a> Service </h3>
