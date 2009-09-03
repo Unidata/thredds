@@ -75,8 +75,9 @@ public class GridEnsembleCoord {
     /** sequence # */
     private int seq = 0;
 
+    // TODO: delete
     /** ensemble number can start with either 1 or 0  */
-    private boolean startWithOne = true;
+    //private boolean startWithOne = true;
 
 
     /**
@@ -287,13 +288,14 @@ public class GridEnsembleCoord {
         if (en == GribNumbers.UNDEFINED )
           return 0;
         // some ensemble numbering start with 0, others with 1
-        if ( en == 0 )
-           startWithOne = false;
-        if (startWithOne ) {
-          return en -1;
-        } else {
+        // TODO: delete
+//        if ( true || en == 0 )
+//           startWithOne = false;
+//        if (startWithOne ) {
+//          return en -1;
+//        } else {
           return en;
-        }
+        //}
       }
       return -1;
     }
