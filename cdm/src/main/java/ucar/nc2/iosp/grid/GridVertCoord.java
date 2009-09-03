@@ -44,8 +44,10 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.units.SimpleUnit;
 import ucar.grid.GridRecord;
 import ucar.grid.GridTableLookup;
+import ucar.grid.GridDefRecord;
 import ucar.grib.grib2.Grib2GridTableLookup;
 import ucar.grib.grib1.Grib1GridTableLookup;
+import ucar.grib.grib1.Grib1GDSVariables;
 
 import java.util.*;
 
@@ -283,6 +285,38 @@ public class GridVertCoord implements Comparable {
     // gotta equal existing list
     return levelList.equals(levels);
   }
+
+  /**
+   * check for Sigma Pressure Levels
+   */
+   /*
+  void checkForPressureLevels( List<GridRecord> records, GridHorizCoordSys hcs, GridTableLookup lookup ) {
+    if (typicalRecord.getLevelType1() == 109 && lookup instanceof Grib1GridTableLookup ) {
+      GridDefRecord gdr = hcs.getGds();
+      Grib1GDSVariables g1dr = (Grib1GDSVariables) gdr.getGdsv();
+      if( g1dr == null || ! g1dr.hasVerticalPressureLevels() )
+        return;
+
+      int NV = g1dr.getNV() / 2 -1;
+      coordValues = new double[ levels.size() * NV ];
+
+      //if( g1dr != null && g1dr.hasVerticalPressureLevels()) {
+        //float[] plevels = g1dr.getVerticalPressureLevels( (float) typicalRecord.getLevel1()  );
+        //Array dataArray = Array.factory(DataType.FLOAT, new int[]{plevels.length}, plevels);
+         //v.addAttribute(new Attribute("atmosphere_hybrid_sigma_pressure_coordinate", dataArray ));
+      //}
+      int idx = 0;
+      for (int i = 0; i < levels.size(); i++) {
+        LevelCoord lc = (LevelCoord) levels.get(i);
+        double[] plevels = (double[]) g1dr.getVerticalPressureLevels( (float) lc.value1  );
+        //coordValues[i] = lc.mid;
+        System.arraycopy( plevels, 0, coordValues, idx, NV );
+        idx += NV;
+      }
+    }
+  }
+  */
+
 
   /**
    * Add this coord as a dimension to the netCDF file
