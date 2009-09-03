@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Release Details 4.1:
  0:
+  place default ehcache.xml in WEB-INF, can be overridden in threddsConfig.xml
 
 Release Details 4.0:
  20:

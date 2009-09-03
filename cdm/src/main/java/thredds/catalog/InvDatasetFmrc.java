@@ -126,11 +126,12 @@ public class InvDatasetFmrc extends InvCatalogRef {
   }
 
   // bit of a kludge to get info into the InvDatasetFmrc
-  public void setFmrcInventoryParams(String location, String def, String suffix, String olderThanS) {
+  public void setFmrcInventoryParams(String location, String def, String suffix, String olderThanS, String subdirs) {
     this.params = new InventoryParams();
     this.params.location = location;
     this.params.def = def;
     this.params.suffix = suffix;
+    this.params.subdirs = subdirs != null && subdirs.equalsIgnoreCase("true");
 
     if (olderThanS != null) {
       try {
@@ -145,8 +146,10 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
   public class InventoryParams {
     public String location, def, suffix;
+    public boolean subdirs;
     public long lastModifiedLimit = 0;
-    public String toString() { return "def="+def +" location="+ location+" suffix="+ suffix+" lastModifiedLimit="+lastModifiedLimit; }
+    public String toString() { return "def="+def +" location="+ location+" suffix="+ suffix+" lastModifiedLimit="+lastModifiedLimit+
+            " subdirs="+subdirs; }
   }
 
   public boolean hasAccess() {

@@ -71,7 +71,7 @@ public class CdmInit {
 
   void init(TdsContext tdsContext) {
     // new for 4.1 - ehcache object caching
-    String ehConfig = ThreddsConfig.get("cache.configFile", tdsContext.getContentDirectory().getPath() + "/ehcache.xml");
+    String ehConfig = ThreddsConfig.get("cache.configFile", tdsContext.getWebinfPath() + "/ehcache.xml");
     String ehDirectory = ThreddsConfig.get("cache.directory", tdsContext.getContentDirectory().getPath() + "/ehcache/");
     try {
       cacheManager = thredds.filesystem.ControllerCaching.makeStandardController(ehConfig, ehDirectory);

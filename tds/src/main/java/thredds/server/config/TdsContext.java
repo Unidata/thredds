@@ -73,6 +73,7 @@ public class TdsContext
   private String startupContentPath;
   private String iddContentPath;
   private String motherlodeContentPath;
+  private String webinfPath;
 
   private File rootDirectory;
   private File contentDirectory;
@@ -189,6 +190,9 @@ public class TdsContext
     this.startupContentDirectory = new File( this.rootDirectory, this.startupContentPath );
     this.startupContentDirSource = new BasicDescendantFileSource( this.startupContentDirectory );
     this.startupContentDirectory = this.startupContentDirSource.getRootDirectory();
+
+    this.webinfPath = this.rootDirectory +"/WEB-INF";
+
 
     // set the tomcat logging directory
     try
@@ -353,6 +357,16 @@ public class TdsContext
   public String getContextPath()
   {
     return contextPath;
+  }
+
+  /**
+   * Return the context path under which this web app is running (e.g., "/thredds").
+   *
+   * @return the context path.
+   */
+  public String getWebinfPath()
+  {
+    return webinfPath;
   }
 
   /**

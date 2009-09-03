@@ -646,6 +646,12 @@ public class DataRootHandler {
     }
 
     void makeProxy() {
+      /*   public InvDatasetScan( InvDatasetImpl parent, String name, String path, String scanLocation,
+                         String configClassName, Object configObj, CrawlableDatasetFilter filter,
+                         CrawlableDatasetLabeler identifier, CrawlableDatasetLabeler namer,
+                         boolean addDatasetSize,
+                         CrawlableDatasetSorter sorter, Map proxyDatasetHandlers,
+                         List childEnhancerList, CatalogRefExpander catalogRefExpander ) */
       this.datasetRootProxy = new InvDatasetScan(null, "", this.path, this.dirLocation,
               null, null, null, null, null, false, null, null, null, null);
     }

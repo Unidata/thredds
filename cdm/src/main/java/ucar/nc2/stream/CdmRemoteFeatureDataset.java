@@ -53,7 +53,8 @@ import org.jdom.input.SAXBuilder;
  * @since May 19, 2009
  */
 public class CdmRemoteFeatureDataset {
-  static private boolean showXML = true;
+  static private boolean debug = false;
+  static private boolean showXML = false;
 
   static public FeatureDataset factory(FeatureType wantFeatureType, String endpoint) throws IOException {
     if (endpoint.startsWith(CdmRemote.SCHEME))
@@ -65,7 +66,7 @@ public class CdmRemoteFeatureDataset {
     String fType = elem.getAttribute("type").getValue();
     String datasetUri = elem.getAttribute("url").getValue();
 
-    System.out.printf("CdmRemoteDatasetFactory endpoint %s%n ftype= %s uri=%s%n", endpoint, fType, datasetUri);
+    if (debug) System.out.printf("CdmRemoteFeatureDataset endpoint %s%n ftype= %s uri=%s%n", endpoint, fType, datasetUri);
 
     FeatureType ft = FeatureType.getType(fType);
     CdmRemote ncremote = new CdmRemote(datasetUri, null);
@@ -90,7 +91,7 @@ public class CdmRemoteFeatureDataset {
     if (showXML) {
       System.out.printf("*** endpoint = %s %n", endpoint);
       XMLOutputter xmlOut = new XMLOutputter();
-      System.out.printf("*** NetcdfDataset/showParsedXML = %n %s %n", xmlOut.outputString(doc));
+      System.out.printf("*** CdmRemoteFeatureDataset/showParsedXML = %n %s %n", xmlOut.outputString(doc));
     }
 
     return doc;

@@ -3,6 +3,10 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.1:
+ 3:
+  more GRIB ensemble work
+  cdmremote working again
+  composite stations work correctly
  2:
   StationPointFeature, StationCollection.flatten
   catalog2 refactor

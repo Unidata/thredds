@@ -67,8 +67,8 @@ public class TestPointFeatureSubset extends TestCase {
     testFeatureDataset("D:/work/arnaud/sampleDataset.nc", FeatureType.ANY_POINT, true);
   }
 
-  public void utestCdmRemote() throws IOException {
-    testFeatureDataset("cdmremote:http://localhost:8080/thredds/cdmremote/station/testCdmRemote/gempak/19580807_sao.gem", FeatureType.STATION, true);
+  public void testCdmRemote() throws IOException {
+    testFeatureDataset("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", FeatureType.STATION, true);
   }
 
   int readAllDir(String dirName, FileFilter ff, FeatureType type) throws IOException {
