@@ -634,11 +634,16 @@ public class GridVariable {
    * Find the grid record for the time and level indices
    *
    * @param time  time index
+   * @param ens   ensemble index
    * @param level level index
    * @return the record or null
    */
-  public GridRecord findRecord(int time, int level) {
-    return recordTracker[time * nlevels + level];
+  public GridRecord findRecord(int time, int ens, int level) {
+    if( hasEnsemble() ) {
+       return recordTracker[ens * ( ntimes * nlevels ) + ( time * nlevels ) + level];
+    } else {
+      return recordTracker[time * nlevels + level];
+    }
   }
 
   /**
