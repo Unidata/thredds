@@ -360,7 +360,7 @@ public class GridIndexToNC {
           }
         }
         if (useVertCoord == null) {  // nope, got to create it
-          useVertCoord = new GridVertCoord(recordList, vname, lookup);
+          useVertCoord = new GridVertCoord(recordList, vname, lookup, hcs);
           vertCoords.add(useVertCoord);
         }
         pv.setVertCoord(useVertCoord);

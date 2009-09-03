@@ -133,7 +133,8 @@ public class GridVertCoord implements Comparable {
    * @param levelName the name of the level
    * @param lookup    the lookup table
    */
-  GridVertCoord(List<GridRecord> records, String levelName, GridTableLookup lookup) {
+  GridVertCoord(List<GridRecord> records, String levelName,
+                GridTableLookup lookup, GridHorizCoordSys hcs) {
     this.typicalRecord = records.get(0);
     this.levelName = levelName;
     this.lookup = lookup;
@@ -146,6 +147,9 @@ public class GridVertCoord implements Comparable {
 
     usesBounds = lookup.isLayer(this.typicalRecord);
     addLevels(records);
+
+    if (typicalRecord.getLevelType1() == 109 && lookup instanceof Grib1GridTableLookup )
+      checkForPressureLevels( records, hcs );
 
     if (GridServiceProvider.debugVert) {
       System.out.println("GribVertCoord: " + getVariableName() + "("
@@ -289,9 +293,8 @@ public class GridVertCoord implements Comparable {
   /**
    * check for Sigma Pressure Levels
    */
-   /*
-  void checkForPressureLevels( List<GridRecord> records, GridHorizCoordSys hcs, GridTableLookup lookup ) {
-    if (typicalRecord.getLevelType1() == 109 && lookup instanceof Grib1GridTableLookup ) {
+
+  void checkForPressureLevels( List<GridRecord> records, GridHorizCoordSys hcs ) {
       GridDefRecord gdr = hcs.getGds();
       Grib1GDSVariables g1dr = (Grib1GDSVariables) gdr.getGdsv();
       if( g1dr == null || ! g1dr.hasVerticalPressureLevels() )
@@ -299,24 +302,13 @@ public class GridVertCoord implements Comparable {
 
       int NV = g1dr.getNV() / 2 -1;
       coordValues = new double[ levels.size() * NV ];
-
-      //if( g1dr != null && g1dr.hasVerticalPressureLevels()) {
-        //float[] plevels = g1dr.getVerticalPressureLevels( (float) typicalRecord.getLevel1()  );
-        //Array dataArray = Array.factory(DataType.FLOAT, new int[]{plevels.length}, plevels);
-         //v.addAttribute(new Attribute("atmosphere_hybrid_sigma_pressure_coordinate", dataArray ));
-      //}
       int idx = 0;
-      for (int i = 0; i < levels.size(); i++) {
-        LevelCoord lc = (LevelCoord) levels.get(i);
-        double[] plevels = (double[]) g1dr.getVerticalPressureLevels( (float) lc.value1  );
-        //coordValues[i] = lc.mid;
+      for (LevelCoord lc : levels ) {
+        double[] plevels = g1dr.getVerticalPressureLevels( lc.value1  );
         System.arraycopy( plevels, 0, coordValues, idx, NV );
         idx += NV;
       }
-    }
   }
-  */
-
 
   /**
    * Add this coord as a dimension to the netCDF file
