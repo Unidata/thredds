@@ -73,7 +73,6 @@ public interface ServiceBuilder extends ThreddsBuilder
   public List<String> getPropertyNames();
   public String getPropertyValue( String name );
 
-  public boolean isServiceNameInUseGlobally( String name );
   /**
    * Add a new Service object with the given name, type, and base uri to this
    * Service returning a ServiceBuilder object to allow full construction and
@@ -92,7 +91,7 @@ public interface ServiceBuilder extends ThreddsBuilder
    * @throws IllegalStateException this ServiceBuilder has already been finished or the top container of this ServiceBuilder already contains a ServiceBuilder with the given name.
    */
   public ServiceBuilder addService( String name, ServiceType type, URI baseUri );
-  public ServiceBuilder removeService( String name );
+  public boolean removeService( ServiceBuilder serviceBuilder );
 
 //  /**
 //   * Add a new Service object with the given name, type, and base uri to this

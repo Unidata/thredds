@@ -9,6 +9,8 @@ import java.net.URISyntaxException;
 import java.net.URI;
 import java.io.StringReader;
 
+import ucar.nc2.util.memory.MemoryCounterAgent;
+
 /**
  * _more_
  *
@@ -59,6 +61,14 @@ public class LargeCatalogReadUtils
         return sb.toString();
     }
 
+    public static InvCatalogImpl parseCatalogIntoInvCatalogImpl( String docBaseUriString )
+            throws URISyntaxException
+    {
+        InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
+
+        return fac.readXML( docBaseUriString );
+    }
+
     public static InvCatalogImpl parseCatalogIntoInvCatalogImpl( String docAsString, String docBaseUriString )
             throws URISyntaxException
     {
@@ -73,8 +83,25 @@ public class LargeCatalogReadUtils
         URI docBaseUri = new URI( docBaseUriString );
 
         ThreddsXmlParser cp = StaxThreddsXmlParser.newInstance();
-        CatalogBuilder catalogBuilder = cp.parseIntoBuilder( new StringReader( docAsString ), docBaseUri );
-
-        return catalogBuilder;
+        return cp.parseIntoBuilder( new StringReader( docAsString ), docBaseUri );
     }
+    
+    public static CatalogBuilder parseCatalogIntoBuilder( String docUriString )
+            throws URISyntaxException, ThreddsXmlParserException
+    {
+        URI docUri = new URI( docUriString );
+
+        ThreddsXmlParser cp = StaxThreddsXmlParser.newInstance();
+        return cp.parseIntoBuilder( docUri );
+    }
+
+    public static void measureSize( Object o )
+    {
+        long memShallow = MemoryCounterAgent.sizeOf( o );
+        long memDeep = MemoryCounterAgent.deepSizeOf( o );
+        System.out.printf( "%s, shallow=%d, deep=%d%n",
+                           o.getClass().getSimpleName(),
+                           memShallow, memDeep );
+    }
+
 }

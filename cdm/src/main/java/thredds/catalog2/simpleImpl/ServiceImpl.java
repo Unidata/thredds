@@ -63,9 +63,12 @@ public class ServiceImpl implements Service, ServiceBuilder
 
   private ServiceContainer serviceContainer;
 
+  private final GlobalServiceContainer globalServiceContainer;
+  private final boolean isRootContainer;
+
   private boolean isBuilt = false;
 
-  protected ServiceImpl( String name, ServiceType type, URI baseUri, ServiceContainer rootContainer )
+  protected ServiceImpl( String name, ServiceType type, URI baseUri, GlobalServiceContainer globalServiceContainer )
   {
     if ( name == null ) throw new IllegalArgumentException( "Name must not be null.");
     if ( type == null ) throw new IllegalArgumentException( "Service type must not be null.");
@@ -78,7 +81,18 @@ public class ServiceImpl implements Service, ServiceBuilder
     this.suffix = "";
     this.propertyContainer = new PropertyContainer();
 
-    this.serviceContainer = new ServiceContainer( rootContainer );
+    if ( globalServiceContainer == null )
+    {
+      this.isRootContainer = true;
+      this.globalServiceContainer = new GlobalServiceContainer();
+    }
+    else
+    {
+      this.isRootContainer = false;
+      this.globalServiceContainer = globalServiceContainer;
+    }
+
+    this.serviceContainer = new ServiceContainer( this.globalServiceContainer );
   }
 
   public String getName()
@@ -176,38 +190,16 @@ public class ServiceImpl implements Service, ServiceBuilder
     return this.propertyContainer.getPropertyByName( name );
   }
 
-  public boolean isServiceNameInUseGlobally( String name )
-  {
-    return this.serviceContainer.isServiceNameInUseGlobally( name );
+  public ServiceBuilder addService( String name, ServiceType type, URI baseUri ) {
+    return this.serviceContainer.addService( name, type, baseUri );
   }
 
-  public ServiceBuilder addService( String name, ServiceType type, URI baseUri )
+  public boolean removeService( ServiceBuilder serviceBuilder )
   {
-    if ( this.isBuilt )
-      throw new IllegalStateException( "This ServiceBuilder has been built." );
-    if ( this.isServiceNameInUseGlobally( name ) )
-      throw new IllegalStateException( "Given service name [" + name + "] not unique in catalog." );
+    if ( serviceBuilder == null )
+      return false;
 
-    ServiceImpl sb = new ServiceImpl( name, type, baseUri, this.serviceContainer.getRootServiceContainer() );
-    this.serviceContainer.addService( sb );
-    return sb;
-  }
-
-  public ServiceBuilder removeService( String name )
-  {
-    if ( this.isBuilt )
-      throw new IllegalStateException( "This CatalogBuilder has been built." );
-    if ( name == null )
-      return null;
-
-    ServiceImpl removedService = this.serviceContainer.removeService( name );
-    if ( null == removedService )
-    {
-      log.debug( "removeService(): unknown ServiceBuilder [" + name + "] (not in map)." );
-      return null;
-    }
-
-    return removedService;
+    return this.serviceContainer.removeService( (ServiceImpl) serviceBuilder );
   }
 
   public List<Service> getServices()
@@ -269,6 +261,8 @@ public class ServiceImpl implements Service, ServiceBuilder
     BuilderIssues localIssues = new BuilderIssues();
 
     // Check subordinates.
+    if ( this.isRootContainer)
+      this.globalServiceContainer.isBuildable( localIssues, this );
     this.propertyContainer.isBuildable( localIssues );
     this.serviceContainer.isBuildable( localIssues );
 

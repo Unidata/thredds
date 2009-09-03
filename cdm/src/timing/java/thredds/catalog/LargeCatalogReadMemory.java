@@ -2,7 +2,9 @@ package thredds.catalog;
 
 import ucar.nc2.util.memory.MemoryCounterAgent;
 import thredds.catalog2.builder.CatalogBuilder;
+import thredds.catalog2.builder.BuilderException;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
+import thredds.catalog2.Catalog;
 
 import java.net.URISyntaxException;
 
@@ -33,27 +35,20 @@ public class LargeCatalogReadMemory
 {
     public static void main( String[] args )
             throws URISyntaxException,
-                   ThreddsXmlParserException
+                   ThreddsXmlParserException,
+                   BuilderException
     {
         String catAsString = LargeCatalogReadUtils.createExampleRadarServiceCatalogAsString( 9112 );
         String docBaseUrlString = "http://motherlode.ucar.edu:9080/thredds/radarServer/nexrad/level2/IDD?stn=KARX&time_start=2009-04-07T:00:00:00Z&time_end=2009-05-22T16:44:39Z";
 
-        InvCatalogImpl invCatalog = null;
-        CatalogBuilder catalogBuilder = null;
+        InvCatalogImpl invCatalog = LargeCatalogReadUtils.parseCatalogIntoInvCatalogImpl( catAsString, docBaseUrlString );
+        CatalogBuilder catalogBuilder = LargeCatalogReadUtils.parseCatalogIntoBuilder( catAsString, docBaseUrlString );
 
-        invCatalog = LargeCatalogReadUtils.parseCatalogIntoInvCatalogImpl( catAsString, docBaseUrlString );
-        catalogBuilder = LargeCatalogReadUtils.parseCatalogIntoBuilder( catAsString, docBaseUrlString );
+        LargeCatalogReadUtils.measureSize( invCatalog);
+        LargeCatalogReadUtils.measureSize( catalogBuilder);
 
-        measureSize( invCatalog);
-        measureSize( catalogBuilder);
-    }
+        Catalog catalog = catalogBuilder.build();
 
-    public static void measureSize( Object o )
-    {
-        long memShallow = MemoryCounterAgent.sizeOf( o );
-        long memDeep = MemoryCounterAgent.deepSizeOf( o );
-        System.out.printf( "%s, shallow=%d, deep=%d%n",
-                           o.getClass().getSimpleName(),
-                           memShallow, memDeep );
+        LargeCatalogReadUtils.measureSize( catalog);
     }
 }

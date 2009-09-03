@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
         thredds.catalog2.simpleImpl.TestPropertyImpl.class,
         thredds.catalog2.simpleImpl.TestPropertyContainer.class,
         thredds.catalog2.simpleImpl.TestServiceImpl.class,
+        GlobalServiceContainerTest.class,
         thredds.catalog2.simpleImpl.TestServiceContainer.class,
         thredds.catalog2.simpleImpl.TestThreddsMetadataImpl.class
 })

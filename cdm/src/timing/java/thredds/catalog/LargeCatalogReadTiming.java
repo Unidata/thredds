@@ -49,7 +49,7 @@ import java.io.StringReader;
  * @author edavis
  * @since 4.0
  */
-public class TimeLargeCatalogRead
+public class LargeCatalogReadTiming
 {
   static final String catURL = "http://motherlode.ucar.edu:9080/thredds/radarServer/nexrad/level2/IDD?stn=KARX&time_start=2009-04-07T:00:00:00Z&time_end=2009-05-22T16:44:39Z";
   //static final String catURL = "http://motherlode.ucar.edu:9080/thredds/radarServer/nexrad/level2/IDD?stn=KARX&time_start=2009-04-07T:00:00:00Z&time_end=2009-05-22T16:44:39Z";
@@ -62,7 +62,7 @@ public class TimeLargeCatalogRead
       InvCatalogImpl cat = null;
       CatalogBuilder catalogBuilder = null;
 
-    long cum = 0;
+      long cum = 0;
     long cum2 = 0;
     int numAttempts = 100;
     for ( int i = 0; i < numAttempts; i++ )
@@ -72,8 +72,12 @@ public class TimeLargeCatalogRead
       long done = System.currentTimeMillis();
       long elapsed = done - start;
 
+        BuilderIssues bldIssues = new BuilderIssues();
+
       start = System.currentTimeMillis();
       catalogBuilder = LargeCatalogReadUtils.parseCatalogIntoBuilder( catAsString, catURL );
+      if ( ! catalogBuilder.isBuildable( bldIssues ) )
+          System.out.println( "Can't build catalog [" + i + "]: " + bldIssues.toString() );
       done = System.currentTimeMillis();
       long elapsed2 = done - start;
 

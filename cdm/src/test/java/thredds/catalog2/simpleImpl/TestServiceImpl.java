@@ -32,9 +32,13 @@
  */
 package thredds.catalog2.simpleImpl;
 
-import junit.framework.*;
+import org.junit.Test;
+import org.junit.Before;
+
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
 import thredds.catalog2.builder.ServiceBuilder;
-import thredds.catalog2.builder.BuilderIssue;
 import thredds.catalog2.builder.BuilderException;
 import thredds.catalog2.builder.BuilderIssues;
 import thredds.catalog2.Service;
@@ -44,7 +48,6 @@ import thredds.catalog.ServiceType;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * _more_
@@ -52,385 +55,356 @@ import java.util.ArrayList;
  * @author edavis
  * @since 4.0
  */
-public class TestServiceImpl extends TestCase
+public class TestServiceImpl
 {
-  private URI baseUri;
-  private URI docBaseUri;
-  private ServiceType type;
+  private String allName, odapName, wcsName, wmsName;
+  private ServiceType allType, odapType, wcsType, wmsType;
+  private URI allBaseUri, odapBaseUri, wcsBaseUri, wmsBaseUri;
+  private ServiceImpl allService, odapService, wcsService, wmsService;
 
-  public TestServiceImpl( String name )
+  @Before
+  public void setupCompoundService() throws URISyntaxException
   {
-    super( name );
+    allName = "all";
+    allType = ServiceType.COMPOUND;
+    allBaseUri = new URI( "");
+    allService = new ServiceImpl( allName, allType, allBaseUri, null );
+
+    odapName = "odap";
+    odapType = ServiceType.OPENDAP;
+    odapBaseUri = new URI( "http://server/thredds/dodsC/" );
+    odapService = (ServiceImpl) allService.addService( odapName, odapType, odapBaseUri );
+
+    wcsName = "wcs";
+    wcsType = ServiceType.WCS;
+    wcsBaseUri = new URI( "http://server/thredds/wcs/" );
+    wcsService = (ServiceImpl) allService.addService( wcsName, wcsType, wcsBaseUri );
+
+    wmsName = "wms";
+    wmsType = ServiceType.WMS;
+    wmsBaseUri = new URI( "http://server/thredds/wms/" );
+    wmsService = (ServiceImpl) allService.addService( wmsName, wmsType, wmsBaseUri );
   }
 
-  @Override
-  protected void setUp() throws Exception
+  @Test
+  public void checkNewServiceAsExpected()
   {
-    try
-    { baseUri = new URI( "http://server/thredds/dodsC/" );
-      docBaseUri = new URI( "http://server/thredds/aCat.xml"); }
-    catch ( URISyntaxException e )
-    { fail( "Bad URI syntax: " + e.getMessage()); }
-
-    type = ServiceType.OPENDAP;
+    assertEquals( odapName, odapService.getName());
+    assertEquals( odapType, odapService.getType());
+    assertEquals( odapBaseUri, odapService.getBaseUri());
   }
 
-  public void testConstructorNullName()
+  @Test
+  public void checkChangedServiceAsExpected() throws URISyntaxException
   {
-    try
-    { new ServiceImpl( null, type, baseUri, null ); }
-    catch ( IllegalArgumentException e )
-    { return; }
-    catch ( Exception e )
-    { fail( "Unexpected exception: " + e.getMessage()); }
-    fail( "No IllegalArgumentException.");
+    odapService.setType( wcsType );
+    assertEquals( wcsType, odapService.getType());
+
+    odapService.setBaseUri( wcsBaseUri );
+    assertEquals( wcsBaseUri, odapService.getBaseUri());
+
+    String descrip = "description";
+    odapService.setDescription( descrip );
+    assertEquals( descrip, odapService.getDescription());
+
+    String suffix = ".suffix";
+    odapService.setSuffix( suffix );
+    assertEquals( suffix, odapService.getSuffix() );
   }
 
-  public void testConstructorNullType()
-  {
-    try
-    { new ServiceImpl( "s1", null, baseUri, null ); }
-    catch ( IllegalArgumentException e )
-    { return; }
-    catch ( Exception e )
-    { fail( "Unexpected exception: " + e.getMessage()); }
-    fail( "No IllegalArgumentException.");
+  @Test(expected=IllegalArgumentException.class)
+  public void checkExceptionOnConstructorWithNullName() {
+    new ServiceImpl( null, odapType, odapBaseUri, null );
   }
 
-  public void testConstructorNullDocBaseUri()
-  {
-    try
-    {
-      new ServiceImpl( "s1", type, null, null ); }
-    catch ( IllegalArgumentException e )
-    { return; }
-    catch ( Exception e )
-    { fail( "Unexpected exception: " + e.getMessage()); }
-    fail( "No IllegalArgumentException.");
+  @Test(expected=IllegalArgumentException.class)
+  public void checkExceptionOnConstructorWithNullType() {
+    new ServiceImpl( odapName, null, odapBaseUri, null );
   }
 
-  public void testCtorGetSet()
-  {
-    String name = "s1";
-    ServiceBuilder sb = new ServiceImpl( name, type, baseUri, null );
-    assertFalse( sb.isBuilt());
-
-    assertTrue( "Name [" + sb.getName() + "] not as expected [" + name + "].",
-                sb.getName().equals( name));
-
-    assertTrue( "Type [" + sb.getType() + "] not as expected [" + type + "].",
-                sb.getType().equals( type));
-    ServiceType chgType = ServiceType.ADDE;
-    sb.setType( chgType );
-    assertTrue( "Type [" + sb.getType() + "] not as expected [" + chgType + "].",
-                sb.getType().equals( chgType));
-
-    assertTrue( "BaseUri [" + sb.getBaseUri() + "] not as expected [" + baseUri + "].",
-                sb.getBaseUri().equals( baseUri ));
-    sb.setBaseUri( docBaseUri );
-    assertTrue( "BaseUri [" + sb.getBaseUri() + "] not as expected [" + docBaseUri + "].",
-                sb.getBaseUri().equals( docBaseUri ));
-
-    assertTrue( "Description [" + sb.getDescription() + "] not empty string (default).",
-                sb.getDescription().equals( ""));
-    String descrip = "a desc";
-    sb.setDescription( descrip );
-    assertTrue( "Description [" + sb.getDescription() + "] not as expected [" + descrip + "].",
-                sb.getDescription().equals( descrip ) );
-
-    assertTrue( "Suffix [" + sb.getSuffix() + "] not empty string (default).",
-                sb.getSuffix().equals( ""));
-    String suffix = "a suffix";
-    sb.setSuffix( suffix );
-    assertTrue( "suffix [" + sb.getSuffix() + "] not as expected [" + suffix + "].",
-                sb.getSuffix().equals( suffix ) );
+  @Test(expected=IllegalArgumentException.class)
+  public void checkExceptionOnConstructorWithNullBaseUri() {
+    new ServiceImpl( odapName, odapType, null, null );
   }
 
-  public void testServiceContainerNonuniqueServiceName()
-  {
-    ServiceBuilder sb = new ServiceImpl( "s1", type, baseUri, null );
-    sb.addService( "s2", type, baseUri );
-    sb.addService( "s3", type, baseUri );
-    assertTrue( "Failed to discover that service name [s2] already in use globally.",
-                sb.isServiceNameInUseGlobally( "s2" ) );
-    try
-    { sb.addService( "s2", type, baseUri ); }
-    catch ( IllegalStateException e )
-    { return; }
-    catch ( Exception e )
-    { fail( "Non-IllegalStateException: " + e.getMessage()); }
-    fail( "No IllegalStateException.");
+  @Test(expected=IllegalArgumentException.class)
+  public void checkExceptionOnChangeToNullType() {
+    odapService.setType( null );
   }
 
-  public void testServiceContainerNonuniqueServiceNameNested()
-  {
-    ServiceBuilder sb = new ServiceImpl( "s1", type, baseUri, null );
-    sb.addService( "s2", type, baseUri );
-    ServiceImpl sb3 = (ServiceImpl) sb.addService( "s3", type, baseUri );
-    sb3.addService( "s3.1", type, baseUri );
-    assertTrue( "Failed to discover that service name [s2] already in use globally.",
-                sb3.isServiceNameInUseGlobally( "s2" ) );
-    try
-    { sb3.addService( "s2", type, baseUri ); }
-    catch ( IllegalStateException e )
-    { return; }
-    catch ( Exception e )
-    { fail( "Non-IllegalStateException: " + e.getMessage()); }
-    fail( "No IllegalStateException.");
+  @Test(expected=IllegalArgumentException.class)
+  public void checkExceptionOnChangeToNullBaseUri() {
+    odapService.setBaseUri( null );
   }
 
-  public void testServiceContainerNonuniqueServiceNameNestedTwoLevels()
-  {
-    ServiceBuilder sb = new ServiceImpl( "s1", type, baseUri, null );
-    sb.addService( "s2", type, baseUri );
-    ServiceBuilder sb3 = (ServiceImpl) sb.addService( "s3", type, baseUri );
-    sb3.addService( "s3.1", type, baseUri );
-    ServiceBuilder sb3_2 = (ServiceImpl) sb3.addService( "s3.2", type, baseUri );
-    sb3_2.addService( "s3.2.1", type, baseUri );
-    assertTrue( "Failed to discover that service name [s2] already in use globally.",
-                sb3_2.isServiceNameInUseGlobally( "s2" ));
-    try
-    { sb3_2.addService( "s2", type, baseUri ); }
-    catch ( IllegalStateException e )
-    { return; }
-    catch ( Exception e )
-    { fail( "Non-IllegalStateException: " + e.getMessage()); }
-    fail( "No IllegalStateException.");
+  @Test
+  public void checkCompoundServiceAsExpected() {
+    assertCompoundServiceAsExpected( 0);
   }
 
-  public void testAddGetRemoveServices()
+  private void assertCompoundServiceAsExpected( int numExtraServices)
   {
-    ServiceBuilder sb = new ServiceImpl( "s1n", type, baseUri, null );
-    String s1_1n = "s1_1n";
-    ServiceBuilder sb1_1 = sb.addService( s1_1n, type, baseUri );
-    String s1_2n = "s1_2n";
-    ServiceBuilder sb1_2 = sb.addService( s1_2n, type, baseUri );
-    sb1_2.addService( "s1_2_1n", type, baseUri );
-    ServiceBuilder sb1_2_2 = sb1_2.addService( "s1_2_2n", type, baseUri );
-    sb1_2_2.addService( "s1_2_2_1", type, baseUri );
+    assertEquals( allName, allService.getName());
+    assertEquals( allType, allService.getType());
+    assertEquals( allBaseUri, allService.getBaseUri());
 
-    List<ServiceBuilder> sbList = sb.getServiceBuilders();
-    assertTrue( sbList.size() == 2 );
-    assertTrue( sbList.get( 0).getName().equals( s1_1n ));
-    assertTrue( sbList.get( 1).getName().equals( s1_2n));
+    assertEquals( odapService, allService.getServiceBuilderByName( odapName ));
+    assertEquals( wcsService, allService.getServiceBuilderByName( wcsName ));
+    assertEquals( wmsService, allService.getServiceBuilderByName( wmsName ));
 
-    assertTrue( sb.getServiceBuilderByName( s1_1n ).equals( sb1_1 ));
-    assertTrue( sb.getServiceBuilderByName( s1_2n ).equals( sb1_2 ));
+    assertEquals( odapService, allService.findServiceBuilderByNameGlobally( odapName ));
+    assertEquals( wcsService, allService.findServiceBuilderByNameGlobally( wcsName ));
+    assertEquals( wmsService, allService.findServiceBuilderByNameGlobally( wmsName ));
 
-    assertTrue( sb.isServiceNameInUseGlobally( s1_2n ));
+    List<ServiceBuilder> serviceBuilders = allService.getServiceBuilders();
+    assertFalse( serviceBuilders.isEmpty());
+    assertEquals( 3 + numExtraServices, serviceBuilders.size());
 
-    // Test removal of service
-    assertTrue( null != sb.removeService( s1_1n ) );
-    assertNull( "Found removed service [" + s1_1n + "].",
-                sb.getServiceBuilderByName( s1_1n ) );
-
-    // Test that non-build getters fail.
-    Service s = (Service) sb;
-    try
-    { s.getServices(); }
-    catch ( IllegalStateException ise )
-    {
-      try
-      { s.getServiceByName( s1_1n); }
-      catch ( IllegalStateException ise2 )
-      { return; }
-      catch ( Exception e )
-      { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage() ); }
-    }
-    catch ( Exception e )
-    { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage()); }
-
+    assertEquals( odapService, serviceBuilders.get( 0));
+    assertEquals( wcsService, serviceBuilders.get( 1));
+    assertEquals( wmsService, serviceBuilders.get( 2));
   }
+
+  @Test
+  public void checkCompoundServiceWhenContainingServiceWithNonuniqueName()
+  {
+    ServiceBuilder dupService = allService.addService( odapName, wcsType, wcsBaseUri );
+
+    assertCompoundServiceAsExpected( 1 );
+
+    assertEquals( dupService, allService.getServiceBuilders().get(3));
+  }
+
+  @Test
+  public void testAddGetRemoveServices() throws URISyntaxException
+  {
+    ServiceBuilder sb1 = this.allService.addService( "one", ServiceType.HTTPServer, new URI( "http://server/thredds/httpServer/") );
+    ServiceBuilder sb2 = this.allService.addService( "two", ServiceType.HTTP, new URI( "http://server/thredds/two/") );
+
+    assertCompoundServiceAsExpected( 2 );
+
+    assertEquals( sb1, this.allService.getServiceBuilderByName( "one" ));
+    assertEquals( sb2, this.allService.getServiceBuilderByName( "two" ));
+
+    assertEquals( sb1, this.allService.findServiceBuilderByNameGlobally( "one" ));
+    assertEquals( sb2, this.allService.findServiceBuilderByNameGlobally( "two" ));
+
+    assertTrue( this.allService.removeService( sb1 ));
+
+    assertCompoundServiceAsExpected( 1 );
+
+    assertNull( this.allService.getServiceBuilderByName( "one" ));
+    assertNull( this.allService.findServiceBuilderByNameGlobally( "one" ));
+
+    assertEquals( sb2, this.allService.getServiceBuilderByName( "two" ) );
+    assertEquals( sb2, this.allService.findServiceBuilderByNameGlobally( "two" ) );
+
+    assertTrue( this.allService.removeService( odapService ));
+
+    assertNull( this.allService.getServiceBuilderByName( odapName ));
+    assertNull( this.allService.findServiceBuilderByNameGlobally( odapName ));
+
+    List<ServiceBuilder> serviceBuilders = this.allService.getServiceBuilders();
+    assertFalse( serviceBuilders.isEmpty());
+    assertEquals( 3, serviceBuilders.size());
+    assertEquals( wcsService, serviceBuilders.get( 0));
+    assertEquals( wmsService, serviceBuilders.get( 1));
+    assertEquals( sb2, serviceBuilders.get( 2));
+  }
+
+  @Test
   public void testAddGetReplaceRemoveProperties()
   {
-    ServiceBuilder sb = new ServiceImpl( "s1", type, baseUri, null );
-    String p1n = "p1";
-    String p1v = "p1.v";
-    sb.addProperty( p1n, p1v );
-    String p2n = "p2";
-    String p2v = "p2.v";
-    sb.addProperty( p2n, p2v );
-    String p3n = "p3";
-    String p3v = "p3.v";
-    sb.addProperty( p3n, p3v );
+    String colorPropName = "color";
+    String colorPropValue = "red";
+    odapService.addProperty( colorPropName, colorPropValue );
+    String texturePropName = "texture";
+    String texturePropValue = "rough";
+    odapService.addProperty( texturePropName, texturePropValue );
+    String tastePropName = "taste";
+    String tastePropValue = "sweet";
+    odapService.addProperty( tastePropName, tastePropValue );
 
     // Test getPropertyNames()
-    List<String> propNames = sb.getPropertyNames();
-    assertTrue( propNames.size() == 3);
-    assertTrue( propNames.get( 0 ).equals( p1n ));
-    assertTrue( propNames.get( 1 ).equals( p2n ));
-    assertTrue( propNames.get( 2 ).equals( p3n ));
+    List<String> propNames = odapService.getPropertyNames();
+    assertEquals( 3, propNames.size());
+    assertEquals( colorPropName, propNames.get( 0 ));
+    assertEquals( texturePropName, propNames.get( 1 ));
+    assertEquals( tastePropName, propNames.get( 2 ));
 
     // Test getPropertyValue()
-    String testValue = sb.getPropertyValue( p1n );
-    assertTrue( "Property [" + p1n + "]/[" + testValue + "] not as expected ["+p1n+"]/[" + p1v + "].",
-                testValue.equals( p1v ) );
-    testValue = sb.getPropertyValue( p2n );
-    assertTrue( "Property [" + p2n + "]/[" + testValue + "] not as expected ["+p2n+"]/[" + p2v + "].",
-                testValue.equals( p2v ) );
-    testValue = sb.getPropertyValue( p3n );
-    assertTrue( "Property [" + p3n + "]/[" + testValue + "] not as expected ["+p3n+"]/[" + p3v + "].",
-                testValue.equals( p3v ) );
+    assertEquals( colorPropValue, odapService.getPropertyValue( colorPropName ));
+    assertEquals( texturePropValue, odapService.getPropertyValue( texturePropName ));
+    assertEquals( tastePropValue, odapService.getPropertyValue( tastePropName ));
 
     // Test replacement.
-    String p1vNew = "p1.vNew";
-    sb.addProperty( p1n, p1vNew );
-    testValue = sb.getPropertyValue( p1n );
-    assertTrue( "Property [" + p1n + "]/[" + testValue + "] not as expected ["+p1n+"]/[" + p1vNew + "].",
-                testValue.equals( p1vNew ) );
+    String colorPropNewValue = "orange";
+    odapService.addProperty( colorPropName, colorPropNewValue );
+    assertEquals( colorPropNewValue, odapService.getPropertyValue( colorPropName ));
 
     // Test removal of property.
-    assertTrue( sb.removeProperty( p1n ));
-    assertNull( sb.getPropertyValue( p1n ));
+    assertTrue( odapService.removeProperty( colorPropName ));
+    assertNull( odapService.getPropertyValue( colorPropName ));
+  }
 
-    // Test that non-build getters fail.
-    Service s = (Service) sb;
-    try
-    { s.getProperties(); }
-    catch ( IllegalStateException ise )
-    {
-      try
-      { s.getPropertyByName( p1n); }
-      catch ( IllegalStateException ise2 )
-      { return; }
-      catch ( Exception e )
-      { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage() ); }
-    }
-    catch ( Exception e )
-    { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage() ); }
+  @Test(expected=IllegalStateException.class)
+  public void checkExceptionOnPreBuildGetProperties() {
+    odapService.getProperties();
+  }
+
+  @Test(expected=IllegalStateException.class)
+  public void checkExceptionOnPreBuildGetPropertyByNAme() {
+    odapService.getPropertyByName( "name");
+  }
+
+  @Test(expected=IllegalStateException.class)
+  public void checkExceptionOnPreBuildGetServices() {
+    odapService.getServices();
+  }
+
+  @Test(expected=IllegalStateException.class)
+  public void checkExceptionOnPreBuildGetServiceByName() {
+    odapService.getServiceByName( "name");
   }
 
   // Set, add, build and test that non-build getters succeed and build add/getters/remove fail.
-  public void testBuildGet()
+  @Test
+  public void checkBuildAndGet() throws BuilderException
   {
-    ServiceBuilder sb = new ServiceImpl( "s1", type, baseUri, null );
-
-    sb.setDescription( "description" );
-    sb.setSuffix( "suffix" );
-
-    String p1n = "p1";
-    String p1v = "p1.v";
-    sb.addProperty( p1n, p1v );
-    String p2n = "p2";
-    String p2v = "p2.v";
-    sb.addProperty( p2n, p2v );
-    String p3n = "p3";
-    String p3v = "p3.v";
-    sb.addProperty( p3n, p3v );
-
-    String s1_1n = "s1_1n";
-    ServiceBuilder sb1_1 = sb.addService( s1_1n, type, baseUri );
-    String s1_2n = "s1_2n";
-    ServiceBuilder sb1_2 = sb.addService( s1_2n, type, baseUri );
-    sb1_2.addService( "s1_2_1n", type, baseUri );
-    ServiceBuilder sb1_2_2 = sb1_2.addService( "s1_2_2n", type, baseUri );
-    sb1_2_2.addService( "s1_2_2_1", type, baseUri );
+    this.allService.addProperty( "propName1", "propValue1" );
+    this.allService.addProperty( "propName2", "propValue2" );
 
     // Check if buildable
     BuilderIssues issues = new BuilderIssues();
-    if ( ! sb.isBuildable( issues ))
-    {
-      StringBuilder stringBuilder = new StringBuilder( "Not isBuildable(): ");
-      for ( BuilderIssue bfi : issues.getIssues() )
-        stringBuilder.append( "\n    ").append( bfi.getMessage()).append(" [").append( bfi.getBuilder().getClass().getName()).append( "]");
-      fail( stringBuilder.toString());
-    }
+    assertTrue( this.allService.isBuildable( issues ));
+    assertTrue( issues.toString(),
+                issues.isEmpty());
 
     // Build
-    Service s = null;
-    try
-    { s = sb.build(); }
-    catch ( BuilderException e )
-    { fail( "Build failed: " + e.getMessage()); }
+    Service s = this.allService.build();
 
-    assertTrue( sb.isBuilt() );
+    assertNotNull( s);
+    assertTrue( this.allService.isBuilt() );
+
+    assertEquals( allName, s.getName() );
+    assertEquals( allType, s.getType() );
+    assertEquals( allBaseUri, s.getBaseUri() );
+
+    assertEquals( odapService, s.getServiceByName( odapName ) );
+    assertEquals( wcsService, s.getServiceByName( wcsName ) );
+    assertEquals( wmsService, s.getServiceByName( wmsName ) );
+
+    assertEquals( odapService, s.findServiceByNameGlobally( odapName ) );
+    assertEquals( wcsService, s.findServiceByNameGlobally( wcsName ) );
+    assertEquals( wmsService, s.findServiceByNameGlobally( wmsName ) );
+
+    List<Service> services = s.getServices();
+    assertFalse( services.isEmpty() );
+    assertEquals( 3, services.size() );
+
+    assertEquals( odapService, services.get( 0 ) );
+    assertEquals( wcsService, services.get( 1 ) );
+    assertEquals( wmsService, services.get( 2 ) );
 
     // Test that Service methods succeed after build.
     List<Property> propList = s.getProperties();
-    assertTrue( propList.size() == 3 );
-    assertTrue( propList.get( 0).getName().equals( p1n));
-    assertTrue( propList.get( 1).getName().equals( p2n));
-    assertTrue( propList.get( 2).getName().equals( p3n));
+    assertEquals( 2, propList.size() );
+    Property prop1 = propList.get( 0 );
+    Property prop2 = propList.get( 1 );
 
-    assertTrue( s.getPropertyByName( p1n ).getName().equals( p1n));
+    assertEquals( "propName1", prop1.getName() );
+    assertEquals( "propName2", prop2.getName() );
 
-    List<Service> sList = s.getServices();
-    assertTrue( sList.size() == 2);
-    assertTrue( sList.get( 0) == sb1_1 );
-    assertTrue( sList.get( 1) == sb1_2 );
-
-    assertTrue( s.getServiceByName( s1_1n ) == sb1_1);
-
-    // Test that ServiceBuilder methods fail after build.
-    try
-    { sb.setType( ServiceType.ADDE ); }
-    catch ( IllegalStateException ise1 )
-    {
-      try
-      { sb.setBaseUri( docBaseUri ); }
-      catch ( IllegalStateException ise2)
-      {
-        try
-        { sb.setDescription( "fred" ); }
-        catch ( IllegalStateException ise3 )
-        {
-          try
-          { sb.setSuffix( "suf" ); }
-          catch ( IllegalStateException ise4 )
-          {
-            try
-            { sb.addProperty( "f", "" ); }
-            catch ( IllegalStateException ise5 )
-            {
-              try
-              { sb.addService( "a", type, baseUri ); }
-              catch ( IllegalStateException ise6 )
-              {
-                try
-                { sb.getPropertyNames(); }
-                catch ( IllegalStateException ise7 )
-                {
-                  try
-                  { sb.getPropertyValue( p1n ); }
-                  catch ( IllegalStateException ise8 )
-                  {
-                    try
-                    { sb.getServiceBuilders(); }
-                    catch ( IllegalStateException ise9 )
-                    {
-                      try
-                      { sb.getServiceBuilderByName( s1_1n ); }
-                      catch ( IllegalStateException ise10 )
-                      { return; }
-                      catch ( Exception e )
-                      { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage() ); }
-                    }
-                    catch ( Exception e )
-                    { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage() ); }
-                  }
-                  catch ( Exception e )
-                  { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage() ); }
-                }
-                catch ( Exception e )
-                { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage() ); }
-              }
-              catch ( Exception e )
-              { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage() ); }
-            }
-            catch ( Exception e )
-            { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage() ); }
-          }
-          catch ( Exception e )
-          { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage() ); }
-        }
-        catch ( Exception e )
-        { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage() ); }
-      }
-      catch ( Exception e )
-      { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage() ); }
-    }
-    catch ( Exception e )
-    { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage() ); }
-    fail( "No exception thrown.");
+    assertEquals( "propValue1", prop1.getValue() );
+    assertEquals( "propValue2", prop2.getValue() );
   }
+
+  @Test(expected=IllegalStateException.class)
+  public void checkExceptionOnPostBuildsetType() throws BuilderException
+  {
+    this.allService.build();
+    this.allService.setType( odapType);
+  }
+
+  @Test(expected=IllegalStateException.class)
+  public void checkExceptionOnPostBuildSetBaseUri() throws BuilderException
+  {
+    this.allService.build();
+    this.allService.setBaseUri( odapBaseUri);
+  }
+
+  @Test(expected=IllegalStateException.class)
+  public void checkExceptionOnPostBuildSetDescription() throws BuilderException
+  {
+    this.allService.build();
+    this.allService.setDescription( "desc");
+  }
+
+  @Test(expected=IllegalStateException.class)
+  public void checkExceptionOnPostBuildSetSuffix() throws BuilderException
+  {
+    this.allService.build();
+    this.allService.setSuffix( ".suffix");
+  }
+
+  @Test(expected=IllegalStateException.class)
+  public void checkExceptionOnPostBuildAddProperty() throws BuilderException
+  {
+    this.allService.build();
+    this.allService.addProperty( "propName1", "propVal1");
+  }
+
+  @Test(expected=IllegalStateException.class)
+  public void checkExceptionOnPostBuildAddService()
+          throws BuilderException, URISyntaxException
+  {
+    this.allService.build();
+    this.allService.addService( "newService", ServiceType.FILE, new URI( "http://server/thredds/new/"));
+  }
+
+  @Test(expected=IllegalStateException.class)
+  public void checkExceptionOnPostBuildGetPropertyNames()
+          throws BuilderException
+  {
+    this.allService.build();
+    this.allService.getPropertyNames();
+  }
+
+  @Test(expected=IllegalStateException.class)
+  public void checkExceptionOnPostBuildGetPropertyValue()
+          throws BuilderException
+  {
+    this.allService.build();
+    this.allService.getPropertyValue( "name");
+  }
+
+  @Test(expected=IllegalStateException.class)
+  public void checkExceptionOnPostBuildGetServiceBuilders()
+          throws BuilderException
+  {
+    this.allService.build();
+    this.allService.getServiceBuilders();
+  }
+
+  @Test(expected=IllegalStateException.class)
+  public void checkExceptionOnPostBuildGetServiceBuilderByName()
+          throws BuilderException
+  {
+    this.allService.build();
+    this.allService.getServiceBuilderByName( "name");
+  }
+
+
+  @Test
+  public void testDuplicateServiceName()
+            throws URISyntaxException
+    {
+        ServiceBuilder dupService = allService.addService( "odap", ServiceType.WMS, new URI( "http://server/thredds/wms/" ) );
+
+        BuilderIssues issues = new BuilderIssues();
+        assertTrue( dupService.isBuildable( issues ) );
+
+        assertFalse( issues.isEmpty() );
+    }
+
 }

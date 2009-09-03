@@ -49,19 +49,18 @@ import ucar.nc2.units.DateType;
  */
 public class CatalogImpl implements Catalog, CatalogBuilder
 {
-  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
-
   private String name;
   private URI docBaseUri;
   private String version;
   private DateType expires;
   private DateType lastModified;
 
-  private ServiceContainer serviceContainer;
+  private final ServiceContainer serviceContainer;
+  private final GlobalServiceContainer globalServiceContainer;
 
-  private DatasetNodeContainer datasetContainer;
+  private final DatasetNodeContainer datasetContainer;
 
-  private PropertyContainer propertyContainer;
+  private final PropertyContainer propertyContainer;
 
   private boolean isBuilt = false;
 
@@ -75,7 +74,8 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     this.expires = expires;
     this.lastModified = lastModified;
 
-    this.serviceContainer = new ServiceContainer( null );
+    this.globalServiceContainer = new GlobalServiceContainer();
+    this.serviceContainer = new ServiceContainer( globalServiceContainer );
 
     this.datasetContainer = new DatasetNodeContainer( null );
 
@@ -143,38 +143,22 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     return this.lastModified;
   }
 
-  public boolean isServiceNameInUseGlobally( String name )
-  {
-    return this.serviceContainer.isServiceNameInUseGlobally( name );
-  }
-
   public ServiceBuilder addService( String name, ServiceType type, URI baseUri )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This CatalogBuilder has been built." );
-    if ( this.isServiceNameInUseGlobally( name) )
-      throw new IllegalStateException( "Given service name [" + name + "] not unique in catalog." );
 
-    ServiceImpl sb = new ServiceImpl( name, type, baseUri, this.serviceContainer );
-    this.serviceContainer.addService( sb );
-    return sb;
+    return this.serviceContainer.addService( name, type, baseUri );
   }
 
-  public ServiceBuilder removeService( String name )
+  public boolean removeService( ServiceBuilder serviceBuilder )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This CatalogBuilder has been built." );
-    if ( name == null )
-      return null;
+    if ( serviceBuilder == null )
+      return false;
 
-    ServiceImpl removedService = this.serviceContainer.removeService( name );
-    if ( removedService == null )
-    {
-      log.debug( "removeService(): unknown ServiceBuilder [" + name + "] (not in map)." );
-      return null;
-    }
-
-    return removedService;
+    return this.serviceContainer.removeService( (ServiceImpl) serviceBuilder );
   }
 
   public List<Service> getServices()
@@ -341,6 +325,7 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     // Check invariants
 
     // Check subordinates.
+    this.globalServiceContainer.isBuildable( localIssues, this );
     this.serviceContainer.isBuildable( localIssues );
     this.datasetContainer.isBuildable( localIssues );
     this.propertyContainer.isBuildable( localIssues );

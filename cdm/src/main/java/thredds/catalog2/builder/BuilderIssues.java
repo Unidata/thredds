@@ -53,10 +53,13 @@ public class BuilderIssues
         this.issues.addAll( issues.getIssues() );
     }
 
-    public boolean isEmpty()
-    {
-        return this.issues.isEmpty();
+    public boolean isEmpty() {
+      return this.issues.isEmpty();
     }
+
+  public int size() {
+    return this.issues.size();
+  }
 
     public List<BuilderIssue> getIssues()
     {

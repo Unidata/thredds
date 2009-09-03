@@ -65,7 +65,7 @@ public interface CatalogBuilder extends ThreddsBuilder
 
   // * @throws IllegalStateException this CatalogBuilder has already been finished or already contains a ServiceBuilder with the given name.
   public ServiceBuilder addService( String name, ServiceType type, URI baseUri );
-  public ServiceBuilder removeService( String name );
+  public boolean removeService( ServiceBuilder serviceBuilder );
   public List<ServiceBuilder> getServiceBuilders();
   public ServiceBuilder getServiceBuilderByName( String name );
   public ServiceBuilder findServiceBuilderByNameGlobally( String name );

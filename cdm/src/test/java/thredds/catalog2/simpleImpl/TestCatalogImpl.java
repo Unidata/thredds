@@ -32,14 +32,19 @@
  */
 package thredds.catalog2.simpleImpl;
 
-import junit.framework.*;
-import thredds.catalog2.builder.ServiceBuilder;
-import thredds.catalog2.builder.CatalogBuilder;
+import org.junit.Test;
+import org.junit.Before;
+
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
+import thredds.catalog2.builder.*;
 import thredds.catalog.ServiceType;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
+import java.util.List;
 import java.text.ParseException;
 
 import ucar.nc2.units.DateType;
@@ -51,20 +56,34 @@ import ucar.nc2.units.TimeDuration;
  * @author edavis
  * @since 4.0
  */
-public class TestCatalogImpl extends TestCase
+public class TestCatalogImpl
 {
+  private CatalogImpl catImpl;
+  private String catName;
+  private URI catDocBaseUri;
+  private String catVersion;
+  private DateType catExpires;
+  private DateType catLastModified;
+  private DateType catExpires2;
+  private DateType catLastModified2;
+
   private URI docBaseUri;
 
   private ServiceType type;
   private URI baseUri;
 
-  public TestCatalogImpl( String name )
+  @Before
+  public void setupBasicCatalog() throws URISyntaxException, ParseException
   {
-    super( name );
-  }
+    this.catName = "Catalog Name";
+    this.catDocBaseUri = new URI( "http://server/thredds/cat.xml");
+    this.catVersion = "1.0.2";
+    this.catLastModified = new DateType( false, new Date( System.currentTimeMillis() ) );
+    this.catExpires = new DateType( catLastModified ).add( new TimeDuration( "P5D" ) );
+    this.catLastModified2 = this.catLastModified.add( new TimeDuration( "P1D"));
+    this.catExpires2 = this.catLastModified2.add( new TimeDuration( "P5D"));
+    this.catImpl = new CatalogImpl( catName, catDocBaseUri, this.catVersion, this.catExpires, this.catLastModified);
 
-  protected void setUp()throws Exception
-  {
     try
     { baseUri = new URI( "http://server/thredds/dodsC/" );
       docBaseUri = new URI( "http://server/thredds/aCat.xml" ); }
@@ -74,85 +93,137 @@ public class TestCatalogImpl extends TestCase
     type = ServiceType.OPENDAP;
   }
 
-  public void testConstructorNullDocBaseUri()
-  {
-    try
-    { new CatalogImpl( "cat", null, "", null, null ); }
-    catch ( IllegalArgumentException e )
-    { return; }
-    catch ( Exception e )
-    { fail( "Unexpected exception: " + e.getMessage()); }
-    fail( "No IllegalArgumentException.");
+  @Test(expected=IllegalArgumentException.class)
+  public void checkForExceptionOnConstructorWithNullDocBaseUri() {
+    new CatalogImpl( this.catName, null, this.catVersion, this.catExpires, this.catLastModified );
   }
 
-  public void testConstructorNormal() throws ParseException
-  {
-    String name = "cat";
-    String verString = "v1";
-    long curTime = System.currentTimeMillis();
-    DateType lastModified = new DateType( false, new Date( curTime) );
-    DateType expires = new DateType( lastModified ).add( new TimeDuration( "P5D"));
-
-    CatalogBuilder cb = new CatalogImpl( name, docBaseUri, verString, expires, lastModified );
-
-    assertFalse( cb.isBuilt() );
-
-    assertTrue( "Name [" + cb.getName() + "] not as expected [" + name + "].",
-                cb.getName().equals( name ) );
-    assertTrue( "BaseUri [" + cb.getDocBaseUri() + "] not as expected [" + docBaseUri + "].",
-                cb.getDocBaseUri().equals( docBaseUri ) );
-    assertTrue( "Version [" + cb.getVersion() + "] not as expected [" + verString + "].",
-                cb.getVersion().equals( verString ) );
-    assertTrue( "Expires time [" + cb.getExpires() + "] not as expected [" + expires + "].",
-                cb.getExpires().equals( expires) );
-    assertTrue( "Last modified time [" + cb.getLastModified() + "] not as expected [" + lastModified + "].",
-                cb.getLastModified().equals( lastModified ) );
-
+  @Test(expected=IllegalArgumentException.class)
+  public void checkForExceptionWhenNullSetDocBaseUri() {
+    this.catImpl.setDocBaseUri( null );
   }
 
-  public void testContainerCatalogNonuniqueDatasetName()
+  @Test
+  public void checkConstructorWithOtherNulls()
   {
-    CatalogBuilder cat = new CatalogImpl( "cat1", docBaseUri, "", null, null );
-    cat.addService( "s1", type, baseUri );
-    cat.addService( "s2", type, baseUri );
-    try
-    { cat.addService( "s1", type, baseUri ); }
-    catch ( IllegalStateException e )
-    { return; }
-    catch ( Exception e )
-    { fail( "Non-IllegalStateException: " + e.getMessage() ); }
-    fail( "No IllgalStateException." );
-  }
-  public void testContainerCatalogNonuniqueDatasetNameNested()
-  {
-    CatalogBuilder cat = new CatalogImpl( "cat1", docBaseUri, "", null, null );
-    cat.addService( "s1", type, baseUri );
-    ServiceBuilder s2 = cat.addService( "s2", type, baseUri );
-    s2.addService( "s2.1", type, baseUri );
-    try
-    { s2.addService( "s1", type, baseUri ); }
-    catch ( IllegalStateException e )
-    { return; }
-    catch ( Exception e )
-    { fail( "Non-IllegalStateException: " + e.getMessage() ); }
-    fail( "No IllgalStateException." );
+    new CatalogImpl( null, this.catDocBaseUri, this.catVersion, this.catExpires, this.catLastModified );
+    new CatalogImpl( this.catName, this.catDocBaseUri, null, this.catExpires, this.catLastModified );
+    new CatalogImpl( this.catName, this.catDocBaseUri, this.catVersion, null, this.catLastModified );
+    new CatalogImpl( this.catName, this.catDocBaseUri, this.catVersion, this.catExpires, null );
   }
 
-  public void testContainerCatalogNonuniqueDatasetNameNestedTwoLevels()
+  @Test
+  public void checkOtherSettersWithNull()
   {
-    CatalogBuilder cat = new CatalogImpl( "cat1", docBaseUri, "", null, null );
-    cat.addService( "s1", type, baseUri );
-    ServiceBuilder s2 = cat.addService( "s2", type, baseUri );
-    s2.addService( "s2.1", type, baseUri );
-    ServiceBuilder s2_2 = s2.addService( "s2.2", type, baseUri );
-    s2_2.addService( "s2.2.1", type, baseUri );
-    try
-    { s2_2.addService( "s1", type, baseUri ); }
-    catch ( IllegalStateException e )
-    { return; }
-    catch ( Exception e )
-    { fail( "Non-IllegalStateException: " + e.getMessage() ); }
-    fail( "No IllgalStateException." );
+    this.catImpl.setName( null );
+    this.catImpl.setVersion( null );
+    this.catImpl.setExpires( null );
+    this.catImpl.setLastModified( null );
+  }
+
+  @Test
+  public void checkCatalogAsExpected()
+  {
+    assertBasicCatalogAsExpected();
+  }
+
+  private void assertBasicCatalogAsExpected()
+  {
+    assertEquals( this.catName, this.catImpl.getName());
+    assertEquals( this.catDocBaseUri, this.catImpl.getDocBaseUri());
+    assertEquals( this.catVersion, this.catImpl.getVersion());
+    assertEquals( this.catExpires, this.catImpl.getExpires());
+    assertEquals( this.catLastModified, this.catImpl.getLastModified());
+  }
+
+  @Test
+  public void checkChangedCatalogAsExpected() throws URISyntaxException
+  {
+    this.catImpl.setName( "name" );
+    assertEquals( "name", this.catImpl.getName());
+
+    URI uri = new URI( "http://server/thredds/bad/" );
+    this.catImpl.setDocBaseUri( uri );
+    assertEquals( uri, this.catImpl.getDocBaseUri());
+
+    this.catImpl.setVersion( "ver" );
+    assertEquals( "ver", this.catImpl.getVersion());
+
+    this.catImpl.setExpires( this.catExpires2 );
+    assertEquals( this.catExpires2, this.catImpl.getExpires());
+
+    this.catImpl.setLastModified( this.catLastModified2 );
+    assertEquals( this.catLastModified2, this.catImpl.getLastModified());
+  }
+
+  @Test
+  public void checkCatalogAddGetRemoveProperties()
+  {
+    this.catImpl.addProperty( "color", "red" );
+    this.catImpl.addProperty( "taste", "sweet" );
+
+    assertBasicCatalogAsExpected();
+
+    assertEquals( "red", this.catImpl.getPropertyValue( "color" ));
+    assertEquals( "sweet", this.catImpl.getPropertyValue( "taste" ));
+
+    assertTrue( this.catImpl.removeProperty( "color" ));
+
+    assertNull( this.catImpl.getPropertyValue( "color" ));
+  }
+
+  @Test
+  public void checkCatalogAddGetRemoveServices() throws URISyntaxException
+  {
+    ServiceBuilder odapService =  this.catImpl.addService( "odap", ServiceType.OPENDAP, new URI( "http://server/thredds/dodsC/") );
+    ServiceBuilder wcsService =  this.catImpl.addService( "wcs", ServiceType.WCS, new URI( "http://server/thredds/wcs/") );
+
+    assertBasicCatalogAsExpected();
+
+    assertEquals( odapService, this.catImpl.getServiceBuilderByName( "odap" ));
+    assertEquals( wcsService, this.catImpl.getServiceBuilderByName( "wcs" ));
+
+    List<ServiceBuilder> services = this.catImpl.getServiceBuilders();
+    assertFalse( services.isEmpty());
+    assertEquals( 2, services.size());
+    assertEquals( odapService, services.get( 0));
+    assertEquals( wcsService, services.get( 1));
+
+    assertTrue( this.catImpl.removeService( odapService ));
+    assertNull( this.catImpl.getServiceBuilderByName( "odap" ));
+  }
+
+  @Test
+  public void checkCatalogAddGetRemoveCatalogRefsAndDatasets() throws URISyntaxException
+  {
+    CatalogRefBuilder cat2 =  this.catImpl.addCatalogRef( "cat2", new URI( "http://server/thredds/cat2.xml") );
+    CatalogRefBuilder cat3 =  this.catImpl.addCatalogRef( "cat3", new URI( "http://server/thredds/cat3.xml") );
+    DatasetBuilder ds1 = this.catImpl.addDataset( "data1" );
+    DatasetBuilder ds2 = this.catImpl.addDataset( "data2" );
+    ds1.setId( "dataId1" );
+    ds2.setId( "dataId2" );
+
+    assertBasicCatalogAsExpected();
+
+    assertEquals( cat2, this.catImpl.getDatasetNodeBuilderById( "cat2" ) );
+    assertEquals( cat3, this.catImpl.getDatasetNodeBuilderById( "cat3" ) );
+    assertEquals( ds1, this.catImpl.getDatasetNodeBuilderById( "dataId1" ) );
+    assertEquals( ds2, this.catImpl.getDatasetNodeBuilderById( "dataId2" ) );
+
+    List<DatasetNodeBuilder> dsNodes = this.catImpl.getDatasetNodeBuilders();
+    assertFalse( dsNodes.isEmpty() );
+    assertEquals( 4, dsNodes.size() );
+
+    assertEquals( cat2, dsNodes.get( 0));
+    assertEquals( cat3, dsNodes.get( 1));
+    assertEquals( ds1, dsNodes.get( 2));
+    assertEquals( ds2, dsNodes.get( 3));
+
+    assertTrue( this.catImpl.removeDataset( cat2 ));
+    assertTrue( this.catImpl.removeDataset( ds1 ));
+
+    assertNull( this.catImpl.getDatasetNodeBuilderById( "cat2" ));
+    assertNull( this.catImpl.getDatasetNodeBuilderById( "dataId1" ));
   }
 
 }

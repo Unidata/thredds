@@ -32,15 +32,17 @@
  */
 package thredds.catalog2.simpleImpl;
 
-import junit.framework.*;
+import org.junit.Test;
+import org.junit.Before;
+
+import static org.junit.Assert.*;
+
 import thredds.catalog2.builder.ServiceBuilder;
-import thredds.catalog2.builder.BuilderIssue;
 import thredds.catalog2.builder.BuilderException;
 import thredds.catalog2.builder.BuilderIssues;
 import thredds.catalog.ServiceType;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -54,144 +56,218 @@ import java.net.URISyntaxException;
  * @author edavis
  * @since 4.0
  */
-public class TestServiceContainer extends TestCase
+public class TestServiceContainer
 {
-  private ServiceContainer sc;
+  private GlobalServiceContainer globalServiceContainer;
+  private ServiceContainer serviceContainer;
+  private ServiceImpl odapService, wmsService, wcsService;
 
-  private String p1n, p1v, p2n, p2v, p3n, p3v;
-  private String s1n, s2n, s3n, s1_1n, s1_2n, s1_2_1n, s1_2_2n, s1_2_2_1n;
-  private URI baseUri1;
-  private ServiceType type;
-
-
-  private ServiceImpl si1, si2, si3, si1_1, si1_2, si1_2_1, si1_2_2, si1_2_2_1;
-  private ServiceBuilder sb1, sb2, sb3, sb1_1, sb1_2, sb1_2_1, sb1_2_2, sb1_2_2_1;
-
-  public TestServiceContainer( String name )
+  @Before
+  public void setupContainerWithThreeUniquelyNamedServices() throws Exception
   {
-    super( name );
+    this.globalServiceContainer = new GlobalServiceContainer();
+    this.serviceContainer = new ServiceContainer( this.globalServiceContainer );
+
+    this.odapService = this.serviceContainer.addService( "odap", ServiceType.OPENDAP, new URI( "http://server/thredds/dodsC/" ) );
+    this.wmsService = this.serviceContainer.addService( "wms", ServiceType.WMS, new URI( "http://server/thredds/wms/" ) );
+    this.wcsService = this.serviceContainer.addService( "wcs", ServiceType.WCS, new URI( "http://server/thredds/wcs/" ) );
   }
 
-  @Override
-  protected void setUp() throws Exception
+  @Test
+  public void checkThatNewlyCreatedContainerIsEmpty()
   {
-    try
-    { baseUri1 = new URI( "http://server/thredds/dodsC/" ); }
-    catch ( URISyntaxException e )
-    { fail( "Bad URI syntax: " + e.getMessage() ); }
+    GlobalServiceContainer gsc = new GlobalServiceContainer();
+    ServiceContainer sc = new ServiceContainer( gsc);
+    assertTrue( sc.isEmpty());
 
-    type = ServiceType.OPENDAP;
-
-    p1n = "p1";
-    p1v = "p1.v";
-    p2n = "p2";
-    p2v = "p2.v";
-    p3n = "p3";
-    p3v = "p3.v";
-
-    s1n = "s1n";
-    s2n = "s2n";
-    s1_1n = "s1_1n";
-    s1_2n = "s1_2n";
-    s1_2_1n = "s1_2_1n";
-    s1_2_2n = "s1_2_2n";
-    s1_2_2_1n = "s1_2_2_1n";
+    assertNotNull( gsc );
+    assertTrue( gsc.isEmpty() );
   }
 
-  private void optionalSetUp()
-  {
-    sc = new ServiceContainer( null );
-    assertFalse( sc.isBuilt());
-
-    si1 = new ServiceImpl( s1n, type, baseUri1, null );
-    sb1 = si1;
-    sb1.setDescription( "description" );
-    sb1.setSuffix( "suffix" );
-
-    sb1.addProperty( p1n, p1v );
-    sb1.addProperty( p2n, p2v );
-    sb1.addProperty( p3n, p3v );
-    sc.addService( si1 );
-
-    sb1_1 = sb1.addService( s1_1n, type, baseUri1 );
-    sb1_2 = sb1.addService( s1_2n, type, baseUri1 );
-    sb1_2_1 = sb1_2.addService( s1_2_1n, type, baseUri1 );
-    sb1_2_2 = sb1_2.addService( s1_2_2n, type, baseUri1 );
-    sb1_2_2_1 = sb1_2_2.addService( s1_2_2_1n, type, baseUri1 );
-
-    si2 = new ServiceImpl( s2n, type, baseUri1, null );
-    sc.addService( si2 );
-    si3 = new ServiceImpl( s3n, type, baseUri1, null );
-    sc.addService( si3 );
+  @Test(expected = IllegalStateException.class)
+  public void checkExceptionOnPreBuildGetServiceByName() {
+    this.serviceContainer.getServiceByName( "odap" );
   }
 
-
-  public void testNewContainerBasics()
-  {
-    sc = new ServiceContainer( null);
-    assertTrue( "New service container not empty.",
-                sc.isEmpty());
-    int size = sc.size();
-    assertTrue( "New service container not size()==0 ["+size+"].",
-                size == 0 );
-
-    assertFalse( "New service container has service [name].",
-                 sc.containsServiceName( "name" ));
-    ServiceBuilder sb = sc.getServiceBuilderByName( "name" );
-    if ( sb != null )
-      fail( "New service container holds unexpected ServiceBuilder [name].");
-
-    assertTrue( "New service container has non-empty ServiceBuilder list.",
-                sc.getServiceBuilders().isEmpty());
-
-    assertNull( "New service container has unexpected globally unique name [name].",
-                sc.getServiceByGloballyUniqueName( "name" ));
-
-    assertNull( "New (empty) service container succeeded in removing serivce [name].",
-                 sc.removeService( "name" ));
-    assertFalse( "New service container succeeded in removing service by globally unique name [name].",
-                 sc.removeServiceByGloballyUniqueName( "name" ));
+  @Test(expected = IllegalStateException.class)
+  public void checkExceptionOnPreBuildGetServices() {
+    this.serviceContainer.getServices();
   }
 
-  public void testNewContainerPreBuildStateExceptions()
-  {
-    sc = new ServiceContainer( null );
-
-    try
-    { sc.getServiceByName( "name" ); }
-    catch ( IllegalStateException ise1 )
-    {
-      try { sc.getServices(); }
-      catch ( IllegalStateException ise2 )
-      { return; }
-      catch ( Exception e1 )
-      { fail( "Unexpected non-IllegalStateException exception thrown: " + e1.getMessage() ); }
-    }
-    catch ( Exception e1 )
-    { fail( "Unexpected non-IllegalStateException exception thrown: " + e1.getMessage() ); }
+  @Test
+  public void checkThreeAddedServicesAreContained() {
+    assertThatThreeAddedServicesAreContained( 0);
   }
 
-  public void testNewContainerBuild()
+  private void assertThatThreeAddedServicesAreContained( int numDuplicates)
   {
-    sc = new ServiceContainer( null );
+    assertFalse( serviceContainer.isEmpty());
+    assertEquals( 3 + numDuplicates, serviceContainer.size() );
+
+    assertTrue( serviceContainer.containsServiceName( "odap" ));
+    assertTrue( serviceContainer.containsServiceName( "wms" ));
+    assertTrue( serviceContainer.containsServiceName( "wcs" ));
+
+    assertEquals( odapService, serviceContainer.getServiceBuilderByName( "odap" ));
+    assertEquals( wmsService, serviceContainer.getServiceBuilderByName( "wms" ));
+    assertEquals( wcsService, serviceContainer.getServiceBuilderByName( "wcs" ));
+  }
+
+  @Test
+  public void checkThreeAddedServicesAreContainedInOrder() {
+    assertThatThreeAddedServicesAreContainedInOrder( 0);
+  }
+
+  private void assertThatThreeAddedServicesAreContainedInOrder( int numDuplicates)
+  {
+    List<ServiceBuilder> serviceBuilders = serviceContainer.getServiceBuilders();
+    assertNotNull( serviceBuilders);
+    assertEquals( 3 + numDuplicates, serviceBuilders.size());
+
+    assertEquals( odapService, serviceBuilders.get( 0));
+    assertEquals( wmsService, serviceBuilders.get( 1));
+    assertEquals( wcsService, serviceBuilders.get( 2));
+  }
+
+  @Test
+  public void checkThreeAddedServicesAreContainedGlobally() {
+    assertThatThreeAddedServicesAreContainedGlobally();
+  }
+
+  private void assertThatThreeAddedServicesAreContainedGlobally()
+  {
+    assertEquals( odapService, serviceContainer.getServiceByGloballyUniqueName( "odap" ));
+    assertEquals( wmsService, serviceContainer.getServiceByGloballyUniqueName( "wms" ));
+    assertEquals( wcsService, serviceContainer.getServiceByGloballyUniqueName( "wcs" ));
+
+    assertTrue( globalServiceContainer.isServiceNameInUseGlobally( "odap" ) );
+    assertTrue( globalServiceContainer.isServiceNameInUseGlobally( "wms" ) );
+    assertTrue( globalServiceContainer.isServiceNameInUseGlobally( "wcs" ) );
+
+    assertEquals( odapService, globalServiceContainer.getServiceByGloballyUniqueName( "odap" ) );
+    assertEquals( wmsService, globalServiceContainer.getServiceByGloballyUniqueName( "wms" ) );
+    assertEquals( wcsService, globalServiceContainer.getServiceByGloballyUniqueName( "wcs" ) );
+  }
+
+  @Test
+  public void checkThatThreeUniqueOneDup()
+          throws URISyntaxException
+  {
+    ServiceImpl dupWmsService = this.serviceContainer.addService( "wms", ServiceType.WCS, new URI( "http://server/thredds/wcs/") );
+
+    assertThatThreeAddedServicesAreContained( 1);
+    assertThatThreeAddedServicesAreContainedInOrder( 1);
+    assertThatThreeAddedServicesAreContainedGlobally();
+
+    assertEquals( dupWmsService, this.serviceContainer.getServiceBuilders().get(3));
+
+    assertFalse( this.globalServiceContainer.isEmpty() );
+    assertEquals( 3, this.globalServiceContainer.numberOfServicesWithGloballyUniqueNames() );
+    assertEquals( 1, this.globalServiceContainer.numberOfServicesWithDuplicateNames() );
+  }
+
+  @Test
+  public void checkThatThreeUniqueOneDupAfterRemoveDup()
+          throws URISyntaxException
+  {
+    ServiceImpl dupWmsService = this.serviceContainer.addService( "wms", ServiceType.WCS, new URI( "http://server/thredds/wcs/" ) );
+
+    this.serviceContainer.removeService( dupWmsService );
+
+    assertThatThreeAddedServicesAreContained( 0);
+    assertThatThreeAddedServicesAreContainedInOrder( 0);
+    assertThatThreeAddedServicesAreContainedGlobally();
+
+
+    assertFalse( this.globalServiceContainer.isEmpty() );
+    assertEquals( 3, this.globalServiceContainer.numberOfServicesWithGloballyUniqueNames() );
+    assertEquals( 0, this.globalServiceContainer.numberOfServicesWithDuplicateNames() );
+  }
+
+  @Test
+  public void checkThatThreeUniqueOneDupAfterRemoveVarious()
+          throws URISyntaxException
+  {
+    ServiceImpl dupWmsService = this.serviceContainer.addService( "wms", ServiceType.WCS, new URI( "http://server/thredds/wcs/" ) );
+
+    this.serviceContainer.removeService( wmsService );
+
+    assertEquals( dupWmsService, this.serviceContainer.getServiceBuilderByName( "wms" ));
+    assertEquals( dupWmsService, this.serviceContainer.getServiceByGloballyUniqueName( "wms" ));
+
+
+    assertFalse( this.globalServiceContainer.isEmpty() );
+    assertEquals( 3, this.globalServiceContainer.numberOfServicesWithGloballyUniqueNames() );
+    assertEquals( 0, this.globalServiceContainer.numberOfServicesWithDuplicateNames() );
+
+    this.serviceContainer.removeService( wcsService );
+
+    assertEquals( odapService, this.serviceContainer.getServiceBuilderByName( "odap" ) );
+    assertEquals( odapService, this.serviceContainer.getServiceByGloballyUniqueName( "odap" ) );
+
+    assertFalse( this.globalServiceContainer.isEmpty() );
+    assertEquals( 2, this.globalServiceContainer.numberOfServicesWithGloballyUniqueNames() );
+    assertEquals( 0, this.globalServiceContainer.numberOfServicesWithDuplicateNames() );
+
+  }
+
+  @Test
+  public void checkThatThreeUniqueServicesContainerBuilds() throws BuilderException
+  {
     BuilderIssues issues = new BuilderIssues();
-    if ( !sc.isBuildable( issues ) )
-    {
-      StringBuilder stringBuilder = new StringBuilder( "Not isBuildable(): " );
-      for ( BuilderIssue bfi : issues.getIssues() )
-        stringBuilder.append( "\n    " ).append( bfi.getMessage() ).append( " [" ).append( bfi.getBuilder().getClass().getName() ).append( "]" );
-      fail( stringBuilder.toString() );
-    }
+    if ( ! this.serviceContainer.isBuildable( issues ) )
+      fail( issues.toString() );
 
-    try
-    { sc.build(); }
-    catch ( BuilderException e )
-    { fail( "Build failed: " + e.getMessage() ); }
+    this.serviceContainer.build();
+
+    assertTrue( this.serviceContainer.isBuilt() );
+
+    // Test build getters.
+
+    // Test post build state exceptions
+  }
+
+  @Test
+  public void checkThatNewContainerBuilds() throws BuilderException
+  {
+    GlobalServiceContainer gsc = new GlobalServiceContainer();
+    ServiceContainer sc = new ServiceContainer( gsc);
+    BuilderIssues issues = new BuilderIssues();
+    if ( ! sc.isBuildable( issues ) )
+      fail( issues.toString() );
+
+    sc.build();
 
     assertTrue( sc.isBuilt() );
 
     // Test build getters.
 
     // Test post build state exceptions
+  }
+
+  @Test
+  public void checkBuildIssuesForDuplicateServiceNameInSameContainer()
+            throws URISyntaxException
+    {
+      this.serviceContainer.addService( "wms", ServiceType.WCS, new URI( "http://server/thredds/wcs/" ) );
+
+      BuilderIssues issues = new BuilderIssues();
+      assertTrue( this.serviceContainer.isBuildable( issues ));
+
+      assertFalse( issues.isEmpty());
+    }
+
+  @Test
+  public void checkBuildIssuesForDuplicateServiceNameInDifferentContainer()
+          throws URISyntaxException
+  {
+    ServiceContainer extraServiceContainer = new ServiceContainer( this.globalServiceContainer);
+
+    extraServiceContainer.addService( "wms", ServiceType.WCS, new URI( "http://server/thredds/wcs/" ) );
+
+    BuilderIssues issues = new BuilderIssues();
+    assertTrue( this.serviceContainer.isBuildable( issues ) );
+
+    assertFalse( issues.isEmpty() );
   }
 }
