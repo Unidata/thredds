@@ -252,7 +252,7 @@ files.</p>
     <p><strong>Note that the dateFormatMark works on the name of the file, without the directories!!</strong></p>
     <p>A <strong>dateFormatMark</strong> can be used on a <strong><em>joinExisting</em> </strong>type only if there is a single time in each file of the aggregation, in which case the coordinate values of the time can be created from the filename, instead of having to open each file and read it.</p>
   </li>
-  <li> You can optionally specify that the files should be opened in <a href="#enhance">enhanced mode</a> (default is <em>NetcdfDataset.EnhanceMode.None</em>)</li>
+  <li> You can optionally specify that the files should be opened in <a href="#enhance">enhanced mode</a> (default is <em>NetcdfDataset.EnhanceMode.None</em>). Generally you should do this if the ncml needs to operate on the datset after the COordSysBuilder has augmented it. Otherwise, you should not enhance.</li>
   <li>A specialized scanFmrc element can be used for a <em><strong><a href="FmrcAggregation.html#forecastModelRunSingleCollection">forecastModelRunSingleCollection</a> </strong></em>aggregation, where forecast model run data is stored in multiple files, with one forecast time per file.</li>
   <li> For scanFmrc, the run date and the forecast date is extracted from the file pathname using a <strong>runDateMatcher </strong>and either a <strong>forecastDateMatcher </strong>or a<strong> forecastOffsetMatcher </strong>attribute<strong>. </strong>All of these require matching a specific string in the file's pathname and then matching a date or hour offset immediately before or after the match. The match is specified by placing it between '#' marking characters. The <strong>runDateMatcher </strong>and <strong>forecastDateMatcher </strong>has a java.text.<a href="#SimpleDateFormat">SimpleDateFormat</a> string before or after the match, while a <strong>forecastOffsetMatcher</strong> counts the number of 'H' characters, and extracts an hour offset from the run date. For example: 
     <pre>     
@@ -532,7 +532,7 @@ forecastOffsetMatcher:                     HHH#.grb#</pre>
 <hr WIDTH="100%">
 <p>&nbsp;</p>
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on July 3, 2009
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Sep 3, 2009
 </address>
 <p>&nbsp;</p>
 </BODY>
