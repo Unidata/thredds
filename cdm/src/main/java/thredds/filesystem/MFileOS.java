@@ -42,7 +42,8 @@ import thredds.inventory.MFile;
  */
 public class MFileOS implements MFile {
   private java.io.File file;
-
+  private Object auxInfo;
+  
   MFileOS(java.io.File file) {
     this.file = file;
   }
@@ -75,5 +76,15 @@ public class MFileOS implements MFile {
   @Override
   public int compareTo(MFile o) {
     return getPath().compareTo( o.getPath());
+  }
+
+    @Override
+  public Object getAuxInfo() {
+    return auxInfo;
+  }
+
+  @Override
+  public void setAuxInfo(Object auxInfo) {
+    this.auxInfo = auxInfo;
   }
 }

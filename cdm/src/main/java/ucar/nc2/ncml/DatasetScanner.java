@@ -79,7 +79,7 @@ public class DatasetScanner {
     if ((subdirsS != null) && subdirsS.equalsIgnoreCase("false"))
       wantSubdirs = false;
 
-    mc = new thredds.inventory.MCollection(dirName, dirName, wantSubdirs, filter, dateExtractor);
+    mc = new thredds.inventory.MCollection(dirName, dirName, wantSubdirs, filter, dateExtractor, null);
 
     if (olderS != null) {
       try {

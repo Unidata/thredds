@@ -54,4 +54,8 @@ public interface MFile extends Comparable<MFile> {
   String getName();
 
   int compareTo(MFile o);
+
+  // does not survive serialization
+  Object getAuxInfo();
+  void setAuxInfo(Object info);
 }

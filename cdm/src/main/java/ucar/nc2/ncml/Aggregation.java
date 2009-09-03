@@ -212,7 +212,6 @@ public abstract class Aggregation implements ProxyReader {
   public void addDatasetScan(Element crawlableDatasetElement, String dirName, String suffix,
           String regexpPatternString, String dateFormatMark, Set<NetcdfDataset.Enhance> enhanceMode, String subdirs, String olderThan) {
     this.dateFormatMark = dateFormatMark;
-    //this.enhance = mode; // LOOK enhance
 
     if (dateFormatMark != null) {
       isDate = true;
@@ -222,7 +221,7 @@ public abstract class Aggregation implements ProxyReader {
     //DatasetScanner2  d = new DatasetScanner(crawlableDatasetElement, dirName, suffix, regexpPatternString, subdirs, olderThan);
     //datasetManager.addDirectoryScan(d);
     // String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS, String dateFormatString)
-    datasetManager.addDirectoryScan(dirName, suffix, regexpPatternString, subdirs, olderThan, dateFormatMark);
+    datasetManager.addDirectoryScan(dirName, suffix, regexpPatternString, subdirs, olderThan, dateFormatMark, enhanceMode);
  }
 
   private Element mergeNcml = null;
@@ -568,9 +567,10 @@ public abstract class Aggregation implements ProxyReader {
       this.location = (location == null) ? null : StringUtil.substitute(location, "\\", "/");
     }
 
-    protected Dataset(MFile cd) {
-      this( cd.getPath());
+    protected Dataset(MFile mfile) {
+      this( mfile.getPath());
       this.cacheLocation = location;
+      this.enhance = (Set<NetcdfDataset.Enhance>) mfile.getAuxInfo();
     }
 
     /**

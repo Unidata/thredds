@@ -91,7 +91,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
 
     //DatasetScanner d = new DatasetScanner(null, dirName, suffix, regexpPatternString, subdirs, olderThan);
     //datasetManager.addDirectoryScan(d);
-    datasetManager.addDirectoryScan(dirName, suffix, regexpPatternString, subdirs, olderThan, null);
+    datasetManager.addDirectoryScan(dirName, suffix, regexpPatternString, subdirs, olderThan, null, null);
   }
 
   @Override

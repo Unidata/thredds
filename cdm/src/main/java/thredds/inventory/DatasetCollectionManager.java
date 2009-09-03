@@ -74,13 +74,13 @@ public class DatasetCollectionManager {
 
     MFileFilter mfilter = (null == sp.getFilter()) ? null : new WildcardMatchOnName(sp.getFilter());
     DateExtractor dateExtractor = (sp.getDateFormatMark() == null) ? null : new DateExtractorFromName(sp.getDateFormatMark());
-    scanList.add(new MCollection(sp.getTopDir(), sp.getTopDir(), sp.wantSubdirs(), mfilter, dateExtractor));
+    scanList.add(new MCollection(sp.getTopDir(), sp.getTopDir(), sp.wantSubdirs(), mfilter, dateExtractor, null));
   }
 
   public DatasetCollectionManager(CollectionSpecParser sp, Formatter errlog) {
     MFileFilter mfilter = (null == sp.getFilter()) ? null : new WildcardMatchOnName(sp.getFilter());
     DateExtractor dateExtractor = (sp.getDateFormatMark() == null) ? null : new DateExtractorFromName(sp.getDateFormatMark());
-    scanList.add(new MCollection(sp.getTopDir(), sp.getTopDir(), sp.wantSubdirs(), mfilter, dateExtractor));
+    scanList.add(new MCollection(sp.getTopDir(), sp.getTopDir(), sp.wantSubdirs(), mfilter, dateExtractor, null));
   }
 
   public DatasetCollectionManager(String recheckS) {
@@ -93,7 +93,8 @@ public class DatasetCollectionManager {
     }
   }
 
-  public void addDirectoryScan(String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS, String dateFormatString) {
+  public void addDirectoryScan(String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS, String dateFormatString,
+                               Object auxInfo) {
     List<MFileFilter> filters = new ArrayList<MFileFilter>(3);
     if (null != regexpPatternString)
       filters.add(new RegExpMatchOnName(regexpPatternString));
@@ -116,7 +117,7 @@ public class DatasetCollectionManager {
       wantSubdirs = false;
 
     MFileFilter filter = (filters.size() == 0) ? null : ((filters.size() == 1) ? filters.get(0) : new Composite(filters));
-    MCollection mc = new thredds.inventory.MCollection(dirName, dirName, wantSubdirs, filter, dateExtractor);
+    MCollection mc = new thredds.inventory.MCollection(dirName, dirName, wantSubdirs, filter, dateExtractor, auxInfo);
 
     scanList.add(mc);
   }
@@ -255,6 +256,7 @@ public class DatasetCollectionManager {
 
       while (iter.hasNext()) {
         MFile mfile = iter.next();
+        mfile.setAuxInfo(mc.getAuxInfo());
         map.put(mfile.getPath(), mfile);
       }
 

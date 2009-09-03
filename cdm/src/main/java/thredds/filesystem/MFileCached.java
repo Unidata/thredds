@@ -44,6 +44,7 @@ import thredds.inventory.MFile;
 class MFileCached implements MFile {
   private String parentDirName;
   private CacheFile cfile;
+  private Object auxInfo;
 
   MFileCached(String parentDirName, CacheFile cfile) {
     this.parentDirName = parentDirName;
@@ -78,6 +79,16 @@ class MFileCached implements MFile {
   @Override
   public int compareTo(MFile o) {
     return getPath().compareTo( o.getPath());
+  }
+
+  @Override
+  public Object getAuxInfo() {
+    return auxInfo;
+  }
+
+  @Override
+  public void setAuxInfo(Object auxInfo) {
+    this.auxInfo = auxInfo;
   }
 
 }

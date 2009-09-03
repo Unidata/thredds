@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  3:
+  ToolsUI: ncml prototypes in NcmlEditor pane
+  hack enhance back into ncml scan element, needed for WRF and anyone who needs CoordSysBuilder intervention
   more GRIB ensemble work
   cdmremote working again
   composite stations work correctly

@@ -2262,9 +2262,23 @@ public class ToolsUI extends JPanel {
     NetcdfDataset ds = null;
     String ncmlLocation = null;
     JEditorPane editor;
+    Map<String, String> protoMap = new HashMap<String, String>(10);
+    ComboBox protoChooser;
 
     NcmlEditorPanel(PreferencesExt p) {
       super(p, "dataset:");
+      protoChooser = new ComboBox( (PreferencesExt) prefs.node("protoChooser"));
+      addProtoChoices();
+      buttPanel.add(protoChooser);
+      protoChooser.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          String ptype = (String) protoChooser.getSelectedItem();
+          String proto = protoMap.get(ptype);
+          if (proto != null) {
+            editor.setText(proto);
+          }
+        }
+      });
 
       editor = new JEditorPane();
 
@@ -2453,6 +2467,34 @@ public class ToolsUI extends JPanel {
       // saveNcmlDialog.setVisible(false);
     }
 
+    void addProtoChoices() {
+      String xml =
+        "<?xml version='1.0' encoding='UTF-8'?>\n" +
+        "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
+        "  <variable name='time' type='int' shape='time'>\n" +
+        "    <attribute name='long_name' type='string' value='time coordinate' />\n" +
+        "    <attribute name='units' type='string' value='days since 2001-8-31 00:00:00 UTC' />\n" +
+        "    <values start='0' increment='10' />\n" +
+        "  </variable>\n" +
+        "  <aggregation dimName='time' type='joinNew'>\n" +
+        "    <variableAgg name='T'/>\n" +
+        "    <scan location='src/test/data/ncml/nc/' suffix='.nc' subdirs='false'/>\n" +
+        "  </aggregation>\n" +
+        "</netcdf>";
+      protoMap.put("joinNew",xml);
+      protoChooser.addItem("joinNew");
+
+      xml =
+        "<?xml version='1.0' encoding='UTF-8'?>\n" +
+        "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
+        "  <aggregation dimName='time' type='joinExisting'>\n" +
+        "    <scan location='ncml/nc/pfeg/' suffix='.nc' />\n" +
+        "  </aggregation>\n" +
+        "</netcdf>";
+      protoMap.put("joinExisting", xml);
+      protoChooser.addItem("joinExisting");
+
+    }
 
   }
 
