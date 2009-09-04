@@ -48,7 +48,7 @@ import ucar.grid.GridRecord;
 import java.io.IOException;
 
 /**
- * An IOSP for Gempak Grid data
+ * Superclass for Gempak grid, MciDAS grid, and GRIB IOSPs
  *
  * @author IDV Development Team
  */
@@ -75,7 +75,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
   static protected IndexExtendMode indexFileModeOnOpen = IndexExtendMode.rewrite; // default is to rewrite
   static protected IndexExtendMode indexFileModeOnSync = IndexExtendMode.extendwrite; // default is to extend
 
-  static protected boolean addLatLon = false; // add lat/lon coordinates for strict CF compliance
+  static protected boolean addLatLon = false; // add lat/lon coordinates for strict CF compliance LOOK should not be static !
   static protected boolean useMaximalCoordSys = false;
   static protected boolean forceNewIndex = false; // force that a new index file is written - for debugging
   static protected boolean alwaysInCache = false;

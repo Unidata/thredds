@@ -41,17 +41,19 @@ import java.util.*;
  */
 
 public class StructureMembers {
-  protected String name;
-  protected Map<String, Member> memberHash = new HashMap<String, Member>(); // Hash of Members
-  protected List<Member> members = new ArrayList<Member>(); // List of Members
-  protected int structureSize = -1;
+  private String name;
+  private Map<String, Member> memberHash;
+  private List<Member> members;
+  private int structureSize = -1;
 
   public StructureMembers(String name) {
     this.name = name;
+    members = new ArrayList<Member>();
   }
 
   public StructureMembers(StructureMembers from) {
     this.name = from.name;
+    members = new ArrayList<Member>(from.getMembers().size());
     for (Member m : from.members)
       addMember( new Member(m)); // make copy - without the data info
   }
@@ -71,8 +73,10 @@ public class StructureMembers {
    * @param m member to add
    */
   public void addMember(Member m) {
-    memberHash.put(m.getName(), m);
     members.add(m);
+    if (memberHash != null)
+      memberHash.put(m.getName(), m);
+
   }
 
   public Member addMember(String name, String desc, String units, DataType dtype, int[] shape) {
@@ -150,6 +154,13 @@ public class StructureMembers {
    */
   public Member findMember(String memberName) {
     if (memberName == null) return null;
+    
+    if (memberHash == null) { // delay making the hash table until needed
+      int initial_capacity = (int) (members.size() / .75) + 1;
+      memberHash = new HashMap<String, Member>(initial_capacity);
+      for (Member m : members)
+        memberHash.put(m.getName(), m);
+    }
     return memberHash.get(memberName);
   }
 
@@ -343,11 +354,11 @@ public class StructureMembers {
     }
 
     public void setVariableInfo(String vname, String desc, String unitString, DataType dtype) {
-      if (!this.name.equals(vname)) {
+      if (!this.name.equals(vname) && (memberHash != null)) {
         memberHash.remove(name);
-        name = vname;
-        memberHash.put(name, this);
+        memberHash.put(vname, this);
       }
+      name = vname;
 
       if (dtype != null)
         this.dtype = dtype;

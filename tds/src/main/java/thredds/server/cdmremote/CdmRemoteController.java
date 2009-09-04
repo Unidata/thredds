@@ -229,7 +229,12 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
   }
 
   private ModelAndView processData(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, PointQueryBean qb) throws IOException {
-    long start = System.currentTimeMillis();
+    long start = 0;
+    if (showTime) {
+      start = System.currentTimeMillis();
+      ucar.unidata.io.RandomAccessFile.setDebugAccess(true);
+    }
+
     List<FeatureCollection> coll = fdp.getPointFeatureCollectionList();
     StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) coll.get(0);
 
@@ -271,7 +276,8 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
 
     if (showTime) {
       long took = System.currentTimeMillis() - start;
-      System.out.println("\ntotal response took = " + took + " msecs count = " + w.count);
+      System.out.printf("%ntotal response took %d msecs nobs = %d%n  seeks= %d nbytes read= %d%n", took, w.count,
+          ucar.unidata.io.RandomAccessFile.getDebugNseeks(), ucar.unidata.io.RandomAccessFile.getDebugNbytes());
     }
 
     return null;

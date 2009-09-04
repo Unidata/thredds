@@ -3,6 +3,9 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.1:
+ 4:
+  optimise hashmap in StructureMembers
+  GridTableLookup.Curvilinear requires external 2D lat/lon
  3:
   qunhe@unc.edu minor changes for UTM
   ToolsUI: ncml prototypes in NcmlEditor pane

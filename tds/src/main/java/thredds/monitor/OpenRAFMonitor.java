@@ -35,6 +35,7 @@ package thredds.monitor;
 import java.util.List;
 
 /**
+ * interface for monitoring RAF fiels, used by JMX.
  * @author caron
  * @since Mar 15, 2008
  */
@@ -42,5 +43,7 @@ public interface OpenRAFMonitor {
   public boolean getDebugLeaks();
   public void setDebugLeaks(boolean b);
   public List<String> getOpenFiles();
+  public int getNseeks();
+  public long getNbytes();
 }
 

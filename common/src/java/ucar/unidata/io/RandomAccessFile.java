@@ -41,6 +41,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.nio.channels.WritableByteChannel;
 
 
@@ -98,25 +100,41 @@ public class RandomAccessFile implements DataInput, DataOutput {
   /**
    * Debugging, do not use.
    *
-   * @param b to debug file reading
-   */
-  static public void setDebugAccess(boolean b) {
-    debugAccess = b;
-  }
-
-  /**
-   * Debugging, do not use.
-   *
    * @return list of open files.
    */
   static public List<String> getOpenFiles() {
     return openFiles;
   }
 
+  /**
+   * Debugging, do not use.
+   *
+   * @param b to debug file reading
+   */
+  static public void setDebugAccess(boolean b) {
+    debugAccess = b;
+    if (b) {
+      debug_nseeks = new AtomicInteger();
+      debug_nbytes = new AtomicLong();
+    }
+  }
+
+  static public int getDebugNseeks() {
+    return (debug_nseeks == null) ? 0 : debug_nseeks.intValue();
+  }
+
+  static public long getDebugNbytes() {
+    return (debug_nbytes == null) ? 0 : debug_nbytes.longValue();
+  }
+
   static protected boolean debugLeaks = false;
-  static protected boolean showOpen = false;
   static protected boolean debugAccess = false;
   static protected List<String> openFiles = Collections.synchronizedList(new ArrayList<String>());
+  static private AtomicInteger debug_nseeks;
+  static private AtomicLong debug_nbytes;
+
+  static protected boolean showOpen = false;
+  static protected boolean showRead = false;
 
   /**
    * The default buffer size, in bytes.
@@ -601,8 +619,11 @@ public class RandomAccessFile implements DataInput, DataOutput {
   protected int read_(long pos, byte[] b, int offset, int len) throws IOException {
     file.seek(pos);
     int n = file.read(b, offset, len);
-    if (debugAccess)
-      System.out.println(" **read_ " + location + " = " + len + " bytes at " + pos + "; block = " + (pos / buffer.length));
+    if (debugAccess) {
+      if (showRead) System.out.println(" **read_ " + location + " = " + len + " bytes at " + pos + "; block = " + (pos / buffer.length));
+      debug_nseeks.incrementAndGet();
+      debug_nbytes.addAndGet(len);
+    }
 
     if (extendMode && (n < len)) {
       //System.out.println(" read_ = "+len+" at "+pos+"; got = "+n);

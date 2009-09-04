@@ -301,27 +301,29 @@ public class GridHorizCoordSys {
       addCoordSystemVariable(ncfile, "latLonCoordSys", "time lat lon");
 
     } else {
-      makeProjection(ncfile);
-      double[] yData, xData; //TODO: can these be removed
-      if (lookup.getProjectionType(gds) == GridTableLookup.RotatedLatLon) {
-        double dy = (gds.getDouble("La2") < gds.getDouble(GridDefRecord.LA1)
-            ? -gds.getDouble(GridDefRecord.DY) : gds.getDouble(GridDefRecord.DY));
+      boolean hasProjection = makeProjection(ncfile);
+      if (hasProjection && GridServiceProvider.addLatLon) {
+        double[] yData, xData;
+        if (lookup.getProjectionType(gds) == GridTableLookup.RotatedLatLon) {
+          double dy = (gds.getDouble("La2") < gds.getDouble(GridDefRecord.LA1)
+              ? -gds.getDouble(GridDefRecord.DY) : gds.getDouble(GridDefRecord.DY));
 
-        yData = addCoordAxis(ncfile, "y", gds.getInt(GridDefRecord.NY),
-            gds.getDouble(GridDefRecord.LA1), dy, "degrees",
-            "y coordinate of projection", "projection_y_coordinate", AxisType.GeoY);
-        xData = addCoordAxis(ncfile, "x", gds.getInt(GridDefRecord.NX),
-            gds.getDouble(GridDefRecord.LO1), gds.getDouble(GridDefRecord.DX), "degrees",
-            "x coordinate of projection", "projection_x_coordinate", AxisType.GeoX);
-      } else {
-        yData = addCoordAxis(ncfile, "y", gds.getInt(GridDefRecord.NY),
-            starty, getDyInKm(), "km", "y coordinate of projection",
-            "projection_y_coordinate", AxisType.GeoY);
-        xData = addCoordAxis(ncfile, "x", gds.getInt(GridDefRecord.NX),
-            startx, getDxInKm(), "km", "x coordinate of projection",
-            "projection_x_coordinate", AxisType.GeoX);
+          yData = addCoordAxis(ncfile, "y", gds.getInt(GridDefRecord.NY),
+              gds.getDouble(GridDefRecord.LA1), dy, "degrees",
+              "y coordinate of projection", "projection_y_coordinate", AxisType.GeoY);
+          xData = addCoordAxis(ncfile, "x", gds.getInt(GridDefRecord.NX),
+              gds.getDouble(GridDefRecord.LO1), gds.getDouble(GridDefRecord.DX), "degrees",
+              "x coordinate of projection", "projection_x_coordinate", AxisType.GeoX);
+        } else {
+          yData = addCoordAxis(ncfile, "y", gds.getInt(GridDefRecord.NY),
+              starty, getDyInKm(), "km", "y coordinate of projection",
+              "projection_y_coordinate", AxisType.GeoY);
+          xData = addCoordAxis(ncfile, "x", gds.getInt(GridDefRecord.NX),
+              startx, getDxInKm(), "km", "x coordinate of projection",
+              "projection_x_coordinate", AxisType.GeoX);
+        }
+        addLatLon2D(ncfile, xData, yData);
       }
-      if (GridServiceProvider.addLatLon) addLatLon2D(ncfile, xData, yData);
     }
   }
 
@@ -509,8 +511,9 @@ public class GridHorizCoordSys {
    * Make a projection and add it to the netCDF file
    *
    * @param ncfile netCDF file
+   * @return true if projection was added and coordinates need to be added, false means do nothing
    */
-  private void makeProjection(NetcdfFile ncfile) {
+  private boolean makeProjection(NetcdfFile ncfile) {
     switch (lookup.getProjectionType(gds)) {
 
       case GridTableLookup.RotatedLatLon:
@@ -532,6 +535,9 @@ public class GridHorizCoordSys {
       case GridTableLookup.Orthographic:
         makeSpaceViewOrOthographic();
         break;
+
+      case GridTableLookup.Curvilinear:
+        return false; // 2D lat/lon must be supplied
 
       default:
         throw new UnsupportedOperationException("unknown projection = "
@@ -561,6 +567,7 @@ public class GridHorizCoordSys {
     }
     addGDSparams(v);
     ncfile.addVariable(g, v);
+    return true;
   }
 
   /**

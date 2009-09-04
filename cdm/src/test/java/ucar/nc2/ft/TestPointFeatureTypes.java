@@ -167,7 +167,9 @@ public class TestPointFeatureTypes extends TestCase {
 
   public void testCdmRemoteCollection() throws IOException {
     //testDons("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak");
-    testDons("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/gempakLocal");
+    //testDons("collection:C:/data/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc", true);
+    testDons("C:/data/datasets/metars/Surface_METAR_20070326_0000.nc", true);
+    //testDons("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocalHome", true);
     //testPointDataset("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", FeatureType.STATION, true);
     //testPointDataset("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", FeatureType.ANY_POINT, true);
     //testPointDataset("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", FeatureType.POINT, true);
@@ -470,7 +472,7 @@ public class TestPointFeatureTypes extends TestCase {
       StationTimeSeriesFeature already = locs.get(loc);
       if (already != null) {
         System.out.printf("  duplicate location %s(%s) of %s(%s) %n", sf.getName(), sf.getDescription(),
-                already.getName(), already.getDescription());
+            already.getName(), already.getDescription());
       } else
         locs.put(loc, sf);
     }
@@ -586,64 +588,59 @@ public class TestPointFeatureTypes extends TestCase {
 
   /////////////////////////////////////////////////////////
 
-  public void testDons(String file) throws IOException {
+  public void testDons(String file, boolean showTime) throws IOException {
+    long start = 0;
+    if (showTime) {
+      start = System.currentTimeMillis();
+      ucar.unidata.io.RandomAccessFile.setDebugAccess(true);
+    }
 
     Formatter buf = new Formatter();
-    FeatureDatasetPoint pods =
-            (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
-                    ucar.nc2.constants.FeatureType.POINT, file, null, buf);
+    FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.POINT, file, null, buf);
     if (pods == null) {  // try as ANY_POINT
       System.out.println("trying as ANY_POINT");
       pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
-              ucar.nc2.constants.FeatureType.ANY_POINT, file, null, buf);
-    }
+          ucar.nc2.constants.FeatureType.ANY_POINT, file, null, buf);
+    } else
+      System.out.println("Open as POINT");
+
     if (pods == null) {
-      throw new IOException("can't open file error="+buf);
+      throw new IOException("can't open file error=" + buf);
     }
 
-    for (int time = 0; time < 2; time++) {
-      List<FeatureCollection> collectionList =
-              pods.getPointFeatureCollectionList();
-      if (collectionList.size() > 1) {
-        throw new IllegalArgumentException(
-                "Can't handle point data with multiple collections");
-      }
-      FeatureCollection fc = collectionList.get(0);
-      PointFeatureCollection collection = null;
-      LatLonRect llr = new LatLonRect(new LatLonPointImpl(33.4, -92.2), new LatLonPointImpl(47.9, -75.89));
+    List<FeatureCollection> collectionList = pods.getPointFeatureCollectionList();
+    FeatureCollection fc = collectionList.get(0);
+    LatLonRect llr = new LatLonRect(new LatLonPointImpl(33.4, -92.2), new LatLonPointImpl(47.9, -75.89));
+    System.out.println("llr = " + llr);
 
-      System.out.println("llr = " + llr);
-      if (fc instanceof PointFeatureCollection) {
-        collection = (PointFeatureCollection) fc;
-        if (llr != null) {
-          collection = collection.subset(llr, null);
-        }
-      } else if (fc instanceof NestedPointFeatureCollection) {
-        NestedPointFeatureCollection npfc =
-                (NestedPointFeatureCollection) fc;
-        //if (llr != null) {
-        //  npfc = npfc.subset(llr);
-        //}
-        collection = npfc.flatten(llr, null);
-      } else {
-        throw new IllegalArgumentException(
-                "Can't handle collection of type "
-                        + fc.getClass().getName());
+    PointFeatureCollection collection = null;
+    if (fc instanceof PointFeatureCollection) {
+      collection = (PointFeatureCollection) fc;
+      if (llr != null) {
+        collection = collection.subset(llr, null);
       }
-      //List pos = new ArrayList(100000);
-      //List times = new ArrayList(100000);
-      PointFeatureIterator dataIterator = collection.getPointFeatureIterator(-1);
+    } else if (fc instanceof NestedPointFeatureCollection) {
+      NestedPointFeatureCollection npfc = (NestedPointFeatureCollection) fc;
+      collection = npfc.flatten(llr, null);
+    } else {
+      throw new IllegalArgumentException("Can't handle collection of type " + fc.getClass().getName());
+    }
 
-      int numObs = 0;
-      while (dataIterator.hasNext()) {
-        PointFeature po = (PointFeature) dataIterator.next();
-        numObs++;
-        ucar.unidata.geoloc.EarthLocation el = po.getLocation();
-        assert llr.contains(el.getLatLon()) : el.getLatLon();
-        if (numObs % 1000 == 0)
-          System.out.println("el = " + el);
-      }
-      System.out.println("numObs= " + numObs);
+    PointFeatureIterator dataIterator = collection.getPointFeatureIterator(-1);
+    int numObs = 0;
+    while (dataIterator.hasNext()) {
+      PointFeature po = (PointFeature) dataIterator.next();
+      numObs++;
+      ucar.unidata.geoloc.EarthLocation el = po.getLocation();
+      assert llr.contains(el.getLatLon()) : el.getLatLon();
+      //if (numObs % 1000 == 0)
+      //  System.out.printf("%d el = %s %n", numObs, el);
+    }
+
+    if (showTime) {
+      long took = System.currentTimeMillis() - start;
+      System.out.printf("%ntotal response took %d msecs nobs = %d%n  seeks= %d nbytes read= %d%n", took, numObs,
+          ucar.unidata.io.RandomAccessFile.getDebugNseeks(), ucar.unidata.io.RandomAccessFile.getDebugNbytes());
     }
   }
 

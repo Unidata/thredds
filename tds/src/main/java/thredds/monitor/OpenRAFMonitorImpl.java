@@ -52,5 +52,15 @@ public class OpenRAFMonitorImpl implements OpenRAFMonitor {
   public List<String> getOpenFiles() {
     return RandomAccessFile.getOpenFiles();
   }
+
+  @Override
+  public int getNseeks() {
+    return RandomAccessFile.getDebugNseeks();
+  }
+
+  @Override
+  public long getNbytes() {
+    return RandomAccessFile.getDebugNbytes();
+  }
 }
 
