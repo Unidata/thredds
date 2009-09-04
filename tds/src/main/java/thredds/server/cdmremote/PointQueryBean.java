@@ -40,7 +40,6 @@ import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
 
 import java.util.Formatter;
-import java.util.Date;
 
 /**
  * Parses the query parameters for cdmRemote datasets.
@@ -245,7 +244,7 @@ public class PointQueryBean {
       double northd = parseLat("north", north);
 
       if (!fatal) {
-        llbb = new LatLonRect(new LatLonPointImpl(southd, westd), new LatLonPointImpl(northd, eastd));
+        llbb = new LatLonRect(new LatLonPointImpl(southd, eastd), new LatLonPointImpl(northd, westd));
         spatialSelection = SpatialSelection.bb;
       }
     }

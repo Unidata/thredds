@@ -51,6 +51,7 @@ import ucar.ma2.DataType;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.Station;
+import ucar.unidata.geoloc.LatLonPointImpl;
 
 /**
  * Test PointFeatureTypes.
@@ -155,7 +156,7 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   public void utestCollection() throws IOException {
-                                                       //Surface_METAR_20070326_0000.nc
+    //Surface_METAR_20070326_0000.nc
     testPointDataset("collection:C:/data/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc", FeatureType.STATION, true);
     //testPointDataset("collection:D:/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc", FeatureType.STATION, true);
   }
@@ -164,8 +165,12 @@ public class TestPointFeatureTypes extends TestCase {
     testPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/station/testCdmRemote/gempak/19580807_sao.gem", FeatureType.STATION, true);
   }
 
-  public void utestCdmRemoteCollection() throws IOException {
-    testPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/gempak/collection", FeatureType.STATION, true);
+  public void testCdmRemoteCollection() throws IOException {
+    //testDons("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak");
+    testDons("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/gempakLocal");
+    //testPointDataset("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", FeatureType.STATION, true);
+    //testPointDataset("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", FeatureType.ANY_POINT, true);
+    //testPointDataset("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", FeatureType.POINT, true);
   }
 
   public void utestCdmRemoteCollectionSubsets() throws IOException {
@@ -577,6 +582,69 @@ public class TestPointFeatureTypes extends TestCase {
     }
 
     private int hashCode = 0;
+  }
+
+  /////////////////////////////////////////////////////////
+
+  public void testDons(String file) throws IOException {
+
+    Formatter buf = new Formatter();
+    FeatureDatasetPoint pods =
+            (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
+                    ucar.nc2.constants.FeatureType.POINT, file, null, buf);
+    if (pods == null) {  // try as ANY_POINT
+      System.out.println("trying as ANY_POINT");
+      pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
+              ucar.nc2.constants.FeatureType.ANY_POINT, file, null, buf);
+    }
+    if (pods == null) {
+      throw new IOException("can't open file error="+buf);
+    }
+
+    for (int time = 0; time < 2; time++) {
+      List<FeatureCollection> collectionList =
+              pods.getPointFeatureCollectionList();
+      if (collectionList.size() > 1) {
+        throw new IllegalArgumentException(
+                "Can't handle point data with multiple collections");
+      }
+      FeatureCollection fc = collectionList.get(0);
+      PointFeatureCollection collection = null;
+      LatLonRect llr = new LatLonRect(new LatLonPointImpl(33.4, -92.2), new LatLonPointImpl(47.9, -75.89));
+
+      System.out.println("llr = " + llr);
+      if (fc instanceof PointFeatureCollection) {
+        collection = (PointFeatureCollection) fc;
+        if (llr != null) {
+          collection = collection.subset(llr, null);
+        }
+      } else if (fc instanceof NestedPointFeatureCollection) {
+        NestedPointFeatureCollection npfc =
+                (NestedPointFeatureCollection) fc;
+        //if (llr != null) {
+        //  npfc = npfc.subset(llr);
+        //}
+        collection = npfc.flatten(llr, null);
+      } else {
+        throw new IllegalArgumentException(
+                "Can't handle collection of type "
+                        + fc.getClass().getName());
+      }
+      //List pos = new ArrayList(100000);
+      //List times = new ArrayList(100000);
+      PointFeatureIterator dataIterator = collection.getPointFeatureIterator(-1);
+
+      int numObs = 0;
+      while (dataIterator.hasNext()) {
+        PointFeature po = (PointFeature) dataIterator.next();
+        numObs++;
+        ucar.unidata.geoloc.EarthLocation el = po.getLocation();
+        assert llr.contains(el.getLatLon()) : el.getLatLon();
+        if (numObs % 1000 == 0)
+          System.out.println("el = " + el);
+      }
+      System.out.println("numObs= " + numObs);
+    }
   }
 
 

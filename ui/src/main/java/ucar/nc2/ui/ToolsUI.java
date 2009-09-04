@@ -69,6 +69,7 @@ import ucar.unidata.io.http.HTTPRandomAccessFile;
 
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
+import ucar.grib.grib2.Grib2Dump;
 
 import thredds.catalog.query.DqcFactory;
 import thredds.wcs.v1_0_0_1.GetCapabilities;
@@ -786,7 +787,7 @@ public class ToolsUI extends JPanel {
       }
     };
     BAMutil.setActionPropertiesToggle(a, null, "use _FillValue attribute for missing values",
-        NetcdfDataset.getFillValueIsMissing(), 'F', -1);
+            NetcdfDataset.getFillValueIsMissing(), 'F', -1);
     BAMutil.addActionToMenu(dsMenu, a);
 
     a = new AbstractAction() {
@@ -796,7 +797,7 @@ public class ToolsUI extends JPanel {
       }
     };
     BAMutil.setActionPropertiesToggle(a, null, "use valid_range attribute for missing values",
-        NetcdfDataset.getInvalidDataIsMissing(), 'V', -1);
+            NetcdfDataset.getInvalidDataIsMissing(), 'V', -1);
     BAMutil.addActionToMenu(dsMenu, a);
 
     a = new AbstractAction() {
@@ -806,7 +807,7 @@ public class ToolsUI extends JPanel {
       }
     };
     BAMutil.setActionPropertiesToggle(a, null, "use mssing_value attribute for missing values",
-        NetcdfDataset.getMissingDataIsMissing(), 'M', -1);
+            NetcdfDataset.getMissingDataIsMissing(), 'M', -1);
     BAMutil.addActionToMenu(dsMenu, a);
   }
 
@@ -1554,7 +1555,7 @@ public class ToolsUI extends JPanel {
         SimpleUnit su1 = SimpleUnit.factoryWithExceptions(unitS1);
         SimpleUnit su2 = SimpleUnit.factoryWithExceptions(unitS2);
         ta.setText("<" + su1.toString() + "> isConvertable to <" + su2.toString() + ">=" +
-            SimpleUnit.isCompatibleWithExceptions(unitS1, unitS2));
+                SimpleUnit.isCompatibleWithExceptions(unitS1, unitS2));
 
       } catch (Exception e) {
 
@@ -1955,6 +1956,27 @@ public class ToolsUI extends JPanel {
       super(p, "file:", true, false);
       gribTable = new GribTable(prefs);
       add(gribTable, BorderLayout.CENTER);
+
+      AbstractButton grib2dump = BAMutil.makeButtcon("alien", "Grib2 dump", false);
+      grib2dump.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Grib2Dump dump = new Grib2Dump();
+          String fileIn = (String) cb.getSelectedItem();
+          try {
+            File fileOut = File.createTempFile("temp", "txt");
+            dump.gribDump(new String[]{fileIn, fileOut.getPath(), "false"});
+            detailTA.setText(IO.readFile(fileOut.getPath()));
+            detailWindow.show();
+            fileOut.delete();
+          } catch (IOException ioe) {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+            ioe.printStackTrace(new PrintStream(bos));
+            ta.setText(bos.toString());
+          }
+        }
+      });
+      buttPanel.add(grib2dump);
+
     }
 
     boolean process(Object o) {
@@ -1977,7 +1999,8 @@ public class ToolsUI extends JPanel {
       } catch (Exception e) {
         e.printStackTrace();
         e.printStackTrace(new PrintStream(bos));
-        ta.setText(bos.toString());
+        detailTA.setText(bos.toString());
+        detailWindow.show();
         err = true;
       }
 
@@ -2267,7 +2290,7 @@ public class ToolsUI extends JPanel {
 
     NcmlEditorPanel(PreferencesExt p) {
       super(p, "dataset:");
-      protoChooser = new ComboBox( (PreferencesExt) prefs.node("protoChooser"));
+      protoChooser = new ComboBox((PreferencesExt) prefs.node("protoChooser"));
       addProtoChoices();
       buttPanel.add(protoChooser);
       protoChooser.addActionListener(new ActionListener() {
@@ -2469,28 +2492,28 @@ public class ToolsUI extends JPanel {
 
     void addProtoChoices() {
       String xml =
-        "<?xml version='1.0' encoding='UTF-8'?>\n" +
-        "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
-        "  <variable name='time' type='int' shape='time'>\n" +
-        "    <attribute name='long_name' type='string' value='time coordinate' />\n" +
-        "    <attribute name='units' type='string' value='days since 2001-8-31 00:00:00 UTC' />\n" +
-        "    <values start='0' increment='10' />\n" +
-        "  </variable>\n" +
-        "  <aggregation dimName='time' type='joinNew'>\n" +
-        "    <variableAgg name='T'/>\n" +
-        "    <scan location='src/test/data/ncml/nc/' suffix='.nc' subdirs='false'/>\n" +
-        "  </aggregation>\n" +
-        "</netcdf>";
-      protoMap.put("joinNew",xml);
+              "<?xml version='1.0' encoding='UTF-8'?>\n" +
+                      "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
+                      "  <variable name='time' type='int' shape='time'>\n" +
+                      "    <attribute name='long_name' type='string' value='time coordinate' />\n" +
+                      "    <attribute name='units' type='string' value='days since 2001-8-31 00:00:00 UTC' />\n" +
+                      "    <values start='0' increment='10' />\n" +
+                      "  </variable>\n" +
+                      "  <aggregation dimName='time' type='joinNew'>\n" +
+                      "    <variableAgg name='T'/>\n" +
+                      "    <scan location='src/test/data/ncml/nc/' suffix='.nc' subdirs='false'/>\n" +
+                      "  </aggregation>\n" +
+                      "</netcdf>";
+      protoMap.put("joinNew", xml);
       protoChooser.addItem("joinNew");
 
       xml =
-        "<?xml version='1.0' encoding='UTF-8'?>\n" +
-        "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
-        "  <aggregation dimName='time' type='joinExisting'>\n" +
-        "    <scan location='ncml/nc/pfeg/' suffix='.nc' />\n" +
-        "  </aggregation>\n" +
-        "</netcdf>";
+              "<?xml version='1.0' encoding='UTF-8'?>\n" +
+                      "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
+                      "  <aggregation dimName='time' type='joinExisting'>\n" +
+                      "    <scan location='ncml/nc/pfeg/' suffix='.nc' />\n" +
+                      "  </aggregation>\n" +
+                      "</netcdf>";
       protoMap.put("joinExisting", xml);
       protoChooser.addItem("joinExisting");
 
@@ -2713,7 +2736,7 @@ public class ToolsUI extends JPanel {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         FmrcInventory fmrCollection = FmrcInventory.makeFromDirectory(null, "test",
-            null, dirName, suffix, ForecastModelRunInventory.OPEN_FORCE_NEW);
+                null, dirName, suffix, ForecastModelRunInventory.OPEN_FORCE_NEW);
 
         FmrcDefinition def = new FmrcDefinition();
         def.makeFromCollectionInventory(fmrCollection);
@@ -2896,14 +2919,14 @@ public class ToolsUI extends JPanel {
               return;
             }
             GetCapabilities getCap =
-                ((thredds.wcs.v1_0_0_1.GetCapabilitiesBuilder)
-                    thredds.wcs.v1_0_0_1.WcsRequestBuilder
-                        .newWcsRequestBuilder("1.0.0",
-                            thredds.wcs.Request.Operation.GetCapabilities,
-                            gridDataset, ""))
-                    .setServerUri(gdUri)
-                    .setSection(GetCapabilities.Section.All)
-                    .buildGetCapabilities();
+                    ((thredds.wcs.v1_0_0_1.GetCapabilitiesBuilder)
+                            thredds.wcs.v1_0_0_1.WcsRequestBuilder
+                                    .newWcsRequestBuilder("1.0.0",
+                                            thredds.wcs.Request.Operation.GetCapabilities,
+                                            gridDataset, ""))
+                            .setServerUri(gdUri)
+                            .setSection(GetCapabilities.Section.All)
+                            .buildGetCapabilities();
             try {
               String gc = getCap.writeCapabilitiesReportAsString();
               detailTA.setText(gc);
@@ -4041,25 +4064,26 @@ public class ToolsUI extends JPanel {
       super(parentFrame);
 
       JLabel lab1 = new JLabel("<html> <body bgcolor=\"#FFECEC\"> <center>" +
-          "<h1>Netcdf Tools User Interface (ToolsUI)</h1>" +
-          "<b>" + getVersion() + "</b>" +
-          "<br><i>http://www.unidata.ucar.edu/software/netcdf-java/</i>" +
-          "<br><b><i>Developers:</b>John Caron, Ethan Davis, Robb Kambic, Yuan Ho</i></b>" +
-          "</center>" +
-          "<br><br>With thanks to these <b>Open Source</b> contributers:" +
-          "<ul>" +
-          "<li><b>ADDE/VisAD</b>: Bill Hibbard, Don Murray, Tom Whittaker, et al (http://www.ssec.wisc.edu/~billh/visad.html)</li>" +
-          "<li><b>Apache Jakarta Commons</b> libraries: (http://http://jakarta.apache.org/commons/)</li>" +
-          "<li><b>Apache Log4J</b> library: (http://logging.apache.org/log4j/) </li>" +
-          "<li><b>IDV:</b> Don Murray, Jeff McWhirter (http://www.unidata.ucar.edu/software/IDV/)</li>" +
-          "<li><b>JDOM</b> library: Jason Hunter, Brett McLaughlin et al (www.jdom.org)</li>" +
-          "<li><b>JGoodies</b> library: Karsten Lentzsch (www.jgoodies.com)</li>" +
-          "<li><b>JPEG-2000</b> Java library: (http://www.jpeg.org/jpeg2000/)</li>" +
-          "<li><b>JUnit</b> library: Erich Gamma, Kent Beck, Erik Meade, et al (http://sourceforge.net/projects/junit/)</li>" +
-          "<li><b>OPeNDAP Java</b> library: Nathan Potter, James Gallagher, Don Denbo, et. al.(http://opendap.org)</li>" +
-          "<li><b>Spring lightweight framework</b> library: Rod Johnson, et. al.(http://www.springsource.org/)</li>" +
-          "</ul><center>Special thanks to <b>Sun Microsystems</b> (java.sun.com) for the platform on which we stand." +
-          "</center></body></html> ");
+              "<h1>Netcdf Tools User Interface (ToolsUI)</h1>" +
+              "<b>" + getVersion() + "</b>" +
+              "<br><i>http://www.unidata.ucar.edu/software/netcdf-java/</i>" +
+              "<br><b><i>Developers:</b>John Caron, Ethan Davis, Robb Kambic, Yuan Ho</i></b>" +
+              "</center>" +
+              "<br><br>With thanks to these <b>Open Source</b> contributers:" +
+              "<ul>" +
+              "<li><b>ADDE/VisAD</b>: Bill Hibbard, Don Murray, Tom Whittaker, et al (http://www.ssec.wisc.edu/~billh/visad.html)</li>" +
+              "<li><b>Apache Jakarta Commons</b> libraries: (http://http://jakarta.apache.org/commons/)</li>" +
+              "<li><b>Apache Log4J</b> library: (http://logging.apache.org/log4j/) </li>" +
+              "<li><b>IDV:</b> Don Murray, Jeff McWhirter (http://www.unidata.ucar.edu/software/IDV/)</li>" +
+              "<li><b>JDOM</b> library: Jason Hunter, Brett McLaughlin et al (www.jdom.org)</li>" +
+              "<li><b>JGoodies</b> library: Karsten Lentzsch (www.jgoodies.com)</li>" +
+              "<li><b>JPEG-2000</b> Java library: (http://www.jpeg.org/jpeg2000/)</li>" +
+              "<li><b>JUnit</b> library: Erich Gamma, Kent Beck, Erik Meade, et al (http://sourceforge.net/projects/junit/)</li>" +
+              "<li><b>OPeNDAP Java</b> library: Nathan Potter, James Gallagher, Don Denbo, et. al.(http://opendap.org)</li>" +
+              "<li><b>Spring lightweight framework</b> library: Rod Johnson, et. al.(http://www.springsource.org/)</li>" +
+              "<li><b>Imaging utilities:</b>: Richard Eigenmann</li>" +
+              "</ul><center>Special thanks to <b>Sun Microsystems</b> (java.sun.com) for the platform on which we stand." +
+              "</center></body></html> ");
 
       JPanel main = new JPanel(new BorderLayout());
       main.setBorder(new javax.swing.border.LineBorder(Color.BLACK));
@@ -4213,7 +4237,7 @@ public class ToolsUI extends JPanel {
       if (arguments.startsWith("http:")) {
         wantDataset = arguments;
 
-       // see if another version is running, if so send it the message
+        // see if another version is running, if so send it the message
         sm = new SocketMessage(14444, wantDataset);
         if (sm.isAlreadyRunning()) {
           System.out.println("ToolsUI already running - pass argument= '" + wantDataset + "' to it and exit");
@@ -4242,7 +4266,7 @@ public class ToolsUI extends JPanel {
 
     // spring initialization
     ApplicationContext springContext =
-        new ClassPathXmlApplicationContext("classpath:resources/nj22/ui/spring/application-config.xml");
+            new ClassPathXmlApplicationContext("classpath:resources/nj22/ui/spring/application-config.xml");
 
     // look for run line arguments
     boolean configRead = false;
