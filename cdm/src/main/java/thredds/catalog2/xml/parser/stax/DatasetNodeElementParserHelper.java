@@ -59,9 +59,15 @@ class DatasetNodeElementParserHelper
 
   private final ThreddsBuilderFactory builderFactory;
 
-  private String defaultServiceName;
-  private String defaultServiceNameInheritedByDescendants;
-  private String idAuthorityInheritedByDescendants;
+  private final DatasetNodeBuilder datasetNodeBuilder;
+
+  private String defaultServiceNameInheritedFromAncestors;
+  private String defaultServiceNameSpecifiedInSelf;
+  private String defaultServiceNameToBeInheritedByDescendants;
+
+  private String idAuthorityInheritedFromAncestors;
+  private String idAuthoritySpecifiedInSelf;
+  private String idAuthorityToBeInheritedByDescendants;
 
   // All metadata applicable to this dataset.
   private List<MetadataElementParser> metadataForThisDataset;
@@ -73,6 +79,7 @@ class DatasetNodeElementParserHelper
   private SplitMetadata finalSplitMetadata;
 
   DatasetNodeElementParserHelper( DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper,
+                                  DatasetNodeBuilder datasetNodeBuilder,
                                   ThreddsBuilderFactory builderFactory )
   {
     if ( parentDatasetNodeElementParserHelper != null)
@@ -92,42 +99,62 @@ class DatasetNodeElementParserHelper
         this.metadataForThisDataset.addAll( metadataInheritedFromAncestors);
       }
 
-      this.defaultServiceNameInheritedByDescendants = parentDatasetNodeElementParserHelper.getDefaultServiceNameInheritedByDescendants();
-      this.idAuthorityInheritedByDescendants = parentDatasetNodeElementParserHelper.getIdAuthorityInheritedByDescendants();
+      this.defaultServiceNameInheritedFromAncestors
+              = parentDatasetNodeElementParserHelper.getDefaultServiceNameToBeInheritedByDescendants();
+      this.idAuthorityInheritedFromAncestors
+              = parentDatasetNodeElementParserHelper.getIdAuthorityToBeInheritedByDescendants();
     }
 
+    this.datasetNodeBuilder = datasetNodeBuilder;
     this.builderFactory = builderFactory;
   }
 
-  void setIdAuthorityInheritedByDescendants( String idAuthorityInheritedByDescendants ) {
-    this.idAuthorityInheritedByDescendants = idAuthorityInheritedByDescendants;
+  String getIdAuthorityInheritedFromAncestors() {
+    return this.idAuthorityInheritedFromAncestors;
   }
 
-  String getIdAuthorityInheritedByDescendants() {
-    return this.idAuthorityInheritedByDescendants;
+  void setIdAuthorityInheritedFromAncestors( String idAuthorityInheritedFromAncestors ) {
+    this.idAuthorityInheritedFromAncestors = idAuthorityInheritedFromAncestors;
   }
 
-  /** Return the name of the service used by any access of this datasetNode
-   * that does not explicitly specify a service. */
-  String getDefaultServiceName() {
-    return this.defaultServiceName != null
-           ? this.defaultServiceName
-           : this.defaultServiceNameInheritedByDescendants;
+  String getIdAuthoritySpecifiedInSelf() {
+    return this.idAuthoritySpecifiedInSelf;
   }
 
-  /** Set the default service name. */
-  void setDefaultServiceName( String defaultServiceName ) {
-    this.defaultServiceName = defaultServiceName;
+  void setIdAuthoritySpecifiedInSelf( String idAuthoritySpecifiedInSelf ) {
+    this.idAuthoritySpecifiedInSelf = idAuthoritySpecifiedInSelf;
   }
 
-  /** Return the name of the service used by any access of this datasetNode
-   * that does not explicitly specify a service. */
-  String getDefaultServiceNameInheritedByDescendants() {
-    return this.defaultServiceNameInheritedByDescendants;
+  String getIdAuthorityToBeInheritedByDescendants() {
+    return this.idAuthorityToBeInheritedByDescendants;
   }
 
-  void setDefaultServiceNameInheritedByDescendants( String defaultServiceNameInheritedByDescendants ) {
-    this.defaultServiceNameInheritedByDescendants = defaultServiceNameInheritedByDescendants;
+  void setIdAuthorityToBeInheritedByDescendants( String idAuthorityToBeInheritedByDescendants ) {
+    this.idAuthorityToBeInheritedByDescendants = idAuthorityToBeInheritedByDescendants;
+  }
+
+  String getDefaultServiceNameInheritedFromAncestors() {
+    return this.defaultServiceNameInheritedFromAncestors;
+  }
+
+  void setDefaultServiceNameInheritedFromAncestors( String defaultServiceNameInheritedFromAncestors) {
+    this.defaultServiceNameInheritedFromAncestors = defaultServiceNameInheritedFromAncestors;
+  }
+
+  String getDefaultServiceNameSpecifiedInSelf() {
+    return this.defaultServiceNameSpecifiedInSelf;
+  }
+
+  void setDefaultServiceNameSpecifiedInSelf( String defaultServiceNameSpecifiedInSelf ) {
+    this.defaultServiceNameSpecifiedInSelf = defaultServiceNameSpecifiedInSelf;
+  }
+
+  String getDefaultServiceNameToBeInheritedByDescendants() {
+    return this.defaultServiceNameToBeInheritedByDescendants;
+  }
+
+  void setDefaultServiceNameToBeInheritedByDescendants( String defaultServiceNameToBeInheritedByDescendants ) {
+    this.defaultServiceNameToBeInheritedByDescendants = defaultServiceNameToBeInheritedByDescendants;
   }
 
   public List<MetadataElementParser> getMetadataForThisDataset() {
@@ -142,33 +169,39 @@ class DatasetNodeElementParserHelper
     return Collections.unmodifiableList( this.metadataInheritedByDescendants);
   }
 
-  void parseStartElementNameAttribute( StartElement startElement,
-                                              DatasetNodeBuilder dsNodeBuilder )
+  void parseStartElementNameAttribute( StartElement startElement )
   {
     Attribute att = startElement.getAttributeByName( DatasetElementNames.DatasetElement_Name );
     if ( att != null )
-      dsNodeBuilder.setName( att.getValue() );
+      this.datasetNodeBuilder.setName( att.getValue() );
   }
 
-  void parseStartElementIdAttribute( StartElement startElement,
-                                            DatasetNodeBuilder dsNodeBuilder )
+  void parseStartElementIdAttribute( StartElement startElement )
   {
     Attribute att = startElement.getAttributeByName( DatasetNodeElementNames.DatasetNodeElement_Id );
     if ( att != null )
-      dsNodeBuilder.setId( att.getValue() );
+      this.datasetNodeBuilder.setId( att.getValue() );
   }
 
-  void parseStartElementIdAuthorityAttribute( StartElement startElement,
-                                                     DatasetNodeBuilder dsNodeBuilder )
+  void parseStartElementIdAuthorityAttribute( StartElement startElement )
   {
     Attribute att = startElement.getAttributeByName( DatasetNodeElementNames.DatasetNodeElement_Authority );
     if ( att != null )
-      dsNodeBuilder.setId( att.getValue() );
+      this.setIdAuthoritySpecifiedInSelf( att.getValue() );
   }
 
+  /**
+   * Handle child start elements that are used in "dataset" elements and "catalogRef" elements.
+   *
+   * @param startElement the StartElement to handle.
+   * @param reader the XMLEventReader with the given StartElement as the next event.
+   * @param dsNodeBuilder the DatasetNodeBuilder this is helping to build
+   * @return true if the given StartElement was recognized and handled.
+   * @throws ThreddsXmlParserException if there was a problem parsing the XML.
+   */
   boolean handleBasicChildStartElement( StartElement startElement,
-                                               XMLEventReader reader,
-                                               DatasetNodeBuilder dsNodeBuilder )
+                                        XMLEventReader reader,
+                                        DatasetNodeBuilder dsNodeBuilder )
           throws ThreddsXmlParserException
   {
     if ( PropertyElementParser.isSelfElementStatic( startElement ))
@@ -210,9 +243,18 @@ class DatasetNodeElementParserHelper
       return false;
   }
 
+  /**
+   * Handle those elements that are only contained in a "dataset" element.
+   *
+   * @param startElement the StartElement to handle.
+   * @param reader the XMLEventReader with the given StartElement as the next event.
+   * @param dsNodeBuilder the DatasetNodeBuilder this is helping to build
+   * @return true if the given StartElement was recognized and handled.
+   * @throws ThreddsXmlParserException if there was a problem parsing the XML.
+   */
   boolean handleCollectionChildStartElement( StartElement startElement,
-                                                    XMLEventReader reader,
-                                                    DatasetNodeBuilder dsNodeBuilder )
+                                             XMLEventReader reader,
+                                             DatasetNodeBuilder dsNodeBuilder )
           throws ThreddsXmlParserException
   {
     if ( DatasetElementParser.isSelfElementStatic( startElement ))
@@ -236,6 +278,16 @@ class DatasetNodeElementParserHelper
   void postProcessingAfterEndElement()
           throws ThreddsXmlParserException
   {
+    if ( this.getDefaultServiceNameToBeInheritedByDescendants() == null )
+      this.setDefaultServiceNameToBeInheritedByDescendants( this.getDefaultServiceNameInheritedFromAncestors() );
+
+    if ( this.getIdAuthorityToBeInheritedByDescendants() == null )
+      this.setIdAuthorityToBeInheritedByDescendants( this.getIdAuthorityInheritedFromAncestors() );
+
+    this.datasetNodeBuilder.setIdAuthority( this.getIdAuthoritySpecifiedInSelf() != null
+                                            ? this.getIdAuthoritySpecifiedInSelf()
+                                            : this.getIdAuthorityInheritedFromAncestors() );
+
     if ( this.threddsMetadataElementParser != null )
       this.threddsMetadataElementParser.postProcessingAfterEndElement();
 

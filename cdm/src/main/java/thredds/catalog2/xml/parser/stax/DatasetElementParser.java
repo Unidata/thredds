@@ -51,8 +51,9 @@ class DatasetElementParser extends AbstractElementParser
 {
   private final CatalogBuilder parentCatalogBuilder;
   private final DatasetNodeBuilder parentDatasetNodeBuilder;
+  private final DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper;
 
-  private final DatasetNodeElementParserHelper datasetNodeElementParserHelper;
+  private DatasetNodeElementParserHelper datasetNodeElementParserHelper;
 
   private DatasetBuilder selfBuilder;
 
@@ -66,8 +67,7 @@ class DatasetElementParser extends AbstractElementParser
     this.parentCatalogBuilder = parentCatalogBuilder;
     this.parentDatasetNodeBuilder = null;
 
-    this.datasetNodeElementParserHelper = new DatasetNodeElementParserHelper( parentDatasetNodeElementParserHelper,
-                                                                              this.builderFactory );
+    this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
   }
 
   DatasetElementParser( XMLEventReader reader,
@@ -80,8 +80,7 @@ class DatasetElementParser extends AbstractElementParser
     this.parentCatalogBuilder = null;
     this.parentDatasetNodeBuilder = parentDatasetNodeBuilder;
 
-    this.datasetNodeElementParserHelper = new DatasetNodeElementParserHelper( parentDatasetNodeElementParserHelper,
-                                                                              this.builderFactory);
+    this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
   }
 
   DatasetElementParser( XMLEventReader reader,
@@ -93,18 +92,19 @@ class DatasetElementParser extends AbstractElementParser
     this.parentCatalogBuilder = null;
     this.parentDatasetNodeBuilder = null;
 
-    this.datasetNodeElementParserHelper = new DatasetNodeElementParserHelper( parentDatasetNodeElementParserHelper,
-                                                                              this.builderFactory );
+    this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
   }
 
   void setDefaultServiceName( String defaultServiceName )
   {
-    this.datasetNodeElementParserHelper.setDefaultServiceName( defaultServiceName );
+    this.datasetNodeElementParserHelper.setDefaultServiceNameSpecifiedInSelf( defaultServiceName );
   }
 
   String getDefaultServiceName()
   {
-    return this.datasetNodeElementParserHelper.getDefaultServiceName();
+    return this.datasetNodeElementParserHelper.getDefaultServiceNameSpecifiedInSelf() != null
+            ? this.datasetNodeElementParserHelper.getDefaultServiceNameSpecifiedInSelf()
+            : this.datasetNodeElementParserHelper.getDefaultServiceNameInheritedFromAncestors();
   }
 
   static boolean isSelfElementStatic( XMLEvent event )
@@ -138,8 +138,12 @@ class DatasetElementParser extends AbstractElementParser
     else
       throw new ThreddsXmlParserException( "" );
 
-    this.datasetNodeElementParserHelper.parseStartElementIdAttribute( startElement, this.selfBuilder );
-    this.datasetNodeElementParserHelper.parseStartElementIdAuthorityAttribute( startElement, this.selfBuilder );
+    this.datasetNodeElementParserHelper = new DatasetNodeElementParserHelper( this.parentDatasetNodeElementParserHelper,
+                                                                              this.selfBuilder,
+                                                                              this.builderFactory );
+
+    this.datasetNodeElementParserHelper.parseStartElementIdAttribute( startElement );
+    this.datasetNodeElementParserHelper.parseStartElementIdAuthorityAttribute( startElement );
 
     Attribute serviceNameAtt = startElement.getAttributeByName( DatasetElementNames.DatasetElement_ServiceName );
     if ( serviceNameAtt != null )

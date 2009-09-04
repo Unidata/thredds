@@ -53,7 +53,7 @@ import java.util.List;
  */
 class MetadataElementParser extends AbstractElementParser
 {
-  private final DatasetNodeElementParserHelper datasetNodeElementParserHelper;
+  private final DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper;
   private final DatasetNodeBuilder parentDatasetNodeBuilder;
 
   private final MetadataBuilder selfBuilder;
@@ -68,24 +68,24 @@ class MetadataElementParser extends AbstractElementParser
   private ThreddsMetadataElementParser threddsMetadataElementParser;
 
   MetadataElementParser( XMLEventReader reader,
-                                ThreddsBuilderFactory builderFactory,
-                                DatasetNodeBuilder parentDatasetNodeBuilder,
-                                DatasetNodeElementParserHelper datasetNodeElementParserHelper )
+                         ThreddsBuilderFactory builderFactory,
+                         DatasetNodeBuilder parentDatasetNodeBuilder,
+                         DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
           throws ThreddsXmlParserException
   {
     super( reader, MetadataElementNames.MetadataElement, builderFactory );
     this.parentDatasetNodeBuilder = parentDatasetNodeBuilder;
-    this.datasetNodeElementParserHelper = datasetNodeElementParserHelper;
+    this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
 
     this.selfBuilder = builderFactory.newMetadataBuilder();
   }
 
   MetadataElementParser( XMLEventReader reader,
-                                ThreddsBuilderFactory builderFactory,
-                                DatasetNodeElementParserHelper datasetNodeElementParserHelper )
+                         ThreddsBuilderFactory builderFactory,
+                         DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
           throws ThreddsXmlParserException
   {
-    this( reader, builderFactory, null, datasetNodeElementParserHelper);
+    this( reader, builderFactory, null, parentDatasetNodeElementParserHelper );
   }
 
   static boolean isSelfElementStatic( XMLEvent event ) {
@@ -97,7 +97,7 @@ class MetadataElementParser extends AbstractElementParser
   }
 
   MetadataBuilder getSelfBuilder() {
-    if ( this.isContainsThreddsMetadata())
+    if ( this.containsThreddsMetadata)
       return null;
     return this.selfBuilder;
   }
@@ -189,7 +189,7 @@ class MetadataElementParser extends AbstractElementParser
                   = new ThreddsMetadataElementParser( this.reader,
                                                       this.builderFactory,
                                                       this.parentDatasetNodeBuilder,
-                                                      this.datasetNodeElementParserHelper,
+                                                      this.parentDatasetNodeElementParserHelper,
                                                       this.isInheritedByDescendants );
         this.threddsMetadataElementParser.parse();
         

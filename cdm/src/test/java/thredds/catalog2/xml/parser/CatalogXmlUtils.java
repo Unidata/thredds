@@ -33,8 +33,9 @@ public class CatalogXmlUtils
     public static CatalogBuilder parseCatalogIntoBuilder( URI docBaseUri, String catalogXml )
             throws ThreddsXmlParserException
     {
-        ThreddsXmlParser cp = StaxThreddsXmlParser.newInstance();
-        return cp.parseIntoBuilder( new StringReader( catalogXml ), docBaseUri );
+      ThreddsXmlParserFactory fac = ThreddsXmlParserFactory.newFactory();
+      ThreddsXmlParser cp = fac.getCatalogParser();
+      return cp.parseIntoBuilder( new StringReader( catalogXml ), docBaseUri );
     }
 
     public static void writeCatalogXml( Catalog cat )

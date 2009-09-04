@@ -54,35 +54,35 @@ class CatalogRefElementParser extends AbstractElementParser
   private final CatalogBuilder parentCatalogBuilder;
   private final DatasetNodeBuilder parentDatasetNodeBuilder;
 
-  private final DatasetNodeElementParserHelper datasetNodeElementParserHelper;
+  private final DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper;
+
+  private DatasetNodeElementParserHelper datasetNodeElementParserHelper;
 
   private CatalogRefBuilder selfBuilder;
 
 
   CatalogRefElementParser( XMLEventReader reader,
-                                  ThreddsBuilderFactory builderFactory,
-                                  CatalogBuilder parentCatalogBuilder,
-                                  DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
+                           ThreddsBuilderFactory builderFactory,
+                           CatalogBuilder parentCatalogBuilder,
+                           DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
           throws ThreddsXmlParserException
   {
     super( reader, CatalogRefElementNames.CatalogRefElement, builderFactory );
     this.parentCatalogBuilder = parentCatalogBuilder;
     this.parentDatasetNodeBuilder = null;
-    this.datasetNodeElementParserHelper = new DatasetNodeElementParserHelper( parentDatasetNodeElementParserHelper,
-                                                                              this.builderFactory );
+    this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
   }
 
   CatalogRefElementParser( XMLEventReader reader,
-                                  ThreddsBuilderFactory builderFactory,
-                                  DatasetNodeBuilder parentDatasetNodeBuilder,
-                                  DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
+                           ThreddsBuilderFactory builderFactory,
+                           DatasetNodeBuilder parentDatasetNodeBuilder,
+                           DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
           throws ThreddsXmlParserException
   {
     super( reader, CatalogRefElementNames.CatalogRefElement, builderFactory );
     this.parentCatalogBuilder = null;
     this.parentDatasetNodeBuilder = parentDatasetNodeBuilder;
-    this.datasetNodeElementParserHelper = new DatasetNodeElementParserHelper( parentDatasetNodeElementParserHelper,
-                                                                              this.builderFactory );
+    this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
   }
 
   static boolean isSelfElementStatic( XMLEvent event )
@@ -128,9 +128,13 @@ class CatalogRefElementParser extends AbstractElementParser
     else
       throw new ThreddsXmlParserException( "" );
 
+    this.datasetNodeElementParserHelper = new DatasetNodeElementParserHelper( this.parentDatasetNodeElementParserHelper,
+                                                                              this.selfBuilder,
+                                                                              this.builderFactory );
+
     // Set optional attributes
-    this.datasetNodeElementParserHelper.parseStartElementIdAttribute( startElement, this.selfBuilder );
-    this.datasetNodeElementParserHelper.parseStartElementIdAuthorityAttribute( startElement, this.selfBuilder );
+    this.datasetNodeElementParserHelper.parseStartElementIdAttribute( startElement );
+    this.datasetNodeElementParserHelper.parseStartElementIdAuthorityAttribute( startElement );
   }
 
   void handleChildStartElement()
