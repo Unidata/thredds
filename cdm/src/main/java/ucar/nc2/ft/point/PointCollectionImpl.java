@@ -134,13 +134,15 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
   }
 
   public PointFeatureCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
-    return new PointFeatureCollectionSubset(this, boundingBox, dateRange);
+    return new PointCollectionSubset(this, boundingBox, dateRange);
   }
 
-  protected class PointFeatureCollectionSubset extends PointCollectionImpl {
+  // for subsetting, the best we can do in general is to filter the original iterator.
+  // subclasses may do something better
+  protected class PointCollectionSubset extends PointCollectionImpl {
     protected PointCollectionImpl from;
 
-    public PointFeatureCollectionSubset(PointCollectionImpl from, LatLonRect filter_bb, DateRange filter_date) {
+    public PointCollectionSubset(PointCollectionImpl from, LatLonRect filter_bb, DateRange filter_date) {
       super(from.name);
       this.from = from;
 

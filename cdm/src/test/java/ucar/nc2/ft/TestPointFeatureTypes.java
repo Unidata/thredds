@@ -644,6 +644,12 @@ public class TestPointFeatureTypes extends TestCase {
     }
   }
 
+    public static void main(String arg[]) throws IOException {
+      TestPointFeatureTypes test = new TestPointFeatureTypes("");
+      test.testDons("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", false);
+
+    }
+
 
 }
 

@@ -43,7 +43,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Formatter;
-import java.util.ArrayList;
 
 /**
  * PointCollection composed of other PointCollections
@@ -84,10 +83,10 @@ public class CompositePointCollection extends PointCollectionImpl {
     if ((dateRange == null) && (boundingBox == null))
       return this;
     else if (dateRange == null)
-      return new PointFeatureCollectionSubset(this, boundingBox, dateRange);
+      return new PointCollectionSubset(this, boundingBox, dateRange);
     else {
       CompositePointCollection dateSubset = new CompositePointCollection(name, pointCollections.subset(dateRange));
-      return new PointFeatureCollectionSubset(dateSubset, boundingBox, dateRange);
+      return new PointCollectionSubset(dateSubset, boundingBox, dateRange);
     }
   }
 

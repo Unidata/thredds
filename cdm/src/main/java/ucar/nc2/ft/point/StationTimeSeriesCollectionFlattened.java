@@ -40,7 +40,7 @@ import ucar.nc2.ft.PointFeatureCollection;
 import java.io.IOException;
 
 /**
- * Describe
+ * A flattened StationTimeSeriesCollection.
  *
  * @author caron
  * @since Aug 27, 2009

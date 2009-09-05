@@ -1,8 +1,18 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <!-- saved from url=(0052)http://www.vets.ucar.edu/luca/netcdf/netcdf.xsd.html -->
-<HTML><HEAD>
+<HTML>
+<HEAD>
 <META http-equiv=Content-Type content="text/html; charset=windows-1252">
-<META content="MSHTML 6.00.2723.2500" name=GENERATOR><title>NcML Schema</title></HEAD>
+<META content="MSHTML 6.00.2723.2500" name=GENERATOR>
+<title>NcML Schema</title>
+<style type="text/css">
+pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
+code {font-size: 11pt;}
+dl {margin: 10px 5px 5px 15px;)
+.style1 {font-style: italic}
+.style1 {font-weight: bold}
+</style>
+</HEAD>
 <BODY bgColor=#ffffff>
 <h1 align=left><B>Annotated Schema for NcML</B></h1>
 <p align=left><em>for version 4.0 of the Netcdf-Java/CDM library</em></p>
@@ -47,15 +57,15 @@ files.</p>
  (1)  &lt;xsd:choice minOccurs=&quot;0&quot;&gt;<br>        &lt;xsd:element name=&quot;readMetadata&quot;/&gt;<br>        &lt;xsd:element name=&quot;explicit&quot;/&gt;<br>      &lt;/xsd:choice&gt;
 <br> (2)  &lt;xsd:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;<br>        &lt;xsd:element ref=&quot;group&quot;/&gt;
         &lt;xsd:element ref=&quot;dimension&quot;/&gt;<br>        &lt;xsd:element ref=&quot;variable&quot;/&gt;<br>        &lt;xsd:element ref=&quot;attribute&quot;/&gt;<br>        &lt;xsd:element ref=&quot;remove&quot;/&gt;<br>      &lt;/xsd:choice&gt;
-<br> <font color="#AA0000">(3)  &lt;xsd:element ref=&quot;aggregation&quot; minOccurs=&quot;0&quot;/&gt;</font><br>    &lt;/xsd:sequence&gt;</pre>
-<pre> (4)&lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:anyURI&quot;/&gt;
+<br> <font color="#AA0000">(3)  &lt;xsd:element ref=&quot;aggregation&quot; minOccurs=&quot;0&quot;/&gt;</font><br>    &lt;/xsd:sequence&gt;
+ (4)&lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:anyURI&quot;/&gt;
  (5)&lt;xsd:attribute name=&quot;id&quot; type=&quot;xsd:string&quot;/&gt;
  (6)&lt;xsd:attribute name=&quot;title&quot; type=&quot;xsd:string&quot;/&gt;
  (7)&lt;xsd:attribute name=&quot;enhance&quot; type=&quot;xsd:string&quot;/&gt;
  (8)&lt;xsd:attribute name=&quot;addRecords&quot; type=&quot;xsd:boolean&quot;/&gt;
+ (9)&lt;xsd:attribute name=&quot;iosp&quot; type=&quot;xsd:string&quot;/&gt;<br>    &lt;xsd:attribute name=&quot;iospParam&quot; type=&quot;xsd:string&quot;/&gt;<br>    &lt;xsd:attribute name=&quot;bufferSize&quot; type=&quot;xsd:int&quot;/&gt;
 
- (9)&lt;xsd:attribute name=&quot;iosp&quot; type=&quot;xsd:string&quot;/&gt;<br>    &lt;xsd:attribute name=&quot;iospParam&quot; type=&quot;xsd:string&quot;/&gt;<br>    &lt;xsd:attribute name=&quot;bufferSize&quot; type=&quot;xsd:int&quot;/&gt;</pre>
-<pre>    <font color="#AA0000">&lt;!-- for netcdf elements nested inside of <a href="#aggregation">aggregation</a> elements --&gt;
+  <font color="#AA0000">&lt;!-- for netcdf elements nested inside of <a href="#aggregation">aggregation</a> elements --&gt;
 (10)&lt;xsd:attribute name=&quot;ncoords&quot; type=&quot;xsd:string&quot;/&gt;
 (11)&lt;xsd:attribute name=&quot;coordValue&quot; type=&quot;xsd:string&quot;/&gt;
 (12)&lt;xsd:attribute name=&quot;section&quot; type=&quot;xsd:string&quot;/&gt;<br>

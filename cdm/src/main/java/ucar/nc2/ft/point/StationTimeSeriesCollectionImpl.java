@@ -80,7 +80,7 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
 
   public StationTimeSeriesFeatureCollection subset(List<Station> stations) throws IOException {
     if (stations == null) return this;
-    return new StationFeatureCollectionSubset(this, stations);
+    return new StationTimeSeriesCollectionSubset(this, stations);
   }
 
   public StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
@@ -124,14 +124,14 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
   public PointFeatureCollection flatten(List<Station> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException {
     if ((stations == null) || (stations.size() == 0))
       return new StationTimeSeriesCollectionFlattened(this, dateRange);
-    return new StationTimeSeriesCollectionFlattened(new StationFeatureCollectionSubset(this, stations), dateRange);
+    return new StationTimeSeriesCollectionFlattened(new StationTimeSeriesCollectionSubset(this, stations), dateRange);
   }
 
   // LOOK subset by filtering on the stations, but it would be easier if we could get the StationFeature from the Station
-  private class StationFeatureCollectionSubset extends StationTimeSeriesCollectionImpl {
+  private class StationTimeSeriesCollectionSubset extends StationTimeSeriesCollectionImpl {
     StationTimeSeriesCollectionImpl from;
 
-    StationFeatureCollectionSubset(StationTimeSeriesCollectionImpl from, List<Station> stations) {
+    StationTimeSeriesCollectionSubset(StationTimeSeriesCollectionImpl from, List<Station> stations) {
       super( from.getName());
       this.from = from;
       this.stationHelper = new StationHelper();

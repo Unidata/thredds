@@ -4,9 +4,11 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <title>Point Feature API</title>
 <style type="text/css">
-<!--
-.style2 {color: #990000}
--->
+pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
+code {font-size: 11pt;}
+dl {margin: 10px 5px 5px 15px;)
+.style1 {font-style: italic}
+.style1 {font-weight: bold}
 </style>
 </head>
 
@@ -98,7 +100,7 @@
   }
 </pre>
 Since an iterator always runs through the data exactly once, its a good idea to call <em>resetIteration</em>() first, to make sure that the iterator is in the correct state. </p>
-<p>Equivalent to the internal iterator, you can explictly get a <strong>PointFeatureIterator</strong> to iterate over the PointFeatures: </p>
+<p>The internal iterator is not thread-safe. In a multithreaded application, you must   explictly get a <strong>PointFeatureIterator</strong> to iterate over the PointFeatures: </p>
 <pre>
   <strong>PointFeatureIterator</strong> iter = pointFeatureCollection.<strong>getPointFeatureIterator</strong>(<strong>100 * 1000</strong>); // 100Kb buffer
   try {
@@ -110,7 +112,7 @@ Since an iterator always runs through the data exactly once, its a good idea to 
     iter.<strong>finish</strong>();
   }
 </pre>        
-<p>The <em>buffersize</em> parameter allows you to specify guidance on how many bytes can be used to buffer data, which may increase performance. Setting this to -1 tells the implementation to choose its own buffer sizes. The implementation is free to ignore this, however.</p>
+<p>The <em>buffersize</em> parameter allows you to specify guidance on how many bytes can be used to buffer data, which may increase performance. The implementation is free to ignore this, however. Setting <em>buffersize</em> to -1 tells the implementation to choose its own buffer size. </p>
 <p>You may  subset a PointFeatureCollection with a lat/lon bounding box, and/or a dateRange:</p>
 <pre>  ucar.nc2.units.DateFormatter dformat = new ucar.nc2.units.DateFormatter()
   PointFeatureCollection subset<strong> = pointFeatureCollection.subset</strong>(new LatLonRect(&quot;40,-105,2,2&quot;), 
