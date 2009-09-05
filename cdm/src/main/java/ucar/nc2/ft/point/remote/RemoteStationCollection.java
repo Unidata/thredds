@@ -28,7 +28,10 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
   public RemoteStationCollection(String uri) throws IOException {
     super(uri);
     this.uri = uri;
+  }
 
+  @Override
+  protected void initStationHelper() {
     // read in all the stations with the "stations" query
     stationHelper = new StationHelper();
     HttpMethod method = null;
@@ -43,46 +46,30 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
       PointStreamProto.StationList stationsp = PointStreamProto.StationList.parseFrom(b);
       for (ucar.nc2.ft.point.remote.PointStreamProto.Station sp : stationsp.getStationsList()) {
         Station s = new StationImpl(sp.getId(), sp.getDesc(), sp.getWmoId(), sp.getLat(), sp.getLon(), sp.getAlt());
-        stationHelper.addStation(s);
+        stationHelper.addStation( new RemoteStationFeatureImpl(s, null));
       }
+
+    } catch (IOException ioe) {
+      throw new RuntimeException(ioe);
 
     } finally {
       if (method != null) method.releaseConnection();
     }
   }
 
-  protected RemoteStationCollection(String name, String uri, StationHelper sh) throws IOException {
-    super(name);
+  protected RemoteStationCollection(String uri, StationHelper sh) throws IOException {
+    super(uri);
     this.uri = uri;
     this.stationHelper = sh;
     this.restrictedList = true;
   }
 
+  // note this assumes that a PointFeature is-a StationPointFeature
   public Station getStation(PointFeature feature) throws IOException {
-    return null;
-  } // ??
-
-  public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-
-    // an anonymous class iterating over the stations
-    return new PointFeatureCollectionIterator() {
-      Iterator<Station> stationIter = stationHelper.getStations().iterator();
-
-      public boolean hasNext() throws IOException {
-        return stationIter.hasNext();
-      }
-
-      public PointFeatureCollection next() throws IOException {
-        return new RemoteStationFeatureImpl(stationIter.next(), null);
-      }
-
-      public void setBufferSize(int bytes) {
-      }
-
-      public void finish() {
-      }
-    };
+    StationPointFeature stationFeature = (StationPointFeature) feature; // LOOK probably will fail here
+    return stationFeature.getStation();
   }
+
 
   // Must override default subsetting implementation for efficiency: eg to make a single call to server
 
@@ -102,11 +89,6 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
     StationHelper sh = new StationHelper();
     sh.setStations(this.stationHelper.getStations(boundingBox));
     return new RemoteStationCollectionSubset(this, sh, boundingBox, null);
-  }
-
-  @Override
-  public StationTimeSeriesFeature getStationFeature(Station s) throws IOException {
-    return new RemoteStationFeatureImpl(s, null);
   }
 
   // NestedPointFeatureCollection
@@ -136,7 +118,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
     RemoteStationCollection from;
 
     RemoteStationCollectionSubset(RemoteStationCollection from, StationHelper sh, LatLonRect filter_bb, DateRange filter_date) throws IOException {
-      super(from.getName(), from.uri, sh);
+      super(from.uri, sh);
       this.from = from;
 
       if (filter_bb == null)
@@ -211,90 +193,5 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
       } 
     }
   }
-
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  /* makes a PointFeature from the raw bytes of the protobuf message
-  private class ProtobufPointFeatureMaker implements FeatureMaker {
-    private DateUnit dateUnit;
-    private StructureMembers sm;
-
-    ProtobufPointFeatureMaker(PointStreamProto.PointFeatureCollection pfc, DateUnit dateUnit) throws IOException {
-      this.dateUnit = dateUnit;
-
-      int offset = 0;
-      sm = new StructureMembers(pfc.getName());
-      for (PointStreamProto.Member m : pfc.getMembersList()) {
-        StructureMembers.Member member = sm.addMember(m.getName(), m.getDesc(), m.getUnits(),
-                NcStream.decodeDataType(m.getDataType()),
-                NcStream.decodeSection(m.getSection()).getShape());
-        member.setDataParam(offset);
-        //System.out.printf("%s offset=%d%n", member.getName(), offset);
-        offset += member.getSizeBytes();
-      }
-      sm.setStructureSize(offset);
-    }
-
-    public PointFeature make(byte[] rawBytes) throws InvalidProtocolBufferException {
-      PointStreamProto.PointFeature pfp = PointStreamProto.PointFeature.parseFrom(rawBytes);
-      PointStreamProto.Location locp = pfp.getLoc();
-      EarthLocationImpl location = new EarthLocationImpl(locp.getLat(), locp.getLon(), locp.getAlt());
-      return new MyPointFeature(location, locp.getTime(), locp.getNomTime(), dateUnit, pfp);
-    }
-
-    private class MyPointFeature extends PointFeatureImpl {
-      PointStreamProto.PointFeature pfp;
-
-      MyPointFeature(EarthLocation location, double obsTime, double nomTime, DateUnit timeUnit, PointStreamProto.PointFeature pfp) {
-        super(location, obsTime, nomTime, timeUnit);
-        this.pfp = pfp;
-      }
-
-      public StructureData getData() throws IOException {
-        ByteBuffer bb = ByteBuffer.wrap(pfp.getData().toByteArray());
-        ArrayStructureBB asbb = new ArrayStructureBB(sm, new int[]{1}, bb, 0);
-        for (String s : pfp.getSdataList())
-          asbb.addObjectToHeap(s);
-        return asbb.getStructureData(0);
-      }
-
-      public String toString() {
-        return location + " obs=" + obsTime + " nom=" + nomTime;
-      }
-    }
-  }
-
-      // an iterator over the observations for this station
-    public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      String query = makeQuery(s.getName(), dateRange);
-
-      HttpMethod method = null;
-      try {
-        method = ncremote.sendQuery(query);
-        InputStream in = method.getResponseBodyAsStream();
-
-        int len = NcStream.readVInt(in);
-        byte[] b = new byte[len];
-        NcStream.readFully(in, b);
-        PointStreamProto.PointFeatureCollection pfc = PointStreamProto.PointFeatureCollection.parseFrom(b);
-
-        // dont know timeUnit unitil now
-        try {
-          timeUnit = new DateUnit(pfc.getTimeUnit());
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-
-        riter = new RemotePointFeatureIterator(method, in, new ProtobufPointFeatureMaker(pfc, timeUnit));
-        riter.setCalculateBounds(this);
-        return riter;
-
-      } catch (Throwable t) {
-        if (method != null) method.releaseConnection();
-        // log.error( "", t);
-        throw new IOException(t.getMessage());
-      }
-    }*/
-
 
 }

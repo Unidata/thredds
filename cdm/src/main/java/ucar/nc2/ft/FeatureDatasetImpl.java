@@ -53,7 +53,7 @@ import java.io.IOException;
 public abstract class FeatureDatasetImpl implements FeatureDataset {
   protected NetcdfDataset ncfile;
   protected String title, desc, location;
-  protected List<VariableSimpleIF> dataVariables = new ArrayList<VariableSimpleIF>();
+  protected List<VariableSimpleIF> dataVariables;
   protected Formatter parseInfo = new Formatter();
   protected DateRange dateRange;
   protected LatLonRect boundingBox;
@@ -108,6 +108,7 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
   protected void setBoundingBox(LatLonRect boundingBox) { this.boundingBox = boundingBox; }
 
   protected void removeDataVariable( String varName) {
+    if (dataVariables == null) return;
     Iterator iter = dataVariables.iterator();
     while (iter.hasNext()) {
       VariableSimpleIF v = (VariableSimpleIF) iter.next();
@@ -168,9 +169,11 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
   public Date getEndDate() { return (dateRange == null) ? null : dateRange.getEnd().getDate(); }
   public LatLonRect getBoundingBox() { return boundingBox; }
 
-  public List<VariableSimpleIF> getDataVariables() {return dataVariables; }
+  public List<VariableSimpleIF> getDataVariables() {
+    return (dataVariables == null) ? new ArrayList<VariableSimpleIF>() : dataVariables;
+  }
   public VariableSimpleIF getDataVariable( String shortName) {
-    for (VariableSimpleIF s : dataVariables) {
+    for (VariableSimpleIF s : getDataVariables()) {
       String ss = s.getShortName();
       if (shortName.equals(ss)) return s;
     }

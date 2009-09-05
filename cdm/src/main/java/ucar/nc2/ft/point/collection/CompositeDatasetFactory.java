@@ -47,6 +47,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Formatter;
 import java.util.List;
+import java.util.ArrayList;
 
 import org.jdom.input.SAXBuilder;
 import org.jdom.*;
@@ -161,37 +162,36 @@ public class CompositeDatasetFactory {
 
     LatLonRect bb = null;
     FeatureCollection fc = null;
-    List<? extends VariableSimpleIF> dataVariables = null;
     switch (wantFeatureType) {
       case POINT:
         CompositePointCollection pfc = new CompositePointCollection(spec, collection);
         bb = pfc.getBoundingBox();
         fc = pfc;
-        dataVariables = pfc.getDataVariables();
         break;
       case STATION:
-        CompositeStationCollection sfc = new CompositeStationCollection(spec, null, collection);
+        CompositeStationCollection sfc = new CompositeStationCollection(spec, collection, null, null);
         bb = sfc.getBoundingBox();
         fc = sfc;
-        dataVariables = sfc.getDataVariables();
         break;
       default:
         return null;
     }
 
-    return new CompositePointDataset(location, wantFeatureType, fc, dataVariables, collection, bb);
+    return new CompositePointDataset(location, wantFeatureType, fc, collection, bb);
   }
 
 
   private static class CompositePointDataset extends PointDatasetImpl {
     private TimedCollection datasets;
-    //private FeatureDatasetPoint proto;
+    private FeatureCollection pfc;
 
-    public CompositePointDataset(String location, FeatureType featureType, FeatureCollection pfc, List<? extends VariableSimpleIF> dataVariables,
+    public CompositePointDataset(String location, FeatureType featureType, FeatureCollection pfc,
                                  TimedCollection datasets, LatLonRect bb) {
       super(featureType);
       setLocationURI(location);
       setPointFeatureCollection(pfc);
+
+      this.pfc = pfc;
       this.datasets = datasets;
 
       if (datasets.getDateRange() != null)
@@ -200,8 +200,21 @@ public class CompositeDatasetFactory {
       if (bb != null)
          setBoundingBox(bb);
 
-      this.dataVariables.addAll( dataVariables);
     }
+
+    // deffer this is possible
+   public List<VariableSimpleIF> getDataVariables() {
+      if (dataVariables == null) {
+        if (pfc instanceof CompositePointCollection)
+          dataVariables = ((CompositePointCollection) pfc).getDataVariables();
+        else if (pfc instanceof CompositeStationCollection)
+          dataVariables = ((CompositeStationCollection) pfc).getDataVariables();
+
+
+      }
+
+    return dataVariables;
+  }
 
     @Override
     protected void setDateRange(DateRange dateRange) {
@@ -213,7 +226,6 @@ public class CompositeDatasetFactory {
       super.setBoundingBox(boundingBox);
     }
 
-
     @Override
     public NetcdfFile getNetcdfFile() {
       FeatureDatasetPoint proto;
@@ -224,7 +236,7 @@ public class CompositeDatasetFactory {
       String loc = td.getLocation();
       Formatter errlog = new Formatter();
       try {
-        proto = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.STATION, loc, null, errlog); // LOOK kludge
+        proto = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.ANY_POINT, loc, null, errlog); // LOOK kludge
         return proto.getNetcdfFile();
       } catch (IOException e) {
         log.error(errlog.toString());

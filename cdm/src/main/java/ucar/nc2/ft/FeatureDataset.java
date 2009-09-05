@@ -142,7 +142,7 @@ public interface FeatureDataset extends FileCacheable {
    *
    * @return List of subclass of VariableSimpleIF, may be empty but not null
    */
-  public List<? extends VariableSimpleIF> getDataVariables();
+  public List<VariableSimpleIF> getDataVariables();
 
   /**
    * Get the named data Variable.

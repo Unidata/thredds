@@ -301,8 +301,7 @@ public class GridHorizCoordSys {
       addCoordSystemVariable(ncfile, "latLonCoordSys", "time lat lon");
 
     } else {
-      boolean hasProjection = makeProjection(ncfile);
-      if (hasProjection && GridServiceProvider.addLatLon) {
+      if (makeProjection(ncfile)) {
         double[] yData, xData;
         if (lookup.getProjectionType(gds) == GridTableLookup.RotatedLatLon) {
           double dy = (gds.getDouble("La2") < gds.getDouble(GridDefRecord.LA1)
@@ -322,7 +321,8 @@ public class GridHorizCoordSys {
               startx, getDxInKm(), "km", "x coordinate of projection",
               "projection_x_coordinate", AxisType.GeoX);
         }
-        addLatLon2D(ncfile, xData, yData);
+        if (GridServiceProvider.addLatLon)
+          addLatLon2D(ncfile, xData, yData);
       }
     }
   }

@@ -96,7 +96,7 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, N
   /**
    * Get the collection of data for a particular Station.
    *
-   * @param s get data for this station, must have come from 
+   * @param s get data for this station, must have come from this Collection
    * @return collection of data for this Station.
    * @throws java.io.IOException on i/o error
    */
@@ -105,7 +105,7 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, N
   /**
    * Get the station that belongs to this feature
    *
-   * @param feature PointFeature obtained from a StationTimeSeriesFeature
+   * @param feature PointFeature obtained from a StationTimeSeriesFeature in this collection
    * @return the Station is belongs to
    * @throws java.io.IOException on i/o error
    */

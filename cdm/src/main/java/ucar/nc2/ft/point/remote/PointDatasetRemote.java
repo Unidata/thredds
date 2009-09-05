@@ -64,8 +64,7 @@ public class PointDatasetRemote extends PointDatasetImpl {
   public PointDatasetRemote(FeatureType wantFeatureType, String uri, List<VariableSimpleIF> vars) throws IOException {
     super(wantFeatureType);
 
-    dataVariables.addAll(vars);
-
+    dataVariables = new ArrayList<VariableSimpleIF>( vars);
 
     collectionList = new ArrayList<FeatureCollection>(1);
     switch (wantFeatureType) {

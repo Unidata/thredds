@@ -42,15 +42,14 @@ import ucar.ma2.StructureData;
 import ucar.unidata.geoloc.Station;
 
 import java.io.IOException;
-import java.util.Iterator;
 
 /**
  * Object Heirarchy for StationFeatureCollection:
- *   StationFeatureCollection (StandardStationCollectionImpl
- *   PointFeatureCollectionIterator (anon)
- *     StationFeature (StandardStationFeatureImpl)
- *     PointFeatureIterator (StandardStationPointIterator)
- *       PointFeatureImpl
+ * StationFeatureCollection (StandardStationCollectionImpl
+ * PointFeatureCollectionIterator (anon)
+ * StationFeature (StandardStationFeatureImpl)
+ * PointFeatureIterator (StandardStationPointIterator)
+ * PointFeatureImpl
  *
  * @author caron
  * @since Mar 28, 2008
@@ -63,15 +62,6 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
     super(ft.getName());
     this.timeUnit = timeUnit;
     this.ft = ft;
-
-    // LOOK can we defer StationHelper ?
-    stationHelper = new StationHelper();
-    int count = 0;
-    StructureDataIterator siter = ft.getStationDataIterator(-1);
-    while (siter.hasNext()) {
-      StructureData stationData = siter.next();
-      stationHelper.addStation( makeStation(stationData, count++));
-    }
   }
 
   private Station makeStation(StructureData stationData, int recnum) {
@@ -79,29 +69,24 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
     return new StandardStationFeatureImpl(s, timeUnit, stationData, recnum);
   }
 
-  public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-    // an anonymous class iterating over the stations
-    return new PointFeatureCollectionIterator() {
-      Iterator<Station> stationIter = stationHelper.getStations().iterator();
-
-      public boolean hasNext() throws IOException {
-        return stationIter.hasNext();
+  @Override
+  protected void initStationHelper() {
+    try {
+      stationHelper = new StationHelper();
+      int count = 0;
+      StructureDataIterator siter = ft.getStationDataIterator(-1);
+      while (siter.hasNext()) {
+        StructureData stationData = siter.next();
+        stationHelper.addStation(makeStation(stationData, count++));
       }
-
-      public PointFeatureCollection next() throws IOException {
-        return (StationFeatureImpl) stationIter.next();
-      }
-
-      public void setBufferSize(int bytes) { }
-
-      public void finish() { }
-
-    };
+    } catch (IOException ioe) {
+      throw new RuntimeException(ioe);
+    }
   }
 
   private class StandardStationFeatureImpl extends StationFeatureImpl {
-      int recnum;
-      StructureData stationData;
+    int recnum;
+    StructureData stationData;
 
     StandardStationFeatureImpl(Station s, DateUnit dateUnit, StructureData stationData, int recnum) {
       super(s, dateUnit, -1);
@@ -123,24 +108,5 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
     }
 
   }
-
-  /* the iterator over the observations
-  private class StandardStationPointIterator extends StandardPointFeatureIterator {
-    StationFeatureImpl station;
-
-    StandardStationPointIterator(StationFeatureImpl station, StructureDataIterator structIter, Cursor tableData) throws IOException {
-      super(ft, timeUnit, structIter, tableData);
-      this.station = station;
-    }
-
-    // decorate to capture npts
-    @Override
-    public boolean hasNext() throws IOException {
-      boolean result = super.hasNext();
-      if (!result && (station != null))
-        station.setNumberPoints(getCount());
-      return result;
-    }
-  } */
 
 }

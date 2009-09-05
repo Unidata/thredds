@@ -46,41 +46,66 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * StationTimeSeries composed of a collection of individual files. "Composite" pattern.
+ * StationTimeSeries composed of a collection of individual StationTimeSeries. "Composite" pattern.
  *
  * @author caron
  * @since May 19, 2009
  */
 public class CompositeStationCollection extends StationTimeSeriesCollectionImpl {
   private TimedCollection dataCollection;
-  protected List<? extends VariableSimpleIF> dataVariables;
+  protected List<VariableSimpleIF> dataVariables;
 
-  protected CompositeStationCollection(String name, List<Station> stns, TimedCollection dataCollection) throws IOException {
+  protected CompositeStationCollection(String name, TimedCollection dataCollection,
+        List<Station> stns, List<VariableSimpleIF> dataVariables) throws IOException {
     super(name);
     this.dataCollection = dataCollection;
     TimedCollection.Dataset td = dataCollection.getPrototype();
     if (td == null)
       throw new RuntimeException("No datasets in the collection");
 
-    Formatter errlog = new Formatter();
-    FeatureDatasetPoint openDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.STATION, td.getLocation(), null, errlog);
-    List<FeatureCollection> fcList = openDataset.getPointFeatureCollectionList();
-    StationTimeSeriesCollectionImpl openCollection = (StationTimeSeriesCollectionImpl) fcList.get(0);
-    if ((stns == null) || (stns.size() == 0))
-      stns = openCollection.getStations();
-
-    // construct list of stations
-    stationHelper = new StationHelper();
-    for (Station s : stns) {
-      stationHelper.addStation(new CompositeStationFeature(s, null, this.dataCollection));
+    if ((stns != null) && (stns.size() > 0)) {
+      stationHelper = new StationHelper();
+      for (Station s : stns)
+        stationHelper.addStation(new CompositeStationFeature(s, null, this.dataCollection));
     }
 
-    dataVariables = openDataset.getDataVariables();
-
-    openDataset.close();
+    this.dataVariables = dataVariables;
   }
 
-  public List<? extends VariableSimpleIF> getDataVariables() {
+  @Override
+  protected void initStationHelper() {
+    TimedCollection.Dataset td = dataCollection.getPrototype();
+    if (td == null)
+      throw new RuntimeException("No datasets in the collection");
+
+    Formatter errlog = new Formatter();
+    FeatureDatasetPoint openDataset = null;
+    try {
+      openDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.STATION, td.getLocation(), null, errlog);
+
+      List<FeatureCollection> fcList = openDataset.getPointFeatureCollectionList();
+      StationTimeSeriesCollectionImpl openCollection = (StationTimeSeriesCollectionImpl) fcList.get(0);
+      List<Station> stns = openCollection.getStations();
+      stationHelper = new StationHelper();
+      for (Station s : stns)
+        stationHelper.addStation(new CompositeStationFeature(s, null, this.dataCollection));
+
+      dataVariables = openDataset.getDataVariables();
+
+    } catch (IOException ioe) {
+      throw new RuntimeException(ioe);
+
+    } finally {
+      try {
+        if (openDataset != null) openDataset.close();
+      } catch (Throwable t) {}
+    }
+  }
+
+  public List<VariableSimpleIF> getDataVariables() {
+    if (dataVariables == null)
+      initStationHelper();
+
     return dataVariables;
   }
 
@@ -90,14 +115,14 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   @Override
   public StationTimeSeriesFeatureCollection subset(List<Station> stations) throws IOException {
     if (stations == null) return this;
-    return new CompositeStationCollection(getName(), stations, dataCollection);
+    return new CompositeStationCollection(getName(), dataCollection, stations, dataVariables);
   }
 
   @Override
   public StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
     if (boundingBox == null) return this;
     List<Station> stations = stationHelper.getStations(boundingBox);
-    return new CompositeStationCollection(getName(), stations, dataCollection);
+    return new CompositeStationCollection(getName(), dataCollection, stations, dataVariables);
   }
 
   @Override
@@ -113,7 +138,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   @Override
   public PointFeatureCollection flatten(List<Station> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException {
     TimedCollection subsetCollection = (dateRange != null) ? dataCollection.subset(dateRange) : dataCollection;
-    return new CompositeStationCollectionFlattened( getName(), stations, dateRange, varList, subsetCollection);
+    return new CompositeStationCollectionFlattened(getName(), stations, dateRange, varList, subsetCollection);
   }
 
   //////////////////////////////////////////////////////////
@@ -200,7 +225,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
         Station s = stnCollection.getStation(getName());
         if (s == null) {
           System.out.printf("CompositeStationFeatureIterator dataset: %s missing station %s%n",
-                  td.getLocation(), getName());
+              td.getLocation(), getName());
           return getNextIterator();
         }
 
@@ -247,7 +272,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
             currentDataset.close();
             if (CompositeDatasetFactory.debug)
               System.out.printf("CompositeStationFeatureIterator close dataset: %s%n", currentDataset.getLocation());
-           } catch (IOException e) {
+          } catch (IOException e) {
             throw new RuntimeException(e);
           }
 

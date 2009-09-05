@@ -52,29 +52,35 @@ import java.util.Formatter;
  */
 public class CompositePointCollection extends PointCollectionImpl {
   private TimedCollection pointCollections;
-  protected List<? extends VariableSimpleIF> dataVariables;
+  protected List<VariableSimpleIF> dataVariables;
 
   protected CompositePointCollection(String name, TimedCollection pointCollections) throws IOException {
     super(name);
     this.pointCollections = pointCollections;
-
-    // must open a prototype in order to get the data variable
-    TimedCollection.Dataset td = pointCollections.getPrototype();
-    if (td == null)
-      throw new RuntimeException("No datasets in the collection");
-
-    Formatter errlog = new Formatter();
-    FeatureDatasetPoint openDataset = null;
-    try {
-      openDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.POINT, td.getLocation(), null, errlog);
-      dataVariables = openDataset.getDataVariables();
-    } finally {
-      if (openDataset != null)
-        openDataset.close();
-    }
   }
 
-  public List<? extends VariableSimpleIF> getDataVariables() {
+  public List<VariableSimpleIF> getDataVariables() {
+    if (dataVariables == null) {
+      // must open a prototype in order to get the data variable
+      TimedCollection.Dataset td = pointCollections.getPrototype();
+      if (td == null)
+        throw new RuntimeException("No datasets in the collection");
+
+      Formatter errlog = new Formatter();
+      FeatureDatasetPoint openDataset = null;
+      try {
+        openDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.POINT, td.getLocation(), null, errlog);
+        dataVariables = openDataset.getDataVariables();
+      } catch (IOException ioe) {
+        throw new RuntimeException(ioe);
+
+      } finally {
+        try {
+          if (openDataset != null) openDataset.close();
+        } catch (Throwable t) {
+        }
+      }
+    }
     return dataVariables;
   }
 

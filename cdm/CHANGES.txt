@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  4:
+  refactor station point classes
   CdmRemoteFeatureDatset is not a CdmRemote
   optimise hashmap in StructureMembers
   GridTableLookup.Curvilinear requires external 2D lat/lon

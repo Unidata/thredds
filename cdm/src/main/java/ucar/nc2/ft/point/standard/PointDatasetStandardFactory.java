@@ -40,6 +40,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.VariableSimpleIF;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -162,7 +163,7 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
         }
 
         // create member variables
-        dataVariables.addAll(flatTable.getDataVariables());
+        dataVariables = new ArrayList<VariableSimpleIF>(flatTable.getDataVariables());
 
         featureType = flatTable.getFeatureType(); // hope they're all the same
         if (flatTable.getFeatureType() == FeatureType.POINT)

@@ -40,11 +40,12 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 
 import java.util.List;
+import java.util.Iterator;
 import java.io.IOException;
 
 /**
  * Abstract superclass for implementations of StationFeatureCollection.
- * Subclass must supply StationHelper, getPointFeatureCollectionIterator().
+ * Subclass must supply initStationHelper, may need to override getPointFeatureCollectionIterator().
  *
  * @author caron
  * @since Feb 5, 2008
@@ -55,46 +56,122 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
   protected PointFeatureCollectionIterator localIterator;
 
   public StationTimeSeriesCollectionImpl(String name) {
-    super( name, FeatureType.STATION);
+    super(name, FeatureType.STATION);
   }
 
-  public List<Station> getStations() {
-    return stationHelper.getStations();
+  protected abstract void initStationHelper(); // allow station helper to be deffered initialization
+
+  // note this assumes that a Station is-a PointFeatureCollection
+  // subclasses must override if thats not true
+  // note that subset() may have made a subset of stationsHelper
+  public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
+
+    return new PointFeatureCollectionIterator() {  // an anonymous class iterating over the stations
+      Iterator<Station> stationIter = stationHelper.getStations().iterator();
+
+      public boolean hasNext() throws IOException {
+        return stationIter.hasNext();
+      }
+
+      public PointFeatureCollection next() throws IOException {
+        return (PointFeatureCollection) stationIter.next();
+      }
+
+      public void setBufferSize(int bytes) {
+      }
+
+      public void finish() {
+      }
+
+    };
   }
 
-  public List<Station> getStations(LatLonRect boundingBox) throws IOException {
-    return stationHelper.getStations(boundingBox);
+  // note this assumes that a Station is-a StationTimeSeriesFeature
+  public StationTimeSeriesFeature getStationFeature(Station s) throws IOException {
+    return (StationTimeSeriesFeature) s;  // subclasses nust override if not true
   }
 
-  public List<Station> getStations(String[] names) throws IOException {
-    return stationHelper.getStations(names);
+  // note this assumes that a PointFeature is-a StationPointFeature
+  public Station getStation(PointFeature feature) throws IOException {
+    StationPointFeature stationFeature = (StationPointFeature) feature;
+    return stationFeature.getStation();
   }
 
-  public Station getStation(String name) {
-    return stationHelper.getStation(name);
+  // might want to preserve the bb instead of the station list
+  public StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
+    return subset( getStations(boundingBox));
   }
 
-  public LatLonRect getBoundingBox() {
-    return stationHelper.getBoundingBox();
-  }
-
+  // might need to override for efficiency
   public StationTimeSeriesFeatureCollection subset(List<Station> stations) throws IOException {
     if (stations == null) return this;
     return new StationTimeSeriesCollectionSubset(this, stations);
   }
 
-  public StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
-    return subset( getStations(boundingBox));
+  // might need to override for efficiency
+  public PointFeatureCollection flatten(List<Station> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException {
+    if ((stations == null) || (stations.size() == 0))
+      return new StationTimeSeriesCollectionFlattened(this, dateRange);
+    return new StationTimeSeriesCollectionFlattened(new StationTimeSeriesCollectionSubset(this, stations), dateRange);
   }
 
-  public StationTimeSeriesFeature getStationFeature(Station s) throws IOException {
-    return (StationTimeSeriesFeature) s;  // subclasses nust override if not true
+  private class StationTimeSeriesCollectionSubset extends StationTimeSeriesCollectionImpl {
+    StationTimeSeriesCollectionImpl from; // probably not needed
+
+    StationTimeSeriesCollectionSubset(StationTimeSeriesCollectionImpl from, List<Station> stations) {
+      super(from.getName());
+      this.from = from;
+      this.stationHelper = new StationHelper();
+      this.stationHelper.setStations(stations);
+    }
+
+    protected  void initStationHelper() {}
+
+    /* dont think this is needed
+    public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
+      return new PointCollectionIteratorFiltered(from.getPointFeatureCollectionIterator(bufferSize), new Filter());
+    }
+
+    public Station getStation(PointFeature feature) throws IOException {
+      return from.getStation(feature);
+    }
+
+    // LOOK: major ick! FIX THIS
+    private class Filter implements PointFeatureCollectionIterator.Filter {
+
+      public boolean filter(PointFeatureCollection pointFeatureCollection) {
+        StationTimeSeriesFeature stationFeature = (StationTimeSeriesFeature) pointFeatureCollection;
+        return stationHelper.getStation(stationFeature.getName()) != null;
+      }
+    } */
   }
 
-  @Override
-  public Station getStation(PointFeature feature) throws IOException {
-    StationPointFeature stationFeature = (StationPointFeature) feature;
-    return stationFeature.getStation();
+  //////////////////////////
+  // boilerplate
+
+  public List<Station> getStations() {
+    if (stationHelper == null) initStationHelper();
+    return stationHelper.getStations();
+  }
+
+  public List<Station> getStations(LatLonRect boundingBox) throws IOException {
+    if (stationHelper == null) initStationHelper();
+    return stationHelper.getStations(boundingBox);
+  }
+
+  public List<Station> getStations(String[] names) throws IOException {
+    if (stationHelper == null) initStationHelper();
+    return stationHelper.getStations(names);
+  }
+
+  public Station getStation(String name) {
+    if (stationHelper == null) initStationHelper();
+    return stationHelper.getStation(name);
+  }
+
+  public LatLonRect getBoundingBox() {
+    if (stationHelper == null) initStationHelper();
+    return stationHelper.getBoundingBox();
   }
 
   public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
@@ -119,40 +196,4 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
     localIterator = getPointFeatureCollectionIterator(-1);
   }
 
-  // flatten into a PointFeatureCollection
-  // if empty, may return null
-  public PointFeatureCollection flatten(List<Station> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException {
-    if ((stations == null) || (stations.size() == 0))
-      return new StationTimeSeriesCollectionFlattened(this, dateRange);
-    return new StationTimeSeriesCollectionFlattened(new StationTimeSeriesCollectionSubset(this, stations), dateRange);
-  }
-
-  // LOOK subset by filtering on the stations, but it would be easier if we could get the StationFeature from the Station
-  private class StationTimeSeriesCollectionSubset extends StationTimeSeriesCollectionImpl {
-    StationTimeSeriesCollectionImpl from;
-
-    StationTimeSeriesCollectionSubset(StationTimeSeriesCollectionImpl from, List<Station> stations) {
-      super( from.getName());
-      this.from = from;
-      this.stationHelper = new StationHelper();
-      this.stationHelper.setStations(stations);
-    }
-
-    public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-      return new PointCollectionIteratorFiltered( from.getPointFeatureCollectionIterator(bufferSize), new Filter());
-    }
-
-    public Station getStation(PointFeature feature) throws IOException {
-      return from.getStation(feature);
-    }
-
-    // LOOK: major ick! FIX THIS
-    private class Filter implements PointFeatureCollectionIterator.Filter {
-
-      public boolean filter(PointFeatureCollection pointFeatureCollection) {
-        StationTimeSeriesFeature stationFeature = (StationTimeSeriesFeature) pointFeatureCollection;
-        return stationHelper.getStation(stationFeature.getName()) != null;
-      }
-    }
-  }
 }
