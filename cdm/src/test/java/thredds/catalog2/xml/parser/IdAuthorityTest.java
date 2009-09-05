@@ -1,7 +1,5 @@
-package thredds.catalog2.simpleImpl;
+package thredds.catalog2.xml.parser;
 
-import thredds.catalog2.xml.parser.CatalogXmlUtils;
-import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 import thredds.catalog2.builder.CatalogBuilder;
 import thredds.catalog2.builder.DatasetNodeBuilder;
 import thredds.catalog2.builder.DatasetBuilder;
@@ -14,7 +12,16 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**
- * _more_
+ * Check that DatasetBuilder.getIdAuthority() gets set to the expected value for various catalog XML situations.
+ *
+ * <pre>
+ * - dataset@attribute
+ * - dataset/attribute
+ * - dataset/metadata/attribute
+ * - dataset/metadata[inherited=true]/attribute
+ * </pre>
+ *
+ * As well as not inheriting from the first three, inheriting from the fourth, and overriding the fourth when any of the four are child datasets.  
  *
  * @author edavis
  * @since 4.0
@@ -72,7 +79,7 @@ public class IdAuthorityTest
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/IdAuthorityTest/childElement.xml";
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/IdAuthorityTest/metadataElement.xml";
     URI docBaseUri = new URI( docBaseUriString );
     String catalogAsString = setupDatasetWithIdAuthorityInMetadataElement();
 
@@ -98,7 +105,7 @@ public class IdAuthorityTest
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/IdAuthorityTest/childElement.xml";
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/IdAuthorityTest/inheritedMetadataElement.xml";
     URI docBaseUri = new URI( docBaseUriString );
     String catalogAsString = setupDatasetWithIdAuthorityInInheritedMetadataElement();
 
@@ -120,11 +127,35 @@ public class IdAuthorityTest
   }
 
   @Test
+  public void checkDatasetNotInheritingIdAuthorityFromParentAuthorityAttribute()
+          throws URISyntaxException,
+                 ThreddsXmlParserException
+  {
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/IdAuthorityTest/notInheritFromParentAttribute.xml";
+    URI docBaseUri = new URI( docBaseUriString );
+    String catalogAsString = setupDatasetNotInheritingIdAuthorityFromParentAuthorityAttribute();
+
+    CatalogBuilder catBuilder = CatalogXmlUtils.parseCatalogIntoBuilder( docBaseUri, catalogAsString );
+
+    CatalogXmlUtils.assertCatalogAsExpected( catBuilder, docBaseUri, null );
+    assertDatasetTwoHasNoAuthority( catBuilder );
+  }
+
+  private static String setupDatasetNotInheritingIdAuthorityFromParentAuthorityAttribute()
+  {
+    StringBuilder sb = new StringBuilder()
+            .append( "<dataset name='dataset 1' ID='DS1' authority='auth1'>" )
+            .append( "  <dataset name='dataset 2' ID='DS2' />" )
+            .append( "</dataset>" );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalog( sb.toString(), null );
+  }
+
+  @Test
   public void checkDatasetNotInheritingIdAuthorityFromParentAuthorityElement()
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/IdAuthorityTest/childElement.xml";
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/IdAuthorityTest/notInheritFromParentElement.xml";
     URI docBaseUri = new URI( docBaseUriString );
     String catalogAsString = setupDatasetNotInheritingIdAuthorityFromParentAuthorityElement();
 
@@ -149,7 +180,7 @@ public class IdAuthorityTest
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/IdAuthorityTest/childElement.xml";
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/IdAuthorityTest/notInheritFromParentMetadataAuthorityElement.xml";
     URI docBaseUri = new URI( docBaseUriString );
     String catalogAsString = setupDatasetNotInheritingIdAuthorityFromParentMetadataAuthorityElement();
 
@@ -176,7 +207,7 @@ public class IdAuthorityTest
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/IdAuthorityTest/childElement.xml";
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/IdAuthorityTest/inheritFromParentInheritedMetadataAuthorityElement.xml";
     URI docBaseUri = new URI( docBaseUriString );
     String catalogAsString = setupDatasetInheritingIdAuthorityFromParentInheritedMetadataAuthorityElement();
 
@@ -203,7 +234,7 @@ public class IdAuthorityTest
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/IdAuthorityTest/childElement.xml";
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/IdAuthorityTest/overrideInheritedWithAttribute.xml";
     URI docBaseUri = new URI( docBaseUriString );
     String catalogAsString = setupDatasetOverridingInheritedIdAuthorityWithAttribute();
 
@@ -230,7 +261,7 @@ public class IdAuthorityTest
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/IdAuthorityTest/childElement.xml";
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/IdAuthorityTest/overrideInheritedWithElement.xml";
     URI docBaseUri = new URI( docBaseUriString );
     String catalogAsString = setupDatasetOverridingInheritedIdAuthorityWithChildElement();
 
@@ -260,7 +291,7 @@ public class IdAuthorityTest
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/IdAuthorityTest/childElement.xml";
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/IdAuthorityTest/overrideInheritedWithchildMetadataElement.xml";
     URI docBaseUri = new URI( docBaseUriString );
     String catalogAsString = setupDatasetOverridingInheritedIdAuthorityWithChildMetadataElement();
 
@@ -292,7 +323,7 @@ public class IdAuthorityTest
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/IdAuthorityTest/childElement.xml";
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/IdAuthorityTest/overrideInheritedWithchildInheritedMetadataElement.xml";
     URI docBaseUri = new URI( docBaseUriString );
     String catalogAsString = setupDatasetOverridingInheritedIdAuthorityWithChildInheritedMetadataElement();
 
