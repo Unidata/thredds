@@ -117,13 +117,21 @@ public class StationHelper {
     return stations;
   }
 
-  public List<Station> getStations(String[] stns) {
-    List<Station> result = new ArrayList<Station>(stns.length);
-    for (String name : stns) {
-      Station stn = getStation(name);
-      if (stn != null) result.add(stn);
+  public List<Station> getStations( List<String> stnNames) {
+    List<Station> result = new ArrayList<Station>(stnNames.size());
+    for (String ss : stnNames) {
+      Station s = stationHash.get(ss);
+      if (s != null)
+        result.add(s);
     }
     return result;
+  }
+
+  public boolean contains(String[] stnNames) {
+    for (String name : stnNames) {
+      if (stationHash.get(name) != null) return true;
+    }
+    return false;
   }
 
 }

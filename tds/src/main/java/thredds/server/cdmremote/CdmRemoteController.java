@@ -51,6 +51,7 @@ import java.io.*;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Formatter;
+import java.util.Arrays;
 import java.nio.channels.WritableByteChannel;
 import java.nio.channels.Channels;
 import java.net.URLDecoder;
@@ -297,7 +298,7 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
     if (query.getLatLonRect() != null)
       stations = sfc.getStations(query.getLatLonRect());
     else if (query.getStnNames() != null)
-      stations = sfc.getStations(query.getStnNames());
+      stations = sfc.getStations( Arrays.asList(query.getStnNames()));
     else
       stations = sfc.getStations();
 

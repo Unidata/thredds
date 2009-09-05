@@ -132,11 +132,14 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
 
   @Override
   public PointFeatureCollection flatten(LatLonRect boundingBox, DateRange dateRange) throws IOException {
-    return flatten(stationHelper.getStations(boundingBox), dateRange, null);
+    TimedCollection subsetCollection = (dateRange != null) ? dataCollection.subset(dateRange) : dataCollection;
+    return new CompositeStationCollectionFlattened(getName(), boundingBox, dateRange, subsetCollection);
+
+    //return flatten(stationHelper.getStations(boundingBox), dateRange, null);
   }
 
   @Override
-  public PointFeatureCollection flatten(List<Station> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException {
+  public PointFeatureCollection flatten(List<String> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException {
     TimedCollection subsetCollection = (dateRange != null) ? dataCollection.subset(dateRange) : dataCollection;
     return new CompositeStationCollectionFlattened(getName(), stations, dateRange, varList, subsetCollection);
   }
@@ -231,7 +234,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
 
         StationTimeSeriesFeature stnFeature = stnCollection.getStationFeature(s);
         if (CompositeDatasetFactory.debug)
-          System.out.printf("CompositeStationFeatureIterator open dataset: %s%n", td.getLocation());
+          System.out.printf("CompositeStationFeatureIterator open dataset: %s for %s%n", td.getLocation(), s.getName());
         return stnFeature.getPointFeatureIterator(bufferSize);
       }
 

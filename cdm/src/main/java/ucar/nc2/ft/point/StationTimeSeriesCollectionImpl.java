@@ -65,6 +65,7 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
   // subclasses must override if thats not true
   // note that subset() may have made a subset of stationsHelper
   public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
+    initStationHelper();
 
     return new PointFeatureCollectionIterator() {  // an anonymous class iterating over the stations
       Iterator<Station> stationIter = stationHelper.getStations().iterator();
@@ -109,10 +110,20 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
   }
 
   // might need to override for efficiency
-  public PointFeatureCollection flatten(List<Station> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException {
+  public PointFeatureCollection flatten(List<String> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException {
     if ((stations == null) || (stations.size() == 0))
       return new StationTimeSeriesCollectionFlattened(this, dateRange);
-    return new StationTimeSeriesCollectionFlattened(new StationTimeSeriesCollectionSubset(this, stations), dateRange);
+    initStationHelper();
+    List<Station> subsetStations = stationHelper.getStations(stations);
+    return new StationTimeSeriesCollectionFlattened(new StationTimeSeriesCollectionSubset(this, subsetStations), dateRange);
+  }
+
+  public PointFeatureCollection flatten(LatLonRect boundingBox, DateRange dateRange) throws IOException {
+    if (boundingBox == null)
+      return new StationTimeSeriesCollectionFlattened(this, dateRange);
+    initStationHelper();
+    List<Station> subsetStations = stationHelper.getStations(boundingBox);
+    return new StationTimeSeriesCollectionFlattened(new StationTimeSeriesCollectionSubset(this, subsetStations), dateRange);
   }
 
   private class StationTimeSeriesCollectionSubset extends StationTimeSeriesCollectionImpl {
@@ -154,14 +165,19 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
     return stationHelper.getStations();
   }
 
+  public List<Station> getStations(List<String> stnNames) {
+    if (stationHelper == null) initStationHelper();
+    return stationHelper.getStations(stnNames);
+  }
+
   public List<Station> getStations(LatLonRect boundingBox) throws IOException {
     if (stationHelper == null) initStationHelper();
     return stationHelper.getStations(boundingBox);
   }
 
-  public List<Station> getStations(String[] names) throws IOException {
+  public boolean contains(String[] names) throws IOException {
     if (stationHelper == null) initStationHelper();
-    return stationHelper.getStations(names);
+    return stationHelper.contains(names);
   }
 
   public Station getStation(String name) {

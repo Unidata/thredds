@@ -37,7 +37,7 @@ import ucar.nc2.ft.*;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.constants.FeatureType;
-import ucar.unidata.geoloc.Station;
+import ucar.unidata.geoloc.LatLonRect;
 
 import java.util.List;
 import java.util.Formatter;
@@ -54,34 +54,45 @@ import java.io.IOException;
 
 public class CompositeStationCollectionFlattened extends PointCollectionImpl {
   private TimedCollection stnCollections;
-  private List<Station> stations;
+  private LatLonRect bbSubset;
+  private List<String> stationsSubset;
   private DateRange dateRange;
-  List<VariableSimpleIF> varList;
+  private List<VariableSimpleIF> varList;
+  private boolean wantStationsubset = false;
 
-  protected CompositeStationCollectionFlattened(String name, List<Station> stations, DateRange dateRange, List<VariableSimpleIF> varList,
-                                                TimedCollection stnCollections) throws IOException {
+  protected CompositeStationCollectionFlattened(String name, List<String> stations, DateRange dateRange,
+                List<VariableSimpleIF> varList, TimedCollection stnCollections) throws IOException {
     super( name);
-    this.stations = stations;
+    this.stationsSubset = stations; // note these will be from the original collection, must transfer
     this.dateRange = dateRange;
     this.varList = varList;
+    this.stnCollections = stnCollections;
+
+    wantStationsubset = (stations != null) && (stations.size() > 0);
+  }
+
+  protected CompositeStationCollectionFlattened(String name, LatLonRect bbSubset, DateRange dateRange, TimedCollection stnCollections) throws IOException {
+    super( name);
+    this.bbSubset = bbSubset;
+    this.dateRange = dateRange;
     this.stnCollections = stnCollections;
   }
 
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-    CompositePointFeatureIterator iter = new CompositePointFeatureIterator();
+    PointIterator iter = new PointIterator();
     if ((boundingBox == null) || (dateRange == null) || (npts < 0))
       iter.setCalculateBounds(this);
     return iter;
   }
 
-  private class CompositePointFeatureIterator extends PointIteratorAbstract {
+  private class PointIterator extends PointIteratorAbstract {
     private boolean finished = false;
     private int bufferSize = -1;
     private Iterator<TimedCollection.Dataset> iter;
     private FeatureDatasetPoint currentDataset;
     private PointFeatureIterator pfIter = null;
 
-    CompositePointFeatureIterator() {
+    PointIterator() {
       iter = stnCollections.getDatasets().iterator();
     }
 
@@ -90,13 +101,21 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
       TimedCollection.Dataset td = iter.next();
       Formatter errlog = new Formatter();
 
+      // open the next dataset
       currentDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.STATION, td.getLocation(), null, errlog);
       if (CompositeDatasetFactory.debug)
-        System.out.printf("CompositeStationCollectionFlattened open dataset: %s%n", td.getLocation());
+        System.out.printf("CompositeStationCollectionFlattened.Iterator open new dataset: %s%n", td.getLocation());
 
+      // it will have a StationTimeSeriesFeatureCollection
       List<FeatureCollection> fcList = currentDataset.getPointFeatureCollectionList();
       StationTimeSeriesFeatureCollection stnCollection = (StationTimeSeriesFeatureCollection) fcList.get(0);
-      PointFeatureCollection pc = stnCollection.flatten(stations, dateRange, varList);
+
+      PointFeatureCollection pc = null;
+      if (wantStationsubset)
+        pc = stnCollection.flatten(stationsSubset, dateRange, varList);
+      else
+        pc = stnCollection.flatten(bbSubset, dateRange);
+
       return pc.getPointFeatureIterator(bufferSize);
     }
 
@@ -113,7 +132,7 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
         pfIter.finish();
         currentDataset.close();
         if (CompositeDatasetFactory.debug)
-           System.out.printf("CompositeStationCollectionFlattened close dataset: %s%n", currentDataset.getLocation());
+           System.out.printf("CompositeStationCollectionFlattened.Iterator close dataset: %s%n", currentDataset.getLocation());
         pfIter = getNextIterator();
         return hasNext();
       }

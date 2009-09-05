@@ -41,6 +41,7 @@ import ucar.nc2.ft.point.remote.PointStream;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.Station;
+import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.Format;
 import ucar.ma2.StructureData;
 import ucar.ma2.Array;
@@ -72,7 +73,6 @@ public class StationWriter {
 
   private Date start, end;
 
-  private List<Station> wantStations;
   private List<VariableSimpleIF> wantVars;
   private DateRange wantRange;
   private PointFeatureCollection pfc;
@@ -87,28 +87,6 @@ public class StationWriter {
   }
 
   boolean validate(HttpServletResponse res) throws IOException {
-
-    // verify SpatialSelection has some stations
-    if (qb.getSpatialSelection() == PointQueryBean.SpatialSelection.bb) {
-      wantStations = sfc.getStations(qb.getLatLonRect());
-      if (wantStations.size() == 0) {
-        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: Bounding Box contains no stations; bb= " + qb.getLatLonRect());
-        return false;
-      }
-      if (debugDetail) {
-        System.out.printf("stns= ");
-        for (Station s : wantStations) System.out.printf("%s ", s.getName());
-        System.out.printf("%n");
-      }
-    } else if (qb.getSpatialSelection() == PointQueryBean.SpatialSelection.stns) {
-      wantStations = sfc.getStations(qb.getStnNames());
-      if (wantStations.size() == 0) {
-        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: No valid stations specified = " + qb.getStn());
-        return false;
-      }
-    } else {
-      wantStations = sfc.getStations();
-    }
 
     // verify TemporalSelection intersects
     if (qb.getTemporalSelection() == PointQueryBean.TemporalSelection.range) {
@@ -134,8 +112,26 @@ public class StationWriter {
       }
     }
 
-    // heres the set of wanted point features
-    pfc = sfc.flatten( wantStations, wantRange, null);
+     // verify SpatialSelection has some stations
+    if (qb.getSpatialSelection() == PointQueryBean.SpatialSelection.bb) {
+      LatLonRect bb = sfc.getBoundingBox();
+      if ((bb != null) && (bb.intersect(qb.getLatLonRect()) == null)) {
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: Bounding Box contains no stations; bb= " + qb.getLatLonRect());
+        return false;
+      }
+      pfc = sfc.flatten( qb.getLatLonRect(), wantRange);
+
+    } else if (qb.getSpatialSelection() == PointQueryBean.SpatialSelection.stns) {
+      if (!sfc.contains(qb.getStnNames())) {
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: No valid stations specified = " + qb.getStn());
+        return false;
+      }
+      List<String> wantStns = Arrays.asList(qb.getStnNames());
+      pfc = sfc.flatten( wantStns, wantRange, null);
+
+    } else {
+      pfc = sfc.flatten( null, wantRange, null);
+    }
 
     return true;
   }
@@ -615,12 +611,26 @@ public class StationWriter {
     File netcdfResult;
     WriterCFStationDataset cfWriter;
     boolean headerWritten = false;
+    private List<Station> wantStations;
 
     WriterNetcdf() throws IOException {
       super(null);
 
       netcdfResult = File.createTempFile("ncss", ".nc"); // LOOK : put in some specified place
       cfWriter = new WriterCFStationDataset(netcdfResult.getAbsolutePath(), "Extracted data from TDS using CDM remote subsetting");
+
+      // verify SpatialSelection has some stations
+     if (qb.getSpatialSelection() == PointQueryBean.SpatialSelection.bb) {
+       wantStations = sfc.getStations(qb.getLatLonRect());
+
+     } else if (qb.getSpatialSelection() == PointQueryBean.SpatialSelection.stns) {
+       List<String> stnNames = Arrays.asList(qb.getStnNames());
+       wantStations = sfc.getStations(stnNames);
+
+     } else {
+       wantStations = sfc.getStations();
+     }
+
     }
 
     public void header() {

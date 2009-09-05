@@ -120,7 +120,7 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, N
    * @return a PointFeatureCollection, may be null if its empty.
    * @throws IOException on read error
    */
-  public PointFeatureCollection flatten(List<Station> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException;
+  public PointFeatureCollection flatten(List<String> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException;
 
 
 }

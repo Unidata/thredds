@@ -113,7 +113,7 @@ public class FeatureDatasetPointXML {
     if (bb != null)
       stations = sobs.getStations(bb);
     else if (names != null)
-      stations = sobs.getStations(names);
+      stations = sobs.getStations( Arrays.asList(names));
     else
       stations = sobs.getStations();
 
