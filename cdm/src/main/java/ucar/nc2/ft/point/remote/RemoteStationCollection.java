@@ -20,21 +20,21 @@ import org.apache.commons.httpclient.HttpMethod;
  * @author caron
  */
 public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
-  private CdmRemote ncremote;
+  private String uri;
   protected LatLonRect boundingBox;
   protected DateRange dateRange;
   private boolean restrictedList = false;
 
-  public RemoteStationCollection(String name, CdmRemote ncremote) throws IOException {
-    super(name);
-    this.ncremote = ncremote;
+  public RemoteStationCollection(String uri) throws IOException {
+    super(uri);
+    this.uri = uri;
 
     // read in all the stations with the "stations" query
     stationHelper = new StationHelper();
     HttpMethod method = null;
     try {
       String query = "req=stations";
-      method = ncremote.sendQuery(query);
+      method = CdmRemote.sendQuery(uri, query);
       InputStream in = method.getResponseBodyAsStream();
 
       int len = NcStream.readVInt(in);
@@ -51,14 +51,16 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
     }
   }
 
-  protected RemoteStationCollection(String name, CdmRemote ncremote, StationHelper sh) throws IOException {
+  protected RemoteStationCollection(String name, String uri, StationHelper sh) throws IOException {
     super(name);
-    this.ncremote = ncremote;
+    this.uri = uri;
     this.stationHelper = sh;
     this.restrictedList = true;
   }
 
-  public Station getStation(PointFeature feature) throws IOException { return null; } // ??  
+  public Station getStation(PointFeature feature) throws IOException {
+    return null;
+  } // ??
 
   public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
 
@@ -111,7 +113,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
   @Override
   public PointFeatureCollection flatten(LatLonRect boundingBox, DateRange dateRange) throws IOException {
     QueryMaker queryMaker = restrictedList ? new QueryByStationList() : null;
-    RemotePointCollection pfc = new RemotePointCollection(getName() + "-flatten", ncremote, queryMaker);
+    RemotePointCollection pfc = new RemotePointCollection(uri, queryMaker);
     return pfc.subset(boundingBox, dateRange);
   }
 
@@ -134,7 +136,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
     RemoteStationCollection from;
 
     RemoteStationCollectionSubset(RemoteStationCollection from, StationHelper sh, LatLonRect filter_bb, DateRange filter_date) throws IOException {
-      super(from.getName(), from.ncremote, sh);
+      super(from.getName(), from.uri, sh);
       this.from = from;
 
       if (filter_bb == null)
@@ -191,7 +193,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
 
       HttpMethod method = null;
       try {
-        method = ncremote.sendQuery(query);
+        method = CdmRemote.sendQuery(uri, query);
         InputStream in = method.getResponseBodyAsStream();
 
         int len = NcStream.readVInt(in);
@@ -205,9 +207,8 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
 
       } catch (Throwable t) {
         if (method != null) method.releaseConnection();
-        // log.error( "", t);
         throw new IOException(t.getMessage());
-      }
+      } 
     }
   }
 

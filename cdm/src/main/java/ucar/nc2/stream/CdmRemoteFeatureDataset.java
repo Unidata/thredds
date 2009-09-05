@@ -34,27 +34,31 @@ package ucar.nc2.stream;
 
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.remote.PointDatasetRemote;
+import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.VariableSimpleIF;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.jdom.output.XMLOutputter;
 import org.jdom.input.SAXBuilder;
+import org.apache.commons.httpclient.HttpMethod;
 
 /**
- * Describe
+ * Factory for CdmRemoteFeatureDataset. GRID, POINT, STATION so dar
  *
  * @author caron
  * @since May 19, 2009
  */
 public class CdmRemoteFeatureDataset {
   static private boolean debug = false;
-  static private boolean showXML = false;
+  static private boolean showXML = true;
 
   static public FeatureDataset factory(FeatureType wantFeatureType, String endpoint) throws IOException {
     if (endpoint.startsWith(CdmRemote.SCHEME))
@@ -63,29 +67,38 @@ public class CdmRemoteFeatureDataset {
     Document doc = getCapabilities(endpoint);
     Element root = doc.getRootElement();
     Element elem = root.getChild("featureDataset");
-    String fType = elem.getAttribute("type").getValue();
-    String datasetUri = elem.getAttribute("url").getValue();
+    String fType = elem.getAttribute("type").getValue();  // LOOK, may be multiple types
+    String uri = elem.getAttribute("url").getValue();
 
-    if (debug) System.out.printf("CdmRemoteFeatureDataset endpoint %s%n ftype= %s uri=%s%n", endpoint, fType, datasetUri);
+    if (debug) System.out.printf("CdmRemoteFeatureDataset endpoint %s%n ftype= %s uri=%s%n", endpoint, fType, uri);
 
     FeatureType ft = FeatureType.getType(fType);
-    CdmRemote ncremote = new CdmRemote(datasetUri, null);
-    NetcdfDataset ncd = new NetcdfDataset(ncremote, null);
 
     if (ft == null || ft == FeatureType.GRID) {
+      CdmRemote ncremote = new CdmRemote(uri);
+      NetcdfDataset ncd = new NetcdfDataset(ncremote, null);
       return new GridDataset(ncd);
+
     } else {
-      return new PointDatasetRemote(ft, ncd, ncremote);
+      List<VariableSimpleIF> dataVars = FeatureDatasetPointXML.getDataVariables(doc);
+      return new PointDatasetRemote(ft, uri, dataVars);
     }
   }
 
   static private org.jdom.Document getCapabilities(String endpoint) throws IOException {
     org.jdom.Document doc;
+    HttpMethod method = null;
     try {
+      method = CdmRemote.sendQuery(endpoint, "req=capabilities");
+      InputStream in = method.getResponseBodyAsStream();
       SAXBuilder builder = new SAXBuilder(false);
-      doc = builder.build(endpoint+"?req=capabilities"); // LOOK - not using httpclient
-    } catch (JDOMException e) {
-      throw new IOException(e.getMessage());
+      doc = builder.build(in);
+
+    } catch (Throwable t) {
+      throw new IOException(t);
+
+    } finally {
+      if (method != null) method.releaseConnection();
     }
 
     if (showXML) {
@@ -98,7 +111,7 @@ public class CdmRemoteFeatureDataset {
   }
 
   public static void main(String args[]) throws IOException {
-    String endpoint = "http://localhost:8080/thredds/cdmremote/idd/metar/gempakLocalHome";
+    String endpoint = "http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocalHome";
     FeatureDatasetPoint fd = (FeatureDatasetPoint) CdmRemoteFeatureDataset.factory(FeatureType.ANY, endpoint);
     FeatureCollection fc = fd.getPointFeatureCollectionList().get(0);
     System.out.printf("Result= %s %n %s %n", fd, fc);

@@ -563,7 +563,7 @@ public class NcMLReader {
    * @return Array with parsed values
    * @throws IllegalArgumentException if string values not parsable to specified data type
    */
-  private ucar.ma2.Array readAttributeValues(Element s) throws IllegalArgumentException {
+  public static ucar.ma2.Array readAttributeValues(Element s) throws IllegalArgumentException {
     String valString = s.getAttributeValue("value");
     if (valString == null) throw new IllegalArgumentException("No value specified");
     valString = StringUtil.unquoteXmlAttribute(valString);

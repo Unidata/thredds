@@ -46,6 +46,7 @@ public interface PointFeatureCollection extends FeatureCollection {
 
   /**
    * Use the internal iterator to check if there is another PointFeature in the iteration.
+   * Note that this is not thread-safe; use getPointFeatureIterator() for a threadsafe iterator.
    * @return true is there is another PointFeature in the iteration.
    * @throws java.io.IOException on read error
    * @see PointFeatureIterator#hasNext

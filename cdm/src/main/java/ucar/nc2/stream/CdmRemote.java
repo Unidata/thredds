@@ -83,7 +83,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     httpClient = client;
   }
 
-  private synchronized void initHttpClient() {
+  static private synchronized void initHttpClient() {
     if (httpClient != null) return;
     MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
     httpClient = new HttpClient(connectionManager);
@@ -92,7 +92,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   //////////////////////////////////////////////////////
   private final String remoteURI;
 
-  public CdmRemote(String _remoteURI, CancelTask cancel) throws IOException {
+  public CdmRemote(String _remoteURI) throws IOException {
 
     // get http URL
     String temp = _remoteURI;
@@ -181,8 +181,9 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     }
   }
 
-  public HttpMethod sendQuery(String query) throws IOException {
-
+  public static HttpMethod sendQuery(String remoteURI, String query) throws IOException {
+    initHttpClient();
+    
     StringBuilder sbuff = new StringBuilder(remoteURI);
     sbuff.append("?");
     sbuff.append(query);

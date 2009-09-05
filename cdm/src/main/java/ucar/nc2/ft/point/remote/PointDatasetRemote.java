@@ -38,10 +38,9 @@ import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
-import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStream;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.VariableSimpleIF;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.EarthLocationImpl;
@@ -50,6 +49,7 @@ import ucar.ma2.*;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -61,16 +61,19 @@ import com.google.protobuf.InvalidProtocolBufferException;
  */
 public class PointDatasetRemote extends PointDatasetImpl {
 
-  public PointDatasetRemote(FeatureType wantFeatureType, NetcdfDataset ncd, CdmRemote ncremote) throws IOException {
-    super(ncd, wantFeatureType);
+  public PointDatasetRemote(FeatureType wantFeatureType, String uri, List<VariableSimpleIF> vars) throws IOException {
+    super(wantFeatureType);
+
+    dataVariables.addAll(vars);
+
 
     collectionList = new ArrayList<FeatureCollection>(1);
     switch (wantFeatureType) {
       case POINT:
-        collectionList.add(new RemotePointCollection(ncd.getLocation(), ncremote, null));
+        collectionList.add(new RemotePointCollection(uri, null));
         break;
       case STATION:
-        collectionList.add(new RemoteStationCollection(ncd.getLocation(), ncremote));
+        collectionList.add(new RemoteStationCollection(uri));
         break;
       default:
         throw new UnsupportedOperationException("No implemenattion for " + wantFeatureType);

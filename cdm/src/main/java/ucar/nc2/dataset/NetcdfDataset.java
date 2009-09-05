@@ -806,7 +806,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   static private NetcdfFile acquireRemote(FileCache cache, FileFactory factory, Object hashKey,
                                           String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
-    if (cache == null) return new CdmRemote(location, cancelTask);
+    if (cache == null) return new CdmRemote(location);
 
     if (factory == null) factory = new RemoteFactory();
     return (NetcdfFile) cache.acquire(factory, hashKey, location, buffer_size, cancelTask, spiObject);
@@ -814,7 +814,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   static private class RemoteFactory implements FileFactory {
     public NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
-      return new CdmRemote(location, cancelTask);
+      return new CdmRemote(location);
     }
   }
 

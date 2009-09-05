@@ -46,6 +46,7 @@ import java.io.FilenameFilter;
  *
  * @author caron
  * @since May 20, 2009
+ * @deprecated see thredds.inventory.DatasetCollectionManager
  */
 
 

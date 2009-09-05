@@ -52,12 +52,12 @@ import org.apache.commons.httpclient.HttpMethod;
  * @since Jun 15, 2009
  */
 class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
-  private CdmRemote ncremote;
+  private String uri;
   private QueryMaker queryMaker;
 
-  RemotePointCollection(String name, CdmRemote ncremote, QueryMaker queryMaker) {
-    super(name);
-    this.ncremote = ncremote;
+  RemotePointCollection(String uri, QueryMaker queryMaker) {
+    super(uri);
+    this.uri = uri;
     this.queryMaker = (queryMaker == null) ? this : queryMaker;
   }
 
@@ -69,7 +69,7 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
     HttpMethod method = null;
 
     try {
-      method = ncremote.sendQuery( queryMaker.makeQuery());
+      method = CdmRemote.sendQuery(uri, queryMaker.makeQuery());
       InputStream in = method.getResponseBodyAsStream();
 
       int len = NcStream.readVInt(in);
@@ -81,7 +81,6 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
       return iter;
 
     } catch (Throwable t) {
-      // log.error(t);
       if (method != null) method.releaseConnection();
       throw new RuntimeException(t);
     }
@@ -100,7 +99,7 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
     PointCollectionImpl from;
 
     PointFeatureCollectionSubset(RemotePointCollection from, LatLonRect filter_bb, DateRange filter_date) throws IOException {
-      super(from.name, from.ncremote, null);
+      super(from.uri, null);
       this.from = from;
 
       if (filter_bb == null)
@@ -119,93 +118,92 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
 }
 
 
+/* private class RemotePointFeatureIterator extends PointIteratorAbstract {
+ PointStreamProto.PointFeatureCollection pfc;
+ HttpMethod method;
+ InputStream in;
 
-  /* private class RemotePointFeatureIterator extends PointIteratorAbstract {
-    PointStreamProto.PointFeatureCollection pfc;
-    HttpMethod method;
-    InputStream in;
+ int count = 0;
+ PointFeature pf;
+ DateUnit timeUnit;
+ StructureMembers sm;
 
-    int count = 0;
-    PointFeature pf;
-    DateUnit timeUnit;
-    StructureMembers sm;
+ RemotePointFeatureIterator(PointStreamProto.PointFeatureCollection pfc, HttpMethod method, InputStream in) throws IOException {
+   this.pfc = pfc;
+   this.method = method;
+   this.in = in;
 
-    RemotePointFeatureIterator(PointStreamProto.PointFeatureCollection pfc, HttpMethod method, InputStream in) throws IOException {
-      this.pfc = pfc;
-      this.method = method;
-      this.in = in;
+   try {
+     timeUnit = new DateUnit(pfc.getTimeUnit());
+   } catch (Exception e) {
+     e.printStackTrace();
+   }
 
-      try {
-        timeUnit = new DateUnit(pfc.getTimeUnit());
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
+   int offset = 0;
+   sm = new StructureMembers(pfc.getName());
+   for (PointStreamProto.Member m : pfc.getMembersList()) {
+     StructureMembers.Member member = sm.addMember(m.getName(), m.getDesc(), m.getUnits(), NcStream.decodeDataType(m.getDataType()),
+             NcStream.decodeSection(m.getSection()).getShape());
+     member.setDataParam( offset);
+     offset += member.getSizeBytes();
+   }
+   sm.setStructureSize( offset);
+ }
 
-      int offset = 0;
-      sm = new StructureMembers(pfc.getName());
-      for (PointStreamProto.Member m : pfc.getMembersList()) {
-        StructureMembers.Member member = sm.addMember(m.getName(), m.getDesc(), m.getUnits(), NcStream.decodeDataType(m.getDataType()),
-                NcStream.decodeSection(m.getSection()).getShape());
-        member.setDataParam( offset);
-        offset += member.getSizeBytes();
-      }
-      sm.setStructureSize( offset);
-    }
+ public boolean hasNext() throws IOException {
+   int len = NcStream.readVInt(in);
+   if (len <= 0) {
+     pf = null;
+     return false;
+   }
 
-    public boolean hasNext() throws IOException {
-      int len = NcStream.readVInt(in);
-      if (len <= 0) {
-        pf = null;
-        return false;
-      }
+   byte[] b = new byte[len];
+   NcStream.readFully(in, b);
+   PointStreamProto.PointFeature pfp = PointStreamProto.PointFeature.parseFrom(b);
+   PointStreamProto.Location locp = pfp.getLoc();
+   EarthLocationImpl location = new EarthLocationImpl(locp.getLat(), locp.getLon(), locp.getAlt());
 
-      byte[] b = new byte[len];
-      NcStream.readFully(in, b);
-      PointStreamProto.PointFeature pfp = PointStreamProto.PointFeature.parseFrom(b);
-      PointStreamProto.Location locp = pfp.getLoc();
-      EarthLocationImpl location = new EarthLocationImpl(locp.getLat(), locp.getLon(), locp.getAlt());
+   pf = new MyPointFeature(location, locp.getTime(), locp.getNomTime(), timeUnit, pfp);
+   count++;
+   return true;
+ }
 
-      pf = new MyPointFeature(location, locp.getTime(), locp.getNomTime(), timeUnit, pfp);
-      count++;
-      return true;
-    }
+ public PointFeature next() throws IOException {
+   if (pf != null)
+     calcBounds(pf);
+   return pf;
+ }
 
-    public PointFeature next() throws IOException {
-      if (pf != null)
-        calcBounds(pf);
-      return pf;
-    }
+ public void finish() {
+   if (method != null)
+     method.releaseConnection();
+   method = null;
 
-    public void finish() {
-      if (method != null)
-        method.releaseConnection();
-      method = null;
+   finishCalcBounds();
+ }
 
-      finishCalcBounds();
-    }
+ public void setBufferSize(int bytes) {
+ }
 
-    public void setBufferSize(int bytes) {
-    }
+ private class MyPointFeature extends PointFeatureImpl {
+   PointStreamProto.PointFeature pfp;
 
-    private class MyPointFeature extends PointFeatureImpl {
-      PointStreamProto.PointFeature pfp;
+   MyPointFeature(EarthLocation location, double obsTime, double nomTime, DateUnit timeUnit, PointStreamProto.PointFeature pfp) {
+     super(location, obsTime, nomTime, timeUnit);
+     this.pfp = pfp;
+   }
 
-      MyPointFeature(EarthLocation location, double obsTime, double nomTime, DateUnit timeUnit, PointStreamProto.PointFeature pfp) {
-        super(location, obsTime, nomTime, timeUnit);
-        this.pfp = pfp;
-      }
+   public StructureData getData() throws IOException {
+     ByteBuffer bb = ByteBuffer.wrap(pfp.getData().toByteArray());
+     ArrayStructureBB asbb = new ArrayStructureBB(sm, new int[]{1}, bb, 0);
+     for (String s : pfp.getSdataList())
+       asbb.addObjectToHeap(s); // not quite right
+     return asbb.getStructureData(0);
+   }
 
-      public StructureData getData() throws IOException {
-        ByteBuffer bb = ByteBuffer.wrap(pfp.getData().toByteArray());
-        ArrayStructureBB asbb = new ArrayStructureBB(sm, new int[]{1}, bb, 0);
-        for (String s : pfp.getSdataList())
-          asbb.addObjectToHeap(s); // not quite right
-        return asbb.getStructureData(0);
-      }
-
-      public String toString() {
-        return location + " obs=" + obsTime + " nom=" + nomTime;
-      }
-    }
-  } */
+   public String toString() {
+     return location + " obs=" + obsTime + " nom=" + nomTime;
+   }
+ }
+} */
 

@@ -34,14 +34,15 @@ package ucar.nc2.ft.point.writer;
 
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.Attribute;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.Dimension;
 import ucar.nc2.ncml.NcMLWriter;
+import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ft.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
+import ucar.ma2.DataType;
 
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
@@ -76,7 +77,7 @@ public class FeatureDatasetPointXML {
   public String getCapabilities() {
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
     return fmt.outputString(getCapabilitiesDocument());
-  } 
+  }
 
   public void getCapabilities(OutputStream os) throws IOException {
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
@@ -98,9 +99,10 @@ public class FeatureDatasetPointXML {
 
   /**
    * Create an XML document for the stations in this dataset.
-   * @param bb restrict stations to this bounding box, may be null
-   * @param names  restrict stations to these names, may be null
-   * @return  XML document for the stations
+   *
+   * @param bb    restrict stations to this bounding box, may be null
+   * @param names restrict stations to these names, may be null
+   * @return XML document for the stations
    * @throws IOException on read error
    */
   public Document makeStationCollectionDocument(LatLonRect bb, String[] names) throws IOException {
@@ -135,6 +137,7 @@ public class FeatureDatasetPointXML {
 
   /**
    * Create the capabilities XML document for this datasets
+   *
    * @return capabilities XML document
    */
   public Document getCapabilitiesDocument() {
@@ -144,7 +147,7 @@ public class FeatureDatasetPointXML {
       rootElem.setAttribute("location", path);
       Element elem = new Element("featureDataset");
       elem.setAttribute("type", fdp.getFeatureType().toString().toLowerCase());
-      elem.setAttribute("url", path +"/"+ fdp.getFeatureType().toString().toLowerCase());
+      elem.setAttribute("url", path + "/" + fdp.getFeatureType().toString().toLowerCase());
       rootElem.addContent(elem);
     }
 
@@ -193,7 +196,6 @@ public class FeatureDatasetPointXML {
   }
 
   private Element writeVariable(VariableSimpleIF v) {
-
     Element varElem = new Element("variable");
     varElem.setAttribute("name", v.getShortName());
 
@@ -207,6 +209,108 @@ public class FeatureDatasetPointXML {
     }
 
     return varElem;
+  }
+
+  /////////////////////////////////////////////
+  public static List<VariableSimpleIF> getDataVariables(Document doc) throws IOException {
+    Element root = doc.getRootElement();
+
+    List<VariableSimpleIF> dataVars = new ArrayList<VariableSimpleIF>();
+    List<Element> varElems = root.getChildren("variable");
+    for (Element varElem : varElems) {
+      dataVars.add(new VariableSimple(varElem));
+    }
+    return dataVars;
+  }
+
+  private static class VariableSimple implements VariableSimpleIF {
+    String name, desc, units;
+    DataType dt;
+    List<Attribute> atts;
+
+    VariableSimple(Element velem) {
+      name = velem.getAttributeValue("name");
+      String type = velem.getAttributeValue("type");
+      dt = DataType.getType(type);
+
+      atts = new ArrayList<Attribute>();
+      List<Element> attElems = velem.getChildren("attribute");
+      for (Element attElem : attElems) {
+        String attName = attElem.getAttributeValue("name");
+        ucar.ma2.Array values = NcMLReader.readAttributeValues(attElem);
+        atts.add(new Attribute(attName, values));
+      }
+
+      for (Attribute att : atts) {
+        if (att.getName().equals("units"))
+          units = att.getStringValue();
+        if (att.getName().equals("long_name"))
+          desc = att.getStringValue();
+        if ((desc == null) && att.getName().equals("description"))
+          desc = att.getStringValue();
+        if ((desc == null) && att.getName().equals("standard_name"))
+          desc = att.getStringValue();
+      }
+    }
+
+    @Override
+    public String getName() {
+      return name;
+    }
+
+    @Override
+    public String getShortName() {
+      return name;
+    }
+
+    @Override
+    public String getDescription() {
+      return desc;
+    }
+
+    @Override
+    public String getUnitsString() {
+      return units;
+    }
+
+    @Override
+    public int getRank() {
+      return 0;
+    }
+
+    @Override
+    public int[] getShape() {
+      return new int[0];
+    }
+
+    @Override
+    public List<Dimension> getDimensions() {
+      return null;
+    }
+
+    @Override
+    public DataType getDataType() {
+      return dt;
+    }
+
+    @Override
+    public List<Attribute> getAttributes() {
+      return atts;
+    }
+
+    @Override
+    public Attribute findAttributeIgnoreCase(String name) {
+      for (Attribute att : atts) {
+        if (att.getName().equalsIgnoreCase(name))
+          return att;
+      }
+      return null;
+    }
+
+    @Override
+    public int compareTo(VariableSimpleIF o) {
+      return name.compareTo(o.getName()); // ??
+    }
   }
 
   // debug
