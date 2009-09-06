@@ -155,7 +155,7 @@ public class TestPointFeatureTypes extends TestCase {
     testPointDataset("collection:D:/formats/gempak/surface/#yyyyMMdd#_sao\\.gem", FeatureType.STATION, true);
   }
 
-  public void testCollection() throws IOException {
+  public void utestCollection() throws IOException {
     //Surface_METAR_20070326_0000.nc
     testPointDataset("collection:C:/data/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc", FeatureType.STATION, true);
     //testPointDataset("collection:D:/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc", FeatureType.STATION, true);
@@ -166,13 +166,13 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   public void testCdmRemoteCollection() throws IOException {
-    //testDons("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak");
+    testDons("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", false);
     //testDons("collection:C:/data/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc", true);
-    testDons("C:/data/datasets/metars/Surface_METAR_20070326_0000.nc", true);
-    testDons("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocalHome", true);
-    //testPointDataset("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", FeatureType.STATION, true);
-    //testPointDataset("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", FeatureType.ANY_POINT, true);
-    //testPointDataset("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", FeatureType.POINT, true);
+    //testDons("C:/data/datasets/metars/Surface_METAR_20070326_0000.nc", true);
+    //testDons("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocalHome", true);
+    testPointDataset("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", FeatureType.STATION, true);
+    testPointDataset("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", FeatureType.ANY_POINT, true);
+    testPointDataset("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", FeatureType.POINT, true);
   }
 
   public void utestCdmRemoteCollectionSubsets() throws IOException {
