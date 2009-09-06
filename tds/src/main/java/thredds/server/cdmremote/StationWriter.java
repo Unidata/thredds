@@ -122,7 +122,7 @@ public class StationWriter {
       pfc = sfc.flatten( qb.getLatLonRect(), wantRange);
 
     } else if (qb.getSpatialSelection() == PointQueryBean.SpatialSelection.stns) {
-      if (!sfc.contains(qb.getStnNames())) {
+      if (!contains(sfc, qb.getStnNames())) {
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: No valid stations specified = " + qb.getStn());
         return false;
       }
@@ -134,6 +134,13 @@ public class StationWriter {
     }
 
     return true;
+  }
+
+  private boolean contains(StationTimeSeriesFeatureCollection sfc, String[] stnNames) {
+     for (String name : stnNames) {
+       if (sfc.getStation(name) != null) return true;
+     }
+    return false;
   }
 
 

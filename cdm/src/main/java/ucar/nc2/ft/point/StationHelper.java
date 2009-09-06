@@ -127,12 +127,5 @@ public class StationHelper {
     return result;
   }
 
-  public boolean contains(String[] stnNames) {
-    for (String name : stnNames) {
-      if (stationHash.get(name) != null) return true;
-    }
-    return false;
-  }
-
 }
 

@@ -64,15 +64,6 @@ public interface StationCollection {
   public List<Station> getStations(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
 
   /**
-   * See if any of the given names are in the station list
-   *
-   * @param names names of stations ids
-   * @return true is at least one station exists
-   * @throws java.io.IOException on i/o error
-   */
-  public boolean contains(String[] names) throws IOException;
-
-  /**
    * Translate list of station names to list of Stations. Skip any not found
    *
    * @param stnNames list of stnNames

@@ -175,11 +175,6 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
     return stationHelper.getStations(boundingBox);
   }
 
-  public boolean contains(String[] names) throws IOException {
-    if (stationHelper == null) initStationHelper();
-    return stationHelper.contains(names);
-  }
-
   public Station getStation(String name) {
     if (stationHelper == null) initStationHelper();
     return stationHelper.getStation(name);
