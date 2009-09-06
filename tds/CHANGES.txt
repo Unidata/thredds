@@ -4,6 +4,10 @@ Build Date = @BUILDTIME@
 
 Release Details 4.1:
  0:
+  grib-8.0 indexing
+  Fix thredds.servlet.HtmlWriter to correctly deal with absolute URLs for folder icons and such.
+  cdmremote refactor
+  forms now integrated with cdmremote, delete non-compiling classes
   place default ehcache.xml in WEB-INF, can be overridden in threddsConfig.xml
 
 Release Details 4.0:
