@@ -551,6 +551,7 @@ public class GridIndexToNC {
  
     List<GridTimeCoord> timeCoords = new ArrayList<GridTimeCoord>();
     List<GridVertCoord> vertCoords = new ArrayList<GridVertCoord>();
+    List<GridEnsembleCoord> ensembleCoords = new ArrayList<GridEnsembleCoord>();
 
     List<String> removeVariables = new ArrayList<String>();
 
@@ -611,6 +612,26 @@ public class GridIndexToNC {
           timeCoords.add( useTimeCoord);
         }
         pv.setTimeCoord( useTimeCoord);
+
+        // check for ensemble members
+        //System.out.println( pv.getName() +"  "+ pv.getParamName() );
+        GridEnsembleCoord useEnsembleCoord = null;
+        GridEnsembleCoord  ensembleCoord = new GridEnsembleCoord(record, lookup);
+        for (GridEnsembleCoord gec : ensembleCoords) {
+          if (ensembleCoord.getNEnsembles() == gec.getNEnsembles()) {
+            useEnsembleCoord = gec;
+            break;
+          }
+        }
+
+        if (useEnsembleCoord == null) {
+          useEnsembleCoord = ensembleCoord;
+          ensembleCoords.add(useEnsembleCoord);
+        }
+        // only add ensemble dimensions
+        if (useEnsembleCoord.getNEnsembles() > 1)
+          pv.setEnsembleCoord(useEnsembleCoord);
+
       }
 
       // any need to be removed?
@@ -636,6 +657,11 @@ public class GridIndexToNC {
       // add coordinate variables at the end
       for (GridTimeCoord tcs : timeCoords) {
         tcs.addToNetcdfFile(ncfile, hcs.getGroup());
+      }
+
+      for (GridEnsembleCoord gec : ensembleCoords) {
+        if (gec.getNEnsembles() > 1)
+          gec.addToNetcdfFile(ncfile, hcs.getGroup());
       }
 
       hcs.addToNetcdfFile( ncfile);
