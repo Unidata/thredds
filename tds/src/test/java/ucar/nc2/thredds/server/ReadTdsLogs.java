@@ -172,15 +172,17 @@ public class ReadTdsLogs {
           //out.format(",%d,%f,%s%n", itask.msecs, speedup, itask.failed);
           if (itask.failed)
             System.out.printf("***FAIL %s %s %n", log.path, itask.failMessage);
-          
-          else if ((itask.statusCode != log.returnCode) && (log.returnCode != 304)) {
-          out.format("%5d: status=%d was=%d %s  %n", itask.reqnum, itask.statusCode, log.returnCode, log.path);
-          out2.format("%5d: status=%d was=%d %s  %n", itask.reqnum, itask.statusCode, log.returnCode, log.path);
 
-        } else if ((itask.statusCode == 200) && (itask.bytesRead != log.sizeBytes)) {
-          out.format("%5d: bytes=%d was=%d %s%n", itask.reqnum, itask.bytesRead, log.sizeBytes, log.path);
-          // out2.format("%5d: bytes=%d was=%d %s%n", reqno, itask.bytesRead, log.sizeBytes, log.path);
-        }
+          else if ((itask.statusCode != log.returnCode) && (log.returnCode != 304) && (log.returnCode != 302)) {
+            if (!compareAgainstLive(itask)) {
+              out.format("%5d: status=%d was=%d %s  %n", itask.reqnum, itask.statusCode, log.returnCode, log.path);
+              out2.format("%5d: status=%d was=%d %s  %n", itask.reqnum, itask.statusCode, log.returnCode, log.path);
+            }
+
+          } else if ((itask.statusCode == 200) && (itask.bytesRead != log.sizeBytes)) {
+            out.format("%5d: bytes=%d was=%d %s%n", itask.reqnum, itask.bytesRead, log.sizeBytes, log.path);
+            // out2.format("%5d: bytes=%d was=%d %s%n", reqno, itask.bytesRead, log.sizeBytes, log.path);
+          }
 
           if (dump) System.out.printf(",%d,%f,%s%n", itask.msecs, speedup, itask.failed);
 
@@ -192,6 +194,28 @@ public class ReadTdsLogs {
         }
       }
       System.out.println("exit ResultProcessor");
+    }
+
+    private boolean compareAgainstLive(SendRequestTask itask) throws IOException {
+      HttpMethod method = null;
+      try {
+        method = new GetMethod(serverLive + itask.log.path);
+        // out2.format("send %s %n", method.getPath());
+
+        method.setFollowRedirects(true);
+        int statusCode = httpClient.executeMethod(method);
+
+        InputStream is = method.getResponseBodyAsStream();
+        if (is != null)
+          IO.copy2null(method.getResponseBodyAsStream(), 10 * 1000); // read data and throw away
+
+        // out2.format("%5d: test status=%d live=%d %n", itask.reqnum, itask.statusCode, statusCode);
+        return statusCode == itask.statusCode;
+
+      } finally {
+        if (method != null) method.releaseConnection();
+      }
+
     }
   }
 
@@ -370,10 +394,10 @@ public class ReadTdsLogs {
         continue;
       }
 
-     /* if (!(log.path.indexOf("ncss/grid") > 0))  {    // ncss only
-        skip++;
-        continue;
-      } */
+      /* if (!(log.path.indexOf("ncss/grid") > 0))  {    // ncss only
+       skip++;
+       continue;
+     } */
 
       if (log.path.indexOf("fileServer") > 0) {
         // System.out.println(" *** skip fmrc " + log);
@@ -625,6 +649,8 @@ public class ReadTdsLogs {
     void run(String filename) throws IOException;
   }
 
+  static String serverLive = "http://motherlode.ucar.edu:8080";
+  static String serverTest = "http://motherlode.ucar.edu:9080";
 
   public static void main(String args[]) throws IOException {
     out = new Formatter(new FileOutputStream("C:/TEMP/readTdsLogs.txt"));
@@ -638,7 +664,7 @@ public class ReadTdsLogs {
     NetcdfDataset.setHttpClient(client);  */
 
     // sendRequests
-    final ReadTdsLogs reader = new ReadTdsLogs("http://motherlode.ucar.edu:9080");
+    final ReadTdsLogs reader = new ReadTdsLogs(serverTest);
 
     long startElapsed = System.nanoTime();
 

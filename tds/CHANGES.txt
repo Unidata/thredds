@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Release Details 4.1:
  0:
+  get showRoots -> admin/dataDir working again
   ehcache debugging commands
   catalogWriting.useBytesForDataSize
   grib-8.0 indexing

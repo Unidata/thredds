@@ -1570,14 +1570,14 @@ public class DataRootHandler {
           while (iter.hasNext()) {
             DataRoot ds = (DataRoot) iter.next();
             e.pw.print(" <b>" + ds.path + "</b>");
-            String url = DataRootHandler.this.tdsContext.getContextPath() + "/dataDir/" + ds.path + "/";
+            String url = DataRootHandler.this.tdsContext.getContextPath() + "/admin/dataDir/" + ds.path + "/";
             if (ds.fmrc == null) {
               String type = (ds.scan == null) ? "root" : "scan";
               e.pw.println(" for " + type + " directory= <a href='" + url + "'>" + ds.dirLocation + "</a> ");
             } else {
               if (ds.dirLocation == null) {
-                url = DataRootHandler.this.tdsContext.getContextPath() + "/" + ds.path;
-                e.pw.println("  for fmrc= <a href='" + url + "'>" + ds.fmrc.getXlinkHref() + "</a>");
+                //url = DataRootHandler.this.tdsContext.getContextPath() + "/" + ds.path;
+                e.pw.println("  for fmrc= <a href='" + ds.fmrc.getXlinkHref() + "'>" + ds.fmrc.getXlinkHref() + "</a>");
               } else {
                 e.pw.println("  for fmrc= <a href='" + url + "'>" + ds.dirLocation + "</a>");
               }

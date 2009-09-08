@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import thredds.servlet.HtmlWriter;
 import thredds.servlet.UsageLog;
+import thredds.servlet.DataRootHandler;
 import thredds.server.config.TdsContext;
 import thredds.util.RequestForwardUtils;
 
@@ -48,6 +49,9 @@ import java.io.File;
 /**
  * Handle /admin/content/
  * Handle /admin/logs/
+ * Handle /admin/dataDir/
+ *
+ * Make sure this is only done under https.
  *
  * @author caron
  * @since 4.0
@@ -79,19 +83,22 @@ public class DirDisplayController extends AbstractController {
     }
 
     File file = null;
-    if (path.startsWith("/content/"))
-    {
+    if (path.startsWith("/content/")) {
       // Check in content/thredds directory (which includes content/thredds/public).
       file = new File(tdsContext.getContentDirectory(), path.substring(9));
       // If not found, check in content/thredds and altContent (but not content/thredds/public).
       if ( ! file.exists() )
         file = tdsContext.getConfigFileSource().getFile( path.substring(9));
+
     } else if (path.startsWith("/logs/")) {
       file = new File(tdsContext.getTomcatLogDirectory(), path.substring(6));
+
+    } else if (path.startsWith("/dataDir/")) {
+      String root = path.substring(9);
+      file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(root);
     }
 
-    if (file == null)
-    {
+    if (file == null) {
       RequestForwardUtils.forwardRequest( path, tdsContext.getDefaultRequestDispatcher(), req, res );
       return null;
     }

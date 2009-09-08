@@ -170,9 +170,9 @@ public class TestPointFeatureTypes extends TestCase {
     //testDons("collection:C:/data/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc", true);
     //testDons("C:/data/datasets/metars/Surface_METAR_20070326_0000.nc", true);
     //testDons("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocalHome", true);
-    testPointDataset("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", FeatureType.STATION, true);
-    testPointDataset("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", FeatureType.ANY_POINT, true);
-    testPointDataset("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", FeatureType.POINT, true);
+    //testPointDataset("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", FeatureType.STATION, true);
+    //testPointDataset("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", FeatureType.ANY_POINT, true);
+    //testPointDataset("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", FeatureType.POINT, true);
   }
 
   public void utestCdmRemoteCollectionSubsets() throws IOException {
@@ -472,7 +472,7 @@ public class TestPointFeatureTypes extends TestCase {
       StationTimeSeriesFeature already = locs.get(loc);
       if (already != null) {
         System.out.printf("  duplicate location %s(%s) of %s(%s) %n", sf.getName(), sf.getDescription(),
-            already.getName(), already.getDescription());
+                already.getName(), already.getDescription());
       } else
         locs.put(loc, sf);
     }
@@ -589,9 +589,8 @@ public class TestPointFeatureTypes extends TestCase {
   /////////////////////////////////////////////////////////
 
   public void testDons(String file, boolean showTime) throws IOException {
-    long start = 0;
+    long start = System.currentTimeMillis();
     if (showTime) {
-      start = System.currentTimeMillis();
       ucar.unidata.io.RandomAccessFile.setDebugAccess(true);
     }
 
@@ -600,7 +599,7 @@ public class TestPointFeatureTypes extends TestCase {
     if (pods == null) {  // try as ANY_POINT
       System.out.println("trying as ANY_POINT");
       pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
-          ucar.nc2.constants.FeatureType.ANY_POINT, file, null, buf);
+              ucar.nc2.constants.FeatureType.ANY_POINT, file, null, buf);
     } else
       System.out.println("Open as POINT");
 
@@ -627,28 +626,34 @@ public class TestPointFeatureTypes extends TestCase {
     }
 
     PointFeatureIterator dataIterator = collection.getPointFeatureIterator(-1);
-    int numObs = 0;
-    while (dataIterator.hasNext()) {
-      PointFeature po = (PointFeature) dataIterator.next();
-      numObs++;
-      ucar.unidata.geoloc.EarthLocation el = po.getLocation();
-      assert llr.contains(el.getLatLon()) : el.getLatLon();
-      //if (numObs % 1000 == 0)
-      //  System.out.printf("%d el = %s %n", numObs, el);
-    }
+    try {
+      int numObs = 0;
+      while (dataIterator.hasNext()) {
+        PointFeature po = (PointFeature) dataIterator.next();
+        numObs++;
+        ucar.unidata.geoloc.EarthLocation el = po.getLocation();
+        assert llr.contains(el.getLatLon()) : el.getLatLon();
+        //if (numObs % 1000 == 0)
+        System.out.printf("%d el = %s %n", numObs, el);
+        break;
+      }
 
-    if (showTime) {
-      long took = System.currentTimeMillis() - start;
-      System.out.printf("%ntotal response took %d msecs nobs = %d%n  seeks= %d nbytes read= %d%n", took, numObs,
-          ucar.unidata.io.RandomAccessFile.getDebugNseeks(), ucar.unidata.io.RandomAccessFile.getDebugNbytes());
+        long took = System.currentTimeMillis() - start;
+        System.out.printf("response took %d msecs nobs = %d%n  seeks= %d nbytes read= %d%n", took, numObs,
+                ucar.unidata.io.RandomAccessFile.getDebugNseeks(), ucar.unidata.io.RandomAccessFile.getDebugNbytes());
+    } finally {
+      if (dataIterator != null)
+        dataIterator.finish();
     }
+    long took = System.currentTimeMillis() - start;
+    System.out.printf("%ntotal response took %d msecs%n", took);
   }
 
-    public static void main(String arg[]) throws IOException {
-      TestPointFeatureTypes test = new TestPointFeatureTypes("");
-      test.testDons("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", false);
+  public static void main(String arg[]) throws IOException {
+    TestPointFeatureTypes test = new TestPointFeatureTypes("");
+    test.testDons("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", false);
 
-    }
+  }
 
 
 }
