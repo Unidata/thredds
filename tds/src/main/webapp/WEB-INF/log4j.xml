@@ -76,7 +76,12 @@
 
   <!-- special loggers -->
   <logger name="cacheLogger" additivity="false">
-    <level value="WARN"/>
+    <level value="INFO"/>
+    <appender-ref ref="cacheLog"/>
+  </logger>
+
+  <logger name="thredds.filesystem.CacheManager" additivity="false">
+    <level value="DEBUG"/>
     <appender-ref ref="cacheLog"/>
   </logger>
 

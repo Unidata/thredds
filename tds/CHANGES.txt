@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Release Details 4.1:
  0:
+  ehcache debugging commands
+  catalogWriting.useBytesForDataSize
   grib-8.0 indexing
   Fix thredds.servlet.HtmlWriter to correctly deal with absolute URLs for folder icons and such.
   cdmremote refactor

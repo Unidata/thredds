@@ -34,13 +34,14 @@ package thredds.filesystem;
 import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Formatter;
 
 /**
  * Lightweight, serializable representation of a java.io.File with arbitrary attributes
  * @author caron
  * @since Mar 21, 2009
  */
-class CacheFile implements Serializable {
+public class CacheFile implements Serializable {
   protected String shortName;
   protected long lastModified;
   protected long length;
@@ -85,12 +86,15 @@ class CacheFile implements Serializable {
 
   @Override
   public String toString() {
-    return "CacheFile{" +
-        "shortName='" + shortName + '\'' +
-        ", lastModified=" + lastModified +
-        ", length=" + length +
-        ", isDirectory=" + isDirectory +
-        ", att=" + att +
-        '}';
+    Formatter f = new Formatter();
+    f.format("CacheFile{ shortName='%s' lastModified=%d length=%d isDirectory=%s%n", shortName, lastModified, length, isDirectory);
+    if (att != null ) {
+      f.format(" attributes:%n");
+      for (String key : att.keySet()) {
+        f.format("  %s = %s %n", key, att.get(key));
+      }
+    }
+
+    return f.toString();
   }
 }

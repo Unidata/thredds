@@ -36,6 +36,7 @@ package thredds.server.config;
 import thredds.servlet.ThreddsConfig;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.FmrcInventoryServlet;
+import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.cache.FileCacheRaf;
 import ucar.nc2.util.DiskCache2;
@@ -71,8 +72,8 @@ public class CdmInit {
 
   void init(TdsContext tdsContext) {
     // new for 4.1 - ehcache object caching
-    String ehConfig = ThreddsConfig.get("cache.configFile", tdsContext.getWebinfPath() + "/ehcache.xml");
-    String ehDirectory = ThreddsConfig.get("cache.directory", tdsContext.getContentDirectory().getPath() + "/ehcache/");
+    String ehConfig = ThreddsConfig.get("ehcache.configFile", tdsContext.getWebinfPath() + "/ehcache.xml");
+    String ehDirectory = ThreddsConfig.get("ehcache.directory", tdsContext.getContentDirectory().getPath() + "/ehcache/");
     try {
       cacheManager = thredds.filesystem.ControllerCaching.makeStandardController(ehConfig, ehDirectory);
       thredds.inventory.DatasetCollectionManager.setController(cacheManager);
@@ -80,6 +81,10 @@ public class CdmInit {
       logServerStartup.error("Cant read ehcache config file "+ehConfig, ioe);
     }
 
+    boolean useBytesForDataSize = ThreddsConfig.getBoolean("catalogWriting.useBytesForDataSize", false);    
+    InvCatalogFactory10.useBytesForDataSize(useBytesForDataSize);
+
+    ////////////////////////////////////
     AggregationFmrc.setDefinitionDirectory(new File(tdsContext.getRootDirectory(), fmrcDefinitionDirectory));
     FmrcInventoryServlet.setDefinitionDirectory(new File(tdsContext.getRootDirectory(), fmrcDefinitionDirectory));
 
@@ -138,6 +143,7 @@ public class CdmInit {
     timer.scheduleAtFixedRate(new CacheScourTask(maxSize), c.getTime(), (long) 1000 * scourSecs);
   }
 
+  // should be called when tomcat exits
   public void destroy() throws Exception {
     if (timer != null) timer.cancel();
     NetcdfDataset.shutdown();

@@ -55,8 +55,9 @@ import ucar.nc2.util.IO;
  */
 @ThreadSafe
 public class CacheManager {
+  static private org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger(thredds.filesystem.CacheManager.class);
   static private net.sf.ehcache.CacheManager cacheManager;
-  static private boolean debug = true, debugConfig = true, debugHits = true;
+  static private boolean debug = true, debugConfig = true;
 
   static public net.sf.ehcache.CacheManager getEhcache() {
     return cacheManager;
@@ -65,26 +66,29 @@ public class CacheManager {
   static public void makeStandardCacheManager(String configFile, String cacheDir) throws IOException {
     String config = IO.readFile(configFile);
     String configString = StringUtil.substitute(config, "${cacheDir}", cacheDir);
-    if (debugConfig) System.out.printf("configString=%n %s %n", configString);
+    cacheLog.info("thredds.filesystem.CacheManager configuraton " + configString);
     cacheManager = new net.sf.ehcache.CacheManager(new StringBufferInputStream(configString));
   }
 
   static public void makeTestCacheManager(String cacheDir) {
     String configString = StringUtil.substitute(config, "${cacheDir}", cacheDir);
-    if (debugConfig) System.out.printf("configString=%n %s %n", configString);
+    if (debugConfig) System.out.printf("CacheManager test=%n %s %n", configString);
     cacheManager = new net.sf.ehcache.CacheManager(new StringBufferInputStream(configString));
   }
 
   static public void makeReadOnlyCacheManager(String cacheDir, String cacheName) {
     String configString = StringUtil.substitute(configReadOnly, "${cacheDir}", cacheDir);
     configString = StringUtil.substitute(configString, "${cacheName}", cacheName);
-    if (debugConfig) System.out.printf("configString=%n %s %n", configString);
+    if (debugConfig) System.out.printf("CacheManager readonly =%n %s %n", configString);
     cacheManager = new net.sf.ehcache.CacheManager(new StringBufferInputStream(configString));
   }
 
   static public void shutdown() {
-    if (cacheManager != null)
+    if (cacheManager != null) {
+      cacheLog.info("thredds.filesystem.CacheManager shutdown");
       cacheManager.shutdown();
+    }
+    cacheManager = null;
   }
 
   /////////////////////////////////////////
@@ -96,7 +100,8 @@ public class CacheManager {
 
   public CacheManager(String cacheName) {
     cache = cacheManager.getCache(cacheName);
-    if (debug) System.out.printf("Open Cache %s%n %s%n", cache, cache.getStatistics().toString());
+    cacheLog.info("thredds.filesystem.CacheManager " + cache);
+    cacheLog.info("thredds.filesystem.CacheManager " + cache.getStatistics().toString());
   }
 
   public void add(Serializable path, Serializable value) {
@@ -104,6 +109,15 @@ public class CacheManager {
 
     cache.put(new Element(path, value));
     addElements.incrementAndGet();
+  }
+
+  static public String show(String cacheName) {
+    if (cacheManager == null) return "no cacheManager set";
+    Cache cache = cacheManager.getCache(cacheName);
+    if (cache == null) return "no cache named "+cacheName;
+    Formatter f = new Formatter();
+    f.format("Cache %s%n %s%n", cache, cache.getStatistics().toString());
+    return f.toString();
   }
 
   /**
@@ -118,7 +132,7 @@ public class CacheManager {
 
     Element e = cache.get(path);
     if (e != null) {
-      if (debugHits) System.out.printf(" InCache %s%n", path);
+      if (cacheLog.isDebugEnabled()) cacheLog.debug("thredds.filesystem.CacheManager found in cache; path =" + path);
 
       CacheDirectory m = (CacheDirectory) e.getValue();
       if (!recheck) return m;
@@ -130,8 +144,11 @@ public class CacheManager {
       }
 
       boolean modified = (f.lastModified() > m.lastModified);
+      if (cacheLog.isDebugEnabled()) cacheLog.debug("thredds.filesystem.CacheManager modified diff = "+
+              (f.lastModified() - m.lastModified) +
+              "; path=" + path);
+
       if (!modified) {
-        if (debugHits) System.out.printf(" Hit %s%n", path);
         hits.incrementAndGet();
         return m;
       }
@@ -142,21 +159,24 @@ public class CacheManager {
     File p = new File(path);
     if (!p.exists()) return null;
 
-    if (debugHits) System.out.printf(" Read file system %s%n", path);
+    if (cacheLog.isDebugEnabled()) cacheLog.debug("thredds.filesystem.CacheManager read from filesystem; path=" + path);
     CacheDirectory m = new CacheDirectory(p);
     add(path, m);
     return m;
   }
 
   public void close() {
-    if (cacheManager != null)
+    if (cacheManager != null) {
+      cacheLog.info("thredds.filesystem.CacheManager shutdown");
       cacheManager.shutdown();
+    }
     cacheManager = null;
   }
 
   ////////////////////////////////////////////////////////////////
+  // test and debug
 
-  public void show() {
+  public void showKeys() {
     List keys = cache.getKeys();
     Collections.sort(keys);
     for (Object key : keys) {

@@ -42,6 +42,8 @@ import java.io.PrintStream;
 
 import javax.servlet.http.HttpServletRequest;
 
+import thredds.filesystem.CacheManager;
+
 /**
  * A Singleton class instantiated by Spring, to populate the Debug methods in the
  * DebugHandler class.
@@ -60,7 +62,7 @@ public class DebugCommands {
     DebugHandler debugHandler = DebugHandler.get("Caches");
     DebugHandler.Action act;
 
-    act = new DebugHandler.Action("showCaches", "Show All Caches") {
+    act = new DebugHandler.Action("showCaches", "Show File Object Caches") {
       public void doAction(DebugHandler.Event e) {
         Formatter f = new Formatter(e.pw);
         f.format("NetcdfFileCache contents\n");
@@ -75,7 +77,7 @@ public class DebugCommands {
     };
     debugHandler.addAction(act);
 
-    act = new DebugHandler.Action("clearCache", "Clear Caches") {
+    act = new DebugHandler.Action("clearCache", "Clear File Object Caches") {
       public void doAction(DebugHandler.Event e) {
         NetcdfDataset.getNetcdfFileCache().clearCache(false);
         ServletUtil.getFileCache().clearCache(false);
@@ -96,6 +98,15 @@ public class DebugCommands {
       public void doAction(DebugHandler.Event e) {
         ServletUtil.getFileCache().clearCache(true);
         e.pw.println("  RAF FileCache force clearCache done ");
+      }
+    };
+    debugHandler.addAction(act);
+
+    act = new DebugHandler.Action("showMFileCache", "Show MFile Directory Cache") {
+      public void doAction(DebugHandler.Event e) {
+        Formatter f = new Formatter(e.pw);
+        f.format("MFile Directory Cache %n %s %n", CacheManager.show("directories"));
+        e.pw.flush();
       }
     };
     debugHandler.addAction(act);

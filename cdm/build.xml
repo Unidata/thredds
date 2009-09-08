@@ -785,7 +785,7 @@
           description="create a full distribution"/>
 
   <!-- release library -->
-  <target name="releaseInternal" depends="makeMain, makeIDVjar" description="internal release to lib">
+  <target name="releaseInternal" description="internal release to lib">
     <copy todir="${lib.dir}/release" overwrite="true">
       <fileset dir="${build.dir}" includes="${jarMain}"/>
       <fileset dir="${build.dir}" includes="${jarIdv}"/>

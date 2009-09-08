@@ -69,7 +69,7 @@ public interface StationCollection {
    * @param stnNames list of stnNames
    * @return  corresponding list of Stations
    */
-  public List<Station> getStations( List<String> stnNames);  
+  public List<Station> getStations( List<String> stnNames);
 
   /**
    * Find a Station by name.

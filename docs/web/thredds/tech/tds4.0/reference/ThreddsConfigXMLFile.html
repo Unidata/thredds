@@ -1,7 +1,8 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title>threddsConfig.xml</title></head>
+<title>threddsConfig.xml</title>
+</head>
 <body>
  <h1><img src="../../images/unidataLogo.png" align="middle" height="150" width="146">Annotated TDS Configuration file (version 4.0)</h1>
 <hr>
@@ -166,10 +167,25 @@ exists, assuming new files are generated externally. <br>
  
  <hr style="width: 100%; height: 2px;">
 
- <h2>Options in 4.1 (do not use yet)</h2>
+ <h2>Options in 4.1 </h2>
 
- <pre> &lt;<strong>cache</strong>&gt;<br>   &lt;<strong>directory</strong>&gt;/scratch/data/tds/cache&lt;/directory&gt;<br>   &lt;<strong>configFile</strong>&gt;/scratch/data/tds/ehcache.xml&lt;/configFile&gt;<br> &lt;/cache&gt;</pre>
- <hr style="width: 100%; height: 2px;">
+<pre> &lt;eh<strong>cache</strong>&gt;<br>   &lt;<strong>directory</strong>&gt;/scratch/data/tds/cache&lt;/directory&gt;<br>   &lt;<strong>configFile</strong>&gt;/scratch/data/tds/ehcache.xml&lt;/configFile&gt;<br> &lt;/ehcache&gt;
+</pre>
+ <ul>
+   <li>location of ehcache configuration</li>
+   <li>location of ehcache data files<br>
+   </li>
+ </ul>
+ <pre>
+
+&lt;catalogWriting&gt;
+  &lt;<strong>useBytesForDataSize</strong>&gt;true&lt;useBytesForDataSize/&gt;
+&lt;/catalogWriting&gt;
+</pre>
+ <ul>
+   <li>   if true, output the Data Size with exact byte count. by default, it will output 4 significant digits, choosing units appropriately.</li>
+ </ul>
+<hr style="width: 100%; height: 2px;">
 <h3><a name="Cache_Locations"></a>Cache Locations</h3><p>The
 various cache locations at times will contain large amounts of data.
 You should choose a location that will not fill up (especially if that

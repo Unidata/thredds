@@ -74,6 +74,11 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
   static private final Namespace xlinkNS = Namespace.getNamespace("xlink", XMLEntityResolver.XLINK_NAMESPACE);
   static private final Namespace ncmlNS = Namespace.getNamespace("ncml", XMLEntityResolver.NJ22_NAMESPACE);
 
+  static private boolean useBytesForDataSize = false;
+  static public void useBytesForDataSize( boolean b) {
+    useBytesForDataSize = b;
+  }
+
   private InvCatalogFactory factory = null;
   // private DOMBuilder domBuilder = new DOMBuilder();
 
@@ -2297,6 +2302,16 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
   private Element writeDataSize( double size) {
     Element sizeElem = new Element("dataSize", defNS);
+
+    // want exactly the number of bytes
+    if (useBytesForDataSize) {
+      sizeElem.setAttribute("units", "bytes");
+      long bytes = (long) size;
+      sizeElem.setText( Long.toString(bytes));
+      return sizeElem;
+    }
+    
+    // otherwise choose appropriate unit
     String unit;
     if (size > 1.0e15) {
       unit = "Pbytes";

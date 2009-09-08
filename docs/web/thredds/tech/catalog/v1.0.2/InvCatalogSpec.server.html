@@ -382,7 +382,8 @@ from the datasetRoot location.<br>
     &lt;/xsd:complexContent&gt;
   &lt;/xsd:complexType&gt;
 &lt;/xsd:element&gt;</pre>
-<pre>&lt;xsd:element name="fmrcInventory"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:attribute name="location" type="xsd:string" use="required"/&gt;<br>    &lt;xsd:attribute name="suffix" type="xsd:string"/&gt;<br>    &lt;xsd:attribute name="fmrcDefinition" type="xsd:string" use="required"/&gt;<br>    &lt;xsd:attribute name="olderThan" type="xsd:string" /&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;</pre>
+<pre>&lt;xsd:element name="fmrcInventory"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:attribute name="location" type="xsd:string" use="required"/&gt;<br>    &lt;xsd:attribute name="suffix" type="xsd:string"/&gt;<br>    &lt;xsd:attribute name="fmrcDefinition" type="xsd:string" use="required"/&gt;<br>    &lt;xsd:attribute name="olderThan" type="xsd:string" /&gt;
+    &lt;xsd:attribute name="subdirs" type="xsd:string" /&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;</pre>
 <p>A <strong>datasetFmrc</strong> is a kind of dataset, and so allows all of the attributes and child elements of the dataset element. </p>
 <h4>Example<br>
 </h4>

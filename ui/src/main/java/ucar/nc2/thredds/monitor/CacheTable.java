@@ -43,10 +43,13 @@ import javax.swing.event.ListSelectionEvent;
 import thredds.ui.TextHistoryPane;
 import thredds.ui.IndependentWindow;
 import thredds.ui.BAMutil;
+import thredds.filesystem.CacheFile;
 import thredds.filesystem.CacheFileProto;
+import thredds.filesystem.CacheDirectory;
 
 import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.Date;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -65,7 +68,7 @@ import net.sf.ehcache.Element;
  */
 public class CacheTable extends JPanel {
   private PreferencesExt prefs;
-  private ucar.util.prefs.ui.BeanTableSorted cacheTable, elemTable;
+  private ucar.util.prefs.ui.BeanTableSorted cacheTable, elemTable, cfileTable;
 
   private CacheManager ehcache;
 
@@ -83,14 +86,14 @@ public class CacheTable extends JPanel {
       public void valueChanged(ListSelectionEvent e) {
         CacheBean bean = (CacheBean) cacheTable.getSelectedBean();
         if (bean == null) return;
-
         ArrayList<ElemBean> beans = new ArrayList<ElemBean>();
         for (Object key : bean.cache.getKeys())
           beans.add(new ElemBean((String) key, bean.cache.get(key)));
         elemTable.setBeans(beans);
       }
     });
-   thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(cacheTable.getJTable(), "Options");
+
+    thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(cacheTable.getJTable(), "Options");
     varPopup.addAction("Show Stats", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         CacheBean bean = (CacheBean) cacheTable.getSelectedBean();
@@ -99,7 +102,7 @@ public class CacheTable extends JPanel {
         infoTA.clear();
         Formatter f = new Formatter();
         try {
-          f.format("%s",  bean.cache.getStatistics());
+          f.format("%s", bean.cache.getStatistics());
         } catch (Exception e1) {
           JOptionPane.showMessageDialog(CacheTable.this, e1.getMessage());
         }
@@ -114,7 +117,31 @@ public class CacheTable extends JPanel {
       public void valueChanged(ListSelectionEvent e) {
         ElemBean bean = (ElemBean) elemTable.getSelectedBean();
         if (bean == null) return;
+        CacheDirectory cd = (CacheDirectory) bean.value; // LOOK
+
+        ArrayList<CacheFileBean> beans = new ArrayList<CacheFileBean>();
+        for (CacheFile cfile : cd.getChildren())
+          beans.add(new CacheFileBean(cfile));
+        cfileTable.setBeans(beans);
+      }
+    });
+
+    /* varPopup = new thredds.ui.PopupMenu(elemTable.getJTable(), "Options");
+    varPopup.addAction("Show Info", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        ElemBean bean = (ElemBean) elemTable.getSelectedBean();
+        if (bean == null) return;
         infoTA.setText(bean.value.toString());
+        infoWindow.showIfNotIconified();
+      }
+    }); */
+
+    cfileTable = new BeanTableSorted(CacheFileBean.class, (PreferencesExt) prefs.node("CacheFileBean"), false);
+    cfileTable.addListSelectionListener(new ListSelectionListener() {
+      public void valueChanged(ListSelectionEvent e) {
+        CacheFileBean bean = (CacheFileBean) cfileTable.getSelectedBean();
+        if (bean == null) return;
+        infoTA.setText(bean.cfile.toString());
         infoWindow.showIfNotIconified();
       }
     });
@@ -130,7 +157,7 @@ public class CacheTable extends JPanel {
         if (ehcache == null) return;
         Formatter f = new Formatter();
         f.format(" Proto count = %d size = %d %n", CacheFileProto.countRead, CacheFileProto.countReadSize);
-        int avg = CacheFileProto.countRead == 0 ? 0 : CacheFileProto.countReadSize/CacheFileProto.countRead;
+        int avg = CacheFileProto.countRead == 0 ? 0 : CacheFileProto.countReadSize / CacheFileProto.countRead;
         f.format("       avg = %d %n", avg);
         infoTA.setText(f.toString());
         infoTA.gotoTop();
@@ -141,7 +168,8 @@ public class CacheTable extends JPanel {
 
     setLayout(new BorderLayout());
     JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, cacheTable, elemTable);
-    add(split, BorderLayout.CENTER);
+    JSplitPane split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, split, cfileTable);
+    add(split2, BorderLayout.CENTER);
   }
 
   public void exit() {
@@ -217,6 +245,34 @@ public class CacheTable extends JPanel {
     ElemBean(String key, Element elem) {
       this.key = key;
       this.value = elem.getObjectValue();
+    }
+
+  }
+
+  public class CacheFileBean {
+    CacheFile cfile;
+
+    public String getShortName() {
+      return cfile.getShortName();
+    }
+
+    public Date getLastModified() {
+      return new Date(cfile.getLastModified());
+    }
+
+    public long getLength() {
+      return cfile.getLength();
+    }
+
+    public boolean isDirectory() {
+      return cfile.isDirectory();
+    }
+
+    public CacheFileBean() {
+    }
+
+    CacheFileBean(CacheFile cfile) {
+      this.cfile = cfile;
     }
 
   }

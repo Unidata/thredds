@@ -70,7 +70,7 @@ public class ReadTdsLogs {
   Thread resultProcessingThread;
 
   AtomicLong regProcess = new AtomicLong();
-  AtomicLong total_requests = new AtomicLong();
+  //AtomicLong total_requests = new AtomicLong();
   AtomicLong total_sendRequest_time = new AtomicLong();
   AtomicLong total_expected_time = new AtomicLong();
 
@@ -80,8 +80,8 @@ public class ReadTdsLogs {
   ReadTdsLogs(String server) throws FileNotFoundException {
     this.server = server;
 
-    executor = Executors.newFixedThreadPool(3); // number of threads
-    completionQ = new ArrayBlockingQueue<Future<SendRequestTask>>(10); // bounded, threadsafe
+    executor = Executors.newFixedThreadPool(30); // number of threads
+    completionQ = new ArrayBlockingQueue<Future<SendRequestTask>>(30); // bounded, threadsafe
     completionService = new ExecutorCompletionService<SendRequestTask>(executor, completionQ);
 
     out = new Formatter(new FileOutputStream("C:/TEMP/readTdsLogs.txt"));
@@ -98,6 +98,7 @@ public class ReadTdsLogs {
     boolean failed = false;
     String failMessage;
     long msecs;
+    long reqnum;
 
     SendRequestTask(Log log) {
       this.log = log;
@@ -106,9 +107,9 @@ public class ReadTdsLogs {
     public SendRequestTask call() throws Exception {
       long start = System.nanoTime();
 
-      int rnum = reqno.incrementAndGet();
-      if (rnum % 100 == 0)
-        System.out.println(rnum + " request= " + log);
+      reqnum = reqno.incrementAndGet();
+      if (reqnum % 1000 == 0)
+        System.out.println(reqnum + " request= " + log);
 
       try {
         send();
@@ -118,7 +119,6 @@ public class ReadTdsLogs {
 
         total_sendRequest_time.getAndAdd(msecs);
         total_expected_time.getAndAdd((long) log.msecs);
-        total_requests.getAndIncrement();
 
       } catch (Throwable t) {
         failed = true;
@@ -161,7 +161,7 @@ public class ReadTdsLogs {
             f = completionService.take(); // block until ready
           }
 
-          long reqno = total_requests.getAndIncrement();
+          //long reqno = total_requests.getAndIncrement();
           SendRequestTask itask = f.get();
           Log log = itask.log;
           String urlString = server + log.path;
@@ -172,13 +172,14 @@ public class ReadTdsLogs {
           //out.format(",%d,%f,%s%n", itask.msecs, speedup, itask.failed);
           if (itask.failed)
             System.out.printf("***FAIL %s %s %n", log.path, itask.failMessage);
-          else if (itask.statusCode != log.returnCode) {
-          out.format("%5d: status=%d was=%d %s  %n", reqno, itask.statusCode, log.returnCode, log.path);
-          out2.format("%5d: status=%d was=%d %s  %n", reqno, itask.statusCode, log.returnCode, log.path);
+          
+          else if ((itask.statusCode != log.returnCode) && (log.returnCode != 304)) {
+          out.format("%5d: status=%d was=%d %s  %n", itask.reqnum, itask.statusCode, log.returnCode, log.path);
+          out2.format("%5d: status=%d was=%d %s  %n", itask.reqnum, itask.statusCode, log.returnCode, log.path);
 
         } else if ((itask.statusCode == 200) && (itask.bytesRead != log.sizeBytes)) {
-          out.format("%5d: bytes=%d was=%d %s%n", reqno, itask.bytesRead, log.sizeBytes, log.path);
-          out2.format("%5d: bytes=%d was=%d %s%n", reqno, itask.bytesRead, log.sizeBytes, log.path);
+          out.format("%5d: bytes=%d was=%d %s%n", itask.reqnum, itask.bytesRead, log.sizeBytes, log.path);
+          // out2.format("%5d: bytes=%d was=%d %s%n", reqno, itask.bytesRead, log.sizeBytes, log.path);
         }
 
           if (dump) System.out.printf(",%d,%f,%s%n", itask.msecs, speedup, itask.failed);
@@ -214,7 +215,7 @@ public class ReadTdsLogs {
     }
     System.out.println("executor terminated");
 
-    System.out.println("total requests= " + total_requests.get());
+    System.out.println("total requests= " + reqno.get());
     System.out.println("total_sendRequest_time= " + total_sendRequest_time.get() / 1000 + " secs");
     System.out.println("total_expected_time= " + total_expected_time.get() / 1000 + " secs");
 
@@ -637,7 +638,7 @@ public class ReadTdsLogs {
     NetcdfDataset.setHttpClient(client);  */
 
     // sendRequests
-    final ReadTdsLogs reader = new ReadTdsLogs("http://motherlode.ucar.edu:8081");
+    final ReadTdsLogs reader = new ReadTdsLogs("http://motherlode.ucar.edu:9080");
 
     long startElapsed = System.nanoTime();
 

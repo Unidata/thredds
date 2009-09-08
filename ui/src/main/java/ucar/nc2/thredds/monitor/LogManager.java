@@ -101,6 +101,7 @@ public class LogManager {
   }
 
   List<File> getLocalFiles() throws IOException {
+    if (logs == null) return new ArrayList<File>();
     List<File> result = new ArrayList<File>(logs.size());
     for (RemoteLog rlog : logs)
       result.add(rlog.localFile);

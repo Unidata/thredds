@@ -310,6 +310,8 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
 
     out.flush();
     res.flushBuffer();
+
+    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));        
     return null;
   }
 
@@ -329,6 +331,7 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
     out.flush();
     res.flushBuffer();
 
+    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
     return null;
   }
 
