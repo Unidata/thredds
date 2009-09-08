@@ -11,6 +11,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Dimension;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.grib.GribIndexName;
 
 /**
  * Test that external updating of GRIB index files is handled correctly
@@ -29,6 +30,7 @@ public class TestIndexUpdating extends TestCase
   private String dataSuffix19_21 = ".times19-21";
 
   private String indexFileName = dataFileName + ".gbx";
+  //private String indexFileName = dataFileName + GribIndexName.currentSuffix;
   private String indexSuffix1_8 = ".times1-8";
   private String indexSuffix1_12 = ".times1-12";
   private String indexSuffix1_18 = ".times1-18";
@@ -92,10 +94,24 @@ public class TestIndexUpdating extends TestCase
     if ( indexFile != null && indexFile.exists() )
       indexFile.delete();
 
+    File indexFileGbx8 = new File( GribIndexName.get(indexFile.getPath() ));
+    if ( indexFileGbx8 != null && indexFileGbx8.exists() )
+      indexFileGbx8.delete();
+
     // always remove cache index if it exists
     File cacheIndex = null;
     if ( indexFile != null )
       cacheIndex = DiskCache.getFile( indexFile.getPath(), true);
+    if ( cacheIndex != null && cacheIndex.exists())
+    {
+      if ( ! cacheIndex.canWrite())
+        fail( "Cannot write/remove cache index file [" + cacheIndex.getPath() + "].");
+      else if ( cacheIndex.exists() )
+        cacheIndex.delete();
+    }
+    cacheIndex = null;
+    if ( indexFile != null )
+      cacheIndex = DiskCache.getFile( GribIndexName.get(indexFile.getPath()), true);
     if ( cacheIndex != null && cacheIndex.exists())
     {
       if ( ! cacheIndex.canWrite())
