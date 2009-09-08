@@ -41,6 +41,7 @@
 package ucar.nc2.iosp.grib;
 
 import ucar.grib.GribChecker;
+import ucar.grib.GribIndexName;
 import ucar.grib.grib2.Grib2WriteIndex;
 import ucar.grib.grib1.Grib1WriteIndex;
 import ucar.nc2.dt.fmrc.ForecastModelRunInventory;
@@ -157,7 +158,8 @@ public final class GribBinaryIndexer {
         if (child.isDirectory()) {
           checkDirs(child);
           // skip index *gbx and inventory *xml files
-        } else if (aChildren.endsWith("gbx") ||
+        } else if (aChildren.endsWith(GribIndexName.oldSuffix ) ||
+            aChildren.endsWith(GribIndexName.currentSuffix) ||
             aChildren.endsWith("xml") ||
             aChildren.endsWith("tmp") || //index in creation process
             aChildren.length() == 0) { // zero length file, ugh...
@@ -178,13 +180,17 @@ public final class GribBinaryIndexer {
       throws IOException {
 
     String[] args = new String[2];
-    File gbx = new File(dir, grib.getName() + ".gbx");
+    //File gbx = new File(dir, grib.getName() + ".gbx");
+    //File gbx = new File( GribIndexName.getNew( dir.getParent() +"/"+ grib.getName() ));
+    File gbx = new File( GribIndexName.getCurrentSuffix( grib.getPath() ));
     if (removeGBX && gbx.exists())
         gbx.delete();
     //System.out.println( "index ="+ gbx.getName() );
 
-    args[0] = grib.getParent() + "/" + grib.getName();
-    args[1] = grib.getParent() + "/" + gbx.getName();
+    //args[0] = grib.getParent() + "/" + grib.getName();
+    args[0] = grib.getPath();
+    //args[1] = grib.getParent() + "/" + gbx.getName();
+    args[1] = gbx.getPath();
     //System.out.println( "args ="+ args[ 0] +" "+ args[ 1 ] );
     if (gbx.exists()) {
       // skip files older than 3 hours
@@ -290,8 +296,8 @@ public final class GribBinaryIndexer {
   static public boolean test() throws IOException {
     GribBinaryIndexer gi = new GribBinaryIndexer();
     String[] args = new String[ 2 ];
-    args[ 0 ] = "C:/data/gefs/GFS_Global_1p0deg_Ensemble_20090303_0000.grib2";
-    args[ 1 ] = args[ 0 ] +".gbx";
+    args[ 0 ] = "C:/data/grib/g2p5U.grib2";
+    args[ 1 ] = GribIndexName.getCurrentSuffix( args[ 0 ] );
     File grib = new File( args[ 0 ]);
     File gbx = new File( args[ 1 ]);
     gi.grib2check( grib, gbx, args);

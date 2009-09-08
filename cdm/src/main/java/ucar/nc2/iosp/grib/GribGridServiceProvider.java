@@ -220,7 +220,8 @@ public class GribGridServiceProvider extends GridServiceProvider {
   protected GridIndex getIndex(String dataLocation) throws IOException {
 
     if (dataLocation.startsWith("http:")) { // direct access through http
-      String indexLocation = dataLocation + ".gbx";
+      //String indexLocation = dataLocation + ".gbx";
+      String indexLocation = GribIndexName.get( dataLocation );
       InputStream ios = indexExistsAsURL(indexLocation);
       if (ios != null) {
         log.debug("open HTTP index = " + indexLocation);
@@ -287,7 +288,8 @@ public class GribGridServiceProvider extends GridServiceProvider {
    * @throws IOException on read error
    */
   private File getIndexFile(String dataLocation) throws IOException {
-    String indexLocation = dataLocation + ".gbx";
+    //String indexLocation = dataLocation + ".gbx";
+    String indexLocation = GribIndexName.get( dataLocation );
     File indexFile = null;
 
     if (indexLocation.startsWith("http:")) { // LOOK direct access through http maybe should disallow ??
