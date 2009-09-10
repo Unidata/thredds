@@ -88,14 +88,16 @@ class AccessElementParser extends AbstractElementParser
       throw new ThreddsXmlParserException( "" );
 
     Attribute serviceNameAtt = startElement.getAttributeByName( AccessElementNames.AccessElement_ServiceName );
-    String serviceName = serviceNameAtt.getValue();
-    // ToDo This only gets top level services, need findServiceBuilderByName() to crawl services
-    ServiceBuilder serviceBuilder = this.parentDatasetBuilder.getParentCatalogBuilder().findServiceBuilderByNameGlobally( serviceName );
+    if ( serviceNameAtt != null )
+    {
+      String serviceName = serviceNameAtt.getValue();
+      ServiceBuilder serviceBuilder = this.parentDatasetBuilder.getParentCatalogBuilder().findServiceBuilderByNameGlobally( serviceName );
+      this.selfBuilder.setServiceBuilder( serviceBuilder );
+    }
 
     Attribute urlPathAtt = startElement.getAttributeByName( AccessElementNames.AccessElement_UrlPath );
     String urlPath = urlPathAtt.getValue();
 
-    this.selfBuilder.setServiceBuilder( serviceBuilder );
     this.selfBuilder.setUrlPath( urlPath );
 
     Attribute dataFormatAtt = startElement.getAttributeByName( AccessElementNames.AccessElement_DataFormat );
