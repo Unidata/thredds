@@ -35,14 +35,14 @@ import org.junit.Test;
  * @author edavis
  * @since 4.0
  */
-public class ServiceNameTest
+public class ServiceNameInheritanceTest
 {
   @Test
   public void checkDatasetWithServiceNameAttribute()
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameTest/attribute.xml";
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameInheritanceTest/attribute.xml";
     URI docBaseUri = new URI( docBaseUriString );
     String catalogAsString = setupDatasetWithServiceNameAttribute();
 
@@ -64,7 +64,7 @@ public class ServiceNameTest
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameTest/childElement.xml";
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameInheritanceTest/childElement.xml";
     URI docBaseUri = new URI( docBaseUriString );
     String catalogAsString = setupDatasetWithServiceNameInChildElement();
 
@@ -88,7 +88,7 @@ public class ServiceNameTest
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameTest/metadataElement.xml";
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameInheritanceTest/metadataElement.xml";
     URI docBaseUri = new URI( docBaseUriString );
     String catalogAsString = setupDatasetWithServiceNameInMetadataElement();
 
@@ -114,7 +114,7 @@ public class ServiceNameTest
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameTest/inheritedMetadataElement.xml";
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameInheritanceTest/inheritedMetadataElement.xml";
     URI docBaseUri = new URI( docBaseUriString );
     String catalogAsString = setupDatasetWithServiceNameInInheritedMetadataElement();
 
@@ -140,7 +140,7 @@ public class ServiceNameTest
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameTest/notInheritAttribute.xml";
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameInheritanceTest/notInheritAttribute.xml";
     URI docBaseUri = new URI( docBaseUriString );
     String catalogAsString = setupDatasetNotInheritingServiceNameFromParentAuthorityAttribute();
 
@@ -165,7 +165,7 @@ public class ServiceNameTest
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameTest/notInheritFromSiblingElement.xml";
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameInheritanceTest/notInheritFromSiblingElement.xml";
     URI docBaseUri = new URI( docBaseUriString );
     String catalogAsString = setupDatasetNotInheritingServiceNameFromSiblingServiceElement();
 
@@ -191,7 +191,7 @@ public class ServiceNameTest
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameTest/notInheritFromParentMetadataElement.xml";
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameInheritanceTest/notInheritFromParentMetadataElement.xml";
     URI docBaseUri = new URI( docBaseUriString );
     String catalogAsString = setupDatasetNotInheritingServiceNameFromParentMetadataElement();
 
@@ -219,7 +219,7 @@ public class ServiceNameTest
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameTest/notInheritFromParentInheritedMetadataElement.xml";
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameInheritanceTest/notInheritFromParentInheritedMetadataElement.xml";
     URI docBaseUri = new URI( docBaseUriString );
     String catalogAsString = setupDatasetInheritingServiceNameFromParentInheritedMetadataElement();
 
@@ -247,7 +247,7 @@ public class ServiceNameTest
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameTest/overrideInheritedServiceNameWithAttribute.xml";
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameInheritanceTest/overrideInheritedServiceNameWithAttribute.xml";
     URI docBaseUri = new URI( docBaseUriString );
     String catalogAsString = setupDatasetOverridingInheritedServiceNameWithAttribute();
 
@@ -275,7 +275,7 @@ public class ServiceNameTest
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameTest/overrideInheritedServiceNameWithChildElement.xml";
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameInheritanceTest/overrideInheritedServiceNameWithChildElement.xml";
     URI docBaseUri = new URI( docBaseUriString );
     String catalogAsString = setupDatasetOverridingInheritedServiceNameWithChildElement();
 
@@ -306,7 +306,7 @@ public class ServiceNameTest
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameTest/overrideInheritedServiceNameWithChildMetadataElement.xml";
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameInheritanceTest/overrideInheritedServiceNameWithChildMetadataElement.xml";
     URI docBaseUri = new URI( docBaseUriString );
     String catalogAsString = setupDatasetOverridingInheritedServiceNameWithChildMetadataElement();
 
@@ -339,7 +339,7 @@ public class ServiceNameTest
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameTest/overrideInheritedServiceNameWithChildInheritedMetadataElement.xml";
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameInheritanceTest/overrideInheritedServiceNameWithChildInheritedMetadataElement.xml";
     URI docBaseUri = new URI( docBaseUriString );
     String catalogAsString = setupDatasetOverridingInheritedServiceWithChildInheritedMetadataElement();
 
@@ -372,7 +372,7 @@ public class ServiceNameTest
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameTest/dsAccessWithLocalAttribute.xml";
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameInheritanceTest/dsAccessWithLocalAttribute.xml";
     URI docBaseUri = new URI( docBaseUriString );
     String catalogAsString = setupDatasetAccessWithLocalServiceNameAttribute();
 
@@ -396,7 +396,7 @@ public class ServiceNameTest
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameTest/dsAccessWithParentAttribute.xml";
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameInheritanceTest/dsAccessWithParentAttribute.xml";
     URI docBaseUri = new URI( docBaseUriString );
     String catalogAsString = setupDatasetAccessWithParentServiceNameAttribute();
 
@@ -420,7 +420,7 @@ public class ServiceNameTest
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameTest/dsAccessWithServiceNameElement.xml";
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameInheritanceTest/dsAccessWithServiceNameElement.xml";
     URI docBaseUri = new URI( docBaseUriString );
     String catalogAsString = setupDatasetAccessWithServiceNameElement();
 
@@ -445,7 +445,7 @@ public class ServiceNameTest
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameTest/dsAccessWithMetadataServiceNameElement.xml";
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameInheritanceTest/dsAccessWithMetadataServiceNameElement.xml";
     URI docBaseUri = new URI( docBaseUriString );
     String catalogAsString = setupDatasetAccessWithMetadataServiceNameElement();
 
@@ -472,7 +472,7 @@ public class ServiceNameTest
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameTest/dsAccessWithInheritedMetadataServiceNameElement.xml";
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/ServiceNameInheritanceTest/dsAccessWithInheritedMetadataServiceNameElement.xml";
     URI docBaseUri = new URI( docBaseUriString );
     String catalogAsString = setupDatasetAccessWithInheritedMetadataServiceNameElement();
 

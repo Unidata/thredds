@@ -350,11 +350,6 @@ public class IdAuthorityInheritanceTest
     return CatalogXmlUtils.wrapThreddsXmlInCatalog( sb.toString(), null );
   }
 
-  private static void assertDatasetOneHasNoAuthority( CatalogBuilder catBuilder ) {
-    DatasetBuilder dsBldr = assertGetDatasetOne( catBuilder );
-    assertNull( dsBldr.getIdAuthority() );
-  }
-
   private static void assertDatasetOneHasAuthorityOne( CatalogBuilder catBuilder ) {
     DatasetBuilder dsBldr = assertGetDatasetOne( catBuilder );
     assertEquals( "auth1", dsBldr.getIdAuthority() );
