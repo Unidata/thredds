@@ -37,10 +37,9 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Group;
 import ucar.nc2.Variable;
 import ucar.nc2.TestAll;
+import ucar.nc2.util.CompareNetcdf;
 import ucar.nc2.iosp.hdf5.TestH5;
-import ucar.ma2.DataType;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayChar;
+import ucar.ma2.*;
 
 import java.io.IOException;
 import java.io.File;
@@ -98,5 +97,53 @@ public class TestH4eos extends TestCase {
       }
     }
 
+  }
+
+  public void testProblem() throws IOException, InvalidRangeException {
+    String filename = "D:/formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf";
+    NetcdfFile ncfile = NetcdfFile.open(filename);
+    Variable v = ncfile.findVariable("/MODIS_SWATH_Type_L1B/Data Fields/EV_250_Aggr1km_RefSB");
+    assert v != null;
+
+    Array data = v.read();
+    System.out.printf(" sum =          %f%n", MAMath.sumDouble(data));
+
+    double sum2 = 0;
+    double sum3 = 0;
+    int[] varShape = v.getShape();
+    int[] origin = new int[3];
+    int[] size = new int[]{1, varShape[1], varShape[2]};
+    for (int i = 0; i < varShape[0]; i++) {
+      origin[0] = i;
+      Array data2D = v.read(origin, size);
+
+      double sum = MAMath.sumDouble(data2D);
+      System.out.printf("  %d sum3D =        %f%n", i, sum);
+      sum2 += sum;
+
+//      assert data2D.getRank() == 2;
+      sum = MAMath.sumDouble(data2D.reduce(0));
+      System.out.printf("  %d sum2D =        %f%n", i, sum);
+      sum3 += sum;
+
+      CompareNetcdf.compareData(data2D, data2D.reduce(0));
+    }
+    System.out.printf(" sum2D =        %f%n", sum2);
+    System.out.printf(" sum2D.reduce = %f%n", sum3);
+  }
+
+  public void testProblem2() throws IOException, InvalidRangeException {
+    int nz = 1;
+    int ny = 2030;
+    int nx = 1354;
+    int size = nz*ny*nx;
+
+    short[] vals = new short[size];
+    for (int i=0; i<size; i++ )
+      vals[i] = (short) i;
+
+    Array data = Array.factory(DataType.SHORT, new int[] {nz,ny,nx}, vals);
+    System.out.printf(" sum =          %f%n", MAMath.sumDouble(data));
+    System.out.printf(" sum2 =          %f%n", MAMath.sumDouble(data.reduce(0)));
   }
 }

@@ -557,9 +557,15 @@ public class MAMath {
    */
   public static double sumDouble(Array a) {
     double sum = 0;
+    int count = 0;
+    int last = (int) a.getSize() - 1;
     IndexIterator iterA = a.getIndexIterator();
-    while (iterA.hasNext())
+    while (iterA.hasNext()) {
       sum += iterA.getDoubleNext();
+      count++;
+      if ((count == 1) || (count == last))
+        System.out.printf(" %d val=%f%n", count, iterA.getDoubleCurrent());
+    }
     return sum;
   }
 

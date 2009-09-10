@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  4:
+  ui.StructureTable also shows nominal time if possible
+  PointFeatureImpl checks if nominal time == 0, if so use obsTime. workaround for protobuf lask of NaN default
   refactor station point classes
   CdmRemoteFeatureDatset is not a CdmRemote
   optimise hashmap in StructureMembers

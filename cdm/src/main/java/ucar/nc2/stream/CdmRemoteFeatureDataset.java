@@ -51,7 +51,7 @@ import org.jdom.input.SAXBuilder;
 import org.apache.commons.httpclient.HttpMethod;
 
 /**
- * Factory for CdmRemoteFeatureDataset. GRID, POINT, STATION so dar
+ * Factory for CdmRemoteFeatureDataset. GRID, POINT, STATION so far
  *
  * @author caron
  * @since May 19, 2009

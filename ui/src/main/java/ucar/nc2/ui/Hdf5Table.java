@@ -256,7 +256,7 @@ public class Hdf5Table extends JPanel {
       return att.getVersion();
     }
 
-    public String getName() {
+    public String getAttributeName() {
       return att.getName();
     }
 

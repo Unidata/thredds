@@ -33,6 +33,7 @@
 package thredds.ui;
 
 import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.ui.ComboBox;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -52,20 +53,20 @@ import javax.swing.filechooser.*;
  * <p/>
  * <pre>
  * <p/>
- * javax.swing.filechooser.FileFilter[] filters = new javax.swing.filechooser.FileFilter[2];
- * filters[0] = new FileManager.HDF5ExtFilter();
- * filters[1] = new FileManager.NetcdfExtFilter();
- * fileChooser = new FileManager(parentFrame, null, filters, (PreferencesExt) prefs.node("FileManager"));
- * <p/>
- * AbstractAction fileAction =  new AbstractAction() {
- * public void actionPerformed(ActionEvent e) {
- * String filename = fileChooser.chooseFilename();
- * if (filename == null) return;
- * process(filename);
- * }
- * };
- * BAMutil.setActionProperties( fileAction, "FileChooser", "open Local dataset...", false, 'L', -1);
- * </pre>
+   javax.swing.filechooser.FileFilter[] filters = new javax.swing.filechooser.FileFilter[2];
+   filters[0] = new FileManager.HDF5ExtFilter();
+   filters[1] = new FileManager.NetcdfExtFilter();
+   fileChooser = new FileManager(parentFrame, null, filters, (PreferencesExt) prefs.node("FileManager"));
+
+   AbstractAction fileAction =  new AbstractAction() {
+     public void actionPerformed(ActionEvent e) {
+       String filename = fileChooser.chooseFilename();
+       if (filename == null) return;
+       process(filename);
+     }
+   };
+   BAMutil.setActionProperties( fileAction, "FileChooser", "open Local dataset...", false, 'L', -1);
+   </pre>
  *
  * @author John Caron
  */
@@ -81,6 +82,11 @@ public class FileManager {
   private ucar.util.prefs.ui.ComboBox dirComboBox;
   private javax.swing.JFileChooser chooser = null;
   private java.util.List<String> defaultDirs = new ArrayList<String>();
+
+  // for override
+  protected JPanel main;
+  protected boolean selectedURL = false;
+  protected ComboBox urlComboBox;
 
   private boolean readOk = true, selectedFile = false;
   private static boolean debug = false, test = false;
@@ -200,9 +206,21 @@ public class FileManager {
     dirPanel.add(dirComboBox, BorderLayout.CENTER);
     dirPanel.add(buttPanel, BorderLayout.EAST);
 
-    JPanel main = new JPanel(new BorderLayout());
+    main = new JPanel(new BorderLayout());
     main.add(dirPanel, BorderLayout.NORTH);
     main.add(chooser, BorderLayout.CENTER);
+
+    urlComboBox = new ComboBox(prefs);
+    urlComboBox.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+          selectedURL = true;
+      }
+    });
+
+    JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+    p.add( new JLabel("or a URL:"));
+    p.add( urlComboBox);
+    main.add(urlComboBox, BorderLayout.SOUTH);
 
     //w = new IndependentWindow("FileChooser", BAMutil.getImage("FileChooser"), main);
     w = new IndependentDialog(parent, true, "FileChooser", main);
@@ -264,18 +282,22 @@ public class FileManager {
   public String chooseFilename() {
     if (!readOk) return null;
     selectedFile = false;
+    selectedURL = false;
     w.setVisible(true); // modal, so blocks; listener calls hide(), which unblocks.
 
     if (selectedFile) {
       File file = chooser.getSelectedFile();
       if (file == null) return null;
       try {
-        if (debug) System.out.println("  selected file= " + file);
         return file.getCanonicalPath().replace('\\', '/');
       } catch (IOException ioe) {
       } // return null
     }
-    if (debug) System.out.println("  return null");
+
+    if (selectedURL) {
+      return (String) urlComboBox.getSelectedItem();
+    }
+
     return null;
   }
 

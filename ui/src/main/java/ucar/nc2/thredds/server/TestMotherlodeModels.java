@@ -47,6 +47,10 @@ import thredds.catalog.*;
 
 import javax.swing.*;
 
+/**
+ * Run through the named catalogs, readd a random dataset from each collection
+ * default is to run over the idd/models.xml catalog.
+ */
 public class TestMotherlodeModels implements CatalogCrawler.Listener {
   private String catUrl;
   private int type;
@@ -143,11 +147,11 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
    
   public static JPanel main;
   public static void main(String args[]) throws IOException {
-    String server = "http://motherlode.ucar.edu:8081/thredds";
+    String server = "http://motherlode.ucar.edu:9080/thredds";
     if (args.length > 0)
       server = args[0];
 
-    String catalog = "/catalog.xml";
+    String catalog = "/idd/models.xml";
     String problemCat = // "/catalog/fmrc/NCEP/RUC2/CONUS_20km/surface/catalog.xml";
                         "/catalog/fmrc/NCEP/RUC2/CONUS_20km/hybrid/catalog.xml";
     String models = "/idd/models.xml";

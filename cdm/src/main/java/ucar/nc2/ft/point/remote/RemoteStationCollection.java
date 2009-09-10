@@ -9,27 +9,33 @@ import ucar.unidata.geoloc.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.httpclient.HttpMethod;
 
 /**
- * Connect to remote Station Collection
+ * Connect to remote Station Collection using cdmremote
  *
  * @author caron
  */
 public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
   private String uri;
-  protected LatLonRect boundingBox;
-  protected DateRange dateRange;
+  protected LatLonRect boundingBoxSubset;
+  protected DateRange dateRangeSubset;
   private boolean restrictedList = false;
 
-  public RemoteStationCollection(String uri) throws IOException {
+  /**
+   * Constructor. defererred station list.
+   * @param uri cdmremote endpoint
+   */
+  public RemoteStationCollection(String uri) {
     super(uri);
     this.uri = uri;
   }
 
+  /**
+   * initialize the stationHelper.
+   */
   @Override
   protected void initStationHelper() {
     // read in all the stations with the "stations" query
@@ -57,11 +63,16 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
     }
   }
 
-  protected RemoteStationCollection(String uri, StationHelper sh) throws IOException {
+  /**
+   * Constructor for a subset. defererred station list.
+   * @param uri cdmremote endpoint
+   * @param sh station Helper subset or null.
+   */
+  protected RemoteStationCollection(String uri, StationHelper sh) {
     super(uri);
     this.uri = uri;
     this.stationHelper = sh;
-    this.restrictedList = true;
+    this.restrictedList = (sh != null);
   }
 
   // note this assumes that a PointFeature is-a StationPointFeature
@@ -86,9 +97,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
   @Override
   public StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
     if (boundingBox == null) return this;
-    StationHelper sh = new StationHelper();
-    sh.setStations(this.stationHelper.getStations(boundingBox));
-    return new RemoteStationCollectionSubset(this, sh, boundingBox, null);
+    return new RemoteStationCollectionSubset(this, null, boundingBox, null);
   }
 
   // NestedPointFeatureCollection
@@ -107,7 +116,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
         query.append(s.getName());
         query.append(",");
       }
-      return PointDatasetRemote.makeQuery(query.toString(), boundingBox, dateRange);
+      return PointDatasetRemote.makeQuery(query.toString(), boundingBoxSubset, dateRangeSubset);
     }
   }
 
@@ -122,17 +131,30 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
       this.from = from;
 
       if (filter_bb == null)
-        this.boundingBox = from.getBoundingBox();
+        this.boundingBoxSubset = from.getBoundingBox();
       else
-        this.boundingBox = (from.getBoundingBox() == null) ? filter_bb : from.getBoundingBox().intersect(filter_bb);
+        this.boundingBoxSubset = (from.getBoundingBox() == null) ? filter_bb : from.getBoundingBox().intersect(filter_bb);
 
       if (filter_date == null) {
-        this.dateRange = from.dateRange;
+        this.dateRangeSubset = from.dateRangeSubset;
       } else {
-        this.dateRange = (from.dateRange == null) ? filter_date : from.dateRange.intersect(filter_date);
+        this.dateRangeSubset = (from.dateRangeSubset == null) ? filter_date : from.dateRangeSubset.intersect(filter_date);
       }
     }
 
+    @Override
+    protected void initStationHelper() {
+      from.initStationHelper();
+      this.stationHelper = new StationHelper();
+      try {
+        this.stationHelper.setStations(this.stationHelper.getStations(boundingBoxSubset));
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+
+    @Override
     public Station getStation(PointFeature feature) throws IOException {
       return from.getStation(feature);
     }
@@ -183,7 +205,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
         NcStream.readFully(in, b);
         PointStreamProto.PointFeatureCollection pfc = PointStreamProto.PointFeatureCollection.parseFrom(b);
 
-        riter = new RemotePointFeatureIterator(method, in, new PointDatasetRemote.ProtobufPointFeatureMaker(pfc));
+        riter = new RemotePointFeatureIterator(method, in, new PointStream.ProtobufPointFeatureMaker(pfc));
         riter.setCalculateBounds(this);
         return riter;
 

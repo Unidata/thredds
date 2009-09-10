@@ -1311,7 +1311,7 @@ public class FmrcInventory {
 
   ///////////////////////////////////////////////////////////////////////////
 
-  private static String[] catalogs  = {
+  /* private static String[] catalogs  = {
           "NCEP/DGEX/Alaska_12km",
           "NCEP/DGEX/CONUS_12km",
 
@@ -1350,12 +1350,16 @@ public class FmrcInventory {
           "NCEP/RUC2/CONUS_20km/pressure",
           "NCEP/RUC2/CONUS_20km/surface",
           "NCEP/RUC2/CONUS_40km",
+  }; */
 
-  };
 
   public static void main(String args[]) throws Exception {  
-    for (String cat : catalogs) doOne( cat, 12);
-    for (String cat : catalog24hours) doOne( cat, 72);
+    for (String cat : FmrcDefinition.fmrcDatasets) {
+      if (cat.contains("/RUC"))
+        doOne( cat, 72);
+      else
+        doOne( cat, 12);
+    }
   }
 
   public static void doOne(String cat, int n) throws Exception {

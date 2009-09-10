@@ -42,16 +42,14 @@ import ucar.nc2.stream.NcStreamProto;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.EarthLocationImpl;
 import ucar.unidata.geoloc.Station;
-import ucar.ma2.StructureData;
-import ucar.ma2.StructureMembers;
-import ucar.ma2.DataType;
-import ucar.ma2.Section;
+import ucar.ma2.*;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
 
 import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
  * Defines the point stream format, along with pointStream.proto.
@@ -154,5 +152,64 @@ public class PointStream {
 
     return stnBuilder.build();
   }
+
+  //////////////////////////////////////////////////////////////////
+  // decoding
+  // makes a PointFeature from the raw bytes of the protobuf message
+
+  static class ProtobufPointFeatureMaker implements FeatureMaker {
+    private DateUnit dateUnit;
+    private StructureMembers sm;
+
+    ProtobufPointFeatureMaker(PointStreamProto.PointFeatureCollection pfc) throws IOException {
+      try {
+        dateUnit = new DateUnit(pfc.getTimeUnit());
+      } catch (Exception e) {
+        e.printStackTrace();
+        dateUnit = DateUnit.getUnixDateUnit();
+      }
+
+      int offset = 0;
+      sm = new StructureMembers(pfc.getName());
+      for (PointStreamProto.Member m : pfc.getMembersList()) {
+        StructureMembers.Member member = sm.addMember(m.getName(), m.getDesc(), m.getUnits(),
+                NcStream.decodeDataType(m.getDataType()),
+                NcStream.decodeSection(m.getSection()).getShape());
+        member.setDataParam(offset);
+        //System.out.printf("%s offset=%d%n", member.getName(), offset);
+        offset += member.getSizeBytes();
+      }
+      sm.setStructureSize(offset);
+    }
+
+    public PointFeature make(byte[] rawBytes) throws InvalidProtocolBufferException {
+      PointStreamProto.PointFeature pfp = PointStreamProto.PointFeature.parseFrom(rawBytes);
+      PointStreamProto.Location locp = pfp.getLoc();
+      EarthLocationImpl location = new EarthLocationImpl(locp.getLat(), locp.getLon(), locp.getAlt());
+      return new MyPointFeature(location, locp.getTime(), locp.getNomTime(), dateUnit, pfp);
+    }
+
+    private class MyPointFeature extends PointFeatureImpl {
+      PointStreamProto.PointFeature pfp;
+
+      MyPointFeature(EarthLocation location, double obsTime, double nomTime, DateUnit timeUnit, PointStreamProto.PointFeature pfp) {
+        super(location, obsTime, nomTime, timeUnit);
+        this.pfp = pfp;
+      }
+
+      public StructureData getData() throws IOException {
+        ByteBuffer bb = ByteBuffer.wrap(pfp.getData().toByteArray());
+        ArrayStructureBB asbb = new ArrayStructureBB(sm, new int[]{1}, bb, 0);
+        for (String s : pfp.getSdataList())
+          asbb.addObjectToHeap(s);
+        return asbb.getStructureData(0);
+      }
+
+      public String toString() {
+        return location + " obs=" + obsTime + " nom=" + nomTime;
+      }
+    }
+  }
+
 
 }

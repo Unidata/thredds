@@ -69,7 +69,7 @@ public class CompareNetcdf {
   boolean showEach = false;
   boolean compareData = false;
 
-  public CompareNetcdf(boolean showCompare, boolean showEach, boolean compareData ) {
+  public CompareNetcdf(boolean showCompare, boolean showEach, boolean compareData) {
     this.compareData = compareData;
     this.showCompare = showCompare;
     this.showEach = showEach;
@@ -87,7 +87,7 @@ public class CompareNetcdf {
     long took = System.currentTimeMillis() - start;
     f.format("Time to compare = %d msecs%n", took);
 
-   return ok;
+    return ok;
   }
 
   private boolean compareGroups(Group org, Group copy, Formatter f) {
@@ -167,9 +167,9 @@ public class CompareNetcdf {
         compareVariableData(org, copy, showCompare, f);
 
       } catch (IOException e) {
-         ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-         e.printStackTrace(new PrintStream(bos));
-         f.format("%s", bos.toString());
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+        e.printStackTrace(new PrintStream(bos));
+        f.format("%s", bos.toString());
       }
     }
 
@@ -231,7 +231,7 @@ public class CompareNetcdf {
       }
 
       if (showEach) f.format("  OK <%s>.equals<%s>%n", want1, want2);
-     if (result != null) {
+      if (result != null) {
         result.add(want1);
         result.add(want2);
       }
@@ -247,12 +247,17 @@ public class CompareNetcdf {
     Array data1 = var1.read();
     Array data2 = var2.read();
 
-    if (showCompare) f.format("   compareArrays %s %s size=%d%n", var1.getNameAndDimensions(), var1.isUnlimited(), data1.getSize());
+    if (showCompare)
+      f.format("   compareArrays %s %s size=%d%n", var1.getNameAndDimensions(), var1.isUnlimited(), data1.getSize());
     compareData(data1, data2);
     if (showCompare) f.format("   ok%n");
   }
 
   static public void compareData(Array data1, Array data2) {
+    compareData(data1, data2, TOL);  
+  }
+
+  static public void compareData(Array data1, Array data2, double tol) {
     assert data1.getSize() == data2.getSize();
     assert data1.getElementType() == data2.getElementType() : data1.getElementType() + "!=" + data2.getElementType();
     DataType dt = DataType.getType(data1.getElementType());
@@ -260,39 +265,84 @@ public class CompareNetcdf {
     IndexIterator iter1 = data1.getIndexIterator();
     IndexIterator iter2 = data2.getIndexIterator();
 
+
     if (dt == DataType.DOUBLE) {
-      while (iter1.hasNext()) {
+      while (iter1.hasNext() && iter2.hasNext()) {
         double v1 = iter1.getDoubleNext();
         double v2 = iter2.getDoubleNext();
         if (!Double.isNaN(v1) || !Double.isNaN(v2))
-          assert v1 == v2 : v1 + " != " + v2 + " count=" + iter1;
+          assert closeEnough(v1, v2, tol) : v1 + " != " + v2 + " count=" + iter1 + " diff = " + diff(v1, v2) + " pdiff=" + pdiff(v1, v2);
       }
     } else if (dt == DataType.FLOAT) {
-      while (iter1.hasNext()) {
+      while (iter1.hasNext() && iter2.hasNext()) {
         float v1 = iter1.getFloatNext();
         float v2 = iter2.getFloatNext();
         if (!Float.isNaN(v1) || !Float.isNaN(v2))
-          assert v1 == v2 : v1 + " != " + v2 + " count=" + iter1;
+          assert closeEnough(v1, v2, (float) tol) : v1 + " != " + v2 + " count=" + iter1;
       }
     } else if (dt == DataType.INT) {
-      while (iter1.hasNext()) {
+      while (iter1.hasNext() && iter2.hasNext()) {
         int v1 = iter1.getIntNext();
         int v2 = iter2.getIntNext();
         assert v1 == v2 : v1 + " != " + v2 + " count=" + iter1;
       }
     } else if (dt == DataType.SHORT) {
-      while (iter1.hasNext()) {
+      double sum1 = 0, sum2 = 0;
+      int count = 0;
+      while (iter1.hasNext() && iter2.hasNext()) {
         short v1 = iter1.getShortNext();
         short v2 = iter2.getShortNext();
         assert v1 == v2 : v1 + " != " + v2 + " count=" + iter1;
+        sum1 += v1;
+        sum2 += v2;
+        count++;
       }
+      System.out.printf("sum1 = %f sum2 = %f count=%d%n", sum1, sum2, count);
     } else if (dt == DataType.BYTE) {
-      while (iter1.hasNext()) {
+      while (iter1.hasNext() && iter2.hasNext()) {
         byte v1 = iter1.getByteNext();
         byte v2 = iter2.getByteNext();
         assert v1 == v2 : v1 + " != " + v2 + " count=" + iter1;
       }
     }
+  }
+
+  static private final double TOL = 1.0e-5;
+  static private final float TOLF = 1.0e-5f;
+
+  static public boolean closeEnoughP(double d1, double d2) {
+    if (Math.abs(d1) < TOL) return Math.abs(d1 - d2) < TOL;
+    return Math.abs((d1 - d2) / d1) < TOL;
+  }
+
+  static public boolean closeEnough(double d1, double d2) {
+    return Math.abs(d1 - d2) < TOL;
+  }
+
+  static public boolean closeEnough(double d1, double d2, double tol) {
+    return Math.abs(d1 - d2) < tol;
+  }
+
+  static public boolean closeEnoughP(double d1, double d2, double tol) {
+    if (Math.abs(d1) < tol) return Math.abs(d1 - d2) < tol;
+    return Math.abs((d1 - d2) / d1) < tol;
+  }
+
+  static public double diff(double d1, double d2) {
+    return Math.abs(d1 - d2);
+  }
+
+  static public double pdiff(double d1, double d2) {
+    return Math.abs((d1 - d2) / d1);
+  }
+
+  static public boolean closeEnough(float d1, float d2) {
+    return Math.abs(d1 - d2) < TOLF;
+  }
+
+  static public boolean closeEnoughP(float d1, float d2) {
+    if (Math.abs(d1) < TOLF) return Math.abs(d1 - d2) < TOLF;
+    return Math.abs((d1 - d2) / d1) < TOLF;
   }
 
 

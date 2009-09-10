@@ -128,6 +128,7 @@ public class ToolsUI extends JPanel {
   private FmrcImplPanel fmrcImplPanel;
   private GeoGridPanel gridPanel;
   private GribPanel gribPanel;
+  private Grib2Panel grib2Panel;
   private Hdf5Panel hdf5Panel;
   private Hdf4Panel hdf4Panel;
   private ImagePanel imagePanel;
@@ -217,6 +218,7 @@ public class ToolsUI extends JPanel {
     // nested tab - iosp
     iospTabPane.addTab("BUFR", new JLabel("BUFR"));
     iospTabPane.addTab("GRIB", new JLabel("GRIB"));
+    iospTabPane.addTab("GRIB2", new JLabel("GRIB2"));
     iospTabPane.addTab("HDF5", new JLabel("HDF5"));
     iospTabPane.addTab("HDF4", new JLabel("HDF4"));
     iospTabPane.addChangeListener(new ChangeListener() {
@@ -358,6 +360,10 @@ public class ToolsUI extends JPanel {
     } else if (title.equals("GRIB")) {
       gribPanel = new GribPanel((PreferencesExt) mainPrefs.node("grib"));
       c = gribPanel;
+
+    } else if (title.equals("GRIB2")) {
+      grib2Panel = new Grib2Panel((PreferencesExt) mainPrefs.node("grib2"));
+      c = grib2Panel;
 
     } else if (title.equals("CoordSys")) {
       coordSysPanel = new CoordSysPanel((PreferencesExt) mainPrefs.node("CoordSys"));
@@ -822,6 +828,7 @@ public class ToolsUI extends JPanel {
     if (fmrcImplPanel != null) fmrcImplPanel.save();
     if (geotiffPanel != null) geotiffPanel.save();
     if (gribPanel != null) gribPanel.save();
+    if (grib2Panel != null) grib2Panel.save();
     if (gridPanel != null) gridPanel.save();
     if (hdf5Panel != null) hdf5Panel.save();
     if (hdf4Panel != null) hdf4Panel.save();
@@ -2015,6 +2022,57 @@ public class ToolsUI extends JPanel {
   }
 
   /////////////////////////////////////////////////////////////////////
+  private class Grib2Panel extends OpPanel {
+    ucar.unidata.io.RandomAccessFile raf = null;
+    Grib2Table gribTable;
+
+    boolean useDefinition = false;
+    JComboBox defComboBox;
+    IndependentWindow defWindow;
+    AbstractButton defButt;
+
+    Grib2Panel(PreferencesExt p) {
+      super(p, "file:", true, false);
+      gribTable = new Grib2Table(prefs);
+      add(gribTable, BorderLayout.CENTER);
+    }
+
+    boolean process(Object o) {
+      String command = (String) o;
+      boolean err = false;
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        if (raf != null)
+          raf.close();
+        raf = new ucar.unidata.io.RandomAccessFile(command, "r");
+
+        gribTable.setGribFile(raf);
+
+      } catch (FileNotFoundException ioe) {
+        JOptionPane.showMessageDialog(null, "Grib2Table cant open " + command + "\n" + ioe.getMessage());
+        ta.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
+        err = true;
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        e.printStackTrace(new PrintStream(bos));
+        detailTA.setText(bos.toString());
+        detailWindow.show();
+        err = true;
+      }
+
+      return !err;
+    }
+
+    void save() {
+      gribTable.save();
+      super.save();
+    }
+
+  }
+
+  /////////////////////////////////////////////////////////////////////
   private class Hdf5Panel extends OpPanel {
     ucar.unidata.io.RandomAccessFile raf = null;
     Hdf5Table hdf5Table;
@@ -3159,10 +3217,7 @@ public class ToolsUI extends JPanel {
 
           NetcdfFile compareFile = null;
           try {
-            if (addCoords)
-              compareFile = NetcdfDataset.acquireDataset(filename, null);
-            else
-              compareFile = NetcdfDataset.acquireFile(filename, null);
+            compareFile = NetcdfDataset.acquireDataset(filename, null);
 
             Formatter f = new Formatter();
             CompareNetcdf cn = new CompareNetcdf(true, false, false);
@@ -3172,7 +3227,7 @@ public class ToolsUI extends JPanel {
             detailTA.gotoTop();
             detailWindow.show();
 
-          } catch (Exception ioe) {
+          } catch (Throwable ioe) {
             ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
             ioe.printStackTrace(new PrintStream(bos));
             detailTA.setText(bos.toString());

@@ -59,7 +59,7 @@ public abstract class PointFeatureImpl implements PointFeature, Comparable<Point
   public PointFeatureImpl( EarthLocation location, double obsTime, double nomTime, DateUnit timeUnit) {
     this.location = location;
     this.obsTime = obsTime;
-    this.nomTime = nomTime;
+    this.nomTime = (nomTime == 0) ? obsTime : nomTime; // LOOK temp kludge until protobuf accepts NaN as defaults
     this.timeUnit = timeUnit;
   }
 

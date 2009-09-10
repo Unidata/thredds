@@ -49,6 +49,8 @@ import ucar.nc2.iosp.grid.GridHorizCoordSys;
 import ucar.nc2.iosp.grid.GridIndexToNC;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import thredds.ui.TextHistoryPane;
 import thredds.ui.IndependentWindow;
@@ -84,23 +86,12 @@ public class GribTable extends JPanel {
     this.prefs = prefs;
 
     gridRecordTable = new BeanTableSorted(GridRecordBean.class, (PreferencesExt) prefs.node("GridRecordBean"), false);
-    /* gridRecordTable.addListSelectionListener(new ListSelectionListener() {
+    gridRecordTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        ddsTable.setBeans(new ArrayList());
-        obsTable.setBeans(new ArrayList());
-
         GridRecordBean mb = (GridRecordBean) gridRecordTable.getSelectedBean();
-        java.util.List<DdsBean> beanList = new ArrayList<DdsBean>();
-        try {
-          setDataDescriptors(beanList, mb.gr.getRootDataDescriptor(), 0);
-          setObs(mb.gr);
-        } catch (IOException e1) {
-          JOptionPane.showMessageDialog(GribTable.this, e1.getMessage());
-          e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        ddsTable.setBeans(beanList);
+        infoTA.setText( mb.gr.toString());
       }
-    }); */
+    });
 
 
     thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(gridRecordTable.getJTable(), "Options");

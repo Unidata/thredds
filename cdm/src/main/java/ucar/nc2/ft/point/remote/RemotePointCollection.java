@@ -76,7 +76,7 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
       byte[] b = new byte[len];
       NcStream.readFully(in, b);
       PointStreamProto.PointFeatureCollection pfc = PointStreamProto.PointFeatureCollection.parseFrom(b);
-      PointFeatureIterator iter = new RemotePointFeatureIterator(method, in, new PointDatasetRemote.ProtobufPointFeatureMaker(pfc));
+      PointFeatureIterator iter = new RemotePointFeatureIterator(method, in, new PointStream.ProtobufPointFeatureMaker(pfc));
       iter.setCalculateBounds(this);
       return iter;
 

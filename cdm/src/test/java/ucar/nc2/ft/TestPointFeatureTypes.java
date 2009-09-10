@@ -588,7 +588,7 @@ public class TestPointFeatureTypes extends TestCase {
 
   /////////////////////////////////////////////////////////
 
-  public void testDons(String file, boolean showTime) throws IOException {
+  private void testDons(String file, boolean showTime) throws IOException {
     long start = System.currentTimeMillis();
     if (showTime) {
       ucar.unidata.io.RandomAccessFile.setDebugAccess(true);
@@ -620,6 +620,7 @@ public class TestPointFeatureTypes extends TestCase {
       }
     } else if (fc instanceof NestedPointFeatureCollection) {
       NestedPointFeatureCollection npfc = (NestedPointFeatureCollection) fc;
+      // npfc = npfc.subset(llr);
       collection = npfc.flatten(llr, null);
     } else {
       throw new IllegalArgumentException("Can't handle collection of type " + fc.getClass().getName());
@@ -633,9 +634,8 @@ public class TestPointFeatureTypes extends TestCase {
         numObs++;
         ucar.unidata.geoloc.EarthLocation el = po.getLocation();
         assert llr.contains(el.getLatLon()) : el.getLatLon();
-        //if (numObs % 1000 == 0)
-        System.out.printf("%d el = %s %n", numObs, el);
-        break;
+        if (numObs % 1000 == 0)
+          System.out.printf("%d el = %s %n", numObs, el);
       }
 
         long took = System.currentTimeMillis() - start;

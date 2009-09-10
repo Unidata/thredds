@@ -984,6 +984,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     "NCEP/GFS/Hawaii_160km",
     "NCEP/GFS/N_Hemisphere_381km",
     "NCEP/GFS/Puerto_Rico_191km",
+    "NCEP/GFS/Global_1p0deg_Ensemble",
 
     "NCEP/NAM/Alaska_11km",
     "NCEP/NAM/Alaska_22km",
@@ -991,6 +992,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     "NCEP/NAM/Alaska_45km/conduit",
     "NCEP/NAM/Alaska_95km",
     "NCEP/NAM/CONUS_12km",
+    "NCEP/NAM/CONUS_12km/conduit",
     "NCEP/NAM/CONUS_20km/surface",
     "NCEP/NAM/CONUS_20km/selectsurface",
     "NCEP/NAM/CONUS_20km/noaaport",
@@ -1006,6 +1008,11 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
 
     "NCEP/DGEX/CONUS_12km",
     "NCEP/DGEX/Alaska_12km",
+
+    "NCEP/SREF/CONUS_40km/ensprod",
+    "NCEP/SREF/CONUS_40km/ensprod_biasc",
+    "NCEP/SREF/Alaska_45km/ensprod",
+    "NCEP/SREF/PacificNE_0p4/ensprod",
 
     "NCEP/NDFD/CONUS_5km",
   };

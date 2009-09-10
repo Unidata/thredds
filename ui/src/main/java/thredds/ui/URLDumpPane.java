@@ -35,6 +35,7 @@ package thredds.ui;
 
 import ucar.nc2.util.IO;
 import ucar.nc2.util.net.HttpClientManager;
+import ucar.nc2.util.net.URLencode;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 
@@ -198,41 +199,44 @@ public class URLDumpPane extends TextHistoryPane {
 
     HttpClient httpclient = HttpClientManager.getHttpClient();
     HttpMethodBase m = null;
-    if (cmd == GET)
-      m = new GetMethod(urlString);
-    else if (cmd == HEAD)
-      m = new HeadMethod(urlString);
-    else if (cmd == OPTIONS)
-      m = new OptionsMethod(urlString);
-    else if (cmd == PUT) {
-      PutMethod p = new PutMethod(urlString);
-      try {
-        p.setRequestEntity(new StringRequestEntity(ta.getText(), "application/text", "UTF-8"));
-      } catch (UnsupportedEncodingException e) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
-        e.printStackTrace(new PrintStream(bos));
-        appendLine(bos.toString());
-        return;
-      }
-      m = p;
-    }
-
-    m.setRequestHeader("Accept-Encoding", "gzip,deflate");
-
-    appendLine("HttpClient " + m.getName() + " " + urlString);
-    appendLine("   do Authentication= " + m.getDoAuthentication());
-    appendLine("   follow Redirects= " + m.getFollowRedirects());
-
-    HttpMethodParams p = m.getParams();
-    appendLine("   cookie policy= " + p.getCookiePolicy());
-    appendLine("   http version= " + p.getVersion().toString());
-    appendLine("   timeout (msecs)= " + p.getSoTimeout());
-    appendLine("   virtual host= " + p.getVirtualHost());
-
-    printHeaders("Request Headers = ", m.getRequestHeaders());
-    appendLine(" ");
 
     try {
+      urlString = URLEncoder.encode(urlString, "UTF-8");
+
+      if (cmd == GET)
+        m = new GetMethod(urlString);
+      else if (cmd == HEAD)
+        m = new HeadMethod(urlString);
+      else if (cmd == OPTIONS)
+        m = new OptionsMethod(urlString);
+      else if (cmd == PUT) {
+        PutMethod p = new PutMethod(urlString);
+        try {
+          p.setRequestEntity(new StringRequestEntity(ta.getText(), "application/text", "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+          ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
+          e.printStackTrace(new PrintStream(bos));
+          appendLine(bos.toString());
+          return;
+        }
+        m = p;
+      }
+
+      m.setRequestHeader("Accept-Encoding", "gzip,deflate");
+
+      appendLine("HttpClient " + m.getName() + " " + urlString);
+      appendLine("   do Authentication= " + m.getDoAuthentication());
+      appendLine("   follow Redirects= " + m.getFollowRedirects());
+
+      HttpMethodParams p = m.getParams();
+      appendLine("   cookie policy= " + p.getCookiePolicy());
+      appendLine("   http version= " + p.getVersion().toString());
+      appendLine("   timeout (msecs)= " + p.getSoTimeout());
+      appendLine("   virtual host= " + p.getVirtualHost());
+
+      printHeaders("Request Headers = ", m.getRequestHeaders());
+      appendLine(" ");
+
       httpclient.executeMethod(m);
 
       printHeaders("Request Headers2 = ", m.getRequestHeaders());
@@ -286,15 +290,15 @@ public class URLDumpPane extends TextHistoryPane {
       appendLine(bos.toString());
 
     } finally {
-      m.releaseConnection();
+      if (m != null) m.releaseConnection();
     }
   }
 
-   String readContents(InputStream is, String charset, int maxKbytes) throws IOException {
-     ByteArrayOutputStream bout = new ByteArrayOutputStream(1000 * maxKbytes);
-     IO.copy(is, bout, 1000 * maxKbytes);
-     return bout.toString(charset);
-   }
+  String readContents(InputStream is, String charset, int maxKbytes) throws IOException {
+    ByteArrayOutputStream bout = new ByteArrayOutputStream(1000 * maxKbytes);
+    IO.copy(is, bout, 1000 * maxKbytes);
+    return bout.toString(charset);
+  }
 
   private void printHeaders(String title, Header[] heads) {
     appendLine(title);

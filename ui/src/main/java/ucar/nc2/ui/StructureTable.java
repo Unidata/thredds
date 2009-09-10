@@ -191,7 +191,7 @@ public class StructureTable extends JPanel {
   public void setPointObsData(List<PointObsDatatype> obsData) throws IOException {
     dataModel = new PointObsDataModel(obsData);
     initTable(dataModel);
-    jtable.getColumnModel().getColumn(0).setCellRenderer(new DateRenderer());
+    //jtable.getColumnModel().getColumn(0).setCellRenderer(new DateRenderer());
   }
 
   /**
@@ -203,7 +203,7 @@ public class StructureTable extends JPanel {
   public void setPointFeatureData(List<PointFeature> obsData) throws IOException {
     dataModel = new PointFeatureDataModel(obsData);
     initTable(dataModel);
-    jtable.getColumnModel().getColumn(0).setCellRenderer(new DateRenderer());
+    //jtable.getColumnModel().getColumn(0).setCellRenderer(new DateRenderer());
   }
 
   private void initTable(StructureTableModel m) {
@@ -219,9 +219,11 @@ public class StructureTable extends JPanel {
       }
     });
 
-    if (m.wantDate)
+    if (m.wantDate) {
       jtable.getColumnModel().getColumn(0).setCellRenderer(new DateRenderer());
-    // jtable.setDefaultRenderer(Date.class, new DateRenderer()); LOOK this doesnt work!
+      jtable.getColumnModel().getColumn(1).setCellRenderer(new DateRenderer());
+    }
+    // jtable.setDefaultRenderer(Date.class, new DateRenderer()); // LOOK this doesnt work!
     jtable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
     // reset popup
@@ -376,8 +378,9 @@ public class StructureTable extends JPanel {
     // remove all data
     abstract public void clear();
 
-    // if we know how to extract the date for this data, add an extra column
-    abstract public Date getDate(int row);
+    // if we know how to extract the date for this data, add two extra columns
+    abstract public Date getObsDate(int row);
+    abstract public Date getNomDate(int row);
 
     public Object getRow(int row) throws InvalidRangeException, IOException {
       return getStructureData(row);
@@ -385,13 +388,15 @@ public class StructureTable extends JPanel {
 
     public int getColumnCount() {
       if (members == null) return 0;
-      return members.getMembers().size() + (wantDate ? 1 : 0);
+      return members.getMembers().size() + (wantDate ? 2 : 0);
     }
 
     public String getColumnName(int columnIndex) {
       if (wantDate && (columnIndex == 0))
-        return "date";
-      int memberCol = wantDate ? columnIndex - 1 : columnIndex;
+        return "obsDate";
+      if (wantDate && (columnIndex == 1))
+        return "nomDate";
+      int memberCol = wantDate ? columnIndex - 2 : columnIndex;
       return members.getMember(memberCol).getName();
     }
 
@@ -399,7 +404,9 @@ public class StructureTable extends JPanel {
     public String getColumnDesc(int columnIndex) {
       if (wantDate && (columnIndex == 0))
         return "Date of observation";
-      int memberCol = wantDate ? columnIndex - 1 : columnIndex;
+      if (wantDate && (columnIndex == 1))
+        return "Nominal Date of collection";
+      int memberCol = wantDate ? columnIndex - 2 : columnIndex;
       StructureMembers.Member m = members.getMember(memberCol);
       return m.getUnitsString();
     }
@@ -416,8 +423,9 @@ public class StructureTable extends JPanel {
 
     public Object getValueAt(int row, int column) {
       if (wantDate && (column == 0))
-        return getDate(row);
-      //int memberCol = wantDate ? column - 1 : column;
+        return getObsDate(row);
+      if (wantDate && (column == 1))
+        return getNomDate(row);
 
       StructureData sd;
       try {
@@ -431,7 +439,6 @@ public class StructureTable extends JPanel {
       }
 
       String colName = getColumnName(column);
-      //StructureMembers.Member gr = sd.getStructureMembers().getMember(memberCol);
       return sd.getScalarObject(colName);
     }
 
@@ -453,7 +460,11 @@ public class StructureTable extends JPanel {
       }
     }
 
-    public Date getDate(int row) {
+    public Date getObsDate(int row) {
+      return null;
+    }
+
+    public Date getNomDate(int row) {
       return null;
     }
 
@@ -502,7 +513,11 @@ public class StructureTable extends JPanel {
       }
     }
 
-    public Date getDate(int row) {
+    public Date getObsDate(int row) {
+      return null;
+    }
+
+    public Date getNomDate(int row) {
       return null;
     }
 
@@ -556,7 +571,11 @@ public class StructureTable extends JPanel {
       }
     }
 
-    public Date getDate(int row) {
+    public Date getObsDate(int row) {
+      return null;
+    }
+
+    public Date getNomDate(int row) {
       return null;
     }
 
@@ -584,7 +603,11 @@ public class StructureTable extends JPanel {
       this.members = as.getStructureMembers();
     }
 
-    public Date getDate(int row) {
+    public Date getObsDate(int row) {
+      return null;
+    }
+
+    public Date getNomDate(int row) {
       return null;
     }
 
@@ -619,6 +642,18 @@ public class StructureTable extends JPanel {
         }
       }
       wantDate = true;
+    }
+
+    public Date getObsDate(int row) {
+      try {
+        return traj.getTime(row);
+      } catch (IOException e) {
+        return null;
+      }
+    }
+
+    public Date getNomDate(int row) {
+      return null;
     }
 
     public Date getDate(int row) {
@@ -667,9 +702,14 @@ public class StructureTable extends JPanel {
       }
     }
 
-    public Date getDate(int row) {
+    public Date getObsDate(int row) {
       PointObsDatatype obs = obsData.get(row);
       return obs.getObservationTimeAsDate();
+    }
+
+    public Date getNomDate(int row) {
+      PointObsDatatype obs = obsData.get(row);
+      return obs.getNominalTimeAsDate();
     }
 
     public int getRowCount() {
@@ -710,12 +750,17 @@ public class StructureTable extends JPanel {
       }
     }
 
-    public Date getDate(int row) {
+    public Date getObsDate(int row) {
       PointFeature obs = obsData.get(row);
       return obs.getObservationTimeAsDate();
     }
 
-    public int getRowCount() {
+    public Date getNomDate(int row) {
+      PointFeature obs = obsData.get(row);
+      return obs.getNominalTimeAsDate();
+    }
+
+     public int getRowCount() {
       return obsData.size();
     }
 
