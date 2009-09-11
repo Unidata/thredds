@@ -63,6 +63,8 @@ public class NetcdfDatasetInfo {
   public NetcdfDatasetInfo( String location) throws IOException {
     ds = NetcdfDataset.openDataset(location, false, null);
     builder = CoordSysBuilder.factory(ds, null); // get builder again, so NetcdfDataset doesnt have to hold onto it
+    builder.augmentDataset( ds, null); // enhance now seperate
+
     //info.setCoordSysBuilderName(conventionName);
     //info.addParseInfo(parseInfo.toString());
     //info.addUserAdvice(userAdvice.toString());

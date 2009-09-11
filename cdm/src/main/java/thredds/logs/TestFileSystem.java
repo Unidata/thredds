@@ -255,7 +255,7 @@ public class TestFileSystem {
     return service;
   }
 
-  public static String[] services = new String[]{"catalog", "dodsC", "dqc", "fileServer", "ncss/grid", "ncss/metars",
+  public static String[] services = new String[]{"admin", "catalog", "cdmremote", "dodsC", "dqc", "fileServer", "ncss/grid", "ncstream",
           "radarServer", "remoteCatalogService", "view", "wcs", "wms"};
 
   public static String findService(String path) {
