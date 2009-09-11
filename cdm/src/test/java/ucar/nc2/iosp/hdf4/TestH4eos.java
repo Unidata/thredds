@@ -64,10 +64,10 @@ public class TestH4eos extends TestCase {
     }
   }
 
+  String testDir = TestAll.testdataDir + "hdf4/";
   public void testReadAll() throws IOException {
-    //readandCountAllInDir(testDir, null);
     int count = 0;
-    count += TestAll.actOnAll("R:/testdata/hdf4/", new MyFileFilter(), new MyAct());
+    count += TestAll.actOnAll(testDir, new MyFileFilter(), new MyAct());
     System.out.println("***READ " + count + " files");
     count += TestAll.actOnAll("D:/hdf4/", new MyFileFilter(), new MyAct());
     System.out.println("***READ " + count + " files");
@@ -99,8 +99,8 @@ public class TestH4eos extends TestCase {
 
   }
 
-  public void testProblem() throws IOException, InvalidRangeException {
-    String filename = "/home/caron/MOD021KM.A2004328.1735.004.2004329164007.hdf";
+  public void testUnsigned() throws IOException, InvalidRangeException {
+    String filename = testDir + "MOD021KM.A2004328.1735.004.2004329164007.hdf";
     NetcdfFile ncfile = NetcdfFile.open(filename);
     Variable v = ncfile.findVariable("/MODIS_SWATH_Type_L1B/Data Fields/EV_250_Aggr1km_RefSB");
     assert v != null;
@@ -130,9 +130,10 @@ public class TestH4eos extends TestCase {
     }
     System.out.printf(" sum2D =        %f%n", sum2);
     System.out.printf(" sum2D.reduce = %f%n", sum3);
+    assert sum2 == sum3;
   }
 
-  public void testProblem2() throws IOException, InvalidRangeException {
+  public void testUnsigned2() throws IOException, InvalidRangeException {
     int nz = 1;
     int ny = 2030;
     int nx = 1354;

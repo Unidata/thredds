@@ -167,6 +167,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     registerConvention("ModisSatellite", ModisSatellite.class, null);
     registerConvention("AvhrrSatellite", AvhrrConvention.class, null);
     registerConvention("Cosmic1Convention", Cosmic1Convention.class, null);
+    registerConvention("NPP/NPOESS", NppConvention.class, null);
 
     // further calls to registerConvention are by the user
     userMode = true;

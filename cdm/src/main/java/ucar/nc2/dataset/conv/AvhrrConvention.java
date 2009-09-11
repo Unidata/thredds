@@ -61,8 +61,7 @@ import java.text.ParseException;
 public class AvhrrConvention extends ucar.nc2.dataset.CoordSysBuilder {
 
   public static boolean isMine(NetcdfFile ncfile) {
-    IOServiceProvider iosp = ncfile.getIosp();
-    if (!(iosp instanceof H5iosp)) return false;
+    if (!ncfile.getFileTypeId().equals("HDF5")) return false;
 
     Group loc = ncfile.findGroup("VHRR/Geo-Location");
     if (null == loc) return false;

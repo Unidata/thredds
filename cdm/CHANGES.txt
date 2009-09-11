@@ -3,7 +3,10 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.1:
+ 5:
+  NppConvention for NPOESS
  4:
+  ui/iosp: Grib2 Table
   Array.createView was not propagating isUnsigned()
   ui.StructureTable also shows nominal time if possible
   PointFeatureImpl checks if nominal time == 0, if so use obsTime. workaround for protobuf lask of NaN default

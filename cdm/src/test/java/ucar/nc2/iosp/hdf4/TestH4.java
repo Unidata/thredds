@@ -46,6 +46,7 @@ public class TestH4 {
     TestSuite suite= new TestSuite();
 
     suite.addTest(new TestSuite(TestH4readAndCount.class)); //
+    suite.addTest(new TestSuite(TestH4eos.class)); //
     suite.addTest(new TestSuite(TestH4subset.class)); //
 
     return suite;
