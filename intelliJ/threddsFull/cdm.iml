@@ -108,7 +108,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" exported="" name="protobuf" level="application" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -119,6 +118,15 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="ehcache" level="project" />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/protobuf-java-2.1.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
 

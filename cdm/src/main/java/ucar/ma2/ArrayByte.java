@@ -112,7 +112,9 @@ public class ArrayByte extends Array {
   }
 
   Array createView(Index index) {
-    return ArrayByte.factory(index, storage);
+    Array result = ArrayByte.factory(index, storage);
+    result.setUnsigned( isUnsigned());
+    return result;
   }
 
   public Object getStorage() {

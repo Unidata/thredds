@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  4:
+  Array.createView was not propagating isUnsigned()
   ui.StructureTable also shows nominal time if possible
   PointFeatureImpl checks if nominal time == 0, if so use obsTime. workaround for protobuf lask of NaN default
   refactor station point classes

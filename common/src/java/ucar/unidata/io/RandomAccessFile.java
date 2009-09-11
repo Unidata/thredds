@@ -119,7 +119,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
     }
   }
 
-  static public int getDebugNseeks() {
+  static public int  getDebugNseeks() {
     return (debug_nseeks == null) ? 0 : debug_nseeks.intValue();
   }
 
@@ -159,7 +159,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
    * write operation.
    */
   protected long filePosition;
-
+                      
   /**
    * The buffer used for reading the data.
    */

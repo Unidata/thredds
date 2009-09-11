@@ -62,7 +62,6 @@ public final class AwxFileGridProductSecondHeader extends AwxFileSecondHeader {
 		short qualityControlFloor;
 		short reserved;
 		
-		// 格点场要素
 		public static short GRID_FEATURE_OCEAN_TEMPERATURE = 1; // unit(K) 
 		public static short GRID_FEATURE_SEA_ICE_DISTRIBUTION = 2; // no unit
 		public static short GRID_FEATURE_SEA_ICE_DENSITY = 3;	//no unit 

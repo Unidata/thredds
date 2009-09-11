@@ -10,7 +10,7 @@
   <bean id="rootController" class="thredds.server.root.RootController" >
     <property name="tdsContext" ref="tdsContext"/>
   </bean>
-
+                   
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
       <value>

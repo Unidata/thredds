@@ -287,17 +287,11 @@ public class CompareNetcdf {
         assert v1 == v2 : v1 + " != " + v2 + " count=" + iter1;
       }
     } else if (dt == DataType.SHORT) {
-      double sum1 = 0, sum2 = 0;
-      int count = 0;
       while (iter1.hasNext() && iter2.hasNext()) {
         short v1 = iter1.getShortNext();
         short v2 = iter2.getShortNext();
         assert v1 == v2 : v1 + " != " + v2 + " count=" + iter1;
-        sum1 += v1;
-        sum2 += v2;
-        count++;
       }
-      System.out.printf("sum1 = %f sum2 = %f count=%d%n", sum1, sum2, count);
     } else if (dt == DataType.BYTE) {
       while (iter1.hasNext() && iter2.hasNext()) {
         byte v1 = iter1.getByteNext();

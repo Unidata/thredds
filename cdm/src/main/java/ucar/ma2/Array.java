@@ -621,6 +621,7 @@ public abstract class Array {
   public Array copy() {
     Array newA = factory(getElementType(), getShape());
     MAMath.copy(newA, this);
+    newA.setUnsigned( isUnsigned());
     return newA;
   }
 
@@ -809,6 +810,7 @@ public abstract class Array {
     if (result.getSize() != getSize())
       throw new IllegalArgumentException("reshape arrays must have same total size");
 
+    result.setUnsigned( isUnsigned());
     Array.arraycopy(this, 0, result, 0, (int) getSize());
     return result;
   }
@@ -837,8 +839,8 @@ public abstract class Array {
   //////////////////////////////////////////////////////////////
 
   /**
-   * Find whether the underlying data should be interprested as unsigned.
-   * Only affects byte, short, int, and double.
+   * Find whether the underlying data should be interpreted as unsigned.
+   * Only affects byte, short, and int.
    * When true, conversions to wider types are handled correctly.
    *
    * @return true if the data is unsigned integer type.
@@ -847,6 +849,13 @@ public abstract class Array {
     return unsigned;
   }
 
+  /**
+   * Set whether the data should be interpreted as unsigned.
+   * Only valid for byte, short, and int.
+   * When true, conversions to wider types are handled correctly.
+   *
+   * @param unsigned true if unsigned
+   */
   public void setUnsigned(boolean unsigned) {
     this.unsigned = unsigned;
   }

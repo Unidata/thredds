@@ -116,9 +116,10 @@ public class ArrayShort extends Array {
    * create new Array with given indexImpl and same backing store
    */
   Array createView(Index index) {
-    return ArrayShort.factory(index, storage);
+    Array result = ArrayShort.factory(index, storage);
+    result.setUnsigned( isUnsigned()); 
+    return result;
   }
-
   /* Get underlying primitive array storage. CAUTION! You may invalidate your warrentee! */
   public Object getStorage() {
     return storage;

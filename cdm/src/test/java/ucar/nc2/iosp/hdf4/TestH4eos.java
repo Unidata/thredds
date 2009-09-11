@@ -100,7 +100,7 @@ public class TestH4eos extends TestCase {
   }
 
   public void testProblem() throws IOException, InvalidRangeException {
-    String filename = "D:/formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf";
+    String filename = "/home/caron/MOD021KM.A2004328.1735.004.2004329164007.hdf";
     NetcdfFile ncfile = NetcdfFile.open(filename);
     Variable v = ncfile.findVariable("/MODIS_SWATH_Type_L1B/Data Fields/EV_250_Aggr1km_RefSB");
     assert v != null;
@@ -143,6 +143,7 @@ public class TestH4eos extends TestCase {
       vals[i] = (short) i;
 
     Array data = Array.factory(DataType.SHORT, new int[] {nz,ny,nx}, vals);
+    data.setUnsigned(true);
     System.out.printf(" sum =          %f%n", MAMath.sumDouble(data));
     System.out.printf(" sum2 =          %f%n", MAMath.sumDouble(data.reduce(0)));
   }
