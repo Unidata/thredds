@@ -47,6 +47,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.Array;
 import ucar.grib.GribGridRecord;
 import ucar.grib.GribNumbers;
+import ucar.grib.grib2.Grib2Tables;
 
 import java.util.*;
 
@@ -75,17 +76,18 @@ public class GridEnsembleCoord {
    */
   private int ensembles;
 
-  /** keys for the ensembles */
-  //private int[] enskey;
+  /** types for the ensembles diemensions */
+  private int[] ensTypes;
+
+  /**
+   * product definition  #
+   */
+  private int pdn = -1;
 
   /**
    * sequence #
    */
   private int seq = 0;
-
-  // TODO: check and delete
-  /** ensemble number can start with either 1 or 0  */
-  //private boolean startWithOne = true;
 
   /**
    * Create a new GridEnsembleCoord from a record
@@ -115,14 +117,36 @@ public class GridEnsembleCoord {
    */
   GridEnsembleCoord(List<GridRecord> records, GridTableLookup lookup) {
     this.lookup = lookup;
-    ensembles = calEnsembles(records);
+    calEnsembles(records);
   }
 
   /**
    * add Ensemble dimension
    */
-  int calEnsembles(List<GridRecord> records) {
+  void calEnsembles(List<GridRecord> records) {
 
+    int[] enstypes = new int[100];
+
+    ensembles = -1;
+    for( GridRecord gr : records ) {
+      GribGridRecord ggr = (GribGridRecord) gr;
+      pdn = ggr.productType;
+      int ensNumber = ggr.getEnsembleNumber();
+      if (ensNumber == GribNumbers.UNDEFINED) {
+        ensembles = -1;
+        return;
+      }
+      if ( ensembles < ensNumber )
+        ensembles = ensNumber;
+      enstypes[ ensNumber ] = ggr.getEnsembleType();
+    }
+    ensembles++;
+
+    ensTypes = new int[ ensembles ];
+    System.arraycopy( enstypes, 0, ensTypes, 0, ensembles);
+
+
+    /*
     GridRecord first = records.get(0);
     if (first instanceof GribGridRecord) { // check for ensemble
       GribGridRecord ggr = (GribGridRecord) first;
@@ -132,6 +156,9 @@ public class GridEnsembleCoord {
       return ggr.getNumberForecasts();
     }
     return -1;
+    */
+
+
     /*
     int key = ggr.getRecordKey(); // levelType1, levelValue1, levelType2, levelValue2,
     //double key = ggr.getRecordKey() +
@@ -229,9 +256,10 @@ public class GridEnsembleCoord {
    */
   void addToNetcdfFile(NetcdfFile ncfile, Group g) {
     Variable v = new Variable(ncfile, g, null, getName());
-    v.setDataType(DataType.INT);
+   // v.setDataType(DataType.INT);
+    v.setDataType(DataType.STRING);
     v.addAttribute(new Attribute("long_name", "ensemble"));
-
+    /*
     int[] data = new int[ensembles];
 
     for (int i = 0; i < ensembles; i++) {
@@ -239,6 +267,13 @@ public class GridEnsembleCoord {
     }
     Array dataArray = Array.factory(DataType.INT,
         new int[]{ensembles}, data);
+    */
+    String[] data = new String[ensembles];
+
+    for (int i = 0; i < ensembles; i++) {
+      data[i] = Grib2Tables.getEnsembleType( pdn, ensTypes[ i ]);
+    }
+    Array dataArray = Array.factory(DataType.STRING, new int[]{ensembles}, data);
 
     v.setDimensions(v.getShortName());
     v.setCachedData(dataArray, false);
@@ -276,15 +311,8 @@ public class GridEnsembleCoord {
       int en = ggr.getEnsembleNumber();
       if (en == GribNumbers.UNDEFINED)
         return 0;
-      // some ensemble numbering start with 0, others with 1
-      // TODO: delete
-//        if ( true || en == 0 )
-//           startWithOne = false;
-//        if (startWithOne ) {
-//          return en -1;
-//        } else {
+
       return en;
-      //}
     }
     return -1;
   }
