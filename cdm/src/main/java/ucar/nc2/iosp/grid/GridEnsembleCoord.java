@@ -271,14 +271,14 @@ public class GridEnsembleCoord {
     String[] data = new String[ensembles];
 
     for (int i = 0; i < ensembles; i++) {
-      data[i] = Grib2Tables.getEnsembleType( pdn, ensTypes[ i ]);
+      data[i] = Grib2Tables.getEnsembleType( pdn, ensTypes[ i ]) +" "+ Integer.toString( i );
     }
     Array dataArray = Array.factory(DataType.STRING, new int[]{ensembles}, data);
 
     v.setDimensions(v.getShortName());
     v.setCachedData(dataArray, false);
 
-    /*
+    /*   // TODO: code clean up and above
     if ( lookup instanceof Grib2GridTableLookup) {
       Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
       //v.addAttribute( new Attribute("GRIB_orgReferenceTime", formatter.toDateTimeStringISO( d )));
