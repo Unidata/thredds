@@ -34,6 +34,7 @@
 package thredds.ui;
 
 import ucar.nc2.util.IO;
+import ucar.nc2.util.URLnaming;
 import ucar.nc2.util.net.HttpClientManager;
 import ucar.nc2.util.net.URLencode;
 import ucar.util.prefs.*;
@@ -43,6 +44,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.net.*;
+import java.net.URI;
 import java.util.*;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
@@ -50,6 +52,7 @@ import java.util.zip.InflaterInputStream;
 import javax.swing.*;
 
 import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.methods.*;
 
@@ -201,7 +204,21 @@ public class URLDumpPane extends TextHistoryPane {
     HttpMethodBase m = null;
 
     try {
-      urlString = URLEncoder.encode(urlString, "UTF-8");
+      /* you might think this works, but it doesnt:
+      URI raw = new URI(urlString.trim());
+      appendLine("raw scheme= " + raw.getScheme() + "\n auth= " + raw.getRawAuthority() + "\n path= " + raw.getRawPath() +
+           "\n query= " + raw.getRawQuery() + "\n fragment= " + raw.getRawFragment()+"\n");
+
+      URI uri = new URI(raw.getScheme(), raw.getRawAuthority(),
+              URIUtil.encodePath(raw.getRawPath()),
+              URIUtil.encodeQuery(raw.getRawQuery()),
+              raw.getRawFragment());
+      appendLine("encoded scheme= " + uri.getScheme() + "\n auth= " + uri.getAuthority() + "\n path= " + uri.getPath() +
+           "\n query= " + uri.getQuery() + "\n fragment= " + uri.getFragment()+"\n");
+      urlString = uri.toString();
+              */
+
+      urlString = URLnaming.escapeQuery(urlString);
 
       if (cmd == GET)
         m = new GetMethod(urlString);

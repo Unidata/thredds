@@ -32,6 +32,9 @@
  */
 package ucar.nc2.util;
 
+import org.apache.commons.httpclient.util.URIUtil;
+import org.apache.commons.httpclient.URIException;
+
 import java.net.URI;
 import java.net.URL;
 import java.net.URISyntaxException;
@@ -43,6 +46,23 @@ import java.io.File;
  * @author caron
  */
 public class URLnaming {
+
+  public static String escapeQuery(String urlString) {
+    urlString = urlString.trim();
+    int posQ = urlString.indexOf("?");
+    if ((posQ > 0) && (posQ < urlString.length() - 2)) {
+      String query = urlString.substring(posQ);
+      if (query.indexOf("%") < 0) { // assume that its not already encoded...
+        String path = urlString.substring(0,posQ);
+        try {
+          urlString = path + URIUtil.encodeQuery( query);
+        } catch (URIException e) {
+          e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+      }
+    }
+    return urlString;
+  }
 
   /**
    * This augments URI.resolve(), by also dealing with file: URIs.

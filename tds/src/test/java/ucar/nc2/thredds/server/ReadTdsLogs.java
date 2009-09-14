@@ -34,6 +34,7 @@
 package ucar.nc2.thredds.server;
 
 import ucar.nc2.util.IO;
+import ucar.nc2.util.URLnaming;
 import ucar.nc2.util.net.HttpClientManager;
 
 import java.io.BufferedReader;
@@ -132,7 +133,7 @@ public class ReadTdsLogs {
 
       HttpMethod method = null;
       try {
-        method = new GetMethod(server + log.path);
+        method = new GetMethod(server + URLnaming.escapeQuery(log.path));
         // out2.format("send %s %n", method.getPath());
 
         method.setFollowRedirects(true);
