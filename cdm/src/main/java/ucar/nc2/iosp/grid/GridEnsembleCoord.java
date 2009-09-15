@@ -76,7 +76,7 @@ public class GridEnsembleCoord {
    */
   private int ensembles;
 
-  /** types for the ensembles diemensions */
+  /** types for the ensembles dimensions */
   private int[] ensTypes;
 
   /**
@@ -324,5 +324,23 @@ public class GridEnsembleCoord {
    */
   int getNEnsembles() {
     return ensembles;
+  }
+
+  /**
+   * Get the product definition number of Ensembles
+   *
+   * @return the product definition number of Ensembles
+   */
+  int getPDN() {
+    return pdn;
+  }
+
+  /**
+   * Get the types of Ensembles
+   *
+   * @return the types of Ensembles
+   */
+  int[] getEnsType() {
+    return ensTypes;
   }
 }

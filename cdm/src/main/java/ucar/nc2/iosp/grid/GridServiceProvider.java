@@ -431,6 +431,23 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
   }
 
   /**
+   * Ensemble information  ensembles, pdn, ensTypes[]
+   *
+   * @param v2      Variable
+   * @return ens[] int[]
+   */
+  public int[] ensembleInfo(Variable v2 ) {
+    GridVariable pv = (GridVariable) v2.getSPobject();
+    int ensembles = pv.getNEnsembles();
+    int[] ensInfo = new int[ ensembles + 2];
+    ensInfo[ 0 ] = ensembles;
+    ensInfo[ 1 ] = pv.getPDN();
+    System.arraycopy( pv.getEnsTypes(), 0, ensInfo, 2, ensembles);
+
+    return ensInfo;
+  }
+
+  /**
    * Read the data for this GridRecord
    *
    * @param gr grid identifier

@@ -55,6 +55,8 @@ import ucar.nc2.units.DateFormatter;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.grid.GridServiceProvider;
+import ucar.nc2.iosp.grid.GridVariable;
+import ucar.nc2.iosp.grid.GridEnsembleCoord;
 import ucar.nc2.Variable;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;
@@ -100,6 +102,7 @@ public class ForecastModelRunInventory {
   private String name;
   private List<TimeCoord> times = new ArrayList<TimeCoord>(); // list of TimeCoord
   private List<VertCoord> vaxes = new ArrayList<VertCoord>(); // list of VertCoord
+  private List<EnsCoord> eaxes = new ArrayList<EnsCoord>(); // list of EnsCoord
   private Date runDate; // date of the run
   private String runTime; // string representation of the date of the run
   private GridDataset gds; // underlying dataset - may be null if read from XML
@@ -147,6 +150,12 @@ public class ForecastModelRunInventory {
         TimeCoord tc = getTimeCoordinate(axis);
         tc.vars.add(grid);
         grid.parent = tc;
+      }
+
+      CoordinateAxis1D eaxis = gcs.getEnsembleAxis();
+      if (eaxis != null) {
+        int[] einfo = getEnsInfo(  v );
+        grid.ec = getEnsCoordinate(eaxis, einfo );
       }
 
       CoordinateAxis1D vaxis = gcs.getVerticalAxis();
@@ -287,6 +296,12 @@ public class ForecastModelRunInventory {
         System.out.println("Missing " + gds.getTitle() + " " + v.getName() + " # =" + missing.size() + "/" + total);
     } else if (debugMissing)
       System.out.println(" None missing for " + gds.getTitle() + " " + v.getName() + " total = " + total);
+  }
+
+  private int[] getEnsInfo( Variable v ) {
+    if (gribIosp == null) return null;
+    int[] info = gribIosp.ensembleInfo(v);
+    return info;
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -440,6 +455,7 @@ public class ForecastModelRunInventory {
   public static class Grid implements Comparable {
     String name; // , sname;
     TimeCoord parent = null;
+    EnsCoord ec = null; // optional
     VertCoord vc = null; // optional
     List<Missing> missing;
 
@@ -556,6 +572,7 @@ public class ForecastModelRunInventory {
   private int vc_seqno = 0;
 
 
+
   /**
    * Represents a vertical coordinate.
    * Tracks a list of variables that all have the same list of valid times.
@@ -669,6 +686,148 @@ public class ForecastModelRunInventory {
     }
   }
 
+
+  //////////////////////////////////////////////////////
+
+  private EnsCoord getEnsCoordinate(String ens_id) {
+    if (ens_id == null)
+      return null;
+    for (EnsCoord ec : eaxes) {
+      if ((ec.id.equals(ens_id)))
+        return ec;
+    }
+    return null;
+  }
+
+  private EnsCoord getEnsCoordinate(CoordinateAxis1D axis, int[] einfo ) {
+    for (EnsCoord ec : eaxes) {
+      if ((ec.axis != null) && (ec.axis == axis)) return ec;
+    }
+
+    EnsCoord want = new EnsCoord(axis, einfo );
+    for (EnsCoord ec : eaxes) {
+      if ((ec.equalsData(want))) return ec;
+    }
+
+    // its a new one
+    eaxes.add(want);
+    want.setId(Integer.toString(ec_seqno));
+    ec_seqno++;
+    return want;
+  }
+
+  private int ec_seqno = 0;
+
+  /**
+   * Represents a ensemble coordinate.
+   * Tracks a list of variables that all have the same list of ensembles.
+   */
+  public static class EnsCoord implements FmrcCoordSys.EnsCoord, Comparable {
+    CoordinateAxis1D axis; // is null when read from XML
+    private String name, units;
+    private String id; // unique id
+    int ensembles;
+    int pdn;
+    int[] ensTypes;
+
+    EnsCoord() {
+    }
+
+    EnsCoord(CoordinateAxis1D axis, int[] einfo) {
+      this.axis = axis;
+      this.name = axis.getName();
+      this.units = axis.getUnitsString();
+      this.ensembles = einfo[ 0 ];
+      this.pdn = einfo[ 1 ];
+      this.ensTypes = new int[ this.ensembles ];
+      System.arraycopy( einfo, 2, ensTypes, 0, ensembles);
+    }
+
+    // copy constructor
+    EnsCoord(EnsCoord ec) {
+      this.name = ec.getName();
+      this.units = ec.getUnits();
+      this.id = ec.getId();
+      this.ensembles = ec.getNEnsembles();
+      this.pdn = ec.getPDN();
+      this.ensTypes = ec.getEnsTypes().clone();
+    }
+
+    public String getId() {
+      return id;
+    }
+
+    public void setId(String id) {
+      this.id = id;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public void setName(String name) {
+      this.name = name;
+    }
+
+    public String getUnits() {
+      return units;
+    }
+
+    public void setUnits(String units) {
+      this.units = units;
+    }
+
+    public int getNEnsembles() {
+      return ensembles;
+    }
+
+    public void setNEnsembles(int ensembles) {
+      this.ensembles = ensembles;
+    }
+
+    public int getPDN() {
+      return pdn;
+    }
+
+    public void setPDN(int pdn ) {
+      this.pdn = pdn;
+    }
+
+    public int[] getEnsTypes() {
+      return ensTypes;
+    }
+
+    public void setEnsTypes(int[] ensTypes ) {
+      this.ensTypes = ensTypes;
+    }
+
+    public int getSize() {
+      return ensembles;
+    }
+
+    public boolean equalsData(EnsCoord other) {
+
+
+      if (ensembles != other.ensembles)
+        return false;
+
+      if (pdn != other.pdn)
+        return false;
+
+      for (int i = 0; i < ensTypes.length; i++) {
+        if ( ensTypes[i] != other.ensTypes[i])
+          return false;
+      }
+
+      return true;
+    }
+
+    public int compareTo(Object o) {
+      EnsCoord other = (EnsCoord) o;
+      return name.compareTo(other.name);
+    }
+  }
+
   static public double getOffsetInHours(Date origin, Date date) {
     double secs = date.getTime() / 1000;
     double origin_secs = origin.getTime() / 1000;
@@ -722,6 +881,26 @@ public class ForecastModelRunInventory {
     rootElem.setAttribute("name", getName());
     rootElem.setAttribute("runTime", runTime);
 
+    // list all the ensemble coords
+    Collections.sort(eaxes);
+    for (EnsCoord ec : eaxes) {
+      Element ecElem = new Element("ensCoord");
+      rootElem.addContent(ecElem);
+      ecElem.setAttribute("id", ec.id);
+      ecElem.setAttribute("name", ec.name);
+      ecElem.setAttribute("product_definition", Integer.toString(ec.pdn));
+      //if (ec.units != null)
+      //  ecElem.setAttribute("units", ec.units);
+
+      StringBuilder sbuff = new StringBuilder();
+      for (int j = 0; j < ec.ensTypes.length; j++) {
+        if (j > 0) sbuff.append(" ");
+        sbuff.append(Integer.toString(ec.ensTypes[j]));
+
+      }
+      ecElem.addContent(sbuff.toString());
+    }
+
     // list all the vertical coords
     Collections.sort(vaxes);
     for (VertCoord vc : vaxes) {
@@ -762,6 +941,8 @@ public class ForecastModelRunInventory {
         Element varElem = new Element("variable");
         offsetElem.addContent(varElem);
         varElem.setAttribute("name", grid.name);
+        if (grid.ec != null)
+          varElem.setAttribute("ens_id", grid.ec.id);
         if (grid.vc != null)
           varElem.setAttribute("vert_id", grid.vc.id);
 
@@ -822,6 +1003,35 @@ public class ForecastModelRunInventory {
     DateFormatter formatter = new DateFormatter();
     fmr.runDate = formatter.getISODate(fmr.runTime);
 
+    java.util.List<Element> eList = rootElem.getChildren("ensCoord");
+    for (Element ensElem : eList) {
+      EnsCoord ec = new EnsCoord();
+      fmr.eaxes.add(ec);
+      ec.id = ensElem.getAttributeValue("id");
+      ec.name = ensElem.getAttributeValue("name");
+      ec.pdn = Integer.parseInt( ensElem.getAttributeValue("product_definition"));
+
+      // parse the values
+      String values = ensElem.getText();
+      StringTokenizer stoke = new StringTokenizer(values);
+      int n = stoke.countTokens();
+      ec.ensTypes = new int[n];
+      int count = 0;
+      while (stoke.hasMoreTokens()) {
+        String toke = stoke.nextToken();
+        int pos = toke.indexOf(',');
+        if (pos < 0)
+          ec.ensTypes[count] = Integer.parseInt(toke);
+//        else {
+//          String val1 = toke.substring(0, pos);
+//          String val2 = toke.substring(pos + 1);
+//          vc.values1[count] = Double.parseDouble(val1);
+//          vc.values2[count] = Double.parseDouble(val2);
+//        }
+        count++;
+      }
+    }
+
     java.util.List<Element> vList = rootElem.getChildren("vertCoord");
     for (Element vertElem : vList) {
       VertCoord vc = new VertCoord();
@@ -873,6 +1083,7 @@ public class ForecastModelRunInventory {
       List<Element> varList = timeElem.getChildren("variable");
       for (Element vElem : varList) {
         Grid grid = new Grid(vElem.getAttributeValue("name"));
+        grid.ec = fmr.getEnsCoordinate(vElem.getAttributeValue("ens_id"));
         grid.vc = fmr.getVertCoordinate(vElem.getAttributeValue("vert_id"));
         tc.vars.add(grid);
         grid.parent = tc;
@@ -1029,6 +1240,7 @@ public class ForecastModelRunInventory {
   public static void main(String args[]) throws IOException {
     if (args.length == 1) {
       ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
+      //ForecastModelRunInventory.readXML( args[0] +".fmrInv.xml" );
       return;
     }
     DiskCache2 cache =  new DiskCache2("fmrcInventory/", true, 5 * 24 * 3600, 3600);

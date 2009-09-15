@@ -293,10 +293,32 @@ public class GridVariable {
    *
    * @return the number of Ensemble
    */
-  int getNEnsembles() {
+  public int getNEnsembles() {
     return (ecs == null)
         ? 1
         : ecs.getNEnsembles();
+  }
+
+  /**
+   * Get the product definition number of Ensemble
+   *
+   * @return the product definition number of Ensemble
+   */
+  public int getPDN() {
+    return (ecs == null)
+        ? -1
+        : ecs.getPDN();
+  }
+
+  /**
+   * Get the types of Ensemble
+   *
+   * @return the types of Ensemble
+   */
+  public int[] getEnsTypes() {
+    return (ecs == null)
+        ? null
+        : ecs.getEnsType();
   }
 
   /**

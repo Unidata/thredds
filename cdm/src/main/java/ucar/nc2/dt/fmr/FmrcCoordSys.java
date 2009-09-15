@@ -50,6 +50,13 @@ public interface FmrcCoordSys {
     public double[] getValues2();
   }
 
+  public interface EnsCoord {
+    public String getName();
+    public int getNEnsembles();
+    public int getPDN();
+    public int[] getEnsTypes();
+  }
+
   public interface TimeCoord {
     public String getName();
     public double[] getOffsetHours();
