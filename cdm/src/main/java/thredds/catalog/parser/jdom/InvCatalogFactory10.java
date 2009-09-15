@@ -185,7 +185,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     // read top-level dataroots
     java.util.List<Element> rootList = catalogElem.getChildren("datasetRoot", defNS);
     for ( Element e : rootList ) {
-      InvProperty root = readDatasetRoot(e);
+      DataRootConfig root = readDatasetRoot(e);
       catalog.addDatasetRoot( root);
     }
 
@@ -1053,7 +1053,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     }
   }
 
-  protected InvProperty readDatasetRoot( Element s) {
+  protected DataRootConfig readDatasetRoot( Element s) {
     String path = s.getAttributeValue("path");
     String dirLocation = s.getAttributeValue("location");
     if ( dirLocation == null )
@@ -1071,7 +1071,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       if (dirLocation.charAt(last) != '/') dirLocation = dirLocation + '/';
     }
 
-    return new InvProperty( path, dirLocation);
+    return new DataRootConfig( path, dirLocation, s.getAttributeValue("cache"));
   }
 
   protected DateType readDate(Element elem) {

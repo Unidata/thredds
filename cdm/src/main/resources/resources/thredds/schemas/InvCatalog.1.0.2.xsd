@@ -295,6 +295,7 @@
     <xsd:complexType>
       <xsd:attribute name="path" type="xsd:string" use="required"/>
       <xsd:attribute name="location" type="xsd:string" use="required"/>
+      <xsd:attribute name="cache" type="xsd:boolean" />
     </xsd:complexType>
   </xsd:element>
 

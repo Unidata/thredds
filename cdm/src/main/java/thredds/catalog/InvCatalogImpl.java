@@ -52,7 +52,7 @@ import javax.swing.event.EventListenerList;
 public class InvCatalogImpl extends InvCatalog {
   private String createFrom;
   // private String dtdID; // keep track of how read, so can write XML
-  private List<InvProperty> roots = new ArrayList<InvProperty>(); // InvProperty
+  private List<DataRootConfig> roots = new ArrayList<DataRootConfig>();
 
   // validation
   private StringBuilder log = new StringBuilder();
@@ -613,7 +613,7 @@ public class InvCatalogImpl extends InvCatalog {
    *
    * @return List of InvProperty. May be empty, may not be null.
    */
-  public java.util.List<InvProperty> getDatasetRoots() {
+  public java.util.List<DataRootConfig> getDatasetRoots() {
     return roots;
   }
 
@@ -622,7 +622,7 @@ public class InvCatalogImpl extends InvCatalog {
    * Add Dataset Root, key = path,  value = location.
    * @param root add a dataset root
    */
-  public void addDatasetRoot(InvProperty root) {
+  public void addDatasetRoot(DataRootConfig root) {
     roots.add(root);
   }
 

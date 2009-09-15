@@ -182,13 +182,21 @@ public class DatasetHandler {
 
     // common case - its a file
     if (ncfile == null) {
+      boolean cache = true; // hack in a "no cache" option
+      if ((match != null) && (match.dataRoot != null)) {
+        cache = match.dataRoot.cache;
+      }
+
       // otherwise, must have a datasetRoot in the path
       File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(reqPath);
       if (file == null) {
         throw new FileNotFoundException(reqPath);
       }
 
-      ncfile = NetcdfDataset.acquireFile(file.getPath(), null);
+      if (cache)
+        ncfile = NetcdfDataset.acquireFile(file.getPath(), null);
+      else
+        ncfile = NetcdfDataset.openFile(file.getPath(), null);
       if (ncfile == null) throw new FileNotFoundException(reqPath);
     }
 

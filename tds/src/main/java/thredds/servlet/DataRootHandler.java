@@ -324,8 +324,8 @@ public class DataRootHandler {
       cl.configCatalog(cat);
 
     // look for datasetRoots
-    for (InvProperty p : cat.getDatasetRoots()) {
-      addRoot(p.getName(), p.getValue(), true);
+    for (DataRootConfig p : cat.getDatasetRoots()) {
+      addRoot(p, true);
     }
 
     // old style - in the service elements
@@ -595,10 +595,38 @@ public class DataRootHandler {
     }
 
     // add it
-    droot = new DataRoot(path, dirLocation);
+    droot = new DataRoot(path, dirLocation, true);
     pathMatcher.put(path, droot);
 
     logCatalogInit.debug(" added rootPath=<" + path + ">  for directory= <" + dirLocation + ">");
+    return true;
+  }
+
+  // Only called by synchronized methods
+  private boolean addRoot(DataRootConfig config, boolean wantErr) {
+    String path = config.getName();
+    String location = config.getValue();
+    // check for duplicates
+    DataRoot droot = (DataRoot) pathMatcher.get(path);
+    if (droot != null) {
+      if (wantErr)
+        logCatalogInit.error("**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
+                " wanted to map to <" + location + ">");
+
+      return false;
+    }
+
+    File file = new File(location);
+    if (!file.exists()) {
+      logCatalogInit.error("**Error: Data Root =" + path + " directory= <" + location + "> does not exist");
+      return false;
+    }
+
+    // add it
+    droot = new DataRoot(path, location, config.isCache());
+    pathMatcher.put(path, droot);
+
+    logCatalogInit.debug(" added rootPath=<" + path + ">  for directory= <" + location + ">");
     return true;
   }
 
@@ -616,6 +644,7 @@ public class DataRootHandler {
     String dirLocation; // to this directory
     InvDatasetScan scan; // the InvDatasetScan that created this (may be null)
     InvDatasetFmrc fmrc; // the InvDatasetFmrc that created this (may be null)
+    boolean cache = true;
 
     // Use this to access CrawlableDataset in dirLocation.
     // I.e., used by datasets that reference a <datasetRoot>
@@ -637,9 +666,10 @@ public class DataRootHandler {
       this.datasetRootProxy = null;
     }
 
-    DataRoot(String path, String dirLocation) {
+    DataRoot(String path, String dirLocation, boolean cache) {
       this.path = path;
       this.dirLocation = dirLocation;
+      this.cache = cache;
       this.scan = null;
 
       makeProxy();
