@@ -109,6 +109,10 @@ public class FmrcInventory {
   private int tc_seqno = 0;
   private List<ForecastModelRunInventory.TimeCoord> timeCoords = new ArrayList<ForecastModelRunInventory.TimeCoord>();
 
+  // list of unique ForecastModelRunInventory.EnsCoord
+  private int ec_seqno = 0;
+  private List<ForecastModelRunInventory.EnsCoord> ensCoords = new ArrayList<ForecastModelRunInventory.EnsCoord>();
+
   // list of unique ForecastModelRunInventory.VertCoord
   private int vc_seqno = 0;
   private List<ForecastModelRunInventory.VertCoord> vertCoords = new ArrayList<ForecastModelRunInventory.VertCoord>();
@@ -177,6 +181,7 @@ public class FmrcInventory {
   }
   public List<ForecastModelRunInventory.TimeCoord> getTimeCoords() { return timeCoords; }
   public List<RunSeq> getRunSequences() { return runSequences; }
+  public List<ForecastModelRunInventory.EnsCoord> getEnsCoords() { return ensCoords; }
   public List<ForecastModelRunInventory.VertCoord> getVertCoords() { return vertCoords; }
 
   public String getSuffixFilter() {
@@ -451,6 +456,14 @@ public class FmrcInventory {
     return null;
   }
 
+  private ForecastModelRunInventory.EnsCoord findEnsCoord(ForecastModelRunInventory.EnsCoord want) {
+    for (ForecastModelRunInventory.EnsCoord ec : ensCoords) {
+      if (want.equalsData(ec))
+        return ec;
+    }
+    return null;
+  }
+
   private ForecastModelRunInventory.VertCoord findVertCoord(ForecastModelRunInventory.VertCoord want) {
     for (ForecastModelRunInventory.VertCoord vc : vertCoords) {
       if (want.equalsData(vc))
@@ -466,6 +479,7 @@ public class FmrcInventory {
     String name;
     List<RunExpected> runs = new ArrayList<RunExpected>();  // List of RunExpected
     ForecastModelRunInventory.VertCoord vertCoordUnion = null;
+    ForecastModelRunInventory.EnsCoord ensCoordUnion = null;
     int countInv, countExpected;
 
     RunSeq seq;                        // which seq this belongs to
@@ -500,6 +514,31 @@ public class FmrcInventory {
     void finish() {
       Collections.sort( runs);
 
+      // run over all ensCoords and construct the union
+      List<ForecastModelRunInventory.EnsCoord> eextendList = new ArrayList<ForecastModelRunInventory.EnsCoord>();
+      ForecastModelRunInventory.EnsCoord ec_union = null;
+      for (RunExpected rune : runs) {
+        ForecastModelRunInventory.EnsCoord ec = rune.grid.ec;
+        if (ec == null) continue;
+        if (ec_union == null)
+          ec_union = new ForecastModelRunInventory.EnsCoord( ec );
+        else if (!ec_union.equalsData(ec))
+          eextendList.add(ec);
+      }
+
+      if (ec_union != null) {
+        normalize( ec_union, eextendList);  
+
+        // now find unique within collection
+        ensCoordUnion = findEnsCoord( ec_union);
+        if (ensCoordUnion == null) {
+          ensCoords.add(ec_union);
+          ensCoordUnion = ec_union;
+          ec_union.setId(Integer.toString(ec_seqno));
+          ec_seqno++;
+        }
+      }
+
       // run over all vertCoords and construct the union
       List<ForecastModelRunInventory.VertCoord> extendList = new ArrayList<ForecastModelRunInventory.VertCoord>();
       ForecastModelRunInventory.VertCoord vc_union = null;
@@ -527,6 +566,29 @@ public class FmrcInventory {
 
     }
 
+    /**
+     * Extend with all the values in the list of EnsCoord
+     *  .
+     * @param ecList list of EnsCoord, may be empty
+     */
+    public void normalize(ForecastModelRunInventory.EnsCoord result,
+                          List<ForecastModelRunInventory.EnsCoord> ecList) {
+      List<ForecastModelRunInventory.EnsCoord> extra = new ArrayList<ForecastModelRunInventory.EnsCoord>();
+      for (ForecastModelRunInventory.EnsCoord ec : ecList) {
+        if ( ! result.equalsData( ec ) ) {
+          // differences can only be greater
+          extra.add( ec );
+        }
+      }
+      if( extra.size() == 0 )
+        return;
+       for (ForecastModelRunInventory.EnsCoord ec : extra ) {
+         if ( ec.getNEnsembles() < result.getNEnsembles() )
+           continue;
+         result = ec;
+       }
+
+    }
 
     /**
      * Extend with all the values in the list of VertCoord

@@ -121,6 +121,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
 
   private List<VertTimeCoord> vertTimeCoords;
   private List<ForecastModelRunInventory.TimeCoord> timeCoords;
+  private List<ForecastModelRunInventory.EnsCoord> ensCoords;
   private List<RunSeq> runSequences;
 
   private String name;
@@ -169,10 +170,13 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
   public static class Grid implements Comparable {
     private String name; // , searchName;
     private VertTimeCoord vtc = null;
+    private ForecastModelRunInventory.EnsCoord ec = null;
 
     Grid (String name) {
       this.name = name;
     }
+
+    public EnsCoord getEnsTimeCoord() { return ec; }
 
     //public String getName() { return name; }
     //public void setName(String name) { this.name = name; }
@@ -478,6 +482,25 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     if (null != suffixFilter)
       rootElem.setAttribute("suffixFilter", suffixFilter);
 
+    // list all the ensemble coordinaates
+    Collections.sort(ensCoords);
+    for (ForecastModelRunInventory.EnsCoord ec : ensCoords) {
+      Element ecElem = new Element("ensCoord");
+      rootElem.addContent(ecElem);
+      ecElem.setAttribute("id", ec.getId());
+      ecElem.setAttribute("name", ec.getName());
+      ecElem.setAttribute("product_definition", Integer.toString(ec.getPDN()));
+
+      StringBuilder sbuff = new StringBuilder();
+      int[] ensTypes = ec.getEnsTypes(); //new int[ ec.getNEnsembles() ];
+      for (int j = 0; j < ensTypes.length; j++) {
+        if (j > 0) sbuff.append(" ");
+        sbuff.append(Integer.toString( ensTypes[j]));
+
+      }
+      ecElem.addContent(sbuff.toString());
+    }
+
     // list all the vertical coordinaates
     Collections.sort(vertTimeCoords);
     for (VertTimeCoord vtc : vertTimeCoords) {
@@ -543,6 +566,8 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
         Element varElem = new Element("variable");
         seqElem.addContent(varElem);
         varElem.setAttribute("name", grid.name);
+        if (grid.ec != null)
+          varElem.setAttribute("ensCoord", grid.ec.getId());
         if (grid.vtc != null) {
           varElem.setAttribute("vertCoord", grid.vtc.getId());
 
@@ -705,6 +730,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     this.name = fmrc.getName();
 
     this.timeCoords = fmrc.getTimeCoords();
+    this.ensCoords = fmrc.getEnsCoords();
 
     this.vertTimeCoords = new ArrayList<VertTimeCoord>();
     for (int i = 0; i < fmrc.getVertCoords().size(); i++) {
@@ -750,6 +776,8 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
         runSeq.vars.add(grid);
         if (uv.vertCoordUnion != null)
           grid.vtc = new VertTimeCoord(uv.vertCoordUnion);
+        if (uv.ensCoordUnion != null)
+          grid.ec =  uv.ensCoordUnion;
       }
     }
 

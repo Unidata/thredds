@@ -734,11 +734,11 @@ public class ForecastModelRunInventory {
    */
   public static class EnsCoord implements FmrcCoordSys.EnsCoord, Comparable {
     CoordinateAxis1D axis; // is null when read from XML
-    private String name, units;
+    private String name; //, units;
     private String id; // unique id
-    int ensembles;
-    int pdn;
-    int[] ensTypes;
+    private int ensembles;
+    private int pdn;
+    private int[] ensTypes;
 
     EnsCoord() {
     }
@@ -746,7 +746,6 @@ public class ForecastModelRunInventory {
     EnsCoord(CoordinateAxis1D axis, int[] einfo) {
       this.axis = axis;
       this.name = axis.getName();
-      this.units = axis.getUnitsString();
       this.ensembles = einfo[ 0 ];
       this.pdn = einfo[ 1 ];
       this.ensTypes = new int[ this.ensembles ];
@@ -756,7 +755,6 @@ public class ForecastModelRunInventory {
     // copy constructor
     EnsCoord(EnsCoord ec) {
       this.name = ec.getName();
-      this.units = ec.getUnits();
       this.id = ec.getId();
       this.ensembles = ec.getNEnsembles();
       this.pdn = ec.getPDN();
@@ -777,14 +775,6 @@ public class ForecastModelRunInventory {
 
     public void setName(String name) {
       this.name = name;
-    }
-
-    public String getUnits() {
-      return units;
-    }
-
-    public void setUnits(String units) {
-      this.units = units;
     }
 
     public int getNEnsembles() {
