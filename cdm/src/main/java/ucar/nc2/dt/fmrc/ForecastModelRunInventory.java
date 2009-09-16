@@ -275,20 +275,29 @@ public class ForecastModelRunInventory {
 
   private void addMissing(Variable v, GridCoordSystem gcs, Grid grid) {
     if (gribIosp == null) return;
-    if (gcs.getVerticalAxis() == null) return;
+    if (gcs.getVerticalAxis() == null && gcs.getEnsembleAxis() == null) return;
     int ntimes = (int) gcs.getTimeAxis().getSize();
-    int nverts = (int) gcs.getVerticalAxis().getSize();
-    int total = ntimes * nverts;
+    int nverts = 1;
+    if (gcs.getVerticalAxis() != null )
+      nverts = (int) gcs.getVerticalAxis().getSize();
+    int nens = 1;
+    if (gcs.getEnsembleAxis() != null )
+      nens = (int) gcs.getEnsembleAxis().getSize();
+    //int total = ntimes * nverts;
+    int total = ntimes * nens * nverts;
+
 
     List<Missing> missing = new ArrayList<Missing>();
     for (int timeIndex = 0; timeIndex < ntimes; timeIndex++) {
-      for (int vertIndex = 0; vertIndex < nverts; vertIndex++)
-        try {
-          if (gribIosp.isMissingXY(v, timeIndex, vertIndex))
-            missing.add(new Missing(timeIndex, vertIndex));
-        } catch (InvalidRangeException e) {
-          e.printStackTrace();
-        }
+      for (int ensIndex = 0; ensIndex < nens; ensIndex++) {
+        for (int vertIndex = 0; vertIndex < nverts; vertIndex++)
+          try {
+            if (gribIosp.isMissingXY(v, timeIndex, ensIndex, vertIndex))
+              missing.add(new Missing(timeIndex, ensIndex, vertIndex));
+          } catch (InvalidRangeException e) {
+            e.printStackTrace();
+          }
+      }
     }
     if (missing.size() > 0) {
       grid.missing = missing;
@@ -532,10 +541,11 @@ public class ForecastModelRunInventory {
   }
 
   public static class Missing {
-    int timeIndex, vertIndex;
+    int timeIndex, ensIndex, vertIndex;
 
-    Missing(int timeIndex, int vertIndex) {
+    Missing(int timeIndex, int ensIndex, int vertIndex) {
       this.timeIndex = timeIndex;
+      this.ensIndex = ensIndex;
       this.vertIndex = vertIndex;
     }
   }
@@ -954,8 +964,14 @@ public class ForecastModelRunInventory {
             Missing m = grid.missing.get(k);
             if (k > 0) sbuff.append(" ");
             sbuff.append(m.timeIndex);
-            sbuff.append(",");
-            sbuff.append(m.vertIndex);
+            if ( grid.ec != null ) {
+              sbuff.append(",");
+              sbuff.append(m.ensIndex);
+            }
+            if ( grid.vc != null ) {
+              sbuff.append(",");
+              sbuff.append(m.vertIndex);
+            }
           }
           missingElem.addContent(sbuff.toString());
         }
@@ -1014,8 +1030,8 @@ public class ForecastModelRunInventory {
       // parse the values
       String values = ensElem.getText();
       StringTokenizer stoke = new StringTokenizer(values);
-      int n = stoke.countTokens();
-      ec.ensTypes = new int[n];
+      ec.ensembles = stoke.countTokens();
+      ec.ensTypes = new int[ ec.ensembles ];
       int count = 0;
       while (stoke.hasMoreTokens()) {
         String toke = stoke.nextToken();
@@ -1097,8 +1113,13 @@ public class ForecastModelRunInventory {
           stoke = new StringTokenizer(values, " ,");
           while (stoke.hasMoreTokens()) {
             int timeIdx = Integer.parseInt(stoke.nextToken());
-            int vertIdx = Integer.parseInt(stoke.nextToken());
-            grid.missing.add(new Missing(timeIdx, vertIdx));
+            int ensIdx = 0;
+            if (grid.ec != null )
+               ensIdx = Integer.parseInt(stoke.nextToken());
+            int vertIdx = 0;
+            if (grid.vc != null )
+              vertIdx = Integer.parseInt(stoke.nextToken());
+            grid.missing.add(new Missing(timeIdx, ensIdx, vertIdx));
           }
         }
       }
@@ -1240,7 +1261,7 @@ public class ForecastModelRunInventory {
   public static void main(String args[]) throws IOException {
     if (args.length == 1) {
       ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
-      //ForecastModelRunInventory.readXML( args[0] +".fmrInv.xml" );
+      ForecastModelRunInventory.readXML( args[0] +".fmrInv.xml" );
       return;
     }
     DiskCache2 cache =  new DiskCache2("fmrcInventory/", true, 5 * 24 * 3600, 3600);
