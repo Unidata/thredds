@@ -457,6 +457,16 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     }
   }
 
+  private ForecastModelRunInventory.EnsCoord findEnsCoord( String id) {
+     if (id == null)
+       return null;
+
+    for (ForecastModelRunInventory.EnsCoord ec : ensCoords) {
+      if (ec.getId().equals(id))
+        return ec;
+    }
+    return null;
+   }
 
   //////////////////////////////////////////////////////////////////////////////////
 
@@ -604,6 +614,33 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     name = rootElem.getAttributeValue("name");
     suffixFilter = rootElem.getAttributeValue("suffixFilter");
 
+    ensCoords = new ArrayList<ForecastModelRunInventory.EnsCoord>();
+    java.util.List<Element> eList = rootElem.getChildren("ensCoord");
+    for (Element ecElem : eList) {
+      ForecastModelRunInventory.EnsCoord ec = new ForecastModelRunInventory.EnsCoord();
+      ec.setId(ecElem.getAttributeValue("id"));
+      ec.setName(ecElem.getAttributeValue("name"));
+      ec.setPDN(Integer.parseInt( ecElem.getAttributeValue("product_definition")));
+
+      // parse the values
+      String values = ecElem.getText();
+      StringTokenizer stoke = new StringTokenizer(values);
+      int n = stoke.countTokens();
+      ec.setNEnsembles( n );
+      int[] ensType = new int[ n ] ;
+      int count = 0;
+      while (stoke.hasMoreTokens()) {
+        String toke = stoke.nextToken();
+        int pos = toke.indexOf(',');
+        if (pos < 0)
+          ensType[count] = Integer.parseInt(toke);
+        count++;
+      }
+      ec.setEnsTypes( ensType ) ;
+      ensCoords.add( ec );
+    }
+
+
     vertTimeCoords = new ArrayList<VertTimeCoord>();
     java.util.List<Element> vList = rootElem.getChildren("vertCoord");
     for (Element vcElem : vList) {
@@ -702,6 +739,8 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
         String name = varElem.getAttributeValue("name");
         Grid grid = new Grid(name);
         rseq.vars.add(grid);
+        grid.ec =  findEnsCoord( varElem.getAttributeValue("ensCoord"));
+        //grid.ec = ForecastModelRunInventory.findEnsCoord(ensCoords, varElem.getAttributeValue("ensCoord"));
         grid.vtc = findVertCoord(varElem.getAttributeValue("vertCoord"));
 
         // look for time dependent vert coordinates - always specific to one variable
@@ -1104,7 +1143,6 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
   };
 
   public static void main(String args[]) throws IOException {
-
     for (int i = 0; i < exampleFiles.length; i+=2)
       convertIds(exampleFiles[i], exampleFiles[i+1]);
 
