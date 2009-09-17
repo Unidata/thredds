@@ -114,14 +114,11 @@ public class TestGridGribIosp extends TestCase {
 
     String dirB1, dirB2;
     if ( args == null || args.length < 1 ) {
-      // TODO: fix and uncomment
-      //dirB1 = TestAll.testdataDir +"test/motherlode/grid/grib/binary70";
       dirB1 = TestAll.testdataDir +"test/motherlode/grid/grib/binary";
-      //dirB2 = TestAll.testdataDir +"test/motherlode/grid/grib/binary80";
       dirB2 = TestAll.testdataDir +"test/motherlode/grid/grib/text";
     } else {
-      dirB1 = args[ 0 ] +"/binary70";
-      dirB2 = args[ 0 ] +"/binary80";
+      dirB1 = args[ 0 ] +"/binary";
+      dirB2 = args[ 0 ] +"/text";
     }
     File dir = new File( dirB1 );
     if (dir.isDirectory()) {
@@ -143,6 +140,7 @@ public class TestGridGribIosp extends TestCase {
             child.contains( "UKM") ||  
             child.contains( "Ensemble") || // Generating Process ID are Strings
             child.endsWith("gbx") ||
+            child.endsWith("gbx8") ||
             child.endsWith("xml") ||
             child.endsWith("tmp") || //index in creation process
             child.length() == 0) { // zero length file, ugh...
