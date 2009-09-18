@@ -119,7 +119,8 @@ public class TestBinaryTextIndexes extends TestCase {
 
   void compareIndexes(String fileBinary, String fileText) throws IOException {
     long start = System.currentTimeMillis();
-    GridIndex giB = new GribReadIndex().open(fileBinary + ".gbx");
+    GridIndex giB = new GribReadIndex().open(fileBinary + ".gbx8");
+    //GridIndex giB = new GribReadIndex().open(fileBinary  );
     GridIndex giT = new GribReadIndex().open(fileText + ".gbx");
 
     // Coordinate systems
@@ -217,18 +218,19 @@ public class TestBinaryTextIndexes extends TestCase {
           continue;
           // skip index *gbx and inventory *xml files
         } else if (
-//            child.contains( "Ensemble") ||
-//            child.contains( "SREF") ||
-//            child.contains( "GFS_Spectral") || //uses >1 parameter tables
+            child.contains( "Ensemble") ||
+            child.contains( "SREF") ||
+            child.contains( "GFS_Spectral") || //uses >1 parameter tables
 //            child.contains( "SPECTRAL") || //uses >1 parameter tables
 //            child.contains( "OCEAN") || //uses >1 horizontal coord system
-//            child.contains( "ECMWF") || //uses >1 horizontal coord system
+            child.contains( "ECMWF") || //uses >1 horizontal coord system
 //            child.contains( "RADAR") || //uses >1 horizontal coord system
 //            child.contains( "SST") || //uses >1 horizontal coord system
-//            child.contains( "UKMET") || //uses >1 horizontal coord system
+            child.contains( "UKMET") || //uses >1 horizontal coord system
+            child.contains( "ukm") || //uses >1 horizontal coord system
 //            child.contains( "GFS_Global_1p25deg") || //uses >1 horizontal coord system
                 child.endsWith("gbx") ||
-                        child.endsWith("gbx2") ||
+                        child.endsWith("gbx8") ||
                         child.endsWith("xml") ||
                         child.endsWith("tmp") || //index in creation process
                         child.length() == 0) { // zero length file, ugh...
