@@ -159,7 +159,7 @@ public final class GribIndexer {
           checkDirs(child);
           // skip index *gbx and inventory *xml files
         } else if (aChildren.endsWith("gbx") ||
-            aChildren.endsWith("gbx2") ||
+            aChildren.endsWith("gbx8") ||
             aChildren.endsWith("xml") ||
             aChildren.endsWith("tmp") || //index in creation process
             aChildren.length() == 0) { // zero length file, ugh...
