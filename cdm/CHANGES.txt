@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  5:
+  AggFmrc: 2D time coordinate switch to double (when numeric) to avoid round-off.
   URLDumpPane, TdsReadLogs : escape query string
   NppConvention for NPOESS
  4:

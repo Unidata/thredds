@@ -403,8 +403,11 @@ public class AggregationFmrc extends AggregationOuterDimension {
       // construct new variable, replace old one
       Group newGroup =  DatasetConstructor.findGroup(ncDataset, taxis.getParentGroup());
 
+      // if numeric, use double
+      DataType dtype = taxis.getDataType() == DataType.STRING ? DataType.STRING : DataType.DOUBLE;
+
       String dims = dimName + " " + taxis.getDimensionsString();
-      VariableDS vagg = new VariableDS(ncDataset, newGroup, null, taxis.getShortName(), taxis.getDataType(), dims, null, null);
+      VariableDS vagg = new VariableDS(ncDataset, newGroup, null, taxis.getShortName(), dtype, dims, null, null);
       DatasetConstructor.transferVariableAttributes(taxis, vagg);
       Attribute att = vagg.findAttribute(_Coordinate.AliasForDimension);
       if (att != null) vagg.remove(att);
