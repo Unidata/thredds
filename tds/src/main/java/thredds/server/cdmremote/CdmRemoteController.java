@@ -50,7 +50,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Formatter;
 import java.util.Arrays;
 import java.nio.channels.WritableByteChannel;
 import java.nio.channels.Channels;
@@ -65,7 +64,6 @@ import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.geoloc.Station;
 
@@ -78,9 +76,8 @@ import ucar.unidata.geoloc.Station;
  */
 public class CdmRemoteController extends AbstractCommandController { // implements LastModified {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
-  private boolean debug = true, showTime = true;
+  private boolean debug = false, showTime = false;
 
-  //private String prefix = "/collection"; // LOOK how do we obtain this?
   private TdsContext tdsContext;
   private boolean allow = true;
   private String configDirectory;
@@ -134,7 +131,7 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
       path = path.substring(0, path.length() - "station".length() - 1);
     }
     if (debug)
-      System.out.printf("CollectionController absPath= %s%n path=%s%n query=%s ft=%s%n", absPath, path, req.getQueryString(), ft);
+      System.out.printf("CdmRemoteController absPath= %s%n path=%s%n query=%s ft=%s%n", absPath, path, req.getQueryString(), ft);
 
     // query validation - first pass
     PointQueryBean query = (PointQueryBean) command;

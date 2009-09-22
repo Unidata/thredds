@@ -164,7 +164,7 @@ public class WMSController extends AbstractController {
       colorRange = new HashMap<String, ColorScaleRange>();
 
       // LOOK Problem - global setting
-      NetcdfDataset.setDefaultEnhanceMode(enhanceMode);
+      //NetcdfDataset.setDefaultEnhanceMode(enhanceMode);
     }
 
     logServerStartup.info( "WMS - initialization done: " + UsageLog.closingMessageNonRequestContext() );

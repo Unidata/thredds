@@ -64,7 +64,7 @@ import org.jdom.*;
 public class CompositeDatasetFactory {
   static public final String SCHEME = "collection:";
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CompositeDatasetFactory.class);
-  static boolean debug = true;
+  static boolean debug = false;
 
   static public FeatureDataset factory(String locationURI, File configFile, Formatter errlog) throws IOException {
     SAXBuilder builder = new SAXBuilder();

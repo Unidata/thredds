@@ -1537,8 +1537,8 @@ public class GempakFileReader implements GempakConstants {
         int npack  = (int) (ibitst.length - 1) / nwordp + 1;
         if (npack * nwordp != ibitst.length) {
             //logError("number of packed records not correct");
-            System.out.println("number of packed records not correct: "
-                               + npack * nwordp + " vs. " + ibitst.length);
+            // System.out.println("number of packed records not correct: "
+            //                   + npack * nwordp + " vs. " + ibitst.length);
             return null;
         }
         float[]     data  = new float[nparms * npack];

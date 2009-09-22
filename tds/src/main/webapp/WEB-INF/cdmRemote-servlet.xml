@@ -94,7 +94,7 @@
 
   <bean id="gempakMetarsLocal" class="thredds.server.cdmremote.CollectionBean">
     <property name="path" value="/idd/metar/gempakLocal"/>
-    <property name="spec" value="D:/formats/gempak/surface/#yyyyMMdd#_sao.gem"/>
+    <property name="spec" value="D:/formats/gempak/surface2/#yyyyMMdd#_sao.gem"/>
     <property name="recheck" value="15 min"/>
     <property name="featureType" value="STATION"/>
   </bean>

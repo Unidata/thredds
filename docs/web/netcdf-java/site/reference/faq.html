@@ -8,7 +8,6 @@ pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid
 code {font-size: 11pt;}
 dl {margin: 10px 5px 5px 15px;)
 .style1 {font-style: italic}
-.style1 {font-weight: bold}
 </style>
 </head>
 
@@ -60,7 +59,11 @@ dl {margin: 10px 5px 5px 15px;)
   <p>&nbsp;</p>
 </blockquote>
 <h3><a name="Logging" id="Logging"></a>Logging</h3>
-<p><strong>Q: How do I get rid of the message &quot;log4j:WARN No appenders could be found for logger (ucar.nc2.NetcdfFile).  log4j:WARN Please initialize the log4j system properly&quot; ?</strong></p>
+<p><strong>Q: How do I  control  the error messages coming out of the library?</strong></p>
+<blockquote>
+  <p>The netCDF-Java library currently uses <a href="www.slf4j.org">SLF4J logging</a>. This alllows you to switch what logging implementation is used. See the Logging section of <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/JarDependencies.html">this page</a>.</p>
+</blockquote>
+<p><strong>Q: Im using the log4j logging package. How do I get rid of the message &quot;log4j:WARN No appenders could be found for logger (ucar.nc2.NetcdfFile).  log4j:WARN Please initialize the log4j system properly&quot; ?</strong></p>
 <blockquote>
   <p>Add the following to your startup code:</p>
   <pre wrap="">
@@ -68,6 +71,8 @@ dl {margin: 10px 5px 5px 15px;)
     org.apache.log4j.Logger logger = org.apache.log4j.Logger.getRootLogger();
     logger.setLevel(org.apache.log4j.Level.OFF)</pre>
 </blockquote>
+<p>&nbsp;</p>
+<blockquote>&nbsp;</blockquote>
 <h3><a name="Multithreading" id="Multithreading"></a>Multithreading</h3>
 <p><strong>Q: Is the Netcdf-Java library thread-safe?</strong></p>
 <blockquote>
@@ -132,7 +137,7 @@ dl {margin: 10px 5px 5px 15px;)
 </blockquote>
 <hr />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on August 26, 2009
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Sept 22, 2009
 </address>
 </body>
 </html>
