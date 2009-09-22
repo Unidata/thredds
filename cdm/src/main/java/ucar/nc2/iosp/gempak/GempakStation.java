@@ -374,7 +374,7 @@ public class GempakStation implements Station {
      * @return the station id
      */
     public String getName() {
-        return stid;
+        return stid.trim() + std2.trim();
     }
 
     /**

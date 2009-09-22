@@ -210,6 +210,11 @@ public class GempakSurfaceFileReader extends AbstractGempakStationFileReader {
                         Format.formatDouble(data[i], 7, 1), 7));
                 builder.append("\t");
             }
+            int[] header = rd.header;
+            if (header.length > 0) {
+                builder.append("\nOb Time = ");
+                builder.append(header[0]);
+            }
         }
         System.out.println(builder.toString());
     }

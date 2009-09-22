@@ -32,6 +32,9 @@
  */
 
 
+
+
+
 package ucar.nc2.iosp.gempak;
 
 
@@ -90,6 +93,9 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
     private final static Number IMISS = new Integer(GempakConstants.IMISSD);
 
     /** static for shared dimension of length 4 */
+    private final static Dimension DIM_LEN8 = new Dimension("len8", 8, true);
+
+    /** static for shared dimension of length 4 */
     private final static Dimension DIM_LEN4 = new Dimension("len4", 4, true);
 
     /** static for shared dimension of length 2 */
@@ -97,6 +103,9 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
 
     /** name for the time variable */
     private final static String TIME_VAR = "time";
+
+    /** name for the time variable */
+    private final static String MISSING_VAR = "_isMissing";
 
     /** station variable names */
     private static String[] stnVarNames = {
@@ -109,7 +118,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
 
     /** lengths of station variable */
     private static int[] stnVarSizes = {
-        4, 4, 4, 4, 4, 2, 2, 4, 4, 4, 4
+        8, 4, 4, 4, 4, 2, 2, 4, 4, 4, 4
     };
 
 
@@ -137,7 +146,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
     /**
      * Get the file type id
      *
-     * @return file type id
+     * @return the file type id
      */
     public String getFileTypeId() {
         return "GempakSurface";
@@ -290,16 +299,20 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         if (v2 instanceof Structure) {
             List<GempakParameter> params =
                 gemreader.getParameters(gemreader.SFDT);
-            Structure                     pdata = (Structure) v2;
-            StructureMembers members            =
-                pdata.makeStructureMembers();
-            List<StructureMembers.Member> mbers = members.getMembers();
-            // each member is a float
-            int i = 0;
+            Structure                     pdata         = (Structure) v2;
+            StructureMembers members = pdata.makeStructureMembers();
+            List<StructureMembers.Member> mbers         =
+                members.getMembers();
+            int                           i             = 0;
+            int                           numBytes      = 0;
+            int                           totalNumBytes = 0;
             for (StructureMembers.Member member : mbers) {
                 member.setDataParam(4 * i++);
+                numBytes      = member.getDataType().getSize();
+                totalNumBytes += numBytes;
             }
-            members.setStructureSize(4 * mbers.size());
+            // one member is a byte
+            members.setStructureSize(totalNumBytes);
             float[] missing = new float[mbers.size()];
             int     missnum = 0;
             for (Variable v : pdata.getVariables()) {
@@ -315,7 +328,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
             Range timeRange    = section.getRange(1);
             int   size         = stationRange.length() * timeRange.length();
             // Create a ByteBuffer using a byte array
-            byte[]     bytes = new byte[4 * params.size() * size];
+            byte[]     bytes = new byte[totalNumBytes * size];
             ByteBuffer buf   = ByteBuffer.wrap(bytes);
             array = new ArrayStructureBB(members, new int[] { size }, buf, 0);
 
@@ -327,8 +340,14 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                     GempakFileReader.RData vals = gemreader.DM_RDTR(x + 1,
                                                       y + 1, gemreader.SFDT);
                     if (vals == null) {
-                        for (int k = 0; k < mbers.size(); k++) {
-                            buf.putFloat(missing[k]);
+                        int k = 0;
+                        for (StructureMembers.Member member : mbers) {
+                            if (member.getDataType().equals(DataType.FLOAT)) {
+                                buf.putFloat(missing[k]);
+                            } else {
+                                buf.put((byte) 1);
+                            }
+                            k++;
                         }
                     } else {
                         float[] reals = vals.data;
@@ -339,6 +358,8 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                             }
                             var++;
                         }
+                        // always add the missing flag
+                        buf.put((byte) 0);
                     }
                 }
             }
@@ -380,6 +401,9 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                 } else if (member.getName().equals(TIME_VAR)) {
                     member.setDataParam(ssize);
                     ssize += 8;
+                } else if (member.getName().equals(MISSING_VAR)) {
+                    member.setDataParam(ssize);
+                    ssize += 1;
                 } else {
                     member.setDataParam(ssize);
                     ssize += 4;
@@ -428,9 +452,9 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                     }
                     String temp = null;
                     if (varname.equals(GempakStation.STID)) {
-                        temp = StringUtil.padRight(stn.getSTID(), 4);
+                        temp = StringUtil.padRight(stn.getName(), 8);
                     } else if (varname.equals(GempakStation.STNM)) {
-                        buf.putInt((int) (stn.getSTNM() / 10));
+                        buf.putInt((int) (stn.getSTNM()));
                     } else if (varname.equals(GempakStation.SLAT)) {
                         buf.putFloat((float) stn.getLatitude());
                     } else if (varname.equals(GempakStation.SLON)) {
@@ -470,6 +494,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                                 buf.putFloat(GempakConstants.RMISSD);
                             }
                         }
+                        buf.put((byte) 1);
                     } else {
                         float[] reals = vals.data;
                         int     var   = 0;
@@ -479,6 +504,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                             }
                             var++;
                         }
+                        buf.put((byte) 0);
                     }
                 }
             }
@@ -637,7 +663,24 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         for (GempakParameter param : params) {
             sVar.addMemberVariable(makeParamVariable(param, null));
         }
+        sVar.addMemberVariable(makeMissingVariable());
         return sVar;
+    }
+
+    /**
+     * Make the missing variable
+     *
+     * @return the missing variable
+     */
+    private Variable makeMissingVariable() {
+        Variable var = new Variable(ncfile, null, null, MISSING_VAR);
+        var.setDataType(DataType.BYTE);
+        var.setDimensions((List<Dimension>) null);
+        var.addAttribute(
+            new Attribute(
+                "description",
+                "missing flag - 1 means all params are missing"));
+        return var;
     }
 
     /**
@@ -704,6 +747,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
             Variable var = makeParamVariable(param, null);
             sVar.addMemberVariable(var);
         }
+        sVar.addMemberVariable(makeMissingVariable());
         sVar.addAttribute(
             new Attribute(
                 "coordinates", "Obs.time Obs.SLAT Obs.SLON Obs.SELV"));
@@ -800,7 +844,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                 for (GempakStation stn : stations) {
                     String test = "";
                     if (varname.equals(GempakStation.STID)) {
-                        test = stn.getSTID();
+                        test = stn.getName();
                     } else if (varname.equals(GempakStation.STNM)) {
                         ((ArrayInt.D1) varArray).set(index,
                                 (int) (stn.getSTNM() / 10));
@@ -878,7 +922,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
 
         if (varname.equals(GempakStation.STID)) {
             longName = "Station identifier";
-            dims.add(DIM_LEN4);
+            dims.add(DIM_LEN8);
         } else if (varname.equals(GempakStation.STNM)) {
             longName = "WMO station id";
             type     = DataType.INT;
