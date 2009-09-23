@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  6:
+  optionally add time resolution in server config 
+  CdmRemoteFeatureDataset gets bb, dateRange from capabilities doc
   cdmRemote req=form
   ncstream anon dimensions
   cdmRemote east/west flipped

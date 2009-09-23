@@ -46,6 +46,7 @@ public class CollectionBean {
   private String recheck;
   private String featureType;
   private String raw;
+  private String resolution;
 
   public String getPath() {
     return path;
@@ -87,5 +88,12 @@ public class CollectionBean {
     this.raw = raw;
   }
 
+  public String getResolution() {
+    return resolution;
+  }
+
+  public void setResolution(String resolution) {
+    this.resolution = resolution;
+  }
 
 }

@@ -35,6 +35,7 @@ package ucar.nc2.ft.point.remote;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.PointFeatureImpl;
 import ucar.nc2.ft.point.PointDatasetImpl;
+import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
@@ -54,15 +55,19 @@ import java.util.List;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
- * Remote Point Dataset.
+ * Client view of a CdmRemote Point Dataset.
  *
  * @author caron
  * @since Feb 16, 2009
  */
 public class PointDatasetRemote extends PointDatasetImpl {
 
-  public PointDatasetRemote(FeatureType wantFeatureType, String uri, List<VariableSimpleIF> vars) throws IOException {
+  public PointDatasetRemote(FeatureType wantFeatureType, String uri, List<VariableSimpleIF> vars, LatLonRect bb,
+      DateRange dr) throws IOException {
+
     super(wantFeatureType);
+    setBoundingBox(bb);
+    setDateRange(dr);
 
     dataVariables = new ArrayList<VariableSimpleIF>( vars);
 

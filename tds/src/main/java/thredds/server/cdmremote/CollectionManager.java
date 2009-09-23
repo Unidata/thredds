@@ -39,6 +39,8 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Attribute;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.TimeDuration;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,6 +49,7 @@ import java.util.HashMap;
 import java.util.Formatter;
 import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.text.ParseException;
 
 import thredds.servlet.DatasetHandler;
 import thredds.servlet.UsageLog;
@@ -81,6 +84,15 @@ public class CollectionManager {
       if (fd == null) {
         log.error("Error opening CompositeDataset path = "+path+"  errlog = ", errlog);
         return null;
+      }
+
+    // kludge
+    DateRange dr = fd.getDateRange();
+    if ((dr != null) && (config.getResolution() != null))
+      try {
+        dr.setResolution( new TimeDuration(config.getResolution()));
+      } catch (ParseException e) {
+        log.error("TimeDuration incorrect= "+config.getResolution(), e);
       }
 
     //if (config.getRaw() != null) {

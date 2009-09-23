@@ -66,7 +66,7 @@ import java.util.Date;
 
 
 public class TimeDuration {
-  private static TimeUnit secUnits;
+  /* private static TimeUnit secUnits;
 
   static {
     try {
@@ -74,7 +74,7 @@ public class TimeDuration {
     } catch (Exception e) {
       e.printStackTrace();
     }
-  }
+  } */
 
   private String text;
   private TimeUnit timeUnit;

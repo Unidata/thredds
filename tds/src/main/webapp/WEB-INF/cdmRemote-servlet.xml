@@ -67,6 +67,7 @@
     <property name="recheck" value="15 min"/>
     <property name="featureType" value="STATION"/>
     <property name="raw" value="report"/>
+    <property name="resolution" value="20 min"/>
   </bean>
 
   <bean id="ncMetarsLocal" class="thredds.server.cdmremote.CollectionBean">
@@ -75,6 +76,7 @@
     <property name="recheck" value="15 min"/>
     <property name="featureType" value="STATION"/>
     <property name="raw" value="report"/>
+    <property name="resolution" value="20 min"/>
   </bean>
 
   <bean id="ncMetarsLocalHome" class="thredds.server.cdmremote.CollectionBean">
@@ -83,6 +85,7 @@
     <property name="recheck" value="15 min"/>
     <property name="featureType" value="STATION"/>
     <property name="raw" value="report"/>
+    <property name="resolution" value="20 min"/>
   </bean>
 
   <bean id="gempakMetars" class="thredds.server.cdmremote.CollectionBean">
@@ -90,6 +93,7 @@
     <property name="spec" value="/data/ldm/gempak/surface/#yyyyMMdd#_sao.gem"/>
     <property name="recheck" value="15 min"/>
     <property name="featureType" value="STATION"/>
+    <property name="resolution" value="20 min"/>
   </bean>
 
   <bean id="gempakMetarsLocal" class="thredds.server.cdmremote.CollectionBean">
@@ -97,6 +101,7 @@
     <property name="spec" value="D:/formats/gempak/surface2/#yyyyMMdd#_sao.gem"/>
     <property name="recheck" value="15 min"/>
     <property name="featureType" value="STATION"/>
+    <property name="resolution" value="20 min"/>
   </bean>
 
   <bean id="gempakMetarsLocalHome" class="thredds.server.cdmremote.CollectionBean">
@@ -104,6 +109,7 @@
     <property name="spec" value="C:/data/formats/gempak/surface/#yyyyMMdd#_sao.gem"/>
     <property name="recheck" value="15 min"/>
     <property name="featureType" value="STATION"/>
+    <property name="resolution" value="20 min"/>
   </bean>
 
   <bean id="quickScatWinds" class="thredds.server.cdmremote.CollectionBean">

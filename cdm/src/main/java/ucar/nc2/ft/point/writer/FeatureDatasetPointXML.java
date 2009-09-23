@@ -40,8 +40,11 @@ import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ft.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.TimeDuration;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
+import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.ma2.DataType;
 
 import org.jdom.output.XMLOutputter;
@@ -113,7 +116,7 @@ public class FeatureDatasetPointXML {
     if (bb != null)
       stations = sobs.getStations(bb);
     else if (names != null)
-      stations = sobs.getStations( Arrays.asList(names));
+      stations = sobs.getStations(Arrays.asList(names));
     else
       stations = sobs.getStations();
 
@@ -164,14 +167,16 @@ public class FeatureDatasetPointXML {
       rootElem.addContent(writeBoundingBox(bb));
 
     // add date range
-    Date start = fdp.getStartDate();
-    Date end = fdp.getEndDate();
-    if ((start != null) && (end != null)) {
+    DateRange dateRange = fdp.getDateRange();
+    if (dateRange != null) {
       DateFormatter format = new DateFormatter();
-      Element dateRange = new Element("TimeSpan"); // from KML
-      dateRange.addContent(new Element("begin").addContent(format.toDateTimeStringISO(start)));
-      dateRange.addContent(new Element("end").addContent(format.toDateTimeStringISO(end)));
-      rootElem.addContent(dateRange);
+      Element drElem = new Element("TimeSpan"); // from KML
+      drElem.addContent(new Element("begin").addContent(dateRange.getStart().toDateTimeStringISO()));
+      drElem.addContent(new Element("end").addContent(dateRange.getEnd().toDateTimeStringISO()));
+      if (dateRange.getResolution() != null)
+        drElem.addContent(new Element("resolution").addContent(dateRange.getResolution().toString()));
+
+      rootElem.addContent(drElem);
     }
 
     // add accept list
@@ -212,6 +217,55 @@ public class FeatureDatasetPointXML {
   }
 
   /////////////////////////////////////////////
+  public static LatLonRect getSpatialExtent(Document doc) throws IOException {
+    Element root = doc.getRootElement();
+    Element latlonBox = root.getChild("LatLonBox");
+    if (latlonBox == null) return null;
+
+    String westS = latlonBox.getChildText("west");
+    String eastS = latlonBox.getChildText("east");
+    String northS = latlonBox.getChildText("north");
+    String southS = latlonBox.getChildText("south");
+    if ((westS == null) || (eastS == null) || (northS == null) || (southS == null)) return null;
+
+    try {
+      double west = Double.parseDouble(westS);
+      double east = Double.parseDouble(eastS);
+      double south = Double.parseDouble(southS);
+      double north = Double.parseDouble(northS);
+      return new LatLonRect(new LatLonPointImpl(south, east), new LatLonPointImpl(north, west));
+
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  public static DateRange getTimeSpan(Document doc) throws IOException {
+    Element root = doc.getRootElement();
+    Element timeSpan = root.getChild("TimeSpan");
+    if (timeSpan == null) return null;
+
+    String beginS = timeSpan.getChildText("begin");
+    String endS = timeSpan.getChildText("end");
+    String resS = timeSpan.getChildText("resolution");
+    if ((beginS == null) || (endS == null)) return null;
+
+    DateFormatter format = new DateFormatter();
+    try {
+      Date start = format.getISODate(beginS);
+      Date end = format.getISODate(endS);
+      DateRange dr = new DateRange(start, end);
+      
+      if (resS != null)
+        dr.setResolution(new TimeDuration(resS));
+
+      return dr;
+
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
   public static List<VariableSimpleIF> getDataVariables(Document doc) throws IOException {
     Element root = doc.getRootElement();
 
