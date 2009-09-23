@@ -72,6 +72,7 @@ import ucar.util.prefs.ui.*;
 import ucar.grib.grib2.Grib2Dump;
 
 import thredds.catalog.query.DqcFactory;
+import thredds.catalog.InvAccess;
 import thredds.wcs.v1_0_0_1.GetCapabilities;
 import thredds.wcs.v1_0_0_1.WcsException;
 import thredds.inventory.MController;

@@ -63,7 +63,7 @@ public class NcStream {
 
   static NcStreamProto.Dimension.Builder encodeDim(Dimension dim) {
     NcStreamProto.Dimension.Builder dimBuilder = NcStreamProto.Dimension.newBuilder();
-    dimBuilder.setName(dim.getName());
+    dimBuilder.setName(dim.getName() == null ? "" : dim.getName());
     dimBuilder.setLength(dim.getLength());
     if (!dim.isShared()) dimBuilder.setIsPrivate(true);
     if (dim.isVariableLength()) dimBuilder.setIsVlen(true);
@@ -286,7 +286,7 @@ public class NcStream {
 
     StringBuilder sbuff = new StringBuilder();
     for (ucar.nc2.stream.NcStreamProto.Dimension dim : var.getShapeList()) {
-      sbuff.append(dim.getName());
+      sbuff.append(dim.getName().length() > 0 ? dim.getName() : Long.toString( dim.getLength())); // anon dimensions use the length
       sbuff.append(" ");
     }
     ncvar.setDimensions(sbuff.toString());

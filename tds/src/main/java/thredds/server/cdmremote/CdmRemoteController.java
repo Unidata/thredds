@@ -275,7 +275,7 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
     if (showTime) {
       long took = System.currentTimeMillis() - start;
       System.out.printf("%ntotal response took %d msecs nobs = %d%n  seeks= %d nbytes read= %d%n", took, w.count,
-          ucar.unidata.io.RandomAccessFile.getDebugNseeks(), ucar.unidata.io.RandomAccessFile.getDebugNbytes());
+              ucar.unidata.io.RandomAccessFile.getDebugNseeks(), ucar.unidata.io.RandomAccessFile.getDebugNbytes());
     }
 
     return null;
@@ -295,7 +295,7 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
     if (query.getLatLonRect() != null)
       stations = sfc.getStations(query.getLatLonRect());
     else if (query.getStnNames() != null)
-      stations = sfc.getStations( Arrays.asList(query.getStnNames()));
+      stations = sfc.getStations(Arrays.asList(query.getStnNames()));
     else
       stations = sfc.getStations();
 
@@ -308,7 +308,7 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
     out.flush();
     res.flushBuffer();
 
-    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));        
+    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
     return null;
   }
 
@@ -401,33 +401,40 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
 
       OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
 
-      if (qb.getRequestType() == PointQueryBean.RequestType.capabilities) {
-        sendCapabilities( out, FeatureType.NONE, absPath);
-        res.flushBuffer();
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
-        return null;
+      switch (qb.getRequestType()) {
+        case capabilities:
+          sendCapabilities(out, FeatureType.NONE, absPath); // LOOK: should default be GRID ?
+          res.flushBuffer();
+          log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
+          return null;
 
-      } else  if (qb.getRequestType() == PointQueryBean.RequestType.cdl) {
-        res.setContentType("text/plain");
-        String cdl = ncfile.toString();
-        res.setContentLength(cdl.length());
-        out.write(cdl.getBytes());
+        case form: // LOOK could do a ncss form
+        case cdl:
+          res.setContentType("text/plain");
+          String cdl = ncfile.toString();
+          res.setContentLength(cdl.length());
+          out.write(cdl.getBytes());
 
-      } else if (qb.getRequestType() == PointQueryBean.RequestType.ncml) {
-        res.setContentType("application/xml");
-        ncfile.writeNcML(out, absPath);
+        case ncml:
+          res.setContentType("application/xml");
+          ncfile.writeNcML(out, absPath);
 
-      } else {
+        case header: {
+          res.setContentType("application/octet-stream");
+          res.setHeader("Content-Description", "ncstream");
 
-        res.setContentType("application/octet-stream");
-        res.setHeader("Content-Description", "ncstream");
-
-        WritableByteChannel wbc = Channels.newChannel(out);
-        NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(req));
-        if (qb.getRequestType() == PointQueryBean.RequestType.header) { // just the header
+          WritableByteChannel wbc = Channels.newChannel(out);
+          NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(req));
           ncWriter.sendHeader(wbc);
+          break;
+        }
 
-        } else { // they want some data
+        default: {
+          res.setContentType("application/octet-stream");
+          res.setHeader("Content-Description", "ncstream");
+
+          WritableByteChannel wbc = Channels.newChannel(out);
+          NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(req));
           String query = qb.getVar() != null ? qb.getVar() : req.getQueryString();
           if ((query == null) || (query.length() == 0)) {
             log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
@@ -441,7 +448,7 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
             ncWriter.sendData(cer.v, cer.section, wbc);
           }
         }
-      }
+      } // end switch on req type
 
       out.flush();
       res.flushBuffer();

@@ -90,9 +90,9 @@ public class PointDatasetRemote extends PointDatasetImpl {
 
     if (boundingBox != null) {
       if (needamp) query.append("&");
-      query.append("east=");
+      query.append("west=");
       query.append(boundingBox.getLonMin());
-      query.append("&west=");
+      query.append("&east=");
       query.append(boundingBox.getLonMax());
       query.append("&south=");
       query.append(boundingBox.getLatMin());

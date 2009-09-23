@@ -244,7 +244,7 @@ public class PointQueryBean {
       double northd = parseLat("north", north);
 
       if (!fatal) {
-        llbb = new LatLonRect(new LatLonPointImpl(southd, eastd), new LatLonPointImpl(northd, westd));
+        llbb = new LatLonRect(new LatLonPointImpl(southd, westd), new LatLonPointImpl(northd, eastd));
         spatialSelection = SpatialSelection.bb;
       }
     }

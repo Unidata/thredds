@@ -3,6 +3,10 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.1:
+ 6:
+  cdmRemote req=form
+  ncstream anon dimensions
+  cdmRemote east/west flipped
  5:
   AggFmrc: 2D time coordinate switch to double (when numeric) to avoid round-off.
   URLDumpPane, TdsReadLogs : escape query string
