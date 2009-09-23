@@ -141,6 +141,8 @@ public class TestCatalogAll extends TestCase {
     suite.addTest(new TestSuite(TestSpatialCoverage.class)); // */
     suite.addTest(new TestSuite(TestTimeCoverage.class)); // */
 
+    suite.addTest( new JUnit4TestAdapter( DatasetScanExpandSubdirsTest.class ));
+    
     suite.addTestSuite( thredds.catalog.parser.jdom.TestDatasetScanFilter.class );
     suite.addTestSuite( thredds.catalog.parser.jdom.TestReadMetadata.class );
 

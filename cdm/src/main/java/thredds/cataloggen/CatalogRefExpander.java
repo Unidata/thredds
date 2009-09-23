@@ -34,7 +34,7 @@
 package thredds.cataloggen;
 
 /**
- * _more_
+ * Indicates whether a particular catalogRef should be converted to a container dataset.
  *
  * @author edavis
  * @since Dec 6, 2005 2:48:11 PM
