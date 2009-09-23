@@ -81,7 +81,7 @@
 004 Abbreviated altimeter setting                          SALT             0  -9999.00        0         0
 004 Abbreviated mean sea level press  millibar             SMSL             0  -9999.00        0         0
 004 Pressure tendency                                      PTND             0  -9999.00        0         0
-004 Pressure tendency                                      PT03             0  -9999.00        0         0
+004 Pressure tendency (3 hour)                             PT03             0  -9999.00        0         0
 004 3 hr pressure change              millibar             P03C             0  -9999.00        0         0
 004 Pressure tendency and group                            P03D             0  -9999.00        0         0
 004 24 hr pressure change             millibar             P24C             0  -9999.00        0         0
@@ -114,9 +114,9 @@
 006 Numeric weather code                                   WNUM             0  -9999.00        0         0
 006 Numeric WMO weather code                               WWMO             0  -9999.00        0         0
 006 Numeric past weather WMO code                          PWWM             0  -9999.00        0         0
-006 Cloud height and coverage                              CHC1             0  -9999.00        0         0
-006 Cloud height and coverage                              CHC2             0  -9999.00        0         0
-006 Cloud height and coverage                              CHC3             0  -9999.00        0         0
+006 Cloud height and coverage level 1                      CHC1             0  -9999.00        0         0
+006 Cloud height and coverage level 2                      CHC2             0  -9999.00        0         0
+006 Cloud height and coverage level 3                      CHC3             0  -9999.00        0         0
 006 Visibility                        US_statute_mile      VSBY             0  -9999.00        0         0
 006 Visibility                        km                   VSBK             0  -9999.00        0         0
 006 Visibility                        nautical_mile        VSBN             0  -9999.00        0         0
