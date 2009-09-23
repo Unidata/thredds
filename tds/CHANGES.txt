@@ -10,6 +10,7 @@ Release Details 4.1:
   ehcache debugging commands
   catalogWriting.useBytesForDataSize
   grib-8.0 indexing
+  Improved GRIB ensemble handling.
   Fix thredds.servlet.HtmlWriter to correctly deal with absolute URLs for folder icons and such.
   cdmremote refactor
   forms now integrated with cdmremote, delete non-compiling classes
