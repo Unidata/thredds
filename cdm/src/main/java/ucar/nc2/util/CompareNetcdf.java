@@ -90,6 +90,32 @@ public class CompareNetcdf {
     return ok;
   }
 
+  public boolean compareVariables(NetcdfFile org, NetcdfFile copy, Formatter f) {
+    f.format("Original = %s%n", org.getLocation());
+    f.format("CompareTo= %s%n", copy.getLocation());
+    boolean ok = true;
+
+    for (Variable orgV : org.getVariables()) {
+      Variable copyVar = copy.findVariable(orgV.getShortName());
+      if (copyVar == null) {
+        f.format(" cant find variable %s in 2nd file%n", orgV.getName());
+        ok = false;
+      }
+    }
+
+    for (Variable orgV : copy.getVariables()) {
+      Variable copyVar = org.findVariable(orgV.getShortName());
+      if (copyVar == null) {
+        f.format(" cant find variable %s in 1st file%n", orgV.getName());
+        ok = false;
+      }
+    }
+
+    return ok;
+  }
+
+
+
   private boolean compareGroups(Group org, Group copy, Formatter f) {
     if (showCompare) f.format(" compareGroup %s to %s %n", org.getName(), copy.getName());
     boolean ok = true;

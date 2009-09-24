@@ -414,10 +414,12 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
           String cdl = ncfile.toString();
           res.setContentLength(cdl.length());
           out.write(cdl.getBytes());
+          break;
 
         case ncml:
           res.setContentType("application/xml");
           ncfile.writeNcML(out, absPath);
+          break;
 
         case header: {
           res.setContentType("application/octet-stream");

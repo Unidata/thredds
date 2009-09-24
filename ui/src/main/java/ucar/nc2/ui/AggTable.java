@@ -239,7 +239,7 @@ public class AggTable extends JPanel {
           org = ncd;
         else {
           CompareNetcdf cn = new CompareNetcdf(false, false, false);
-          cn.compare(org, ncd, f);
+          cn.compareVariables(org, ncd, f);
           ncd.close();
           f.format("--------------------------------%n");
         }

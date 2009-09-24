@@ -142,7 +142,7 @@ public class TdsMonitor extends JPanel {
   static private TdsMonitor ui;
   static private boolean done = false;
 
-  private static String ehLocation = "/data/thredds/ehcache/";
+  private static String ehLocation = "/machine/data/thredds/ehcache/";
   private static String config =
           "<ehcache>\n" +
                   "    <diskStore path='" + ehLocation + "'/>\n" +
