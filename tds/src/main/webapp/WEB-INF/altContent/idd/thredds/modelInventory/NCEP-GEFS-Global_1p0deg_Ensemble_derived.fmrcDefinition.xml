@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<fmrcDefinition dataset="test">
+
+  <vertCoord id="3" name="height_above_ground" units="m">10.0</vertCoord>
+
+  <vertCoord id="2" name="height_above_ground1" units="m">2.0</vertCoord>
+
+  <vertCoord id="1" name="pressure" units="Pa">20000.0 25000.0 50000.0 70000.0 85000.0 92500.0 100000.0</vertCoord>
+
+  <vertCoord id="0" name="pressure_difference_layer" units="Pa">0.0,18000.0</vertCoord>
+
+  <offsetHours id="0">6.0 12.0 18.0 24.0 30.0 36.0 42.0 48.0 54.0 60.0 66.0 72.0 78.0 84.0 90.0 96.0 102.0 108.0 114.0 120.0 126.0 132.0 138.0 144.0 150.0 156.0 162.0 168.0 174.0 180.0 186.0 192.0 198.0 204.0 210.0 216.0 222.0 228.0 234.0 240.0 246.0 252.0 258.0 264.0 270.0 276.0 282.0 288.0 294.0 300.0 306.0 312.0 318.0 324.0 330.0 336.0 342.0 348.0 354.0 360.0 366.0 372.0 378.0 384.0</offsetHours>
+
+  <offsetHours id="1">0.0 6.0 12.0 18.0 24.0 30.0 36.0 42.0 48.0 54.0 60.0 66.0 72.0 78.0 84.0 90.0 96.0 102.0 108.0 114.0 120.0 126.0 132.0 138.0 144.0 150.0 156.0 162.0 168.0 174.0 180.0 186.0 192.0 198.0 204.0 210.0 216.0 222.0 228.0 234.0 240.0 246.0 252.0 258.0 264.0 270.0 276.0 282.0 288.0 294.0 300.0 306.0 312.0 318.0 324.0 330.0 336.0 342.0 348.0 354.0 360.0 366.0 372.0 378.0 384.0</offsetHours>
+
+  <offsetHours id="2">0.0</offsetHours>
+
+  <runSequence allUseSeq="0">
+
+    <variable name="Categorical_Freezing_Rain_stdDev_surface" />
+
+    <variable name="Categorical_Freezing_Rain_unweightedMean_surface" />
+
+    <variable name="Categorical_Ice_Pellets_stdDev_surface" />
+
+    <variable name="Categorical_Ice_Pellets_unweightedMean_surface" />
+
+    <variable name="Categorical_Rain_stdDev_surface" />
+
+    <variable name="Categorical_Rain_unweightedMean_surface" />
+
+    <variable name="Categorical_Snow_stdDev_surface" />
+
+    <variable name="Categorical_Snow_unweightedMean_surface" />
+
+    <variable name="Maximum_temperature_stdDev_height_above_ground" vertCoord="2" />
+
+    <variable name="Maximum_temperature_unweightedMean_height_above_ground" vertCoord="2" />
+
+    <variable name="Minimum_temperature_stdDev_height_above_ground" vertCoord="2" />
+
+    <variable name="Minimum_temperature_unweightedMean_height_above_ground" vertCoord="2" />
+
+    <variable name="Total_precipitation_stdDev_surface" />
+
+    <variable name="Total_precipitation_unweightedMean_surface" />
+
+  </runSequence>
+
+  <runSequence allUseSeq="1">
+
+    <variable name="Convective_available_potential_energy_stdDev_pressure_difference_layer" vertCoord="0" />
+
+    <variable name="Convective_available_potential_energy_unweightedMean_pressure_difference_layer" vertCoord="0" />
+
+    <variable name="Geopotential_height_stdDev_pressure" vertCoord="1" />
+
+    <variable name="Geopotential_height_unweightedMean_pressure" vertCoord="1" />
+
+    <variable name="Precipitable_water_stdDev_entire_atmosphere" />
+
+    <variable name="Precipitable_water_unweightedMean_entire_atmosphere" />
+
+    <variable name="Pressure_reduced_to_MSL_stdDev_msl" />
+
+    <variable name="Pressure_reduced_to_MSL_unweightedMean_msl" />
+
+    <variable name="Pressure_stdDev_surface" />
+
+    <variable name="Pressure_unweightedMean_surface" />
+
+    <variable name="Relative_humidity_stdDev_height_above_ground" vertCoord="2" />
+
+    <variable name="Relative_humidity_stdDev_pressure" vertCoord="1" />
+
+    <variable name="Relative_humidity_unweightedMean_height_above_ground" vertCoord="2" />
+
+    <variable name="Relative_humidity_unweightedMean_pressure" vertCoord="1" />
+
+    <variable name="Temperature_stdDev_height_above_ground" vertCoord="2" />
+
+    <variable name="Temperature_stdDev_pressure" vertCoord="1" />
+
+    <variable name="Temperature_unweightedMean_height_above_ground" vertCoord="2" />
+
+    <variable name="Temperature_unweightedMean_pressure" vertCoord="1" />
+
+    <variable name="Total_cloud_cover_stdDev_entire_atmosphere" />
+
+    <variable name="Total_cloud_cover_unweightedMean_entire_atmosphere" />
+
+    <variable name="U-component_of_wind_stdDev_height_above_ground" vertCoord="3" />
+
+    <variable name="U-component_of_wind_stdDev_pressure" vertCoord="1" />
+
+    <variable name="U-component_of_wind_unweightedMean_height_above_ground" vertCoord="3" />
+
+    <variable name="U-component_of_wind_unweightedMean_pressure" vertCoord="1" />
+
+    <variable name="V-component_of_wind_stdDev_height_above_ground" vertCoord="3" />
+
+    <variable name="V-component_of_wind_stdDev_pressure" vertCoord="1" />
+
+    <variable name="V-component_of_wind_unweightedMean_height_above_ground" vertCoord="3" />
+
+    <variable name="V-component_of_wind_unweightedMean_pressure" vertCoord="1" />
+
+  </runSequence>
+
+  <runSequence allUseSeq="2">
+
+    <variable name="Geopotential_height_stdDev_surface" />
+
+    <variable name="Geopotential_height_unweightedMean_surface" />
+
+  </runSequence>
+
+</fmrcDefinition>
