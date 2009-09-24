@@ -27,13 +27,13 @@
       </publisher>
     </metadata>
 
-    <datasetFmrc name="NMM (Primary Domain) Runs" path="fmrc/Unidata/rtmodel/nmm" collectionType="ForecastModelRuns" harvest="true" runsOnly="true">
+    <!--datasetFmrc name="NMM (Primary Domain) Runs" path="fmrc/Unidata/rtmodel/nmm" collectionType="ForecastModelRuns" harvest="true" runsOnly="true">
       <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
         <aggregation dimName="run" type="forecastModelRunSingleCollection" timeUnitsChange="true" recheckEvery="5 min">
           <scanFmrc location="/data/ldm/pub/rtmodel/" subdirs="false" regExp=".*nmm\.Grb.*" runDateMatcher="yyMMddHH#_nmm.GrbF#" forecastOffsetMatcher="#_nmm.GrbF#HHH" />
         </aggregation>
       </netcdf>
-    </datasetFmrc>
+    </datasetFmrc-->
 
     <datasetScan name="NMM (Primary Domain) individual files" ID="Unidata-Regional-Model/nmm/files" path="Unidata/rtmodel/nmm/files" location="/data/ldm/pub/rtmodel/">
       <filter>

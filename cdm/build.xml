@@ -785,6 +785,8 @@
   <target name="dist" depends="makeAll, makeIDVjar, makeSrc-CDM, javadoc, javadocAll"
           description="create a full distribution"/>
 
+  <target  name="cleanReleaseInternal" depends="clean, makeIDVjar, releaseInternal" />
+
   <!-- release library -->
   <target name="releaseInternal" description="internal release to lib">
     <copy todir="${lib.dir}/release" overwrite="true">
