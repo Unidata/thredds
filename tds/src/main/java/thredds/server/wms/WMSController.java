@@ -327,15 +327,16 @@ public class WMSController extends AbstractController {
 
     boolean isRemote = false;
 
-    if (datasetPath == null) {
+    if (datasetPath == null) { // passing in a dataset URL, presumably opendap
       datasetPath = ServletUtil.getParameterIgnoreCase(req, "dataset");
       isRemote = (datasetPath != null);
     }
 
     try {
-      dataset = isRemote ? ucar.nc2.dt.grid.GridDataset.open(datasetPath) : DatasetHandler.openGridDataset(req, res, datasetPath);
-    }
-    catch (IOException e) {
+      // ope ndirectly if an opendap URL, else go through DatasetHandler
+      dataset = isRemote ? ucar.nc2.dt.grid.GridDataset.open(datasetPath, enhanceMode) : DatasetHandler.openGridDataset(req, res, datasetPath, enhanceMode);
+
+    } catch (IOException e) {
       log.warn("WMSController: Failed to open dataset <" + datasetPath + ">: " + e.getMessage());
       throw new WmsException("Failed to open dataset, \"" + datasetPath + "\".");
     }

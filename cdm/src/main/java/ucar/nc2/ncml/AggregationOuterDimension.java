@@ -805,7 +805,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
         Variable v = findVariable(ncd, mainv);
         if (v == null) {
-          logger.error("AggOuterDimension cant find "+mainv+" in "+ ncd.getLocation()+"; return all zeroes!!!");
+          logger.error("AggOuterDimension cant find "+mainv.getName()+" in "+ ncd.getLocation()+"; return all zeroes!!!");
           return Array.factory(mainv.getDataType(), new Section( section).getShape()); // all zeros LOOK need missing value
         }
 

@@ -42,6 +42,7 @@ import ucar.nc2.util.cache.FileFactory;
 import java.io.*;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Set;
 
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvDatasetFmrc;
@@ -228,11 +229,28 @@ public class DatasetHandler {
     }
   }
 
-  static public GridDataset openGridDataset( HttpServletRequest req,
-                                             HttpServletResponse res,
-                                             String reqPath)
-          throws IOException
-  {
+  /**
+   * Open a file as a GridDataset, using getNetcdfFile(), so that it gets wrapped in NcML if needed.
+   * @param req the request
+   * @param res the response
+   * @param reqPath the request path
+   * @return GridDataset
+   * @throws IOException on read error
+   */
+  static public GridDataset openGridDataset( HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
+    return openGridDataset(req, res, reqPath, null);
+  }
+
+    /**
+     * Open a file as a GridDataset, using getNetcdfFile(), so that it gets wrapped in NcML if needed.
+     * @param req the request
+     * @param res the response
+     * @param reqPath the request path
+     * @param enhanceMode optional enhance mode or null
+     * @return GridDataset
+     * @throws IOException on read error
+     */
+  static public GridDataset openGridDataset( HttpServletRequest req, HttpServletResponse res, String reqPath, Set<NetcdfDataset.Enhance> enhanceMode) throws IOException {
     /* first look for an fmrc dataset
     DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
     if ((match != null) && (match.dataRoot.fmrc != null)) {
@@ -248,16 +266,12 @@ public class DatasetHandler {
     if (ncfile == null) return null;
 
     NetcdfDataset ncd = null;
-    try
-    {
-      // Convert to NetcdfDataset without enhancing.
-      // [Enhance will be done by GridDataset() below.]
-      ncd = NetcdfDataset.wrap( ncfile, null );
-
+    try {
+      // Convert to NetcdfDataset
+      ncd = NetcdfDataset.wrap( ncfile, enhanceMode );
       return new ucar.nc2.dt.grid.GridDataset(ncd);
-    }
-    catch ( Throwable t )
-    {
+
+    } catch ( Throwable t ) {
       if ( ncd == null )
         ncfile.close();
       else

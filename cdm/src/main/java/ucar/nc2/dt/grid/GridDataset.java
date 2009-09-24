@@ -84,7 +84,20 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
    * @see ucar.nc2.dataset.NetcdfDataset#acquireDataset
    */
   static public GridDataset open(String location) throws java.io.IOException {
-    Set<NetcdfDataset.Enhance> enhanceMode = NetcdfDataset.getCoordSysEnhanceMode();
+    return open(location, NetcdfDataset.getCoordSysEnhanceMode());
+  }
+
+  /**
+   * Open a netcdf dataset, using NetcdfDataset.defaultEnhanceMode plus CoordSystems
+   * and turn into a GridDataset.
+   *
+   * @param location netcdf dataset to open, using NetcdfDataset.acquireDataset().
+   * @param enhanceMode open netcdf dataset with this enhanceMode
+   * @return GridDataset
+   * @throws java.io.IOException on read error
+   * @see ucar.nc2.dataset.NetcdfDataset#acquireDataset
+   */
+  static public GridDataset open(String location, Set<NetcdfDataset.Enhance> enhanceMode) throws java.io.IOException {
     NetcdfDataset ds = ucar.nc2.dataset.NetcdfDataset.acquireDataset(null, location, enhanceMode, -1, null, null);
     return new GridDataset(ds);
   }

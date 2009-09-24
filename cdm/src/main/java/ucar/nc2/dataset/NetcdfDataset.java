@@ -363,7 +363,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Make NetcdfFile into NetcdfDataset with given enhance mode
    *
    * @param ncfile      wrap this
-   * @param enhanceMode using this enhancemode
+   * @param enhanceMode using this enhance mode (may be null)
    * @return NetcdfDataset wrapping the given ncfile
    * @throws IOException on io error
    */

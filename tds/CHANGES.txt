@@ -4,7 +4,7 @@ Build Date = @BUILDTIME@
 
 Release Details 4.1:
  0:
-  WMS: remove global setting of NetcdfDataset.enhance()
+  WMS: remove global setting of NetcdfDataset.enhance(), set enhance when opening GridDataset
   hack in dataset cache=false
   get showRoots -> admin/dataDir working again
   ehcache debugging commands
