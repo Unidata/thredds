@@ -47,6 +47,7 @@ import java.util.regex.*;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
 
 /**
@@ -60,14 +61,15 @@ public class ReadTdsLogs {
   private static AtomicInteger reqno = new AtomicInteger(0);
   private static Formatter out, out2;
 
-  private HttpClient httpClient = HttpClientManager.init(null, "ReadTdsLogs");
+  private HttpClient httpClient;
 
   ///////////////////////////////////////////////////////
   // multithreading
+  final int nthreads = 10;
 
   ExecutorService executor;
   ExecutorCompletionService<SendRequestTask> completionService;
-  ArrayBlockingQueue<Future<SendRequestTask>> completionQ;
+  //ArrayBlockingQueue<Future<SendRequestTask>> completionQ;
   Thread resultProcessingThread;
 
   AtomicLong regProcess = new AtomicLong();
@@ -81,9 +83,13 @@ public class ReadTdsLogs {
   ReadTdsLogs(String server) throws FileNotFoundException {
     this.server = server;
 
-    executor = Executors.newFixedThreadPool(30); // number of threads
-    completionQ = new ArrayBlockingQueue<Future<SendRequestTask>>(30); // bounded, threadsafe
-    completionService = new ExecutorCompletionService<SendRequestTask>(executor, completionQ);
+    httpClient = HttpClientManager.init(null, "ReadTdsLogs");
+    MultiThreadedHttpConnectionManager cm = (MultiThreadedHttpConnectionManager) httpClient.getHttpConnectionManager();
+    cm.setMaxConnectionsPerHost(nthreads);
+
+    executor = Executors.newFixedThreadPool(nthreads); // number of threads
+    //completionQ = new ArrayBlockingQueue<Future<SendRequestTask>>(30); // bounded, threadsafe
+    completionService = new ExecutorCompletionService<SendRequestTask>(executor);
 
     out = new Formatter(new FileOutputStream("C:/TEMP/readTdsLogs.txt"));
 
@@ -109,7 +115,7 @@ public class ReadTdsLogs {
       long start = System.nanoTime();
 
       reqnum = reqno.incrementAndGet();
-      if (reqnum % 1000 == 0)
+      if (reqnum % 100 == 0)
         System.out.println(reqnum + " request= " + log);
 
       try {
@@ -198,6 +204,8 @@ public class ReadTdsLogs {
     }
 
     private boolean compareAgainstLive(SendRequestTask itask) throws IOException {
+      if (serverLive == null) return true;
+
       HttpMethod method = null;
       try {
         method = new GetMethod(serverLive + itask.log.path);
@@ -650,7 +658,7 @@ public class ReadTdsLogs {
     void run(String filename) throws IOException;
   }
 
-  static String serverLive = "http://motherlode.ucar.edu:8080";
+  static String serverLive = null; // "http://motherlode.ucar.edu:8080";
   static String serverTest = "http://motherlode.ucar.edu:9080";
 
   public static void main(String args[]) throws IOException {

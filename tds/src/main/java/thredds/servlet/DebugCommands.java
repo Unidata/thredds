@@ -111,6 +111,15 @@ public class DebugCommands {
     };
     debugHandler.addAction(act);
 
+    act = new DebugHandler.Action("disableCache", "Disable Caches") {
+      public void doAction(DebugHandler.Event e) {
+        NetcdfDataset.disableNetcdfFileCache();;
+        ServletUtil.setFileCache(null);
+        e.pw.println("  disableCache ok");
+      }
+    };
+    debugHandler.addAction(act);
+
   }
 
   protected void makeDebugActions() {

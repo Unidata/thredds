@@ -182,7 +182,7 @@ public class DataRootHandler {
 
     //getExtraCatalogs(catList); // no more extraCatalogs.txt
 
-    logCatalogInit.info("initCatalogs(): initializing " + catList.size() + " root catalogs [see catalogErrors.log for details].");
+    logCatalogInit.info("initCatalogs(): initializing " + catList.size() + " root catalogs.");
     this.initCatalogs(catList);
   }
 
@@ -1167,10 +1167,10 @@ public class DataRootHandler {
 
     // Handle case for root catalog.
     // ToDo Is this needed? OPeNDAP no longer allows "/thredds/dodsC/catalog.html"
-    if ( catPath.equals( "" ))
+    if (catPath.equals(""))
       catPath = "catalog.html";
 
-    if ( catPath.endsWith( "/"))
+    if (catPath.endsWith("/"))
       catPath += "catalog.html";
 
     if (!catPath.endsWith(".xml")
@@ -1182,10 +1182,10 @@ public class DataRootHandler {
 
     // Handle case for root catalog.
     // ToDo Is this needed? OPeNDAP no longer allows "/thredds/dodsC/catalog.html"
-    if ( catPath.equals( "catalog.html") || catPath.equals( "catalog.xml"))
+    if (catPath.equals("catalog.html") || catPath.equals("catalog.xml"))
       path = "/" + catPath;
 
-    RequestForwardUtils.forwardRequestRelativeToCurrentContext( path, req, res );
+    RequestForwardUtils.forwardRequestRelativeToCurrentContext(path, req, res);
 
     return true;
   }
@@ -1618,15 +1618,30 @@ public class DataRootHandler {
     };
     debugHandler.addAction(act);
 
-    act = new DebugHandler.Action("getRoots", "Get data roots") {
+    act = new DebugHandler.Action("getRoots", "Check data roots") {
       public void doAction(DebugHandler.Event e) {
         synchronized (DataRootHandler.this) {
           e.pw.print("<pre>\n");
           Iterator iter = pathMatcher.iterator();
+          boolean ok = true;
           while (iter.hasNext()) {
             DataRoot ds = (DataRoot) iter.next();
-            e.pw.print(ds.path + "," + ds.dirLocation + "\n");
+            if ((ds.dirLocation == null) && (ds.fmrc != null)) continue;
+            
+            try {
+              File f = new File(ds.dirLocation);
+              if (!f.exists()) {
+                e.pw.print("MISSING on dir = " + ds.dirLocation + " for path = " + ds.path + "\n");
+                ok = false;
+              }
+            } catch (Throwable t) {
+              e.pw.print("ERROR on dir = " + ds.dirLocation + " for path = " + ds.path + "\n");
+              e.pw.print(t.getMessage() + "\n");
+              ok = false;
+            }
           }
+          if (ok)
+            e.pw.print("ALL OK\n");
           e.pw.print("</pre>\n");
         }
       }
@@ -1637,15 +1652,15 @@ public class DataRootHandler {
       public void doAction(DebugHandler.Event e) {
         try {
           singleton.reinit();
-          e.pw.println( "reinit ok");
+          e.pw.println("reinit ok");
 
         } catch (Exception e1) {
-          e.pw.println( "Error on reinit "+e1.getMessage());
-          log.error( "Error on reinit "+e1.getMessage());
+          e.pw.println("Error on reinit " + e1.getMessage());
+          log.error("Error on reinit " + e1.getMessage());
         }
       }
     };
-    debugHandler.addAction( act);
+    debugHandler.addAction(act);
 
   }
 
