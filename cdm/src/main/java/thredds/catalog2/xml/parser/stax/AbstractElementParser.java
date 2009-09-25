@@ -68,7 +68,9 @@ abstract class AbstractElementParser
     this.builderFactory = builderFactory;
   }
 
-  abstract boolean isSelfElement( XMLEvent event );
+  boolean isSelfElement( XMLEvent event ) {
+    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
+  }
 
   abstract void parseStartElement()
           throws ThreddsXmlParserException;

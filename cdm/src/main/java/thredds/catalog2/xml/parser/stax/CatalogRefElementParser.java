@@ -90,11 +90,6 @@ class CatalogRefElementParser extends AbstractElementParser
     return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, CatalogRefElementNames.CatalogRefElement );
   }
 
-  boolean isSelfElement( XMLEvent event )
-  {
-    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
-  }
-
   CatalogRefBuilder getSelfBuilder() {
     return this.selfBuilder;
   }

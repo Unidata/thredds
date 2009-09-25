@@ -79,14 +79,8 @@ class ServiceElementParser extends AbstractElementParser
     this.parentServiceBuilder = parentServiceBuilder;
   }
 
-  static boolean isSelfElementStatic( XMLEvent event )
-  {
+  static boolean isSelfElementStatic( XMLEvent event ) {
     return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ServiceElementNames.ServiceElement );
-  }
-
-  boolean isSelfElement( XMLEvent event )
-  {
-    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
   }
 
   ServiceBuilder getSelfBuilder() {

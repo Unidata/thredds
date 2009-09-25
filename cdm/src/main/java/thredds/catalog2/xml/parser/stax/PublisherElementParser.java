@@ -31,18 +31,11 @@ class PublisherElementParser extends AbstractElementParser
     this.parentBuilder = parentBuilder;
   }
 
-  static boolean isSelfElementStatic( XMLEvent event )
-  {
+  static boolean isSelfElementStatic( XMLEvent event ) {
     return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.PublisherElement );
   }
 
-  boolean isSelfElement( XMLEvent event )
-  {
-    return isSelfElementStatic( event );
-  }
-
-  ThreddsBuilder getSelfBuilder()
-  {
+  ThreddsBuilder getSelfBuilder() {
     return null;
   }
 

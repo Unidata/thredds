@@ -44,10 +44,6 @@ public class VariableGroupElementParser extends AbstractElementParser
             event, ThreddsMetadataElementNames.VariablesElement );
   }
 
-  public boolean isSelfElement( XMLEvent event){
-    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
-  }
-
   public void parseStartElement()
           throws ThreddsXmlParserException
   {

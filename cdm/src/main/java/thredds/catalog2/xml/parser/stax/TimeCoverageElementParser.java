@@ -49,18 +49,11 @@ class TimeCoverageElementParser extends AbstractElementParser
     this.resolutionParserFactory = new DurationParser.Factory( ThreddsMetadataElementNames.DateRangeType_ResolutionElement);
   }
 
-  static boolean isSelfElementStatic( XMLEvent event )
-  {
+  static boolean isSelfElementStatic( XMLEvent event ) {
     return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.TimeCoverageElement );
   }
 
-  boolean isSelfElement( XMLEvent event )
-  {
-    return isSelfElementStatic( event );
-  }
-
-  ThreddsBuilder getSelfBuilder()
-  {
+  ThreddsBuilder getSelfBuilder() {
     return this.selfBuilder;
   }
 

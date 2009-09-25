@@ -32,18 +32,11 @@ class CreatorElementParser extends AbstractElementParser
     this.parentBuilder = parentBuilder;
   }
 
-  static boolean isSelfElementStatic( XMLEvent event )
-  {
+  static boolean isSelfElementStatic( XMLEvent event ) {
     return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.CreatorElement );
   }
 
-  boolean isSelfElement( XMLEvent event )
-  {
-    return isSelfElementStatic( event );
-  }
-
-  ThreddsBuilder getSelfBuilder()
-  {
+  ThreddsBuilder getSelfBuilder() {
     return null;
   }
 
@@ -101,18 +94,11 @@ class CreatorElementParser extends AbstractElementParser
       this.parentBuilder = (ThreddsMetadataBuilder.ContributorBuilder) parentBuilder;
     }
 
-    static boolean isSelfElementStatic( XMLEvent event )
-    {
+    static boolean isSelfElementStatic( XMLEvent event ) {
       return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.CreatorElement_NameElement );
     }
 
-    boolean isSelfElement( XMLEvent event )
-    {
-      return isSelfElementStatic( event );
-    }
-
-    ThreddsBuilder getSelfBuilder()
-    {
+    ThreddsBuilder getSelfBuilder() {
       return null;
     }
 
@@ -159,10 +145,6 @@ class CreatorElementParser extends AbstractElementParser
 
     static boolean isSelfElementStatic( XMLEvent event ) {
       return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.CreatorElement_ContactElement );
-    }
-
-    boolean isSelfElement( XMLEvent event ) {
-      return isSelfElementStatic( event );
     }
 
     ThreddsBuilder getSelfBuilder() {

@@ -84,10 +84,6 @@ class MetadataElementParser extends AbstractElementParser
     return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, MetadataElementNames.MetadataElement );
   }
 
-  boolean isSelfElement( XMLEvent event ) {
-    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
-  }
-
   MetadataBuilder getSelfBuilder() {
     if ( this.containsThreddsMetadata)
       return null;

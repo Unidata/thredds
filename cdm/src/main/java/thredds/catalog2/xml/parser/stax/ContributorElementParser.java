@@ -37,11 +37,6 @@ class ContributorElementParser extends AbstractElementParser
     return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.ContributorElement );
   }
 
-  boolean isSelfElement( XMLEvent event )
-  {
-    return isSelfElementStatic( event );
-  }
-
   ThreddsBuilder getSelfBuilder()
   {
     return null;

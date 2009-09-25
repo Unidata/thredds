@@ -95,14 +95,8 @@ class DatasetElementParser extends AbstractElementParser
             : this.datasetNodeElementParserHelper.getDefaultServiceNameInheritedFromAncestors();
   }
 
-  static boolean isSelfElementStatic( XMLEvent event )
-  {
+  static boolean isSelfElementStatic( XMLEvent event ) {
     return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, DatasetElementNames.DatasetElement );
-  }
-
-  boolean isSelfElement( XMLEvent event )
-  {
-    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
   }
 
   DatasetBuilder getSelfBuilder() {

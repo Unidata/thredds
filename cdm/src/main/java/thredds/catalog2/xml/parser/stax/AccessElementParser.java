@@ -68,11 +68,6 @@ class AccessElementParser extends AbstractElementParser
     return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, AccessElementNames.AccessElement );
   }
 
-  boolean isSelfElement( XMLEvent event )
-  {
-    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
-  }
-
   AccessBuilder getSelfBuilder() {
     return this.selfBuilder;
   }

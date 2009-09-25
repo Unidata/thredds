@@ -209,14 +209,8 @@ class ThreddsMetadataElementParser extends AbstractElementParser
       this.inheritedByDescendants = inheritedByDescendants;
     }
 
-    static boolean isSelfElementStatic( XMLEvent event )
-    {
+    static boolean isSelfElementStatic( XMLEvent event ) {
       return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.ServiceNameElement );
-    }
-
-    boolean isSelfElement( XMLEvent event )
-    {
-      return isSelfElementStatic( event );
     }
 
     ThreddsBuilder getSelfBuilder() {
@@ -261,14 +255,8 @@ class ThreddsMetadataElementParser extends AbstractElementParser
       this.threddsMetadataBuilder = threddsMetadataBuilder;
     }
 
-    static boolean isSelfElementStatic( XMLEvent event )
-    {
+    static boolean isSelfElementStatic( XMLEvent event ) {
       return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.DataFormatElement );
-    }
-
-    boolean isSelfElement( XMLEvent event )
-    {
-      return isSelfElementStatic( event );
     }
 
     ThreddsBuilder getSelfBuilder() {
@@ -313,10 +301,6 @@ class ThreddsMetadataElementParser extends AbstractElementParser
       return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.DataTypeElement );
     }
 
-    boolean isSelfElement( XMLEvent event ) {
-        return isSelfElementStatic( event );
-    }
-
     ThreddsBuilder getSelfBuilder() {
       return null;
     }
@@ -356,10 +340,6 @@ class ThreddsMetadataElementParser extends AbstractElementParser
 
     static boolean isSelfElementStatic( XMLEvent event ) {
       return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.DateElement );
-    }
-
-    boolean isSelfElement( XMLEvent event ) {
-        return isSelfElementStatic( event );
     }
 
     ThreddsBuilder getSelfBuilder() {
@@ -441,18 +421,11 @@ class ThreddsMetadataElementParser extends AbstractElementParser
       this.inheritedByDescendants = inheritedByDescendants;
     }
 
-    static boolean isSelfElementStatic( XMLEvent event )
-    {
+    static boolean isSelfElementStatic( XMLEvent event ) {
       return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.AuthorityElement );
     }
 
-    boolean isSelfElement( XMLEvent event )
-    {
-      return isSelfElementStatic( event );
-    }
-
-    ThreddsBuilder getSelfBuilder()
-    {
+    ThreddsBuilder getSelfBuilder() {
       return null;
     }
 
@@ -491,18 +464,11 @@ class ThreddsMetadataElementParser extends AbstractElementParser
       this.threddsMetadataBuilder = threddsMetadataBuilder;
     }
 
-    static boolean isSelfElementStatic( XMLEvent event )
-    {
+    static boolean isSelfElementStatic( XMLEvent event ) {
       return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.DocumentationElement );
     }
 
-    boolean isSelfElement( XMLEvent event )
-    {
-      return isSelfElementStatic( event );
-    }
-
-    ThreddsBuilder getSelfBuilder()
-    {
+    ThreddsBuilder getSelfBuilder() {
       return null;
     }
 
