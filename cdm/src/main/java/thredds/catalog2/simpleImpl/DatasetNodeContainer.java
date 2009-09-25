@@ -326,26 +326,18 @@ class DatasetNodeContainer
    * Check whether contained DatasetNodeBuilders are all in a state such that
    * calling their build() will succeed.
    *
-   * @param issues a list into which any issues that come up during isBuildable() will be add.
    * @return true if this DatasetNodeContainer is in a state where build() will succeed.
    */
-  public boolean isBuildable( BuilderIssues issues )
+  public BuilderIssues getIssues()
   {
-    if ( this.isBuilt )
-      return true;
-
-    BuilderIssues localIssues = new BuilderIssues();
+    BuilderIssues issues = new BuilderIssues();
 
     // Check on contained DatasetNodeImpl objects.
     if ( this.datasetNodeImplList != null )
       for ( DatasetNodeBuilder dnb : this.datasetNodeImplList )
-        dnb.isBuildable( localIssues );
+        issues.addAllIssues( dnb.getIssues());
 
-    if ( localIssues.isEmpty() )
-      return true;
-
-    issues.addAllIssues( localIssues );
-    return false;
+    return issues;
   }
 
   /**
@@ -358,10 +350,6 @@ class DatasetNodeContainer
   {
     if ( this.isBuilt )
       return;
-
-    BuilderIssues issues = new BuilderIssues();
-    if ( ! isBuildable( issues ) )
-      throw new BuilderException( issues );
 
     // Build contained DatasetNodeImpl objects.
     if ( this.datasetNodeImplList != null )

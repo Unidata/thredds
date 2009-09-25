@@ -58,12 +58,12 @@ class DatasetElementParser extends AbstractElementParser
   private DatasetBuilder selfBuilder;
 
   DatasetElementParser( XMLEventReader reader,
-                               ThreddsBuilderFactory builderFactory,
-                               CatalogBuilder parentCatalogBuilder,
-                               DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
+                        ThreddsBuilderFactory builderFactory,
+                        CatalogBuilder parentCatalogBuilder,
+                        DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
           throws ThreddsXmlParserException
   {
-    super( reader, DatasetElementNames.DatasetElement, builderFactory );
+    super( DatasetElementNames.DatasetElement, reader, builderFactory );
     this.parentCatalogBuilder = parentCatalogBuilder;
     this.parentDatasetNodeBuilder = null;
 
@@ -76,21 +76,9 @@ class DatasetElementParser extends AbstractElementParser
                                DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
           throws ThreddsXmlParserException
   {
-    super( reader, DatasetElementNames.DatasetElement, builderFactory );
+    super( DatasetElementNames.DatasetElement, reader, builderFactory );
     this.parentCatalogBuilder = null;
     this.parentDatasetNodeBuilder = parentDatasetNodeBuilder;
-
-    this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
-  }
-
-  DatasetElementParser( XMLEventReader reader,
-                               ThreddsBuilderFactory builderFactory,
-                               DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
-          throws ThreddsXmlParserException
-  {
-    super( reader, DatasetElementNames.DatasetElement, builderFactory );
-    this.parentCatalogBuilder = null;
-    this.parentDatasetNodeBuilder = null;
 
     this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
   }
@@ -109,12 +97,12 @@ class DatasetElementParser extends AbstractElementParser
 
   static boolean isSelfElementStatic( XMLEvent event )
   {
-    return isSelfElement( event, DatasetElementNames.DatasetElement );
+    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, DatasetElementNames.DatasetElement );
   }
 
   boolean isSelfElement( XMLEvent event )
   {
-    return isSelfElement( event, DatasetElementNames.DatasetElement );
+    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
   }
 
   DatasetBuilder getSelfBuilder() {

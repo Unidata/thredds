@@ -36,8 +36,6 @@ import junit.framework.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
-import java.util.ArrayList;
 
 import thredds.catalog2.builder.BuilderIssue;
 import thredds.catalog2.builder.BuilderException;
@@ -127,19 +125,16 @@ public class TestMetadataImpl extends TestCase
   public void testBuild()
   {
     // Check if buildable
-    BuilderIssues issues = new BuilderIssues();
-    if ( ! mdImpl1.isBuildable( issues ) )
+    BuilderIssues issues = mdImpl1.getIssues();
+    if ( ! issues.isValid() )
     {
-      StringBuilder stringBuilder = new StringBuilder( "Not isBuildable(): " );
-      for ( BuilderIssue bfi : issues.getIssues() )
-        stringBuilder.append( "\n    " ).append( bfi.getMessage() ).append( " [" ).append( bfi.getBuilder().getClass().getName() ).append( "]" );
+      StringBuilder stringBuilder = new StringBuilder( "Invalid metadata: " ).append( issues.toString());
       fail( stringBuilder.toString() );
     }
-    if ( ! mdImpl2.isBuildable( issues ) )
+    issues = mdImpl2.getIssues();
+    if ( ! issues.isValid() )
     {
-      StringBuilder stringBuilder = new StringBuilder( "Not isBuildable(): " );
-      for ( BuilderIssue bfi : issues.getIssues() )
-        stringBuilder.append( "\n    " ).append( bfi.getMessage() ).append( " [" ).append( bfi.getBuilder().getClass().getName() ).append( "]" );
+      StringBuilder stringBuilder = new StringBuilder( "Invalid metadata: " ).append( issues.toString());
       fail( stringBuilder.toString() );
     }
 

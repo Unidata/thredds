@@ -113,23 +113,18 @@ class GlobalServiceContainer
    * Helper method that checks for duplicate service names. Used by CatalogBuilder.isBuildable() and
    * ServiceBuilder.isBuildable().
    *
-   * @param issues any issues found.
    * @param responsibleBuilder the ThreddsBuilder which called this helper method.
    * @return true if no issues, false otherwise.
    */
-  boolean isBuildable( BuilderIssues issues, ThreddsBuilder responsibleBuilder )
+  BuilderIssues getIssues( ThreddsBuilder responsibleBuilder )
   {
-    BuilderIssues localIssues = new BuilderIssues();
+    BuilderIssues issues = new BuilderIssues();
 
     // Check subordinates.
     if ( ! this.servicesWithDuplicateName.isEmpty())
       for ( ServiceImpl s : this.servicesWithDuplicateName )
-        localIssues.addIssue( "Catalog contains duplicate service name [" + s.getName() + "].", responsibleBuilder );
+        issues.addIssue( BuilderIssue.Severity.WARNING, "Catalog contains duplicate service name [" + s.getName() + "].", responsibleBuilder, null );
 
-    if ( localIssues.isEmpty() )
-      return true;
-
-    issues.addAllIssues( localIssues );
-    return false;
+    return issues;
   }
 }

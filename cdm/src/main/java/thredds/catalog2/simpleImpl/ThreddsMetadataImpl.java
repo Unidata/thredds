@@ -36,6 +36,7 @@ import thredds.catalog2.ThreddsMetadata;
 import thredds.catalog2.builder.ThreddsMetadataBuilder;
 import thredds.catalog2.builder.BuilderException;
 import thredds.catalog2.builder.BuilderIssues;
+import thredds.catalog2.builder.BuilderIssue;
 import thredds.catalog.DataFormatType;
 
 import java.util.*;
@@ -75,13 +76,13 @@ public class ThreddsMetadataImpl
   private GeospatialCoverageImpl geospatialCoverage;
   private DateRangeImpl temporalCoverage;
 
-  private List<VariableImpl> variables;
+  private List<VariableGroupImpl> variableGroups;
   private long dataSizeInBytes;
   private DataFormatType dataFormat;
   private FeatureType dataType;
   private String collectionType;
 
-    public ThreddsMetadataImpl()
+  public ThreddsMetadataImpl()
   {
     this.isBuilt = false;
     this.dataSizeInBytes = -1;
@@ -106,7 +107,7 @@ public class ThreddsMetadataImpl
          || this.geospatialCoverage != null || this.temporalCoverage != null )
       return false;
 
-    if ( this.variables != null && ! this.variables.isEmpty() )
+    if ( this.variableGroups != null && ! this.variableGroups.isEmpty() )
       return false;
 
     if ( this.dataSizeInBytes != -1 || this.dataFormat != null || this.dataType != null || this.collectionType != null )
@@ -115,12 +116,10 @@ public class ThreddsMetadataImpl
     return true;
   }
 
-  public DocumentationBuilder addDocumentation( String docType, String title, URI externalReference )
+  public DocumentationBuilder addDocumentation( String docType, String title, String externalReference )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This Builder has been built.");
-    if ( title == null ) throw new IllegalArgumentException( "Title may not be null.");
-    if ( externalReference == null ) throw new IllegalArgumentException( "External reference may not be null.");
     if ( this.docs == null )
       this.docs = new ArrayList<DocumentationImpl>();
     DocumentationImpl doc = new DocumentationImpl( docType, title, externalReference );
@@ -572,11 +571,12 @@ public class ThreddsMetadataImpl
   }
 
   public DateRangeBuilder setTemporalCoverageBuilder( String startDate, String startDateFormat,
-                                                      String endDate, String endDateFormat, String duration )
+                                                      String endDate, String endDateFormat,
+                                                      String duration, String resolution )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This Builder has been built." );
-    this.temporalCoverage = new DateRangeImpl( startDate, startDateFormat, endDate, endDateFormat, duration );
+    this.temporalCoverage = new DateRangeImpl( startDate, startDateFormat, endDate, endDateFormat, duration, resolution );
     return this.temporalCoverage;
   }
 
@@ -593,44 +593,44 @@ public class ThreddsMetadataImpl
         return this.temporalCoverage;
     }
 
-  public VariableBuilder addVariableBuilder()
+  public VariableGroupBuilder addVariableGroupBuilder()
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This Builder has been built." );
-    if ( this.variables == null )
-      this.variables = new ArrayList<VariableImpl>();
-    VariableImpl var = new VariableImpl();
-    this.variables.add( var);
-    return var;
+    if ( this.variableGroups == null )
+      this.variableGroups = new ArrayList<VariableGroupImpl>();
+    VariableGroupImpl varGroup = new VariableGroupImpl();
+    this.variableGroups.add( varGroup);
+    return varGroup;
   }
 
-  public boolean removeVariableBuilder( VariableBuilder variableBuilder )
+  public boolean removeVariableGroupBuilder( VariableGroupBuilder variableGroupBuilder )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This Builder has been built." );
-    if ( variableBuilder == null )
+    if ( variableGroupBuilder == null )
       return false;
-    if ( this.variables == null )
+    if ( this.variableGroups == null )
       return false;
-    return this.variables.remove( (VariableImpl) variableBuilder );
+    return this.variableGroups.remove( (VariableGroupImpl) variableGroupBuilder );
   }
 
-  public List<VariableBuilder> getVariableBuilders()
+  public List<VariableGroupBuilder> getVariableGroupBuilders()
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This Builder has been built." );
-    if ( this.variables == null )
+    if ( this.variableGroups == null )
       return Collections.emptyList();
-    return Collections.unmodifiableList( new ArrayList<VariableBuilder>( this.variables ) );
+    return Collections.unmodifiableList( new ArrayList<VariableGroupBuilder>( this.variableGroups ) );
   }
 
-  public List<Variable> getVariables()
+  public List<VariableGroup> getVariableGroups()
   {
     if ( ! this.isBuilt )
       throw new IllegalStateException( "Sorry, I've escaped from my Builder before being built." );
-    if ( this.variables == null )
+    if ( this.variableGroups == null )
       return Collections.emptyList();
-    return Collections.unmodifiableList( new ArrayList<Variable>( this.variables ) );
+    return Collections.unmodifiableList( new ArrayList<VariableGroup>( this.variableGroups ) );
   }
 
   public void setDataSizeInBytes( long dataSizeInBytes )
@@ -694,26 +694,55 @@ public class ThreddsMetadataImpl
     return this.isBuilt;
   }
 
-  public boolean isBuildable( BuilderIssues issues )
+  public BuilderIssues getIssues()
   {
-    if ( this.isBuilt )
-      return true;
-
-    BuilderIssues localIssues = new BuilderIssues();
+    BuilderIssues issues = new BuilderIssues();
 
     // Check subordinates.
     if ( this.docs != null )
       for ( DocumentationImpl doc : this.docs )
-        doc.isBuildable( localIssues );
-    // ToDo keywords
-    // ToDo ...
+        issues.addAllIssues( doc.getIssues());
+    if ( this.keyphrases != null )
+      for( KeyphraseImpl keyphrase : this.keyphrases )
+        issues.addAllIssues( keyphrase.getIssues());
+    if ( this.creators != null )
+      for( ContributorImpl creator : this.creators )
+        issues.addAllIssues( creator.getIssues());
+    if ( this.contributors != null )
+      for( ContributorImpl contributor : this.contributors )
+        issues.addAllIssues( contributor.getIssues());
+    if ( this.publishers != null )
+      for( ContributorImpl publisher : this.publishers )
+        issues.addAllIssues( publisher.getIssues());
 
+    if ( this.otherDates != null )
+      for( DatePointImpl date : this.otherDates )
+        issues.addAllIssues( date.getIssues());
+    if ( this.createdDate != null )
+      issues.addAllIssues( this.createdDate.getIssues() );
+    if ( this.modifiedDate != null )
+      issues.addAllIssues( this.modifiedDate.getIssues() );
+    if ( this.issuedDate != null )
+      issues.addAllIssues( this.issuedDate.getIssues() );
+    if ( this.validDate != null )
+      issues.addAllIssues( this.validDate.getIssues() );
+    if ( this.availableDate != null )
+      issues.addAllIssues( this.availableDate.getIssues() );
+    if ( this.metadataCreatedDate != null )
+      issues.addAllIssues( this.metadataCreatedDate.getIssues() );
+    if ( this.metadataModifiedDate != null )
+      issues.addAllIssues( this.metadataModifiedDate.getIssues() );
 
-    if ( localIssues.isEmpty() )
-      return true;
+    if ( this.geospatialCoverage != null )
+      issues.addAllIssues( this.geospatialCoverage.getIssues() );
+    if ( this.temporalCoverage != null )
+      issues.addAllIssues( this.temporalCoverage.getIssues() );
 
-    issues.addAllIssues( localIssues );
-    return false;
+    if ( this.variableGroups != null )
+      for ( VariableGroupImpl variableGroup : this.variableGroups )
+        issues.addAllIssues( variableGroup.getIssues() );
+
+    return issues;
   }
 
   public ThreddsMetadata build() throws BuilderException
@@ -721,16 +750,49 @@ public class ThreddsMetadataImpl
     if ( this.isBuilt )
       return this;
 
-    BuilderIssues issues = new BuilderIssues();
-    if ( ! isBuildable( issues ) )
-      throw new BuilderException( issues );
-
     // Check subordinates.
     if ( this.docs != null )
       for ( DocumentationImpl doc : this.docs )
         doc.build();
-    // ToDo keywords
-    // ToDo ...
+    if ( this.keyphrases != null )
+      for ( KeyphraseImpl keyphrase : this.keyphrases )
+        keyphrase.build();
+    if ( this.creators != null )
+      for ( ContributorImpl creator : this.creators )
+        creator.build();
+    if ( this.contributors != null )
+      for ( ContributorImpl contributor : this.contributors )
+        contributor.build();
+    if ( this.publishers != null )
+      for ( ContributorImpl publisher : this.publishers )
+        publisher.build();
+
+    if ( this.otherDates != null )
+      for ( DatePointImpl date : this.otherDates )
+        date.build();
+    if ( this.createdDate != null )
+      this.createdDate.build();
+    if ( this.modifiedDate != null )
+      this.modifiedDate.build();
+    if ( this.issuedDate != null )
+      this.issuedDate.build();
+    if ( this.validDate != null )
+      this.validDate.build();
+    if ( this.availableDate != null )
+      this.availableDate.build();
+    if ( this.metadataCreatedDate != null )
+      this.metadataCreatedDate.build();
+    if ( this.metadataModifiedDate != null )
+      this.metadataModifiedDate.build();
+
+    if ( this.geospatialCoverage != null )
+      this.geospatialCoverage.build();
+    if ( this.temporalCoverage != null )
+      this.temporalCoverage.build();
+
+    if ( this.variableGroups != null )
+      for ( VariableGroupImpl variableGroup : this.variableGroups )
+        variableGroup.build();
 
     this.isBuilt = true;
     return this;
@@ -745,13 +807,13 @@ public class ThreddsMetadataImpl
 
     public final String docType;
     public final String title;
-    public final URI externalReference;
+    public final String externalReference;
     public final String content;
 
-    public DocumentationImpl( String docType, String title, URI externalReference )
+    public DocumentationImpl( String docType, String title, String externalReference )
     {
-      if ( title == null ) throw new IllegalArgumentException( "Title may not be null.");
-      if ( externalReference == null ) throw new IllegalArgumentException( "External reference may not be null.");
+      //if ( title == null ) throw new IllegalArgumentException( "Title may not be null.");
+      //if ( externalReference == null ) throw new IllegalArgumentException( "External reference may not be null.");
       this.isContainedContent = false;
       this.docType = docType;
       this.title = title;
@@ -793,11 +855,18 @@ public class ThreddsMetadataImpl
       return this.title;
     }
 
-    public URI getExternalReference()
+    public String getExternalReference()
     {
       if ( this.isContainedContent )
         throw new IllegalStateException( "Documentation with contained content has no external reference.");
       return this.externalReference;
+    }
+
+    public URI getExternalReferenceAsUri() throws URISyntaxException
+    {
+      if ( this.isContainedContent )
+        throw new IllegalStateException( "Documentation with contained content has no external reference.");
+      return this.externalReference != null ? new URI( this.externalReference) : null;
     }
 
     public boolean isBuilt()
@@ -805,9 +874,9 @@ public class ThreddsMetadataImpl
       return this.isBuilt;
     }
 
-    public boolean isBuildable( BuilderIssues issues )
+    public BuilderIssues getIssues()
     {
-      return true;
+      return new BuilderIssues();
     }
 
     public Documentation build() throws BuilderException
@@ -848,8 +917,10 @@ public class ThreddsMetadataImpl
       return this.isBuilt;
     }
 
-    public boolean isBuildable( BuilderIssues issues ) {
-        return true;
+    public BuilderIssues getIssues() {
+      if ( phrase == null || phrase.equals( "" ) )
+        return new BuilderIssues( BuilderIssue.Severity.WARNING, "Phrase may not be null or empty.", this, null );
+      return new BuilderIssues();
     }
 
     public Keyphrase build() throws BuilderException {
@@ -917,8 +988,10 @@ public class ThreddsMetadataImpl
             return this.isBuilt;
         }
 
-        public boolean isBuildable( BuilderIssues issues ) {
-            return true;
+        public BuilderIssues getIssues() {
+          if ( this.date == null )
+            return new BuilderIssues( BuilderIssue.Severity.ERROR, "Date may not be null.", this, null);
+          return new BuilderIssues();
         }
 
         public DatePoint build() throws BuilderException {
@@ -937,46 +1010,46 @@ public class ThreddsMetadataImpl
         private final String endDateFormat;
         private final String endDate;
         private final String duration;
+        private final String resolution;
 
         public DateRangeImpl( String startDate, String startDateFormat,
                               String endDate, String endDateFormat,
-                              String duration )
+                              String duration, String resolution )
         {
             this.startDateFormat = startDateFormat;
             this.startDate = startDate;
             this.endDateFormat = endDateFormat;
             this.endDate = endDate;
             this.duration = duration;
+          this.resolution = resolution;
         }
 
-        public String getStartDateFormat()
-        {
-            return this.startDateFormat;
+        public String getStartDateFormat() {
+          return this.startDateFormat;
         }
 
-        public String getStartDate()
-        {
-            return this.startDate;
+        public String getStartDate() {
+          return this.startDate;
         }
 
-        public String getEndDateFormat()
-        {
-            return this.endDateFormat;
+        public String getEndDateFormat() {
+          return this.endDateFormat;
         }
 
-        public String getEndDate()
-        {
-            return this.endDate;
+        public String getEndDate() {
+          return this.endDate;
         }
 
-        public String getDuration()
-        {
-            return this.duration;
+        public String getDuration() {
+          return this.duration;
         }
 
-        public String toString()
-        {
-            return (this.isBuilt ? "DateRange" : "DateRangeBuilder") +
+        public String getResolution() {
+          return this.resolution;
+        }
+
+        public String toString() {
+          return (this.isBuilt ? "DateRange" : "DateRangeBuilder") +
                    " [" + this.startDate + " <-- " + this.duration + " --> " + this.endDate + "]";
         }
 
@@ -1009,10 +1082,8 @@ public class ThreddsMetadataImpl
             return this.isBuilt;
         }
 
-        public boolean isBuildable( BuilderIssues issues )
+        public BuilderIssues getIssues()
         {
-            if (this.isBuilt) return true;
-
             int specified = 3;
             if ( this.startDate == null || this.startDate.equals( "" ) )
                 specified--;
@@ -1022,13 +1093,11 @@ public class ThreddsMetadataImpl
                 specified--;
 
             if ( specified == 2 )
-                return true;
+                return new BuilderIssues();
             else if ( specified < 2)
-              issues.addIssue( "Underspecified " + this.toString(), this);
+              return new BuilderIssues( BuilderIssue.Severity.ERROR, "Underspecified " + this.toString(), this, null);
             else // if (specified > 2)
-              issues.addIssue( "Overspecified " + this.toString(), this);
-            
-            return false;
+              return new BuilderIssues( BuilderIssue.Severity.ERROR, "Overspecified " + this.toString(), this, null);
         }
 
         public DateRange build() throws BuilderException {
@@ -1044,23 +1113,24 @@ public class ThreddsMetadataImpl
 
     private String authority;
     private String name;
+    private String role;
     private String email;
-    private URI webPage;
+    private String webPage;
 
-    public String getAuthority()
-    {
+    ContributorImpl() {}
+
+    public String getNamingAuthority() {
       return this.authority;
     }
 
-    public void setAuthority( String authority )
+    public void setNamingAuthority( String authority )
     {
       if ( this.isBuilt )
         throw new IllegalStateException( "This Builder has been built." );
       this.authority = authority;
     }
 
-    public String getName()
-    {
+    public String getName() {
       return this.name;
     }
 
@@ -1073,8 +1143,18 @@ public class ThreddsMetadataImpl
       this.name = name;
     }
 
-    public String getEmail()
+    public String getRole() {
+      return this.role;
+    }
+
+    public void setRole( String role )
     {
+      if ( this.isBuilt )
+        throw new IllegalStateException( "This Builder has been built." );
+      this.role = role;
+    }
+
+    public String getEmail() {
       return this.email;
     }
 
@@ -1085,16 +1165,112 @@ public class ThreddsMetadataImpl
       this.email = email;
     }
 
-    public URI getWebPage()
-    {
+    public String getWebPage() {
       return this.webPage;
     }
 
-    public void setWebPage( URI webPage )
+    public void setWebPage( String webPage )
     {
       if ( this.isBuilt )
         throw new IllegalStateException( "This Builder has been built." );
       this.webPage = webPage;
+    }
+
+    public boolean isBuilt() {
+      return this.isBuilt;
+    }
+
+    public BuilderIssues getIssues() {
+      if ( this.name == null )
+        return new BuilderIssues( BuilderIssue.Severity.ERROR, "Name may not be null.", this, null);
+      return new BuilderIssues();
+    }
+
+    public Contributor build() throws BuilderException
+    {
+      this.isBuilt = true;
+      return this;
+    }
+  }
+
+  public static class VariableGroupImpl implements VariableGroup, VariableGroupBuilder
+  {
+    private boolean isBuilt = false;
+
+    private String vocabularyAuthorityId;
+    private String vocabularyAuthorityUrl;
+
+    private List<VariableImpl> variables;
+
+    private String variableMapUrl;
+
+    public String getVocabularyAuthorityId() {
+      return this.vocabularyAuthorityId;
+    }
+
+    public void setVocabularyAuthorityId( String vocabAuthId) {
+      if ( this.isBuilt )
+        throw new IllegalStateException( "This Builder has already been built." );
+      this.vocabularyAuthorityId = vocabAuthId;
+    }
+
+    public String getVocabularyAuthorityUrl() {
+      return this.vocabularyAuthorityUrl;
+    }
+
+    public void setVocabularyAuthorityUrl( String vocabAuthUrl) {
+      if ( this.isBuilt )
+        throw new IllegalStateException( "This Builder has already been built." );
+      this.vocabularyAuthorityUrl = vocabAuthUrl;
+    }
+
+    public List<Variable> getVariables() {
+      if ( ! this.isBuilt)
+        throw new IllegalStateException( "Sorry, I've escaped from my Builder before being built." );
+      if ( this.variables == null )
+        return Collections.emptyList();
+      return Collections.unmodifiableList( new ArrayList<Variable>( variables) );
+    }
+
+    public List<VariableBuilder> getVariableBuilders() {
+      if ( this.isBuilt)
+        throw new IllegalStateException( "This Builder has already been built." );
+      if ( this.variables == null )
+        return Collections.emptyList();
+      return Collections.unmodifiableList( new ArrayList<VariableBuilder>( variables ) );
+    }
+
+    public VariableBuilder addVariableBuilder( String name, String description, String units,
+                                               String vocabId, String vocabName )
+    {
+      if ( this.isBuilt )
+        throw new IllegalStateException( "This Builder has already been built." );
+      if ( this.variableMapUrl != null )
+        throw new IllegalStateException( "Already contains variableMap, can't add variables." );
+
+      VariableImpl newVar = new VariableImpl( name, description, units, vocabId, vocabName, this );
+
+      if ( this.variables == null)
+        this.variables = new ArrayList<VariableImpl>();
+      this.variables.add( newVar );
+      return newVar;
+    }
+
+    public String getVariableMapUrl() {
+      return this.variableMapUrl;
+    }
+
+    public void setVariableMapUrl( String variableMapUrl)
+    {
+      if ( this.isBuilt)
+        throw new IllegalStateException( "This Builder has already been built.");
+      if ( variableMapUrl != null && this.variables != null && ! this.variables.isEmpty())
+        throw new IllegalStateException( "Already contains variables, can't set variableMap.");
+      this.variableMapUrl = variableMapUrl;
+    }
+
+    public boolean isEmpty() {
+      return variableMapUrl == null && ( this.variables == null || this.variables.isEmpty());
     }
 
     public boolean isBuilt()
@@ -1102,12 +1278,14 @@ public class ThreddsMetadataImpl
       return this.isBuilt;
     }
 
-    public boolean isBuildable( BuilderIssues issues )
+    public BuilderIssues getIssues()
     {
-      return true;
+      if ( variableMapUrl != null && this.variables != null && ! this.variables.isEmpty())
+        return new BuilderIssues( BuilderIssue.Severity.ERROR, "This VariableGroupBuilder has variables and variableMap.", this, null );
+      return new BuilderIssues();
     }
 
-    public Contributor build() throws BuilderException
+    public Object build() throws BuilderException
     {
       this.isBuilt = true;
       return this;
@@ -1119,54 +1297,37 @@ public class ThreddsMetadataImpl
   {
     private boolean isBuilt;
 
-    private String authority = "";
-    private String id;
-    private String title = "";
-    private String description = "";
-    private String units = "";
+    private String name;
+    private String description;
+    private String units;
+    private String vocabularyId;
+    private String vocabularyName;
 
-    public VariableImpl() {}
+    private VariableGroupBuilder parent;
 
-    public String getAuthority()
+    public VariableImpl( String name, String description, String units,
+                         String vocabId, String vocabName, VariableGroupBuilder parent )
     {
-      return this.authority;
+      this.name = name;
+      this.description = description;
+      this.units = units;
+      this.vocabularyId = vocabId;
+      this.vocabularyName = vocabName;
+      this.parent = parent;
     }
 
-    public void setAuthority( String authority )
+    public String getName() {
+      return this.name;
+    }
+
+    public void setName( String name )
     {
       if ( this.isBuilt )
         throw new IllegalStateException( "This Builder has been built." );
-      this.authority = authority == null ? "" : authority;
+      this.name = name;
     }
 
-    public String getId()
-    {
-      return this.id;
-    }
-
-    public void setId( String id )
-    {
-      if ( this.isBuilt )
-        throw new IllegalStateException( "This Builder has been built." );
-      if ( id == null )
-        throw new IllegalArgumentException( "Id may not be null.");
-      this.id = id;
-    }
-
-    public String getTitle()
-    {
-      return this.title;
-    }
-
-    public void setTitle( String title )
-    {
-      if ( this.isBuilt )
-        throw new IllegalStateException( "This Builder has been built." );
-      this.title = title == null ? "" : title;
-    }
-
-    public String getDescription()
-    {
+    public String getDescription() {
       return this.description;
     }
 
@@ -1174,11 +1335,10 @@ public class ThreddsMetadataImpl
     {
       if ( this.isBuilt )
         throw new IllegalStateException( "This Builder has been built." );
-      this.description = description == null ? "" : description;
+      this.description = description;
     }
 
-    public String getUnits()
-    {
+    public String getUnits() {
       return this.units;
     }
 
@@ -1186,7 +1346,37 @@ public class ThreddsMetadataImpl
     {
       if ( this.isBuilt )
         throw new IllegalStateException( "This Builder has been built." );
-      this.units = units == null ? "" : units;
+      this.units = units;
+    }
+
+    public String getVocabularyId() {
+      return this.vocabularyId;
+    }
+
+    public void setVocabularyId( String vocabularyId )
+    {
+      if ( this.isBuilt )
+        throw new IllegalStateException( "This Builder has been built." );
+      this.vocabularyId = vocabularyId;
+    }
+
+    public String getVocabularyName() {
+      return this.vocabularyName;
+    }
+
+    public void setVocabularyName( String vocabularyName )
+    {
+      if ( this.isBuilt )
+        throw new IllegalStateException( "This Builder has been built." );
+      this.vocabularyName = vocabularyName;
+    }
+
+    public String getVocabularyAuthorityId() {
+      return this.parent.getVocabularyAuthorityId();
+    }
+
+    public String getVocabularyAuthorityUrl() {
+      return this.parent.getVocabularyAuthorityUrl();
     }
 
     public boolean isBuilt()
@@ -1194,9 +1384,11 @@ public class ThreddsMetadataImpl
       return this.isBuilt;
     }
 
-    public boolean isBuildable( BuilderIssues issues )
+    public BuilderIssues getIssues()
     {
-      return true;
+      if ( this.name == null || this.name.length() == 0 )
+        return new BuilderIssues( BuilderIssue.Severity.WARNING, "Variable name is null or empty.", this, null );
+      return new BuilderIssues();
     }
 
     public Variable build() throws BuilderException
@@ -1215,7 +1407,7 @@ public class ThreddsMetadataImpl
     private URI defaultCrsUri;
 
     private URI crsUri;
-    private boolean is3D;
+    //private boolean is3D;
     private boolean isZPositiveUp;
 
     private boolean isGlobal;
@@ -1315,9 +1507,9 @@ public class ThreddsMetadataImpl
       return this.isBuilt;
     }
 
-    public boolean isBuildable( BuilderIssues issues )
+    public BuilderIssues getIssues()
     {
-      return false;
+      return new BuilderIssues();
     }
 
     public GeospatialCoverage build() throws BuilderException
@@ -1409,9 +1601,9 @@ public class ThreddsMetadataImpl
       return this.isBuilt;
     }
 
-    public boolean isBuildable( BuilderIssues issues )
+    public BuilderIssues getIssues()
     {
-      return true;
+      return new BuilderIssues();
     }
 
     public GeospatialRange build() throws BuilderException

@@ -198,6 +198,8 @@ public class TestCatalogImpl
   {
     CatalogRefBuilder cat2 =  this.catImpl.addCatalogRef( "cat2", new URI( "http://server/thredds/cat2.xml") );
     CatalogRefBuilder cat3 =  this.catImpl.addCatalogRef( "cat3", new URI( "http://server/thredds/cat3.xml") );
+    cat2.setId( "cat2");
+    cat3.setId( "cat3");
     DatasetBuilder ds1 = this.catImpl.addDataset( "data1" );
     DatasetBuilder ds2 = this.catImpl.addDataset( "data2" );
     ds1.setId( "dataId1" );
@@ -224,6 +226,77 @@ public class TestCatalogImpl
 
     assertNull( this.catImpl.getDatasetNodeBuilderById( "cat2" ));
     assertNull( this.catImpl.getDatasetNodeBuilderById( "dataId1" ));
+  }
+
+  @Test
+  public void checkBuildIssuesForMultipleServices()
+          throws URISyntaxException
+  {
+    this.catImpl.addService( "odap", ServiceType.OPENDAP,  new URI( "http://server/thredds/dodsC/"));
+    this.catImpl.addService( "wcs", ServiceType.WCS,  new URI( "http://server/thredds/wcs/"));
+    this.catImpl.addService( "wms", ServiceType.WMS,  new URI( "http://server/thredds/wms/"));
+
+    BuilderIssues issues = this.catImpl.getIssues();
+    assertTrue( issues.toString(), issues.isValid() );
+    assertTrue( issues.toString(), issues.isEmpty() );
+  }
+
+  @Test
+  public void checkBuildIssuesForDuplicateServiceName()
+          throws URISyntaxException
+  {
+    this.catImpl.addService( "odap", ServiceType.OPENDAP, new URI( "http://server/thredds/dodsC/" ) );
+    this.catImpl.addService( "odap", ServiceType.OPENDAP, new URI( "http://server/thredds/dodsC/" ) );
+
+    BuilderIssues issues = this.catImpl.getIssues();
+    assertTrue( issues.toString(), issues.isValid() );
+    assertFalse( issues.toString(), issues.isEmpty() );
+  }
+
+  @Test
+  public void checkBuildIssuesCompoundService()
+          throws URISyntaxException
+  {
+    ServiceImpl compoundService = (ServiceImpl) this.catImpl.addService( "all", ServiceType.COMPOUND, new URI( "") );
+    compoundService.addService( "odap", ServiceType.OPENDAP,  new URI( "http://server/thredds/dodsC/"));
+    compoundService.addService( "wcs", ServiceType.WCS,  new URI( "http://server/thredds/wcs/"));
+    compoundService.addService( "wms", ServiceType.WMS,  new URI( "http://server/thredds/wms/"));
+
+    BuilderIssues issues = this.catImpl.getIssues();
+    assertTrue( issues.toString(), issues.isValid() );
+    assertTrue( issues.toString(), issues.isEmpty() );
+  }
+
+  @Test
+  public void checkBuildIssuesCompoundServiceWithDuplicate()
+          throws URISyntaxException
+  {
+    ServiceImpl compoundService = (ServiceImpl) this.catImpl.addService( "all", ServiceType.COMPOUND, new URI( "") );
+    compoundService.addService( "odap", ServiceType.OPENDAP,  new URI( "http://server/thredds/dodsC/"));
+    compoundService.addService( "wcs", ServiceType.WCS,  new URI( "http://server/thredds/wcs/"));
+    compoundService.addService( "wms", ServiceType.WMS,  new URI( "http://server/thredds/wms/"));
+    compoundService.addService( "odap", ServiceType.WMS,  new URI( "http://server/thredds/wms/"));
+
+    BuilderIssues issues = this.catImpl.getIssues();
+    assertTrue( issues.toString(), issues.isValid() );
+    assertFalse( issues.toString(), issues.isEmpty() );
+  }
+
+  @Test
+  public void checkBuildIssuesForDuplicateServiceNameInDifferentContainer()
+          throws URISyntaxException
+  {
+    ServiceImpl compoundService = (ServiceImpl) this.catImpl.addService( "all", ServiceType.COMPOUND, new URI( "" ) );
+    compoundService.addService( "odap", ServiceType.OPENDAP, new URI( "http://server/thredds/dodsC/" ) );
+    compoundService.addService( "wcs", ServiceType.WCS, new URI( "http://server/thredds/wcs/" ) );
+    compoundService.addService( "wms", ServiceType.WMS, new URI( "http://server/thredds/wms/" ) );
+    compoundService.addService( "odap", ServiceType.WMS, new URI( "http://server/thredds/wms/" ) );
+
+    this.catImpl.addService( "odap", ServiceType.OPENDAP, new URI( "http://server/thredds/dodsC/" ) );
+
+    BuilderIssues issues = this.catImpl.getIssues();
+    assertTrue( issues.toString(), issues.isValid() );
+    assertFalse( issues.toString(), issues.isEmpty() );
   }
 
 }

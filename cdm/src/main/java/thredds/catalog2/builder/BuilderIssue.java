@@ -40,24 +40,36 @@ package thredds.catalog2.builder;
  */
 public class BuilderIssue
 {
+  public enum Severity { FATAL, ERROR, WARNING };
+
+  private final Severity severity;
   private final String message;
   private final ThreddsBuilder builder;
+  private final Exception cause;
 
-  public BuilderIssue( String message, ThreddsBuilder builder )
+  public BuilderIssue( Severity severity, String message, ThreddsBuilder builder, Exception cause )
   {
-      if ( message == null || builder == null )
-          throw new IllegalArgumentException( "Null message and/or builder.");
-      this.message = message;
-      this.builder = builder;
+    if ( severity == null || message == null || builder == null )
+      throw new IllegalArgumentException( "Null severity level, message, and/or builder.");
+    this.severity = severity;
+    this.message = message;
+    this.builder = builder;
+    this.cause = cause;
   }
 
-  public String getMessage()
-  {
+  public Severity getSeverity() {
+    return this.severity;
+  }
+
+  public String getMessage() {
     return this.message;
   }
 
-  public ThreddsBuilder getBuilder()
-  {
+  public ThreddsBuilder getBuilder() {
     return this.builder;
+  }
+
+  public Exception getCause() {
+    return this.cause;
   }
 }

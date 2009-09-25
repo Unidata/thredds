@@ -119,41 +119,20 @@ public class AccessImpl implements Access, AccessBuilder
     return this.isBuilt;
   }
 
-  public boolean isBuildable( BuilderIssues issues )
+  public BuilderIssues getIssues()
   {
-    if ( this.isBuilt )
-      return true;
-
-    BuilderIssues localIssues = new BuilderIssues();
+    BuilderIssues issues = new BuilderIssues();
 
     if ( this.service == null )
-      localIssues.addIssue( new BuilderIssue( "Dataset[\"" + parentDs.getName() + "\"] not accessible[\"" + this.urlPath + "\"] due to null service.", this ) );
+      issues.addIssue( BuilderIssue.Severity.ERROR, "Dataset[\"" + parentDs.getName() + "\"] not accessible[\"" + this.urlPath + "\"] due to null service.", this, null );
     if ( this.urlPath == null )
-      localIssues.addIssue( new BuilderIssue( "Dataset[\"" + parentDs.getName() + "\"] not accessible[\"" + this.service != null ? this.service.getName() : "" + "\"] due to null urlPath.", this ) );
+      issues.addIssue( BuilderIssue.Severity.ERROR, "Dataset[\"" + parentDs.getName() + "\"] not accessible[\"" + this.service != null ? this.service.getName() : "" + "\"] due to null urlPath.", this, null );
 
-    // Check subordinates.
-    if ( this.service != null )
-      this.service.isBuildable( localIssues );
-
-    if ( localIssues.isEmpty() )
-      return true;
-
-    issues.addAllIssues( localIssues );
-    return false;
+    return issues;
   }
 
   public Access build() throws BuilderException
   {
-    if ( this.isBuilt )
-      return this;
-
-    BuilderIssues issues = new BuilderIssues();
-    if ( !isBuildable( issues ) )
-      throw new BuilderException( issues );
-
-    // Check subordinates.
-    this.service.build();
-
     this.isBuilt = true;
     return this;
   }

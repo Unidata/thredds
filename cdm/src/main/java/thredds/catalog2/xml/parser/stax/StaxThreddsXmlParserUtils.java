@@ -42,6 +42,7 @@ import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.events.XMLEvent;
+import javax.xml.stream.events.StartElement;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -61,6 +62,79 @@ class StaxThreddsXmlParserUtils
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( StaxThreddsXmlParserUtils.class );
 
   private StaxThreddsXmlParserUtils() {}
+
+  static boolean isEventStartOrEndElementWithMatchingName( XMLEvent event, QName elementName )
+  {
+    if ( event == null )
+      throw new IllegalArgumentException( "Event may not be null.");
+
+    QName eventElementName = null;
+    if ( event.isStartElement() )
+      eventElementName = event.asStartElement().getName();
+    else if ( event.isEndElement() )
+      eventElementName = event.asEndElement().getName();
+    else
+      return false;
+
+    if ( eventElementName.equals( elementName ) )
+      return true;
+    return false;
+  }
+
+  public static StartElement readNextEventCheckItIsStartElementWithExpectedName( XMLEventReader xmlEventReader,
+                                                                          QName startElementName )
+          throws ThreddsXmlParserException
+  {
+    if ( ! xmlEventReader.hasNext() )
+      throw new IllegalStateException( "XMLEventReader has no further events." );
+
+    StartElement startElement = null;
+    try
+    {
+      XMLEvent event = xmlEventReader.peek();
+      if ( ! event.isStartElement() )
+        throw new IllegalStateException( "Next event must be StartElement." );
+
+      if ( ! event.asStartElement().getName().equals( startElementName ) )
+        throw new IllegalStateException( "Start element must be an '" + startElementName.getLocalPart() + "' element." );
+
+      startElement = xmlEventReader.nextEvent().asStartElement();
+    }
+    catch ( XMLStreamException e )
+    {
+      String msg = "Problem reading XML stream.";
+      log.warn( "readNextEventCheckItIsStartElementWithExpectedName(): " + msg, e );
+      throw new ThreddsXmlParserException( new ThreddsXmlParserIssue( ThreddsXmlParserIssue.Severity.FATAL, msg, null, e ) );
+    }
+
+    return startElement;
+  }
+
+  public static void readNextEventCheckItIsEndElementWithExpectedName( XMLEventReader xmlEventReader,
+                                                                      QName elementName )
+          throws ThreddsXmlParserException
+  {
+    if ( ! xmlEventReader.hasNext() )
+      throw new IllegalStateException( "XMLEventReader has no further events." );
+
+    try
+    {
+      XMLEvent event = xmlEventReader.peek();
+      if ( ! event.isEndElement() )
+        throw new IllegalStateException( "Next event must be EndElement." );
+
+      if ( ! event.asEndElement().getName().equals( elementName ) )
+        throw new IllegalStateException( "End element must be an '" + elementName.getLocalPart() + "' element." );
+
+      xmlEventReader.nextEvent(); // .asEndElement();
+    }
+    catch ( XMLStreamException e )
+    {
+      String msg = "Problem reading XML stream.";
+      log.warn( "readNextEventCheckItIsEndElementWithExpectedName(): " + msg, e );
+      throw new ThreddsXmlParserException( new ThreddsXmlParserIssue( ThreddsXmlParserIssue.Severity.FATAL, msg, null, e ) );
+    }
+  }
 
   static String getLocationInfo( XMLEventReader xmlEventReader )
   {
@@ -188,16 +262,28 @@ class StaxThreddsXmlParserUtils
     return result;
   }
 
+  /**
+   * Return the character contents of the containing element as a String trimmed of whitespace.
+   * <p>
+   * When called, the StartElement must have already been read from the reader. Until the
+   * EndElement is reached, only Characters events are expected. Upon completion, the reader is
+   * left with the EndElement as the next event.
+   *
+   * @param xmlEventReader the event reader from which to consume Characters events.
+   * @param containingElementName the QName of the containing element.
+   * @return a String representation of the character contents of the containing element.
+   * @throws ThreddsXmlParserException  if had trouble reading from the XMLEventReader.
+   */
   static String getCharacterContent( XMLEventReader xmlEventReader, QName containingElementName )
           throws ThreddsXmlParserException
   {
     if ( xmlEventReader == null )
       throw new IllegalArgumentException( "XMLEventReader may not be null." );
-    if ( ! xmlEventReader.hasNext())
-      throw new IllegalArgumentException( "XMLEventReader must have next.");
-
     if ( containingElementName == null )
-      throw new IllegalArgumentException( "Containing element name may not be null.");
+      throw new IllegalArgumentException( "Containing element name may not be null." );
+
+    if ( ! xmlEventReader.hasNext())
+      throw new IllegalStateException( "XMLEventReader must have next.");
 
     StringBuilder stringBuilder = new StringBuilder();
     Location location = null;
@@ -217,7 +303,7 @@ class StaxThreddsXmlParserUtils
         {
           if ( event.asEndElement().getName().equals( containingElementName ))
           {
-            return stringBuilder.toString();
+            return stringBuilder.toString().trim();
           }
           throw new IllegalStateException( "Badly formed XML? Unexpected end element [" + event.asEndElement().getName().getLocalPart() + "]["+location+"] doesn't match expected start element [" + containingElementName.getLocalPart() + "].");
         }

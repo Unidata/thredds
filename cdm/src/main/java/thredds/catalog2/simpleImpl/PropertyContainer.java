@@ -33,7 +33,6 @@
 package thredds.catalog2.simpleImpl;
 
 import thredds.catalog2.Property;
-import thredds.catalog2.builder.BuilderIssue;
 import thredds.catalog2.builder.BuilderIssues;
 
 import java.util.*;
@@ -181,7 +180,7 @@ class PropertyContainer
   }
 
   /**
-   * This method always returns "true" because no action is required to
+   * This method always returns an empty BuilderIssues object because no action is required to
    * finish any contained Property classes.
    *
    * The reasons for this are:
@@ -190,19 +189,18 @@ class PropertyContainer
    * <li>This container stores the properties in a Map by property name (so there are no duplicate names).</li>
    * </ol>
    *
-   * @param issues a list in which to add any issues that come up during isFinished()
-   * @return true if this PropertyContainer is in a state where finish() will succeed.
+   * @return an empty BuilderIssues object.
    */
-  public boolean isBuildable( BuilderIssues issues )
+  public BuilderIssues getIssues()
   {
-    return true;
+    return null;
   }
 
   /**
    * Mark this PropertyContainer as unmodifiable and return "true".
    *
    * No validation is required
-   * (see {@link #isBuildable(thredds.catalog2.builder.BuilderIssues) isBuildable(issues)})
+   * (see {@link #getIssues()})
    */
   public void build()
   {

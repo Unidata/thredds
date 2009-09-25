@@ -51,8 +51,6 @@ import java.util.*;
  */
 public class ServiceImpl implements Service, ServiceBuilder
 {
-  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
-
   private String name;
   private String description;
   private ServiceType type;
@@ -220,7 +218,7 @@ public class ServiceImpl implements Service, ServiceBuilder
   {
     if ( ! this.isBuilt)
       throw new IllegalStateException( "This Service has escaped its Builder before being built.");
-    return this.serviceContainer.getServiceByGloballyUniqueName( name );
+    return this.globalServiceContainer.getServiceByGloballyUniqueName( name );
   }
 
   public List<ServiceBuilder> getServiceBuilders()
@@ -239,7 +237,7 @@ public class ServiceImpl implements Service, ServiceBuilder
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This ServiceBuilder has been built." );
-    return this.serviceContainer.getServiceByGloballyUniqueName( name );
+    return this.globalServiceContainer.getServiceByGloballyUniqueName( name );
   }
 
   public boolean isBuilt()
@@ -250,31 +248,22 @@ public class ServiceImpl implements Service, ServiceBuilder
   /**
    * Check whether the state of this ServiceBuilder is such that build() will succeed.
    *
-   * @param issues a list into which any issues that come up during isBuildable() will be add.
    * @return true if this ServiceBuilder is in a state where build() will succeed.
    */
-  public boolean isBuildable( BuilderIssues issues )
+  public BuilderIssues getIssues()
   {
-    if ( this.isBuilt )
-      return true;
-
-    BuilderIssues localIssues = new BuilderIssues();
+    BuilderIssues issues = this.serviceContainer.getIssues();
 
     // Check subordinates.
     if ( this.isRootContainer)
-      this.globalServiceContainer.isBuildable( localIssues, this );
-    this.propertyContainer.isBuildable( localIssues );
-    this.serviceContainer.isBuildable( localIssues );
+      issues.addAllIssues( this.globalServiceContainer.getIssues( this ));
+    issues.addAllIssues( this.propertyContainer.getIssues());
 
     // Check if this is leaf service that it has a baseUri.
     if ( this.serviceContainer.isEmpty() && this.baseUri == null )
-      localIssues.addIssue( new BuilderIssue( "Non-compound services must have base URI.", this ));
+      issues.addIssue( BuilderIssue.Severity.WARNING, "Non-compound services must have base URI.", this, null );
 
-    if ( localIssues.isEmpty() )
-      return true;
-
-    issues.addAllIssues( localIssues );
-    return false;
+    return issues;
   }
 
   /**
@@ -287,10 +276,6 @@ public class ServiceImpl implements Service, ServiceBuilder
   {
     if ( this.isBuilt )
       return this;
-
-    BuilderIssues issues = new BuilderIssues();
-    if ( ! isBuildable( issues ))
-      throw new BuilderException( issues );
 
     // Check subordinates.
     this.propertyContainer.build();

@@ -43,7 +43,6 @@ import thredds.catalog.DataFormatType;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * _more_
@@ -203,12 +202,10 @@ public class TestDatasetImpl extends TestCase
   public void testBuild()
   {
     // Check if buildable
-    BuilderIssues issues = new BuilderIssues();
-    if ( ! parentDatasetBldr.isBuildable( issues ) )
+    BuilderIssues issues = parentDatasetBldr.getIssues();
+    if ( ! issues.isValid() )
     {
-      StringBuilder stringBuilder = new StringBuilder( "Not isBuildable(): " );
-      for ( BuilderIssue bfi : issues.getIssues() )
-        stringBuilder.append( "\n    " ).append( bfi.getMessage() ).append( " [" ).append( bfi.getBuilder().getClass().getName() ).append( "]" );
+      StringBuilder stringBuilder = new StringBuilder( "Invalid dataset: " ).append( issues.toString());
       fail( stringBuilder.toString() );
     }
 

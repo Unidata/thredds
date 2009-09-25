@@ -67,7 +67,7 @@ class CatalogRefElementParser extends AbstractElementParser
                            DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
           throws ThreddsXmlParserException
   {
-    super( reader, CatalogRefElementNames.CatalogRefElement, builderFactory );
+    super( CatalogRefElementNames.CatalogRefElement, reader, builderFactory );
     this.parentCatalogBuilder = parentCatalogBuilder;
     this.parentDatasetNodeBuilder = null;
     this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
@@ -79,7 +79,7 @@ class CatalogRefElementParser extends AbstractElementParser
                            DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
           throws ThreddsXmlParserException
   {
-    super( reader, CatalogRefElementNames.CatalogRefElement, builderFactory );
+    super( CatalogRefElementNames.CatalogRefElement, reader, builderFactory );
     this.parentCatalogBuilder = null;
     this.parentDatasetNodeBuilder = parentDatasetNodeBuilder;
     this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
@@ -87,12 +87,12 @@ class CatalogRefElementParser extends AbstractElementParser
 
   static boolean isSelfElementStatic( XMLEvent event )
   {
-    return isSelfElement( event, CatalogRefElementNames.CatalogRefElement );
+    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, CatalogRefElementNames.CatalogRefElement );
   }
 
   boolean isSelfElement( XMLEvent event )
   {
-    return isSelfElement( event, CatalogRefElementNames.CatalogRefElement );
+    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
   }
 
   CatalogRefBuilder getSelfBuilder() {

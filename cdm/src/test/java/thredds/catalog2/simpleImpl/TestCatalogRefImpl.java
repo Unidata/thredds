@@ -38,8 +38,6 @@ import thredds.catalog2.CatalogRef;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * _more_
@@ -107,12 +105,10 @@ public class TestCatalogRefImpl extends TestCase
   public void testBuild()
   {
     // Check if buildable
-    BuilderIssues issues = new BuilderIssues();
-    if ( !catRefBldr.isBuildable( issues ) )
+    BuilderIssues issues = catRefBldr.getIssues();
+    if ( !issues.isValid() )
     {
-      StringBuilder stringBuilder = new StringBuilder( "Not isBuildable(): " );
-      for ( BuilderIssue bfi : issues.getIssues() )
-        stringBuilder.append( "\n    " ).append( bfi.getMessage() ).append( " [" ).append( bfi.getBuilder().getClass().getName() ).append( "]" );
+      StringBuilder stringBuilder = new StringBuilder( "Invalid CatRef: " ).append( issues.toString());
       fail( stringBuilder.toString() );
     }
 

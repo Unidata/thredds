@@ -75,31 +75,19 @@ public class CatalogRefImpl
   }
 
   @Override
-  public boolean isBuildable( BuilderIssues issues )
+  public BuilderIssues getIssues()
   {
-    if ( this.isBuilt )
-      return true;
-
-    BuilderIssues localIssues = new BuilderIssues();
-    super.isBuildable( issues );
+    BuilderIssues issues = super.getIssues();
 
     // ToDo Check any invariants.
 
-    if ( localIssues.isEmpty() )
-      return true;
-
-    issues.addAllIssues( localIssues );
-    return false;
+    return issues;
   }
 
   public CatalogRef build() throws BuilderException
   {
     if ( this.isBuilt )
       return this;
-
-    BuilderIssues issues = new BuilderIssues();
-    if ( !isBuildable( issues ) )
-      throw new BuilderException( issues );
 
     super.build();
 

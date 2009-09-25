@@ -203,29 +203,20 @@ class ServiceContainer
   }
   
   /**
-   * Check whether contained ServiceBuilders are all in a state such that
-   * calling their build() will succeed.
+   * Gather any issues with the current state of this ServiceContainer.
    *
-   * @param issues a list into which any issues that come up during isBuildable() will be add.
-   * @return true if this ServiceContainer is in a state where build() will succeed.
+   * @return any BuilderIssues with the current state of this ServiceContainer.
    */
-  boolean isBuildable( BuilderIssues issues )
+  BuilderIssues getIssues()
   {
-    if ( this.isBuilt )
-      return true;
-
-    BuilderIssues localIssues = new BuilderIssues();
+    BuilderIssues issues = new BuilderIssues();
 
     // Check on contained ServiceImpl objects.
     if ( this.services != null )
       for ( ServiceImpl sb : this.services )
-        sb.isBuildable( localIssues );
+        issues.addAllIssues( sb.getIssues());
 
-    if ( localIssues.isEmpty() )
-      return true;
-
-    issues.addAllIssues( localIssues );
-    return false;
+    return issues;
   }
 
   /**
@@ -238,10 +229,6 @@ class ServiceContainer
   {
     if ( this.isBuilt )
       return;
-
-    BuilderIssues issues = new BuilderIssues();
-    if ( ! isBuildable( issues ) )
-      throw new BuilderException( issues );
 
     // Build contained ServiceImpl objects.
     if ( this.services != null )

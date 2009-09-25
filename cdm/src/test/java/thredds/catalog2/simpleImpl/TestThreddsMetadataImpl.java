@@ -63,6 +63,7 @@ public class TestThreddsMetadataImpl
   private ThreddsMetadata tm;
 
   private ThreddsMetadataBuilder.DocumentationBuilder docBldr1;
+  private String doc1Ref;
   private URI doc1RefUri;
   private String doc1Title;
   private ThreddsMetadataBuilder.DocumentationBuilder docBldr2;
@@ -91,7 +92,8 @@ public class TestThreddsMetadataImpl
     @Before
   public void setUp() throws URISyntaxException
   {
-    doc1RefUri = new URI( "http://server/thredds/doc.xml" );
+    doc1Ref = "http://server/thredds/doc.xml";
+    doc1RefUri = new URI( doc1Ref );
 
     this.doc1Title = "documentation title";
     this.doc2Content = "<x>some content</x>";
@@ -137,7 +139,7 @@ public class TestThreddsMetadataImpl
     dateAvailable = new ThreddsMetadataImpl.DatePointImpl( "2009-08-25T12:00", null, ThreddsMetadata.DatePointType.Available.toString() );
     dateMetadataCreated = new ThreddsMetadataImpl.DatePointImpl( "2009-08-25T12:00", null, ThreddsMetadata.DatePointType.MetadataCreated.toString() );
     dateMetadataModified = new ThreddsMetadataImpl.DatePointImpl( "2009-08-25T12:00", null, ThreddsMetadata.DatePointType.MetadataModified.toString() );
-    temporalCoverage = new ThreddsMetadataImpl.DateRangeImpl( "2009-08-25T00:00", null, "2009-08-25T12:00", null, null);
+    temporalCoverage = new ThreddsMetadataImpl.DateRangeImpl( "2009-08-25T00:00", null, "2009-08-25T12:00", null, null, null);
     dataSizeInBytes = 56000;
     dataFormat = DataFormatType.NETCDF;
     dataType = FeatureType.TRAJECTORY;
@@ -155,7 +157,7 @@ public class TestThreddsMetadataImpl
 
     tmi.setTemporalCoverageBuilder( this.temporalCoverage.getStartDate(), this.temporalCoverage.getStartDateFormat(),
                                     this.temporalCoverage.getEndDate(), this.temporalCoverage.getEndDateFormat(),
-                                    this.temporalCoverage.getDuration() );
+                                    this.temporalCoverage.getDuration(), this.temporalCoverage.getResolution() );
     tmi.setDataSizeInBytes( this.dataSizeInBytes );
     tmi.setDataFormat( this.dataFormat );
     tmi.setDataType( this.dataType );
@@ -188,7 +190,7 @@ public class TestThreddsMetadataImpl
     List<ThreddsMetadataBuilder.DocumentationBuilder> docBldrList = tmi.getDocumentationBuilders();
     assertTrue( docBldrList.isEmpty() );
 
-    docBldr1 = tmi.addDocumentation( null, this.doc1Title, this.doc1RefUri );
+    docBldr1 = tmi.addDocumentation( null, this.doc1Title, this.doc1Ref );
     docBldr2 = tmi.addDocumentation( null, this.doc2Content );
 
     docBldrList = tmi.getDocumentationBuilders();
@@ -216,12 +218,10 @@ public class TestThreddsMetadataImpl
   private void buildBuilder()
   {
     // Check if buildable
-    BuilderIssues issues = new BuilderIssues();
-    if ( ! tmb.isBuildable( issues ) )
+    BuilderIssues issues = tmb.getIssues();
+    if ( ! issues.isValid() )
     {
-      StringBuilder stringBuilder = new StringBuilder( "Not isBuildable(): " );
-      for ( BuilderIssue bfi : issues.getIssues() )
-        stringBuilder.append( "\n    " ).append( bfi.getMessage() ).append( " [" ).append( bfi.getBuilder().getClass().getName() ).append( "]" );
+      StringBuilder stringBuilder = new StringBuilder( "Not isBuildable(): " ).append( issues.toString() );
       fail( stringBuilder.toString() );
     }
 
@@ -253,7 +253,7 @@ public class TestThreddsMetadataImpl
       dateAvailable = new ThreddsMetadataImpl.DatePointImpl( "2009-08-25T12:00", null, ThreddsMetadata.DatePointType.Available.toString() );
       dateMetadataCreated = new ThreddsMetadataImpl.DatePointImpl( "2009-08-25T12:00", null, ThreddsMetadata.DatePointType.MetadataCreated.toString() );
       dateMetadataModified = new ThreddsMetadataImpl.DatePointImpl( "2009-08-25T12:00", null, ThreddsMetadata.DatePointType.MetadataModified.toString() );
-      temporalCoverage = new ThreddsMetadataImpl.DateRangeImpl( "2009-08-25T00:00", null, "2009-08-25T12:00", null, null );
+      temporalCoverage = new ThreddsMetadataImpl.DateRangeImpl( "2009-08-25T00:00", null, "2009-08-25T12:00", null, null, null );
       dataSizeInBytes = 56000;
       dataFormat = DataFormatType.NETCDF;
       dataType = FeatureType.TRAJECTORY;
@@ -271,7 +271,7 @@ public class TestThreddsMetadataImpl
 
       tmi.setTemporalCoverageBuilder( this.temporalCoverage.getStartDate(), this.temporalCoverage.getStartDateFormat(),
                                       this.temporalCoverage.getEndDate(), this.temporalCoverage.getEndDateFormat(),
-                                      this.temporalCoverage.getDuration() );
+                                      this.temporalCoverage.getDuration(), this.temporalCoverage.getResolution() );
 
     tmi.setDataSizeInBytes( this.dataSizeInBytes );
     tmi.setDataFormat( this.dataFormat );

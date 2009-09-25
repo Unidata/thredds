@@ -92,7 +92,7 @@ public class ThreddsMetadataBuilderUtils
         ThreddsMetadataBuilder.DateRangeBuilder drb = source.getTemporalCoverageBuilder();
         recipient.setTemporalCoverageBuilder( drb.getStartDate(), drb.getStartDateFormat(),
                                               drb.getEndDate(), drb.getEndDateFormat(),
-                                              drb.getDuration() );
+                                              drb.getDuration(), drb.getResolution() );
     }
 
     // Add all Builder content.
@@ -102,7 +102,7 @@ public class ThreddsMetadataBuilderUtils
     addCopiesOfKeyphraseBuilders( source, recipient );
     addCopiesOfPublisherBuilders( source, recipient );
 
-    addCopiesOfVariableBuilders( source, recipient );
+    addCopiesOfVariableGroupBuilders( source, recipient );
                        
     return recipient;
   }
@@ -152,8 +152,8 @@ public class ThreddsMetadataBuilderUtils
     addCopiesOfPublisherBuilders( first, mergedResults );
     addCopiesOfPublisherBuilders( second, mergedResults );
 
-    addCopiesOfVariableBuilders( first, mergedResults );
-    addCopiesOfVariableBuilders( second, mergedResults );
+    addCopiesOfVariableGroupBuilders( first, mergedResults );
+    addCopiesOfVariableGroupBuilders( second, mergedResults );
 
   }
 
@@ -205,21 +205,27 @@ public class ThreddsMetadataBuilderUtils
       result.addKeyphrase( curKeyphrase.getAuthority(), curKeyphrase.getPhrase() );
   }
 
-  private static void addCopiesOfVariableBuilders( ThreddsMetadataBuilder source, ThreddsMetadataBuilder result )
+  private static void addCopiesOfVariableGroupBuilders( ThreddsMetadataBuilder source, ThreddsMetadataBuilder result )
   {
-    for ( ThreddsMetadataBuilder.VariableBuilder curSourceVarBuilder : source.getVariableBuilders() )
+    for ( ThreddsMetadataBuilder.VariableGroupBuilder curSourceVarGroupBuilder : source.getVariableGroupBuilders() )
     {
-      ThreddsMetadataBuilder.VariableBuilder curResultVarBuilder = result.addVariableBuilder();
-      if ( curResultVarBuilder.getAuthority() != null )
-        curSourceVarBuilder.setAuthority( curResultVarBuilder.getAuthority() );
-      if ( curResultVarBuilder.getId() != null )
-        curSourceVarBuilder.setId( curResultVarBuilder.getId() );
-      if ( curResultVarBuilder.getTitle() != null )
-        curSourceVarBuilder.setTitle( curResultVarBuilder.getTitle() );
-      if ( curResultVarBuilder.getDescription() != null )
-        curSourceVarBuilder.setDescription( curResultVarBuilder.getDescription() );
-      if ( curResultVarBuilder.getUnits() != null )
-        curSourceVarBuilder.setUnits( curResultVarBuilder.getUnits() );
+      ThreddsMetadataBuilder.VariableGroupBuilder curResultVarGroupBuilder = result.addVariableGroupBuilder();
+
+      if ( curSourceVarGroupBuilder.getVocabularyAuthorityId() != null )
+        curResultVarGroupBuilder.setVocabularyAuthorityId( curSourceVarGroupBuilder.getVocabularyAuthorityId() );
+      if ( curSourceVarGroupBuilder.getVocabularyAuthorityUrl() != null )
+        curResultVarGroupBuilder.setVocabularyAuthorityUrl( curSourceVarGroupBuilder.getVocabularyAuthorityUrl() );
+
+      if ( curSourceVarGroupBuilder.getVariableMapUrl() != null )
+        curResultVarGroupBuilder.setVariableMapUrl( curSourceVarGroupBuilder.getVariableMapUrl() );
+
+      if ( curSourceVarGroupBuilder.getVariableBuilders() != null )
+        for ( ThreddsMetadataBuilder.VariableBuilder curSourceVarBuilder : curSourceVarGroupBuilder.getVariableBuilders() )
+          curResultVarGroupBuilder.addVariableBuilder( curSourceVarBuilder.getName(),
+                                                       curSourceVarBuilder.getDescription(),
+                                                       curSourceVarBuilder.getUnits(),
+                                                       curSourceVarBuilder.getVocabularyId(),
+                                                       curSourceVarBuilder.getVocabularyName());
     }
   }
 
@@ -241,7 +247,7 @@ public class ThreddsMetadataBuilderUtils
     if ( temporalCov != null )
       mergedThreddsMetadata.setTemporalCoverageBuilder( temporalCov.getStartDate(), temporalCov.getStartDateFormat(),
                                                         temporalCov.getEndDate(), temporalCov.getEndDateFormat(),
-                                                        temporalCov.getDuration() );
+                                                        temporalCov.getDuration(), temporalCov.getResolution() );
   }
 
   private static void mergeOverwriteProjectTitle( ThreddsMetadataBuilder first,
@@ -368,8 +374,8 @@ public class ThreddsMetadataBuilderUtils
   private static void copySingleContributorBuilder( ThreddsMetadataBuilder.ContributorBuilder source,
                                                     ThreddsMetadataBuilder.ContributorBuilder recipient )
   {
-    if ( source.getAuthority() != null )
-      recipient.setAuthority( source.getAuthority() );
+    if ( source.getNamingAuthority() != null )
+      recipient.setNamingAuthority( source.getNamingAuthority() );
     if ( source.getName() != null )
       recipient.setName( source.getName() );
     if ( source.getEmail() != null )

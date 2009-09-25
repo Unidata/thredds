@@ -61,6 +61,8 @@ class ThreddsMetadataElementParser extends AbstractElementParser
 
   private AbstractElementParser delegate = null;
 
+  private VariableGroupElementParser.Factory varGroupFactory;
+
   ThreddsMetadataElementParser( XMLEventReader reader,
                                 ThreddsBuilderFactory builderFactory,
                                 DatasetNodeBuilder parentDatasetNodeBuilder,
@@ -68,27 +70,40 @@ class ThreddsMetadataElementParser extends AbstractElementParser
                                 boolean inheritedByDescendants )
           throws ThreddsXmlParserException
   {
-    super( reader, ThreddsMetadataElementNames.ThreddsMetadataElement, builderFactory );
+    super( ThreddsMetadataElementNames.ThreddsMetadataElement, reader, builderFactory );
     this.parentDatasetNodeBuilder = parentDatasetNodeBuilder;
     this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
     this.inheritedByDescendants = inheritedByDescendants;
 
     this.selfBuilder = builderFactory.newThreddsMetadataBuilder();
+    this.varGroupFactory = new VariableGroupElementParser.Factory();
   }
 
-    static boolean isSelfElementStatic( XMLEvent event ) {
-        if ( ServiceNameElementParser.isSelfElementStatic( event ) )
-            return true;
-        if ( DataFormatElementParser.isSelfElementStatic( event ) )
-            return true;
-        if ( DataTypeElementParser.isSelfElementStatic( event ) )
-            return true;
-        if ( DateElementParser.isSelfElementStatic( event ) )
-            return true;
-        if ( AuthorityElementParser.isSelfElementStatic( event ) )
-            return true;
-        return false;
-    }
+  static boolean isSelfElementStatic( XMLEvent event ) {
+    if ( ServiceNameElementParser.isSelfElementStatic( event ) )
+      return true;
+    if ( DataFormatElementParser.isSelfElementStatic( event ) )
+      return true;
+    if ( DataTypeElementParser.isSelfElementStatic( event ) )
+      return true;
+    if ( DateElementParser.isSelfElementStatic( event ) )
+      return true;
+    if ( AuthorityElementParser.isSelfElementStatic( event ) )
+      return true;
+    if ( DocumentationElementParser.isSelfElementStatic( event ))
+      return true;
+    if ( CreatorElementParser.isSelfElementStatic( event ))
+      return true;
+    if ( PublisherElementParser.isSelfElementStatic( event ))
+      return true;
+    if ( ContributorElementParser.isSelfElementStatic( event ))
+      return true;
+    if ( TimeCoverageElementParser.isSelfElementStatic( event ))
+      return true;
+    if ( VariableGroupElementParser.isSelfElementStatic( event ))
+      return true;
+    return false;
+  }
 
     boolean isSelfElement( XMLEvent event ) {
         if ( delegate != null )
@@ -118,23 +133,29 @@ class ThreddsMetadataElementParser extends AbstractElementParser
                                                           this.inheritedByDescendants );
         }
         else if ( DataFormatElementParser.isSelfElementStatic( startElement ) )
-        {
             this.delegate = new DataFormatElementParser( this.reader, this.builderFactory, this.selfBuilder );
-        }
         else if ( DataTypeElementParser.isSelfElementStatic( startElement ) )
-        {
             this.delegate = new DataTypeElementParser( this.reader, this.builderFactory, this.selfBuilder );
-        }
         else if ( DateElementParser.isSelfElementStatic( startElement ) )
-        {
             this.delegate = new DateElementParser( this.reader, this.builderFactory, this.selfBuilder );
-        }
         else if ( AuthorityElementParser.isSelfElementStatic( startElement ) )
         {
             this.delegate = new AuthorityElementParser( this.reader, this.builderFactory, this.selfBuilder,
                                                         this.parentDatasetNodeElementParserHelper,
                                                         this.inheritedByDescendants );
         }
+        else if ( DocumentationElementParser.isSelfElementStatic( startElement ))
+          this.delegate = new DocumentationElementParser( this.reader, this.builderFactory, this.selfBuilder );
+        else if ( CreatorElementParser.isSelfElementStatic( startElement ))
+          this.delegate = new CreatorElementParser( this.reader, this.builderFactory, this.selfBuilder );
+        else if ( PublisherElementParser.isSelfElementStatic( startElement ))
+          this.delegate = new PublisherElementParser( this.reader, this.builderFactory, this.selfBuilder );
+        else if ( ContributorElementParser.isSelfElementStatic( startElement ))
+          this.delegate = new ContributorElementParser( this.reader, this.builderFactory, this.selfBuilder );
+        else if ( TimeCoverageElementParser.isSelfElementStatic( startElement ))
+          this.delegate = new TimeCoverageElementParser( this.reader, this.builderFactory, this.selfBuilder );
+        else if ( this.varGroupFactory.isEventMyStartElement( startElement ))
+          this.delegate = this.varGroupFactory.getNewParser( this.reader, this.builderFactory, this.selfBuilder );
         else
             throw new ThreddsXmlParserException( "" );
 
@@ -182,7 +203,7 @@ class ThreddsMetadataElementParser extends AbstractElementParser
                               boolean inheritedByDescendants )
             throws ThreddsXmlParserException
     {
-      super( reader, ThreddsMetadataElementNames.ServiceNameElement, builderFactory );
+      super( ThreddsMetadataElementNames.ServiceNameElement, reader, builderFactory );
       this.threddsMetadataBuilder = threddsMetadataBuilder;
       this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
       this.inheritedByDescendants = inheritedByDescendants;
@@ -190,7 +211,7 @@ class ThreddsMetadataElementParser extends AbstractElementParser
 
     static boolean isSelfElementStatic( XMLEvent event )
     {
-      return isSelfElement( event, ThreddsMetadataElementNames.ServiceNameElement );
+      return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.ServiceNameElement );
     }
 
     boolean isSelfElement( XMLEvent event )
@@ -232,17 +253,17 @@ class ThreddsMetadataElementParser extends AbstractElementParser
     private final ThreddsMetadataBuilder threddsMetadataBuilder;
 
     DataFormatElementParser( XMLEventReader reader,
-                                    ThreddsBuilderFactory builderFactory,
-                                    ThreddsMetadataBuilder threddsMetadataBuilder )
+                             ThreddsBuilderFactory builderFactory,
+                             ThreddsMetadataBuilder threddsMetadataBuilder )
             throws ThreddsXmlParserException
     {
-      super( reader, ThreddsMetadataElementNames.DataFormatElement, builderFactory );
+      super( ThreddsMetadataElementNames.DataFormatElement, reader, builderFactory );
       this.threddsMetadataBuilder = threddsMetadataBuilder;
     }
 
     static boolean isSelfElementStatic( XMLEvent event )
     {
-      return isSelfElement( event, ThreddsMetadataElementNames.DataFormatElement );
+      return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.DataFormatElement );
     }
 
     boolean isSelfElement( XMLEvent event )
@@ -284,12 +305,12 @@ class ThreddsMetadataElementParser extends AbstractElementParser
                            ThreddsMetadataBuilder threddsMetadataBuilder )
             throws ThreddsXmlParserException
     {
-      super( reader, ThreddsMetadataElementNames.DataTypeElement, builderFactory );
+      super( ThreddsMetadataElementNames.DataTypeElement, reader, builderFactory );
       this.threddsMetadataBuilder = threddsMetadataBuilder;
     }
 
     static boolean isSelfElementStatic( XMLEvent event ) {
-        return isSelfElement( event, ThreddsMetadataElementNames.DataTypeElement );
+      return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.DataTypeElement );
     }
 
     boolean isSelfElement( XMLEvent event ) {
@@ -329,12 +350,12 @@ class ThreddsMetadataElementParser extends AbstractElementParser
                        ThreddsMetadataBuilder threddsMetadataBuilder )
             throws ThreddsXmlParserException
     {
-      super( reader, ThreddsMetadataElementNames.DateElement, builderFactory );
+      super( ThreddsMetadataElementNames.DateElement, reader, builderFactory );
       this.threddsMetadataBuilder = threddsMetadataBuilder;
     }
 
     static boolean isSelfElementStatic( XMLEvent event ) {
-        return isSelfElement( event, ThreddsMetadataElementNames.DateElement );
+      return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.DateElement );
     }
 
     boolean isSelfElement( XMLEvent event ) {
@@ -414,7 +435,7 @@ class ThreddsMetadataElementParser extends AbstractElementParser
                             boolean inheritedByDescendants )
             throws ThreddsXmlParserException
     {
-      super( reader, ThreddsMetadataElementNames.AuthorityElement, builderFactory );
+      super( ThreddsMetadataElementNames.AuthorityElement, reader, builderFactory );
       this.threddsMetadataBuilder = threddsMetadataBuilder;
       this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
       this.inheritedByDescendants = inheritedByDescendants;
@@ -422,7 +443,7 @@ class ThreddsMetadataElementParser extends AbstractElementParser
 
     static boolean isSelfElementStatic( XMLEvent event )
     {
-      return isSelfElement( event, ThreddsMetadataElementNames.AuthorityElement );
+      return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.AuthorityElement );
     }
 
     boolean isSelfElement( XMLEvent event )
@@ -456,4 +477,68 @@ class ThreddsMetadataElementParser extends AbstractElementParser
         this.parentDatasetNodeElementParserHelper.setIdAuthorityToBeInheritedByDescendants( this.idAuthority );
     }
   }
+
+  static class DocumentationElementParser extends AbstractElementParser
+  {
+    private final ThreddsMetadataBuilder threddsMetadataBuilder;
+
+    DocumentationElementParser( XMLEventReader reader,
+                                ThreddsBuilderFactory builderFactory,
+                                ThreddsMetadataBuilder threddsMetadataBuilder )
+            throws ThreddsXmlParserException
+    {
+      super( ThreddsMetadataElementNames.DocumentationElement, reader, builderFactory );
+      this.threddsMetadataBuilder = threddsMetadataBuilder;
+    }
+
+    static boolean isSelfElementStatic( XMLEvent event )
+    {
+      return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.DocumentationElement );
+    }
+
+    boolean isSelfElement( XMLEvent event )
+    {
+      return isSelfElementStatic( event );
+    }
+
+    ThreddsBuilder getSelfBuilder()
+    {
+      return null;
+    }
+
+    void parseStartElement()
+            throws ThreddsXmlParserException
+    {
+      StartElement startElement = this.getNextEventIfStartElementIsMine();
+
+      Attribute typeAtt = startElement.getAttributeByName( ThreddsMetadataElementNames.DocumentationElement_Type );
+      Attribute xlinkTitleAtt = startElement.getAttributeByName( ThreddsMetadataElementNames.DocumentationElement_XlinkTitle );
+      Attribute xlinkExternalRefAtt = startElement.getAttributeByName( ThreddsMetadataElementNames.DocumentationElement_XlinkHref );
+
+      String type = typeAtt != null ? typeAtt.getValue() : null;
+      String xlinkTitle = xlinkTitleAtt != null ? xlinkTitleAtt.getValue() : null;
+      String xlinkExternalRef = xlinkExternalRefAtt != null ? xlinkExternalRefAtt.getValue() : null;
+
+      String content = StaxThreddsXmlParserUtils.getCharacterContent( this.reader, ThreddsMetadataElementNames.DocumentationElement );
+
+      if ( xlinkTitle == null && xlinkExternalRef == null )
+      {
+        this.threddsMetadataBuilder.addDocumentation( type, content );
+        return;
+      }
+      else
+        this.threddsMetadataBuilder.addDocumentation( type, xlinkTitle, xlinkExternalRef );
+    }
+
+    void handleChildStartElement()
+            throws ThreddsXmlParserException
+    {
+    }
+
+    void postProcessingAfterEndElement()
+            throws ThreddsXmlParserException
+    {
+    }
+  }
+
 }

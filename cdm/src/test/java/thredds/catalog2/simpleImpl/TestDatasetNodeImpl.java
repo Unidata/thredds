@@ -37,7 +37,6 @@ import junit.framework.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.ArrayList;
 
 import thredds.catalog2.builder.*;
 import thredds.catalog2.DatasetNode;
@@ -233,12 +232,10 @@ public class TestDatasetNodeImpl extends TestCase
   private void callBuildOnBuilder()
   {
     // Check if buildable
-    BuilderIssues issues = new BuilderIssues();
-    if ( ! dsNodeBldr.isBuildable( issues ) )
+    BuilderIssues issues = dsNodeBldr.getIssues();
+    if ( ! issues.isValid() )
     {
-      StringBuilder stringBuilder = new StringBuilder( "Not isBuildable(): " );
-      for ( BuilderIssue bfi : issues.getIssues() )
-        stringBuilder.append( "\n    " ).append( bfi.getMessage() ).append( " [" ).append( bfi.getBuilder().getClass().getName() ).append( "]" );
+      StringBuilder stringBuilder = new StringBuilder( "Invalid dsNode: " ).append( issues.toString());
       fail( stringBuilder.toString() );
     }
 

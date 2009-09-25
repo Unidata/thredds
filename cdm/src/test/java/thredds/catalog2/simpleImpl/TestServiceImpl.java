@@ -87,29 +87,41 @@ public class TestServiceImpl
   }
 
   @Test
-  public void checkNewServiceAsExpected()
+  public void checkNewServiceAsExpectedAndBuildIssues()
   {
-    assertEquals( odapName, odapService.getName());
-    assertEquals( odapType, odapService.getType());
-    assertEquals( odapBaseUri, odapService.getBaseUri());
+    ServiceImpl si = new ServiceImpl( odapName, odapType, odapBaseUri, null );
+
+    assertEquals( odapName, si.getName());
+    assertEquals( odapType, si.getType());
+    assertEquals( odapBaseUri, si.getBaseUri());
+
+    BuilderIssues issues = si.getIssues();
+    assertTrue( issues.toString(), issues.isValid());
+    assertTrue( issues.toString(), issues.isEmpty());
   }
 
   @Test
-  public void checkChangedServiceAsExpected() throws URISyntaxException
+  public void checkChangedServiceAsExpectedAndBuilderIssues() throws URISyntaxException
   {
-    odapService.setType( wcsType );
-    assertEquals( wcsType, odapService.getType());
+    ServiceImpl service = new ServiceImpl( odapName, odapType, odapBaseUri, null );
 
-    odapService.setBaseUri( wcsBaseUri );
-    assertEquals( wcsBaseUri, odapService.getBaseUri());
+    service.setType( wcsType );
+    assertEquals( wcsType, service.getType());
+
+    service.setBaseUri( wcsBaseUri );
+    assertEquals( wcsBaseUri, service.getBaseUri());
 
     String descrip = "description";
-    odapService.setDescription( descrip );
-    assertEquals( descrip, odapService.getDescription());
+    service.setDescription( descrip );
+    assertEquals( descrip, service.getDescription());
 
     String suffix = ".suffix";
-    odapService.setSuffix( suffix );
-    assertEquals( suffix, odapService.getSuffix() );
+    service.setSuffix( suffix );
+    assertEquals( suffix, service.getSuffix() );
+
+    BuilderIssues issues = service.getIssues();
+    assertTrue( issues.toString(), issues.isValid() );
+    assertTrue( issues.toString(), issues.isEmpty() );
   }
 
   @Test(expected=IllegalArgumentException.class)
@@ -168,11 +180,11 @@ public class TestServiceImpl
   @Test
   public void checkCompoundServiceWhenContainingServiceWithNonuniqueName()
   {
-    ServiceBuilder dupService = allService.addService( odapName, wcsType, wcsBaseUri );
+    ServiceBuilder dupService = this.allService.addService( this.odapName, this.wcsType, this.wcsBaseUri );
 
     assertCompoundServiceAsExpected( 1 );
 
-    assertEquals( dupService, allService.getServiceBuilders().get(3));
+    assertEquals( dupService, this.allService.getServiceBuilders().get(3));
   }
 
   @Test
@@ -275,10 +287,9 @@ public class TestServiceImpl
     this.allService.addProperty( "propName2", "propValue2" );
 
     // Check if buildable
-    BuilderIssues issues = new BuilderIssues();
-    assertTrue( this.allService.isBuildable( issues ));
-    assertTrue( issues.toString(),
-                issues.isEmpty());
+    BuilderIssues issues = this.allService.getIssues();
+    assertTrue( issues.toString(), issues.isValid());
+    assertTrue( issues.toString(), issues.isEmpty());
 
     // Build
     Service s = this.allService.build();
@@ -394,17 +405,13 @@ public class TestServiceImpl
     this.allService.getServiceBuilderByName( "name");
   }
 
-
   @Test
-  public void testDuplicateServiceName()
-            throws URISyntaxException
-    {
-        ServiceBuilder dupService = allService.addService( "odap", ServiceType.WMS, new URI( "http://server/thredds/wms/" ) );
+  public void checkBuildIssuesOnCompoundServiceWhenContainingServiceWithNonuniqueName()
+  {
+    ServiceBuilder dupService = this.allService.addService( this.odapName, this.wcsType, this.wcsBaseUri );
 
-        BuilderIssues issues = new BuilderIssues();
-        assertTrue( dupService.isBuildable( issues ) );
-
-        assertFalse( issues.isEmpty() );
-    }
-
+    BuilderIssues issues = this.allService.getIssues();
+    assertTrue( issues.toString(), issues.isValid() );
+    assertFalse( issues.toString(), issues.isEmpty() );
+  }
 }

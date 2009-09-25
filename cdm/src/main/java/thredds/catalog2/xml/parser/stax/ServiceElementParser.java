@@ -64,7 +64,7 @@ class ServiceElementParser extends AbstractElementParser
                                CatalogBuilder catalogBuilder )
           throws ThreddsXmlParserException
   {
-    super( reader, ServiceElementNames.ServiceElement, builderFactory);
+    super( ServiceElementNames.ServiceElement, reader, builderFactory);
     this.catalogBuilder = catalogBuilder;
     this.parentServiceBuilder = null;
   }
@@ -74,19 +74,19 @@ class ServiceElementParser extends AbstractElementParser
                                ServiceBuilder parentServiceBuilder )
           throws ThreddsXmlParserException
   {
-    super( reader, ServiceElementNames.ServiceElement, builderFactory );
+    super( ServiceElementNames.ServiceElement, reader, builderFactory );
     this.catalogBuilder = null;
     this.parentServiceBuilder = parentServiceBuilder;
   }
 
   static boolean isSelfElementStatic( XMLEvent event )
   {
-    return isSelfElement( event, ServiceElementNames.ServiceElement );
+    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ServiceElementNames.ServiceElement );
   }
 
   boolean isSelfElement( XMLEvent event )
   {
-    return isSelfElement( event, ServiceElementNames.ServiceElement );
+    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
   }
 
   ServiceBuilder getSelfBuilder() {

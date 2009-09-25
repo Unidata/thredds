@@ -32,16 +32,12 @@
 
 package thredds.catalog;
 
-import thredds.catalog2.Catalog;
 import thredds.catalog2.builder.CatalogBuilder;
 import thredds.catalog2.builder.BuilderIssues;
-import thredds.catalog2.xml.parser.ThreddsXmlParser;
+import thredds.catalog2.builder.BuilderException;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
-import thredds.catalog2.xml.parser.stax.StaxThreddsXmlParser;
 
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.io.StringReader;
 
 /**
  * _more_
@@ -55,7 +51,7 @@ public class LargeCatalogReadTiming
   //static final String catURL = "http://motherlode.ucar.edu:9080/thredds/radarServer/nexrad/level2/IDD?stn=KARX&time_start=2009-04-07T:00:00:00Z&time_end=2009-05-22T16:44:39Z";
 
   public static void main( String[] args )
-          throws URISyntaxException, ThreddsXmlParserException
+          throws URISyntaxException, ThreddsXmlParserException, BuilderException
   {
       String catAsString = LargeCatalogReadUtils.createExampleRadarServiceCatalogAsString( 9112 );
 
@@ -76,8 +72,10 @@ public class LargeCatalogReadTiming
 
       start = System.currentTimeMillis();
       catalogBuilder = LargeCatalogReadUtils.parseCatalogIntoBuilder( catAsString, catURL );
-      if ( ! catalogBuilder.isBuildable( bldIssues ) )
-          System.out.println( "Can't build catalog [" + i + "]: " + bldIssues.toString() );
+      BuilderIssues issues = catalogBuilder.getIssues();
+      if ( ! issues.isValid() )
+          System.out.println( "Invalid catalog [" + i + "]: " + bldIssues.toString() );
+      catalogBuilder.build();
       done = System.currentTimeMillis();
       long elapsed2 = done - start;
 
@@ -98,11 +96,11 @@ public class LargeCatalogReadTiming
       System.out.println( "OK check:\n" + sb );
 
       System.out.println( "thredds.catalog2" );
-      BuilderIssues bldIssues = new BuilderIssues();
-      if ( !catalogBuilder.isBuildable( bldIssues ) )
-          System.out.println( "Can't build catalog: " + bldIssues.toString() );
+      BuilderIssues bldIssues = catalogBuilder.getIssues();
+      if ( ! bldIssues.isValid() )
+          System.out.println( "Invalid catalog: " + bldIssues.toString() );
       else
-          System.out.println( "Build OK: " + ( bldIssues.isEmpty() ? "" : bldIssues.toString()) );
+          System.out.println( "Valid catalog: " + ( bldIssues.isEmpty() ? "" : bldIssues.toString()) );
 
     System.out.println( "Done" );
 

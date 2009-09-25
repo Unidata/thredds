@@ -1,6 +1,7 @@
 package thredds.catalog2.xml.names;
 
 import thredds.catalog2.xml.names.CatalogNamespace;
+import thredds.catalog2.ThreddsMetadata;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
@@ -30,13 +31,37 @@ public class ThreddsMetadataElementNames
   public static final QName AuthorityElement
           = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
                        "authority" );
+  
   public static final QName DocumentationElement
           = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
                        "documentation" );
+  public static final QName DocumentationElement_Type
+          = new QName( XMLConstants.NULL_NS_URI,
+                       "type" );
+  public static final String DocumentationElement_Type_Funding = "funding";
+  public static final String DocumentationElement_Type_History = "history";
+  public static final String DocumentationElement_Type_ProcessingLevel = "processing_level";
+  public static final String DocumentationElement_Type_Rights = "rights";
+  public static final String DocumentationElement_Type_Summary = "summary";
+
+  public static final QName DocumentationElement_XlinkTitle
+          = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
+                       "title" );
+  public static final QName DocumentationElement_XlinkHref
+          = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
+                       "href" );
+  public static final QName DocumentationElement_XlinkType
+          = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
+                       "type" );
+
 
   public static final QName KeywordElement
           = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
                        "keyword" );
+  public static final QName ControlledVocabType_Authority
+          = new QName( XMLConstants.NULL_NS_URI,
+                       "vocabulary" );
+
   // ToDo "keyword" attributes
 
   public static final QName DateElement
@@ -45,13 +70,13 @@ public class ThreddsMetadataElementNames
     public static final QName DateElement_Type
             = new QName( XMLConstants.NULL_NS_URI,
                          "type" );
-    public static final String DateElement_Type_Created = "created";
-    public static final String DateElement_Type_Modified = "modified";
-    public static final String DateElement_Type_Valid = "valid";
-    public static final String DateElement_Type_Issued = "issued";
-    public static final String DateElement_Type_Available = "available";
-    public static final String DateElement_Type_MetadataCreated = "metadataCreated";
-    public static final String DateElement_Type_MetadataModified = "metadataModified";
+    public static final String DateElement_Type_Created = ThreddsMetadata.DatePointType.Created.toString(); // "created";
+    public static final String DateElement_Type_Modified = ThreddsMetadata.DatePointType.Modified.toString(); // "modified";
+    public static final String DateElement_Type_Valid = ThreddsMetadata.DatePointType.Valid.toString(); // "valid";
+    public static final String DateElement_Type_Issued = ThreddsMetadata.DatePointType.Issued.toString(); // "issued";
+    public static final String DateElement_Type_Available = ThreddsMetadata.DatePointType.Available.toString(); // "available";
+    public static final String DateElement_Type_MetadataCreated = ThreddsMetadata.DatePointType.MetadataCreated.toString(); // "metadataCreated";
+    public static final String DateElement_Type_MetadataModified = ThreddsMetadata.DatePointType.MetadataModified.toString(); // "metadataModified";
      
     public static final QName DateElement_Format
             = new QName( XMLConstants.NULL_NS_URI,
@@ -60,17 +85,47 @@ public class ThreddsMetadataElementNames
   public static final QName CreatorElement
           = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
                        "creator" );
-  // ToDo "creator" attributes
+  public static final QName CreatorElement_NameElement
+          = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
+                       "name" );
+  public static final QName CreatorElement_NameElement_NamingAuthority
+          = new QName( XMLConstants.NULL_NS_URI,
+                       "vocabulary" );
+  public static final QName CreatorElement_ContactElement
+          = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
+                       "contact" );
+  public static final QName CreatorElement_ContactElement_Email
+          = new QName( XMLConstants.NULL_NS_URI,
+                       "email" );
+  public static final QName CreatorElement_ContactElement_Url
+          = new QName( XMLConstants.NULL_NS_URI,
+                       "url" );
 
   public static final QName ContributorElement
           = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
                        "contributor" );
-  // ToDo "contributor" attributes
+  public static final QName ContributorElement_Role
+          = new QName( XMLConstants.NULL_NS_URI,
+                       "role" );
 
   public static final QName PublisherElement
           = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
                        "publisher" );
-  // ToDo "publisher" attributes
+  public static final QName PublisherElement_NameElement
+          = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
+                       "name" );
+  public static final QName PublisherElement_NameElement_NamingAuthority
+          = new QName( XMLConstants.NULL_NS_URI,
+                       "vocabulary" );
+  public static final QName PublisherElement_ContactElement
+          = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
+                       "contact" );
+  public static final QName PublisherElement_ContactElement_Email
+          = new QName( XMLConstants.NULL_NS_URI,
+                       "email" );
+  public static final QName PublisherElement_ContactElement_Url
+          = new QName( XMLConstants.NULL_NS_URI,
+                       "url" );
 
   public static final QName ProjectElement
           = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
@@ -80,17 +135,63 @@ public class ThreddsMetadataElementNames
   public static final QName GeospatialCoverageElement
           = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
                        "geospatialCoverage" );
+  public static final QName GeospatialCoverageElement_NameElement
+          = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
+                       "name" );
   // ToDo "geospatialCoverage" attributes
 
   public static final QName TimeCoverageElement
           = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
-                       "timeCoverage" );
-  // ToDo "timeCoverage" attributes
+                       "timeCoverage" );   
+  public static final QName DateRangeType_StartElement
+          = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
+                       "start" );
+  public static final QName DateRangeType_EndElement
+          = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
+                       "end" );
+  public static final QName DateRangeType_DurationElement
+          = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
+                       "duration" );
+  public static final QName DateRangeType_ResolutionElement
+          = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
+                       "resolution" );
+  public static final QName DateType_Format
+          = new QName( XMLConstants.NULL_NS_URI,
+                       "format" );
+  public static final QName DateType_Type
+          = new QName( XMLConstants.NULL_NS_URI,
+                       "type" );
 
   public static final QName VariablesElement
           = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
                        "variables" );
-  // ToDo "variables" attributes
+  public static final QName VariablesElement_vocabAuthorityId
+          = new QName( XMLConstants.NULL_NS_URI,
+                       "vocabulary" );
+  public static final QName VariablesElement_vocabAuthorityUrl
+          = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
+                       "href" );
+  public static final QName VariablesElement_VariableElement
+          = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
+                       "variable" );
+  public static final QName VariablesElement_VariableElement_name
+          = new QName( XMLConstants.NULL_NS_URI,
+                       "name" );
+  public static final QName VariablesElement_VariableElement_units
+          = new QName( XMLConstants.NULL_NS_URI,
+                       "units" );
+  public static final QName VariablesElement_VariableElement_vocabularyId
+          = new QName( XMLConstants.NULL_NS_URI,
+                       "vocabulary_id" );
+  public static final QName VariablesElement_VariableElement_vocabularyName
+          = new QName( XMLConstants.NULL_NS_URI,
+                       "vocabulary_name" );
+  public static final QName VariablesElement_VariableMapElement
+          = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
+                       "variableMap" );
+  public static final QName VariablesElement_VariableMapElement_XlinkHref
+          = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
+                       "href" );
 
   public static final QName DataSizeElement
           = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),

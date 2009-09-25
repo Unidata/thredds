@@ -73,27 +73,19 @@ class MetadataElementParser extends AbstractElementParser
                          DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
           throws ThreddsXmlParserException
   {
-    super( reader, MetadataElementNames.MetadataElement, builderFactory );
+    super( MetadataElementNames.MetadataElement, reader, builderFactory );
     this.parentDatasetNodeBuilder = parentDatasetNodeBuilder;
     this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
 
     this.selfBuilder = builderFactory.newMetadataBuilder();
   }
 
-  MetadataElementParser( XMLEventReader reader,
-                         ThreddsBuilderFactory builderFactory,
-                         DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
-          throws ThreddsXmlParserException
-  {
-    this( reader, builderFactory, null, parentDatasetNodeElementParserHelper );
-  }
-
   static boolean isSelfElementStatic( XMLEvent event ) {
-    return isSelfElement( event, MetadataElementNames.MetadataElement );
+    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, MetadataElementNames.MetadataElement );
   }
 
   boolean isSelfElement( XMLEvent event ) {
-    return isSelfElement( event, MetadataElementNames.MetadataElement );
+    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
   }
 
   MetadataBuilder getSelfBuilder() {
@@ -196,7 +188,7 @@ class MetadataElementParser extends AbstractElementParser
       }
       else
       {
-        String msg = "Unexpected non-THREDDS Metadata";
+        String msg = "Expecting THREDDS Metadata, got non-THREDDS Metadata";
         ThreddsXmlParserIssue issue = StaxThreddsXmlParserUtils.createIssueForUnexpectedElement( msg, this.reader );
         // ToDo Instead of throwing exception, gather issues and continue.
         throw new ThreddsXmlParserException( issue );

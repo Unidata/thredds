@@ -51,7 +51,6 @@ import java.net.URISyntaxException;
  *
  * Most normal cases are exercised in TestServiceImpl and TestCatalogImpl.
  * Here we do a few tests on a new container.
- * ToDo May want to add more later.
  *
  * @author edavis
  * @since 4.0
@@ -214,17 +213,13 @@ public class TestServiceContainer
   @Test
   public void checkThatThreeUniqueServicesContainerBuilds() throws BuilderException
   {
-    BuilderIssues issues = new BuilderIssues();
-    if ( ! this.serviceContainer.isBuildable( issues ) )
-      fail( issues.toString() );
+    BuilderIssues issues = this.serviceContainer.getIssues();
+    assertTrue( issues.toString(), issues.isValid());
+    assertTrue( issues.toString(), issues.isEmpty());
 
     this.serviceContainer.build();
 
     assertTrue( this.serviceContainer.isBuilt() );
-
-    // Test build getters.
-
-    // Test post build state exceptions
   }
 
   @Test
@@ -232,42 +227,11 @@ public class TestServiceContainer
   {
     GlobalServiceContainer gsc = new GlobalServiceContainer();
     ServiceContainer sc = new ServiceContainer( gsc);
-    BuilderIssues issues = new BuilderIssues();
-    if ( ! sc.isBuildable( issues ) )
-      fail( issues.toString() );
+    BuilderIssues issues = sc.getIssues();
+    assertTrue( issues.toString(), issues.isValid() );
 
     sc.build();
 
     assertTrue( sc.isBuilt() );
-
-    // Test build getters.
-
-    // Test post build state exceptions
-  }
-
-  @Test
-  public void checkBuildIssuesForDuplicateServiceNameInSameContainer()
-            throws URISyntaxException
-    {
-      this.serviceContainer.addService( "wms", ServiceType.WCS, new URI( "http://server/thredds/wcs/" ) );
-
-      BuilderIssues issues = new BuilderIssues();
-      assertTrue( this.serviceContainer.isBuildable( issues ));
-
-      assertFalse( issues.isEmpty());
-    }
-
-  @Test
-  public void checkBuildIssuesForDuplicateServiceNameInDifferentContainer()
-          throws URISyntaxException
-  {
-    ServiceContainer extraServiceContainer = new ServiceContainer( this.globalServiceContainer);
-
-    extraServiceContainer.addService( "wms", ServiceType.WCS, new URI( "http://server/thredds/wcs/" ) );
-
-    BuilderIssues issues = new BuilderIssues();
-    assertTrue( this.serviceContainer.isBuildable( issues ) );
-
-    assertFalse( issues.isEmpty() );
   }
 }

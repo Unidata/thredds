@@ -53,35 +53,19 @@ abstract class AbstractElementParser
 {
   org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
-  final XMLEventReader reader;
   final QName elementName;
+  final XMLEventReader reader;
   final ThreddsBuilderFactory builderFactory;
 
-  AbstractElementParser( XMLEventReader reader,
-                         QName elementName,
+  AbstractElementParser( QName elementName, XMLEventReader reader,
                          ThreddsBuilderFactory builderFactory )
   {
-    if ( reader == null || elementName == null || builderFactory == null )
-      throw new IllegalArgumentException( "XMLEventReader, element name, and BuilderFactory may not be null.");
-    
-    this.reader = reader;
+    if ( elementName == null || reader == null || builderFactory == null )
+      throw new IllegalArgumentException( "Element name, XMLEventReader, and/or BuilderFactory may not be null.");
+
     this.elementName = elementName;
+    this.reader = reader;
     this.builderFactory = builderFactory;
-  }
-
-  static boolean isSelfElement( XMLEvent event, QName selfElementName )
-  {
-    QName elemName = null;
-    if ( event.isStartElement() )
-      elemName = event.asStartElement().getName();
-    else if ( event.isEndElement() )
-      elemName = event.asEndElement().getName();
-    else
-      return false;
-
-    if ( elemName.equals( selfElementName ) )
-      return true;
-    return false;
   }
 
   abstract boolean isSelfElement( XMLEvent event );

@@ -179,7 +179,7 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   {
     if ( !isBuilt )
       throw new IllegalStateException( "This Catalog has escaped its CatalogBuilder without being build()-ed." );
-    return this.serviceContainer.getServiceByGloballyUniqueName( name );
+    return this.globalServiceContainer.getServiceByGloballyUniqueName( name );
   }
 
   public List<ServiceBuilder> getServiceBuilders()
@@ -198,7 +198,7 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   {
     if ( isBuilt )
       throw new IllegalStateException( "This CatalogBuilder has been built." );
-    return this.serviceContainer.getServiceByGloballyUniqueName( name );
+    return this.globalServiceContainer.getServiceByGloballyUniqueName( name );
   }
 
   public void addProperty( String name, String value )
@@ -314,37 +314,26 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     return this.isBuilt;
   }
 
-  public boolean isBuildable( BuilderIssues issues )
+  public BuilderIssues getIssues()
   {
-    if ( this.isBuilt )
-      return true;
-
-    BuilderIssues localIssues = new BuilderIssues();
+    BuilderIssues issues = new BuilderIssues();
 
     // ToDo Check any invariants.
     // Check invariants
 
     // Check subordinates.
-    this.globalServiceContainer.isBuildable( localIssues, this );
-    this.serviceContainer.isBuildable( localIssues );
-    this.datasetContainer.isBuildable( localIssues );
-    this.propertyContainer.isBuildable( localIssues );
+    issues.addAllIssues( this.globalServiceContainer.getIssues( this ));
+    issues.addAllIssues( this.serviceContainer.getIssues());
+    issues.addAllIssues( this.datasetContainer.getIssues());
+    issues.addAllIssues( this.propertyContainer.getIssues());
 
-    if ( localIssues.isEmpty() )
-      return true;
-
-    issues.addAllIssues( localIssues );
-    return false;
+    return issues;
   }
 
   public Catalog build() throws BuilderException
   {
     if ( this.isBuilt )
       return this;
-
-    BuilderIssues issues = new BuilderIssues();
-    if ( !isBuildable( issues ) )
-      throw new BuilderException( issues );
 
     // ToDo Check any invariants.
     // Check invariants

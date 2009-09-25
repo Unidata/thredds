@@ -33,7 +33,9 @@
 package thredds.catalog2;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Iterator;
 
 import ucar.nc2.constants.FeatureType;
 import thredds.catalog.DataFormatType;
@@ -68,7 +70,7 @@ public interface ThreddsMetadata
 
   public GeospatialCoverage getGeospatialCoverage();
   public DateRange getTemporalCoverage();  
-  public List<Variable> getVariables();
+  public List<VariableGroup> getVariableGroups();
 
   public long getDataSizeInBytes();
   public DataFormatType getDataFormat();
@@ -84,7 +86,8 @@ public interface ThreddsMetadata
     public String getContent();
 
     public String getTitle();
-    public URI getExternalReference();
+    public String getExternalReference();
+    public URI getExternalReferenceAsUri() throws URISyntaxException;
   }
 
   public interface Keyphrase
@@ -142,23 +145,39 @@ public interface ThreddsMetadata
         public String getEndDateFormat();
         public String getEndDate();
         public String getDuration();
+        public String getResolution();
     }
 
   public interface Contributor
   {
-    public String getAuthority();
     public String getName();
+    public String getNamingAuthority();
+    public String getRole();
     public String getEmail();
-    public URI getWebPage();
+    public String getWebPage();
+  }
+
+  public interface VariableGroup
+  {
+    public String getVocabularyAuthorityId();
+    public String getVocabularyAuthorityUrl();
+
+    public List<Variable> getVariables();
+    public String getVariableMapUrl();
+    public boolean isEmpty();
   }
 
   public interface Variable
   {
-    public String getAuthority();
-    public String getId();
-    public String getTitle();
+    public String getName();
     public String getDescription();
     public String getUnits();
+
+    public String getVocabularyId();
+    public String getVocabularyName();
+
+    public String getVocabularyAuthorityId();
+    public String getVocabularyAuthorityUrl();
   }
 
   public interface GeospatialCoverage

@@ -36,8 +36,6 @@ import junit.framework.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
-import java.util.ArrayList;
 
 import thredds.catalog.ServiceType;
 import thredds.catalog.DataFormatType;
@@ -142,12 +140,10 @@ public class TestAccessImpl extends TestCase
     accessImpl.setDataFormat( formatType );
 
     // Check if buildable
-    BuilderIssues issues = new BuilderIssues();
-    if ( ! accessImpl.isBuildable( issues ) )
+    BuilderIssues issues = accessImpl.getIssues();
+    if ( ! issues.isValid() )
     {
-      StringBuilder stringBuilder = new StringBuilder( "Not isBuildable(): " );
-      for ( BuilderIssue bfi : issues.getIssues() )
-        stringBuilder.append( "\n    " ).append( bfi.getMessage() ).append( " [" ).append( bfi.getBuilder().getClass().getName() ).append( "]" );
+      StringBuilder stringBuilder = new StringBuilder( "Invalid access: ").append( issues.toString() );
       fail( stringBuilder.toString() );
     }
 

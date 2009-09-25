@@ -16,7 +16,7 @@ import javax.xml.stream.events.XMLEvent;
  * @author edavis
  * @since 4.0
  */
-public class DocumentParser
+class DocumentParser
 {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 

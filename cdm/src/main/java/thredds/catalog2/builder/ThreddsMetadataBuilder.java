@@ -33,7 +33,9 @@
 package thredds.catalog2.builder;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Iterator;
 
 import ucar.nc2.constants.FeatureType;
 import thredds.catalog2.ThreddsMetadata;
@@ -49,7 +51,7 @@ public interface ThreddsMetadataBuilder extends ThreddsBuilder
 {
   public boolean isEmpty();
   
-  public DocumentationBuilder addDocumentation( String docType, String title, URI externalReference );
+  public DocumentationBuilder addDocumentation( String docType, String title, String externalReference );
   public DocumentationBuilder addDocumentation( String docType, String content );
   public boolean removeDocumentation( DocumentationBuilder docBuilder );
   public List<DocumentationBuilder> getDocumentationBuilders();
@@ -105,12 +107,13 @@ public interface ThreddsMetadataBuilder extends ThreddsBuilder
   public GeospatialCoverageBuilder getGeospatialCoverageBuilder();
 
   public DateRangeBuilder setTemporalCoverageBuilder( String startDate, String startDateFormat,
-                                                      String endDate, String endDateFormat, String duration );
+                                                      String endDate, String endDateFormat,
+                                                      String duration, String resolution );
   public DateRangeBuilder getTemporalCoverageBuilder();
 
-  public VariableBuilder addVariableBuilder();
-  public boolean removeVariableBuilder( VariableBuilder variableBuilder );
-  public List<VariableBuilder> getVariableBuilders();
+  public VariableGroupBuilder addVariableGroupBuilder();
+  public boolean removeVariableGroupBuilder( VariableGroupBuilder varGroupBldr);
+  public List<VariableGroupBuilder> getVariableGroupBuilders();
 
   public void setDataSizeInBytes( long dataSizeInBytes );
   public long getDataSizeInBytes();
@@ -143,7 +146,8 @@ public interface ThreddsMetadataBuilder extends ThreddsBuilder
     public String getTitle();
 
     //public void setExternalReference( URI externalReference );
-    public URI getExternalReference();
+    public String getExternalReference();
+    public URI getExternalReferenceAsUri() throws URISyntaxException;
 
     public ThreddsMetadata.Documentation build() throws BuilderException;
   }
@@ -173,6 +177,7 @@ public interface ThreddsMetadataBuilder extends ThreddsBuilder
         public String getEndDateFormat();
         public String getEndDate();
         public String getDuration();
+        public String getResolution();
 
         public ThreddsMetadata.DateRange build() throws BuilderException;
     }
@@ -180,35 +185,58 @@ public interface ThreddsMetadataBuilder extends ThreddsBuilder
 
     public interface ContributorBuilder extends ThreddsBuilder
   {
-    public String getAuthority();
-    public void setAuthority( String authority );
     public String getName();
     public void setName( String name );
+    public String getNamingAuthority();
+    public void setNamingAuthority( String authority );
+    public String getRole();
+    public void setRole( String role );
     public String getEmail();
     public void setEmail( String email );
 
-    public URI getWebPage();
-    public void setWebPage( URI webPage );
+    public String getWebPage();
+    public void setWebPage( String webPage );
 
     public ThreddsMetadata.Contributor build() throws BuilderException;
   }
 
+  public interface VariableGroupBuilder extends ThreddsBuilder
+  {
+    public String getVocabularyAuthorityId();
+    public void setVocabularyAuthorityId( String vocabAuthId);
+
+    public String getVocabularyAuthorityUrl();
+    public void setVocabularyAuthorityUrl( String vocabAuthUrl);
+
+    public List<VariableBuilder> getVariableBuilders();
+    public VariableBuilder addVariableBuilder( String name, String description, String units,
+                                               String vocabId, String vocabName );
+
+    public String getVariableMapUrl();
+    public void setVariableMapUrl( String variableMapUrl);
+
+    public boolean isEmpty();
+  }
+
   public interface VariableBuilder extends ThreddsBuilder
   {
-    public String getAuthority();
-    public void setAuthority( String authority );
-
-    public String getId();
-    public void setId( String id);
-
-    public String getTitle();
-    public void setTitle( String title );
+    public String getName();
+    public void setName( String name);
 
     public String getDescription();
     public void setDescription( String description );
 
     public String getUnits();
     public void setUnits( String units );
+
+    public String getVocabularyId();
+    public void setVocabularyId( String vocabId);
+
+    public String getVocabularyName();
+    public void setVocabularyName( String vocabName);
+
+    public String getVocabularyAuthorityId();
+    public String getVocabularyAuthorityUrl();
 
     public ThreddsMetadata.Variable build() throws BuilderException;
   }

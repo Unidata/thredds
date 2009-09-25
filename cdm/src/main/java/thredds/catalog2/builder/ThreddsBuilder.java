@@ -51,10 +51,9 @@ public interface ThreddsBuilder
   /**
    * Check whether the state of this ThreddsBuilder is such that build() will succeed.
    *
-   * @param issues a list into which any issues that come up during isBuildable() will be add.
    * @return true if this ThreddsBuilder is in a state where build() will succeed.
    */
-  public boolean isBuildable( BuilderIssues issues );
+  public BuilderIssues getIssues();
 
   /**
    * Generate the object being built by this ThreddsBuilder.

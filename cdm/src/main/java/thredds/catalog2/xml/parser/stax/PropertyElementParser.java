@@ -59,11 +59,11 @@ class PropertyElementParser extends AbstractElementParser
   private final ServiceBuilder serviceBuilder;
 
   PropertyElementParser( XMLEventReader reader,
-                                ThreddsBuilderFactory builderFactory,
-                                CatalogBuilder catBuilder )
+                         ThreddsBuilderFactory builderFactory,
+                         CatalogBuilder catBuilder )
           throws ThreddsXmlParserException
   {
-    super( reader, PropertyElementNames.PropertyElement, builderFactory);
+    super( PropertyElementNames.PropertyElement, reader, builderFactory);
     this.catBuilder = catBuilder;
     this.datasetNodeBuilder = null;
     this.serviceBuilder = null;
@@ -74,7 +74,7 @@ class PropertyElementParser extends AbstractElementParser
                                 DatasetNodeBuilder datasetNodeBuilder )
           throws ThreddsXmlParserException
   {
-    super( reader, PropertyElementNames.PropertyElement, builderFactory );
+    super( PropertyElementNames.PropertyElement, reader, builderFactory );
     this.catBuilder = null;
     this.datasetNodeBuilder = datasetNodeBuilder;
     this.serviceBuilder = null;
@@ -85,7 +85,7 @@ class PropertyElementParser extends AbstractElementParser
                                 ServiceBuilder serviceBuilder )
           throws ThreddsXmlParserException
   {
-    super( reader, PropertyElementNames.PropertyElement, builderFactory );
+    super( PropertyElementNames.PropertyElement, reader, builderFactory );
     this.catBuilder = null;
     this.datasetNodeBuilder = null;
     this.serviceBuilder = serviceBuilder;
@@ -93,12 +93,12 @@ class PropertyElementParser extends AbstractElementParser
 
   static boolean isSelfElementStatic( XMLEvent event )
   {
-    return isSelfElement( event, PropertyElementNames.PropertyElement );
+    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, PropertyElementNames.PropertyElement );
   }
 
   boolean isSelfElement( XMLEvent event )
   {
-    return isSelfElement( event, PropertyElementNames.PropertyElement );
+    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
   }
 
   ThreddsBuilder getSelfBuilder() {

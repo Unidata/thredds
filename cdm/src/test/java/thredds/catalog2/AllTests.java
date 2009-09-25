@@ -12,10 +12,8 @@ import thredds.catalog2.xml.parser.stax.XMLEvent_WriteAsEncodedUnicodeMethodTest
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+        thredds.catalog2.builder.util.AllTests.class,
         thredds.catalog2.simpleImpl.AllTests.class,
-        thredds.catalog2.xml.parser.TestCatalogParser.class,
-        thredds.catalog2.xml.parser.stax.ParseCatalogTest.class,
-        thredds.catalog2.xml.parser.stax.ParseMetadataTest.class,
-        XMLEvent_WriteAsEncodedUnicodeMethodTest.class
+        thredds.catalog2.xml.parser.AllTests.class
 })
 public class AllTests { }

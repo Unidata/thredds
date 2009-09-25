@@ -168,47 +168,22 @@ public class MetadataImpl implements Metadata, MetadataBuilder
     return this.isBuilt;
   }
 
-  public boolean isBuildable( BuilderIssues issues )
+  public BuilderIssues getIssues()
   {
-    if ( this.isBuilt )
-      return true;
-
     if ( this.isContainedContent )
     {
       if ( this.content == null )
-      {
-        issues.addIssue( new BuilderIssue( "MetadataBuilder contains null content.", this ));
-        return false;
-      }
+        return new BuilderIssues( BuilderIssue.Severity.WARNING, "MetadataBuilder contains null content.", this, null );
     }
     else
       if ( this.title == null || this.externalReference == null )
-      {
-        issues.addIssue( new BuilderIssue( "MetadataBuilder with link has null title and/or link URI.", this ) );
-        return false;
-      }
+        return new BuilderIssues( BuilderIssue.Severity.WARNING, "MetadataBuilder with link has null title and/or link URI.", this, null );
 
-    return true;
+    return new BuilderIssues();
   }
 
   public Metadata build() throws BuilderException
   {
-    if ( this.isBuilt )
-      return this;
-
-    BuilderIssues issues = new BuilderIssues();
-    if ( ! this.isBuildable( issues ))
-      throw new BuilderException( issues);
-
-    // Clean up.
-    if ( this.isContainedContent )
-    {
-      this.title = null;
-      this.externalReference = null;
-    }
-    else
-      this.content = null;
-
     this.isBuilt = true;
     return this;
   }

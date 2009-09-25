@@ -384,26 +384,18 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return this.isBuilt;
   }
 
-  public boolean isBuildable( BuilderIssues issues )
+  public BuilderIssues getIssues()
   {
-    if ( this.isBuilt )
-      return true;
-
-    BuilderIssues localIssues = new BuilderIssues();
+    BuilderIssues issues = this.datasetContainer.getIssues();
 
     // Check subordinates.
     if ( this.metadataImplList != null )
       for ( MetadataBuilder mb : this.metadataImplList )
-        mb.isBuildable( localIssues);
-    this.datasetContainer.isBuildable( localIssues );
+        issues.addAllIssues( mb.getIssues());
 
     // ToDo Check invariants.
 
-    if ( localIssues.isEmpty() )
-      return true;
-
-    issues.addAllIssues( localIssues );
-    return false;
+    return issues;
   }
 
   public DatasetNode build() throws BuilderException
@@ -411,11 +403,7 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     if ( this.isBuilt )
       return this;
 
-    BuilderIssues issues = new BuilderIssues();
-    if ( !isBuildable( issues ) )
-      throw new BuilderException( issues );
-
-    // Check subordinates.
+    // Build subordinates.
     if ( this.metadataImplList != null )
       for ( MetadataBuilder mb : this.metadataImplList )
         mb.build();

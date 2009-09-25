@@ -78,7 +78,7 @@ public class DatasetImpl
 
     if ( this.accessImplList == null )
       return false;
-    return this.accessImplList.remove( accessBuilder );
+    return this.accessImplList.remove( (AccessImpl) accessBuilder );
   }
 
   public boolean isAccessible()
@@ -136,44 +136,22 @@ public class DatasetImpl
   }
 
   @Override
-  public boolean isBuildable( BuilderIssues issues )
+  public BuilderIssues getIssues()
   {
-    if ( this.isBuilt )
-      return true;
-
-    BuilderIssues localIssues = new BuilderIssues();
-    super.isBuildable( issues );
+    BuilderIssues issues = super.getIssues();
 
     // Check subordinates.
     if ( this.accessImplList != null )
       for ( AccessBuilder ab : this.accessImplList )
-        ab.isBuildable( localIssues );
+        issues.addAllIssues( ab.getIssues());
 
-    //ToDo Check invariants
-//    // Check invariants: all access reference a service in the containing catalog.
-//    for ( AccessBuilder ab : this.accessImplList )
-//    {
-//      String serviceName = ab.getServiceBuilder().getName();
-//      Service abs = ((CatalogSearch)this.getParentCatalogBuilder()).findServiceByName( serviceName);
-//      if ( abs == null )
-//        finishLog.appendBuildErrors( String message );
-//    }
-
-    if ( localIssues.isEmpty() )
-      return true;
-
-    issues.addAllIssues( localIssues );
-    return false;
+    return issues;
   }
 
   public Dataset build() throws BuilderException
   {
     if ( this.isBuilt )
       return this;
-
-    BuilderIssues issues = new BuilderIssues();
-    if ( ! isBuildable( issues ) )
-      throw new BuilderException( issues );
 
     super.build();
 

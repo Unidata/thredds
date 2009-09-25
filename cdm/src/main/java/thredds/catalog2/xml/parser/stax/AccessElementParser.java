@@ -59,18 +59,18 @@ class AccessElementParser extends AbstractElementParser
                               DatasetBuilder parentDatasetBuilder )
           throws ThreddsXmlParserException
   {
-    super( reader, AccessElementNames.AccessElement, builderFactory );
+    super( AccessElementNames.AccessElement, reader, builderFactory );
     this.parentDatasetBuilder = parentDatasetBuilder;
   }
 
   static boolean isSelfElementStatic( XMLEvent event )
   {
-    return isSelfElement( event, AccessElementNames.AccessElement );
+    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, AccessElementNames.AccessElement );
   }
 
   boolean isSelfElement( XMLEvent event )
   {
-    return isSelfElement( event, AccessElementNames.AccessElement );
+    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
   }
 
   AccessBuilder getSelfBuilder() {

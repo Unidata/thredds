@@ -11,18 +11,20 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        thredds.catalog2.simpleImpl.TestAccessImpl.class,
-        thredds.catalog2.simpleImpl.TestCatalogImpl.class,
-        thredds.catalog2.simpleImpl.TestCatalogRefImpl.class,
-        thredds.catalog2.simpleImpl.TestDatasetImpl.class,
-        thredds.catalog2.simpleImpl.TestDatasetNodeImpl.class,
-        thredds.catalog2.simpleImpl.TestMetadataImpl.class,
-        thredds.catalog2.simpleImpl.TestPropertyImpl.class,
-        thredds.catalog2.simpleImpl.TestPropertyContainer.class,
-        thredds.catalog2.simpleImpl.TestServiceImpl.class,
+        TestAccessImpl.class,
+        TestCatalogImpl.class,
+        TestCatalogRefImpl.class,
+        TestDatasetImpl.class,
+        TestDatasetNodeImpl.class,
+        TestMetadataImpl.class,
+        TestPropertyImpl.class,
+        TestPropertyContainer.class,
+        TestServiceImpl.class,
         GlobalServiceContainerTest.class,
-        thredds.catalog2.simpleImpl.TestServiceContainer.class,
-        thredds.catalog2.simpleImpl.TestThreddsMetadataImpl.class
+        TestServiceContainer.class,
+        TestThreddsMetadataImpl.class,
+        VariableTest.class,
+        VariableGroupTest.class
 })
 public class AllTests
 { }

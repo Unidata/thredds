@@ -42,7 +42,6 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.XMLEventReader;
-import java.util.Date;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
@@ -62,22 +61,20 @@ class CatalogElementParser extends AbstractElementParser
   CatalogBuilder selfBuilder;
 
   CatalogElementParser( String docBaseUriString,
-                               XMLEventReader reader,
-                               ThreddsBuilderFactory builderFactory )
+                        XMLEventReader reader,
+                        ThreddsBuilderFactory builderFactory )
           throws ThreddsXmlParserException
   {
-    super( reader, CatalogElementNames.CatalogElement, builderFactory );
+    super( CatalogElementNames.CatalogElement, reader, builderFactory );
     this.docBaseUriString = docBaseUriString;
   }
 
-  static boolean isSelfElementStatic( XMLEvent event )
-  {
-    return isSelfElement( event, CatalogElementNames.CatalogElement );
+  static boolean isSelfElementStatic( XMLEvent event ) {
+    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, CatalogElementNames.CatalogElement );
   }
 
-  boolean isSelfElement( XMLEvent event )
-  {
-    return isSelfElement( event, CatalogElementNames.CatalogElement );
+  boolean isSelfElement( XMLEvent event ) {
+    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
   }
 
   CatalogBuilder getSelfBuilder() {
@@ -97,8 +94,7 @@ class CatalogElementParser extends AbstractElementParser
     Attribute expiresAtt = startElement.getAttributeByName( CatalogElementNames.CatalogElement_Expires );
     String expiresString = expiresAtt != null ? expiresAtt.getValue() : null;
     DateType expires = null;
-    try
-    {
+    try {
       expires = expiresString != null ? new DateType( expiresString, null, null ) : null;
     }
     catch ( ParseException e )
@@ -112,8 +108,7 @@ class CatalogElementParser extends AbstractElementParser
     Attribute lastModifiedAtt = startElement.getAttributeByName( CatalogElementNames.CatalogElement_LastModified );
     String lastModifiedString = lastModifiedAtt != null ? lastModifiedAtt.getValue() : null;
     DateType lastModified = null;
-    try
-    {
+    try {
       lastModified = lastModifiedString != null ? new DateType( lastModifiedString, null, null ) : null;
     }
     catch ( ParseException e )
@@ -125,8 +120,7 @@ class CatalogElementParser extends AbstractElementParser
       throw new ThreddsXmlParserException( issue );
     }
     URI docBaseUri = null;
-    try
-    {
+    try {
       docBaseUri = new URI( docBaseUriString );
     }
     catch ( URISyntaxException e )
