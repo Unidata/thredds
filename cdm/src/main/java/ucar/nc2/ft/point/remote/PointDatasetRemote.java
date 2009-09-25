@@ -109,9 +109,9 @@ public class PointDatasetRemote extends PointDatasetImpl {
     if (dateRange != null) {
       DateFormatter df = new DateFormatter();
       if (needamp) query.append("&");
-      query.append("&start=");
+      query.append("time_start=");
       query.append(df.toDateTimeStringISO(dateRange.getStart().getDate()));
-      query.append("&end=");
+      query.append("&time_end=");
       query.append(df.toDateTimeStringISO(dateRange.getEnd().getDate()));
     }
 

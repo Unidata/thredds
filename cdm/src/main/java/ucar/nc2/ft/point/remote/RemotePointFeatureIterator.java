@@ -15,6 +15,8 @@ import java.io.IOException;
  * @since May 14, 2009
  */
 public class RemotePointFeatureIterator extends PointIteratorAbstract {
+  private static final boolean debug = false;
+
   private HttpMethod method;
   private InputStream in;
   private FeatureMaker featureMaker;
@@ -41,8 +43,8 @@ public class RemotePointFeatureIterator extends PointIteratorAbstract {
     if (finished) return false;
     
     int len = NcStream.readVInt(in);
-    //if (getCount() % 100 == 0)
-    //  System.out.println(" RemotePointFeatureIterator len= " + len+ " count = "+getCount());
+    if (debug && (getCount() % 100 == 0))
+      System.out.println(" RemotePointFeatureIterator len= " + len+ " count = "+getCount());
     if (len <= 0) {
       pf = null;
       finish();

@@ -85,7 +85,7 @@ public class PointFeatureDatasetViewer extends JPanel {
   private DateFormatter df = new DateFormatter();
 
   private boolean eventsOK = true;
-  private boolean debugStationRegionSelect = false, debugQuery = false;
+  private boolean debugStationRegionSelect = false, debugQuery = true;
 
   private int maxCount = Integer.MAX_VALUE;
 
@@ -264,7 +264,6 @@ public class PointFeatureDatasetViewer extends JPanel {
 
     // set the feature collection table - all use this
     List<FeatureCollectionBean> fcBeans = new ArrayList<FeatureCollectionBean>();
-
     for (FeatureCollection fc : dataset.getPointFeatureCollectionList()) {
       FeatureType ftype = fc.getCollectionFeatureType();
       if ((ftype == FeatureType.POINT) || (ftype == FeatureType.PROFILE) || (ftype == FeatureType.STATION) || 
@@ -272,13 +271,21 @@ public class PointFeatureDatasetViewer extends JPanel {
         fcBeans.add( new FeatureCollectionBean(fc));
       }
     }
-
-    if (fcBeans.size() == 0) {
+    if (fcBeans.size() == 0)
       JOptionPane.showMessageDialog(null, "No PointFeatureCollections found that could be displayed");
-    }
 
     fcTable.setBeans(fcBeans);
     infoTA.clear();
+
+    // set the date range if possible
+    DateRange dr = dataset.getDateRange();
+    if (dr != null)
+      stationMap.setDateRange(dr);
+
+    // set the bounding box if possible
+    LatLonRect bb = dataset.getBoundingBox();
+    if (bb != null)
+      stationMap.setGeoBounds(bb);
   }
 
   private void setFeatureCollection(FeatureCollectionBean fcb) throws IOException {
@@ -397,13 +404,13 @@ public class PointFeatureDatasetViewer extends JPanel {
 
     else if (selectedType == FeatureType.STATION) {
       StationTimeSeriesFeatureCollection stationCollection = (StationTimeSeriesFeatureCollection) selectedCollection;
-      if (geoRegion != null) {
+     /*  if (geoRegion != null) {
         StationTimeSeriesFeatureCollection stationSubset = stationCollection.subset(geoRegion);
         setStations( stationSubset);
         return;
-      } else {
-        pc = stationCollection.flatten(null, dateRange);
-      }
+      } else { */
+        pc = stationCollection.flatten(geoRegion, dateRange);
+      //}
     }
 
     else if (selectedType == FeatureType.STATION_PROFILE) {

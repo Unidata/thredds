@@ -64,7 +64,7 @@ import javax.xml.stream.XMLStreamException;
 public class StationWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StationWriter.class);
 
-  private static boolean debug = false, debugDetail = false;
+  private static boolean debug = true, debugDetail = false;
   private static long timeToScan = 0;
 
   private FeatureDatasetPoint fd;

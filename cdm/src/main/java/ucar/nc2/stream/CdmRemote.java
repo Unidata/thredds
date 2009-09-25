@@ -189,7 +189,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     sbuff.append(query);
 
     if (showRequest)
-      System.out.println("CdmRemote sendQuery= " + query + " url=" + sbuff);
+      System.out.println("CdmRemote sendQuery=" + sbuff);
 
     HttpMethod method = new GetMethod(sbuff.toString());
 

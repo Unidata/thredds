@@ -11,6 +11,7 @@
   <dataset name="Other Unidata Data">
     <catalogRef xlink:href="idd/rtmodel.xml" xlink:title="Unidata Real-time Regional Model" name="" />
     <catalogRef xlink:href="galeon/catalog.xml" xlink:title="Unidata GALEON Experimental Web Coverage Service (WCS) datasets" name="" />
+    <catalogRef xlink:href="cdmremoteCatalog.xml" xlink:title="CDM Remote Test datasets" name="" />
     <dataset name="Test Restricted Dataset" ID="testRestrictedDataset" urlPath="restrict/testData.nc" restrictAccess="tiggeData">
       <serviceName>thisDODS</serviceName>
       <dataType>Grid</dataType>

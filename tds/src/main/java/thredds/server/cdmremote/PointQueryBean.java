@@ -207,12 +207,12 @@ public class PointQueryBean {
     else if (spatial.equalsIgnoreCase("point")) spatialSelection = SpatialSelection.point;
     else if (spatial.equalsIgnoreCase("stns")) spatialSelection = SpatialSelection.stns;
 
-    if (spatial.equalsIgnoreCase("bb")) {
+    if (spatialSelection == SpatialSelection.bb) {
       parseSpatialExtent();
 
-    } else if (spatial.equalsIgnoreCase("point")) {
+    } else if (spatialSelection == SpatialSelection.point) {
       double lat = parseLat("latitude", latitude);
-      double lon = parseLat("longitude", longitude);
+      double lon = parseLon("longitude", longitude);
       latlonPoint = new LatLonPointImpl(lat, lon);
     }
 
@@ -309,6 +309,9 @@ public class PointQueryBean {
       dateRange = new DateRange(startDate, null, duration, null);
     else if ((endDate != null) && (duration != null))
       dateRange = new DateRange(null, endDate, duration, null);
+
+    if (dateRange != null)
+      temporalSelection = TemporalSelection.range;
   }
 
 

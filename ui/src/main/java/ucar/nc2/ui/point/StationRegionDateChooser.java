@@ -101,6 +101,7 @@ public class StationRegionDateChooser extends thredds.viewer.ui.geoloc.NPControl
   private AbstractAction dateAction;
 
   // prefs
+  private PrefPanel minmaxPP;
   private Field.Double minLonField, maxLonField, minLatField, maxLatField;
 
   // events
@@ -285,16 +286,15 @@ public class StationRegionDateChooser extends thredds.viewer.ui.geoloc.NPControl
      bbAction.putValue(BAMutil.STATE, geoSelectionMode ? Boolean.TRUE : Boolean.FALSE );
 
      // the fields use a PrefPanel
-    PrefPanel pp = null;
     if (regionSelect) {
-      pp = new PrefPanel( null, null);
-      minLonField = pp.addDoubleField("minLon", "minLon", geoSelection.getMinX(), nfracDig, 0, 0, null);
-      maxLonField = pp.addDoubleField("maxLon", "maxLon", geoSelection.getMaxX(), nfracDig, 2, 0, null);
-      minLatField = pp.addDoubleField("minLat", "minLat", geoSelection.getMinY(), nfracDig, 4, 0, null);
-      maxLatField = pp.addDoubleField("maxLat", "maxLat", geoSelection.getMaxY(), nfracDig, 6, 0, null);
+      minmaxPP = new PrefPanel( null, null);
+      minLonField = minmaxPP.addDoubleField("minLon", "minLon", geoSelection.getMinX(), nfracDig, 0, 0, null);
+      maxLonField = minmaxPP.addDoubleField("maxLon", "maxLon", geoSelection.getMaxX(), nfracDig, 2, 0, null);
+      minLatField = minmaxPP.addDoubleField("minLat", "minLat", geoSelection.getMinY(), nfracDig, 4, 0, null);
+      maxLatField = minmaxPP.addDoubleField("maxLat", "maxLat", geoSelection.getMaxY(), nfracDig, 6, 0, null);
 
-      pp.finish(false, BorderLayout.EAST);
-      pp.addActionListener(new ActionListener() {
+      minmaxPP.finish(true, BorderLayout.EAST);
+      minmaxPP.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           // "Apply" was called
           double minLon = minLonField.getDouble();
@@ -307,6 +307,9 @@ public class StationRegionDateChooser extends thredds.viewer.ui.geoloc.NPControl
           redraw();
         }
       });
+
+
+
     }
 
     // assemble
@@ -322,7 +325,7 @@ public class StationRegionDateChooser extends thredds.viewer.ui.geoloc.NPControl
     if (dateSelect) BAMutil.addActionToContainer( toolPanel, dateAction);
 
     JPanel upperPanel = new JPanel(new BorderLayout());
-    if (regionSelect) upperPanel.add(pp, BorderLayout.NORTH);
+    if (regionSelect) upperPanel.add(minmaxPP, BorderLayout.NORTH);
     upperPanel.add(toolPanel, BorderLayout.SOUTH);
 
     JPanel statusPanel = new JPanel(new BorderLayout());
