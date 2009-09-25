@@ -42,6 +42,7 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.XMLEventReader;
+import javax.xml.namespace.QName;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
@@ -60,17 +61,13 @@ class CatalogElementParser extends AbstractElementParser
 
   CatalogBuilder selfBuilder;
 
-  CatalogElementParser( String docBaseUriString,
+  CatalogElementParser( QName elementName,
+                        String docBaseUriString,
                         XMLEventReader reader,
                         ThreddsBuilderFactory builderFactory )
-          throws ThreddsXmlParserException
   {
-    super( CatalogElementNames.CatalogElement, reader, builderFactory );
+    super( elementName, reader, builderFactory );
     this.docBaseUriString = docBaseUriString;
-  }
-
-  static boolean isSelfElementStatic( XMLEvent event ) {
-    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, CatalogElementNames.CatalogElement );
   }
 
   CatalogBuilder getSelfBuilder() {
@@ -167,5 +164,25 @@ class CatalogElementParser extends AbstractElementParser
 //    if ( !( builder instanceof CatalogBuilder ) )
 //      throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetBuilder." );
 //    CatalogBuilder catalogBuilder = (CatalogBuilder) builder;
+  }
+
+  static class Factory
+  {
+    private QName elementName;
+
+    Factory() {
+      this.elementName = CatalogElementNames.CatalogElement;
+    }
+
+    boolean isEventMyStartElement( XMLEvent event ) {
+      return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
+    }
+
+    CatalogElementParser getNewParser( String docBaseUriString,
+                                       XMLEventReader reader,
+                                       ThreddsBuilderFactory builderFactory )
+    {
+      return new CatalogElementParser( this.elementName, docBaseUriString, reader, builderFactory );
+    }
   }
 }

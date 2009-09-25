@@ -59,6 +59,7 @@ public class StaxThreddsXmlParser implements ThreddsXmlParser
 {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
+  private CatalogElementParser.Factory catElemParserFactory;
 //  private boolean isValidating = false;
 //  private Schema schema = null;
 
@@ -68,7 +69,9 @@ public class StaxThreddsXmlParser implements ThreddsXmlParser
     return new StaxThreddsXmlParser();
   }
 
-  private StaxThreddsXmlParser() { }
+  private StaxThreddsXmlParser() {
+    this.catElemParserFactory = new CatalogElementParser.Factory();
+  }
 
   private XMLInputFactory getFactory()
   {
@@ -104,9 +107,10 @@ public class StaxThreddsXmlParser implements ThreddsXmlParser
         }
         else if ( event.isStartElement())
         {
-          if ( CatalogElementParser.isSelfElementStatic( event.asStartElement() ))
+          if ( this.catElemParserFactory.isEventMyStartElement( event.asStartElement() ))
           {
-            CatalogElementParser catElemParser = new CatalogElementParser( source.getSystemId(), eventReader, catBuilderFac);
+            CatalogElementParser catElemParser = this.catElemParserFactory.getNewParser( source.getSystemId(),
+                                                                                         eventReader, catBuilderFac);
             threddsBuilder = catElemParser.parse();
           }
           // ToDo Implement reading a document with "dataset" root element.
