@@ -59,6 +59,11 @@ class DatasetNodeElementParserHelper
 
   private final ThreddsBuilderFactory builderFactory;
 
+  private final PropertyElementParser.Factory propertyElemParserFactory;
+  private final DatasetElementParser.Factory datasetElemParserFactory;
+  private final CatalogRefElementParser.Factory catRefElemParserFactory;
+  private final MetadataElementParser.Factory metadataElemParserFactory;
+
   private final DatasetNodeBuilder datasetNodeBuilder;
 
   private String defaultServiceNameInheritedFromAncestors;
@@ -82,6 +87,14 @@ class DatasetNodeElementParserHelper
                                   DatasetNodeBuilder datasetNodeBuilder,
                                   ThreddsBuilderFactory builderFactory )
   {
+    this.datasetNodeBuilder = datasetNodeBuilder;
+    this.builderFactory = builderFactory;
+
+    this.propertyElemParserFactory = new PropertyElementParser.Factory();
+    this.datasetElemParserFactory = new DatasetElementParser.Factory();
+    this.catRefElemParserFactory = new CatalogRefElementParser.Factory();
+    this.metadataElemParserFactory = new MetadataElementParser.Factory();
+
     if ( parentDatasetNodeElementParserHelper != null)
     {
       List<MetadataElementParser> metadataInheritedFromAncestors
@@ -104,9 +117,6 @@ class DatasetNodeElementParserHelper
       this.idAuthorityInheritedFromAncestors
               = parentDatasetNodeElementParserHelper.getIdAuthorityToBeInheritedByDescendants();
     }
-
-    this.datasetNodeBuilder = datasetNodeBuilder;
-    this.builderFactory = builderFactory;
   }
 
   String getIdAuthorityInheritedFromAncestors() {
@@ -204,16 +214,18 @@ class DatasetNodeElementParserHelper
                                         DatasetNodeBuilder dsNodeBuilder )
           throws ThreddsXmlParserException
   {
-    if ( PropertyElementParser.isSelfElementStatic( startElement ))
+    if ( this.propertyElemParserFactory.isEventMyStartElement( startElement ))
     {
-      PropertyElementParser parser = new PropertyElementParser( reader, this.builderFactory, dsNodeBuilder );
+      PropertyElementParser parser = this.propertyElemParserFactory.getNewParser( reader,
+                                                                                  this.builderFactory,
+                                                                                  dsNodeBuilder );
       parser.parse();
       return true;
     }
-    else if ( MetadataElementParser.isSelfElementStatic( startElement ))
+    else if ( this.metadataElemParserFactory.isEventMyStartElement( startElement ))
     {
-      MetadataElementParser parser = new MetadataElementParser( reader, this.builderFactory,
-                                                                dsNodeBuilder, this );
+      MetadataElementParser parser = this.metadataElemParserFactory.getNewParser( reader, this.builderFactory,
+                                                                                  dsNodeBuilder, this );
       parser.parse();
 
       if ( this.metadataForThisDataset == null )
@@ -257,17 +269,17 @@ class DatasetNodeElementParserHelper
                                              DatasetNodeBuilder dsNodeBuilder )
           throws ThreddsXmlParserException
   {
-    if ( DatasetElementParser.isSelfElementStatic( startElement ))
+    if ( this.datasetElemParserFactory.isEventMyStartElement( startElement ))
     {
-      DatasetElementParser parser = new DatasetElementParser( reader, this.builderFactory,
-                                                              dsNodeBuilder, this);
+      DatasetElementParser parser = this.datasetElemParserFactory.getNewParser( reader, this.builderFactory,
+                                                                                dsNodeBuilder, this );
       parser.parse();
       return true;
     }
-    else if ( CatalogRefElementParser.isSelfElementStatic( startElement ))
+    else if ( this.catRefElemParserFactory.isEventMyStartElement( startElement ))
     {
-      CatalogRefElementParser parser = new CatalogRefElementParser( reader, this.builderFactory,
-                                                                    dsNodeBuilder, this);
+      CatalogRefElementParser parser = this.catRefElemParserFactory.getNewParser( reader, this.builderFactory,
+                                                                                  dsNodeBuilder, this );
       parser.parse();
       return true;
     }

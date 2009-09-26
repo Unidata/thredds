@@ -43,6 +43,7 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.XMLEventReader;
+import javax.xml.namespace.QName;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -54,33 +55,39 @@ import java.net.URISyntaxException;
  */
 class ServiceElementParser extends AbstractElementParser
 {
-  private final CatalogBuilder catalogBuilder;
+  private final CatalogBuilder parentCatalogBuilder;
   private final ServiceBuilder parentServiceBuilder;
+
+  private final ServiceElementParser.Factory serviceElemParserFactory;
+  private final PropertyElementParser.Factory propertyElemParserFactory;
 
   private ServiceBuilder selfBuilder;
 
-  ServiceElementParser( XMLEventReader reader,
-                               ThreddsBuilderFactory builderFactory,
-                               CatalogBuilder catalogBuilder )
-          throws ThreddsXmlParserException
+
+  private ServiceElementParser( QName elementName,
+                        XMLEventReader reader,
+                        ThreddsBuilderFactory builderFactory,
+                        CatalogBuilder parentCatalogBuilder )
   {
-    super( ServiceElementNames.ServiceElement, reader, builderFactory);
-    this.catalogBuilder = catalogBuilder;
+    super( elementName, reader, builderFactory);
+    this.parentCatalogBuilder = parentCatalogBuilder;
     this.parentServiceBuilder = null;
+
+    this.serviceElemParserFactory = new Factory();
+    this.propertyElemParserFactory = new PropertyElementParser.Factory();
   }
 
-  ServiceElementParser( XMLEventReader reader,
-                               ThreddsBuilderFactory builderFactory,
-                               ServiceBuilder parentServiceBuilder )
-          throws ThreddsXmlParserException
+  private ServiceElementParser( QName elementName,
+                        XMLEventReader reader,
+                        ThreddsBuilderFactory builderFactory,
+                        ServiceBuilder parentServiceBuilder )
   {
-    super( ServiceElementNames.ServiceElement, reader, builderFactory );
-    this.catalogBuilder = null;
+    super( elementName, reader, builderFactory );
+    this.parentCatalogBuilder = null;
     this.parentServiceBuilder = parentServiceBuilder;
-  }
 
-  static boolean isSelfElementStatic( XMLEvent event ) {
-    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ServiceElementNames.ServiceElement );
+    this.serviceElemParserFactory = new Factory();
+    this.propertyElemParserFactory = new PropertyElementParser.Factory();
   }
 
   ServiceBuilder getSelfBuilder() {
@@ -108,8 +115,8 @@ class ServiceElementParser extends AbstractElementParser
       log.error( "parseElement(): Bad service base URI [" + baseUriString + "]: " + e.getMessage(), e );
       throw new ThreddsXmlParserException( "Bad service base URI [" + baseUriString + "]", e );
     }
-    if ( this.catalogBuilder != null )
-      this.selfBuilder = this.catalogBuilder.addService( name, serviceType, baseUri );
+    if ( this.parentCatalogBuilder != null )
+      this.selfBuilder = this.parentCatalogBuilder.addService( name, serviceType, baseUri );
     else if ( this.parentServiceBuilder != null )
       this.selfBuilder = this.parentServiceBuilder.addService( name, serviceType, baseUri );
     else
@@ -133,14 +140,18 @@ class ServiceElementParser extends AbstractElementParser
   {
     StartElement startElement = this.peekAtNextEventIfStartElement();
 
-    if ( ServiceElementParser.isSelfElementStatic( startElement ) )
+    if ( this.serviceElemParserFactory.isEventMyStartElement( startElement ) )
     {
-      ServiceElementParser serviceElemParser = new ServiceElementParser( reader, this.builderFactory, this.selfBuilder );
+      ServiceElementParser serviceElemParser = this.serviceElemParserFactory.getNewParser( reader,
+                                                                                           this.builderFactory,
+                                                                                           this.selfBuilder );
       serviceElemParser.parse();
     }
-    else if ( PropertyElementParser.isSelfElementStatic( startElement ))
+    else if ( this.propertyElemParserFactory.isEventMyStartElement( startElement ))
     {
-      PropertyElementParser parser = new PropertyElementParser( reader, this.builderFactory, this.selfBuilder);
+      PropertyElementParser parser = this.propertyElemParserFactory.getNewParser( reader,
+                                                                                  this.builderFactory,
+                                                                                  this.selfBuilder);
       parser.parse();
     }
     else
@@ -154,5 +165,32 @@ class ServiceElementParser extends AbstractElementParser
           throws ThreddsXmlParserException
   {
     return;
+  }
+
+  static class Factory
+  {
+    private QName elementName;
+
+    Factory() {
+      this.elementName = ServiceElementNames.ServiceElement;
+    }
+
+    boolean isEventMyStartElement( XMLEvent event ) {
+      return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
+    }
+
+    ServiceElementParser getNewParser( XMLEventReader reader,
+                                       ThreddsBuilderFactory builderFactory,
+                                       CatalogBuilder parentCatalogBuilder )
+    {
+      return new ServiceElementParser( this.elementName, reader, builderFactory, parentCatalogBuilder );
+    }
+
+    ServiceElementParser getNewParser( XMLEventReader reader,
+                                       ThreddsBuilderFactory builderFactory,
+                                       ServiceBuilder parentServiceBuilder )
+    {
+      return new ServiceElementParser( this.elementName, reader, builderFactory, parentServiceBuilder );
+    }
   }
 }

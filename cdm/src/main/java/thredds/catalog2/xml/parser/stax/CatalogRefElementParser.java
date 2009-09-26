@@ -40,6 +40,7 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.XMLEventReader;
+import javax.xml.namespace.QName;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -61,33 +62,28 @@ class CatalogRefElementParser extends AbstractElementParser
   private CatalogRefBuilder selfBuilder;
 
 
-  CatalogRefElementParser( XMLEventReader reader,
-                           ThreddsBuilderFactory builderFactory,
-                           CatalogBuilder parentCatalogBuilder,
-                           DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
-          throws ThreddsXmlParserException
+  private CatalogRefElementParser( QName elementName,
+                                   XMLEventReader reader,
+                                   ThreddsBuilderFactory builderFactory,
+                                   CatalogBuilder parentCatalogBuilder,
+                                   DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
   {
-    super( CatalogRefElementNames.CatalogRefElement, reader, builderFactory );
+    super( elementName, reader, builderFactory );
     this.parentCatalogBuilder = parentCatalogBuilder;
     this.parentDatasetNodeBuilder = null;
     this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
   }
 
-  CatalogRefElementParser( XMLEventReader reader,
-                           ThreddsBuilderFactory builderFactory,
-                           DatasetNodeBuilder parentDatasetNodeBuilder,
-                           DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
-          throws ThreddsXmlParserException
+  private CatalogRefElementParser( QName elementName,
+                                   XMLEventReader reader,
+                                   ThreddsBuilderFactory builderFactory,
+                                   DatasetNodeBuilder parentDatasetNodeBuilder,
+                                   DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
   {
-    super( CatalogRefElementNames.CatalogRefElement, reader, builderFactory );
+    super( elementName, reader, builderFactory );
     this.parentCatalogBuilder = null;
     this.parentDatasetNodeBuilder = parentDatasetNodeBuilder;
     this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
-  }
-
-  static boolean isSelfElementStatic( XMLEvent event )
-  {
-    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, CatalogRefElementNames.CatalogRefElement );
   }
 
   CatalogRefBuilder getSelfBuilder() {
@@ -151,5 +147,36 @@ class CatalogRefElementParser extends AbstractElementParser
 
     this.datasetNodeElementParserHelper.addFinalThreddsMetadataToDatasetNodeBuilder( this.selfBuilder );
     this.datasetNodeElementParserHelper.addFinalMetadataToDatasetNodeBuilder( this.selfBuilder );
+  }
+
+  static class Factory
+  {
+    private QName elementName;
+
+    Factory() {
+      this.elementName = CatalogRefElementNames.CatalogRefElement;
+    }
+
+    boolean isEventMyStartElement( XMLEvent event ) {
+      return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
+    }
+
+    CatalogRefElementParser getNewParser( XMLEventReader reader,
+                                          ThreddsBuilderFactory builderFactory,
+                                          CatalogBuilder parentCatalogBuilder,
+                                          DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
+    {
+      return new CatalogRefElementParser( this.elementName, reader, builderFactory, parentCatalogBuilder,
+                                          parentDatasetNodeElementParserHelper );
+    }
+
+    CatalogRefElementParser getNewParser( XMLEventReader reader,
+                                          ThreddsBuilderFactory builderFactory,
+                                          DatasetNodeBuilder parentDatasetNodeBuilder,
+                                          DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
+    {
+      return new CatalogRefElementParser( this.elementName, reader, builderFactory, parentDatasetNodeBuilder,
+                                          parentDatasetNodeElementParserHelper );
+    }
   }
 }

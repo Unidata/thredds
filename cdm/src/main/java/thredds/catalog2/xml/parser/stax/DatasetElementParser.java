@@ -40,6 +40,7 @@ import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.XMLEventReader;
+import javax.xml.namespace.QName;
 
 /**
  * _more_
@@ -53,34 +54,40 @@ class DatasetElementParser extends AbstractElementParser
   private final DatasetNodeBuilder parentDatasetNodeBuilder;
   private final DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper;
 
+  private final AccessElementParser.Factory accessElementParserFactory;
+
   private DatasetNodeElementParserHelper datasetNodeElementParserHelper;
 
   private DatasetBuilder selfBuilder;
 
-  DatasetElementParser( XMLEventReader reader,
+  private DatasetElementParser( QName elementName,
+                        XMLEventReader reader,
                         ThreddsBuilderFactory builderFactory,
                         CatalogBuilder parentCatalogBuilder,
                         DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
-          throws ThreddsXmlParserException
   {
-    super( DatasetElementNames.DatasetElement, reader, builderFactory );
+    super( elementName, reader, builderFactory );
     this.parentCatalogBuilder = parentCatalogBuilder;
     this.parentDatasetNodeBuilder = null;
 
     this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
+
+    this.accessElementParserFactory = new AccessElementParser.Factory();
   }
 
-  DatasetElementParser( XMLEventReader reader,
-                               ThreddsBuilderFactory builderFactory,
-                               DatasetNodeBuilder parentDatasetNodeBuilder,
-                               DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
-          throws ThreddsXmlParserException
+  private DatasetElementParser( QName elementName,
+                        XMLEventReader reader,
+                        ThreddsBuilderFactory builderFactory,
+                        DatasetNodeBuilder parentDatasetNodeBuilder,
+                        DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
   {
-    super( DatasetElementNames.DatasetElement, reader, builderFactory );
+    super( elementName, reader, builderFactory );
     this.parentCatalogBuilder = null;
     this.parentDatasetNodeBuilder = parentDatasetNodeBuilder;
 
     this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
+
+    this.accessElementParserFactory = new AccessElementParser.Factory();
   }
 
   void setDefaultServiceName( String defaultServiceName )
@@ -93,10 +100,6 @@ class DatasetElementParser extends AbstractElementParser
     return this.datasetNodeElementParserHelper.getDefaultServiceNameSpecifiedInSelf() != null
             ? this.datasetNodeElementParserHelper.getDefaultServiceNameSpecifiedInSelf()
             : this.datasetNodeElementParserHelper.getDefaultServiceNameInheritedFromAncestors();
-  }
-
-  static boolean isSelfElementStatic( XMLEvent event ) {
-    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, DatasetElementNames.DatasetElement );
   }
 
   DatasetBuilder getSelfBuilder() {
@@ -148,11 +151,10 @@ class DatasetElementParser extends AbstractElementParser
       return;
     else if ( this.datasetNodeElementParserHelper.handleCollectionChildStartElement( startElement, this.reader, this.selfBuilder ))
       return;
-    else if ( AccessElementParser.isSelfElementStatic( startElement ) )
+    else if ( this.accessElementParserFactory.isEventMyStartElement( startElement ) )
     {
-      AccessElementParser parser = new AccessElementParser( this.reader,
-                                                            this.builderFactory,
-                                                            this.selfBuilder );
+      AccessElementParser parser = this.accessElementParserFactory.getNewParser( this.reader, this.builderFactory,
+                                                                                 this.selfBuilder );
       parser.parse();
       return;
     }
@@ -191,4 +193,35 @@ class DatasetElementParser extends AbstractElementParser
         this.datasetNodeElementParserHelper.addFinalThreddsMetadataToDatasetNodeBuilder( this.selfBuilder );
         this.datasetNodeElementParserHelper.addFinalMetadataToDatasetNodeBuilder( this.selfBuilder );
     }
+
+  static class Factory
+  {
+    private QName elementName;
+
+    Factory() {
+      this.elementName = DatasetElementNames.DatasetElement;
+    }
+
+    boolean isEventMyStartElement( XMLEvent event ) {
+      return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
+    }
+
+    DatasetElementParser getNewParser( XMLEventReader reader,
+                                       ThreddsBuilderFactory builderFactory,
+                                       CatalogBuilder parentCatalogBuilder,
+                                       DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
+    {
+      return new DatasetElementParser( this.elementName, reader, builderFactory, parentCatalogBuilder,
+                                       parentDatasetNodeElementParserHelper );
+    }
+
+    DatasetElementParser getNewParser( XMLEventReader reader,
+                                       ThreddsBuilderFactory builderFactory,
+                                       DatasetNodeBuilder parentDatasetNodeBuilder,
+                                       DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
+    {
+      return new DatasetElementParser( this.elementName, reader, builderFactory, parentDatasetNodeBuilder,
+                                       parentDatasetNodeElementParserHelper );
+    }
+  }
 }

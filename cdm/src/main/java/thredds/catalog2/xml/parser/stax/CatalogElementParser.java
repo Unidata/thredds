@@ -59,15 +59,23 @@ class CatalogElementParser extends AbstractElementParser
 {
   private final String docBaseUriString;
 
+  private final PropertyElementParser.Factory propertyElemParserFactory;
+  private final ServiceElementParser.Factory serviceElemParserFactory;
+  private final DatasetElementParser.Factory datasetElemParserFactory;
+
   CatalogBuilder selfBuilder;
 
-  CatalogElementParser( QName elementName,
+  private CatalogElementParser( QName elementName,
                         String docBaseUriString,
                         XMLEventReader reader,
                         ThreddsBuilderFactory builderFactory )
   {
     super( elementName, reader, builderFactory );
     this.docBaseUriString = docBaseUriString;
+
+    this.propertyElemParserFactory = new PropertyElementParser.Factory();
+    this.serviceElemParserFactory = new ServiceElementParser.Factory();
+    this.datasetElemParserFactory = new DatasetElementParser.Factory();
   }
 
   CatalogBuilder getSelfBuilder() {
@@ -132,23 +140,24 @@ class CatalogElementParser extends AbstractElementParser
   {
     StartElement startElement = this.peekAtNextEventIfStartElement();
 
-    if ( ServiceElementParser.isSelfElementStatic( startElement ) )
+    if ( this.serviceElemParserFactory.isEventMyStartElement( startElement ) )
     {
-      ServiceElementParser serviceElemParser = new ServiceElementParser( this.reader,
-                                                                         this.builderFactory,
-                                                                         this.selfBuilder );
+      ServiceElementParser serviceElemParser = this.serviceElemParserFactory.getNewParser( reader,
+                                                                                           this.builderFactory,
+                                                                                           this.selfBuilder );
       serviceElemParser.parse();
     }
-    else if ( PropertyElementParser.isSelfElementStatic( startElement ) )
+    else if ( this.propertyElemParserFactory.isEventMyStartElement( startElement ) )
     {
-      PropertyElementParser parser = new PropertyElementParser( this.reader,
-                                                                this.builderFactory,
-                                                                this.selfBuilder );
+      PropertyElementParser parser = this.propertyElemParserFactory.getNewParser( reader,
+                                                                                  this.builderFactory,
+                                                                                  this.selfBuilder );
       parser.parse();
     }
-    else if ( DatasetElementParser.isSelfElementStatic( startElement ) )
+    else if ( this.datasetElemParserFactory.isEventMyStartElement( startElement ) )
     { // ToDo Not sure about the null parameter?
-      DatasetElementParser parser = new DatasetElementParser( this.reader, this.builderFactory,  this.selfBuilder, null );
+      DatasetElementParser parser = this.datasetElemParserFactory.getNewParser( this.reader, this.builderFactory,
+                                                                                this.selfBuilder, null );
       parser.parse();
     }
     else

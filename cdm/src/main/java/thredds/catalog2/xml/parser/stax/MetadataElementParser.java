@@ -41,6 +41,7 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.XMLEventReader;
+import javax.xml.namespace.QName;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -67,21 +68,17 @@ class MetadataElementParser extends AbstractElementParser
 
   private ThreddsMetadataElementParser threddsMetadataElementParser;
 
-  MetadataElementParser( XMLEventReader reader,
-                         ThreddsBuilderFactory builderFactory,
-                         DatasetNodeBuilder parentDatasetNodeBuilder,
-                         DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
-          throws ThreddsXmlParserException
+  private MetadataElementParser( QName elementName,
+                                 XMLEventReader reader,
+                                 ThreddsBuilderFactory builderFactory,
+                                 DatasetNodeBuilder parentDatasetNodeBuilder,
+                                 DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
   {
-    super( MetadataElementNames.MetadataElement, reader, builderFactory );
+    super( elementName, reader, builderFactory );
     this.parentDatasetNodeBuilder = parentDatasetNodeBuilder;
     this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
 
     this.selfBuilder = builderFactory.newMetadataBuilder();
-  }
-
-  static boolean isSelfElementStatic( XMLEvent event ) {
-    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, MetadataElementNames.MetadataElement );
   }
 
   MetadataBuilder getSelfBuilder() {
@@ -226,6 +223,27 @@ class MetadataElementParser extends AbstractElementParser
     {
       if ( this.content != null )
         this.selfBuilder.setContent( this.content.toString() );
+    }
+  }
+
+  static class Factory
+  {
+    private QName elementName;
+
+    Factory() {
+      this.elementName = MetadataElementNames.MetadataElement;
+    }
+
+    boolean isEventMyStartElement( XMLEvent event ) {
+      return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
+    }
+
+    MetadataElementParser getNewParser( XMLEventReader reader,
+                                        ThreddsBuilderFactory builderFactory,
+                                        DatasetNodeBuilder parentDatasetNodeBuilder,
+                                        DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper )
+    {
+      return new MetadataElementParser( this.elementName, reader, builderFactory, parentDatasetNodeBuilder, parentDatasetNodeElementParserHelper );
     }
   }
 }

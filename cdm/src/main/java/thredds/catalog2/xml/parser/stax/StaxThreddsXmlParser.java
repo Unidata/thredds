@@ -114,17 +114,7 @@ public class StaxThreddsXmlParser implements ThreddsXmlParser
             threddsBuilder = catElemParser.parse();
           }
           // ToDo Implement reading a document with "dataset" root element.
-//          else if ( DatasetElementParser.isSelfElementStatic( event.asStartElement() ))
-//          {
-//            DatasetElementParser dsElemParser = new DatasetElementParser( source.getSystemId(), eventReader, catBuilderFac);
-//            threddsBuilder = dsElemParser.parse();
-//          }
           // ToDo Implement reading a document with "metadata" root element.
-//          else if ( MetadataElementParser.isSelfElementStatic( event.asStartElement() ))
-//          {
-//            MetadataElementParser mdElemParser = new MetadataElementParser( source.getSystemId(), eventReader, catBuilderFac);
-//            threddsBuilder = mdElemParser.parse();
-//          }
           else
           {
             // ToDo Save the results in a ThreddsXmlParserIssue (Warning) and report.

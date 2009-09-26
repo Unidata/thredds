@@ -41,6 +41,7 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.XMLEventReader;
+import javax.xml.namespace.QName;
 
 /**
  * _more_
@@ -54,18 +55,13 @@ class AccessElementParser extends AbstractElementParser
 
   private AccessBuilder selfBuilder;
 
-  AccessElementParser( XMLEventReader reader,
-                              ThreddsBuilderFactory builderFactory,
-                              DatasetBuilder parentDatasetBuilder )
-          throws ThreddsXmlParserException
+  private AccessElementParser( QName elementName,
+                               XMLEventReader reader,
+                               ThreddsBuilderFactory builderFactory,
+                               DatasetBuilder parentDatasetBuilder )
   {
-    super( AccessElementNames.AccessElement, reader, builderFactory );
+    super( elementName, reader, builderFactory );
     this.parentDatasetBuilder = parentDatasetBuilder;
-  }
-
-  static boolean isSelfElementStatic( XMLEvent event )
-  {
-    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, AccessElementNames.AccessElement );
   }
 
   AccessBuilder getSelfBuilder() {
@@ -115,5 +111,25 @@ class AccessElementParser extends AbstractElementParser
           throws ThreddsXmlParserException
   {
     return;
+  }
+
+  static class Factory
+  {
+    private QName elementName;
+
+    Factory() {
+      this.elementName = AccessElementNames.AccessElement;
+    }
+
+    boolean isEventMyStartElement( XMLEvent event ) {
+      return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
+    }
+
+    AccessElementParser getNewParser( XMLEventReader reader,
+                                      ThreddsBuilderFactory builderFactory,
+                                      DatasetBuilder parentDatasetBuilder )
+    {
+      return new AccessElementParser( this.elementName, reader, builderFactory, parentDatasetBuilder );
+    }
   }
 }

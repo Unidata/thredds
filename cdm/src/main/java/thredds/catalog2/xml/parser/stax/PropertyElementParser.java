@@ -40,6 +40,7 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.XMLEventReader;
+import javax.xml.namespace.QName;
 
 /**
  * _more_
@@ -50,49 +51,41 @@ import javax.xml.stream.XMLEventReader;
 class PropertyElementParser extends AbstractElementParser
 {
   
-  boolean isChildElement( XMLEvent event ) {
-    return false; //property doesn't contain any children
-  }
-
   private final CatalogBuilder catBuilder;
   private final DatasetNodeBuilder datasetNodeBuilder;
   private final ServiceBuilder serviceBuilder;
 
-  PropertyElementParser( XMLEventReader reader,
+  private PropertyElementParser( QName elementName,
+                         XMLEventReader reader,
                          ThreddsBuilderFactory builderFactory,
                          CatalogBuilder catBuilder )
-          throws ThreddsXmlParserException
   {
-    super( PropertyElementNames.PropertyElement, reader, builderFactory);
+    super( elementName, reader, builderFactory);
     this.catBuilder = catBuilder;
     this.datasetNodeBuilder = null;
     this.serviceBuilder = null;
   }
 
-  PropertyElementParser( XMLEventReader reader,
-                                ThreddsBuilderFactory builderFactory,
-                                DatasetNodeBuilder datasetNodeBuilder )
-          throws ThreddsXmlParserException
+  private PropertyElementParser( QName elementName,
+                         XMLEventReader reader,
+                         ThreddsBuilderFactory builderFactory,
+                         DatasetNodeBuilder datasetNodeBuilder )
   {
-    super( PropertyElementNames.PropertyElement, reader, builderFactory );
+    super( elementName, reader, builderFactory );
     this.catBuilder = null;
     this.datasetNodeBuilder = datasetNodeBuilder;
     this.serviceBuilder = null;
   }
 
-  PropertyElementParser( XMLEventReader reader,
-                                ThreddsBuilderFactory builderFactory,
-                                ServiceBuilder serviceBuilder )
-          throws ThreddsXmlParserException
+  private PropertyElementParser( QName elementName,
+                         XMLEventReader reader,
+                         ThreddsBuilderFactory builderFactory,
+                         ServiceBuilder serviceBuilder )
   {
-    super( PropertyElementNames.PropertyElement, reader, builderFactory );
+    super( elementName, reader, builderFactory );
     this.catBuilder = null;
     this.datasetNodeBuilder = null;
     this.serviceBuilder = serviceBuilder;
-  }
-
-  static boolean isSelfElementStatic( XMLEvent event ) {
-    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, PropertyElementNames.PropertyElement );
   }
 
   ThreddsBuilder getSelfBuilder() {
@@ -122,16 +115,60 @@ class PropertyElementParser extends AbstractElementParser
   void handleChildStartElement()
           throws ThreddsXmlParserException
   {
-    StartElement startElement = this.peekAtNextEventIfStartElement();
+    String unexpectedChildElementAsString =
+            StaxThreddsXmlParserUtils.consumeElementAndConvertToXmlString( this.reader );
 
-    if ( ! isChildElement( startElement ) )
-      // ToDo Save the results in a ThreddsXmlParserIssue (Warning) and report.
-      StaxThreddsXmlParserUtils.consumeElementAndConvertToXmlString( this.reader );
+    ThreddsBuilder parentBuilder;
+    if ( this.catBuilder != null )
+      parentBuilder = this.catBuilder;
+    else if ( this.datasetNodeBuilder != null )
+      parentBuilder = this.datasetNodeBuilder;
+    else if ( this.serviceBuilder != null )
+      parentBuilder = this.serviceBuilder;
+    else
+      throw new ThreddsXmlParserException( "Unknown parent builder." );
+
+    BuilderIssue issue = new BuilderIssue( BuilderIssue.Severity.WARNING, "Unexpected child element: " + unexpectedChildElementAsString, parentBuilder, null );
+    // ToDo Save the results in a ThreddsXmlParserIssue (Warning) and report.
   }
 
   void postProcessingAfterEndElement()
           throws ThreddsXmlParserException
   {
     return;
+  }
+
+  static class Factory
+  {
+    private QName elementName;
+
+    Factory() {
+      this.elementName = PropertyElementNames.PropertyElement;
+    }
+
+    boolean isEventMyStartElement( XMLEvent event ) {
+      return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
+    }
+
+    PropertyElementParser getNewParser( XMLEventReader reader,
+                                       ThreddsBuilderFactory builderFactory,
+                                       CatalogBuilder parentCatalogBuilder )
+    {
+      return new PropertyElementParser( this.elementName, reader, builderFactory, parentCatalogBuilder );
+    }
+
+    PropertyElementParser getNewParser( XMLEventReader reader,
+                                       ThreddsBuilderFactory builderFactory,
+                                       DatasetNodeBuilder parentDatasetNodeBuilder )
+    {
+      return new PropertyElementParser( this.elementName, reader, builderFactory, parentDatasetNodeBuilder );
+    }
+
+    PropertyElementParser getNewParser( XMLEventReader reader,
+                                       ThreddsBuilderFactory builderFactory,
+                                       ServiceBuilder parentServiceBuilder )
+    {
+      return new PropertyElementParser( this.elementName, reader, builderFactory, parentServiceBuilder );
+    }
   }
 }
