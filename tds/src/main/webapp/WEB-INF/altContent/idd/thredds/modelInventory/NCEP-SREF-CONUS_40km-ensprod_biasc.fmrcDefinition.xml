@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fmrcDefinition dataset="http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/SREF/CONUS_40km/ensprod_biasc/files/catalog.xml">
+<fmrcDefinition dataset="http://motherlode.ucar.edu:8081/thredds/catalog/fmrc/NCEP/SREF/CONUS_40km/ensprod_biasc/files/catalog.xml">
   <vertCoord id="5" name="height_above_ground" units="m">10.0</vertCoord>
   <vertCoord id="2" name="height_above_ground1" units="m">2.0</vertCoord>
   <vertCoord id="0" name="pressure" units="Pa">25000.0 30000.0 50000.0 70000.0 85000.0 100000.0</vertCoord>
@@ -18,8 +18,8 @@
     <variable name="Relative_humidity_stdDev_pressure" vertCoord="3" />
     <variable name="Relative_humidity_weightedMean_height_above_ground" vertCoord="2" />
     <variable name="Relative_humidity_weightedMean_pressure" vertCoord="3" />
-    <variable name="Temperature_belowLL_height_above_ground" vertCoord="2" />
-    <variable name="Temperature_belowLL_pressure" vertCoord="4" />
+    <variable name="Temperature_below_273.0_height_above_ground" vertCoord="2" />
+    <variable name="Temperature_below_273.0_pressure" vertCoord="4" />
     <variable name="Temperature_stdDev_height_above_ground" vertCoord="2" />
     <variable name="Temperature_stdDev_pressure" vertCoord="3" />
     <variable name="Temperature_weightedMean_height_above_ground" vertCoord="2" />
@@ -32,11 +32,12 @@
     <variable name="V-component_of_wind_stdDev_pressure" vertCoord="0" />
     <variable name="V-component_of_wind_weightedMean_height_above_ground" vertCoord="5" />
     <variable name="V-component_of_wind_weightedMean_pressure" vertCoord="0" />
-    <variable name="Wind_speed_aboveUL_height_above_ground" vertCoord="5" />
+    <variable name="Wind_speed_above_12.89_height_above_ground" vertCoord="5" />
+    <variable name="Wind_speed_above_17.5_height_above_ground" vertCoord="5" />
+    <variable name="Wind_speed_above_25.78_height_above_ground" vertCoord="5" />
     <variable name="Wind_speed_stdDev_height_above_ground" vertCoord="5" />
     <variable name="Wind_speed_stdDev_pressure" vertCoord="0" />
     <variable name="Wind_speed_weightedMean_height_above_ground" vertCoord="5" />
     <variable name="Wind_speed_weightedMean_pressure" vertCoord="0" />
   </runSequence>
 </fmrcDefinition>
-
