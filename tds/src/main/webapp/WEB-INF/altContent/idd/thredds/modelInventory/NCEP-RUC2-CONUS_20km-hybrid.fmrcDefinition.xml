@@ -36,6 +36,7 @@
     <run runHour="22.0" offsetHourSeq="1" />
     <run runHour="23.0" offsetHourSeq="1" />
     <variable name="Baseflow-Groundwater_Runoff" vertCoord="0" />
+    <variable name="Canopy_water_evaporation" />
     <variable name="Cloud_mixing_ratio" vertCoord="1" />
     <variable name="Convective_available_potential_energy" vertCoord="2" />
     <variable name="Convective_inhibition" vertCoord="2" />
@@ -76,6 +77,7 @@
     <variable name="Surface_exchange_coefficients_for_T_and_Q_divided_by_delta_z" />
     <variable name="Surface_exchange_coefficients_for_U_and_V_divided_by_delta_z" />
     <variable name="Temperature" vertCoord="4" />
+    <variable name="Transpiration" />
     <variable name="Turbulent_kinetic_energy" vertCoord="1" />
     <variable name="U-component_of_wind" vertCoord="1" />
     <variable name="U-component_of_wind_height_above_ground" vertCoord="7" />
