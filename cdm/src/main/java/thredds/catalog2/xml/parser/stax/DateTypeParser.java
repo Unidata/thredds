@@ -23,7 +23,7 @@ class DateTypeParser
   private String type;
   private String value;
 
-  DateTypeParser( QName elementName) {
+  private DateTypeParser( QName elementName) {
     this.elementName = elementName;
   }
 

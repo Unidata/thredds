@@ -22,7 +22,7 @@ class ControlledVocabTypeParser
   private String vocabAuth;
   private String value;
 
-  ControlledVocabTypeParser( QName elementName) {
+  private ControlledVocabTypeParser( QName elementName) {
     this.elementName = elementName;
   }
 

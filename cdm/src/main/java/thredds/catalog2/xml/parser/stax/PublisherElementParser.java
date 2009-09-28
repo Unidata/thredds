@@ -26,10 +26,10 @@ class PublisherElementParser extends AbstractElementParser
   private final CreatorElementParser.NameElementParser.Factory nameElemParserFactory;
   private final CreatorElementParser.ContactElementParser.Factory contactElemParserFactory;
 
-  PublisherElementParser( QName elementName,
-                          XMLEventReader reader,
-                          ThreddsBuilderFactory builderFactory,
-                          ThreddsMetadataBuilder parentBuilder )
+  private PublisherElementParser( QName elementName,
+                                  XMLEventReader reader,
+                                  ThreddsBuilderFactory builderFactory,
+                                  ThreddsMetadataBuilder parentBuilder )
   {
     super( elementName, reader, builderFactory );
     this.parentBuilder = parentBuilder;

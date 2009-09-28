@@ -18,7 +18,7 @@ import javax.xml.stream.events.Attribute;
  * @author edavis
  * @since 4.0
  */
-public class VariableGroupElementParser extends AbstractElementParser
+class VariableGroupElementParser extends AbstractElementParser
 {
   private final ThreddsMetadataBuilder parentBuilder;
 
@@ -27,10 +27,10 @@ public class VariableGroupElementParser extends AbstractElementParser
   private VariableElementParser.Factory varElemParserFactory;
   private VariableElementParser varElemParser;
 
-  VariableGroupElementParser( QName elementName,
-                              XMLEventReader reader,
-                              ThreddsBuilderFactory builderFactory,
-                              ThreddsBuilder parentBuilder )
+  private VariableGroupElementParser( QName elementName,
+                                      XMLEventReader reader,
+                                      ThreddsBuilderFactory builderFactory,
+                                      ThreddsBuilder parentBuilder )
   {
     super( elementName, reader, builderFactory);
 
@@ -39,7 +39,7 @@ public class VariableGroupElementParser extends AbstractElementParser
     this.varElemParserFactory = new VariableElementParser.Factory();
   }
 
-  public void parseStartElement()
+  void parseStartElement()
           throws ThreddsXmlParserException
   {
     StartElement startElement = this.getNextEventIfStartElementIsMine();
@@ -103,10 +103,10 @@ public class VariableGroupElementParser extends AbstractElementParser
     private final ThreddsMetadataBuilder.VariableGroupBuilder parentBuilder;
     private ThreddsMetadataBuilder.VariableBuilder selfBuilder;
 
-    VariableElementParser( QName elementName,
-                           XMLEventReader reader,
-                           ThreddsBuilderFactory builderFactory,
-                           ThreddsBuilder parentBuilder ) {
+    private VariableElementParser( QName elementName,
+                                   XMLEventReader reader,
+                                   ThreddsBuilderFactory builderFactory,
+                                   ThreddsBuilder parentBuilder ) {
       this.elementName = elementName;
       this.reader = reader;
       this.builderFactory = builderFactory;

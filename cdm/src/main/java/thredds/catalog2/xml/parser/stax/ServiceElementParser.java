@@ -65,9 +65,9 @@ class ServiceElementParser extends AbstractElementParser
 
 
   private ServiceElementParser( QName elementName,
-                        XMLEventReader reader,
-                        ThreddsBuilderFactory builderFactory,
-                        CatalogBuilder parentCatalogBuilder )
+                                XMLEventReader reader,
+                                ThreddsBuilderFactory builderFactory,
+                                CatalogBuilder parentCatalogBuilder )
   {
     super( elementName, reader, builderFactory);
     this.parentCatalogBuilder = parentCatalogBuilder;

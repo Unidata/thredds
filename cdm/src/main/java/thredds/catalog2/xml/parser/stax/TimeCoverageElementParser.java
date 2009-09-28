@@ -35,10 +35,10 @@ class TimeCoverageElementParser extends AbstractElementParser
   private DurationParser.Factory resolutionParserFactory;
   private DurationParser resolutionParser;
 
-  TimeCoverageElementParser( QName elementName,
-                             XMLEventReader reader,
-                             ThreddsBuilderFactory builderFactory,
-                             ThreddsMetadataBuilder parentBuilder )
+  private TimeCoverageElementParser( QName elementName,
+                                     XMLEventReader reader,
+                                     ThreddsBuilderFactory builderFactory,
+                                     ThreddsMetadataBuilder parentBuilder )
   {
     super( elementName, reader, builderFactory );
     this.parentBuilder = parentBuilder;
@@ -134,7 +134,7 @@ class TimeCoverageElementParser extends AbstractElementParser
 
     private String value;
 
-    DurationParser( QName elementName ) {
+    private DurationParser( QName elementName ) {
       this.elementName = elementName;
     }
 

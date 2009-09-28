@@ -24,10 +24,10 @@ class ContributorElementParser extends AbstractElementParser
   private final ThreddsMetadataBuilder parentBuilder;
   private ThreddsMetadataBuilder.ContributorBuilder selfBuilder;
 
-  ContributorElementParser( QName elementName,
-                            XMLEventReader reader,
-                            ThreddsBuilderFactory builderFactory,
-                            ThreddsMetadataBuilder parentBuilder )
+  private ContributorElementParser( QName elementName,
+                                    XMLEventReader reader,
+                                    ThreddsBuilderFactory builderFactory,
+                                    ThreddsMetadataBuilder parentBuilder )
   {
     super( elementName, reader, builderFactory );
     this.parentBuilder = parentBuilder;
