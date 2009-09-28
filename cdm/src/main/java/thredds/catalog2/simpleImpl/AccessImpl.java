@@ -43,7 +43,7 @@ import thredds.catalog2.builder.*;
  * @author edavis
  * @since 4.0
  */
-public class AccessImpl implements Access, AccessBuilder
+class AccessImpl implements Access, AccessBuilder
 {
   private final DatasetImpl parentDs;
   private ServiceImpl service;
@@ -53,7 +53,7 @@ public class AccessImpl implements Access, AccessBuilder
 
   private boolean isBuilt = false;
 
-  protected AccessImpl( DatasetImpl parentDataset )
+  AccessImpl( DatasetImpl parentDataset )
   {
     this.parentDs = parentDataset;
   }

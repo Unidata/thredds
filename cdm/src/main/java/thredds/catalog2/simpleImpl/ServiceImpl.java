@@ -49,7 +49,7 @@ import java.util.*;
  * @author edavis
  * @since 4.0
  */
-public class ServiceImpl implements Service, ServiceBuilder
+class ServiceImpl implements Service, ServiceBuilder
 {
   private String name;
   private String description;
@@ -66,7 +66,7 @@ public class ServiceImpl implements Service, ServiceBuilder
 
   private boolean isBuilt = false;
 
-  protected ServiceImpl( String name, ServiceType type, URI baseUri, GlobalServiceContainer globalServiceContainer )
+  ServiceImpl( String name, ServiceType type, URI baseUri, GlobalServiceContainer globalServiceContainer )
   {
     if ( name == null ) throw new IllegalArgumentException( "Name must not be null.");
     if ( type == null ) throw new IllegalArgumentException( "Service type must not be null.");

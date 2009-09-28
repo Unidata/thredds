@@ -11,7 +11,6 @@ import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 import thredds.catalog2.builder.ThreddsBuilderFactory;
 import thredds.catalog2.builder.ThreddsMetadataBuilder;
 import thredds.catalog2.builder.ThreddsBuilder;
-import thredds.catalog2.simpleImpl.ThreddsMetadataImpl;
 import thredds.catalog2.simpleImpl.ThreddsBuilderFactoryImpl;
 
 /**
@@ -29,7 +28,7 @@ public class TimeCoverageElementParserTest
   public void createMockObjects()
   {
     this.fac = new ThreddsBuilderFactoryImpl();
-    this.tmBldr = new ThreddsMetadataImpl();
+    this.tmBldr = this.fac.newThreddsMetadataBuilder();
   }
 
   @Test

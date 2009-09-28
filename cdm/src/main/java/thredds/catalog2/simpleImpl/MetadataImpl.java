@@ -46,7 +46,7 @@ import java.net.URI;
  * @author edavis
  * @since 4.0
  */
-public class MetadataImpl implements Metadata, MetadataBuilder
+class MetadataImpl implements Metadata, MetadataBuilder
 {
   private boolean isContainedContent;
 
@@ -56,19 +56,19 @@ public class MetadataImpl implements Metadata, MetadataBuilder
 
   private boolean isBuilt;
 
-  public MetadataImpl()
+  MetadataImpl()
   {
     this.isContainedContent = true;
     this.isBuilt = false;
   }
 
-  public MetadataImpl( boolean isContainedContent )
+  MetadataImpl( boolean isContainedContent )
   {
     this.isContainedContent = isContainedContent;
     this.isBuilt = false;
   }
 
-  public MetadataImpl( String title, URI externalReference )
+  MetadataImpl( String title, URI externalReference )
   {
     if ( title == null )
       throw new IllegalArgumentException( "Title may not be null." );
@@ -83,7 +83,7 @@ public class MetadataImpl implements Metadata, MetadataBuilder
     this.isBuilt = false;
   }
 
-  public MetadataImpl( String content )
+  MetadataImpl( String content )
   {
     if ( content == null )
       throw new IllegalArgumentException( "Content string may not be null.");

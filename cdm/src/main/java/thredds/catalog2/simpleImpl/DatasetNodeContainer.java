@@ -87,7 +87,7 @@ class DatasetNodeContainer
     return this;
   }
 
-  public boolean isDatasetNodeIdInUseGlobally( String id )
+  boolean isDatasetNodeIdInUseGlobally( String id )
   {
     if ( this.getDatasetNodeByGloballyUniqueId( id ) == null )
       return false;
@@ -124,7 +124,7 @@ class DatasetNodeContainer
     }
   }
 
-  protected boolean removeDatasetNodeByGloballyUniqueId( String id )
+  boolean removeDatasetNodeByGloballyUniqueId( String id )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This DatasetNodeContainer has been built." );
@@ -160,7 +160,7 @@ class DatasetNodeContainer
     return this.localIdList.add( datasetNode.getId() );
   }
 
-  protected boolean removeDatasetNodeFromLocalById( String id )
+  boolean removeDatasetNodeFromLocalById( String id )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This DatasetNodeContainer has been built." );
@@ -173,7 +173,7 @@ class DatasetNodeContainer
     return this.localIdList.remove( id );
   }
 
-  protected DatasetNodeImpl getDatasetNodeByGloballyUniqueId( String id )
+  DatasetNodeImpl getDatasetNodeByGloballyUniqueId( String id )
   {
     if ( id == null )
       return null;
@@ -189,14 +189,14 @@ class DatasetNodeContainer
     }
   }
 
-  public boolean isEmpty()
+  boolean isEmpty()
   {
     if ( this.datasetNodeImplList == null )
       return true;
     return this.datasetNodeImplList.isEmpty();
   }
 
-  public int size()
+  int size()
   {
     if ( this.datasetNodeImplList == null )
       return 0;
@@ -210,7 +210,7 @@ class DatasetNodeContainer
    * @throws IllegalArgumentException if datasetNode is null.
    * @throws IllegalStateException if build() has been called on this DatasetNodeContainer or the id of the DatasetNode is not unique in the root container.
    */
-  public void addDatasetNode( DatasetNodeImpl datasetNode )
+  void addDatasetNode( DatasetNodeImpl datasetNode )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This DatasetNodeContainer has been built.");
@@ -243,7 +243,7 @@ class DatasetNodeContainer
    * @throws IllegalArgumentException if datasetNode is null.
    * @throws IllegalStateException if build() has been called on this DatasetNodeContainer.
    */
-  public boolean removeDatasetNode( DatasetNodeImpl datasetNode )
+  boolean removeDatasetNode( DatasetNodeImpl datasetNode )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This DatasetNodeContainer has been built." );
@@ -275,7 +275,7 @@ class DatasetNodeContainer
     return true;
   }
 
-  public List<DatasetNode> getDatasets()
+  List<DatasetNode> getDatasets()
   {
     if ( ! this.isBuilt )
       throw new IllegalStateException( "This DatasetNodeCollection has escaped its Builder before being built." );
@@ -285,7 +285,7 @@ class DatasetNodeContainer
     return Collections.unmodifiableList( new ArrayList<DatasetNode>( this.datasetNodeImplList ));
   }
 
-  public DatasetNode getDatasetById( String id )
+  DatasetNode getDatasetById( String id )
   {
     if ( ! this.isBuilt )
       throw new IllegalStateException( "This DatasetNodeCollection has escaped its Builder before being built." );
@@ -299,7 +299,7 @@ class DatasetNodeContainer
     return null;
   }
 
-  public List<DatasetNodeBuilder> getDatasetNodeBuilders()
+  List<DatasetNodeBuilder> getDatasetNodeBuilders()
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This DatasetNodeContainer has been built." );
@@ -308,7 +308,7 @@ class DatasetNodeContainer
     return Collections.unmodifiableList( new ArrayList<DatasetNodeBuilder>( this.datasetNodeImplList ) );
   }
 
-  public DatasetNodeBuilder getDatasetNodeBuilderById( String id )
+  DatasetNodeBuilder getDatasetNodeBuilderById( String id )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This DatasetNodeContainer has been built." );
@@ -328,7 +328,7 @@ class DatasetNodeContainer
    *
    * @return true if this DatasetNodeContainer is in a state where build() will succeed.
    */
-  public BuilderIssues getIssues()
+  BuilderIssues getIssues()
   {
     BuilderIssues issues = new BuilderIssues();
 
@@ -345,7 +345,7 @@ class DatasetNodeContainer
    *
    * @throws thredds.catalog2.builder.BuilderException if any of the contained datasets are not in a valid state.
    */
-  public void build()
+  void build()
           throws BuilderException
   {
     if ( this.isBuilt )

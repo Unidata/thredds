@@ -47,7 +47,7 @@ import ucar.nc2.units.DateType;
  * @author edavis
  * @since 4.0
  */
-public class CatalogImpl implements Catalog, CatalogBuilder
+class CatalogImpl implements Catalog, CatalogBuilder
 {
   private String name;
   private URI docBaseUri;
@@ -65,7 +65,7 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   private boolean isBuilt = false;
 
 
-  public CatalogImpl( String name, URI docBaseUri, String version, DateType expires, DateType lastModified )
+  CatalogImpl( String name, URI docBaseUri, String version, DateType expires, DateType lastModified )
   {
     if ( docBaseUri == null ) throw new IllegalArgumentException( "Catalog base URI must not be null.");
     this.name = name;

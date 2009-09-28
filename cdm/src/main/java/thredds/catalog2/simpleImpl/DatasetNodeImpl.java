@@ -44,7 +44,7 @@ import java.net.URI;
  * @author edavis
  * @since 4.0
  */
-public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
+class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
 {
   private String id;
   private String idAuthority;
@@ -62,7 +62,7 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
 
   private boolean isBuilt = false;
 
-  protected DatasetNodeImpl( String name, CatalogImpl parentCatalog, DatasetNodeImpl parent )
+  DatasetNodeImpl( String name, CatalogImpl parentCatalog, DatasetNodeImpl parent )
   {
     if ( name == null )
       throw new IllegalArgumentException( "DatasetNode name must not be null.");
@@ -266,7 +266,7 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
       return false;
     if ( this.metadataImplList == null )
       return false;
-    return this.metadataImplList.remove( metadataBuilder );
+    return this.metadataImplList.remove( (MetadataImpl) metadataBuilder );
   }
 
   public List<Metadata> getMetadata()

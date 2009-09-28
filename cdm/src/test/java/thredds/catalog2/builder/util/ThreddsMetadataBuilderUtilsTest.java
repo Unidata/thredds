@@ -5,7 +5,8 @@ import org.junit.Before;
 import static org.junit.Assert.*;
 
 import thredds.catalog2.builder.ThreddsMetadataBuilder;
-import thredds.catalog2.simpleImpl.ThreddsMetadataImpl;
+import thredds.catalog2.builder.ThreddsBuilderFactory;
+import thredds.catalog2.simpleImpl.ThreddsBuilderFactoryImpl;
 
 import java.util.List;
 
@@ -20,7 +21,9 @@ public class ThreddsMetadataBuilderUtilsTest
   @Test
   public void checkCopyThreddsMetadataBuilderVariables()
   {
-    ThreddsMetadataBuilder srcTmBldr = new ThreddsMetadataImpl();
+    ThreddsBuilderFactory fac = new ThreddsBuilderFactoryImpl();
+
+    ThreddsMetadataBuilder srcTmBldr = fac.newThreddsMetadataBuilder();
     ThreddsMetadataBuilder.VariableGroupBuilder srcVarGrpBldr = srcTmBldr.addVariableGroupBuilder();
 
     String vocabAuthId = "vocabAuthId";
@@ -28,7 +31,7 @@ public class ThreddsMetadataBuilderUtilsTest
     String name = "name";
     srcVarGrpBldr.addVariableBuilder( name, "descrip", "units", "vocabId", "vocabName" );
 
-    ThreddsMetadataBuilder recipientTmBldr = new ThreddsMetadataImpl();
+    ThreddsMetadataBuilder recipientTmBldr = fac.newThreddsMetadataBuilder();
     assertNotNull( recipientTmBldr);
     assertTrue( recipientTmBldr.getVariableGroupBuilders().isEmpty());
 

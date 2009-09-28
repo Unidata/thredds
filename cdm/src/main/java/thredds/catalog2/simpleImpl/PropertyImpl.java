@@ -40,11 +40,11 @@ import thredds.catalog2.Property;
  * @author edavis
  * @since 4.0
  */
-public class PropertyImpl implements Property
+class PropertyImpl implements Property
 {
   private final String name;
   private final String value;
-  public PropertyImpl( String name, String value )
+  PropertyImpl( String name, String value )
   {
     if ( name == null ) throw new IllegalArgumentException( "Name must not be null.");
     if ( value == null ) throw new IllegalArgumentException( "Value must not be null.");

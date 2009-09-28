@@ -57,14 +57,14 @@ class PropertyContainer
     this.propertiesMap = null;
   }
 
-  public boolean isEmpty()
+  boolean isEmpty()
   {
     if ( this.propertiesMap == null )
       return true;
     return this.propertiesMap.isEmpty();
   }
 
-  public int size()
+  int size()
   {
     if ( this.propertiesMap == null )
       return 0;
@@ -79,7 +79,7 @@ class PropertyContainer
    * @throws IllegalArgumentException if name or value are null.
    * @throws IllegalStateException if build() has been called on this PropertyContainer.
    */
-  public void addProperty( String name, String value )
+  void addProperty( String name, String value )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This PropertyContainer has been built.");
@@ -103,7 +103,7 @@ class PropertyContainer
    * @throws IllegalArgumentException if name is null.
    * @throws IllegalStateException if build() has been called on this PropertyContainer.
    */
-  public boolean removeProperty( String name )
+  boolean removeProperty( String name )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This PropertyContainer has been built." );
@@ -121,14 +121,14 @@ class PropertyContainer
     return true;
   }
 
-  public List<String> getPropertyNames()
+  List<String> getPropertyNames()
   {
     if ( this.propertiesMap == null )
       return Collections.emptyList();
     return Collections.unmodifiableList( new ArrayList<String>( this.propertiesMap.keySet() ) );
   }
 
-  public boolean containsPropertyName( String name )
+  boolean containsPropertyName( String name )
   {
     if ( name == null )
       return false;
@@ -141,7 +141,7 @@ class PropertyContainer
     return true;
   }
 
-  public String getPropertyValue( String name )
+  String getPropertyValue( String name )
   {
     if ( name == null )
       return null;
@@ -155,7 +155,7 @@ class PropertyContainer
     return property.getValue();
   }
 
-  public List<Property> getProperties()
+  List<Property> getProperties()
   {
     if ( this.propertiesMap == null )
       return Collections.emptyList();
@@ -163,7 +163,7 @@ class PropertyContainer
     return Collections.unmodifiableList( new ArrayList<Property>( this.propertiesMap.values() ) );
   }
 
-  public Property getPropertyByName( String name )
+  Property getPropertyByName( String name )
   {
     if ( name == null )
       return null;
@@ -174,7 +174,7 @@ class PropertyContainer
     return this.propertiesMap.get( name );
   }
 
-  public boolean isBuilt()
+  boolean isBuilt()
   {
     return this.isBuilt;
   }
@@ -191,7 +191,7 @@ class PropertyContainer
    *
    * @return an empty BuilderIssues object.
    */
-  public BuilderIssues getIssues()
+  BuilderIssues getIssues()
   {
     return null;
   }
@@ -202,7 +202,7 @@ class PropertyContainer
    * No validation is required
    * (see {@link #getIssues()})
    */
-  public void build()
+  void build()
   {
     this.isBuilt = true;
     return;

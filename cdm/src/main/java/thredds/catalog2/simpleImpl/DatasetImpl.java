@@ -47,7 +47,7 @@ import java.util.Collections;
  * @author edavis
  * @since 4.0
  */
-public class DatasetImpl
+class DatasetImpl
         extends DatasetNodeImpl
         implements Dataset, DatasetBuilder
 {
@@ -55,7 +55,7 @@ public class DatasetImpl
 
   private boolean isBuilt = false;
 
-  protected DatasetImpl( String name, CatalogImpl parentCatalog, DatasetNodeImpl parent )
+  DatasetImpl( String name, CatalogImpl parentCatalog, DatasetNodeImpl parent )
   {
     super( name, parentCatalog, parent);
   }

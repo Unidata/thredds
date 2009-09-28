@@ -43,14 +43,14 @@ import java.net.URI;
  * @author edavis
  * @since 4.0
  */
-public class CatalogRefImpl
+class CatalogRefImpl
         extends DatasetNodeImpl
         implements CatalogRef, CatalogRefBuilder
 {
   private URI reference;
   private boolean isBuilt = false;
 
-  protected CatalogRefImpl( String name, URI reference, CatalogImpl parentCatalog, DatasetNodeImpl parent )
+  CatalogRefImpl( String name, URI reference, CatalogImpl parentCatalog, DatasetNodeImpl parent )
   {
     super( name, parentCatalog, parent);
     if ( reference == null ) throw new IllegalArgumentException( "CatalogRef reference URI must not be null." );

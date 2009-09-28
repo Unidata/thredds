@@ -51,7 +51,7 @@ import ucar.nc2.constants.FeatureType;
  * @author edavis
  * @since 4.0
  */
-public class ThreddsMetadataImpl
+class ThreddsMetadataImpl
         implements ThreddsMetadata, ThreddsMetadataBuilder
 {
   private boolean isBuilt;
@@ -82,7 +82,7 @@ public class ThreddsMetadataImpl
   private FeatureType dataType;
   private String collectionType;
 
-  public ThreddsMetadataImpl()
+  ThreddsMetadataImpl()
   {
     this.isBuilt = false;
     this.dataSizeInBytes = -1;
