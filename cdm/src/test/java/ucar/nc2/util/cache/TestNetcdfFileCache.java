@@ -50,12 +50,13 @@ import java.util.concurrent.*;
  */
 public class TestNetcdfFileCache extends TestCase {
 
-  public TestNetcdfFileCache( String name) {
+  public TestNetcdfFileCache(String name) {
     super(name);
   }
 
   FileCache cache;
   FileFactory factory = new MyFileFactory();
+
   protected void setUp() throws java.lang.Exception {
     cache = new FileCache(5, 100, 60 * 60);
   }
@@ -68,12 +69,10 @@ public class TestNetcdfFileCache extends TestCase {
 
 
   public void testNetcdfFileCache() throws IOException {
-    loadFiles( new File(TestLocal.cdmTestDataDir), cache);
-    System.out.println(" loaded "+count);
+    loadFiles(new File(TestLocal.cdmTestDataDir), cache);
+    System.out.println(" loaded " + count);
 
-    Formatter format = new Formatter();
-    cache.showCache(format);
-    System.out.println(format);
+    cache.showCache(new Formatter(System.out));
 
     // count cache size
     Map<Object, FileCache.CacheElement> map = cache.getCache();
@@ -87,7 +86,7 @@ public class TestNetcdfFileCache extends TestCase {
 
     // load same files again - should be added to the list, rather than creating a new elem
     int saveCount = count;
-    loadFiles( new File(TestLocal.cdmTestDataDir), cache);
+    loadFiles(new File(TestLocal.cdmTestDataDir), cache);
     map = cache.getCache();
     assert map.values().size() == saveCount;
 
@@ -95,7 +94,7 @@ public class TestNetcdfFileCache extends TestCase {
       FileCache.CacheElement elem = map.get(key);
       //System.out.println(" "+key+" == "+elem);
       assert elem.list.size() == 2;
-      checkAllSame( elem.list);
+      checkAllSame(elem.list);
     }
 
     cache.clearCache(true);
@@ -103,7 +102,7 @@ public class TestNetcdfFileCache extends TestCase {
     assert map.values().size() == 0;
 
     // load again
-    loadFiles( new File(TestLocal.cdmTestDataDir), cache);
+    loadFiles(new File(TestLocal.cdmTestDataDir), cache);
     map = cache.getCache();
     assert map.values().size() == saveCount;
 
@@ -113,19 +112,19 @@ public class TestNetcdfFileCache extends TestCase {
       FileCache.CacheElement elem = map.get(key);
       assert elem.list.size() == 1;
       for (FileCache.CacheElement.CacheFile file : elem.list) {
-        files.add( file.ncfile);
+        files.add(file.ncfile);
       }
     }
     for (FileCacheable ncfile : files) {
       ncfile.close();
     }
-    cache.clearCache( false);
+    cache.clearCache(false);
     map = cache.getCache();
     assert map.values().size() == 0 : map.values().size();
 
     // load twice
-    loadFiles( new File(TestLocal.cdmTestDataDir), cache);
-    loadFiles( new File(TestLocal.cdmTestDataDir), cache);
+    loadFiles(new File(TestLocal.cdmTestDataDir), cache);
+    loadFiles(new File(TestLocal.cdmTestDataDir), cache);
     map = cache.getCache();
     assert map.values().size() == saveCount;
 
@@ -142,7 +141,7 @@ public class TestNetcdfFileCache extends TestCase {
     map = cache.getCache();
     assert map.values().size() == saveCount;
 
-    cache.clearCache( false);
+    cache.clearCache(false);
     map = cache.getCache();
     assert map.values().size() == saveCount;
 
@@ -164,13 +163,14 @@ public class TestNetcdfFileCache extends TestCase {
       if (first == null)
         first = file;
       else {
-        assert first.ncfile.getLocation().equals( file.ncfile.getLocation());
+        assert first.ncfile.getLocation().equals(file.ncfile.getLocation());
         assert first.lastAccessed < file.lastAccessed;
       }
     }
   }
 
   int count = 0;
+
   void loadFiles(File dir, FileCache cache) {
     for (File f : dir.listFiles()) {
       if (f.isDirectory())
@@ -184,26 +184,66 @@ public class TestNetcdfFileCache extends TestCase {
           count++;
         } catch (IOException e) {
           // e.printStackTrace();
-          System.out.println(" *** failed on "+f.getPath());
+          System.out.println(" *** failed on " + f.getPath());
         }
       }
     }
   }
 
+  /////////////////////////////////////////////////////////////////////////////////
+
+  public void testPeriodicClear() throws IOException {
+    FileCache cache = new FileCache(0, 10, 60 * 60);
+    testPeriodicCleanup(cache);
+    Map<Object, FileCache.CacheElement> map = cache.getCache();
+    assert map.values().size() == 0 : map.values().size();
+
+    cache = new FileCache(5, 10, 60 * 60);
+    testPeriodicCleanup(cache);
+    map = cache.getCache();
+    assert map.values().size() == 5 : map.values().size(); 
+  }
+
+  private void testPeriodicCleanup(FileCache cache) throws IOException {
+    loadFiles(new File(TestLocal.cdmTestDataDir), cache);
+    System.out.println(" loaded " + count);
+
+    // close all
+    Map<Object, FileCache.CacheElement> map = cache.getCache();
+    List<FileCacheable> files = new ArrayList<FileCacheable>();
+    for (Object key : map.keySet()) {
+      FileCache.CacheElement elem = map.get(key);
+      assert elem.list.size() == 1;
+      for (FileCache.CacheElement.CacheFile file : elem.list) {
+        files.add(file.ncfile);
+      }
+    }
+    System.out.println(" close " + files.size());
+
+    for (FileCacheable ncfile : files) {
+      ncfile.close();
+    }
+
+    cache.showCache(new Formatter(System.out));    
+    cache.cleanup(10);
+  }
+
+
+  //////////////////////////////////////////////////////////////////////////////////
   int N = 10000;
   int PROD_THREAD = 10;
   int CONS_THREAD = 10;
- // int QSIZE = 10;
+  // int QSIZE = 10;
   int SKIP = 100;
 
   public void testConcurrentAccess() throws InterruptedException {
-    loadFiles( new File(TestLocal.cdmTestDataDir), cache);
+    loadFiles(new File(TestLocal.cdmTestDataDir), cache);
     Map<Object, FileCache.CacheElement> map = cache.getCache();
     List<String> files = new ArrayList<String>();
     for (Object key : map.keySet()) {
       FileCache.CacheElement elem = map.get(key);
       for (FileCache.CacheElement.CacheFile file : elem.list)
-        files.add( file.ncfile.getLocation());
+        files.add(file.ncfile.getLocation());
     }
 
     Random r = new Random();
@@ -212,17 +252,17 @@ public class TestNetcdfFileCache extends TestCase {
     Formatter format = new Formatter(System.out);
     ConcurrentLinkedQueue<Future> q = new ConcurrentLinkedQueue<Future>();
     ExecutorService qexec = Executors.newFixedThreadPool(CONS_THREAD);
-    qexec.submit( new Consumer(q, format));
+    qexec.submit(new Consumer(q, format));
 
     ExecutorService exec = Executors.newFixedThreadPool(PROD_THREAD);
-    for (int i=0; i< N; i++) {
+    for (int i = 0; i < N; i++) {
       // pick a file at random
       int findex = r.nextInt(nfiles);
       String location = files.get(findex);
-      q.add( exec.submit( new CallAcquire( location)));
+      q.add(exec.submit(new CallAcquire(location)));
 
       if (i % SKIP == 0) {
-        format.format(" %3d qsize= %3d ",i, q.size());
+        format.format(" %3d qsize= %3d ", i, q.size());
         cache.showStats(format);
       }
     }
@@ -248,54 +288,58 @@ public class TestNetcdfFileCache extends TestCase {
       total_locks += locks;
       total += elem.list.size();
     }
-    System.out.println(" total="+total+" total_locks="+total_locks);
+    System.out.println(" total=" + total + " total_locks=" + total_locks);
 //    assert total_locks == map.keySet().size();
 
-    cache.clearCache( false);
+    cache.clearCache(false);
     format.format("after cleanup qsize= %4d\n", q.size());
     cache.showStats(format);
 
     cache.clearCache(true);
   }
 
- class Consumer implements Runnable {
-   private final ConcurrentLinkedQueue<Future> queue;
-   Formatter format;
+  class Consumer implements Runnable {
+    private final ConcurrentLinkedQueue<Future> queue;
+    Formatter format;
 
-   Consumer(ConcurrentLinkedQueue<Future> q, Formatter format) {
-     queue = q;
-     this.format = format;
-   }
+    Consumer(ConcurrentLinkedQueue<Future> q, Formatter format) {
+      queue = q;
+      this.format = format;
+    }
 
 
-   public void run() {
-     try {
-       while (true) {
-         consume( queue.poll());
-       }
-     } catch (Exception ex) {
-       ex.printStackTrace();
-     }
-   }
+    public void run() {
+      try {
+        while (true) {
+          consume(queue.poll());
+        }
+      } catch (Exception ex) {
+        ex.printStackTrace();
+      }
+    }
 
-   void consume(Future x) throws ExecutionException, InterruptedException, IOException {
-     if (x == null) return;
-     
-     if (x.isDone()) {
-       NetcdfFile ncfile = (NetcdfFile) x.get();
-       ncfile.close();
-       //format.format("  closed qsize= %3d\n", queue.size());
-     } else {
-       // format.format("  lost file= %3d\n", queue.size());
-       queue.add(x); // put it back
-     }
+    void consume(Future x) throws ExecutionException, InterruptedException, IOException {
+      if (x == null) return;
 
-   }
- }
+      if (x.isDone()) {
+        NetcdfFile ncfile = (NetcdfFile) x.get();
+        ncfile.close();
+        //format.format("  closed qsize= %3d\n", queue.size());
+      } else {
+        // format.format("  lost file= %3d\n", queue.size());
+        queue.add(x); // put it back
+      }
+
+    }
+  }
 
   class CallAcquire implements Callable<FileCacheable> {
     String location;
-    CallAcquire(String location) { this.location = location; }
+
+    CallAcquire(String location) {
+      this.location = location;
+    }
+
     public FileCacheable call() throws Exception {
       return cache.acquire(factory, location, null);
     }
@@ -303,7 +347,11 @@ public class TestNetcdfFileCache extends TestCase {
 
   class RunClose implements Runnable {
     NetcdfFile f;
-    RunClose(NetcdfFile f) { this.f = f; }
+
+    RunClose(NetcdfFile f) {
+      this.f = f;
+    }
+
     public void run() {
       try {
         f.close();

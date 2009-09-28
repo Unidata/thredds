@@ -65,7 +65,7 @@ public interface FileCacheable {
   public boolean sync() throws IOException;
 
   /**
-   * FileCacheable must store the FileCache and call it on close():
+   * If the FileCache is set, the FileCacheable object must store it and call FileCache.release() on FileCacheable.close():
    * <pre>
   public synchronized void close() throws java.io.IOException {
     if (isClosed) return;

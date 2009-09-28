@@ -376,7 +376,7 @@ public class ReadTdsLogs {
 
   static private int total_submit = 0;
   static private int skip_submit = -1;
-  static private int max_submit = Integer.MAX_VALUE;
+  static private int max_submit = 10000; // Integer.MAX_VALUE;
 
   void sendRequests(String filename, int max) throws IOException {
     int submit = 0;
@@ -403,10 +403,10 @@ public class ReadTdsLogs {
         continue;
       }
 
-      /* if (!(log.path.indexOf("ncss/grid") > 0))  {    // ncss only
+      if (!(log.path.indexOf("dodsC") > 0))  {    // opendap only
        skip++;
        continue;
-     } */
+     }
 
       if (log.path.indexOf("fileServer") > 0) {
         // System.out.println(" *** skip fmrc " + log);

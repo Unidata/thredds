@@ -476,7 +476,7 @@ public class FileCache {
    * <p/>
    * We have to synchronize because of clearCache()
    */
-  private synchronized void cleanup(int maxElements) {
+  synchronized void cleanup(int maxElements) {
     if (disabled.get()) return;
 
     try {
