@@ -141,9 +141,11 @@ public class TimeCoverageElementParserTest
     XMLEventReader reader = StaxParserUtils.createXmlEventReaderOnXmlString( xml, "http://test.catalog2.thredds/DateTypeParserTest/someTest.xml" );
     StaxParserUtils.advanceReaderToFirstStartElement( reader );
 
-    assertTrue( TimeCoverageElementParser.isSelfElementStatic( reader.peek() ));
+    TimeCoverageElementParser.Factory timeCovParserFactory = new TimeCoverageElementParser.Factory();
 
-    TimeCoverageElementParser parser = new TimeCoverageElementParser( reader, this.fac, this.tmBldr );
+    assertTrue( timeCovParserFactory.isEventMyStartElement( reader.peek() ));
+
+    TimeCoverageElementParser parser = timeCovParserFactory.getNewParser( reader, this.fac, this.tmBldr );
 
     ThreddsBuilder bldr = parser.parse();
     assertNotNull( bldr );

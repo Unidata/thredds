@@ -63,6 +63,7 @@ class DatasetNodeElementParserHelper
   private final DatasetElementParser.Factory datasetElemParserFactory;
   private final CatalogRefElementParser.Factory catRefElemParserFactory;
   private final MetadataElementParser.Factory metadataElemParserFactory;
+  private final ThreddsMetadataElementParser.Factory threddsMetadataElemParserFactory;
 
   private final DatasetNodeBuilder datasetNodeBuilder;
 
@@ -94,6 +95,7 @@ class DatasetNodeElementParserHelper
     this.datasetElemParserFactory = new DatasetElementParser.Factory();
     this.catRefElemParserFactory = new CatalogRefElementParser.Factory();
     this.metadataElemParserFactory = new MetadataElementParser.Factory();
+    this.threddsMetadataElemParserFactory = new ThreddsMetadataElementParser.Factory();
 
     if ( parentDatasetNodeElementParserHelper != null)
     {
@@ -241,13 +243,13 @@ class DatasetNodeElementParserHelper
 
       return true;
     }
-    else if ( ThreddsMetadataElementParser.isSelfElementStatic( startElement ))
+    else if ( this.threddsMetadataElemParserFactory.isEventMyStartElement( startElement ))
     {
       if ( this.threddsMetadataElementParser == null )
-        this.threddsMetadataElementParser = new ThreddsMetadataElementParser( reader,
-                                                                              this.builderFactory,
-                                                                              dsNodeBuilder,
-                                                                              this, false );
+        this.threddsMetadataElementParser = this.threddsMetadataElemParserFactory.getNewParser( reader,
+                                                                                                this.builderFactory,
+                                                                                                dsNodeBuilder,
+                                                                                                this, false );
       this.threddsMetadataElementParser.parse();
       return true;
     }

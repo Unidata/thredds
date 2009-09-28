@@ -66,6 +66,7 @@ class MetadataElementParser extends AbstractElementParser
   private boolean isContainedContent = false;
   private StringBuilder content;
 
+  private ThreddsMetadataElementParser.Factory threddsMetadataElementParserFactory;
   private ThreddsMetadataElementParser threddsMetadataElementParser;
 
   private MetadataElementParser( QName elementName,
@@ -77,6 +78,8 @@ class MetadataElementParser extends AbstractElementParser
     super( elementName, reader, builderFactory );
     this.parentDatasetNodeBuilder = parentDatasetNodeBuilder;
     this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
+
+    this.threddsMetadataElementParserFactory = new ThreddsMetadataElementParser.Factory();
 
     this.selfBuilder = builderFactory.newMetadataBuilder();
   }
@@ -121,7 +124,7 @@ class MetadataElementParser extends AbstractElementParser
     // If contains "threddsMetadataGroup" elements, drop metadata wrapper
     StartElement nextElement = this.peekAtNextEventIfStartElement();
 
-    if ( ThreddsMetadataElementParser.isSelfElementStatic( nextElement ) )
+    if ( this.threddsMetadataElementParserFactory.isEventMyStartElement( nextElement ) )
     {
       this.containsThreddsMetadata = true;
       return;
@@ -167,15 +170,17 @@ class MetadataElementParser extends AbstractElementParser
 
     if ( this.containsThreddsMetadata )
     {
-      if ( ThreddsMetadataElementParser.isSelfElementStatic( startElement ) )
+      if ( this.threddsMetadataElementParserFactory.isEventMyStartElement( startElement ) )
       {
         if ( this.threddsMetadataElementParser == null )
+        {
           this.threddsMetadataElementParser
-                  = new ThreddsMetadataElementParser( this.reader,
-                                                      this.builderFactory,
-                                                      this.parentDatasetNodeBuilder,
-                                                      this.parentDatasetNodeElementParserHelper,
-                                                      this.isInheritedByDescendants );
+                  = this.threddsMetadataElementParserFactory.getNewParser( this.reader,
+                                                                           this.builderFactory,
+                                                                           this.parentDatasetNodeBuilder,
+                                                                           this.parentDatasetNodeElementParserHelper,
+                                                                           this.isInheritedByDescendants );
+        }
         this.threddsMetadataElementParser.parse();
         
       }
@@ -190,7 +195,7 @@ class MetadataElementParser extends AbstractElementParser
     }
     else
     {
-      if ( ThreddsMetadataElementParser.isSelfElementStatic( startElement ) )
+      if ( this.threddsMetadataElementParserFactory.isEventMyStartElement( startElement ) )
       {
         String msg = "Unexpected THREDDS Metadata";
         ThreddsXmlParserIssue issue = StaxThreddsXmlParserUtils.createIssueForUnexpectedElement( msg, this.reader );

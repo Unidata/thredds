@@ -11,6 +11,7 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
+import javax.xml.namespace.QName;
 
 /**
  * _more_
@@ -23,22 +24,16 @@ class ContributorElementParser extends AbstractElementParser
   private final ThreddsMetadataBuilder parentBuilder;
   private ThreddsMetadataBuilder.ContributorBuilder selfBuilder;
 
-  ContributorElementParser( XMLEventReader reader,
-                          ThreddsBuilderFactory builderFactory,
-                          ThreddsMetadataBuilder parentBuilder )
-          throws ThreddsXmlParserException
+  ContributorElementParser( QName elementName,
+                            XMLEventReader reader,
+                            ThreddsBuilderFactory builderFactory,
+                            ThreddsMetadataBuilder parentBuilder )
   {
-    super( ThreddsMetadataElementNames.ContributorElement, reader, builderFactory );
+    super( elementName, reader, builderFactory );
     this.parentBuilder = parentBuilder;
   }
 
-  static boolean isSelfElementStatic( XMLEvent event )
-  {
-    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.ContributorElement );
-  }
-
-  ThreddsBuilder getSelfBuilder()
-  {
+  ThreddsBuilder getSelfBuilder() {
     return null;
   }
 
@@ -68,5 +63,25 @@ class ContributorElementParser extends AbstractElementParser
   void postProcessingAfterEndElement()
           throws ThreddsXmlParserException
   {
+  }
+
+  static class Factory
+  {
+    private QName elementName;
+
+    Factory() {
+      this.elementName = ThreddsMetadataElementNames.ContributorElement;
+    }
+
+    boolean isEventMyStartElement( XMLEvent event ) {
+      return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
+    }
+
+    ContributorElementParser getNewParser( XMLEventReader reader,
+                                           ThreddsBuilderFactory builderFactory,
+                                           ThreddsMetadataBuilder parentBuilder )
+    {
+      return new ContributorElementParser( this.elementName, reader, builderFactory, parentBuilder );
+    }
   }
 }

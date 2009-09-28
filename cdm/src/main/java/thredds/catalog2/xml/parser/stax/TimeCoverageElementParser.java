@@ -35,22 +35,18 @@ class TimeCoverageElementParser extends AbstractElementParser
   private DurationParser.Factory resolutionParserFactory;
   private DurationParser resolutionParser;
 
-  TimeCoverageElementParser( XMLEventReader reader,
+  TimeCoverageElementParser( QName elementName,
+                             XMLEventReader reader,
                              ThreddsBuilderFactory builderFactory,
                              ThreddsMetadataBuilder parentBuilder )
-          throws ThreddsXmlParserException
   {
-    super( ThreddsMetadataElementNames.TimeCoverageElement, reader, builderFactory );
+    super( elementName, reader, builderFactory );
     this.parentBuilder = parentBuilder;
 
     this.startElementParserFactory = new DateTypeParser.Factory( ThreddsMetadataElementNames.DateRangeType_StartElement );
     this.endElementParserFactory = new DateTypeParser.Factory( ThreddsMetadataElementNames.DateRangeType_EndElement );
     this.durationParserFactory = new DurationParser.Factory( ThreddsMetadataElementNames.DateRangeType_DurationElement);
     this.resolutionParserFactory = new DurationParser.Factory( ThreddsMetadataElementNames.DateRangeType_ResolutionElement);
-  }
-
-  static boolean isSelfElementStatic( XMLEvent event ) {
-    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.TimeCoverageElement );
   }
 
   ThreddsBuilder getSelfBuilder() {
@@ -111,6 +107,27 @@ class TimeCoverageElementParser extends AbstractElementParser
                                                                       duration, resolution );
   }
 
+  static class Factory
+  {
+    private QName elementName;
+
+    Factory() {
+      this.elementName = ThreddsMetadataElementNames.TimeCoverageElement;
+    }
+
+    boolean isEventMyStartElement( XMLEvent event )
+    {
+      return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
+    }
+
+    TimeCoverageElementParser getNewParser( XMLEventReader reader,
+                                            ThreddsBuilderFactory builderFactory,
+                                            ThreddsMetadataBuilder parentBuilder )
+    {
+      return new TimeCoverageElementParser( this.elementName, reader, builderFactory, parentBuilder );
+    }
+  }
+
   static class DurationParser
   {
     private QName elementName;
@@ -147,11 +164,9 @@ class TimeCoverageElementParser extends AbstractElementParser
         return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
       }
 
-      DurationParser getNewParser()
-      {
+      DurationParser getNewParser() {
         return new DurationParser( this.elementName );
       }
     }
-
   }
 }

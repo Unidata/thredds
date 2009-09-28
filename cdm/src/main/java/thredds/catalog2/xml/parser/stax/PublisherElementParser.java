@@ -10,6 +10,7 @@ import thredds.catalog2.xml.names.ThreddsMetadataElementNames;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.events.StartElement;
+import javax.xml.namespace.QName;
 
 /**
  * _more_
@@ -22,17 +23,19 @@ class PublisherElementParser extends AbstractElementParser
   private final ThreddsMetadataBuilder parentBuilder;
   private ThreddsMetadataBuilder.ContributorBuilder selfBuilder;
 
-  PublisherElementParser( XMLEventReader reader,
+  private final CreatorElementParser.NameElementParser.Factory nameElemParserFactory;
+  private final CreatorElementParser.ContactElementParser.Factory contactElemParserFactory;
+
+  PublisherElementParser( QName elementName,
+                          XMLEventReader reader,
                           ThreddsBuilderFactory builderFactory,
                           ThreddsMetadataBuilder parentBuilder )
-          throws ThreddsXmlParserException
   {
-    super( ThreddsMetadataElementNames.PublisherElement, reader, builderFactory );
+    super( elementName, reader, builderFactory );
     this.parentBuilder = parentBuilder;
-  }
 
-  static boolean isSelfElementStatic( XMLEvent event ) {
-    return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.PublisherElement );
+    this.nameElemParserFactory = new CreatorElementParser.NameElementParser.Factory();
+    this.contactElemParserFactory = new CreatorElementParser.ContactElementParser.Factory();
   }
 
   ThreddsBuilder getSelfBuilder() {
@@ -52,16 +55,16 @@ class PublisherElementParser extends AbstractElementParser
   {
     StartElement startElement = this.peekAtNextEventIfStartElement();
 
-    if ( CreatorElementParser.NameElementParser.isSelfElementStatic( startElement ) )
+    if ( this.nameElemParserFactory.isEventMyStartElement( startElement ) )
     {
       CreatorElementParser.NameElementParser elementParser
-              = new CreatorElementParser.NameElementParser( this.reader, this.builderFactory, this.selfBuilder );
+              = this.nameElemParserFactory.getNewParser( this.reader, this.builderFactory, this.selfBuilder );
       elementParser.parse();
     }
-    else if ( CreatorElementParser.ContactElementParser.isSelfElementStatic( startElement ) )
+    else if ( this.contactElemParserFactory.isEventMyStartElement( startElement ) )
     {
       CreatorElementParser.ContactElementParser elementParser
-              = new CreatorElementParser.ContactElementParser( this.reader, this.builderFactory, this.selfBuilder );
+              = this.contactElemParserFactory.getNewParser( this.reader, this.builderFactory, this.selfBuilder );
       elementParser.parse();
     }
     else
@@ -76,5 +79,25 @@ class PublisherElementParser extends AbstractElementParser
   void postProcessingAfterEndElement()
           throws ThreddsXmlParserException
   {
+  }
+
+  static class Factory
+  {
+    private QName elementName;
+
+    Factory() {
+      this.elementName = ThreddsMetadataElementNames.CreatorElement;
+    }
+
+    boolean isEventMyStartElement( XMLEvent event ) {
+      return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
+    }
+
+    PublisherElementParser getNewParser( XMLEventReader reader,
+                                         ThreddsBuilderFactory builderFactory,
+                                         ThreddsMetadataBuilder parentBuilder )
+    {
+      return new PublisherElementParser( this.elementName, reader, builderFactory, parentBuilder );
+    }
   }
 }

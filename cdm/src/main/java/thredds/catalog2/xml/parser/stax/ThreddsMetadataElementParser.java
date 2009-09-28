@@ -42,6 +42,7 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.XMLEventReader;
+import javax.xml.namespace.QName;
 
 /**
  * _more_
@@ -61,108 +62,107 @@ class ThreddsMetadataElementParser extends AbstractElementParser
 
   private AbstractElementParser delegate = null;
 
-  private VariableGroupElementParser.Factory varGroupFactory;
+  private final ServiceNameElementParser.Factory serviceNameParserFactory;
+  private final DataFormatElementParser.Factory dataFormatParserFactory;
+  private final DataTypeElementParser.Factory dataTypeParserFactory;
+  private final DateElementParser.Factory dateParserFactory;
+  private final AuthorityElementParser.Factory authorityParserFactory;
+  private final DocumentationElementParser.Factory documentationParserFactory;
+  private final CreatorElementParser.Factory creatorParserFactory;
+  private final PublisherElementParser.Factory publisherParserFactory;
+  private final ContributorElementParser.Factory contribParserFactory;
+  private final TimeCoverageElementParser.Factory timeCovParserFactory;
+  private final VariableGroupElementParser.Factory variableGroupParserFactory;
 
-  ThreddsMetadataElementParser( XMLEventReader reader,
-                                ThreddsBuilderFactory builderFactory,
-                                DatasetNodeBuilder parentDatasetNodeBuilder,
-                                DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper,
-                                boolean inheritedByDescendants )
-          throws ThreddsXmlParserException
+  private ThreddsMetadataElementParser( QName elementName,
+                                        ServiceNameElementParser.Factory serviceNameParserFactory,
+                                        DataFormatElementParser.Factory dataFormatParserFactory,
+                                        DataTypeElementParser.Factory dataTypeParserFactory,
+                                        DateElementParser.Factory dateParserFactory,
+                                        AuthorityElementParser.Factory authorityParserFactory,
+                                        DocumentationElementParser.Factory documentationParserFactory,
+                                        CreatorElementParser.Factory creatorParserFactory,
+                                        PublisherElementParser.Factory publisherParserFactory,
+                                        ContributorElementParser.Factory contribParserFactory,
+                                        TimeCoverageElementParser.Factory timeCovParserFactory,
+                                        VariableGroupElementParser.Factory variableGroupParserFactory,
+                                        XMLEventReader reader,
+                                        ThreddsBuilderFactory builderFactory,
+                                        DatasetNodeBuilder parentDatasetNodeBuilder,
+                                        DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper,
+                                        boolean inheritedByDescendants )
   {
-    super( ThreddsMetadataElementNames.ThreddsMetadataElement, reader, builderFactory );
+    super( elementName, reader, builderFactory );
     this.parentDatasetNodeBuilder = parentDatasetNodeBuilder;
     this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
     this.inheritedByDescendants = inheritedByDescendants;
 
     this.selfBuilder = builderFactory.newThreddsMetadataBuilder();
-    this.varGroupFactory = new VariableGroupElementParser.Factory();
-  }
-
-  static boolean isSelfElementStatic( XMLEvent event ) {
-    if ( ServiceNameElementParser.isSelfElementStatic( event ) )
-      return true;
-    if ( DataFormatElementParser.isSelfElementStatic( event ) )
-      return true;
-    if ( DataTypeElementParser.isSelfElementStatic( event ) )
-      return true;
-    if ( DateElementParser.isSelfElementStatic( event ) )
-      return true;
-    if ( AuthorityElementParser.isSelfElementStatic( event ) )
-      return true;
-    if ( DocumentationElementParser.isSelfElementStatic( event ))
-      return true;
-    if ( CreatorElementParser.isSelfElementStatic( event ))
-      return true;
-    if ( PublisherElementParser.isSelfElementStatic( event ))
-      return true;
-    if ( ContributorElementParser.isSelfElementStatic( event ))
-      return true;
-    if ( TimeCoverageElementParser.isSelfElementStatic( event ))
-      return true;
-    if ( VariableGroupElementParser.isSelfElementStatic( event ))
-      return true;
-    return false;
+    
+    this.serviceNameParserFactory = serviceNameParserFactory;
+    this.dataFormatParserFactory = dataFormatParserFactory;
+    this.dataTypeParserFactory = dataTypeParserFactory;
+    this.dateParserFactory = dateParserFactory;
+    this.authorityParserFactory = authorityParserFactory;
+    this.documentationParserFactory = documentationParserFactory;
+    this.creatorParserFactory = creatorParserFactory;
+    this.publisherParserFactory = publisherParserFactory;
+    this.contribParserFactory = contribParserFactory;
+    this.variableGroupParserFactory = variableGroupParserFactory;
+    this.timeCovParserFactory = timeCovParserFactory;
   }
 
     boolean isSelfElement( XMLEvent event ) {
-        if ( delegate != null )
-            return delegate.isSelfElement( event );
-        return isSelfElementStatic( event );
+      return delegate.isSelfElement( event );
     }
 
     ThreddsMetadataBuilder getSelfBuilder() {
         return this.selfBuilder;
     }
 
-    void parseStartElement()
-            throws ThreddsXmlParserException
+  void parseStartElement()
+          throws ThreddsXmlParserException
+  {
+    // ThreddsMetadata container object only, no self element exists!
+    // So peek at next event to see how to route it.
+    StartElement startElement = this.peekAtNextEventIfStartElement();
+
+    if ( this.serviceNameParserFactory.isEventMyStartElement( startElement ) )
+      this.delegate = this.serviceNameParserFactory.getNewParser( this.reader, this.builderFactory,
+                                                                         this.selfBuilder,
+                                                                         this.parentDatasetNodeElementParserHelper,
+                                                                         this.inheritedByDescendants );
+    else if ( this.dataFormatParserFactory.isEventMyStartElement( startElement ) )
+      this.delegate = this.dataFormatParserFactory.getNewParser( this.reader, this.builderFactory, this.selfBuilder );
+    else if ( this.dataTypeParserFactory.isEventMyStartElement( startElement ) )
+      this.delegate = this.dataTypeParserFactory.getNewParser( this.reader, this.builderFactory, this.selfBuilder );
+    else if ( this.dateParserFactory.isEventMyStartElement( startElement ) )
+      this.delegate = this.dateParserFactory.getNewParser( this.reader, this.builderFactory, this.selfBuilder );
+    else if ( this.authorityParserFactory.isEventMyStartElement( startElement ) )
     {
-        // ThreddsMetadata container object only, no self element exists!
-        // So peek at next event to see how to route it.
-        StartElement startElement = this.peekAtNextEventIfStartElement();
-
-        if ( ! isSelfElementStatic( startElement ) )
-            throw new IllegalArgumentException( "Start element [" + startElement.getName().getLocalPart()
-                                                + "] must be one of the THREDDS metadata element." );
-
-        if ( ServiceNameElementParser.isSelfElementStatic( startElement ) )
-        {
-            this.delegate = new ServiceNameElementParser( this.reader, this.builderFactory, this.selfBuilder,
-                                                          this.parentDatasetNodeElementParserHelper,
-                                                          this.inheritedByDescendants );
-        }
-        else if ( DataFormatElementParser.isSelfElementStatic( startElement ) )
-            this.delegate = new DataFormatElementParser( this.reader, this.builderFactory, this.selfBuilder );
-        else if ( DataTypeElementParser.isSelfElementStatic( startElement ) )
-            this.delegate = new DataTypeElementParser( this.reader, this.builderFactory, this.selfBuilder );
-        else if ( DateElementParser.isSelfElementStatic( startElement ) )
-            this.delegate = new DateElementParser( this.reader, this.builderFactory, this.selfBuilder );
-        else if ( AuthorityElementParser.isSelfElementStatic( startElement ) )
-        {
-            this.delegate = new AuthorityElementParser( this.reader, this.builderFactory, this.selfBuilder,
-                                                        this.parentDatasetNodeElementParserHelper,
-                                                        this.inheritedByDescendants );
-        }
-        else if ( DocumentationElementParser.isSelfElementStatic( startElement ))
-          this.delegate = new DocumentationElementParser( this.reader, this.builderFactory, this.selfBuilder );
-        else if ( CreatorElementParser.isSelfElementStatic( startElement ))
-          this.delegate = new CreatorElementParser( this.reader, this.builderFactory, this.selfBuilder );
-        else if ( PublisherElementParser.isSelfElementStatic( startElement ))
-          this.delegate = new PublisherElementParser( this.reader, this.builderFactory, this.selfBuilder );
-        else if ( ContributorElementParser.isSelfElementStatic( startElement ))
-          this.delegate = new ContributorElementParser( this.reader, this.builderFactory, this.selfBuilder );
-        else if ( TimeCoverageElementParser.isSelfElementStatic( startElement ))
-          this.delegate = new TimeCoverageElementParser( this.reader, this.builderFactory, this.selfBuilder );
-        else if ( this.varGroupFactory.isEventMyStartElement( startElement ))
-          this.delegate = this.varGroupFactory.getNewParser( this.reader, this.builderFactory, this.selfBuilder );
-        else
-            throw new ThreddsXmlParserException( "" );
-
-        this.delegate.parseStartElement();
+      this.delegate = this.authorityParserFactory.getNewParser( this.reader, this.builderFactory, this.selfBuilder,
+                                                                this.parentDatasetNodeElementParserHelper,
+                                                                this.inheritedByDescendants );
     }
+    else if ( this.documentationParserFactory.isEventMyStartElement( startElement ) )
+      this.delegate = this.documentationParserFactory.getNewParser( this.reader, this.builderFactory, this.selfBuilder );
+    else if ( this.creatorParserFactory.isEventMyStartElement( startElement ) )
+      this.delegate = this.creatorParserFactory.getNewParser( this.reader, this.builderFactory, this.selfBuilder );
+    else if ( this.publisherParserFactory.isEventMyStartElement( startElement ) )
+      this.delegate = this.publisherParserFactory.getNewParser( this.reader, this.builderFactory, this.selfBuilder );
+    else if ( this.contribParserFactory.isEventMyStartElement( startElement ) )
+      this.delegate = this.contribParserFactory.getNewParser( this.reader, this.builderFactory, this.selfBuilder );
+    else if ( this.timeCovParserFactory.isEventMyStartElement( startElement ) )
+      this.delegate = this.timeCovParserFactory.getNewParser( this.reader, this.builderFactory, this.selfBuilder );
+    else if ( this.variableGroupParserFactory.isEventMyStartElement( startElement ) )
+      this.delegate = this.variableGroupParserFactory.getNewParser( this.reader, this.builderFactory, this.selfBuilder );
+    else
+      throw new ThreddsXmlParserException( "Not a recognized ThreddsMetadata child element [" + startElement.getName().getLocalPart() + "]." );
 
-    void handleChildStartElement()
+    this.delegate.parseStartElement();
+  }
+
+  void handleChildStartElement()
             throws ThreddsXmlParserException
     {
         if ( this.delegate == null )
@@ -182,6 +182,81 @@ class ThreddsMetadataElementParser extends AbstractElementParser
         this.delegate.postProcessingAfterEndElement();
     }
 
+  static class Factory
+  {
+    private final QName elementName;
+    private final ServiceNameElementParser.Factory serviceNameParserFactory;
+    private final DataFormatElementParser.Factory dataFormatParserFactory;
+    private final DataTypeElementParser.Factory dataTypeParserFactory;
+    private final DateElementParser.Factory dateParserFactory;
+    private final AuthorityElementParser.Factory authorityParserFactory;
+    private final DocumentationElementParser.Factory documentationParserFactory;
+    private final CreatorElementParser.Factory creatorParserFactory;
+    private final PublisherElementParser.Factory publisherParserFactory;
+    private final ContributorElementParser.Factory contribParserFactory;
+    private final TimeCoverageElementParser.Factory timeCovParserFactory;
+    private final VariableGroupElementParser.Factory varGroupParserFactory;
+
+
+    Factory() {
+      this.elementName = ThreddsMetadataElementNames.ThreddsMetadataElement;
+      this.serviceNameParserFactory = new ServiceNameElementParser.Factory();
+      this.dataFormatParserFactory = new DataFormatElementParser.Factory();
+      this.dataTypeParserFactory = new DataTypeElementParser.Factory();
+      this.dateParserFactory = new DateElementParser.Factory();
+      this.authorityParserFactory = new AuthorityElementParser.Factory();
+      this.documentationParserFactory = new DocumentationElementParser.Factory();
+      this.creatorParserFactory = new CreatorElementParser.Factory();
+      this.publisherParserFactory = new PublisherElementParser.Factory();
+      this.contribParserFactory = new ContributorElementParser.Factory();
+      this.timeCovParserFactory = new TimeCoverageElementParser.Factory();
+      this.varGroupParserFactory = new VariableGroupElementParser.Factory();
+    }
+
+    boolean isEventMyStartElement( XMLEvent event )
+    {
+      if ( this.serviceNameParserFactory.isEventMyStartElement( event ) )
+        return true;
+      if ( this.dataFormatParserFactory.isEventMyStartElement( event ) )
+        return true;
+      if ( this.dataTypeParserFactory.isEventMyStartElement( event ) )
+        return true;
+      if ( this.dateParserFactory.isEventMyStartElement( event ) )
+        return true;
+      if ( this.authorityParserFactory.isEventMyStartElement( event ) )
+        return true;
+      if ( this.documentationParserFactory.isEventMyStartElement( event ) )
+        return true;
+      if ( this.creatorParserFactory.isEventMyStartElement( event ) )
+        return true;
+      if ( this.publisherParserFactory.isEventMyStartElement( event ) )
+        return true;
+      if ( this.contribParserFactory.isEventMyStartElement( event ) )
+        return true;
+      if ( this.timeCovParserFactory.isEventMyStartElement( event ) )
+        return true;
+      if ( this.varGroupParserFactory.isEventMyStartElement( event ) )
+        return true;
+      return false;
+    }
+
+    ThreddsMetadataElementParser getNewParser( XMLEventReader reader,
+                                               ThreddsBuilderFactory builderFactory,
+                                               DatasetNodeBuilder parentDatasetNodeBuilder,
+                                               DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper,
+                                               boolean inheritedByDescendants )
+    {
+      return new ThreddsMetadataElementParser( this.elementName, this.serviceNameParserFactory,
+                                               this.dataFormatParserFactory, this.dataTypeParserFactory,
+                                               this.dateParserFactory, this.authorityParserFactory,
+                                               this.documentationParserFactory, this.creatorParserFactory,
+                                               this.publisherParserFactory, this.contribParserFactory,
+                                               this.timeCovParserFactory, this.varGroupParserFactory,
+                                               reader, builderFactory, parentDatasetNodeBuilder,
+                                               parentDatasetNodeElementParserHelper, inheritedByDescendants );
+    }
+  }
+
   static class ServiceNameElementParser extends AbstractElementParser
   {
     private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
@@ -196,21 +271,17 @@ class ThreddsMetadataElementParser extends AbstractElementParser
     private String serviceName;
 
 
-    ServiceNameElementParser( XMLEventReader reader,
-                              ThreddsBuilderFactory builderFactory,
-                              ThreddsMetadataBuilder threddsMetadataBuilder,
-                              DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper,
-                              boolean inheritedByDescendants )
-            throws ThreddsXmlParserException
+    private ServiceNameElementParser( QName elementName,
+                                      XMLEventReader reader,
+                                      ThreddsBuilderFactory builderFactory,
+                                      ThreddsMetadataBuilder threddsMetadataBuilder,
+                                      DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper,
+                                      boolean inheritedByDescendants )
     {
-      super( ThreddsMetadataElementNames.ServiceNameElement, reader, builderFactory );
+      super( elementName, reader, builderFactory );
       this.threddsMetadataBuilder = threddsMetadataBuilder;
       this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
       this.inheritedByDescendants = inheritedByDescendants;
-    }
-
-    static boolean isSelfElementStatic( XMLEvent event ) {
-      return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.ServiceNameElement );
     }
 
     ThreddsBuilder getSelfBuilder() {
@@ -237,6 +308,29 @@ class ThreddsMetadataElementParser extends AbstractElementParser
       if ( this.inheritedByDescendants )
         this.parentDatasetNodeElementParserHelper.setDefaultServiceNameToBeInheritedByDescendants( this.serviceName );
     }
+
+    static class Factory
+    {
+      private QName elementName;
+
+      Factory() {
+        this.elementName = ThreddsMetadataElementNames.ServiceNameElement;
+      }
+
+      boolean isEventMyStartElement( XMLEvent event ) {
+        return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
+      }
+
+      ServiceNameElementParser getNewParser( XMLEventReader reader,
+                                             ThreddsBuilderFactory builderFactory,
+                                             ThreddsMetadataBuilder threddsMetadataBuilder,
+                                             DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper,
+                                             boolean inheritedByDescendants )
+      {
+        return new ServiceNameElementParser( this.elementName, reader, builderFactory, threddsMetadataBuilder,
+                                             parentDatasetNodeElementParserHelper, inheritedByDescendants );
+      }
+    }
   }
 
   /**
@@ -246,17 +340,13 @@ class ThreddsMetadataElementParser extends AbstractElementParser
   {
     private final ThreddsMetadataBuilder threddsMetadataBuilder;
 
-    DataFormatElementParser( XMLEventReader reader,
-                             ThreddsBuilderFactory builderFactory,
-                             ThreddsMetadataBuilder threddsMetadataBuilder )
-            throws ThreddsXmlParserException
+    private DataFormatElementParser( QName elementName,
+                                     XMLEventReader reader,
+                                     ThreddsBuilderFactory builderFactory,
+                                     ThreddsMetadataBuilder threddsMetadataBuilder )
     {
-      super( ThreddsMetadataElementNames.DataFormatElement, reader, builderFactory );
+      super( elementName, reader, builderFactory );
       this.threddsMetadataBuilder = threddsMetadataBuilder;
-    }
-
-    static boolean isSelfElementStatic( XMLEvent event ) {
-      return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.DataFormatElement );
     }
 
     ThreddsBuilder getSelfBuilder() {
@@ -279,6 +369,26 @@ class ThreddsMetadataElementParser extends AbstractElementParser
     void postProcessingAfterEndElement()
             throws ThreddsXmlParserException
     { }
+
+    static class Factory
+    {
+      private QName elementName;
+
+      Factory() {
+        this.elementName = ThreddsMetadataElementNames.DataFormatElement;
+      }
+
+      boolean isEventMyStartElement( XMLEvent event ) {
+        return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
+      }
+
+      DataFormatElementParser getNewParser( XMLEventReader reader,
+                                            ThreddsBuilderFactory builderFactory,
+                                            ThreddsMetadataBuilder parentBuilder )
+      {
+        return new DataFormatElementParser( this.elementName, reader, builderFactory, parentBuilder );
+      }
+    }
   }
 
   /**
@@ -288,17 +398,13 @@ class ThreddsMetadataElementParser extends AbstractElementParser
   {
     private final ThreddsMetadataBuilder threddsMetadataBuilder;
 
-    DataTypeElementParser( XMLEventReader reader,
-                           ThreddsBuilderFactory builderFactory,
-                           ThreddsMetadataBuilder threddsMetadataBuilder )
-            throws ThreddsXmlParserException
+    private DataTypeElementParser( QName elementName,
+                                   XMLEventReader reader,
+                                   ThreddsBuilderFactory builderFactory,
+                                   ThreddsMetadataBuilder threddsMetadataBuilder )
     {
-      super( ThreddsMetadataElementNames.DataTypeElement, reader, builderFactory );
+      super( elementName, reader, builderFactory );
       this.threddsMetadataBuilder = threddsMetadataBuilder;
-    }
-
-    static boolean isSelfElementStatic( XMLEvent event ) {
-      return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.DataTypeElement );
     }
 
     ThreddsBuilder getSelfBuilder() {
@@ -320,6 +426,26 @@ class ThreddsMetadataElementParser extends AbstractElementParser
     void postProcessingAfterEndElement() throws ThreddsXmlParserException {
         return;
     }
+
+    static class Factory
+    {
+      private QName elementName;
+
+      Factory() {
+        this.elementName = ThreddsMetadataElementNames.DataTypeElement;
+      }
+
+      boolean isEventMyStartElement( XMLEvent event ) {
+        return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
+      }
+
+      DataTypeElementParser getNewParser( XMLEventReader reader,
+                                          ThreddsBuilderFactory builderFactory,
+                                          ThreddsMetadataBuilder parentBuilder )
+      {
+        return new DataTypeElementParser( this.elementName, reader, builderFactory, parentBuilder );
+      }
+    }
   }
 
   /**
@@ -329,17 +455,13 @@ class ThreddsMetadataElementParser extends AbstractElementParser
   {
     private final ThreddsMetadataBuilder threddsMetadataBuilder;
 
-    DateElementParser( XMLEventReader reader,
-                       ThreddsBuilderFactory builderFactory,
-                       ThreddsMetadataBuilder threddsMetadataBuilder )
-            throws ThreddsXmlParserException
+    private DateElementParser( QName elementName,
+                               XMLEventReader reader,
+                               ThreddsBuilderFactory builderFactory,
+                               ThreddsMetadataBuilder threddsMetadataBuilder )
     {
-      super( ThreddsMetadataElementNames.DateElement, reader, builderFactory );
+      super( elementName, reader, builderFactory );
       this.threddsMetadataBuilder = threddsMetadataBuilder;
-    }
-
-    static boolean isSelfElementStatic( XMLEvent event ) {
-      return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.DateElement );
     }
 
     ThreddsBuilder getSelfBuilder() {
@@ -393,6 +515,26 @@ class ThreddsMetadataElementParser extends AbstractElementParser
     void postProcessingAfterEndElement() throws ThreddsXmlParserException {
         return;
     }
+
+    static class Factory
+    {
+      private QName elementName;
+
+      Factory() {
+        this.elementName = ThreddsMetadataElementNames.DateElement;
+      }
+
+      boolean isEventMyStartElement( XMLEvent event ) {
+        return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
+      }
+
+      DateElementParser getNewParser( XMLEventReader reader,
+                                         ThreddsBuilderFactory builderFactory,
+                                         ThreddsMetadataBuilder parentBuilder )
+      {
+        return new DateElementParser( this.elementName, reader, builderFactory, parentBuilder );
+      }
+    }
   }
 
   static class AuthorityElementParser extends AbstractElementParser
@@ -407,22 +549,17 @@ class ThreddsMetadataElementParser extends AbstractElementParser
 
     private String idAuthority;
 
-
-    AuthorityElementParser( XMLEventReader reader,
-                            ThreddsBuilderFactory builderFactory,
-                            ThreddsMetadataBuilder threddsMetadataBuilder,
-                            DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper,
-                            boolean inheritedByDescendants )
-            throws ThreddsXmlParserException
+    private AuthorityElementParser( QName elementName,
+                                    XMLEventReader reader,
+                                    ThreddsBuilderFactory builderFactory,
+                                    ThreddsMetadataBuilder threddsMetadataBuilder,
+                                    DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper,
+                                    boolean inheritedByDescendants )
     {
-      super( ThreddsMetadataElementNames.AuthorityElement, reader, builderFactory );
+      super( elementName, reader, builderFactory );
       this.threddsMetadataBuilder = threddsMetadataBuilder;
       this.parentDatasetNodeElementParserHelper = parentDatasetNodeElementParserHelper;
       this.inheritedByDescendants = inheritedByDescendants;
-    }
-
-    static boolean isSelfElementStatic( XMLEvent event ) {
-      return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.AuthorityElement );
     }
 
     ThreddsBuilder getSelfBuilder() {
@@ -449,23 +586,42 @@ class ThreddsMetadataElementParser extends AbstractElementParser
       if ( this.inheritedByDescendants )
         this.parentDatasetNodeElementParserHelper.setIdAuthorityToBeInheritedByDescendants( this.idAuthority );
     }
+
+    static class Factory
+    {
+      private QName elementName;
+
+      Factory() {
+        this.elementName = ThreddsMetadataElementNames.AuthorityElement;
+      }
+
+      boolean isEventMyStartElement( XMLEvent event ) {
+        return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
+      }
+
+      AuthorityElementParser getNewParser( XMLEventReader reader,
+                                           ThreddsBuilderFactory builderFactory,
+                                           ThreddsMetadataBuilder parentBuilder,
+                                           DatasetNodeElementParserHelper parentDatasetNodeElementParserHelper,
+                                           boolean inheritedByDescendants )
+      {
+        return new AuthorityElementParser( this.elementName, reader, builderFactory, parentBuilder,
+                                           parentDatasetNodeElementParserHelper, inheritedByDescendants);
+      }
+    }
   }
 
   static class DocumentationElementParser extends AbstractElementParser
   {
     private final ThreddsMetadataBuilder threddsMetadataBuilder;
 
-    DocumentationElementParser( XMLEventReader reader,
-                                ThreddsBuilderFactory builderFactory,
-                                ThreddsMetadataBuilder threddsMetadataBuilder )
-            throws ThreddsXmlParserException
+    private DocumentationElementParser( QName elementName,
+                                        XMLEventReader reader,
+                                        ThreddsBuilderFactory builderFactory,
+                                        ThreddsMetadataBuilder threddsMetadataBuilder )
     {
-      super( ThreddsMetadataElementNames.DocumentationElement, reader, builderFactory );
+      super( elementName, reader, builderFactory );
       this.threddsMetadataBuilder = threddsMetadataBuilder;
-    }
-
-    static boolean isSelfElementStatic( XMLEvent event ) {
-      return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, ThreddsMetadataElementNames.DocumentationElement );
     }
 
     ThreddsBuilder getSelfBuilder() {
@@ -504,6 +660,26 @@ class ThreddsMetadataElementParser extends AbstractElementParser
     void postProcessingAfterEndElement()
             throws ThreddsXmlParserException
     {
+    }
+
+    static class Factory
+    {
+      private QName elementName;
+
+      Factory() {
+        this.elementName = ThreddsMetadataElementNames.DocumentationElement;
+      }
+
+      boolean isEventMyStartElement( XMLEvent event ) {
+        return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
+      }
+
+      DocumentationElementParser getNewParser( XMLEventReader reader,
+                                               ThreddsBuilderFactory builderFactory,
+                                               ThreddsMetadataBuilder parentBuilder )
+      {
+        return new DocumentationElementParser( this.elementName, reader, builderFactory, parentBuilder );
+      }
     }
   }
 
