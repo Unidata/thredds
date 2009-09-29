@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>CF encoding</title>
+<style type="text/css">
+pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
+code {font-size: 11pt;}
+dl {margin: 10px 5px 5px 15px;)
+.style1 {font-style: italic}
+.style1 {font-style: italic}
+</style>
+</head>
+
+<body>
+<h1>CF encoding of Point Observation Datasets</h1>
+<p>&nbsp;</p>
+<table width="1252" height="181" border="1">
+  <tr>
+    <th width="197" scope="col">Type</th>
+    <th width="142" scope="col">single</th>
+    <th width="236" scope="col">multidim</th>
+    <th width="248" scope="col">ragged contiguous</th>
+    <th width="182" scope="col">ragged indexed</th>
+    <th width="207" scope="col">flattened</th>
+  </tr>
+  <tr>
+    <td><strong>point</strong></td>
+    <td><div align="center">
+      <p align="left">data(obs)</p>
+      <p align="left"><strong>time,lat,lon,alt</strong>(obs)</p>
+    </div></td>
+    <td><div align="center">N/A</div></td>
+    <td><div align="center">N/A</div></td>
+    <td><div align="center">N/A</div></td>
+    <td><div align="center">N/A</div></td>
+  </tr>
+  <tr>
+    <td><strong>stationTimeSeries</strong></td>
+    <td><div align="center">
+      <p align="left">data(obs)</p>
+      <p align="left"><strong>time</strong>(obs)</p>
+      <p align="left">scalar <strong>lat, lon, alt</strong></p>
+    </div></td>
+    <td><div align="center">
+      <p align="left">data(station,obs)</p>
+      <p align="left"><strong>time</strong>(station, obs), <strong>time</strong>(obs)</p>
+      <p align="left"><strong>lat,lon,alt</strong>(station)</p>
+    </div></td>
+    <td><div align="center">
+      <p align="left">data(obs)</p>
+      <p align="left"><strong>time</strong>(obs)</p>
+      <p align="left"><strong>lat,lon,alt</strong>(station), numObs(station)</p>
+      </div></td>
+    <td><div align="center">
+      <p align="left">data(obs)</p>
+      <p align="left"><strong>time</strong>(obs), stationIndex(obs)</p>
+      <p align="left"><strong>lat,lon,alt</strong>(station)</p>
+    </div></td>
+    <td><div align="center">
+      <p align="left">data(obs)</p>
+      <p align="left"><strong>time</strong>(obs), stationId(obs)</p>
+      <p align="left"><strong>lat,lon,alt</strong>(obs)</p>
+    </div></td>
+  </tr>
+  <tr>
+    <td><strong>trajectory</strong></td>
+    <td><div align="center">
+      <p align="left">data(obs)</p>
+      <p align="left"><strong>time</strong>(obs)</p>
+      <p align="left"><strong>time,lat,lon,alt</strong>(obs)</p>
+    </div></td>
+    <td><div align="center">
+      <p align="left">data(traj,obs)</p>
+      <p align="left"><strong>time</strong>(traj, obs)</p>
+      <p align="left"><strong>lat,lon,alt</strong>(traj, obs)</p>
+    </div></td>
+    <td><div align="center">
+      <p align="left">data(obs)</p>
+      <p align="left"><strong>time</strong>,<strong>lat,lon,alt</strong>(obs)</p>
+      <p align="left">numObs(traj)</p>
+    </div></td>
+    <td><div align="center">
+      <p align="left">data(obs)</p>
+      <p align="left"><strong>time</strong>,<strong>lat,lon,alt</strong>(obs)</p>
+      <p align="left">trajIndex(obs)</p>
+    </div></td>
+    <td><div align="center">N/A</div>
+    </td>
+  </tr>
+  <tr>
+    <td><strong>profile</strong></td>
+    <td><div align="center">
+      <p align="left">data(z)</p>
+      <p align="left"><strong>time</strong>(z), <strong>time</strong></p>
+      <p align="left"><strong>lat,lon</strong></p>
+      <p align="left"><strong>alt</strong>(z)</p>
+    </div></td>
+    <td><div align="center">
+      <p align="left">data(profile, z)</p>
+      <p align="left"><strong>time</strong>(profile, z), <strong>time</strong>(profile)</p>
+      <p align="left"><strong>lat,lon</strong>(profile)</p>
+      <p align="left"><strong>alt</strong>(profile,z),<strong> alt</strong>(z)</p>
+    </div></td>
+    <td><div align="center">
+      <p align="left">data(obs)</p>
+      <p align="left"><strong>time</strong>(obs), <strong>time</strong>(profile), <span class="style1"><strong>time</strong>(profile, z)</span></p>
+      <p align="left"><strong>lat,lon</strong>(profile), numObs(profile)</p>
+      <p align="left"><strong>alt</strong>(obs)</p>
+    </div></td>
+    <td><div align="center">
+      <p align="left">data(obs)</p>
+      <p align="left"><strong>time</strong>(obs), <strong>time</strong>(profile)</p>
+      <p align="left"><strong>lat,lon</strong>(profile)</p>
+      <p align="left"><strong>alt</strong>(obs)</p>
+      <p align="left">profileIndex(obs)</p>
+    </div></td>
+    <td><div align="center">N/A</div></td>
+  </tr>
+  <tr>
+    <td><strong>stationProfileTimeSeries</strong></td>
+    <td><div align="center">data(time,z)</div></td>
+    <td><div align="center">
+      <p align="left">data(station, profile, z)</p>
+      <p align="left"><strong>time</strong>(station, profile, z), <strong>time</strong>(station, profile)</p>
+      <p align="left"><strong>lat,lon</strong>(station)</p>
+      <p align="left"><strong>alt</strong>(station, profile,z),<strong> alt</strong>(station, z)</p>
+    </div></td>
+    <td><div align="center">data(profile,z)</div></td>
+    <td><div align="center"></div></td>
+    <td><div align="center"></div></td>
+  </tr>
+  <tr>
+    <td><strong>section</strong></td>
+    <td><div align="center"></div></td>
+    <td><div align="center"></div></td>
+    <td><div align="center"></div></td>
+    <td><div align="center"></div></td>
+    <td><div align="center"></div></td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<hr width="100%" />
+<address>
+<img src="../../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Sep 29, 2009
+</address>
+</body>
+</html>
