@@ -73,7 +73,7 @@ public class DiskCache2 {
    * Create a cache on disk.
    * @param root the root directory of the cache. Must be writeable.
    * @param reletiveToHome if the root directory is reletive to the cache home directory.
-   * @param persistMinutes how old a file should be before deleting.
+   * @param persistMinutes  a file is deleted if its last modified time is greater than persistMinutes
    * @param scourEveryMinutes how often to run the scour process. If <= 0, dont scour.
    */
   public DiskCache2(String root, boolean reletiveToHome, int persistMinutes, int scourEveryMinutes) {

@@ -59,7 +59,7 @@ import org.jdom.Element;
  * @author caron
  */
 public class AggregationExisting extends AggregationOuterDimension {
-  static private boolean debugPersist = false, debugPersistDetail = false;
+  //static private boolean debugPersist = true, debugPersistDetail = false;  use logging
 
   public AggregationExisting(NetcdfDataset ncd, String dimName, String recheckS) {
     super(ncd, dimName, Aggregation.Type.joinExisting, recheckS);
@@ -87,6 +87,9 @@ public class AggregationExisting extends AggregationOuterDimension {
       coordCacheVar = new CoordValueVar(dimName, DataType.STRING, "");      
     }
     cacheList.add(coordCacheVar);  // coordinate variable is always cached
+
+    // gotta check persistence info - before buildCoords - if its gouing to do any good
+    persistRead();
 
     // now find out how many coordinates we have, caching values if needed
     buildCoords(cancelTask);
@@ -150,7 +153,7 @@ public class AggregationExisting extends AggregationOuterDimension {
     // make it a cacheVar
     joinAggCoord.setSPobject( coordCacheVar);
 
-    // check persistence info - may have cached values
+    // check persistence info - may have cached values other than coordinate
     persistRead();
 
     setDatasetAcquireProxy(typicalDataset, ncDataset);
@@ -254,7 +257,8 @@ public class AggregationExisting extends AggregationOuterDimension {
     try {
       if (!cacheFile.exists()) {
         File dir = cacheFile.getParentFile();
-        dir.mkdirs();
+        if (!dir.mkdirs())
+          logger.error("Cant make cache directory= "+cacheFile);
       }
 
       // Get a file channel for the file
@@ -296,8 +300,8 @@ public class AggregationExisting extends AggregationOuterDimension {
             out.print("    <cache varName='" + pv.varName + "' >");
             NCdumpW.printArray(data, out);
             out.print("</cache>\n");
-            if (debugPersist)
-              System.out.println(" wrote array = " + pv.varName + " nelems= "+data.getSize()+" for "+dataset.getLocation());
+            if (logger.isDebugEnabled())
+              logger.debug(" wrote array = " + pv.varName + " nelems= "+data.getSize()+" for "+dataset.getLocation());
           }
         }
         out.print("  </netcdf>\n");
@@ -309,8 +313,8 @@ public class AggregationExisting extends AggregationOuterDimension {
       cacheFile.setLastModified( datasetManager.getLastScanned());
       cacheDirty = false;
 
-      if (debugPersist)
-        System.out.println("Aggregation persisted = " + cacheFile.getPath() + " lastModified= " + new Date(datasetManager.getLastScanned()));
+      if (logger.isDebugEnabled())
+              logger.debug("Aggregation persisted = " + cacheFile.getPath() + " lastModified= " + new Date(datasetManager.getLastScanned()));
 
     } finally {
       if (channel != null)
@@ -328,7 +332,8 @@ public class AggregationExisting extends AggregationOuterDimension {
     if (!cacheFile.exists())
       return;
 
-    if (debugPersist) System.out.println(" Try to Read cache " + cacheFile.getPath());
+    if (logger.isDebugEnabled())
+              logger.debug(" Try to Read cache " + cacheFile.getPath());
 
     Element aggElem;
     try {
@@ -354,17 +359,20 @@ public class AggregationExisting extends AggregationOuterDimension {
 
       if (null == dod) {
         // this should mean that the dataset has been deleted. so not a problem
-        if (debugPersist) System.out.println(" have cache but no dataset= " + id);
+        if (logger.isDebugEnabled())
+              logger.debug(" have cache but no dataset= " + id);
         // logger.warn(" have cache but no dataset= " + id);
 
       } else {
 
-        if (debugPersist) System.out.println(" use cache for dataset= " + id);
+        if (logger.isDebugEnabled())
+              logger.debug(" use cache for dataset= " + id);
         if (dod.ncoord == 0) {
           String ncoordsS = netcdfElemNested.getAttributeValue("ncoords");
           try {
             dod.ncoord = Integer.parseInt(ncoordsS);
-            if (debugPersist) System.out.println(" Read the cache; ncoords = " + dod.ncoord);
+            if (logger.isDebugEnabled())
+              logger.debug(" Read the cache; ncoords = " + dod.ncoord);
           } catch (NumberFormatException e) {
             logger.error("bad ncoord attribute on dataset=" + id);
           }
@@ -379,25 +387,26 @@ public class AggregationExisting extends AggregationOuterDimension {
           if (pv != null) {
             String sdata = cacheElemNested.getText();
             if (sdata.length() == 0) continue;
-            if (debugPersist) System.out.println(" read data for var = " + varName + " size= "+sdata.length());
+            if (logger.isDebugEnabled())
+              logger.debug(" read data for var = " + varName + " size= "+sdata.length());
             
-            long start = System.nanoTime();
+            //long start = System.nanoTime();
             String[] vals = sdata.split(" ");
-            double took = .001 * .001 * .001 * (System.nanoTime() - start);
-            if (debugPersist) System.out.println("  split took = " + took + " sec; ");
+            //double took = .001 * .001 * .001 * (System.nanoTime() - start);
+            //if (debugPersist) System.out.println("  split took = " + took + " sec; ");
 
             try {
-              start = System.nanoTime();
+              //start = System.nanoTime();
               Array data = Array.makeArray(pv.dtype, vals);
-              took = .001 * .001 * .001 * (System.nanoTime() - start);
-              if (debugPersist) System.out.println("  makeArray took = " + took + " sec nelems= "+data.getSize());
+              //took = .001 * .001 * .001 * (System.nanoTime() - start);
+              //if (debugPersist) System.out.println("  makeArray took = " + took + " sec nelems= "+data.getSize());
               pv.putData(id, data);
             } catch (Exception e) {
               logger.warn("Error reading cached data ",e);
             }
 
           } else
-            logger.error("not a cache var=" + varName);
+            logger.warn("not a cache var=" + varName);
         }
       }
     }

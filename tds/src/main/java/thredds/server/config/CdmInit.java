@@ -117,10 +117,10 @@ public class CdmInit {
     // optimization: netcdf-3 files can only grow, not have metadata changes
     ucar.nc2.NetcdfFile.setProperty("syncExtendOnly", "true");
 
-    // persist joinNew aggregations. default every 24 hours, delete stuff older than 30 days
+    // persist joinNew aggregations. default every 24 hours, delete stuff older than 90 days
     String dir = ThreddsConfig.get("AggregationCache.dir", new File( tdsContext.getContentDirectory().getPath(), "cacheAged").getPath());
     int scourSecs = ThreddsConfig.getSeconds("AggregationCache.scour", 24 * 60 * 60);
-    int maxAgeSecs = ThreddsConfig.getSeconds("AggregationCache.maxAge", 30 * 24 * 60 * 60);
+    int maxAgeSecs = ThreddsConfig.getSeconds("AggregationCache.maxAge", 90 * 24 * 60 * 60);
     aggCache = new DiskCache2(dir, false, maxAgeSecs / 60, scourSecs / 60);
     Aggregation.setPersistenceCache(aggCache);
 

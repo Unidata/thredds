@@ -181,9 +181,21 @@
   <logger name="thredds.dqc"/>
   <logger name="thredds.servlet"/>
 
+
+  <!-- debug
+  <logger name="ucar.nc2.ncml.Aggregation" additivity="false">
+    <level value="DEBUG"/>
+    <appender-ref ref="threddsServlet"/>
+  </logger>
+
+  <logger name="thredds.inventory.DatasetCollectionManager" additivity="false">
+    <level value="DEBUG"/>
+    <appender-ref ref="threddsServlet"/>
+  </logger>   -->
+
   <root>
     <level value="WARN"/>
     <appender-ref ref="threddsServlet"/>
   </root>
-
+  
 </log4j:configuration>

@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  6:
+  aggExisting caching now works correctly
   cdmremote point: get DateRange filter working
   optionally add time resolution in server config
   CdmRemoteFeatureDataset gets bb, dateRange from capabilities doc

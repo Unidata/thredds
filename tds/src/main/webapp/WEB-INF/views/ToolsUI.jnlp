@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/netcdf-java/v4.0/webstart">
+<jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/netcdf-java/v4.1/webstart">
   <information>
-    <title>NetCDF Tools UI 4</title>
+    <title>NetCDF Tools UI 4.1</title>
     <vendor>Unidata</vendor>
     <homepage href="http://www.unidata.ucar.edu/software/netcdf-java/"/>
     <description kind="short">GUI interface to netCDF-Java / Common Data Model</description>
@@ -14,8 +14,9 @@
   </security>
 
   <resources>
-    <j2se version="1.5+" max-heap-size="1024m"/>
+    <j2se version="1.6+" max-heap-size="1024m"/>
     <jar href="netcdfUI.jar"/>
+    <jar href="bounce.jar"/>
     <jar href="bufrTables.jar"/>
     <jar href="codec.jar"/>
     <jar href="grib.jar"/>

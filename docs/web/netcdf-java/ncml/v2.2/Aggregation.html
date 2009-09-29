@@ -322,6 +322,7 @@ DateFormatMark: CG#yyyyDDD_HHmmss</pre>
 </blockquote>
 <p>The value of  <strong>recheckEvery</strong> must be a <a href="http://www.unidata.ucar.edu/software/udunits/">udunit</a> time unit, e.g. uses units of <em>sec, min, hour, day</em>, etc. If you do not specify a recheckEvery attribute, the collection will be assumed to be non-changing. </p>
 <p><em>When using the <strong>scan</strong> element on directories whose contents may change, you must use  a <strong>recheckEvery</strong> attribute. It  specifies the maximum time before changes will be detected by a newly opened NcML dataset. An existing NcML dataset will not notice the changes, and you can get FileNotFoundException if the component files are deleted.</em></p>
+<p><em>Note that the<strong> recheckEvery</strong> attribute specifies how  out-of-date you are willing to allow your changing datasets to be, not  how often the data changes. If you want updates to be  seen within 5 min, use 5 minutes here, regardless of the frequency of  updating.</em></p>
 <h2>Aggregation Caching<a name="caching"></a></h2>
 <p>For large collection of files, one wants to avoid opening every single file each time the dataset is accessed. Instead we only want to open the files that are actually needed to fulfill a data request. Generally this is straightforward, except for discovering the number and values of the aggregation coordinate variable for type <strong>joinExisting. </strong>This is because we have to know the size of the aggregation dimension when we open the dataset, even before we read any data. For practical purposes, we  often need to know the coordinate values immediately also. </p>
 <p>To help solve this problem, you should enable Aggregation Caching in your application, by telling the
@@ -352,7 +353,7 @@ DateFormatMark: CG#yyyyDDD_HHmmss</pre>
 <p>Next: <a href="FmrcAggregation.html">FMRC Aggregation</a> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  July 2009
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Sep 2009
 </address>
 <p>&nbsp;</p>
 </body>

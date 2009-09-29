@@ -72,7 +72,6 @@ import ucar.util.prefs.ui.*;
 import ucar.grib.grib2.Grib2Dump;
 
 import thredds.catalog.query.DqcFactory;
-import thredds.catalog.InvAccess;
 import thredds.wcs.v1_0_0_1.GetCapabilities;
 import thredds.wcs.v1_0_0_1.WcsException;
 import thredds.inventory.MController;
@@ -3577,6 +3576,8 @@ public class ToolsUI extends JPanel {
           Formatter f = new Formatter();
           pfDataset.getDetailInfo(f);
           detailTA.setText(f.toString());
+          detailTA.appendLine("-----------------------------");
+          detailTA.appendLine(getCapabilities(pfDataset));
           detailTA.gotoTop();
           detailWindow.show();
         }
@@ -3710,6 +3711,11 @@ public class ToolsUI extends JPanel {
         JOptionPane.showMessageDialog(this, e.getMessage());
         return false;
       }
+    }
+
+    private String getCapabilities(FeatureDatasetPoint fdp) {
+      ucar.nc2.ft.point.writer.FeatureDatasetPointXML xmlWriter = new ucar.nc2.ft.point.writer.FeatureDatasetPointXML(fdp, null);
+      return xmlWriter.getCapabilities();
     }
   }
 

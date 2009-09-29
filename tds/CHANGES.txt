@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Release Details 4.1:
  0:
+  aggExisting caching now works correctly  
+  fix webstart, point to 4.1
   cdmremote point: get DateRange filter working
   WMS: remove global setting of NetcdfDataset.enhance(), set enhance when opening GridDataset
   hack in dataset cache=false

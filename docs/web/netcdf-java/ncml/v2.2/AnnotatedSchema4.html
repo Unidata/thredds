@@ -10,7 +10,6 @@ pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid
 code {font-size: 11pt;}
 dl {margin: 10px 5px 5px 15px;)
 .style1 {font-style: italic}
-.style1 {font-weight: bold}
 </style>
 </HEAD>
 <BODY bgColor=#ffffff>
@@ -274,7 +273,9 @@ forecastOffsetMatcher:                     HHH#.grb#</pre>
 </li>
   <li>You must specify an aggregation type.</li>
   <li>For all types except <em><strong>joinUnion</strong></em>, you must specify the dimension name to join. </li>
-  <li>When you are using scan elements on a set of files that may change, and you are using caching, set <strong>recheckEvery</strong> to a valid <a href="http://www.unidata.ucar.edu/software/udunits/">udunit</a> time value, like &quot;10 min&quot;, &quot;1 hour&quot;, &quot;30 days&quot;, etc. Whenever the dataset is reacquired from the cache, the directories will be rescanned if <strong>recheckEvery</strong> amount of time has elapsed since the last time it was scanned. If you do not specify a recheckEvery attribute, the collection will be assumed to be non-changing.</li>
+  <li>When you are using scan elements on a set of files that may change, and you are using caching, set <strong>recheckEvery</strong> to a valid <a href="http://www.unidata.ucar.edu/software/udunits/">udunit</a> time value, like &quot;10 min&quot;, &quot;1 hour&quot;, &quot;30 days&quot;, etc. Whenever the dataset is reacquired from the cache, the directories will be rescanned if <strong>recheckEvery</strong> amount of time has elapsed since the last time it was scanned. If you do not specify a recheckEvery attribute, the collection will be assumed to be non-changing. 
+  <p>The<strong> recheckEvery</strong>  attribute specifies how  out-of-date you are willing to allow your changing datasets to be, not  how often the data changes. If you want updates to be  seen within 5 min, use 5 minutes here, regardless of the frequency of  updating.</p>
+  </li>
   <li>Only for <strong><em>joinExisting</em> </strong>and<strong> <em>forecastModelRunCollection</em></strong> types: if <strong>timeUnitsChange</strong> is set to true, the units of the joined coordinate variable may change, so examine them and do any appropriate conversion so that the aggregated coordinate values have consistent units. </li>
   <li>Experimental, do not use. <font color="#990000"><br>
   </font></li>
@@ -542,7 +543,7 @@ forecastOffsetMatcher:                     HHH#.grb#</pre>
 <hr WIDTH="100%">
 <p>&nbsp;</p>
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Sep 3, 2009
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Sep 28, 2009
 </address>
 <p>&nbsp;</p>
 </BODY>
