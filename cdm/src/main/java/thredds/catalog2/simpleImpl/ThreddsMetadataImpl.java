@@ -798,19 +798,19 @@ class ThreddsMetadataImpl
     return this;
   }
 
-    public static class DocumentationImpl
+   static class DocumentationImpl
           implements Documentation, DocumentationBuilder
   {
     private boolean isBuilt = false;
 
     private final boolean isContainedContent;
 
-    public final String docType;
-    public final String title;
-    public final String externalReference;
-    public final String content;
+    private final String docType;
+    private final String title;
+    private final String externalReference;
+    private final String content;
 
-    public DocumentationImpl( String docType, String title, String externalReference )
+    DocumentationImpl( String docType, String title, String externalReference )
     {
       //if ( title == null ) throw new IllegalArgumentException( "Title may not be null.");
       //if ( externalReference == null ) throw new IllegalArgumentException( "External reference may not be null.");
@@ -821,7 +821,7 @@ class ThreddsMetadataImpl
       this.content = null;
     }
 
-    public DocumentationImpl( String docType, String content )
+    DocumentationImpl( String docType, String content )
     {
       if ( content == null ) throw new IllegalArgumentException( "Content may not be null." );
       this.isContainedContent = true;
@@ -886,14 +886,14 @@ class ThreddsMetadataImpl
     }
   }
 
-  public static class KeyphraseImpl
+  static class KeyphraseImpl
           implements Keyphrase, KeyphraseBuilder
   {
     private boolean isBuilt;
     private final String authority;
     private final String phrase;
 
-    public KeyphraseImpl( String authority, String phrase)
+    KeyphraseImpl( String authority, String phrase)
     {
         if ( phrase == null || phrase.equals( "" ))
             throw new IllegalArgumentException( "Phrase may not be null.");
@@ -929,7 +929,7 @@ class ThreddsMetadataImpl
     }
   }
 
-    public static class DatePointImpl
+    static class DatePointImpl
             implements DatePoint, DatePointBuilder
     {
         private boolean isBuilt = false;
@@ -938,7 +938,8 @@ class ThreddsMetadataImpl
         private final String format;
         private final String type;
 
-        public DatePointImpl( String date, String format, String type) {
+        DatePointImpl( String date, String format, String type)
+        {
             if ( date == null )
                 throw new IllegalArgumentException( "Date may not be null.");
 
@@ -1000,29 +1001,30 @@ class ThreddsMetadataImpl
         }
     }
 
-    public static class DateRangeImpl
-            implements DateRange, DateRangeBuilder
+
+  static class DateRangeImpl
+          implements DateRange, DateRangeBuilder
+  {
+    private boolean isBuilt = false;
+
+    private final String startDateFormat;
+    private final String startDate;
+    private final String endDateFormat;
+    private final String endDate;
+    private final String duration;
+    private final String resolution;
+
+    DateRangeImpl( String startDate, String startDateFormat,
+                   String endDate, String endDateFormat,
+                   String duration, String resolution )
     {
-        private boolean isBuilt = false;
-
-        private final String startDateFormat;
-        private final String startDate;
-        private final String endDateFormat;
-        private final String endDate;
-        private final String duration;
-        private final String resolution;
-
-        public DateRangeImpl( String startDate, String startDateFormat,
-                              String endDate, String endDateFormat,
-                              String duration, String resolution )
-        {
-            this.startDateFormat = startDateFormat;
-            this.startDate = startDate;
-            this.endDateFormat = endDateFormat;
-            this.endDate = endDate;
-            this.duration = duration;
-          this.resolution = resolution;
-        }
+      this.startDateFormat = startDateFormat;
+      this.startDate = startDate;
+      this.endDateFormat = endDateFormat;
+      this.endDate = endDate;
+      this.duration = duration;
+      this.resolution = resolution;
+    }
 
         public String getStartDateFormat() {
           return this.startDateFormat;
@@ -1106,7 +1108,7 @@ class ThreddsMetadataImpl
         }
     }
 
-  public static class ContributorImpl
+  static class ContributorImpl
           implements Contributor, ContributorBuilder
   {
     private boolean isBuilt;
@@ -1193,7 +1195,7 @@ class ThreddsMetadataImpl
     }
   }
 
-  public static class VariableGroupImpl implements VariableGroup, VariableGroupBuilder
+  static class VariableGroupImpl implements VariableGroup, VariableGroupBuilder
   {
     private boolean isBuilt = false;
 
@@ -1203,6 +1205,8 @@ class ThreddsMetadataImpl
     private List<VariableImpl> variables;
 
     private String variableMapUrl;
+
+    VariableGroupImpl() {}
 
     public String getVocabularyAuthorityId() {
       return this.vocabularyAuthorityId;
@@ -1292,7 +1296,7 @@ class ThreddsMetadataImpl
     }
   }
 
-  public static class VariableImpl
+  static class VariableImpl
           implements Variable, VariableBuilder
   {
     private boolean isBuilt;
@@ -1305,8 +1309,8 @@ class ThreddsMetadataImpl
 
     private VariableGroupBuilder parent;
 
-    public VariableImpl( String name, String description, String units,
-                         String vocabId, String vocabName, VariableGroupBuilder parent )
+    VariableImpl( String name, String description, String units,
+                  String vocabId, String vocabName, VariableGroupBuilder parent )
     {
       this.name = name;
       this.description = description;
@@ -1398,7 +1402,7 @@ class ThreddsMetadataImpl
     }
   }
 
-  public static class GeospatialCoverageImpl
+  static class GeospatialCoverageImpl
           implements GeospatialCoverage,
                      GeospatialCoverageBuilder
   {
@@ -1518,7 +1522,7 @@ class ThreddsMetadataImpl
     }
   }
 
-  public static class GeospatialRangeImpl
+  static class GeospatialRangeImpl
           implements GeospatialRange,
                      GeospatialRangeBuilder
   {
@@ -1530,7 +1534,7 @@ class ThreddsMetadataImpl
     private double resolution;
     private String units;
 
-    public GeospatialRangeImpl()
+    GeospatialRangeImpl()
     {
       this.isBuilt = false;
       
