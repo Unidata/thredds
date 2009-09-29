@@ -19,15 +19,15 @@ import javax.xml.namespace.QName;
 * @author edavis
 * @since 4.0
 */
-class ContributorElementParser extends AbstractElementParser
+class KeyphraseElementParser extends AbstractElementParser
 {
   private final ThreddsMetadataBuilder parentBuilder;
-  private ThreddsMetadataBuilder.ContributorBuilder selfBuilder;
+  private ThreddsMetadataBuilder.KeyphraseBuilder selfBuilder;
 
-  private ContributorElementParser( QName elementName,
-                                    XMLEventReader reader,
-                                    ThreddsBuilderFactory builderFactory,
-                                    ThreddsMetadataBuilder parentBuilder )
+  private KeyphraseElementParser( QName elementName,
+                                  XMLEventReader reader,
+                                  ThreddsBuilderFactory builderFactory,
+                                  ThreddsMetadataBuilder parentBuilder )
   {
     super( elementName, reader, builderFactory );
     this.parentBuilder = parentBuilder;
@@ -41,15 +41,12 @@ class ContributorElementParser extends AbstractElementParser
           throws ThreddsXmlParserException
   {
     StartElement startElement = this.getNextEventIfStartElementIsMine();
-    Attribute roleAtt = startElement.getAttributeByName( ThreddsMetadataElementNames.ContributorElement_Role );
+    Attribute roleAtt = startElement.getAttributeByName( ThreddsMetadataElementNames.ControlledVocabType_Authority );
     String role = roleAtt != null ? roleAtt.getValue() : null;
 
     String name = StaxThreddsXmlParserUtils.getCharacterContent( this.reader,
                                                                  this.elementName );
-    this.selfBuilder = this.parentBuilder.addContributor();
-
-    this.selfBuilder.setName( name );
-    this.selfBuilder.setRole( role );
+    this.selfBuilder = this.parentBuilder.addKeyphrase( role, name);
   }
 
   void handleChildStartElement()
@@ -70,18 +67,18 @@ class ContributorElementParser extends AbstractElementParser
     private QName elementName;
 
     Factory() {
-      this.elementName = ThreddsMetadataElementNames.ContributorElement;
+      this.elementName = ThreddsMetadataElementNames.KeywordElement;
     }
 
     boolean isEventMyStartElement( XMLEvent event ) {
       return StaxThreddsXmlParserUtils.isEventStartOrEndElementWithMatchingName( event, this.elementName );
     }
 
-    ContributorElementParser getNewParser( XMLEventReader reader,
+    KeyphraseElementParser getNewParser( XMLEventReader reader,
                                            ThreddsBuilderFactory builderFactory,
                                            ThreddsMetadataBuilder parentBuilder )
     {
-      return new ContributorElementParser( this.elementName, reader, builderFactory, parentBuilder );
+      return new KeyphraseElementParser( this.elementName, reader, builderFactory, parentBuilder );
     }
   }
 }

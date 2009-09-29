@@ -30,24 +30,14 @@ class StaxParserUtils
     if ( rootElementAttributes != null )
       for ( Map.Entry<String,String> atts : rootElementAttributes.entrySet())
         sb.append( " ").append( atts.getKey()).append( "='").append( atts.getValue()).append( "'");
-    sb.append( ">\n" )
-            .append( contentXml )
-            .append( "</" ).append( rootElementName ).append( ">" );
-
-    return sb.toString();
-  }
-
-  static String getXmlDocWithEmptyRootElement( String rootElementName, Map<String, String> rootElementAttributes )
-  {
-    StringBuilder sb = new StringBuilder()
-            .append( "<?xml version='1.0' encoding='UTF-8'?>\n" )
-            .append( "<" ).append( rootElementName )
-            .append( "      xmlns='http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0'\n" );
-    if ( rootElementAttributes != null )
-      for ( Map.Entry<String, String> atts : rootElementAttributes.entrySet() )
-        sb.append( "      " ).append( atts.getKey() ).append( "='" ).append( atts.getValue() ).append( "'" );
-    sb.append( " />");
-
+    if ( contentXml == null || contentXml.isEmpty())
+      sb.append( " />");
+    else
+    {
+      sb.append( ">\n" )
+              .append( contentXml )
+              .append( "</" ).append( rootElementName ).append( ">" );
+    }
     return sb.toString();
   }
 

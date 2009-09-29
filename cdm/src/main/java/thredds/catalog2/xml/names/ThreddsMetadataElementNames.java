@@ -62,8 +62,6 @@ public class ThreddsMetadataElementNames
           = new QName( XMLConstants.NULL_NS_URI,
                        "vocabulary" );
 
-  // ToDo "keyword" attributes
-
   public static final QName DateElement
           = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
                        "date" );

@@ -81,7 +81,7 @@ public class DateTypeParserTest
     String type = "type";
 
     QName elemQualName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(), elemName );
-    String xml = getEmptyDateTypeElement( elemName, format, type );
+    String xml = getDateTypeElement( elemName, null, format, type );
 
     assertDateTypeXmlAsExpected( elemQualName, "", format, type, xml );
   }
@@ -95,17 +95,6 @@ public class DateTypeParserTest
       attributes.put( "type", type );
 
     return StaxParserUtils.wrapContentXmlInXmlDocRootElement( dateElementName, attributes, dateString );
-  }
-
-  private String getEmptyDateTypeElement( String dateElementName, String format, String type )
-  {
-    Map<String, String> attributes = new HashMap<String, String>();
-    if ( format != null )
-      attributes.put( "format", format );
-    if ( type != null )
-      attributes.put( "type", type );
-
-    return StaxParserUtils.getXmlDocWithEmptyRootElement( dateElementName, attributes );
   }
 
   private void assertDateTypeXmlAsExpected( QName elemName, String date, String format, String type, String xml )

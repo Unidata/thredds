@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         DateTypeParserTest.class,
+        KeyphraseParserTest.class,
         ParseCatalogTest.class,
         ParseMetadataTest.class,
         ParseThreddsMetadataCreatedDate.class,
