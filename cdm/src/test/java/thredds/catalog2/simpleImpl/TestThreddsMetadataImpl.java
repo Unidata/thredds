@@ -38,7 +38,6 @@ import org.junit.Before;
 import static org.junit.Assert.*;
 
 import thredds.catalog2.builder.ThreddsMetadataBuilder;
-import thredds.catalog2.builder.BuilderIssue;
 import thredds.catalog2.builder.BuilderException;
 import thredds.catalog2.builder.BuilderIssues;
 import thredds.catalog2.ThreddsMetadata;
@@ -145,7 +144,7 @@ public class TestThreddsMetadataImpl
     dataType = FeatureType.TRAJECTORY;
     collectionType = "timeSeries";
 
-    tmi.setProjectTitle( this.projectTitle );
+    tmi.addProjectName( null, this.projectTitle );
 
     tmi.setCreatedDatePointBuilder( this.dateCreated.getDate(), this.dateCreated.getDateFormat() );
     tmi.setModifiedDatePointBuilder( this.dateModified.getDate(),  this.dateModified.getDateFormat());
@@ -167,7 +166,13 @@ public class TestThreddsMetadataImpl
 
     assertTrue( tmb.isBuilt() );
 
-    assertTrue( tmi.getProjectTitle().equals( this.projectTitle));
+    List<ThreddsMetadata.ProjectName> projectNames = tmi.getProjectNames();
+    assertNotNull( projectNames);
+    assertEquals( 1, projectNames.size());
+    ThreddsMetadata.ProjectName projectName = projectNames.get( 0 );
+    assertNotNull( projectName );
+    assertEquals( this.projectTitle, projectName.getName());
+
     assertTrue( tmi.getCreatedDate().equals( this.dateCreated ));
     assertTrue( tmi.getModifiedDate().equals( this.dateModified ));
     assertTrue( tmi.getIssuedDate().equals( this.dateIssued ));
@@ -232,51 +237,6 @@ public class TestThreddsMetadataImpl
     { fail( "Build failed: " + e.getMessage() ); }
 
     assertTrue( tmb.isBuilt() );
-  }
-
-  private void checkBuilderSimpleSetIllegalState()
-  {
-    try
-    { tmi.setProjectTitle( this.projectTitle ); }
-    catch ( IllegalStateException ise )
-    {
-      return;
-    }
-    catch ( Exception e )
-    { fail( "Unexpected non-IllegalStateException: " + e.getMessage()); }
-    fail( "Did not throw expected IllegalStateException.");
-
-      dateCreated = new ThreddsMetadataImpl.DatePointImpl( "2009-08-25T12:00", null, ThreddsMetadata.DatePointType.Created.toString() );
-      dateModified = new ThreddsMetadataImpl.DatePointImpl( "2009-08-25T13:00", null, ThreddsMetadata.DatePointType.Modified.toString() );
-      dateIssued = new ThreddsMetadataImpl.DatePointImpl( "2009-08-25T15:00", null, ThreddsMetadata.DatePointType.Issued.toString() );
-      dateValid = new ThreddsMetadataImpl.DatePointImpl( "2009-08-25T12:00", null, ThreddsMetadata.DatePointType.Valid.toString() );
-      dateAvailable = new ThreddsMetadataImpl.DatePointImpl( "2009-08-25T12:00", null, ThreddsMetadata.DatePointType.Available.toString() );
-      dateMetadataCreated = new ThreddsMetadataImpl.DatePointImpl( "2009-08-25T12:00", null, ThreddsMetadata.DatePointType.MetadataCreated.toString() );
-      dateMetadataModified = new ThreddsMetadataImpl.DatePointImpl( "2009-08-25T12:00", null, ThreddsMetadata.DatePointType.MetadataModified.toString() );
-      temporalCoverage = new ThreddsMetadataImpl.DateRangeImpl( "2009-08-25T00:00", null, "2009-08-25T12:00", null, null, null );
-      dataSizeInBytes = 56000;
-      dataFormat = DataFormatType.NETCDF;
-      dataType = FeatureType.TRAJECTORY;
-      collectionType = "timeSeries";
-
-      tmi.setProjectTitle( this.projectTitle );
-
-      tmi.setCreatedDatePointBuilder( this.dateCreated.getDate(), this.dateCreated.getDateFormat() );
-      tmi.setModifiedDatePointBuilder( this.dateModified.getDate(), this.dateModified.getDateFormat() );
-      tmi.setIssuedDatePointBuilder( this.dateIssued.getDate(), this.dateIssued.getDateFormat() );
-      tmi.setValidDatePointBuilder( this.dateValid.getDate(), this.dateValid.getDateFormat() );
-      tmi.setAvailableDatePointBuilder( this.dateAvailable.getDate(), this.dateAvailable.getDateFormat() );
-      tmi.setMetadataCreatedDatePointBuilder( this.dateMetadataCreated.getDate(), this.dateMetadataCreated.getDateFormat() );
-      tmi.setMetadataModifiedDatePointBuilder( this.dateMetadataModified.getDate(), this.dateMetadataModified.getDateFormat() );
-
-      tmi.setTemporalCoverageBuilder( this.temporalCoverage.getStartDate(), this.temporalCoverage.getStartDateFormat(),
-                                      this.temporalCoverage.getEndDate(), this.temporalCoverage.getEndDateFormat(),
-                                      this.temporalCoverage.getDuration(), this.temporalCoverage.getResolution() );
-
-    tmi.setDataSizeInBytes( this.dataSizeInBytes );
-    tmi.setDataFormat( this.dataFormat );
-    tmi.setDataType( this.dataType );
-    tmi.setCollectionType( this.collectionType );
   }
 
   private void checkBuilderDocumentationIllegalStateGet()

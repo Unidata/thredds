@@ -58,11 +58,10 @@ class ThreddsMetadataImpl
 
   private List<DocumentationImpl> docs;
   private List<KeyphraseImpl> keyphrases;
+  private List<ProjectNameImpl> projectNames;
   private List<ContributorImpl> creators;
   private List<ContributorImpl> contributors;
   private List<ContributorImpl> publishers;
-
-  private String projectTitle;
 
   private List<DatePointImpl> otherDates;
   private DatePointImpl createdDate;
@@ -94,6 +93,8 @@ class ThreddsMetadataImpl
       return false;
     if ( this.keyphrases != null && ! this.keyphrases.isEmpty() )
       return false;
+    if ( this.projectNames != null && ! this.projectNames.isEmpty() )
+      return false;
     if ( this.creators != null && ! this.creators.isEmpty() )
       return false;
     if ( this.contributors != null && ! this.contributors.isEmpty() )
@@ -101,7 +102,7 @@ class ThreddsMetadataImpl
     if ( this.publishers != null && ! this.publishers.isEmpty() )
       return false;
 
-    if ( this.projectTitle != null || this.createdDate != null || this.modifiedDate != null
+    if ( this.createdDate != null || this.modifiedDate != null
          || this.issuedDate != null || this.validDate != null || this.availableDate != null
          || this.metadataCreatedDate != null || this.metadataModifiedDate != null
          || this.geospatialCoverage != null || this.temporalCoverage != null )
@@ -192,7 +193,7 @@ class ThreddsMetadataImpl
     return this.keyphrases.remove( (KeyphraseImpl) keyphraseBuilder );
   }
 
-  public List<KeyphraseBuilder> getKeyphraseBuilder()
+  public List<KeyphraseBuilder> getKeyphraseBuilders()
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This Builder has been built." );
@@ -208,6 +209,48 @@ class ThreddsMetadataImpl
     if ( this.keyphrases == null )
       return Collections.emptyList();
     return Collections.unmodifiableList( new ArrayList<Keyphrase>( this.keyphrases ) );
+  }
+
+  public ProjectNameBuilder addProjectName( String namingAuthority, String name )
+  {
+    if ( this.isBuilt )
+      throw new IllegalStateException( "This Builder has been built." );
+    if ( name == null )
+      throw new IllegalArgumentException( "Project name may not be null.");
+    if ( this.projectNames == null )
+      this.projectNames = new ArrayList<ProjectNameImpl>();
+    ProjectNameImpl projectName = new ProjectNameImpl( namingAuthority, name);
+    this.projectNames.add( projectName );
+    return projectName;
+  }
+
+  public boolean removeProjectName( ProjectNameBuilder projectNameBuilder )
+  {
+    if ( this.isBuilt )
+      throw new IllegalStateException( "This Builder has been built." );
+    if ( projectNameBuilder == null )
+      return false;
+    if ( this.projectNames == null )
+      return false;
+    return this.projectNames.remove( (ProjectNameImpl) projectNameBuilder );
+  }
+
+  public List<ProjectNameBuilder> getProjectNameBuilders()
+  {
+    if ( this.isBuilt )
+      throw new IllegalStateException( "This Builder has been built." );
+    if ( this.projectNames == null )
+      return Collections.emptyList();
+    return Collections.unmodifiableList( new ArrayList<ProjectNameBuilder>( this.projectNames ) );
+  }
+
+  public List<ProjectName> getProjectNames()
+  {
+    if ( ! this.isBuilt )
+      throw new IllegalStateException( "Sorry, I've escaped from my Builder before being built." );
+    if ( this.projectNames == null )
+      return Collections.emptyList();
+    return Collections.unmodifiableList( new ArrayList<ProjectName>( this.projectNames ) );
   }
 
   public ContributorBuilder addCreator()
@@ -328,18 +371,6 @@ class ThreddsMetadataImpl
     if ( this.publishers == null )
       return Collections.emptyList();
     return Collections.unmodifiableList( new ArrayList<Contributor>( this.publishers ) );
-  }
-
-  public void setProjectTitle( String projectTitle )
-  {
-    if ( this.isBuilt )
-      throw new IllegalStateException( "This Builder has been built." );
-    this.projectTitle = projectTitle;
-  }
-
-  public String getProjectTitle()
-  {
-    return this.projectTitle;
   }
 
     public DatePointBuilder addOtherDatePointBuilder( String date, String format, String type )
@@ -798,7 +829,7 @@ class ThreddsMetadataImpl
     return this;
   }
 
-   static class DocumentationImpl
+  static class DocumentationImpl
           implements Documentation, DocumentationBuilder
   {
     private boolean isBuilt = false;
@@ -924,6 +955,46 @@ class ThreddsMetadataImpl
     }
 
     public Keyphrase build() throws BuilderException {
+        this.isBuilt = true;
+        return this;
+    }
+  }
+
+  static class ProjectNameImpl
+          implements ProjectName, ProjectNameBuilder
+  {
+    private boolean isBuilt;
+    private String namingAuthority;
+    private String projectName;
+
+    ProjectNameImpl( String namingAuthority, String projectName )
+    {
+        if ( projectName == null || projectName.equals( "" ))
+            throw new IllegalArgumentException( "Phrase may not be null.");
+        this.namingAuthority = namingAuthority;
+        this.projectName = projectName;
+        this.isBuilt = false;
+    }
+
+    public String getNamingAuthority() {
+      return this.namingAuthority;
+    }
+
+    public String getName() {
+      return this.projectName;
+    }
+
+    public boolean isBuilt() {
+      return this.isBuilt;
+    }
+
+    public BuilderIssues getIssues() {
+      if ( projectName == null || projectName.equals( "" ) )
+        return new BuilderIssues( BuilderIssue.Severity.WARNING, "Phrase may not be null or empty.", this, null );
+      return new BuilderIssues();
+    }
+
+    public ProjectName build() throws BuilderException {
         this.isBuilt = true;
         return this;
     }

@@ -28,7 +28,7 @@ import thredds.catalog2.simpleImpl.ThreddsBuilderFactoryImpl;
  * @author edavis
  * @since 4.0
  */
-public class KeyphraseParserTest
+public class ProjectParserTest
 {
   private ThreddsBuilderFactory fac;
   private ThreddsMetadataBuilder tmBldr;
@@ -41,53 +41,55 @@ public class KeyphraseParserTest
   }
 
   @Test
-  public void checkParseCompleteKeywordElement() throws XMLStreamException, ThreddsXmlParserException
+  public void checkParseCompleteProjectElement() throws XMLStreamException, ThreddsXmlParserException
   {
-    String elemName = ThreddsMetadataElementNames.KeywordElement.getLocalPart();
+    String docBaseUriString = "http://test.catalog2.thredds/ProjectParserTest/completeProjectElement.xml";
+
+    String elemName = ThreddsMetadataElementNames.ProjectElement.getLocalPart();
     String authorityAttName = ThreddsMetadataElementNames.ControlledVocabType_Authority.getLocalPart();
     String authorityAttValue = "GCMD";
-    String phrase = "some keyphrase";
+    String projName = "some proj name";
 
     Map<String, String> attributes = new HashMap<String, String>();
     if ( authorityAttValue != null )
       attributes.put( authorityAttName, authorityAttValue );
 
-    String xml = StaxParserUtils.wrapContentXmlInXmlDocRootElement( elemName, attributes, phrase );
+    String xml = StaxParserUtils.wrapContentXmlInXmlDocRootElement( elemName, attributes, projName );
 
-    XMLEventReader reader = StaxParserUtils.createXmlEventReaderOnXmlString( xml, "http://test.catalog2.thredds/DateTypeParserTest/someTest.xml" );
+    XMLEventReader reader = StaxParserUtils.createXmlEventReaderOnXmlString( xml, docBaseUriString );
 
-    KeyphraseElementParser.Factory fac = new KeyphraseElementParser.Factory();
+    ProjectElementParser.Factory fac = new ProjectElementParser.Factory();
     StaxParserUtils.advanceReaderToFirstStartElement( reader );
     assertTrue( fac.isEventMyStartElement( reader.peek() ) );
 
-    KeyphraseElementParser keyphraseParser = fac.getNewParser( reader, this.fac, this.tmBldr );
-    ThreddsMetadataBuilder.KeyphraseBuilder keyphraseBldr = (ThreddsMetadataBuilder.KeyphraseBuilder) keyphraseParser.parse();
-    assertNotNull( keyphraseBldr );
+    ProjectElementParser projectNameParser = fac.getNewParser( reader, this.fac, this.tmBldr );
+    ThreddsMetadataBuilder.ProjectNameBuilder projNameBldr = (ThreddsMetadataBuilder.ProjectNameBuilder) projectNameParser.parse();
+    assertNotNull( projNameBldr );
 
-    assertEquals( authorityAttValue, keyphraseBldr.getAuthority());
-    assertEquals( phrase, keyphraseBldr.getPhrase());
+    assertEquals( authorityAttValue, projNameBldr.getNamingAuthority() );
+    assertEquals( projName, projNameBldr.getName() );
   }
 
   @Test
-  public void checkCatalogDatasetWrappedKeyphraseElement()
+  public void checkCatalogDatasetWrappedProjectElement()
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
-    String docBaseUriString = "http://cat2.stax.KeyphraseParserTest/checkCatDsWrappedKeyphrase.xml";
-    String elemName = ThreddsMetadataElementNames.KeywordElement.getLocalPart();
+    String docBaseUriString = "http://test.catalog2.thredds/ProjectParserTest/wrappedProjectElement.xml";
+    String elemName = ThreddsMetadataElementNames.ProjectElement.getLocalPart();
     String authorityAttName = ThreddsMetadataElementNames.ControlledVocabType_Authority.getLocalPart();
     String authorityAttValue = "GCMD";
-    String phrase = "some keyphrase";
+    String projName = "some proj name";
     String kpXml = "<" + elemName + " " + authorityAttName + "='" + authorityAttValue + "'>"
-                   + phrase
+                   + projName
                    + "</" + elemName + ">";
 
-    assertCatalogDatasetWrappedKeyphraseAsExpected( docBaseUriString, kpXml, authorityAttValue, phrase );
+    assertCatalogDatasetWrappedProjectNameAsExpected( docBaseUriString, kpXml, authorityAttValue, projName );
   }
 
 
-  private void assertCatalogDatasetWrappedKeyphraseAsExpected( String docBaseUriString, String kpXml,
-                                                               String authority, String phrase )
+  private void assertCatalogDatasetWrappedProjectNameAsExpected( String docBaseUriString, String kpXml,
+                                                                 String authority, String projName )
           throws URISyntaxException,
                  ThreddsXmlParserException
   {
@@ -100,14 +102,14 @@ public class KeyphraseParserTest
 
     DatasetBuilder dsBldr = CatalogXmlUtils.assertCatalogWithContainerDatasetAsExpected( catBuilder, docBaseUri );
     ThreddsMetadataBuilder tmdBldr = dsBldr.getThreddsMetadataBuilder();
-    tmdBldr.getKeyphraseBuilders();
-    List<ThreddsMetadataBuilder.KeyphraseBuilder> kpBldrs = tmdBldr.getKeyphraseBuilders();
-    assertNotNull( kpBldrs);
-    assertFalse( kpBldrs.isEmpty());
-    assertEquals( 1, kpBldrs.size());
-    ThreddsMetadataBuilder.KeyphraseBuilder kpBldr = kpBldrs.get( 0 );
-    assertNotNull( kpBldr);
-    assertEquals( authority, kpBldr.getAuthority());
-    assertEquals( phrase, kpBldr.getPhrase());
+    assertNotNull( tmdBldr);
+    List<ThreddsMetadataBuilder.ProjectNameBuilder> projNameBldrs = tmdBldr.getProjectNameBuilders();
+    assertNotNull( projNameBldrs );
+    assertFalse( projNameBldrs.isEmpty() );
+    assertEquals( 1, projNameBldrs.size() );
+    ThreddsMetadataBuilder.ProjectNameBuilder projNameBldr = projNameBldrs.get( 0 );
+    assertNotNull( projNameBldr );
+    assertEquals( authority, projNameBldr.getNamingAuthority() );
+    assertEquals( projName, projNameBldr.getName() );
   }
 }

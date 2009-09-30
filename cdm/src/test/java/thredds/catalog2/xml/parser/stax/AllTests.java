@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
         ParseCatalogTest.class,
         ParseMetadataTest.class,
         ParseThreddsMetadataCreatedDate.class,
+        ProjectParserTest.class,
         TimeCoverageElementParserTest.class,
         XMLEvent_WriteAsEncodedUnicodeMethodTest.class
 })

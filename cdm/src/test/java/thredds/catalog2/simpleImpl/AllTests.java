@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
         GlobalServiceContainerTest.class,
         TestServiceContainer.class,
         TestThreddsMetadataImpl.class,
+        ProjectNameImplTest.class,
         VariableTest.class,
         VariableGroupTest.class
 })

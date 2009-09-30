@@ -69,6 +69,7 @@ class ThreddsMetadataElementParser extends AbstractElementParser
   private final AuthorityElementParser.Factory authorityParserFactory;
   private final DocumentationElementParser.Factory documentationParserFactory;
   private final KeyphraseElementParser.Factory keyphraseParserFactory;
+  private final ProjectElementParser.Factory projectNameParserFactory;
   private final CreatorElementParser.Factory creatorParserFactory;
   private final PublisherElementParser.Factory publisherParserFactory;
   private final ContributorElementParser.Factory contribParserFactory;
@@ -83,6 +84,7 @@ class ThreddsMetadataElementParser extends AbstractElementParser
                                         AuthorityElementParser.Factory authorityParserFactory,
                                         DocumentationElementParser.Factory documentationParserFactory,
                                         KeyphraseElementParser.Factory keyphraseParserFactory,
+                                        ProjectElementParser.Factory projectNameParserFactory,
                                         CreatorElementParser.Factory creatorParserFactory,
                                         PublisherElementParser.Factory publisherParserFactory,
                                         ContributorElementParser.Factory contribParserFactory,
@@ -108,6 +110,7 @@ class ThreddsMetadataElementParser extends AbstractElementParser
     this.authorityParserFactory = authorityParserFactory;
     this.documentationParserFactory = documentationParserFactory;
     this.keyphraseParserFactory = keyphraseParserFactory;
+    this.projectNameParserFactory = projectNameParserFactory;
     this.creatorParserFactory = creatorParserFactory;
     this.publisherParserFactory = publisherParserFactory;
     this.contribParserFactory = contribParserFactory;
@@ -151,6 +154,8 @@ class ThreddsMetadataElementParser extends AbstractElementParser
       this.delegate = this.documentationParserFactory.getNewParser( this.reader, this.builderFactory, this.selfBuilder );
     else if ( this.keyphraseParserFactory.isEventMyStartElement( startElement ) )
       this.delegate = this.keyphraseParserFactory.getNewParser( this.reader, this.builderFactory, this.selfBuilder );
+    else if ( this.projectNameParserFactory.isEventMyStartElement( startElement ) )
+      this.delegate = this.projectNameParserFactory.getNewParser( this.reader, this.builderFactory, this.selfBuilder );
     else if ( this.creatorParserFactory.isEventMyStartElement( startElement ) )
       this.delegate = this.creatorParserFactory.getNewParser( this.reader, this.builderFactory, this.selfBuilder );
     else if ( this.publisherParserFactory.isEventMyStartElement( startElement ) )
@@ -197,6 +202,7 @@ class ThreddsMetadataElementParser extends AbstractElementParser
     private final AuthorityElementParser.Factory authorityParserFactory;
     private final DocumentationElementParser.Factory documentationParserFactory;
     private final KeyphraseElementParser.Factory keyphraseParserFactory;
+    private final ProjectElementParser.Factory projectNameParserFactory;
     private final CreatorElementParser.Factory creatorParserFactory;
     private final PublisherElementParser.Factory publisherParserFactory;
     private final ContributorElementParser.Factory contribParserFactory;
@@ -213,6 +219,7 @@ class ThreddsMetadataElementParser extends AbstractElementParser
       this.authorityParserFactory = new AuthorityElementParser.Factory();
       this.documentationParserFactory = new DocumentationElementParser.Factory();
       this.keyphraseParserFactory = new KeyphraseElementParser.Factory();
+      this.projectNameParserFactory = new ProjectElementParser.Factory();
       this.creatorParserFactory = new CreatorElementParser.Factory();
       this.publisherParserFactory = new PublisherElementParser.Factory();
       this.contribParserFactory = new ContributorElementParser.Factory();
@@ -235,6 +242,8 @@ class ThreddsMetadataElementParser extends AbstractElementParser
       if ( this.documentationParserFactory.isEventMyStartElement( event ) )
         return true;
       if ( this.keyphraseParserFactory.isEventMyStartElement( event ) )
+        return true;
+      if ( this.projectNameParserFactory.isEventMyStartElement( event ) )
         return true;
       if ( this.creatorParserFactory.isEventMyStartElement( event ) )
         return true;
@@ -259,7 +268,7 @@ class ThreddsMetadataElementParser extends AbstractElementParser
                                                this.dataFormatParserFactory, this.dataTypeParserFactory,
                                                this.dateParserFactory, this.authorityParserFactory,
                                                this.documentationParserFactory, this.keyphraseParserFactory,
-                                               this.creatorParserFactory,
+                                               this.projectNameParserFactory, this.creatorParserFactory,
                                                this.publisherParserFactory, this.contribParserFactory,
                                                this.timeCovParserFactory, this.varGroupParserFactory,
                                                reader, builderFactory, parentDatasetNodeBuilder,

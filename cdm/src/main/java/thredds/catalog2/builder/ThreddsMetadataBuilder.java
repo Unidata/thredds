@@ -58,7 +58,12 @@ public interface ThreddsMetadataBuilder extends ThreddsBuilder
 
   public KeyphraseBuilder addKeyphrase( String authority, String phrase );
   public boolean removeKeyphrase( KeyphraseBuilder keyphraseBuilder );
-  public List<KeyphraseBuilder> getKeyphraseBuilder();
+  public List<KeyphraseBuilder> getKeyphraseBuilders();
+
+  public ProjectNameBuilder addProjectName( String namingAuthority, String name);
+  public boolean removeProjectName( ProjectNameBuilder projectNameBuilder);
+  public List<ProjectNameBuilder> getProjectNameBuilders();
+
 
   public ContributorBuilder addCreator();
   public boolean removeCreator( ContributorBuilder creatorBuilder );
@@ -72,9 +77,6 @@ public interface ThreddsMetadataBuilder extends ThreddsBuilder
   public ContributorBuilder addPublisher();
   public boolean removePublisher( ContributorBuilder PublisherBuilder );
   public List<ContributorBuilder> getPublisherBuilder();
-
-  public void setProjectTitle( String projectTitle );
-  public String getProjectTitle();
 
   public DatePointBuilder addOtherDatePointBuilder( String date, String format, String type);
   public boolean removeOtherDatePointBuilder( DatePointBuilder builder);
@@ -131,7 +133,7 @@ public interface ThreddsMetadataBuilder extends ThreddsBuilder
 
   ThreddsMetadata build() throws BuilderException;
 
-    public interface DocumentationBuilder extends ThreddsBuilder
+  public interface DocumentationBuilder extends ThreddsBuilder
   {
     //public void setContainedContent( boolean containedContent );
     public boolean isContainedContent();
@@ -158,6 +160,14 @@ public interface ThreddsMetadataBuilder extends ThreddsBuilder
     public String getPhrase();
 
     public ThreddsMetadata.Keyphrase build() throws BuilderException;
+  }
+
+  public interface ProjectNameBuilder extends ThreddsBuilder
+  {
+    public String getNamingAuthority();
+    public String getName();
+
+    public ThreddsMetadata.ProjectName build() throws BuilderException;
   }
 
     public interface DatePointBuilder extends ThreddsBuilder

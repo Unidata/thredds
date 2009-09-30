@@ -58,6 +58,9 @@ public class ThreddsMetadataElementNames
   public static final QName KeywordElement
           = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
                        "keyword" );
+  public static final QName ProjectElement
+          = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
+                       "project" );
   public static final QName ControlledVocabType_Authority
           = new QName( XMLConstants.NULL_NS_URI,
                        "vocabulary" );
@@ -124,11 +127,6 @@ public class ThreddsMetadataElementNames
   public static final QName PublisherElement_ContactElement_Url
           = new QName( XMLConstants.NULL_NS_URI,
                        "url" );
-
-  public static final QName ProjectElement
-          = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
-                       "project" );
-  // ToDo "project" attributes
 
   public static final QName GeospatialCoverageElement
           = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),

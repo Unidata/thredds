@@ -79,8 +79,6 @@ public class ThreddsMetadataBuilderUtils
         ThreddsMetadataBuilder.DatePointBuilder dpb = source.getValidDatePointBuilder();
         recipient.setValidDatePointBuilder( dpb.getDate(), dpb.getDateFormat() );
     }
-    if ( source.getProjectTitle() != null )
-      recipient.setProjectTitle( source.getProjectTitle() );
 
     ThreddsMetadataBuilder.GeospatialCoverageBuilder geoCovBuilder = source.getGeospatialCoverageBuilder();
     if ( geoCovBuilder != null )
@@ -100,6 +98,7 @@ public class ThreddsMetadataBuilderUtils
     addCopiesOfCreatorBuilders( source, recipient );
     addCopiesOfDocumentationBuilders( source, recipient );
     addCopiesOfKeyphraseBuilders( source, recipient );
+    addCopiesOfProjectNameBuilders( source, recipient );
     addCopiesOfPublisherBuilders( source, recipient );
 
     addCopiesOfVariableGroupBuilders( source, recipient );
@@ -131,7 +130,6 @@ public class ThreddsMetadataBuilderUtils
     mergeOverwriteDateMetadataModified( first, second, mergedResults );
     mergeOverwriteDateModified( first, second, mergedResults );
     mergeOverwriteDateValid( first, second, mergedResults );
-    mergeOverwriteProjectTitle( first, second, mergedResults );
 
     mergeOverwriteGeospatialCoverage( first, second, mergedResults );
     mergeOverwriteTemporalCoverage( first, second, mergedResults );
@@ -149,12 +147,14 @@ public class ThreddsMetadataBuilderUtils
     addCopiesOfKeyphraseBuilders( first, mergedResults );
     addCopiesOfKeyphraseBuilders( second, mergedResults );
 
+    addCopiesOfProjectNameBuilders( first, mergedResults );
+    addCopiesOfProjectNameBuilders( second, mergedResults );
+
     addCopiesOfPublisherBuilders( first, mergedResults );
     addCopiesOfPublisherBuilders( second, mergedResults );
 
     addCopiesOfVariableGroupBuilders( first, mergedResults );
     addCopiesOfVariableGroupBuilders( second, mergedResults );
-
   }
 
   private static void addCopiesOfDocumentationBuilders( ThreddsMetadataBuilder source,
@@ -201,8 +201,14 @@ public class ThreddsMetadataBuilderUtils
 
   private static void addCopiesOfKeyphraseBuilders( ThreddsMetadataBuilder source, ThreddsMetadataBuilder result )
   {
-    for ( ThreddsMetadataBuilder.KeyphraseBuilder curKeyphrase : source.getKeyphraseBuilder() )
+    for ( ThreddsMetadataBuilder.KeyphraseBuilder curKeyphrase : source.getKeyphraseBuilders() )
       result.addKeyphrase( curKeyphrase.getAuthority(), curKeyphrase.getPhrase() );
+  }
+
+  private static void addCopiesOfProjectNameBuilders( ThreddsMetadataBuilder source, ThreddsMetadataBuilder result )
+  {
+    for ( ThreddsMetadataBuilder.ProjectNameBuilder curProjName : source.getProjectNameBuilders() )
+      result.addProjectName( curProjName.getNamingAuthority(), curProjName.getName() );
   }
 
   private static void addCopiesOfVariableGroupBuilders( ThreddsMetadataBuilder source, ThreddsMetadataBuilder result )
@@ -248,15 +254,6 @@ public class ThreddsMetadataBuilderUtils
       mergedThreddsMetadata.setTemporalCoverageBuilder( temporalCov.getStartDate(), temporalCov.getStartDateFormat(),
                                                         temporalCov.getEndDate(), temporalCov.getEndDateFormat(),
                                                         temporalCov.getDuration(), temporalCov.getResolution() );
-  }
-
-  private static void mergeOverwriteProjectTitle( ThreddsMetadataBuilder first,
-                                                  ThreddsMetadataBuilder second,
-                                                  ThreddsMetadataBuilder mergedThreddsMetadata )
-  {
-    String projectTitle = second.getProjectTitle() != null ? second.getProjectTitle() : first.getProjectTitle();
-    if ( projectTitle != null )
-      mergedThreddsMetadata.setProjectTitle( projectTitle );
   }
 
   private static void mergeOverwriteDateValid( ThreddsMetadataBuilder first,

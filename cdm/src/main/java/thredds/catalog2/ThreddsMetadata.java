@@ -51,11 +51,10 @@ public interface ThreddsMetadata
   public List<Documentation> getDocumentation();
 
   public List<Keyphrase> getKeyphrases();
+  public List<ProjectName> getProjectNames();
   public List<Contributor> getCreator();
   public List<Contributor> getContributor();
   public List<Contributor> getPublisher();
-
-  public String getProjectTitle();
 
   public List<DatePoint> getOtherDates();
   public DatePoint getCreatedDate();
@@ -94,6 +93,12 @@ public interface ThreddsMetadata
   {
     public String getAuthority();
     public String getPhrase();
+  }
+
+  public interface ProjectName
+  {
+    public String getNamingAuthority();
+    public String getName();
   }
 
     public enum DatePointType
