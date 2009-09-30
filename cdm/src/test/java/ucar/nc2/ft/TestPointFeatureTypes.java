@@ -43,6 +43,8 @@ import java.util.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
+import ucar.nc2.units.TimeDuration;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.TestAll;
 import ucar.ma2.StructureData;
@@ -161,12 +163,13 @@ public class TestPointFeatureTypes extends TestCase {
     //testPointDataset("collection:D:/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc", FeatureType.STATION, true);
   }
 
-  public void utestCdmRemote() throws IOException {
+  public void testCdmRemote() throws IOException {
     testPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/station/testCdmRemote/gempak/19580807_sao.gem", FeatureType.STATION, true);
   }
 
-  public void testCdmRemoteCollection() throws IOException {
-    testDons("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", false);
+  public void testCdmRemoteCollection() throws Exception {
+    testDon2("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/gempakLocal", false);
+    //testDons("cdmremote:http://motherlode.ucar.edu:8081/thredds/cdmremote/idd/metar/gempak", false);
     //testDons("collection:C:/data/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc", true);
     //testDons("C:/data/datasets/metars/Surface_METAR_20070326_0000.nc", true);
     //testDons("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocalHome", true);
@@ -648,6 +651,61 @@ public class TestPointFeatureTypes extends TestCase {
     long took = System.currentTimeMillis() - start;
     System.out.printf("%ntotal response took %d msecs%n", took);
   }
+
+  private void testDon2(String file, boolean showTime) throws Exception {
+        long start = System.currentTimeMillis();
+        ucar.unidata.io.RandomAccessFile.setDebugAccess(true);
+
+        Formatter buf  = new Formatter();
+        FeatureDatasetPoint pods =
+            (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
+                ucar.nc2.constants.FeatureType.POINT, file, null, buf);
+        if (pods == null) {  // try as ANY_POINT
+            System.out.println("trying as ANY_POINT");
+            pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
+                ucar.nc2.constants.FeatureType.ANY_POINT, file, null, buf);
+        }
+        if (pods == null) {
+            throw new IOException("can't open file "+file);
+        }
+       List<FeatureCollection> collectionList = pods.getPointFeatureCollectionList();
+       FeatureCollection fc = collectionList.get(0);
+           LatLonRect llr = new LatLonRect(new LatLonPointImpl(33.4, -92.2), new LatLonPointImpl(47.9, -75.89));
+       System.out.println("llr = " + llr);
+       Date startd = new DateType("2009-09-15 00:00:00Z", null, null).getDate();
+       DateRange dr = new DateRange(startd, new TimeDuration("1 hour"));
+
+       PointFeatureCollection collection = null;
+       if (fc instanceof PointFeatureCollection) {
+         collection = (PointFeatureCollection) fc;
+         if (llr != null) {
+           collection = collection.subset(llr, dr);
+         }
+       } else if (fc instanceof NestedPointFeatureCollection) {
+         NestedPointFeatureCollection npfc = (NestedPointFeatureCollection) fc;
+         collection = npfc.flatten(llr, dr);
+       } else {
+         throw new IllegalArgumentException("Can't handle collection of type " + fc.getClass().getName());
+       }
+
+       PointFeatureIterator dataIterator = collection.getPointFeatureIterator(-1);
+       int numObs = 0;
+       while (dataIterator.hasNext()) {
+         PointFeature po = (PointFeature) dataIterator.next();
+         numObs++;
+         ucar.unidata.geoloc.EarthLocation el = po.getLocation();
+         StructureData structure = po.getData();
+         assert llr.contains(el.getLatLon()) : el.getLatLon();
+         assert dr.included(po.getNominalTimeAsDate());
+         //if (numObs % 1000 == 0)
+         //  System.out.printf("%d el = %s %n", numObs, el);
+       }
+       dataIterator.finish();
+
+       long took = System.currentTimeMillis() - start;
+       System.out.printf("%ntotal response took %d msecs nobs = %d%n  seeks= %d nbytes read= %d%n", took, numObs,
+           ucar.unidata.io.RandomAccessFile.getDebugNseeks(), ucar.unidata.io.RandomAccessFile.getDebugNbytes());
+    }
 
   public static void main(String arg[]) throws IOException {
     TestPointFeatureTypes test = new TestPointFeatureTypes("");
