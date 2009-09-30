@@ -14,23 +14,267 @@ dl {margin: 10px 5px 5px 15px;)
 
 <body>
 <h1>CF encoding of Point Observation Datasets</h1>
-<p>&nbsp;</p>
-<table width="1252" height="181" border="1">
+<h3>CDM table notation</h3>
+<p><strong><em>CDM table notation</em></strong> expresses the data structures for point features in a  way that reflects the data layout on disk, as well as the relationship of index  space to coordinate space, which we call the <em>connectedness</em> of the feature type. The following are the CDM table  notation rules, which we explain further in the examples below.</p>
+<ul type="disc">
+  <li>A <em>feature</em> is represented as a structure.</li>
+  <li>A <em>table</em> is a collection of structures of the same type. The size of the table may       be fixed or variable length.</li>
+  <li>A <em>feature type</em> is represented as nested tables of specific form.</li>
+  <li>Both <em>coordinates</em> and <em>data variables</em> can be at any       level of the nesting.</li>
+  <li>A coordinate in an inner table is connected; a       coordinate in the outermost table is unconnected.</li>
+  <li>A constant coordinate can be factored out to the       top level. This is logically <em>joined</em> to a nested table with the same       dimension.</li>
+  <li>A <em>feature collection</em> is an unconnected collection of a specific feature type.</li>
+</ul>
+<h4>CDL notation:</h4>
+<pre>dimensions:
+  sample = 300;
+variables:
+  float <strong>lat</strong>(sample);
+  float <strong>lon</strong>(sample);
+  float <strong>z</strong>(sample);
+  float <strong>time</strong>(sample);
+  float data1(sample);
+  float data2(sample);
+</pre>
+<h4>CDM Structure notation:</h4>
+<p>Variables with a common outer dimension can be grouped into a <em>structure</em>:</p>
+<pre>dimensions:
+  sample = 300;
+variables:
+ structure {
+   float <strong>lat</strong>;
+   float <strong>lon</strong>;
+   float <strong>z</strong>;
+   float <strong>time</strong>;
+   float data1;
+   float data2;
+ } obs(sample); </pre>
+<p>Both the netCDF-4 file format and the NetCDF-Java CDM library support structure data types. </p>
+<h4>CDM Table notation:</h4>
+<pre>dimensions:
+  sample = 300;
+Table {
+   <strong>lat, lon, z, time</strong>;
+   data1, data2, ...
+} obs(sample); </pre>
+<h4>SQL notation:</h4>
+<pre>
+CREATE TABLE obs  (
+  <strong>lat</strong> float,  <strong>lon</strong> float, <strong>z</strong> float, <strong>time</strong> float,
+  data1 float, data2 float, ...
+)  </pre>
+<h4>Data rows:</h4>
+<table width="489" border="1">
   <tr>
-    <th width="197" scope="col">Type</th>
-    <th width="142" scope="col">single</th>
-    <th width="236" scope="col">multidim</th>
-    <th width="248" scope="col">ragged contiguous</th>
-    <th width="182" scope="col">ragged indexed</th>
-    <th width="207" scope="col">flattened</th>
+    <th width="58" scope="col">lat</th>
+    <th width="63" scope="col">lon</th>
+    <th width="43" scope="col">z</th>
+    <th width="164" scope="col">time</th>
+    <th width="61" scope="col">data1</th>
+    <th width="60" scope="col">data2</th>
+  </tr>
+  <tr>
+    <td>23.2</td>
+    <td>-120.5</td>
+    <td>30</td>
+    <td>2009-07-22 02:10:00Z</td>
+    <td>280.9</td>
+    <td>7</td>
+  </tr>
+  <tr>
+    <td>24.6</td>
+    <td>-132.9</td>
+    <td>30</td>
+    <td>2009-07-22 02:10:20Z</td>
+    <td>281.0</td>
+    <td>4</td>
+  </tr>
+</table>
+<h3>Nested Tables</h3>
+<h4>CDL:</h4>
+<pre>dimensions:
+  station = 15;
+  time = 20;
+variables:
+  float <strong>lat</strong>(station);
+  float <strong>lon</strong>(station);
+  float <strong>z</strong>(station);
+  float <strong>time</strong>(station, time);
+  float data1(station, time);
+  float data2(station, time);
+</pre>
+<h4>CDM Nested Structure:</h4>
+<pre>dimensions:
+  station = 15;
+  time = 20;
+variables:
+ structure {
+   float <strong>lat</strong>;
+   float <strong>lon</strong>;
+   float <strong>z</strong>;
+   structure {
+     float <strong>time</strong>;
+     float data1;
+     float data2;
+   } obs(time);
+ } station(station); </pre>
+<h4>CDM Nested Table:</h4>
+<pre>dimensions:
+  station = 15;
+  time = 20;
+Table {
+   <strong>lat, lon, z;</strong>
+   Table {
+     <strong>time</strong>;
+     data1, data2, ...
+   } obs(time); 
+} station(station); </pre>
+<h4>SQL notation:</h4>
+<pre>
+CREATE TABLE station  (
+  <strong>lat</strong> float,  <strong>lon</strong> float, <strong>z</strong> float,
+  station_id int
+) 
+CREATE TABLE obs  (
+  <strong>time</strong> float,
+  data1 float, data2 float
+  station_id int
+)
+CREATE INDEX obs_station_index  ON obs (station_id)    
+SELECT * FROM station  <strong>INNER</strong> JOIN obs ON station.station_id = obs.station_id  </pre>
+<h4>Data rows:</h4>
+<table width="547" border="1">
+  <tr>
+    <th width="65" scope="col">station_id</th>
+    <th width="57" scope="col">lat</th>
+    <th width="62" scope="col">lon</th>
+    <th width="42" scope="col">z</th>
+    <th width="162" scope="col">time</th>
+    <th width="70" scope="col">data1</th>
+    <th width="43" scope="col">data2</th>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>23.2</td>
+    <td>-120.5</td>
+    <td>30</td>
+    <td>2009-07-22 02:10:00Z</td>
+    <td>280.9</td>
+    <td>7</td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td>24.6</td>
+    <td>-132.9</td>
+    <td>30</td>
+    <td>2009-07-22 02:10:00Z</td>
+    <td>281.0</td>
+    <td>4</td>
+  </tr>
+</table>
+<h3>Factor out time coordinate</h3>
+<h4>CDL:</h4>
+<pre>dimensions:
+  station = 15;
+  time = 20;
+variables:
+  float <strong>lat</strong>(station);
+  float <strong>lon</strong>(station);
+  float <strong>z</strong>(station);
+  float <strong>time</strong>(time);
+  float data1(station, time);
+  float data2(station, time);
+</pre>
+<h4>CDM Nested Table:</h4>
+<pre>dimensions:
+  station = 15;
+  time = 20;
+<strong>time</strong>(time);
+Table {
+   <strong>lat, lon, z;</strong>
+   Table {
+     data1, data2, ...
+   } obs(time); 
+} station(station); </pre>
+<p>We use an<em> index join</em> to add the time coordinate to the observation.</p>
+<h4>SQL notation:</h4>
+<p>No way to effectively factor out time coordinate, must store redundantly in the obs table</p>
+<h3>Variable number of times for each station</h3>
+<h4>CDL:</h4>
+<p>The 2D data arrays data(station, time) are flattened into a 1D arrays: data(obs). This is a way to efficiently store <em>ragged arrays</em>, ie non-rectangular arrays.</p>
+<pre>dimensions:
+  station = 15;
+  obs = 287;
+variables:
+  float <strong>lat</strong>(station);
+  float <strong>lon</strong>(station);
+  float <strong>z</strong>(station);
+  float <strong>time</strong>(obs);
+  float data1(obs);
+  float data2(obs);
+  int station_index(obs);</pre>
+<p>The <em>station_index</em> variable is added to associate each observation with a station, using the station dimension index. The index here acts as a primary key for the station. The observations can be stored in any order.</p>
+<pre>dimensions:
+  station = 15;
+  obs = 287;
+variables:
+  float <strong>lat</strong>(station);
+  float <strong>lon</strong>(station);
+  float <strong>z</strong>(station);
+  int obs_count(station);
+  float <strong>time</strong>(obs);
+  float data1(obs);
+  float data2(obs);
+</pre>
+<p>The <em>obs_count</em> variable is added to associate each observation with a station. All obs between rowStart(s) and rowStart(s+1) belong to station s, where      </p>
+<ul>
+  <li>rowStart(stn) = 0 if stn = 0 </li>
+  <li>rowStart(stn) = rowStart(stn-1) + <em>obs_count</em>(stn-1) if i &gt; 0 </li>
+</ul>
+<p>The advantage of this approach is performance for getting all the observations for one station: the data for each station are stored contiguously, and can be found by reading obs_count(station) instead of station_index(obs).</p>
+<h4>CDM Nested Table:</h4>
+<pre>dimensions:
+  station = 15;
+Table {
+   <strong>lat, lon, z;</strong>
+   Table {
+     time;
+     data1, data2, ...
+   } obs(*); 
+} station(station); </pre>
+<p>The (*) means a variable number. The notation is independent of the various ways that the ragged arrays might be stored.</p>
+<h4>SQL notation:</h4>
+<p>SQL tables always have a variable length number of rows.</p>
+<h4></h4>
+<h2>Design Goals</h2>
+<ul>
+  <li>categorize point data into small number of  types</li>
+  <li>accept current practices for storing point data (as much as possible without too much complication)</li>
+  <li>allow storing multiple features in one file</li>
+  <li>allow variable length features</li>
+  <li>allow user to decide on how much data redundancy</li>
+  <li>enable generic software to read files</li>
+</ul>
+<hr />
+<p>&nbsp;</p>
+<table width="1335" height="181" border="1">
+  <tr>
+    <th width="171" scope="col">Type</th>
+    <th width="176" scope="col">single</th>
+    <th width="298" scope="col">multidim</th>
+    <th width="263" scope="col">ragged contiguous</th>
+    <th width="216" scope="col">ragged indexed</th>
+    <th width="171" scope="col">flattened</th>
   </tr>
   <tr>
     <td><strong>point</strong></td>
     <td><div align="center">
+      <p align="center">N/A</p>
+      </div></td>
+    <td><div align="center">
       <p align="left">data(obs)</p>
-      <p align="left"><strong>time,lat,lon,alt</strong>(obs)</p>
+      <p align="left"><strong>time,lat,lon,z</strong>(obs)</p>
     </div></td>
-    <td><div align="center">N/A</div></td>
     <td><div align="center">N/A</div></td>
     <td><div align="center">N/A</div></td>
     <td><div align="center">N/A</div></td>
@@ -68,7 +312,7 @@ dl {margin: 10px 5px 5px 15px;)
     <td><div align="center">
       <p align="left">data(obs)</p>
       <p align="left"><strong>time</strong>(obs)</p>
-      <p align="left"><strong>time,lat,lon,alt</strong>(obs)</p>
+      <p align="left"><strong>lat,lon,alt</strong>(obs)</p>
     </div></td>
     <td><div align="center">
       <p align="left">data(traj,obs)</p>
@@ -119,12 +363,17 @@ dl {margin: 10px 5px 5px 15px;)
   </tr>
   <tr>
     <td><strong>stationProfileTimeSeries</strong></td>
-    <td><div align="center">data(time,z)</div></td>
+    <td><div align="center">
+      <p align="left">data(profile, z)</p>
+      <p align="left"><strong>time</strong>(profile, z),<strong>time</strong>( profile)</p>
+      <p align="left"><strong>lat,lon</strong></p>
+      <p align="left"><strong>alt</strong>(profile,z),<strong>alt</strong>(z)</p>
+    </div></td>
     <td><div align="center">
       <p align="left">data(station, profile, z)</p>
       <p align="left"><strong>time</strong>(station, profile, z), <strong>time</strong>(station, profile)</p>
       <p align="left"><strong>lat,lon</strong>(station)</p>
-      <p align="left"><strong>alt</strong>(station, profile,z),<strong> alt</strong>(station, z)</p>
+      <p align="left"><strong>alt</strong>(station, profile,z),<strong> alt</strong>(station, z), <strong>alt</strong>(z)</p>
     </div></td>
     <td><div align="center">data(profile,z)</div></td>
     <td><div align="center"></div></td>
@@ -132,8 +381,16 @@ dl {margin: 10px 5px 5px 15px;)
   </tr>
   <tr>
     <td><strong>section</strong></td>
-    <td><div align="center"></div></td>
-    <td><div align="center"></div></td>
+    <td><p align="left">data(profile, z)</p>
+      <p align="left"><strong>time</strong>(profile, z), <strong>time</strong>(profile)</p>
+      <p align="left"><strong>lat,lon</strong>(profile)</p>
+    <p align="left"><strong>alt</strong>( profile,z),<strong> alt</strong>(z)</p></td>
+    <td><div align="center">
+      <p align="left">data(section, profile, z)</p>
+      <p align="left"><strong>time</strong>(section, profile, z), <strong>time</strong>(section, profile)</p>
+      <p align="left"><strong>lat,lon</strong>(section, profile)</p>
+      <p align="left"><strong>alt</strong>( section, profile,z),<strong> alt</strong>(section, z),<strong> alt</strong>(z)</p>
+    </div></td>
     <td><div align="center"></div></td>
     <td><div align="center"></div></td>
     <td><div align="center"></div></td>

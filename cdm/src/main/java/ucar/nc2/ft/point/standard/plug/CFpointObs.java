@@ -50,7 +50,9 @@ import java.util.*;
 import java.io.IOException;
 
 /**
- * CF "point obs" Convention
+ * CF "point obs" Convention.
+ *
+ * 
  *
  * @author caron
  * @since Nov 3, 2008
@@ -91,7 +93,19 @@ public class CFpointObs extends TableConfigurerImpl {
     if (ftypeS == null)
       ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt3, null);
 
-    CF.FeatureType ftype = (ftypeS == null) ? CF.FeatureType.point : CF.FeatureType.valueOf(ftypeS);
+    CF.FeatureType ftype;
+    if (ftypeS == null)
+      ftype = CF.FeatureType.point;
+    else {
+      try {
+        ftype = CF.FeatureType.valueOf(ftypeS);
+      } catch (Throwable t) {
+        ftype = CF.FeatureType.point; // ??
+      }
+    }
+
+    if (!checkForCoordinates(ds, errlog)) return null;
+
     switch (ftype) {
       case point: return getPointConfig(ds, errlog);
       case stationTimeSeries: return getStationConfig(ds, errlog);
@@ -103,15 +117,37 @@ public class CFpointObs extends TableConfigurerImpl {
     }
   }
 
-  protected TableConfig getPointConfig(NetcdfDataset ds, Formatter errlog) {
-        // obs table
+  private boolean checkForCoordinates(NetcdfDataset ds, Formatter errlog) {
+    boolean ok = true;
     Variable time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
     if (time == null) {
-      errlog.format("Must have a Time coordinate");
-      return null;
+      errlog.format("Cant find a Time coordinate");
+      ok = false;
     }
+
+    // find lat coord
+    Variable lat = CoordSysEvaluator.findCoordByType(ds, AxisType.Lat);
+    if (lat == null) {
+      errlog.format("Cant find a Latitude coordinate");
+      ok = false;
+    }
+
+    // find lon coord
+    Variable lon = CoordSysEvaluator.findCoordByType(ds, AxisType.Lon);
+    if (lon == null) {
+      errlog.format("Cant find a Longitude coordinate");
+      ok = false;
+    }
+
+    return ok;
+  }
+
+  private TableConfig getPointConfig(NetcdfDataset ds, Formatter errlog) {
+        // obs table
+    Variable time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
     Dimension obsDim = time.getDimension(0); // what about time(stn, obs) ??
     boolean hasStruct = Evaluator.hasRecordStructure(ds);
+
     TableConfig obs = new TableConfig(Table.Type.Structure, obsDim.getName());
     obs.structName = hasStruct ? "record" : obsDim.getName();
     obs.isPsuedoStructure = !hasStruct;
@@ -119,26 +155,14 @@ public class CFpointObs extends TableConfigurerImpl {
     obs.time = time.getName();
     obs.featureType = FeatureType.POINT;
     CoordSysEvaluator.findCoords(obs, ds);
+    
     return obs;
   }
 
-  protected TableConfig getStationConfig(NetcdfDataset ds, Formatter errlog) throws IOException {
-    boolean needFinish = false;
-
-    // find lat coord
+  // for station and stationProfile
+  private TableConfig getStationTable(NetcdfDataset ds, Formatter errlog) throws IOException {
     Variable lat = CoordSysEvaluator.findCoordByType(ds, AxisType.Lat);
-    if (lat == null) {
-      errlog.format("Must have a Latitude coordinate");
-      return null;
-    }
-
-    // find lon coord
     Variable lon = CoordSysEvaluator.findCoordByType(ds, AxisType.Lon);
-    if (lon == null) {
-      errlog.format("Must have a Longitude coordinate");
-      return null;
-    }
-
     if (lat.getRank() != lon.getRank()) {
       errlog.format("Lat and Lon coordinate must have same rank");
       return null;
@@ -157,7 +181,7 @@ public class CFpointObs extends TableConfigurerImpl {
       stationDim = lat.getDimension(0);
     }
 
-    boolean stnIsStruct = Evaluator.hasRecordStructure(ds) && stationDim.isUnlimited();
+    boolean stnIsStruct = (stationDim != null) && Evaluator.hasRecordStructure(ds) && stationDim.isUnlimited();
 
     Table.Type stationTableType = stnIsScalar ? Table.Type.Top : Table.Type.Structure;
     TableConfig stnTable = new TableConfig(stationTableType, "station");
@@ -189,12 +213,18 @@ public class CFpointObs extends TableConfigurerImpl {
       }
     }
 
+    return stnTable;
+  }
+
+  private TableConfig getStationConfig(NetcdfDataset ds, Formatter errlog) throws IOException {
+    boolean needFinish = false;
+
+    TableConfig stnTable = getStationTable(ds, errlog);
+    if (stnTable == null) return null;
+    Dimension stationDim = stnTable.dim;
+
     // obs table
     Variable time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
-    if (time == null) {
-      errlog.format("Must have a Time coordinate");
-      return null;
-    }
     Dimension obsDim = time.getDimension(time.getRank()-1); // may be time(time) or time(stn, obs)
 
     Table.Type obsTableType = null;
@@ -230,8 +260,8 @@ public class CFpointObs extends TableConfigurerImpl {
 
       // ok, must be multidim
       if (obsVars.size() > 0) {
-        stnTable.vars = stnIsStruct ? null : stnVars; // restrict to these if psuedo Struct
-        obsTableType = stnIsStruct ? Table.Type.MultiDimInner : Table.Type.MultiDimStructurePsuedo;
+        stnTable.vars = stnTable.isPsuedoStructure ? stnVars : null; // restrict to these if psuedo Struct
+        obsTableType = stnTable.isPsuedoStructure ? Table.Type.MultiDimStructurePsuedo : Table.Type.MultiDimInner;
       }
     }
 
@@ -239,7 +269,6 @@ public class CFpointObs extends TableConfigurerImpl {
       errlog.format("Unknown Station/Obs");
       return null;
     }
-
 
     TableConfig obsConfig = new TableConfig(obsTableType, obsDim.getName());
     obsConfig.dim = obsDim;
@@ -251,10 +280,10 @@ public class CFpointObs extends TableConfigurerImpl {
     obsConfig.isPsuedoStructure = !obsIsStruct;
 
     if ((obsTableType == Table.Type.MultiDimInner) || (obsTableType == Table.Type.MultiDimStructurePsuedo)) {
-      obsConfig.isPsuedoStructure = !stnIsStruct;
+      obsConfig.isPsuedoStructure = stnTable.isPsuedoStructure;
       obsConfig.dim = stationDim;
       obsConfig.inner = obsDim;
-      obsConfig.structName = stnIsStruct ? "record" : stationDim.getName();
+      obsConfig.structName = stnTable.isPsuedoStructure ? stationDim.getName() : "record";
       obsConfig.vars = obsVars;
       if (time.getRank() == 1)
         obsConfig.addJoin( new JoinArray( time, JoinArray.Type.raw, 0));
@@ -314,11 +343,11 @@ public class CFpointObs extends TableConfigurerImpl {
     return stnTable;
   }
 
-  protected TableConfig getProfileConfig(NetcdfDataset ds, Formatter errlog) {
+  private TableConfig getProfileConfig(NetcdfDataset ds, Formatter errlog) {
     return null;
   }
 
-  protected TableConfig getTrajectoryConfig(NetcdfDataset ds, Formatter errlog) {
+  private TableConfig getTrajectoryConfig(NetcdfDataset ds, Formatter errlog) {
     TableConfig nt = new TableConfig(Table.Type.Structure, "trajectory");
     nt.featureType = FeatureType.TRAJECTORY;
 
@@ -332,7 +361,17 @@ public class CFpointObs extends TableConfigurerImpl {
     return nt;
   }
 
-  protected TableConfig getStationProfileConfig(NetcdfDataset ds, Formatter errlog) {
-    return null;
+  private TableConfig getStationProfileConfig(NetcdfDataset ds, Formatter errlog) {
+    TableConfig nt = new TableConfig(Table.Type.Structure, "stationProfile");
+    nt.featureType = FeatureType.STATION_PROFILE;
+
+    CoordSysEvaluator.findCoords(nt, ds);
+
+    TableConfig obs = new TableConfig(Table.Type.MultiDimInner, "record");
+    obs.dim = ds.findDimension("sample");
+    obs.outer = ds.findDimension("traj");
+    nt.addChild(obs);
+
+    return nt;
   }
 }
