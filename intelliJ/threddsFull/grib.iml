@@ -40,7 +40,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/junit.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/junit-4.5.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
