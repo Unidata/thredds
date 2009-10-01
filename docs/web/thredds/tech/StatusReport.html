@@ -2,14 +2,45 @@
 <html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <title>THREDDS Technical Status</title></head>
-
 <body>
 <h1 align="left"><img src="images/unidataLogo.png" align="middle" height="75" width="75"><strong>THREDDS Technical Status </strong></h1>
 <hr>
+
+<h3><a name="200910" id="200910"></a>Status update 2009 October </h3>
+<ol>
+  <li> <strong>THREDDS Data Server (TDS)</strong></li>
+  <ol>
+    <li>Stable release is 4.0.26
+      <ol>
+        <li>Mainly a performance, memory, and stability release.</li>
+        <li>Uses netCDF-Java/CDM 4.0</li>
+        <li>Added OGC WMS service [<a href="#ncWMS">*</a>]</li>
+        <li>Support for some GRIB ensemble data.</li>
+      </ol>
+    </li>
+    <li>Development release 4.1. Currently alpha, will promote to stable release by end of October
+      <ol>
+        <li>More performance, memory, and stability improvements.</li>
+        <li>Improved handling of the various PointObs feature types.</li>
+        <li>Improved tracking of dataset collections (used in aggregation and PointObs collections).</li>
+        <li>Improved handling of GRIB ensemble data (including a new GRIB index format).</li>
+      </ol>
+    </li>
+  </ol>
+  <li><strong>Common Data Model / netCDF-Java</strong>
+    <ol>
+      <li>sdfd</li>
+    </ol>
+  </li>
+</ol>
+
+<p>[<a name="ncWMS"></a>*] Based on <a href="http://www.resc.rdg.ac.uk/trac/ncWMS/">ncWMS</a> code, with thanks to Jon Blower (Univ of Reading) and Pauline Mak (Univ of Tasmania).</p>
+
+<hr style="width: 100%; height: 2px;">
+
 <h3><a name="20090320" id="20090320"></a>Status update 03/20/2009 </h3>
 <ol>
-  <li> <strong>THREDDS Data Server (TDS)</strong>
-  </li>
+  <li> <strong>THREDDS Data Server (TDS)</strong></li>
   <ol>
     <li>Stable release is 3.17.3.1, mainly in maintenance mode.</li>
     <ol>
@@ -90,6 +121,7 @@ services, including possibly a WCS point service.</li>
       </ol>
   </li>
 </ol>
+
 <h3>&nbsp;</h3>
 <h3><a name="20080924" id="20080924"></a>Status update 09/24/2008 </h3>
 <ol>
