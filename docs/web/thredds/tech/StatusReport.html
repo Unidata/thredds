@@ -1,12 +1,13 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title>THREDDS Technical Status</title></head>
+<title>THREDDS Technical Status</title>
+</head>
 <body>
 <h1 align="left"><img src="images/unidataLogo.png" align="middle" height="75" width="75"><strong>THREDDS Technical Status </strong></h1>
 <hr>
 
-<h3><a name="200910" id="200910"></a>Status update 2009 October </h3>
+<h3><a name="20091001" id="20091001"></a>Status update 10/01/2009 </h3>
 <ol>
   <li> <strong>THREDDS Data Server (TDS)</strong></li>
   <ol>
@@ -21,15 +22,64 @@
     <li>Development release 4.1. Currently alpha, will promote to stable release by end of October
       <ol>
         <li>More performance, memory, and stability improvements.</li>
-        <li>Improved handling of the various PointObs feature types.</li>
+        <li>Uses netCDF-Java/CDM 4.1</li>
+        <li><a href="http://www.unidata.ucar.edu/software/netcdf-java/stream/CdmRemote.html">CdmRemote</a> - experimental web service for point feature datasets</li>
+        <li><a href="http://www.unidata.ucar.edu/software/netcdf-java/stream/NcStream.html">ncstream</a> - experimental web service for remote access to CDM datasets</li>
         <li>Improved tracking of dataset collections (used in aggregation and PointObs collections).</li>
+        <li>thredds.filesystem uses ehcahe to cache file directory scanning</li>
         <li>Improved handling of GRIB ensemble data (including a new GRIB index format).</li>
       </ol>
     </li>
   </ol>
   <li><strong>Common Data Model / netCDF-Java</strong>
     <ol>
-      <li>sdfd</li>
+      <li>Netcdf-Java
+        library version 4.1 is in beta. It requires the use of Java 1.6.</li>
+      <li>Point Features<ol>
+        <li>"Nested Table" implementation refactor</li>
+          <li><a href="http://www.unidata.ucar.edu/software/netcdf-java/stream/CdmRemote.html">CdmRemote</a>  experimental protocol for remote access  to point feature datasets using <strong>cdmremote:</strong> prefix</li>
+          <li>PointDatasetCollections can be defined on the fly using <strong>collection:</strong> prefix</li>
+        </ol>
+      </li>
+      <li>Coordinate Systems
+        <ol>
+            <li>AvhrrConventions</li>
+            <li> NppConventions</li>
+          <li>Cosmic Conventions</li>
+            <li>WRF MAP_PROJ=0</li>
+            <li>2D Coordinate Systems can now efficiently find(x,y) from (i,j)<br>
+                        </li>
+        </ol>
+      </li>
+      <li>IOSP
+        <ol>
+            <li>GEMPAK Grid data (Don Murray)</li>
+            <li>GRIB IOSP deals with ensembles, new binary indexes (gbx8) with complete PDS, GDS</li>
+          <li> CAMx UAM-IV (Barron Henderson)<br>
+            </li>
+        </ol>
+      </li>
+      <li>General
+        <ol>
+            <li>udunits: logarithmic units (Steve Emmerson)</li>
+            <li>catalog classes refactored to thredds.catalog2</li>
+            <li><a href="http://www.unidata.ucar.edu/software/netcdf-java/stream/NcStream.html">ncstream</a> experimental protocol for remote access to CDM datasets using <strong>ncstream</strong>: prefix</li>
+            <li>mock testing framework</li>
+        </ol>
+      </li>
+      <li>ToolsUI
+        <ol>
+            <li>New Tabs for debugging GRIB and HDF4 IOSPS</li>
+            <li>TDS Monitor log analysis application (experimental)</li>
+        </ol>
+      </li>
+      <li>NcML
+        <ol>
+            <li>Values can be specified with fromAttribute</li>
+            <li>logicalSection, logicalSlice</li>
+            <li>DatasetCollectionManager for managing aggregation and Point Feature collections</li>
+        </ol>
+      </li>
     </ol>
   </li>
 </ol>
@@ -130,7 +180,7 @@ services, including possibly a WCS point service.</li>
         <li>Stable release is 3.16.43 is mostly in maintenence mode.
           <ol>
             <li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/interfaceSpec/RadarLevel2SubsetService.html">Level II NEXRAD radar server </a>bug fixes</li>
-            </ol>
+          </ol>
       </li>
         <li>Development release is 4.0.24<ol><li>Integrating <a href="http://www.springframework.org/">Spring</a> into TDS for long term maintainability. </li>
             <li>New WCS 1.0, <a href="http://galeon-wcs.jot.com/WikiHome/GALEON%20Phase2%20Main%20Page/WCS%201.0%20Plus%20Documents">WCSplus</a> implementations</li>
@@ -139,7 +189,7 @@ services, including possibly a WCS point service.</li>
             <li>A prototype adding WMS functionality to TDS is done, based on Jon Blower (Readding U) <a href="http://www.resc.rdg.ac.uk/trac/ncWMS/">ncWMS</a> code.</li>
         </ol>
         </li>
-      </ol>
+    </ol>
   </li>
   <li><strong>Common Data Model</strong>
     <ol>
