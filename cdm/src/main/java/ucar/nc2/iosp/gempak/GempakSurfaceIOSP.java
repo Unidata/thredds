@@ -33,8 +33,6 @@
 
 
 
-
-
 package ucar.nc2.iosp.gempak;
 
 
@@ -236,16 +234,18 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
      * @throws IOException problem synching the file
      */
     public boolean sync() throws IOException {
-        /*
-        if ((gemreader.getInitFileSize() < raf.length()) && extendIndex) {
+        if (gemreader.getInitFileSize() < raf.length()) {
+            Trace.msg("GEMPAK: file is bigger");
+            Trace.call1("GEMPAK: reader.init");
             gemreader.init(true);
-            GridIndex index = gemreader.getGridIndex();
+            Trace.call2("GEMPAK: reader.init");
+            Trace.call1("GEMPAK: buildNCFile");
             // reconstruct the ncfile objects
             ncfile.empty();
-            open(index, null);
+            buildNCFile();
+            Trace.call2("GEMPAK: buildNCFile");
             return true;
         }
-        */
         return false;
     }
 
@@ -265,7 +265,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         }
         //System.out.println("looking for " + v2);
         //System.out.println("Section = " + section);
-        Trace.call1("GEMPAK: readData");
+        //Trace.call1("GEMPAK: readData");
         Array array = null;
         if (gemreader.getSurfaceFileType().equals(gemreader.SHIP)) {
             array = readShipData(v2, section);
@@ -277,7 +277,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         }
         //  long took = System.currentTimeMillis() - start;
         //  System.out.println("  read data took=" + took + " msec ");
-        Trace.call2("GEMPAK: readData");
+        //Trace.call2("GEMPAK: readData");
         return array;
     }
 
@@ -332,7 +332,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
             ByteBuffer buf   = ByteBuffer.wrap(bytes);
             array = new ArrayStructureBB(members, new int[] { size }, buf, 0);
 
-            Trace.call1("GEMPAK: readStandardData", section.toString());
+            //Trace.call1("GEMPAK: readStandardData", section.toString());
             for (int y = stationRange.first(); y <= stationRange.last();
                     y += stationRange.stride()) {
                 for (int x = timeRange.first(); x <= timeRange.last();
@@ -363,7 +363,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                     }
                 }
             }
-            Trace.call2("GEMPAK: readStandardData");
+            //Trace.call2("GEMPAK: readStandardData");
         }
         return array;
     }
@@ -441,7 +441,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
             }
             boolean hasTime = (members.findMember(TIME_VAR) != null);
 
-            Trace.call1("GEMPAK: readShipData", section.toString());
+            //Trace.call1("GEMPAK: readShipData", section.toString());
             // fill out the station information
             for (int x = recordRange.first(); x <= recordRange.last();
                     x += recordRange.stride()) {
@@ -508,7 +508,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                     }
                 }
             }
-            Trace.call2("GEMPAK: readShipData");
+            //Trace.call2("GEMPAK: readShipData");
         }
         return array;
     }
@@ -577,6 +577,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
     private void buildStandardFile() {
         // Build station list
         List<GempakStation> stations = gemreader.getStations();
+        Trace.msg("GEMPAK: now have " + stations.size() + " stations");
         Dimension station = new Dimension("station", stations.size(), true);
         ncfile.addDimension(null, station);
         ncfile.addDimension(null, DIM_LEN4);
@@ -714,7 +715,8 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         // Build variable list (var(station,time))
         List<GempakStation> stations = gemreader.getStations();
         int                 numObs   = stations.size();
-        Dimension           record   = new Dimension("record", numObs, true);
+        Trace.msg("GEMPAK: now have " + numObs + " stations");
+        Dimension record = new Dimension("record", numObs, true);
         ncfile.addDimension(null, record);
         List<Dimension> records = new ArrayList(1);
         records.add(record);
