@@ -843,7 +843,7 @@ public String NC_check_name(String name) {
     if (syncExtendOnly)
       return syncExtend();
 
-    if (lastModified == 0)
+    if (lastModified == 0) // ?? HttpRandomAccessFile
       return false;
 
     File file = new File(raf.getLocation());

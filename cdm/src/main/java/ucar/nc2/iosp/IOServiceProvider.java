@@ -34,9 +34,7 @@ package ucar.nc2.iosp;
 
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
-import ucar.ma2.StructureDataIterator;
 import ucar.nc2.ParsedSectionSpec;
-import ucar.nc2.Structure;
 
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
@@ -117,10 +115,10 @@ public interface IOServiceProvider {
 
   /**
    * Allows reading sections of nested variables
-   * @param cer
+   * @param cer section specification : what data is wanted
    * @return requested data array
-   * @throws IOException
-   * @throws InvalidRangeException
+   * @throws IOException on read error
+   * @throws InvalidRangeException if section spec is invalid
    */
   public ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException;
 
