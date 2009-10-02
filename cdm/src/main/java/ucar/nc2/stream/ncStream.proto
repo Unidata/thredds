@@ -96,3 +96,9 @@ message Range {
 message Section {
   repeated Range range = 1;
 }
+
+//////////////////////////////////
+
+message Error {
+  required string message = 1;
+}

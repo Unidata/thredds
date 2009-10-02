@@ -45,6 +45,8 @@ import ucar.unidata.geoloc.Station;
 import ucar.ma2.*;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.List;
 
@@ -60,25 +62,67 @@ import com.google.protobuf.InvalidProtocolBufferException;
  * @since Feb 16, 2009
  */
 public class PointStream {
+  public enum MessageType {
+    StationList, PointFeatureCollection, PointFeature, End, Error
+  }
+
+  static private final byte[] MAGIC_StationList = new byte[]{(byte) 0xfe, (byte) 0xfe, (byte) 0xef, (byte) 0xef};
+  static private final byte[] MAGIC_PointFeatureCollection = new byte[]{(byte) 0xfa, (byte) 0xfa, (byte) 0xaf, (byte) 0xaf};
+  static private final byte[] MAGIC_PointFeature = new byte[]{(byte) 0xf0, (byte) 0xf0, (byte) 0x0f, (byte) 0x0f};
+
+  static public MessageType readMagic(InputStream is) throws IOException {
+    byte[] b = new byte[4];
+    NcStream.readFully(is, b);
+
+    if (test(b, MAGIC_PointFeature)) return MessageType.PointFeature;
+    if (test(b, MAGIC_PointFeatureCollection)) return MessageType.PointFeatureCollection;
+    if (test(b, MAGIC_StationList)) return MessageType.StationList;
+    if (test(b, NcStream.MAGIC_END)) return MessageType.End;
+    if (test(b, NcStream.MAGIC_ERR)) return MessageType.Error;
+    return null;
+  }
+
+  static public int writeMagic(OutputStream out, MessageType type) throws IOException {
+    switch (type) {
+      case PointFeature:
+        return NcStream.writeBytes(out, PointStream.MAGIC_PointFeature);
+      case PointFeatureCollection:
+        return NcStream.writeBytes(out, PointStream.MAGIC_PointFeatureCollection);
+      case StationList:
+        return NcStream.writeBytes(out, PointStream.MAGIC_StationList);
+      case End:
+        return NcStream.writeBytes(out, NcStream.MAGIC_END);
+      case Error:
+        return NcStream.writeBytes(out, NcStream.MAGIC_ERR);
+    }
+    return 0;
+  }
+
+  private static boolean test(byte[] b, byte[] m) {
+    if (b.length != m.length) return false;
+    for (int i = 0; i < b.length; i++)
+      if (b[i] != m[i]) return false;
+    return true;
+  }
 
   static public PointStreamProto.PointFeatureCollection encodePointFeatureCollection(String name, PointFeature pf) throws IOException {
     PointStreamProto.PointFeatureCollection.Builder builder = PointStreamProto.PointFeatureCollection.newBuilder();
     if (name == null)
       System.out.printf("HEY%n");
     builder.setName(name);
-    builder.setTimeUnit( pf.getTimeUnit().getUnitsString());
+    builder.setTimeUnit(pf.getTimeUnit().getUnitsString());
 
     StructureData sdata = pf.getData();
     StructureMembers sm = sdata.getStructureMembers();
     for (StructureMembers.Member m : sm.getMembers()) {
       PointStreamProto.Member.Builder mbuilder = PointStreamProto.Member.newBuilder();
-      mbuilder.setName( m.getName());
+      mbuilder.setName(m.getName());
       if (null != m.getDescription())
-        mbuilder.setDesc( m.getDescription());
+        mbuilder.setDesc(m.getDescription());
       if (null != m.getUnitsString())
-        mbuilder.setUnits( m.getUnitsString());
-      mbuilder.setDataType( NcStream.encodeDataType(m.getDataType()));
-      mbuilder.setSection( NcStream.encodeSection( new ucar.ma2.Section( m.getShape())));
+        mbuilder.setUnits(m.getUnitsString());
+      mbuilder.setDataType(NcStream.encodeDataType(m.getDataType()));
+      mbuilder.setSection(NcStream.encodeSection(new ucar.ma2.Section(m.getShape())));
       builder.addMembers(mbuilder);
     }
 
@@ -88,13 +132,13 @@ public class PointStream {
   static public PointStreamProto.PointFeature encodePointFeature(PointFeature pf) throws IOException {
     PointStreamProto.Location.Builder locBuilder = PointStreamProto.Location.newBuilder();
     locBuilder.setTime(pf.getObservationTime());
-    if (!Double.isNaN( pf.getNominalTime()) && (pf.getNominalTime() != pf.getObservationTime()))
+    if (!Double.isNaN(pf.getNominalTime()) && (pf.getNominalTime() != pf.getObservationTime()))
       locBuilder.setNomTime(pf.getNominalTime());
-    
+
     EarthLocation loc = pf.getLocation();
     locBuilder.setLat(loc.getLatitude());
     locBuilder.setLon(loc.getLongitude());
-    if (!Double.isNaN( loc.getAltitude()))
+    if (!Double.isNaN(loc.getAltitude()))
       locBuilder.setAlt(loc.getAltitude());
 
     PointStreamProto.PointFeature.Builder builder = PointStreamProto.PointFeature.newBuilder();
@@ -124,11 +168,11 @@ public class PointStream {
         for (char c : sdata.getJavaArrayChar(m))
           bb.put((byte) c);
       } else
-        System.out.println(" unimplemented type = "+m.getDataType());
+        System.out.println(" unimplemented type = " + m.getDataType());
 
     }
     //System.out.println(" size= "+size+" bb="+bb.limit());
-    builder.setData( ByteString.copyFrom( bb.array()));
+    builder.setData(ByteString.copyFrom(bb.array()));
     return builder.build();
   }
 
@@ -140,7 +184,7 @@ public class PointStream {
       locBuilder.setId(loc.getName());
       locBuilder.setLat(loc.getLatitude());
       locBuilder.setLon(loc.getLongitude());
-      if (!Double.isNaN( loc.getAltitude()))
+      if (!Double.isNaN(loc.getAltitude()))
         locBuilder.setAlt(loc.getAltitude());
       if (loc.getDescription() != null)
         locBuilder.setDesc(loc.getDescription());

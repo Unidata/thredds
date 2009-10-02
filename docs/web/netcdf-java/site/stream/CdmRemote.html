@@ -116,22 +116,22 @@ where:
   </tr>
   <tr>
     <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>req=data</strong></td>
-    <td>pointData ncstream message</td>
+    <td>pointFeatureList message</td>
     <td>get all the data</td>
   </tr>
   <tr>
     <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>req=data&amp;north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
-    <td>pointData ncstream message</td>
+    <td>pointFeatureList message</td>
     <td>get data in bounding box</td>
   </tr>
   <tr>
     <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>req=data&amp;</strong><strong>time_start=&amp;time_end=</strong></td>
-    <td>pointData ncstream message</td>
+    <td>pointFeatureList message</td>
     <td>get data in time range</td>
   </tr>
   <tr>
     <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>req=data&amp;var=Temp,lat,lon</strong></td>
-    <td>pointData ncstream message</td>
+    <td>pointFeatureList message</td>
     <td>get data for listed variables</td>
   </tr>
 </table>
@@ -160,37 +160,37 @@ where:
   </tr>
   <tr>
     <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=stations</strong></td>
-    <td>stationList ncstream message</td>
+    <td>stationListMessage</td>
     <td>get all stations</td>
   </tr>
   <tr>
     <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=stations&amp;north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
-    <td>stationList ncstream message</td>
+    <td>stationListMessage</td>
     <td>get stations in bounding box</td>
   </tr>
   <tr>
     <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=stations&amp;stn=KDEN,KLOG,MOAS</strong></td>
-    <td>stationList ncstream message</td>
+    <td>stationListMessage</td>
     <td>get stations in list</td>
   </tr>
   <tr>
     <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=data&amp;time_start=&amp;time_end=&amp;</strong><strong>stn=KDEN</strong></td>
-    <td>pointData ncstream message</td>
+    <td>pointFeatureList message</td>
     <td>get data in time range</td>
   </tr>
   <tr>
     <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=data&amp;</strong><strong>stn=KDEN,KLOG,MOAS</strong></td>
-    <td>pointData ncstream message</td>
+    <td>pointFeatureList message</td>
     <td>get data for station list</td>
   </tr>
   <tr>
     <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=data&amp;</strong><strong>north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
-    <td>pointData ncstream message</td>
+    <td>pointFeatureList message</td>
     <td>get data in bounding box</td>
   </tr>
   <tr>
     <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=data&amp;</strong><strong>var=Temp,lat,lon&amp;</strong><strong>stn=KDEN</strong></td>
-    <td>pointData ncstream message</td>
+    <td>pointFeatureList message</td>
     <td>get data for listed variables</td>
   </tr>
 </table>
@@ -214,6 +214,35 @@ where:
 <br />  &lt;LatLonBox&gt;<br />    &lt;west&gt;-180.0000&lt;/west&gt;<br />    &lt;east&gt;180.0000&lt;/east&gt;<br />    &lt;south&gt;-90.0000&lt;/south&gt;<br />    &lt;north&gt;82.5199&lt;/north&gt;<br />  &lt;/LatLonBox&gt;<br />  &lt;AcceptList&gt;<br />    &lt;accept&gt;raw&lt;/accept&gt;<br />    &lt;accept&gt;xml&lt;/accept&gt;<br />    &lt;accept&gt;csv&lt;/accept&gt;<br />    &lt;accept&gt;netcdf&lt;/accept&gt;<br />    &lt;accept&gt;ncstream&lt;/accept&gt;<br />  &lt;/AcceptList&gt;<br />&lt;/capabilities&gt;</pre>
 
 <p>&nbsp;</p>
+<hr width="100%" />
+<h2>PointStream Grammer</h2>
+<p>An <em><strong>pointstream</strong></em> is a sequence of one or more messages:</p>
+<pre>   pointstream = {message}
+   message = stationListMessage | pointFeatureListMessage | errorMessage | endMessage
+   stationListMessage = MAGIC_StationList, vlen, PointStreamProto.StationList 
+   pointFeatureListMessage = pointFeatureCollectionMessage, {pointFeatureMessage}, (endMessage | errorMessage)
+
+
+   pointFeatureCollectionMessage = MAGIC_PointFeatureCollection, vlen, PointStreamProto.PointFeatureCollection
+   pointFeatureMessage = MAGIC_PointFeature, vlen, PointStreamProto.PointFeature
+   endMessage = MAGIC_END
+   errorMessage = MAGIC_ERR, vlen, NcStreamProto.Error
+   
+   vlen = variable length encoded positive integer == length of the following object in bytes
+
+
+   // 8 byte constants
+
+   MAGIC_StationList            =  0xad, 0xec, 0xce, 0xda 
+   MAGIC_PointFeatureCollection =  0xab, 0xec, 0xce, 0xba <br />
+   MAGIC_PointFeature           =  0xab, 0xec, 0xce, 0xba <br />   MAGIC_END                    =  0xab, 0xad, 0xba, 0xda <br />
+   MAGIC_ERR                    =  0xab, 0xad, 0xba, 0xda <br />
+</pre>
+<p>The protobuf messages are defined by </p>
+<ul>
+  <li><strong>thredds\cdm\src\main\java\ucar\nc2\ft\point\remote\pointStream.proto</strong></li>
+</ul>
+<p></p>
 <hr width="100%" />
 <h2>Current notes on motherlode dev</h2>
 <p>cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/gempakLocal/collection</p>
@@ -307,7 +336,6 @@ FeatureDataset on location= cdmremote:http://localhost:8080/thredds/cdmremote/lo
     time_coverage_start = &quot;1143243900&quot;
     time_coverage_end = &quot;1143330240&quot;
     observationDimension = &quot;recNum&quot;
-    notes = &quot;\n    The metar2nc decoder creates a netCDF file based on a set of variables \n    that are commonly used in display programs. Since not all the variables\n    that are possible(over 135) are written, the raw METAR report is stored \n    for future decoding of variables not explicited specified. The \n    lastChild variable gives the record number of the most recent report \n    for a particular station and the prevChild variable is the record \n    number of the next most recent. By following the links, all the reports\n    for a particular station can be extracted.&quot;
  <strong> Data Variables (0)</strong>
 
 parseInfo=
@@ -337,7 +365,8 @@ CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_2
 (check to see what the strategy is for stations: coomplete scan or ??)</strong>
 
 </pre>
-<p>5) <strong>cdmremoteCatalog.xml </strong>defines datasets for the collections we have working so far.<br>
+<p>5) <strong>cdmremoteCatalog.xml </strong>defines datasets for the collections we have working so far.</p>
+<p><br>
 </p>
 <hr width="100%" />
 <address>

@@ -33,10 +33,14 @@
 package ucar.nc2.ft.point.remote;
 
 import ucar.nc2.ft.point.PointCollectionImpl;
+import ucar.nc2.ft.point.PointIteratorAbstract;
+import ucar.nc2.ft.point.PointIteratorEmpty;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.PointFeature;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.CdmRemote;
+import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -67,23 +71,44 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
 
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
     HttpMethod method = null;
+    String errMessage = null;
 
     try {
       method = CdmRemote.sendQuery(uri, queryMaker.makeQuery());
       InputStream in = method.getResponseBodyAsStream();
 
-      int len = NcStream.readVInt(in);
-      byte[] b = new byte[len];
-      NcStream.readFully(in, b);
-      PointStreamProto.PointFeatureCollection pfc = PointStreamProto.PointFeatureCollection.parseFrom(b);
-      PointFeatureIterator iter = new RemotePointFeatureIterator(method, in, new PointStream.ProtobufPointFeatureMaker(pfc));
-      iter.setCalculateBounds(this);
-      return iter;
+      PointStream.MessageType mtype = PointStream.readMagic(in);
+      if (mtype == PointStream.MessageType.PointFeatureCollection) {
+        int len = NcStream.readVInt(in);
+        byte[] b = new byte[len];
+        NcStream.readFully(in, b);
+        PointStreamProto.PointFeatureCollection pfc = PointStreamProto.PointFeatureCollection.parseFrom(b);
+        PointFeatureIterator iter = new RemotePointFeatureIterator(method, in, new PointStream.ProtobufPointFeatureMaker(pfc));
+        iter.setCalculateBounds(this);
+        return iter;
+
+      } else if (mtype == PointStream.MessageType.End) {
+        return new PointIteratorEmpty(); // nothing in the iteration
+
+      } else if (mtype == PointStream.MessageType.Error) {
+        int len = NcStream.readVInt(in);
+        byte[] b = new byte[len];
+        NcStream.readFully(in, b);
+        NcStreamProto.Error proto = NcStreamProto.Error.parseFrom(b);
+        errMessage = NcStream.decodeErrorMessage(proto);
+
+      } else {
+        errMessage = "Illegal pointstream message type= " + mtype; // maybe kill the socket ?
+      }
 
     } catch (Throwable t) {
       if (method != null) method.releaseConnection();
       throw new RuntimeException(t);
     }
+
+    if (errMessage != null)
+      throw new IOException(errMessage);
+    return null;
   }
 
 

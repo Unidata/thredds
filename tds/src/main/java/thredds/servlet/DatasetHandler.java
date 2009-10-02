@@ -47,6 +47,7 @@ import java.util.Set;
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvDatasetFmrc;
 import thredds.catalog.InvDatasetScan;
+import thredds.catalog.InvAccess;
 import thredds.servlet.restrict.RestrictedDatasetServlet;
 
 import javax.servlet.http.HttpServletRequest;
@@ -369,7 +370,11 @@ public class DatasetHandler {
     } else { // dataset
       if (debugResourceControl)
         System.out.println("putResourceControl " + ds.getRestrictAccess() + " for dataset " + ds.getUrlPath());
-      resourceControlHash.put(ds.getUrlPath(), ds.getRestrictAccess());
+      //resourceControlHash.put(ds.getUrlPath(), ds.getRestrictAccess());
+      for (InvAccess access : ds.getAccess()) {
+        resourceControlHash.put(access.getUrlPath(), ds.getRestrictAccess());
+      }
+
     }
 
     hasResourceControl = true;

@@ -61,6 +61,7 @@ import ucar.nc2.ft.point.remote.PointStream;
 import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamWriter;
+import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
@@ -288,22 +289,33 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
     if (null != getContentDescription(query))
       res.setHeader("Content-Description", getContentDescription(query));
 
-    List<FeatureCollection> coll = fdp.getPointFeatureCollectionList();
-    StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) coll.get(0);
+    try {
+      List<FeatureCollection> coll = fdp.getPointFeatureCollectionList();
+      StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) coll.get(0);
 
-    List<Station> stations;
-    if (query.getLatLonRect() != null)
-      stations = sfc.getStations(query.getLatLonRect());
-    else if (query.getStnNames() != null)
-      stations = sfc.getStations(Arrays.asList(query.getStnNames()));
-    else
-      stations = sfc.getStations();
+      List<Station> stations;
+      if (query.getLatLonRect() != null)
+        stations = sfc.getStations(query.getLatLonRect());
+      else if (query.getStnNames() != null)
+        stations = sfc.getStations(Arrays.asList(query.getStnNames()));
+      else
+        stations = sfc.getStations();
 
-    PointStreamProto.StationList stationsp = PointStream.encodeStations(stations);
-    byte[] b = stationsp.toByteArray();
-    NcStream.writeVInt(out, b.length);
-    out.write(b);
-    NcStream.writeVInt(out, 0);
+      PointStreamProto.StationList stationsp = PointStream.encodeStations(stations);
+      byte[] b = stationsp.toByteArray();
+      PointStream.writeMagic(out, PointStream.MessageType.StationList);
+      NcStream.writeVInt(out, b.length);
+      out.write(b);
+      
+    } catch (Throwable t) {
+      NcStreamProto.Error err = NcStream.encodeErrorMessage( t.getMessage());
+      byte[] b = err.toByteArray();
+      PointStream.writeMagic(out, PointStream.MessageType.Error);
+      NcStream.writeVInt(out, b.length);
+      out.write(b);
+      
+      throw new IOException(t);
+    }
 
     out.flush();
     res.flushBuffer();

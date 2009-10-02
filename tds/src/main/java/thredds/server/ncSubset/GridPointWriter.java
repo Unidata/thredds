@@ -60,7 +60,6 @@ public class GridPointWriter {
   private static boolean debug = false;
   private static long timeToScan = 0;
 
-
   private DateFormatter format = new DateFormatter();
   private GridDataset gds;
 

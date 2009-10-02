@@ -41,10 +41,7 @@ import java.io.File;
 import java.util.*;
 
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.units.DateUnit;
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateType;
-import ucar.nc2.units.TimeDuration;
+import ucar.nc2.units.*;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.TestAll;
 import ucar.ma2.StructureData;
@@ -168,7 +165,14 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   public void testCdmRemoteCollection() throws Exception {
-    testDon2("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/gempakLocal", false);
+    //testDon2("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/gempakLocal", false);
+    while (true) {
+      //testDon2("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/gempakLocal", false);
+      //testDon2("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/gempakLocal", false);
+      testDon2("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", true);
+      Thread.sleep(60 * 1000);
+    }
+
     //testDons("cdmremote:http://motherlode.ucar.edu:8081/thredds/cdmremote/idd/metar/gempak", false);
     //testDons("collection:C:/data/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc", true);
     //testDons("C:/data/datasets/metars/Surface_METAR_20070326_0000.nc", true);
@@ -641,9 +645,9 @@ public class TestPointFeatureTypes extends TestCase {
           System.out.printf("%d el = %s %n", numObs, el);
       }
 
-        long took = System.currentTimeMillis() - start;
-        System.out.printf("response took %d msecs nobs = %d%n  seeks= %d nbytes read= %d%n", took, numObs,
-                ucar.unidata.io.RandomAccessFile.getDebugNseeks(), ucar.unidata.io.RandomAccessFile.getDebugNbytes());
+      long took = System.currentTimeMillis() - start;
+      System.out.printf("response took %d msecs nobs = %d%n  seeks= %d nbytes read= %d%n", took, numObs,
+              ucar.unidata.io.RandomAccessFile.getDebugNseeks(), ucar.unidata.io.RandomAccessFile.getDebugNbytes());
     } finally {
       if (dataIterator != null)
         dataIterator.finish();
@@ -652,65 +656,78 @@ public class TestPointFeatureTypes extends TestCase {
     System.out.printf("%ntotal response took %d msecs%n", took);
   }
 
-  private void testDon2(String file, boolean showTime) throws Exception {
-        long start = System.currentTimeMillis();
-        ucar.unidata.io.RandomAccessFile.setDebugAccess(true);
+  private void testDon2(String file, boolean usePresent) throws Exception {
+    long start = System.currentTimeMillis();
+    //ucar.unidata.io.RandomAccessFile.setDebugAccess(true);
 
-        Formatter buf  = new Formatter();
-        FeatureDatasetPoint pods =
+    Formatter buf = new Formatter();
+    FeatureDatasetPoint pods =
             (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
-                ucar.nc2.constants.FeatureType.POINT, file, null, buf);
-        if (pods == null) {  // try as ANY_POINT
-            System.out.println("trying as ANY_POINT");
-            pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
-                ucar.nc2.constants.FeatureType.ANY_POINT, file, null, buf);
-        }
-        if (pods == null) {
-            throw new IOException("can't open file "+file);
-        }
-       List<FeatureCollection> collectionList = pods.getPointFeatureCollectionList();
-       FeatureCollection fc = collectionList.get(0);
-           LatLonRect llr = new LatLonRect(new LatLonPointImpl(33.4, -92.2), new LatLonPointImpl(47.9, -75.89));
-       System.out.println("llr = " + llr);
-       Date startd = new DateType("2009-09-15 00:00:00Z", null, null).getDate();
-       DateRange dr = new DateRange(startd, new TimeDuration("1 hour"));
-
-       PointFeatureCollection collection = null;
-       if (fc instanceof PointFeatureCollection) {
-         collection = (PointFeatureCollection) fc;
-         if (llr != null) {
-           collection = collection.subset(llr, dr);
-         }
-       } else if (fc instanceof NestedPointFeatureCollection) {
-         NestedPointFeatureCollection npfc = (NestedPointFeatureCollection) fc;
-         collection = npfc.flatten(llr, dr);
-       } else {
-         throw new IllegalArgumentException("Can't handle collection of type " + fc.getClass().getName());
-       }
-
-       PointFeatureIterator dataIterator = collection.getPointFeatureIterator(-1);
-       int numObs = 0;
-       while (dataIterator.hasNext()) {
-         PointFeature po = (PointFeature) dataIterator.next();
-         numObs++;
-         ucar.unidata.geoloc.EarthLocation el = po.getLocation();
-         StructureData structure = po.getData();
-         assert llr.contains(el.getLatLon()) : el.getLatLon();
-         assert dr.included(po.getNominalTimeAsDate());
-         //if (numObs % 1000 == 0)
-         //  System.out.printf("%d el = %s %n", numObs, el);
-       }
-       dataIterator.finish();
-
-       long took = System.currentTimeMillis() - start;
-       System.out.printf("%ntotal response took %d msecs nobs = %d%n  seeks= %d nbytes read= %d%n", took, numObs,
-           ucar.unidata.io.RandomAccessFile.getDebugNseeks(), ucar.unidata.io.RandomAccessFile.getDebugNbytes());
+                    ucar.nc2.constants.FeatureType.POINT, file, null, buf);
+    if (pods == null) {  // try as ANY_POINT
+      System.out.println("trying as ANY_POINT");
+      pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
+              ucar.nc2.constants.FeatureType.ANY_POINT, file, null, buf);
     }
+    if (pods == null) {
+      throw new IOException("can't open file " + file);
+    }
+    List<FeatureCollection> collectionList = pods.getPointFeatureCollectionList();
+    FeatureCollection fc = collectionList.get(0);
+    LatLonRect llr = new LatLonRect(new LatLonPointImpl(33.4, -92.2), new LatLonPointImpl(47.9, -75.89));
+    System.out.println("llr = " + llr);
+
+    DateRange dr;
+    if (usePresent) {
+      dr = new DateRange(null, new DateType(true, null), new TimeDuration("1 hour"), null);
+      dr = new DateRange( dr.getStart().getDate(), dr.getEnd().getDate() ); // get rid of reletive time
+    } else {
+      Date startd = new DateType("2009-09-15 00:00:00Z", null, null).getDate();
+      dr = new DateRange(startd, new TimeDuration("1 hour"));
+    }
+    System.out.println("date range = " + dr);
+
+    PointFeatureCollection collection = null;
+    if (fc instanceof PointFeatureCollection) {
+      collection = (PointFeatureCollection) fc;
+      if (llr != null) {
+        collection = collection.subset(llr, dr);
+      }
+    } else if (fc instanceof NestedPointFeatureCollection) {
+      NestedPointFeatureCollection npfc = (NestedPointFeatureCollection) fc;
+      collection = npfc.flatten(llr, dr);
+    } else {
+      throw new IllegalArgumentException("Can't handle collection of type " + fc.getClass().getName());
+    }
+
+    DateRange track = null;
+    DateFormatter df = new DateFormatter();
+    PointFeatureIterator dataIterator = collection.getPointFeatureIterator(-1);
+    int numObs = 0;
+    while (dataIterator.hasNext()) {
+      PointFeature po = (PointFeature) dataIterator.next();
+      numObs++;
+      ucar.unidata.geoloc.EarthLocation el = po.getLocation();
+      StructureData structure = po.getData();
+      assert llr.contains(el.getLatLon()) : el.getLatLon() + " not in "+ llr;
+
+      Date obsDate = po.getObservationTimeAsDate();
+      assert dr.included(obsDate) : df.toDateTimeString(obsDate) + " not in "+ dr;
+      if (numObs % 1000 == 0)
+        System.out.printf("%d el = %s %s %n", numObs, el, df.toDateTimeString(obsDate));
+
+      if (track == null) track = new DateRange(obsDate, obsDate);
+      else track.extend(obsDate);
+    }
+    dataIterator.finish();
+
+    long took = System.currentTimeMillis() - start;
+    System.out.printf("%ntotal response took %d msecs nobs = %d range=%s %n", took, numObs, track);
+  }
 
   public static void main(String arg[]) throws IOException {
     TestPointFeatureTypes test = new TestPointFeatureTypes("");
     test.testDons("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", false);
-
   }
 
 

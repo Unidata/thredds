@@ -24,12 +24,12 @@ import com.google.protobuf.InvalidProtocolBufferException;
 public class NcStream {
   //  must start with this "CDFS"
   static final byte[] MAGIC_START = new byte[]{0x43, 0x44, 0x46, 0x53};
-  // adecceda
+
   static final byte[] MAGIC_HEADER = new byte[]{(byte) 0xad, (byte) 0xec, (byte) 0xce, (byte) 0xda};
-  // abecceba
   static final byte[] MAGIC_DATA = new byte[]{(byte) 0xab, (byte) 0xec, (byte) 0xce, (byte) 0xba};
-  // abadbada
-  static final byte[] MAGIC_ERR = new byte[]{(byte) 0xab, (byte) 0xad, (byte) 0xba, (byte) 0xda};
+
+  static public final byte[] MAGIC_ERR = new byte[]{(byte) 0xab, (byte) 0xad, (byte) 0xba, (byte) 0xda};
+  static public final byte[] MAGIC_END = new byte[]{(byte) 0xed, (byte) 0xed, (byte) 0xde, (byte) 0xde};
 
   static NcStreamProto.Group.Builder encodeGroup(Group g, int sizeToCache) throws IOException {
     NcStreamProto.Group.Builder groupBuilder = NcStreamProto.Group.newBuilder();
@@ -119,6 +119,12 @@ public class NcStream {
     return builder;
   }
 
+  static public NcStreamProto.Error encodeErrorMessage(String message) throws IOException {
+    NcStreamProto.Error.Builder builder = NcStreamProto.Error.newBuilder();
+    builder.setMessage(message);
+    return builder.build();
+  }
+
   static NcStreamProto.Data encodeDataProto(Variable var, Section section) throws IOException, InvalidRangeException {
     NcStreamProto.Data.Builder builder = NcStreamProto.Data.newBuilder();
     builder.setVarName(var.getName());
@@ -177,7 +183,7 @@ public class NcStream {
     return length;
   }
 
-  static int writeBytes(OutputStream out, byte[] b) throws IOException {
+  static public int writeBytes(OutputStream out, byte[] b) throws IOException {
     return writeBytes(out, b, 0, b.length);
   }
 
@@ -255,14 +261,18 @@ public class NcStream {
     return done;
   }
 
-  static boolean readAndTest(InputStream is, byte[] test) throws IOException {
+  static public boolean readAndTest(InputStream is, byte[] test) throws IOException {
     byte[] b = new byte[test.length];
-    is.read(b);
+    readFully(is, b);
 
     if (b.length != test.length) return false;
     for (int i = 0; i < b.length; i++)
       if (b[i] != test[i]) return false;
     return true;
+  }
+
+  static public String decodeErrorMessage(NcStreamProto.Error err) {
+    return err.getMessage();
   }
 
   static Dimension decodeDim(NcStreamProto.Dimension dim) {

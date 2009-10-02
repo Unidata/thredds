@@ -1,6 +1,7 @@
 package ucar.nc2.ft.point.remote;
 
 import ucar.nc2.stream.NcStream;
+import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.point.PointIteratorAbstract;
 import org.apache.commons.httpclient.HttpMethod;
@@ -9,7 +10,7 @@ import java.io.InputStream;
 import java.io.IOException;
 
 /**
- * Describe
+ * Iterate through a stream of PointStream.MessageType.PointFeature until PointStream.MessageType.End
  *
  * @author caron
  * @since May 14, 2009
@@ -41,21 +42,40 @@ public class RemotePointFeatureIterator extends PointIteratorAbstract {
 
   public boolean hasNext() throws IOException {
     if (finished) return false;
-    
-    int len = NcStream.readVInt(in);
-    if (debug && (getCount() % 100 == 0))
-      System.out.println(" RemotePointFeatureIterator len= " + len+ " count = "+getCount());
-    if (len <= 0) {
+
+    PointStream.MessageType mtype = PointStream.readMagic(in);
+    if (mtype == PointStream.MessageType.PointFeature) {
+      int len = NcStream.readVInt(in);
+      if (debug && (getCount() % 100 == 0))
+        System.out.println(" RemotePointFeatureIterator len= " + len + " count = " + getCount());
+
+      byte[] b = new byte[len];
+      NcStream.readFully(in, b);
+
+      pf = featureMaker.make(b);
+      return true;
+
+    } else if (mtype == PointStream.MessageType.End) {
       pf = null;
       finish();
       return false;
+      
+    } else if (mtype == PointStream.MessageType.Error) {
+      int len = NcStream.readVInt(in);
+      byte[] b = new byte[len];
+      NcStream.readFully(in, b);
+      NcStreamProto.Error proto = NcStreamProto.Error.parseFrom(b);
+      String errMessage = NcStream.decodeErrorMessage(proto);
+
+      pf = null;
+      finish();
+      throw new IOException(errMessage);
+
+    } else {
+      pf = null;
+      finish();
+      throw new IOException("Illegal pointstream message type= "+mtype); // maybe kill the socket ?
     }
-
-    byte[] b = new byte[len];
-    NcStream.readFully(in, b);
-
-    pf = featureMaker.make(b);
-    return true;
   }
 
   public PointFeature next() throws IOException {

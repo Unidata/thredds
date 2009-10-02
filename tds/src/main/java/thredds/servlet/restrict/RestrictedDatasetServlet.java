@@ -52,7 +52,7 @@ public class RestrictedDatasetServlet extends HttpServlet {
   private static org.slf4j.Logger log;
   private static Authorizer handler = new TomcatAuthorizer();
   private static boolean initOK = false;
-  private static boolean debugResourceControl = true;
+  private static boolean debugResourceControl = false;
 
   public void init() throws ServletException {
     super.init();

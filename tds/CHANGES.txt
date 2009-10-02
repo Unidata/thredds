@@ -4,6 +4,9 @@ Build Date = @BUILDTIME@
 
 Release Details 4.1:
  0:
+  add pointstream error handling
+  restrictDataset: add all URLs from InvAccess list.
+  restrictDataset: default web.xml in thredds.war does not use SSL
   aggExisting caching now works correctly  
   fix webstart, point to 4.1
   cdmremote point: get DateRange filter working

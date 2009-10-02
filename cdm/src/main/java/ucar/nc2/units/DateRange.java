@@ -255,6 +255,18 @@ public class DateRange {
   }
 
   /**
+   * Extend this date range by the given Date.
+   *
+   * @param d given Date
+   */
+  public void extend(Date d) {
+    if (d.before(getStart().getDate()))
+      setStart( new DateType(false, d));
+    if (getEnd().before(d))
+      setEnd(new DateType(false, d));
+  }
+
+  /**
    * Get the starting Date.
    *
    * @return starting Date

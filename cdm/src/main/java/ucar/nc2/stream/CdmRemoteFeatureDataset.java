@@ -60,7 +60,7 @@ import org.apache.commons.httpclient.HttpMethod;
  */
 public class CdmRemoteFeatureDataset {
   static private boolean debug = false;
-  static private boolean showXML = true;
+  static private boolean showXML = false;
 
   static public FeatureDataset factory(FeatureType wantFeatureType, String endpoint) throws IOException {
     if (endpoint.startsWith(CdmRemote.SCHEME))

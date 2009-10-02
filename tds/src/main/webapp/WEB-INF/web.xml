@@ -676,9 +676,9 @@
     <auth-constraint>
       <role-name>restrictedDatasetUser</role-name>
     </auth-constraint>
-    <user-data-constraint>
+    <!-- user-data-constraint>
       <transport-guarantee>CONFIDENTIAL</transport-guarantee>
-    </user-data-constraint>
+    </user-data-constraint -->
   </security-constraint>
 
   <!-- can only have one login-config for extire context. -->
