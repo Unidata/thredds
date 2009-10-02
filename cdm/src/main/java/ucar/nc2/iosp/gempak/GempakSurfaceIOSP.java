@@ -234,6 +234,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
      * @throws IOException problem synching the file
      */
     public boolean sync() throws IOException {
+        /*
         if (gemreader.getInitFileSize() < raf.length()) {
             Trace.msg("GEMPAK: file is bigger");
             Trace.call1("GEMPAK: reader.init");
@@ -246,6 +247,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
             Trace.call2("GEMPAK: buildNCFile");
             return true;
         }
+        */
         return false;
     }
 
