@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>CF encoding Table</title>
+</head>
+
+<body>
+<h3>CF Encoding Summary</h3>
+<table width="1437" height="181" border="1">
+  <tr>
+    <th width="134" scope="col">Type</th>
+    <th width="193" scope="col">single</th>
+    <th width="257" scope="col">multidim</th>
+    <th width="226" scope="col">ragged contiguous</th>
+    <th width="227" scope="col">ragged indexed</th>
+    <th width="161" scope="col">flattened</th>
+    <th width="193" scope="col">Table</th>
+  </tr>
+  <tr>
+    <td><strong>point</strong></td>
+    <td><div align="center">
+      <p align="center">N/A</p>
+    </div></td>
+    <td><div align="center">
+      <p align="left">data(obs)</p>
+      <p align="left"><strong>time,lat,lon,z</strong>(obs)</p>
+    </div></td>
+    <td><div align="center">N/A</div></td>
+    <td><div align="center">N/A</div></td>
+    <td><div align="center">N/A</div></td>
+    <td><pre>Table { 
+  <strong>lat, lon, z, time</strong>;    
+  data1, data2, ... 
+} obs(sample);</pre></td>
+  </tr>
+  <tr>
+    <td><strong>stationTimeSeries</strong></td>
+    <td><div align="center">
+      <p align="left">data(time)</p>
+      <p align="left"><strong>time</strong>(time)</p>
+      <p align="left">scalar <strong>lat, lon, z</strong></p>
+    </div></td>
+    <td><div align="center">
+      <p align="left">data(station, obs)</p>
+      <p align="left"><strong>time</strong>(station, obs) | <strong>time</strong>(time)</p>
+      <p align="left"><strong>lat,lon,alt</strong>(station)</p>
+    </div></td>
+    <td><div align="center">
+      <p align="left">data(obs)</p>
+      <p align="left"><strong>time</strong>(obs)</p>
+      <p align="left"><strong>lat,lon,alt</strong>(station), numObs(station)</p>
+    </div></td>
+    <td><div align="center">
+      <p align="left">data(obs)</p>
+      <p align="left"><strong>time</strong>(obs), stationIndex(obs)</p>
+      <p align="left"><strong>lat,lon,alt</strong>(station)</p>
+    </div></td>
+    <td><div align="center">
+      <p align="left">data(obs)</p>
+      <p align="left"><strong>time</strong>(obs), stationId(obs)</p>
+      <p align="left"><strong>lat,lon,alt</strong>(obs)</p>
+    </div></td>
+    <td><pre>Table {
+  <strong>lat, lon, z;</strong>
+  Table {
+    <strong>time</strong>;
+    data1, data2, ...
+  } obs(time); 
+} station(station); </pre></td>
+  </tr>
+  <tr>
+    <td><strong>trajectory</strong></td>
+    <td><div align="center">
+      <p align="left">data(obs)</p>
+      <p align="left"><strong>time</strong>(obs)</p>
+      <p align="left"><strong>lat,lon,z</strong>(obs)</p>
+    </div></td>
+    <td><div align="center">
+      <p align="left">data(traj,obs)</p>
+      <p align="left"><strong>time</strong>(traj, obs)</p>
+      <p align="left"><strong>lat,lon,z</strong>(traj, obs)</p>
+    </div></td>
+    <td><div align="center">
+      <p align="left">data(obs)</p>
+      <p align="left"><strong>time</strong>,<strong>lat,lon,z</strong>(obs)</p>
+      <p align="left">numObs(traj)</p>
+    </div></td>
+    <td><div align="center">
+      <p align="left">data(obs)</p>
+      <p align="left"><strong>time</strong>,<strong>lat,lon,z</strong>(obs)</p>
+      <p align="left">trajIndex(obs)</p>
+    </div></td>
+    <td><div align="center">N/A</div></td>
+    <td><pre>Table {
+<strong></strong>
+  Table {
+    <strong>time</strong>, <strong>lat, lon, z</strong>;
+    data1, data2, ...
+  } obs(*); 
+} traj(traj); </pre></td>
+  </tr>
+  <tr>
+    <td><strong>profile</strong></td>
+    <td><div align="center">
+      <p align="left">data(z)</p>
+      <p align="left"><strong>time</strong>(z), <strong>time</strong></p>
+      <p align="left"><strong>lat,lon</strong></p>
+      <p align="left"><strong>z</strong>(z)</p>
+    </div></td>
+    <td><div align="center">
+      <p align="left">data(profile, z)</p>
+      <p align="left"><strong>time</strong>(profile, z) | <strong>time</strong>(profile)</p>
+      <p align="left"><strong>lat,lon</strong>(profile)</p>
+      <p align="left"><strong>z</strong>(profile,z) | <strong>z</strong>(z)</p>
+    </div></td>
+    <td><div align="center">
+      <p align="left">data(obs)</p>
+      <p align="left"><strong>time</strong>(obs) | <strong>time</strong>(profile)</p>
+      <p align="left"><strong>lat,lon</strong>(profile), numObs(profile)</p>
+      <p align="left"><strong>z</strong>(obs)</p>
+    </div></td>
+    <td><div align="center">
+      <p align="left">data(obs)</p>
+      <p align="left"><strong>time</strong>(obs), <strong>time</strong>(profile)</p>
+      <p align="left"><strong>lat,lon</strong>(profile)</p>
+      <p align="left"><strong>z</strong>(obs), profileIndex(obs)</p>
+    </div></td>
+    <td><div align="center">N/A</div></td>
+    <td><pre>Table {
+  <strong>lat, lon, time;</strong>
+  Table {
+    <strong>z</strong>;
+    data1, data2, ...
+  } obs(*); 
+} profile(profile); </pre></td>
+  </tr>
+  <tr>
+    <td><strong>stationProfile</strong></td>
+    <td><div align="center">
+      <p align="left">data(profile, z)</p>
+      <p align="left"><strong>time</strong>(profile, z),<strong>time</strong>( profile)</p>
+      <p align="left"><strong>lat,lon</strong>,<strong>alt</strong></p>
+      <p align="left"><strong>z</strong>(profile,z),<strong> z</strong>(z)</p>
+    </div></td>
+    <td><div align="center">
+      <p align="left">data(station, profile, z)</p>
+      <p align="left"><strong>time</strong>(station, profile, z) | <strong>time</strong>(station, profile)</p>
+      <p align="left"><strong>lat,lon,alt</strong>(station)</p>
+      <p align="left"><strong>z</strong>(station, profile,z) | <strong>z</strong>(z)</p>
+    </div></td>
+    <td><div align="center">
+      <p align="left">data(obs)</p>
+      <p align="left"><strong>time</strong>(station, profile) | <strong>time</strong>(obs)</p>
+      <p align="left"><strong>lat,lon</strong>,<strong>alt</strong>(station)</p>
+      <p align="left"><strong>z</strong>(obs), <strong>z</strong>(z)</p>
+      <p align="left">numProfile(station), numObs(profile)</p>
+    </div></td>
+    <td><div align="center">
+      <p align="left">data(obs)</p>
+      <p align="left"><strong>time</strong>(station, profile), <strong>time</strong>(obs)</p>
+      <p align="left"><strong>lat,lon</strong>,<strong>alt</strong>(station)</p>
+      <p align="left"><strong>z</strong>(obs), <strong>z</strong>(z)</p>
+      <p align="left">stationIndex(obs), profileIndex(obs)</p>
+    </div></td>
+    <td><div align="center">N/A</div></td>
+    <td><pre>Table {
+  <strong>lat, lon, alt;</strong>
+  Table {
+   <strong> time;</strong>
+    Table {
+      <strong>z</strong>;
+      data1, data2, ...
+    } obs(*); 
+  } profile(*); 
+} station(station); </pre></td>
+  </tr>
+  <tr>
+    <td><strong>section</strong></td>
+    <td><p align="left">data(profile, z)</p>
+        <p align="left"><strong>time</strong>(profile, z), <strong>time</strong>(profile)</p>
+      <p align="left"><strong>lat,lon</strong>(profile)</p>
+      <p align="left"><strong>z</strong>( profile,z),<strong> z</strong>(z)</p></td>
+    <td><div align="center">
+      <p align="left">data(section, profile, z)</p>
+      <p align="left"><strong>time</strong>(section, profile, z) | <strong>time</strong>(section, profile)</p>
+      <p align="left"><strong>lat,lon</strong>(section, profile)</p>
+      <p align="left"><strong>z</strong>( section, profile,z) | <strong>z</strong>(z)</p>
+    </div></td>
+    <td><div align="center">
+      <p align="left">data(obs)</p>
+      <p align="left"><strong>time</strong>(section, profile) | <strong>time</strong>(obs)</p>
+      <p align="left"><strong>lat,lon</strong>(profile)</p>
+      <p align="left"><strong>z</strong>(obs), <strong>z</strong>(z)</p>
+      <p align="left">numProfile(section), numObs(profile)</p>
+    </div></td>
+    <td><div align="center">
+      <p align="left">data(obs)</p>
+      <p align="left"><strong>time</strong>(section, profile), <strong>time</strong>(obs)</p>
+      <p align="left"><strong>lat,lon</strong>(profile)</p>
+      <p align="left"><strong>z</strong>(obs), <strong>z</strong>(z)</p>
+      <p align="left">sectionIndex(obs), profileIndex(obs)</p>
+    </div></td>
+    <td><div align="center">N/A</div></td>
+    <td><pre>Table {<strong></strong>
+  Table {
+   <strong> lat, lon, time;</strong>
+    Table {
+      <strong>z</strong>;
+      data1, data2, ...
+    } obs(*); 
+  } profile(*); 
+} section(section); </pre></td>
+  </tr>
+</table>
+</body>
+</html>
