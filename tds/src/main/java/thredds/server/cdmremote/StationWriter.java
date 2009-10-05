@@ -714,7 +714,7 @@ public class StationWriter {
           } catch (Throwable t) {
             String mess = t.getMessage();
             if (mess == null) mess = t.getClass().getName();
-            NcStreamProto.Error err = NcStream.encodeErrorMessage( mess);
+            NcStreamProto.Error err = NcStream.encodeErrorMessage( t.getMessage());
             byte[] b = err.toByteArray();
             PointStream.writeMagic(out, PointStream.MessageType.Error);
             NcStream.writeVInt(out, b.length);

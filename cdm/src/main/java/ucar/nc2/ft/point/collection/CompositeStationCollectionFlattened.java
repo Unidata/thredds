@@ -53,6 +53,8 @@ import java.io.IOException;
 
 
 public class CompositeStationCollectionFlattened extends PointCollectionImpl {
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CompositeStationCollectionFlattened.class);
+
   private TimedCollection stnCollections;
   private LatLonRect bbSubset;
   private List<String> stationsSubset;
@@ -103,6 +105,11 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
 
       // open the next dataset
       currentDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.STATION, td.getLocation(), null, errlog);
+      if (currentDataset == null) {
+        logger.error("FeatureDatasetFactoryManager failed to open: %s%nerrlog = %s", td.getLocation(), errlog);
+        return getNextIterator();
+      }
+
       if (CompositeDatasetFactory.debug)
         System.out.printf("CompositeStationCollectionFlattened.Iterator open new dataset: %s%n", td.getLocation());
 

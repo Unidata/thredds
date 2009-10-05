@@ -165,10 +165,9 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   public void testCdmRemoteCollection() throws Exception {
-    //testDon2("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/gempakLocal", false);
+    //testDon3("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", false);
     while (true) {
-      //testDon2("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/gempakLocal", false);
-      //testDon2("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/gempakLocal", false);
+      // testDon2("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/gempakLocal", false);
       testDon2("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", true);
       Thread.sleep(60 * 1000);
     }
@@ -680,7 +679,7 @@ public class TestPointFeatureTypes extends TestCase {
     DateRange dr;
     if (usePresent) {
       dr = new DateRange(null, new DateType(true, null), new TimeDuration("1 hour"), null);
-      dr = new DateRange( dr.getStart().getDate(), dr.getEnd().getDate() ); // get rid of reletive time
+      dr = new DateRange(dr.getStart().getDate(), dr.getEnd().getDate()); // get rid of reletive time
     } else {
       Date startd = new DateType("2009-09-15 00:00:00Z", null, null).getDate();
       dr = new DateRange(startd, new TimeDuration("1 hour"));
@@ -709,10 +708,10 @@ public class TestPointFeatureTypes extends TestCase {
       numObs++;
       ucar.unidata.geoloc.EarthLocation el = po.getLocation();
       StructureData structure = po.getData();
-      assert llr.contains(el.getLatLon()) : el.getLatLon() + " not in "+ llr;
+      assert llr.contains(el.getLatLon()) : el.getLatLon() + " not in " + llr;
 
       Date obsDate = po.getObservationTimeAsDate();
-      assert dr.included(obsDate) : df.toDateTimeString(obsDate) + " not in "+ dr;
+      assert dr.included(obsDate) : df.toDateTimeString(obsDate) + " not in " + dr;
       if (numObs % 1000 == 0)
         System.out.printf("%d el = %s %s %n", numObs, el, df.toDateTimeString(obsDate));
 
@@ -723,6 +722,64 @@ public class TestPointFeatureTypes extends TestCase {
 
     long took = System.currentTimeMillis() - start;
     System.out.printf("%ntotal response took %d msecs nobs = %d range=%s %n", took, numObs, track);
+  }
+
+  private void testDon3(String file, boolean usePresent) throws Exception {
+
+    long start = System.currentTimeMillis();
+    Formatter buf = new Formatter();
+    for (int i = 0; i < 10; i++) {
+      FeatureDatasetPoint pods =
+              (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
+                      ucar.nc2.constants.FeatureType.POINT, file, null, buf);
+      if (pods == null) {  // try as ANY_POINT
+        System.out.println("trying as ANY_POINT");
+        pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
+                ucar.nc2.constants.FeatureType.ANY_POINT, file, null, buf);
+      }
+      if (pods == null) {
+        throw new Exception("can't open file");
+      }
+      List<FeatureCollection> collectionList = pods.getPointFeatureCollectionList();
+      FeatureCollection fc = collectionList.get(0);
+      LatLonRect llr = new LatLonRect(new LatLonPointImpl(33.4, -92.2), new LatLonPointImpl(47.9, -75.89));
+      System.out.println("llr = " + llr);
+      Date now = new Date();
+      Date ago = new Date(now.getTime() - 3600000);
+      DateRange dr = new DateRange(ago, now);
+
+      PointFeatureCollection collection = null;
+      if (fc instanceof PointFeatureCollection) {
+        collection = (PointFeatureCollection) fc;
+        if (llr != null) {
+          collection = collection.subset(llr, dr);
+        }
+      } else if (fc instanceof NestedPointFeatureCollection) {
+        NestedPointFeatureCollection npfc = (NestedPointFeatureCollection) fc;
+        collection = npfc.flatten(llr, dr);
+      } else {
+        throw new IllegalArgumentException("Can't handle collection of type " + fc.getClass().getName());
+      }
+
+      PointFeatureIterator dataIterator = collection.getPointFeatureIterator(-1);
+      int numObs = 0;
+      while (dataIterator.hasNext()) {
+        PointFeature po = (PointFeature) dataIterator.next();
+        numObs++;
+        ucar.unidata.geoloc.EarthLocation el = po.getLocation();
+        StructureData structure = po.getData();
+        assert llr.contains(el.getLatLon()) : el.getLatLon();
+        assert dr.included(po.getNominalTimeAsDate());
+        if (numObs % 1000 == 0)
+          System.out.printf("%d el = %s %n", numObs, el);
+      }
+      dataIterator.finish();
+
+      long took = System.currentTimeMillis() - start;
+      System.out.printf("%ntotal response took %d msecs nobs = %d%n  seeks= %d nbytes read= %d%n", took, numObs,
+              ucar.unidata.io.RandomAccessFile.getDebugNseeks(), ucar.unidata.io.RandomAccessFile.getDebugNbytes());
+      Thread.sleep(6000);
+    }
   }
 
   public static void main(String arg[]) throws IOException {

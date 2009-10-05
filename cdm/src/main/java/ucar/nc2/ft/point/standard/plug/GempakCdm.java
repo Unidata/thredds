@@ -99,19 +99,19 @@ public class GempakCdm extends TableConfigurerImpl {
     // find lat coord
     Variable lat = CoordSysEvaluator.findCoordByType(ds, AxisType.Lat);
     if (lat == null) {
-      errlog.format("Must have a Latitude coordinate");
+      errlog.format("GempakCdm: Must have a Latitude coordinate");
       return null;
     }
 
     // find lon coord
     Variable lon = CoordSysEvaluator.findCoordByType(ds, AxisType.Lon);
     if (lon == null) {
-      errlog.format("Must have a Longitude coordinate");
+      errlog.format("GempakCdm: Must have a Longitude coordinate");
       return null;
     }
 
     if (lat.getRank() != lon.getRank()) {
-      errlog.format("Lat and Lon coordinate must have same rank");
+      errlog.format("GempakCdm: Lat and Lon coordinate must have same rank");
       return null;
     }
 
@@ -122,7 +122,7 @@ public class GempakCdm extends TableConfigurerImpl {
 
     if (!stnIsScalar) {
       if (lat.getDimension(0) != lon.getDimension(0)) {
-        errlog.format("Lat and Lon coordinate must have same size");
+        errlog.format("GempakCdm: Lat and Lon coordinate must have same size");
         return null;
       }
       stationDim = lat.getDimension(0);
@@ -154,7 +154,7 @@ public class GempakCdm extends TableConfigurerImpl {
 
     if (!stnIsScalar) {
       if (!stnId.getDimension(0).equals(stationDim)) {
-        errlog.format("Station id outer dimension must match latitude/longitude dimension");
+        errlog.format("GempakCdm: Station id (%s) outer dimension must match latitude/longitude dimension (%s)", stnTable.stnId, stationDim);
         return null;
       }
     }
@@ -162,7 +162,7 @@ public class GempakCdm extends TableConfigurerImpl {
     // obs table
     Variable time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
     if (time == null) {
-      errlog.format("Must have a Time coordinate");
+      errlog.format("GempakCdm: Must have a Time coordinate");
       return null;
     }
     Dimension obsDim = time.getDimension(time.getRank()-1); // may be time(time) or time(stn, obs)
@@ -186,7 +186,7 @@ public class GempakCdm extends TableConfigurerImpl {
     }
 
     if (obsTableType == null) {
-        errlog.format("Cannot figure out Station/obs table structure");
+        errlog.format("GempakCdm: Cannot figure out Station/obs table structure");
         return null;
     }
 
@@ -218,19 +218,19 @@ public class GempakCdm extends TableConfigurerImpl {
     // find lat coord
     Variable lat = CoordSysEvaluator.findCoordByType(ds, AxisType.Lat);
     if (lat == null) {
-      errlog.format("Must have a Latitude coordinate");
+      errlog.format("GempakCdm: Must have a Latitude coordinate");
       return null;
     }
 
     // find lon coord
     Variable lon = CoordSysEvaluator.findCoordByType(ds, AxisType.Lon);
     if (lon == null) {
-      errlog.format("Must have a Longitude coordinate");
+      errlog.format("GempakCdm: Must have a Longitude coordinate");
       return null;
     }
 
     if (lat.getRank() != lon.getRank()) {
-      errlog.format("Lat and Lon coordinate must have same rank");
+      errlog.format("GempakCdm: Lat and Lon coordinate must have same rank");
       return null;
     }
 
@@ -253,7 +253,7 @@ public class GempakCdm extends TableConfigurerImpl {
     // obs table
     Variable time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
     if (time == null) {
-      errlog.format("Must have a Time coordinate");
+      errlog.format("GempakCdm: Must have a Time coordinate");
       return null;
     }
     Dimension obsDim = time.getDimension(time.getRank()-1); // may be time(time) or time(stn, obs)
@@ -262,7 +262,7 @@ public class GempakCdm extends TableConfigurerImpl {
     Structure multidimStruct = Evaluator.getStructureWithDimensions(ds, stationDim, obsDim);
 
     if (multidimStruct == null) {
-        errlog.format("Cannot figure out StationAsPoint table structure");
+        errlog.format("GempakCdm: Cannot figure out StationAsPoint table structure");
         return null;
     }
 

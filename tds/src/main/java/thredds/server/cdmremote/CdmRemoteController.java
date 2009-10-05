@@ -179,10 +179,10 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
       res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
       return null;
 
-    } catch (Throwable e) {
-      e.printStackTrace();
+    } catch (Throwable t) {
+      log.error("CdmRemoteController exception:", t);
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
-      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, t.getMessage());
       return null;
 
     } finally {
