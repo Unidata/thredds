@@ -13,47 +13,52 @@ public class IddModelDatasetsUtils
 {
   private static final String[][] modelIds =
           {
-                  { "NCEP/GFS/Alaska_191km"},           // both
-                  { "NCEP/GFS/CONUS_80km"},             // both
-                  { "NCEP/GFS/CONUS_95km"},             // both
-                  { "NCEP/GFS/CONUS_191km"},            // both
-                  { "NCEP/GFS/Global_0p5deg"},          // both
-                  { "NCEP/GFS/Global_onedeg"},          // both
-                //  { "NCEP/GFS/Global_1p0deg_Ensemble"}, // Not in IDV models catalog
-                  { "NCEP/GFS/Global_2p5deg"},          // both
-                  { "NCEP/GFS/Hawaii_160km"},           // both
-                  { "NCEP/GFS/N_Hemisphere_381km"},     // both
-                  { "NCEP/GFS/Puerto_Rico_191km"},      // both
+                  { "NCEP/NDFD/CONUS_5km"},                       // idd and/or idv ?
 
-                  { "NCEP/NAM/Alaska_11km"},            // both
-                  { "NCEP/NAM/Alaska_22km"},            // both
-                  { "NCEP/NAM/Alaska_45km/noaaport"},   // both
-                  { "NCEP/NAM/Alaska_45km/conduit"},    // both
-                  { "NCEP/NAM/Alaska_95km"},            // both
-                  { "NCEP/NAM/CONUS_12km"},             // both
-                  //      { "NCEP/NAM/CONUS_12km/conduit"},      // not in idv
-                  { "NCEP/NAM/CONUS_20km/surface"},      // both
-                  { "NCEP/NAM/CONUS_20km/selectsurface"},// both
-                  { "NCEP/NAM/CONUS_20km/noaaport"},     // both
-                  { "NCEP/NAM/CONUS_40km/conduit"},      // both
-                  { "NCEP/NAM/CONUS_80km"},              // both
-                  { "NCEP/NAM/Polar_90km"},              // both
+                  { "NCEP/DGEX/Alaska_12km"},                     // idd and/or idv ?
+                  { "NCEP/DGEX/CONUS_12km"},                      // idd and/or idv ?
 
-                  { "NCEP/RUC2/CONUS_20km/surface"},      // both
-                  { "NCEP/RUC2/CONUS_20km/pressure"},     // both
-                  { "NCEP/RUC2/CONUS_20km/hybrid"},       // both
-                  //     { "NCEP/RUC2/CONUS_40km"},              // not in idv
+                  { "NCEP/GFS/Alaska_191km"},                     // idd and/or idv ?
+                  { "NCEP/GFS/CONUS_80km"},                       // idd and/or idv ?
+                  { "NCEP/GFS/CONUS_95km"},                       // idd and/or idv ?
+                  { "NCEP/GFS/CONUS_191km"},                      // idd and/or idv ?
+                  { "NCEP/GFS/Global_0p5deg"},                    // idd and/or idv ?
+                  { "NCEP/GFS/Global_onedeg"},                    // idd and/or idv ?
+                  { "NCEP/GFS/Global_2p5deg"},                    // idd and/or idv ?
+                  { "NCEP/GFS/Hawaii_160km"},                     // idd and/or idv ?
+                  { "NCEP/GFS/N_Hemisphere_381km"},               // idd and/or idv ?
+                  { "NCEP/GFS/Puerto_Rico_191km"},                // idd and/or idv ?
 
-                  { "NCEP/RUC/CONUS_80km"},               // both
+                  { "NCEP/NAM/Alaska_11km"},                      // idd and/or idv ?
+                  { "NCEP/NAM/Alaska_22km"},                      // idd and/or idv ?
+                  { "NCEP/NAM/Alaska_45km/conduit"},              // idd and/or idv ?
+                  { "NCEP/NAM/Alaska_45km/noaaport"},             // idd and/or idv ?
+                  { "NCEP/NAM/Alaska_95km"},                      // idd and/or idv ?
+                  { "NCEP/NAM/CONUS_12km"},                       // idd and/or idv ?
+                  { "NCEP/NAM/CONUS_12km/conduit"},               // idd and/or idv ?
+                  { "NCEP/NAM/CONUS_20km/noaaport"},              // idd and/or idv ?
+                  { "NCEP/NAM/CONUS_20km/surface"},               // idd and/or idv ?
+                  { "NCEP/NAM/CONUS_20km/selectsurface"},         // idd and/or idv ?
+                  { "NCEP/NAM/CONUS_40km/conduit"},               // idd and/or idv ?
+                  { "NCEP/NAM/CONUS_80km"},                       // idd and/or idv ?
+                  { "NCEP/NAM/Polar_90km"},                       // idd and/or idv ?
 
-                  { "NCEP/DGEX/CONUS_12km"},              // both
-                  { "NCEP/DGEX/Alaska_12km"},             // both
+                  { "NCEP/RUC2/CONUS_20km/hybrid"},               // idd and/or idv ?
+                  { "NCEP/RUC2/CONUS_20km/pressure"},             // idd and/or idv ?
+                  { "NCEP/RUC2/CONUS_20km/surface"},              // idd and/or idv ?
+                  { "NCEP/RUC2/CONUS_40km"},                      // idd and/or idv ?
 
-                  { "NCEP/SREF/CONUS_40km/ensprod_biasc"}, // both
-                  { "NCEP/SREF/CONUS_40km/pgrb_biasc"},    // both
+                  { "NCEP/RUC/CONUS_80km"},                       // idd and/or idv ?
 
-                  { "NCEP/NDFD/CONUS_5km"},                // both
-                  //     { "NCEP/NEWGBXNDFD/CONUS_5km"}
+                  { "NCEP/GEFS/Global_1p0deg_Ensemble/derived" }, // idd and/or idv ?
+                  // datasetScan not datasetFmrc { "NCEP/GEFS/Global_1p0deg_Ensemble/member" }, // idd and/or idv ?
+
+                  { "NCEP/SREF/Alaska_45km/ensprod"},                // idd and/or idv ?
+                  { "NCEP/SREF/CONUS_40km/ensprod"},               // idd and/or idv ?
+                  { "NCEP/SREF/CONUS_40km/ensprod_biasc"},         // idd and/or idv ?
+                  // datasetScan not datasetFmrc { "NCEP/SREF/CONUS_40km/pgrb_biasc"}, // idd and/or idv ?
+                  { "NCEP/SREF/PacificNE_0p4/ensprod"},            // idd and/or idv ?
+
           };
 
   public static Object[][] getModelIds()

@@ -61,8 +61,10 @@ public class CompareGribVarNamesUtils
     private final static String FMRC_PREFIX = "catalog/fmrc/";
     private final static String FMRC_RUN_SUFFIX = "/runs/catalog.xml";
 
-    private final static String SCAN_PREFIX = "catalog/model/";
-    private final static String SCAN_CATALOG_SUFFIX = "/catalog.xml";
+    private final static String SCAN_PREFIX = "catalog/fmrc/";
+    private final static String SCAN_CATALOG_SUFFIX = "/files/catalog.xml";
+//    private final static String SCAN_PREFIX = "catalog/model/";
+//    private final static String SCAN_CATALOG_SUFFIX = "/catalog.xml";
 
     /**
      * For the given model ID, get the dataset at the given index in the
