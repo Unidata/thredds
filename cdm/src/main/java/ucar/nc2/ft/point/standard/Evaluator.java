@@ -128,7 +128,7 @@ public class Evaluator {
   static public Structure getStructureWithDimensions(NetcdfDataset ds, Dimension dim0, Dimension dim1) {
      for (Variable v : ds.getVariables()) {
        if ((v instanceof Structure) && (v.getRank() == 2)) {
-         if ((v.getDimension(0) == dim0) && (v.getDimension(1) == dim1))
+         if (v.getDimension(0).equals(dim0) && v.getDimension(1).equals(dim1))
            return (Structure) v;
        }
     }

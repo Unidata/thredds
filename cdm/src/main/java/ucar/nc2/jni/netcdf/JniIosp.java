@@ -106,14 +106,6 @@ public class JniIosp extends AbstractIOServiceProvider {
     ncfile.finish();
   }
 
-  public boolean syncExtend() throws IOException {
-    return false;
-  }
-
-  public boolean sync() throws IOException {
-    return false;
-  }
-
   private void makeGroup(int grpid, Group4 g4) throws IOException {
     makeDimensions(grpid, g4);
     makeUserTypes(grpid, g4.g);

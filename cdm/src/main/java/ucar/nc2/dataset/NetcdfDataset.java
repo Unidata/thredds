@@ -1049,6 +1049,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         EnumSet<Enhance> saveMode = this.enhanceMode;
         this.enhanceMode = EnumSet.noneOf(Enhance.class);
         enhance(this, saveMode, null);
+        return true;
       }
     }
 

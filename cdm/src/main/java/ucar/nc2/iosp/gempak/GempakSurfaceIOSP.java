@@ -244,6 +244,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
             // reconstruct the ncfile objects
             ncfile.empty();
             buildNCFile();
+            ncfile.finish();
             Trace.call2("GEMPAK: buildNCFile");
             return true;
         }

@@ -106,7 +106,7 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
       // open the next dataset
       currentDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.STATION, td.getLocation(), null, errlog);
       if (currentDataset == null) {
-        logger.error("FeatureDatasetFactoryManager failed to open: %s%nerrlog = %s", td.getLocation(), errlog);
+        logger.error("FeatureDatasetFactoryManager failed to open: "+td.getLocation()+" \nerrlog = " + errlog);
         return getNextIterator();
       }
 

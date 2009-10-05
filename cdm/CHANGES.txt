@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  6:
+  fix sync() is all iosps we control
+  ucar.nc2.ft.point.standard.Evaluator() uses equals() instead of ==
   add pointstream error handling; add NcStream.Error message
   aggExisting caching now works correctly
   cdmremote point: get DateRange filter working

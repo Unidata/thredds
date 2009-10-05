@@ -305,14 +305,15 @@ public class FileCache {
     // sync the file when you want to use it again : needed for grib growing index, netcdf-3 record growing, etc
     // also sets isClosed = false
     if (ncfile != null) {
-      try {
-        ncfile.sync();
-        if (cacheLog.isDebugEnabled())
-          cacheLog.debug("FileCache " + name + " aquire from cache " + hashKey + " " + ncfile.getLocation());
-        if (debugPrint)
-          System.out.println("  FileCache " + name + " aquire from cache " + hashKey + " " + ncfile.getLocation());
-      } catch (IOException e) {
+     try {
+        boolean changed = ncfile.sync();
+       if (cacheLog.isDebugEnabled())
+         cacheLog.debug("FileCache " + name + " aquire from cache " + hashKey + " " + ncfile.getLocation()+" changed = "+changed);
+       if (debugPrint)
+         System.out.println("  FileCache " + name + " aquire from cache " + hashKey + " " + ncfile.getLocation()+" changed = "+changed);
+       } catch (IOException e) {
         log.error("FileCache " + name + " synch failed on " + ncfile.getLocation() + " " + e.getMessage());
+        return null;
       }
     }
 

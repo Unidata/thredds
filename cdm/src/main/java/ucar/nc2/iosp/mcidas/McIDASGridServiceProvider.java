@@ -165,10 +165,11 @@ public class McIDASGridServiceProvider extends GridServiceProvider {
             // reconstruct the ncfile objects
             ncfile.empty();
             open(index, null);
+          return true;
+
         } catch (IOException ioe) {
             return false;
         }
-        return true;
     }
 
     /**
