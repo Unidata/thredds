@@ -487,7 +487,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
     // Read sort element
     Element sorterElem = dsElem.getChild( "sort", defNS );
-    CrawlableDatasetSorter sorter = null;
+    // By default, sort in decreasing lexigraphic order.
+    CrawlableDatasetSorter sorter = new LexigraphicByNameSorter( false );
     if ( sorterElem != null )
     {
       sorter = readDatasetScanSorter( sorterElem );
