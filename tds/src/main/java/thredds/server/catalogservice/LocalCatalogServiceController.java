@@ -222,7 +222,7 @@ public class LocalCatalogServiceController extends AbstractController
         if ( dataset == null )
         {
           String msg = "Did not find dataset [" + datasetId + "] in catalog [" + baseUriString + "].";
-          log.info( "handleRequestInternal(): " + msg );
+          //log.info( "handleRequestInternal(): " + msg );
           log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, msg.length() ) );
           response.sendError( HttpServletResponse.SC_NOT_FOUND, msg.toString() );
           return null;
