@@ -33,9 +33,13 @@
 
 package thredds.logs;
 
+import ucar.nc2.units.DateFormatter;
+
 import java.util.regex.*;
+import java.util.Date;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 
 /**
  * Read TDS access logs
@@ -53,6 +57,10 @@ public class AccessLogParser implements LogReader.LogParser {
   // 128.117.140.75 - - [02/May/2008:00:46:26 -0600] "HEAD /thredds/dodsC/model/NCEP/DGEX/CONUS_12km/DGEX_CONUS_12km_20080501_1800.grib2.dds HTTP/1.1" 200 - "null" "Java/1.6.0_05" 21
   //
 
+  // 30/Sep/2009:23:50:47 -0600
+  private SimpleDateFormat formatFrom = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z");
+  private DateFormatter formatTo = new DateFormatter();
+
   private static Pattern regPattern =
           Pattern.compile("^(\\d+\\.\\d+\\.\\d+\\.\\d+) - (.*) \\[(.*)\\] \"(.*)\" (\\d+) ([\\-\\d]+) \"(.*)\" \"(.*)\" (\\d+)");
 
@@ -66,7 +74,7 @@ public class AccessLogParser implements LogReader.LogParser {
       if (m.matches()) {
         LogReader.Log log = new LogReader.Log();
         log.ip = m.group(1);
-        log.date = m.group(3);
+        log.date = convertDate( m.group(3));
         String request = m.group(4);
         log.returnCode = parse(m.group(5));
         log.sizeBytes = parseLong(m.group(6));
@@ -88,6 +96,17 @@ public class AccessLogParser implements LogReader.LogParser {
       System.out.println("Cant parse " + line);
     }
     return null;
+  }
+
+  private String convertDate(String accessDateFormat) {
+    // 30/Sep/2009:23:50:47 -0600
+    try {
+      Date d = formatFrom.parse(accessDateFormat);
+      return formatTo.toDateTimeStringISO(d);
+    } catch (Throwable t) {
+      System.out.printf("Bad date format = %s err = %s%n", accessDateFormat, t.getMessage());
+    }
+    return accessDateFormat;
   }
 
   private int parse(String s) {

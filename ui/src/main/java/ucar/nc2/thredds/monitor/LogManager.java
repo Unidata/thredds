@@ -48,6 +48,7 @@ import org.apache.commons.httpclient.auth.CredentialsProvider;
  */
 public class LogManager {
   static private File topDir;
+  static private final String latestServletLog = "threddsServlet.log";
 
   static {
     CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(null);
@@ -119,7 +120,7 @@ public class LogManager {
       size = Long.parseLong(tokes[1]);
 
       localFile = new File(localDir, name);
-      if (!localFile.exists() || (localFile.length() > size)) {
+      if (!localFile.exists() || (localFile.length() > size) || name.equals(latestServletLog)) {
         System.out.printf("Read RemoteLog length=%d local=%d for %s%n", size, localFile.length(), name);
         read();
       } else if (localFile.length() < size) {
