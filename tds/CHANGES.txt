@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Release Details 4.1:
  0:
+  catalog?dataset=id with unknown id now returns 404 not 400
   add pointstream error handling
   restrictDataset: add all URLs from InvAccess list.
   restrictDataset: default web.xml in thredds.war does not use SSL

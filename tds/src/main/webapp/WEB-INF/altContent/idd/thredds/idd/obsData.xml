@@ -3,7 +3,6 @@
          xmlns:xlink="http://www.w3.org/1999/xlink" name="THREDDS-IDD OPeNDAP Data Server - Station Data"
          version="1.0.2">
   <service name="latest" serviceType="Resolver" base=""/>
-  <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/"/>
 
   <service name="all" serviceType="Compound" base="">
     <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
@@ -131,7 +130,6 @@
           <variable name="wind_speed" vocabulary_name="wind_speed" units="m/s">Wind Speed</variable>
         </variables>
       </metadata>
-      <access urlPath="metars" serviceName="ncss"/>
       <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" addRecords="true"/>
       <filter>
         <include wildcard="*.nc" atomic="true" collection="false"/>

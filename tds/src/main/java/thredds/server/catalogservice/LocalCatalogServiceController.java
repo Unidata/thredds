@@ -223,8 +223,8 @@ public class LocalCatalogServiceController extends AbstractController
         {
           String msg = "Did not find dataset [" + datasetId + "] in catalog [" + baseUriString + "].";
           log.info( "handleRequestInternal(): " + msg );
-          log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ) );
-          response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
+          log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, msg.length() ) );
+          response.sendError( HttpServletResponse.SC_NOT_FOUND, msg.toString() );
           return null;
         }
 
