@@ -160,11 +160,11 @@ public class TestPointFeatureTypes extends TestCase {
     //testPointDataset("collection:D:/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc", FeatureType.STATION, true);
   }
 
-  public void testCdmRemote() throws IOException {
+  public void utestCdmRemote() throws IOException {
     testPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/station/testCdmRemote/gempak/19580807_sao.gem", FeatureType.STATION, true);
   }
 
-  public void testCdmRemoteCollection() throws Exception {
+  public void utestCdmRemoteCollection() throws Exception {
     //testDon3("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", false);
     while (true) {
       // testDon2("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/gempakLocal", false);
@@ -721,7 +721,7 @@ public class TestPointFeatureTypes extends TestCase {
     dataIterator.finish();
 
     long took = System.currentTimeMillis() - start;
-    System.out.printf("%ntotal response took %d msecs nobs = %d range=%s %n", took, numObs, track);
+    System.out.printf("%ntotal response took %d msecs nobs = %d range=%s %n==============%n", took, numObs, track);
   }
 
   private void testDon3(String file, boolean usePresent) throws Exception {

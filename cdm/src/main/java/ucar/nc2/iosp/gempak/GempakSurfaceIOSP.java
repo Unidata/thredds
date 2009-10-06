@@ -59,6 +59,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Calendar;
 
 
 /**
@@ -170,6 +171,9 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
     public void open(RandomAccessFile raf, NetcdfFile ncfile,
                      CancelTask cancelTask)
             throws IOException {
+
+        //System.out.printf("GempakSurfaceIOSP open %s (%s) %n", raf.getLocation(), Calendar.getInstance().getTime());
+
         this.raf    = raf;
         this.ncfile = ncfile;
         long start = System.currentTimeMillis();
@@ -234,8 +238,10 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
      * @throws IOException problem synching the file
      */
     public boolean sync() throws IOException {
+       //System.out.printf("check sync on %s (%s) %n", raf.getLocation(), Calendar.getInstance().getTime());
 
         if (gemreader.getInitFileSize() < raf.length()) {
+          long start = System.currentTimeMillis();
             Trace.msg("GEMPAK: file is bigger");
             Trace.call1("GEMPAK: reader.init");
             gemreader.init(true);
@@ -246,6 +252,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
             buildNCFile();
             ncfile.finish();
             Trace.call2("GEMPAK: buildNCFile");
+            //System.out.printf("sync on %s took %d msecs%n", raf.getLocation(), (System.currentTimeMillis()-start));
             return true;
         }
         

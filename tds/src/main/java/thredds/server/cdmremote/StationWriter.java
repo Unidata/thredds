@@ -121,6 +121,7 @@ public class StationWriter {
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: Bounding Box contains no stations; bb= " + qb.getLatLonRect());
         return false;
       }
+      //System.out.printf("sfc.flatten0 wantRange= %s on %s %n", wantRange, fd.getLocation());
       pfc = sfc.flatten(qb.getLatLonRect(), wantRange);
 
     } else if (qb.getSpatialSelection() == PointQueryBean.SpatialSelection.stns) {
@@ -128,10 +129,12 @@ public class StationWriter {
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: No valid stations specified = " + qb.getStn());
         return false;
       }
+      //System.out.printf("sfc.flatten1 wantRange= %s on %s %n", wantRange, fd.getLocation());
       List<String> wantStns = Arrays.asList(qb.getStnNames());
       pfc = sfc.flatten(wantStns, wantRange, null);
 
     } else {
+      //System.out.printf("sfc.flatten2 wantRange= %s on %s %n", wantRange, fd.getLocation());
       pfc = sfc.flatten(null, wantRange, null);
     }
 

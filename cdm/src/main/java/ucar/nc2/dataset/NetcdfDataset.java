@@ -824,8 +824,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   private List<CoordinateSystem> coordSys = new ArrayList<CoordinateSystem>();
   private List<CoordinateAxis> coordAxes = new ArrayList<CoordinateAxis>();
   private List<CoordinateTransform> coordTransforms = new ArrayList<CoordinateTransform>();
-  //private boolean coordSysWereAdded = false;
-  //private boolean isEnhanceProcessed = false;
   private String convUsed;
 
   private EnumSet<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // enhancement mode for this specific dataset
@@ -1054,6 +1052,15 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
 
     return false;
+  }
+
+  @Override
+  public void empty() {
+    super.empty();
+    coordSys = new ArrayList<CoordinateSystem>();
+    coordAxes = new ArrayList<CoordinateAxis>();
+    coordTransforms = new ArrayList<CoordinateTransform>();
+    convUsed = null;
   }
 
   public boolean syncExtend() throws IOException {
