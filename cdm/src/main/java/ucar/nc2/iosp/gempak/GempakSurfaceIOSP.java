@@ -53,6 +53,8 @@ import ucar.unidata.util.StringUtil;
 import visad.util.Trace;
 
 import java.io.IOException;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 
 import java.nio.ByteBuffer;
 
@@ -60,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Calendar;
+import java.util.StringTokenizer;
 
 
 /**
@@ -133,7 +136,9 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
     public boolean isValidFile(RandomAccessFile raf) throws IOException {
         try {
             gemreader = new GempakSurfaceFileReader();
+            Trace.call1("GEMPAKSIOSP.isValidFile: reader.init");
             gemreader.init(raf, false);
+            Trace.call2("GEMPAKSIOSP.isValidFile: reader.init");
         } catch (Exception ioe) {
             return false;
         }
@@ -180,15 +185,13 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         if (gemreader == null) {
             gemreader = new GempakSurfaceFileReader();
         }
-        Trace.call1("GEMPAK: open:initTables");
+        Trace.call1("GEMPAKSIOSP.open: initTables");
         initTables();
-        Trace.call2("GEMPAK: open:initTables");
-        Trace.call1("GEMPAK: reader.init");
+        Trace.call2("GEMPAKSIOSP.open: initTables");
+        Trace.call1("GEMPAKSIOSP.open: reader.init");
         gemreader.init(raf, true);
-        Trace.call2("GEMPAK: reader.init");
-        Trace.call1("GEMPAK: buildNCFile");
+        Trace.call2("GEMPAKSIOSP.open: reader.init");
         buildNCFile();
-        Trace.call2("GEMPAK: buildNCFile");
     }
 
     /**
@@ -238,24 +241,22 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
      * @throws IOException problem synching the file
      */
     public boolean sync() throws IOException {
+       //printStack("***************************** sync ************************", 100);
        //System.out.printf("check sync on %s (%s) %n", raf.getLocation(), Calendar.getInstance().getTime());
 
         if (gemreader.getInitFileSize() < raf.length()) {
           long start = System.currentTimeMillis();
-            Trace.msg("GEMPAK: file is bigger");
-            Trace.call1("GEMPAK: reader.init");
-            gemreader.init(true);
-            Trace.call2("GEMPAK: reader.init");
-            Trace.call1("GEMPAK: buildNCFile");
+            Trace.msg("GEMPAKSIOSP.sync: file is bigger: " + raf.length() + " > " + gemreader.getInitFileSize());
+            Trace.call1("GEMPAKSIOSP.sync: reader.init");
+            gemreader.init(raf, true);
+            Trace.call2("GEMPAKSIOSP.sync: reader.init");
+            Trace.call1("GEMPAKSIOSP.sync: buildNCFile");
             // reconstruct the ncfile objects
-            ncfile.empty();
             buildNCFile();
-            ncfile.finish();
-            Trace.call2("GEMPAK: buildNCFile");
+            Trace.call2("GEMPAKSIOSP.sync: buildNCFile");
             //System.out.printf("sync on %s took %d msecs%n", raf.getLocation(), (System.currentTimeMillis()-start));
             return true;
         }
-        
         return false;
     }
 
@@ -275,7 +276,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         }
         //System.out.println("looking for " + v2);
         //System.out.println("Section = " + section);
-        //Trace.call1("GEMPAK: readData");
+        //Trace.call1("GEMPAKSIOSP: readData");
         Array array = null;
         if (gemreader.getSurfaceFileType().equals(gemreader.SHIP)) {
             array = readShipData(v2, section);
@@ -287,7 +288,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         }
         //  long took = System.currentTimeMillis() - start;
         //  System.out.println("  read data took=" + took + " msec ");
-        //Trace.call2("GEMPAK: readData");
+        //Trace.call2("GEMPAKSIOSP: readData");
         return array;
     }
 
@@ -342,7 +343,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
             ByteBuffer buf   = ByteBuffer.wrap(bytes);
             array = new ArrayStructureBB(members, new int[] { size }, buf, 0);
 
-            //Trace.call1("GEMPAK: readStandardData", section.toString());
+            //Trace.call1("GEMPAKSIOSP: readStandardData", section.toString());
             for (int y = stationRange.first(); y <= stationRange.last();
                     y += stationRange.stride()) {
                 for (int x = timeRange.first(); x <= timeRange.last();
@@ -373,7 +374,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                     }
                 }
             }
-            //Trace.call2("GEMPAK: readStandardData");
+            //Trace.call2("GEMPAKSIOSP: readStandardData");
         }
         return array;
     }
@@ -451,7 +452,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
             }
             boolean hasTime = (members.findMember(TIME_VAR) != null);
 
-            //Trace.call1("GEMPAK: readShipData", section.toString());
+            //Trace.call1("GEMPAKSIOSP: readShipData", section.toString());
             // fill out the station information
             for (int x = recordRange.first(); x <= recordRange.last();
                     x += recordRange.stride()) {
@@ -518,7 +519,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                     }
                 }
             }
-            //Trace.call2("GEMPAK: readShipData");
+            //Trace.call2("GEMPAKSIOSP: readShipData");
         }
         return array;
     }
@@ -570,6 +571,8 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
      * @throws IOException   problem reading the file
      */
     private void buildNCFile() throws IOException {
+        Trace.call1("GEMPAKSIOSP: buildNCFile");
+        ncfile.empty();
         String fileType = gemreader.getSurfaceFileType();
         if (fileType.equals(gemreader.STANDARD)) {
             buildStandardFile();
@@ -579,6 +582,9 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
             buildClimateFile();
         }
         addGlobalAttributes();
+        ncfile.finish();
+        Trace.call2("GEMPAKSIOSP: buildNCFile");
+        //System.out.println(ncfile);
     }
 
     /**
@@ -587,7 +593,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
     private void buildStandardFile() {
         // Build station list
         List<GempakStation> stations = gemreader.getStations();
-        Trace.msg("GEMPAK: now have " + stations.size() + " stations");
+        Trace.msg("GEMPAKSIOSP: now have " + stations.size() + " stations");
         Dimension station = new Dimension("station", stations.size(), true);
         ncfile.addDimension(null, station);
         ncfile.addDimension(null, DIM_LEN4);
@@ -725,7 +731,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
         // Build variable list (var(station,time))
         List<GempakStation> stations = gemreader.getStations();
         int                 numObs   = stations.size();
-        Trace.msg("GEMPAK: now have " + numObs + " stations");
+        Trace.msg("GEMPAKSIOSP: now have " + numObs + " stations");
         Dimension record = new Dimension("record", numObs, true);
         ncfile.addDimension(null, record);
         List<Dimension> records = new ArrayList(1);
@@ -859,7 +865,8 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
                         test = stn.getName();
                     } else if (varname.equals(GempakStation.STNM)) {
                         ((ArrayInt.D1) varArray).set(index,
-                                (int) (stn.getSTNM() / 10));
+                                // (int) (stn.getSTNM() / 10));
+                                (int) (stn.getSTNM()));
                     } else if (varname.equals(GempakStation.SLAT)) {
                         ((ArrayFloat.D1) varArray).set(index,
                                 (float) stn.getLatitude());
@@ -994,6 +1001,46 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
             v.setDimensions((String) null);
         }
         return v;
+    }
+
+    /**
+     * Print the stack trace for a given line of code.
+     *
+     * @param msg        message to print
+     * @param maxLines   number of lines in the stack to print
+     * @param onlyIfTraceContainsThisString  if true, only print if it
+     *                                       contains this String
+     */
+    private void printStack(String msg, int maxLines) {
+        String trace = getStackTrace();
+        if (msg != null) {
+            System.out.println(msg);
+        }
+        StringTokenizer tok    = new StringTokenizer(trace, "\n");
+        int             allcnt = 0;
+        int             cnt    = 0;
+        while (tok.hasMoreTokens()) {
+            String line = tok.nextToken();
+            allcnt++;
+            if (allcnt > 4) {
+                System.out.println(line);
+                cnt++;
+                if (cnt > maxLines) {
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Return the stack trace of this calling thread
+     *
+     * @return  The stack trace
+     */
+    private String getStackTrace() {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        new IllegalArgumentException("").printStackTrace(new PrintStream(baos));
+        return baos.toString();
     }
 
 }
