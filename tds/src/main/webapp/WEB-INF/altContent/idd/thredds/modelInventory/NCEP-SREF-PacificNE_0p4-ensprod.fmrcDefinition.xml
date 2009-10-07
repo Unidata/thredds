@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fmrcDefinition dataset="http://motherlode.ucar.edu:8081/thredds/catalog/fmrc/NCEP/SREF/PacificNE_0p4/ensprod/files/catalog.xml">
+<fmrcDefinition dataset="test">
   <vertCoord id="5" name="height_above_ground" units="m">10.0</vertCoord>
   <vertCoord id="0" name="height_above_ground1" units="m">2.0</vertCoord>
   <vertCoord id="3" name="pressure" units="Pa">25000.0 30000.0 50000.0 70000.0 85000.0</vertCoord>
@@ -9,13 +9,13 @@
   <offsetHours id="0">0.0 3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0 87.0</offsetHours>
   <offsetHours id="1">6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0 87.0</offsetHours>
   <runSequence allUseSeq="0">
-    <variable name="Categorical_Freezing_Rain_between_1.0_1.0_surface" />
+    <variable name="Categorical_Freezing_Rain_between_1_1_surface" />
     <variable name="Categorical_Freezing_Rain_weightedMean_surface" />
-    <variable name="Categorical_Ice_Pellets_between_1.0_1.0_surface" />
+    <variable name="Categorical_Ice_Pellets_between_1_1_surface" />
     <variable name="Categorical_Ice_Pellets_weightedMean_surface" />
-    <variable name="Categorical_Rain_between_1.0_1.0_surface" />
+    <variable name="Categorical_Rain_between_1_1_surface" />
     <variable name="Categorical_Rain_weightedMean_surface" />
-    <variable name="Categorical_Snow_between_1.0_1.0_surface" />
+    <variable name="Categorical_Snow_between_1_1_surface" />
     <variable name="Categorical_Snow_weightedMean_surface" />
     <variable name="Convective_available_potential_energy" />
     <variable name="Dew_point_temperature_stdDev_height_above_ground" vertCoord="0" />
@@ -25,7 +25,10 @@
     <variable name="Geopotential_height_stdDev_pressure" vertCoord="2" />
     <variable name="Geopotential_height_weightedMean_pressure" vertCoord="3" />
     <variable name="Parcel_lifted_index_to_500_hPa" vertCoord="4" />
-    <variable name="Parcel_lifted_index_to_500_hPa_below_-8.0_pressure_difference_layer" vertCoord="4" />
+    <variable name="Parcel_lifted_index_to_500_hPa_below_-2_pressure_difference_layer" vertCoord="4" />
+    <variable name="Parcel_lifted_index_to_500_hPa_below_-4_pressure_difference_layer" vertCoord="4" />
+    <variable name="Parcel_lifted_index_to_500_hPa_below_-8_pressure_difference_layer" vertCoord="4" />
+    <variable name="Parcel_lifted_index_to_500_hPa_below_0_pressure_difference_layer" vertCoord="4" />
     <variable name="Pressure_reduced_to_MSL_stdDev_msl" />
     <variable name="Pressure_reduced_to_MSL_weightedMean_msl" />
     <variable name="Temperature_stdDev_height_above_ground" vertCoord="0" />
@@ -36,48 +39,12 @@
     <variable name="U-component_of_wind_weightedMean_pressure" vertCoord="3" />
     <variable name="V-component_of_wind_weightedMean_height_above_ground" vertCoord="5" />
     <variable name="V-component_of_wind_weightedMean_pressure" vertCoord="3" />
-    <variable name="Wind_speed_above_12.89_height_above_ground" vertCoord="5" />
-    <variable name="Wind_speed_above_17.5_height_above_ground" vertCoord="5" />
-    <variable name="Wind_speed_above_25.0_height_above_ground" vertCoord="5" />
+    <variable name="Wind_speed_above_0_height_above_ground" vertCoord="5" />
     <variable name="Wind_speed_stdDev_height_above_ground" vertCoord="5" />
     <variable name="Wind_speed_stdDev_pressure" vertCoord="2" />
   </runSequence>
-  <runSequence allUseSeq="0">
-    <variable name="Convective_available_potential_energy_above_1000.0_surface" />
-  </runSequence>
-  <runSequence allUseSeq="0">
-    <variable name="Convective_available_potential_energy_above_2000.0_surface" />
-  </runSequence>
-  <runSequence allUseSeq="0">
-    <variable name="Convective_available_potential_energy_above_3000.0_surface" />
-  </runSequence>
-  <runSequence allUseSeq="0">
-    <variable name="Convective_available_potential_energy_above_4000.0_surface" />
-  </runSequence>
-  <runSequence allUseSeq="0">
-    <variable name="Convective_available_potential_energy_above_500.0_surface" />
-  </runSequence>
-  <runSequence allUseSeq="0">
-    <variable name="Parcel_lifted_index_to_500_hPa_below_-2.0_pressure_difference_layer" vertCoord="4" />
-  </runSequence>
-  <runSequence allUseSeq="0">
-    <variable name="Parcel_lifted_index_to_500_hPa_below_-4.0_pressure_difference_layer" vertCoord="4" />
-  </runSequence>
-  <runSequence allUseSeq="0">
-    <variable name="Parcel_lifted_index_to_500_hPa_below_-6.0_pressure_difference_layer" vertCoord="4" />
-  </runSequence>
-  <runSequence allUseSeq="0">
-    <variable name="Parcel_lifted_index_to_500_hPa_below_0.0_pressure_difference_layer" vertCoord="4" />
-  </runSequence>
   <runSequence allUseSeq="1">
-    <variable name="Total_precipitation_above_0.25_surface" />
-    <variable name="Total_precipitation_above_1.27_surface" />
-    <variable name="Total_precipitation_above_12.7_surface" />
-    <variable name="Total_precipitation_above_2.54_surface" />
-    <variable name="Total_precipitation_above_25.4_surface" />
-    <variable name="Total_precipitation_above_38.1_surface" />
-    <variable name="Total_precipitation_above_50.8_surface" />
-    <variable name="Total_precipitation_above_6.35_surface" />
+    <variable name="Total_precipitation_above_0_surface" />
     <variable name="Total_precipitation_stdDev_surface" />
     <variable name="Total_precipitation_weightedMean_surface" />
   </runSequence>
