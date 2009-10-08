@@ -18,8 +18,8 @@
     <variable name="Relative_humidity_stdDev_pressure" vertCoord="3" />
     <variable name="Relative_humidity_weightedMean_height_above_ground" vertCoord="2" />
     <variable name="Relative_humidity_weightedMean_pressure" vertCoord="3" />
-    <variable name="Temperature_below_273_height_above_ground" vertCoord="2" />
-    <variable name="Temperature_below_273_pressure" vertCoord="4" />
+    <variable name="Temperature_probability_below_273_height_above_ground" vertCoord="2" />
+    <variable name="Temperature_probability_below_273_pressure" vertCoord="4" />
     <variable name="Temperature_stdDev_height_above_ground" vertCoord="2" />
     <variable name="Temperature_stdDev_pressure" vertCoord="3" />
     <variable name="Temperature_weightedMean_height_above_ground" vertCoord="2" />
@@ -32,11 +32,12 @@
     <variable name="V-component_of_wind_stdDev_pressure" vertCoord="0" />
     <variable name="V-component_of_wind_weightedMean_height_above_ground" vertCoord="5" />
     <variable name="V-component_of_wind_weightedMean_pressure" vertCoord="0" />
-    <variable name="Wind_speed_above_0_height_above_ground" vertCoord="5" />
+    <variable name="Wind_speed_probability_above_12p89_height_above_ground" vertCoord="5" />
+    <variable name="Wind_speed_probability_above_17p5_height_above_ground" vertCoord="5" />
+    <variable name="Wind_speed_probability_above_25p78_height_above_ground" vertCoord="5" />
     <variable name="Wind_speed_stdDev_height_above_ground" vertCoord="5" />
     <variable name="Wind_speed_stdDev_pressure" vertCoord="0" />
     <variable name="Wind_speed_weightedMean_height_above_ground" vertCoord="5" />
     <variable name="Wind_speed_weightedMean_pressure" vertCoord="0" />
   </runSequence>
 </fmrcDefinition>
-

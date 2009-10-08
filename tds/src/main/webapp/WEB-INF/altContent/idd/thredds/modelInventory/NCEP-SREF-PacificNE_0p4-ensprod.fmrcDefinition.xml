@@ -9,15 +9,19 @@
   <offsetHours id="0">0.0 3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0 87.0</offsetHours>
   <offsetHours id="1">6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0 87.0</offsetHours>
   <runSequence allUseSeq="0">
-    <variable name="Categorical_Freezing_Rain_between_1_1_surface" />
+    <variable name="Categorical_Freezing_Rain_probability_between_1_1_surface" />
     <variable name="Categorical_Freezing_Rain_weightedMean_surface" />
-    <variable name="Categorical_Ice_Pellets_between_1_1_surface" />
+    <variable name="Categorical_Ice_Pellets_probability_between_1_1_surface" />
     <variable name="Categorical_Ice_Pellets_weightedMean_surface" />
-    <variable name="Categorical_Rain_between_1_1_surface" />
+    <variable name="Categorical_Rain_probability_between_1_1_surface" />
     <variable name="Categorical_Rain_weightedMean_surface" />
-    <variable name="Categorical_Snow_between_1_1_surface" />
+    <variable name="Categorical_Snow_probability_between_1_1_surface" />
     <variable name="Categorical_Snow_weightedMean_surface" />
     <variable name="Convective_available_potential_energy" />
+    <variable name="Convective_available_potential_energy_probability_above_1000_surface" />
+    <variable name="Convective_available_potential_energy_probability_above_3000_surface" />
+    <variable name="Convective_available_potential_energy_probability_above_4000_surface" />
+    <variable name="Convective_available_potential_energy_probability_above_500_surface" />
     <variable name="Dew_point_temperature_stdDev_height_above_ground" vertCoord="0" />
     <variable name="Dew_point_temperature_stdDev_pressure" vertCoord="1" />
     <variable name="Dew_point_temperature_weightedMean_height_above_ground" vertCoord="0" />
@@ -25,10 +29,10 @@
     <variable name="Geopotential_height_stdDev_pressure" vertCoord="2" />
     <variable name="Geopotential_height_weightedMean_pressure" vertCoord="3" />
     <variable name="Parcel_lifted_index_to_500_hPa" vertCoord="4" />
-    <variable name="Parcel_lifted_index_to_500_hPa_below_-2_pressure_difference_layer" vertCoord="4" />
-    <variable name="Parcel_lifted_index_to_500_hPa_below_-4_pressure_difference_layer" vertCoord="4" />
-    <variable name="Parcel_lifted_index_to_500_hPa_below_-8_pressure_difference_layer" vertCoord="4" />
-    <variable name="Parcel_lifted_index_to_500_hPa_below_0_pressure_difference_layer" vertCoord="4" />
+    <variable name="Parcel_lifted_index_to_500_hPa_probability_below_-2_pressure_difference_layer" vertCoord="4" />
+    <variable name="Parcel_lifted_index_to_500_hPa_probability_below_-4_pressure_difference_layer" vertCoord="4" />
+    <variable name="Parcel_lifted_index_to_500_hPa_probability_below_-8_pressure_difference_layer" vertCoord="4" />
+    <variable name="Parcel_lifted_index_to_500_hPa_probability_below_0_pressure_difference_layer" vertCoord="4" />
     <variable name="Pressure_reduced_to_MSL_stdDev_msl" />
     <variable name="Pressure_reduced_to_MSL_weightedMean_msl" />
     <variable name="Temperature_stdDev_height_above_ground" vertCoord="0" />
@@ -39,12 +43,21 @@
     <variable name="U-component_of_wind_weightedMean_pressure" vertCoord="3" />
     <variable name="V-component_of_wind_weightedMean_height_above_ground" vertCoord="5" />
     <variable name="V-component_of_wind_weightedMean_pressure" vertCoord="3" />
-    <variable name="Wind_speed_above_0_height_above_ground" vertCoord="5" />
+    <variable name="Wind_speed_probability_above_12p89_height_above_ground" vertCoord="5" />
+    <variable name="Wind_speed_probability_above_17p5_height_above_ground" vertCoord="5" />
+    <variable name="Wind_speed_probability_above_25_height_above_ground" vertCoord="5" />
     <variable name="Wind_speed_stdDev_height_above_ground" vertCoord="5" />
     <variable name="Wind_speed_stdDev_pressure" vertCoord="2" />
   </runSequence>
   <runSequence allUseSeq="1">
-    <variable name="Total_precipitation_above_0_surface" />
+    <variable name="Total_precipitation_probability_above_0p25_surface" />
+    <variable name="Total_precipitation_probability_above_12p7_surface" />
+    <variable name="Total_precipitation_probability_above_1p27_surface" />
+    <variable name="Total_precipitation_probability_above_25p4_surface" />
+    <variable name="Total_precipitation_probability_above_2p54_surface" />
+    <variable name="Total_precipitation_probability_above_38p1_surface" />
+    <variable name="Total_precipitation_probability_above_50p8_surface" />
+    <variable name="Total_precipitation_probability_above_6p35_surface" />
     <variable name="Total_precipitation_stdDev_surface" />
     <variable name="Total_precipitation_weightedMean_surface" />
   </runSequence>
