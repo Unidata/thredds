@@ -95,9 +95,11 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator {
     if (collection != null) {
       if (collection.getBoundingBox() == null)
         collection.setBoundingBox(bb);
-      DateRange dr = getDateRange();
-      if ((collection.getDateRange() == null) && (dr != null))
-        collection.setDateRange(dr);
+      if (collection.getDateRange() == null) {
+        DateRange dr = getDateRange();
+        if (dr != null)
+          collection.setDateRange(dr);
+      }
       if (collection.size() <= 0)
         collection.setSize(count);
     }

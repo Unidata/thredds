@@ -4,7 +4,9 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  6:
-  fix sync() is all iosps we control
+  nasty bug in Index.scalarIndexImmutable
+  redo NCdumpW.writeNcML to use Formatter
+  fix sync() in all iosps we control
   ucar.nc2.ft.point.standard.Evaluator() uses equals() instead of ==
   add pointstream error handling; add NcStream.Error message
   aggExisting caching now works correctly

@@ -10,8 +10,8 @@
     <th width="134" scope="col">Type</th>
     <th width="193" scope="col">single</th>
     <th width="312" scope="col">multidim</th>
-    <th width="249" scope="col">ragged contiguous</th>
-    <th width="235" scope="col">ragged indexed</th>
+    <th width="262" scope="col">ragged contiguous</th>
+    <th width="222" scope="col">ragged indexed</th>
     <th width="205" scope="col">flattened</th>
     <th width="192" scope="col">Nested Table</th>
   </tr>
@@ -37,27 +37,27 @@
     <td><div align="center">
       <p align="left">data(time)</p>
       <p align="left"><strong>time</strong>(time)</p>
-      <p align="left">scalar <strong>lat, lon, z</strong></p>
+      <p align="left">scalar <strong>lat, lon, stn_alt</strong></p>
     </div></td>
     <td><div align="center">
       <p align="left">data(station, obs) | data(station, time)</p>
       <p align="left"><strong>time</strong>(station, obs) | <strong>time</strong>(time)</p>
-      <p align="left"><strong>lat,lon,alt</strong>(station)</p>
+      <p align="left"><strong>lat,lon,stn_alt</strong>(station)</p>
     </div></td>
     <td><div align="center">
       <p align="left">data(obs)</p>
       <p align="left"><strong>time</strong>(obs)</p>
-      <p align="left"><strong>lat,lon,alt</strong>(station), numObs(station)</p>
+      <p align="left"><strong>lat,lon,stn_alt</strong>(station), numObs(station)</p>
     </div></td>
     <td><div align="center">
       <p align="left">data(obs)</p>
       <p align="left"><strong>time</strong>(obs), stationIndex(obs)</p>
-      <p align="left"><strong>lat,lon,alt</strong>(station)</p>
+      <p align="left"><strong>lat,lon,stn_alt</strong>(station)</p>
     </div></td>
     <td><div align="center">
       <p align="left">data(obs)</p>
       <p align="left"><strong>time</strong>(obs), stationId(obs)</p>
-      <p align="left"><strong>lat,lon,alt</strong>(obs)</p>
+      <p align="left"><strong>lat,lon,stn_alt</strong>(obs)</p>
     </div></td>
     <td><pre>Table {
   <strong>lat, lon, z;</strong>
@@ -172,7 +172,7 @@
     <td><div align="center">
       <p align="left">data(profile, z)</p>
       <p align="left"><strong>time</strong>(profile, z) | <strong>time</strong>(profile)</p>
-      <p align="left"><strong>lat,lon</strong>(profile)</p>
+      <p align="left"><strong>lat,lon</strong>,<strong>stn_alt</strong>(profile)</p>
       <p align="left"><strong>alt</strong>(profile,z) | <strong>z</strong>(z)</p>
       <p align="left">stationId(profile)</p>
     </div></td>

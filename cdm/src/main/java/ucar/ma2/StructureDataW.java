@@ -33,7 +33,6 @@
 package ucar.ma2;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -113,7 +112,7 @@ public class StructureDataW extends StructureData {
    */
   public double getScalarDouble(StructureMembers.Member m) {
     Array data = getArray(m);
-    return data.getDouble(Index.scalarIndex);
+    return data.getDouble(Index.scalarIndexImmutable);
   }
 
 
@@ -136,7 +135,7 @@ public class StructureDataW extends StructureData {
    */
   public float getScalarFloat(StructureMembers.Member m) {
     Array data = getArray(m);
-    return data.getFloat(Index.scalarIndex);
+    return data.getFloat(Index.scalarIndexImmutable);
   }
 
   /**
@@ -158,7 +157,7 @@ public class StructureDataW extends StructureData {
    */
   public byte getScalarByte(StructureMembers.Member m) {
     Array data = getArray(m);
-    return data.getByte(Index.scalarIndex);
+    return data.getByte(Index.scalarIndexImmutable);
   }
 
   /**
@@ -180,7 +179,7 @@ public class StructureDataW extends StructureData {
    */
   public int getScalarInt(StructureMembers.Member m) {
     Array data = getArray(m);
-    return data.getInt(Index.scalarIndex);
+    return data.getInt(Index.scalarIndexImmutable);
   }
 
   /**
@@ -202,7 +201,7 @@ public class StructureDataW extends StructureData {
    */
   public short getScalarShort(StructureMembers.Member m) {
     Array data = getArray(m);
-    return data.getShort(Index.scalarIndex);
+    return data.getShort(Index.scalarIndexImmutable);
   }
 
   /**
@@ -225,7 +224,7 @@ public class StructureDataW extends StructureData {
    */
   public long getScalarLong(StructureMembers.Member m) {
     Array data = getArray(m);
-    return data.getLong(Index.scalarIndex);
+    return data.getLong(Index.scalarIndexImmutable);
   }
 
   /**
@@ -248,7 +247,7 @@ public class StructureDataW extends StructureData {
    */
   public char getScalarChar(StructureMembers.Member m) {
     Array data = getArray(m);
-    return data.getChar(Index.scalarIndex);
+    return data.getChar(Index.scalarIndexImmutable);
   }
 
   /**

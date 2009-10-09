@@ -47,7 +47,7 @@ import java.util.List;
  */
 
 public class Index implements Cloneable {
-  public static final Index0D scalarIndex = new Index0D(); // immutable, so can be shared
+  public static final Index0D scalarIndexImmutable = new Index0D(); // immutable, so can be shared
 
   /**
    * Generate a subclass of Index optimized for this array's rank
@@ -58,7 +58,7 @@ public class Index implements Cloneable {
     int rank = shape.length;
     switch (rank) {
       case 0:
-        return scalarIndex;
+        return new Index0D();
       case 1:
         return new Index1D(shape);
       case 2:
@@ -81,7 +81,7 @@ public class Index implements Cloneable {
   private static Index factory(int rank) {
     switch (rank) {
       case 0:
-        return scalarIndex;
+        return new Index0D();
       case 1:
         return new Index1D();
       case 2:

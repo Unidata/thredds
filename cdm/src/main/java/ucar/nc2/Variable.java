@@ -817,7 +817,7 @@ public class Variable implements VariableIF {
    */
   public byte readScalarByte() throws IOException {
     Array data = getScalarData();
-    return data.getByte(Index.scalarIndex);
+    return data.getByte(Index.scalarIndexImmutable);
   }
 
   /**
@@ -829,7 +829,7 @@ public class Variable implements VariableIF {
    */
   public short readScalarShort() throws IOException {
     Array data = getScalarData();
-    return data.getShort(Index.scalarIndex);
+    return data.getShort(Index.scalarIndexImmutable);
   }
 
   /**
@@ -841,7 +841,7 @@ public class Variable implements VariableIF {
    */
   public int readScalarInt() throws IOException {
     Array data = getScalarData();
-    return data.getInt(Index.scalarIndex);
+    return data.getInt(Index.scalarIndexImmutable);
   }
 
   /**
@@ -853,7 +853,7 @@ public class Variable implements VariableIF {
    */
   public long readScalarLong() throws IOException {
     Array data = getScalarData();
-    return data.getLong(Index.scalarIndex);
+    return data.getLong(Index.scalarIndexImmutable);
   }
 
   /**
@@ -865,7 +865,7 @@ public class Variable implements VariableIF {
    */
   public float readScalarFloat() throws IOException {
     Array data = getScalarData();
-    return data.getFloat(Index.scalarIndex);
+    return data.getFloat(Index.scalarIndexImmutable);
   }
 
   /**
@@ -877,7 +877,7 @@ public class Variable implements VariableIF {
    */
   public double readScalarDouble() throws IOException {
     Array data = getScalarData();
-    return data.getDouble(Index.scalarIndex);
+    return data.getDouble(Index.scalarIndexImmutable);
   }
 
   /**
@@ -891,7 +891,7 @@ public class Variable implements VariableIF {
   public String readScalarString() throws IOException {
     Array data = getScalarData();
     if (dataType == DataType.STRING)
-      return (String) data.getObject(Index.scalarIndex);
+      return (String) data.getObject(Index.scalarIndexImmutable);
     else if (dataType == DataType.CHAR) {
       ArrayChar dataC = (ArrayChar) data;
       return dataC.getString();

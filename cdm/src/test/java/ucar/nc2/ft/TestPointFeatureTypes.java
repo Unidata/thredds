@@ -120,6 +120,12 @@ public class TestPointFeatureTypes extends TestCase {
     // CF 1.5 multidim stations, stn dim unlimited, must distinguish station table from obs.
     testPointDataset(topdir + "cfPoint/station/sampleDataset.nc", FeatureType.STATION, true);
 
+    // CF 1.5 single trajectory (prob actually multiple - flat)
+    testPointDataset(topdir + "cfPoint/trajectory/rt_20090512_willy2.ncml", FeatureType.TRAJECTORY, true);
+
+    // CF 1.5 single trajectory (prob actually profile)
+    testPointDataset(topdir + "cfPoint/trajectory/p1140004.ncml", FeatureType.TRAJECTORY, true);
+
   }
 
   public void testGempak() throws IOException {
@@ -240,7 +246,7 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   private void testPointDataset(String location, FeatureType type, boolean show) throws IOException {
-    System.out.printf("----------- Read %s %n", location);
+    System.out.printf("================ TestPointFeatureCollection read %s %n", location);
     long start = System.currentTimeMillis();
 
     Formatter out = new Formatter();
@@ -252,6 +258,7 @@ public class TestPointFeatureTypes extends TestCase {
 
     // FeatureDataset
     if (show) {
+      System.out.printf("----------- testPointDataset getDetailInfo -----------------%n");
       fdataset.getDetailInfo(out);
       System.out.printf("%s %n", out);
     } else {
@@ -280,7 +287,7 @@ public class TestPointFeatureTypes extends TestCase {
       if (fc instanceof PointFeatureCollection) {
         PointFeatureCollection pfc = (PointFeatureCollection) fc;
         int count = testPointFeatureCollection(pfc, show);
-        System.out.println(" getData count= " + count + " size= " + pfc.size());
+        System.out.println("PointFeatureCollection getData count= " + count + " size= " + pfc.size());
         assert count == pfc.size();
 
       } else if (fc instanceof StationTimeSeriesFeatureCollection) {
@@ -313,6 +320,7 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   int testPointFeatureCollection(PointFeatureCollection pfc, boolean show) throws IOException {
+    System.out.printf("----------- testPointFeatureCollection -----------------%n");
     if (show) {
       System.out.println(" test PointFeatureCollection " + pfc.getName());
       System.out.println(" calcBounds");

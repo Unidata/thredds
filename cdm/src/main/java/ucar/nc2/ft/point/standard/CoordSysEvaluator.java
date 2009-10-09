@@ -108,6 +108,39 @@ public class CoordSysEvaluator {
   }
 
   /**
+   * Look for Axis by Type and outer dimension
+   * @param ds look in this dataset's "Best" coordinate system.
+   * @param atype look for this type of CoordinateAxis.
+   * @param outer match this dimension. if null, axis must be scalar
+   * @return the found CoordinateAxis, or null if none
+   */
+  static public CoordinateAxis findCoordByTypeAndDimension(NetcdfDataset ds, AxisType atype, Dimension outer) {
+    CoordinateSystem use = findBestCoordinateSystem(ds);
+    if (use == null) return null;
+
+    for (CoordinateAxis axis : use.getCoordinateAxes()) {
+      if (axis.getAxisType() == atype) {
+        if ((outer == null) && (axis.getRank() == 0))
+          return axis;
+        if ((outer != null) && (axis.getDimension(0).equals(outer)))
+          return axis;
+      }
+    }
+
+    // try all the axes
+    for (CoordinateAxis axis : ds.getCoordinateAxes()) {
+      if (axis.getAxisType() == atype) {
+        if ((outer == null) && (axis.getRank() == 0))
+          return axis;
+        if ((outer != null) && (axis.getDimension(0).equals(outer)))
+          return axis;
+      }
+    }
+
+    return null;
+  }
+
+  /**
    * Look for Axis by Type.
    * @param ds look in this dataset's "Best" coordinate system.
    * @param atype look for this type of CoordinateAxis. takes the first one it finds.

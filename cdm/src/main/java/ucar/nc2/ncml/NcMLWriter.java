@@ -84,6 +84,15 @@ public class NcMLWriter {
     return fmt.outputString(makeDocument( null));
   }
 
+  public String writeXML(Variable v) throws IOException {
+
+    // Output the document, use standard formatter
+    //fmt = new XMLOutputter("  ", true);
+    //fmt.setLineSeparator("\n");
+    fmt = new XMLOutputter(Format.getPrettyFormat());
+    return fmt.outputString(makeDocument( null));
+  }
+
   /**
    * Write a NetcdfFile as an XML document to the specified file.
    *

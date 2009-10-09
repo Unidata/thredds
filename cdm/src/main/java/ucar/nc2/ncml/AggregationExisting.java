@@ -88,7 +88,7 @@ public class AggregationExisting extends AggregationOuterDimension {
     }
     cacheList.add(coordCacheVar);  // coordinate variable is always cached
 
-    // gotta check persistence info - before buildCoords - if its gouing to do any good
+    // gotta check persistence info - before buildCoords - if its going to do any good
     persistRead();
 
     // now find out how many coordinates we have, caching values if needed
@@ -153,7 +153,7 @@ public class AggregationExisting extends AggregationOuterDimension {
     // make it a cacheVar
     joinAggCoord.setSPobject( coordCacheVar);
 
-    // check persistence info - may have cached values other than coordinate
+    // check persistence info - may have cached values other than coordinate  LOOK ????
     persistRead();
 
     setDatasetAcquireProxy(typicalDataset, ncDataset);

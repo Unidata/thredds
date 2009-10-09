@@ -217,7 +217,12 @@ public class DatasetViewer extends JPanel {
       PopupMenu csPopup = new PopupMenu(jtable, "Options");
       csPopup.addAction("Show Declaration", new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          showDeclaration(table);
+          showDeclaration(table, false);
+        }
+      });
+      csPopup.addAction("Show NcML", new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          showDeclaration(table, true);
         }
       });
       csPopup.addAction("NCdump Data", "Dump", new AbstractAction() {
@@ -225,11 +230,6 @@ public class DatasetViewer extends JPanel {
           dumpData(table);
         }
       });
-      /* csPopup.addAction("Count Missing Data", new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          showMissingData(table);
-        }
-      }); */
       if (level == 0) {
         csPopup.addAction("Data Table", new AbstractAction() {
           public void actionPerformed(ActionEvent e) {
@@ -325,11 +325,23 @@ public class DatasetViewer extends JPanel {
     treeWindow.show();
   } */
 
-  private void showDeclaration(BeanTableSorted from) {
+  private void showDeclaration(BeanTableSorted from, boolean isNcml) {
     Variable v = getCurrentVariable(from);
     if (v == null) return;
     infoTA.clear();
-    infoTA.appendLine( v.toString());
+    if (isNcml) {
+      Formatter out = new Formatter();
+      try {
+        NCdumpW.writeNcMLVariable( v, out);
+      } catch (IOException e) {
+        e.printStackTrace(); 
+      }
+      infoTA.appendLine( out.toString());
+
+    } else {
+      infoTA.appendLine( v.toString());
+    }
+
     if (Debug.isSet( "Xdeveloper")) {
       infoTA.appendLine("\n");
       infoTA.appendLine( "FULL NAME = "+ v.getName());
