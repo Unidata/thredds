@@ -117,7 +117,7 @@ public class LatestDqcHandler extends DqcHandler
     {
       // No LatestConfig.Item ID was given in request.
       String tmpMsg = "No latest request ID given.";
-      log.error( "handleRequest(): " + tmpMsg );
+      log.info( "handleRequest(): " + tmpMsg );
       res.sendError( HttpServletResponse.SC_NOT_FOUND,
                      "LatestDqcHandler.handleRequest(): " + tmpMsg );
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, 0 ));
