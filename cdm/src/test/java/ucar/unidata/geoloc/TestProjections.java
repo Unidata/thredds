@@ -35,6 +35,7 @@ package ucar.unidata.geoloc;
 import junit.framework.*;
 
 import ucar.unidata.geoloc.projection.*;
+import ucar.unidata.geoloc.projection.proj4.AlbersEqualAreaEllipse;
 import ucar.nc2.TestAll;
 
 /**
@@ -93,27 +94,43 @@ public class TestProjections extends TestCase {
     System.out.println("Tested " + NTRIALS + " pts for projection " + proj.getClassName());
   }
 
-  // must have lon within +/- lonMax
+  // must have lon within +/- lonMax, lat within +/- latMax
   public void testProjectionLonMax(ProjectionImpl proj, double lonMax, double latMax) {
     java.util.Random r = new java.util.Random((long) this.hashCode());
     LatLonPointImpl startL = new LatLonPointImpl();
 
+    double minx = Double.MAX_VALUE;
+    double maxx = -Double.MAX_VALUE;
+    double miny = Double.MAX_VALUE;
+    double maxy = -Double.MAX_VALUE;
     for (int i = 0; i < NTRIALS; i++) {
-      startL.setLatitude(latMax * (2*r.nextDouble() - 1)); // random latlon point
-      startL.setLongitude(lonMax * (2*r.nextDouble() - 1));
+      startL.setLatitude(latMax * (2 * r.nextDouble() - 1)); // random latlon point
+      startL.setLongitude(lonMax * (2 * r.nextDouble() - 1));
 
       ProjectionPoint p = proj.latLonToProj(startL);
       LatLonPoint endL = proj.projToLatLon(p);
 
       if (show) {
-        System.out.println("start  = " + startL);
+        System.out.println("startL  = " + startL);
         System.out.println("inter  = " + p);
-        System.out.println("end  = " + endL);
+        System.out.println("endL  = " + endL);
       }
 
       double tolerence = 5.0e-4;
       assert (TestAll.closeEnough(startL.getLatitude(), endL.getLatitude(), tolerence)) : proj.getClass().getName() + " failed start= " + startL + " end = " + endL;
       assert (TestAll.closeEnough(startL.getLongitude(), endL.getLongitude(), tolerence)) : proj.getClass().getName() + " failed start= " + startL + " end = " + endL;
+
+      minx = Math.min(minx, p.getX());
+      maxx = Math.max(maxx, p.getX());
+      miny = Math.min(miny, p.getY());
+      maxy = Math.max(maxy, p.getY());
+    }
+
+    double rangex = maxx - minx;
+    double rangey = maxy - miny;
+    if (show) {
+      System.out.printf("rangex  = (%f,%f) %n", minx, maxx);
+      System.out.printf("rangey  = (%f,%f) %n", miny, maxy);
     }
 
     startL.setLatitude(latMax / 2);
@@ -122,19 +139,27 @@ public class TestProjections extends TestCase {
     proj.latLonToProj(startL, base);
     ProjectionPointImpl startP = new ProjectionPointImpl();
     for (int i = 0; i < NTRIALS; i++) {
-      startP.setLocation(base.getX() * (2*r.nextDouble() - 1),  // random proj point
-              base.getY() * (2*r.nextDouble() - 1));
+      double x = minx + rangex * r.nextDouble();
+      double y = miny + rangey * r.nextDouble();
+      startP.setLocation(x, y);
 
-      LatLonPoint ll = proj.projToLatLon(startP);
-      ProjectionPoint endP = proj.latLonToProj(ll);
+      try {
+        LatLonPoint ll = proj.projToLatLon(startP);
+        ProjectionPoint endP = proj.latLonToProj(ll);
 
-       if (false) {
-        System.out.println("start  = " + startP);
-        System.out.println("end  = " + endP);
+
+        if (show) {
+          System.out.println("start  = " + startP);
+          System.out.println("interL  = " + ll);
+          System.out.println("end  = " + endP);
+        }
+
+        assert TestAll.closeEnough(startP.getX(), endP.getX(), 5.0e-4) : " failed start= " + startP.getX() + " end = " + endP.getX() + "; x,y="+ startP;
+        assert TestAll.closeEnough(startP.getY(), endP.getY(), 5.0e-4) : " failed start= " + startP.getY() + " end = " + endP.getY() + "; x,y="+ startP;
+      } catch (IllegalArgumentException e) {
+        System.out.printf("IllegalArgumentException=%s%n", e.getMessage());
+        continue;
       }
-
-      assert TestAll.closeEnough(startP.getX(), endP.getX(), 5.0e-4) : " failed start= " + startP.getX() + " end = " + endP.getX();
-      assert TestAll.closeEnough(startP.getY(), endP.getY(), 5.0e-4) : " failed start= " + startP.getY() + " end = " + endP.getY();
     }
 
     System.out.println("Tested " + NTRIALS + " pts for projection " + proj.getClassName());
@@ -150,8 +175,8 @@ public class TestProjections extends TestCase {
   public void testLCseam() {
     // test seam crossing
     LambertConformal lc = new LambertConformal(40.0, 180.0, 20.0, 60.0);
-    ProjectionPointImpl p1 = (ProjectionPointImpl) lc.latLonToProj( new LatLonPointImpl(0.0, -1.0), new ProjectionPointImpl());
-    ProjectionPointImpl p2 = (ProjectionPointImpl) lc.latLonToProj( new LatLonPointImpl(0.0, 1.0), new ProjectionPointImpl());
+    ProjectionPointImpl p1 = (ProjectionPointImpl) lc.latLonToProj(new LatLonPointImpl(0.0, -1.0), new ProjectionPointImpl());
+    ProjectionPointImpl p2 = (ProjectionPointImpl) lc.latLonToProj(new LatLonPointImpl(0.0, 1.0), new ProjectionPointImpl());
     System.out.printf(" p1= x=%f y=%f%n", p1.getX(), p1.getY());
     System.out.printf(" p2= x=%f y=%f%n", p2.getX(), p2.getY());
     assert lc.crossSeam(p1, p2);
@@ -190,6 +215,13 @@ public class TestProjections extends TestCase {
     testProjection(new AlbersEqualArea());
     AlbersEqualArea p = new AlbersEqualArea();
     AlbersEqualArea p2 = (AlbersEqualArea) p.constructCopy();
+    assert p.equals(p2);
+  }
+
+  public void testAEAE() {
+    testProjectionLonMax(new AlbersEqualAreaEllipse(), 360, 80);
+    AlbersEqualAreaEllipse p = new AlbersEqualAreaEllipse();
+    AlbersEqualAreaEllipse p2 = (AlbersEqualAreaEllipse) p.constructCopy();
     assert p.equals(p2);
   }
 

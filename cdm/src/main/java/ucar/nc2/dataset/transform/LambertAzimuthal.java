@@ -36,6 +36,7 @@ package ucar.nc2.dataset.transform;
 import ucar.nc2.dataset.*;
 import ucar.nc2.Variable;
 import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Earth;
 
 /**
  * Create a LambertAzimuthal Projection from the information in the Coordinate Transform Variable.
@@ -53,8 +54,6 @@ public class LambertAzimuthal extends AbstractCoordTransBuilder {
   }
 
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-    //double[] pars = readAttributeDouble2(ctv.findAttribute("standard_parallel"));
-    //if (pars == null) return null;
 
     double lon0 = readAttributeDouble(ctv, "longitude_of_projection_origin", Double.NaN);
     double lat0 = readAttributeDouble(ctv, "latitude_of_projection_origin", Double.NaN);
@@ -67,9 +66,12 @@ public class LambertAzimuthal extends AbstractCoordTransBuilder {
       false_northing *= scalef;
     }
 
+    double earth_radius = readAttributeDouble(ctv, "earth_radius", Earth.getRadius() * .001);
+
     ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea proj =
-            new ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea(lat0, lon0, false_easting, false_northing, 
-            ProjectionImpl.EARTH_RADIUS);
+            new ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea(lat0, lon0, false_easting, false_northing,
+                    earth_radius);
+
     return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
   }
 }

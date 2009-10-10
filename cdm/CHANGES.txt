@@ -3,6 +3,10 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.1:
+ 7:
+  add earth_radius parameter to AlbersEqualArea, LambertAzimuthEqualArea
+  refactor Earth, EarthEllipsoidal. Use inverse flattenting as parameter, consolidate constructors, use proj4 calculations of ellipse parameters
+  add ucar.unidata.geoloc.projection.proj4 for jhlab java versions of proj4 code; AlbersEqualAreaEllipse.
  6:
   nasty bug in Index.scalarIndexImmutable
   redo NCdumpW.writeNcML to use Formatter
