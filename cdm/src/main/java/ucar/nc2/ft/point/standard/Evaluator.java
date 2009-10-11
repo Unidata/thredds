@@ -96,16 +96,21 @@ public class Evaluator {
     return v == null ? null : v.getShortName();
   }
 
-  static public String getVariableWithAttribute(NetcdfDataset ds, String attName, String attValue) {
+  static public Variable getVariableWithAttribute(NetcdfDataset ds, String attName, String attValue) {
     for (Variable v : ds.getVariables()) {
       String stdName = ds.findAttValueIgnoreCase(v, attName, null);
       if ((stdName != null) && stdName.equals(attValue))
-        return v.getName();
+        return v;
     }
     return null;
   }
 
-  static public String getVariableWithAttribute(Structure struct, String attName, String attValue) {
+  static public String getNameOfVariableWithAttribute(NetcdfDataset ds, String attName, String attValue) {
+    Variable v = getVariableWithAttribute(ds, attName, attValue);
+    return (v == null) ? null : v.getShortName();
+  }
+
+  static public String getNameOfVariableWithAttribute(Structure struct, String attName, String attValue) {
     for (Variable v : struct.getVariables()) {
       Attribute att = v.findAttributeIgnoreCase(attName);
       if ((att != null) && att.getStringValue().equals(attValue))

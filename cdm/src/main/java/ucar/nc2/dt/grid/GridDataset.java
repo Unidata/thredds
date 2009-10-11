@@ -43,6 +43,8 @@ import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.ma2.IndexIterator;
+import ucar.ma2.Array;
 
 import java.util.*;
 import java.io.IOException;
@@ -515,6 +517,42 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
     } catch (Exception ioe) {
       ioe.printStackTrace();
     }
+
+    //////////////////////////
+
+    GridDataset gridDataset = null;
+    try {
+      gridDataset = GridDataset.open(filename);
+      for (Enum parameter : parameters.values()) {
+
+        GridDatatype pwd = gridDataset.findGridDatatype(parameter.name());
+        GridCoordSystem pwdGcs = pwd.getCoordinateSystem();
+
+        // Get index value for lat/lon
+        int[] idx = pwdGcs.findXYindexFromLatLon(lat, lon, null);
+
+        // Reads values for the given (location,parameter) for all times
+        Array data = pwd.readDataSlice(-1, -1, idx[1], idx[0]);
+        IndexIterator iter = data.getIndexIterator();
+        while (iter.hasNext()) {
+          float val = iter.getFloatNext();
+        }
+      }
+
+    } catch (Exception exc) {
+      exc.printStackTrace();
+
+    } finally {
+      if (gridDataset != null) {
+        try {
+          gridDataset.close();
+        } catch (IOException ioe) {
+          ioe.printStackTrace();
+        }
+      }
+    }
+
+
   }
 
 }

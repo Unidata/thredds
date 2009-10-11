@@ -107,34 +107,31 @@ public class CoordSysEvaluator {
     return null;
   }
 
+  static public interface Predicate {
+    boolean match(CoordinateAxis axis);
+  }
+
   /**
-   * Look for Axis by Type and outer dimension
+   * Look for Axis by Type and test against a predicate
    * @param ds look in this dataset's "Best" coordinate system.
    * @param atype look for this type of CoordinateAxis.
-   * @param outer match this dimension. if null, axis must be scalar
+   * @param p match this predicate
    * @return the found CoordinateAxis, or null if none
    */
-  static public CoordinateAxis findCoordByTypeAndDimension(NetcdfDataset ds, AxisType atype, Dimension outer) {
+  static public CoordinateAxis findCoordByType(NetcdfDataset ds, AxisType atype, Predicate p) {
     CoordinateSystem use = findBestCoordinateSystem(ds);
     if (use == null) return null;
 
+    // try the "best" cs
     for (CoordinateAxis axis : use.getCoordinateAxes()) {
-      if (axis.getAxisType() == atype) {
-        if ((outer == null) && (axis.getRank() == 0))
-          return axis;
-        if ((outer != null) && (axis.getDimension(0).equals(outer)))
-          return axis;
-      }
+      if (axis.getAxisType() == atype)
+        if (p.match(axis)) return axis;
     }
 
     // try all the axes
     for (CoordinateAxis axis : ds.getCoordinateAxes()) {
-      if (axis.getAxisType() == atype) {
-        if ((outer == null) && (axis.getRank() == 0))
-          return axis;
-        if ((outer != null) && (axis.getDimension(0).equals(outer)))
-          return axis;
-      }
+      if (axis.getAxisType() == atype)
+        if (p.match(axis)) return axis;
     }
 
     return null;

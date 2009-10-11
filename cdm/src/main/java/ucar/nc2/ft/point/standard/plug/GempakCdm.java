@@ -35,13 +35,10 @@ package ucar.nc2.ft.point.standard.plug;
 
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.CF;
-import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.ft.point.standard.*;
 import ucar.nc2.*;
-import ucar.ma2.Array;
 import ucar.ma2.DataType;
 
 import java.util.*;
@@ -145,7 +142,7 @@ public class GempakCdm extends TableConfigurerImpl {
       stnTable.stnAlt = alt.getName();
 
     // station id
-    stnTable.stnId = Evaluator.getVariableWithAttribute(ds, "standard_name", "station_id");
+    stnTable.stnId = Evaluator.getNameOfVariableWithAttribute(ds, "standard_name", "station_id");
     if (stnTable.stnId == null) {
       errlog.format("Must have a Station id variable with standard name station_id");
       return null;
