@@ -16,6 +16,7 @@
     <variable name="Categorical_Rain" />
     <variable name="Categorical_Snow" />
     <variable name="Convective_available_potential_energy" />
+    <variable name="Convective_available_potential_energy_probability_above_1000_surface" />
     <variable name="Convective_available_potential_energy_probability_above_2000_surface" />
     <variable name="Convective_available_potential_energy_probability_above_3000_surface" />
     <variable name="Convective_available_potential_energy_probability_above_4000_surface" />
@@ -30,6 +31,7 @@
     <variable name="Geopotential_height_stdDev_pressure" vertCoord="2" />
     <variable name="Geopotential_height_weightedMean_pressure" vertCoord="2" />
     <variable name="Parcel_lifted_index_to_500_hPa" vertCoord="3" />
+    <variable name="Parcel_lifted_index_to_500_hPa_probability_below_0_pressure_difference_layer" vertCoord="3" />
     <variable name="Parcel_lifted_index_to_500_hPa_probability_below_-4_pressure_difference_layer" vertCoord="3" />
     <variable name="Parcel_lifted_index_to_500_hPa_probability_below_-8_pressure_difference_layer" vertCoord="3" />
     <variable name="Precipitable_water_stdDev_entire_atmosphere" />
@@ -48,6 +50,7 @@
     <variable name="V-component_of_wind_weightedMean_pressure" vertCoord="2" />
     <variable name="Visibility" />
     <variable name="Visibility_probability_below_1609_surface" />
+    <variable name="Visibility_probability_below_4827_surface" />
     <variable name="Wind_speed_probability_above_12p89_height_above_ground" vertCoord="5" />
     <variable name="Wind_speed_probability_above_17p5_height_above_ground" vertCoord="5" />
     <variable name="Wind_speed_probability_above_25p78_height_above_ground" vertCoord="5" />

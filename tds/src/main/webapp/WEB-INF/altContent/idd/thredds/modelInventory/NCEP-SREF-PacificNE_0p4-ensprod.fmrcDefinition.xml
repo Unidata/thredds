@@ -19,6 +19,7 @@
     <variable name="Categorical_Snow_weightedMean_surface" />
     <variable name="Convective_available_potential_energy" />
     <variable name="Convective_available_potential_energy_probability_above_1000_surface" />
+    <variable name="Convective_available_potential_energy_probability_above_2000_surface" />
     <variable name="Convective_available_potential_energy_probability_above_3000_surface" />
     <variable name="Convective_available_potential_energy_probability_above_4000_surface" />
     <variable name="Convective_available_potential_energy_probability_above_500_surface" />
@@ -31,6 +32,7 @@
     <variable name="Parcel_lifted_index_to_500_hPa" vertCoord="4" />
     <variable name="Parcel_lifted_index_to_500_hPa_probability_below_-2_pressure_difference_layer" vertCoord="4" />
     <variable name="Parcel_lifted_index_to_500_hPa_probability_below_-4_pressure_difference_layer" vertCoord="4" />
+    <variable name="Parcel_lifted_index_to_500_hPa_probability_below_-6_pressure_difference_layer" vertCoord="4" />
     <variable name="Parcel_lifted_index_to_500_hPa_probability_below_-8_pressure_difference_layer" vertCoord="4" />
     <variable name="Parcel_lifted_index_to_500_hPa_probability_below_0_pressure_difference_layer" vertCoord="4" />
     <variable name="Pressure_reduced_to_MSL_stdDev_msl" />

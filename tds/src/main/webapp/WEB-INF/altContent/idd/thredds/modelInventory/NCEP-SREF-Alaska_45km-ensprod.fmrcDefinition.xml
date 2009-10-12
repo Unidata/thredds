@@ -18,6 +18,7 @@
     <variable name="Convective_available_potential_energy" />
     <variable name="Convective_available_potential_energy_probability_above_1000_surface" />
     <variable name="Convective_available_potential_energy_probability_above_2000_surface" />
+    <variable name="Convective_available_potential_energy_probability_above_3000_surface" />
     <variable name="Convective_available_potential_energy_probability_above_4000_surface" />
     <variable name="Convective_available_potential_energy_probability_above_500_surface" />
     <variable name="Dew_point_temperature_stdDev_height_above_ground" vertCoord="0" />
@@ -29,6 +30,7 @@
     <variable name="Geopotential_height_weightedMean_pressure" vertCoord="2" />
     <variable name="Parcel_lifted_index_to_500_hPa" vertCoord="4" />
     <variable name="Parcel_lifted_index_to_500_hPa_probability_below_-2_pressure_difference_layer" vertCoord="4" />
+    <variable name="Parcel_lifted_index_to_500_hPa_probability_below_-4_pressure_difference_layer" vertCoord="4" />
     <variable name="Parcel_lifted_index_to_500_hPa_probability_below_-6_pressure_difference_layer" vertCoord="4" />
     <variable name="Parcel_lifted_index_to_500_hPa_probability_below_-8_pressure_difference_layer" vertCoord="4" />
     <variable name="Parcel_lifted_index_to_500_hPa_probability_below_0_pressure_difference_layer" vertCoord="4" />
@@ -50,6 +52,7 @@
   </runSequence>
   <runSequence allUseSeq="1">
     <variable name="Large_scale_snow" />
+    <variable name="Large_scale_snow_probability_above_50p8_surface" />
     <variable name="Large_scale_snow_probability_above_101p6_surface" />
     <variable name="Large_scale_snow_probability_above_152p4_surface" />
     <variable name="Large_scale_snow_probability_above_190p5_surface" />
@@ -63,6 +66,7 @@
   <runSequence allUseSeq="2">
     <variable name="Total_precipitation" />
     <variable name="Total_precipitation_probability_above_0p25_surface" />
+    <variable name="Total_precipitation_probability_above_6p35_surface" />
     <variable name="Total_precipitation_probability_above_12p7_surface" />
     <variable name="Total_precipitation_probability_above_1p27_surface" />
     <variable name="Total_precipitation_probability_above_25p4_surface" />
