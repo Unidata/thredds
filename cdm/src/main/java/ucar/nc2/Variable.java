@@ -1077,7 +1077,7 @@ public class Variable implements VariableIF {
         if (!strict)
           buf.format("%s=%d",dimName,myd.getLength());
         else
-          buf.format(dimName);
+          buf.format("%s",dimName);
       } else {
         if (dimName != null) {
           buf.format("%s=", dimName);

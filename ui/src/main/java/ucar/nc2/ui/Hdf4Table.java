@@ -37,7 +37,6 @@ import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.iosp.hdf4.H4iosp;
 import ucar.nc2.iosp.hdf4.H4header;
 
@@ -47,10 +46,8 @@ import javax.swing.event.ListSelectionEvent;
 
 import thredds.ui.TextHistoryPane;
 import thredds.ui.IndependentWindow;
-import thredds.ui.BAMutil;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.*;
 
@@ -144,6 +141,7 @@ public class Hdf4Table extends JPanel {
     //prefs.putInt("splitPosH", splitH.getDividerLocation());
   }
 
+  private H4header header;
   private String location;
 
   public void setHdf4File(RandomAccessFile raf) throws IOException {
@@ -151,8 +149,8 @@ public class Hdf4Table extends JPanel {
     long start = System.nanoTime();
     java.util.List<TagBean> beanList = new ArrayList<TagBean>();
 
-    NetcdfFile ncfile = new MyNetcdfFile();
     H4iosp iosp = new H4iosp();
+    NetcdfFile ncfile = new MyNetcdfFile(iosp);
     try {
       iosp.open(raf, ncfile, null);
     } catch (Throwable t) {
@@ -162,7 +160,7 @@ public class Hdf4Table extends JPanel {
       dumpTA.setText( bos.toString());      
     }
 
-    H4header header = (H4header) iosp.sendIospMessage("header");
+    header = (H4header) iosp.sendIospMessage("header");
     for (H4header.Tag tag : header.getTags ()) {
       beanList.add(new TagBean(tag));
     }
@@ -170,8 +168,15 @@ public class Hdf4Table extends JPanel {
     tagTable.setBeans(beanList);
   }
 
-  private class MyNetcdfFile extends NetcdfFile {
+  public void getEosInfo(Formatter f) throws IOException {
+    header.getEosInfo(f);
+  }
 
+  // need  acccess to protected constructor: iosp.open(raf, ncfile, null);
+  private class MyNetcdfFile extends NetcdfFile {
+    public MyNetcdfFile(H4iosp iosp) {
+       this.spi = iosp; // iosp must be set during open
+    }
   }
 
   public class TagBean {
@@ -202,6 +207,10 @@ public class Hdf4Table extends JPanel {
       return tag.isExtended();
     }
 
+    public String getVClass() {
+      return tag.getVClass();
+    }
+
     public int getOffset() {
       return tag.getOffset();
     }
@@ -219,74 +228,5 @@ public class Hdf4Table extends JPanel {
     }
 
   }
-
-  public class MessageBean {
-    H5header.HeaderMessage m;
-
-    // no-arg constructor
-    public MessageBean() {
-    }
-
-    // create from a dataset
-    public MessageBean(H5header.HeaderMessage m) {
-      this.m = m;
-    }
-
-    public String getMessageType(){
-      return m.getMtype().toString();
-    }
-
-    public String getName(){
-      return m.getName();
-    }
-
-    public short getSize() {
-      return m.getSize();
-    }
-
-    public byte getFlags() {
-      return m.getFlags();
-    }
-
-    public long getStart() {
-      return m.getStart();
-    }
-
-  }
-
-  public class AttributeBean {
-    H5header.MessageAttribute att;
-
-    // no-arg constructor
-    public AttributeBean() {
-    }
-
-    // create from a dataset
-    public AttributeBean(H5header.MessageAttribute att) {
-      this.att = att;
-    }
-
-    public byte getVersion() {
-      return att.getVersion();
-    }
-
-    public String getName() {
-      return att.getName();
-    }
-
-    public String getMdt() {
-      return att.getMdt().toString();
-    }
-
-    public String getMds() {
-      return att.getMds().toString();
-    }
-
-    public long getDataPos() {
-      return att.getDataPos();
-    }
-
-  }
-
 
 }

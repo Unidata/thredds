@@ -260,7 +260,6 @@ public class NestedTable {
         throw new RuntimeException(e.getMessage());
       }
     }
-
   }
 
   // knows how to get specific coordinate data from a table or its parents
@@ -528,7 +527,7 @@ public class NestedTable {
   }
 
   public Station makeStation(StructureData stationData) {
-    String stationName = stnVE.getCoordValueString(stationData);
+    String stationName = stnVE.getCoordValueAsString(stationData);
     String stationDesc = (stnDescVE == null) ? "" : stnDescVE.getCoordValueString(stationData);
     String stnWmoId = (wmoVE == null) ? "" : wmoVE.getCoordValueString(stationData);
 

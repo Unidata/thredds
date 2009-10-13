@@ -2126,6 +2126,23 @@ public class ToolsUI extends JPanel {
       super(p, "file:", true, false);
       hdf4Table = new Hdf4Table(prefs);
       add(hdf4Table, BorderLayout.CENTER);
+
+      AbstractButton eosdump = BAMutil.makeButtcon("alien", "Show EOS processing", false);
+      eosdump.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          try {
+            Formatter f  = new Formatter();
+            hdf4Table.getEosInfo(f);
+            detailTA.setText(f.toString());
+            detailWindow.show();
+          } catch (IOException ioe) {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+            ioe.printStackTrace(new PrintStream(bos));
+            ta.setText(bos.toString());
+          }
+        }
+      });
+      buttPanel.add(eosdump);
     }
 
     boolean process(Object o) {

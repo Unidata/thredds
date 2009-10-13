@@ -53,10 +53,10 @@ public class ODLparser {
   private Document doc;
   private boolean debug = false, showRaw = false, show = false;
 
-  void showDoc() {
+  void showDoc(java.io.OutputStream out) {
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
     try {
-      fmt.output(doc, System.out);
+      fmt.output(doc, out);
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -96,7 +96,7 @@ public class ODLparser {
       }
     }
 
-    if (show) showDoc();
+    if (show) showDoc(System.out);
     return rootElem;
   }
 

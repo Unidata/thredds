@@ -68,6 +68,13 @@ public abstract class CoordVarExtractor {
     return getCoordValueString(tableData[nestingLevel]);
   }
 
+
+  public String getCoordValueAsString(StructureData sdata) {
+    if (isString()) return getCoordValueString(sdata);
+    double dval = getCoordValue( sdata);
+    return Double.toString(dval);
+  }
+
   public String toString() {
     return axisName + " nestingLevel= " + nestingLevel;
   }

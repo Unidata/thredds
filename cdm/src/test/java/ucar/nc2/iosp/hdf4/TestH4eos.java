@@ -67,10 +67,10 @@ public class TestH4eos extends TestCase {
   String testDir = TestAll.testdataDir + "hdf4/";
   public void testReadAll() throws IOException {
     int count = 0;
-    count += TestAll.actOnAll(testDir, new MyFileFilter(), new MyAct());
+    count = TestAll.actOnAll(testDir, new MyFileFilter(), new MyAct());
     System.out.println("***READ " + count + " files");
-    count += TestAll.actOnAll("D:/hdf4/", new MyFileFilter(), new MyAct());
-    System.out.println("***READ " + count + " files");
+    //count = TestAll.actOnAll("D:/formats/hdf4/", new MyFileFilter(), new MyAct());
+    //System.out.println("***READ " + count + " files");
   }
 
   private class MyAct implements TestAll.Act {

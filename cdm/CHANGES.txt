@@ -4,8 +4,14 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  7:
+  CPpointObs: clarify the variants.
+  Variable.getNameAndDimensions() had bug when theres a '%' in the name.
+  UAMIV iosp calls finish() not sync()
+  NetcdfDataset.enhance() now returns the CoordSysBuilder for debugging purposes
+  fix NetdfDatasetInfo.getParseInfo()
+  improve HDF-EOS processing.
   add earth_radius parameter to AlbersEqualArea, LambertAzimuthEqualArea
-  refactor Earth, EarthEllipsoidal. Use inverse flattenting as parameter, consolidate constructors, use proj4 calculations of ellipse parameters
+  refactor Earth, EarthEllipsoidal. Use inverse flattening as parameter, consolidate constructors, use proj4 calculations of ellipse parameters
   add ucar.unidata.geoloc.projection.proj4 for jhlab java versions of proj4 code; AlbersEqualAreaEllipse.
  6:
   nasty bug in Index.scalarIndexImmutable

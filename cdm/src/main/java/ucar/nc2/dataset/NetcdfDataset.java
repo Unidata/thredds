@@ -454,9 +454,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * Possible remove all direct access to Variable.enhance
    */
-  static private void enhance(NetcdfDataset ds, Set<Enhance> mode, CancelTask cancelTask) throws IOException {
+  static private CoordSysBuilderIF enhance(NetcdfDataset ds, Set<Enhance> mode, CancelTask cancelTask) throws IOException {
     //if (ds.isEnhanceProcessed) return;
-    if (mode == null) return;
+    if (mode == null) return null;
 
      // CoordSysBuilder may enhance dataset: add new variables, attributes, etc
     CoordSysBuilderIF builder = null;
@@ -471,7 +471,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       for (Variable v : ds.getVariables()) {
         VariableEnhanced ve = (VariableEnhanced) v;
         ve.enhance(mode);
-        if ((cancelTask != null) && cancelTask.isCancel()) return;
+        if ((cancelTask != null) && cancelTask.isCancel()) return null;
       }
     }
 
@@ -482,6 +482,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     ds.finish(); // recalc the global lists
     ds.enhanceMode.addAll(mode);
+
+    return builder;
   }
 
   /**
@@ -1378,9 +1380,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * recalc enhancement info - use default enhance mode
    *
    * @throws java.io.IOException on error
+   * @return the CoordSysBuilder used, for debugging. do not modify or retain a reference
    */
-  public void enhance() throws IOException {
-    enhance(this, defaultEnhanceMode, null);
+  public CoordSysBuilderIF enhance() throws IOException {
+    return enhance(this, defaultEnhanceMode, null);
   }
 
   /**

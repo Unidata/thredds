@@ -87,6 +87,8 @@ public class H4header {
    private static boolean debugTracker = false; // memory tracker
    private static boolean warnings = true; // log messages
 
+   private static boolean debugHdfEosOff = false; // allow to turn hdf eos processing off
+
    public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
      debugTag1 = debugFlag.isSet("H4header/tag1");
      debugTag2 = debugFlag.isSet("H4header/tag2");
@@ -97,7 +99,9 @@ public class H4header {
      debugChunkTable = debugFlag.isSet("H4header/chunkTable");
      debugChunkDetail = debugFlag.isSet("H4header/chunkDetail");
      debugTracker = debugFlag.isSet("H4header/memTracker");
-     HdfEos.showWork = debugFlag.isSet("HdfEos/showWork");
+     debugHdfEosOff = debugFlag.isSet("HdfEos/turnOff");
+     if (debugFlag.isSet("HdfEos/showWork"))
+       HdfEos.showWork = true;
    }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -147,8 +151,15 @@ public class H4header {
     ncfile.setLocation(myRaf.getLocation());
     construct(ncfile, alltags);
 
-    HdfEos.amendFromODL(ncfile, ncfile.getRootGroup());
-    adjustDimensions();
+    if (!debugHdfEosOff) {
+      boolean used = HdfEos.amendFromODL(ncfile, ncfile.getRootGroup());
+      if (used) {
+        adjustDimensions();
+        String history = ncfile.findAttValueIgnoreCase(null, "_History", "");
+        ncfile.addAttribute(null, new Attribute("_History", history + "; HDF-EOS StructMetadata information was read"));
+
+      }
+    }
 
     if (debugTag2) {
       for (Tag tag : alltags)
@@ -156,6 +167,10 @@ public class H4header {
     }
 
     if (debugTracker) memTracker.report();
+  }
+
+  public void getEosInfo(Formatter f) throws IOException {
+    HdfEos.getEosInfo(ncfile, ncfile.getRootGroup(), f);
   }
 
   static private int tagid(short refno, short code) {
@@ -254,7 +269,7 @@ public class H4header {
     }
 
     // misc global attributes
-    ncfile.addAttribute(null, new Attribute("History", "Direct read of HDF4 file through CDM library"));
+    ncfile.addAttribute(null, new Attribute("_History", "Direct read of HDF4 file through CDM library"));
     for (Tag t : alltags) {
       if (t.code == 30) {
         ncfile.addAttribute(null, new Attribute("HDF4_Version", ((TagVersion) t).value()));
@@ -820,7 +835,7 @@ public class H4header {
     boolean ok = true;
     for (int i = 0; i < dim.shape.length; i++)
       if (dim.shape[i] != v.getDimension(i).getLength()) {
-        if (warnings) log.warn(dim.shape[i] + " != " + v.getDimension(i).getLength() + " for " + v.getName());
+        if (warnings) log.info(dim.shape[i] + " != " + v.getDimension(i).getLength() + " for " + v.getName());
         ok = false;
       }
 
@@ -1207,6 +1222,14 @@ public class H4header {
 
     public String getVinfo() {
       return (vinfo == null) ? "" : vinfo.toString();
+    }
+
+    public String getVClass() {
+      if (this instanceof H4header.TagVGroup)
+        return ((H4header.TagVGroup) this).className;
+      if (this instanceof H4header.TagVH)
+        return ((H4header.TagVH) this).className;
+      return "";
     }
   }
 

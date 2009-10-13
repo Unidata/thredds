@@ -28,7 +28,6 @@
   <li><em><strong>http://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.nc</strong></em></li>
 </ul>
 <p>The HTTP server must implement the <strong>getRange</strong> header. Performance will be strongly affected by file format and the data access pattern. </p>
-<p>&nbsp;</p>
 <p>The local or remote file must be <a href="../formats/FileTypes.html">one of the formats that the netCDF-Java library can read</a>. We call this set of files Common Data Model files, (or <em><strong>CDM files</strong></em> for short), to make clear that the NetCDF-Java library is not limited to netCDF files. </p>
 <p>If the URL ends with a with &quot;.Z&quot;, &quot;.zip&quot;, &quot;.gzip&quot;, &quot;.gz&quot;, or &quot;.bz2&quot;, the file is assumed to be <em><strong>compressed</strong></em>. The netCDF-Java library will uncompress/unzip and write a new file without the suffix, then read from the uncompressed file. Generally it prefers to place the uncompressed file in the same directory as the original file. If it does not have write permission on that directory, it will use the <a href="Caching.html">cache directory</a> defined by <strong>ucar.nc2.util.DiskCache.</strong></p>
 <h3>2. ucar.nc2.dataset.NetcdfDataset.openFile(String location) </h3>
@@ -59,6 +58,7 @@
   <li><em>thredds:resolve:http://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/NAM/CONUS_12km/latest.xml</em></li>
 </ul>
 <p>In this case, <strong><em>http://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/NAM/CONUS_12km/latest.xml</em></strong> returns a catalog contining the latest dataset in the <strong><em>NCEP/NAM/CONUS_12km</em></strong> collection. NetcdfDataset will read the catalog, extract  the THREDDS dataset, and open it as in section 3 above. </p>
+<p>5. NetcdfDataset can open <em><strong><a href="../stream/CdmRemote.html">CDM Remote</a></strong></em> datasets, which have the form <strong><em>cdmremote:http://server:8080/thredds/cdmremote/data.nc</em></strong>. In this case it expects that theURL is an endpoint for a cdmremote web service.</p>
 <h3>3. ucar.nc2.dataset.NetcdfDataset.openDataset(String location) </h3>
 <p>NetcdfDataset.openDataset() simply calls a NetcdfDataset.openFile(), then enhances the dataset by 1) dealing with packed variables and missing values (if present), and 2) adding coordinate systems if possible. </p>
 <h3>4. ucar.nc2.ft.FeatureDatasetFactoryManager</h3>

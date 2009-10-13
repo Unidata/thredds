@@ -42,9 +42,11 @@ import ucar.ma2.DataType;
 import ucar.ma2.ArrayChar;
 
 import java.io.IOException;
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Formatter;
 
 import org.jdom.Element;
 
@@ -57,8 +59,7 @@ import org.jdom.Element;
  */
 public class HdfEos {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HdfEos.class);
-  static private boolean showTypes = false;
-  static public boolean showWork = false;
+  static boolean showWork = false; // set in debug
 
   /**
    * Amend the given NetcdfFile with metadata from HDF-EOS structMetadata.
@@ -68,8 +69,31 @@ public class HdfEos {
    * @param ncfile Amend this file
    * @param eosGroup the group containing variables named StructMetadata.*
    * @throws IOException on read error
+   * @return true if HDF-EOS info was found
    */
-  static public void amendFromODL(NetcdfFile ncfile, Group eosGroup) throws IOException {
+  static public boolean amendFromODL(NetcdfFile ncfile, Group eosGroup) throws IOException {
+    String smeta = getStructMetadata(eosGroup);
+    if (smeta == null) return false;
+
+    new HdfEos().amendFromODL(ncfile, smeta);
+    return true;
+  }
+
+  static public void getEosInfo(NetcdfFile ncfile, Group eosGroup, Formatter f) throws IOException {
+    String smeta = getStructMetadata(eosGroup);
+    if (smeta == null) {
+      f.format("No StructMetadata variables in group %s %n", eosGroup.getName());
+      return;
+    }
+    f.format("raw = %n%s%n", smeta);
+    ODLparser parser = new ODLparser();
+    parser.parseFromString(smeta.toString()); // now we have the ODL in JDOM elements
+    ByteArrayOutputStream bos = new ByteArrayOutputStream(1000 * 1000);
+    parser.showDoc(bos);
+    f.format("parsed = %n%s%n", bos.toString());
+  }
+
+  static private String getStructMetadata(Group eosGroup) throws IOException {
     StringBuilder sbuff = null;
     String structMetadata = null;
 
@@ -91,10 +115,7 @@ public class HdfEos {
         sbuff.append(structMetadata);
       n++;
     }
-    if (sbuff != null)
-      structMetadata = sbuff.toString();
-    if (structMetadata != null)
-      new HdfEos().amendFromODL(ncfile, structMetadata);
+    return (sbuff != null) ? sbuff.toString() : structMetadata;
   }
 
   /**
@@ -172,7 +193,7 @@ public class HdfEos {
     }
 
     if (featureType != null) {
-      if (showTypes) System.out.println("***EOS featureType= "+featureType.toString());
+      if (showWork) System.out.println("***EOS featureType= "+featureType.toString());
       rootg.addAttribute(new Attribute("cdm_data_type", featureType.toString()));
     }
 
@@ -248,7 +269,7 @@ public class HdfEos {
       }
       if ((latAxis != null) && (lonAxis != null)) {
         List<Dimension> xyDomain = CoordinateSystem.makeDomain(new Variable[] {latAxis, lonAxis});
-       if (xyDomain.size() < 2) featureType = FeatureType.PROFILE;
+       if (xyDomain.size() < 2) featureType = FeatureType.PROFILE;  // ??
       }
 
     }
@@ -428,7 +449,7 @@ public class HdfEos {
       newDims.add(dim);
     }
     v.setDimensions(newDims);
-    if (showWork) System.out.printf(" set shared dimensions for %s %n", v.getName());
+    if (showWork) System.out.printf(" set shared dimensions for %s %n", v.getNameAndDimensions());
   }
 
   // look if the wanted dimension is in the  unknownDims list.
