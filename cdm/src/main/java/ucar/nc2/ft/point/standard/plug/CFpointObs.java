@@ -202,8 +202,10 @@ public class CFpointObs extends TableConfigurerImpl {
         break;
       case multidim:
         obsTable = makeMultidim(ds, stnTable, obsDim, errlog);
-        if (time.getRank() == 1) // time(time)
+        if (time.getRank() == 1)  { // time(time)
           obsTable.addJoin(new JoinArray(time, JoinArray.Type.raw, 0));
+          obsTable.time = time.getShortName();
+        }
         break;
       case raggedContiguous:
         obsTable = makeRaggedContiguous(ds, stnTable, obsDim, errlog);
@@ -655,6 +657,16 @@ public class CFpointObs extends TableConfigurerImpl {
     return var.getShortName();
   }
 
+  private String matchAxisTypeAndDimension(NetcdfDataset ds, AxisType type, final Dimension outer, final Dimension inner) {
+    Variable var = CoordSysEvaluator.findCoordByType(ds, type, new CoordSysEvaluator.Predicate() {
+      public boolean match(CoordinateAxis axis) {
+        return ((axis.getRank() == 2) && outer.equals(axis.getDimension(0)) && inner.equals(axis.getDimension(1)));
+      }
+    });
+    if (var == null) return null;
+    return var.getShortName();
+  }
+
   private CoordinateAxis findZAxisNotStationAlt(NetcdfDataset ds) {
     CoordinateAxis z = CoordSysEvaluator.findCoordByType(ds, AxisType.Height, new CoordSysEvaluator.Predicate() {
       public boolean match(CoordinateAxis axis) {
@@ -755,10 +767,10 @@ public class CFpointObs extends TableConfigurerImpl {
     TableConfig obsTable = new TableConfig(obsTableType, obsDim.getName());
     obsTable.dim = obsDim;
 
-    obsTable.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, obsDim);
-    obsTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, obsDim);
-    obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Height, obsDim);
-    obsTable.time = matchAxisTypeAndDimension(ds, AxisType.Time, obsDim);
+    obsTable.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, parentDim, obsDim);
+    obsTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, parentDim, obsDim);
+    obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Height, parentDim, obsDim);
+    obsTable.time = matchAxisTypeAndDimension(ds, AxisType.Time, parentDim, obsDim);
 
     // divide up the variables between the parent and the obs
     List<String> obsVars = null;

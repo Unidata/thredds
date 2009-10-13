@@ -94,6 +94,28 @@ public class TestPointFeatureTypes extends TestCase {
     }
   }
 
+  String syn_topdir = "C:/data/ft/point/test/";
+  public void testSynth() throws IOException {
+
+    assert 3 == testPointDataset(syn_topdir + "point.ncml", FeatureType.POINT, false);
+    assert 3 == testPointDataset(syn_topdir + "pointUnlimited.ncml", FeatureType.POINT, false);
+    
+    assert 3 == testPointDataset(syn_topdir + "stationSingle.ncml", FeatureType.STATION, false);
+    assert 3 == testPointDataset(syn_topdir + "stationSingleWithZLevel.ncml", FeatureType.STATION, false);
+    assert 15 == testPointDataset(syn_topdir + "stationMultidim.ncml", FeatureType.STATION, false);
+    assert 15 == testPointDataset(syn_topdir + "stationMultidimTimeJoin.ncml", FeatureType.STATION, false);
+    assert 6 == testPointDataset(syn_topdir + "stationRaggedContig.ncml", FeatureType.STATION, false);
+    assert 6 == testPointDataset(syn_topdir + "stationRaggedIndex.ncml", FeatureType.STATION, false);
+
+    assert 10 == testPointDataset(syn_topdir + "trajSingle.ncml", FeatureType.TRAJECTORY, false);
+    assert 20 == testPointDataset(syn_topdir + "trajMultidim.ncml", FeatureType.TRAJECTORY, false);
+
+  }
+
+  public void testProblem() throws IOException {
+    testPointDataset(syn_topdir + "trajMultidim.ncml", FeatureType.TRAJECTORY, true);    
+  }
+
 
   public void testCF() throws IOException {
 
@@ -245,7 +267,7 @@ public class TestPointFeatureTypes extends TestCase {
     return count;
   }
 
-  private void testPointDataset(String location, FeatureType type, boolean show) throws IOException {
+  private int  testPointDataset(String location, FeatureType type, boolean show) throws IOException {
     System.out.printf("================ TestPointFeatureCollection read %s %n", location);
     long start = System.currentTimeMillis();
 
@@ -281,32 +303,35 @@ public class TestPointFeatureTypes extends TestCase {
     assert fdataset instanceof FeatureDatasetPoint;
     FeatureDatasetPoint fdpoint = (FeatureDatasetPoint) fdataset;
 
+    int count = 0;
     for (FeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
       assert (fc instanceof PointFeatureCollection) || (fc instanceof NestedPointFeatureCollection) : fc.getClass().getName();
 
       if (fc instanceof PointFeatureCollection) {
         PointFeatureCollection pfc = (PointFeatureCollection) fc;
-        int count = testPointFeatureCollection(pfc, show);
+        count = testPointFeatureCollection(pfc, show);
         System.out.println("PointFeatureCollection getData count= " + count + " size= " + pfc.size());
         assert count == pfc.size();
 
       } else if (fc instanceof StationTimeSeriesFeatureCollection) {
-        testStationFeatureCollection((StationTimeSeriesFeatureCollection) fc);
+        count = testStationFeatureCollection((StationTimeSeriesFeatureCollection) fc);
         //testNestedPointFeatureCollection((StationTimeSeriesFeatureCollection) fc, show);
 
       } else {
 
-        testNestedPointFeatureCollection((NestedPointFeatureCollection) fc, show);
+        count = testNestedPointFeatureCollection((NestedPointFeatureCollection) fc, show);
       }
     }
 
     fdataset.close();
     long took = System.currentTimeMillis() - start;
-    System.out.println(" took= " + took + " msec");
+    System.out.printf(" nobs=%d took= %d msec%n", count, took);
+
+    return count;
   }
 
   // loop through all PointFeatureCollection
-  void testNestedPointFeatureCollection(NestedPointFeatureCollection npfc, boolean show) throws IOException {
+  int testNestedPointFeatureCollection(NestedPointFeatureCollection npfc, boolean show) throws IOException {
     long start = System.currentTimeMillis();
     int count = 0;
     PointFeatureCollectionIterator iter = npfc.getPointFeatureCollectionIterator(-1);
@@ -317,6 +342,7 @@ public class TestPointFeatureTypes extends TestCase {
     long took = System.currentTimeMillis() - start;
     if (show)
       System.out.println(" testNestedPointFeatureCollection complete count= " + count + " full iter took= " + took + " msec");
+    return count;
   }
 
   int testPointFeatureCollection(PointFeatureCollection pfc, boolean show) throws IOException {
@@ -445,8 +471,8 @@ public class TestPointFeatureTypes extends TestCase {
 
   ////////////////////////////////////////////////////////////
 
-  void testStationFeatureCollection(StationTimeSeriesFeatureCollection sfc) throws IOException {
-    System.out.printf("Complete Iteration for %s %n", sfc.getName());
+  int testStationFeatureCollection(StationTimeSeriesFeatureCollection sfc) throws IOException {
+    System.out.printf("--------------------------\nComplete Iteration for %s %n", sfc.getName());
     int countAll = count(sfc);
 
     // try a subset
@@ -463,6 +489,8 @@ public class TestPointFeatureTypes extends TestCase {
     int countFlat = count(flatten);
 
     assert countFlat <= countAll;
+
+    return countAll;
   }
 
   int count(StationTimeSeriesFeatureCollection sfc) throws IOException {

@@ -544,13 +544,23 @@ public class NestedTable {
   }
 
   public void addParentJoin(Cursor cursor) throws IOException {
-    if (leaf.extraJoins != null) {
+    Table t = leaf;
+    int level = 0 ;
+    while (t != null) {
+      addParentJoin(t, level, cursor);
+      level++;
+      t = t.parent;
+    }
+  }
+
+  private void addParentJoin(Table t, int level, Cursor cursor) throws IOException {
+    if (t.extraJoins != null) {
       List<StructureData> sdata = new ArrayList<StructureData>(3);
-      sdata.add(cursor.tableData[0]);
+      sdata.add(cursor.tableData[level]);
       for (Join j : leaf.extraJoins) {
         sdata.add(j.getJoinData(cursor));
       }
-      cursor.tableData[0] = StructureDataFactory.make( sdata.toArray(new StructureData[ sdata.size()]));
+      cursor.tableData[level] = StructureDataFactory.make( sdata.toArray(new StructureData[ sdata.size()]));  // LOOK try to consolidate 
     }
   }
 
