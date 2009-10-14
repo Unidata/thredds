@@ -208,7 +208,7 @@
       <datasetFmrc name="NCEP-GFS-Global_2p5deg" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/GFS/Global_2p5deg">
         <metadata inherited="true">
           <documentation type="summary">NCEP GFS Model : AWIPS 228 (A) Grid. Global Lat/Lon grid.
-            Model runs are made at 0, 6, 12, and 18Z, with forecasts hourly from 22 to 32 hours, then every 12 hours from 192 to 384 hours (8 to 16 days).
+            Model runs are made at every 12 hours from 192 to 384 hours (8 to 16 days).
             Horizontal= 73 by 144 points, resolution 2.5 degree, Lat/Lon projection.
             Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure layers.
           </documentation>
