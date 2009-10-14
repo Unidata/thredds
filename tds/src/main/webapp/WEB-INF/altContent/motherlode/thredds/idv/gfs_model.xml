@@ -607,7 +607,7 @@
       <serviceName>all</serviceName>
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/GFS/Global_2p5deg/" xlink:title="Available Inventory" />
       <metadata inherited="true">
-        <documentation type="summary">NCEP GFS Model : AWIPS 228 (A) Grid. Global Lat/Lon grid. Model runs are made at 0, 6, 12, and 18Z, with forecasts hourly from 22 to 32 hours, the every 12 hours from 192 to 384 hours. Horizontal= 73 by 144 points, resolution 2.5 degree, Lat/Lon projection. Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure layers.</documentation>
+        <documentation type="summary">NCEP GFS Model : AWIPS 228 (A) Grid. Global Lat/Lon grid. Model runs are made at every 12 hours from 192 to 384 hours. Horizontal= 73 by 144 points, resolution 2.5 degree, Lat/Lon projection. Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure layers.</documentation>
         <geospatialCoverage zpositive="down">
           <northsouth>
             <start>-90.0</start>
