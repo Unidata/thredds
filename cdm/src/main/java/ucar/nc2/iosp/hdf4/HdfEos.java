@@ -402,6 +402,25 @@ public class HdfEos {
       }
     }
 
+    // get projection
+    String projS = null;
+    Element projElem = gridElem.getChild("Projection");
+    if (projElem != null)
+      projS = projElem.getText();
+    boolean isLatLon = "GCTP_GEO".equals(projS);
+
+    // look for XDim, YDim coordinate variables
+    if (isLatLon) {
+      for (Variable v : dataG.getVariables()) {
+        if (v.isCoordinateVariable()) {
+          if (v.getShortName().equals("YDim"))
+            v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
+          if (v.getShortName().equals("XDim"))
+            v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
+        }
+      }
+
+    }
     return FeatureType.GRID;
   }
 

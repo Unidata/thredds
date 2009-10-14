@@ -94,9 +94,8 @@ public class TestPointFeatureTypes extends TestCase {
     }
   }
 
-  String syn_topdir = "C:/data/ft/point/test/";
+  String syn_topdir = TestAll.cdmLocalTestDataDir + "/point/";
   public void testSynth() throws IOException {
-
     assert 3 == testPointDataset(syn_topdir + "point.ncml", FeatureType.POINT, false);
     assert 3 == testPointDataset(syn_topdir + "pointUnlimited.ncml", FeatureType.POINT, false);
     
@@ -109,13 +108,25 @@ public class TestPointFeatureTypes extends TestCase {
 
     assert 10 == testPointDataset(syn_topdir + "trajSingle.ncml", FeatureType.TRAJECTORY, false);
     assert 20 == testPointDataset(syn_topdir + "trajMultidim.ncml", FeatureType.TRAJECTORY, false);
+    assert 6 == testPointDataset(syn_topdir + "trajRaggedContig.ncml", FeatureType.TRAJECTORY, false);
+    assert 6 == testPointDataset(syn_topdir + "trajRaggedIndex.ncml", FeatureType.TRAJECTORY, false);
+
+    assert 13 ==  testPointDataset(syn_topdir + "profileSingle.ncml", FeatureType.PROFILE, false);
+    assert 12 ==  testPointDataset(syn_topdir + "profileSingleTimeJoin.ncml", FeatureType.PROFILE, false);
+    assert 50 ==  testPointDataset(syn_topdir + "profileMultidim.ncml", FeatureType.PROFILE, false);
+    assert 50 ==  testPointDataset(syn_topdir + "profileMultidimTimeJoin.ncml", FeatureType.PROFILE, false);
+    assert 50 ==  testPointDataset(syn_topdir + "profileMultidimZJoin.ncml", FeatureType.PROFILE, false);
+    assert 50 ==  testPointDataset(syn_topdir + "profileMultidimTimeZJoin.ncml", FeatureType.PROFILE, false);
+    assert 6 ==  testPointDataset(syn_topdir + "profileRaggedContig.ncml", FeatureType.PROFILE, false);
+    assert 6 ==  testPointDataset(syn_topdir + "profileRaggedContigTimeJoin.ncml", FeatureType.PROFILE, false);
+    assert 22 ==  testPointDataset(syn_topdir + "profileRaggedIndex.ncml", FeatureType.PROFILE, false);
+    assert 22 ==  testPointDataset(syn_topdir + "profileRaggedIndexTimeJoin.ncml", FeatureType.PROFILE, false);
 
   }
 
   public void testProblem() throws IOException {
-    testPointDataset(syn_topdir + "trajMultidim.ncml", FeatureType.TRAJECTORY, true);    
+    testPointDataset(syn_topdir + "profileRaggedContigTimeJoin.ncml", FeatureType.PROFILE, true);
   }
-
 
   public void testCF() throws IOException {
 
@@ -337,6 +348,8 @@ public class TestPointFeatureTypes extends TestCase {
     PointFeatureCollectionIterator iter = npfc.getPointFeatureCollectionIterator(-1);
     while (iter.hasNext()) {
       PointFeatureCollection pfc = iter.next();
+      if (show)
+        System.out.printf(" PointFeatureCollection=%s %n",pfc);
       count += testPointFeatureCollection(pfc, false);
     }
     long took = System.currentTimeMillis() - start;
@@ -473,7 +486,7 @@ public class TestPointFeatureTypes extends TestCase {
 
   int testStationFeatureCollection(StationTimeSeriesFeatureCollection sfc) throws IOException {
     System.out.printf("--------------------------\nComplete Iteration for %s %n", sfc.getName());
-    int countAll = count(sfc);
+    int countStns = countLocations(sfc);
 
     // try a subset
     LatLonRect bb = sfc.getBoundingBox();
@@ -481,19 +494,19 @@ public class TestPointFeatureTypes extends TestCase {
     LatLonRect bb2 = new LatLonRect(bb.getLowerLeftPoint(), bb.getHeight() / 2, bb.getWidth() / 2);
     System.out.println("Subset= " + bb2.toString2());
     StationTimeSeriesFeatureCollection sfcSub = sfc.subset(bb2);
-    int countSub = count(sfcSub);
-    assert countSub <= countAll;
+    int countSub = countLocations(sfcSub);
+    assert countSub <= countStns;
 
     System.out.println("Flatten= " + bb2.toString2());
     PointFeatureCollection flatten = sfc.flatten(bb2, null);
-    int countFlat = count(flatten);
+    int countFlat = countLocations(flatten);
+    assert countFlat <= countStns;
 
-    assert countFlat <= countAll;
-
-    return countAll;
+    flatten = sfc.flatten(null, null);
+    return countObs(flatten);
   }
 
-  int count(StationTimeSeriesFeatureCollection sfc) throws IOException {
+  int countLocations(StationTimeSeriesFeatureCollection sfc) throws IOException {
     System.out.printf(" Station List Size = %d %n", sfc.getStations().size());
 
     // check uniqueness
@@ -545,37 +558,37 @@ public class TestPointFeatureTypes extends TestCase {
 
     if (fc instanceof PointFeatureCollection) {
       PointFeatureCollection pfc = (PointFeatureCollection) fc;
-      count(pfc);
+      countLocations(pfc);
 
       LatLonRect bb = pfc.getBoundingBox();
       LatLonRect bb2 = new LatLonRect(bb.getLowerLeftPoint(), bb.getHeight() / 2, bb.getWidth() / 2);
       PointFeatureCollection subset = pfc.subset(bb2, null);
-      count(subset);
+      countLocations(subset);
 
     } else if (fc instanceof StationTimeSeriesFeatureCollection) {
       StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) fc;
       PointFeatureCollection pfcAll = sfc.flatten(null, null);
-      System.out.printf("Unique Locations all = %d %n", count(pfcAll));
+      System.out.printf("Unique Locations all = %d %n", countLocations(pfcAll));
 
       LatLonRect bb = sfc.getBoundingBox();
       assert bb != null;
       LatLonRect bb2 = new LatLonRect(bb.getLowerLeftPoint(), bb.getHeight() / 2, bb.getWidth() / 2);
       PointFeatureCollection pfcSub = sfc.flatten(bb2, null);
-      System.out.printf("Unique Locations sub1 = %d %n", count(pfcSub));
+      System.out.printf("Unique Locations sub1 = %d %n", countLocations(pfcSub));
 
       StationTimeSeriesFeatureCollection sfcSub = sfc.subset(bb2);
       PointFeatureCollection pfcSub2 = sfcSub.flatten(null, null);
-      System.out.printf("Unique Locations sub2 = %d %n", count(pfcSub2));
+      System.out.printf("Unique Locations sub2 = %d %n", countLocations(pfcSub2));
 
       // Dons
       sfc = sfc.subset(bb2);
       PointFeatureCollection subDon = sfc.flatten(bb2, null);
-      System.out.printf("Unique Locations subDon = %d %n", count(subDon));
+      System.out.printf("Unique Locations subDon = %d %n", countLocations(subDon));
     }
 
   }
 
-  int count(PointFeatureCollection pfc) throws IOException {
+  int countLocations(PointFeatureCollection pfc) throws IOException {
     int count = 0;
     Set<MyLocation> locs = new HashSet<MyLocation>(80000);
     pfc.resetIteration();
@@ -594,6 +607,16 @@ public class TestPointFeatureTypes extends TestCase {
     //always returns the same lat/lon/alt (of the first observation).
     //(pos was populated going through the PointFeatureIterator).
 
+  }
+
+  int countObs(PointFeatureCollection pfc) throws IOException {
+    int count = 0;
+    pfc.resetIteration();
+    while (pfc.hasNext()) {
+      PointFeature pf = pfc.next();
+      count++;
+    }
+    return count;
   }
 
   private class MyLocation {

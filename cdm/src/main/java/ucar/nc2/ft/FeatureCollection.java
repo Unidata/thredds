@@ -32,6 +32,8 @@
  */
 package ucar.nc2.ft;
 
+import ucar.nc2.units.DateRange;
+
 /**
  * A collection of FeatureTypes.
  * 

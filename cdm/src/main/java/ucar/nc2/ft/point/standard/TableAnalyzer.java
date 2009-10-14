@@ -279,15 +279,15 @@ public class TableAnalyzer {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
-  protected TableConfigurer tc;
-  protected NetcdfDataset ds;
-  protected Map<String, TableConfig> tableFind = new HashMap<String, TableConfig>();
-  protected Set<TableConfig> tableSet = new HashSet<TableConfig>();
+  private TableConfigurer tc;
+  private NetcdfDataset ds;
+  private Map<String, TableConfig> tableFind = new HashMap<String, TableConfig>();
+  private Set<TableConfig> tableSet = new HashSet<TableConfig>();
   //protected List<TableConfig.JoinConfig> joins = new ArrayList<TableConfig.JoinConfig>();
-  protected List<NestedTable> leaves = new ArrayList<NestedTable>();
-  protected FeatureType ft;
+  private List<NestedTable> leaves = new ArrayList<NestedTable>();
+  private FeatureType ft;
 
-  protected TableAnalyzer(NetcdfDataset ds, TableConfigurer tc) {
+  private TableAnalyzer(NetcdfDataset ds, TableConfigurer tc) {
     this.tc = tc;
     this.ds = ds;
 
@@ -332,17 +332,25 @@ public class TableAnalyzer {
     return ds;
   }
 
-  protected Formatter userAdvice = new Formatter();
-  protected Formatter errlog = new Formatter();
+  private Formatter userAdvice = new Formatter();
+  private Formatter errlog = new Formatter();
 
   public String getUserAdvice() {
     return userAdvice.toString();
   }
 
-  protected String conventionName;
+  public String getErrlog() {
+    return errlog.toString();
+  }
 
-  protected void setConventionUsed(String convName) {
+  private String conventionName;
+
+  private void setConventionUsed(String convName) {
     this.conventionName = convName;
+  }
+
+  private String getConventionUsed() {
+    return this.conventionName;
   }
 
   /////////////////////////////////////////////////////////
@@ -352,7 +360,7 @@ public class TableAnalyzer {
    * @param wantFeatureType want this FeatureType
    * @throws IOException on read error
    */
-  protected void analyze(FeatureType wantFeatureType) throws IOException {
+  private void analyze(FeatureType wantFeatureType) throws IOException {
     // for netcdf-3 files, convert record dimension to structure
     // LOOK may be problems when served via opendap
     boolean structAdded = (Boolean) ds.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
@@ -375,7 +383,7 @@ public class TableAnalyzer {
   }
 
   // no TableConfig was passed in - gotta wing it
-  protected void makeTablesDefault(boolean structAdded) throws IOException {
+  private void makeTablesDefault(boolean structAdded) throws IOException {
 
     // make Structures into a table
     List<Variable> vars = new ArrayList<Variable>(ds.getVariables());
@@ -439,7 +447,7 @@ public class TableAnalyzer {
 
   }
 
-  protected void findNestedStructures(Structure s, TableConfig parent) {
+  private void findNestedStructures(Structure s, TableConfig parent) {
     for (Variable v : s.getVariables()) {
       if (v instanceof Structure) {  // handles Sequences too
         TableConfig nestedTable = new TableConfig(Table.Type.NestedStructure, v.getName());
@@ -459,14 +467,14 @@ public class TableAnalyzer {
   }
 
 
-  protected void addTable(TableConfig t) {
+  private void addTable(TableConfig t) {
     tableFind.put(t.name, t);
     if (t.dim != null)
       tableFind.put(t.dim.getName(), t);
     tableSet.add(t);
   }
 
-  protected void addTableRecurse(TableConfig t) {
+  private void addTableRecurse(TableConfig t) {
     addTable(t);
     if (t.children != null) {
       for (TableConfig child : t.children)
@@ -474,7 +482,7 @@ public class TableAnalyzer {
     }
   }
 
-  protected List<Variable> getStructVars(List<Variable> vars, Dimension dim) {
+  private List<Variable> getStructVars(List<Variable> vars, Dimension dim) {
     List<Variable> structVars = new ArrayList<Variable>();
     for (Variable v : vars) {
       if (v.isScalar()) continue;
@@ -485,7 +493,7 @@ public class TableAnalyzer {
     return structVars;
   }
 
-  protected void makeNestedTables() {
+  private void makeNestedTables() {
     // We search among all the possible Tables in a dataset for joins, and coordinate
     // variables. Based on those, we form "interesting" sets and make them into NestedTables.
 
@@ -503,7 +511,7 @@ public class TableAnalyzer {
     } */
   }
 
-  protected void makeLeaves() {
+  private void makeLeaves() {
 
     // find the leaves
     for (TableConfig config : tableSet) {
@@ -520,7 +528,7 @@ public class TableAnalyzer {
   /////////////////////////////////////////////////////
   // utilities
 
-  protected Variable findVariableWithAttribute(List<Variable> list, String name, String value) {
+  private Variable findVariableWithAttribute(List<Variable> list, String name, String value) {
     for (Variable v : list) {
       if (ds.findAttValueIgnoreCase(v, name, "").equals(value))
         return v;
@@ -535,9 +543,9 @@ public class TableAnalyzer {
   /////////////////////////////////////////////////////
   // track station info
 
-  protected StationInfo stationInfo = new StationInfo();
+  private StationInfo stationInfo = new StationInfo();
 
-  StationInfo getStationInfo() {
+  private StationInfo getStationInfo() {
     return stationInfo;
   }
 

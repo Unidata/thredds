@@ -246,9 +246,9 @@ public class ToolsUI extends JPanel {
     ftTabPane.addTab("Grids", new JLabel("Grids"));
     ftTabPane.addTab("WMS", new JLabel("WMS"));
     ftTabPane.addTab("PointFeature", new JLabel("PointFeature"));
-    ftTabPane.addTab("PointObs", new JLabel("PointObs"));
-    ftTabPane.addTab("StationObs", new JLabel("StationObs"));
-    ftTabPane.addTab("Trajectory", new JLabel("Trajectory"));
+    //ftTabPane.addTab("PointObs", new JLabel("PointObs"));
+    //ftTabPane.addTab("StationObs", new JLabel("StationObs"));
+    //ftTabPane.addTab("Trajectory", new JLabel("Trajectory"));
     ftTabPane.addTab("Images", new JLabel("Images"));
     ftTabPane.addTab("Radial", new JLabel("Radial"));
     ftTabPane.addTab("StationRadial", new JLabel("StationRadial"));

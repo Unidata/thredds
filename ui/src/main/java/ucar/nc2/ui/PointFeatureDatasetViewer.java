@@ -647,14 +647,6 @@ public class PointFeatureDatasetViewer extends JPanel {
       return "latLon";
     }
 
-    public String getName() {
-      return s.getName();
-    }
-
-    public String getDescription() {
-      return s.getDescription();
-    }
-
     public int getNobs() {
       return npts;
     }
@@ -665,6 +657,15 @@ public class PointFeatureDatasetViewer extends JPanel {
 
     public String getWmoId() {
       return "";
+    }
+
+    // all the station dependent methods need to be overridden
+    public String getName() {
+      return s.getName();
+    }
+
+    public String getDescription() {
+      return s.getDescription();
     }
 
     public double getLatitude() {
@@ -746,12 +747,16 @@ public class PointFeatureDatasetViewer extends JPanel {
       return pf.getLocation().getAltitude();
     }
 
+    public LatLonPoint getLatLon() {
+      return pf.getLocation().getLatLon();
+    }
+
     public int compareTo(Station so) {
       return getName().compareTo(so.getName());
     }
 
     public boolean isMissing() {
-      return false;
+      return Double.isNaN(getLatitude());
     }
   }
 
@@ -763,12 +768,13 @@ public class PointFeatureDatasetViewer extends JPanel {
     public ProfileFeatureBean(ProfileFeature pfc) {
       this.pfc = pfc;
       try {
-        if (pfc.hasNext()) {
+        pfc.calcBounds();
+        if (pfc.hasNext())
           pf = pfc.next();
-        }
       } catch (IOException ioe) {
         log.warn("Trajectory empty ", ioe);
       }
+      pfc.finish();
       npts = pfc.size();
     }
 
@@ -802,6 +808,14 @@ public class PointFeatureDatasetViewer extends JPanel {
 
     public double getAltitude() {
       return pf.getLocation().getAltitude();
+    }
+
+    public LatLonPoint getLatLon() {
+      return pf.getLocation().getLatLon();
+    }
+
+    public boolean isMissing() {
+      return Double.isNaN(getLatitude());
     }
 
     public int compareTo(Station so) {

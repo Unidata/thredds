@@ -67,14 +67,12 @@ import java.util.*;
 public class FeatureDatasetPointXML {
   private FeatureDatasetPoint fdp;
   private String path;
-  private StationTimeSeriesFeatureCollection sobs;
+  //private PointFeatureCollection pfc;
+  //private NestedPointFeatureCollection pfc;
 
   public FeatureDatasetPointXML(FeatureDatasetPoint fdp, String path) {
     this.fdp = fdp;
     this.path = path;
-
-    List<FeatureCollection> list = fdp.getPointFeatureCollectionList();
-    this.sobs = (StationTimeSeriesFeatureCollection) list.get(0);
   }
 
   public String getCapabilities() {
@@ -109,6 +107,15 @@ public class FeatureDatasetPointXML {
    * @throws IOException on read error
    */
   public Document makeStationCollectionDocument(LatLonRect bb, String[] names) throws IOException {
+
+    List<FeatureCollection> list = fdp.getPointFeatureCollectionList();
+    FeatureCollection fc = (NestedPointFeatureCollection) list.get(0);
+
+    if (!(fc instanceof StationTimeSeriesFeatureCollection))
+      throw new UnsupportedOperationException( fc.getClass().getName()+" not a StationTimeSeriesFeatureCollection");
+
+    StationTimeSeriesFeatureCollection sobs = (StationTimeSeriesFeatureCollection) fc;
+
     Element rootElem = new Element("stationCollection");
     Document doc = new Document(rootElem);
 
@@ -162,7 +169,7 @@ public class FeatureDatasetPointXML {
     }
 
     // add lat/lon bounding box
-    LatLonRect bb = sobs.getBoundingBox();
+    LatLonRect bb = fdp.getBoundingBox();
     if (bb != null)
       rootElem.addContent(writeBoundingBox(bb));
 

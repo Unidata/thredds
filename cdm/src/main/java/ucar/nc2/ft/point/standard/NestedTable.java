@@ -103,8 +103,8 @@ public class NestedTable {
     while (t != null) {
       if (t.getFeatureType() != null) featureType = t.getFeatureType();
       t = t.parent;
-      if (!(t instanceof Table.TableTop)) // LOOK using nlevels is fishy
-        nlevels++;
+      // if (!(t instanceof Table.TableTop)) // LOOK using nlevels is fishy
+      nlevels++;
     }
 
     if (featureType == null) {
@@ -131,7 +131,7 @@ public class NestedTable {
       if (nlevels == 3) featureType = FeatureType.STATION_PROFILE;
     }
 
-    // check for singleton
+    /* check for singleton
     if (((nlevels == 1) && (featureType == FeatureType.STATION) || (featureType == FeatureType.PROFILE) || (featureType == FeatureType.TRAJECTORY)) ||
             ((nlevels == 2) && (featureType == FeatureType.STATION_PROFILE) || (featureType == FeatureType.SECTION))) {
 
@@ -142,7 +142,7 @@ public class NestedTable {
       root = Table.factory(ds, parentConfig);
 
       nlevels++;
-    }
+    } // */
   }
 
   Table getRoot() {
@@ -521,6 +521,7 @@ public class NestedTable {
 
   public String getFeatureName(StructureData sdata) {
     if (featureVariableName == null) return "unknown";
+    if (sdata == null) return "unknown";
     StructureMembers.Member m = sdata.findMember(featureVariableName);
     if (m == null) return "unknown";
     return sdata.getScalarString(m);
