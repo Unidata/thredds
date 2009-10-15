@@ -54,7 +54,7 @@ public abstract class StationProfileFeatureImpl extends OneNestedPointCollection
   protected DateUnit timeUnit;
   protected int timeSeriesNpts;
   protected Station s;
-  protected NestedPointFeatureCollectionIterator localIterator;
+  protected PointFeatureCollectionIterator localIterator;
 
   public StationProfileFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt, DateUnit timeUnit, int npts) {
     super( name, FeatureType.STATION_PROFILE);
@@ -116,7 +116,7 @@ public abstract class StationProfileFeatureImpl extends OneNestedPointCollection
   }
 
   public void resetIteration() throws IOException {
-    localIterator = getNestedPointFeatureCollectionIterator(-1);
+    localIterator = getPointFeatureCollectionIterator(-1);
   }
 
   public int compareTo(Station so) {

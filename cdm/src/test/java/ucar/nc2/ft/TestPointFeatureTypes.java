@@ -44,6 +44,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.*;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.TestAll;
+import ucar.nc2.ft.point.MultipleNestedPointCollectionImpl;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 import ucar.ma2.DataType;
@@ -98,7 +99,7 @@ public class TestPointFeatureTypes extends TestCase {
   public void testSynth() throws IOException {
     assert 3 == testPointDataset(syn_topdir + "point.ncml", FeatureType.POINT, false);
     assert 3 == testPointDataset(syn_topdir + "pointUnlimited.ncml", FeatureType.POINT, false);
-    
+
     assert 3 == testPointDataset(syn_topdir + "stationSingle.ncml", FeatureType.STATION, false);
     assert 3 == testPointDataset(syn_topdir + "stationSingleWithZLevel.ncml", FeatureType.STATION, false);
     assert 15 == testPointDataset(syn_topdir + "stationMultidim.ncml", FeatureType.STATION, false);
@@ -125,7 +126,7 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   public void testProblem() throws IOException {
-    testPointDataset(syn_topdir + "profileRaggedContigTimeJoin.ncml", FeatureType.PROFILE, true);
+    testPointDataset(syn_topdir + "stationProfileSingle.ncml", FeatureType.STATION_PROFILE, true);
   }
 
   public void testCF() throws IOException {
@@ -328,6 +329,10 @@ public class TestPointFeatureTypes extends TestCase {
         count = testStationFeatureCollection((StationTimeSeriesFeatureCollection) fc);
         //testNestedPointFeatureCollection((StationTimeSeriesFeatureCollection) fc, show);
 
+      } else if (fc instanceof StationProfileFeatureCollection) {
+        count = testStationProfileFeatureCollection((StationProfileFeatureCollection) fc, show);
+        //testNestedPointFeatureCollection((StationTimeSeriesFeatureCollection) fc, show);
+
       } else {
 
         count = testNestedPointFeatureCollection((NestedPointFeatureCollection) fc, show);
@@ -351,6 +356,28 @@ public class TestPointFeatureTypes extends TestCase {
       if (show)
         System.out.printf(" PointFeatureCollection=%s %n",pfc);
       count += testPointFeatureCollection(pfc, false);
+    }
+    long took = System.currentTimeMillis() - start;
+    if (show)
+      System.out.println(" testNestedPointFeatureCollection complete count= " + count + " full iter took= " + took + " msec");
+    return count;
+  }
+
+  // loop through all PointFeatureCollection
+  int testStationProfileFeatureCollection(StationProfileFeatureCollection stationProfileFeatureCollection, boolean show) throws IOException {
+    long start = System.currentTimeMillis();
+    int count = 0;
+    stationProfileFeatureCollection.resetIteration();
+    while (stationProfileFeatureCollection.hasNext()) {
+      ucar.nc2.ft.StationProfileFeature spf = stationProfileFeatureCollection.next();
+
+      spf.resetIteration();
+      while (spf.hasNext()) {
+        ucar.nc2.ft.ProfileFeature pf = spf.next();
+        if (show)
+          System.out.printf(" ProfileFeature=%s %n",pf);
+        count += testPointFeatureCollection(pf, false);
+      }
     }
     long took = System.currentTimeMillis() - start;
     if (show)

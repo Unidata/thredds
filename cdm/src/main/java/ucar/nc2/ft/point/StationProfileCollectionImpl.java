@@ -49,7 +49,7 @@ import java.io.IOException;
 public abstract class StationProfileCollectionImpl extends MultipleNestedPointCollectionImpl implements StationProfileFeatureCollection {
 
   protected StationHelper stationHelper;
-  protected PointFeatureCollectionIterator localIterator;
+  protected NestedPointFeatureCollectionIterator localIterator;
 
   public StationProfileCollectionImpl(String name) {
     super( name, FeatureType.STATION_PROFILE);
@@ -109,7 +109,7 @@ public abstract class StationProfileCollectionImpl extends MultipleNestedPointCo
   }
 
   public void resetIteration() throws IOException {
-    localIterator = getPointFeatureCollectionIterator(-1);
+    localIterator = getNestedPointFeatureCollectionIterator(-1);
   }
 
   public int compareTo(Station so) {

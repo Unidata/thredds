@@ -15,6 +15,7 @@ dl {margin: 10px 5px 5px 15px;)
 <h1>Netcdf-Java FAQ</h1>
 <hr />
 <ul>
+  <li><a href="#Arrays">Arrays</a></li>
   <li><a href="#Caching">Caching</a></li>
   <li><a href="#IOSP">IOSP</a></li>
   <li><a href="#Logging">Logging</a></li>
@@ -23,6 +24,15 @@ dl {margin: 10px 5px 5px 15px;)
   <li><a href="#Unsigned">Unsigned types</a></li>
   <li><a href="#Writing">Writing</a></li>
 </ul>
+<h3><a name="Arrays" id="Arrays"></a>Arrays</h3>
+<p><strong>Q: I want to read data from a NetcdfFile and  use another package to process the results, which doesnt use  ucar.ma2.Array. How can I get the data out of the Array object most efficiently?</strong></p>
+<blockquote>
+  <p>    The most efficient way is to use  this method on the Array class:</p>
+  <pre> public java.lang.Object get1DJavaArray(java.lang.Class wantType);</pre>
+  <p>which will give back the Java primitive array, without copying if possible. For example if you have a type double Array object:</p>
+  <pre> double[] ja = (double []) ma.get1DJavaArray( double.class);</pre>
+  <p>You then have to see if your chosen  package has a constructor that can wrap the Java array without copying it. You will also need the multidimensional shape information: <strong>int[] shape = ma.getShape().</strong></p>
+</blockquote>
 <h3><a name="Caching" id="Caching"></a>Caching</h3>
 <p><strong>Q: How do I use NetcdfFile object caching</strong>?</p>
 <blockquote>
