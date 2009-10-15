@@ -1210,6 +1210,10 @@ public class ForecastModelRunInventory {
     try {
       gds = ucar.nc2.dt.grid.GridDataset.open(ncfileLocation);
       fmr = new ForecastModelRunInventory(gds, null);
+    } catch (IOException ioe) {
+      if (debug)
+        ioe.printStackTrace();
+       return null;
     }  finally {
       if (gds != null) gds.close();
     }
