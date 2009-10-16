@@ -116,4 +116,12 @@ z is of shape 20x2x87, it should be 20x87x193.
 
   }
 
+
+  public static void main(String[] args) {
+    String s1 = "CoastWatch/MODSCW/closest_chlora/Mean/CB05/P2009190";
+    String s2 = "CoastWatch/MODSCW/closest_chlora/Mean/SE05/P2009190";
+    System.out.printf("s1 = %d s2 = %d%n", s1.hashCode(), s2.hashCode());
+
+  }
+
 }

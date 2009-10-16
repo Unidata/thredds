@@ -8,20 +8,20 @@
 <body>
 <h3>CF Encoding Table
 </h3>
-<table width="1557" height="758" border="1">
+<table width="1565" height="758" border="1">
   <tr>
-    <th width="97" scope="col">Type</th>
-    <th width="245" scope="col">single</th>
-    <th width="391" scope="col">multidim</th>
-    <th width="342" scope="col">ragged</th>
-    <th width="238" scope="col">flattened</th>
-    <th width="204" scope="col">Nested Table</th>
+    <th width="96" scope="col">Type</th>
+    <th width="244" scope="col">single</th>
+    <th width="390" scope="col">multidim</th>
+    <th width="344" scope="col">ragged</th>
+    <th width="237" scope="col">flattened</th>
+    <th width="214" scope="col">Nested Table</th>
   </tr>
   <tr>
     <td height="68"><strong>point</strong></td>
     <td>      <p align="center">N/A</p></td>
     <td>      <pre>data(obs)
-<strong>time,lat,lon,z</strong>(obs)</pre></td>
+<strong>time,lat,lon,</strong>z(obs)</pre></td>
     <td><div align="center">N/A</div></td>
     <td><div align="center">N/A</div></td>
     <td><pre>Table { 
@@ -33,18 +33,18 @@
     <td height="116"><strong>station</strong></td>
     <td>      <pre>data(time)
 <strong>time</strong>(time)
-scalar <strong>lat, lon, stn_alt</strong></pre></td>
-    <td>      <pre>data(station, obs)
-<strong>time</strong>(station, obs) | <strong>time</strong>(time)         
-<strong>lat,lon,stn_alt</strong>(station) </pre></td>
+scalar <strong>lat,lon</strong>,stn_alt,<strong>stn_id</strong></pre></td>
+    <td>      <pre>data(station,obs)
+<strong>time</strong>(station,obs) | <strong>time</strong>(time)         
+<strong>lat,lon</strong>,stn_alt,<strong>stn_id</strong>(station) </pre></td>
     <td>      <pre>data(obs)        
 <strong>time</strong>(obs)        
-<strong>lat,lon,stn_alt</strong>(station)        
-numObs(station) | stationIndex(obs) </pre></td>
+<strong>lat,lon</strong>,stn_alt<strong>,stn_id</strong>(station)        
+<strong>numObs</strong>(station) | <strong>stationIndex</strong>(obs) </pre></td>
     <td>      <pre>data(obs)
 <strong>time</strong>(obs)<strong>
-lat,lon,stn_alt</strong>(obs)
-stationId(obs)</pre></td>
+lat,lon</strong>,stn_alt(obs)
+<strong>stn_id</strong>(obs)</pre></td>
     <td><pre>Table {
   <strong>lat, lon, z;</strong>
   Table {
@@ -56,15 +56,18 @@ stationId(obs)</pre></td>
   <tr>
     <td height="100"><strong>trajectory</strong></td>
     <td>      <pre>data(obs)
-<strong>time</strong>,<strong>lat,lon,z</strong>(obs)      </pre></td>
+<strong>time</strong>,<strong>lat,lon</strong>,z(obs)
+scalar traj_id      </pre></td>
     <td>      <pre>data(traj,obs)<strong>
-time</strong>,<strong>lat,lon,z</strong>(traj, obs)     </pre>    </td>
+time</strong>,<strong>lat,lon</strong>,z(traj,obs)
+<strong>traj_id</strong>(traj)     </pre>    </td>
     <td>      <pre>data(obs)
-<strong>time</strong>,<strong>lat,lon,z</strong>(obs)
-numObs(traj) | trajIndex(obs)</pre></td>
+<strong>time</strong>,<strong>lat,lon</strong>,z(obs)
+<strong>numObs</strong>(traj) | <strong>trajIndex</strong>(obs)
+<strong>traj_id</strong>(traj)</pre></td>
     <td>      <pre>data(obs)<strong>
-time</strong>,<strong>lat,lon,z</strong>(obs)
-trajId(obs)</pre>    </td>
+time</strong>,<strong>lat,lon,</strong>z(obs)
+<strong>traj_id</strong>(obs)</pre>    </td>
     <td><pre>Table {
 <strong></strong>
   Table {
@@ -78,21 +81,21 @@ trajId(obs)</pre>    </td>
     <td>      <pre>data(z)<strong>
 time</strong>(z) | <strong>time
 </strong>scalar<strong> lat,lon
-</strong><strong>z</strong>(z)</pre>    </td>
-    <td>      <pre>data(profile, z)
-<strong>time</strong>(profile, z) | <strong>time</strong>(profile)
+z(</strong>z)</pre>    </td>
+    <td>      <pre>data(profile,z)
+<strong>time</strong>(profile,z) | <strong>time</strong>(profile)
 <strong>lat,lon</strong>(profile)
 <strong>alt</strong>(profile,z) | <strong>z</strong>(z)     </pre>    </td>
     <td>      <pre>data(obs)
 <strong>time</strong>(profile) | <strong>time</strong>(obs) <strong>
 lat,lon</strong>(profile)
 <strong>z</strong>(obs)
-numObs(profile) | profileIndex(obs)</pre>    </td>
+<strong>numObs</strong>(profile) | <strong>profileIndex</strong>(obs)</pre>    </td>
     <td>      <pre>data(obs)
-time(obs)<strong>
+<strong>time</strong>(obs)<strong>
 lat,lon</strong>(obs)
 <strong>z</strong>(obs)
-profileId(obs)</pre></td>
+<strong>prof_id</strong>(obs)</pre></td>
     <td><pre>Table {
   <strong>lat, lon, time;</strong>
   Table {
@@ -112,7 +115,7 @@ profileId(obs)</pre></td>
 lat,lon,stn_alt</strong>(station)
 <strong>alt</strong>(station, profile,z) | <strong>z</strong>(z)     </pre>    </td>
     <td>      <pre>data(obs)
-<strong>time</strong>( profile) | <strong>time</strong>(obs)
+<strong>time</strong>(profile) | <strong>time</strong>(obs)
 <strong>lat,lon</strong>,<strong>stn_alt</strong>(station)<strong>
 z</strong>(obs)
 numProfiles(station),numObs(profile) | 

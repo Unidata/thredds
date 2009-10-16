@@ -82,6 +82,7 @@ public class DatasetConstructor {
         if ((v instanceof Structure) && !(v instanceof StructureDS)) {
            v = new StructureDS(target, (Structure) v);
 
+          // else if (!(v instanceof VariableDS) && !(v instanceof StructureDS)) Doug Lindolm
         } else if (!(v instanceof VariableDS)) {
           v = new VariableDS(target, v, false);  // enhancement done by original variable, this is just to reparent to target dataset.
         }

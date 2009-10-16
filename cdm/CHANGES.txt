@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  7:
+  HdfEos: look for XDim/YDim coordinates with GCTP_GEO projection, these are lat/lon
   CPpointObs: clarify the variants.
   Variable.getNameAndDimensions() had bug when theres a '%' in the name.
   UAMIV iosp calls finish() not sync()
