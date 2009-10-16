@@ -28,10 +28,10 @@
     <values>10 20 30 5 50 560 6 7 8</values>
   </variable>
   
-  <variable name="time" shape="time" type="double">
+  <variable name="time" shape="time z" type="double">
     <attribute name="long_name" value="time" />
-    <attribute name="units" value="days since 1970-01-01 00:00:00" />
-    <values>0 31 59</values>
+    <attribute name="units" value="min since 1970-01-01 00:00:00" />
+    <values start="1" increment="3"/>
   </variable>
   
   <variable name="data" shape="time z" type="float">

@@ -449,7 +449,7 @@ public class NestedTable {
       StationConstruct sc = (StationConstruct) cursor.what;
       return sc.getStructureDataIterator(bufferSize);
     }
-    return root.getStructureDataIterator(cursor, bufferSize);
+    return leaf.parent.getStructureDataIterator(cursor, bufferSize);  // the middle table
   }
 
   public StructureDataIterator getStationProfileObsDataIterator(Cursor cursor, int bufferSize) throws IOException {
@@ -558,10 +558,10 @@ public class NestedTable {
     if (t.extraJoins != null) {
       List<StructureData> sdata = new ArrayList<StructureData>(3);
       sdata.add(cursor.tableData[level]);
-      for (Join j : leaf.extraJoins) {
+      for (Join j : t.extraJoins) {
         sdata.add(j.getJoinData(cursor));
       }
-      cursor.tableData[level] = StructureDataFactory.make( sdata.toArray(new StructureData[ sdata.size()]));  // LOOK try to consolidate 
+      cursor.tableData[level] = StructureDataFactory.make( sdata.toArray(new StructureData[ sdata.size()]));  // LOOK should try to consolidate
     }
   }
 

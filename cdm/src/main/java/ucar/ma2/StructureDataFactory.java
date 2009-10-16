@@ -67,12 +67,25 @@ public class StructureDataFactory {
 
   static public StructureData make(StructureData[] sdatas) {
     if (sdatas.length == 1) return sdatas[0];
-    StructureDataComposite result = new StructureDataComposite();
+
+    // look for sole
+    int count = 0;
+    StructureData result = null;
+    for (StructureData sdata : sdatas) {
+      if (sdata != null) {
+        count++;
+        result = sdata;
+      }
+    }
+    if (count == 1) return result;
+
+    // combine
+    StructureDataComposite result2 = new StructureDataComposite();
     for (StructureData sdata : sdatas) {
       if (sdata != null)
-        result.add(sdata);
+        result2.add(sdata);
     }
-    return result;
+    return result2;
   }
 
 

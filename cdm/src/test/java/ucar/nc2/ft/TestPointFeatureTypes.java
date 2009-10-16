@@ -123,10 +123,15 @@ public class TestPointFeatureTypes extends TestCase {
     assert 22 ==  testPointDataset(syn_topdir + "profileRaggedIndex.ncml", FeatureType.PROFILE, false);
     assert 22 ==  testPointDataset(syn_topdir + "profileRaggedIndexTimeJoin.ncml", FeatureType.PROFILE, false);
 
+    assert 9 == testPointDataset(syn_topdir + "stationProfileSingle.ncml", FeatureType.STATION_PROFILE, false);
+    assert 9 == testPointDataset(syn_topdir + "stationProfileSingleTimeJoin.ncml", FeatureType.STATION_PROFILE, false);
+
+
   }
 
   public void testProblem() throws IOException {
-    testPointDataset(syn_topdir + "stationProfileSingle.ncml", FeatureType.STATION_PROFILE, true);
+    //testPointDataset(syn_topdir + "stationSingle.ncml", FeatureType.STATION, true);
+    testPointDataset(syn_topdir + "stationProfileMultidim.ncml", FeatureType.STATION_PROFILE, true);
   }
 
   public void testCF() throws IOException {
@@ -641,6 +646,7 @@ public class TestPointFeatureTypes extends TestCase {
     pfc.resetIteration();
     while (pfc.hasNext()) {
       PointFeature pf = pfc.next();
+      StructureData sd = pf.getData();
       count++;
     }
     return count;

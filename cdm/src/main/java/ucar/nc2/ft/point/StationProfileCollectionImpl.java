@@ -55,30 +55,30 @@ public abstract class StationProfileCollectionImpl extends MultipleNestedPointCo
     super( name, FeatureType.STATION_PROFILE);
   }
 
-  protected abstract void initStations();
+  protected abstract void initStationHelper(); // allow station helper to be deffered initialization
 
   public List<Station> getStations() {
-    if (stationHelper == null) initStations();
+    if (stationHelper == null) initStationHelper();
     return stationHelper.getStations();
   }
 
   public List<Station> getStations(List<String> stnNames) {
-    if (stationHelper == null) initStations();
+    if (stationHelper == null) initStationHelper();
     return stationHelper.getStations(stnNames);
   }
 
   public List<Station> getStations(LatLonRect boundingBox) throws IOException {
-    if (stationHelper == null) initStations();
+    if (stationHelper == null) initStationHelper();
     return stationHelper.getStations(boundingBox);
   }
 
   public Station getStation(String name) {
-    if (stationHelper == null) initStations();
+    if (stationHelper == null) initStationHelper();
     return stationHelper.getStation(name);
   }
 
   public LatLonRect getBoundingBox() {
-    if (stationHelper == null) initStations();
+    if (stationHelper == null) initStationHelper();
     return stationHelper.getBoundingBox();
   }
 
@@ -128,7 +128,7 @@ public abstract class StationProfileCollectionImpl extends MultipleNestedPointCo
     }
 
       // already done
-    protected void initStations() {}
+    protected void initStationHelper() {}
 
     // use this only if it is multiply nested
     public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {

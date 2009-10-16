@@ -458,6 +458,8 @@ public class Structure extends Variable {
     public void setBufferSize(int bytes) {
       if (count > 0) return; // too late
       int structureSize = calcStructureSize();
+      if (structureSize <= 0)
+        structureSize = 1; // no members in the psuedo-structure LOOK is this ok?
       if (bytes <= 0)
         bytes = defaultBufferSize;
       readAtaTime = Math.max( 10, bytes / structureSize);

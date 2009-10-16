@@ -67,7 +67,27 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     this.timeUnit = timeUnit;
   }
 
-  protected void initStations() {
+  @Override
+  protected void initStationHelper() {
+    try {
+      stationHelper = new StationHelper();
+      int count = 0;
+      StructureDataIterator siter = ft.getStationDataIterator(-1);
+      while (siter.hasNext()) {
+        StructureData stationData = siter.next();
+        stationHelper.addStation(makeStation(stationData, count++));
+      }
+    } catch (IOException ioe) {
+      throw new RuntimeException(ioe);
+    }
+  }
+
+  private Station makeStation(StructureData stationData, int recnum) {
+    Station s = ft.makeStation(stationData);
+    return new StandardStationProfileFeature(s, stationData, recnum);
+  }
+
+  /* protected void initStations() {
     if (stationHelper != null) return;
     stationHelper = new StationHelper();
 
@@ -80,7 +100,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     } catch (IOException ioe) {
       throw new RuntimeException("Failed to init stations", ioe);
     }
-  }
+  } */
 
   // iterate over stations
   public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
@@ -143,8 +163,8 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
         cursorIter.tableData[1] = iter.next();
         cursorIter.parentIndex = 1; // LOOK ??
 
-        double time = ft.getObsTime(cursorIter);
-        return new StandardProfileFeature(s, timeUnit.makeDate(time), cursorIter);
+        // double time = ft.getObsTime(cursorIter);
+        return new StandardProfileFeature(s, cursorIter);
       }
 
       public void setBufferSize(int bytes) {
@@ -160,17 +180,17 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
   // one profile
   private class StandardProfileFeature extends ProfileFeatureImpl {
     private Cursor cursor;
-    private String desc;
+    //private String desc;
 
-    StandardProfileFeature(Station s, Date time, Cursor cursor) throws IOException {
-      super(dateFormatter.toDateTimeStringISO(time), s.getLatitude(), s.getLongitude(), -1);
+    StandardProfileFeature(Station s, Cursor cursor) throws IOException {
+      super(ft.getFeatureName(cursor.tableData[1]), s.getLatitude(), s.getLongitude(), -1);
       this.cursor = cursor;
-      this.desc = "time=" + time + "stn=" + s.getDescription();
+      //this.desc = "time=" + time + "stn=" + s.getDescription();
     }
 
-    public String getDescription() {
+    /* public String getDescription() {
       return desc;
-    }
+    } */
 
     // iterate over obs in the profile
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
