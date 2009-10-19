@@ -31,3 +31,5 @@ Disallow: /thredds/DLwriter/
 Disallow: /thredds/view/
 Disallow: /thredds/restrictedAccess/
 Disallow: /thredds/admin/
+Disallow: /oai/docs/
+Disallow: /dqcServlet/
