@@ -11,9 +11,9 @@ Changes in version 4.1:
   NetcdfDataset.enhance() now returns the CoordSysBuilder for debugging purposes
   fix NetdfDatasetInfo.getParseInfo()
   improve HDF-EOS processing.
-  add earth_radius parameter to AlbersEqualArea, LambertAzimuthEqualArea
+  add earth_radius parameter to AlbersEqualArea, LambertAzimuthEqualArea, LambertConformalConic
   refactor Earth, EarthEllipsoidal. Use inverse flattening as parameter, consolidate constructors, use proj4 calculations of ellipse parameters
-  add ucar.unidata.geoloc.projection.proj4 for jhlab java versions of proj4 code; AlbersEqualAreaEllipse.
+  add ucar.unidata.geoloc.projection.proj4 for jhlab java versions of proj4 code; AlbersEqualAreaEllipse, LambertConformalConicEllipse.
  6:
   nasty bug in Index.scalarIndexImmutable
   redo NCdumpW.writeNcML to use Formatter

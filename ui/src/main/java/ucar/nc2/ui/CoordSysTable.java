@@ -361,9 +361,8 @@ public class CoordSysTable extends JPanel {
     for (CoordinateSystem cs : csList) {
       buff.format("%s:", cs.getName());
       if (GridCoordSys.isGridCoordSys(buff, cs)) {
-        buff.format(" GRID ");
         GridCoordSys gcs = new GridCoordSys(cs, buff);
-        buff.format(gcs.isComplete(v) ? " COMPLETE" : " NOT COMPLETE");
+        buff.format("GRID %s%n", (gcs.isComplete(v) ? " COMPLETE" : " NOT COMPLETE"));
       } else {
         buff.format(" NOT GRID");
       }

@@ -76,13 +76,13 @@ public abstract class Table {
       case LinkedList: // linked list of child records, using indexes
         return new TableLinkedList(ds, config);
 
-      case MultiDimInner: // inner struct of a multdim
+      case MultiDimInner: // the inner struct of a 2D multdim(outer, inner)
         return new TableMultiDimInner(ds, config);
 
-      case MultiDimStructure: // a multidim structure
+      case MultiDimStructure: // the outer struct of a multidim structure
         return new TableMultiDimStructure(ds, config);
 
-      case MultiDimStructurePsuedo: // a multidim structure
+      case MultiDimStructurePsuedo: // the outer struct of a multidim psuedostructure
         return new TableMultiDimStructurePsuedo(ds, config);
 
       case NestedStructure: // Structure or Sequence is nested in the parent
@@ -457,7 +457,7 @@ public abstract class Table {
   ///////////////////////////////////////////////////////
 
   /**
-   * A collection of Multdimensional Variables:
+   * A collection of Multidimensional Variables:
    * <p/>
    * Variable stn(outDim)
    * Variable v1(outDim, innerDim, ...)
@@ -466,34 +466,34 @@ public abstract class Table {
    * can be thought of as a structure:
    * <p/>
    * Structure {
-   * stn;
-   * v1(innerDim, ...)
-   * v2(innerDim);
+   *  stn;
+   *  v1(innerDim, ...)
+   *  v2(innerDim);
    * } so(outerDim);
    * <p/>
    * and as nested structures:
    * <p/>
    * Structure {
-   * stn;
-   * Structure {
-   * v1(...),
-   * v2
-   * } si(innerDim);
+   *  stn;
+   *  Structure {
+   *   v1(...),
+   *   v2
+   *  } si(innerDim);
    * } so(outerDim);
    * <p/>
    * 1) When outerDim is the record variable, (ie it really is a structure) it makes sense to read the entire record at once:
    * <p/>
    * Structure {
-   * v1(innerDim, ...)
-   * v2(innerDim);
-   * stn;
+   *  v1(innerDim, ...)
+   *  v2(innerDim);
+   *  stn;
    * } so(outerDim);
    * <p/>
    * and return the StructureData with the inner variables removed:
    * <p/>
    * StructureData {
-   * stn1;
-   * stn2
+   *  stn1;
+   *  stn2
    * } so(outerDim);
    * <p/>
    * LOOK (This may be hard, when is subset done ?? since inner need access to other members)
@@ -501,18 +501,18 @@ public abstract class Table {
    * And for the inner iterator, given the original StructureData for outerDim=fixed
    * <p/>
    * StructureData {
-   * v1(innerDim, ...)
-   * v2(innerDim);
-   * stn;
+   *  v1(innerDim, ...)
+   *  v2(innerDim);
+   *  stn;
    * } so(outerDim=fixed);
    * <p/>
    * rearrange it into an ArrayStructure:
    * <p/>
    * ArrayStructure(innerDim) {
-   * StructureData {
-   * v1(...);
-   * v2;
-   * }
+   *  StructureData {
+   *   v1(...);
+   *   v2;
+   *  }
    * }
    * <p/>
    * Use Table types MultdimOuter, MultidimInner for this case
@@ -658,7 +658,7 @@ public abstract class Table {
         int count = 1;
         while (count++ < struct.getRank()) // handles multidim case 
           section.appendRange(null);
-        ArrayStructure data = (ArrayStructure) struct.read(section);
+        ArrayStructure data = (ArrayStructure) struct.read(section); // read all the data for a fixed outer index
         return data.getStructureDataIterator();
       } catch (InvalidRangeException e) {
         throw new IllegalStateException(e);
