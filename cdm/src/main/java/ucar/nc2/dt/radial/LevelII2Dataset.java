@@ -371,7 +371,10 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
           
             int[] shape1 = v.getShape();
             int[] shape2 = v0.getShape();
-            int[] shape = {shape2[0], shape1[1]*stride[1], shape1[2]*stride[2]};
+            int shp1 = (shape1[1]*stride[1] > shape2[1]) ? shape2[1] : shape1[1]*stride[1];
+            int shp2 = (shape1[2]*stride[2] > shape2[2]) ? shape2[2] : shape1[2]*stride[2];
+            
+            int[] shape = {shape2[0], shp1, shp2};
             int [] origin = {0, 0, 0};
              Section section = null;
 
@@ -986,7 +989,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
 
 
   public static void main(String args[]) throws Exception, IOException, InstantiationException, IllegalAccessException {
-   String fileIn = "/home/yuanho/Desktop/idv/dorade/KATX_20040113_0107";
+   String fileIn = "/home/yuanho/Download/KCLX_20091019_2021";
    // String fileIn ="/upc/share/testdata/radar/NOP3_20071112_1633";
     //RadialDatasetSweepFactory datasetFactory = new RadialDatasetSweepFactory();
     //RadialDatasetSweep rds = datasetFactory.open(fileIn, null);
@@ -1002,6 +1005,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
     }
     List rvars = rds.getDataVariables();
     RadialDatasetSweep.RadialVariable vDM = (RadialDatasetSweep.RadialVariable) rds.getDataVariable("Reflectivity");
+    vDM.readAllData();
     testRadialVariable(vDM);
     for (int i = 0; i < rvars.size(); i++) {
       RadialDatasetSweep.RadialVariable rv = (RadialDatasetSweep.RadialVariable) rvars.get(i);
