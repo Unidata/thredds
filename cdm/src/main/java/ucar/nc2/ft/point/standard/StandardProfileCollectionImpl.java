@@ -44,6 +44,7 @@ import ucar.unidata.geoloc.LatLonRect;
 import java.io.IOException;
 
 /**
+ * Nested Table implementation of ProfileCollection
  * @author caron
  * @since Jan 20, 2009
  */
@@ -62,7 +63,7 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
   }
 
   public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-    return new ProfileIterator( ft.getFeatureDataIterator(bufferSize));
+    return new ProfileIterator( ft.getRootFeatureDataIterator(bufferSize));
   }
 
   private ProfileIterator localIterator = null;
@@ -120,7 +121,7 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       Cursor cursorIter = cursor.copy();
-      StructureDataIterator siter = ft.getFeatureObsDataIterator( cursorIter, bufferSize);
+      StructureDataIterator siter = ft.getLeafFeatureDataIterator( cursorIter, bufferSize);
       StandardPointFeatureIterator iter = new StandardPointFeatureIterator(ft, timeUnit, siter, cursorIter);
       if ((boundingBox == null) || (dateRange == null) || (npts < 0))
         iter.setCalculateBounds(this);

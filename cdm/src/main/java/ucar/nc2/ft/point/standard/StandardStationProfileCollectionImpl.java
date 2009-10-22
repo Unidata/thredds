@@ -59,7 +59,6 @@ import java.util.List;
 public class StandardStationProfileCollectionImpl extends StationProfileCollectionImpl {
   private DateUnit timeUnit;
   private NestedTable ft;
-  private DateFormatter dateFormatter = new DateFormatter();
 
   StandardStationProfileCollectionImpl(NestedTable ft, DateUnit timeUnit) throws IOException {
     super(ft.getName());
@@ -103,15 +102,19 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
   } */
 
   // iterate over stations
+
   public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
     return new NestedPointFeatureCollectionIterator() {
       private Iterator iter = getStations().iterator();
+
       public boolean hasNext() throws IOException {
         return iter.hasNext();
       }
+
       public NestedPointFeatureCollection next() throws IOException {
         return (StandardStationProfileFeature) iter.next();
       }
+
       public void setBufferSize(int bytes) {
       }
     };
@@ -171,8 +174,8 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
         iter.setBufferSize(bytes);
       }
 
-    public void finish() {
-    }
+      public void finish() {
+      }
 
     }
   }
@@ -193,6 +196,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     } */
 
     // iterate over obs in the profile
+
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       StructureDataIterator structIter = ft.getStationProfileObsDataIterator(cursor, bufferSize);
       StandardPointFeatureIterator iter = new StandardPointFeatureIterator(ft, timeUnit, structIter, cursor.copy());

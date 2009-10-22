@@ -330,7 +330,7 @@ public class StructureMembers {
 
     /**
      * Set the data array. Used for implementation, DO NOT USE DIRECTLY!
-     * @param data set to this value
+     * @param data set to this Array. must not be a logical view
      */
     public void setDataArray(Array data) {
       this.dataArray = data;

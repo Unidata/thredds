@@ -33,6 +33,8 @@
 
 package ucar.nc2.ft;
 
+import java.io.IOException;
+
 /**
  * A collection of profiles which originate along a trajectory.
  *
@@ -45,6 +47,27 @@ public interface SectionFeature extends NestedPointFeatureCollection {
    * The number of profiles along the trajectory.
    * @return number of profiles along the trajectory.
    */
-  
   public int size();
+
+  /**
+   * Use the internal iterator to check if there is another ProfileFeature in the iteration.
+   * @return true is there is another ProfileFeature in the iteration.
+   * @throws java.io.IOException on read error
+   */
+  public boolean hasNext() throws java.io.IOException;
+
+  /**
+   * Use the internal iterator to get the next ProfileFeature in the iteration.
+   * You must call hasNext() before you call this.
+   * @return the next ProfileFeature in the iteration
+   * @throws java.io.IOException on read error
+   */
+  public ProfileFeature next() throws java.io.IOException;
+
+  /**
+   * Reset the internal iterator for another iteration over the ProfileFeature in this Collection.
+   * @throws java.io.IOException on read error
+   */
+  public void resetIteration() throws IOException;
+
 }

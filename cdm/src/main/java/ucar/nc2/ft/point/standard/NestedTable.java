@@ -430,17 +430,17 @@ public class NestedTable {
     return siter;
   }
 
-  public StructureDataIterator getStationObsDataIterator(Cursor cursor, int bufferSize) throws IOException {
-    return leaf.getStructureDataIterator(cursor, bufferSize);
-  }
-
-  // Trajectory, Profile
-  public StructureDataIterator getFeatureDataIterator(int bufferSize) throws IOException {
+  // Trajectory, Profile, Section
+  public StructureDataIterator getRootFeatureDataIterator(int bufferSize) throws IOException {
     return root.getStructureDataIterator(null, bufferSize);
   }
 
-  public StructureDataIterator getFeatureObsDataIterator(Cursor cursor, int bufferSize) throws IOException {
+  public StructureDataIterator getLeafFeatureDataIterator(Cursor cursor, int bufferSize) throws IOException {
     return leaf.getStructureDataIterator(cursor, bufferSize);
+  }
+
+  public StructureDataIterator getMiddleFeatureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+    return leaf.parent.getStructureDataIterator(cursor, bufferSize);  // the middle table
   }
 
   // Station Profile

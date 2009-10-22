@@ -45,7 +45,7 @@ import java.io.IOException;
 
 /**
  * Abstract superclass for implementations of StationProfileFeature.
- * Subclass must implement getNestedPointFeatureCollectionIterator();
+ * Subclass must implement getPointFeatureCollectionIterator();
  *
  * @author caron
  * @since Feb 29, 2008

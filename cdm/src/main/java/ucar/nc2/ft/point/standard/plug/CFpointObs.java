@@ -423,40 +423,39 @@ public class CFpointObs extends TableConfigurerImpl {
       case raggedContiguous: {
         zDim = z.getDimension(0);
 
-        Variable numProfiles = findVariableWithStandardNameAndDimension(ds, RAGGED_ROWSIZE, stationDim, errlog);
-        if (numProfiles == null) {
-          errlog.format("stationProfile numProfiles: must have a ragged_rowSize variable with station dimension %s%n", stationDim);
+        Variable stationIndex = findVariableWithStandardNameAndNotDimension(ds, RAGGED_PARENTINDEX, stationDim, errlog);
+        if (stationIndex == null) {
+          errlog.format("stationProfile stationIndex: must have a ragged_parentIndex variable with profile dimension%n");
           return null;
         }
-        if (numProfiles.getRank() != 1) {
-          errlog.format("stationProfile numProfiles: %s variable must be rank 1%n", numProfiles.getName());
+        if (stationIndex.getRank() != 1) {
+          errlog.format("stationProfile stationIndex: %s variable must be rank 1%n", stationIndex.getName());
           return null;
         }
+        profileDim = stationIndex.getDimension(0);
 
-        Variable numObs = findVariableWithStandardNameAndNotDimension(ds, RAGGED_ROWSIZE, stationDim, errlog);
+        Variable numObs = findVariableWithStandardNameAndDimension(ds, RAGGED_ROWSIZE, profileDim, errlog);
         if (numObs == null) {
-          errlog.format("stationProfile numObs: must have a ragged_rowSize variable for observations%n");
+          errlog.format("stationProfile numObs: must have a ragged_rowSize variable with profile dimension %s%n", profileDim);
           return null;
         }
         if (numObs.getRank() != 1) {
           errlog.format("stationProfile numObs: %s variable for observations must be rank 1%n", numObs.getName());
           return null;
         }
-        profileDim = numObs.getDimension(0);
-
         if (profileDim.equals(zDim)) {
-          errlog.format("stationProfile numObs (%s) must have profile dimension, not obs dimension %s%n", numObs.getNameAndDimensions(), zDim);
+          errlog.format("stationProfile profile dimension %s cannot be obs dimension %s%n", profileDim, zDim);
           return null;
         }
 
-        TableConfig profileTable = makeMiddleTable(ds, stationTable, profileDim, errlog);
+        TableConfig profileTable = makeRaggedIndex(ds, profileDim, errlog);
         stationTable.addChild(profileTable);
-        TableConfig zTable = makeMultidimInner(ds, stationTable, zDim, errlog);
+        TableConfig zTable = makeRaggedContiguous(ds, profileTable, zDim, errlog);
         profileTable.addChild(zTable);
         break;
       }
 
-      case raggedIndex: {
+      case raggedIndex: {  // NOT USED
         zDim = z.getDimension(0);
 
         if (time.getRank() != 1) {
@@ -498,9 +497,160 @@ public class CFpointObs extends TableConfigurerImpl {
     return stationTable;
   }
 
-  private TableConfig getSectionConfig(NetcdfDataset ds, Formatter errlog) {
-    return null;
+   private TableConfig getSectionConfig(NetcdfDataset ds, Formatter errlog) throws IOException {
+    EncodingInfo info = identifyEncoding(ds, CF.FeatureType.section, errlog);
+    if (info == null) return null;
+
+    TableConfig parentTable = makeParentTable(ds, FeatureType.SECTION, info, errlog);
+    if (parentTable == null) return null;
+
+    Dimension sectionDim = parentTable.dim;
+    Dimension profileDim = null;
+    Dimension zDim = null;
+
+    Variable time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
+    if (time.getRank() == 0) {
+      errlog.format("section cannot have a scalar time coordinate%n");
+      return null;
+    }
+
+    // find the non-station altitude
+    Variable z = findZAxisNotStationAlt(ds);
+    if (z == null) {
+      errlog.format("section must have a z coordinate%n");
+      return null;
+    }
+    if (z.getRank() == 0) {
+      errlog.format("section cannot have a scalar z coordinate%n");
+      return null;
+    }
+
+    switch (info.encoding) {
+      case single: {
+        assert ((time.getRank() >= 1) && (time.getRank() <= 2)) : "time must be rank 1 or 2";
+        assert ((z.getRank() >= 1) && (z.getRank() <= 2)) : "z must be rank 1 or 2";
+
+        if (time.getRank() == 2) {
+          if (z.getRank() == 2)  // 2d time, 2d z
+            assert time.getDimensions().equals(z.getDimensions()) : "rank-2 time and z dimensions must be the same";
+          else  // 2d time, 1d z
+            assert time.getDimension(1).equals(z.getDimension(0)) : "rank-2 time must have z inner dimension";
+          profileDim = time.getDimension(0);
+          zDim = time.getDimension(1);
+
+        } else { // 1d time
+          if (z.getRank() == 2) { // 1d time, 2d z
+            assert z.getDimension(0).equals(time.getDimension(0)) : "rank-2 z must have time outer dimension";
+            profileDim = z.getDimension(0);
+            zDim = z.getDimension(1);
+          } else { // 1d time, 1d z
+            assert !time.getDimension(0).equals(z.getDimension(0)) : "time and z dimensions must be different";
+            profileDim = time.getDimension(0);
+            zDim = z.getDimension(0);
+          }
+        }
+        // make profile table
+        TableConfig profileTable = makeParentTable(ds, FeatureType.PROFILE, new EncodingInfo(Encoding.multidim, profileDim), errlog);
+        if (profileTable == null) return null;
+        if (time.getRank() == 1) // join time(time)
+          profileTable.addJoin(new JoinArray(time, JoinArray.Type.raw, 0));
+        parentTable.addChild(profileTable);
+
+        // make the inner (z) table
+        TableConfig zTable = makeMultidimInner(ds, profileTable, zDim, errlog);
+        if (z.getRank() == 1) // join z(z)
+          zTable.addJoin(new JoinArray(z, JoinArray.Type.raw, 0));
+        profileTable.addChild(zTable);
+
+        break;
+      }
+
+      case multidim: {
+        assert ((time.getRank() >= 2) && (time.getRank() <= 3)) : "time must be rank 2 or 3";
+        assert ((z.getRank() == 1) || (z.getRank() == 3)) : "z must be rank 1 or 3";
+
+        if (time.getRank() == 3) {
+          if (z.getRank() == 3)  // 3d time, 3d z
+            assert time.getDimensions().equals(z.getDimensions()) : "rank-3 time and z dimensions must be the same";
+          else  // 3d time, 1d z
+            assert time.getDimension(2).equals(z.getDimension(0)) : "rank-3 time must have z inner dimension";
+          profileDim = time.getDimension(1);
+          zDim = time.getDimension(2);
+
+        } else { // 2d time
+          if (z.getRank() == 3) { // 2d time, 3d z
+            assert z.getDimension(1).equals(time.getDimension(1)) : "rank-2 time must have time inner dimension";
+            profileDim = z.getDimension(1);
+            zDim = z.getDimension(2);
+          } else { // 2d time, 1d z
+            assert !time.getDimension(0).equals(z.getDimension(0)) : "time and z dimensions must be different";
+            assert !time.getDimension(1).equals(z.getDimension(0)) : "time and z dimensions must be different";
+            profileDim = time.getDimension(1);
+            zDim = z.getDimension(0);
+          }
+        }
+
+        // make profile table
+        //   private TableConfig makeMultidimInner(NetcdfDataset ds, TableConfig parentTable, Dimension obsDim, Formatter errlog) throws IOException {
+
+        TableConfig profileTable = makeMultidimInner(ds, parentTable, profileDim, errlog);
+        if (profileTable == null) return null;
+        parentTable.addChild(profileTable);
+
+        // make the inner (z) table
+        TableConfig zTable = makeMultidimInner3D(ds, parentTable, profileTable, zDim, errlog);
+        if (z.getRank() == 1) // join z(z)
+          zTable.addJoin(new JoinArray(z, JoinArray.Type.raw, 0));
+        profileTable.addChild(zTable);
+        break;
+      }
+
+      case raggedContiguous: {
+        zDim = z.getDimension(0);
+
+        Variable stationIndex = findVariableWithStandardNameAndNotDimension(ds, RAGGED_PARENTINDEX, sectionDim, errlog);
+        if (stationIndex == null) {
+          errlog.format("section stationIndex: must have a ragged_parentIndex variable with profile dimension%n");
+          return null;
+        }
+        if (stationIndex.getRank() != 1) {
+          errlog.format("section stationIndex: %s variable must be rank 1%n", stationIndex.getName());
+          return null;
+        }
+        profileDim = stationIndex.getDimension(0);
+
+        Variable numObs = findVariableWithStandardNameAndDimension(ds, RAGGED_ROWSIZE, profileDim, errlog);
+        if (numObs == null) {
+          errlog.format("section numObs: must have a ragged_rowSize variable with profile dimension %s%n", profileDim);
+          return null;
+        }
+        if (numObs.getRank() != 1) {
+          errlog.format("section numObs: %s variable for observations must be rank 1%n", numObs.getName());
+          return null;
+        }
+        if (profileDim.equals(zDim)) {
+          errlog.format("section profile dimension %s cannot be obs dimension %s%n", profileDim, zDim);
+          return null;
+        }
+
+        TableConfig profileTable = makeRaggedIndex(ds, profileDim, errlog);
+        parentTable.addChild(profileTable);
+        TableConfig zTable = makeRaggedContiguous(ds, profileTable, zDim, errlog);
+        profileTable.addChild(zTable);
+        break;
+      }
+
+      case raggedIndex: {
+        throw new UnsupportedOperationException("CFpointObs: section raggedIndex encoding");
+      }
+
+      case flat:
+        throw new UnsupportedOperationException("CFpointObs: section flat encoding");
+    }
+
+    return parentTable;
   }
+
 
   /////////////////////////////////////////////////////////////////////
 
@@ -751,17 +901,17 @@ public class CFpointObs extends TableConfigurerImpl {
 
   /////////////////////////////////////////////////////////////////////////////////
 
-  private TableConfig makeRaggedContiguous(NetcdfDataset ds, TableConfig parentTable, Dimension obsDim, Formatter errlog) throws IOException {
-    TableConfig obsTable = new TableConfig(Table.Type.Contiguous, obsDim.getName());
-    obsTable.dim = obsDim;
+  private TableConfig makeRaggedContiguous(NetcdfDataset ds, TableConfig parentTable, Dimension childDim, Formatter errlog) throws IOException {
+    TableConfig obsTable = new TableConfig(Table.Type.Contiguous, childDim.getName());
+    obsTable.dim = childDim;
 
-    obsTable.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, obsDim);
-    obsTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, obsDim);
-    obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Height, obsDim);
-    obsTable.time = matchAxisTypeAndDimension(ds, AxisType.Time, obsDim);
+    obsTable.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, childDim);
+    obsTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, childDim);
+    obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Height, childDim);
+    obsTable.time = matchAxisTypeAndDimension(ds, AxisType.Time, childDim);
 
-    boolean obsIsStruct = Evaluator.hasRecordStructure(ds) && obsDim.isUnlimited();
-    obsTable.structName = obsIsStruct ? "record" : obsDim.getName();
+    boolean obsIsStruct = Evaluator.hasRecordStructure(ds) && childDim.isUnlimited();
+    obsTable.structName = obsIsStruct ? "record" : childDim.getName();
     obsTable.structureType = obsIsStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
 
     obsTable.numRecords = findNameVariableWithStandardNameAndDimension(ds, RAGGED_ROWSIZE, parentTable.dim, errlog);
@@ -787,20 +937,20 @@ public class CFpointObs extends TableConfigurerImpl {
     return obsTable;
   }
 
-  private TableConfig makeRaggedIndex(NetcdfDataset ds, Dimension obsDim, Formatter errlog) throws IOException {
-    TableConfig obsTable = new TableConfig(Table.Type.ParentIndex, obsDim.getName());
-    obsTable.dim = obsDim;
+  private TableConfig makeRaggedIndex(NetcdfDataset ds, Dimension childDim, Formatter errlog) throws IOException {
+    TableConfig obsTable = new TableConfig(Table.Type.ParentIndex, childDim.getName());
+    obsTable.dim = childDim;
 
-    obsTable.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, obsDim);
-    obsTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, obsDim);
-    obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Height, obsDim);
-    obsTable.time = matchAxisTypeAndDimension(ds, AxisType.Time, obsDim);
+    obsTable.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, childDim);
+    obsTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, childDim);
+    obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Height, childDim);
+    obsTable.time = matchAxisTypeAndDimension(ds, AxisType.Time, childDim);
 
-    boolean obsIsStruct = Evaluator.hasRecordStructure(ds) && obsDim.isUnlimited();
-    obsTable.structName = obsIsStruct ? "record" : obsDim.getName();
+    boolean obsIsStruct = Evaluator.hasRecordStructure(ds) && childDim.isUnlimited();
+    obsTable.structName = obsIsStruct ? "record" : childDim.getName();
     obsTable.structureType = obsIsStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
 
-    obsTable.parentIndex = findNameVariableWithStandardNameAndDimension(ds, RAGGED_PARENTINDEX, obsDim, errlog);
+    obsTable.parentIndex = findNameVariableWithStandardNameAndDimension(ds, RAGGED_PARENTINDEX, childDim, errlog);
     if (null == obsTable.parentIndex)
       return null;
 

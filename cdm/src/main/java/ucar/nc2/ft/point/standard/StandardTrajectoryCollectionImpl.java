@@ -63,7 +63,7 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
   }
 
   public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-    return new TrajIterator( ft.getFeatureDataIterator(bufferSize));
+    return new TrajIterator( ft.getRootFeatureDataIterator(bufferSize));
   }
 
   private TrajIterator localIterator = null;
@@ -123,7 +123,7 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
       cursor.recnum[1] = recno;
       cursor.tableData[1] = trajData;
       cursor.parentIndex = 1; // LOOK ?
-      StructureDataIterator siter = ft.getFeatureObsDataIterator( cursor, bufferSize);
+      StructureDataIterator siter = ft.getLeafFeatureDataIterator( cursor, bufferSize);
       StandardPointFeatureIterator iter = new StandardPointFeatureIterator(ft, timeUnit, siter, cursor);
       if ((boundingBox == null) || (dateRange == null) || (npts < 0))
         iter.setCalculateBounds(this);

@@ -134,10 +134,13 @@ public class TestPointFeatureTypes extends TestCase {
     assert 24 == testPointDataset(syn_topdir + "stationProfileMultidimJoinZ.ncml", FeatureType.STATION_PROFILE, false);
     assert 18 == testPointDataset(syn_topdir + "stationProfileMultidimJoinTime.ncml", FeatureType.STATION_PROFILE, false);
     assert 36 == testPointDataset(syn_topdir + "stationProfileMultidimJoinTimeAndZ.ncml", FeatureType.STATION_PROFILE, false);
+    assert 14 == testPointDataset(syn_topdir + "stationProfileRagged.ncml", FeatureType.STATION_PROFILE, false);
+    assert 14 == testPointDataset(syn_topdir + "stationProfileRaggedJoinTime.ncml", FeatureType.STATION_PROFILE, false);
+
   }
 
   public void testProblem() throws IOException {
-    testPointDataset(syn_topdir + "stationProfileRaggedContig.ncml", FeatureType.STATION_PROFILE, true);
+    testPointDataset(syn_topdir + "sectionMultidim.ncml", FeatureType.SECTION, true);
   }
 
   public void testCF() throws IOException {
@@ -344,6 +347,9 @@ public class TestPointFeatureTypes extends TestCase {
         count = testStationProfileFeatureCollection((StationProfileFeatureCollection) fc, show);
         if (showStructureData) showStructureData((StationProfileFeatureCollection) fc );
 
+      } else if (fc instanceof SectionFeatureCollection) {
+        count = testSectionFeatureCollection((SectionFeatureCollection) fc, show);
+
       } else {
 
         count = testNestedPointFeatureCollection((NestedPointFeatureCollection) fc, show);
@@ -381,6 +387,28 @@ public class TestPointFeatureTypes extends TestCase {
     stationProfileFeatureCollection.resetIteration();
     while (stationProfileFeatureCollection.hasNext()) {
       ucar.nc2.ft.StationProfileFeature spf = stationProfileFeatureCollection.next();
+
+      spf.resetIteration();
+      while (spf.hasNext()) {
+        ucar.nc2.ft.ProfileFeature pf = spf.next();
+        if (show)
+          System.out.printf(" ProfileFeature=%s %n", pf);
+        count += testPointFeatureCollection(pf, show);
+      }
+    }
+    long took = System.currentTimeMillis() - start;
+    if (show)
+      System.out.println(" testStationProfileFeatureCollection complete count= " + count + " full iter took= " + took + " msec");
+    return count;
+  }
+
+  // loop through all PointFeatureCollection
+  int testSectionFeatureCollection(SectionFeatureCollection sectionFeatureCollection, boolean show) throws IOException {
+    long start = System.currentTimeMillis();
+    int count = 0;
+    sectionFeatureCollection.resetIteration();
+    while (sectionFeatureCollection.hasNext()) {
+      ucar.nc2.ft.SectionFeature spf = sectionFeatureCollection.next();
 
       spf.resetIteration();
       while (spf.hasNext()) {
