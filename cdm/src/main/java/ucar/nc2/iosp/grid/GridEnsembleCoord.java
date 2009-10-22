@@ -74,7 +74,7 @@ public class GridEnsembleCoord {
   /**
    * number of ensembles
    */
-  private int ensembles;
+  private int ensembles = -1;
 
   /** types for the ensembles dimensions */
   private int[] ensTypes;
@@ -97,7 +97,6 @@ public class GridEnsembleCoord {
    */
   GridEnsembleCoord(GridRecord record, GridTableLookup lookup) {
     this.lookup = lookup;
-    //ensembles = calEnsembles(records);
     if (record instanceof GribGridRecord) { // check for ensemble
       GribGridRecord ggr = (GribGridRecord) record;
       if (ggr.getEnsembleNumber() == GribNumbers.UNDEFINED) {
@@ -106,7 +105,6 @@ public class GridEnsembleCoord {
       }
       ensembles = ggr.getNumberForecasts();
     }
-    ensembles = -1;
   }
 
   /**
@@ -117,13 +115,15 @@ public class GridEnsembleCoord {
    */
   GridEnsembleCoord(List<GridRecord> records, GridTableLookup lookup) {
     this.lookup = lookup;
-    calEnsembles(records);
+    GridRecord gr = records.get( 0 );
+    if (gr instanceof GribGridRecord)
+      calEnsembles(records);
   }
 
   /**
    * add Ensemble dimension
    */
-  void calEnsembles(List<GridRecord> records) {
+  private void calEnsembles(List<GridRecord> records) {
 
     int[] enstypes = new int[100];
 
@@ -144,75 +144,6 @@ public class GridEnsembleCoord {
 
     ensTypes = new int[ ensembles ];
     System.arraycopy( enstypes, 0, ensTypes, 0, ensembles);
-
-
-    /*
-    GridRecord first = records.get(0);
-    if (first instanceof GribGridRecord) { // check for ensemble
-      GribGridRecord ggr = (GribGridRecord) first;
-      if (ggr.getEnsembleNumber() == GribNumbers.UNDEFINED)
-        return -1;
-
-      return ggr.getNumberForecasts();
-    }
-    return -1;
-    */
-
-
-    /*
-    int key = ggr.getRecordKey(); // levelType1, levelValue1, levelType2, levelValue2,
-    //double key = ggr.getRecordKey() +
-    //    ggr.levelType1 + ggr.levelValue1 + ggr.levelType2 +ggr.levelValue2;
-    ensembles = 1;
-    for( int i = 1; i < records.size(); i++) {
-      ggr = (GribGridRecord) records.get( i );
-      //double key1 = ggr.getRecordKey() +
-      //  ggr.levelType1 + ggr.levelValue1 + ggr.levelType2 +ggr.levelValue2;
-      if (key == ggr.getRecordKey() ) {
-        ensembles++;
-      }
-
-    }
-    */
-    // get the Ensemble keys
-    //System.out.println( "Ensembles ="+ ensembles );
-    /*
-    enskey = new int[ ensembles ];
-    ArrayList<Integer> ek = new ArrayList<Integer>();
-    int ikey;
-    for( int i = 0; i < records.size(); i++) {
-      ggr = (GribGridRecord) records.get( i );
-      Integer ii = new Integer( ggr.getRecordKey() );
-      if( ! ek.contains( ii ))
-          ek.add( ii );
-      //enskey[ ggr.forecastTime ] = ggr.getRecordKey();
-      if ( ggr.forecastTime == 3)
-        System.out.println(  ggr.getRecordKey()+" "+ ggr.productType +" "+ ggr. discipline
-          +" "+ ggr.category +" "+ ggr.paramNumber +" "+ ggr.typeGenProcess+" "+
-          ggr.levelType1 +" "+ ggr.levelValue1 +" "+ ggr.levelType2 +" "+ ggr.levelValue2
-          +" "+  ggr.refTime.hashCode() +" "+  ggr.forecastTime);
-    }
-    System.out.println( ek );
-    System.out.println( ek.size() );
-    */
-    /*
-        int ensemble = 0;
-        GridRecord first =  recordList.get( 0 );
-        if ( first instanceof GribGridRecord ) { // check for ensemble
-          GribGridRecord ggr = (GribGridRecord) first;
-          int key = ggr.getRecordKey();
-          for( int i = 1; i < recordList.size(); i++) {
-            ggr = (GribGridRecord) recordList.get( i );
-            if (key == ggr.getRecordKey() ) {
-              ensemble++;
-            }
-          }
-          ensembleDimension.add( new Integer( ensemble ));
-        }
-
-    }
-    return ensembles;
-    */
   }
 
   /**
@@ -277,20 +208,6 @@ public class GridEnsembleCoord {
 
     v.setDimensions(v.getShortName());
     v.setCachedData(dataArray, false);
-
-    /*   // TODO: code clean up and above
-    if ( lookup instanceof Grib2GridTableLookup) {
-      Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
-      //v.addAttribute( new Attribute("GRIB_orgReferenceTime", formatter.toDateTimeStringISO( d )));
-      //v.addAttribute( new Attribute("GRIB2_significanceOfRTName",
-       //   g2lookup.getFirstSignificanceOfRTName()));
-    } else if ( lookup instanceof Grib1GridTableLookup) {
-      Grib1GridTableLookup g1lookup = (Grib1GridTableLookup) lookup;
-      //v.addAttribute( new Attribute("GRIB_orgReferenceTime", formatter.toDateTimeStringISO( d )));
-      //v.addAttribute( new Attribute("GRIB2_significanceOfRTName",
-      //    g1lookup.getFirstSignificanceOfRTName()));
-    }
-    */
 
     v.addAttribute(new Attribute(_Coordinate.AxisType,
         AxisType.Ensemble.toString()));
