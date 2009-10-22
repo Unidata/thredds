@@ -39,8 +39,6 @@ import org.jdom.Element;
 
 import java.io.IOException;
 
-import ucar.nc2.Dimension;
-
 /**
  * Describe
  *
@@ -104,11 +102,9 @@ public class TableConfigXML {
         tableElem.addContent(new Element("start").addContent(config.start));
         tableElem.addContent(new Element("next").addContent(config.next));
         break;
-      case MultiDimInner:
-        tableElem.addContent(new Element("dimension").addContent(config.dim.getName()));
-        break;
-      case MultiDimStructurePsuedo:
-        tableElem.addContent(new Element("outerDimension").addContent(config.dim.getName()));
+      case MultidimInner:
+      case MultidimInnerPsuedo:
+        tableElem.addContent(new Element("outerDimension").addContent(config.outer.getName()));
         tableElem.addContent(new Element("innerDimension").addContent(config.inner.getName()));
         break;
       case NestedStructure:
@@ -119,11 +115,10 @@ public class TableConfigXML {
         break;
       case Singleton:
         break;
-      case MultiDimStructure:
+      case MultidimStructure:
       case Structure:
         tableElem.addContent(new Element("dimension").addContent(config.dim.getName()));
-        if (config.isPsuedoStructure)
-          tableElem.setAttribute("isPsuedoStructure", Boolean.toString(config.isPsuedoStructure));
+        tableElem.setAttribute("structureType", config.structureType.toString());
         break;
       case Top:
         tableElem.addContent(new Element("structure").addContent(config.structName));

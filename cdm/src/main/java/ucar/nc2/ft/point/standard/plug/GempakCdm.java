@@ -130,7 +130,7 @@ public class GempakCdm extends TableConfigurerImpl {
     Table.Type stationTableType = stnIsScalar ? Table.Type.Top : Table.Type.Structure;
     TableConfig stnTable = new TableConfig(stationTableType, "station");
     stnTable.featureType = FeatureType.STATION;
-    stnTable.isPsuedoStructure = !hasStruct;
+    stnTable.structureType = hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;      
     stnTable.dim = stationDim;
 
     stnTable.lat= lat.getName();
@@ -170,7 +170,7 @@ public class GempakCdm extends TableConfigurerImpl {
       // Structure(station, time)
       multidimStruct = Evaluator.getStructureWithDimensions(ds, stationDim, obsDim);
       if (multidimStruct != null) {
-        obsTableType = Table.Type.MultiDimStructure;
+        obsTableType = Table.Type.MultidimStructure;
       }
     }
 
@@ -178,7 +178,7 @@ public class GempakCdm extends TableConfigurerImpl {
     if (obsTableType == null) {
       // time(station, time)
       if (time.getRank() == 2) {
-        obsTableType = Table.Type.MultiDimInner;
+        obsTableType = Table.Type.MultidimInner;
       }
     }
 
@@ -192,16 +192,16 @@ public class GempakCdm extends TableConfigurerImpl {
     obs.time = time.getName();
     stnTable.addChild(obs);
 
-    if (obsTableType == Table.Type.MultiDimStructure) {
+    if (obsTableType == Table.Type.MultidimStructure) {
       obs.structName = multidimStruct.getName();
-      obs.isPsuedoStructure = false;
+      obs.structureType = TableConfig.StructureType.Structure;
       // if time is not in this structure, need to join it
       if (multidimStruct.findVariable( time.getShortName()) == null) {
         obs.addJoin(new JoinArray( time, JoinArray.Type.raw, 0));
       }
     }
 
-    if (obsTableType == Table.Type.MultiDimInner) {
+    if (obsTableType == Table.Type.MultidimInner) {
       obs.dim = obsDim;
     }
 
@@ -266,7 +266,7 @@ public class GempakCdm extends TableConfigurerImpl {
     TableConfig obs = new TableConfig(obsTableType, obsDim.getName());
     obs.dim = obsDim;
     obs.structName = multidimStruct.getName();
-    obs.isPsuedoStructure = false;
+    obs.structureType = TableConfig.StructureType.Structure;
     obs.featureType = FeatureType.POINT;
 
     obs.lat= lat.getName();

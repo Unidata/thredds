@@ -264,7 +264,8 @@ public String NC_check_name(String name) {
   // name pattern matching
   //static private final String special1 = "_\\.@\\+\\-";
   //static private final String special2 = " ";
-  static private final Pattern objectNamePattern = Pattern.compile("[a-zA-Z0-9_][a-zA-Z0-9_@\\.\\-\\+]*");
+  //static private final Pattern objectNamePattern = Pattern.compile("[a-zA-Z0-9_][a-zA-Z0-9_@\\.\\-\\+]*");
+  static private final Pattern objectNamePattern = Pattern.compile("[a-zA-Z0-9_][a-zA-Z0-9_@\\:\\(\\)\\.\\-\\+]*");
 
   /**
    * Determine if the given name can be used for a Dimension, Attribute, or Variable name.

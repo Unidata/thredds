@@ -418,7 +418,7 @@ public class TableAnalyzer {
     if (dimSet.size() == 1) {
       Dimension obsDim = (Dimension) dimSet.toArray()[0];
       TableConfig st = new TableConfig(Table.Type.Structure, "record");
-      st.isPsuedoStructure = true;
+      st.structureType = TableConfig.StructureType.PsuedoStructure;
       st.dim = obsDim;
       CoordSysEvaluator.findCoords(st, ds);
 
@@ -438,7 +438,7 @@ public class TableAnalyzer {
     if (time != null) {
       Dimension obsDim = (Dimension) time.getDimension(0);
       TableConfig st = new TableConfig(Table.Type.Structure, obsDim.getName());
-      st.isPsuedoStructure = true;
+      st.structureType = TableConfig.StructureType.PsuedoStructure;
       st.dim = obsDim;
       CoordSysEvaluator.findCoords(st, ds);
 

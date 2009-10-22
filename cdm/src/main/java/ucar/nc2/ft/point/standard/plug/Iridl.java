@@ -78,7 +78,7 @@ public class Iridl extends TableConfigurerImpl  {
     // station table
     TableConfig stationTable = new TableConfig(Table.Type.Structure, "station");
     stationTable.structName = "station";
-    stationTable.isPsuedoStructure = true;
+    stationTable.structureType = TableConfig.StructureType.PsuedoStructure;
     stationTable.featureType = FeatureType.STATION;
     stationTable.dim = stationDim;
 
@@ -90,7 +90,7 @@ public class Iridl extends TableConfigurerImpl  {
 
     // obs table
     TableConfig obsTable;
-    obsTable = new TableConfig(Table.Type.MultiDimInner, "obs");
+    obsTable = new TableConfig(Table.Type.MultidimInner, "obs");
     obsTable.time = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Time);
     obsTable.outer = stationDim;
     obsTable.dim = obsDim;

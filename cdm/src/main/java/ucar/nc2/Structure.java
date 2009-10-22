@@ -54,7 +54,7 @@ import java.io.IOException;
  */
 
 public class Structure extends Variable {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Structure.class);
+  static protected org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Structure.class);
   static protected int defaultBufferSize = 500 * 1000; // 500K bytes
 
   protected List<Variable> members;
@@ -245,7 +245,16 @@ public class Structure extends Variable {
   /** Get the variables contained directly in this Structure.
    * @return List of type Variable.
    */
-  public java.util.List<Variable> getVariables() { return isImmutable() ?  members : new ArrayList<Variable>(members); }
+  public java.util.List<Variable> getVariables() {
+    return isImmutable() ?  members : new ArrayList<Variable>(members);
+  }
+
+  /** Get the number of variables contained directly in this Structure.
+   * @return number of member variables
+   */
+  public int getNumberOfMemberVariables() {
+    return members.size();
+  }
 
   /** Get the (short) names of the variables contained directly in this Structure.
    * @return List of type String.

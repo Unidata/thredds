@@ -50,6 +50,8 @@ import java.util.Map;
  * @since Apr 23, 2008
  */
 public class TableConfig {
+  public enum StructureType {Structure, PsuedoStructure, PsuedoStructure2D}
+
   public Table.Type type;
   public String name;
   public TableConfig parent;
@@ -58,7 +60,7 @@ public class TableConfig {
 
   public String structName; // full name of structure
   public String nestedTableName; // short name of structure
-  public boolean isPsuedoStructure = false;
+  public StructureType structureType = StructureType.Structure;
 
   // linked, contiguous list
   public String start;  // name of variable - starting child index (in parent)
@@ -71,9 +73,10 @@ public class TableConfig {
 
   // TablePsuedoStructureList, Structure
   public List<String> vars;
+  public Dimension dim; // outer dimension
 
   // multidim: outer and inner dimensions
-  public Dimension dim, outer, inner;
+  public Dimension outer, inner;
   
   // Table.Type ArrayStructure
   public ArrayStructure as;

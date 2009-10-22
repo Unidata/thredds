@@ -8,7 +8,7 @@ pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid
 code {font-size: 11pt;}
 dl {margin: 10px 5px 5px 15px;)
 .style1 {font-style: italic}
-.style1 {font-weight: bold}
+.style2 {font-weight: bold}
 </style>
 </head>
 
@@ -284,11 +284,11 @@ Since an iterator always runs through the data exactly once, its a good idea to 
 <pre>
   stationProfileFeature<strong>.resetIteration</strong>();
   while(stationProfileFeature.<strong>hasNext</strong>() { 
-    ucar.nc2.ft.<strong>ProfileFeature</strong> profile = stationProfileFeature.<strong>next</strong>()
+    ucar.nc2.ft.<strong>ProfileFeature</strong> profile = stationProfileFeature.<strong>next</strong>();
 
     profile<strong>.resetIteration</strong>();
     while(profile.<strong>hasNext</strong>()) {
-      ucar.nc2.ft.PointFeature pointFeature = profile.<strong>next</strong>()
+      ucar.nc2.ft.PointFeature pointFeature = profile.<strong>next</strong>();
       ...
     }
   }</pre>
@@ -308,22 +308,23 @@ Since an iterator always runs through the data exactly once, its a good idea to 
 </pre>
 <p>A StationProfileFeatureCollection  extends <strong>StationCollection</strong>, from which you can get the list of available Stations, a bounding box, etc. Note how the <strong>StationCollection</strong> interface makes handling  StationProfileFeatureCollection identical to StationTimeSeriesFeatureCollection. You may subset the collection <strong> </strong>by passing in a list of Stations, or get a  StationProfileFeature from a specific Station. </p>
 <p>To run through all the data,  iterate through each <strong>StationProfileFeature</strong> in the collection, then through each ProfileFeature in the StationProfileFeature, then through each PointFeature of the ProfileFeatures:</p>
-<pre>
-  stationProfileFeatureCollection<strong>.resetIteration</strong>();
-  while(stationProfileFeatureCollection.<strong>hasNext</strong>() { 
-    ucar.nc2.ft.<strong>StationProfileFeature</strong> stationProfile = stationProfileFeatureCollection.<strong>next</strong>()
-  
-   stationProfile<strong>.resetIteration</strong>();
-   while(stationProfile.<strong>hasNext</strong>() { 
-      ucar.nc2.ft.<strong>ProfileFeature</strong> profile = stationProfile.<strong>nextFeature</strong>()
+<pre>    stationProfileFeatureCollection.<strong>resetIteration</strong>();
+    while (stationProfileFeatureCollection.<strong>hasNext</strong>()) {
+      ucar.nc2.ft.StationProfileFeature stationProfile = stationProfileFeatureCollection.<strong>next</strong>();
 
-      profile<strong>.resetIteration</strong>();
-      while(profile.<strong>hasNext</strong>()) {
-        ucar.nc2.ft.PointFeature pointFeature = profile.<strong>nextData</strong>()
-        ...
+      stationProfile.<strong>resetIteration</strong>();
+      while (stationProfile.<strong>hasNext</strong>()) {
+        ucar.nc2.ft.ProfileFeature profile = stationProfile.<strong>next</strong>();
+
+        profile.<strong>resetIteration</strong>();
+        while (profile.<strong>hasNext</strong>()) {
+          ucar.nc2.ft.PointFeature pointFeature = profile.<strong>next</strong>();
+          StructureData sdata = pointFeature.<strong>getData</strong>();
+          ...
+        }
       }
     }
-  }</pre>
+</pre>
 <p>As usual, you can <strong>flatten</strong> the collection, throwing away the station and profile information, and making it into a collection of PointFeatures. The flattening may include subsetting by lat/lon bounding box, and/or a dateRange. </p>
 <hr width="100%" />
 <address>

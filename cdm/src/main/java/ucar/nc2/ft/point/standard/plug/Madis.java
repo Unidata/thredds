@@ -106,7 +106,7 @@ public class Madis  extends TableConfigurerImpl  {
       TableConfig ptTable = new TableConfig(Table.Type.Structure, hasStruct ? "record" : obsDim.getName() );
       ptTable.structName = "record";
       ptTable.featureType = FeatureType.POINT;
-      ptTable.isPsuedoStructure = !hasStruct;
+      ptTable.structureType = hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;      
 
       ptTable.dim = obsDim;
       ptTable.time = vn.obsTime;

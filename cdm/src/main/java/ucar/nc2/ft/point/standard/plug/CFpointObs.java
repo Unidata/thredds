@@ -214,7 +214,7 @@ public class CFpointObs extends TableConfigurerImpl {
         obsTable = makeSingle(ds, obsDim, errlog);
         break;
       case multidim:
-        obsTable = makeMultidim(ds, stnTable, obsDim, errlog);
+        obsTable = makeMultidimInner(ds, stnTable, obsDim, errlog);
         if (time.getRank() == 1) { // time(time)
           obsTable.addJoin(new JoinArray(time, JoinArray.Type.raw, 0));
           obsTable.time = time.getShortName();
@@ -257,7 +257,7 @@ public class CFpointObs extends TableConfigurerImpl {
         obsTable = makeSingle(ds, obsDim, errlog);
         break;
       case multidim:
-        obsTable = makeMultidim(ds, parentTable, obsDim, errlog);
+        obsTable = makeMultidimInner(ds, parentTable, obsDim, errlog);
         if (z.getRank() == 1) // z(z)
           obsTable.addJoin(new JoinArray(z, JoinArray.Type.raw, 0));
         break;
@@ -294,7 +294,7 @@ public class CFpointObs extends TableConfigurerImpl {
         obsConfig = makeSingle(ds, obsDim, errlog);
         break;
       case multidim:
-        obsConfig = makeMultidim(ds, parentTable, obsDim, errlog);
+        obsConfig = makeMultidimInner(ds, parentTable, obsDim, errlog);
         break;
       case raggedContiguous:
         obsConfig = makeRaggedContiguous(ds, parentTable, obsDim, errlog);
@@ -372,7 +372,7 @@ public class CFpointObs extends TableConfigurerImpl {
         stationTable.addChild(profileTable);
 
         // make the inner (z) table
-        TableConfig zTable = makeMultidim(ds, profileTable, zDim, errlog);
+        TableConfig zTable = makeMultidimInner(ds, profileTable, zDim, errlog);
         if (z.getRank() == 1) // join z(z)
           zTable.addJoin(new JoinArray(z, JoinArray.Type.raw, 0));
         profileTable.addChild(zTable);
@@ -393,7 +393,7 @@ public class CFpointObs extends TableConfigurerImpl {
           zDim = time.getDimension(2);
 
         } else { // 2d time
-          if (z.getRank() == 2) { // 2d time, 3d z
+          if (z.getRank() == 3) { // 2d time, 3d z
             assert z.getDimension(1).equals(time.getDimension(1)) : "rank-2 time must have time inner dimension";
             profileDim = z.getDimension(1);
             zDim = z.getDimension(2);
@@ -406,12 +406,14 @@ public class CFpointObs extends TableConfigurerImpl {
         }
 
         // make profile table
-        TableConfig profileTable = makeMiddleTable(ds, FeatureType.PROFILE, stationTable, profileDim);
+        //   private TableConfig makeMultidimInner(NetcdfDataset ds, TableConfig parentTable, Dimension obsDim, Formatter errlog) throws IOException {
+
+        TableConfig profileTable = makeMultidimInner(ds, stationTable, profileDim, errlog);
         if (profileTable == null) return null;
+        stationTable.addChild(profileTable);
 
         // make the inner (z) table
-        stationTable.addChild(profileTable);
-        TableConfig zTable = makeMultidim(ds, info.parentDim, profileTable, zDim, errlog);
+        TableConfig zTable = makeMultidimInner3D(ds, stationTable, profileTable, zDim, errlog);
         if (z.getRank() == 1) // join z(z)
           zTable.addJoin(new JoinArray(z, JoinArray.Type.raw, 0));
         profileTable.addChild(zTable);
@@ -423,32 +425,33 @@ public class CFpointObs extends TableConfigurerImpl {
 
         Variable numProfiles = findVariableWithStandardNameAndDimension(ds, RAGGED_ROWSIZE, stationDim, errlog);
         if (numProfiles == null) {
-          errlog.format("stationProfile raggedContiguous must have a ragged_rowSize variable with station dimension %s%n", stationDim);
+          errlog.format("stationProfile numProfiles: must have a ragged_rowSize variable with station dimension %s%n", stationDim);
           return null;
         }
         if (numProfiles.getRank() != 1) {
-          errlog.format("stationProfile ragged_rowSize %s variable must be rank 1%n", numProfiles.getName());
+          errlog.format("stationProfile numProfiles: %s variable must be rank 1%n", numProfiles.getName());
           return null;
         }
 
         Variable numObs = findVariableWithStandardNameAndNotDimension(ds, RAGGED_ROWSIZE, stationDim, errlog);
         if (numObs == null) {
-          errlog.format("stationProfile raggedContiguous must have a ragged_rowSize variable for observations%n");
+          errlog.format("stationProfile numObs: must have a ragged_rowSize variable for observations%n");
           return null;
         }
         if (numObs.getRank() != 1) {
-          errlog.format("stationProfile ragged_rowSize %s variable for observations must be rank 1%n", numObs.getName());
+          errlog.format("stationProfile numObs: %s variable for observations must be rank 1%n", numObs.getName());
           return null;
         }
-        if (!numObs.getDimension(0).equals(zDim)) {
-          errlog.format("stationProfile ragged_rowSize %s variable for observations must have z dimension%n", zDim);
+        profileDim = numObs.getDimension(0);
+
+        if (profileDim.equals(zDim)) {
+          errlog.format("stationProfile numObs (%s) must have profile dimension, not obs dimension %s%n", numObs.getNameAndDimensions(), zDim);
           return null;
         }
 
-        profileDim = numProfiles.getDimension(0);
         TableConfig profileTable = makeMiddleTable(ds, stationTable, profileDim, errlog);
         stationTable.addChild(profileTable);
-        TableConfig zTable = makeMultidim(ds, stationTable, zDim, errlog);
+        TableConfig zTable = makeMultidimInner(ds, stationTable, zDim, errlog);
         profileTable.addChild(zTable);
         break;
       }
@@ -483,7 +486,7 @@ public class CFpointObs extends TableConfigurerImpl {
         }
         TableConfig profileTable = makeMiddleTable(ds, stationTable, profileDim, errlog);
         stationTable.addChild(profileTable);
-        TableConfig zTable = makeMultidim(ds, stationTable, zDim, errlog);
+        TableConfig zTable = makeMultidimInner(ds, stationTable, zDim, errlog);
         profileTable.addChild(zTable);
         break;
       }
@@ -596,10 +599,10 @@ public class CFpointObs extends TableConfigurerImpl {
 
     if (info.encoding != Encoding.single) {
       // set up structure
-      boolean stnIsStruct = Evaluator.hasRecordStructure(ds) && stationDim.isUnlimited();
-      stnTable.isPsuedoStructure = !stnIsStruct;
+      boolean hasStruct = Evaluator.hasRecordStructure(ds) && stationDim.isUnlimited();
+      stnTable.structureType = hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
       stnTable.dim = stationDim;
-      stnTable.structName = stnIsStruct ? "record" : stationDim.getName();
+      stnTable.structName = hasStruct ? "record" : stationDim.getName();
 
       // station id
       if (stnTable.stnId == null) {
@@ -636,7 +639,7 @@ public class CFpointObs extends TableConfigurerImpl {
     if (info.encoding != Encoding.single) {
       // set up structure
       boolean stnIsStruct = Evaluator.hasRecordStructure(ds) && info.parentDim.isUnlimited();
-      parentTable.isPsuedoStructure = !stnIsStruct;
+      parentTable.structureType = stnIsStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
       parentTable.dim = info.parentDim;
       parentTable.structName = stnIsStruct ? "record" : info.parentDim.getName();
     }
@@ -644,9 +647,9 @@ public class CFpointObs extends TableConfigurerImpl {
     return parentTable;
   }
 
-  // the middle table of Structure(outer, middle, inner)  
+  /* the middle table of Structure(outer, middle, inner)
   private TableConfig makeMiddleTable(NetcdfDataset ds, FeatureType ftype, TableConfig parentTable, Dimension middle) throws IOException {
-    Table.Type middleTableType = parentTable.isPsuedoStructure ? Table.Type.MultiDimStructurePsuedo : Table.Type.MultiDimInner;
+    Table.Type middleTableType = parentTable.isPsuedoStructure ? Table.Type.MultidimInnerPsuedo : Table.Type.MultidimInner;
     Dimension outer = parentTable.dim;
 
     TableConfig middleTable = new TableConfig(middleTableType, ftype.toString());
@@ -665,7 +668,7 @@ public class CFpointObs extends TableConfigurerImpl {
     middleTable.structName = stnIsStruct ? "record" : outer.getName();
 
     return middleTable;
-  }
+  }  */
 
   private String findNameVariableWithStandardNameAndDimension(NetcdfDataset ds, String standard_name, Dimension outer, Formatter errlog) {
     Variable v = findVariableWithStandardNameAndDimension(ds, standard_name, outer, errlog);
@@ -759,7 +762,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
     boolean obsIsStruct = Evaluator.hasRecordStructure(ds) && obsDim.isUnlimited();
     obsTable.structName = obsIsStruct ? "record" : obsDim.getName();
-    obsTable.isPsuedoStructure = !obsIsStruct;
+    obsTable.structureType = obsIsStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
 
     obsTable.numRecords = findNameVariableWithStandardNameAndDimension(ds, RAGGED_ROWSIZE, parentTable.dim, errlog);
     if (null == obsTable.numRecords) {
@@ -795,7 +798,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
     boolean obsIsStruct = Evaluator.hasRecordStructure(ds) && obsDim.isUnlimited();
     obsTable.structName = obsIsStruct ? "record" : obsDim.getName();
-    obsTable.isPsuedoStructure = !obsIsStruct;
+    obsTable.structureType = obsIsStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
 
     obsTable.parentIndex = findNameVariableWithStandardNameAndDimension(ds, RAGGED_PARENTINDEX, obsDim, errlog);
     if (null == obsTable.parentIndex)
@@ -822,13 +825,12 @@ public class CFpointObs extends TableConfigurerImpl {
     return obsTable;
   }
 
-  // the inner table of Structure(outer, inner)
-  private TableConfig makeMultidim(NetcdfDataset ds, TableConfig parentTable, Dimension obsDim, Formatter errlog) throws IOException {
+  // the inner table of Structure(outer, inner) and middle table of Structure(outer, middle, inner)
+  private TableConfig makeMultidimInner(NetcdfDataset ds, TableConfig parentTable, Dimension obsDim, Formatter errlog) throws IOException {
     Dimension parentDim = parentTable.dim;
 
-    Table.Type obsTableType = parentTable.isPsuedoStructure ? Table.Type.MultiDimStructurePsuedo : Table.Type.MultiDimInner;
+    Table.Type obsTableType = (parentTable.structureType == TableConfig.StructureType.PsuedoStructure) ? Table.Type.MultidimInnerPsuedo : Table.Type.MultidimInner;
     TableConfig obsTable = new TableConfig(obsTableType, obsDim.getName());
-    obsTable.dim = obsDim;
 
     obsTable.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, parentDim, obsDim);
     obsTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, parentDim, obsDim);
@@ -854,58 +856,61 @@ public class CFpointObs extends TableConfigurerImpl {
         }
       }
     }
+    parentTable.vars = parentVars; 
+    // parentTable.vars = parentTable.isPsuedoStructure ? parentVars : null; // restrict to these if psuedoStruct
 
-    parentTable.vars = parentTable.isPsuedoStructure ? parentVars : null; // restrict to these if psuedoStruct
-
-    obsTable.isPsuedoStructure = parentTable.isPsuedoStructure;
-    obsTable.dim = parentDim;
+    obsTable.structureType = parentTable.structureType;
+    obsTable.outer = parentDim;
     obsTable.inner = obsDim;
-    obsTable.structName = parentTable.isPsuedoStructure ? parentDim.getName() : "record";
+    obsTable.dim = (parentTable.structureType == TableConfig.StructureType.PsuedoStructure) ? parentDim : obsDim;
+    obsTable.structName = obsDim.getName();
     obsTable.vars = obsVars;
 
     return obsTable;
   }
 
   // the inner table of Structure(outer, middle, inner)
-  private TableConfig makeMultidim(NetcdfDataset ds, Dimension outer, TableConfig middleTable, Dimension obsDim, Formatter errlog) throws IOException {
+  private TableConfig makeMultidimInner3D(NetcdfDataset ds, TableConfig outerTable, TableConfig middleTable, Dimension innerDim, Formatter errlog) throws IOException {
+    Dimension outerDim = outerTable.dim;
     Dimension middleDim = middleTable.inner;
 
-    Table.Type obsTableType = middleTable.isPsuedoStructure ? Table.Type.MultiDimStructurePsuedo : Table.Type.MultiDimInner;
-    TableConfig obsTable = new TableConfig(obsTableType, obsDim.getName());
-    obsTable.dim = obsDim;
+    Table.Type obsTableType = (outerTable.structureType == TableConfig.StructureType.PsuedoStructure) ? Table.Type.MultidimInnerPsuedo3D : Table.Type.MultidimInner3D;
+    TableConfig obsTable = new TableConfig(obsTableType, innerDim.getName());
+    obsTable.structureType = TableConfig.StructureType.PsuedoStructure2D;
+    obsTable.dim = outerDim;
+    obsTable.outer = middleDim;
+    obsTable.inner = innerDim;
+    obsTable.structName = innerDim.getName();
 
-    obsTable.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, outer, middleDim, obsDim);
-    obsTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, outer, middleDim, obsDim);
-    obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Height, outer, middleDim, obsDim);
-    obsTable.time = matchAxisTypeAndDimension(ds, AxisType.Time, outer, middleDim, obsDim);
+    obsTable.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, outerDim, middleDim, innerDim);
+    obsTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, outerDim, middleDim, innerDim);
+    obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Height, outerDim, middleDim, innerDim);
+    obsTable.time = matchAxisTypeAndDimension(ds, AxisType.Time, outerDim, middleDim, innerDim);
 
-    // divide up the variables between the parent and the obs
-    List<String> obsVars = null;
+    // divide up the variables between the 3 tables
     List<Variable> vars = ds.getVariables();
-    List<String> parentVars = new ArrayList<String>(vars.size());
-    obsVars = new ArrayList<String>(vars.size());
+    List<String> outerVars = new ArrayList<String>(vars.size());
+    List<String> middleVars = new ArrayList<String>(vars.size());
+    List<String> innerVars = new ArrayList<String>(vars.size());
     for (Variable orgV : vars) {
       if (orgV instanceof Structure) continue;
 
-      if (orgV.getRank() == 2) {
-        if (outer.equals(orgV.getDimension(0)) && middleDim.equals(orgV.getDimension(1)))
-          parentVars.add(orgV.getShortName());
-      }
+      if (orgV.getRank() == 1) {
+        if (outerDim.equals(orgV.getDimension(0)))
+          outerVars.add(orgV.getShortName());
 
-      else if (orgV.getRank() == 3) {
-        if (outer.equals(orgV.getDimension(0)) && middleDim.equals(orgV.getDimension(1)) && obsDim.equals(orgV.getDimension(2)))
-          obsVars.add(orgV.getShortName());
-      }
+      } else if (orgV.getRank() == 2) {
+        if (outerDim.equals(orgV.getDimension(0)) && middleDim.equals(orgV.getDimension(1)))
+          middleVars.add(orgV.getShortName());
 
+      } else if (orgV.getRank() == 3) {
+        if (outerDim.equals(orgV.getDimension(0)) && middleDim.equals(orgV.getDimension(1)) && innerDim.equals(orgV.getDimension(2)))
+          innerVars.add(orgV.getShortName());
+      }
     }
-
-    middleTable.vars = middleTable.isPsuedoStructure ? parentVars : null; // restrict to these if psuedoStruct
-
-    obsTable.isPsuedoStructure = middleTable.isPsuedoStructure;
-    obsTable.dim = middleDim;
-    obsTable.inner = obsDim;
-    obsTable.structName = middleTable.isPsuedoStructure ? middleDim.getName() : "record";
-    obsTable.vars = obsVars;
+    outerTable.vars = outerVars;
+    middleTable.vars = middleVars;
+    obsTable.vars = innerVars;
 
     return obsTable;
   }
@@ -924,7 +929,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
     boolean obsIsStruct = Evaluator.hasRecordStructure(ds) && obsDim.isUnlimited();
     obsTable.structName = obsIsStruct ? "record" : obsDim.getName();
-    obsTable.isPsuedoStructure = !obsIsStruct;
+    obsTable.structureType = obsIsStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
 
     return obsTable;
   }

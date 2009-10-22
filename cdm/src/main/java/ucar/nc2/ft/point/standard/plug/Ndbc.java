@@ -102,7 +102,7 @@ public class Ndbc extends TableConfigurerImpl  {
     if ((wantFeatureType == FeatureType.POINT)) {
       TableConfig nt = new TableConfig(Table.Type.Structure, hasStruct ? "record" : obsDim.getName() );
       nt.structName = "record";
-      nt.isPsuedoStructure = !hasStruct;
+      nt.structureType = hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;      
       nt.featureType = FeatureType.POINT;
       CoordSysEvaluator.findCoords(nt, ds);
       return nt;
@@ -122,7 +122,7 @@ public class Ndbc extends TableConfigurerImpl  {
 
     TableConfig obs = new TableConfig(Table.Type.Structure, hasStruct ? "record" : obsDim.getName());
     obs.structName = "record";
-    obs.isPsuedoStructure = !hasStruct;
+    obs.structureType = hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
     obs.dim = obsDim;
     obs.time = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Time);
     nt.addChild(obs);

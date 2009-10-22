@@ -56,8 +56,12 @@ import java.io.IOException;
  * @author caron
  */
 public class StructurePseudo extends Structure {
-  private List<Variable> orgVariables =  new ArrayList<Variable>();
-  private boolean debugRecord = false;
+  private static boolean debugRecord = false;
+  private List<Variable> orgVariables =  new ArrayList<Variable>(); // the underlying original variables
+
+  protected StructurePseudo( NetcdfFile ncfile, Group group, String shortName) {
+    super (ncfile, group, null, shortName);
+  }
 
   /** Make a Structure out of all Variables with the named dimension as their outermost dimension.
    *
@@ -96,21 +100,6 @@ public class StructurePseudo extends Structure {
     calcElementSize();
   }
 
-  @Override
-  public boolean removeMemberVariable( Variable v) {
-    if (super.removeMemberVariable(v)) {
-      java.util.Iterator<Variable> iter = orgVariables.iterator();
-      while (iter.hasNext()) {
-        Variable mv =  iter.next();
-        if (mv.getShortName().equals(v.getShortName())) {
-          iter.remove();
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
   /** Make a Structure out of named Variables, each has the same named outermost dimension.
    *
    * @param ncfile part of this file
@@ -130,7 +119,10 @@ public class StructurePseudo extends Structure {
     // find all variables in this group that has this as the outer dimension
     for (String name : varNames) {
       Variable orgV = group.findVariable(name);
-      if (orgV == null) continue; // skip - should log message
+      if (orgV == null) {
+        log.warn("StructurePseudo cannot find variable "+name);
+        continue; // skip - should log message
+      }
 
       Dimension dim0 = orgV.getDimension(0);
       if (!dim0.equals(dim)) throw new IllegalArgumentException("Variable "+orgV.getNameAndDimensions()+" must have outermost dimension="+dim);
@@ -149,6 +141,21 @@ public class StructurePseudo extends Structure {
     }
 
     calcElementSize();
+  }
+
+  @Override
+  public boolean removeMemberVariable( Variable v) {
+    if (super.removeMemberVariable(v)) {
+      java.util.Iterator<Variable> iter = orgVariables.iterator();
+      while (iter.hasNext()) {
+        Variable mv =  iter.next();
+        if (mv.getShortName().equals(v.getShortName())) {
+          iter.remove();
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   @Override

@@ -69,7 +69,7 @@ public class FslWindProfiler extends TableConfigurerImpl  {
     profile.featureType = FeatureType.PROFILE;
     // nt.addChild(profile);
 
-    TableConfig levels = new TableConfig(Table.Type.MultiDimInner, "levels");
+    TableConfig levels = new TableConfig(Table.Type.MultidimInner, "levels");
     levels.outer = Evaluator.getDimension(ds, "recNum", errlog);
     levels.dim = Evaluator.getDimension(ds, "level", errlog);
     levels.elev = Evaluator.getVariableName(ds, "levels", errlog);

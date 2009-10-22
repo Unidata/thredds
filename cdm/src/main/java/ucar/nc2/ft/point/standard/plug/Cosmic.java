@@ -85,7 +85,7 @@ public class Cosmic extends TableConfigurerImpl {
      //traj.time = "time";
 
      TableConfig obs = new TableConfig(Table.Type.Structure, "point");
-     obs.isPsuedoStructure = true;
+     obs.structureType = TableConfig.StructureType.PsuedoStructure;
      obs.dim = ds.findDimension("MSL_alt");
      obs.lat = "Lat";
      obs.lon = "Lon";

@@ -611,10 +611,8 @@ public class NCdumpW {
 
   static private void printStructureData(PrintWriter out, StructureData sdata, Indent indent, CancelTask ct) throws IOException {
     indent.incr();
-    //int saveIndent = ilev.getIndentLevel();
     for (StructureMembers.Member m : sdata.getMembers()) {
       Array sdataArray = sdata.getArray(m);
-      //ilev.setIndentLevel(saveIndent);
       printArray(sdataArray, m.getName(), m.getUnitsString(), out, indent, ct);
       if (ct != null && ct.isCancel()) return;
     }

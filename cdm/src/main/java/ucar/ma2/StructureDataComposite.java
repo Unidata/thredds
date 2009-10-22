@@ -59,7 +59,8 @@ public class StructureDataComposite extends StructureData {
   }
 
   public Array getArray(StructureMembers.Member m) {
-    return proxy.get(m).getArray(m);
+    StructureData sdata = proxy.get(m);
+    return sdata.getArray(m);
   }
 
   public float convertScalarFloat(StructureMembers.Member m) {
