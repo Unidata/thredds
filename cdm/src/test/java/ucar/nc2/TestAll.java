@@ -48,6 +48,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.TestOffAggForecastModel;
 import ucar.nc2.iosp.grib.TestBinaryTextIndexes;
+import ucar.nc2.iosp.gempak.TestReadingGempak;
 
 /**
  * TestSuite that runs all nj22 unit tests.
@@ -164,6 +165,7 @@ public class TestAll {
     RandomAccessFile.setDebugLeaks( true);
 
     TestSuite suite= new TestSuite();
+
     suite.addTest( ucar.nc2.TestLocal.suite()); // data in the release
 
     suite.addTest( ucar.nc2.TestNC2.suite());
@@ -185,6 +187,8 @@ public class TestAll {
     suite.addTest( ucar.nc2.TestIosp.suite());   //
     suite.addTest( new TestSuite(TestBinaryTextIndexes.class));  //
     suite.addTest( new TestSuite(TestGridGribIosp.class));  //
+    suite.addTest( new TestSuite(TestReadingGempak.class));  //
+
     suite.addTest( ucar.nc2.iosp.hdf5.TestH5.suite()); // */
     suite.addTest( ucar.nc2.iosp.hdf4.TestH4.suite()); //
 
