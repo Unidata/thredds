@@ -38,10 +38,12 @@
  *
  */
 
-package ucar.nc2;
+package ucar.nc2.iosp.grib;
 
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.util.CompareNetcdf;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.TestAll;
 
 import java.io.IOException;
 import java.io.File;

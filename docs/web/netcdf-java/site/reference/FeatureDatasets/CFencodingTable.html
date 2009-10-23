@@ -115,9 +115,11 @@ lat,lon,stn_alt,stn_id</strong>(station)
     <td>      <pre>// contig z, profiles in any sequence
 data(obs)
 <strong>time</strong>(profile) | <strong>time</strong>(obs)
-<strong>lat,lon</strong>,<strong>stn_alt,stn_id</strong>(station)<strong>
+<strong>lat,lon</strong>,<strong>stn_alt</strong>(station)<strong>
 z</strong>(obs)
-<strong>stationIndex</strong>(profile),<strong>numObs</strong>(profile)</pre>    </td>
+<strong>stationIndex</strong>(profile),<strong>numObs</strong>(profile)
+
+<strong>stn_id</strong>(station)</pre>    </td>
     <td>      <pre>// multidim profile w stn id 
 data(profile,z)
 <strong>time</strong>(profile)|<strong>time</strong>(profile,z)<strong>
@@ -148,15 +150,18 @@ lat,lon</strong>(profile)
 <strong>alt</strong>(section,profile,z) | <strong>z</strong>(z)     </pre>    </td>
     <td>      <pre>// contig z, profiles in any sequence
 data(obs)
-<strong>time</strong>( profile) | <strong>time</strong>(obs)<strong>
+<strong>time</strong>(profile) | <strong>time</strong>(obs)<strong>
 lat,lon</strong>(profile)
 <strong>z</strong>(obs) | <strong>z</strong>(z)
-<strong>sectionIndex</strong>(profile),<strong>numObs</strong>(profile)</pre>    </td>
-    <td>      <pre>data(obs)<strong>
-time</strong>(obs)<strong>
-lat,lon</strong>(obs)
-<strong>z</strong>(obs)
-profileId(obs),sectionId(obs)</pre>    </td>
+<strong>sectionIndex</strong>(profile),<strong>numObs</strong>(profile)
+
+<strong>sectionId</strong>(section)</pre>    </td>
+    <td>      <pre>// multidim profile w section id 
+data(profile,z)
+<strong>time</strong>(profile)|<strong>time</strong>(profile,z)<strong>
+lat,lon</strong><strong></strong>(profile)
+<strong>alt</strong>(profile,z) | <strong>z</strong>(z)
+<strong>sectionId</strong>(profile)</pre>    </td>
     <td><pre>Table {<strong></strong>
   Table {
    <strong> lat, lon, time;</strong>

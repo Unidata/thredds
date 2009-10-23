@@ -46,8 +46,8 @@ import ucar.unidata.util.TestDiskCacheUtils;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.ncml.TestOffAggForecastModel;
 import ucar.nc2.iosp.grib.TestBinaryTextIndexes;
+import ucar.nc2.iosp.grib.TestGridGribIosp;
 import ucar.nc2.iosp.gempak.TestReadingGempak;
 
 /**
@@ -185,12 +185,6 @@ public class TestAll {
     suite.addTest( thredds.catalog.TestCatalogAll.suite()); //
 
     suite.addTest( ucar.nc2.TestIosp.suite());   //
-    suite.addTest( new TestSuite(TestBinaryTextIndexes.class));  //
-    suite.addTest( new TestSuite(TestGridGribIosp.class));  //
-    suite.addTest( new TestSuite(TestReadingGempak.class));  //
-
-    suite.addTest( ucar.nc2.iosp.hdf5.TestH5.suite()); // */
-    suite.addTest( ucar.nc2.iosp.hdf4.TestH4.suite()); //
 
    return new TestSetup(suite) {
 

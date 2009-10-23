@@ -51,14 +51,19 @@ public class TestIosp {
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();
     suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestIndexUpdating.class));
-    /*
+
     suite.addTest( new TestSuite( ucar.nc2.iosp.dmsp.TestDmspIosp.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.gini.TestGini.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.nexrad2.TestNexrad2.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.nexrad2.TestNexrad2HiResolution.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.nids.TestNids.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.dorade.TestDorade.class));
-    */
+    suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestGridGribIosp.class));
+    suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestBinaryTextIndexes.class));
+    suite.addTest( new TestSuite( ucar.nc2.iosp.gempak.TestReadingGempak.class));
+    
+    suite.addTest( ucar.nc2.iosp.hdf5.TestH5.suite());
+    suite.addTest( ucar.nc2.iosp.hdf4.TestH4.suite());
     return suite;
   }
 
