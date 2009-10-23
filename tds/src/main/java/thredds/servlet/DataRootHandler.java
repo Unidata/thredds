@@ -279,10 +279,12 @@ public class DataRootHandler {
    * Read the named catalog and extract the data roots from it.
    * Recurse into nested catalog refs that are reletive to contentPath.
    *
+   * <p>DO NOT CALL from unsynchronized method.
+   *
    * @param path file path of catalog, reletive to contentPath, ie catalog fullpath = contentPath + path.
    * @throws IOException if reading catalog fails
    */
-  synchronized void initCatalog(String path) throws IOException {
+  private void initCatalog(String path) throws IOException {
     path = StringUtils.cleanPath(path);
     logCatalogInit.info("\n**************************************\nCatalog init " + path + "\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]");
     initCatalog(path, true);

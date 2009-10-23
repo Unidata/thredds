@@ -475,44 +475,19 @@ public class TestDataRootHandler extends TestCase
 
     buildTdsContextAndDataRootHandler();
 
-    // Call DataRootHandler.initCatalog() on the config catalog
-    try
-    {
-      drh.reinit();
-      drh.initCatalog( path1 );
-      drh.initCatalog( path2 );
-    }
-    catch ( FileNotFoundException e )
-    {
-      fail( e.getMessage() );
-      return;
-    }
-    catch ( IOException e )
-    {
-      fail( "I/O error while initializing catalog <" + cat1Filename + ">: " + e.getMessage() );
-      return;
-    }
-    catch ( IllegalArgumentException e )
-    {
-      fail( "IllegalArgumentException while initializing catalog <" + cat1Filename + ">: " + e.getMessage() );
-      return;
-    }
-    catch ( StringIndexOutOfBoundsException e )
-    {
-      fail( "Failed to initialized catalog <" + cat1Filename + ">: " + e.getMessage());
-      return;
-    }
+    // Call DataRootHandler.initCatalogs() on the config catalogs
+    List<String> catPaths = new ArrayList<String>();
+    catPaths.add( path1 );
+    catPaths.add( path2 );
 
-
-    StringBuilder checkMsg = new StringBuilder();
+    drh.reinit();
+    drh.initCatalogs( catPaths );
 
     // Make sure DRH has "catalog1.xml".
+    StringBuilder checkMsg = new StringBuilder();
     InvCatalogImpl cat1 = (InvCatalogImpl) drh.getCatalog( path1, cat1File.toURI() );
-    if ( cat1 == null )
-    {
-      fail( "Catalog1 <" + path1 + "> not found by DataRootHandler." );
-      return;
-    }
+    assertNotNull( "Catalog1 <" + path1 + "> not found by DataRootHandler.", cat1 );
+
     assertTrue( "Catalog1 <" + path1 + "> not valid: " + checkMsg.toString(),
                 cat1.check( checkMsg ) );
     if ( checkMsg.length() > 0 )
@@ -523,19 +498,13 @@ public class TestDataRootHandler extends TestCase
 
     // Make sure DRH does not have "aSubDir/../catalog2.xml".
     InvCatalogImpl cat2WithDotDot = (InvCatalogImpl) drh.getCatalog( path2, cat2File.toURI() );
-    if ( cat2WithDotDot != null )
-    {
-      fail( "Catalog2 with bad-path (contains \"../\" directory) <" + path2 + "> found by DataRootHandler." );
-      return;
-    }
+    assertNull( "Catalog2 with bad-path (contains \"../\" directory) <" + path2 + "> found by DataRootHandler.",
+                cat2WithDotDot);
 
     // Make sure DRH has "catalog2.xml".
     InvCatalogImpl cat2 = (InvCatalogImpl) drh.getCatalog( cat2Filename, cat2File.toURI() );
-    if ( cat2 == null )
-    {
-      fail( "Catalog2 with good-path <" + cat2Filename + "> not found by DataRootHandler." );
-      return;
-    }
+    assertNotNull( "Catalog2 with good-path <" + cat2Filename + "> not found by DataRootHandler.",
+                   cat2);
     assertTrue( "Catalog2 with good-path <" + cat2Filename + "> not valid: " + checkMsg.toString(),
                 cat2.check( checkMsg ) );
     if ( checkMsg.length() > 0 )
