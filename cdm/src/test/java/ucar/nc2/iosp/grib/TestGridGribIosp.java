@@ -42,8 +42,10 @@ package ucar.nc2.iosp.grib;
 
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.util.CompareNetcdf;
+import ucar.nc2.util.CancelTask;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.TestAll;
+import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
 import java.io.File;
@@ -82,7 +84,7 @@ public class TestGridGribIosp extends TestCase {
     }
     ucar.unidata.io.RandomAccessFile rafB = new ucar.unidata.io.RandomAccessFile(fileBinary, "r");
     rafB.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
-    NetcdfFile ncfileBinary = new NetcdfFile(spiB, rafB, fileBinary, null);
+    NetcdfFile ncfileBinary = new NetcdfFileSPI(spiB, rafB, fileBinary, null);
     //System.out.println( "Time to create Netcdf object using GridGrib Iosp "+
     //  (System.currentTimeMillis() - start) );
     System.out.println( "Binary Netcdf created" );
@@ -99,7 +101,7 @@ public class TestGridGribIosp extends TestCase {
     }
     ucar.unidata.io.RandomAccessFile rafT = new ucar.unidata.io.RandomAccessFile(fileText, "r");
     rafT.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
-    NetcdfFile ncfileText = new NetcdfFile(spiT, rafT, fileText, null);
+    NetcdfFile ncfileText = new NetcdfFileSPI(spiT, rafT, fileText, null);
 
     System.out.println( "Text Netcdf created" );
 
@@ -152,6 +154,12 @@ public class TestGridGribIosp extends TestCase {
         }
       }
     } else {
+    }
+  }
+
+  private static class NetcdfFileSPI extends NetcdfFile {
+    NetcdfFileSPI(IOServiceProvider spi, RandomAccessFile raf, String location, CancelTask cancelTask) throws IOException {
+      super(spi, raf, location, cancelTask);
     }
   }
 

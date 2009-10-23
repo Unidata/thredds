@@ -52,11 +52,15 @@ public class TestH5read extends TestCase {
     super(name);
   }
 
+  String testDir = TestAll.testdataDir + "hdf5/";
+
+
  public void testH5data() {
    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl(""));
 
+
    //TestAll.readAllDir (TestH5.testDir, new FileFilter() {
-   TestAll.readAllDir ("R:/testdata/hdf5/", new FileFilter() {
+   TestAll.readAllDir (testDir, new FileFilter() {
       public boolean accept(File file) {
         String name = file.getPath();
         return (name.endsWith(".h5") || name.endsWith(".H5") || name.endsWith(".he5") || name.endsWith(".nc"));
@@ -76,9 +80,10 @@ public class TestH5read extends TestCase {
     ncfile.close();
   }
 
-  public void problem() {
+  public void utestProblem() {
     //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    readAllData( "C:\\data\\testdata\\hdf5\\samples\\opaque.h5");
+    //readAllData( "C:\\data\\testdata\\hdf5\\samples\\opaque.h5");
+    readAllData( testDir +"compressCompoundBarrowdale.h5");
   }
 
   public static void readAllDir(String dirName) {
