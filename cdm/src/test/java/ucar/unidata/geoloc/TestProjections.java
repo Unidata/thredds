@@ -36,6 +36,7 @@ import junit.framework.*;
 
 import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.geoloc.projection.proj4.AlbersEqualAreaEllipse;
+import ucar.unidata.geoloc.projection.proj4.LambertConformalConicEllipse;
 import ucar.nc2.TestAll;
 
 /**
@@ -45,7 +46,7 @@ import ucar.nc2.TestAll;
  */
 
 public class TestProjections extends TestCase {
-  boolean show = false;
+  boolean show = true;
   int NTRIALS = 10000;
   double TOLERENCE = 1.0e-6;
   int count = 10;
@@ -218,10 +219,17 @@ public class TestProjections extends TestCase {
     assert p.equals(p2);
   }
 
-  public void testAEAE() {
+  public void utestAEAE() {
     testProjectionLonMax(new AlbersEqualAreaEllipse(), 360, 80);
     AlbersEqualAreaEllipse p = new AlbersEqualAreaEllipse();
     AlbersEqualAreaEllipse p2 = (AlbersEqualAreaEllipse) p.constructCopy();
+    assert p.equals(p2);
+  }
+
+  public void utestLCCE() {
+    testProjectionLonMax(new LambertConformalConicEllipse(), 360, 80);
+    LambertConformalConicEllipse p = new LambertConformalConicEllipse();
+    LambertConformalConicEllipse p2 = (LambertConformalConicEllipse) p.constructCopy();
     assert p.equals(p2);
   }
 

@@ -63,7 +63,7 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
 
   // note this assumes that a Station is-a PointFeatureCollection
   // subclasses must override if thats not true
-  // note that subset() may have made a subset of stationsHelper
+  // note that subset() may have made a subset of stationHelper
   public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
     initStationHelper();
 

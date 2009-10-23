@@ -110,6 +110,7 @@ public class TableConfigXML {
       case NestedStructure:
         tableElem.addContent(new Element("structure").addContent(config.structName));
         break;
+      case ParentId:
       case ParentIndex:
         tableElem.addContent(new Element("parentIndex").addContent(config.parentIndex));
         break;

@@ -35,6 +35,7 @@ package ucar.nc2.ft.point.standard;
 import ucar.nc2.*;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.StructureDataIteratorLimited;
+import ucar.nc2.ft.point.StationFeatureImpl;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.constants.FeatureType;
@@ -90,6 +91,7 @@ public class NestedTable {
   private DateFormatter dateFormatter = new DateFormatter();
 
   // A NestedTable Table is created after the Tables have been joined, and the leaves identified.
+  // It is a single chain of Table objects from child to parent. Highest parent is root. Lowest child is leaf
   NestedTable(NetcdfDataset ds, TableConfig config, Formatter errlog) {
     this.ds = ds;
     this.errlog = errlog;
@@ -387,78 +389,6 @@ public class NestedTable {
     leaf.show(formatter, 2);
   }
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // not clear these methods should be here
-
-  // Point
-
-  public StructureDataIterator getObsDataIterator(Cursor cursor, int bufferSize) throws IOException {
-    return root.getStructureDataIterator(cursor, bufferSize);
-  }
-
-  // Station or Station_Profile
-
-  // allow Construct to override and make stations directly
-
-  public List<Station> makeStations(int bufferSize) throws IOException {
-
-    if (root instanceof Table.TableConstruct) {
-      return constructStations((Table.TableConstruct) root);
-    }
-
-    // otherwise
-    ArrayList<Station> result = new ArrayList<Station>();
-    StructureDataIterator siter = getStationDataIterator(bufferSize);
-    while (siter.hasNext()) {
-      StructureData stationData = siter.next();
-      result.add(makeStation(stationData));
-    }
-    return result;
-  }
-
-  // old way
-  public StructureDataIterator getStationDataIterator(int bufferSize) throws IOException {
-    Table stationTable = root;
-    StructureDataIterator siter = stationTable.getStructureDataIterator(null, bufferSize);
-
-    if (stationTable.limit != null) {
-      Variable limitV = ds.findVariable(stationTable.limit);
-      int limit = limitV.readScalarInt();
-      return new StructureDataIteratorLimited(siter, limit);
-    }
-
-    return siter;
-  }
-
-  // Trajectory, Profile, Section
-  public StructureDataIterator getRootFeatureDataIterator(int bufferSize) throws IOException {
-    return root.getStructureDataIterator(null, bufferSize);
-  }
-
-  public StructureDataIterator getLeafFeatureDataIterator(Cursor cursor, int bufferSize) throws IOException {
-    return leaf.getStructureDataIterator(cursor, bufferSize);
-  }
-
-  public StructureDataIterator getMiddleFeatureDataIterator(Cursor cursor, int bufferSize) throws IOException {
-    return leaf.parent.getStructureDataIterator(cursor, bufferSize);  // the middle table
-  }
-
-  // Station Profile
-  public StructureDataIterator getStationProfileDataIterator(Cursor cursor, int bufferSize) throws IOException {
-    if (cursor.what instanceof StationConstruct) {
-      StationConstruct sc = (StationConstruct) cursor.what;
-      return sc.getStructureDataIterator(bufferSize);
-    }
-    return leaf.parent.getStructureDataIterator(cursor, bufferSize);  // the middle table
-  }
-
-  public StructureDataIterator getStationProfileObsDataIterator(Cursor cursor, int bufferSize) throws IOException {
-    if (getFeatureType() != FeatureType.STATION_PROFILE)
-      throw new UnsupportedOperationException("Not a StationProfileFeatureCollection");
-
-    return leaf.getStructureDataIterator(cursor, bufferSize);
-  }
-
   ///////////////////////////////////////////////////////////////////////////////
 
   public double getObsTime(Cursor cursor) {
@@ -489,22 +419,22 @@ public class NestedTable {
   }
 
   public double getLatitude(Cursor cursor) {
-    if (cursor.what instanceof StationConstruct)
-      return ((StationConstruct) cursor.what).getLatitude();
+    //if (cursor.what instanceof StationConstruct)
+    //  return ((StationConstruct) cursor.what).getLatitude();
 
     return latVE.getCoordValue(cursor.tableData);
   }
 
   public double getLongitude(Cursor cursor) {
-    if (cursor.what instanceof StationConstruct)
-      return ((StationConstruct) cursor.what).getLongitude();
+    //if (cursor.what instanceof StationConstruct)
+    //  return ((StationConstruct) cursor.what).getLongitude();
 
     return lonVE.getCoordValue(cursor.tableData);
   }
 
   public EarthLocation getEarthLocation(Cursor cursor) {
-    if (cursor.what instanceof StationConstruct)
-      return ((StationConstruct) cursor.what);
+    //if (cursor.what instanceof StationConstruct)
+    // return ((StationConstruct) cursor.what);
 
     double lat = latVE.getCoordValue(cursor.tableData);
     double lon = lonVE.getCoordValue(cursor.tableData);
@@ -527,18 +457,7 @@ public class NestedTable {
     return sdata.getScalarString(m);
   }
 
-  public Station makeStation(StructureData stationData) {
-    String stationName = stnVE.getCoordValueAsString(stationData);
-    String stationDesc = (stnDescVE == null) ? "" : stnDescVE.getCoordValueString(stationData);
-    String stnWmoId = (wmoVE == null) ? "" : wmoVE.getCoordValueString(stationData);
-
-    double lat = latVE.getCoordValue(stationData);
-    double lon = lonVE.getCoordValue(stationData);
-    double elev = (stnAltVE == null) ? Double.NaN : stnAltVE.getCoordValue(stationData);
-    //double elev = (altVE == null) ? Double.NaN : altVE.getCoordValue(stationData);
-
-    return new StationImpl(stationName, stationDesc, stnWmoId, lat, lon, elev);
-  }
+  //////////////////////////////////////////////////
 
   public StructureData makeObsStructureData(Cursor cursor) {
     return StructureDataFactory.make(cursor.tableData);
@@ -546,7 +465,7 @@ public class NestedTable {
 
   public void addParentJoin(Cursor cursor) throws IOException {
     Table t = leaf;
-    int level = 0 ;
+    int level = 0;
     while (t != null) {
       addParentJoin(t, level, cursor);
       level++;
@@ -561,26 +480,109 @@ public class NestedTable {
       for (Join j : t.extraJoins) {
         sdata.add(j.getJoinData(cursor));
       }
-      cursor.tableData[level] = StructureDataFactory.make( sdata.toArray(new StructureData[ sdata.size()]));  // LOOK should try to consolidate
+      cursor.tableData[level] = StructureDataFactory.make(sdata.toArray(new StructureData[sdata.size()]));  // LOOK should try to consolidate
     }
   }
 
-  /////////////////////////////////////////////////////////
-  // stations get constructed by reading the obs and extracting
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // not clear these methods should be here
 
-  private List<Station> constructStations(Table.TableConstruct stationTable) throws IOException {
+  //// Point
+
+  public StructureDataIterator getObsDataIterator(Cursor cursor, int bufferSize) throws IOException {
+    return root.getStructureDataIterator(cursor, bufferSize);
+  }
+
+  //// Station or Station_Profile
+
+  /* public List<Station> makeStations(StationMaker stationMaker, int bufferSize) throws IOException {
+    // allow TableConstruct to override and make stations directly
+    if (root instanceof Table.TableConstruct) {
+      return constructStations((Table.TableConstruct) root);
+    }
+
+    // otherwise
+    int recnum = 0; // ??
+    ArrayList<Station> result = new ArrayList<Station>();
+    StructureDataIterator siter = getStationDataIterator(bufferSize);
+    while (siter.hasNext()) {
+      StructureData stationData = siter.next();
+      Station s = stationMaker.makeStation( makeStation(stationData), stationData, recnum++);
+      result.add(s);
+    }
+    return result;
+  } */
+
+  public StructureDataIterator getStationDataIterator(int bufferSize) throws IOException {
+    Table stationTable = root;
+    StructureDataIterator siter = stationTable.getStructureDataIterator(null, bufferSize);
+
+    if (stationTable.limit != null) {
+      Variable limitV = ds.findVariable(stationTable.limit);
+      int limit = limitV.readScalarInt();
+      return new StructureDataIteratorLimited(siter, limit);
+    }
+
+    return siter;
+  }
+
+  //// Trajectory, Profile, Section
+  public StructureDataIterator getRootFeatureDataIterator(int bufferSize) throws IOException {
+    return root.getStructureDataIterator(null, bufferSize);
+  }
+
+  public StructureDataIterator getLeafFeatureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+    return leaf.getStructureDataIterator(cursor, bufferSize);
+  }
+
+  public StructureDataIterator getMiddleFeatureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+    return leaf.parent.getStructureDataIterator(cursor, bufferSize);  // the middle table
+  }
+
+  /* Station Profile
+  public StructureDataIterator getStationProfileDataIterator(Cursor cursor, int bufferSize) throws IOException {
+    if (cursor.what instanceof StationConstruct) {
+      StationConstruct sc = (StationConstruct) cursor.what;
+      return sc.getStructureDataIterator(bufferSize);
+    }
+    return leaf.parent.getStructureDataIterator(cursor, bufferSize);  // the middle table
+  }
+
+  public StructureDataIterator getStationProfileObsDataIterator(Cursor cursor, int bufferSize) throws IOException {
+    if (getFeatureType() != FeatureType.STATION_PROFILE)
+      throw new UnsupportedOperationException("Not a StationProfileFeatureCollection");
+
+    return leaf.getStructureDataIterator(cursor, bufferSize);
+  }  */
+
+  // also called from StandardPointFeatureIterator
+  Station makeStation(StructureData stationData) {
+    String stationName = stnVE.getCoordValueAsString(stationData);
+    String stationDesc = (stnDescVE == null) ? "" : stnDescVE.getCoordValueString(stationData);
+    String stnWmoId = (wmoVE == null) ? "" : wmoVE.getCoordValueString(stationData);
+
+    double lat = latVE.getCoordValue(stationData);
+    double lon = lonVE.getCoordValue(stationData);
+    double elev = (stnAltVE == null) ? Double.NaN : stnAltVE.getCoordValue(stationData);
+
+    return new StationImpl(stationName, stationDesc, stnWmoId, lat, lon, elev);
+  }
+
+  /////////////////////////////////////////////////////////
+  // Table.Construct: stations get constructed by reading the obs and extracting
+
+  /* private List<Station> constructStations(Table.TableConstruct stationTable) throws IOException {
     Map<String, StationConstruct> stnMap = new HashMap<String, StationConstruct>();
     ArrayList<Station> result = new ArrayList<Station>();
-    StructureDataIterator iter = stationTable.getStructureDataIterator(null, -1);
+    StructureDataIterator iter = stationTable.getStructureDataIterator(null, -1); // this will be the obs structure
     int recno = 0;
     while (iter.hasNext()) {
       StructureData sdata = iter.next();
-      StationConstruct snew = makeStationConstruct(sdata);
-      StationConstruct s = stnMap.get(snew.getName());
+      String stationName = stnVE.getCoordValueString(sdata);
+      StationConstruct s = stnMap.get(stationName);
       if (s == null) {
-        s = snew;
-        s.struct = stationTable.struct;
-        stnMap.put(s.getName(), s);
+        s = makeStationConstruct(stationName, stationTable.getObsStructure(), sdata);
+        stnMap.put(stationName, s);
         result.add(s);
       }
       double obsTime = timeVE.getCoordValue(sdata);
@@ -591,8 +593,7 @@ public class NestedTable {
     return result;
   }
 
-  private StationConstruct makeStationConstruct(StructureData stationData) {
-    String stationName = stnVE.getCoordValueString(stationData);
+  private StationConstruct makeStationConstruct(String stationName, Structure obsStruct, StructureData stationData) {
     String stationDesc = (stnDescVE == null) ? "" : stnDescVE.getCoordValueString(stationData);
     String stnWmoId = (wmoVE == null) ? "" : wmoVE.getCoordValueString(stationData);
 
@@ -600,15 +601,16 @@ public class NestedTable {
     double lon = lonVE.getCoordValue(stationData);
     double elev = (stnAltVE == null) ? Double.NaN : stnAltVE.getCoordValue(stationData);
 
-    return new StationConstruct(stationName, stationDesc, stnWmoId, lat, lon, elev);
+    return new StationConstruct(stationName, obsStruct, stationDesc, stnWmoId, lat, lon, elev);
   }
 
   private class StationConstruct extends StationImpl {
     List<Index> index;
-    Structure struct;
+    Structure obsStruct;
 
-    StationConstruct(String name, String desc, String wmoId, double lat, double lon, double alt) {
+    StationConstruct(String name, Structure obsStruct, String desc, String wmoId, double lat, double lon, double alt) {
       super(name, desc, wmoId, lat, lon, alt);
+      this.obsStruct = obsStruct;
     }
 
     void addIndex(int recno, double time) {
@@ -630,8 +632,8 @@ public class NestedTable {
       return new IndexedStructureDataIterator();
     }
 
-    class IndexedStructureDataIterator implements ucar.ma2.StructureDataIterator {
-      int count = 0;
+    private class IndexedStructureDataIterator implements ucar.ma2.StructureDataIterator {
+      private int count = 0;
 
       public boolean hasNext() throws IOException {
         return count < index.size();
@@ -640,7 +642,7 @@ public class NestedTable {
       public StructureData next() throws IOException {
         Index i = index.get(count++);
         try {
-          return struct.readStructure(i.recno);
+          return obsStruct.readStructure(i.recno);
         } catch (InvalidRangeException e) {
           throw new IllegalStateException("bad recnum " + i.recno, e);
         }
@@ -653,12 +655,8 @@ public class NestedTable {
         count = 0;
         return this;
       }
-
-      public void finish() {
-      }
-
     }
 
-  }
+  } */
 
 }

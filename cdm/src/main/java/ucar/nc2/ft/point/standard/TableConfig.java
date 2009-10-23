@@ -39,7 +39,6 @@ import ucar.ma2.StructureData;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * This encapsolates the info needed by NestedTable to handle point feature "nested table" datasets.
@@ -85,7 +84,7 @@ public class TableConfig {
   public StructureData sdata;
 
   // Table.Type ParentIndex
-  public Map<Integer, List<Integer>> indexMap;
+  // public Map<Integer, List<Integer>> indexMap;
   public String parentIndex;  // name of variable - parent index (in parent)
 
   // coordinate variable names

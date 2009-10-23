@@ -50,6 +50,7 @@ import java.io.IOException;
  * @since Jan 20, 2009
  */
 public abstract class Table {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Table.class);
 
   public enum CoordName {
     Lat, Lon, Elev, Time, TimeNominal, StnId, StnDesc, WmoId, StnAlt
@@ -58,7 +59,7 @@ public abstract class Table {
   public enum Type {
     ArrayStructure, Construct, Contiguous, LinkedList,
     MultidimInner, MultidimInner3D, MultidimInnerPsuedo, MultidimInnerPsuedo3D, MultidimStructure,
-    NestedStructure, ParentIndex, Singleton, Structure, Top
+    NestedStructure, ParentId, ParentIndex, Singleton, Structure, Top
   }
 
   public static Table factory(NetcdfDataset ds, TableConfig config) {
@@ -96,6 +97,9 @@ public abstract class Table {
       case NestedStructure: // Structure or Sequence is nested in the parent
         return new TableNestedStructure(ds, config);
 
+      case ParentId: // child record has an id for the parent.
+        return new TableParentId(ds, config);
+
       case ParentIndex: // child record has the record index of the parent.
         return new TableParentIndex(ds, config);
 
@@ -117,7 +121,7 @@ public abstract class Table {
   String name;
   FeatureType featureType;
 
-  Table parent;
+  Table parent, child;
   List<Join> extraJoins;
 
   String lat, lon, elev, time, timeNominal;
@@ -144,8 +148,10 @@ public abstract class Table {
     this.stnAlt = config.stnAlt;
     this.limit = config.limit;
 
-    if (config.parent != null)
+    if (config.parent != null) {
       parent = Table.factory(ds, config.parent);
+      parent.child = this;
+    }
 
     this.extraJoins = config.extraJoin;
 
@@ -331,35 +337,26 @@ public abstract class Table {
 
   /**
    * When theres no seperate station table, but info is duplicated in the obs structure.
-   * The name of the structure is in config.structName.
-   * Just return the obs structure iterator, extraction is done elsewhere.
-   * TableConstruct is the parent table, config.structName is the child table.
+   * Must have a TableParentId child table
    * No variables are added to cols.
    * <p/>
    * Used by:
    * BufrCdm StationProfile type
    */
   public static class TableConstruct extends Table {
-    Structure struct;
+    ArrayStructure as; // injected by TableParentId
 
     TableConstruct(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
-      struct = (Structure) ds.findVariable(config.structName);
-      if (struct == null)
-        throw new IllegalStateException("Cant find Structure " + config.structName);
     }
 
     @Override
     protected void showTableExtraInfo(String indent, Formatter f) {
-      f.format("%sArrayStruct=%s%n", indent, struct.getNameAndDimensions());
     }
 
-    public Variable findVariable(String axisName) {
-      return struct.findVariable(axisName);
-    }
-
-    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
-      return struct.getStructureIterator(bufferSize);
+    @Override
+     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+      return as.getStructureDataIterator();
     }
   }
 
@@ -424,8 +421,28 @@ public abstract class Table {
 
     TableParentIndex(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
-      this.indexMap = config.indexMap; // LOOK maybe caclulate this here?
       this.parentIndexName = config.parentIndex;
+
+      // construct the map
+      try {
+        Variable rpIndex = ds.findVariable(config.parentIndex);
+        Array index = rpIndex.read();
+
+        int childIndex = 0;
+        this.indexMap = new HashMap<Integer, List<Integer>>((int) (2 * index.getSize()));
+        while (index.hasNext()) {
+          int parent = index.nextInt();
+          List<Integer> list = indexMap.get(parent);
+          if (list == null) {
+            list = new ArrayList<Integer>();
+            indexMap.put(parent, list);
+          }
+          list.add(childIndex);
+          childIndex++;
+        }
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
 
       checkNonDataVariable(config.parentIndex);
     }
@@ -442,6 +459,105 @@ public abstract class Table {
       return new StructureDataIteratorIndexed(struct, index);
     }
   }
+
+  ///////////////////////////////////////////////////////
+  /**
+   * The children have a field containing the index of the parent.
+   * For efficiency, we scan this data and construct an IndexMap( parentIndex -> list of children),
+   * i.e. we compute the inverse link, parent -> children.
+   * TableParentIndex is the children, config.struct describes the cols.
+   * <p/>
+   * Used by:
+   * CFPointObs
+   */
+  public static class TableParentId extends TableStructure {
+    private ParentInfo[] indexMap;
+    private String parentIdName;
+
+    TableParentId(NetcdfDataset ds, TableConfig config) {
+      super(ds, config);
+      this.parentIdName = config.parentIndex;
+
+      // construct the hash of unique parents, based on the id variable
+      Map<Object, ParentInfo> parentHash;
+      try {
+        Variable rpIndex = ds.findVariable(parentIdName);
+        Array index = rpIndex.read();
+        if (index instanceof ArrayChar)
+          index = ((ArrayChar)index).make1DStringArray();
+
+        parentHash = new HashMap<Object, ParentInfo>((int) (2 * index.getSize()));
+
+        int childIndex = 0;
+        while (index.hasNext()) {
+          Object parent = index.next();
+          ParentInfo info = parentHash.get(parent);
+          if (info == null) {
+            info = new ParentInfo();
+            parentHash.put(parent, info);
+          }
+          info.add(childIndex);
+          childIndex++;
+        }
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+
+      // construct the indexMap and the ArrayStructure containing StructureData for the parents
+      Collection<ParentInfo> parents = parentHash.values();
+      int n = parents.size();
+      this.indexMap = new ParentInfo[n];
+      StructureData[] parentData = new StructureData[n];
+      int count = 0;
+      for (ParentInfo info : parents) {
+        this.indexMap[count] = info;
+        parentData[count++] = info.sdata;
+      }
+      ArrayStructure as = new ArrayStructureW(struct.makeStructureMembers(), new int[] {n}, parentData);
+
+      // find the parent TableCOnstruct and inject the ArrayStructure
+      Table t = this;
+      while (t.parent != null) {
+        t = t.parent;
+        if (t instanceof TableConstruct) {
+          ((TableConstruct) t).as = as;
+          break;
+        }
+      }
+
+      checkNonDataVariable(parentIdName);
+    }
+
+    private class ParentInfo {
+      List<Integer> recnumList = new ArrayList<Integer>();
+      StructureData sdata;
+
+      void add(int recnum) throws IOException {
+        recnumList.add(recnum);
+        if (sdata != null) return;
+        try {
+          sdata = struct.readStructure( recnum);
+        } catch (ucar.ma2.InvalidRangeException e) {
+          log.error("TableParentId read recno=" + recnum, e);
+          throw new RuntimeException(e.getMessage());
+        }
+      }
+    }
+
+    @Override
+    protected void showTableExtraInfo(String indent, Formatter f) {
+      f.format("%sparentIdName=%s, indexMap.size=%d%n", indent, parentIdName, indexMap.length);
+    }
+
+    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+      int parentIndex = cursor.getParentRecnum();
+      ParentInfo info = indexMap[parentIndex];
+      List<Integer> index = (info == null) ? new ArrayList<Integer>() : info.recnumList;
+      return new StructureDataIteratorIndexed(struct, index);
+    }
+
+  }
+
 
   ///////////////////////////////////////////////////////
 

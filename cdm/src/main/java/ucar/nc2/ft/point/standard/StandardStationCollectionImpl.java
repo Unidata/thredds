@@ -64,20 +64,30 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
     this.ft = ft;
   }
 
-  private Station makeStation(StructureData stationData, int recnum) {
+  public Station makeStation(StructureData stationData, int recnum) {
     Station s = ft.makeStation(stationData);
     return new StandardStationFeatureImpl(s, timeUnit, stationData, recnum);
   }
 
   @Override
+  /* protected void initStationHelper() {
+    try {
+      stationHelper = new StationHelper();
+      stationHelper.setStations( ft.makeStations(this, -1));
+    } catch (IOException ioe) {
+      throw new RuntimeException(ioe);
+    }
+  }  */
+
   protected void initStationHelper() {
     try {
       stationHelper = new StationHelper();
+
       int count = 0;
       StructureDataIterator siter = ft.getStationDataIterator(-1);
       while (siter.hasNext()) {
         StructureData stationData = siter.next();
-        stationHelper.addStation(makeStation(stationData, count++));
+        stationHelper.addStation( makeStation(stationData, count++));
       }
     } catch (IOException ioe) {
       throw new RuntimeException(ioe);

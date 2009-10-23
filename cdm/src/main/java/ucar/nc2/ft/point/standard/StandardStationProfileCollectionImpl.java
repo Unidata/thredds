@@ -35,15 +35,12 @@ package ucar.nc2.ft.point.standard;
 import ucar.nc2.ft.point.*;
 import ucar.nc2.ft.*;
 import ucar.nc2.units.DateUnit;
-import ucar.nc2.units.DateFormatter;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.unidata.geoloc.Station;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Object Heirarchy:
@@ -67,7 +64,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
   }
 
   @Override
-  protected void initStationHelper() {
+   protected void initStationHelper() {
     try {
       stationHelper = new StationHelper();
       int count = 0;
@@ -81,7 +78,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     }
   }
 
-  private Station makeStation(StructureData stationData, int recnum) {
+  public Station makeStation(StructureData stationData, int recnum) {
     Station s = ft.makeStation(stationData);
     return new StandardStationProfileFeature(s, stationData, recnum);
   }
@@ -150,7 +147,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
 
       StandardStationProfileFeatureIterator(Cursor cursor) throws IOException {
         this.cursor = cursor;
-        iter = ft.getStationProfileDataIterator(cursor, -1);
+        iter = ft.getMiddleFeatureDataIterator(cursor, -1);
       }
 
       public boolean hasNext() throws IOException {
@@ -198,30 +195,12 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     // iterate over obs in the profile
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      StructureDataIterator structIter = ft.getStationProfileObsDataIterator(cursor, bufferSize);
+      StructureDataIterator structIter = ft.getLeafFeatureDataIterator(cursor, bufferSize);
       StandardPointFeatureIterator iter = new StandardPointFeatureIterator(ft, timeUnit, structIter, cursor.copy());
       if ((boundingBox == null) || (dateRange == null) || (npts < 0))
         iter.setCalculateBounds(this);
       return iter;
     }
-
-    /* the iterator over the observations
-    private class StandardStationProfilePointIterator extends StandardPointFeatureIterator {
-      StationFeatureImpl station;
-
-      StandardStationProfilePointIterator(StructureDataIterator structIter, Cursor cursor) throws IOException {
-        super(ft, timeUnit, structIter, cursor.copy());
-      }
-
-      // decorate to capture npts
-      @Override
-      public boolean hasNext() throws IOException {
-        boolean result = super.hasNext();
-        if (!result)
-          setNumberPoints(getCount());
-        return result;
-      }
-    } */
 
   }
 
