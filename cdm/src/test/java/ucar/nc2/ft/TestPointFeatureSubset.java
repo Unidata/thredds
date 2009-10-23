@@ -67,7 +67,7 @@ public class TestPointFeatureSubset extends TestCase {
     testFeatureDataset("D:/work/arnaud/sampleDataset.nc", FeatureType.ANY_POINT, true);
   }
 
-  public void testCdmRemote() throws IOException {
+  public void utestCdmRemote() throws IOException {
     testFeatureDataset("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", FeatureType.STATION, true);
   }
 

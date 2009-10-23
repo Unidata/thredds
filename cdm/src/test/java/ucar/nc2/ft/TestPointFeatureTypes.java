@@ -202,8 +202,8 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
 
-  public void utestProblemGemPak() throws IOException {
-    testPointDataset("D:\\formats\\gempak\\surface\\20090521_sao.gem", FeatureType.STATION, true);
+  public void testProblemGemPak() throws Exception {
+    testDons("Q:/cdmUnitTest/formats/gempak/surface/20090521_sao.gem", true);
   }
 
   public void utestProblem() throws IOException {

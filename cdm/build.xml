@@ -845,12 +845,16 @@
 
   <!-- netcdfUI webstart release -->
   <target name="releaseWebstart" description="make webstart release; do dist or release first">
+    <copy file="${root.dir}/netCDFtools.jnlp" toDir="${webstart_dir}" overwrite="true" />
+
     <signjar alias="idv" jar="${build.dir}/${jarUI}" keystore="${keystore}" signedjar="${webstart_dir}/netcdfUI.jar"
              storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${bounce.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/bounce.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${bufrTables.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/bufrTables.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${ehcache.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/ehcache.jar" storepass="${keystore.password}"/>
      <signjar alias="idv" jar="${lib.dir}/release/${grib.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/grib.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${jdom.jar}" keystore="${keystore}"
