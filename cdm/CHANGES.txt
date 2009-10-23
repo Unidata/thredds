@@ -4,7 +4,9 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  7:
-  StandardSection implementation, add to PointFeatureDatasetViewer
+  H5iosp: deal with compressed, chunked compound types
+  ucar.nc2.iosp.LayoutBB now a subclass of Layout
+  ucar.nc2.dt.point.StandardSection implementation, add to PointFeatureDatasetViewer
   HdfEos: look for XDim/YDim coordinates with GCTP_GEO projection, these are lat/lon
   CPpointObs: clarify the variants.
   Variable.getNameAndDimensions() had bug when theres a '%' in the name.

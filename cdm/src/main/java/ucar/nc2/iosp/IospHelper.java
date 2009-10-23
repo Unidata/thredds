@@ -91,6 +91,7 @@ public class IospHelper {
    * @param dataType dataType of the variable
    * @param arr      primitive array to read data into
    * @param byteOrder if equal to RandomAccessFile.ORDER_XXXX, set the byte order just before reading
+   * @param convertChar true if bytes should be converted to char for dataType CHAR
    * @return primitive array with data read in
    * @throws java.io.IOException on read error
    */
@@ -268,7 +269,7 @@ public class IospHelper {
   } //
 
   /**
-   * Read data subset from PositioningDataInputStream, create primitive array of size Layout.getTotalNelems.
+   * Read data subset from ByteBuffer, create primitive array of size Layout.getTotalNelems.
    * Reading is controlled by the Layout object.
    *
    * @param layout    handles skipping around in the file, privide ByteBuffer to read from
@@ -278,8 +279,10 @@ public class IospHelper {
    * @throws java.io.IOException on read error
    */
   static public Object readDataFill(LayoutBB layout, DataType dataType, Object fillValue) throws java.io.IOException {
-    Object arr = (fillValue == null) ? makePrimitiveArray((int) layout.getTotalNelems(), dataType) :
-        makePrimitiveArray((int) layout.getTotalNelems(), dataType, fillValue);
+    long size = layout.getTotalNelems();
+    if (dataType == DataType.STRUCTURE) size *= layout.getElemSize();
+    Object arr = (fillValue == null) ? makePrimitiveArray((int) size, dataType) :
+        makePrimitiveArray((int) size, dataType, fillValue);
     return readData(layout, dataType, arr);
   }
 
@@ -380,10 +383,11 @@ public class IospHelper {
         for (int i = 0; i < chunk.getNelems()*recsize; i++)
           pa[pos++] = bb.get();
       }
+      return pa;
     }
 
     throw new IllegalStateException();
-  } // */
+  }
 
   static public void copyFromByteBuffer(ByteBuffer bb, StructureMembers.Member m, IndexIterator result) {
     int offset = m.getDataParam();
@@ -432,7 +436,8 @@ public class IospHelper {
   static public Object makePrimitiveArray(int size, DataType dataType) {
     Object arr = null;
 
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.ENUM1)  || (dataType == DataType.OPAQUE)) {
+    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.ENUM1)
+        || (dataType == DataType.OPAQUE) || (dataType == DataType.STRUCTURE)) {
       arr = new byte[size];
 
     } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
@@ -514,6 +519,18 @@ public class IospHelper {
       String[] pa = new String[size];
       for (int i = 0; i < size; i++) pa[i] = (String) fillValue;
       return pa;
+
+    } else if (dataType == DataType.STRUCTURE) {
+      byte[] pa = new byte[size];
+      byte[] val = (byte []) fillValue;
+      int count = 0;
+      while (count < size) {
+        for (int i = 0; i < val.length; i++) {
+          pa[count++] = val[i];
+        }
+      }
+      return pa;
+
     }
 
     throw new IllegalStateException();

@@ -96,7 +96,6 @@ public class H5iosp extends AbstractIOServiceProvider {
 
   private RandomAccessFile myRaf;
   private H5header headerParser;
-  private ucar.nc2.NetcdfFile ncfile; // debug
 
   /////////////////////////////////////////////////////////////////////////////
   // reading
@@ -105,7 +104,6 @@ public class H5iosp extends AbstractIOServiceProvider {
                    ucar.nc2.util.CancelTask cancelTask) throws IOException {
 
     this.myRaf = raf;
-    this.ncfile = ncfile;
     headerParser = new H5header(myRaf, ncfile, this);
     headerParser.read(null);
 
@@ -128,6 +126,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
     Object data;
+    Layout layout;
 
     if (vinfo.useFillValue) { // fill value only
       Object pa = IospHelper.makePrimitiveArray((int) wantSection.computeSize(), dataType, vinfo.getFillValue());
@@ -140,8 +139,8 @@ public class H5iosp extends AbstractIOServiceProvider {
       if (debugFilter) System.out.println("read variable filtered " + v2.getName() + " vinfo = " + vinfo);
       assert vinfo.isChunked;
       ByteOrder bo = (vinfo.typeInfo.byteOrder == 0) ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
-      H5tiledLayoutBB layout = new H5tiledLayoutBB(v2, wantSection, myRaf, vinfo.mfp.getFilters(), bo);
-      data = IospHelper.readDataFill(layout, v2.getDataType(), vinfo.getFillValue());
+      layout = new H5tiledLayoutBB(v2, wantSection, myRaf, vinfo.mfp.getFilters(), bo);
+      data = IospHelper.readDataFill((LayoutBB) layout, v2.getDataType(), vinfo.getFillValue());
 
     } else { // normal case
       if (debug) System.out.println("read variable " + v2.getName() + " vinfo = " + vinfo);
@@ -172,7 +171,6 @@ public class H5iosp extends AbstractIOServiceProvider {
         wantSection = wantSection.removeVlen(); // remove vlen dimension
       }
 
-      Layout layout;
       if (vinfo.isChunked) {
         layout = new H5tiledLayout((H5header.Vinfo) v2.getSPobject(), readDtype, wantSection);
       } else {
@@ -183,6 +181,8 @@ public class H5iosp extends AbstractIOServiceProvider {
 
     if (data instanceof Array)
       return (Array) data;
+    else if (dataType == DataType.STRUCTURE)
+      return convertStructure((Structure) v2, layout, wantSection.getShape(), (byte[]) data);
     else
       return Array.factory(dataType.getPrimitiveClassType(), wantSection.getShape(), data);
   }
@@ -249,7 +249,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
     }
 
-    if (dataType == DataType.STRUCTURE) {  // LOOK what about subset ?
+    /* if (dataType == DataType.STRUCTURE) {  // LOOK what about subset ?
       boolean hasStrings = false;
       Structure s = (Structure) v;
 
@@ -291,6 +291,24 @@ public class H5iosp extends AbstractIOServiceProvider {
       return asbb;
     } // */
 
+    if (dataType == DataType.STRUCTURE) {  // LOOK what about subset ?
+      int recsize = layout.getElemSize();
+      long size = recsize * layout.getTotalNelems();
+      byte[] byteArray = new byte[(int)size];
+      while (layout.hasNext()) {
+        Layout.Chunk chunk = layout.next();
+        if (chunk == null) continue;
+        if (debugStructure)
+          System.out.println(" readStructure " + v.getName() + " chunk= " + chunk + " index.getElemSize= " + layout.getElemSize());
+        // copy bytes directly into the underlying byte[] LOOK : assumes contiguous layout ??
+        myRaf.seek(chunk.getSrcPos());
+        myRaf.read(byteArray, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
+      }
+
+      // place data into an ArrayStructureBB
+      return convertStructure((Structure) v, layout, shape, byteArray);
+    }
+
     // normal case
     return readDataPrimitive(layout, dataType, shape, fillValue, byteOrder, true);
   }
@@ -305,6 +323,38 @@ public class H5iosp extends AbstractIOServiceProvider {
       if (debugVlen) System.out.printf(" convertReference 0x%x to %s %n", reference, result[i]);
     }
     return Array.factory(String.class, new int[]{nelems}, result);
+  }
+
+  private ArrayStructure convertStructure(Structure s, Layout layout, int[] shape, byte[] byteArray) throws IOException {
+    boolean hasStrings = false;
+
+    // create StructureMembers - must set offsets
+    StructureMembers sm = s.makeStructureMembers();
+    for (StructureMembers.Member m : sm.getMembers()) {
+      Variable v2 = s.findVariable(m.getName());
+      H5header.Vinfo vm = (H5header.Vinfo) v2.getSPobject();
+      if (vm.typeInfo.byteOrder >= 0) // apparently each member may have seperate byte order (!!!??)
+        m.setDataObject(vm.typeInfo.byteOrder == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+      m.setDataParam((int) (vm.dataPos)); // offset since start of Structure
+      if (v2.getDataType() == DataType.STRING)
+        hasStrings = true;
+    }
+    int recsize = layout.getElemSize();
+    sm.setStructureSize(recsize); // gotta calculate this ourself
+
+    // place data into an ArrayStructureBB
+    ByteBuffer bb = ByteBuffer.wrap(byteArray);
+    ArrayStructureBB asbb = new ArrayStructureBB(sm, shape, bb, 0);
+
+    // strings are stored on the heap, and must be read separately
+    if (hasStrings) {
+      int destPos = 0;
+      for (int i = 0; i < layout.getTotalNelems(); i++) { // loop over each structure
+        convertStrings(asbb, destPos, sm);
+        destPos += layout.getElemSize();
+      }
+    }
+    return asbb;
   }
 
   void convertStrings(ArrayStructureBB asbb, int pos, StructureMembers sm) throws java.io.IOException {

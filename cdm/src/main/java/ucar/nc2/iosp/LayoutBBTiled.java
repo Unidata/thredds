@@ -236,6 +236,12 @@ public class LayoutBBTiled implements LayoutBB {
       if (db == null) db = bb.asDoubleBuffer();
       return db;
     }
+
+    // artifact of overriding Layout
+    public long getSrcPos(){
+      throw new UnsupportedOperationException();
+    }
+
   }
 
 }

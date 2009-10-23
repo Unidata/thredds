@@ -146,12 +146,12 @@ lat,lon</strong>(profile)
 <strong>time</strong>(section, profile, z)|<strong>time</strong>(section, profile)
 <strong>lat,lon</strong>(section, profile)
 <strong>alt</strong>(section,profile,z) | <strong>z</strong>(z)     </pre>    </td>
-    <td>      <pre>data(obs)
+    <td>      <pre>// contig z, profiles in any sequence
+data(obs)
 <strong>time</strong>( profile) | <strong>time</strong>(obs)<strong>
 lat,lon</strong>(profile)
 <strong>z</strong>(obs) | <strong>z</strong>(z)
-numProfiles(section), numObs(profile) |
-  sectionIndex(profile), profileIndex(obs)</pre>    </td>
+<strong>sectionIndex</strong>(profile),<strong>numObs</strong>(profile)</pre>    </td>
     <td>      <pre>data(obs)<strong>
 time</strong>(obs)<strong>
 lat,lon</strong>(obs)

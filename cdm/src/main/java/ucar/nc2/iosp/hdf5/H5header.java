@@ -2663,7 +2663,10 @@ public class H5header {
 
     public String getName() {
       DataType dtype = getNCtype(type, byteSize);
-      return dtype.toString() + " size= "+byteSize;
+      if (dtype != null)
+        return dtype.toString() + " size= "+byteSize;
+      else
+        return "type="+Integer.toString(type) + " size= "+byteSize;
     }
 
     void read(String objectName) throws IOException {

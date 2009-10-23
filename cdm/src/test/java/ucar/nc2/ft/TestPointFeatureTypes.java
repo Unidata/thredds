@@ -138,9 +138,12 @@ public class TestPointFeatureTypes extends TestCase {
     assert 14 == testPointDataset(syn_topdir + "stationProfileRaggedJoinTime.ncml", FeatureType.STATION_PROFILE, false);
 
     assert 100 == testPointDataset(syn_topdir + "sectionMultidim.ncml", FeatureType.SECTION, false);
+    assert 100 == testPointDataset(syn_topdir + "sectionMultidimJoinZ.ncml", FeatureType.SECTION, false);
+    assert 50 == testPointDataset(syn_topdir + "sectionSingle.ncml", FeatureType.SECTION, false);
     assert 12 == testPointDataset(syn_topdir + "sectionRagged.ncml", FeatureType.SECTION, false);
 
-    assert 13 == testPointDataset(syn_topdir + "stationFlat.ncml", FeatureType.STATION, false);
+      assert 13 == testPointDataset(syn_topdir + "stationFlat.ncml", FeatureType.STATION, false);
+      
   }
 
   public void testProblem() throws IOException {
@@ -595,8 +598,7 @@ public class TestPointFeatureTypes extends TestCase {
     System.out.println("Flatten= " + bb2.toString2());
     PointFeatureCollection flatten = sfc.flatten(bb2, null);
     int countFlat = countLocations(flatten);
-    if (countFlat > countStns)
-      System.out.printf("WRONG! countFlat=%s > countStns=%d%n", countFlat, countStns);
+    assert countFlat <= countStns;
 
     flatten = sfc.flatten(null, null);
     return countObs(flatten);
@@ -730,8 +732,7 @@ public class TestPointFeatureTypes extends TestCase {
       if (this == oo) return true;
       if (!(oo instanceof MyLocation)) return false;
       MyLocation other = (MyLocation) oo;
-      if (!Double.isNaN(alt) && (alt != other.alt)) return false;
-      return (lat == other.lat) && (lon == other.lon);
+      return (lat == other.lat) && (lon == other.lon) && (alt == other.alt);
     }
 
     @Override
@@ -740,8 +741,7 @@ public class TestPointFeatureTypes extends TestCase {
         int result = 17;
         result += 37 * result + lat * 10000;
         result += 37 * result + lon * 10000;
-        if (!Double.isNaN(alt))
-          result += 37 * result + alt * 10000;
+        result += 37 * result + alt * 10000;
         hashCode = result;
       }
       return hashCode;

@@ -63,7 +63,7 @@ import java.nio.*;
  * @since Jan 9, 2008
  */
 
-public interface LayoutBB {
+public interface LayoutBB extends Layout {
 
   /**
    * Get total number of elements in the wanted subset.
@@ -98,7 +98,7 @@ public interface LayoutBB {
    * A chunk of data that is contiguous in both the source and destination.
    * Read nelems from ByteBuffer at filePos, store in destination at startElem.
    */
-  public interface Chunk {
+  public interface Chunk extends Layout.Chunk {
 
     /**
      * Get the position in source <Type>Buffer where to read or write: "file position"
