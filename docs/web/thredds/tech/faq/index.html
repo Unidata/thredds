@@ -25,6 +25,11 @@
   </pre>
 </blockquote>
 
+<p><strong>Q: I'm seeing the error &quot;Inconsistent array length read: 538976288 !=  1668244581' when I open the dataset in the IDV. Why?</strong></p>
+<blockquote>
+  <p>The error &quot;Inconsistent array length read&quot; only tells you that  there was an error on the server in the middle of responding to an OPeNDAP request. You then must look in the   <strong>threddsServlet.log</strong> and find the error to know why. <br>
+  </p>
+</blockquote>
 <hr width="100%">
 <h2>Tomcat<a name="tomcat"></a> FAQ </h2>
 <p><strong>Q: Im getting the error &quot;java.lang.OutOfMemoryError: PermGen<a name="PermGen"></a> space&quot;. Whats up?</strong></p>

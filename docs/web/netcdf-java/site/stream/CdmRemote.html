@@ -8,7 +8,6 @@ pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid
 code {font-size: 11pt;}
 dl {margin: 10px 5px 5px 15px;)
 .style1 {font-style: italic}
-.style1 {font-weight: bold}
 </style>
 </head>
 
@@ -25,10 +24,17 @@ dl {margin: 10px 5px 5px 15px;)
 <pre>  <strong>req</strong>=( <strong>CDL</strong> | <strong>NcML</strong> | <strong>capabilities</strong> | <strong>header</strong> | <strong>data</strong>)
   <strong>var</strong>=vars
 where:
-  vars := varspec | varspec[,varspec]
+  vars := varspec | varspec[',' varspec]
   varspec := varname[subsetSpec]
   varname := valid variable name
-  subsetSpec := '<strong>(</strong>' fortran-90 array spec '<strong>)</strong>'
+  subsetSpec := '(' fortran-90 arraySpec ')'
+
+  fortran-90 arraySpec := dim | dim ',' dims
+  dim := ':' | slice | start ':' end | start ':' end ':' stride
+  slice := INTEGER
+  start := INTEGER
+  stride := INTEGER
+  end := INTEGER
 </pre>
 <ul>
   <li>request names are case-insensitive</li>
