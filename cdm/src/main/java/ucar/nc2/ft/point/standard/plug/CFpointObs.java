@@ -334,20 +334,13 @@ public class CFpointObs extends TableConfigurerImpl {
     EncodingInfo info = identifyEncoding(ds, CF.FeatureType.stationProfile, errlog);
     if (info == null) return null;
 
-    TableConfig stationTable = makeStationTable(ds, FeatureType.STATION_PROFILE, info, errlog);
-    if (stationTable == null) return null;
-
-    Dimension stationDim = stationTable.dim;
-    Dimension profileDim = null;
-    Dimension zDim = null;
-
     Variable time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
     if (time.getRank() == 0) {
-      errlog.format("stationProfile cannot have a scalar time coordinate%n");
+      errlog.format("section cannot have a scalar time coordinate%n");
       return null;
     }
 
-    // find the non-station altitude
+        // find the non-station altitude
     Variable z = findZAxisNotStationAlt(ds);
     if (z == null) {
       errlog.format("stationProfile must have a z coordinate%n");
@@ -357,6 +350,27 @@ public class CFpointObs extends TableConfigurerImpl {
       errlog.format("stationProfile cannot have a scalar z coordinate%n");
       return null;
     }
+
+    // distinguish multidim from flat
+    if ((info.encoding == Encoding.multidim) && (time.getRank() < 3) && (z.getRank() < 3)) {
+      Variable parentId = identifyParent(ds, CF.FeatureType.stationProfile);
+      if ((parentId != null) && (parentId.getRank() == 1) && (parentId.getDimension(0).equals(time.getDimension(0)))){
+        if (time.getRank() == 1) // multidim time must be 2 or 3 dim
+          info =  new EncodingInfo(Encoding.flat, parentId);
+        else if (time.getRank() == 2) {
+          Dimension zDim = z.getDimension(z.getRank()-1); // may be z(z) or z(profile, z)
+          if (zDim.equals(time.getDimension(1))) // flat 2D time will have time as inner dim 
+            info =  new EncodingInfo(Encoding.flat, parentId);
+        }
+      }
+    }
+
+    TableConfig stationTable = makeStationTable(ds, FeatureType.STATION_PROFILE, info, errlog);
+    if (stationTable == null) return null;
+
+    Dimension stationDim = stationTable.dim;
+    Dimension profileDim = null;
+    Dimension zDim = null;
 
     switch (info.encoding) {
       case single: {
@@ -508,8 +522,25 @@ public class CFpointObs extends TableConfigurerImpl {
         break;
       }
 
-      case flat:
-        throw new UnsupportedOperationException("CFpointObs: stationProfile flat encoding");
+     case flat:
+        profileDim = time.getDimension(0); // may be time(profile) or time(profile, z)
+        Variable parentId = identifyParent(ds, CF.FeatureType.stationProfile);
+
+        TableConfig profileTable = makeStructTable(ds, FeatureType.SECTION, info, errlog);
+        profileTable.parentIndex = parentId.getName();
+        profileTable.stnId = findNameVariableWithStandardNameAndDimension(ds, STATION_ID, profileDim, errlog);
+        profileTable.stnDesc = findNameVariableWithStandardNameAndDimension(ds, STATION_DESC, profileDim, errlog);
+        profileTable.stnWmoId = findNameVariableWithStandardNameAndDimension(ds, STATION_WMOID, profileDim, errlog);
+        profileTable.stnAlt = findNameVariableWithStandardNameAndDimension(ds, STATION_ALTITUDE, profileDim, errlog);
+        stationTable.addChild(profileTable);
+
+        zDim = z.getDimension(z.getRank() - 1); // may be z(z) or z(profile, z)
+        TableConfig zTable = makeMultidimInner(ds, profileTable, zDim, errlog);
+        if (z.getRank() == 1) // z(z)
+          zTable.addJoin(new JoinArray(z, JoinArray.Type.raw, 0));
+        profileTable.addChild(zTable);
+
+        break;
     }
 
     return stationTable;
@@ -767,6 +798,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
   private Variable identifyParent(NetcdfDataset ds, CF.FeatureType ftype) {
     switch (ftype) {
+      case stationProfile:
       case stationTimeSeries:
         return Evaluator.getVariableWithAttribute(ds, STANDARD_NAME, STATION_ID);
       case trajectory:

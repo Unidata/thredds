@@ -111,6 +111,8 @@ public class TestPointFeatureTypes extends TestCase {
     assert 15 == testPointDataset(syn_topdir + "stationMultidimUnlimited.nc", FeatureType.STATION, false);
     assert 6 == testPointDataset(syn_topdir + "stationRaggedContig.ncml", FeatureType.STATION, false);
     assert 6 == testPointDataset(syn_topdir + "stationRaggedIndex.ncml", FeatureType.STATION, false);
+    assert 13 == testPointDataset(syn_topdir + "stationFlat.ncml", FeatureType.STATION, false);
+    assert 13 == testPointDataset(syn_topdir + "stationFlat.nc", FeatureType.STATION, false);
 
     assert 10 == testPointDataset(syn_topdir + "trajSingle.ncml", FeatureType.TRAJECTORY, false);
     assert 20 == testPointDataset(syn_topdir + "trajMultidim.ncml", FeatureType.TRAJECTORY, false);
@@ -137,20 +139,23 @@ public class TestPointFeatureTypes extends TestCase {
     assert 36 == testPointDataset(syn_topdir + "stationProfileMultidimJoinTimeAndZ.ncml", FeatureType.STATION_PROFILE, false);
     assert 14 == testPointDataset(syn_topdir + "stationProfileRagged.ncml", FeatureType.STATION_PROFILE, false);
     assert 14 == testPointDataset(syn_topdir + "stationProfileRaggedJoinTime.ncml", FeatureType.STATION_PROFILE, false);
+    assert 420 == testPointDataset(syn_topdir + "stationProfileFlat.ncml", FeatureType.STATION_PROFILE, false);
+    assert 420 == testPointDataset(syn_topdir + "stationProfileFlat.nc", FeatureType.STATION_PROFILE, false);
 
     assert 100 == testPointDataset(syn_topdir + "sectionMultidim.ncml", FeatureType.SECTION, false);
     assert 100 == testPointDataset(syn_topdir + "sectionMultidimJoinZ.ncml", FeatureType.SECTION, false);
     assert 50 == testPointDataset(syn_topdir + "sectionSingle.ncml", FeatureType.SECTION, false);
     assert 12 == testPointDataset(syn_topdir + "sectionRagged.ncml", FeatureType.SECTION, false);
 
-    assert 13 == testPointDataset(syn_topdir + "stationFlat.ncml", FeatureType.STATION, false);
     assert 420 == testPointDataset(syn_topdir + "sectionFlat.ncml", FeatureType.SECTION, false);
     assert 420 == testPointDataset(syn_topdir + "sectionFlat.nc", FeatureType.SECTION, false);
+
+
 
   }
 
   public void testProblem() throws IOException {
-    testPointDataset(syn_topdir + "sectionFlat.ncml", FeatureType.SECTION, true);
+    testPointDataset(syn_topdir + "stationProfileFlat.ncml", FeatureType.STATION_PROFILE, true);
   }
 
   public void testCF() throws IOException {
