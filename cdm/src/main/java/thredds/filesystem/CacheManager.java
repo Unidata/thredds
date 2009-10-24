@@ -57,7 +57,7 @@ import ucar.nc2.util.IO;
 public class CacheManager {
   static private org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger(thredds.filesystem.CacheManager.class);
   static private net.sf.ehcache.CacheManager cacheManager;
-  static private boolean debug = true, debugConfig = true;
+  static private boolean debugConfig = true;
 
   static public net.sf.ehcache.CacheManager getEhcache() {
     return cacheManager;

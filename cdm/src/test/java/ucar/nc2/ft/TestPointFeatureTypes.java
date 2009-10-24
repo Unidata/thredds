@@ -46,6 +46,7 @@ import ucar.nc2.units.*;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.TestAll;
 import ucar.nc2.NCdumpW;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.ft.point.MultipleNestedPointCollectionImpl;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
@@ -142,12 +143,14 @@ public class TestPointFeatureTypes extends TestCase {
     assert 50 == testPointDataset(syn_topdir + "sectionSingle.ncml", FeatureType.SECTION, false);
     assert 12 == testPointDataset(syn_topdir + "sectionRagged.ncml", FeatureType.SECTION, false);
 
-      assert 13 == testPointDataset(syn_topdir + "stationFlat.ncml", FeatureType.STATION, false);
-      
+    assert 13 == testPointDataset(syn_topdir + "stationFlat.ncml", FeatureType.STATION, false);
+    assert 420 == testPointDataset(syn_topdir + "sectionFlat.ncml", FeatureType.SECTION, false);
+    assert 420 == testPointDataset(syn_topdir + "sectionFlat.nc", FeatureType.SECTION, false);
+
   }
 
   public void testProblem() throws IOException {
-    testPointDataset(syn_topdir + "stationFlat.ncml", FeatureType.STATION, true);
+    testPointDataset(syn_topdir + "sectionFlat.ncml", FeatureType.SECTION, true);
   }
 
   public void testCF() throws IOException {
@@ -202,8 +205,12 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
 
-  public void testProblemGemPak() throws Exception {
-    testDons("Q:/cdmUnitTest/formats/gempak/surface/20090521_sao.gem", true);
+  public void testGempakProblem() throws Exception {
+    NetcdfFile.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("NetcdfFile/showRequest"));
+
+    testDon2("Y:\\ldm\\gempak\\surface/20091023_sao.gem", true);
+    //testDon2("Q:/cdmUnitTest/formats/gempak/surface/20090521_sao.gem", true);
+    //testPointVsAny("Q:/cdmUnitTest/formats/gempak/surface/20090521_sao.gem", true);
   }
 
   public void utestProblem() throws IOException {
@@ -358,7 +365,6 @@ public class TestPointFeatureTypes extends TestCase {
         count = testSectionFeatureCollection((SectionFeatureCollection) fc, show);
 
       } else {
-
         count = testNestedPointFeatureCollection((NestedPointFeatureCollection) fc, show);
       }
     }
@@ -752,6 +758,72 @@ public class TestPointFeatureTypes extends TestCase {
 
   /////////////////////////////////////////////////////////
 
+  private void testPointVsAny(String file, boolean showIO) throws IOException {
+    long start = System.currentTimeMillis();
+    if (showIO)
+      ucar.unidata.io.RandomAccessFile.setDebugAccess(true);
+
+    LatLonRect llr = new LatLonRect(new LatLonPointImpl(33.4, -92.2), new LatLonPointImpl(47.9, -75.89));
+    System.out.println("subset box = " + llr);
+
+    Formatter buf = new Formatter();
+    FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.POINT, file, null, buf);
+    if (pods != null) {
+      System.out.println("================\nOpen as POINT");
+      readAll(pods, llr, "POINT", true);
+    }
+
+    pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.ANY_POINT, file, null, buf);
+    if (pods != null) {
+      System.out.println("======================\nOpen as ANY_POINT");
+      readAll(pods, llr, "ANY_POINT", true);
+    }
+
+  }
+
+  private void readAll(FeatureDatasetPoint pods, LatLonRect llr, String what, boolean showIO) throws IOException {
+    long start = System.currentTimeMillis();
+    if (showIO)
+      ucar.unidata.io.RandomAccessFile.setDebugAccess(true);
+
+    List<FeatureCollection> collectionList = pods.getPointFeatureCollectionList();
+    FeatureCollection fc = collectionList.get(0);
+
+    PointFeatureCollection collection = null;
+    if (fc instanceof PointFeatureCollection) {
+      collection = (PointFeatureCollection) fc;
+      collection = collection.subset(llr, null);
+      what += ".subset";
+
+    } else if (fc instanceof NestedPointFeatureCollection) {
+      NestedPointFeatureCollection npfc = (NestedPointFeatureCollection) fc;
+      collection = npfc.flatten(llr, null);
+      what += ".flatten";
+    } else {
+      throw new IllegalArgumentException("Can't handle collection of type " + fc.getClass().getName());
+    }
+
+    PointFeatureIterator dataIterator = collection.getPointFeatureIterator(-1);
+    try {
+      int numObs = 0;
+      while (dataIterator.hasNext()) {
+        PointFeature po = (PointFeature) dataIterator.next();
+        if (numObs % 1000 == 0)
+          System.out.printf("%d el = %s %n", numObs, po.getLocation());
+        numObs++;
+      }
+
+      long took = System.currentTimeMillis() - start;
+      System.out.printf("%s took %d msecs nobs = %d%n  seeks= %d Mbytes read= %d%n", what, took, numObs,
+              ucar.unidata.io.RandomAccessFile.getDebugNseeks(), ucar.unidata.io.RandomAccessFile.getDebugNbytes()/(1000 * 1000));
+    } finally {
+      if (dataIterator != null)
+        dataIterator.finish();
+    }
+  }
+
+
+
   private void testDons(String file, boolean showTime) throws IOException {
     long start = System.currentTimeMillis();
     if (showTime) {
@@ -814,21 +886,17 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   private void testDon2(String file, boolean usePresent) throws Exception {
-    long start = System.currentTimeMillis();
     //ucar.unidata.io.RandomAccessFile.setDebugAccess(true);
 
     Formatter buf = new Formatter();
-    FeatureDatasetPoint pods =
-            (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
-                    ucar.nc2.constants.FeatureType.POINT, file, null, buf);
-    if (pods == null) {  // try as ANY_POINT
-      System.out.println("trying as ANY_POINT");
-      pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
-              ucar.nc2.constants.FeatureType.ANY_POINT, file, null, buf);
-    }
+    FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
+            ucar.nc2.constants.FeatureType.ANY_POINT, file, null, buf);
     if (pods == null) {
       throw new IOException("can't open file " + file);
     }
+    //pods.calcBounds();
+    System.out.printf("Opened file %s%n dateRange= %s", file, pods.getDateRange());
+
     List<FeatureCollection> collectionList = pods.getPointFeatureCollectionList();
     FeatureCollection fc = collectionList.get(0);
     LatLonRect llr = new LatLonRect(new LatLonPointImpl(33.4, -92.2), new LatLonPointImpl(47.9, -75.89));
@@ -836,14 +904,19 @@ public class TestPointFeatureTypes extends TestCase {
 
     DateRange dr;
     if (usePresent) {
-      dr = new DateRange(null, new DateType(true, null), new TimeDuration("1 hour"), null);
-      dr = new DateRange(dr.getStart().getDate(), dr.getEnd().getDate()); // get rid of reletive time
+      //Date now = new Date();
+      //Date ago = new Date(now.getTime()-3600000);
+      dr = new DateRange(null, new DateType(true, null), new TimeDuration("2 hour"), null);
+
+      //dr = new DateRange(null, new DateType(true, null), new TimeDuration("1 hour"), null);
+      //dr = new DateRange(dr.getStart().getDate(), dr.getEnd().getDate()); // get rid of reletive time
     } else {
-      Date startd = new DateType("2009-09-15 00:00:00Z", null, null).getDate();
+      Date startd = pods.getDateRange().getStart().getDate();
       dr = new DateRange(startd, new TimeDuration("1 hour"));
     }
     System.out.println("date range = " + dr);
 
+    long start = System.currentTimeMillis();
     PointFeatureCollection collection = null;
     if (fc instanceof PointFeatureCollection) {
       collection = (PointFeatureCollection) fc;

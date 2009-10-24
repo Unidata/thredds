@@ -57,7 +57,7 @@ import java.io.*;
  */
 public class AggregationFmrc extends AggregationOuterDimension {
   static private String definitionDir;
-  static protected Set<NetcdfDataset.Enhance> fmrcEnhanceMode = EnumSet.of(NetcdfDataset.Enhance.CoordSystems);
+  static protected Set<NetcdfDataset.Enhance> fmrcEnhanceMode = EnumSet.of(NetcdfDataset.Enhance.CoordSystems); // static protected Set<NetcdfDataset.Enhance> fmrcEnhanceMode = NetcdfDataset.getDefaultEnhanceMode();
 
   static public void setDefinitionDirectory(File defDir) {
     definitionDir = defDir.getPath() + '/';

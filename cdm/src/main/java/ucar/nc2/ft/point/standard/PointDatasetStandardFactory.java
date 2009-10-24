@@ -139,9 +139,9 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
   private static class PointDatasetStandard extends PointDatasetImpl {
     private TableAnalyzer analyser;
     private DateUnit timeUnit;
-    private FeatureType featureType = FeatureType.POINT; // default
+    //private FeatureType featureType = FeatureType.POINT; // default
 
-    PointDatasetStandard(FeatureType ftype, TableAnalyzer analyser, NetcdfDataset ds, Formatter errlog) throws IOException {
+    PointDatasetStandard(FeatureType wantFeatureType, TableAnalyzer analyser, NetcdfDataset ds, Formatter errlog) throws IOException {
       super(ds, null);
       parseInfo.format(" PointFeatureDatasetImpl=%s\n", getClass().getName());
       this.analyser = analyser;

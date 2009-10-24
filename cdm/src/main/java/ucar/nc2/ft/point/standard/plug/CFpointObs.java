@@ -519,18 +519,26 @@ public class CFpointObs extends TableConfigurerImpl {
     EncodingInfo info = identifyEncoding(ds, CF.FeatureType.section, errlog);
     if (info == null) return null;
 
+    Variable time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
+    if (time.getRank() == 0) {
+      errlog.format("section cannot have a scalar time coordinate%n");
+      return null;
+    }
+
+    if (info.encoding == Encoding.single) {
+      Dimension profileDim = time.getDimension(0); // may be time(profile) or time(profile, z)
+      Variable parentId = identifyParent(ds, CF.FeatureType.section);
+      if ((parentId != null) && (parentId.getRank() == 1) && (parentId.getDimension(0).equals(profileDim))){
+        info =  new EncodingInfo(Encoding.flat, parentId);
+      }
+    }
+
     TableConfig parentTable = makeStructTable(ds, FeatureType.SECTION, info, errlog);
     if (parentTable == null) return null;
 
     Dimension sectionDim = parentTable.dim;
     Dimension profileDim = null;
     Dimension zDim = null;
-
-    Variable time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
-    if (time.getRank() == 0) {
-      errlog.format("section cannot have a scalar time coordinate%n");
-      return null;
-    }
 
     // find the non-station altitude
     Variable z = findZAxisNotStationAlt(ds);
@@ -663,7 +671,21 @@ public class CFpointObs extends TableConfigurerImpl {
       }
 
       case flat:
-        throw new UnsupportedOperationException("CFpointObs: section flat encoding");
+        parentTable.type = Table.Type.Construct; // override default
+        profileDim = time.getDimension(0); // may be time(profile) or time(profile, z)
+        Variable parentId = identifyParent(ds, CF.FeatureType.section);
+
+        TableConfig profileTable = makeStructTable(ds, FeatureType.SECTION, info, errlog);
+        profileTable.parentIndex = parentId.getName();
+        parentTable.addChild(profileTable);
+
+        zDim = z.getDimension(z.getRank() - 1); // may be z(z) or z(profile, z)
+        TableConfig zTable = makeMultidimInner(ds, profileTable, zDim, errlog);
+        if (z.getRank() == 1) // z(z)
+          zTable.addJoin(new JoinArray(z, JoinArray.Type.raw, 0));
+        profileTable.addChild(zTable);
+
+        break;
     }
 
     return parentTable;

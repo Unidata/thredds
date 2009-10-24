@@ -82,7 +82,7 @@ public class FileCache {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCache.class);
   static private org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
   static private ScheduledExecutorService exec;
-  static boolean debug = true;
+  static boolean debug = false;
   static boolean debugPrint = false;
   static boolean debugCleanup = false;
 

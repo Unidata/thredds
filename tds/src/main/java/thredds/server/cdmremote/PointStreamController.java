@@ -66,7 +66,7 @@ import java.nio.channels.Channels;
  */
 public class PointStreamController extends AbstractCommandController implements LastModified {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
-  private boolean debug = true;
+  private boolean debug = false;
 
   private String prefix = "/point"; // LOOK how do we obtain this?
   private TdsContext tdsContext;
