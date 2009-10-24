@@ -33,17 +33,14 @@
 package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.*;
-import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.point.standard.plug.*;
 import ucar.nc2.dataset.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.AxisType;
-import ucar.unidata.util.Parameter;
 
 import java.util.*;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.lang.reflect.Method;
 
 import org.jdom.output.XMLOutputter;
@@ -283,7 +280,6 @@ public class TableAnalyzer {
   private NetcdfDataset ds;
   private Map<String, TableConfig> tableFind = new HashMap<String, TableConfig>();
   private Set<TableConfig> tableSet = new HashSet<TableConfig>();
-  //protected List<TableConfig.JoinConfig> joins = new ArrayList<TableConfig.JoinConfig>();
   private List<NestedTable> leaves = new ArrayList<NestedTable>();
   private FeatureType ft;
 
@@ -482,17 +478,6 @@ public class TableAnalyzer {
     }
   }
 
-  private List<Variable> getStructVars(List<Variable> vars, Dimension dim) {
-    List<Variable> structVars = new ArrayList<Variable>();
-    for (Variable v : vars) {
-      if (v.isScalar()) continue;
-      if (v.getDimension(0) == dim) {
-        structVars.add(v);
-      }
-    }
-    return structVars;
-  }
-
   private void makeNestedTables() {
     // We search among all the possible Tables in a dataset for joins, and coordinate
     // variables. Based on those, we form "interesting" sets and make them into NestedTables.
@@ -525,23 +510,10 @@ public class TableAnalyzer {
       getDetailInfo( new Formatter( System.out));
   }
 
-  /////////////////////////////////////////////////////
-  // utilities
 
-  private Variable findVariableWithAttribute(List<Variable> list, String name, String value) {
-    for (Variable v : list) {
-      if (ds.findAttValueIgnoreCase(v, name, "").equals(value))
-        return v;
-      if (v instanceof Structure) {
-        Variable vv = findVariableWithAttribute(((Structure) v).getVariables(), name, value);
-        if (vv != null) return vv;
-      }
-    }
-    return null;
-  }
 
   /////////////////////////////////////////////////////
-  // track station info
+  /* track station info
 
   private StationInfo stationInfo = new StationInfo();
 
@@ -553,7 +525,7 @@ public class TableAnalyzer {
     public String stationId, stationDesc, stationNpts;
     public int nstations;
     public String latName, lonName, elevName;
-  }
+  }  */
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -605,11 +577,11 @@ public class TableAnalyzer {
     try {
       writeConfigXML(sf);
     } catch (IOException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      e.printStackTrace();
     }
   }
 
-  public void writeConfigXML(java.util.Formatter sf) throws IOException {
+  private void writeConfigXML(java.util.Formatter sf) throws IOException {
     if (tc != null) {
       TableConfig config = tc.getConfig(ft, ds, errlog);
       if (config != null) {
@@ -625,7 +597,7 @@ public class TableAnalyzer {
   /** Create an XML document from this info
    * @return netcdfDatasetInfo XML document
    */
-  public Document makeDocument() {
+  private Document makeDocument() {
     Element rootElem = new Element("featureDataset");
     Document doc = new Document(rootElem);
     rootElem.setAttribute("location", ds.getLocation());

@@ -266,6 +266,7 @@ public abstract class Table {
           break;
       }
 
+      config.vars = new ArrayList<String>();
       for (Variable v : struct.getVariables()) {
         // remove substructures
         if (v.getDataType() == DataType.STRUCTURE) {
@@ -273,6 +274,7 @@ public abstract class Table {
             struct.removeMemberVariable(v);
         } else {
           this.cols.add(v);
+          config.vars.add(v.getName());
         }
       }
     }

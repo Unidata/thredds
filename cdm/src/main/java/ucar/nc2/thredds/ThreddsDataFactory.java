@@ -50,8 +50,7 @@ import java.util.Formatter;
 import java.io.IOException;
 
 /**
- * This tries to translate a THREDDS InvDataset into a data object that can be used, either a NetcdfDataset or a
- * FeatureDataset.
+ * This tries to translate a THREDDS InvDataset into a data object that can be used, either as a NetcdfDataset or as a FeatureDataset.
  * <p/>
  * As input, it can take
  * <ol><li> An InvAccess object.
@@ -70,6 +69,8 @@ import java.io.IOException;
  * @author caron
  */
 public class ThreddsDataFactory {
+  static public final String SCHEME = "thredds:";
+
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debugOpen = debugFlag.isSet("thredds/debugOpen");
     debugTypeOpen = debugFlag.isSet("thredds/openDatatype");
@@ -144,7 +145,7 @@ public class ThreddsDataFactory {
     location = location.trim();
     location = ucar.unidata.util.StringUtil.replace(location, '\\', "/");
 
-    if (location.startsWith("thredds:"))
+    if (location.startsWith(SCHEME))
       location = location.substring(8);
 
     if (location.startsWith("resolve:")) {

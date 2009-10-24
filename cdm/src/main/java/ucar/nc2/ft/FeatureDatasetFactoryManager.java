@@ -181,7 +181,13 @@ public class FeatureDatasetFactoryManager {
    *
    * @param wantFeatureType open this kind of FeatureDataset; may be null, which means search all factories.
    *                        If datatype is not null, only return correct FeatureDataset (eg PointFeatureDataset for DataType.POINT).
-   * @param location        URL or file location of the dataset
+   * @param location        URL or file location of the dataset. This may be a
+   *                    <ol>
+   *                    <li>thredds catalog#dataset (with a thredds: prefix)
+   *                    <li>cdmremote dataset (with an cdmremote: prefix)
+   *                    <li>collection dataset (with a collection: prefix)
+   *                    <li>cdm dataset opened with NetcdfDataset.acquireDataset(), then wrapped
+   *                    </ol>
    * @param task            user may cancel
    * @param errlog          place errors here, may not be null
    * @return a subclass of FeatureDataset, or null if no suitable factory was found
@@ -189,7 +195,7 @@ public class FeatureDatasetFactoryManager {
    */
   static public FeatureDataset open(FeatureType wantFeatureType, String location, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
     // special processing for thredds: datasets
-    if (location.startsWith("thredds:")) {
+    if (location.startsWith(ThreddsDataFactory.SCHEME)) {
       ThreddsDataFactory.Result result = new ThreddsDataFactory().openFeatureDataset(wantFeatureType, location, task);
       errlog.format("%s", result.errLog);
       if (!featureTypeOk(wantFeatureType, result.featureType)) {

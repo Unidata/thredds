@@ -40,7 +40,7 @@ import org.jdom.Element;
 import java.io.IOException;
 
 /**
- * Describe
+ * Helper class to convert a  TableConfig to and from XML
  *
  * @author caron
  * @since Aug 18, 2009
