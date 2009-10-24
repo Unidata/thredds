@@ -1,0 +1,83 @@
+<html>
+<head>
+<title>Adding/Overwriting GRIB tables/parameters</title>
+</head>
+
+<body>
+<h1>Adding/Overwriting GRIB tables/parameters</h1>
+
+<p>
+The Grib1 reader uses a Table based on the site ID, sub-site ID, and version number from the data to read in a particular Table while Grib2 only has one parameter table. 
+Sometimes there is a need to add/overwrite Grib1 tables or to add/overwrite Grib2 parameters for the Grib Library. This process is not difficult.
+<h3>Grib 1 Adding/Overwriting GRIB tables</h3>
+<p>
+First one needs to create a file listing the new tables, the file has the following syntax of site ID, sub-site ID, version number, and table name each separated by a :. 
+The -1 is a wild card character and it match any number in the field.  If the table name begins with /, http:, or file: then the table is loaded with the full path name, 
+otherwise the table is assumed to be in the resources/grib/tables directory in the Grib package or jar.
+Here is a sample table file configuration.
+<pre>
+7:	-1:		  0:	nceptab_2.tab
+7:	-1:		  1:	nceptab_1.tab
+7:	-1:		  2:	nceptab_2.tab
+7:	-1:		  3:	nceptab_3.tab
+158:	 0:		  2:	/grib/tables/fnmoc_2.tab
+</pre>
+<p>
+The routine  <b>GribPDSParamTable.addParameterUserLookup(String userGribTabList)</b> reads the above configuration file. 
+<p>
+The newly created tables must be in NCEP format of parameter number, short name, long name and units inside []. The fields are separated by :. Here is a sample Grib1 table, the first line always starts with
+-1 : site ID : sub-site ID : version number. The -1 is a wild card character, same as above.
+<pre>
+-1:7:-1:2
+0:var0:undefined
+1:PRES:Pressure [Pa]
+2:PRMSL:Pressure reduced to MSL [Pa]
+3:PTEND:Pressure tendency [Pa s-1]
+</pre>
+<p>
+Remember if one is overwritting a table then only the new table parameters will be available.
+
+
+
+<h3>Grib 2 Adding/Overwriting GRIB parameters</h3>
+<p>
+Since there is only one Grib2 table, there is no need for the table configuration file as in Grib1. The only file needed is a  file that contains the parameters that need 
+to be add/overwritten. This file has the following syntax:
+
+<pre>
+# Sample Grib2 table parameters that are read in externally
+# Use static method: ParameterTable.addParametersUser(String UserGribTable)
+# Grib 2 Table: http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-1.shtml
+# The fields are separated by tabs, Name cannot have spaces, use _
+# fields: 
+# Discipline Category ParameterNumber Name Unit Description
+0	1	223	Total_precipitation	kg/m2	Total precipitation in 24 hours
+0	2	1	Wind_speed	knots	Wind speed at 2 meters
+</pre>
+
+The routine  <b>ParameterTable.addParametersUser("C:/data/grib/tables/grib2userparameters.txt" );</b> reads in the above parameters. 
+
+<p>Only the parameters with the
+Discipline Category ParameterNumber are modified, the other parameters remain unchanged.   
+Remember the fields must be separated by tabs and the field definitions can be obtained at:
+<a href="http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-1.shtml">Grib 2 Table Information</a>
+
+<p>
+<b>
+If there are questions about adding/overwriting tables/parameters, create a support ticket at:
+
+<a href="http://www.unidata.ucar.edu/support/topics.jsp">support netcdf-decoders</a></b>
+
+</body>
+</html>
+
+<!--
+Once you've created this file, you would access it by putting
+the grib2lookuptable.lst in your <home>/.metapps/DefaultIdv
+directory.  Alternatively, you could place the grib2lookuptable.lst
+on a local web server and use the IDV's sitepath parameter
+(startup option or user preference) to point to the location
+of the file.
+//-->
+
+
