@@ -46,7 +46,7 @@ import ucar.nc2.TestAll;
  */
 
 public class TestProjections extends TestCase {
-  boolean show = true;
+  boolean show = false;
   int NTRIALS = 10000;
   double TOLERENCE = 1.0e-6;
   int count = 10;

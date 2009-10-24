@@ -822,7 +822,7 @@ public class CFpointObs extends TableConfigurerImpl {
     if (info.encoding == Encoding.single) stationTableType = Table.Type.Top;
     if (info.encoding == Encoding.flat) stationTableType = Table.Type.Construct;
 
-    TableConfig stnTable = new TableConfig(stationTableType, "station");
+    TableConfig stnTable = new TableConfig(stationTableType, ds.getLocation());
     stnTable.featureType = ftype;
     stnTable.stnId = findNameVariableWithStandardNameAndDimension(ds, STATION_ID, stationDim, errlog);
     stnTable.stnDesc = findNameVariableWithStandardNameAndDimension(ds, STATION_DESC, stationDim, errlog);
@@ -1156,7 +1156,7 @@ public class CFpointObs extends TableConfigurerImpl {
   private TableConfig makeSingle(NetcdfDataset ds, Dimension obsDim, Formatter errlog) throws IOException {
 
     Table.Type obsTableType = Table.Type.Structure;
-    TableConfig obsTable = new TableConfig(obsTableType, obsDim.getName());
+    TableConfig obsTable = new TableConfig(obsTableType, ds.getLocation());
     obsTable.dim = obsDim;
 
     obsTable.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, obsDim);

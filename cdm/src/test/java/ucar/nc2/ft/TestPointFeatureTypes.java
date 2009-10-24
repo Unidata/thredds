@@ -47,7 +47,6 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.TestAll;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.ft.point.MultipleNestedPointCollectionImpl;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 import ucar.ma2.DataType;
@@ -99,63 +98,61 @@ public class TestPointFeatureTypes extends TestCase {
     }
   }
 
-  String syn_topdir = TestAll.cdmLocalTestDataDir + "/point/";
-  public void testSynth() throws IOException {
-    assert 3 == testPointDataset(syn_topdir + "point.ncml", FeatureType.POINT, false);
-    assert 3 == testPointDataset(syn_topdir + "pointUnlimited.ncml", FeatureType.POINT, false);
+  // these are internal, synthetic (ncml) datasets with (almost) all possible combinations for proposed CF point obs
+  String CFpointObs_topdir = TestAll.cdmLocalTestDataDir + "/point/";
+  public void testCFpointObs() throws IOException {
+    assert 3 == testPointDataset(CFpointObs_topdir + "point.ncml", FeatureType.POINT, false);
+    assert 3 == testPointDataset(CFpointObs_topdir + "pointUnlimited.ncml", FeatureType.POINT, false);
 
-    assert 3 == testPointDataset(syn_topdir + "stationSingle.ncml", FeatureType.STATION, false);
-    assert 3 == testPointDataset(syn_topdir + "stationSingleWithZLevel.ncml", FeatureType.STATION, false);
-    assert 15 == testPointDataset(syn_topdir + "stationMultidim.ncml", FeatureType.STATION, false);
-    assert 15 == testPointDataset(syn_topdir + "stationMultidimTimeJoin.ncml", FeatureType.STATION, false);
-    assert 15 == testPointDataset(syn_topdir + "stationMultidimUnlimited.nc", FeatureType.STATION, false);
-    assert 6 == testPointDataset(syn_topdir + "stationRaggedContig.ncml", FeatureType.STATION, false);
-    assert 6 == testPointDataset(syn_topdir + "stationRaggedIndex.ncml", FeatureType.STATION, false);
-    assert 13 == testPointDataset(syn_topdir + "stationFlat.ncml", FeatureType.STATION, false);
-    assert 13 == testPointDataset(syn_topdir + "stationFlat.nc", FeatureType.STATION, false);
+    assert 3 == testPointDataset(CFpointObs_topdir + "stationSingle.ncml", FeatureType.STATION, false);
+    assert 3 == testPointDataset(CFpointObs_topdir + "stationSingleWithZLevel.ncml", FeatureType.STATION, false);
+    assert 15 == testPointDataset(CFpointObs_topdir + "stationMultidim.ncml", FeatureType.STATION, false);
+    assert 15 == testPointDataset(CFpointObs_topdir + "stationMultidimTimeJoin.ncml", FeatureType.STATION, false);
+    assert 15 == testPointDataset(CFpointObs_topdir + "stationMultidimUnlimited.nc", FeatureType.STATION, false);
+    assert 6 == testPointDataset(CFpointObs_topdir + "stationRaggedContig.ncml", FeatureType.STATION, false);
+    assert 6 == testPointDataset(CFpointObs_topdir + "stationRaggedIndex.ncml", FeatureType.STATION, false);
+    assert 13 == testPointDataset(CFpointObs_topdir + "stationFlat.ncml", FeatureType.STATION, false);
+    assert 13 == testPointDataset(CFpointObs_topdir + "stationFlat.nc", FeatureType.STATION, false);
 
-    assert 10 == testPointDataset(syn_topdir + "trajSingle.ncml", FeatureType.TRAJECTORY, false);
-    assert 20 == testPointDataset(syn_topdir + "trajMultidim.ncml", FeatureType.TRAJECTORY, false);
-    assert 6 == testPointDataset(syn_topdir + "trajRaggedContig.ncml", FeatureType.TRAJECTORY, false);
-    assert 6 == testPointDataset(syn_topdir + "trajRaggedIndex.ncml", FeatureType.TRAJECTORY, false);
+    assert 10 == testPointDataset(CFpointObs_topdir + "trajSingle.ncml", FeatureType.TRAJECTORY, false);
+    assert 20 == testPointDataset(CFpointObs_topdir + "trajMultidim.ncml", FeatureType.TRAJECTORY, false);
+    assert 6 == testPointDataset(CFpointObs_topdir + "trajRaggedContig.ncml", FeatureType.TRAJECTORY, false);
+    assert 6 == testPointDataset(CFpointObs_topdir + "trajRaggedIndex.ncml", FeatureType.TRAJECTORY, false);
 
-    assert 13 ==  testPointDataset(syn_topdir + "profileSingle.ncml", FeatureType.PROFILE, false);
-    assert 12 ==  testPointDataset(syn_topdir + "profileSingleTimeJoin.ncml", FeatureType.PROFILE, false);
-    assert 50 ==  testPointDataset(syn_topdir + "profileMultidim.ncml", FeatureType.PROFILE, false);
-    assert 50 ==  testPointDataset(syn_topdir + "profileMultidimTimeJoin.ncml", FeatureType.PROFILE, false);
-    assert 50 ==  testPointDataset(syn_topdir + "profileMultidimZJoin.ncml", FeatureType.PROFILE, false);
-    assert 50 ==  testPointDataset(syn_topdir + "profileMultidimTimeZJoin.ncml", FeatureType.PROFILE, false);
-    assert 6 ==  testPointDataset(syn_topdir + "profileRaggedContig.ncml", FeatureType.PROFILE, false);
-    assert 6 ==  testPointDataset(syn_topdir + "profileRaggedContigTimeJoin.ncml", FeatureType.PROFILE, false);
-    assert 22 ==  testPointDataset(syn_topdir + "profileRaggedIndex.ncml", FeatureType.PROFILE, false);
-    assert 22 ==  testPointDataset(syn_topdir + "profileRaggedIndexTimeJoin.ncml", FeatureType.PROFILE, false);
+    assert 13 ==  testPointDataset(CFpointObs_topdir + "profileSingle.ncml", FeatureType.PROFILE, false);
+    assert 12 ==  testPointDataset(CFpointObs_topdir + "profileSingleTimeJoin.ncml", FeatureType.PROFILE, false);
+    assert 50 ==  testPointDataset(CFpointObs_topdir + "profileMultidim.ncml", FeatureType.PROFILE, false);
+    assert 50 ==  testPointDataset(CFpointObs_topdir + "profileMultidimTimeJoin.ncml", FeatureType.PROFILE, false);
+    assert 50 ==  testPointDataset(CFpointObs_topdir + "profileMultidimZJoin.ncml", FeatureType.PROFILE, false);
+    assert 50 ==  testPointDataset(CFpointObs_topdir + "profileMultidimTimeZJoin.ncml", FeatureType.PROFILE, false);
+    assert 6 ==  testPointDataset(CFpointObs_topdir + "profileRaggedContig.ncml", FeatureType.PROFILE, false);
+    assert 6 ==  testPointDataset(CFpointObs_topdir + "profileRaggedContigTimeJoin.ncml", FeatureType.PROFILE, false);
+    assert 22 ==  testPointDataset(CFpointObs_topdir + "profileRaggedIndex.ncml", FeatureType.PROFILE, false);
+    assert 22 ==  testPointDataset(CFpointObs_topdir + "profileRaggedIndexTimeJoin.ncml", FeatureType.PROFILE, false);
 
-    assert 9 == testPointDataset(syn_topdir + "stationProfileSingle.ncml", FeatureType.STATION_PROFILE, false);
-    assert 9 == testPointDataset(syn_topdir + "stationProfileSingleTimeJoin.ncml", FeatureType.STATION_PROFILE, false);
-    assert 18 == testPointDataset(syn_topdir + "stationProfileMultidim.ncml", FeatureType.STATION_PROFILE, false);
-    assert 18 == testPointDataset(syn_topdir + "stationProfileMultidimUnlimited.nc", FeatureType.STATION_PROFILE, false);
-    assert 24 == testPointDataset(syn_topdir + "stationProfileMultidimJoinZ.ncml", FeatureType.STATION_PROFILE, false);
-    assert 18 == testPointDataset(syn_topdir + "stationProfileMultidimJoinTime.ncml", FeatureType.STATION_PROFILE, false);
-    assert 36 == testPointDataset(syn_topdir + "stationProfileMultidimJoinTimeAndZ.ncml", FeatureType.STATION_PROFILE, false);
-    assert 14 == testPointDataset(syn_topdir + "stationProfileRagged.ncml", FeatureType.STATION_PROFILE, false);
-    assert 14 == testPointDataset(syn_topdir + "stationProfileRaggedJoinTime.ncml", FeatureType.STATION_PROFILE, false);
-    assert 420 == testPointDataset(syn_topdir + "stationProfileFlat.ncml", FeatureType.STATION_PROFILE, false);
-    assert 420 == testPointDataset(syn_topdir + "stationProfileFlat.nc", FeatureType.STATION_PROFILE, false);
+    assert 9 == testPointDataset(CFpointObs_topdir + "stationProfileSingle.ncml", FeatureType.STATION_PROFILE, false);
+    assert 9 == testPointDataset(CFpointObs_topdir + "stationProfileSingleTimeJoin.ncml", FeatureType.STATION_PROFILE, false);
+    assert 18 == testPointDataset(CFpointObs_topdir + "stationProfileMultidim.ncml", FeatureType.STATION_PROFILE, false);
+    assert 18 == testPointDataset(CFpointObs_topdir + "stationProfileMultidimUnlimited.nc", FeatureType.STATION_PROFILE, false);
+    assert 24 == testPointDataset(CFpointObs_topdir + "stationProfileMultidimJoinZ.ncml", FeatureType.STATION_PROFILE, false);
+    assert 18 == testPointDataset(CFpointObs_topdir + "stationProfileMultidimJoinTime.ncml", FeatureType.STATION_PROFILE, false);
+    assert 36 == testPointDataset(CFpointObs_topdir + "stationProfileMultidimJoinTimeAndZ.ncml", FeatureType.STATION_PROFILE, false);
+    assert 14 == testPointDataset(CFpointObs_topdir + "stationProfileRagged.ncml", FeatureType.STATION_PROFILE, false);
+    assert 14 == testPointDataset(CFpointObs_topdir + "stationProfileRaggedJoinTime.ncml", FeatureType.STATION_PROFILE, false);
+    assert 420 == testPointDataset(CFpointObs_topdir + "stationProfileFlat.ncml", FeatureType.STATION_PROFILE, false);
+    assert 420 == testPointDataset(CFpointObs_topdir + "stationProfileFlat.nc", FeatureType.STATION_PROFILE, false);
 
-    assert 100 == testPointDataset(syn_topdir + "sectionMultidim.ncml", FeatureType.SECTION, false);
-    assert 100 == testPointDataset(syn_topdir + "sectionMultidimJoinZ.ncml", FeatureType.SECTION, false);
-    assert 50 == testPointDataset(syn_topdir + "sectionSingle.ncml", FeatureType.SECTION, false);
-    assert 12 == testPointDataset(syn_topdir + "sectionRagged.ncml", FeatureType.SECTION, false);
+    assert 100 == testPointDataset(CFpointObs_topdir + "sectionMultidim.ncml", FeatureType.SECTION, false);
+    assert 100 == testPointDataset(CFpointObs_topdir + "sectionMultidimJoinZ.ncml", FeatureType.SECTION, false);
+    assert 50 == testPointDataset(CFpointObs_topdir + "sectionSingle.ncml", FeatureType.SECTION, false);
+    assert 12 == testPointDataset(CFpointObs_topdir + "sectionRagged.ncml", FeatureType.SECTION, false);
 
-    assert 420 == testPointDataset(syn_topdir + "sectionFlat.ncml", FeatureType.SECTION, false);
-    assert 420 == testPointDataset(syn_topdir + "sectionFlat.nc", FeatureType.SECTION, false);
-
-
-
+    assert 420 == testPointDataset(CFpointObs_topdir + "sectionFlat.ncml", FeatureType.SECTION, false);
+    assert 420 == testPointDataset(CFpointObs_topdir + "sectionFlat.nc", FeatureType.SECTION, false);
   }
 
   public void testProblem() throws IOException {
-    testPointDataset(syn_topdir + "stationProfileFlat.ncml", FeatureType.STATION_PROFILE, true);
+    testPointDataset(CFpointObs_topdir + "stationProfileFlat.ncml", FeatureType.STATION_PROFILE, true);
   }
 
   public void testCF() throws IOException {
@@ -210,7 +207,7 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
 
-  public void testGempakProblem() throws Exception {
+  public void utestGempakProblem() throws Exception {
     NetcdfFile.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("NetcdfFile/showRequest"));
 
     testDon2("Y:\\ldm\\gempak\\surface/20091023_sao.gem", true);

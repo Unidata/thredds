@@ -80,8 +80,8 @@ public class TableConfigXML {
   private Element writeTable(TableConfig config) {
     Element tableElem = new Element("table");
 
-    if (config.name != null)
-      tableElem.setAttribute("name", config.name);
+    //if (config.name != null)
+    //  tableElem.setAttribute("name", config.name);
     if (config.type != null)
       tableElem.setAttribute("type", config.type.toString());
 
@@ -118,8 +118,8 @@ public class TableConfigXML {
         break;
       case MultidimStructure:
       case Structure:
-        tableElem.addContent(new Element("dimension").addContent(config.dim.getName()));
         tableElem.setAttribute("structureType", config.structureType.toString());
+        tableElem.addContent(new Element("dimension").addContent(config.dim.getName()));
         break;
       case Top:
         tableElem.addContent(new Element("structure").addContent(config.structName));

@@ -139,7 +139,6 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
   private static class PointDatasetStandard extends PointDatasetImpl {
     private TableAnalyzer analyser;
     private DateUnit timeUnit;
-    //private FeatureType featureType = FeatureType.POINT; // default
 
     PointDatasetStandard(FeatureType wantFeatureType, TableAnalyzer analyser, NetcdfDataset ds, Formatter errlog) throws IOException {
       super(ds, null);
