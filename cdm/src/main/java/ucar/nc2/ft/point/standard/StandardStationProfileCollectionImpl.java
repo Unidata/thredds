@@ -67,11 +67,10 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
    protected void initStationHelper() {
     try {
       stationHelper = new StationHelper();
-      int count = 0;
       StructureDataIterator siter = ft.getStationDataIterator(-1);
       while (siter.hasNext()) {
         StructureData stationData = siter.next();
-        stationHelper.addStation(makeStation(stationData, count++));
+        stationHelper.addStation(makeStation(stationData, siter.getCurrentRecno()));
       }
     } catch (IOException ioe) {
       throw new RuntimeException(ioe);
@@ -133,15 +132,15 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     // iterate over series of profiles at a given station
     public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
       Cursor cursor = new Cursor(ft.getNumberOfLevels());
-      cursor.what = s;
-      cursor.recnum[2] = recnum;
+      // cursor.what = s;
+      cursor.recnum[2] = recnum; // the station record
       cursor.tableData[2] = stationData; // obs(leaf) = 0, profile=1, station(root)=2
       cursor.parentIndex = 2; // LOOK ??
       return new StandardStationProfileFeatureIterator(cursor);
     }
 
     private class StandardStationProfileFeatureIterator implements PointFeatureCollectionIterator {
-      Cursor cursor;
+      private Cursor cursor;
       private ucar.ma2.StructureDataIterator iter;
       private int count = 0;
 
@@ -159,9 +158,10 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
 
       public PointFeatureCollection next() throws IOException {
         Cursor cursorIter = cursor.copy();
-        cursorIter.recnum[1] = count++;
-        cursorIter.tableData[1] = iter.next();
+        cursorIter.tableData[1] = iter.next(); // the profile record
+        cursorIter.recnum[1] = iter.getCurrentRecno();
         cursorIter.parentIndex = 1; // LOOK ??
+        count++;
 
         // double time = ft.getObsTime(cursorIter);
         return new StandardProfileFeature(s, cursorIter);

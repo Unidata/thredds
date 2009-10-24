@@ -259,20 +259,29 @@ public abstract class ArrayStructure extends Array {
       private int count = 0;
       private int size = (int) getSize();
 
+      @Override
       public boolean hasNext() throws IOException {
         return count < size;
       }
 
+      @Override
       public StructureData next() throws IOException {
         return getStructureData(count++);
       }
 
+      @Override
       public void setBufferSize(int bytes) {
       }
 
+      @Override
       public StructureDataIterator reset() {
         count = 0;
         return this;
+      }
+
+      @Override
+      public int getCurrentRecno() {
+        return count-1;
       }
     };
   }

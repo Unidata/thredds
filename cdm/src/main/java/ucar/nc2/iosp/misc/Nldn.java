@@ -281,6 +281,7 @@ The specifics for the binary NLDN data record contained in the IDD is:
       raf.seek(0);
     }
 
+    @Override
     public StructureDataIterator reset() {
       done = 0;
       alreadyRead = 0;
@@ -290,16 +291,18 @@ The specifics for the binary NLDN data record contained in the IDD is:
       try {
         raf.seek(0);
       } catch (IOException e) {
-        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        throw new RuntimeException(e);
       }
       return this;
     }
 
+    @Override
     public boolean hasNext() throws IOException {
       if (done < alreadyRead) return true;
       return readHeader();
     }
 
+    @Override
     public StructureData next() throws IOException {
       done++;
       return asbb.getStructureData( nextIndex++);
@@ -328,7 +331,13 @@ The specifics for the binary NLDN data record contained in the IDD is:
       return true;
     }
 
+    @Override
     public void setBufferSize(int bytes) {}
+
+    @Override
+    public int getCurrentRecno() {
+      return done - 1;
+    }
   }
 
 

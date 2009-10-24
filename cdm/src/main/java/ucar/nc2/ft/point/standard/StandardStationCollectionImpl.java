@@ -83,11 +83,10 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
     try {
       stationHelper = new StationHelper();
 
-      int count = 0;
       StructureDataIterator siter = ft.getStationDataIterator(-1);
       while (siter.hasNext()) {
         StructureData stationData = siter.next();
-        stationHelper.addStation( makeStation(stationData, count++));
+        stationHelper.addStation( makeStation(stationData, siter.getCurrentRecno()));
       }
     } catch (IOException ioe) {
       throw new RuntimeException(ioe);

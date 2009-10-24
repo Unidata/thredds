@@ -230,7 +230,7 @@ public abstract class Table {
   public static class TableStructure extends Table {
     Structure struct;
     Dimension dim;
-    boolean addIndex;
+    //boolean addIndex;
 
     TableStructure(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
@@ -274,7 +274,7 @@ public abstract class Table {
             struct.removeMemberVariable(v);
         } else {
           this.cols.add(v);
-          config.vars.add(v.getName());
+          config.vars.add(v.getShortName());
         }
       }
     }
@@ -373,15 +373,36 @@ public abstract class Table {
    * CFPointObs
    */
   public static class TableContiguous extends TableStructure {
-    private String start; // variable name holding the starting index in parent
-    private String numRecords; // variable name holding the number of children in parent
-    private int[] startIndex;
+    private String startVarName; // variable name holding the starting index in parent
+    private String numRecordsVarName; // variable name holding the number of children in parent
+    private int[] startIndex, numRecords;
 
     TableContiguous(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
-      this.start = config.start;
-      this.numRecords = config.numRecords;
-      this.startIndex = config.startIndex;
+      this.startVarName = config.start;
+      this.numRecordsVarName = config.numRecords;
+
+      if (startVarName == null) {  // read numRecords when startVar is not known
+        try {
+          Variable v = ds.findVariable(config.numRecords);
+          Array numRecords = v.read();
+          int n = (int) v.getSize();
+
+          // construct the start variable
+          this.numRecords = new int[n];
+          this.startIndex = new int[n];
+          int i = 0;
+          int count = 0;
+          while (numRecords.hasNext()) {
+            this.startIndex[i] = count;
+            this.numRecords[i] = numRecords.nextInt();
+            count += this.numRecords[i];
+            i++;
+          }
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+      }
 
       checkNonDataVariable(config.start);
       checkNonDataVariable(config.numRecords);
@@ -389,20 +410,21 @@ public abstract class Table {
 
     @Override
     protected void showTableExtraInfo(String indent, Formatter f) {
-      f.format("%sstart=%s, numRecords=%s%n", indent, start, numRecords);
+      f.format("%sstart=%s, numRecords=%s%n", indent, startVarName, numRecordsVarName);
     }
 
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
-      int firstRecno;
+      int firstRecno, numrecs;
       StructureData parentStruct = cursor.getParentStructure();
       if (startIndex != null) {
         int parentIndex = cursor.getParentRecnum();
         firstRecno = startIndex[parentIndex];
+        numrecs = numRecords[parentIndex];
       } else {
-        firstRecno = parentStruct.getScalarInt(start);
+        firstRecno = parentStruct.getScalarInt(startVarName);
+        numrecs = parentStruct.getScalarInt(numRecordsVarName);
       }
-      int n = parentStruct.getScalarInt(numRecords);
-      return new StructureDataIteratorLinked(struct, firstRecno, n, null);
+      return new StructureDataIteratorLinked(struct, firstRecno, numrecs, null);
     }
   }
 
@@ -970,24 +992,31 @@ public abstract class Table {
       this.sdata = sdata;
     }
 
+    @Override
     public boolean hasNext() throws IOException {
       return (count == 0);
     }
 
+    @Override
     public StructureData next() throws IOException {
       count++;
       return sdata;
     }
 
+    @Override
     public void setBufferSize(int bytes) {
     }
 
+    @Override
     public StructureDataIterator reset() {
       count = 0;
       return this;
     }
 
-    public void finish() {
+
+    @Override
+    public int getCurrentRecno() {
+      return count - 1;
     }
   }
 

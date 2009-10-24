@@ -49,12 +49,11 @@ import java.io.IOException;
  */
 public abstract class PointIteratorFromStructureData extends PointIteratorAbstract {
 
-  // makeFeature may return null, then skip it and go to next iteration
+  // makeFeature may return null, if so then skip it and go to next iteration
   protected abstract PointFeature makeFeature(int recnum, StructureData sdata) throws IOException;
 
   private Filter filter;
   private StructureDataIterator structIter;
-  private int count = 0;
   private PointFeature feature = null; // hasNext must cache
   private boolean finished = false;
 
@@ -68,7 +67,7 @@ public abstract class PointIteratorFromStructureData extends PointIteratorAbstra
     while (true) {
       StructureData sdata = nextStructureData();
       if (sdata == null) break;
-      feature = makeFeature(count, sdata);
+      feature = makeFeature(structIter.getCurrentRecno(), sdata);
       if (feature == null) continue;
       if (feature.getLocation().isMissing()) {
         continue;
@@ -86,7 +85,6 @@ public abstract class PointIteratorFromStructureData extends PointIteratorAbstra
   public PointFeature next() throws IOException {
     if (feature == null) return null;
     calcBounds(feature);
-    count++;
     return feature;
   }
 
@@ -100,8 +98,7 @@ public abstract class PointIteratorFromStructureData extends PointIteratorAbstra
     finished = true;
   }
 
-  // so subclasses can override
-  protected StructureData nextStructureData() throws IOException {
+  private StructureData nextStructureData() throws IOException {
     return structIter.hasNext() ? structIter.next() : null;
   }
 

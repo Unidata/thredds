@@ -551,33 +551,43 @@ public class BufrIosp extends AbstractIOServiceProvider {
   }
 
   private class SequenceIterator implements StructureDataIterator {
-    int count;
-    ArrayStructure abb;
-    StructureDataIterator siter;
+    private int count;
+    private ArrayStructure abb;
+    private StructureDataIterator siter;
 
     SequenceIterator(int count, ArrayStructure abb) {
       this.count = count;
       this.abb = abb;
     }
 
+    @Override
     public boolean hasNext() throws IOException {
       if (siter == null)
         siter = abb.getStructureDataIterator();
       return siter.hasNext();
     }
 
+    @Override
     public StructureData next() throws IOException {
       return siter.next();
     }
 
+    @Override
     public void setBufferSize(int bytes) {
       siter.setBufferSize(bytes);
     }
 
+    @Override
     public StructureDataIterator reset() {
       siter = null;
       return this;
     }
+
+    @Override
+    public int getCurrentRecno() {
+      return siter.getCurrentRecno();
+    }
+
   }
 
   public String getDetailInfo() {

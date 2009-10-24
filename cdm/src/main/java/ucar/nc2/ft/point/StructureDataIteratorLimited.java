@@ -53,24 +53,31 @@ public class StructureDataIteratorLimited implements StructureDataIterator {
     this.count = 0;
   }
 
+  @Override
   public StructureData next() throws IOException {
     return org.next();
   }
 
+  @Override
   public boolean hasNext() throws IOException {
     return count < limit && org.hasNext();
   }
 
+  @Override
   public StructureDataIterator reset() {
     this.count = 0;
     org = org.reset();
     return this;
   }
 
+  @Override
   public void setBufferSize(int bytes) {
     org.setBufferSize( bytes);
   }
 
-  public void finish() {}
+  @Override
+  public int getCurrentRecno() {
+    return org.getCurrentRecno();
+  }
   
 }

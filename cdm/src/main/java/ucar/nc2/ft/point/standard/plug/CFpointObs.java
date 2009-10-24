@@ -1007,7 +1007,7 @@ public class CFpointObs extends TableConfigurerImpl {
       return null;
     }
 
-    // read numRecords
+    /* read numRecords
     Variable v = ds.findVariable(obsTable.numRecords);
     Array numRecords = v.read();
     int n = (int) v.getSize();
@@ -1019,7 +1019,7 @@ public class CFpointObs extends TableConfigurerImpl {
     while (numRecords.hasNext()) {
       obsTable.startIndex[i++] = count;
       count += numRecords.nextLong();
-    }
+    } */
 
     return obsTable;
   }

@@ -36,7 +36,6 @@ import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.methods.GetMethod;
-import ucar.nc2.util.CancelTask;
 
 import ucar.ma2.Array;
 import ucar.ma2.Section;

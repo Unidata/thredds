@@ -98,7 +98,8 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
     }
 
     public TrajectoryFeature next() throws IOException {
-      return new StandardTrajectoryFeature(structIter.next(), count++);
+      StructureData trajData = structIter.next();
+      return new StandardTrajectoryFeature(trajData, structIter.getCurrentRecno());
     }
 
     public void setBufferSize(int bytes) { }

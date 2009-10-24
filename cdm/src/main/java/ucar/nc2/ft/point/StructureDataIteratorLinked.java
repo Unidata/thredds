@@ -49,6 +49,7 @@ public class StructureDataIteratorLinked implements StructureDataIterator {
   private Structure s;
   private int firstRecord, nextRecno, numRecords;
   private String linkVarName;
+  private int currRecno;
 
   public StructureDataIteratorLinked(Structure s, int firstRecord, int numRecords, String linkVarName) throws IOException {
     this.s = s;
@@ -58,13 +59,14 @@ public class StructureDataIteratorLinked implements StructureDataIterator {
     this.linkVarName = linkVarName;
   }
 
+  @Override
   public StructureData next() throws IOException {
     StructureData sdata;
-    int recno = nextRecno;
+    currRecno = nextRecno;
     try {
-      sdata = s.readStructure( recno);
+      sdata = s.readStructure( currRecno);
     } catch (ucar.ma2.InvalidRangeException e) {
-      log.error("StructureDataLinkedIterator.nextStructureData recno=" + recno, e);
+      log.error("StructureDataLinkedIterator.nextStructureData recno=" + currRecno, e);
       throw new IOException(e.getMessage());
     }
 
@@ -80,17 +82,23 @@ public class StructureDataIteratorLinked implements StructureDataIterator {
     return sdata;
   }
 
+  @Override
   public boolean hasNext() throws IOException {
     return nextRecno >= 0;
   }
 
+  @Override
   public StructureDataIterator reset() {
     this.nextRecno = firstRecord;
     return this;
   }
 
+  @Override
   public void setBufferSize(int bytes) {}
 
-  public void finish() {}
+  @Override
+  public int getCurrentRecno() {
+    return currRecno;
+  }
   
 }

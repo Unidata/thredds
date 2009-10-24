@@ -427,8 +427,10 @@ public class Structure extends Variable {
       setBufferSize( bufferSize);
     }
 
+    @Override
     public boolean hasNext() { return count < recnum; }
 
+    @Override
     public StructureDataIterator reset() {
       count = 0;
       readStart = 0;
@@ -436,6 +438,7 @@ public class Structure extends Variable {
       return this;
     }
 
+    @Override
     public StructureData next() throws IOException {
       if (count >= readStart) {
         readNext();
@@ -445,7 +448,10 @@ public class Structure extends Variable {
       return as.getStructureData( readCount++);
     }
 
-    public void finish() {}
+    @Override
+    public int getCurrentRecno() {
+      return count-1;
+    }
 
     private void readNext() throws IOException {
       int left = Math.min(recnum, readStart+readAtaTime); // dont go over recnum
@@ -464,6 +470,7 @@ public class Structure extends Variable {
       readCount = 0;
     }
 
+    @Override
     public void setBufferSize(int bytes) {
       if (count > 0) return; // too late
       int structureSize = calcStructureSize();
@@ -494,10 +501,12 @@ public class Structure extends Variable {
       reset();
     }
 
+    @Override
     public boolean hasNext() {
       return count < total;
     }
 
+    @Override
     public StructureDataIterator reset() {
       count = 0;
       total = (int) getSize();
@@ -508,6 +517,12 @@ public class Structure extends Variable {
       return this;
     }
 
+    @Override
+    public int getCurrentRecno() {
+      return count-1;
+    }
+
+    @Override
     public StructureData next() throws IOException {
       if (count >= readStart)
         readNextGeneralRank();
@@ -515,8 +530,6 @@ public class Structure extends Variable {
       count++;
       return as.getStructureData( readCount++);
     }
-
-    public void finish() {}
 
     private void readNextGeneralRank() throws IOException {
 

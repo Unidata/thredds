@@ -87,11 +87,9 @@ public class TableConfigXML {
 
     switch (config.type) {
       case ArrayStructure:
-        //tableElem.addContent(new Element("as").setAttribute("name", config.as));
-        tableElem.addContent(new Element("dimension").addContent(config.dim.getName()));
+        tableElem.setAttribute("dimension", config.dim.getName());
         break;
       case Construct:
-        tableElem.addContent(new Element("structure").addContent(config.structName));
         break;
       case Contiguous:
         if (config.start != null)
@@ -118,11 +116,12 @@ public class TableConfigXML {
         break;
       case MultidimStructure:
       case Structure:
-        tableElem.setAttribute("structureType", config.structureType.toString());
-        tableElem.addContent(new Element("dimension").addContent(config.dim.getName()));
+        tableElem.setAttribute("subtype", config.structureType.toString());
+        tableElem.setAttribute("dimension", config.dim.getName());
+        tableElem.addContent(new Element("structName").addContent(config.structName));
         break;
       case Top:
-        tableElem.addContent(new Element("structure").addContent(config.structName));
+        tableElem.addContent(new Element("structName").addContent(config.structName));
         break;
     }
 

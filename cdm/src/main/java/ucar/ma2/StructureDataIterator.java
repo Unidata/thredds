@@ -69,6 +69,8 @@ public interface StructureDataIterator {
    */
   public StructureDataIterator reset();
 
+  public int getCurrentRecno();
+
   /*
    * Make sure that the iterator is complete, and recover resources.
    * You must complete the iteration (until hasNext() returns false) or call finish().

@@ -64,14 +64,14 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
   public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
     return new NestedPointFeatureCollectionIterator() {
       private StructureDataIterator sdataIter = ft.getRootFeatureDataIterator(-1);
-      private int count = 0;
 
       public boolean hasNext() throws IOException {
         return sdataIter.hasNext();
       }
 
       public NestedPointFeatureCollection next() throws IOException {
-        return new StandardSectionFeature(sdataIter.next(), count++);
+        StructureData sdata = sdataIter.next();
+        return new StandardSectionFeature(sdata, sdataIter.getCurrentRecno());
       }
 
       public void setBufferSize(int bytes) {
@@ -95,7 +95,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
       Cursor cursor = new Cursor(ft.getNumberOfLevels());
       cursor.recnum[2] = recnum;
       cursor.tableData[2] = sectionData; // obs(leaf) = 0, profile=1, section(root)=2
-      cursor.parentIndex = 2; // LOOK ??
+      cursor.parentIndex = 2;
       return new StandardSectionProfileFeatureIterator(cursor);
     }
 
@@ -108,7 +108,6 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
   private class StandardSectionProfileFeatureIterator implements PointFeatureCollectionIterator {
     Cursor cursor;
     private ucar.ma2.StructureDataIterator iter;
-    private int count = 0;
 
     StandardSectionProfileFeatureIterator(Cursor cursor) throws IOException {
       this.cursor = cursor;
@@ -121,9 +120,9 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
 
     public PointFeatureCollection next() throws IOException {
       Cursor cursorIter = cursor.copy();
-      cursorIter.recnum[1] = count++;
       cursorIter.tableData[1] = iter.next();
-      cursorIter.parentIndex = 1; // LOOK ??
+      cursorIter.recnum[1] = iter.getCurrentRecno();
+      cursorIter.parentIndex = 1;
 
       // double time = ft.getObsTime(cursorIter);
       return new StandardSectionProfileFeature(cursorIter);

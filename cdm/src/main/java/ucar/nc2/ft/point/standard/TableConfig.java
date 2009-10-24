@@ -65,7 +65,7 @@ public class TableConfig {
   public String start;  // name of variable - starting child index (in parent)
   public String next;  // name of variable - next child index (in child)
   public String numRecords;  // name of variable - number of children (in parent)
-  public int[] startIndex;  // starting child index for each parent
+  // public int[] startIndex;  // starting child index for each parent
 
   // top only
   public FeatureType featureType;

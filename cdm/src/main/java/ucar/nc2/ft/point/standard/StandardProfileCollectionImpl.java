@@ -87,7 +87,6 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
 
   private class ProfileIterator implements PointFeatureCollectionIterator {
     StructureDataIterator structIter;
-    int count = 0;
 
     ProfileIterator(ucar.ma2.StructureDataIterator structIter) throws IOException {
       this.structIter = structIter;
@@ -100,8 +99,8 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
     public ProfileFeature next() throws IOException {
       Cursor cursor = new Cursor(ft.getNumberOfLevels());
       cursor.tableData[1] = structIter.next();
-      cursor.recnum[1] = count++;
-      cursor.parentIndex = 1; // LOOK ?
+      cursor.recnum[1] = structIter.getCurrentRecno();
+      cursor.parentIndex = 1;
       return new StandardProfileFeature(cursor);
     }
 

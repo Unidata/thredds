@@ -536,31 +536,40 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   private class StructureDataConverter implements StructureDataIterator {
-    StructureDataIterator orgIter;
-    StructureDS newStruct;
-    int count = 0;
+    private StructureDataIterator orgIter;
+    private StructureDS newStruct;
+    private int count = 0;
 
     StructureDataConverter(StructureDS newStruct, StructureDataIterator orgIter) {
       this.newStruct = newStruct;
       this.orgIter = orgIter;
     }
 
+    @Override
     public boolean hasNext() throws IOException {
       return orgIter.hasNext();
     }
 
+    @Override
     public StructureData next() throws IOException {
       StructureData sdata = orgIter.next();
       return newStruct.convert(sdata, count++);
     }
 
+    @Override
     public void setBufferSize(int bytes) {
       orgIter.setBufferSize(bytes);
     }
 
+    @Override
     public StructureDataIterator reset() {
       orgIter.reset();
       return this;
+    }
+
+    @Override
+    public int getCurrentRecno() {
+      return orgIter.getCurrentRecno();
     }
   }
 

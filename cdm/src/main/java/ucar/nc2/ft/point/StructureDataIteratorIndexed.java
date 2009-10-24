@@ -51,6 +51,7 @@ public class StructureDataIteratorIndexed implements StructureDataIterator {
   private Structure s;
   private List<Integer> index;
   private Iterator<Integer> indexIter;
+  private int currRecord;
 
   public StructureDataIteratorIndexed(Structure s, List<Integer> index) throws IOException {
     this.s = s;
@@ -58,29 +59,36 @@ public class StructureDataIteratorIndexed implements StructureDataIterator {
     reset();
   }
 
+  @Override
   public StructureData next() throws IOException {
     StructureData sdata;
-    int recno = indexIter.next();
+    currRecord = indexIter.next();
     try {
-      sdata = s.readStructure( recno);
+      sdata = s.readStructure( currRecord);
     } catch (ucar.ma2.InvalidRangeException e) {
-      log.error("StructureDataIteratorIndexed.nextStructureData recno=" + recno, e);
+      log.error("StructureDataIteratorIndexed.nextStructureData recno=" + currRecord, e);
       throw new IOException(e.getMessage());
     }
     return sdata;
   }
 
+  @Override
   public boolean hasNext() throws IOException {
     return indexIter.hasNext();
   }
 
+  @Override
   public StructureDataIterator reset() {
     this.indexIter = index.iterator();
     return this;
   }
 
+  @Override
   public void setBufferSize(int bytes) {}
 
-  public void finish() {}
+  @Override
+  public int getCurrentRecno() {
+    return currRecord;
+  }
   
 }

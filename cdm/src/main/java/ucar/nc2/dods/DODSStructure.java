@@ -131,7 +131,6 @@ public class DODSStructure extends ucar.nc2.Structure {
 
   private class SequenceIterator implements StructureDataIterator {
     private int nrows, row = 0;
-    private DSequence seq = null;
     private ArrayStructure structArray;
 
     SequenceIterator(String CE) throws java.io.IOException {
@@ -140,20 +139,29 @@ public class DODSStructure extends ucar.nc2.Structure {
       nrows = (int) structArray.getSize();
     }
 
+    @Override
     public boolean hasNext() {
       return row < nrows;
     }
 
+    @Override
     public StructureData next() {
       return structArray.getStructureData(row++);
     }
 
+    @Override
     public void setBufferSize(int bytes) {
     }
 
+    @Override
     public StructureDataIterator reset() {
       row = 0;
       return this;
+    }
+
+    @Override
+    public int getCurrentRecno() {
+      return row - 1;
     }
 
   }

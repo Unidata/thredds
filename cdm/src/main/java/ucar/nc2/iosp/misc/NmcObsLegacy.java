@@ -709,10 +709,12 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
         }
       }
 
+      @Override
       public boolean hasNext() throws IOException {
         return count < entries.length;
       }
 
+      @Override
       public StructureData next() throws IOException {
         Entry entry = entries[count++];
 
@@ -724,12 +726,19 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
         return abb.getStructureData(0);
       }
 
+      @Override
       public void setBufferSize(int bytes) {
       }
 
+      @Override
       public StructureDataIterator reset() {
         count = 0;
         return this;
+      }
+
+      @Override
+      public int getCurrentRecno() {
+        return count - 1;
       }
     }
 

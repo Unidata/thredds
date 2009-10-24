@@ -40,7 +40,7 @@ import ucar.ma2.StructureData;
  * @since Jan 24, 2009
  */
 public class Cursor {
-  Object what; // used by StationConstruct
+  //Object what; // used by StationConstruct
   StructureData[] tableData;
   int[] recnum;
   int parentIndex;
@@ -60,7 +60,7 @@ public class Cursor {
 
   Cursor copy() {
     Cursor clone = new Cursor(tableData.length);
-    clone.what = what; // not a copy !!
+    //clone.what = what; // not a copy !!
     clone.parentIndex = parentIndex;
     System.arraycopy(this.tableData, 0, clone.tableData, 0, tableData.length);
     System.arraycopy(this.recnum, 0, clone.recnum, 0, tableData.length);

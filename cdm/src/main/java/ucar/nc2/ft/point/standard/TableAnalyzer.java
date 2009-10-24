@@ -282,6 +282,7 @@ public class TableAnalyzer {
   private Set<TableConfig> tableSet = new HashSet<TableConfig>();
   private List<NestedTable> leaves = new ArrayList<NestedTable>();
   private FeatureType ft;
+  private TableConfig configResult;
 
   private TableAnalyzer(NetcdfDataset ds, TableConfigurer tc) {
     this.tc = tc;
@@ -366,17 +367,46 @@ public class TableAnalyzer {
       makeNestedTables();
 
     } else {
-      TableConfig config = tc.getConfig(wantFeatureType, ds, errlog);
-      if (config != null)
-        addTableRecurse( config); // kinda stupid
+      configResult = tc.getConfig(wantFeatureType, ds, errlog);
+      if (configResult != null)
+        addTableRecurse( configResult); // kinda stupid
       else { // use default
         makeTablesDefault(structAdded);
         makeNestedTables();
       }
     }
 
-    makeLeaves();
+    // find the leaves
+    for (TableConfig config : tableSet) {
+      if (config.children == null) { // its a leaf
+        NestedTable flatTable = new NestedTable(ds, config, errlog);
+        leaves.add(flatTable);
+      }
+    }
+
+    if (PointDatasetStandardFactory.showTables)
+      getDetailInfo( new Formatter( System.out));
   }
+
+
+  private void addTable(TableConfig t) {
+    tableFind.put(t.name, t);
+    if (t.dim != null)
+      tableFind.put(t.dim.getName(), t);
+    tableSet.add(t);
+  }
+
+  private void addTableRecurse(TableConfig t) {
+    addTable(t);
+    if (t.children != null) {
+      for (TableConfig child : t.children)
+        addTableRecurse(child);
+    }
+  }
+
+
+  ///////////////////////////////////////////////////////////
+  // default analasis aka guessing
 
   // no TableConfig was passed in - gotta wing it
   private void makeTablesDefault(boolean structAdded) throws IOException {
@@ -462,22 +492,6 @@ public class TableAnalyzer {
     }
   }
 
-
-  private void addTable(TableConfig t) {
-    tableFind.put(t.name, t);
-    if (t.dim != null)
-      tableFind.put(t.dim.getName(), t);
-    tableSet.add(t);
-  }
-
-  private void addTableRecurse(TableConfig t) {
-    addTable(t);
-    if (t.children != null) {
-      for (TableConfig child : t.children)
-        addTableRecurse(child);
-    }
-  }
-
   private void makeNestedTables() {
     // We search among all the possible Tables in a dataset for joins, and coordinate
     // variables. Based on those, we form "interesting" sets and make them into NestedTables.
@@ -495,21 +509,6 @@ public class TableAnalyzer {
       parent.children.add(join);
     } */
   }
-
-  private void makeLeaves() {
-
-    // find the leaves
-    for (TableConfig config : tableSet) {
-      if (config.children == null) { // its a leaf
-        NestedTable flatTable = new NestedTable(ds, config, errlog);
-        leaves.add(flatTable);
-      }
-    }
-
-    if (PointDatasetStandardFactory.showTables)
-      getDetailInfo( new Formatter( System.out));
-  }
-
 
 
   /////////////////////////////////////////////////////
@@ -582,13 +581,10 @@ public class TableAnalyzer {
   }
 
   private void writeConfigXML(java.util.Formatter sf) throws IOException {
-    if (tc != null) {
-      TableConfig config = tc.getConfig(ft, ds, errlog);
-      if (config != null) {
-        TableConfigXML tcx = new TableConfigXML(config, tc.getClass().getName());
+    if (configResult != null) {
+        TableConfigXML tcx = new TableConfigXML(configResult, tc.getClass().getName());
         tcx.writeConfigXML(sf);
         return;
-      }
     }
     XMLOutputter fmt = new XMLOutputter( Format.getPrettyFormat());
     sf.format("%s", fmt.outputString ( makeDocument()));
