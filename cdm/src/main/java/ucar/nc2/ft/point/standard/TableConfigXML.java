@@ -38,6 +38,8 @@ import org.jdom.Document;
 import org.jdom.Element;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Helper class to convert a  TableConfig to and from XML
@@ -125,9 +127,10 @@ public class TableConfigXML {
         break;
     }
 
-    addCoordinates(tableElem, config);
+    List<String> varNames = config.vars == null ? new ArrayList<String>() : new ArrayList<String>(config.vars);
+    addCoordinates(tableElem, config, varNames);
     if (config.vars != null) {
-      for (String col : config.vars)
+      for (String col : varNames)
         tableElem.addContent(new Element("variable").addContent(col));
     }
 
@@ -149,25 +152,26 @@ public class TableConfigXML {
     return tableElem;
   }
 
-  private void addCoordinates(Element tableElem, TableConfig table) {
-    addCoord(tableElem, table.lat, "lat");
-    addCoord(tableElem, table.lon, "lon");
-    addCoord(tableElem, table.elev, "elev");
-    addCoord(tableElem, table.time, "time");
-    addCoord(tableElem, table.timeNominal, "timeNominal");
-    addCoord(tableElem, table.stnId, "stnId");
-    addCoord(tableElem, table.stnDesc, "stnDesc");
-    addCoord(tableElem, table.stnNpts, "stnNpts");
-    addCoord(tableElem, table.stnWmoId, "stnWmoId");
-    addCoord(tableElem, table.stnAlt, "stnAlt");
-    addCoord(tableElem, table.limit, "limit");
+  private void addCoordinates(Element tableElem, TableConfig table, List<String> varNames) {
+    addCoord(tableElem, table.lat, "lat", varNames);
+    addCoord(tableElem, table.lon, "lon", varNames);
+    addCoord(tableElem, table.elev, "elev", varNames);
+    addCoord(tableElem, table.time, "time", varNames);
+    addCoord(tableElem, table.timeNominal, "timeNominal", varNames);
+    addCoord(tableElem, table.stnId, "stnId", varNames);
+    addCoord(tableElem, table.stnDesc, "stnDesc", varNames);
+    addCoord(tableElem, table.stnNpts, "stnNpts", varNames);
+    addCoord(tableElem, table.stnWmoId, "stnWmoId", varNames);
+    addCoord(tableElem, table.stnAlt, "stnAlt", varNames);
+    addCoord(tableElem, table.limit, "limit", varNames);
   }
 
-  private void addCoord(Element tableElem, String name, String type) {
+  private void addCoord(Element tableElem, String name, String type, List<String> varNames) {
     if (name != null) {
       Element elem = new Element("coordinate").setAttribute("type", type);
       elem.addContent(name);
       tableElem.addContent(elem);
+      varNames.remove(name);
     }
   }
 
