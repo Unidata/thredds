@@ -93,7 +93,7 @@ public class CatalogDatasetTestUtils
                 return true;
             }
         };
-        CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_RANDOM_DIRECT, false, listener );
+        CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_RANDOM_DIRECT_NOT_FIRST_OR_LAST, false, listener );
 
         int numDs = crawler.crawl( catalogUrl, null, psStatusMsg );
         psStatusMsg.close();
@@ -123,6 +123,7 @@ public class CatalogDatasetTestUtils
     {
         try
         {
+          // ToDo - Handle URLs for "resolver" datasets.
             return NetcdfDataset.openDataset( datasetUrl, false, null );
         }
         catch ( IOException e )

@@ -58,7 +58,10 @@ public class StandardCatalogUtils
             "catalog/station/profiler/wind/1hr/catalog.xml",
             "catalog/station/profiler/RASS/1hr/catalog.xml",
             "catalog/station/soundings/catalog.xml",
-            "catalog/satellite/WV/AK-REGIONAL_16km/catalog.xml"
+            "catalog/satellite/WV/AK-REGIONAL_16km/catalog.xml",
+            "catalog/GEMPAK/model/gfs/catalog.xml",
+            "catalog/GEMPAK/model/nam-ak/catalog.xml",
+            "catalog/GEMPAK/model/ukmet/catalog.xml"
     };
 
     public static Collection<Object[]> getNsfMainCatalogUrlArrayCollection()
@@ -99,6 +102,7 @@ public class StandardCatalogUtils
             "idv/latestModels.xml",
             "idv/rt-models.xml",            // check that not expired!
             "idv/rt-models.1.0.xml",        // check that not expired!
+            "gempakTestCat.xml",
             "cataloggen/catalogs/uniModelsInvCat1.0en.xml",  // check that not expired!
             "galeon/catalog.xml",
             "casestudies/catalog.xml",

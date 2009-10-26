@@ -82,6 +82,10 @@ public class CatalogCrawler {
    * return one random dataset in each collection of direct datasets.
    */
   static public final int USE_RANDOM_DIRECT = 3;
+  /**
+   * return one random dataset in each collection of direct datasets.
+   */
+  static public final int USE_RANDOM_DIRECT_NOT_FIRST_OR_LAST = 4;
 
   private boolean skipDatasetScan = false;
   private int type = USE_ALL;
@@ -104,7 +108,7 @@ public class CatalogCrawler {
     this.skipDatasetScan = skipDatasetScan;
     this.listen = listen;
 
-    if (type == USE_RANDOM_DIRECT)
+    if (type == USE_RANDOM_DIRECT || type == USE_RANDOM_DIRECT_NOT_FIRST_OR_LAST )
       this.random = new Random(System.currentTimeMillis());
   }
 
@@ -247,6 +251,9 @@ public class CatalogCrawler {
       } else if (type == USE_RANDOM_DIRECT) {
         listen.getDataset(chooseRandom(leaves));
 
+      } else if (type == USE_RANDOM_DIRECT_NOT_FIRST_OR_LAST) {
+        listen.getDataset(chooseRandomNotFirstOrLast(leaves));
+
       } else { // do all of them
         for (InvDataset dds : leaves) {
           listen.getDataset(dds);
@@ -279,6 +286,15 @@ public class CatalogCrawler {
 
   private InvDataset chooseRandom(List datasets) {
     int index = random.nextInt(datasets.size());
+    return (InvDataset) datasets.get(index);
+  }
+
+  private InvDataset chooseRandomNotFirstOrLast(List datasets) {
+    int index = random.nextInt(datasets.size());
+    if ( index == 0 && datasets.size() > 1)
+      index++;
+    else if ( index == datasets.size() - 1 && datasets.size() > 1)
+      index--;
     return (InvDataset) datasets.get(index);
   }
 
