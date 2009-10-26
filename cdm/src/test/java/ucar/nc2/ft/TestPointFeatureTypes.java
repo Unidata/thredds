@@ -102,7 +102,7 @@ public class TestPointFeatureTypes extends TestCase {
   String CFpointObs_topdir = TestAll.cdmLocalTestDataDir + "/point/";
   public void testCFpointObs() throws IOException {
     assert 3 == testPointDataset(CFpointObs_topdir + "point.ncml", FeatureType.POINT, false);
-    assert 3 == testPointDataset(CFpointObs_topdir + "pointUnlimited.ncml", FeatureType.POINT, false);
+    assert 3 == testPointDataset(CFpointObs_topdir + "pointUnlimited.nc", FeatureType.POINT, false);
 
     assert 3 == testPointDataset(CFpointObs_topdir + "stationSingle.ncml", FeatureType.STATION, false);
     assert 3 == testPointDataset(CFpointObs_topdir + "stationSingleWithZLevel.ncml", FeatureType.STATION, false);
@@ -275,39 +275,7 @@ public class TestPointFeatureTypes extends TestCase {
 
     fdataset.close();
   }
-
-  int readAllDir(String dirName, FileFilter ff, FeatureType type) throws IOException {
-    int count = 0;
-
-    System.out.println("---------------Reading directory " + dirName);
-    File allDir = new File(dirName);
-    File[] allFiles = allDir.listFiles();
-    if (null == allFiles) {
-      System.out.println("---------------INVALID " + dirName);
-      return count;
-    }
-
-    for (File f : allFiles) {
-      String name = f.getAbsolutePath();
-      if (f.isDirectory())
-        continue;
-      if (((ff == null) || ff.accept(f)) && !name.endsWith(".exclude")) {
-        try {
-          testPointDataset(name, type, false);
-        } catch (Throwable t) {
-          t.printStackTrace();
-        }
-        count++;
-      }
-    }
-
-    for (File f : allFiles) {
-      if (f.isDirectory() && !f.getName().equals("exclude"))
-        count += readAllDir(f.getAbsolutePath(), ff, type);
-    }
-
-    return count;
-  }
+  
 
   private int  testPointDataset(String location, FeatureType type, boolean show) throws IOException {
     System.out.printf("================ TestPointFeatureCollection read %s %n", location);

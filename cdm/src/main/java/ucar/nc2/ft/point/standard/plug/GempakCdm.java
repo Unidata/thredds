@@ -45,7 +45,7 @@ import java.util.*;
 import java.io.IOException;
 
 /**
- * Class Description.
+ * Gempak Point Obs data.
  *
  * @author caron
  * @since Mar 3, 2009
