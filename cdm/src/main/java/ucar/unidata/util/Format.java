@@ -67,8 +67,7 @@ public class Format {
      * @param tabStop pad out to here
      * @param alwaysOne true if you want to guarentee at least one space.
      */
-    public static void tab(StringBuilder sbuff, int tabStop,
-                           boolean alwaysOne) {
+    public static void tab(StringBuilder sbuff, int tabStop, boolean alwaysOne) {
         int len = sbuff.length();
         if (tabStop > len) {
             sbuff.setLength(tabStop);

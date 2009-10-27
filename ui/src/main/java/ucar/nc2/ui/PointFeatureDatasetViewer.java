@@ -163,7 +163,7 @@ public class PointFeatureDatasetViewer extends JPanel {
         FeatureCollectionBean fcb = (FeatureCollectionBean) fcTable.getSelectedBean();
         try {
           setFeatureCollection(fcb);
-        } catch (IOException e1) {
+        } catch (Exception e1) {
           JOptionPane.showMessageDialog(null, "Error reading FeatureCollection " + fcb.fc.getName() + " error=" + e1.getMessage());
           e1.printStackTrace();
         }

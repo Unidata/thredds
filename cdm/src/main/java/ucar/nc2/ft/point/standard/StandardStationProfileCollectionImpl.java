@@ -72,7 +72,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
         StructureData stationData = siter.next();
         stationHelper.addStation(makeStation(stationData, siter.getCurrentRecno()));
       }
-    } catch (IOException ioe) {
+    } catch (Exception ioe) {
       throw new RuntimeException(ioe);
     }
   }

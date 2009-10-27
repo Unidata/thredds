@@ -82,6 +82,10 @@ public class TestReadandCountGrib extends TestCase {
     TestReadandCount.doOne(dir, filename, ngrids, ncoordSys, ncoordAxes, nVertCooordAxes);
   }
 
+  public void testProblem() throws Exception {
+    doOne("grib2/data/","CLDGRIB2.2005040905", 5, 1, 3, 0);    
+  }
+
    public static void main( String arg[]) throws Exception {
      //TestReadandCount.doOne("Q:/grid/grib/grib1/data/", "ukm.wmo", -1, -1, -1, -1);
 

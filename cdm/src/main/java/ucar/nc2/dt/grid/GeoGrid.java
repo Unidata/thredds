@@ -851,11 +851,11 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     StringBuilder buf = new StringBuilder(200);
     buf.setLength(0);
     buf.append(getName());
-    Format.tab(buf, 15, true);
-    buf.append(getUnitsString());
     Format.tab(buf, 30, true);
+    buf.append(getUnitsString());
+    Format.tab(buf, 60, true);
     buf.append(hasMissingData());
-    Format.tab(buf, 40, true);
+    Format.tab(buf, 66, true);
     buf.append(getDescription());
     return buf.toString();
   }

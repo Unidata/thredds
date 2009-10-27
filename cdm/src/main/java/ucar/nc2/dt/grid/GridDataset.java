@@ -319,32 +319,31 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
    * Show Grids and coordinate systems.
    * @param buf put info here
    */
-  public void getInfo(StringBuilder buf) {
+  private void getInfo(Formatter buf) {
     int countGridset = 0;
-    buf.setLength(0);
 
     for (Gridset gs : gridsetHash.values()) {
       GridCoordSystem gcs = gs.getGeoCoordSystem();
-      buf.append("\nGridset ").append(countGridset).append(" coordSys=").append(gcs);
-      buf.append(" LLbb=").append(gcs.getLatLonBoundingBox());
+      buf.format("%nGridset %d  coordSys=%s", countGridset,  gcs);
+      buf.format(" LLbb=%s ", gcs.getLatLonBoundingBox());
       if ((gcs.getProjection() != null)  && !gcs.getProjection().isLatLon())
-        buf.append(" bb=").append(gcs.getBoundingBox());
-      buf.append("\n");
-      buf.append("Name___________Unit___________hasMissing_____Description\n");
+        buf.format(" bb= %s", gcs.getBoundingBox());
+      buf.format("%n");
+      buf.format("Name__________________________Unit__________________________hasMissing_Description%n");
       for (GeoGrid grid : grids) {
-        buf.append(grid.getInfo());
-        buf.append("\n");
+        buf.format(grid.getInfo());
+        buf.format("%n");
       }
       countGridset++;
-      buf.append("\n");
+      buf.format("%n");
     }
 
-    buf.append("\nGeoReferencing Coordinate Axes\n");
-    buf.append("Name___________Len__Unit________________Type___Description\n");
+    buf.format("\nGeoReferencing Coordinate Axes\n");
+    buf.format("Name__________________________Units_______________Type______Description\n");
     for (CoordinateAxis axis : ds.getCoordinateAxes()) {
       if (axis.getAxisType() == null) continue;
       axis.getInfo(buf);
-      buf.append("\n");
+      buf.format("\n");
     }
   }
 
@@ -354,21 +353,21 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
    * Get Details about the dataset.
    */
   public String getDetailInfo() {
-    StringBuilder buff = new StringBuilder(5000);
+    Formatter buff = new Formatter();
     getInfo(buff);
-    buff.append("\n\n----------------------------------------------------\n");
+    buff.format("\n\n----------------------------------------------------\n");
     NetcdfDatasetInfo info = null;
     try {
       info = new NetcdfDatasetInfo( ds.getLocation());
-      buff.append(info.getParseInfo());
+      buff.format(info.getParseInfo());
     } catch (IOException e) {
-      buff.append("NetcdfDatasetInfo failed");
+      buff.format("NetcdfDatasetInfo failed");
     } finally {
       if (info != null) try { info.close(); } catch (IOException ee) {} // do nothing
     }
-    buff.append("\n\n----------------------------------------------------\n");
-    buff.append(ds.toString());
-    buff.append("\n\n----------------------------------------------------\n");
+    buff.format("\n\n----------------------------------------------------\n");
+    buff.format(ds.toString());
+    buff.format("\n\n----------------------------------------------------\n");
 
     return buff.toString();
   }

@@ -698,7 +698,7 @@ public class CFpointObs extends TableConfigurerImpl {
       }
 
       case raggedIndex: {
-        throw new UnsupportedOperationException("CFpointObs: section raggedIndex encoding");
+        throw new UnsupportedOperationException("CFpointObs: section raggedIndex encoding%n");
       }
 
       case flat:
@@ -746,7 +746,7 @@ public class CFpointObs extends TableConfigurerImpl {
       if (ftype == CF.FeatureType.section) {
         Variable parentId = identifyParent(ds, ftype);
         if (parentId == null) {
-          errlog.format("Section ragged must have section_id variable ");
+          errlog.format("Section ragged must have section_id variable%n");
           return null;
         }
         return new EncodingInfo(Encoding.raggedContiguous, parentId);
@@ -762,7 +762,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
     Variable lat = CoordSysEvaluator.findCoordByType(ds, AxisType.Lat);
     if (lat == null) {
-      errlog.format("Must have a Latitude coordinate");
+      errlog.format("Must have a Latitude coordinate%n");
       return null;
     }
     Dimension latDim = lat.getDimension(0);
@@ -779,7 +779,7 @@ public class CFpointObs extends TableConfigurerImpl {
         else if (lat.getRank() == 1)
           return new EncodingInfo(Encoding.multidim, lat);
 
-        errlog.format("CFpointObs %s Must have Lat/Lon coordinates of rank 0 or 1", ftype);
+        errlog.format("CFpointObs %s Must have Lat/Lon coordinates of rank 0 or 1%n", ftype);
         return null;
 
       case trajectory:
@@ -789,7 +789,7 @@ public class CFpointObs extends TableConfigurerImpl {
         else if (lat.getRank() == 2)
           return new EncodingInfo(Encoding.multidim, lat);
 
-        errlog.format("CFpointObs %s Must have Lat/Lon coordinates of rank 1 or 2", ftype);
+        errlog.format("CFpointObs %s Must have Lat/Lon coordinates of rank 1 or 2%n", ftype);
         return null;
     }
 
@@ -831,18 +831,18 @@ public class CFpointObs extends TableConfigurerImpl {
     stnTable.lat = lat.getName();
     stnTable.lon = lon.getName();
 
+    // station id
+    if (stnTable.stnId == null) {
+      errlog.format("Must have a Station id variable with standard name station_id%n");
+      return null;
+    }
+
     if (info.encoding != Encoding.single) {
       // set up structure
       boolean hasStruct = Evaluator.hasRecordStructure(ds) && stationDim.isUnlimited();
       stnTable.structureType = hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
       stnTable.dim = stationDim;
       stnTable.structName = hasStruct ? "record" : stationDim.getName();
-
-      // station id
-      if (stnTable.stnId == null) {
-        errlog.format("Must have a Station id variable with standard name station_id");  // why ??
-        return null;
-      }
     }
 
     // LOOK probably need a standard name here

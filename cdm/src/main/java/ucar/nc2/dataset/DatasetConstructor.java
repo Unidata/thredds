@@ -58,6 +58,7 @@ public class DatasetConstructor {
     transferGroup(src, src.getRootGroup(), target.getRootGroup(), replaceCheck);
   }
 
+  // transfer the objects in src group to the target group
   static private void transferGroup(NetcdfFile ds, Group src, Group target, ReplaceVariableCheck replaceCheck) {
     boolean unlimitedOK = false; // LOOK why not allowed?
 

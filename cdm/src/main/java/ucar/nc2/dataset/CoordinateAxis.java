@@ -36,9 +36,9 @@ package ucar.nc2.dataset;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
-import ucar.unidata.util.Format;
 
 import java.io.IOException;
+import java.util.Formatter;
 
 /**
  * A Coordinate Axis is a Variable that specifies one of the coordinates of a CoordinateSystem.
@@ -276,18 +276,13 @@ public class CoordinateAxis extends VariableDS {
    * Get a string representation
    * @param buf place info here
    */
-  public void getInfo(StringBuilder buf) {
-    buf.append(getName());
-    Format.tab(buf, 15, true);
-    buf.append(getSize()).append("");
-    Format.tab(buf, 20, true);
-    buf.append(getUnitsString());
+  public void getInfo(Formatter buf) {
+    buf.format("%-30s", getNameAndDimensions());
+    buf.format("%-20s", getUnitsString());
     if (axisType != null) {
-      Format.tab(buf, 40, true);
-      buf.append("type=").append(axisType.toString());
+      buf.format("%-10s", axisType.toString());
     }
-    Format.tab(buf, 52, true);
-    buf.append(getDescription());
+    buf.format("%s", getDescription());
 
     /* if (isNumeric) {
      boolean debugCoords = ucar.util.prefs.ui.Debug.isSet("Dataset/showCoordValues");
