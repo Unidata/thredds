@@ -175,6 +175,8 @@ public abstract class AbstractGempakStationFileReader extends GempakFileReader {
         makeFileSubType();
 
         Trace.call1("GEMPAK: get date list");
+        // null out the old cached list
+        dates = null;
         dateList = makeDateList(uniqueTimes);
         Trace.call2("GEMPAK: get date list");
 
@@ -446,7 +448,7 @@ public abstract class AbstractGempakStationFileReader extends GempakFileReader {
      * @return list of dates.
      */
     public List<Date> getDates() {
-        if ((dates == null) || (dates.isEmpty() && !dateList.isEmpty())) {
+        if ((dates == null || dates.isEmpty()) && !dateList.isEmpty()) {
             dates = new ArrayList<Date>(dateList.size());
             dateFmt.setTimeZone(TimeZone.getTimeZone("GMT"));
             for (String dateString : dateList) {

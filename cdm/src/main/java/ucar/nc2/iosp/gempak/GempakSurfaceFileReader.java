@@ -139,6 +139,8 @@ public class GempakSurfaceFileReader extends AbstractGempakStationFileReader {
             logError("Unable to read stations and times");
             return false;
         }
+        // since the reads are ob by ob, set buffer size small
+        if (subType.equals(STANDARD)) rf.setBufferSize(256);
         return true;
 
     }

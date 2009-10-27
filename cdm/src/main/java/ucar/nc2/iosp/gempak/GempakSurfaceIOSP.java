@@ -246,7 +246,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
 
         if (gemreader.getInitFileSize() < raf.length()) {
           long start = System.currentTimeMillis();
-            Trace.msg("GEMPAKSIOSP.sync: file is bigger: " + raf.length() + " > " + gemreader.getInitFileSize());
+            Trace.msg("GEMPAKSIOSP.sync: file " + raf.getLocation()+ " is bigger: " + raf.length() + " > " + gemreader.getInitFileSize());
             Trace.call1("GEMPAKSIOSP.sync: reader.init");
             gemreader.init(raf, true);
             Trace.call2("GEMPAKSIOSP.sync: reader.init");
