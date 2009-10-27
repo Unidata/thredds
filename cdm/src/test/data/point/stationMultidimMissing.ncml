@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" >
+  <dimension name="s" length="5" />
+  <dimension name="z" length="3" />
+  <dimension name="time" length="3"/>
+
+  <attribute name="CF:featureType" value="stationTimeSeries" />
+  <attribute name="Conventions" value="CF-1.5" />
+  
+  <variable name="lon" shape="s" type="float">
+    <attribute name="long_name" value="longitude" />
+    <attribute name="units" value="degrees_east" />
+    <values start="-100" increment="3"/>
+  </variable>
+  <variable name="lat" shape="s" type="float">
+    <attribute name="long_name" value="latitude" />
+    <attribute name="units" value="degrees_north" />
+    <values start="40" increment="2"/>
+  </variable>
+  <variable name="stationId" shape="s" type="int">
+    <attribute name="standard_name" value="station_id" />
+    <values start="666" increment="6"/>
+  </variable>
+  <variable name="stationAlt" shape="s" type="int">
+    <attribute name="standard_name" value="station_altitude" />
+    <values start="100" increment="6"/>
+  </variable>
+
+  <variable name="z" shape="z" type="float">
+    <attribute name="long_name" value="height above mean sea level" />
+    <attribute name="units" value="km" />
+    <attribute name="positive" value="up" />
+    <values>10 20 30</values>
+  </variable>
+  
+  <variable name="time" shape="s time" type="double">
+    <attribute name="long_name" value="time" />
+    <attribute name="units" value="days since 1970-01-01 00:00:00" />
+    <attribute name="missing_value" type="double" value="-9999" />
+    <values>10 20 30 10 20 -9999 10 20 30 10 20 30 10 -9999 -9999 </values>
+  </variable>
+  
+  <variable name="data" shape="s time z" type="float">
+    <attribute name="long_name" value="skin temperature" />
+    <attribute name="units" value="Celsius" />
+    <attribute name="coordinates" value="time lon lat z" />
+    <values start="1" increment="3"/>
+  </variable>
+</netcdf>
+

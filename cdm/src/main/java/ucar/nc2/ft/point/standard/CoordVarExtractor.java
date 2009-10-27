@@ -36,13 +36,12 @@ package ucar.nc2.ft.point.standard;
 import ucar.ma2.StructureData;
 
 /**
- * Class Description.
+ * Abstract superclass for extracting coordinat values from nested tables.
  *
  * @author caron
  * @since Jan 26, 2009
  */
 
-// knows how to get specific coordinate data from a table or its parents
 public abstract class CoordVarExtractor {
   protected String axisName;
   protected int nestingLevel;

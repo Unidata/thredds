@@ -85,7 +85,6 @@ public class NestedTable {
   private CoordVarExtractor timeVE, nomTimeVE, latVE, lonVE, altVE;
   private CoordVarExtractor stnVE, stnDescVE, wmoVE, stnAltVE;
 
-  private String featureVariableName = "featureName";
   private int nlevels;
 
   private DateFormatter dateFormatter = new DateFormatter();
@@ -419,23 +418,14 @@ public class NestedTable {
   }
 
   public double getLatitude(Cursor cursor) {
-    //if (cursor.what instanceof StationConstruct)
-    //  return ((StationConstruct) cursor.what).getLatitude();
-
     return latVE.getCoordValue(cursor.tableData);
   }
 
   public double getLongitude(Cursor cursor) {
-    //if (cursor.what instanceof StationConstruct)
-    //  return ((StationConstruct) cursor.what).getLongitude();
-
     return lonVE.getCoordValue(cursor.tableData);
   }
 
   public EarthLocation getEarthLocation(Cursor cursor) {
-    //if (cursor.what instanceof StationConstruct)
-    // return ((StationConstruct) cursor.what);
-
     double lat = latVE.getCoordValue(cursor.tableData);
     double lon = lonVE.getCoordValue(cursor.tableData);
     double alt = (altVE == null) ? Double.NaN : altVE.getCoordValue(cursor.tableData);
@@ -450,11 +440,28 @@ public class NestedTable {
   }
 
   public String getFeatureName(StructureData sdata) {
-    if (featureVariableName == null) return "unknown";
+    if (root.feature_id == null) return "unknown";
     if (sdata == null) return "unknown";
-    StructureMembers.Member m = sdata.findMember(featureVariableName);
+    StructureMembers.Member m = sdata.findMember(root.feature_id);
     if (m == null) return "unknown";
-    return sdata.getScalarString(m);
+
+    if (m.getDataType().isString())
+      return sdata.getScalarString(m);
+    else if (m.getDataType().isIntegral())
+      return Integer.toString(sdata.convertScalarInt(m));
+    else
+      return Double.toString(sdata.convertScalarDouble(m));
+  }
+
+
+  public boolean isFeatureMissing(StructureData sdata) {
+    if (root.feature_id == null) return false;
+    StructureMembers.Member m = sdata.findMember(root.feature_id);
+    if (m == null) {
+      log.error("cant find feature_id "+root.feature_id );
+      return false;
+    }
+      return Double.isNaN(sdata.convertScalarDouble(m));
   }
 
   //////////////////////////////////////////////////
@@ -494,25 +501,6 @@ public class NestedTable {
   }
 
   //// Station or Station_Profile
-
-  /* public List<Station> makeStations(StationMaker stationMaker, int bufferSize) throws IOException {
-    // allow TableConstruct to override and make stations directly
-    if (root instanceof Table.TableConstruct) {
-      return constructStations((Table.TableConstruct) root);
-    }
-
-    // otherwise
-    int recnum = 0; // ??
-    ArrayList<Station> result = new ArrayList<Station>();
-    StructureDataIterator siter = getStationDataIterator(bufferSize);
-    while (siter.hasNext()) {
-      StructureData stationData = siter.next();
-      Station s = stationMaker.makeStation( makeStation(stationData), stationData, recnum++);
-      result.add(s);
-    }
-    return result;
-  } */
-
   public StructureDataIterator getStationDataIterator(int bufferSize) throws IOException {
     Table stationTable = root;
     StructureDataIterator siter = stationTable.getStructureDataIterator(null, bufferSize);
@@ -564,6 +552,9 @@ public class NestedTable {
     double lat = latVE.getCoordValue(stationData);
     double lon = lonVE.getCoordValue(stationData);
     double elev = (stnAltVE == null) ? Double.NaN : stnAltVE.getCoordValue(stationData);
+
+    // missing lat, lon means skip this station
+    if (Double.isNaN(lat) || Double.isNaN(lon)) return null;
 
     return new StationImpl(stationName, stationDesc, stnWmoId, lat, lon, elev);
   }

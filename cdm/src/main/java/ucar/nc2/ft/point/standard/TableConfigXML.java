@@ -91,40 +91,69 @@ public class TableConfigXML {
       case ArrayStructure:
         tableElem.setAttribute("dimension", config.dim.getName());
         break;
+
       case Construct:
         break;
+
       case Contiguous:
         if (config.start != null)
-          tableElem.addContent(new Element("start").addContent(config.start));
-        tableElem.addContent(new Element("numRecords").addContent(config.numRecords));
+          tableElem.setAttribute("start", config.start);
+        tableElem.setAttribute("numRecords", config.numRecords);
         break;
+
       case LinkedList:
-        tableElem.addContent(new Element("start").addContent(config.start));
-        tableElem.addContent(new Element("next").addContent(config.next));
+        tableElem.setAttribute("start", config.start);
+        tableElem.setAttribute("next", config.next);
         break;
+
       case MultidimInner:
       case MultidimInnerPsuedo:
-        tableElem.addContent(new Element("outerDimension").addContent(config.outer.getName()));
-        tableElem.addContent(new Element("innerDimension").addContent(config.inner.getName()));
+        tableElem.setAttribute("dim0", config.outer.getName());
+        tableElem.setAttribute("dim1", config.inner.getName());
         break;
+
+      case MultidimInner3D:
+        break;
+
+      case MultidimInnerPsuedo3D:
+        break;
+
+      case MultidimStructure:
+        tableElem.setAttribute("structName", config.structName);
+        break;
+
       case NestedStructure:
-        tableElem.addContent(new Element("structure").addContent(config.structName));
+        tableElem.setAttribute("structName", config.structName);
         break;
+
       case ParentId:
       case ParentIndex:
-        tableElem.addContent(new Element("parentIndex").addContent(config.parentIndex));
+        tableElem.setAttribute("parentIndex", config.parentIndex);
         break;
+
       case Singleton:
         break;
-      case MultidimStructure:
+
       case Structure:
         tableElem.setAttribute("subtype", config.structureType.toString());
-        tableElem.setAttribute("dimension", config.dim.getName());
-        tableElem.addContent(new Element("structName").addContent(config.structName));
+        switch (config.structureType) {
+          case Structure:
+            tableElem.setAttribute("structName", config.structName);
+            break;
+          case PsuedoStructure:
+            tableElem.setAttribute("dim", config.dim.getName());
+            break;
+          case PsuedoStructure2D:
+            tableElem.setAttribute("dim0", config.dim.getName());
+            tableElem.setAttribute("dim1", config.outer.getName());
+            break;
+        }
         break;
+
       case Top:
-        tableElem.addContent(new Element("structName").addContent(config.structName));
+        tableElem.setAttribute("structName", config.structName);
         break;
+
     }
 
     List<String> varNames = config.vars == null ? new ArrayList<String>() : new ArrayList<String>(config.vars);

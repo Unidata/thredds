@@ -88,18 +88,23 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
   private class TrajIterator implements PointFeatureCollectionIterator {
     StructureDataIterator structIter;
     int count = 0;
+    StructureData nextTraj;
 
     TrajIterator(ucar.ma2.StructureDataIterator structIter) throws IOException {
       this.structIter = structIter;
     }
 
     public boolean hasNext() throws IOException {
-      return structIter.hasNext();
+      while (true) {
+        if(!structIter.hasNext()) return false;
+        nextTraj = structIter.next();
+        if (!ft.isFeatureMissing(nextTraj)) break;
+      }
+      return true;
     }
 
     public TrajectoryFeature next() throws IOException {
-      StructureData trajData = structIter.next();
-      return new StandardTrajectoryFeature(trajData, structIter.getCurrentRecno());
+      return new StandardTrajectoryFeature(nextTraj, structIter.getCurrentRecno());
     }
 
     public void setBufferSize(int bytes) { }

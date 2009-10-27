@@ -260,6 +260,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
     TableConfig parentTable = makeStructTable(ds, FeatureType.PROFILE, info, errlog);
     if (parentTable == null) return null;
+    parentTable.feature_id = identifyParentId(ds, CF.FeatureType.profile);
 
     // obs table
     Variable z = CoordSysEvaluator.findCoordByType(ds, AxisType.Height);
@@ -301,6 +302,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
     TableConfig parentTable = makeStructTable(ds, FeatureType.TRAJECTORY, info, errlog);
     if (parentTable == null) return null;
+    parentTable.feature_id = identifyParentId(ds, CF.FeatureType.trajectory);
 
     // obs table
     Variable time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
@@ -566,6 +568,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
     TableConfig parentTable = makeStructTable(ds, FeatureType.SECTION, info, errlog);
     if (parentTable == null) return null;
+    parentTable.feature_id = identifyParentId(ds, CF.FeatureType.section);
 
     Dimension sectionDim = parentTable.dim;
     Dimension profileDim = null;
@@ -722,7 +725,6 @@ public class CFpointObs extends TableConfigurerImpl {
     return parentTable;
   }
 
-
   /////////////////////////////////////////////////////////////////////
 
   private class EncodingInfo {
@@ -794,6 +796,11 @@ public class CFpointObs extends TableConfigurerImpl {
     }
 
     return null;
+  }
+
+  private String identifyParentId(NetcdfDataset ds, CF.FeatureType ftype) {
+    Variable v = identifyParent(ds, ftype);
+    return (v == null) ? null : v.getShortName();
   }
 
   private Variable identifyParent(NetcdfDataset ds, CF.FeatureType ftype) {

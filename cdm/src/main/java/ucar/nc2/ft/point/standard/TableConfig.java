@@ -54,12 +54,12 @@ public class TableConfig {
   public Table.Type type;
   public String name;
   public TableConfig parent;
-  public List<Join> extraJoin;
   public List<TableConfig> children;
+  public List<Join> extraJoin;
 
   public String structName; // full name of structure
   public String nestedTableName; // short name of structure
-  public StructureType structureType = StructureType.Structure;
+  public StructureType structureType = StructureType.Structure; // default
 
   // linked, contiguous list
   public String start;  // name of variable - starting child index (in parent)
@@ -67,7 +67,7 @@ public class TableConfig {
   public String numRecords;  // name of variable - number of children (in parent)
   // public int[] startIndex;  // starting child index for each parent
 
-  // top only
+  // only the top oe is used
   public FeatureType featureType;
 
   // TablePsuedoStructureList, Structure
@@ -92,6 +92,9 @@ public class TableConfig {
 
   // station info
   public String stnId, stnDesc, stnNpts, stnWmoId, stnAlt;
+
+  // variable name holding the id
+  public String feature_id;
 
   /**
    * Constructor

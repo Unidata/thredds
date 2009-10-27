@@ -126,7 +126,7 @@ public abstract class Table {
 
   String lat, lon, elev, time, timeNominal;
   String stnId, stnDesc, stnNpts, stnWmoId, stnAlt, limit;
-  //public int nstations;
+  String feature_id;
 
   List<VariableSimpleIF> cols = new ArrayList<VariableSimpleIF>();    // all variables
   List<String> nondataVars = new ArrayList<String>(); // exclude these from the getDataVariables() list
@@ -147,6 +147,7 @@ public abstract class Table {
     this.stnWmoId = config.stnWmoId;
     this.stnAlt = config.stnAlt;
     this.limit = config.limit;
+    this.feature_id = config.feature_id;
 
     if (config.parent != null) {
       parent = Table.factory(ds, config.parent);

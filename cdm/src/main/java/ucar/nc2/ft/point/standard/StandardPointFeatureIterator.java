@@ -64,27 +64,24 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
     cursor.recnum[0] = recnum;
     cursor.tableData[0] = sdata; // always in the first position
     ft.addParentJoin(cursor); // there may be parent joins
-    
-    return new StandardPointFeature(cursor, timeUnit, recnum);
+
+    double obsTime = ft.getObsTime( this.cursor);
+    if (Double.isNaN(obsTime)) return null; // missing data
+
+    return new StandardPointFeature(cursor, timeUnit, obsTime);
   }
 
   private class StandardPointFeature extends PointFeatureImpl implements StationPointFeature {
-    protected int id;
     protected Cursor cursor;
 
-    public StandardPointFeature(Cursor cursor, DateUnit timeUnit, int id) {
+    public StandardPointFeature(Cursor cursor, DateUnit timeUnit, double obsTime) {
       super( timeUnit);
-      this.cursor = cursor.copy(); // must keep own copy, since sdata is changing each time
-      this.id = id;
+      this.cursor = cursor.copy(); // must keep own copy, since sdata is changing each time LOOK needed ?
 
-      obsTime = ft.getObsTime( this.cursor);
+      this.obsTime = obsTime;
       nomTime = ft.getNomTime( this.cursor);
       if (Double.isNaN(nomTime)) nomTime = obsTime;
       location = ft.getEarthLocation( this.cursor);
-    }
-
-    public Object getId() {
-      return Integer.toString(id);
     }
 
     public StructureData getData() {

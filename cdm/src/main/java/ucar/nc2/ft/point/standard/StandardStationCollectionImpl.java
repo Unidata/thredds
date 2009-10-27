@@ -64,20 +64,17 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
     this.ft = ft;
   }
 
+  /**
+   * Make a Station from the station data structure.
+   * @param stationData station data structure
+   * @param recnum station data recnum within table
+   * @return Station or null, skip this Station
+   */
   public Station makeStation(StructureData stationData, int recnum) {
     Station s = ft.makeStation(stationData);
+    if (s == null) return null;
     return new StandardStationFeatureImpl(s, timeUnit, stationData, recnum);
   }
-
-  @Override
-  /* protected void initStationHelper() {
-    try {
-      stationHelper = new StationHelper();
-      stationHelper.setStations( ft.makeStations(this, -1));
-    } catch (IOException ioe) {
-      throw new RuntimeException(ioe);
-    }
-  }  */
 
   protected void initStationHelper() {
     try {
@@ -86,7 +83,9 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
       StructureDataIterator siter = ft.getStationDataIterator(-1);
       while (siter.hasNext()) {
         StructureData stationData = siter.next();
-        stationHelper.addStation( makeStation(stationData, siter.getCurrentRecno()));
+        Station s = makeStation(stationData, siter.getCurrentRecno());
+        if (s != null)
+          stationHelper.addStation( s);
       }
     } catch (IOException ioe) {
       throw new RuntimeException(ioe);
