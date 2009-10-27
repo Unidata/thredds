@@ -58,10 +58,7 @@ public class StandardCatalogUtils
             "catalog/station/profiler/wind/1hr/catalog.xml",
             "catalog/station/profiler/RASS/1hr/catalog.xml",
             "catalog/station/soundings/catalog.xml",
-            "catalog/satellite/WV/AK-REGIONAL_16km/catalog.xml",
-            "catalog/GEMPAK/model/gfs/catalog.xml",
-            "catalog/GEMPAK/model/nam-ak/catalog.xml",
-            "catalog/GEMPAK/model/ukmet/catalog.xml"
+            "catalog/satellite/WV/AK-REGIONAL_16km/catalog.xml"
     };
 
     public static Collection<Object[]> getNsfMainCatalogUrlArrayCollection()
@@ -112,5 +109,26 @@ public class StandardCatalogUtils
             "casestudies/july18_2002cat.xml",
             "servers/radarCollections.xml"
     };
+
+  public static Collection<Object[]> getMlodeDeepCatalogUrlArrayCollection()
+  {
+    List<Object[]> result = new ArrayList<Object[]>();
+    for ( String curCatalogUrl : mlodeDeepCatalogUrls )
+      result.add( new String[]{curCatalogUrl} );
+
+    return result;
+  }
+
+  public static List<String> getMlodeDeepCatalogUrlList()
+  {
+    return Arrays.asList( mlodeDeepCatalogUrls );
+  }
+
+  private static final String[] mlodeDeepCatalogUrls = {
+          "catalog/GEMPAK/model/gfs/catalog.xml",
+          "catalog/GEMPAK/model/nam-ak/catalog.xml",
+          "catalog/GEMPAK/model/ukmet/catalog.xml"
+  };
+
 
 }

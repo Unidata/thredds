@@ -66,6 +66,8 @@ public class CrawlRandomDatasetsOnMotherlodeTds
         StringBuilder log = new StringBuilder();
 
         List<String> catalogUrls = StandardCatalogUtils.getIddDeepCatalogUrlList();
+        catalogUrls.addAll( StandardCatalogUtils.getMlodeDeepCatalogUrlList() );
+
         List<String> fullCatalogUrls = new ArrayList<String>();
         for ( String s : catalogUrls )
           fullCatalogUrls.add( tdsUrl + s);
