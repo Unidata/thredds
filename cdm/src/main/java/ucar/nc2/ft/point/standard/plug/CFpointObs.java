@@ -1014,20 +1014,6 @@ public class CFpointObs extends TableConfigurerImpl {
       return null;
     }
 
-    /* read numRecords
-    Variable v = ds.findVariable(obsTable.numRecords);
-    Array numRecords = v.read();
-    int n = (int) v.getSize();
-
-    // construct the start variable
-    obsTable.startIndex = new int[n];
-    int i = 0;
-    int count = 0;
-    while (numRecords.hasNext()) {
-      obsTable.startIndex[i++] = count;
-      count += numRecords.nextLong();
-    } */
-
     return obsTable;
   }
 
@@ -1047,24 +1033,6 @@ public class CFpointObs extends TableConfigurerImpl {
     obsTable.parentIndex = findNameVariableWithStandardNameAndDimension(ds, RAGGED_PARENTINDEX, childDim, errlog);
     if (null == obsTable.parentIndex)
       return null;
-
-    /* Variable rpIndex = ds.findVariable(obsTable.parentIndex);
-
-    // construct the map
-    Array index = rpIndex.read();
-    int childIndex = 0;
-    Map<Integer, List<Integer>> map = new HashMap<Integer, List<Integer>>((int) (2 * index.getSize()));
-    while (index.hasNext()) {
-      int parent = index.nextInt();
-      List<Integer> list = map.get(parent);
-      if (list == null) {
-        list = new ArrayList<Integer>();
-        map.put(parent, list);
-      }
-      list.add(childIndex);
-      childIndex++;
-    }
-    obsTable.indexMap = map; */
 
     return obsTable;
   }

@@ -116,7 +116,7 @@ public class StructurePseudo extends Structure {
     if (group == null)
       group = ncfile.getRootGroup();
 
-    // find all variables in this group that has this as the outer dimension
+    // use the list of varnames that were passed in
     for (String name : varNames) {
       Variable orgV = group.findVariable(name);
       if (orgV == null) {
