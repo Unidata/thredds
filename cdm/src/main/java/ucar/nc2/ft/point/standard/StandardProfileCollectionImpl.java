@@ -39,6 +39,7 @@ import ucar.nc2.ft.*;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.constants.FeatureType;
 import ucar.ma2.StructureDataIterator;
+import ucar.ma2.StructureData;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
@@ -87,20 +88,27 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
 
   private class ProfileIterator implements PointFeatureCollectionIterator {
     StructureDataIterator structIter;
+    StructureData nextProfileData;
 
     ProfileIterator(ucar.ma2.StructureDataIterator structIter) throws IOException {
       this.structIter = structIter;
     }
 
     public boolean hasNext() throws IOException {
-      return structIter.hasNext();
+      while (true) {
+        if(!structIter.hasNext()) return false;
+        nextProfileData = structIter.next();
+        if (!ft.isFeatureMissing(nextProfileData)) break;
+      }
+      return true;
     }
+
 
     public ProfileFeature next() throws IOException {
       Cursor cursor = new Cursor(ft.getNumberOfLevels());
-      cursor.tableData[1] = structIter.next();
+      cursor.tableData[1] = nextProfileData;
       cursor.recnum[1] = structIter.getCurrentRecno();
-      cursor.parentIndex = 1;
+      cursor.parentIndex = 1; // LOOK ??
       return new StandardProfileFeature(cursor);
     }
 
@@ -114,17 +122,33 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
   private class StandardProfileFeature extends ProfileFeatureImpl {
     Cursor cursor;
     StandardProfileFeature( Cursor cursor) {
-      super( ft.getFeatureName(cursor.tableData[1]), ft.getLatitude(cursor), ft.getLongitude(cursor), -1);
+      super( ft.getFeatureName(cursor), ft.getLatitude(cursor), ft.getLongitude(cursor), -1);
       this.cursor = cursor;
     }
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       Cursor cursorIter = cursor.copy();
       StructureDataIterator siter = ft.getLeafFeatureDataIterator( cursorIter, bufferSize);
-      StandardPointFeatureIterator iter = new StandardPointFeatureIterator(ft, timeUnit, siter, cursorIter);
+      StandardPointFeatureIterator iter = new StandardProfileFeatureIterator(ft, timeUnit, siter, cursorIter);
       if ((boundingBox == null) || (dateRange == null) || (npts < 0))
         iter.setCalculateBounds(this);
       return iter;
+    }
+
+    class StandardProfileFeatureIterator extends StandardPointFeatureIterator {
+
+      StandardProfileFeatureIterator(NestedTable ft, DateUnit timeUnit, StructureDataIterator structIter, Cursor cursor) throws IOException {
+        super(ft, timeUnit, structIter, cursor);
+      }
+
+      protected boolean filter() throws IOException {
+        // standard filter is to check for missing time data
+        if (ft.isTimeMissing(this.cursor)) return true;
+
+        // must also check for missing z values
+        return ft.isAltMissing(this.cursor);
+
+      }
     }
   }
 

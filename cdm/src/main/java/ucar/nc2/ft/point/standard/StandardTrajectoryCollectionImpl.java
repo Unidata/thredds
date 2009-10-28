@@ -104,7 +104,12 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
     }
 
     public TrajectoryFeature next() throws IOException {
-      return new StandardTrajectoryFeature(nextTraj, structIter.getCurrentRecno());
+      Cursor cursor = new Cursor(ft.getNumberOfLevels());
+      cursor.recnum[1] = structIter.getCurrentRecno();
+      cursor.tableData[1] = nextTraj;
+      cursor.parentIndex = 1; // LOOK ?
+
+      return new StandardTrajectoryFeature(cursor);
     }
 
     public void setBufferSize(int bytes) { }
@@ -115,22 +120,16 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
   }
 
   private class StandardTrajectoryFeature extends TrajectoryFeatureImpl {
-    StructureData trajData;
-    int recno;
+    Cursor cursor;
 
-    StandardTrajectoryFeature(StructureData trajData, int recno) {
-      super(ft.getFeatureName(trajData), -1);
-      this.trajData = trajData;
-      this.recno = recno;
+    StandardTrajectoryFeature(Cursor cursor) {
+      super(ft.getFeatureName(cursor), -1);
+      this.cursor = cursor;
     }
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      Cursor cursor = new Cursor(ft.getNumberOfLevels());
-      cursor.recnum[1] = recno;
-      cursor.tableData[1] = trajData;
-      cursor.parentIndex = 1; // LOOK ?
       StructureDataIterator siter = ft.getLeafFeatureDataIterator( cursor, bufferSize);
-      StandardPointFeatureIterator iter = new StandardPointFeatureIterator(ft, timeUnit, siter, cursor);
+      StandardPointFeatureIterator iter = new StandardPointFeatureIterator(ft, timeUnit, siter, cursor.copy());
       if ((boundingBox == null) || (dateRange == null) || (npts < 0))
         iter.setCalculateBounds(this);
       return iter;

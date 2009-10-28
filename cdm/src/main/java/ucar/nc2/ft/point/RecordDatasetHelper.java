@@ -42,6 +42,7 @@ import ucar.nc2.ft.*;
 
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.StructureDS;
+import ucar.nc2.dataset.StructurePseudoDS;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.DateFormatter;
@@ -111,7 +112,7 @@ public class RecordDatasetHelper {
         throw new IllegalArgumentException("File <" + this.ncfile.getLocation() +
             "> has no unlimited dimension, specify psuedo record dimension with observationDimension global attribute.");
       this.obsDim = this.ncfile.getRootGroup().findDimension(recDimName);
-      this.recordVar = new StructureDS(null, new StructurePseudo(this.ncfile, null, "record", obsDim)); // true
+      this.recordVar = new StructurePseudoDS(this.ncfile, null, "record", null, obsDim);
     }
 
     // create member variables

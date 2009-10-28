@@ -64,41 +64,28 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
   }
 
   @Override
-   protected void initStationHelper() {
+  protected void initStationHelper() {
     try {
       stationHelper = new StationHelper();
       StructureDataIterator siter = ft.getStationDataIterator(-1);
       while (siter.hasNext()) {
         StructureData stationData = siter.next();
-        stationHelper.addStation(makeStation(stationData, siter.getCurrentRecno()));
+        Station s = makeStation(stationData, siter.getCurrentRecno());
+        if (s != null)
+          stationHelper.addStation( s);
       }
-    } catch (Exception ioe) {
+    } catch (IOException ioe) {
       throw new RuntimeException(ioe);
     }
   }
 
   public Station makeStation(StructureData stationData, int recnum) {
     Station s = ft.makeStation(stationData);
+    if (s == null) return null;
     return new StandardStationProfileFeature(s, stationData, recnum);
   }
 
-  /* protected void initStations() {
-    if (stationHelper != null) return;
-    stationHelper = new StationHelper();
-
-    try {
-      int count = 0;
-      List<Station> stnList = ft.makeStations(-1);
-      for (Station s : stnList) {
-        stationHelper.addStation(new StandardStationProfileFeature(s, null, count++));
-      }
-    } catch (IOException ioe) {
-      throw new RuntimeException("Failed to init stations", ioe);
-    }
-  } */
-
   // iterate over stations
-
   public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
     return new NestedPointFeatureCollectionIterator() {
       private Iterator iter = getStations().iterator();
@@ -173,35 +160,42 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
 
       public void finish() {
       }
-
     }
   }
 
   // one profile
   private class StandardProfileFeature extends ProfileFeatureImpl {
     private Cursor cursor;
-    //private String desc;
 
     StandardProfileFeature(Station s, Cursor cursor) throws IOException {
-      super(ft.getFeatureName(cursor.tableData[1]), s.getLatitude(), s.getLongitude(), -1);
+      super(ft.getFeatureName(cursor), s.getLatitude(), s.getLongitude(), -1);
       this.cursor = cursor;
       //this.desc = "time=" + time + "stn=" + s.getDescription();
     }
 
-    /* public String getDescription() {
-      return desc;
-    } */
-
     // iterate over obs in the profile
-
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       StructureDataIterator structIter = ft.getLeafFeatureDataIterator(cursor, bufferSize);
-      StandardPointFeatureIterator iter = new StandardPointFeatureIterator(ft, timeUnit, structIter, cursor.copy());
+      StandardPointFeatureIterator iter = new StandardProfileFeatureIterator(ft, timeUnit, structIter, cursor.copy());
       if ((boundingBox == null) || (dateRange == null) || (npts < 0))
         iter.setCalculateBounds(this);
       return iter;
     }
+  }
 
+  private class StandardProfileFeatureIterator extends StandardPointFeatureIterator {
+
+    StandardProfileFeatureIterator(NestedTable ft, DateUnit timeUnit, StructureDataIterator structIter, Cursor cursor) throws IOException {
+      super(ft, timeUnit, structIter, cursor);
+    }
+
+    protected boolean filter() throws IOException {
+      // standard filter is to check for missing time data
+      if (ft.isTimeMissing(this.cursor)) return true;
+
+      // must also check for missing z values
+      return ft.isAltMissing(this.cursor);
+    }
   }
 
 }

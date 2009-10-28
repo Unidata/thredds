@@ -239,7 +239,8 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     }
 
     // do we need to calculate the ScaleMissing ?
-    if (!alreadyScaleOffsetMissing && dataType.isNumeric() && mode.contains(NetcdfDataset.Enhance.ScaleMissing) || mode.contains(NetcdfDataset.Enhance.ScaleMissingDefer)) {
+    if (!alreadyScaleOffsetMissing && (dataType.isNumeric() || dataType == DataType.CHAR) && 
+        mode.contains(NetcdfDataset.Enhance.ScaleMissing) || mode.contains(NetcdfDataset.Enhance.ScaleMissingDefer)) {
       this.scaleMissingProxy = new EnhanceScaleMissingImpl( this);
 
       // promote the data type if ScaleMissing is set

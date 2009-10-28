@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.util.List;
 
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.StructurePseudo;
 
 /**
  * @author john

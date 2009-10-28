@@ -35,11 +35,11 @@ package ucar.nc2.ft.point.standard;
 import ucar.nc2.*;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.StructureDataIteratorLimited;
-import ucar.nc2.ft.point.StationFeatureImpl;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.VariableDS;
 import ucar.ma2.*;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.geoloc.EarthLocation;
@@ -83,7 +83,7 @@ public class NestedTable {
   private FeatureType featureType;
 
   private CoordVarExtractor timeVE, nomTimeVE, latVE, lonVE, altVE;
-  private CoordVarExtractor stnVE, stnDescVE, wmoVE, stnAltVE;
+  private CoordVarExtractor stnVE, stnDescVE, wmoVE, stnAltVE, idVE;
 
   private int nlevels;
 
@@ -125,6 +125,8 @@ public class NestedTable {
     wmoVE = findCoordinateAxis(Table.CoordName.WmoId, leaf, 0);
     stnAltVE = findCoordinateAxis(Table.CoordName.StnAlt, leaf, 0);
 
+    idVE = findCoordinateAxis(Table.CoordName.FeatureId, root, nlevels-1);
+
     // LOOK: Major kludge
     if (featureType == null) {
       if (nlevels == 1) featureType = FeatureType.POINT;
@@ -163,7 +165,7 @@ public class NestedTable {
     String axisName = t.findCoordinateVariableName(coordName);
 
     if (axisName != null) {
-      Variable v = t.findVariable(axisName);
+      VariableDS v = t.findVariable(axisName);
       if (v != null)
         return new CoordVarExtractorVariable(v, axisName, nestingLevel);
 
@@ -183,7 +185,7 @@ public class NestedTable {
 
       // see if its at the top level
       if (t instanceof Table.TableTop) {
-        v = ds.findVariable(axisName);
+        v = (VariableDS) ds.findVariable(axisName);
 
         if (v != null)
           return new CoordVarTop(v);
@@ -200,9 +202,9 @@ public class NestedTable {
 
   // knows how to get specific coordinate data from a table or its parents
   private class CoordVarExtractorVariable extends CoordVarExtractor {
-    protected Variable coordVar;
+    protected VariableDS coordVar;
 
-    CoordVarExtractorVariable(Variable v, String axisName, int nestingLevel) {
+    CoordVarExtractorVariable(VariableDS v, String axisName, int nestingLevel) {
       super(axisName, nestingLevel);
       this.coordVar = v;
     }
@@ -224,6 +226,17 @@ public class NestedTable {
       return coordVar.getDataType().isString();
     }
 
+    @Override
+    public boolean isMissing(StructureData sdata) {
+      if (isString()) {
+        String s = getCoordValueString(sdata);
+        return coordVar.isMissing((double) s.charAt(0));       
+      } else {
+        double val = getCoordValue(sdata);
+        return coordVar.isMissing(val);
+      }
+    }
+
     public double getCoordValue(StructureData sdata) {
       return sdata.convertScalarDouble(axisName);
     }
@@ -231,9 +244,9 @@ public class NestedTable {
 
   // knows how to get specific coordinate data from a table or its parents
   private class CoordVarTop extends CoordVarExtractor {
-    protected Variable varTop;
+    protected VariableDS varTop;
 
-    CoordVarTop(Variable v) {
+    CoordVarTop(VariableDS v) {
       super(v.getName(), 0);
       this.varTop = v;
     }
@@ -260,6 +273,11 @@ public class NestedTable {
       } catch (IOException e) {
         throw new RuntimeException(e.getMessage());
       }
+    }
+
+    public boolean isMissing(StructureData sdata) {
+      double val = getCoordValue(sdata);
+      return varTop.isMissing(val);
     }
   }
 
@@ -290,6 +308,10 @@ public class NestedTable {
       return m.getDataType().isString();
     }
 
+    public boolean isMissing(StructureData sdata) {
+      return false;
+    }
+
   }
 
   // a constant coordinate variable
@@ -316,6 +338,11 @@ public class NestedTable {
 
     public boolean isString() {
       return true;
+    }
+
+
+    public boolean isMissing(StructureData sdata) {
+      return false;
     }
 
     @Override
@@ -439,10 +466,16 @@ public class NestedTable {
     return new EarthLocationImpl(lat, lon, alt);
   }
 
-  public String getFeatureName(StructureData sdata) {
-    if (root.feature_id == null) return "unknown";
+  public String getFeatureName(Cursor cursor) {
+    int count = 0;
+    Table t = leaf;
+    while (count++ < cursor.parentIndex)
+      t = t.parent;
+
+    if (t.feature_id == null) return "unknown";
+    StructureData sdata = cursor.getParentStructure();
     if (sdata == null) return "unknown";
-    StructureMembers.Member m = sdata.findMember(root.feature_id);
+    StructureMembers.Member m = sdata.findMember(t.feature_id);
     if (m == null) return "unknown";
 
     if (m.getDataType().isString())
@@ -455,14 +488,20 @@ public class NestedTable {
 
 
   public boolean isFeatureMissing(StructureData sdata) {
-    if (root.feature_id == null) return false;
-    StructureMembers.Member m = sdata.findMember(root.feature_id);
-    if (m == null) {
-      log.error("cant find feature_id "+root.feature_id );
-      return false;
-    }
-      return Double.isNaN(sdata.convertScalarDouble(m));
+    if (idVE== null) return false;
+    return idVE.isMissing(sdata);
   }
+
+  public boolean isTimeMissing(Cursor cursor) {
+    if (timeVE == null) return false;
+    return timeVE.isMissing(cursor.tableData);
+  }
+
+  public boolean isAltMissing(Cursor cursor) {
+    if (altVE == null) return false;
+    return altVE.isMissing(cursor.tableData);
+  }
+
 
   //////////////////////////////////////////////////
 
@@ -545,7 +584,9 @@ public class NestedTable {
 
   // also called from StandardPointFeatureIterator
   Station makeStation(StructureData stationData) {
+    if (stnVE.isMissing(stationData)) return null;
     String stationName = stnVE.getCoordValueAsString(stationData);
+
     String stationDesc = (stnDescVE == null) ? "" : stnDescVE.getCoordValueString(stationData);
     String stnWmoId = (wmoVE == null) ? "" : wmoVE.getCoordValueString(stationData);
 

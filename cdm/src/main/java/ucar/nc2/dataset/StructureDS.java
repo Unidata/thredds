@@ -56,6 +56,10 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   protected Structure orgVar; // wrap this Variable
   private String orgName; // in case Variable wwas renamed, and we need the original name for aggregation
 
+  protected StructureDS( NetcdfFile ncfile, Group group, String shortName) {
+    super (ncfile, group, null, shortName);
+  }
+
   /**
    * Constructor when theres no underlying variable. You better set the values too!
    *

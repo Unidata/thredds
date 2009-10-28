@@ -35,8 +35,8 @@ package ucar.nc2.ft.point.standard;
 
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.StructureData;
-import ucar.nc2.Structure;
-import ucar.nc2.Variable;
+import ucar.nc2.dataset.StructureDS;
+import ucar.nc2.dataset.VariableDS;
 
 import java.io.IOException;
 
@@ -48,7 +48,7 @@ import java.io.IOException;
  * @since Jan 22, 2009
  */
 public class JoinParentIndex implements Join {
-  Structure parentStructure;
+  StructureDS parentStructure;
   ArrayStructure parentData;
   String parentIndex;
 
@@ -57,7 +57,7 @@ public class JoinParentIndex implements Join {
    * @param parentStructure  get data from this Structure
    * @param parentIndex name of member variable in leaf StructureData
    */
-  public JoinParentIndex(Structure parentStructure, String parentIndex) {
+  public JoinParentIndex(StructureDS parentStructure, String parentIndex) {
     this.parentStructure = parentStructure;
     this.parentIndex = parentIndex;
 
@@ -74,8 +74,8 @@ public class JoinParentIndex implements Join {
     return parentData.getStructureData(index);
   }
 
-  public Variable findVariable(String axisName) {
-    return parentStructure.findVariable(axisName);
+  public VariableDS findVariable(String axisName) {
+    return (VariableDS) parentStructure.findVariable(axisName);
   }
 
 

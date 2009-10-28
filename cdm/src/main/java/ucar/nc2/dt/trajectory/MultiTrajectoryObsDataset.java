@@ -37,6 +37,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.StructurePseudo;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.dt.VariableSimpleSubclass;
 import ucar.nc2.dt.*;

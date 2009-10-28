@@ -41,7 +41,6 @@ import ucar.nc2.constants.FeatureType;
  * @since Mar 26, 2008
  */
 public abstract class TrajectoryFeatureImpl extends PointCollectionImpl implements TrajectoryFeature {
-  private int npts;
 
   public TrajectoryFeatureImpl( String name, int npts) {
     super(name);
@@ -53,8 +52,4 @@ public abstract class TrajectoryFeatureImpl extends PointCollectionImpl implemen
     return FeatureType.TRAJECTORY;
   }
 
-  @Override
-  public int size() {
-    return npts;
-  }
 }

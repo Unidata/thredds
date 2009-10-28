@@ -29,9 +29,11 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.nc2;
+
+package ucar.nc2.dataset;
 
 import ucar.ma2.*;
+import ucar.nc2.*;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -45,7 +47,8 @@ import java.io.IOException;
  */
 
 
-public class StructurePseudo2Dim extends StructurePseudo {
+public class StructurePseudo2Dim extends StructurePseudoDS {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructurePseudo2Dim.class);
   private List<Variable> orgVariables = new ArrayList<Variable>();
   private boolean debugRecord = false;
 
@@ -58,7 +61,7 @@ public class StructurePseudo2Dim extends StructurePseudo {
    * @param outer the outer dimension, may not be null
    * @param inner the inner dimension, may not be null
    */
-  public StructurePseudo2Dim( NetcdfFile ncfile, Group group, String shortName, List<String> varNames, Dimension outer, Dimension inner) {
+  public StructurePseudo2Dim( NetcdfDataset ncfile, Group group, String shortName, List<String> varNames, Dimension outer, Dimension inner) {
     super (ncfile, group, shortName);
     this.dataType = DataType.STRUCTURE;
     ArrayList<Dimension> dims = new ArrayList<Dimension>(2);
@@ -72,50 +75,48 @@ public class StructurePseudo2Dim extends StructurePseudo {
     // find all variables in this group that has this as the outer dimension
     if (varNames == null) {
       List<Variable> vars = group.getVariables();
+      varNames = new ArrayList<String>(vars.size());
       for (Variable orgV : vars) {
         if (orgV.getRank() < 2) continue;
-
-        if (outer.equals(orgV.getDimension(0)) && inner.equals(orgV.getDimension(1))) {
-          Variable memberV = new Variable(ncfile, group, this, orgV.getShortName());
-          memberV.setDataType(orgV.getDataType());
-          memberV.setSPobject(orgV.getSPobject()); // ??
-          memberV.attributes.addAll(orgV.getAttributes());
-
-          List<Dimension> dimList = new ArrayList<Dimension>(orgV.dimensions);
-          memberV.setDimensions( dimList.subList(2, dimList.size())); // remove first 2 dimensions
-
-          addMemberVariable(memberV);
-          orgVariables.add(orgV);
-        }
-      }
-    } else {
-      // check passed in vars are ok
-      for (String name : varNames) {
-        Variable orgV = group.findVariable(name);
-        if (orgV == null) {
-          log.warn("StructurePseudo2Dim cannot find variable "+name);
-          continue; // skip - should log message
-        }
-
-        if (!outer.equals(orgV.getDimension(0)))
-          throw new IllegalArgumentException("Variable "+orgV.getNameAndDimensions()+" must have outermost dimension="+outer);
-        if (!inner.equals(orgV.getDimension(1)))
-          throw new IllegalArgumentException("Variable "+orgV.getNameAndDimensions()+" must have 2nd dimension="+inner);
-
-        Variable memberV = new Variable(ncfile, group, this, orgV.getShortName());
-        memberV.setDataType(orgV.getDataType());
-        memberV.setSPobject(orgV.getSPobject()); // ??
-        memberV.attributes.addAll(orgV.getAttributes());
-
-        List<Dimension> dimList = new ArrayList<Dimension>(orgV.dimensions);
-        memberV.setDimensions( dimList.subList(2, dimList.size())); // remove first 2 dimensions
-
-        addMemberVariable(memberV);
-        orgVariables.add(orgV);
+        if (outer.equals(orgV.getDimension(0)) && inner.equals(orgV.getDimension(1)))
+          varNames.add(orgV.getShortName());
       }
     }
 
+    for (String name : varNames) {
+      Variable orgV = group.findVariable(name);
+      if (orgV == null) {
+        log.warn("StructurePseudo2Dim cannot find variable "+name);
+        continue;
+      }
+
+      if (!outer.equals(orgV.getDimension(0)))
+        throw new IllegalArgumentException("Variable "+orgV.getNameAndDimensions()+" must have outermost dimension="+outer);
+      if (!inner.equals(orgV.getDimension(1)))
+        throw new IllegalArgumentException("Variable "+orgV.getNameAndDimensions()+" must have 2nd dimension="+inner);
+
+      VariableDS memberV = new VariableDS(ncfile, group, this, orgV.getShortName(), orgV.getDataType(), null,
+          orgV.getUnitsString(), orgV.getDescription());
+       memberV.setDataType(orgV.getDataType());
+      memberV.setSPobject(orgV.getSPobject()); // ??
+      memberV.getAttributes().addAll(orgV.getAttributes());
+
+      List<Dimension> dimList = new ArrayList<Dimension>(orgV.getDimensions());
+      memberV.setDimensions( dimList.subList(2, dimList.size())); // remove first 2 dimensions
+      memberV.enhance(enhanceScaleMissing);
+
+      addMemberVariable(memberV);
+      orgVariables.add(orgV);
+    }
+
     calcElementSize();
+  }
+
+  @Override
+  public Structure select(List<String> memberNames) {
+    StructurePseudo2Dim result = new StructurePseudo2Dim((NetcdfDataset) ncfile, group, getShortName(), memberNames, getDimension(0), getDimension(1));
+    result.isSubset = true;
+    return result;
   }
 
   @Override

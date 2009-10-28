@@ -35,6 +35,7 @@ package ucar.nc2;
 import junit.framework.*;
 import ucar.ma2.*;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.StructurePseudo;
 
 import java.io.*;
 

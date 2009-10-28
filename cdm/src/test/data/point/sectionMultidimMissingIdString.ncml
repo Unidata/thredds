@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" >
-  <dimension name="section" length="2" />
+  <dimension name="section" length="3" />
   <dimension name="prof" length="5" />
   <dimension name="z" length="10" />
+  <dimension name="strlen" length="1" />
 
   <attribute name="CF:featureType" value="section" />
   <attribute name="Conventions" value="CF-1.5" />
@@ -17,12 +18,22 @@
     <attribute name="units" value="degrees_north" />
     <values start="40" increment="2"/>
   </variable>
-  <variable name="section_id" shape="section" type="int">
+    <variable name="sectionId" shape="section strlen" type="char">
     <attribute name="standard_name" value="section_id" />
+    <attribute name="missing_value" type="char" value="B" />
+    <values>ABC</values>
+  </variable>
+  <variable name="profileId" shape="section prof" type="int">
+    <attribute name="standard_name" value="profile_id" />
     <values start="6" increment="6"/>
   </variable>
+  <variable name="profileAlt" shape="section prof" type="int">
+    <attribute name="standard_name" value="base_altitude" />
+    <attribute name="units" value="km above msl" />
+    <values start="100" increment="6"/>
+  </variable>
 
-  <variable name="z" shape="z" type="float">
+  <variable name="alt" shape="section prof z" type="float">
     <attribute name="long_name" value="height above mean sea level" />
     <attribute name="units" value="km" />
     <attribute name="positive" value="up" />

@@ -32,7 +32,7 @@
  */
 package ucar.nc2.ft.point.standard;
 
-import ucar.nc2.Variable;
+import ucar.nc2.dataset.VariableDS;
 import ucar.ma2.StructureData;
 import ucar.ma2.Array;
 import ucar.ma2.StructureDataFactory;
@@ -51,7 +51,7 @@ public class JoinArray implements Join {
     raw   // use cursor[0]
   }
 
-  Variable v;
+  VariableDS v;
   Array data;
   Type type;
   int param;
@@ -59,8 +59,10 @@ public class JoinArray implements Join {
   /**
    * Constructor.
    * @param v get data from this Variable
+   * @param type how to use the parameter
+   * @param param optional parameter
    */
-  public JoinArray(Variable v, Type type, int param) {
+  public JoinArray(VariableDS v, Type type, int param) {
     this.v = v;
     this.type = type;
     this.param = param;
@@ -88,7 +90,7 @@ public class JoinArray implements Join {
     return StructureDataFactory.make(v.getShortName(), data.getObject(recnum));
   }
 
-  public Variable findVariable(String varName) {
+  public VariableDS findVariable(String varName) {
     return (varName.equals(v.getName())) ? v : null;
   }
 

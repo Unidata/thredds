@@ -3,6 +3,10 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.1:
+ 8:
+  Handle missing values in CFPointObs, NestedTables.
+  Allow missing_value processing of CHAR dataType. empty string = 0.
+  StructurePseudo moved to ucar.nc2.dataset.StructurePseudoDS because we need missing values; ucar.nc2.StructurePseudo now deprecated
  7:
   H5iosp: deal with compressed, chunked compound types
   ucar.nc2.iosp.LayoutBB now a subclass of Layout

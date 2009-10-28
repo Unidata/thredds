@@ -35,7 +35,7 @@ package ucar.nc2.ft.point.standard;
 import ucar.nc2.*;
 import ucar.nc2.ft.point.StructureDataIteratorLinked;
 import ucar.nc2.ft.point.StructureDataIteratorIndexed;
-import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.ma2.*;
 
@@ -53,7 +53,7 @@ public abstract class Table {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Table.class);
 
   public enum CoordName {
-    Lat, Lon, Elev, Time, TimeNominal, StnId, StnDesc, WmoId, StnAlt
+    Lat, Lon, Elev, Time, TimeNominal, StnId, StnDesc, WmoId, StnAlt, FeatureId
   }
 
   public enum Type {
@@ -206,6 +206,9 @@ public abstract class Table {
       case StnAlt:
         return stnAlt;
 
+      case FeatureId:
+        return feature_id;
+
     }
     return null;
   }
@@ -229,7 +232,7 @@ public abstract class Table {
    * config.vars if not null restricts to list of vars, must be members.
    */
   public static class TableStructure extends Table {
-    Structure struct;
+    StructureDS struct;
     Dimension dim;
     //boolean addIndex;
 
@@ -239,24 +242,20 @@ public abstract class Table {
       switch (config.structureType) {
 
         case Structure:
-          struct = (Structure) ds.findVariable(config.structName);
+          struct = (StructureDS) ds.findVariable(config.structName);
           if (struct == null)
             throw new IllegalStateException("Cant find Structure " + config.structName);
 
           dim = struct.getDimension(0);
 
           if (config.vars != null)
-            struct = struct.select(config.vars); // limit to list of vars
+            struct = (StructureDS) struct.select(config.vars); // limit to list of vars
           break;
 
         case PsuedoStructure:
           this.dim = config.dim;
           assert dim != null;
-
-          if (config.vars != null)
-            struct = new StructurePseudo(ds, dim.getGroup(), config.structName, config.vars, config.dim);
-          else
-            struct = new StructurePseudo(ds, dim.getGroup(), config.structName, config.dim);
+          struct = new StructurePseudoDS(ds, dim.getGroup(), config.structName, config.vars, config.dim);
           break;
 
         case PsuedoStructure2D:
@@ -286,8 +285,8 @@ public abstract class Table {
     }
 
     @Override
-    public Variable findVariable(String axisName) {
-      return struct.findVariable(axisName);
+    public VariableDS findVariable(String axisName) {
+      return (VariableDS) struct.findVariable(axisName);
     }
 
     @Override
@@ -549,7 +548,6 @@ public abstract class Table {
           break;
         }
       }
-
       checkNonDataVariable(parentIdName);
     }
 
@@ -580,9 +578,7 @@ public abstract class Table {
       List<Integer> index = (info == null) ? new ArrayList<Integer>() : info.recnumList;
       return new StructureDataIteratorIndexed(struct, index);
     }
-
   }
-
 
   ///////////////////////////////////////////////////////
 
@@ -664,8 +660,8 @@ public abstract class Table {
      }
 
      @Override
-     public Variable findVariable(String axisName) {
-       return ds.findVariable(axisName);
+     public VariableDS findVariable(String axisName) {
+       return (VariableDS) ds.findVariable(axisName);
      }
 
      public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
@@ -733,8 +729,8 @@ public abstract class Table {
      }
 
      @Override
-     public Variable findVariable(String axisName) {
-       return ds.findVariable(axisName);
+     public VariableDS findVariable(String axisName) {
+       return (VariableDS) ds.findVariable(axisName);
      }
 
      public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
@@ -903,8 +899,8 @@ public abstract class Table {
       f.format("%sstruct=%s, nestedTableName=%s%n", indent, struct.getNameAndDimensions(), nestedTableName);
     }
 
-    public Variable findVariable(String axisName) {
-      return struct.findVariable(axisName);
+    public VariableDS findVariable(String axisName) {
+      return (VariableDS) struct.findVariable(axisName);
     }
 
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
@@ -1036,7 +1032,7 @@ public abstract class Table {
   } */
 
   // LOOK others should override
-  public Variable findVariable(String axisName) {
+  public VariableDS findVariable(String axisName) {
     return null;
   }
 

@@ -21,7 +21,7 @@
     <values start="33" increment="6"/>
   </variable>
   <variable name="obsCount" shape="profile" type="int">
-    <attribute name="standard_name" value="ragged_rowSize" />
+    <attribute name="standard_name" value="ragged_row_size" />
     <values>1 2 3</values>
   </variable>
 

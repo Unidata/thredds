@@ -37,6 +37,9 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.StructurePseudoDS;
+import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.ft.point.standard.*;
 import ucar.nc2.*;
 import ucar.ma2.DataType;
@@ -157,7 +160,7 @@ public class GempakCdm extends TableConfigurerImpl {
     }
 
     // obs table
-    Variable time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
+    VariableDS time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
     if (time == null) {
       errlog.format("GempakCdm: Must have a Time coordinate");
       return null;
@@ -248,7 +251,7 @@ public class GempakCdm extends TableConfigurerImpl {
     Variable alt = CoordSysEvaluator.findCoordByType(ds, AxisType.Height);
 
     // obs table
-    Variable time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
+    VariableDS time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
     if (time == null) {
       errlog.format("GempakCdm: Must have a Time coordinate");
       return null;
@@ -282,7 +285,7 @@ public class GempakCdm extends TableConfigurerImpl {
           vars.add(v.getShortName());
     }
 
-    Structure s = new StructurePseudo(ds, null, "stnStruct", vars, stationDim);
+    StructureDS s = new StructurePseudoDS(ds, null, "stnStruct", vars, stationDim);
     obs.addJoin(new JoinMuiltdimStructure(s, obsDim.getLength()));
     obs.addJoin(new JoinArray( time, JoinArray.Type.modulo, obsDim.getLength()));
 

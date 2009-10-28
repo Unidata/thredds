@@ -35,10 +35,11 @@ package ucar.nc2.ft.point.standard.plug;
 import ucar.nc2.ft.point.standard.*;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.StructurePseudoDS;
+import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.Dimension;
-import ucar.nc2.Structure;
 
 import java.util.Formatter;
 import java.util.StringTokenizer;
@@ -141,7 +142,7 @@ public class UnidataPointObs extends TableConfigurerImpl {
       obsTable.lon = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lon, stationDim);
       obsTable.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height, stationDim);
 
-      Structure stns = new ucar.nc2.StructurePseudo(ds, null, "stationPsuedoStructure", stationDim);
+      StructureDS stns = new StructurePseudoDS(ds, null, "stationPsuedoStructure", null, stationDim);
       obsTable.addJoin( new JoinParentIndex(stns, parentIndexVar));
 
       return obsTable;

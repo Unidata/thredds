@@ -1,6 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
- *
+ * Copyright (c) 1998 - 2009. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -53,15 +52,12 @@ import java.io.IOException;
  *     var3(other);
  *   } name(dim);
  * </pre>
+ * @deprecated use ucar.nc2.dataset.StructurePseudoDS
  * @author caron
  */
 public class StructurePseudo extends Structure {
   private static boolean debugRecord = false;
   private List<Variable> orgVariables =  new ArrayList<Variable>(); // the underlying original variables
-
-  protected StructurePseudo( NetcdfFile ncfile, Group group, String shortName) {
-    super (ncfile, group, null, shortName);
-  }
 
   /** Make a Structure out of all Variables with the named dimension as their outermost dimension.
    *

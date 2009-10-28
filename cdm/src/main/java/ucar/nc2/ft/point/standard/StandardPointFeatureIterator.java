@@ -49,9 +49,9 @@ import java.io.IOException;
  * @since Mar 29, 2008
  */
 public class StandardPointFeatureIterator extends PointIteratorFromStructureData {
-  private NestedTable ft;
-  private DateUnit timeUnit;
-  private Cursor cursor;
+  protected NestedTable ft;
+  protected DateUnit timeUnit;
+  protected Cursor cursor;
 
   StandardPointFeatureIterator(NestedTable ft, DateUnit timeUnit, ucar.ma2.StructureDataIterator structIter, Cursor cursor) throws IOException {
     super(structIter, null);
@@ -65,10 +65,15 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
     cursor.tableData[0] = sdata; // always in the first position
     ft.addParentJoin(cursor); // there may be parent joins
 
-    double obsTime = ft.getObsTime( this.cursor);
-    if (Double.isNaN(obsTime)) return null; // missing data
+    if (filter()) return null; // missing data
 
+    double obsTime = ft.getObsTime( this.cursor);
     return new StandardPointFeature(cursor, timeUnit, obsTime);
+  }
+
+  protected boolean filter() throws IOException {
+    // standard filter is to check for missing time data
+    return ft.isTimeMissing(this.cursor);
   }
 
   private class StandardPointFeature extends PointFeatureImpl implements StationPointFeature {

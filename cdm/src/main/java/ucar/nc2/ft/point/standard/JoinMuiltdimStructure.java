@@ -34,6 +34,8 @@ package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
+import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.dataset.StructureDS;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.StructureData;
 
@@ -46,7 +48,7 @@ import java.io.IOException;
  * @since May 29, 2009
  */
 public class JoinMuiltdimStructure implements Join {
-  Structure parentStructure;
+  StructureDS parentStructure;
   ArrayStructure parentData;
   int dimLength;
 
@@ -55,7 +57,7 @@ public class JoinMuiltdimStructure implements Join {
    * @param parentStructure  get data from this Structure
    * @param dimLength structure index is recnum % dimlength
    */
-  public JoinMuiltdimStructure(Structure parentStructure, int dimLength) {
+  public JoinMuiltdimStructure(StructureDS parentStructure, int dimLength) {
     this.parentStructure = parentStructure;
     this.dimLength = dimLength;
 
@@ -71,8 +73,8 @@ public class JoinMuiltdimStructure implements Join {
     return parentData.getStructureData(recnum);
   }
 
-  public Variable findVariable(String axisName) {
-    return parentStructure.findVariable(axisName);
+  public VariableDS findVariable(String axisName) {
+    return (VariableDS) parentStructure.findVariable(axisName);
   }
 
     @Override

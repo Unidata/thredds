@@ -1,40 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" >
-  <dimension name="s" length="3" />
-  <dimension name="z" length="2" />
+  <dimension name="traj" length="5" />
   <dimension name="obs" length="6"/>
+  <dimension name="z" length="2"/>
 
-  <attribute name="CF:featureType" value="stationTimeSeries" />
+  <attribute name="CF:featureType" value="trajectory" />
   <attribute name="Conventions" value="CF-1.5" />
   
-  <variable name="lon" shape="s" type="float">
+  <variable name="lon" shape="obs" type="float">
     <attribute name="long_name" value="longitude" />
     <attribute name="units" value="degrees_east" />
     <values start="-100" increment="3"/>
   </variable>
-  <variable name="lat" shape="s" type="float">
+  <variable name="lat" shape="obs" type="float">
     <attribute name="long_name" value="latitude" />
     <attribute name="units" value="degrees_north" />
     <values start="40" increment="2"/>
   </variable>
-  <variable name="stationId" shape="s" type="int">
-    <attribute name="standard_name" value="station_id" />
-    <values start="666" increment="6"/>
+  <variable name="trajId" shape="traj" type="int">
+    <attribute name="standard_name" value="trajectory_id" />
+    <attribute name="missing_value" type="int" value="-9999" />
+    <values>1 2 -9999 4 5</values>
   </variable>
-  <variable name="stationAlt" shape="s" type="int">
-    <attribute name="standard_name" value="station_altitude" />
-    <values start="100" increment="6"/>
-  </variable>
-  <variable name="obsCount" shape="s" type="int">
-    <attribute name="standard_name" value="ragged_row_size" />
-    <values>1 2 3</values>
+  <variable name="trajIndex" shape="obs" type="int">
+    <attribute name="standard_name" value="ragged_parent_index" />
+    <values>0 0 0 1 1 2</values>
   </variable>
 
-  <variable name="z" shape="z" type="float">
+  <variable name="alt" shape="obs" type="float">
     <attribute name="long_name" value="height above mean sea level" />
     <attribute name="units" value="km" />
     <attribute name="positive" value="up" />
-    <values>10 20</values>
+    <values start="10" increment="10"/>
   </variable>
   
   <variable name="time" shape="obs" type="double">
@@ -46,14 +43,14 @@
   <variable name="data" shape="obs" type="float">
     <attribute name="long_name" value="skin temperature" />
     <attribute name="units" value="Celsius" />
-    <attribute name="coordinates" value="time lon lat" />
+    <attribute name="coordinates" value="time lon lat alt" />
     <values start="1" increment="3"/>
   </variable>
 
   <variable name="dataMitZ" shape="obs z" type="float">
     <attribute name="long_name" value="skin flavor" />
     <attribute name="units" value="Pa" />
-    <attribute name="coordinates" value="time lon lat z" />
+    <attribute name="coordinates" value="time lon lat alt" />
     <values start="11" increment="11"/>
   </variable>
 </netcdf>

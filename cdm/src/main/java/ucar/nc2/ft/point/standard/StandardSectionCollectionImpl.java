@@ -43,7 +43,8 @@ import ucar.unidata.geoloc.LatLonRect;
 import java.io.IOException;
 
 /**
- * Nested Table implementation of SectionCollection
+ * Nested Table implementation of SectionCollection.
+ * a collection of section features
  *
  * @author caron
  * @since Oct 22, 2009
@@ -64,14 +65,24 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
   public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
     return new NestedPointFeatureCollectionIterator() {
       private StructureDataIterator sdataIter = ft.getRootFeatureDataIterator(-1);
+      private StructureData nextSection;
 
-      public boolean hasNext() throws IOException {
-        return sdataIter.hasNext();
+      public SectionFeature next() throws IOException {
+        Cursor cursor = new Cursor(ft.getNumberOfLevels());
+        cursor.recnum[2] = sdataIter.getCurrentRecno();
+        cursor.tableData[2] = nextSection; // obs(leaf) = 0, profile=1, section(root)=2
+        cursor.parentIndex = 2;
+
+        return new StandardSectionFeature(cursor);
       }
 
-      public NestedPointFeatureCollection next() throws IOException {
-        StructureData sdata = sdataIter.next();
-        return new StandardSectionFeature(sdata, sdataIter.getCurrentRecno());
+      public boolean hasNext() throws IOException {
+        while (true) {
+          if (!sdataIter.hasNext()) return false;
+          nextSection = sdataIter.next();
+          if (!ft.isFeatureMissing(nextSection)) break;
+        }
+        return true;
       }
 
       public void setBufferSize(int bytes) {
@@ -79,24 +90,18 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
     };
   }
 
-  // a time series of profiles at one station
+  // a single section: a collection of profiles along a trajectory
   private class StandardSectionFeature extends SectionFeatureImpl {
-    StructureData sectionData;
-    int recnum;
+    Cursor cursor;
 
-    StandardSectionFeature(StructureData sdata, int recnum) {
-      super(ft.getName());
-      sectionData = sdata;
-      this.recnum = recnum;
+    StandardSectionFeature(Cursor cursor) {
+      super(ft.getFeatureName(cursor));
+      this.cursor = cursor;
     }
 
     @Override
     public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-      Cursor cursor = new Cursor(ft.getNumberOfLevels());
-      cursor.recnum[2] = recnum;
-      cursor.tableData[2] = sectionData; // obs(leaf) = 0, profile=1, section(root)=2
-      cursor.parentIndex = 2;
-      return new StandardSectionProfileFeatureIterator(cursor);
+      return new StandardSectionFeatureIterator(cursor.copy());
     }
 
     @Override
@@ -105,11 +110,11 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
     }
   }
 
-  private class StandardSectionProfileFeatureIterator implements PointFeatureCollectionIterator {
+  private class StandardSectionFeatureIterator implements PointFeatureCollectionIterator {
     Cursor cursor;
     private ucar.ma2.StructureDataIterator iter;
 
-    StandardSectionProfileFeatureIterator(Cursor cursor) throws IOException {
+    StandardSectionFeatureIterator(Cursor cursor) throws IOException {
       this.cursor = cursor;
       iter = ft.getMiddleFeatureDataIterator(cursor, -1);
     }
@@ -142,17 +147,33 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
     Cursor cursor;
 
     StandardSectionProfileFeature(Cursor cursor) {
-      super(ft.getFeatureName(cursor.tableData[1]), ft.getLatitude(cursor), ft.getLongitude(cursor), -1);
+      super(ft.getFeatureName(cursor), ft.getLatitude(cursor), ft.getLongitude(cursor), -1);
       this.cursor = cursor;
     }
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       Cursor cursorIter = cursor.copy();
       StructureDataIterator siter = ft.getLeafFeatureDataIterator(cursorIter, bufferSize);
-      StandardPointFeatureIterator iter = new StandardPointFeatureIterator(ft, timeUnit, siter, cursorIter);
+      StandardPointFeatureIterator iter = new StandardSectionProfileFeatureIterator(ft, timeUnit, siter, cursorIter);
       if ((boundingBox == null) || (dateRange == null) || (npts < 0))
         iter.setCalculateBounds(this);
       return iter;
+    }
+  }
+
+  private class StandardSectionProfileFeatureIterator extends StandardPointFeatureIterator {
+
+    StandardSectionProfileFeatureIterator(NestedTable ft, DateUnit timeUnit, StructureDataIterator structIter, Cursor cursor) throws IOException {
+      super(ft, timeUnit, structIter, cursor);
+    }
+
+    protected boolean filter() throws IOException {
+      // standard filter is to check for missing time data
+      if (ft.isTimeMissing(this.cursor)) return true;
+
+      // must also check for missing z values
+      return ft.isAltMissing(this.cursor);
+
     }
   }
 

@@ -59,6 +59,8 @@ public abstract class CoordVarExtractor {
 
   public abstract boolean isString();
 
+
+
   public double getCoordValue(StructureData[] tableData) {
     return getCoordValue(tableData[nestingLevel]);
   }
@@ -67,11 +69,16 @@ public abstract class CoordVarExtractor {
     return getCoordValueString(tableData[nestingLevel]);
   }
 
-
   public String getCoordValueAsString(StructureData sdata) {
     if (isString()) return getCoordValueString(sdata);
     double dval = getCoordValue( sdata);
     return Double.toString(dval);
+  }
+
+  protected abstract boolean isMissing(StructureData tableData);
+
+  public boolean isMissing(StructureData[] tableData) {
+    return isMissing(tableData[nestingLevel]);
   }
 
   public String toString() {

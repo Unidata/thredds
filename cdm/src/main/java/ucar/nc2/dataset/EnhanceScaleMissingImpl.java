@@ -54,6 +54,8 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
   static private final double NC_FILL_DOUBLE = 9.9692099683868690e+36;
   static private final String FillValue = "_FillValue";
 
+  static private boolean debug = false, debugRead = false, debugMissing = false;
+
   private DataType convertedDataType = null;
   private boolean useNaNs = false;
 
@@ -76,7 +78,6 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
 
   private boolean isUnsigned;
 
-  private boolean debug = false, debugRead = false, debugMissing = false;
 
   /**
    * Constructor, when you dont want anything done.
@@ -204,17 +205,29 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
 
     /// missing_value
     if (null != (att = forVar.findAttribute("missing_value"))) {
+      String svalue = att.getStringValue();
       if (att.isString()) {
-        try {
+        if (forVar.getDataType() == DataType.CHAR) {
           missingValue = new double[1];
-          missingValue[0] = Double.parseDouble(att.getStringValue());
-          missType = att.getDataType();
+          if (svalue.length() == 0) missingValue[0] = 0;
+          else missingValue[0] = svalue.charAt(0);
+
+          missType = DataType.CHAR;
           hasMissingValue = true;
-        } catch (NumberFormatException ex) {
-          if (debug) System.out.println("String missing_value not parsable as double= " + att.getStringValue());
+
+        } else {  // not a CHAR - try to fix problem where they use a numeric value as a String attribute
+
+          try {
+            missingValue = new double[1];
+            missingValue[0] = Double.parseDouble(svalue);
+            missType = att.getDataType();
+            hasMissingValue = true;
+          } catch (NumberFormatException ex) {
+            if (debug) System.out.println("String missing_value not parsable as double= " + att.getStringValue());
+          }
         }
 
-      } else {
+      } else { // not a string
         missingValue = getValueAsDouble(att);
         missType = att.getDataType();
         hasMissingValue = true;

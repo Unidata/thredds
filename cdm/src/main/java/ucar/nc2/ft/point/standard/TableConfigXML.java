@@ -193,6 +193,7 @@ public class TableConfigXML {
     addCoord(tableElem, table.stnWmoId, "stnWmoId", varNames);
     addCoord(tableElem, table.stnAlt, "stnAlt", varNames);
     addCoord(tableElem, table.limit, "limit", varNames);
+    addCoord(tableElem, table.feature_id, "featureId", varNames);
   }
 
   private void addCoord(Element tableElem, String name, String type, List<String> varNames) {

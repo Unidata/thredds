@@ -37,13 +37,13 @@ import ucar.nc2.ft.point.standard.*;
 import ucar.nc2.ft.point.standard.CoordSysEvaluator;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.Structure;
-import ucar.ma2.Array;
 import ucar.ma2.DataType;
 
 import java.util.*;
@@ -58,8 +58,8 @@ import java.io.IOException;
  */
 public class CFpointObs extends TableConfigurerImpl {
   private static String STANDARD_NAME = "standard_name";
-  private static String RAGGED_ROWSIZE = "ragged_rowSize";
-  private static String RAGGED_PARENTINDEX = "ragged_parentIndex";
+  private static String RAGGED_ROWSIZE = "ragged_row_size";
+  private static String RAGGED_PARENTINDEX = "ragged_parent_index";
   private static String STATION_ID = "station_id";
   private static String STATION_DESC = "station_desc";
   private static String STATION_ALTITUDE = "station_altitude";
@@ -203,7 +203,7 @@ public class CFpointObs extends TableConfigurerImpl {
     if (info == null) return null;
 
     // obs dimension
-    Variable time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
+    VariableDS time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
     Dimension obsDim = time.getDimension(time.getRank() - 1); // may be time(time) or time(stn, obs)
 
     // check for flat - correct the encoding if so 
@@ -261,11 +261,14 @@ public class CFpointObs extends TableConfigurerImpl {
     TableConfig parentTable = makeStructTable(ds, FeatureType.PROFILE, info, errlog);
     if (parentTable == null) return null;
     parentTable.feature_id = identifyParentId(ds, CF.FeatureType.profile);
+    if (parentTable.feature_id == null) {
+      errlog.format("getProfileConfig cant find a profile id %n");
+    }
 
     // obs table
-    Variable z = CoordSysEvaluator.findCoordByType(ds, AxisType.Height);
+    VariableDS z = CoordSysEvaluator.findCoordByType(ds, AxisType.Height);
     if (z == null) {
-      errlog.format("CFpointObs cant find a Height coordinate %n");
+      errlog.format("getProfileConfig cant find a Height coordinate %n");
       return null;
     }
     Dimension obsDim = z.getDimension(z.getRank() - 1); // may be z(z) or z(profile, z)
@@ -303,6 +306,9 @@ public class CFpointObs extends TableConfigurerImpl {
     TableConfig parentTable = makeStructTable(ds, FeatureType.TRAJECTORY, info, errlog);
     if (parentTable == null) return null;
     parentTable.feature_id = identifyParentId(ds, CF.FeatureType.trajectory);
+    if (parentTable.feature_id == null) {
+      errlog.format("getTrajectoryConfig cant find a trajectoy id %n");      
+    }
 
     // obs table
     Variable time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
@@ -336,14 +342,14 @@ public class CFpointObs extends TableConfigurerImpl {
     EncodingInfo info = identifyEncoding(ds, CF.FeatureType.stationProfile, errlog);
     if (info == null) return null;
 
-    Variable time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
+    VariableDS time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
     if (time.getRank() == 0) {
       errlog.format("section cannot have a scalar time coordinate%n");
       return null;
     }
 
         // find the non-station altitude
-    Variable z = findZAxisNotStationAlt(ds);
+    VariableDS z = findZAxisNotStationAlt(ds);
     if (z == null) {
       errlog.format("stationProfile must have a z coordinate%n");
       return null;
@@ -552,7 +558,7 @@ public class CFpointObs extends TableConfigurerImpl {
     EncodingInfo info = identifyEncoding(ds, CF.FeatureType.section, errlog);
     if (info == null) return null;
 
-    Variable time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
+    VariableDS time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
     if (time.getRank() == 0) {
       errlog.format("section cannot have a scalar time coordinate%n");
       return null;
@@ -569,13 +575,16 @@ public class CFpointObs extends TableConfigurerImpl {
     TableConfig parentTable = makeStructTable(ds, FeatureType.SECTION, info, errlog);
     if (parentTable == null) return null;
     parentTable.feature_id = identifyParentId(ds, CF.FeatureType.section);
+    if (parentTable.feature_id == null) {
+      errlog.format("getSectionConfig cant find a section id %n");
+    }
 
     Dimension sectionDim = parentTable.dim;
     Dimension profileDim = null;
     Dimension zDim = null;
 
     // find the non-station altitude
-    Variable z = findZAxisNotStationAlt(ds);
+    VariableDS z = findZAxisNotStationAlt(ds);
     if (z == null) {
       errlog.format("section must have a z coordinate%n");
       return null;
@@ -655,6 +664,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
         TableConfig profileTable = makeMultidimInner(ds, parentTable, profileDim, errlog);
         if (profileTable == null) return null;
+        profileTable.feature_id = identifyParentId(ds, CF.FeatureType.profile);
         parentTable.addChild(profileTable);
 
         // make the inner (z) table
@@ -694,7 +704,9 @@ public class CFpointObs extends TableConfigurerImpl {
         }
 
         TableConfig profileTable = makeRaggedIndex(ds, profileDim, errlog);
+        profileTable.feature_id = identifyParentId(ds, CF.FeatureType.profile);
         parentTable.addChild(profileTable);
+
         TableConfig zTable = makeRaggedContiguous(ds, profileTable, zDim, errlog);
         profileTable.addChild(zTable);
         break;
@@ -711,6 +723,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
         TableConfig profileTable = makeStructTable(ds, FeatureType.SECTION, info, errlog);
         profileTable.parentIndex = parentId.getName();
+        profileTable.feature_id = identifyParentId(ds, CF.FeatureType.profile);
         parentTable.addChild(profileTable);
 
         zDim = z.getDimension(z.getRank() - 1); // may be z(z) or z(profile, z)
@@ -767,7 +780,6 @@ public class CFpointObs extends TableConfigurerImpl {
       errlog.format("Must have a Latitude coordinate%n");
       return null;
     }
-    Dimension latDim = lat.getDimension(0);
 
     switch (ftype) {
       case point:
@@ -1107,7 +1119,7 @@ public class CFpointObs extends TableConfigurerImpl {
     for (Variable orgV : vars) {
       if (orgV instanceof Structure) continue;
 
-      if (orgV.getRank() == 1) {
+      if ((orgV.getRank() == 1) || ((orgV.getRank() == 2) && orgV.getDataType() == DataType.CHAR)) {
         if (outerDim.equals(orgV.getDimension(0)))
           outerVars.add(orgV.getShortName());
 
