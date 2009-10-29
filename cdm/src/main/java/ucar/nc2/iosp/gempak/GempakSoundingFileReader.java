@@ -350,8 +350,8 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
         }
 
         GempakSoundingFileReader gsfr = getInstance(getFile(args[0]), true);
-        /*
         System.out.println("Type = " + gsfr.getFileType());
+        /*
         gsfr.printFileLabel();
         gsfr.printKeys();
         gsfr.printHeaders();
