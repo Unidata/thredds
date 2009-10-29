@@ -334,7 +334,7 @@ public class TdsMonitor extends JPanel {
         logTable.setLogFiles(globFiles(command));
 
       } catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
+        JOptionPane.showMessageDialog(null, "logTable.setLogFiles failed " + command + "\n" + ioe.getMessage());
         ta.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
         err = true;
 

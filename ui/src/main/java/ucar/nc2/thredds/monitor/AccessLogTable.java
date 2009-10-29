@@ -611,8 +611,8 @@ public class AccessLogTable extends JPanel {
   
   private void showTimeSeriesAll(java.util.List<LogReader.Log> logs) {
     // 09/Apr/2009:16:38:28 -0600
-    SimpleDateFormat df = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z");
-    SimpleDateFormat dfo = new SimpleDateFormat("yyyy/MMM/dd HH:mm:ss");
+    //SimpleDateFormat df = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z");
+    SimpleDateFormat df = new SimpleDateFormat("yyyy-MMM-ddTHH:mm:ss");
 
     TimeSeries bytesSentData = new TimeSeries("Bytes Sent", Minute.class);
     TimeSeries timeTookData = new TimeSeries("Average Latency", Minute.class);

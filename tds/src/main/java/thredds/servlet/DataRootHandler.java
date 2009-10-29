@@ -770,7 +770,7 @@ public class DataRootHandler {
 
     DataRoot dataRoot = findDataRoot(path);
     if (dataRoot == null) {
-      log.debug("hasDataRootMatch(): no InvDatasetScan for " + path);
+      if (log.isDebugEnabled()) log.debug("hasDataRootMatch(): no InvDatasetScan for " + path);
       return false;
     }
     return true;
@@ -1226,7 +1226,7 @@ public class DataRootHandler {
           File catFile = this.tdsContext.getConfigFileSource().getFile(workPath);
           if (catFile != null) {
             String catalogFullPath = catFile.getPath();
-            log.info("getCatalog(): Rereading expired catalog [" + catalogFullPath + "].");
+            if (log.isDebugEnabled()) log.debug("getCatalog(): Rereading expired catalog [" + catalogFullPath + "].");
             InvCatalogFactory factory = getCatalogFactory(true);
             InvCatalogImpl reReadCat = readCatalog(factory, workPath, catalogFullPath);
 
@@ -1299,7 +1299,7 @@ public class DataRootHandler {
     }
 
     InvDatasetScan dscan = match.dataRoot.scan;
-    log.debug("makeDynamicCatalog(): Calling makeCatalogForDirectory( " + baseURI + ", " + path + ").");
+    if (log.isDebugEnabled()) log.debug("makeDynamicCatalog(): Calling makeCatalogForDirectory( " + baseURI + ", " + path + ").");
     InvCatalogImpl cat = dscan.makeCatalogForDirectory(path, baseURI);
 
     if (null == cat) {
@@ -1500,7 +1500,7 @@ public class DataRootHandler {
 
     DataRoot dataRoot = findDataRoot(path);
     if (dataRoot == null) {
-      log.debug("_getNcML no InvDatasetScan for =" + path);
+      if (log.isDebugEnabled()) log.debug("_getNcML no InvDatasetScan for =" + path);
       return null;
     }
 

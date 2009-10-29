@@ -62,7 +62,7 @@ public class LogManager {
       String homeDir = System.getProperty( "user.home" );
       topDir = new File(homeDir, "tdsMonitor");
     }
-
+    System.out.printf("logs stored at= %s%n", topDir);
   }
 
   String server, type;

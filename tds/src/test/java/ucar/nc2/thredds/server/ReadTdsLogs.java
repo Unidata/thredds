@@ -91,7 +91,7 @@ public class ReadTdsLogs {
     //completionQ = new ArrayBlockingQueue<Future<SendRequestTask>>(30); // bounded, threadsafe
     completionService = new ExecutorCompletionService<SendRequestTask>(executor);
 
-    out = new Formatter(new FileOutputStream("C:/TEMP/readTdsLogs.txt"));
+    // out = new Formatter(new FileOutputStream("C:/TEMP/readTdsLogs.txt"));
 
     resultProcessingThread = new Thread(new ResultProcessor());
     resultProcessingThread.start();
@@ -182,12 +182,12 @@ public class ReadTdsLogs {
 
           else if ((itask.statusCode != log.returnCode) && (log.returnCode != 304) && (log.returnCode != 302)) {
             if (!compareAgainstLive(itask)) {
-              out.format("%5d: status=%d was=%d %s  %n", itask.reqnum, itask.statusCode, log.returnCode, log.path);
+              if (out != null) out.format("%5d: status=%d was=%d %s  %n", itask.reqnum, itask.statusCode, log.returnCode, log.path);
               out2.format("%5d: status=%d was=%d %s  %n", itask.reqnum, itask.statusCode, log.returnCode, log.path);
             }
 
           } else if ((itask.statusCode == 200) && (itask.bytesRead != log.sizeBytes)) {
-            out.format("%5d: bytes=%d was=%d %s%n", itask.reqnum, itask.bytesRead, log.sizeBytes, log.path);
+            if (out != null) out.format("%5d: bytes=%d was=%d %s%n", itask.reqnum, itask.bytesRead, log.sizeBytes, log.path);
             // out2.format("%5d: bytes=%d was=%d %s%n", reqno, itask.bytesRead, log.sizeBytes, log.path);
           }
 
@@ -662,7 +662,7 @@ public class ReadTdsLogs {
   static String serverTest = "http://motherlode.ucar.edu:9080";
 
   public static void main(String args[]) throws IOException {
-    out = new Formatter(new FileOutputStream("C:/TEMP/readTdsLogs.txt"));
+    out = null; // new Formatter(new FileOutputStream("C:/TEMP/readTdsLogs.txt"));
     out2 = new Formatter(System.out);
 
     /* why ?
@@ -678,7 +678,8 @@ public class ReadTdsLogs {
     long startElapsed = System.nanoTime();
 
     //String accessLogs = "D:\\logs\\motherlode\\live\\access";
-    String accessLogs = "C:\\Documents and Settings\\caron.UNIDATA_DOMAIN\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access";
+    //String accessLogs = "C:\\Documents and Settings\\caron.UNIDATA_DOMAIN\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access";
+    String accessLogs = "/home/caron/tdsMonitor/motherlode%3A8080/access/access.2009-09-27.log";
 
     read(accessLogs, new MClosure() {
       public void run(String filename) throws IOException {
@@ -691,7 +692,7 @@ public class ReadTdsLogs {
     long elapsedTime = System.nanoTime() - startElapsed;
     System.out.println("elapsed= " + elapsedTime / (1000 * 1000 * 1000) + "secs");
 
-    out.close();
+    if (out != null) out.close();
     out2.close();
 
   }
