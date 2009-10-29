@@ -300,13 +300,22 @@ public class GridVertCoord implements Comparable {
       if( g1dr == null || ! g1dr.hasVerticalPressureLevels() )
         return;
 
-      int NV = g1dr.getNV() / 2 -1;
-      coordValues = new double[ levels.size() * NV ];
-      int idx = 0;
-      for (LevelCoord lc : levels ) {
-        double[] plevels = g1dr.getVerticalPressureLevels( lc.value1  );
-        System.arraycopy( plevels, 0, coordValues, idx, NV );
-        idx += NV;
+      int NV = g1dr.getNV();
+      if ( NV > 2 && NV < 255 ) { // Some data doesn't add Pressure Level values
+        NV = NV / 2 -1;
+        coordValues = new double[ levels.size() * NV ];
+        int idx = 0;
+        for (LevelCoord lc : levels ) {
+          double[] plevels = g1dr.getVerticalPressureLevels( lc.value1  );
+          System.arraycopy( plevels, 0, coordValues, idx, NV );
+          idx += NV;
+        }
+      } else { // add numeric values
+        coordValues = new double[ levels.size()];
+        for (int i = 0; i < levels.size(); i++ ) {
+          LevelCoord lc = levels.get( i );
+          coordValues[ i ] =   lc.value1  ;
+        }
       }
   }
 
