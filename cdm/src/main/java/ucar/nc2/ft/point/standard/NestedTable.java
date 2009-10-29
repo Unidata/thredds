@@ -230,7 +230,8 @@ public class NestedTable {
     public boolean isMissing(StructureData sdata) {
       if (isString()) {
         String s = getCoordValueString(sdata);
-        return coordVar.isMissing((double) s.charAt(0));       
+        double test = (s.length() == 0) ? 0 : (double) s.charAt(0);
+        return coordVar.isMissing(test);       
       } else {
         double val = getCoordValue(sdata);
         return coordVar.isMissing(val);
@@ -388,11 +389,11 @@ public class NestedTable {
 
   public String getName() {
     Formatter formatter = new Formatter();
-    formatter.format("%s", leaf.getName());
+    formatter.format("%s", root.getName());
 
-    Table t = leaf;
-    while (t.parent != null) {
-      t = t.parent;
+    Table t = root;
+    while (t.child != null) {
+      t = t.child;
       formatter.format("/%s", t.getName());
     }
     return formatter.toString();

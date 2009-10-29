@@ -331,7 +331,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
       buf.format("%n");
       buf.format("Name__________________________Unit__________________________hasMissing_Description%n");
       for (GeoGrid grid : grids) {
-        buf.format(grid.getInfo());
+        buf.format("%s", grid.getInfo());
         buf.format("%n");
       }
       countGridset++;
@@ -359,14 +359,14 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
     NetcdfDatasetInfo info = null;
     try {
       info = new NetcdfDatasetInfo( ds.getLocation());
-      buff.format(info.getParseInfo());
+      buff.format("%s", info.getParseInfo());
     } catch (IOException e) {
       buff.format("NetcdfDatasetInfo failed");
     } finally {
       if (info != null) try { info.close(); } catch (IOException ee) {} // do nothing
     }
     buff.format("\n\n----------------------------------------------------\n");
-    buff.format(ds.toString());
+    buff.format("%s", ds.toString());
     buff.format("\n\n----------------------------------------------------\n");
 
     return buff.toString();

@@ -841,7 +841,7 @@ public class CFpointObs extends TableConfigurerImpl {
     if (info.encoding == Encoding.single) stationTableType = Table.Type.Top;
     if (info.encoding == Encoding.flat) stationTableType = Table.Type.Construct;
 
-    TableConfig stnTable = new TableConfig(stationTableType, ds.getLocation());
+    TableConfig stnTable = new TableConfig(stationTableType, stationDim.getName());
     stnTable.featureType = ftype;
     stnTable.stnId = findNameVariableWithStandardNameAndDimension(ds, STATION_ID, stationDim, errlog);
     stnTable.stnDesc = findNameVariableWithStandardNameAndDimension(ds, STATION_DESC, stationDim, errlog);
@@ -885,7 +885,7 @@ public class CFpointObs extends TableConfigurerImpl {
     if (info.encoding == Encoding.single) tableType = Table.Type.Top;
     if (info.encoding == Encoding.flat) tableType = Table.Type.ParentId;
 
-    TableConfig tableConfig = new TableConfig(tableType, ftype.toString());
+    TableConfig tableConfig = new TableConfig(tableType, info.parentDim.getName());
     tableConfig.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, info.parentDim);
     tableConfig.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, info.parentDim);
     tableConfig.elev = matchAxisTypeAndDimension(ds, AxisType.Height, info.parentDim);
@@ -1143,7 +1143,7 @@ public class CFpointObs extends TableConfigurerImpl {
   private TableConfig makeSingle(NetcdfDataset ds, Dimension obsDim, Formatter errlog) throws IOException {
 
     Table.Type obsTableType = Table.Type.Structure;
-    TableConfig obsTable = new TableConfig(obsTableType, ds.getLocation());
+    TableConfig obsTable = new TableConfig(obsTableType, "single");
     obsTable.dim = obsDim;
 
     obsTable.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, obsDim);

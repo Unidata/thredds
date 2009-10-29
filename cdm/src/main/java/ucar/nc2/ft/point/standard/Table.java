@@ -234,10 +234,11 @@ public abstract class Table {
   public static class TableStructure extends Table {
     StructureDS struct;
     Dimension dim;
-    //boolean addIndex;
+    TableConfig.StructureType stype;
 
     TableStructure(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
+      this.stype = config.structureType;
 
       switch (config.structureType) {
 
@@ -297,6 +298,11 @@ public abstract class Table {
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
       return struct.getStructureIterator(bufferSize);
     }
+
+    @Override
+    public String getName() {
+      return stype.toString()+"("+struct.getName()+")";
+    }
   }
 
   ///////////////////////////////////////////////////////
@@ -313,7 +319,7 @@ public abstract class Table {
     TableArrayStructure(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
       this.as = config.as;
-      this.dim = new Dimension(config.name, (int) config.as.getSize(), false);
+      this.dim = new Dimension(config.structName, (int) config.as.getSize(), false);
       assert (this.as != null);
 
       for (StructureMembers.Member m : config.as.getStructureMembers().getMembers())
@@ -332,6 +338,11 @@ public abstract class Table {
 
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
       return as.getStructureDataIterator();
+    }
+
+        @Override
+    public String getName() {
+      return "ArrayStructure("+name+")";
     }
   }
 
@@ -359,6 +370,11 @@ public abstract class Table {
     @Override
      public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
       return as.getStructureDataIterator();
+    }
+
+    @Override
+    public String getName() {
+      return "Constructed";
     }
   }
 
@@ -426,6 +442,11 @@ public abstract class Table {
       }
       return new StructureDataIteratorLinked(struct, firstRecno, numrecs, null);
     }
+
+    @Override
+    public String getName() {
+      return "Contig("+numRecordsVarName+")";
+    }
   }
 
   ///////////////////////////////////////////////////////
@@ -481,6 +502,11 @@ public abstract class Table {
       List<Integer> index = indexMap.get(parentIndex);
       if (index == null) index = new ArrayList<Integer>();
       return new StructureDataIteratorIndexed(struct, index);
+    }
+
+    @Override
+    public String getName() {
+      return "Indexed("+parentIndexName+")";
     }
   }
 
@@ -578,6 +604,11 @@ public abstract class Table {
       List<Integer> index = (info == null) ? new ArrayList<Integer>() : info.recnumList;
       return new StructureDataIteratorIndexed(struct, index);
     }
+
+    @Override
+    public String getName() {
+      return "ParentId("+parentIdName+")";
+    }
   }
 
   ///////////////////////////////////////////////////////
@@ -607,13 +638,18 @@ public abstract class Table {
       int firstRecno = parentStruct.getScalarInt(start);
       return new StructureDataIteratorLinked(struct, firstRecno, -1, next);
     }
+
+        @Override
+    public String getName() {
+      return "Linked("+start+"->"+next+")";
+    }
   }
 
   ///////////////////////////////////////////////////////
 
   public static class TableMultidimInner extends Table {
      StructureMembers sm; // the inner structure members
-     Dimension dim;
+     Dimension inner, outer;
      NetcdfDataset ds;
 
      TableMultidimInner(NetcdfDataset ds, TableConfig config) {
@@ -621,7 +657,8 @@ public abstract class Table {
        this.ds = ds;
        assert config.outer != null;
        assert config.inner != null;
-       dim = config.inner;
+       this.inner = config.inner;
+       this.outer = config.outer;
 
        sm = new StructureMembers(config.name);
        if (config.vars != null) {
@@ -651,12 +688,12 @@ public abstract class Table {
 
      @Override
      protected void showTableExtraInfo(String indent, Formatter f) {
-       f.format("%sStructureMembers=%s, dim=%s%n", indent, sm.getName(), dim.getName());
+       f.format("%sStructureMembers=%s, dim=%s,%s%n", indent, sm.getName(), outer.getName(), inner.getName());
      }
 
      @Override
      public String showDimension() {
-       return dim.getName();
+       return inner.getName();
      }
 
      @Override
@@ -666,7 +703,7 @@ public abstract class Table {
 
      public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
        StructureData parentStruct = cursor.getParentStructure();
-       ArrayStructureMA asma = new ArrayStructureMA(sm, new int[]{dim.getLength()});
+       ArrayStructureMA asma = new ArrayStructureMA(sm, new int[]{inner.getLength()});
        for (VariableSimpleIF v : cols) {
          Array data = parentStruct.getArray(v.getShortName());
          StructureMembers.Member childm = sm.findMember(v.getShortName());
@@ -675,6 +712,10 @@ public abstract class Table {
        return asma.getStructureDataIterator();
      }
 
+      @Override
+      public String getName() {
+        return "Multidim(" + outer.getName()+"," + inner.getName() + ")";
+      }
    }
 
   public static class TableMultidimInner3D extends Table {
@@ -746,6 +787,11 @@ public abstract class Table {
        return asma.getStructureDataIterator();
      }
 
+      @Override
+      public String getName() {
+        return "Multidim(" + dim.getName()+"," + middle.getName() +"," + inner.getName() + ")";
+      }
+
    }
 
    /**
@@ -757,7 +803,7 @@ public abstract class Table {
    * CFpointObs
    */
   public static class TableMultidimInnerPsuedo extends Table.TableStructure {
-    Dimension inner;
+    Dimension inner, outer;
     StructureMembers sm;
 
     TableMultidimInnerPsuedo(NetcdfDataset ds, TableConfig config) {
@@ -765,6 +811,7 @@ public abstract class Table {
       assert config.outer != null;
       assert config.inner != null;
       this.inner = config.inner;
+      this.outer = config.outer;
 
       sm = new StructureMembers(config.name);
       for (Variable v : struct.getVariables()) {
@@ -792,6 +839,11 @@ public abstract class Table {
       }
     }
 
+           @Override
+      public String getName() {
+        return "MultidimPseudo(" + outer.getName()+"," + inner.getName() + ")";
+      }
+
   }
 
   public static class TableMultidimInnerPsuedo3D extends Table.TableStructure {
@@ -804,6 +856,7 @@ public abstract class Table {
       assert config.dim != null;
       assert config.outer != null; // middle
       assert config.inner != null;
+      this.dim = config.dim;
       this.middle = config.outer;
       this.inner = config.inner;
 
@@ -837,6 +890,11 @@ public abstract class Table {
       }
     }
 
+      @Override
+      public String getName() {
+        return "MultidimPsuedo(" + dim.getName()+"," + middle.getName() +"," + inner.getName() + ")";
+      }
+
   }
 
   ///////////////////////////////////////////////////////
@@ -866,6 +924,11 @@ public abstract class Table {
       } catch (InvalidRangeException e) {
         throw new IllegalStateException(e);
       }
+    }
+
+    @Override
+    public String getName() {
+      return "MultidimStructure(" + struct.getName() + ")";
     }
 
   }
@@ -919,6 +982,11 @@ public abstract class Table {
 
       throw new IllegalStateException("Cant fing memmber " + nestedTableName);
     }
+
+        @Override
+    public String getName() {
+      return "NestedStructure(" + nestedTableName + ")";
+    }
   }
 
   ///////////////////////////////////////////////////////
@@ -949,6 +1017,11 @@ public abstract class Table {
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
       return new SingletonStructureDataIterator(sdata);
     }
+
+    @Override
+    public String getName() {
+      return "Singleton";
+    }
   }
 
   /**
@@ -978,6 +1051,11 @@ public abstract class Table {
 
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
       return new SingletonStructureDataIterator(null);
+    }
+
+        @Override
+    public String getName() {
+      return "TopScalars";
     }
   }
 

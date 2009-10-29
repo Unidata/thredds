@@ -35,8 +35,14 @@ package ucar.nc2.ft.point.standard.plug;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.point.standard.*;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.Variable;
+import ucar.nc2.Structure;
+import ucar.nc2.Dimension;
+import ucar.ma2.DataType;
 
 import java.util.Formatter;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * FLS Wind profile data
@@ -71,10 +77,33 @@ public class FslWindProfiler extends TableConfigurerImpl  {
 
     TableConfig levels = new TableConfig(Table.Type.MultidimInner, "levels");
     levels.outer = Evaluator.getDimension(ds, "recNum", errlog);
-    levels.dim = Evaluator.getDimension(ds, "level", errlog);
-    levels.elev = Evaluator.getVariableName(ds, "levels", errlog);
+    levels.inner = Evaluator.getDimension(ds, "level", errlog);
+    levels.elev = Evaluator.getVariableName(ds, "level", errlog);
 
     profile.addChild(levels);
+
+    // divide up the variables between the parent and the obs
+    List<String> obsVars = null;
+    List<Variable> vars = ds.getVariables();
+    List<String> parentVars = new ArrayList<String>(vars.size());
+    obsVars = new ArrayList<String>(vars.size());
+    for (Variable orgV : vars) {
+      if (orgV instanceof Structure) continue;
+
+      Dimension dim0 = orgV.getDimension(0);
+      if ((dim0 != null) && dim0.equals(profile.dim)) {
+        if ((orgV.getRank() == 1) || ((orgV.getRank() == 2) && orgV.getDataType() == DataType.CHAR)) {
+          parentVars.add(orgV.getShortName());
+        } else {
+          Dimension dim1 = orgV.getDimension(1);
+          if ((dim1 != null) && dim1.equals(levels.inner))
+            obsVars.add(orgV.getShortName());
+        }
+      }
+    }
+    profile.vars = parentVars;
+    levels.vars = obsVars;
+
     
     return profile;
   }

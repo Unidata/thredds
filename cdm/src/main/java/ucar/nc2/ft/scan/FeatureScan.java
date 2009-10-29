@@ -105,10 +105,11 @@ public class FeatureScan {
         if (prev != null) {
           String name = f.getName();
           String stem = stem(name);
-          if (name.endsWith(".gbx")) {
+          if (name.endsWith(".gbx") || name.endsWith(".gbx8")) {
             files2.remove(f);
           } else if (name.endsWith(".ncml")) {
-            if (prev.getName().equals(stem+".nc")) files2.remove(prev);
+            if (prev.getName().equals(stem+".nc"))
+              files2.remove(prev);
           } else if (name.endsWith(".bz2")) {
             if (prev.getName().equals(stem)) files2.remove(f);
           } else if (name.endsWith(".gz")) {

@@ -75,6 +75,7 @@ public class UnidataPointFeature  extends TableConfigurerImpl  {
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
     TableConfig nt = new TableConfig(Table.Type.ArrayStructure, "station");
     nt.featureType = FeatureType.STATION_PROFILE;
+    nt.structName = "station";
 
     nt.stnId = STN_NAME;
     nt.lat = STN_LAT;

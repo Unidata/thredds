@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pointConfig featureType="STATION_PROFILE">
+  <table type="Structure" subtype="Structure" structName="record">
+    <coordinate type="lat">staLat</coordinate>
+    <coordinate type="lon">staLon</coordinate>
+    <coordinate type="stnId">staName</coordinate>
+    <coordinate type="stnWmoId">wmoStaNum</coordinate>
+    <table type="Singleton">
+      <coordinate type="time">timeObs</coordinate>
+      <table type="MultidimInner" dim0="recNum" dim1="levels">
+        <extraJoin class="class ucar.nc2.ft.point.standard.JoinArray" type="raw">
+          <variable>level</variable>
+          <param value="0" />
+        </extraJoin>
+      </table>
+    </table>
+  </table>
+</pointConfig>

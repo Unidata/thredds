@@ -91,6 +91,8 @@ public class StructurePseudoDS extends StructureDS {
       List<Variable> vars = group.getVariables();
       varNames = new ArrayList<String>(vars.size());
       for (Variable orgV : vars) {
+        if (orgV.getDataType() == DataType.STRUCTURE) continue;
+        
         Dimension dim0 = orgV.getDimension(0);
         if ((dim0 != null) && dim0.equals(outerDim))
           varNames.add(orgV.getShortName());
