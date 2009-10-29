@@ -48,7 +48,8 @@ public class JoinArray implements Join {
   public enum Type { 
     modulo,  // use cursor[0] % param
     divide, // use cursor[0] / param
-    raw   // use cursor[0]
+    raw ,  // use cursor[0]
+    scalar // use scalar data
   }
 
   VariableDS v;
@@ -85,6 +86,9 @@ public class JoinArray implements Join {
         break;
       case raw:
         recnum = cursor.recnum[0];
+        break;
+      case scalar:
+        recnum = 0;
         break;
     }
     return StructureDataFactory.make(v.getShortName(), data.getObject(recnum));

@@ -875,6 +875,13 @@ public class ToolsUI extends JPanel {
     tabbedPane.setSelectedComponent(coordSysPanel);
   }
 
+  private void openNcML(String datasetName) {
+    makeComponent(ncmlTabPane, "NcmlEditor");
+    ncmlEditorPanel.doit(datasetName);
+    tabbedPane.setSelectedComponent(ncmlTabPane);
+    ncmlTabPane.setSelectedComponent(ncmlEditorPanel);
+  }
+
   private void openPointFeatureDataset(String datasetName) {
     makeComponent(ftTabPane, "PointFeature");
     pointFeaturePanel.setPointFeatureDataset(null, datasetName);
@@ -3531,6 +3538,9 @@ public class ToolsUI extends JPanel {
           } else if (e.getPropertyName().equals("openCoordSystems")) {
             String datasetName = (String) e.getNewValue();
             openCoordSystems(datasetName);
+          } else if (e.getPropertyName().equals("openNcML")) {
+            String datasetName = (String) e.getNewValue();
+            openNcML(datasetName);
           } else if (e.getPropertyName().equals("openGridDataset")) {
             String datasetName = (String) e.getNewValue();
             openGridDataset(datasetName);

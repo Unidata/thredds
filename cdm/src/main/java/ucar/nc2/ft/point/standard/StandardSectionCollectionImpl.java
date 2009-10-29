@@ -167,12 +167,11 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
       super(ft, timeUnit, structIter, cursor);
     }
 
-    protected boolean filter() throws IOException {
-      if (!super.filter()) return false;
-
+    @Override
+    protected boolean isMissing() throws IOException {
+      if (super.isMissing()) return true;
       // must also check for missing z values
       return ft.isAltMissing(this.cursor);
-
     }
   }
 

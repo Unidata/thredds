@@ -141,9 +141,10 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
         super(ft, timeUnit, structIter, cursor);
       }
 
-      protected boolean filter() throws IOException {
+      @Override
+      protected boolean isMissing() throws IOException {
         // standard filter is to check for missing time data
-        if (!super.filter()) return false;
+        if (super.isMissing()) return true;
 
         // must also check for missing z values
         return ft.isAltMissing(this.cursor);

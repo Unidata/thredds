@@ -841,7 +841,8 @@ public class CFpointObs extends TableConfigurerImpl {
     if (info.encoding == Encoding.single) stationTableType = Table.Type.Top;
     if (info.encoding == Encoding.flat) stationTableType = Table.Type.Construct;
 
-    TableConfig stnTable = new TableConfig(stationTableType, stationDim.getName());
+    String name = (stationDim == null) ? " single" : stationDim.getName();
+    TableConfig stnTable = new TableConfig(stationTableType, name);
     stnTable.featureType = ftype;
     stnTable.stnId = findNameVariableWithStandardNameAndDimension(ds, STATION_ID, stationDim, errlog);
     stnTable.stnDesc = findNameVariableWithStandardNameAndDimension(ds, STATION_DESC, stationDim, errlog);
@@ -885,7 +886,8 @@ public class CFpointObs extends TableConfigurerImpl {
     if (info.encoding == Encoding.single) tableType = Table.Type.Top;
     if (info.encoding == Encoding.flat) tableType = Table.Type.ParentId;
 
-    TableConfig tableConfig = new TableConfig(tableType, info.parentDim.getName());
+    String name = (info.parentDim == null) ? " single" : info.parentDim.getName();
+    TableConfig tableConfig = new TableConfig(tableType, name);
     tableConfig.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, info.parentDim);
     tableConfig.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, info.parentDim);
     tableConfig.elev = matchAxisTypeAndDimension(ds, AxisType.Height, info.parentDim);

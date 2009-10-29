@@ -441,13 +441,20 @@ public class TableAnalyzer {
           dimSet.add(dim);
     }
 
+    // lat, lon, time all use same dimension - use it
     if (dimSet.size() == 1) {
       Dimension obsDim = (Dimension) dimSet.toArray()[0];
-      TableConfig st = new TableConfig(Table.Type.Structure, "record");
-      st.structureType = TableConfig.StructureType.PsuedoStructure;
+      TableConfig st = new TableConfig(Table.Type.Structure, obsDim.getName());
+      st.structureType = obsDim.isUnlimited() ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
+      st.structName = obsDim.isUnlimited() ? "record" : obsDim.getName();
       st.dim = obsDim;
-      CoordSysEvaluator.findCoords(st, ds);
+      CoordSysEvaluator.findCoordWithDimension(st, ds, obsDim);
 
+      CoordinateAxis time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
+      if ((time != null) && (time.getRank() == 0)) {
+        st.addJoin(new JoinArray(time, JoinArray.Type.scalar, 0));
+        st.time = time.getShortName();
+      }
       addTable( st);
     }
 

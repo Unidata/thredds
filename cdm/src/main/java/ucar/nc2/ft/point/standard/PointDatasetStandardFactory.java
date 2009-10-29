@@ -72,15 +72,15 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
    * <li> TableAnalyzer must agree it can handle the requested FeatureType
    * </ol>
    *
-   * @param wantFeatureType destired feature type
+   * @param wantFeatureType desired feature type, null means FeatureType.ANY_POINT
    * @param ds              analyse this dataset
    * @param errlog          log error messages here (may not be null)
    * @return if successful, return non-null. This object is then passed back into open(), so analysis can be reused.
    * @throws IOException
    */
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
-
-    if ((wantFeatureType != null) && (wantFeatureType != FeatureType.ANY_POINT)) {
+    if (wantFeatureType == null) wantFeatureType = FeatureType.ANY_POINT;
+    if (wantFeatureType != FeatureType.ANY_POINT) {
       if (!wantFeatureType.isPointFeatureType())
         return null;
     }

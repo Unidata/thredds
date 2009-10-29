@@ -33,13 +33,6 @@
   </variable>
 
   <variable name="alt" shape="section prof z" type="float">
-    <attribute name="long_name" value="height above mean sea level" />
-    <attribute name="units" value="km" />
-    <attribute name="positive" value="up" />
-    <values start="1" increment="6"/>
-  </variable>
-
-  <variable name="alt" shape="section prof z" type="float">
     <attribute name="long_name" value="height above base" />
     <attribute name="units" value="km" />
     <attribute name="positive" value="up" />

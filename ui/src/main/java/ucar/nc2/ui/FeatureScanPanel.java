@@ -98,6 +98,14 @@ public class FeatureScanPanel extends JPanel {
       }
     });
 
+    varPopup.addAction("Open as NcML", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
+        if (ftb == null) return;
+        FeatureScanPanel.this.firePropertyChange("openNcML", null, ftb.f.getPath());
+      }
+    });
+
     varPopup.addAction("Open as GridDataset", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();

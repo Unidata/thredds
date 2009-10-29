@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         name="Test public datasets" version="1.0.2">
+
+  <service name="bothServices" serviceType="Compound" base="">
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
+  </service>
+
+  <datasetScan name="public datasets" ID="public/dataset" path="public/dataset" location="content/">
+    <metadata inherited="true">
+      <serviceName>bothServices</serviceName>
+    </metadata>
+
+    <addID/>
+    <addDatasetSize/>
+  </datasetScan>
+
+</catalog>

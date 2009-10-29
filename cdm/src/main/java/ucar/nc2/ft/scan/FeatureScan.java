@@ -48,7 +48,7 @@ import java.util.List;
 import java.util.Collections;
 
 /**
- * Class Description
+ * Scan a directory, try to open files as a Featute Typre dataset.
  *
  * @author caron
  * @since Aug 15, 2009

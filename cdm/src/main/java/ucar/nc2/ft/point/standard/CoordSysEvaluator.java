@@ -72,6 +72,25 @@ public class CoordSysEvaluator {
     }
   }
 
+  static public void findCoordWithDimension(TableConfig nt, NetcdfDataset ds, Dimension outer) {
+
+    CoordinateSystem use = findBestCoordinateSystem(ds);
+    if (use == null) return;
+
+    for (CoordinateAxis axis : use.getCoordinateAxes()) {
+      if (!outer.equals(axis.getDimension(0))) continue;
+
+      if (axis.getAxisType() == AxisType.Lat)
+        nt.lat = axis.getShortName();
+      else if (axis.getAxisType() == AxisType.Lon)
+        nt.lon = axis.getShortName();
+      else if (axis.getAxisType() == AxisType.Time)
+        nt.time = axis.getShortName();
+      else if (axis.getAxisType() == AxisType.Height)
+        nt.elev = axis.getShortName();
+    }
+  }
+
    /**
    * Look for Axis by Type.
    * @param ds look in this dataset's "Best" coordinate system.

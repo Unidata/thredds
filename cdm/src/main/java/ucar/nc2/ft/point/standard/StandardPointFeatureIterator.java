@@ -65,13 +65,13 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
     cursor.tableData[0] = sdata; // always in the first position
     ft.addParentJoin(cursor); // there may be parent joins
 
-    if (filter()) return null; // missing data
+    if (isMissing()) return null; // missing data
 
     double obsTime = ft.getObsTime( this.cursor);
     return new StandardPointFeature(cursor, timeUnit, obsTime);
   }
 
-  protected boolean filter() throws IOException {
+  protected boolean isMissing() throws IOException {
     // standard filter is to check for missing time data
     if (ft.isTimeMissing(this.cursor)) return true;
     if (ft.isMissing(this.cursor)) return true;
