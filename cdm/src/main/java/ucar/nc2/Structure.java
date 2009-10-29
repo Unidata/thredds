@@ -556,9 +556,7 @@ public class Structure extends Variable {
     public void setBufferSize(int bytes) {
       // ignored
     }
-
   }
-
 
   ////////////////////////////////////////////
 
@@ -577,8 +575,7 @@ public class Structure extends Variable {
   }
 
   @Override
-  public String writeCDL(String indent, boolean useFullName, boolean strict) {
-    Formatter buf = new Formatter();
+  protected void writeCDL(Formatter buf, String indent, boolean useFullName, boolean strict) {
     buf.format("\n%s%s {\n", indent, dataType);
 
     String nestedSpace = "  "+indent;
@@ -598,8 +595,6 @@ public class Structure extends Variable {
       buf.format("\n");
     }
     buf.format("\n");
-
-    return buf.toString();
   }
 
 }

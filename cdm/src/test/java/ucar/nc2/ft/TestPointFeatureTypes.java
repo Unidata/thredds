@@ -249,9 +249,9 @@ public class TestPointFeatureTypes extends TestCase {
     //testPointDataset("collection:D:/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc", FeatureType.STATION, true);
   }
 
-  public void testCdmRemote() throws IOException {
-    // testPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/station/testCdmRemote/gempak/19580807_sao.gem", FeatureType.STATION, true);
-    testPointDataset("cdmremote:http://motherlode.ucar.edu:8081/thredds/cdmremote/idd/metar/gempak", FeatureType.STATION, true);
+  public void utestCdmRemote() throws IOException {
+    //testPointDataset("cdmremote:http://motherlode.ucar.edu:8081/thredds/cdmremote/idd/metar/gempak", FeatureType.STATION, true);
+    testPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocal", FeatureType.STATION, true);
   }
 
   public void utestCdmRemoteCollection() throws Exception {
@@ -271,7 +271,7 @@ public class TestPointFeatureTypes extends TestCase {
     //testPointDataset("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", FeatureType.POINT, true);
   }
 
-  public void testCdmRemoteCollectionSubsets() throws IOException {
+  public void utestCdmRemoteCollectionSubsets() throws IOException {
     Formatter f = new Formatter();
     //String location = "cdmremote:http://localhost:8080/thredds/cdmremote/gempakSurface.xml/collection";
     String location = "cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/gempakLocal";
