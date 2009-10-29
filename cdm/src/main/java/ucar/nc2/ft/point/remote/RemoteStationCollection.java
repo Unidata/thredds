@@ -46,6 +46,11 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
       method = CdmRemote.sendQuery(uri, query);
       InputStream in = method.getResponseBodyAsStream();
 
+      PointStream.MessageType mtype = PointStream.readMagic(in);
+      if (mtype != PointStream.MessageType.StationList) {
+        throw new RuntimeException("Station Request: bad response");
+      }
+
       int len = NcStream.readVInt(in);
       byte[] b = new byte[len];
       NcStream.readFully(in, b);
@@ -199,6 +204,11 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
       try {
         method = CdmRemote.sendQuery(uri, query);
         InputStream in = method.getResponseBodyAsStream();
+
+        PointStream.MessageType mtype = PointStream.readMagic(in);
+        if (mtype != PointStream.MessageType.PointFeatureCollection) {
+          throw new RuntimeException("Station Request: bad response");
+        }
 
         int len = NcStream.readVInt(in);
         byte[] b = new byte[len];
