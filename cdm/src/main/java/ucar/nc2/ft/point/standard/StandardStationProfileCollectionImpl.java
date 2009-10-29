@@ -190,8 +190,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     }
 
     protected boolean filter() throws IOException {
-      // standard filter is to check for missing time data
-      if (ft.isTimeMissing(this.cursor)) return true;
+      if (!super.filter()) return false;
 
       // must also check for missing z values
       return ft.isAltMissing(this.cursor);

@@ -193,6 +193,7 @@ public class GempakCdm extends TableConfigurerImpl {
     TableConfig obs = new TableConfig(obsTableType, obsDim.getName());
     obs.dim = obsDim;
     obs.time = time.getName();
+    obs.missingVar = "_isMissing";
     stnTable.addChild(obs);
 
     if (obsTableType == Table.Type.MultidimStructure) {

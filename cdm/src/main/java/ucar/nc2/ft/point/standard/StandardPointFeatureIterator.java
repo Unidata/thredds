@@ -73,7 +73,9 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
 
   protected boolean filter() throws IOException {
     // standard filter is to check for missing time data
-    return ft.isTimeMissing(this.cursor);
+    if (ft.isTimeMissing(this.cursor)) return true;
+    if (ft.isMissing(this.cursor)) return true;
+    return false;
   }
 
   private class StandardPointFeature extends PointFeatureImpl implements StationPointFeature {

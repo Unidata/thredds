@@ -697,6 +697,7 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
             new Attribute(
                 "description",
                 "missing flag - 1 means all params are missing"));
+        var.addAttribute( new Attribute("missing_value", new Byte((byte)1)));
         return var;
     }
 
@@ -1008,8 +1009,6 @@ public class GempakSurfaceIOSP extends AbstractIOServiceProvider {
      *
      * @param msg        message to print
      * @param maxLines   number of lines in the stack to print
-     * @param onlyIfTraceContainsThisString  if true, only print if it
-     *                                       contains this String
      */
     private void printStack(String msg, int maxLines) {
         String trace = getStackTrace();

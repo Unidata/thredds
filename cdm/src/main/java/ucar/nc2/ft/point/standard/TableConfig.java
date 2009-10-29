@@ -95,6 +95,7 @@ public class TableConfig {
 
   // variable name holding the id
   public String feature_id;
+  public String missingVar;
 
   /**
    * Constructor

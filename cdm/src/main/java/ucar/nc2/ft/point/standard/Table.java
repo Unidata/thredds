@@ -53,7 +53,7 @@ public abstract class Table {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Table.class);
 
   public enum CoordName {
-    Lat, Lon, Elev, Time, TimeNominal, StnId, StnDesc, WmoId, StnAlt, FeatureId
+    Lat, Lon, Elev, Time, TimeNominal, StnId, StnDesc, WmoId, StnAlt, FeatureId, MissingVar
   }
 
   public enum Type {
@@ -126,7 +126,7 @@ public abstract class Table {
 
   String lat, lon, elev, time, timeNominal;
   String stnId, stnDesc, stnNpts, stnWmoId, stnAlt, limit;
-  String feature_id;
+  String feature_id, missingVar;
 
   List<VariableSimpleIF> cols = new ArrayList<VariableSimpleIF>();    // all variables
   List<String> nondataVars = new ArrayList<String>(); // exclude these from the getDataVariables() list
@@ -148,6 +148,7 @@ public abstract class Table {
     this.stnAlt = config.stnAlt;
     this.limit = config.limit;
     this.feature_id = config.feature_id;
+    this.missingVar = config.missingVar;
 
     if (config.parent != null) {
       parent = Table.factory(ds, config.parent);
@@ -208,6 +209,9 @@ public abstract class Table {
 
       case FeatureId:
         return feature_id;
+
+      case MissingVar:
+        return missingVar;
 
     }
     return null;

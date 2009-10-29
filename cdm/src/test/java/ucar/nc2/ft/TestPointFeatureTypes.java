@@ -364,7 +364,6 @@ public class TestPointFeatureTypes extends TestCase {
     return count;
   }
 
-  // loop through all PointFeatureCollection
   int testNestedPointFeatureCollection(NestedPointFeatureCollection npfc, boolean show) throws IOException {
     long start = System.currentTimeMillis();
     int count = 0;
@@ -381,7 +380,6 @@ public class TestPointFeatureTypes extends TestCase {
     return count;
   }
 
-  // loop through all PointFeatureCollection
   int testStationProfileFeatureCollection(StationProfileFeatureCollection stationProfileFeatureCollection, boolean show) throws IOException {
     long start = System.currentTimeMillis();
     int count = 0;
@@ -403,7 +401,6 @@ public class TestPointFeatureTypes extends TestCase {
     return count;
   }
 
-  // loop through all PointFeatureCollection
   int testSectionFeatureCollection(SectionFeatureCollection sectionFeatureCollection, boolean show) throws IOException {
     long start = System.currentTimeMillis();
     int count = 0;
@@ -1001,9 +998,40 @@ public class TestPointFeatureTypes extends TestCase {
     }
   }
 
-  public static void main(String arg[]) throws IOException {
+  private void testGempakMissing(String file) throws Exception {
+
+    Formatter buf = new Formatter();
+    FeatureDatasetPoint pods =
+        (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.STATION, file, null, buf);
+    if (pods == null)
+      throw new Exception("can't open file");
+
+    List<FeatureCollection> collectionList = pods.getPointFeatureCollectionList();
+    StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) collectionList.get(0);
+
+    int count = 0;
+    int countMissing = 0;
+    sfc.resetIteration();
+    while (sfc.hasNext()) {
+      StationTimeSeriesFeature sf = sfc.next();
+
+      sf.resetIteration();
+      while (sf.hasNext()) {
+        PointFeature pf = sf.next();
+        StructureData sdata = pf.getData();
+        byte bval = sdata.getScalarByte("_isMissing");
+        if (bval == 1) countMissing++;
+        count++;
+      }
+    }
+
+    double ratio = ((double)countMissing)/count;
+    System.out.printf("countMissing=%d total=%d ratio=%f %n", countMissing, count, ratio);
+  }
+
+  public static void main(String arg[]) throws Exception {
     TestPointFeatureTypes test = new TestPointFeatureTypes("");
-    test.testDons("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", false);
+    test.testGempakMissing("C:\\data\\ft\\station\\20090524_sao.gem");
   }
 
 

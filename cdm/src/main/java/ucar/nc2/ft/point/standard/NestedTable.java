@@ -83,7 +83,7 @@ public class NestedTable {
   private FeatureType featureType;
 
   private CoordVarExtractor timeVE, nomTimeVE, latVE, lonVE, altVE;
-  private CoordVarExtractor stnVE, stnDescVE, wmoVE, stnAltVE, idVE;
+  private CoordVarExtractor stnVE, stnDescVE, wmoVE, stnAltVE, idVE, missingVE;
 
   private int nlevels;
 
@@ -125,7 +125,8 @@ public class NestedTable {
     wmoVE = findCoordinateAxis(Table.CoordName.WmoId, leaf, 0);
     stnAltVE = findCoordinateAxis(Table.CoordName.StnAlt, leaf, 0);
 
-    idVE = findCoordinateAxis(Table.CoordName.FeatureId, root, nlevels-1);
+    missingVE = findCoordinateAxis(Table.CoordName.MissingVar, leaf, 0);
+    idVE = findCoordinateAxis(Table.CoordName.FeatureId, root, nlevels-1); // LOOK start at root ??
 
     // LOOK: Major kludge
     if (featureType == null) {
@@ -501,6 +502,11 @@ public class NestedTable {
   public boolean isAltMissing(Cursor cursor) {
     if (altVE == null) return false;
     return altVE.isMissing(cursor.tableData);
+  }
+
+  public boolean isMissing(Cursor cursor) {
+    if (missingVE == null) return false;
+    return missingVE.isMissing(cursor.tableData);
   }
 
 
