@@ -40,6 +40,9 @@ import org.jdom.Element;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.logging.Formatter;
+
+import ucar.nc2.ft.FeatureDatasetPoint;
 
 /**
  * Helper class to convert a  TableConfig to and from XML
@@ -47,11 +50,33 @@ import java.util.ArrayList;
  * @author caron
  * @since Aug 18, 2009
  */
-public class TableConfigXML {
+public class PointConfigXML {
   private TableConfig tc;
   private String analyserClass;
 
-  TableConfigXML(TableConfig tc, String analyserClass) {
+  public static void writeConfigXML(FeatureDatasetPoint pfd, java.util.Formatter f) {
+    if (!(pfd instanceof PointDatasetStandardFactory.PointDatasetStandard)) {
+      f.format("%s not instance of PointDatasetStandard%n", pfd.getLocation());
+      return;
+    }
+    PointDatasetStandardFactory.PointDatasetStandard spfd = (PointDatasetStandardFactory.PointDatasetStandard) pfd;
+    TableAnalyzer analyser = spfd.getTableAnalyzer();
+    TableConfig tc = analyser.getTableConfig();
+    if (tc == null) {
+      f.format("%s has no TableConfig%n", pfd.getLocation());
+      return;
+    }
+
+    PointConfigXML xml = new PointConfigXML(tc, analyser.getClass().getName());
+    try {
+      xml.writeConfigXML(f);
+    } catch (IOException e) {
+      f.format("%s error writing=%s%n", pfd.getLocation(), e.getMessage());
+      return;
+    }
+  }
+
+  PointConfigXML(TableConfig tc, String analyserClass) {
     this.tc = tc;
     this.analyserClass = analyserClass;
   }
@@ -67,7 +92,7 @@ public class TableConfigXML {
    * @return netcdfDatasetInfo XML document
    */
   public Document makeDocument() {
-    Element rootElem = new Element("tableConfig");
+    Element rootElem = new Element("pointConfig");
     Document doc = new Document(rootElem);
     if (analyserClass != null)
       rootElem.addContent( new Element("analyser").setAttribute("class", analyserClass));
@@ -194,6 +219,7 @@ public class TableConfigXML {
     addCoord(tableElem, table.stnAlt, "stnAlt", varNames);
     addCoord(tableElem, table.limit, "limit", varNames);
     addCoord(tableElem, table.feature_id, "featureId", varNames);
+    addCoord(tableElem, table.missingVar, "isMissingVar", varNames);
   }
 
   private void addCoord(Element tableElem, String name, String type, List<String> varNames) {

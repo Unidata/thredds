@@ -136,7 +136,7 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
 
   /////////////////////////////////////////////////////////////////////
 
-  private static class PointDatasetStandard extends PointDatasetImpl {
+  static class PointDatasetStandard extends PointDatasetImpl {
     private TableAnalyzer analyser;
     private DateUnit timeUnit;
 
@@ -207,6 +207,8 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
         return analyser.getImplementationName();
       return super.getImplementationName();
     }
+
+    TableAnalyzer getTableAnalyzer() { return analyser; } 
   }
 
   static void doit(PointDatasetStandardFactory fac, String filename) throws IOException {

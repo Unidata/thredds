@@ -346,8 +346,8 @@ public class TableAnalyzer {
     this.conventionName = convName;
   }
 
-  private String getConventionUsed() {
-    return this.conventionName;
+  TableConfig getTableConfig() {
+    return this.configResult;
   }
 
   /////////////////////////////////////////////////////////
@@ -589,7 +589,7 @@ public class TableAnalyzer {
 
   private void writeConfigXML(java.util.Formatter sf) throws IOException {
     if (configResult != null) {
-        TableConfigXML tcx = new TableConfigXML(configResult, tc.getClass().getName());
+        PointConfigXML tcx = new PointConfigXML(configResult, tc.getClass().getName());
         tcx.writeConfigXML(sf);
         return;
     }

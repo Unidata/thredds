@@ -3611,6 +3611,19 @@ public class ToolsUI extends JPanel {
       });
       buttPanel.add(infoButton);
 
+      AbstractButton xmlButton = BAMutil.makeButtcon("XML", "pointConfig.xml", false);
+      xmlButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          if (pfDataset == null) return;
+          Formatter f = new Formatter();
+          ucar.nc2.ft.point.standard.PointConfigXML.writeConfigXML(pfDataset, f);
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(xmlButton);
+
       AbstractButton calcButton = BAMutil.makeButtcon("V3", "CalcBounds", false);
       calcButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
