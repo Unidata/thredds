@@ -5,6 +5,7 @@
 !
 ! Temperature
 001 Temperature                       degC                 TMPC             0  -9999.00        0         0
+001 Temperature                       degC                 TEMP             0  -9999.00        0         0
 001 Temperature                       degF                 TMPF             0  -9999.00        0         0
 001 Temperature                       K                    TMPK             0  -9999.00        0         0
 001 Surface potential temperature     K                    STHA             0  -9999.00        0         0
@@ -43,6 +44,7 @@
 001 Sea Surface Temperature           F                    SSTF             0  -9999.00        0         0
 001 Temperature of lifted surface air degC                 LTMP             0  -9999.00        0         0
 ! Moisture
+002 Dew-point temperature             degC                 DWPT             0  -9999.00        0         0
 002 Dew-point temperature             degC                 DWPC             0  -9999.00        0         0
 002 Dew-point temperature             F                    DWPF             0  -9999.00        0         0
 002 Dew-point temperature             K                    DWPK             0  -9999.00        0         0
@@ -73,7 +75,7 @@
 003 Dry hydrostatic height            meter                DHGT             0  -9999.00        0         0
 003 Moist hydrostatic height          meter                MHGT             0  -9999.00        0         0
 ! Pressure
-004 Station pressure                  millibar             PRES             0  -9999.00        0         0
+004 Pressure                          millibar             PRES             0  -9999.00        0         0
 004 Mean sea level pressure           millibar             PMSL             0  -9999.00        0         0
 004 Surface pressure                  millibar             PALT             0  -9999.00        0         0
 004 Altimeter setting                 inch_Hg              ALTI             0  -9999.00        0         0
