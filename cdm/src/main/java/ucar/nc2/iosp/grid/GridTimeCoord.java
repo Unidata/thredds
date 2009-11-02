@@ -45,6 +45,8 @@ import ucar.grid.GridTableLookup;
 import ucar.grid.GridRecord;
 import ucar.grib.grib2.Grib2GridTableLookup;
 import ucar.grib.grib1.Grib1GridTableLookup;
+import ucar.grib.GribNumbers;
+import ucar.grib.GribGridRecord;
 
 import java.util.*;
 
@@ -78,6 +80,9 @@ public class GridTimeCoord {
     private List<Date> times = new ArrayList<Date>();  //  Date
     //private double[] offsetHours;
 
+    /** interval length */
+    private int intervalLength = GribNumbers.UNDEFINED;
+
     /** sequence # */
     private int seq = 0;
 
@@ -99,6 +104,11 @@ public class GridTimeCoord {
     GridTimeCoord(List<GridRecord> records, GridTableLookup lookup) {
         this();
         this.lookup = lookup;
+        if ( records.get( 0 ) instanceof GribGridRecord ) {
+          GribGridRecord ggr = (GribGridRecord) records.get( 0 );
+          if ( ggr.startOfInterval != GribNumbers.UNDEFINED)
+            intervalLength = ggr.forecastTime - ggr.startOfInterval;
+        }
         addTimes(records);
         Collections.sort(times);
     }
@@ -214,8 +224,6 @@ public class GridTimeCoord {
     void addToNetcdfFile(NetcdfFile ncfile, Group g) {
         Variable v = new Variable(ncfile, g, null, getName());
         v.setDataType(DataType.INT);
-        v.addAttribute(new Attribute("long_name", "forecast time"));
-        //v.addAttribute( new Attribute("standard_name", "forecast_reference_time"));
 
         int      ntimes   = getNTimes();
         int[]    data     = new int[ntimes];
@@ -236,17 +244,47 @@ public class GridTimeCoord {
             Date validTime = (Date) times.get(i);
             data[i] = (int) dateUnit.makeValue(validTime);
         }
-        Array dataArray = Array.factory(DataType.INT,
-                                        new int[] { ntimes }, data);
-
+        Array dataArray = Array.factory(DataType.INT, new int[]{ntimes}, data);
         v.setDimensions(v.getShortName());
         v.setCachedData(dataArray, false);
 
-        Date d = lookup.getFirstBaseTime();
+        if ( intervalLength == GribNumbers.UNDEFINED ) {
+          v.addAttribute(new Attribute("long_name", "forecast time"));
+          v.addAttribute(new Attribute("units", timeUnit + " since " + refDate));
+        } else {
+          String interval =  Integer.toString( intervalLength ) +
+              lookup.getFirstTimeRangeUnitName() +" intervals";
+          v.addAttribute(new Attribute("long_name", "time for "+ interval));
+          v.addAttribute(new Attribute("units", timeUnit + " since " + refDate));
+          v.addAttribute(new Attribute("bounds", getName() +"_bounds"));
 
-        v.addAttribute(new Attribute("units",
-                                     timeUnit + " since " + refDate));
-        if ( lookup instanceof Grib2GridTableLookup) {
+          // add times bound variable
+          Variable vb = new Variable(ncfile, g, null, getName() +"_bounds");
+          vb.setDataType(DataType.INT);
+          if (g == null) {
+            g = ncfile.getRootGroup();
+          }
+          if ( g.findDimension("ncell") == null) {
+            ncfile.addDimension(g, new Dimension("ncell", 2, true));
+          }
+          vb.setDimensions( getName() +" ncell");
+
+          vb.addAttribute(new Attribute("long_name",  interval ));
+          vb.addAttribute(new Attribute("units", timeUnit + " since " + refDate));
+          // add data
+          int[] bdata = new int[ntimes * 2];
+          int idx = 0;
+          for (int i = 0; i < data.length; i++ ) {
+            bdata[ idx++ ] = data[ i ] - intervalLength;
+            bdata[ idx++] = data[ i ];
+          }
+          Array bdataArray = Array.factory(DataType.INT, new int[]{ntimes *2}, bdata);
+          vb.setCachedData(bdataArray, false);
+          ncfile.addVariable(g, vb);
+        }
+
+        Date d = lookup.getFirstBaseTime();
+      if ( lookup instanceof Grib2GridTableLookup) {
           Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
           v.addAttribute( new Attribute("GRIB_orgReferenceTime", formatter.toDateTimeStringISO( d )));
           v.addAttribute( new Attribute("GRIB2_significanceOfRTName",
@@ -257,10 +295,9 @@ public class GridTimeCoord {
           v.addAttribute( new Attribute("GRIB2_significanceOfRTName",
               g1lookup.getFirstSignificanceOfRTName()));
         }
-        v.addAttribute(new Attribute(_Coordinate.AxisType,
-                                     AxisType.Time.toString()));
+        v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 
-        ncfile.addVariable(g, v);
+      ncfile.addVariable(g, v);
     }
 
     /**
@@ -356,8 +393,6 @@ public class GridTimeCoord {
         calendar.add(calandar_unit, factor * record.getValidTimeOffset());
         validTime = calendar.getTime();
 
-        // TODO: should this just be done when the record is created?
-        //record.setValidTime(validTime);
         return validTime;
     }
 

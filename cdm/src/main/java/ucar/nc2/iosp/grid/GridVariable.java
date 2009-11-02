@@ -53,6 +53,8 @@ import ucar.grib.grib1.Grib1GridTableLookup;
 import ucar.grib.grib1.Grib1GDSVariables;
 import ucar.grib.grib2.Grib2GridTableLookup;
 import ucar.grib.grib2.Grib2Tables;
+import ucar.grib.GribGridRecord;
+import ucar.grib.GribNumbers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -454,7 +456,7 @@ public class GridVariable {
     String dims = tcs.getName();
 
     if ( hasEnsemble() ) {
-      dims = dims + " " + getEnsembleName();  // TODO: time first
+      dims = dims + " " + getEnsembleName();   
       //dims = getEnsembleName() + " " + dims;
     }
 
@@ -476,9 +478,15 @@ public class GridVariable {
     if (unit == null) {
       unit = "";
     }
+    v.addAttribute(new Attribute("long_name", makeLongName(firstRecord, lookup)));
+    if ( firstRecord instanceof GribGridRecord ) {
+      GribGridRecord ggr = (GribGridRecord) firstRecord;
+      if ( ggr.startOfInterval != GribNumbers.UNDEFINED) {
+        v.addAttribute(new Attribute("standard_name", "accumulated_"+ vname ));
+        v.addAttribute(new Attribute("cell_methods", tcs.getName() +": sum"  ));
+      }
+    }
     v.addAttribute(new Attribute("units", unit));
-    v.addAttribute(new Attribute("long_name",
-        makeLongName(firstRecord, lookup)));
     v.addAttribute(
         new Attribute(
             "missing_value", new Float(lookup.getFirstMissingValue())));
@@ -746,15 +754,7 @@ public class GridVariable {
    * @return long variable name
    */
   private String makeLongName(GridRecord gr, GridTableLookup lookup) {
-    /* // TODO: check / delete
-    GridParameter param = lookup.getParameter(gr);
-    String levelName = GridIndexToNC.makeLevelName(gr, lookup);
-    //String levelName = lookup.getLevelDescription(gr);
-    //String levelName = lookup.getLevelName( gr );
-    return (levelName.length() == 0)
-        ? param.getDescription()
-        : param.getDescription() + " @ " + levelName;
-   */
+
     GridParameter param = lookup.getParameter(gr);
 
     String levelName;
