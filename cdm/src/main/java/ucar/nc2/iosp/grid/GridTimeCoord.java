@@ -168,7 +168,14 @@ public class GridTimeCoord {
      */
     boolean matchLevels(List<GridRecord> records) {
 
-        // first create a new list
+    // check if accumulation type
+    if ( records.get( 0 ) instanceof GribGridRecord ) {
+          GribGridRecord ggr = (GribGridRecord) records.get( 0 );
+          if ( intervalLength != ggr.startOfInterval )
+              return false;
+    }
+
+    // first create a new list
     List<Date> timeList = new ArrayList<Date>( records.size());
     for ( GridRecord record : records) {
             Date       validTime = getValidTime(record, lookup);
