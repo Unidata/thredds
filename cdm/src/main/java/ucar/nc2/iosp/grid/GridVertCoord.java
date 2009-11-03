@@ -89,7 +89,7 @@ public class GridVertCoord implements Comparable {
   /**
    * coord values
    */
-  private double[] coordValues;
+  private double[] coordValues = null;
 
   /**
    * uses bounds flag
@@ -301,7 +301,9 @@ public class GridVertCoord implements Comparable {
         return;
 
       int NV = g1dr.getNV();
-      if ( NV > 2 && NV < 255 ) { // Some data doesn't add Pressure Level values
+      // TODO: more research is needed on pressure level calculations.
+      // current comment permits ncml users to set hybrid levels and to get the data
+      if ( false && NV > 2 && NV < 255 ) { // Some data doesn't add Pressure Level values
         NV = NV / 2 -1;
         coordValues = new double[ levels.size() * NV ];
         int idx = 0;
@@ -330,6 +332,8 @@ public class GridVertCoord implements Comparable {
       return;
     }
     int nlevs = levels.size();
+    if ( coordValues != null )
+      nlevs = coordValues.length;
     ncfile.addDimension(g, new Dimension(getVariableName(), nlevs, true));
   }
 
