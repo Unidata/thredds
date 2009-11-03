@@ -48,8 +48,13 @@ import java.util.Formatter;
 
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.IO;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.Dimension;
+import ucar.nc2.Variable;
+import ucar.nc2.Structure;
+import ucar.ma2.DataType;
 
 /**
  * Helper class to convert a  TableConfig to and from XML
@@ -143,6 +148,7 @@ public class PointConfigXML {
       case MultidimInnerPsuedo:
         tableElem.setAttribute("dim0", config.outerName);
         tableElem.setAttribute("dim1", config.innerName);
+        tableElem.setAttribute("subtype", config.structureType.toString());
         break;
 
       case MultidimInner3D:
@@ -232,18 +238,30 @@ public class PointConfigXML {
   }
 
   private Element writeJoinArray(JoinArray join) {
-    Element joinElem = new Element("extraJoin");
+    Element joinElem = new Element("join");
     joinElem.setAttribute("class", join.getClass().toString());
     if (join.type != null)
       joinElem.setAttribute("type", join.type.toString());
     if (join.v != null)
       joinElem.addContent(new Element("variable").addContent(join.v.getName()));
-    joinElem.addContent(new Element("param").setAttribute("value", Integer.toString(join.param)));
+    joinElem.addContent(new Element("param").addContent(Integer.toString(join.param)));
     return joinElem;
   }
 
+  private JoinArray readJoinArray(NetcdfDataset ds, Element joinElement) {
+    JoinArray.Type type = JoinArray.Type.valueOf(joinElement.getAttributeValue("type"));
+    Element paramElem = joinElement.getChild("param");
+    String paramS = paramElem.getText();
+    Integer param = Integer.parseInt(paramS);
+
+    Element varElem = joinElement.getChild("variable");
+    String varName = varElem.getText();
+    VariableDS v = (VariableDS) ds.findVariable(varName);
+    return new JoinArray(v, type, param);
+  }
+
   private Element writeJoinMuiltdimStructure(JoinMuiltdimStructure join) {
-    Element joinElem = new Element("extraJoin");
+    Element joinElem = new Element("join");
     joinElem.setAttribute("class", join.getClass().toString());
     if (join.parentStructure != null)
       joinElem.addContent(new Element("parentStructure").addContent(join.parentStructure.getName()));
@@ -252,7 +270,7 @@ public class PointConfigXML {
   }
 
   private Element writeJoinParentIndex(JoinParentIndex join) {
-    Element joinElem = new Element("extraJoin");
+    Element joinElem = new Element("join");
     joinElem.setAttribute("class", join.getClass().toString());
     if (join.parentStructure != null)
       joinElem.addContent(new Element("parentStructure").addContent(join.parentStructure.getName()));
@@ -262,9 +280,9 @@ public class PointConfigXML {
   }
 
   ///////////////////////////////////////////////////////////////////////////
-  private static boolean debugXML = true;
-  private static boolean debugURL = true;
-  private static boolean showParsedXML = true;
+  private static boolean debugXML = false;
+  private static boolean debugURL = false;
+  private static boolean showParsedXML = false;
 
   public TableConfig readConfigXMLfromResource(String resourceLocation, FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
     ClassLoader cl = this.getClass().getClassLoader();
@@ -296,7 +314,7 @@ public class PointConfigXML {
     Element configElem = doc.getRootElement();
     String featureType = configElem.getAttributeValue("featureType");
     Element tableElem = configElem.getChild("table");
-    TableConfig tc = parseTableConfig( tableElem);
+    TableConfig tc = parseTableConfig(ds, tableElem, null);
     tc.featureType = FeatureType.valueOf(featureType);
 
     return tc;
@@ -322,13 +340,13 @@ public class PointConfigXML {
     Element configElem = doc.getRootElement();
     String featureType = configElem.getAttributeValue("featureType");
     Element tableElem = configElem.getChild("table");
-    TableConfig tc = parseTableConfig( tableElem);
+    TableConfig tc = parseTableConfig(ds, tableElem, null);
     tc.featureType = FeatureType.valueOf(featureType);
 
     return tc;
   }
 
-  private TableConfig parseTableConfig(Element tableElem) {
+  private TableConfig parseTableConfig(NetcdfDataset ds, Element tableElem, TableConfig parent) {
     String typeS = tableElem.getAttributeValue("type");
     Table.Type ttype = Table.Type.valueOf(typeS);
 
@@ -356,7 +374,10 @@ public class PointConfigXML {
       case MultidimInner:
       case MultidimInnerPsuedo:
         tc.outerName = tableElem.getAttributeValue("dim0");
+        tc.dimName = tc.outerName;
         tc.innerName = tableElem.getAttributeValue("dim1");
+        tc.structureType = TableConfig.StructureType.valueOf(tableElem.getAttributeValue("subtype"));
+        makeMultidimInner(ds, parent, tc);
         break;
 
       case MultidimInner3D:
@@ -410,11 +431,89 @@ public class PointConfigXML {
       tc.setCoordinateVariableName(coordName, coordElem.getText());
     }
 
+    List<Element> joinList = (List<Element>) tableElem.getChildren("join");
+    for (Element joinElem : joinList) {
+      tc.addJoin( readJoinArray(ds, joinElem));
+    }
+
     List<Element> nestedTableList = (List<Element>) tableElem.getChildren("table");
     for (Element nestedTable : nestedTableList)
-      tc.addChild( parseTableConfig( nestedTable));
+      tc.addChild( parseTableConfig(ds, nestedTable, tc));
 
     return tc;
   }
+
+  private void makeMultidimInner(NetcdfDataset ds, TableConfig parentTable, TableConfig childTable) {
+    Dimension parentDim = ds.findDimension(parentTable.dimName);
+    Dimension childDim = ds.findDimension(childTable.innerName);
+
+    // divide up the variables between the parent and the child
+    List<String> obsVars = null;
+    List<Variable> vars = ds.getVariables();
+    List<String> parentVars = new ArrayList<String>(vars.size());
+    obsVars = new ArrayList<String>(vars.size());
+    for (Variable orgV : vars) {
+      if (orgV instanceof Structure) continue;
+
+      Dimension dim0 = orgV.getDimension(0);
+      if ((dim0 != null) && dim0.equals(parentDim)) {
+        if ((orgV.getRank() == 1) || ((orgV.getRank() == 2) && orgV.getDataType() == DataType.CHAR)) {
+          parentVars.add(orgV.getShortName());
+        } else {
+          Dimension dim1 = orgV.getDimension(1);
+          if ((dim1 != null) && dim1.equals(childDim))
+            obsVars.add(orgV.getShortName());
+        }
+      }
+    }
+    parentTable.vars = parentVars;
+    childTable.vars = obsVars;
+  }
+
+  /* the inner table of Structure(outer, middle, inner)
+  private TableConfig makeMultidimInner3D(NetcdfDataset ds, TableConfig outerTable, TableConfig middleTable, Dimension innerDim, Formatter errlog) throws IOException {
+    Dimension outerDim = ds.findDimension(outerTable.dimName);
+    Dimension middleDim = ds.findDimension(middleTable.innerName);
+
+    Table.Type obsTableType = (outerTable.structureType == TableConfig.StructureType.PsuedoStructure) ? Table.Type.MultidimInnerPsuedo3D : Table.Type.MultidimInner3D;
+    TableConfig obsTable = new TableConfig(obsTableType, innerDim.getName());
+    obsTable.structureType = TableConfig.StructureType.PsuedoStructure2D;
+    obsTable.dimName = outerTable.dimName;
+    obsTable.outerName = middleTable.innerName;
+    obsTable.innerName = innerDim.getName();
+    obsTable.structName = innerDim.getName();
+
+    obsTable.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, outerDim, middleDim, innerDim);
+    obsTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, outerDim, middleDim, innerDim);
+    obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Height, outerDim, middleDim, innerDim);
+    obsTable.time = matchAxisTypeAndDimension(ds, AxisType.Time, outerDim, middleDim, innerDim);
+
+    // divide up the variables between the 3 tables
+    List<Variable> vars = ds.getVariables();
+    List<String> outerVars = new ArrayList<String>(vars.size());
+    List<String> middleVars = new ArrayList<String>(vars.size());
+    List<String> innerVars = new ArrayList<String>(vars.size());
+    for (Variable orgV : vars) {
+      if (orgV instanceof Structure) continue;
+
+      if ((orgV.getRank() == 1) || ((orgV.getRank() == 2) && orgV.getDataType() == DataType.CHAR)) {
+        if (outerDim.equals(orgV.getDimension(0)))
+          outerVars.add(orgV.getShortName());
+
+      } else if (orgV.getRank() == 2) {
+        if (outerDim.equals(orgV.getDimension(0)) && middleDim.equals(orgV.getDimension(1)))
+          middleVars.add(orgV.getShortName());
+
+      } else if (orgV.getRank() == 3) {
+        if (outerDim.equals(orgV.getDimension(0)) && middleDim.equals(orgV.getDimension(1)) && innerDim.equals(orgV.getDimension(2)))
+          innerVars.add(orgV.getShortName());
+      }
+    }
+    outerTable.vars = outerVars;
+    middleTable.vars = middleVars;
+    obsTable.vars = innerVars;
+
+    return obsTable;
+  } */
 
 }

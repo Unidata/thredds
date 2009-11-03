@@ -160,13 +160,14 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     registerConvention("MADIS surface observations, v1.0", MADISStation.class, null);
     registerConvention("epic-insitu-1.0", EpicInsitu.class, null);
     registerConvention("NCAR-RAF/nimbus", Nimbus.class, null);
+    registerConvention("Cosmic1Convention", Cosmic1Convention.class, null);
+    registerConvention("Suomi", Suomi.class, null);
 
     // new
     registerConvention("NSSL National Reflectivity Mosaic", NsslRadarMosaicConvention.class, null);
     registerConvention("FslWindProfiler", FslWindProfiler.class, null);
     registerConvention("ModisSatellite", ModisSatellite.class, null);
     registerConvention("AvhrrSatellite", AvhrrConvention.class, null);
-    registerConvention("Cosmic1Convention", Cosmic1Convention.class, null);
     registerConvention("NPP/NPOESS", NppConvention.class, null);
 
     // further calls to registerConvention are by the user

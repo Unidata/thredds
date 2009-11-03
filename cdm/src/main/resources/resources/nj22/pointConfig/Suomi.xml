@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pointConfig featureType="STATION">
+  <table type="Structure" subtype="PsuedoStructure" dim="station">
+    <coordinate type="Lat">lat</coordinate>
+    <coordinate type="Lon">lon</coordinate>
+    <coordinate type="StnId">station</coordinate>
+    <coordinate type="StnAlt">height</coordinate>
+    <table type="MultidimInnerPsuedo" dim0="station" dim1="time_offset" subtype="PsuedoStructure">
+      <coordinate type="Time">time_offset</coordinate>
+      <join class="class ucar.nc2.ft.point.standard.JoinArray" type="raw">
+        <variable>time_offset</variable>
+        <param>0</param>
+      </join>
+    </table>
+  </table>
+</pointConfig>
+
+
+

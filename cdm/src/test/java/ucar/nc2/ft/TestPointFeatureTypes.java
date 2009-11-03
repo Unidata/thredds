@@ -171,7 +171,7 @@ public class TestPointFeatureTypes extends TestCase {
 
   public void testProblem() throws IOException {
     // assert 18 == testPointDataset(CFpointObs_topdir + "sectionMultidimMissingAlt.ncml", FeatureType.SECTION, true);
-    testPointDataset("C:/data/datasets/cosmic/wetPrf_C005.2007.294.15.00.G19_0001.0002_nc", FeatureType.ANY_POINT, true);
+    assert 124 == testPointDataset(topdir + "ft/station/suomi/suoHWV_2006.105.00.00.0060_nc", FeatureType.STATION, true);
   }
 
   public void testCF() throws IOException {
@@ -205,6 +205,19 @@ public class TestPointFeatureTypes extends TestCase {
     // CF 1.5 single trajectory (prob actually profile)
     testPointDataset(topdir + "cfPoint/trajectory/p1140004.ncml", FeatureType.TRAJECTORY, true);
 
+  }
+
+  public void testPlug() throws IOException {
+
+    // cosmic
+    assert 383 == testPointDataset(topdir + "ft/trajectory/cosmic/wetPrf_C005.2007.294.16.22.G17_0001.0002_nc", FeatureType.TRAJECTORY, true);
+
+    // ndbc
+    assert 1405 == testPointDataset(topdir + "ft/station/nbdc/41001h1976.nc", FeatureType.STATION, true);
+
+    // suomi
+    assert 124 == testPointDataset(topdir + "ft/station/suomi/suoHWV_2006.105.00.00.0060_nc", FeatureType.STATION, true);
+    assert 4848 == testPointDataset(topdir + "ft/station/suomi/gsuPWV_2006.105.00.00.1440_nc", FeatureType.STATION, true);
   }
 
   public void testGempak() throws IOException {

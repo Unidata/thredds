@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  8:
+  UAMIV iosp not handling file seperator generally
   Handle missing values in CFPointObs, NestedTables.
   Allow missing_value processing of CHAR dataType. empty string = 0.
   StructurePseudo moved to ucar.nc2.dataset.StructurePseudoDS because we need missing values; ucar.nc2.StructurePseudo now deprecated

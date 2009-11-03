@@ -312,7 +312,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     }
 
     if ((z_oneD == null) && (z_best != null)) { // cant find one-d z but have nD z
-      sbuff.format("GridCoordSys needs a 1D Coordinate, instead has %s%n", z_best.getNameAndDimensions());
+      if (sbuff != null) sbuff.format("GridCoordSys needs a 1D Coordinate, instead has %s%n", z_best.getNameAndDimensions());
     }
     
     if (z_oneD != null) {

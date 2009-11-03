@@ -963,6 +963,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @return the dimension, or null if not found
    */
   public Dimension findDimension(String name) {
+    if (name == null) return null;
     for (Dimension d : dimensions) {
       if (name.equals(d.getName()))
         return d;
