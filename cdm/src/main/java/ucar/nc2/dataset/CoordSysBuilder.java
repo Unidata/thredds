@@ -291,8 +291,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
     if (convName != null) {
       // look for ncml first
-      String convNcML;
-      convNcML = ncmlHash.get(convName);
+      String convNcML = ncmlHash.get(convName);
       if (convNcML != null) {
         CoordSysBuilder csb = new CoordSysBuilder();
         NcMLReader.wrapNcML(ds, convNcML, cancelTask);

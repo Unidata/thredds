@@ -67,7 +67,7 @@ public class TableConfig {
   public String numRecords;  // name of variable - number of children (in parent)
   // public int[] startIndex;  // starting child index for each parent
 
-  // only the top oe is used
+  // only the top one is used
   public FeatureType featureType;
 
   // TablePsuedoStructureList, Structure
@@ -118,5 +118,78 @@ public class TableConfig {
     if (extraJoin == null) extraJoin = new ArrayList<Join>(3);
     extraJoin.add(extra);
   }
+
+  public String findCoordinateVariableName(Table.CoordName coordName) {
+    switch (coordName) {
+      case Elev:
+        return elev;
+      case Lat:
+        return lat;
+      case Lon:
+        return lon;
+      case Time:
+        return time;
+      case TimeNominal:
+        return timeNominal;
+
+      case StnId:
+        return stnId;
+      case StnDesc:
+        return stnDesc;
+      case WmoId:
+        return stnWmoId;
+      case StnAlt:
+        return stnAlt;
+
+      case FeatureId:
+        return feature_id;
+
+      case MissingVar:
+        return missingVar;
+
+    }
+    return null;
+  }
+
+  public void setCoordinateVariableName(Table.CoordName coordName, String name) {
+    switch (coordName) {
+      case Elev:
+        elev = name;
+        break;
+      case Lat:
+        lat = name;
+        break;
+      case Lon:
+        lon = name;
+      case Time:
+        time = name;
+        break;
+      case TimeNominal:
+        timeNominal = name;
+        break;
+
+      case StnId:
+        stnId = name;
+        break;
+      case StnDesc:
+        stnDesc = name;
+        break;
+      case WmoId:
+        stnWmoId = name;
+        break;
+      case StnAlt:
+        stnAlt = name;
+        break;
+
+      case FeatureId:
+        feature_id = name;
+        break;
+
+      case MissingVar:
+        missingVar = name;
+        break;
+    }
+  }
+
 
 }

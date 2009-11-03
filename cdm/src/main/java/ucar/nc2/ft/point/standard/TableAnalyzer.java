@@ -350,6 +350,10 @@ public class TableAnalyzer {
     return this.configResult;
   }
 
+  TableConfigurer getTableConfigurer() {
+    return tc;
+  }
+
   /////////////////////////////////////////////////////////
 
   /**
@@ -589,8 +593,8 @@ public class TableAnalyzer {
 
   private void writeConfigXML(java.util.Formatter sf) throws IOException {
     if (configResult != null) {
-        PointConfigXML tcx = new PointConfigXML(configResult, tc.getClass().getName());
-        tcx.writeConfigXML(sf);
+        PointConfigXML tcx = new PointConfigXML();
+        tcx.writeConfigXML(configResult, tc.getClass().getName(), sf);
         return;
     }
     XMLOutputter fmt = new XMLOutputter( Format.getPrettyFormat());

@@ -38,23 +38,22 @@ import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
 import ucar.ma2.Array;
-import ucar.ma2.IndexIterator;
 import ucar.ma2.DataType;
 import ucar.ma2.ArrayDouble;
 
 import java.io.IOException;
 
 /**
- * Cosmicc data - version 1
+ * Cosmic data - version 1.
+ * Add time coordinate from global atts start_time, stop_time, assuming its linear along the vertical dimension.
  *
  * @author caron
  * @since Jul 29, 2009
  */
-public class Cosmic1Convention extends ATDRadarConvention {
+public class Cosmic1Convention extends CoordSysBuilder {
 
   /**
    * @param ncfile the NetcdfFile to test
@@ -78,6 +77,8 @@ public class Cosmic1Convention extends ATDRadarConvention {
   }
 
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+
+    // create a time variable - assume its linear along the vertical dimension
     double start =  ds.readAttributeDouble(null, "start_time", Double.NaN);
     double stop =  ds.readAttributeDouble(null, "stop_time", Double.NaN);
 

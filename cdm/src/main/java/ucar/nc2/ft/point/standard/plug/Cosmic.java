@@ -41,12 +41,14 @@ import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.ft.point.standard.TableConfig;
 import ucar.nc2.ft.point.standard.Table;
 import ucar.nc2.ft.point.standard.TableConfigurerImpl;
+import ucar.nc2.ft.point.standard.PointConfigXML;
 import ucar.nc2.*;
 import ucar.nc2.units.SimpleUnit;
 import ucar.ma2.StructureDataScalar;
 import ucar.ma2.DataType;
 
 import java.util.*;
+import java.io.IOException;
 
 /**
  * Class Description.
@@ -68,7 +70,13 @@ public class Cosmic extends TableConfigurerImpl {
     return center != null && center.equals("UCAR/CDAAC");
   }
 
-  public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
+  public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
+    PointConfigXML reader = new PointConfigXML();
+    return reader.readConfigXMLfromResource("Cosmic.xml", wantFeatureType, ds, errlog);
+  }
+
+
+  public TableConfig getConfigOld(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
 
      TableConfig traj = new TableConfig(Table.Type.Top, "traj");
      traj.featureType = FeatureType.TRAJECTORY;
