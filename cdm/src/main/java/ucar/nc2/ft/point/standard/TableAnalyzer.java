@@ -395,8 +395,8 @@ public class TableAnalyzer {
 
   private void addTable(TableConfig t) {
     tableFind.put(t.name, t);
-    if (t.dim != null)
-      tableFind.put(t.dim.getName(), t);
+    if (t.dimName != null)
+      tableFind.put(t.dimName, t);
     tableSet.add(t);
   }
 
@@ -451,7 +451,7 @@ public class TableAnalyzer {
       TableConfig st = new TableConfig(Table.Type.Structure, obsDim.getName());
       st.structureType = obsDim.isUnlimited() ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
       st.structName = obsDim.isUnlimited() ? "record" : obsDim.getName();
-      st.dim = obsDim;
+      st.dimName = obsDim.getName();
       CoordSysEvaluator.findCoordWithDimension(st, ds, obsDim);
 
       CoordinateAxis time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
@@ -476,7 +476,7 @@ public class TableAnalyzer {
       Dimension obsDim = (Dimension) time.getDimension(0);
       TableConfig st = new TableConfig(Table.Type.Structure, obsDim.getName());
       st.structureType = TableConfig.StructureType.PsuedoStructure;
-      st.dim = obsDim;
+      st.dimName = obsDim.getName();
       CoordSysEvaluator.findCoords(st, ds);
 
       addTable( st);

@@ -376,7 +376,7 @@ public class CFpointObs extends TableConfigurerImpl {
     TableConfig stationTable = makeStationTable(ds, FeatureType.STATION_PROFILE, info, errlog);
     if (stationTable == null) return null;
 
-    Dimension stationDim = stationTable.dim;
+    Dimension stationDim = ds.findDimension(stationTable.dimName);
     Dimension profileDim = null;
     Dimension zDim = null;
 
@@ -579,7 +579,7 @@ public class CFpointObs extends TableConfigurerImpl {
       errlog.format("getSectionConfig cant find a section id %n");
     }
 
-    Dimension sectionDim = parentTable.dim;
+    Dimension sectionDim = ds.findDimension(parentTable.dimName);
     Dimension profileDim = null;
     Dimension zDim = null;
 
@@ -861,7 +861,7 @@ public class CFpointObs extends TableConfigurerImpl {
       // set up structure
       boolean hasStruct = Evaluator.hasRecordStructure(ds) && stationDim.isUnlimited();
       stnTable.structureType = hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
-      stnTable.dim = stationDim;
+      stnTable.dimName = stationDim.getName();
       stnTable.structName = hasStruct ? "record" : stationDim.getName();
     }
 
@@ -898,8 +898,8 @@ public class CFpointObs extends TableConfigurerImpl {
       // set up structure
       boolean stnIsStruct = Evaluator.hasRecordStructure(ds) && info.parentDim.isUnlimited();
       tableConfig.structureType = stnIsStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
-      tableConfig.dim = info.parentDim;
-      tableConfig.structName = stnIsStruct ? "record" : info.parentDim.getName();
+      tableConfig.dimName = info.parentDim.getName();
+      tableConfig.structName = stnIsStruct ? "record" : tableConfig.dimName;
     }
 
     return tableConfig;
@@ -1011,7 +1011,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
   private TableConfig makeRaggedContiguous(NetcdfDataset ds, TableConfig parentTable, Dimension childDim, Formatter errlog) throws IOException {
     TableConfig obsTable = new TableConfig(Table.Type.Contiguous, childDim.getName());
-    obsTable.dim = childDim;
+    obsTable.dimName = childDim.getName();
 
     obsTable.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, childDim);
     obsTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, childDim);
@@ -1022,9 +1022,10 @@ public class CFpointObs extends TableConfigurerImpl {
     obsTable.structName = obsIsStruct ? "record" : childDim.getName();
     obsTable.structureType = obsIsStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
 
-    obsTable.numRecords = findNameVariableWithStandardNameAndDimension(ds, RAGGED_ROWSIZE, parentTable.dim, errlog);
+    Dimension outer = ds.findDimension(parentTable.dimName);
+    obsTable.numRecords = findNameVariableWithStandardNameAndDimension(ds, RAGGED_ROWSIZE, outer, errlog);
     if (null == obsTable.numRecords) {
-      errlog.format("there must be a ragged_rowSize variable with outer dimension that matches latitude/longitude dimension %s%n", parentTable.dim);
+      errlog.format("there must be a ragged_rowSize variable with outer dimension that matches latitude/longitude dimension %s%n", parentTable.dimName);
       return null;
     }
 
@@ -1033,7 +1034,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
   private TableConfig makeRaggedIndex(NetcdfDataset ds, Dimension childDim, Formatter errlog) throws IOException {
     TableConfig obsTable = new TableConfig(Table.Type.ParentIndex, childDim.getName());
-    obsTable.dim = childDim;
+    obsTable.dimName = childDim.getName();
 
     obsTable.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, childDim);
     obsTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, childDim);
@@ -1053,7 +1054,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
   // the inner table of Structure(outer, inner) and middle table of Structure(outer, middle, inner)
   private TableConfig makeMultidimInner(NetcdfDataset ds, TableConfig parentTable, Dimension obsDim, Formatter errlog) throws IOException {
-    Dimension parentDim = parentTable.dim;
+    Dimension parentDim = ds.findDimension(parentTable.dimName);
 
     Table.Type obsTableType = (parentTable.structureType == TableConfig.StructureType.PsuedoStructure) ? Table.Type.MultidimInnerPsuedo : Table.Type.MultidimInner;
     TableConfig obsTable = new TableConfig(obsTableType, obsDim.getName());
@@ -1086,9 +1087,9 @@ public class CFpointObs extends TableConfigurerImpl {
     // parentTable.vars = parentTable.isPsuedoStructure ? parentVars : null; // restrict to these if psuedoStruct
 
     obsTable.structureType = parentTable.structureType;
-    obsTable.outer = parentDim;
-    obsTable.inner = obsDim;
-    obsTable.dim = (parentTable.structureType == TableConfig.StructureType.PsuedoStructure) ? parentDim : obsDim;
+    obsTable.outerName = parentDim.getName();
+    obsTable.innerName = obsDim.getName();
+    obsTable.dimName = (parentTable.structureType == TableConfig.StructureType.PsuedoStructure) ? obsTable.outerName : obsTable.innerName;
     obsTable.structName = obsDim.getName();
     obsTable.vars = obsVars;
 
@@ -1097,15 +1098,15 @@ public class CFpointObs extends TableConfigurerImpl {
 
   // the inner table of Structure(outer, middle, inner)
   private TableConfig makeMultidimInner3D(NetcdfDataset ds, TableConfig outerTable, TableConfig middleTable, Dimension innerDim, Formatter errlog) throws IOException {
-    Dimension outerDim = outerTable.dim;
-    Dimension middleDim = middleTable.inner;
+    Dimension outerDim = ds.findDimension(outerTable.dimName);
+    Dimension middleDim = ds.findDimension(middleTable.innerName);
 
     Table.Type obsTableType = (outerTable.structureType == TableConfig.StructureType.PsuedoStructure) ? Table.Type.MultidimInnerPsuedo3D : Table.Type.MultidimInner3D;
     TableConfig obsTable = new TableConfig(obsTableType, innerDim.getName());
     obsTable.structureType = TableConfig.StructureType.PsuedoStructure2D;
-    obsTable.dim = outerDim;
-    obsTable.outer = middleDim;
-    obsTable.inner = innerDim;
+    obsTable.dimName = outerTable.dimName;
+    obsTable.outerName = middleTable.innerName;
+    obsTable.innerName = innerDim.getName();
     obsTable.structName = innerDim.getName();
 
     obsTable.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, outerDim, middleDim, innerDim);
@@ -1146,7 +1147,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
     Table.Type obsTableType = Table.Type.Structure;
     TableConfig obsTable = new TableConfig(obsTableType, "single");
-    obsTable.dim = obsDim;
+    obsTable.dimName = obsDim.getName();
 
     obsTable.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, obsDim);
     obsTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, obsDim);

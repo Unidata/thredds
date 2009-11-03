@@ -134,7 +134,7 @@ public class GempakCdm extends TableConfigurerImpl {
     TableConfig stnTable = new TableConfig(stationTableType, "station");
     stnTable.featureType = FeatureType.STATION;
     stnTable.structureType = hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;      
-    stnTable.dim = stationDim;
+    stnTable.dimName = stationDim.getName();
 
     stnTable.lat= lat.getName();
     stnTable.lon= lon.getName();
@@ -191,7 +191,7 @@ public class GempakCdm extends TableConfigurerImpl {
     }
 
     TableConfig obs = new TableConfig(obsTableType, obsDim.getName());
-    obs.dim = obsDim;
+    obs.dimName = obsDim.getName();
     obs.time = time.getName();
     obs.missingVar = "_isMissing";
     stnTable.addChild(obs);
@@ -206,7 +206,7 @@ public class GempakCdm extends TableConfigurerImpl {
     }
 
     if (obsTableType == Table.Type.MultidimInner) {
-      obs.dim = obsDim;
+      obs.dimName = obsDim.getName();
     }
 
     if (needFinish) ds.finish();
@@ -268,7 +268,7 @@ public class GempakCdm extends TableConfigurerImpl {
     }
 
     TableConfig obs = new TableConfig(obsTableType, obsDim.getName());
-    obs.dim = obsDim;
+    obs.dimName = obsDim.getName();
     obs.structName = multidimStruct.getName();
     obs.structureType = TableConfig.StructureType.Structure;
     obs.featureType = FeatureType.POINT;

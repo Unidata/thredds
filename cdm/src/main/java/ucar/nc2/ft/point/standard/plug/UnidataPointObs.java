@@ -98,7 +98,7 @@ public class UnidataPointObs extends TableConfigurerImpl {
       obsTable.lon = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lon, obsDim);
       obsTable.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height, obsDim);
 
-      obsTable.dim = obsDim;
+      obsTable.dimName = obsDim.getName();
       return obsTable;
     }
 
@@ -109,7 +109,7 @@ public class UnidataPointObs extends TableConfigurerImpl {
       TableConfig obsTable = new TableConfig(Table.Type.Structure, hasStruct ? "record" : obsDim.getName() );
       obsTable.structureType = hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
       obsTable.featureType = FeatureType.POINT;
-      obsTable.dim = obsDim;
+      obsTable.dimName = obsDim.getName();
       obsTable.structName = "record";
 
       obsTable.time = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Time, obsDim);
@@ -159,7 +159,7 @@ public class UnidataPointObs extends TableConfigurerImpl {
       obsTable.lat = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lat, obsDim);
       obsTable.lon = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lon, obsDim);
       obsTable.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height, obsDim);
-      obsTable.dim = obsDim;
+      obsTable.dimName = obsDim.getName();
 
       Dimension trajDim = UnidataPointDatasetHelper.findDimension(ds, "trajectory");
       if (trajDim != null) {
@@ -191,7 +191,7 @@ public class UnidataPointObs extends TableConfigurerImpl {
     TableConfig stationTable = new TableConfig(Table.Type.Structure, "station");
     stationTable.structureType = TableConfig.StructureType.PsuedoStructure;
     stationTable.featureType = FeatureType.STATION;
-    stationTable.dim = stationDim;
+    stationTable.dimName = stationDim.getName();
     stationTable.limit = Evaluator.getVariableName(ds, "number_stations", null);
 
     stationTable.stnId = Evaluator.getVariableName(ds, "station_id", null);
@@ -206,8 +206,8 @@ public class UnidataPointObs extends TableConfigurerImpl {
     TableConfig obsTable;
     if (isMultiDim) {
       obsTable = new TableConfig(Table.Type.MultidimInner, "obs");
-      obsTable.outer = stationDim;
-      obsTable.dim = obsDim;
+      obsTable.outerName = stationDim.getName();
+      obsTable.dimName = obsDim.getName();
 
     } else {
 
@@ -233,7 +233,7 @@ public class UnidataPointObs extends TableConfigurerImpl {
       obsTable.parentIndex = Evaluator.getVariableName(ds, "parent_index", null);
     }
 
-    obsTable.dim = obsDim;
+    obsTable.dimName = obsDim.getName();
     obsTable.time = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Time);
     obsTable.timeNominal = Evaluator.getVariableName(ds, "time_nominal", null);
 

@@ -119,6 +119,11 @@ public class Evaluator {
     return null;
   }
 
+  static public String getDimensionName(NetcdfDataset ds, String key, Formatter errlog) {
+    Dimension d = getDimension(ds, key, errlog);
+    return (d == null) ? null : d.getName();
+  }
+
   static public Dimension getDimension(NetcdfDataset ds, String key, Formatter errlog) {
     Dimension d = null;
     String s = getLiteral(ds, key, errlog);

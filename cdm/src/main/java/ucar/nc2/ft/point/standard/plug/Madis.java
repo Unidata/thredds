@@ -108,7 +108,7 @@ public class Madis  extends TableConfigurerImpl  {
       ptTable.featureType = FeatureType.POINT;
       ptTable.structureType = hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;      
 
-      ptTable.dim = obsDim;
+      ptTable.dimName = obsDim.getName();
       ptTable.time = vn.obsTime;
       ptTable.timeNominal = vn.nominalTime;
       ptTable.lat = vn.lat;
@@ -123,12 +123,12 @@ public class Madis  extends TableConfigurerImpl  {
     stnTable.featureType = FeatureType.STATION;
     stnTable.structureType = TableConfig.StructureType.PsuedoStructure;
 
-    stnTable.dim = Evaluator.getDimension(ds, "maxStaticIds", errlog);
+    stnTable.dimName = Evaluator.getDimensionName(ds, "maxStaticIds", errlog);
     stnTable.limit = Evaluator.getVariableName(ds, "nStaticIds", errlog);
     stnTable.stnId = Evaluator.getVariableName(ds, "staticIds", errlog);
 
     TableConfig obs = new TableConfig(Table.Type.LinkedList, "record");
-    obs.dim = Evaluator.getDimension(ds, "recNum", errlog);
+    obs.dimName = Evaluator.getDimensionName(ds, "recNum", errlog);
     obs.time = vn.obsTime;
     obs.timeNominal = vn.nominalTime;
     obs.start =  Evaluator.getVariableName(ds, "lastRecord", errlog);

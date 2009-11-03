@@ -3,10 +3,10 @@
   <tableConfigurer class="ucar.nc2.ft.point.standard.plug.Cosmic" />
   <table type="Top" structName="traj">
     <table type="Structure" subtype="PsuedoStructure" dim="MSL_alt">
-      <coordinate type="lat">Lat</coordinate>
-      <coordinate type="lon">Lon</coordinate>
-      <coordinate type="elev">MSL_alt</coordinate>
-      <coordinate type="time">time</coordinate>
+      <coordinate type="Lat">Lat</coordinate>
+      <coordinate type="Lon">Lon</coordinate>
+      <coordinate type="Elev">MSL_alt</coordinate>
+      <coordinate type="Time">time</coordinate>
       <variable>Temp</variable>
       <variable>Vp</variable>
       <variable>Pres</variable>

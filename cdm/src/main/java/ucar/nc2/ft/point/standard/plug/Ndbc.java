@@ -123,7 +123,7 @@ public class Ndbc extends TableConfigurerImpl  {
     TableConfig obs = new TableConfig(Table.Type.Structure, hasStruct ? "record" : obsDim.getName());
     obs.structName = "record";
     obs.structureType = hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
-    obs.dim = obsDim;
+    obs.dimName = obsDim.getName();
     obs.time = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Time);
     nt.addChild(obs);
 

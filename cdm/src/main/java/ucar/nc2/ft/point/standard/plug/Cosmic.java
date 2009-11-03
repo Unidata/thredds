@@ -57,6 +57,19 @@ import java.io.IOException;
  * @since Jan 26, 2009
  */
 public class Cosmic extends TableConfigurerImpl {
+  public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
+    String center = ds.findAttValueIgnoreCase(null, "center", null);
+    return center != null && center.equals("UCAR/CDAAC");
+  }
+
+  public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
+    PointConfigXML reader = new PointConfigXML();
+    //return reader.readConfigXMLfromResource("resources/nj22/pointConfig/Cosmic.xml", wantFeatureType, ds, errlog);
+    return reader.readConfigXML("C:\\dev\\tds\\thredds\\cdm\\src\\main\\resources\\resources\\nj22\\pointConfig\\Cosmic1.xml", wantFeatureType, ds, errlog);
+  }
+
+ /*
+
   private static String dimName = "MSL_alt";
   private static String dimVarName = "MSL_alt";
   private static String latVarName = "Lat";
@@ -65,16 +78,6 @@ public class Cosmic extends TableConfigurerImpl {
 
   private static String trajId = "trajectory data";
     // :title = "WPDN data : selected by ob time : time range from 1207951200 to 1207954800";
-  public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
-    String center = ds.findAttValueIgnoreCase(null, "center", null);
-    return center != null && center.equals("UCAR/CDAAC");
-  }
-
-  public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
-    PointConfigXML reader = new PointConfigXML();
-    return reader.readConfigXMLfromResource("Cosmic.xml", wantFeatureType, ds, errlog);
-  }
-
 
   public TableConfig getConfigOld(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
 
@@ -94,7 +97,7 @@ public class Cosmic extends TableConfigurerImpl {
 
      TableConfig obs = new TableConfig(Table.Type.Structure, "point");
      obs.structureType = TableConfig.StructureType.PsuedoStructure;
-     obs.dim = ds.findDimension("MSL_alt");
+     obs.dimName = "MSL_alt";
      obs.lat = "Lat";
      obs.lon = "Lon";
      obs.time = "time";
@@ -139,7 +142,7 @@ public class Cosmic extends TableConfigurerImpl {
     obsTable.elev = Evaluator.getVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Height.toString());
     obsTable.time = Evaluator.getVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Time.toString());
 
-    return obsTable;    // */
+    return obsTable;    //
   }
 
     private  Structure buildStructure( NetcdfDataset ncd, String structureId )
@@ -247,5 +250,5 @@ public class Cosmic extends TableConfigurerImpl {
     cal.clear();
     cal.set(year, month, dayOfMonth, hourOfDay, minute, second);
     return cal.getTime();
-  }
+  }  */
 }

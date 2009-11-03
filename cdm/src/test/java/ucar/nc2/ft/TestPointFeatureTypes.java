@@ -171,7 +171,7 @@ public class TestPointFeatureTypes extends TestCase {
 
   public void testProblem() throws IOException {
     // assert 18 == testPointDataset(CFpointObs_topdir + "sectionMultidimMissingAlt.ncml", FeatureType.SECTION, true);
-    testPointDataset("Q:/point/netcdf/19981110_1200", FeatureType.ANY_POINT, true);
+    testPointDataset("C:/data/datasets/cosmic/wetPrf_C005.2007.294.15.00.G19_0001.0002_nc", FeatureType.ANY_POINT, true);
   }
 
   public void testCF() throws IOException {

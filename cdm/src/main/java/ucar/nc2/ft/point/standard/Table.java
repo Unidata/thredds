@@ -237,7 +237,7 @@ public abstract class Table {
    */
   public static class TableStructure extends Table {
     StructureDS struct;
-    Dimension dim;
+    Dimension dim, outer;
     TableConfig.StructureType stype;
 
     TableStructure(NetcdfDataset ds, TableConfig config) {
@@ -258,16 +258,17 @@ public abstract class Table {
           break;
 
         case PsuedoStructure:
-          this.dim = config.dim;
+          this.dim = ds.findDimension(config.dimName);
           assert dim != null;
-          struct = new StructurePseudoDS(ds, dim.getGroup(), config.structName, config.vars, config.dim);
+          struct = new StructurePseudoDS(ds, dim.getGroup(), config.structName, config.vars, this.dim);
           break;
 
         case PsuedoStructure2D:
-          this.dim = config.dim;
+          this.dim = ds.findDimension(config.dimName);
+          this.outer = ds.findDimension(config.outerName);
           assert dim != null;
-          assert config.outer != null;
-          struct = new StructurePseudo2Dim(ds, dim.getGroup(), config.structName, config.vars, config.dim, config.outer);
+          assert config.outerName != null;
+          struct = new StructurePseudo2Dim(ds, dim.getGroup(), config.structName, config.vars, this.dim, this.outer);
           break;
       }
 
@@ -659,10 +660,10 @@ public abstract class Table {
      TableMultidimInner(NetcdfDataset ds, TableConfig config) {
        super(ds, config);
        this.ds = ds;
-       assert config.outer != null;
-       assert config.inner != null;
-       this.inner = config.inner;
-       this.outer = config.outer;
+       assert config.outerName != null;
+       assert config.innerName != null;
+       this.inner = ds.findDimension(config.innerName);
+       this.outer = ds.findDimension(config.outerName);
 
        sm = new StructureMembers(config.name);
        if (config.vars != null) {
@@ -679,7 +680,7 @@ public abstract class Table {
        } else {
          for (Variable v : ds.getVariables()) {
            if (v.getRank() < 2) continue;
-           if (v.getDimension(0).equals(config.outer) && v.getDimension(1).equals(config.inner)) {
+           if (v.getDimension(0).equals(this.outer) && v.getDimension(1).equals(this.inner)) {
              cols.add(v);
              int rank = v.getRank();
              int[] shape = new int[rank - 2];
@@ -730,12 +731,12 @@ public abstract class Table {
      TableMultidimInner3D(NetcdfDataset ds, TableConfig config) {
        super(ds, config);
        this.ds = ds;
-       assert config.dim != null;
-       assert config.outer != null;
-       assert config.inner != null;
-       this.dim = config.dim;
-       this.inner = config.inner;
-       this.middle = config.outer;
+       assert config.dimName != null;
+       assert config.outerName != null;
+       assert config.innerName != null;
+       this.dim = ds.findDimension(config.dimName);
+       this.inner = ds.findDimension(config.innerName);
+       this.middle = ds.findDimension(config.outerName);
 
        sm = new StructureMembers(config.name);
        if (config.vars != null) {
@@ -812,10 +813,10 @@ public abstract class Table {
 
     TableMultidimInnerPsuedo(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
-      assert config.outer != null;
-      assert config.inner != null;
-      this.inner = config.inner;
-      this.outer = config.outer;
+      assert config.outerName != null;
+      assert config.innerName != null;
+      this.inner = ds.findDimension(config.innerName);
+      this.outer = ds.findDimension(config.outerName);
 
       sm = new StructureMembers(config.name);
       for (Variable v : struct.getVariables()) {
@@ -857,12 +858,12 @@ public abstract class Table {
 
     TableMultidimInnerPsuedo3D(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
-      assert config.dim != null;
-      assert config.outer != null; // middle
-      assert config.inner != null;
-      this.dim = config.dim;
-      this.middle = config.outer;
-      this.inner = config.inner;
+      assert config.dimName != null;
+      assert config.outerName != null; // middle
+      assert config.innerName != null;
+      this.dim = ds.findDimension(config.dimName);
+      this.middle = ds.findDimension(config.outerName);
+      this.inner = ds.findDimension(config.innerName);
 
       sm = new StructureMembers(config.name);
       for (Variable v : struct.getVariables()) {

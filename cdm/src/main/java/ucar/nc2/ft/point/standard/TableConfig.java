@@ -72,11 +72,13 @@ public class TableConfig {
 
   // TablePsuedoStructureList, Structure
   public List<String> vars;
-  public Dimension dim; // outer dimension
+  //public Dimension dim; // outer dimension
+  public String dimName; // outer dimension
 
   // multidim: outer and inner dimensions
-  public Dimension outer, inner;
-  
+  // public Dimension outer, inner;
+  public String outerName, innerName;
+
   // Table.Type ArrayStructure
   public ArrayStructure as;
 

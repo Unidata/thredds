@@ -62,7 +62,7 @@ public class FslWindProfiler extends TableConfigurerImpl  {
 
     TableConfig profile = new TableConfig(Table.Type.Structure, "record");
     profile.structName = "record";
-    profile.dim = Evaluator.getDimension(ds, "recNum", errlog);
+    profile.dimName = Evaluator.getDimensionName(ds, "recNum", errlog);
     profile.time = Evaluator.getVariableName(ds, "timeObs", errlog);
 
     profile.stnId = Evaluator.getVariableName(ds, "staName", errlog);
@@ -76,11 +76,14 @@ public class FslWindProfiler extends TableConfigurerImpl  {
     // nt.addChild(profile);
 
     TableConfig levels = new TableConfig(Table.Type.MultidimInner, "levels");
-    levels.outer = Evaluator.getDimension(ds, "recNum", errlog);
-    levels.inner = Evaluator.getDimension(ds, "level", errlog);
+    levels.outerName = profile.dimName;
+    levels.innerName = Evaluator.getDimensionName(ds, "level", errlog);
     levels.elev = Evaluator.getVariableName(ds, "level", errlog);
 
     profile.addChild(levels);
+
+    Dimension outer = Evaluator.getDimension(ds, "recNum", errlog);
+    Dimension inner = Evaluator.getDimension(ds, "level", errlog);
 
     // divide up the variables between the parent and the obs
     List<String> obsVars = null;
@@ -91,12 +94,12 @@ public class FslWindProfiler extends TableConfigurerImpl  {
       if (orgV instanceof Structure) continue;
 
       Dimension dim0 = orgV.getDimension(0);
-      if ((dim0 != null) && dim0.equals(profile.dim)) {
+      if ((dim0 != null) && dim0.equals(outer)) {
         if ((orgV.getRank() == 1) || ((orgV.getRank() == 2) && orgV.getDataType() == DataType.CHAR)) {
           parentVars.add(orgV.getShortName());
         } else {
           Dimension dim1 = orgV.getDimension(1);
-          if ((dim1 != null) && dim1.equals(levels.inner))
+          if ((dim1 != null) && dim1.equals(inner))
             obsVars.add(orgV.getShortName());
         }
       }

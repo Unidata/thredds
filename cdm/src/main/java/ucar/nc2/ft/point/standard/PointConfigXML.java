@@ -122,7 +122,7 @@ public class PointConfigXML {
 
     switch (config.type) {
       case ArrayStructure:
-        tableElem.setAttribute("dimension", config.dim.getName());
+        tableElem.setAttribute("dimension", config.dimName);
         break;
 
       case Construct:
@@ -141,8 +141,8 @@ public class PointConfigXML {
 
       case MultidimInner:
       case MultidimInnerPsuedo:
-        tableElem.setAttribute("dim0", config.outer.getName());
-        tableElem.setAttribute("dim1", config.inner.getName());
+        tableElem.setAttribute("dim0", config.outerName);
+        tableElem.setAttribute("dim1", config.innerName);
         break;
 
       case MultidimInner3D:
@@ -174,11 +174,11 @@ public class PointConfigXML {
             tableElem.setAttribute("structName", config.structName);
             break;
           case PsuedoStructure:
-            tableElem.setAttribute("dim", config.dim.getName());
+            tableElem.setAttribute("dim", config.dimName);
             break;
           case PsuedoStructure2D:
-            tableElem.setAttribute("dim0", config.dim.getName());
-            tableElem.setAttribute("dim1", config.outer.getName());
+            tableElem.setAttribute("dim0", config.dimName);
+            tableElem.setAttribute("dim1", config.outerName);
             break;
         }
         break;
@@ -273,7 +273,7 @@ public class PointConfigXML {
       throw new FileNotFoundException(resourceLocation);
 
     if (debugXML) {
-      System.out.println(" NetcdfDataset URL = <" + resourceLocation + ">");
+      System.out.println(" PointConfig URL = <" + resourceLocation + ">");
       InputStream is2 = cl.getResourceAsStream(resourceLocation);
       System.out.println(" contents=\n" + IO.readContents(is2));
     }
@@ -281,7 +281,7 @@ public class PointConfigXML {
     org.jdom.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder(false);
-      if (debugURL) System.out.println(" NetcdfDataset URL = <" + resourceLocation + ">");
+      if (debugURL) System.out.println(" PointConfig URL = <" + resourceLocation + ">");
       doc = builder.build(is);
     } catch (JDOMException e) {
       throw new IOException(e.getMessage());
@@ -290,7 +290,33 @@ public class PointConfigXML {
 
     if (showParsedXML) {
       XMLOutputter xmlOut = new XMLOutputter();
-      System.out.println("*** NetcdfDataset/showParsedXML = \n" + xmlOut.outputString(doc) + "\n*******");
+      System.out.println("*** PointConfig/showParsedXML = \n" + xmlOut.outputString(doc) + "\n*******");
+    }
+
+    Element configElem = doc.getRootElement();
+    String featureType = configElem.getAttributeValue("featureType");
+    Element tableElem = configElem.getChild("table");
+    TableConfig tc = parseTableConfig( tableElem);
+    tc.featureType = FeatureType.valueOf(featureType);
+
+    return tc;
+  }
+
+  public TableConfig readConfigXML(String fileLocation, FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
+
+    org.jdom.Document doc;
+    try {
+      SAXBuilder builder = new SAXBuilder(false);
+      if (debugURL) System.out.println(" PointConfig URL = <" + fileLocation + ">");
+      doc = builder.build(fileLocation);
+    } catch (JDOMException e) {
+      throw new IOException(e.getMessage());
+    }
+    if (debugXML) System.out.println(" SAXBuilder done");
+
+    if (showParsedXML) {
+      XMLOutputter xmlOut = new XMLOutputter();
+      System.out.println("*** PointConfig/showParsedXML = \n" + xmlOut.outputString(doc) + "\n*******");
     }
 
     Element configElem = doc.getRootElement();
@@ -309,7 +335,7 @@ public class PointConfigXML {
     String name = tableElem.getAttributeValue("name");
     TableConfig tc = new TableConfig(ttype, name);
 
-    /* switch (ttype) {
+    switch (ttype) {
       case ArrayStructure:
         tc.dimName = tableElem.getAttributeValue("dimension");
         break;
@@ -318,20 +344,19 @@ public class PointConfigXML {
         break;
 
       case Contiguous:
-        if (config.start != null)
-          tableElem.setAttribute("start", config.start);
-        tableElem.setAttribute("numRecords", config.numRecords);
+        tc.numRecords = tableElem.getAttributeValue("numRecords");
+        tc.start = tableElem.getAttributeValue("start");
         break;
 
       case LinkedList:
-        tableElem.setAttribute("start", config.start);
-        tableElem.setAttribute("next", config.next);
+        tc.start = tableElem.getAttributeValue("start");
+        tc.next = tableElem.getAttributeValue("next");
         break;
 
       case MultidimInner:
       case MultidimInnerPsuedo:
-        tableElem.setAttribute("dim0", config.outer.getName());
-        tableElem.setAttribute("dim1", config.inner.getName());
+        tc.outerName = tableElem.getAttributeValue("dim0");
+        tc.innerName = tableElem.getAttributeValue("dim1");
         break;
 
       case MultidimInner3D:
@@ -341,42 +366,42 @@ public class PointConfigXML {
         break;
 
       case MultidimStructure:
-        tableElem.setAttribute("structName", config.structName);
+        tc.structName = tableElem.getAttributeValue("structName");
         break;
 
       case NestedStructure:
-        tableElem.setAttribute("structName", config.structName);
+        tc.structName = tableElem.getAttributeValue("structName");
         break;
 
       case ParentId:
       case ParentIndex:
-        tableElem.setAttribute("parentIndex", config.parentIndex);
+        tc.parentIndex = tableElem.getAttributeValue("parentIndex");
         break;
 
       case Singleton:
         break;
 
       case Structure:
-        tableElem.setAttribute("subtype", config.structureType.toString());
-        switch (config.structureType) {
+        tc.structureType = TableConfig.StructureType.valueOf(tableElem.getAttributeValue("subtype"));
+        switch (tc.structureType) {
           case Structure:
-            tableElem.setAttribute("structName", config.structName);
+            tc.structName = tableElem.getAttributeValue("structName");
             break;
           case PsuedoStructure:
-            tableElem.setAttribute("dim", config.dim.getName());
+            tc.dimName = tableElem.getAttributeValue("dim");
             break;
           case PsuedoStructure2D:
-            tableElem.setAttribute("dim0", config.dim.getName());
-            tableElem.setAttribute("dim1", config.outer.getName());
+            tc.dimName = tableElem.getAttributeValue("dim0");
+            tc.outerName = tableElem.getAttributeValue("dim1");
             break;
         }
         break;
 
       case Top:
-        tableElem.setAttribute("structName", config.structName);
+        tc.structName = tableElem.getAttributeValue("structName");
         break;
 
-    }  */
+    }
 
     List<Element> coordList = (List<Element>) tableElem.getChildren("coordinate");
     for (Element coordElem : coordList) {
