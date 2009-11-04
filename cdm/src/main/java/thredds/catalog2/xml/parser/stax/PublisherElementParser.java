@@ -86,7 +86,7 @@ class PublisherElementParser extends AbstractElementParser
     private QName elementName;
 
     Factory() {
-      this.elementName = ThreddsMetadataElementNames.CreatorElement;
+      this.elementName = ThreddsMetadataElementNames.PublisherElement;
     }
 
     boolean isEventMyStartElement( XMLEvent event ) {

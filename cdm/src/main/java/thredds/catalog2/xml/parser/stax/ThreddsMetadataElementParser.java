@@ -312,7 +312,7 @@ class ThreddsMetadataElementParser extends AbstractElementParser
     {
       this.getNextEventIfStartElementIsMine();
       // ToDo Save the results in a ThreddsXmlParserIssue (Warning) and report.
-      this.serviceName = StaxThreddsXmlParserUtils.getCharacterContent( this.reader, ThreddsMetadataElementNames.ServiceNameElement );
+      this.serviceName = StaxThreddsXmlParserUtils.getCharacterContent( this.reader, this.elementName );
     }
 
     void handleChildStartElement()
@@ -497,8 +497,7 @@ class ThreddsMetadataElementParser extends AbstractElementParser
         String formatString = formatAtt != null ? formatAtt.getValue() : null;
 
 
-        String date = StaxThreddsXmlParserUtils.getCharacterContent( this.reader,
-                                                                     ThreddsMetadataElementNames.DateElement );
+        String date = StaxThreddsXmlParserUtils.getCharacterContent( this.reader, this.elementName );
         ThreddsMetadata.DatePointType type = ThreddsMetadata.DatePointType.getTypeForLabel( typeString );
         if ( type.equals( ThreddsMetadata.DatePointType.Untyped ) || type.equals( ThreddsMetadata.DatePointType.Other) )
             this.threddsMetadataBuilder.addOtherDatePointBuilder( date, formatString, typeString );
@@ -589,7 +588,7 @@ class ThreddsMetadataElementParser extends AbstractElementParser
             throws ThreddsXmlParserException
     {
       this.getNextEventIfStartElementIsMine();
-      this.idAuthority = StaxThreddsXmlParserUtils.getCharacterContent( this.reader, ThreddsMetadataElementNames.AuthorityElement );
+      this.idAuthority = StaxThreddsXmlParserUtils.getCharacterContent( this.reader, this.elementName );
     }
 
     void handleChildStartElement()
@@ -660,7 +659,7 @@ class ThreddsMetadataElementParser extends AbstractElementParser
       String xlinkTitle = xlinkTitleAtt != null ? xlinkTitleAtt.getValue() : null;
       String xlinkExternalRef = xlinkExternalRefAtt != null ? xlinkExternalRefAtt.getValue() : null;
 
-      String content = StaxThreddsXmlParserUtils.getCharacterContent( this.reader, ThreddsMetadataElementNames.DocumentationElement );
+      String content = StaxThreddsXmlParserUtils.getCharacterContent( this.reader, this.elementName );
 
       if ( xlinkTitle == null && xlinkExternalRef == null )
       {

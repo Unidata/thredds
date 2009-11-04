@@ -108,8 +108,7 @@ class CreatorElementParser extends AbstractElementParser
       Attribute namingAuthAtt = startElement.getAttributeByName( ThreddsMetadataElementNames.CreatorElement_NameElement_NamingAuthority );
       String namingAuth = namingAuthAtt != null ? namingAuthAtt.getValue() : null;
 
-      String name = StaxThreddsXmlParserUtils.getCharacterContent( this.reader,
-                                                                   ThreddsMetadataElementNames.CreatorElement_NameElement );
+      String name = StaxThreddsXmlParserUtils.getCharacterContent( this.reader, this.elementName );
 
       this.parentBuilder.setName( name );
       this.parentBuilder.setNamingAuthority( namingAuth );
