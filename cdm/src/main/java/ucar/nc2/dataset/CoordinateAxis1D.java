@@ -754,8 +754,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       return false;
     }
 
-    if (data.getRank() != 2 || data.getShape()[1] != 2)
-            System.out.printf("HEY boundsVarName=%s%n", boundsVarName);
+    assert (data.getRank() == 2) && (data.getShape()[1] == 2) : "incorrect shape data for variable "+  boundsVar;
 
     // extract the bounds
     int n = shape[0];
