@@ -8,12 +8,11 @@
      <coordinate type="WmoId">wmoStaNum</coordinate>
 
     <table type="Singleton">
-      <coordinate type="time">timeObs</coordinate>
-      <table type="MultidimInner" dim0="recNum" dim1="levels">
-        <extraJoin class="class ucar.nc2.ft.point.standard.JoinArray" type="raw">
+      <table type="MultidimInner" dim0="recNum" dim1="level" subtype="Structure" structName="record">
+        <join class="class ucar.nc2.ft.point.standard.JoinArray" type="raw">
           <variable>level</variable>
-          <param value="0" />
-        </extraJoin>
+          <param>0</param>
+        </join>
       </table>
     </table>
   </table>

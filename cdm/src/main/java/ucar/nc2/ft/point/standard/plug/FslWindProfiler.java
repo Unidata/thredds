@@ -43,6 +43,7 @@ import ucar.ma2.DataType;
 import java.util.Formatter;
 import java.util.List;
 import java.util.ArrayList;
+import java.io.IOException;
 
 /**
  * FLS Wind profile data
@@ -57,7 +58,43 @@ public class FslWindProfiler extends TableConfigurerImpl  {
     return title != null && (title.startsWith("WPDN data") || title.startsWith("RASS data"));
   }
 
-  public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
+  public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
+    PointConfigXML reader = new PointConfigXML();
+    TableConfig tc = reader.readConfigXMLfromResource("resources/nj22/pointConfig/FslWindProfiler.xml", wantFeatureType, ds, errlog);
+
+    TableConfig inner = tc.children.get(0).children.get(0);
+    makeMultidimInner(ds, tc, inner, inner.outerName, inner.innerName);
+    return tc;
+  }
+
+  private void makeMultidimInner(NetcdfDataset ds, TableConfig parentTable, TableConfig childTable, String outerDin, String innerDim) {
+    Dimension parentDim = ds.findDimension(outerDin);
+    Dimension childDim = ds.findDimension(innerDim);
+
+    // divide up the variables between the parent and the child
+    List<String> obsVars = null;
+    List<Variable> vars = ds.getVariables();
+    List<String> parentVars = new ArrayList<String>(vars.size());
+    obsVars = new ArrayList<String>(vars.size());
+    for (Variable orgV : vars) {
+      if (orgV instanceof Structure) continue;
+
+      Dimension dim0 = orgV.getDimension(0);
+      if ((dim0 != null) && dim0.equals(parentDim)) {
+        if ((orgV.getRank() == 1) || ((orgV.getRank() == 2) && orgV.getDataType() == DataType.CHAR)) {
+          parentVars.add(orgV.getShortName());
+        } else {
+          Dimension dim1 = orgV.getDimension(1);
+          if ((dim1 != null) && dim1.equals(childDim))
+            obsVars.add(orgV.getShortName());
+        }
+      }
+    }
+    parentTable.vars = parentVars;
+    childTable.vars = obsVars;
+  }
+
+  /* public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
     //TableConfig nt = new TableConfig(Table.Type.Singleton, "station");
 
     TableConfig profile = new TableConfig(Table.Type.Structure, "record");
@@ -109,6 +146,6 @@ public class FslWindProfiler extends TableConfigurerImpl  {
 
     
     return profile;
-  }
+  }   */
 
 }

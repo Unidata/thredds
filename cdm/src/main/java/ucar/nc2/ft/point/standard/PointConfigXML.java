@@ -145,6 +145,7 @@ public class PointConfigXML {
         break;
 
       case MultidimInner:
+        tableElem.setAttribute("structName", config.structName);
       case MultidimInnerPsuedo:
         tableElem.setAttribute("dim0", config.outerName);
         tableElem.setAttribute("dim1", config.innerName);
@@ -372,6 +373,7 @@ public class PointConfigXML {
         break;
 
       case MultidimInner:
+        tc.structName = tableElem.getAttributeValue("structName");
       case MultidimInnerPsuedo:
         tc.outerName = tableElem.getAttributeValue("dim0");
         tc.dimName = tc.outerName;

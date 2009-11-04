@@ -170,8 +170,7 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   public void testProblem() throws IOException {
-    // assert 18 == testPointDataset(CFpointObs_topdir + "sectionMultidimMissingAlt.ncml", FeatureType.SECTION, true);
-    assert 124 == testPointDataset(topdir + "ft/station/suomi/suoHWV_2006.105.00.00.0060_nc", FeatureType.STATION, true);
+    testPointDataset("D:\\ft\\station_profile\\PROFILER_RASS_01hr_20091027_1500.nc", FeatureType.STATION_PROFILE, true);
   }
 
   public void testCF() throws IOException {

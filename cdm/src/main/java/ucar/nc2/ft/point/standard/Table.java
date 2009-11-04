@@ -998,9 +998,10 @@ public abstract class Table {
 
   /**
    * Table is a single StructureData, passed in as config.sdata.
+   * Ok for sdata to be null
    * <p/>
    * Used by:
-   * Cosmic
+   * FslWindProfiler
    */
   public static class TableSingleton extends Table {
     StructureData sdata;
@@ -1008,7 +1009,7 @@ public abstract class Table {
     TableSingleton(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
       this.sdata = config.sdata;
-      assert (this.sdata != null);
+      if (sdata == null) return;
 
       for (StructureMembers.Member m : sdata.getStructureMembers().getMembers())
         cols.add(new VariableSimpleAdapter(m));
@@ -1016,7 +1017,7 @@ public abstract class Table {
 
     @Override
     protected void showTableExtraInfo(String indent, Formatter f) {
-      f.format("%sStructureData=%s%n", indent, sdata.getName());
+      f.format("%sStructureData=%s%n", indent, sdata);
     }
 
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
@@ -1064,6 +1065,7 @@ public abstract class Table {
     }
   }
 
+  // ok for sdata to be null
   private static class SingletonStructureDataIterator implements StructureDataIterator {
     private int count = 0;
     private StructureData sdata;
