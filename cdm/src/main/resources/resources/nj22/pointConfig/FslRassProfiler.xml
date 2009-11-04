@@ -10,7 +10,7 @@
     <table type="Singleton">
       <table type="MultidimInner" dim0="recNum" dim1="level" subtype="Structure" structName="record">
         <join class="class ucar.nc2.ft.point.standard.JoinArray" type="raw">
-          <variable>levels</variable>
+          <variable>level</variable>
           <param>0</param>
         </join>
       </table>

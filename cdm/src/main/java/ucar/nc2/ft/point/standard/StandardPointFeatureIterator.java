@@ -63,16 +63,17 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
   protected PointFeature makeFeature(int recnum, StructureData sdata) throws IOException {
     cursor.recnum[0] = recnum;
     cursor.tableData[0] = sdata; // always in the first position
+    cursor.currentIndex = 0;
     ft.addParentJoin(cursor); // there may be parent joins
 
     if (isMissing()) return null; // missing data
 
     double obsTime = ft.getObsTime( this.cursor);
-    return new StandardPointFeature(cursor, timeUnit, obsTime);
+    // must send a copy, since sdata is changing each time, and StandardPointFeature may be stored
+    return new StandardPointFeature(cursor.copy(), timeUnit, obsTime);
   }
 
   protected boolean isMissing() throws IOException {
-    // standard filter is to check for missing time data
     if (ft.isTimeMissing(this.cursor)) return true;
     if (ft.isMissing(this.cursor)) return true;
     return false;
@@ -83,7 +84,7 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
 
     public StandardPointFeature(Cursor cursor, DateUnit timeUnit, double obsTime) {
       super( timeUnit);
-      this.cursor = cursor.copy(); // must keep own copy, since sdata is changing each time LOOK needed ?
+      this.cursor = cursor;
 
       this.obsTime = obsTime;
       nomTime = ft.getNomTime( this.cursor);
@@ -91,6 +92,7 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
       location = ft.getEarthLocation( this.cursor);
     }
 
+    @Override
     public StructureData getData() {
       return ft.makeObsStructureData( cursor);
     }

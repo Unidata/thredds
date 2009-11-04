@@ -122,7 +122,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       // cursor.what = s;
       cursor.recnum[2] = recnum; // the station record
       cursor.tableData[2] = stationData; // obs(leaf) = 0, profile=1, station(root)=2
-      cursor.parentIndex = 2; // LOOK ??
+      cursor.currentIndex = 2;
       return new StandardStationProfileFeatureIterator(cursor);
     }
 
@@ -147,7 +147,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
         Cursor cursorIter = cursor.copy();
         cursorIter.tableData[1] = iter.next(); // the profile record
         cursorIter.recnum[1] = iter.getCurrentRecno();
-        cursorIter.parentIndex = 1; // LOOK ??
+        cursorIter.currentIndex = 1;
         count++;
 
         // double time = ft.getObsTime(cursorIter);
@@ -175,8 +175,9 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
 
     // iterate over obs in the profile
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      StructureDataIterator structIter = ft.getLeafFeatureDataIterator(cursor, bufferSize);
-      StandardPointFeatureIterator iter = new StandardProfileFeatureIterator(ft, timeUnit, structIter, cursor.copy());
+      Cursor cursorIter = cursor.copy();
+      StructureDataIterator structIter = ft.getLeafFeatureDataIterator(cursorIter, bufferSize);
+      StandardPointFeatureIterator iter = new StandardProfileFeatureIterator(ft, timeUnit, structIter, cursorIter);
       if ((boundingBox == null) || (dateRange == null) || (npts < 0))
         iter.setCalculateBounds(this);
       return iter;

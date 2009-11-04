@@ -471,7 +471,7 @@ public class NestedTable {
   public String getFeatureName(Cursor cursor) {
     int count = 0;
     Table t = leaf;
-    while (count++ < cursor.parentIndex)
+    while (count++ < cursor.currentIndex)
       t = t.parent;
 
     if (t.feature_id == null) return "unknown";

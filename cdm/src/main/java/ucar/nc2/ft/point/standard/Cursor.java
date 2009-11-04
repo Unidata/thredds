@@ -40,28 +40,33 @@ import ucar.ma2.StructureData;
  * @since Jan 24, 2009
  */
 public class Cursor {
-  //Object what; // used by StationConstruct
   StructureData[] tableData;
   int[] recnum;
-  int parentIndex;
+  int currentIndex;
 
   Cursor(int nlevels) {
     tableData = new StructureData[nlevels];
     recnum = new int[nlevels];
   }
 
+  private int getParentIndex() { // skip null structureData, to allow dummy tables to be inserted, eg FslWindProfiler
+    int indx = currentIndex;
+    while (tableData[indx] == null) indx++;
+    return indx;
+  }
+
   StructureData getParentStructure() {
-    return tableData[parentIndex];
+    return tableData[getParentIndex()];
   }
 
   int getParentRecnum() {
-    return recnum[parentIndex];
+    return recnum[getParentIndex()];
   }
 
   Cursor copy() {
     Cursor clone = new Cursor(tableData.length);
     //clone.what = what; // not a copy !!
-    clone.parentIndex = parentIndex;
+    clone.currentIndex = currentIndex;
     System.arraycopy(this.tableData, 0, clone.tableData, 0, tableData.length);
     System.arraycopy(this.recnum, 0, clone.recnum, 0, tableData.length);
     return clone;

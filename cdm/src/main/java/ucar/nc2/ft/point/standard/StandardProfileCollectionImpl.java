@@ -108,7 +108,7 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
       Cursor cursor = new Cursor(ft.getNumberOfLevels());
       cursor.tableData[1] = nextProfileData;
       cursor.recnum[1] = structIter.getCurrentRecno();
-      cursor.parentIndex = 1; // LOOK ??
+      cursor.currentIndex = 1;
       return new StandardProfileFeature(cursor);
     }
 

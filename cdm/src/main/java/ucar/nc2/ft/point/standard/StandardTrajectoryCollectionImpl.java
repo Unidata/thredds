@@ -45,6 +45,7 @@ import ucar.unidata.geoloc.LatLonRect;
 import java.io.IOException;
 
 /**
+ * TrajectoryFeatureCollection using nested tables.
  * @author caron
  * @since Dec 31, 2008
  */
@@ -63,10 +64,10 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
   }
 
   public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-    return new TrajIterator( ft.getRootFeatureDataIterator(bufferSize));
+    return new TrajCollectionIterator( ft.getRootFeatureDataIterator(bufferSize));
   }
 
-  private TrajIterator localIterator = null;
+  private TrajCollectionIterator localIterator = null;
   public boolean hasNext() throws IOException {
     if (localIterator == null) resetIteration();
     return localIterator.hasNext();
@@ -82,15 +83,15 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
   }
 
   public void resetIteration() throws IOException {
-    localIterator = (TrajIterator) getPointFeatureCollectionIterator(-1);
+    localIterator = (TrajCollectionIterator) getPointFeatureCollectionIterator(-1);
   }
 
-  private class TrajIterator implements PointFeatureCollectionIterator {
+  private class TrajCollectionIterator implements PointFeatureCollectionIterator {
     StructureDataIterator structIter;
     int count = 0;
     StructureData nextTraj;
 
-    TrajIterator(ucar.ma2.StructureDataIterator structIter) throws IOException {
+    TrajCollectionIterator(ucar.ma2.StructureDataIterator structIter) throws IOException {
       this.structIter = structIter;
     }
 
@@ -107,7 +108,7 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
       Cursor cursor = new Cursor(ft.getNumberOfLevels());
       cursor.recnum[1] = structIter.getCurrentRecno();
       cursor.tableData[1] = nextTraj;
-      cursor.parentIndex = 1; // LOOK ?
+      cursor.currentIndex = 1;
 
       return new StandardTrajectoryFeature(cursor);
     }
@@ -119,6 +120,8 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
 
   }
 
+  ///////////////////////////////////////
+  // TrajectoryFeature using nested tables.
   private class StandardTrajectoryFeature extends TrajectoryFeatureImpl {
     Cursor cursor;
 
@@ -128,14 +131,16 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
     }
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      StructureDataIterator siter = ft.getLeafFeatureDataIterator( cursor, bufferSize);
-      StandardPointFeatureIterator iter = new StandardPointFeatureIterator(ft, timeUnit, siter, cursor.copy());
+      Cursor cursorIter = cursor.copy();
+      StructureDataIterator siter = ft.getLeafFeatureDataIterator( cursorIter, bufferSize);
+      StandardPointFeatureIterator iter = new StandardPointFeatureIterator(ft, timeUnit, siter, cursorIter);
       if ((boundingBox == null) || (dateRange == null) || (npts < 0))
         iter.setCalculateBounds(this);
       return iter;
     }
   }
 
+  ///////////////////////////////////////
   private class StandardTrajectoryCollectionSubset extends StandardTrajectoryCollectionImpl {
     TrajectoryFeatureCollection from;
     LatLonRect boundingBox;

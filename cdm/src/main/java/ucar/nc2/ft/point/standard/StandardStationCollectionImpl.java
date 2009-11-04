@@ -107,7 +107,7 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
       Cursor cursor = new Cursor(ft.getNumberOfLevels());
       cursor.recnum[1] = recnum;
       cursor.tableData[1] = stationData;
-      cursor.parentIndex = 1; // LOOK ?
+      cursor.currentIndex = 1;
       StructureDataIterator obsIter = ft.getLeafFeatureDataIterator(cursor, bufferSize);
       StandardPointFeatureIterator iter = new StandardPointFeatureIterator(ft, timeUnit, obsIter, cursor);
       if ((boundingBox == null) || (dateRange == null) || (npts < 0))

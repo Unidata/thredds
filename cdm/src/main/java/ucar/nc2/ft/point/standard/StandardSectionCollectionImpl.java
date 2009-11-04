@@ -71,7 +71,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
         Cursor cursor = new Cursor(ft.getNumberOfLevels());
         cursor.recnum[2] = sdataIter.getCurrentRecno();
         cursor.tableData[2] = nextSection; // obs(leaf) = 0, profile=1, section(root)=2
-        cursor.parentIndex = 2;
+        cursor.currentIndex = 2;
 
         return new StandardSectionFeature(cursor);
       }
@@ -127,7 +127,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
       Cursor cursorIter = cursor.copy();
       cursorIter.tableData[1] = iter.next();
       cursorIter.recnum[1] = iter.getCurrentRecno();
-      cursorIter.parentIndex = 1;
+      cursorIter.currentIndex = 1;
 
       // double time = ft.getObsTime(cursorIter);
       return new StandardSectionProfileFeature(cursorIter);

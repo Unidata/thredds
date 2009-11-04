@@ -171,6 +171,7 @@ public class TestPointFeatureTypes extends TestCase {
 
   public void testProblem() throws IOException {
     testPointDataset("D:\\ft\\station_profile\\PROFILER_RASS_01hr_20091027_1500.nc", FeatureType.STATION_PROFILE, true);
+    testPointDataset("D:\\ft\\station_profile\\PROFILER_wind_01hr_20091024_1200.nc", FeatureType.STATION_PROFILE, true);
   }
 
   public void testCF() throws IOException {
@@ -217,6 +218,13 @@ public class TestPointFeatureTypes extends TestCase {
     // suomi
     assert 124 == testPointDataset(topdir + "ft/station/suomi/suoHWV_2006.105.00.00.0060_nc", FeatureType.STATION, true);
     assert 4848 == testPointDataset(topdir + "ft/station/suomi/gsuPWV_2006.105.00.00.1440_nc", FeatureType.STATION, true);
+
+    // fsl wind profilers
+    assert 198 == testPointDataset(topdir + "ft/station_profile/PROFILER_RASS_01hr_20091027_1500.nc", FeatureType.STATION_PROFILE, true);
+    assert 198 == testPointDataset(topdir + "ft/station_profile/PROFILER_RASS_06min_20091028_2318.nc", FeatureType.STATION_PROFILE, true);
+    assert 1728 == testPointDataset(topdir + "ft/station_profile/PROFILER_wind_01hr_20091024_1200.nc", FeatureType.STATION_PROFILE, true);
+    assert 2088 == testPointDataset(topdir + "ft/station_profile/PROFILER_wind_06min_20091030_2330.nc", FeatureType.STATION_PROFILE, true);
+
   }
 
   public void testGempak() throws IOException {

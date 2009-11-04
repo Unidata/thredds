@@ -59,8 +59,12 @@ public class FslWindProfiler extends TableConfigurerImpl  {
   }
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
+    String title = ds.findAttValueIgnoreCase(null, "title", null);
+    boolean isRass = title.startsWith("RASS data");
+    String xml = isRass ? "resources/nj22/pointConfig/FslRassProfiler.xml" : "resources/nj22/pointConfig/FslWindProfiler.xml";
+
     PointConfigXML reader = new PointConfigXML();
-    TableConfig tc = reader.readConfigXMLfromResource("resources/nj22/pointConfig/FslWindProfiler.xml", wantFeatureType, ds, errlog);
+    TableConfig tc = reader.readConfigXMLfromResource(xml, wantFeatureType, ds, errlog);
 
     TableConfig inner = tc.children.get(0).children.get(0);
     makeMultidimInner(ds, tc, inner, inner.outerName, inner.innerName);
