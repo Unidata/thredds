@@ -614,10 +614,13 @@ public class HtmlWriter {
 
     } else { // replace xml with html
       URI catURI = cat.getBaseURI();
-      catHtml = catURI.getPath();  // remove the server name - we want a reletive URL
+      // Get the catalog name - we want a relative URL
+      catHtml = catURI.getPath();
+      int pos = catHtml.lastIndexOf("/");
+      if ( pos != -1) catHtml = catHtml.substring( pos + 1 );
 
       // change the ending to "catalog.html?"
-      int pos = catHtml.lastIndexOf('.');
+      pos = catHtml.lastIndexOf('.');
       if (pos < 0)
         catHtml = catHtml + "catalog.html?";
       else
