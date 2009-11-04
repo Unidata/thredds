@@ -1,14 +1,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head>
   <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-  <title>THREDDS Group - Product Backlog</title></head>
+  <title>THREDDS Group - Planning</title></head>
 <body>
 
-<h1>THREDDS Group - Backlog</h1>
+<h1>THREDDS Group - Planning</h1>
 
 <hr style="width: 100%; height: 2px;">
 
-<h2>4.1 Iteration Backlog [Sept 15]</h2>
+<h2>Version 4.1 [Sept 15]</h2>
 
 <ul>
   <li>[<a href="threddsCatalog2/backlogs.html">thredds.catalog2</a>] Cleanup
@@ -21,16 +21,16 @@
   <li>[FileSystem PointCollection] Use FileSystem for tracking collections of
     datasets for PointObsCollectionServer.
   </li>
-  <li>[FileSystem DatasetScan] Use FileSystem for tracking collections of
-    datasets for DatasetScan/CatalogGen.</li>
+  
   <li>[GRIB PDS/GDS Index] New GRIB index scheme that includes PDS and
     GDS.</li>
   <li>[GRIB Ensemble Data] Improve GRIB library handling of ensemble data
     (SREF, ...)</li><li>[Some Bugs]</li><ul><li>Ability to output dataSize element with units="bytes"</li></ul></ul>
 
-<h2>4.2 Iteration Backlog [Dec 15]</h2>
+<h2>Version 4.2 [Dec 15]</h2>
 <ul>
-  <li>[DatasetSource] Extract and use new interface for locating datasets given
+  <li>catalog2 on server</li><li>consider non-catalog config mechanism</li><ul><li>catalog2</li><li>follow Spring bean wiring paradigm</li><li>GUI interface hides XML</li></ul><li>generic config mechanism for point datasets</li><li>[FileSystem DatasetScan] Use FileSystem for tracking collections of
+    datasets for DatasetScan/CatalogGen.</li><li>[DatasetSource] Extract and use new interface for locating datasets given
     an ID.</li><ul><li>GOAL: separate data location from HTTP request processing; allow
     TDS, ncWMS, RAMADDA to use same interface. ("<code>TDS Services -&gt;|&lt;- DatasetSource interface -&gt;|&lt;- TDS State</code>")</li><li>Register IDs or ID groups that are handled (state impl side of things)</li><li>Handle restricted data?
     Metadata?</li></ul>
@@ -45,13 +45,13 @@
       as plug-in for catalog builder/source [DatasetCollection?]
     </li>
     <li>[AutoMetadataExtraction FeatureType] Use FeatureType API to get
-      certain metadata (BBox, etc)</li>
+      certain metadata (BBox, etc)</li><li>Persistence mechanism for extracted metadata</li>
   </ul><li>[GEMPAK Sounding Data] CDM local and remote access (w/ collection queries) to GEMPAK Soundings.</li><li>[RadarServer
 TdsContext] Update RadarServer to use TdsContext and FileSource for
 locating config directories and files (Spring Bean? Spring MVC?).</li>
 </ul>
 
-<h2>4.3 Iteration Backlog []</h2><ul><li>[TDS Config State]</li><li>[FMRC Refactor] ???</li></ul><h2>Product Backlog</h2>
+<h2>Version 4.3 []</h2><ul><li>[Unidata Real-time Regional WRF model] Improve the "idd/rtmodels.xml" catalog to separate out model runs,&nbsp;extract lat/lon bounding box for each run, and aggregate over the forecast hours for each run. [[??Use pluggable DatasetCollection to organize data. Use [AutoMetadataExtraction] for lat/lon bounding box. ??]]</li><li>[TDS Config State]</li><li>[FMRC Refactor] ???</li></ul><h2>Product Backlog</h2>
 
 <ul>
   <li>[FileSystem Updater] Extend FileSystem to support pluggable update
