@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  8:
+  Grib: precipitation accumulation
+  point datasets: CF-1.5, Suomi, FslWindProfiler, Cosmic, GempakSurface
   catch illegal bounds shapes in CoordAxis1D.makeBounds()
   UAMIV iosp not handling file seperator generally
   Handle missing values in CFPointObs, NestedTables.
