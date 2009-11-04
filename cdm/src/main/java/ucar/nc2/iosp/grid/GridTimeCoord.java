@@ -106,7 +106,8 @@ public class GridTimeCoord {
         this.lookup = lookup;
         if ( records.get( 0 ) instanceof GribGridRecord ) {
           GribGridRecord ggr = (GribGridRecord) records.get( 0 );
-          if ( ggr.startOfInterval != GribNumbers.UNDEFINED)
+          if ( ggr.startOfInterval != GribNumbers.UNDEFINED &&
+            ggr.productType > 8 && ggr.productType < 15)
             intervalLength = ggr.forecastTime - ggr.startOfInterval;
         }
         addTimes(records);
@@ -167,13 +168,6 @@ public class GridTimeCoord {
      * @return true if they are the same as this
      */
     boolean matchLevels(List<GridRecord> records) {
-
-    // check if accumulation type
-    if ( records.get( 0 ) instanceof GribGridRecord ) {
-          GribGridRecord ggr = (GribGridRecord) records.get( 0 );
-          if ( intervalLength != ggr.startOfInterval )
-              return false;
-    }
 
     // first create a new list
     List<Date> timeList = new ArrayList<Date>( records.size());
