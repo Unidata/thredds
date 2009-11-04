@@ -87,7 +87,7 @@ public class UnidataPointFeature  extends TableConfigurerImpl  {
 
     TableConfig obs = new TableConfig(Table.Type.Structure, "obsRecord");
     obs.structName = "record";
-    obs.dim = Evaluator.getDimension(ds, "record", errlog);
+    obs.dimName = Evaluator.getDimensionName(ds, "record", errlog);
 
     obs.lat = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lat);
     obs.lon = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lon);
