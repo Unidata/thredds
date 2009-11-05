@@ -207,6 +207,7 @@ public class UnidataPointObs extends TableConfigurerImpl {
     if (isMultiDim) {
       obsTable = new TableConfig(Table.Type.MultidimInner, "obs");
       obsTable.outerName = stationDim.getName();
+      obsTable.innerName = obsDim.getName();
       obsTable.dimName = obsDim.getName();
 
     } else {

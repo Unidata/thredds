@@ -41,6 +41,8 @@ import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.ma2.DataType;
 
+import java.util.List;
+
 /**
  * CoordinateSystem Evaluation utilities.
  *
@@ -53,14 +55,20 @@ public class CoordSysEvaluator {
    * Look for Axis by Type, assign to TableConfig if found.
    * Looks for Lat, Lon, Time, Height.
    * @param nt assign coordinates to this table.
-   * @param ds look in this dataset's "Best" coordinate system.
+   * @param ds look in this dataset's "Best" coordinate system. If no CoordSystem, try list of coordinate axes
    */
   static public void findCoords(TableConfig nt, NetcdfDataset ds) {
 
     CoordinateSystem use = findBestCoordinateSystem(ds);
-    if (use == null) return;
+    if (use == null)
+      findCoords(nt, ds.getCoordinateAxes());
+    else
+      findCoords(nt, use.getCoordinateAxes());
+  }
 
-    for (CoordinateAxis axis : use.getCoordinateAxes()) {
+  static public void findCoords(TableConfig nt, List<CoordinateAxis> axes) {
+
+    for (CoordinateAxis axis : axes) {
       if (axis.getAxisType() == AxisType.Lat)
         nt.lat = axis.getShortName();
       else if (axis.getAxisType() == AxisType.Lon)

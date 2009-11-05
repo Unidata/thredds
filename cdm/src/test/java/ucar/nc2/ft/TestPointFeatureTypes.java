@@ -170,8 +170,7 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   public void testProblem() throws IOException {
-    testPointDataset("D:\\ft\\station_profile\\PROFILER_RASS_01hr_20091027_1500.nc", FeatureType.STATION_PROFILE, true);
-    testPointDataset("D:\\ft\\station_profile\\PROFILER_wind_01hr_20091024_1200.nc", FeatureType.STATION_PROFILE, true);
+    testPointDataset("C:\\data\\ft\\station\\madis2.sao", FeatureType.STATION, true);
   }
 
   public void testCF() throws IOException {

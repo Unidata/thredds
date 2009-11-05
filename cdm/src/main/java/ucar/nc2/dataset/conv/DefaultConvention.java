@@ -134,7 +134,7 @@ public class DefaultConvention extends CoordSysBuilder {
             vp.isCoordinateAxis = true;
             map.put(AxisType.Time, vp);
             parseInfo.format(" Time Coordinate Axis added (unit) = %s from unit %s\n", vp.v.getName(), unit);
-            break;
+            //break; // allow multiple time coords
           }
         }
       }

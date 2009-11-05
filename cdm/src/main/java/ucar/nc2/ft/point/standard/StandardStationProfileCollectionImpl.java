@@ -119,7 +119,6 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     // iterate over series of profiles at a given station
     public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
       Cursor cursor = new Cursor(ft.getNumberOfLevels());
-      // cursor.what = s;
       cursor.recnum[2] = recnum; // the station record
       cursor.tableData[2] = stationData; // obs(leaf) = 0, profile=1, station(root)=2
       cursor.currentIndex = 2;

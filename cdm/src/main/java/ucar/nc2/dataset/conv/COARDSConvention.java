@@ -58,7 +58,8 @@ public class COARDSConvention extends CoordSysBuilder {
     String unit = v.getUnitsString();
     if (unit == null)
       return null;
-
+    unit = unit.trim();
+    
     if( unit.equalsIgnoreCase("degrees_east") ||
             unit.equalsIgnoreCase("degrees_E") ||
             unit.equalsIgnoreCase("degreesE") ||

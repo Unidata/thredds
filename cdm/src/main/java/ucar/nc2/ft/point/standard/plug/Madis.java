@@ -44,7 +44,7 @@ import java.util.Formatter;
  * @author caron
  * @since Apr 23, 2008
  */
-public class Madis  extends TableConfigurerImpl  {
+public class Madis extends TableConfigurerImpl  {
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     if ((wantFeatureType != FeatureType.ANY_POINT) && (wantFeatureType != FeatureType.STATION) && (wantFeatureType != FeatureType.POINT))
@@ -118,7 +118,7 @@ public class Madis  extends TableConfigurerImpl  {
       return ptTable;
      }
 
-    // otherwise its a station
+    /* otherwise its a station
     TableConfig stnTable = new TableConfig(Table.Type.Structure, "station");
     stnTable.featureType = FeatureType.STATION;
     stnTable.structureType = TableConfig.StructureType.PsuedoStructure;
@@ -133,6 +133,22 @@ public class Madis  extends TableConfigurerImpl  {
     obs.timeNominal = vn.nominalTime;
     obs.start =  Evaluator.getVariableName(ds, "lastRecord", errlog);
     obs.next =  Evaluator.getVariableName(ds, "prevRecord", errlog);
+
+    obs.stnId = vn.stnId;
+    obs.stnDesc = vn.stnDesc;
+    obs.lat = vn.lat;
+    obs.lon = vn.lon;
+    obs.elev = vn.elev; */
+
+        // otherwise its a station
+    TableConfig stnTable = new TableConfig(Table.Type.Construct, "station");
+    stnTable.featureType = FeatureType.STATION;
+
+    TableConfig obs = new TableConfig(Table.Type.ParentId, "record");
+    obs.parentIndex = vn.stnId;
+    obs.dimName = Evaluator.getDimensionName(ds, "recNum", errlog);
+    obs.time = vn.obsTime;
+    obs.timeNominal = vn.nominalTime;
 
     obs.stnId = vn.stnId;
     obs.stnDesc = vn.stnDesc;
