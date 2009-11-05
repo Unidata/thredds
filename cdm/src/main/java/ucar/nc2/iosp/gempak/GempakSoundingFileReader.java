@@ -33,6 +33,7 @@
 
 
 
+
 package ucar.nc2.iosp.gempak;
 
 
@@ -220,6 +221,24 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
     }
 
     /**
+     * Get the list of merged parts in this file
+     * @return a list of the unmerged parts (only SNDT)
+     */
+    public List<String> getMergedParts() {
+        List<String> list = new ArrayList<String>(1);
+        list.add(SNDT);
+        return list;
+    }
+
+    /**
+     * Get the list of unmerged parts in this file
+     * @return a list of the unmerged parts
+     */
+    public List<String> getUnmergedParts() {
+        return new ArrayList<String>(unmergedParts);
+    }
+
+    /**
      * Make the file subtype
      */
     protected void makeFileSubType() {}  // already set in init()
@@ -297,12 +316,12 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
     }
 
     /**
-     * _more_
+     * Make the header for the text report
      *
-     * @param stn _more_
-     * @param date _more_
+     * @param stn  the station
+     * @param date  the date
      *
-     * @return _more_
+     * @return  the header
      */
     private String makeHeader(GempakStation stn, String date) {
         StringBuilder builder = new StringBuilder();
@@ -351,14 +370,12 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
 
         GempakSoundingFileReader gsfr = getInstance(getFile(args[0]), true);
         System.out.println("Type = " + gsfr.getFileType());
-        /*
         gsfr.printFileLabel();
         gsfr.printKeys();
         gsfr.printHeaders();
         gsfr.printParts();
         gsfr.printDates();
         gsfr.printStations(false);
-        */
         int row = 1;
         int col = 1;
         if (args.length > 1) {
@@ -373,6 +390,7 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
                     System.out.println("couldn't find station " + args[2]);
                     System.exit(1);
                 }
+                System.out.println("found station at column " + col);
             }
         }
         gsfr.printOb(row, col);
