@@ -273,14 +273,13 @@ public class GridTimeCoord {
           vb.addAttribute(new Attribute("long_name",  interval ));
           vb.addAttribute(new Attribute("units", timeUnit + " since " + refDate));
           // add data
-          int[] bdata = new int[ntimes * 2];
-          int idx = 0;
+          Array bdataArray = Array.factory(DataType.INT, new int[]{data.length, 2});
+          ucar.ma2.Index ima = bdataArray.getIndex();
           for (int i = 0; i < data.length; i++ ) {
-            bdata[ idx++ ] = data[ i ] - intervalLength;
-            bdata[ idx++] = data[ i ];
+            bdataArray.setInt(ima.set(i, 0), data[ i ] - intervalLength );
+            bdataArray.setInt(ima.set(i, 1), data[ i ] );
           }
-          Array bdataArray = Array.factory(DataType.INT, new int[]{ntimes *2}, bdata);
-          vb.setCachedData(bdataArray, false);
+          vb.setCachedData(bdataArray, true);
           ncfile.addVariable(g, vb);
         }
 
