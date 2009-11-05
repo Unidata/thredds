@@ -32,6 +32,7 @@
  */
 
 
+
 package ucar.nc2.iosp.gempak;
 
 
@@ -77,9 +78,9 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
         new Dimension("maxMergeLevels", 50, true);
 
     /**
-     * _more_
+     * Make the station reader for this type
      *
-     * @return _more_
+     * @return a GempakSoundingFileReader
      */
     protected AbstractGempakStationFileReader makeStationReader() {
         return new GempakSoundingFileReader();
@@ -140,16 +141,10 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
         //System.out.println("looking for " + v2);
         //System.out.println("Section = " + section);
         //Trace.call1("GEMPAKSIOSP: readData");
-        Array array = readSoundingData(v2, section, gemreader.getFileSubType().equals(GempakSoundingFileReader.MERGED));
-        /*
-        if (gemreader.getFileSubType().equals(
-                GempakSoundingFileReader.UNMERGED)) {
-            array = readUnmergedData(v2, section, false);
-        } else if (gemreader.getFileSubType().equals(
-                GempakSoundingFileReader.MERGED)) {
-            array = readMergedData(v2, section, true);
-        }
-        */
+        Array array = readSoundingData(
+                          v2, section,
+                          gemreader.getFileSubType().equals(
+                              GempakSoundingFileReader.MERGED));
         //long took = System.currentTimeMillis() - start;
         //System.out.println("  read data took=" + took + " msec ");
         //Trace.call2("GEMPAKSIOSP: readData");
@@ -162,27 +157,29 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
      *
      * @param v2  variable to read
      * @param section  section of the variable
+     * @param isMerged flag for merged data or not
      *
      * @return the array of data
      *
      * @throws IOException  problem reading the file
      */
-    private Array readSoundingData(Variable v2, Section section, boolean isMerged)
+    private Array readSoundingData(Variable v2, Section section,
+                                   boolean isMerged)
             throws IOException {
 
         Array array = null;
         if (v2 instanceof Structure) {
 
-            Range stationRange = section.getRange(0);
-            Range timeRange    = section.getRange(1);
-            int   size         = stationRange.length() * timeRange.length();
+            Range                         stationRange = section.getRange(0);
+            Range                         timeRange    = section.getRange(1);
+            int size = stationRange.length() * timeRange.length();
 
-            Structure                     pdata    = (Structure) v2;
+            Structure                     pdata        = (Structure) v2;
             StructureMembers members = pdata.makeStructureMembers();
-            List<StructureMembers.Member> mmembers = members.getMembers();
+            List<StructureMembers.Member> mmembers     = members.getMembers();
             ArrayStructureBB.setOffsets(members);
             ArrayStructureBB abb = new ArrayStructureBB(members,
-                                       new int[] {size});
+                                       new int[] { size });
             ByteBuffer buf = abb.getByteBuffer();
 
             //Trace.call1("GEMPAKSIOSP: readMergedData" , section.toString());
@@ -190,49 +187,32 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
                     y += stationRange.stride()) {
                 for (int x = timeRange.first(); x <= timeRange.last();
                         x += timeRange.stride()) {
-                    List<String> parts = 
-                           (isMerged) ? ((GempakSoundingFileReader) gemreader).getMergedParts() : ((GempakSoundingFileReader) gemreader).getUnmergedParts();
+                    List<String> parts = (isMerged)
+                                         ? ((GempakSoundingFileReader) gemreader)
+                                             .getMergedParts()
+                                         : ((GempakSoundingFileReader) gemreader)
+                                             .getUnmergedParts();
                     boolean allMissing = true;
                     for (String part : parts) {
 
-                        List<GempakParameter> params = gemreader.getParameters(part);
-                        GempakFileReader.RData vals =
-                                    gemreader.DM_RDTR(x + 1, y + 1, part);
+                        List<GempakParameter> params =
+                            gemreader.getParameters(part);
+                        GempakFileReader.RData vals = gemreader.DM_RDTR(x
+                                                          + 1, y + 1, part);
+                        ArraySequence aseq = null;
+                        Sequence seq = (Sequence) pdata.findVariable(part);
                         if (vals == null) {
-                            for (StructureMembers.Member member : mmembers) {
-                                if (member.getDataType().equals(
-                                        DataType.SEQUENCE)) {
-                                    Sequence seq = (Sequence) pdata.findVariable(
-                                                       member.getName());
-                                    ArraySequence aseq = makeEmptySequence(seq);
-                                    int index          =
-                                        abb.addObjectToHeap(aseq);
-                                    buf.putInt(index);
-                                } 
-                                //else {
-                                //    buf.put((byte) 1);
-                                //}
-                            }
+                            aseq = makeEmptySequence(seq);
                         } else {
                             allMissing = false;
-                            for (StructureMembers.Member member : mmembers) {
-                                if (member.getDataType().equals(
-                                        DataType.SEQUENCE)) {
-                                    Sequence seq = (Sequence) pdata.findVariable(
-                                                       member.getName());
-                                    ArraySequence aseq = makeArraySequence(seq,
-                                                             params, vals.data);
-                                    int index          =
-                                        abb.addObjectToHeap(aseq);
-                                    buf.putInt(index);
-                                } 
-                                //else if {
-                                //buf.put((byte) 0);
-                                //}
-                            }
+                            aseq = makeArraySequence(seq, params, vals.data);
                         }
+                        int index = abb.addObjectToHeap(aseq);
+                        buf.putInt(index);
                     }
-                    buf.put((byte) (allMissing?1:0));
+                    buf.put((byte) (allMissing
+                                    ? 1
+                                    : 0));
                 }
             }
             array = abb;
@@ -242,11 +222,11 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
     }
 
     /**
-     * _more_
+     * Create an empty ArraySequence for missing data
      *
-     * @param seq _more_
+     * @param seq  the Sequence variable
      *
-     * @return _more_
+     * @return the empty sequence
      */
     private ArraySequence makeEmptySequence(Sequence seq) {
         StructureMembers members = seq.makeStructureMembers();
@@ -255,13 +235,13 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
     }
 
     /**
-     * _more_
+     * Create an ArraySequence to hold the data
      *
-     * @param seq _more_
-     * @param params _more_
-     * @param values _more_
+     * @param seq    the Sequence variable
+     * @param params the list of all GempakParameters possible in that sequence
+     * @param values the values that were read
      *
-     * @return _more_
+     * @return the ArraySequence
      */
     private ArraySequence makeArraySequence(Sequence seq,
                                             List<GempakParameter> params,
@@ -280,13 +260,13 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
             member.setDataParam(offset);
             offset += 4;
         }
-        members.setStructureSize(offset);  // add a byte for missing
+        members.setStructureSize(offset);
 
         int        size  = offset * numLevels;
         byte[]     bytes = new byte[size];
         ByteBuffer buf   = ByteBuffer.wrap(bytes);
         ArrayStructureBB abb = new ArrayStructureBB(members,
-                                   new int[] {numLevels}, buf, 0);
+                                   new int[] { numLevels }, buf, 0);
         int var = 0;
         for (int i = 0; i < numLevels; i++) {
             for (GempakParameter param : params) {
@@ -299,153 +279,6 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
         return new ArraySequence(members,
                                  new SequenceIterator(numLevels, abb),
                                  numLevels);
-    }
-
-    /**
-     * Read in the data for the record variable.  In this case, it should be
-     * a Structure of record dimension.  We can handle a subset of the
-     * variables in a structure.
-     *
-     * @param v2  variable to read
-     * @param section  section of the variable
-     *
-     * @return the array of data
-     *
-     * @throws IOException  problem reading the file
-     */
-    private Array readUnmergedData(Variable v2, Section section)
-            throws IOException {
-
-        Array array = null;
-        /*
-        if (v2 instanceof Structure) {
-            List<GempakParameter> params =
-                gemreader.getParameters(GempakSurfaceFileReader.SFDT);
-            Structure                     pdata     = (Structure) v2;
-            StructureMembers members = pdata.makeStructureMembers();
-            List<StructureMembers.Member> mbers     = members.getMembers();
-            int                           ssize     = 0;
-            int                           stnVarNum = 0;
-            List<String> stnKeyNames = gemreader.getStationKeyNames();
-            for (StructureMembers.Member member : mbers) {
-                if (stnKeyNames.contains(member.getName())) {
-                    int varSize = getStnVarSize(member.getName());
-                    member.setDataParam(ssize);
-                    ssize += varSize;
-                } else if (member.getName().equals(TIME_VAR)) {
-                    member.setDataParam(ssize);
-                    ssize += 8;
-                } else if (member.getName().equals(MISSING_VAR)) {
-                    member.setDataParam(ssize);
-                    ssize += 1;
-                } else {
-                    member.setDataParam(ssize);
-                    ssize += 4;
-                }
-            }
-            members.setStructureSize(ssize);
-
-            // TODO:  figure out how to get the missing value for data
-            //float[] missing = new float[mbers.size()];
-            //int     missnum = 0;
-            //for (Variable v : pdata.getVariables()) {
-            //    Attribute att = v.findAttribute("missing_value");
-            //    missing[missnum++] = (att == null)
-            //                         ? GempakConstants.RMISSD
-            //                         : att.getNumericValue().floatValue();
-            //}
-
-
-            Range recordRange = section.getRange(0);
-            int   size        = recordRange.length();
-            // Create a ByteBuffer using a byte array
-            byte[]     bytes = new byte[ssize * size];
-            ByteBuffer buf   = ByteBuffer.wrap(bytes);
-            array = new ArrayStructureBB(members, new int[] { size }, buf, 0);
-            List<GempakStation> stationList    = gemreader.getStations();
-            List<Date>          dateList       = gemreader.getDates();
-            boolean             needToReadData = !pdata.isSubset();
-            if ( !needToReadData) {  // subset, see if we need some param data
-                for (GempakParameter param : params) {
-                    if (members.findMember(param.getName()) != null) {
-                        needToReadData = true;
-                        break;
-                    }
-                }
-            }
-            boolean hasTime = (members.findMember(TIME_VAR) != null);
-
-            //Trace.call1("GEMPAKSIOSP: readUnmergedData", section.toString());
-            // fill out the station information
-            for (int x = recordRange.first(); x <= recordRange.last();
-                    x += recordRange.stride()) {
-                GempakStation stn = stationList.get(x);
-                for (String varname : stnKeyNames) {
-                    if (members.findMember(varname) == null) {
-                        continue;
-                    }
-                    String temp = null;
-                    if (varname.equals(GempakStation.STID)) {
-                        temp = StringUtil.padRight(stn.getName(), 8);
-                    } else if (varname.equals(GempakStation.STNM)) {
-                        buf.putInt((int) (stn.getSTNM()));
-                    } else if (varname.equals(GempakStation.SLAT)) {
-                        buf.putFloat((float) stn.getLatitude());
-                    } else if (varname.equals(GempakStation.SLON)) {
-                        buf.putFloat((float) stn.getLongitude());
-                    } else if (varname.equals(GempakStation.SELV)) {
-                        buf.putFloat((float) stn.getAltitude());
-                    } else if (varname.equals(GempakStation.STAT)) {
-                        temp = StringUtil.padRight(stn.getSTAT(), 2);
-                    } else if (varname.equals(GempakStation.COUN)) {
-                        temp = StringUtil.padRight(stn.getCOUN(), 2);
-                    } else if (varname.equals(GempakStation.STD2)) {
-                        temp = StringUtil.padRight(stn.getSTD2(), 4);
-                    } else if (varname.equals(GempakStation.SPRI)) {
-                        buf.putInt(stn.getSPRI());
-                    } else if (varname.equals(GempakStation.SWFO)) {
-                        temp = StringUtil.padRight(stn.getSWFO(), 4);
-                    } else if (varname.equals(GempakStation.WFO2)) {
-                        temp = StringUtil.padRight(stn.getWFO2(), 4);
-                    }
-                    if (temp != null) {
-                        buf.put(temp.getBytes());
-                    }
-                }
-                if (members.findMember(TIME_VAR) != null) {
-                    // put in the time
-                    Date time = dateList.get(x);
-                    buf.putDouble(time.getTime() / 1000.d);
-                }
-
-                if (needToReadData) {
-                    int column = stn.getIndex();
-                    GempakFileReader.RData vals = gemreader.DM_RDTR(1,
-                                                      column, GempakSurfaceFileReader.SFDT);
-                    if (vals == null) {
-                        for (GempakParameter param : params) {
-                            if (members.findMember(param.getName()) != null) {
-                                buf.putFloat(GempakConstants.RMISSD);
-                            }
-                        }
-                        buf.put((byte) 1);
-                    } else {
-                        float[] reals = vals.data;
-                        int     var   = 0;
-                        for (GempakParameter param : params) {
-                            if (members.findMember(param.getName()) != null) {
-                                buf.putFloat(reals[var]);
-                            }
-                            var++;
-                        }
-                        buf.put((byte) 0);
-                    }
-                }
-            }
-            //Trace.call2("GEMPAKSIOSP: readUnmergedData");
-        }
-        */
-        return array;
     }
 
     /**
@@ -578,8 +411,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
 
 
     /**
-     * Make a structure for the part
-     *
+     * Make a Sequence for the part
      *
      * @param parent  parent structure
      * @param partName   partname
@@ -605,58 +437,55 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
     }
 
 
-
-
     /**
-     * Class EmptyStructureDataIterator _more_
-     *
+     * An empty sequence iterator
      *
      * @author Unidata Development Team
      */
     class EmptyStructureDataIterator implements StructureDataIterator {
 
         /**
-         * _more_
+         * Do we have more?
          *
-         * @return _more_
+         * @return false
          *
-         * @throws IOException _more_
+         * @throws IOException problem with read
          */
         @Override public boolean hasNext() throws IOException {
             return false;
         }
 
         /**
-         * _more_
+         * Get the next data
          *
-         * @return _more_
+         * @return null
          *
-         * @throws IOException _more_
+         * @throws IOException problem with read
          */
         @Override public StructureData next() throws IOException {
             return null;
         }
 
         /**
-         * _more_
+         * Set the buffer size
          *
-         * @param bytes _more_
+         * @param bytes the buffer size
          */
         @Override public void setBufferSize(int bytes) {}
 
         /**
-         * _more_
+         * Reset the iterator
          *
-         * @return _more_
+         * @return this
          */
         @Override public StructureDataIterator reset() {
             return this;
         }
 
         /**
-         * _more_
+         * Get the current record number
          *
-         * @return _more_
+         * @return -1
          */
         @Override public int getCurrentRecno() {
             return -1;
@@ -664,27 +493,26 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
     }
 
     /**
-     * Class SequenceIterator _more_
-     *
+     * A data iterator for a sequence
      *
      * @author Unidata Development Team
      */
     private class SequenceIterator implements StructureDataIterator {
 
-        /** _more_          */
+        /** the number of records */
         private int count;
 
-        /** _more_          */
+        /** the backing structure */
         private ArrayStructure abb;
 
-        /** _more_          */
+        /** the iterator */
         private StructureDataIterator siter;
 
         /**
-         * _more_
+         * Create a new iterator for the ArrayStructure
          *
-         * @param count _more_
-         * @param abb _more_
+         * @param count the number of records
+         * @param abb   the backing store
          */
         SequenceIterator(int count, ArrayStructure abb) {
             this.count = count;
@@ -692,11 +520,11 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
         }
 
         /**
-         * _more_
+         * Do we have more?
          *
-         * @return _more_
+         * @return true if we do
          *
-         * @throws IOException _more_
+         * @throws IOException problem with read
          */
         @Override public boolean hasNext() throws IOException {
             if (siter == null) {
@@ -706,29 +534,29 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
         }
 
         /**
-         * _more_
+         * Get the next StructureData
          *
-         * @return _more_
+         * @return the next StructureData
          *
-         * @throws IOException _more_
+         * @throws IOException problem with read
          */
         @Override public StructureData next() throws IOException {
             return siter.next();
         }
 
         /**
-         * _more_
+         * Set the buffer size
          *
-         * @param bytes _more_
+         * @param bytes the buffer size
          */
         @Override public void setBufferSize(int bytes) {
             siter.setBufferSize(bytes);
         }
 
         /**
-         * _more_
+         * Reset the iterator
          *
-         * @return _more_
+         * @return  this
          */
         @Override public StructureDataIterator reset() {
             siter = null;
@@ -736,9 +564,9 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
         }
 
         /**
-         * _more_
+         * Get the current record number
          *
-         * @return _more_
+         * @return the current record number
          */
         @Override public int getCurrentRecno() {
             return siter.getCurrentRecno();
