@@ -170,7 +170,8 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   public void testProblem() throws IOException {
-    assert 8769 == testPointDataset("file:Q:/sounding/gempak/19580807_upa.ncml", FeatureType.STATION_PROFILE, true);
+    assert 13 ==  testPointDataset(CFpointObs_topdir + "profileSingle.ncml", FeatureType.PROFILE, false);
+
   }
 
   public void testCF() throws IOException {
@@ -223,6 +224,9 @@ public class TestPointFeatureTypes extends TestCase {
     assert 198 == testPointDataset(topdir + "ft/station_profile/PROFILER_RASS_06min_20091028_2318.nc", FeatureType.STATION_PROFILE, true);
     assert 1728 == testPointDataset(topdir + "ft/station_profile/PROFILER_wind_01hr_20091024_1200.nc", FeatureType.STATION_PROFILE, true);
     assert 2088 == testPointDataset(topdir + "ft/station_profile/PROFILER_wind_06min_20091030_2330.nc", FeatureType.STATION_PROFILE, true);
+
+    //gempack sounding
+    assert 8769 == testPointDataset(TestAll.testdataDir+"sounding/gempak/19580807_upa.ncml", FeatureType.STATION_PROFILE, true);
 
   }
 
