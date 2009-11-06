@@ -80,6 +80,7 @@ public class TableAnalyzer {
     registerAnalyzer("MADIS surface observations, v1.0", Madis.class, null);
     registerAnalyzer("Ndbc", Ndbc.class, null);
     registerAnalyzer("Suomi-Station-CDM", Suomi.class, null);
+    registerAnalyzer("BuoyShip-NetCDF", BuoyShipSynop.class, null);
     // registerAnalyzer("Unidata Point Feature v1.0", UnidataPointFeature.class, null);
 
     // further calls to registerConvention are by the user
