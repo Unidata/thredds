@@ -102,6 +102,11 @@ public class GridVertCoord implements Comparable {
   boolean dontUseVertical = false;
 
   /**
+     * vertical pressure factors
+     */
+  double[] factors = null;
+
+  /**
    * positive  direction
    */
   String positive = "up";
@@ -294,16 +299,41 @@ public class GridVertCoord implements Comparable {
    * check for Sigma Pressure Levels
    */
 
-  void checkForPressureLevels( List<GridRecord> records, GridHorizCoordSys hcs ) {
+  boolean checkForPressureLevels( List<GridRecord> records, GridHorizCoordSys hcs ) {
       GridDefRecord gdr = hcs.getGds();
       Grib1GDSVariables g1dr = (Grib1GDSVariables) gdr.getGdsv();
       if( g1dr == null || ! g1dr.hasVerticalPressureLevels() )
-        return;
+        return false;
 
+      // add hybrid numbers
+      coordValues = new double[ levels.size()];
+        for (int i = 0; i < levels.size(); i++ ) {
+          LevelCoord lc = levels.get( i );
+          coordValues[ i ] =   lc.value1  ;
+        }
       int NV = g1dr.getNV();
-      // TODO: more research is needed on pressure level calculations.
-      // current comment permits ncml users to set hybrid levels and to get the data
-      if ( false && NV > 2 && NV < 255 ) { // Some data doesn't add Pressure Level values
+      // add new variables
+      if (  NV > 2 && NV < 255 ) { // Some data doesn't add Pressure Level values
+         factors = g1dr.getVerticalPressureLevels();
+      }
+      return true;
+
+    /*
+        // add hybrida variable
+          Variable ha = new Variable(ncfile, g, null, "hybrida");
+          vb.setDataType(DataType.INT);
+          if (g == null) {
+            g = ncfile.getRootGroup();
+          }
+          if ( g.findDimension("ncell") == null) {
+            ncfile.addDimension(g, new Dimension("ncell", 2, true));
+          }
+          vb.setDimensions( getName() +" ncell");
+
+          vb.addAttribute(new Attribute("long_name",  interval ));
+          vb.addAttribute(new Attribute("units", timeUnit + " since " + refDate));
+          // add data
+
         NV = NV / 2 -1;
         coordValues = new double[ levels.size() * NV ];
         int idx = 0;
@@ -318,7 +348,8 @@ public class GridVertCoord implements Comparable {
           LevelCoord lc = levels.get( i );
           coordValues[ i ] =   lc.value1  ;
         }
-      }
+      */
+
   }
 
   /**
@@ -439,6 +470,48 @@ public class GridVertCoord implements Comparable {
       b.setCachedData(boundsArray, true);
 
       ncfile.addVariable(g, b);
+    }
+
+    if (factors != null) {
+      // check if already created
+      if (g == null) {
+        g = ncfile.getRootGroup();
+      }
+      if ( g.findVariable ( "hybrida" ) != null)
+        return ;
+      v.addAttribute(new Attribute("standard_name", "atmosphere_hybrid_sigma_pressure_coordinate" ));
+      v.addAttribute(new Attribute("formula_terms", "ap: hybrida b: hybridb ps: Pressure" ));
+      // create  hybrid factor variables
+      // add hybrida variable
+      Variable ha = new Variable(ncfile, g, null, "hybrida");
+      ha.setDataType(DataType.DOUBLE);
+      ha.addAttribute(new Attribute("long_name",  "level_a_factor" ));
+      //ha.addAttribute(new Attribute("standard_name", "atmosphere_hybrid_sigma_pressure_coordinate" ));
+      ha.addAttribute(new Attribute("units", ""));
+      ha.setDimensions(getVariableName());
+      // add data
+      int middle = factors.length / 2;
+      double[] adata = new double[ middle ];
+      for( int i = 0; i < middle; i++ )
+        adata[ i ] = factors[ i ];
+      Array haArray = Array.factory(DataType.DOUBLE, new int[]{adata.length}, adata);
+      ha.setCachedData(haArray, true);
+      ncfile.addVariable(g, ha);
+
+      // add hybridb variable
+      Variable hb = new Variable(ncfile, g, null, "hybridb");
+      hb.setDataType(DataType.DOUBLE);
+      hb.addAttribute(new Attribute("long_name",  "level_b_factor" ));
+      //hb.addAttribute(new Attribute("standard_name", "atmosphere_hybrid_sigma_pressure_coordinate" ));
+      hb.addAttribute(new Attribute("units", ""));
+      hb.setDimensions(getVariableName());
+      // add data
+      double[] bdata = new double[ middle ];
+      for( int i = 0; i < middle; i++ )
+        bdata[ i ] = factors[ i + middle ];
+      Array hbArray = Array.factory(DataType.DOUBLE, new int[]{bdata.length}, bdata);
+      hb.setCachedData(hbArray, true);
+      ncfile.addVariable(g, hb);
     }
   }
 
