@@ -64,9 +64,16 @@ public class Nimbus extends COARDSConvention {
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
     ds.addAttribute(null, new Attribute("cdm_data_type", ucar.nc2.constants.FeatureType.TRAJECTORY.name()));
 
-    setAxisType(ds, "LATC", AxisType.Lat);
-    setAxisType(ds, "LONC", AxisType.Lon);
-    setAxisType(ds, "PALT", AxisType.Height);
+    if (!setAxisType(ds, "LATC", AxisType.Lat))
+      if (!setAxisType(ds, "LAT", AxisType.Lat))
+        setAxisType(ds, "GGLAT", AxisType.Lat);
+
+    if (!setAxisType(ds, "LONC", AxisType.Lon))
+      if (!setAxisType(ds, "LON", AxisType.Lon))
+        setAxisType(ds, "GGLON", AxisType.Lon);
+
+    if (!setAxisType(ds, "PALT", AxisType.Height))
+      setAxisType(ds, "GGALT", AxisType.Height);
 
     boolean hasTime = setAxisType(ds, "Time", AxisType.Time);
     if (!hasTime)
@@ -77,7 +84,7 @@ public class Nimbus extends COARDSConvention {
 
     if (!hasTime) {
       Variable time = ds.findVariable("time_offset");
-      if ((time != null) && (time.getUnitsString() == null)) {
+      if (time != null) {
         Variable base = ds.findVariable("base_time");
         int base_time = base.readScalarInt();
         try {

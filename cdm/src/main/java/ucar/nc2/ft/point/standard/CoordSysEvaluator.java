@@ -118,11 +118,11 @@ public class CoordSysEvaluator {
    */
   static public CoordinateAxis findCoordByType(NetcdfDataset ds, AxisType atype) {
     CoordinateSystem use = findBestCoordinateSystem(ds);
-    if (use == null) return null;
-
-    for (CoordinateAxis axis : use.getCoordinateAxes()) {
-      if (axis.getAxisType() == atype)
-        return axis;
+    if (use != null) {
+      for (CoordinateAxis axis : use.getCoordinateAxes()) {
+        if (axis.getAxisType() == atype)
+          return axis;
+      }
     }
 
     // try all the axes

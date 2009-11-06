@@ -32,12 +32,11 @@
 
 package ucar.nc2.ft.point.standard.plug;
 
-import ucar.nc2.ft.point.standard.TableConfigurerImpl;
-import ucar.nc2.ft.point.standard.TableConfig;
-import ucar.nc2.ft.point.standard.PointConfigXML;
-import ucar.nc2.ft.point.standard.CoordSysEvaluator;
+import ucar.nc2.ft.point.standard.*;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.Dimension;
 
 import java.util.Formatter;
@@ -56,11 +55,24 @@ public class RafNimbus extends TableConfigurerImpl {
   }
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
-    PointConfigXML reader = new PointConfigXML();
-    TableConfig result = reader.readConfigXMLfromResource("resources/nj22/pointConfig/RafNimbus.xml", wantFeatureType, ds, errlog);
-    TableConfig inner = result.children.get(0);
-    Dimension innerDim = ds.findDimension(inner.dimName);
-    CoordSysEvaluator.findCoordWithDimension(inner, ds, innerDim); // let CoordSysBuilder figure out coordinates
-    return result;
+    TableConfig topTable = new TableConfig(Table.Type.Top, "singleTrajectory");
+
+    CoordinateAxis coordAxis = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
+    if (coordAxis == null) {
+      errlog.format("Cant find a time coordinate");
+      return null;
+    }
+    Dimension innerDim = coordAxis.getDimension(0);
+    boolean obsIsStruct = Evaluator.hasRecordStructure(ds) && innerDim.isUnlimited();
+
+    TableConfig obsTable = new TableConfig(Table.Type.Structure, innerDim.getName());
+    obsTable.dimName = innerDim.getName();
+    obsTable.time = coordAxis.getName();
+    obsTable.structName = obsIsStruct ? "record" : innerDim.getName();
+    obsTable.structureType = obsIsStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
+    CoordSysEvaluator.findCoordWithDimension(obsTable, ds, innerDim); 
+
+    topTable.addChild(obsTable);
+    return topTable;
   }
 }

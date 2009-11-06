@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<pointConfig featureType="TRAJECTORY">
-  <table type="Top" structName=" single">
-    <table type="Structure" subtype="PsuedoStructure" dim="Time" structName="Time" />
-  </table>
-</pointConfig>
