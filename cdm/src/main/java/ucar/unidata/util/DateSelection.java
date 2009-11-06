@@ -21,15 +21,16 @@
  */
 
 
+
 package ucar.unidata.util;
 
 
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Date;
 import java.util.List;
 
 
@@ -39,22 +40,49 @@ import java.util.List;
 
 public class DateSelection {
 
+    /** date formatter         */
     private static SimpleDateFormat sdf;
 
+    /** url argument names          */
     private static final String ARG_PREFIX = "dateselection.";
 
-    public static final String ARG_STARTMODE = ARG_PREFIX +"start_mode";
-    public static final String ARG_ENDMODE  = ARG_PREFIX +"end_mode"; 
-    public static final String ARG_STARTFIXEDTIME = ARG_PREFIX +"start_fixedtime";
-    public static final String ARG_ENDFIXEDTIME = ARG_PREFIX +"end_fixedtime";
-    public static final String ARG_STARTOFFSET = ARG_PREFIX +"start_offset";
-    public static final String ARG_ENDOFFSET = ARG_PREFIX +"end_offset";
-    public static final String ARG_POSTRANGE = ARG_PREFIX +"postrange";
-    public static final String ARG_PRERANGE = ARG_PREFIX +"prerange";
-    public static final String ARG_INTERVAL = ARG_PREFIX +"interval";
-    public static final String ARG_ROUNDTO = ARG_PREFIX +"roundto";
-    public static final String ARG_COUNT = ARG_PREFIX +"count";
-    public static final String ARG_SKIP = ARG_PREFIX +"skip";
+    /** url argument names          */
+    public static final String ARG_STARTMODE = ARG_PREFIX + "start_mode";
+
+    /** url argument names          */
+    public static final String ARG_ENDMODE = ARG_PREFIX + "end_mode";
+
+    /** url argument names          */
+    public static final String ARG_STARTFIXEDTIME = ARG_PREFIX
+                                                    + "start_fixedtime";
+
+    /** url argument names          */
+    public static final String ARG_ENDFIXEDTIME = ARG_PREFIX
+                                                  + "end_fixedtime";
+
+    /** url argument names          */
+    public static final String ARG_STARTOFFSET = ARG_PREFIX + "start_offset";
+
+    /** url argument names          */
+    public static final String ARG_ENDOFFSET = ARG_PREFIX + "end_offset";
+
+    /** url argument names          */
+    public static final String ARG_POSTRANGE = ARG_PREFIX + "postrange";
+
+    /** url argument names          */
+    public static final String ARG_PRERANGE = ARG_PREFIX + "prerange";
+
+    /** url argument names          */
+    public static final String ARG_INTERVAL = ARG_PREFIX + "interval";
+
+    /** url argument names          */
+    public static final String ARG_ROUNDTO = ARG_PREFIX + "roundto";
+
+    /** url argument names          */
+    public static final String ARG_COUNT = ARG_PREFIX + "count";
+
+    /** url argument names          */
+    public static final String ARG_SKIP = ARG_PREFIX + "skip";
 
 
 
@@ -79,8 +107,9 @@ public class DateSelection {
     public static final int TIMEMODE_DATA = 3;
 
 
-    public static String[] TIMEMODESTRINGS = { "FIXED", "CURRENT",
-					       "RELATIVE","DATA" };
+    /** string ids for time modes      */
+    public static String[] TIMEMODESTRINGS = { "FIXED", "CURRENT", "RELATIVE",
+            "DATA" };
 
 
     /** Mode for constructing set */
@@ -159,74 +188,96 @@ public class DateSelection {
 
     /**
      * ctor for instantiating a DateSelection object from a set of url argument originally created from toUrlString
+     *
+     * @param args set of name value pairs as created by getUrlArgs
      */
     public DateSelection(Hashtable<String, String> args) {
-	String s;
+        String s;
 
-	s = args.get(ARG_STARTMODE);
-	if(s!=null) {
-	    boolean ok = false;
-	    for(int i=0;i<TIMEMODESTRINGS.length;i++)  {
-		if(TIMEMODESTRINGS[i].equals(s)) {
-		    startMode = TIMEMODES[i];
-		    ok = true;
-		    break;
-		}
-	    }
-	    if(!ok) throw new IllegalArgumentException("Unknown " + ARG_STARTMODE +" argument:" +s);
-	}
+        s = args.get(ARG_STARTMODE);
+        if (s != null) {
+            boolean ok = false;
+            for (int i = 0; i < TIMEMODESTRINGS.length; i++) {
+                if (TIMEMODESTRINGS[i].equals(s)) {
+                    startMode = TIMEMODES[i];
+                    ok        = true;
+                    break;
+                }
+            }
+            if ( !ok) {
+                throw new IllegalArgumentException("Unknown " + ARG_STARTMODE
+                        + " argument:" + s);
+            }
+        }
 
-	s = args.get(ARG_ENDMODE);
-	if(s!=null) {
-	    boolean ok = false;
-	    for(int i=0;i<TIMEMODESTRINGS.length;i++)  {
-		if(TIMEMODESTRINGS[i].equals(s)) {
-		    endMode = TIMEMODES[i];
-		    ok = true;
-		    break;
-		}
-	    }
-	    if(!ok) throw new IllegalArgumentException("Unknown " + ARG_ENDMODE +" argument:" +s);
-	}
-
-
-
-	s = args.get(ARG_STARTFIXEDTIME);
-	if(s!=null) {
-	    try {
-		startFixedTime = parseDate(s).getTime();
-	    } catch(java.text.ParseException pe) {
-		throw new IllegalArgumentException("Incorrect date format for argument " + ARG_STARTFIXEDTIME + " " + s);
-	    }
-	}
+        s = args.get(ARG_ENDMODE);
+        if (s != null) {
+            boolean ok = false;
+            for (int i = 0; i < TIMEMODESTRINGS.length; i++) {
+                if (TIMEMODESTRINGS[i].equals(s)) {
+                    endMode = TIMEMODES[i];
+                    ok      = true;
+                    break;
+                }
+            }
+            if ( !ok) {
+                throw new IllegalArgumentException("Unknown " + ARG_ENDMODE
+                        + " argument:" + s);
+            }
+        }
 
 
-	s = args.get(ARG_ENDFIXEDTIME);
-	if(s!=null) {
-	    try {
-		endFixedTime = parseDate(s).getTime();
-	    } catch(java.text.ParseException pe) {
-		throw new IllegalArgumentException("Incorrect date format for argument " + ARG_ENDFIXEDTIME + " " + s);
-	    }
-	}
+
+        s = args.get(ARG_STARTFIXEDTIME);
+        if (s != null) {
+            try {
+                startFixedTime = parseDate(s).getTime();
+            } catch (java.text.ParseException pe) {
+                throw new IllegalArgumentException(
+                    "Incorrect date format for argument "
+                    + ARG_STARTFIXEDTIME + " " + s);
+            }
+        }
 
 
-	roundTo = toDouble(args.get(ARG_ROUNDTO), roundTo);
-	interval = toDouble(args.get(ARG_INTERVAL), interval);
-	postRange = toDouble(args.get(ARG_POSTRANGE), postRange);
-	preRange = toDouble(args.get(ARG_PRERANGE), preRange);
-	startOffset = toDouble(args.get(ARG_STARTOFFSET), startOffset);
-	endOffset = toDouble(args.get(ARG_ENDOFFSET), endOffset);
-	skip =(int) toDouble(args.get(ARG_SKIP), skip);
-	count =(int) toDouble(args.get(ARG_COUNT), count);
+        s = args.get(ARG_ENDFIXEDTIME);
+        if (s != null) {
+            try {
+                endFixedTime = parseDate(s).getTime();
+            } catch (java.text.ParseException pe) {
+                throw new IllegalArgumentException(
+                    "Incorrect date format for argument " + ARG_ENDFIXEDTIME
+                    + " " + s);
+            }
+        }
+
+
+        roundTo     = toDouble(args.get(ARG_ROUNDTO), roundTo);
+        interval    = toDouble(args.get(ARG_INTERVAL), interval);
+        postRange   = toDouble(args.get(ARG_POSTRANGE), postRange);
+        preRange    = toDouble(args.get(ARG_PRERANGE), preRange);
+        startOffset = toDouble(args.get(ARG_STARTOFFSET), startOffset);
+        endOffset   = toDouble(args.get(ARG_ENDOFFSET), endOffset);
+        skip        = (int) toDouble(args.get(ARG_SKIP), skip);
+        count       = (int) toDouble(args.get(ARG_COUNT), count);
 
 
     }
 
 
+    /**
+     * helper method that converts a string to a double. If s is null then return  dflt
+     *
+     * @param s the string
+     * @param dflt default value
+     *
+     * @return the double
+     */
     private double toDouble(String s, double dflt) {
-	if(s==null) return dflt;
-	return new Double(s).doubleValue();
+        if (s == null) {
+            return dflt;
+        }
+        return new Double(s).doubleValue();
     }
 
 
@@ -1301,11 +1352,15 @@ public class DateSelection {
      * test main
      *
      * @param cmdLineArgs cmd line args
+     *
+     * @throws Exception on badness
      */
     public static void main(String[] cmdLineArgs) throws Exception {
         DateSelection dateSelection = new DateSelection();
         List          dates         = new ArrayList();
-        long          now           = dateSelection.parseDate(dateSelection.formatDate(new Date(System.currentTimeMillis()))).getTime();
+        long now = dateSelection.parseDate(
+                       dateSelection.formatDate(
+                           new Date(System.currentTimeMillis()))).getTime();
         for (int i = 0; i < 20; i++) {
             dates.add(new DatedObject(new Date(now
                     + DateUtil.minutesToMillis(20) - i * 10 * 60 * 1000)));
@@ -1326,21 +1381,21 @@ public class DateSelection {
 
 
         dates = dateSelection.apply(dates);
-	//        System.err.println("result:" + dates);
+        //        System.err.println("result:" + dates);
 
 
-	Hashtable<String, String> args = new Hashtable<String,String>();
-	dateSelection.getArgs(args);
-	System.err.println ("url string:" + dateSelection.toUrlString());
+        Hashtable<String, String> args = new Hashtable<String, String>();
+        dateSelection.getUrlArgs(args);
+        System.err.println("url string:" + dateSelection.toUrlString());
 
-	DateSelection dateSelection2 = new DateSelection(args);
-	if(!dateSelection.equals(dateSelection2)) {
-	    System.err.println ("date selection 2 != date selection");
-	    System.err.println (dateSelection);
-	    System.err.println (dateSelection2);
-	} else {
-	    System.err.println ("date selection 2 == date selection");
-	}
+        DateSelection dateSelection2 = new DateSelection(args);
+        if ( !dateSelection.equals(dateSelection2)) {
+            System.err.println("date selection 2 != date selection");
+            System.err.println(dateSelection);
+            System.err.println(dateSelection2);
+        } else {
+            System.err.println("date selection 2 == date selection");
+        }
     }
 
 
@@ -1366,84 +1421,119 @@ public class DateSelection {
 
 
 
-    public String urlArg(String name, String value) {
-	return "&" +name +"=" + value;
+    /**
+     * helper method to create a url arg
+     *
+     * @param name url arg name
+     * @param value value
+     *
+     * @return the name=value string
+     */
+    private static String urlArg(String name, String value) {
+        return "&" + name + "=" + value;
     }
 
+    /**
+     * format the date as ISO
+     *
+     * @param d the date
+     *
+     * @return the formatted date
+     */
     private String formatDate(Date d) {
-	if(sdf == null) {
-	    sdf =   new SimpleDateFormat(DateUtil.DateFormatHandler.ISO_DATE_TIME.getDateTimeFormatString());
+        if (sdf == null) {
+            sdf = new SimpleDateFormat(DateUtil.DateFormatHandler
+                .ISO_DATE_TIME.getDateTimeFormatString());
             sdf.setTimeZone(DateUtil.TIMEZONE_GMT);
-	}
-	return sdf.format(d);
+        }
+        return sdf.format(d);
     }
 
+    /**
+     * parse the iso date
+     *
+     * @param s date string
+     *
+     * @return date
+     *
+     * @throws java.text.ParseException on badness
+     */
     private Date parseDate(String s) throws java.text.ParseException {
-	if(s==null || s.trim().length()==0) return null;
-	if(sdf == null) {
-	    sdf =   new SimpleDateFormat(DateUtil.DateFormatHandler.ISO_DATE_TIME.getDateTimeFormatString());
+        if ((s == null) || (s.trim().length() == 0)) {
+            return null;
+        }
+        if (sdf == null) {
+            sdf = new SimpleDateFormat(DateUtil.DateFormatHandler
+                .ISO_DATE_TIME.getDateTimeFormatString());
             sdf.setTimeZone(DateUtil.TIMEZONE_GMT);
-	}
-	return sdf.parse(s);
+        }
+        return sdf.parse(s);
     }
 
 
     /**
-     * tostring
+     * This adds to the hashtable the set of name/value pairs that allow us to create a new DateSelection from a url argument string
      *
-     * @return tostring
+     *
+     * @param args put the name value pairs in here
      */
-    public void  getArgs(Hashtable<String, String> args) {
-	args.put(ARG_STARTMODE, TIMEMODESTRINGS[startMode]);
-	args.put(ARG_ENDMODE, TIMEMODESTRINGS[endMode]);
-	if(startMode == TIMEMODE_FIXED) {
-	    args.put(ARG_STARTFIXEDTIME, formatDate(new Date(startFixedTime)));
-	}
-	if(endMode == TIMEMODE_FIXED) {
-	    args.put(ARG_ENDFIXEDTIME, formatDate(new Date(endFixedTime)));
-	}
-	if(startOffset!=0) {
-	    args.put(ARG_STARTOFFSET, ""+startOffset);
-	}
-	if(endOffset!=0) {
-	    args.put(ARG_ENDOFFSET, ""+endOffset);
-	}
-	if(preRange == preRange) {
-	    args.put(ARG_PRERANGE, ""+preRange);
-	}
-	if(postRange == postRange) {
-	    args.put(ARG_POSTRANGE, ""+postRange);
-	}
-	if(interval == interval) {
-	    args.put(ARG_INTERVAL, ""+interval);
-	}
-	if(roundTo!=0) {
-	    args.put(ARG_ROUNDTO, ""+roundTo);
-	}
-	if(count!=MAX_COUNT) {
-	    args.put(ARG_COUNT, ""+count);
-	}
-	if(skip!=0) {
-	    args.put(ARG_SKIP, ""+skip);
-	}
+    public void getUrlArgs(Hashtable<String, String> args) {
+        args.put(ARG_STARTMODE, TIMEMODESTRINGS[startMode]);
+        args.put(ARG_ENDMODE, TIMEMODESTRINGS[endMode]);
+        if (startMode == TIMEMODE_FIXED) {
+            args.put(ARG_STARTFIXEDTIME,
+                     formatDate(new Date(startFixedTime)));
+        }
+        if (endMode == TIMEMODE_FIXED) {
+            args.put(ARG_ENDFIXEDTIME, formatDate(new Date(endFixedTime)));
+        }
+        if (startOffset != 0) {
+            args.put(ARG_STARTOFFSET, "" + startOffset);
+        }
+        if (endOffset != 0) {
+            args.put(ARG_ENDOFFSET, "" + endOffset);
+        }
+        if (preRange == preRange) {
+            args.put(ARG_PRERANGE, "" + preRange);
+        }
+        if (postRange == postRange) {
+            args.put(ARG_POSTRANGE, "" + postRange);
+        }
+        if (interval == interval) {
+            args.put(ARG_INTERVAL, "" + interval);
+        }
+        if (roundTo != 0) {
+            args.put(ARG_ROUNDTO, "" + roundTo);
+        }
+        if (count != MAX_COUNT) {
+            args.put(ARG_COUNT, "" + count);
+        }
+        if (skip != 0) {
+            args.put(ARG_SKIP, "" + skip);
+        }
     }
 
 
 
 
+    /**
+     * Create a url string to encode this object
+     *
+     * @return the url string
+     */
     public String toUrlString() {
-	StringBuffer sb = new StringBuffer();
-	Hashtable<String,String>  args  = new Hashtable<String,String>();
-	getArgs(args);
-	for(Enumeration keys  = args.keys(); keys.hasMoreElements();) {
-	    String key = (String)keys.nextElement();
-	    String value = args.get(key);
-	    sb.append(urlArg(key, value));
-	}
-	return sb.toString();
+        StringBuffer              sb   = new StringBuffer();
+        Hashtable<String, String> args = new Hashtable<String, String>();
+        getUrlArgs(args);
+        for (Enumeration keys = args.keys(); keys.hasMoreElements(); ) {
+            String key   = (String) keys.nextElement();
+            String value = args.get(key);
+            sb.append(urlArg(key, value));
+        }
+        return sb.toString();
     }
 
-    
+
 
 
 }
