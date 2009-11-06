@@ -1099,7 +1099,7 @@ public class NcMLReader {
       cmdRemove(v, remElem.getAttributeValue("type"), remElem.getAttributeValue("name"));
     }
 
-    if (v.getDataType() == DataType.STRUCTURE) {
+    if ((v.getDataType() == DataType.STRUCTURE) || (v.getDataType() == DataType.SEQUENCE)) {
       // deal with nested variables
       StructureDS s = (StructureDS) v;
       StructureDS refS = (StructureDS) refv;

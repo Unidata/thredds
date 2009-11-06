@@ -32,12 +32,33 @@
  */
 package ucar.nc2.ft.point.standard;
 
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.Dimension;
+import ucar.nc2.Variable;
+import ucar.nc2.Attribute;
+import ucar.nc2.constants.AxisType;
+
+import java.util.Formatter;
+
 /**
  * Abstract superclass for TableConfigurer implementations
  * @author caron
  * @since Jan 21, 2009
  */
 public abstract class TableConfigurerImpl implements TableConfigurer {
+  // CF names
+  public static final String STANDARD_NAME = "standard_name";
+  public static final String RAGGED_ROWSIZE = "ragged_row_size";
+  public static final String RAGGED_PARENTINDEX = "ragged_parent_index";
+  public static final String STATION_ID = "station_id";
+  public static final String STATION_DESC = "station_desc";
+  public static final String STATION_ALTITUDE = "station_altitude";
+  public static final String STATION_WMOID = "station_wmoid";
+  public static final String TRAJ_ID = "trajectory_id";
+  public static final String PROFILE_ID = "profile_id";
+  public static final String SECTION_ID = "section_id";
+
   public String getConvName() {
     return convName;
   }
@@ -55,5 +76,84 @@ public abstract class TableConfigurerImpl implements TableConfigurer {
   }
 
   private String convName, convUsed;
+
+  protected String findNameVariableWithStandardNameAndDimension(NetcdfDataset ds, String standard_name, Dimension outer, Formatter errlog) {
+    Variable v = findVariableWithStandardNameAndDimension(ds, standard_name, outer, errlog);
+    return (v == null) ? null : v.getShortName();
+  }
+
+  protected Variable findVariableWithStandardNameAndDimension(NetcdfDataset ds, String standard_name, Dimension outer, Formatter errlog) {
+    for (Variable v : ds.getVariables()) {
+      String stdName = ds.findAttValueIgnoreCase(v, STANDARD_NAME, null);
+      if ((stdName != null) && stdName.equals(standard_name)) {
+        if (v.getRank() > 0 && v.getDimension(0).equals(outer))
+          return v;
+        if ((v.getRank() == 0) && (outer == null))
+          return v;
+      }
+    }
+    return null;
+  }
+
+  protected Variable findVariableWithStandardNameAndNotDimension(NetcdfDataset ds, String standard_name, Dimension outer, Formatter errlog) {
+    for (Variable v : ds.getVariables()) {
+      String stdName = ds.findAttValueIgnoreCase(v, STANDARD_NAME, null);
+      if ((stdName != null) && stdName.equals(standard_name) && v.getRank() > 0 && !v.getDimension(0).equals(outer))
+        return v;
+    }
+    return null;
+  }
+
+  protected String matchAxisTypeAndDimension(NetcdfDataset ds, AxisType type, final Dimension outer) {
+    Variable var = CoordSysEvaluator.findCoordByType(ds, type, new CoordSysEvaluator.Predicate() {
+      public boolean match(CoordinateAxis axis) {
+        if ((outer == null) && (axis.getRank() == 0))
+          return true;
+        if ((outer != null) && (axis.getRank() == 1) && (outer.equals(axis.getDimension(0))))
+          return true;
+        return false;
+      }
+    });
+    if (var == null) return null;
+    return var.getShortName();
+  }
+
+  protected String matchAxisTypeAndDimension(NetcdfDataset ds, AxisType type, final Dimension outer, final Dimension inner) {
+    Variable var = CoordSysEvaluator.findCoordByType(ds, type, new CoordSysEvaluator.Predicate() {
+      public boolean match(CoordinateAxis axis) {
+        return ((axis.getRank() == 2) && outer.equals(axis.getDimension(0)) && inner.equals(axis.getDimension(1)));
+      }
+    });
+    if (var == null) return null;
+    return var.getShortName();
+  }
+
+  protected String matchAxisTypeAndDimension(NetcdfDataset ds, AxisType type, final Dimension outer, final Dimension middle, final Dimension inner) {
+    Variable var = CoordSysEvaluator.findCoordByType(ds, type, new CoordSysEvaluator.Predicate() {
+      public boolean match(CoordinateAxis axis) {
+        return ((axis.getRank() == 3) && outer.equals(axis.getDimension(0)) && middle.equals(axis.getDimension(1)) && inner.equals(axis.getDimension(2)));
+      }
+    });
+    if (var == null) return null;
+    return var.getShortName();
+  }
+
+  protected CoordinateAxis findZAxisNotStationAlt(NetcdfDataset ds) {
+    CoordinateAxis z = CoordSysEvaluator.findCoordByType(ds, AxisType.Height, new CoordSysEvaluator.Predicate() {
+      public boolean match(CoordinateAxis axis) {
+        Attribute stdName = axis.findAttribute(STANDARD_NAME);
+        return ((stdName == null) || !STATION_ALTITUDE.equals(stdName.getStringValue()));
+      }
+    });
+    if (z != null) return z;
+
+    z = CoordSysEvaluator.findCoordByType(ds, AxisType.Pressure, new CoordSysEvaluator.Predicate() {
+      public boolean match(CoordinateAxis axis) {
+        Attribute stdName = axis.findAttribute(STANDARD_NAME);
+        return ((stdName == null) || !STATION_ALTITUDE.equals(stdName.getStringValue()));
+      }
+    });
+    return z;
+  }
 
 }

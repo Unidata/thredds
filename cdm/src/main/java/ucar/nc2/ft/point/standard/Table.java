@@ -906,7 +906,8 @@ public abstract class Table {
 
   /**
    * Used for Structure(station, time).
-   * This is used for the inner table.
+   * This is used for the inner table, where the station index gets set, and all the structures for that
+   * styation are read in at once. Then we just iterate over that ArrayStructure.
    * <p/>
    * Used by:
    * GempakCdm
@@ -944,6 +945,8 @@ public abstract class Table {
   /**
    * A Structure inside of a parent Structure.
    * Name of child member inside parent Structure is config.nestedTableName
+    obsTable.structName = obsStruct.getName();
+    obsTable.nestedTableName = obsStruct.getShortName();
    * <p/>
    * Used by:
    * BufrCdm

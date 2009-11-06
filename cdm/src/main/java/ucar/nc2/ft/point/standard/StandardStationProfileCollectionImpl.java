@@ -122,35 +122,38 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       cursor.recnum[2] = recnum; // the station record
       cursor.tableData[2] = stationData; // obs(leaf) = 0, profile=1, station(root)=2
       cursor.currentIndex = 2;
-      return new StandardStationProfileFeatureIterator(cursor);
+      return new TimeSeriesOfProfileFeatureIterator(cursor);
     }
 
-    private class StandardStationProfileFeatureIterator implements PointFeatureCollectionIterator {
+    private class TimeSeriesOfProfileFeatureIterator implements PointFeatureCollectionIterator {
       private Cursor cursor;
       private ucar.ma2.StructureDataIterator iter;
       private int count = 0;
+      //private StructureData nextProfile;
 
-      StandardStationProfileFeatureIterator(Cursor cursor) throws IOException {
+      TimeSeriesOfProfileFeatureIterator(Cursor cursor) throws IOException {
         this.cursor = cursor;
         iter = ft.getMiddleFeatureDataIterator(cursor, -1);
       }
 
       public boolean hasNext() throws IOException {
-        boolean r = iter.hasNext();
-        if (!r)
-          timeSeriesNpts = count; // field in StationProfileFeatureImpl
-        return r;
+        while (true) {
+          if(!iter.hasNext()) {
+            timeSeriesNpts = count; // field in StationProfileFeatureImpl
+            return false;
+          }
+          //nextProfile = iter.next();
+          cursor.tableData[1] = iter.next();
+          cursor.recnum[1] = iter.getCurrentRecno();
+          cursor.currentIndex = 1;
+          if (!ft.isMissing(cursor)) break;
+        }
+        return true;
       }
 
       public PointFeatureCollection next() throws IOException {
-        Cursor cursorIter = cursor.copy();
-        cursorIter.tableData[1] = iter.next(); // the profile record
-        cursorIter.recnum[1] = iter.getCurrentRecno();
-        cursorIter.currentIndex = 1;
         count++;
-
-        // double time = ft.getObsTime(cursorIter);
-        return new StandardProfileFeature(s, cursorIter);
+        return new StandardProfileFeature(s, cursor.copy());
       }
 
       public void setBufferSize(int bytes) {

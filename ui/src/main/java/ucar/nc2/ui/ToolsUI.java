@@ -3340,7 +3340,7 @@ public class ToolsUI extends JPanel {
 
     void doWriteNetCDF(String filename) {
       try {
-        FileWriter.writeToFile(ncfile, filename, false, -1);
+        FileWriter.writeToFile(ncfile, filename, false, -1, false);
         JOptionPane.showMessageDialog(this, "File successfully written");
       } catch (Exception ioe) {
         JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());

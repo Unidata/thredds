@@ -145,6 +145,14 @@ public class Evaluator {
     return null;
   }
 
+  static public Structure getNestedStructure(Structure s) {
+     for (Variable v : s.getVariables()) {
+       if ((v instanceof Structure))
+           return (Structure) v;
+    }
+    return null;
+  }
+
 
   static public boolean hasRecordStructure(NetcdfDataset ds) {
     Variable v = ds.findVariable("record");

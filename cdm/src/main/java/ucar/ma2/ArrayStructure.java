@@ -558,7 +558,7 @@ public abstract class ArrayStructure extends Array {
       return data.getObject(recno * m.getSize()); // LOOK ?? 
      }
 
-    throw new RuntimeException("Dont have implemenation for " + dataType);
+    throw new RuntimeException("Dont have implementation for " + dataType);
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////

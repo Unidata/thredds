@@ -170,7 +170,7 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   public void testProblem() throws IOException {
-    testPointDataset("C:\\data\\ft\\station\\madis2.sao", FeatureType.STATION, true);
+    assert 8769 == testPointDataset("file:Q:/sounding/gempak/19580807_upa.ncml", FeatureType.STATION_PROFILE, true);
   }
 
   public void testCF() throws IOException {
@@ -586,7 +586,7 @@ public class TestPointFeatureTypes extends TestCase {
         sdata.getScalarString(member);
       }
 
-      if ((dt != DataType.STRING) && (dt != DataType.CHAR) && (dt != DataType.STRUCTURE)) {
+      if ((dt != DataType.STRING) && (dt != DataType.CHAR) && (dt != DataType.STRUCTURE) && (dt != DataType.SEQUENCE)) {
         sdata.convertScalarFloat(member.getName());
       }
 

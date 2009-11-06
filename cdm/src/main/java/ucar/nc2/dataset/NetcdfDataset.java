@@ -1566,26 +1566,29 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @throws IOException on read or write error
    */
   public static void main(String arg[]) throws IOException {
+    String usage = "usage: ucar.nc2.dataset.NetcdfDataset -in <fileIn> -out <fileOut> [-isLargeFile]";
     if (arg.length < 4) {
-      System.out.println("usage: ucar.nc2.dataset.NetcdfDataset -in <fileIn> -out <fileOut> [-delay <millisecs>]");
+      System.out.println(usage);
       System.exit(0);
     }
 
+    boolean isLargeFile = false;
     String datasetIn = null, datasetOut = null;
     for (int i = 0; i < arg.length; i++) {
       String s = arg[i];
       if (s.equalsIgnoreCase("-in")) datasetIn = arg[i + 1];
       if (s.equalsIgnoreCase("-out")) datasetOut = arg[i + 1];
+      if (s.equalsIgnoreCase("-isLargeFile")) isLargeFile = true;
     }
     if ((datasetIn == null) || (datasetOut == null)) {
-      System.out.println("usage: ucar.nc2.dataset.NetcdfDataset -in <fileIn> -out <fileOut> [-delay <millisecs>]");
+      System.out.println(usage);
       System.exit(0);
     }
 
     NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, null);
     System.out.println("Read from " + datasetIn + " write to " + datasetOut);
 
-    NetcdfFile ncfileOut = ucar.nc2.FileWriter.writeToFile(ncfileIn, datasetOut, false, -1);
+    NetcdfFile ncfileOut = ucar.nc2.FileWriter.writeToFile(ncfileIn, datasetOut, false, -1, isLargeFile);
     ncfileIn.close();
     ncfileOut.close();
     System.out.println("NetcdfFile written = " + ncfileOut);

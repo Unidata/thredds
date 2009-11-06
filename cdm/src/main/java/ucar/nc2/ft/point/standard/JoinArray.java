@@ -46,10 +46,11 @@ import java.io.IOException;
  */
 public class JoinArray implements Join {
   public enum Type { 
-    modulo,  // use cursor[0] % param
-    divide, // use cursor[0] / param
-    raw ,  // use cursor[0]
-    scalar // use scalar data
+    modulo,  // use cursor.recnum[0] % param
+    divide, // use cursor.recnum[0] / param
+    level ,  // use cursor.recnum[param]
+    raw ,  // use cursor.recnum[0]
+    scalar // use 0
   }
 
   VariableDS v;
@@ -83,6 +84,9 @@ public class JoinArray implements Join {
         break;
       case divide:
         recnum = cursor.recnum[0] / param;
+        break;
+      case level:
+        recnum = cursor.recnum[param];
         break;
       case raw:
         recnum = cursor.recnum[0];

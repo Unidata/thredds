@@ -96,23 +96,30 @@ public class FileWriter {
     return writeToFile(fileIn, fileOutName, fill, 0);
   }
 
+
+  public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill, int delay) throws IOException {
+    return writeToFile(fileIn, fileOutName, fill, delay, false); 
+  }
+
   /**
    * Copy a NetcdfFile to a physical file, using Netcdf-3 file format.
    *
    * @param fileIn      write from this NetcdfFile
    * @param fileOutName write to this local file
    * @param fill        use fill mode
-   * @param delay       if > 0, pause this amount (in milliseconds) between writing each record. (for testing)
+   * @param delay       if > 0, delay this many millisecs between record writing (debugging - do not use)
+   * @param isLargeFile  if true, make large file format (> 2Gb offsets)
    * @return NetcdfFile that was written. It remains open for reading or writing.
    * @throws IOException on read or write error
    */
-  public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill, int delay) throws IOException {
+  public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill, int delay, boolean isLargeFile) throws IOException {
 
     NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(fileOutName, fill);
     if (debug) {
       System.out.println("FileWriter write " + fileIn.getLocation() + " to " + fileOutName);
       System.out.println("File In = " + fileIn);
     }
+    ncfile.setLargeFile(isLargeFile);
 
     // global attributes
     List<Attribute> glist = fileIn.getGlobalAttributes();
