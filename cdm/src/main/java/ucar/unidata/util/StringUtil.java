@@ -1,35 +1,23 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
+ * support@unidata.ucar.edu.
  *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at
+ * your option) any later version.
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
+ * General Public License for more details.
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
+
 
 
 package ucar.unidata.util;
@@ -43,6 +31,7 @@ import java.text.SimpleDateFormat;
 
 import java.util.*;
 import java.util.regex.*;
+
 
 
 
@@ -1702,29 +1691,32 @@ public class StringUtil {
      */
     public static String replaceDate(String s, String macroName, Date date,
                                      String macroPrefix, String macroSuffix) {
-        int idx1 = s.indexOf(macroPrefix + macroName);
-        if (idx1 < 0) {
-            return s;
-        }
 
-        int idx2 = s.indexOf(macroSuffix, idx1);
-        if (idx2 < 0) {
-            return s;
-        }
+        while(true) {
+            int idx1 = s.indexOf(macroPrefix + macroName);
+            if (idx1 < 0) {
+                return s;
+            }
 
-        String   fullMacro = s.substring(idx1 + macroPrefix.length(), idx2);
-        String[] toks      = StringUtil.split(fullMacro, ":", 2);
+            int idx2 = s.indexOf(macroSuffix, idx1);
+            if (idx2 < 0) {
+                return s;
+            }
 
-        if ((toks == null) || (toks.length != 2)) {
-            throw new IllegalArgumentException("Could not find date format:"
-                    + s);
+            String   fullMacro = s.substring(idx1 + macroPrefix.length(), idx2);
+            String[] toks      = StringUtil.split(fullMacro, ":", 2);
+
+            if ((toks == null) || (toks.length != 2)) {
+                throw new IllegalArgumentException("Could not find date format:"
+                                                   + s);
+            }
+            SimpleDateFormat sdf = new SimpleDateFormat(toks[1]);
+            sdf.setTimeZone(DateUtil.TIMEZONE_GMT);
+            String formattedDate = sdf.format(date);
+            s = s.replace(macroPrefix + fullMacro + macroSuffix, formattedDate);
+            //        System.err.println(s);
         }
-        SimpleDateFormat sdf = new SimpleDateFormat(toks[1]);
-        sdf.setTimeZone(DateUtil.TIMEZONE_GMT);
-        String formattedDate = sdf.format(date);
-        s = s.replace(macroPrefix + fullMacro + macroSuffix, formattedDate);
-        //        System.err.println(s);
-        return s;
+        //        return s;
     }
 
 
