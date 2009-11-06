@@ -616,6 +616,8 @@ public abstract class Aggregation implements ProxyReader {
       long start = System.currentTimeMillis();
 
       NetcdfFile ncfile = NetcdfDataset.acquireFile(reader, null, cacheLocation, -1, cancelTask, spiObject);
+
+      // must merge NcML before enhancing
       if (mergeNcml != null)
         ncfile = NcMLReader.mergeNcML(ncfile, mergeNcml); // create new dataset
       if (enhance == null || enhance.isEmpty()) {

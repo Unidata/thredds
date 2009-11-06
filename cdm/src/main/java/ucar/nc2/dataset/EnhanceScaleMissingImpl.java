@@ -465,8 +465,8 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
    * @return true if missing
    */
   public boolean isMissing(double val) {
-    if (!hasMissing()) return false;
     if (Double.isNaN(val)) return true;
+    if (!hasMissing()) return false;
     return isMissing_(val);
   }
 
@@ -476,9 +476,9 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
    * @return true if missing
    */
   public boolean isMissingFast( double val) {
-    if (!hasMissing()) return false;
     if (useNaNs) return Double.isNaN(val); // no need to check again
     if (Double.isNaN(val)) return true;
+    if (!hasMissing()) return false;
     return isMissing_(val);
   }
 
