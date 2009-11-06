@@ -1,43 +1,34 @@
 /*
  * $Id: DateSelection.java,v 1.18 2007/05/22 23:33:11 jeffmc Exp $
  *
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright  1997-2004 Unidata Program Center/University Corporation for
+ * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
+ * support@unidata.ucar.edu.
  *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at
+ * your option) any later version.
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
+ * General Public License for more details.
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
 
 package ucar.unidata.util;
 
 
+import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Date;
 import java.util.List;
 
@@ -47,6 +38,25 @@ import java.util.List;
  */
 
 public class DateSelection {
+
+    private static SimpleDateFormat sdf;
+
+    private static final String ARG_PREFIX = "dateselection.";
+
+    public static final String ARG_STARTMODE = ARG_PREFIX +"start_mode";
+    public static final String ARG_ENDMODE  = ARG_PREFIX +"end_mode"; 
+    public static final String ARG_STARTFIXEDTIME = ARG_PREFIX +"start_fixedtime";
+    public static final String ARG_ENDFIXEDTIME = ARG_PREFIX +"end_fixedtime";
+    public static final String ARG_STARTOFFSET = ARG_PREFIX +"start_offset";
+    public static final String ARG_ENDOFFSET = ARG_PREFIX +"end_offset";
+    public static final String ARG_POSTRANGE = ARG_PREFIX +"postrange";
+    public static final String ARG_PRERANGE = ARG_PREFIX +"prerange";
+    public static final String ARG_INTERVAL = ARG_PREFIX +"interval";
+    public static final String ARG_ROUNDTO = ARG_PREFIX +"roundto";
+    public static final String ARG_COUNT = ARG_PREFIX +"count";
+    public static final String ARG_SKIP = ARG_PREFIX +"skip";
+
+
 
     /** debug flag */
     public boolean debug = false;
@@ -69,6 +79,10 @@ public class DateSelection {
     public static final int TIMEMODE_DATA = 3;
 
 
+    public static String[] TIMEMODESTRINGS = { "FIXED", "CURRENT",
+					       "RELATIVE","DATA" };
+
+
     /** Mode for constructing set */
     public static int[] TIMEMODES = { TIMEMODE_FIXED, TIMEMODE_CURRENT,
                                       TIMEMODE_RELATIVE };
@@ -87,7 +101,6 @@ public class DateSelection {
 
     /** End mode */
     private int endMode = TIMEMODE_FIXED;
-
 
     /** The start fixed time  in milliseconds */
     private long startFixedTime = Long.MAX_VALUE;
@@ -142,6 +155,83 @@ public class DateSelection {
      * ctor
      */
     public DateSelection() {}
+
+
+    /**
+     * ctor for instantiating a DateSelection object from a set of url argument originally created from toUrlString
+     */
+    public DateSelection(Hashtable<String, String> args) {
+	String s;
+
+	s = args.get(ARG_STARTMODE);
+	if(s!=null) {
+	    boolean ok = false;
+	    for(int i=0;i<TIMEMODESTRINGS.length;i++)  {
+		if(TIMEMODESTRINGS[i].equals(s)) {
+		    startMode = TIMEMODES[i];
+		    ok = true;
+		    break;
+		}
+	    }
+	    if(!ok) throw new IllegalArgumentException("Unknown " + ARG_STARTMODE +" argument:" +s);
+	}
+
+	s = args.get(ARG_ENDMODE);
+	if(s!=null) {
+	    boolean ok = false;
+	    for(int i=0;i<TIMEMODESTRINGS.length;i++)  {
+		if(TIMEMODESTRINGS[i].equals(s)) {
+		    endMode = TIMEMODES[i];
+		    ok = true;
+		    break;
+		}
+	    }
+	    if(!ok) throw new IllegalArgumentException("Unknown " + ARG_ENDMODE +" argument:" +s);
+	}
+
+
+
+	s = args.get(ARG_STARTFIXEDTIME);
+	if(s!=null) {
+	    try {
+		startFixedTime = parseDate(s).getTime();
+	    } catch(java.text.ParseException pe) {
+		throw new IllegalArgumentException("Incorrect date format for argument " + ARG_STARTFIXEDTIME + " " + s);
+	    }
+	}
+
+
+	s = args.get(ARG_ENDFIXEDTIME);
+	if(s!=null) {
+	    try {
+		endFixedTime = parseDate(s).getTime();
+	    } catch(java.text.ParseException pe) {
+		throw new IllegalArgumentException("Incorrect date format for argument " + ARG_ENDFIXEDTIME + " " + s);
+	    }
+	}
+
+
+	roundTo = toDouble(args.get(ARG_ROUNDTO), roundTo);
+	interval = toDouble(args.get(ARG_INTERVAL), interval);
+	postRange = toDouble(args.get(ARG_POSTRANGE), postRange);
+	preRange = toDouble(args.get(ARG_PRERANGE), preRange);
+	startOffset = toDouble(args.get(ARG_STARTOFFSET), startOffset);
+	endOffset = toDouble(args.get(ARG_ENDOFFSET), endOffset);
+	skip =(int) toDouble(args.get(ARG_SKIP), skip);
+	count =(int) toDouble(args.get(ARG_COUNT), count);
+
+
+    }
+
+
+    private double toDouble(String s, double dflt) {
+	if(s==null) return dflt;
+	return new Double(s).doubleValue();
+    }
+
+
+
+
 
     /**
      * ctor
@@ -1210,12 +1300,12 @@ public class DateSelection {
     /**
      * test main
      *
-     * @param args cmd line args
+     * @param cmdLineArgs cmd line args
      */
-    public static void main(String[] args) {
+    public static void main(String[] cmdLineArgs) throws Exception {
         DateSelection dateSelection = new DateSelection();
         List          dates         = new ArrayList();
-        long          now           = System.currentTimeMillis();
+        long          now           = dateSelection.parseDate(dateSelection.formatDate(new Date(System.currentTimeMillis()))).getTime();
         for (int i = 0; i < 20; i++) {
             dates.add(new DatedObject(new Date(now
                     + DateUtil.minutesToMillis(20) - i * 10 * 60 * 1000)));
@@ -1236,13 +1326,24 @@ public class DateSelection {
 
 
         dates = dateSelection.apply(dates);
-        System.err.println("result:" + dates);
+	//        System.err.println("result:" + dates);
 
 
+	Hashtable<String, String> args = new Hashtable<String,String>();
+	dateSelection.getArgs(args);
+	System.err.println ("url string:" + dateSelection.toUrlString());
 
-
-
+	DateSelection dateSelection2 = new DateSelection(args);
+	if(!dateSelection.equals(dateSelection2)) {
+	    System.err.println ("date selection 2 != date selection");
+	    System.err.println (dateSelection);
+	    System.err.println (dateSelection2);
+	} else {
+	    System.err.println ("date selection 2 == date selection");
+	}
     }
+
+
 
     /**
      * tostring
@@ -1262,6 +1363,87 @@ public class DateSelection {
                + " count          =" + count + "\n";
 
     }
+
+
+
+    public String urlArg(String name, String value) {
+	return "&" +name +"=" + value;
+    }
+
+    private String formatDate(Date d) {
+	if(sdf == null) {
+	    sdf =   new SimpleDateFormat(DateUtil.DateFormatHandler.ISO_DATE_TIME.getDateTimeFormatString());
+            sdf.setTimeZone(DateUtil.TIMEZONE_GMT);
+	}
+	return sdf.format(d);
+    }
+
+    private Date parseDate(String s) throws java.text.ParseException {
+	if(s==null || s.trim().length()==0) return null;
+	if(sdf == null) {
+	    sdf =   new SimpleDateFormat(DateUtil.DateFormatHandler.ISO_DATE_TIME.getDateTimeFormatString());
+            sdf.setTimeZone(DateUtil.TIMEZONE_GMT);
+	}
+	return sdf.parse(s);
+    }
+
+
+    /**
+     * tostring
+     *
+     * @return tostring
+     */
+    public void  getArgs(Hashtable<String, String> args) {
+	args.put(ARG_STARTMODE, TIMEMODESTRINGS[startMode]);
+	args.put(ARG_ENDMODE, TIMEMODESTRINGS[endMode]);
+	if(startMode == TIMEMODE_FIXED) {
+	    args.put(ARG_STARTFIXEDTIME, formatDate(new Date(startFixedTime)));
+	}
+	if(endMode == TIMEMODE_FIXED) {
+	    args.put(ARG_ENDFIXEDTIME, formatDate(new Date(endFixedTime)));
+	}
+	if(startOffset!=0) {
+	    args.put(ARG_STARTOFFSET, ""+startOffset);
+	}
+	if(endOffset!=0) {
+	    args.put(ARG_ENDOFFSET, ""+endOffset);
+	}
+	if(preRange == preRange) {
+	    args.put(ARG_PRERANGE, ""+preRange);
+	}
+	if(postRange == postRange) {
+	    args.put(ARG_POSTRANGE, ""+postRange);
+	}
+	if(interval == interval) {
+	    args.put(ARG_INTERVAL, ""+interval);
+	}
+	if(roundTo!=0) {
+	    args.put(ARG_ROUNDTO, ""+roundTo);
+	}
+	if(count!=MAX_COUNT) {
+	    args.put(ARG_COUNT, ""+count);
+	}
+	if(skip!=0) {
+	    args.put(ARG_SKIP, ""+skip);
+	}
+    }
+
+
+
+
+    public String toUrlString() {
+	StringBuffer sb = new StringBuffer();
+	Hashtable<String,String>  args  = new Hashtable<String,String>();
+	getArgs(args);
+	for(Enumeration keys  = args.keys(); keys.hasMoreElements();) {
+	    String key = (String)keys.nextElement();
+	    String value = args.get(key);
+	    sb.append(urlArg(key, value));
+	}
+	return sb.toString();
+    }
+
+    
 
 
 }
