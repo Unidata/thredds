@@ -54,11 +54,11 @@ public class TestOffAggFmrcMisc extends TestCase {
     super(name);
   }
 
-  public void testScaling() throws Exception, InvalidRangeException {
+  public void testScaling() throws Exception {
     String xml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-      "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
+      "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='true' >\n" +
       "  <aggregation dimName='runtime' type='forecastModelRunCollection' timeUnitsChange='true'>\n" +
-      "    <scan location='C:/data/work/signell/efine' suffix='.nc' dateFormatMark='#yyyyMMddHH' enhance='true' />" +
+      "    <scan location='D:/work/signell/efine' suffix='.nc' dateFormatMark='#yyyyMMddHH' enhance='true' />" +
       "  </aggregation>\n" +
       "</netcdf>";
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), "aggFmrcScaling", null);
@@ -76,8 +76,8 @@ public class TestOffAggFmrcMisc extends TestCase {
     ncfile.close();
   }
 
-  public void testScaling2() throws Exception, InvalidRangeException {
-    NetcdfFile ncfile = NetcdfDataset.acquireFile("file:C:/data/work/signell/efine/fine.ncml", null);
+  public void testScaling2() throws Exception {
+    NetcdfFile ncfile = NetcdfDataset.acquireFile("file:D:/work/signell/efine/fine.ncml", null);
 
     // make sure that scaling is applied
     VariableDS vs = (VariableDS) ncfile.findTopVariable("hs");

@@ -244,7 +244,7 @@ public class TestOffAggFmrcGrib extends TestCase {
   private void testReadData(NetcdfFile ncfile, int nagg) throws IOException {
     Variable v = ncfile.findVariable("Pressure_surface");
     assert null != v;
-    assert v.getName().equals("Pressure_surface");
+    assert v.getName().equals("Pressure_surface");  // float Pressure_surface(run=8, time=29, y=257, x=369);
     assert v.getRank() == 4;
     int[] shape = v.getShape();
     assert shape[0] == nagg;

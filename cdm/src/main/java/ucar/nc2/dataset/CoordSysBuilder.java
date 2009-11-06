@@ -1155,12 +1155,15 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       if (axis != null)
         return axis;
 
-      if (v instanceof CoordinateAxis) {
+      // if not a CoordinateAxis, will turn into one
+      v = axis = ds.addCoordinateAxis((VariableDS) v);
+
+      /* if (v instanceof CoordinateAxis) {
         axis = (CoordinateAxis) v;
       } else {
         axis = ds.addCoordinateAxis((VariableDS) v);
         v = axis;
-      }
+      } */
 
       if (axisType != null) {
         axis.setAxisType(axisType);
