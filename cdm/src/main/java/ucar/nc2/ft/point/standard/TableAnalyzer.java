@@ -81,7 +81,7 @@ public class TableAnalyzer {
     registerAnalyzer("Ndbc", Ndbc.class, null);
     registerAnalyzer("Suomi-Station-CDM", Suomi.class, null);
     registerAnalyzer("BuoyShip-NetCDF", BuoyShipSynop.class, null);
-    // registerAnalyzer("Unidata Point Feature v1.0", UnidataPointFeature.class, null);
+    registerAnalyzer("NCAR-RAF/nimbus", RafNimbus.class, null);
 
     // further calls to registerConvention are by the user
     userMode = true;

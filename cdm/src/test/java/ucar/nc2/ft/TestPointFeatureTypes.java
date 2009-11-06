@@ -100,7 +100,7 @@ public class TestPointFeatureTypes extends TestCase {
 
   // these are internal, synthetic (ncml) datasets with (almost) all possible combinations for proposed CF point obs
   String CFpointObs_topdir = TestAll.cdmLocalTestDataDir + "/point/";
-  public void testCFpointObs() throws IOException {
+  public void testCFcanonical() throws IOException {
     assert 3 == testPointDataset(CFpointObs_topdir + "point.ncml", FeatureType.POINT, false);
     assert 3 == testPointDataset(CFpointObs_topdir + "pointUnlimited.nc", FeatureType.POINT, false);
     assert 4 == testPointDataset(CFpointObs_topdir + "pointMissing.ncml", FeatureType.POINT, false);
@@ -170,40 +170,39 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   public void testProblem() throws IOException {
-    assert 13 ==  testPointDataset(CFpointObs_topdir + "profileSingle.ncml", FeatureType.PROFILE, false);
-
+    assert 8157 == testPointDataset(topdir + "ft/trajectory/raf/raftrack.nc", FeatureType.TRAJECTORY, false);
   }
 
   public void testCF() throws IOException {
 
     /////// POINT
     // CF 1.1 psuedo-structure
-    testPointDataset(topdir + "cfPoint/point/filtered_apriori_super_calibrated_binned1.nc", FeatureType.POINT, true);
+    assert 1001 == testPointDataset(topdir + "cfPoint/point/filtered_apriori_super_calibrated_binned1.nc", FeatureType.POINT, true);
 
     // CF 1.5 psuedo-structure
-    testPointDataset(topdir + "cfPoint/point/nmcbob.shp.nc", FeatureType.POINT, true);
+    assert 1196 == testPointDataset(topdir + "cfPoint/point/nmcbob.shp.nc", FeatureType.POINT, true);
 
     /////// STATION
     // CF 1.3 ragged contiguous, single station
-    testPointDataset(topdir + "cfPoint/station/rig_tower.2009-02-01.ncml", FeatureType.STATION, true);
+    assert 17280 == testPointDataset(topdir + "cfPoint/station/rig_tower.2009-02-01.ncml", FeatureType.STATION, true);
 
     // CF 1.5 station unlimited, multidim
-    testPointDataset(topdir + "cfPoint/station/billNewDicast.nc", FeatureType.STATION, true);
+    assert 78912 == testPointDataset(topdir + "cfPoint/station/billNewDicast.nc", FeatureType.STATION, true);
 
     // CF 1.5 station regular (not unlimited), multidim
-    testPointDataset(topdir + "cfPoint/station/billOldDicast.nc", FeatureType.STATION, true);
+    assert 19728 == testPointDataset(topdir + "cfPoint/station/billOldDicast.nc", FeatureType.STATION, true);
 
     // CF 1.0 multidim with dimensions reversed
     //testPointDataset(topdir+"cfPoint/station/solrad_point_pearson.ncml", FeatureType.STATION, true);
 
     // CF 1.5 multidim stations, stn dim unlimited, must distinguish station table from obs.
-    testPointDataset(topdir + "cfPoint/station/sampleDataset.nc", FeatureType.STATION, true);
+    assert 1728 == testPointDataset(topdir + "cfPoint/station/sampleDataset.nc", FeatureType.STATION, true);
 
     // CF 1.5 single trajectory (prob actually multiple - flat)
-    testPointDataset(topdir + "cfPoint/trajectory/rt_20090512_willy2.ncml", FeatureType.TRAJECTORY, true);
+    assert 53176 == testPointDataset(topdir + "cfPoint/trajectory/rt_20090512_willy2.ncml", FeatureType.TRAJECTORY, true);
 
     // CF 1.5 single trajectory (prob actually profile)
-    testPointDataset(topdir + "cfPoint/trajectory/p1140004.ncml", FeatureType.TRAJECTORY, true);
+    assert 245 == testPointDataset(topdir + "cfPoint/trajectory/p1140004.ncml", FeatureType.TRAJECTORY, true);
 
   }
 
@@ -227,6 +226,20 @@ public class TestPointFeatureTypes extends TestCase {
 
     //gempack sounding
     assert 8769 == testPointDataset(TestAll.testdataDir+"sounding/gempak/19580807_upa.ncml", FeatureType.STATION_PROFILE, true);
+
+    // gempak surface
+    assert 3337 == testPointDataset(topdir + "ft/point/2009103008_sb.gem", FeatureType.POINT, false);
+    assert 938 == testPointDataset(topdir + "ft/point/2009110100_ship.gem", FeatureType.POINT, false);
+    assert 55856 == testPointDataset(topdir + "ft/point/20091030_syn.gem", FeatureType.POINT, false);
+    assert 28328 == testPointDataset(topdir + "ft/point/20091030_syn.gem", FeatureType.STATION, false);
+
+    // netcdf buoy / synoptic (from fsl ? or are these robb's perl decoders ?
+    assert 32452 == testPointDataset(topdir + "ft/point/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, false);
+    assert 1516 == testPointDataset(topdir + "ft/point/Surface_Synoptic_20090921_0000.nc", FeatureType.POINT, false);
+
+    //RAF-Nimbus
+    assert 7741 == testPointDataset(topdir + "ft/trajectory/raf/135_ordrd.nc", FeatureType.TRAJECTORY, false);
+    assert 8157 == testPointDataset(topdir + "ft/trajectory/raf/raftrack.nc", FeatureType.TRAJECTORY, false);
 
   }
 

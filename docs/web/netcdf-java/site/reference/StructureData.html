@@ -172,7 +172,7 @@ The following will return any compatible type as a double or float, but will hav
 <p>When storing data in an ArrayStructureBB, the heap must be used for both Strings and Sequences. The Object that is added to the heap in the <em>ArrayStructureBB.addObjectToHeap() </em>call:</p>
 <ul>
   <li>scalar String: <strong>String</strong></li>
-  <li>array od Strings: <strong>String[]</strong></li>
+  <li>array of Strings: <strong>String[]</strong></li>
   <li>sequence: <strong>ArraySequence</strong></li>
 </ul>
 <h4>ArrayStructureBB Nested Structures</h4>
@@ -191,7 +191,7 @@ The following will return any compatible type as a double or float, but will hav
     return offset;
   }
 </pre>
-<p>This only works when the nested structures are all of the same, known length. For variable length nested Structures, use ArraySequence. //????? LOOK</p>
+<p>This only works when the nested structures are all of the same, known length. For variable length nested Structures, use ArraySequence. </p>
 <h4>Member data overridding</h4>
 <p>NetcdfDataset may widen the type of a Variable when implementing scale/offset attributes. Typically this will cause a byte or short to become a float or double. A StructureDS will post-process the data it gets from the IOSP to implement this. When the IOSP returns an ArrayStructureBB, it is convenient to rewrite just the member data that needs to be widened. This can be done by calculating the new data and calling ArrayStructure.setMemberData(Array).</p>
 <pre>  public void <strong>setMemberArray</strong>(ucar.ma2.StructureMembers.Member, ucar.ma2.Array memberArray);</pre>
@@ -223,10 +223,37 @@ The following will return any compatible type as a double or float, but will hav
 <pre>  public <strong>ArrayStructureW</strong>(StructureMembers members, int[] shape, StructureData[] sdata);
 </pre>
 <p>All of the work is  in constructing the StructureData objects. </p>
+<p>&nbsp;</p>
+<h2>ArraySequence</h2>
+<p>To create an empty sequence, one needs an empty StructureDataIterator, for example the following can be used:</p>
+<pre>
+class EmptyStructureDataIterator implements StructureDataIterator {
+
+   @Override
+   public boolean hasNext() throws IOException {
+     return false;
+   }
+
+   @Override
+   public StructureData next() throws IOException {
+     return null;
+   }
+
+   @Override
+   public void setBufferSize(int bytes) { }
+
+   @Override
+   public StructureDataIterator reset() {  }
+
+   @Override
+   public int getCurrentRecno() {
+     return -1;
+   }
+ }</pre>
 <hr />
 <p>&nbsp;</p>
 <address>
-<img src="../nc.gif" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Aug 05, 2008
+<img src="../nc.gif" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 2009
 </address>
 </body>
 </html>
