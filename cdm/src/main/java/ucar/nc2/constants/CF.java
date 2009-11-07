@@ -46,6 +46,20 @@ public class CF {
   public static final String featureTypeAtt2 = "CF-featureType";
   public static final String featureTypeAtt3 = "CFfeatureType";
 
+  // CF names
+  public static final String STANDARD_NAME = "standard_name";
+  public static final String RAGGED_ROWSIZE = "ragged_row_size";
+  public static final String RAGGED_PARENTINDEX = "ragged_parent_index";
+  public static final String STATION_ID = "station_id";
+  public static final String STATION_DESC = "station_desc";
+  public static final String STATION_ALTITUDE = "station_altitude";
+  public static final String STATION_WMOID = "station_WMO_id";
+  public static final String TRAJ_ID = "trajectory_id";
+  public static final String PROFILE_ID = "profile_id";
+  public static final String SECTION_ID = "section_id";
+
+
+
   /**
    * Start of map from CF feature type names to our FeatureType enums.
    * Unofficial.

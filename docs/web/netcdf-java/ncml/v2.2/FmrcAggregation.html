@@ -4,6 +4,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <title>FMRC Aggregation</title>
+<style type="text/css">
+pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
+code {font-size: 11pt;}
+dl {margin: 10px 5px 5px 15px;)
+.style1 {font-style: italic}
+</style>
 </head>
 
 <body>
@@ -15,13 +21,15 @@
 <h2>2.<strong> Grid  datasets with two time dimensions </strong></h2>
 <p>The <strong>ucar.nc2.dt.GridDatatype</strong> is the CDM <em>scientfic datatype</em> for grids. It has been generalized to allow two time dimensions, called the <em><strong>runtime</strong></em> and <em><strong>time</strong></em> dimensions, in order to represent collections of forecast model runs. Such a dataset can be created by writing a single file, or by using NcML aggregation to create a virtual dataset out of multiple files. </p>
 <p>Both the <em><strong>runtime</strong></em> and <em><strong>time</strong></em> coordinates may have type <strong>String</strong> or <strong>char</strong> and hold ISO 8601 dates, or have a <em><strong>udunit</strong></em> date unit string in its units attribute. For example:</p>
-<pre>  String <strong>runtime(run=8)</strong>;<br>     :long_name = &quot;Run time for model&quot;;<br>     :standard_name = &quot;forecast_reference_time&quot;;<br>     :_CoordinateAxisType = &quot;RunTime&quot;;</pre>
-<pre> data:
+<pre>  String <strong>runtime(run=8)</strong>;<br>     :long_name = &quot;Run time for model&quot;;<br>     :standard_name = &quot;forecast_reference_time&quot;;<br>     :_CoordinateAxisType = &quot;RunTime&quot;;
+
+  data:
   &quot;2006-09-05T12:00:00Z&quot;, &quot;2006-09-06T12:00:00Z&quot;, &quot;2006-09-07T12:00:00Z&quot;, &quot;2006-09-08T12:00:00Z&quot;, 
   &quot;2006-09-09T12:00:00Z&quot;, &quot;2006-09-10T12:00:00Z&quot;, &quot;2006-09-11T12:00:00Z&quot;, &quot;2006-09-12T12:00:00Z&quot;</pre>
 <p>The <em><strong>time</strong></em> coordinate is the forecast (valid) time, and  it will differ for each run, and so will be two dimensional: </p>
-<pre>   double <strong>time(run=8, time=16)</strong>;<br>     :units = &quot;hours since 2006-09-05T12:00:00Z&quot;;<br>     :long_name = &quot;forecast (valid) time&quot;;<br>     :standard_name = &quot;time&quot;;<br>     :_CoordinateAxisType = &quot;Time&quot;;</pre>
-<pre> data:       
+<pre>   double <strong>time(run=8, time=16)</strong>;<br>     :units = &quot;hours since 2006-09-05T12:00:00Z&quot;;<br>     :long_name = &quot;forecast (valid) time&quot;;<br>     :standard_name = &quot;time&quot;;<br>     :_CoordinateAxisType = &quot;Time&quot;;
+
+   data:       
    {90.0, 96.0, 102.0, 108.0, 114.0, 120.0, 126.0, 132.0, 138.0, 144.0, 150.0, 156.0, 162.0, 168.0, 174.0, 180.0},
    {114.0, 120.0, 126.0, 132.0, 138.0, 144.0, 150.0, 156.0, 162.0, 168.0, 174.0, 180.0, 186.0, 192.0, 198.0, 204.0},
    {138.0, 144.0, 150.0, 156.0, 162.0, 168.0, 174.0, 180.0, 186.0, 192.0, 198.0, 204.0, 210.0, 216.0, 222.0, 228.0},
@@ -78,8 +86,9 @@
 (3)  &lt;aggregation dimName=&quot;Time&quot; type=&quot;<strong>joinExisting</strong>&quot;&gt;
 (4)   &lt;netcdf <strong>location</strong>=&quot;file:/data/ldm/NAM_CONUS_80km/Run_20060910_0000/Hour_F00.grib1&quot; <strong>coordValue</strong>=&quot;0&quot;/&gt;<br>      &lt;netcdf location=&quot;file:/data/ldm/NAM_CONUS_80km/Run_20060910_0000/Hour_F03.grib1&quot; coordValue=&quot;3&quot;/&gt;<br>      &lt;netcdf location=&quot;file:/data/ldm/NAM_CONUS_80km/Run_20060910_0000/Hour_F06.grib1&quot; coordValue=&quot;6&quot;/&gt;
      &lt;/aggregation&gt;
-    &lt;/netcdf&gt;</pre>
-<pre>(5) &lt;netcdf coordValue=&quot;<strong>2006-09-10T06:00:00Z</strong>&quot;&gt;
+    &lt;/netcdf&gt;
+
+(5) &lt;netcdf coordValue=&quot;<strong>2006-09-10T06:00:00Z</strong>&quot;&gt;
      &lt;aggregation dimName=&quot;Time&quot; type=&quot;<strong>joinExisting</strong>&quot;&gt;
 (6)   &lt;scan location=&quot;<strong>/data/ldm/NAM_CONUS_80km/Run_20060910_0600/</strong>&quot; suffix=&quot;.<strong>grib1</strong>&quot; /&gt;
      &lt;/aggregation&gt;
@@ -112,13 +121,16 @@
 </ol>
 <h3>Case 3: Data for each forecast model run is in multiple files, with one forecast time per file </h3>
 <p>In the case where the data has a single time step in each file, and we can figure out the runtime and forecast time from each file's pathname, we can use a special aggregation type called <em><strong>forecastModelRunSingleCollection</strong></em><a name="forecastModelRunSingleCollection"></a>, and a special form of the scan element called <em><strong>scanFmrc. </strong></em></p>
-<pre>  &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br>  &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;</pre>
-<pre>(1)&lt;aggregation dimName=&quot;run&quot; type=&quot;<strong>forecastModelRunSingleCollection</strong>&quot; <strong>timeUnitsChange</strong>=&quot;true&quot; &gt;</pre>
-<pre>(2) &lt;scanFmrc <strong>location</strong>=&quot;/data/grib/rtmodels/&quot; <strong>regExp</strong>=&quot;.*_nmm\.GrbF[0-9]{5}$&quot;
+<pre> &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+ &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+
+(1) &lt;aggregation dimName=&quot;run&quot; type=&quot;<strong>forecastModelRunSingleCollection</strong>&quot; <strong>timeUnitsChange</strong>=&quot;true&quot; &gt;
+
+(2) &lt;scanFmrc <strong>location</strong>=&quot;/data/grib/rtmodels/&quot; <strong>regExp</strong>=&quot;.*_nmm\.GrbF[0-9]{5}$&quot;
 (3)   <strong>runDateMatcher</strong>=&quot;yyMMddHH#_nmm.GrbF#&quot;
-(4)   <strong>forecastOffsetMatcher</strong>=&quot;#_nmm.GrbF#HHH&quot;/&gt;</pre>
-<pre>   &lt;/aggregation&gt;</pre>
-<pre>  &lt;/netcdf&gt;</pre>
+(4)   <strong>forecastOffsetMatcher</strong>=&quot;#_nmm.GrbF#HHH&quot;/&gt;
+   &lt;/aggregation&gt;
+ &lt;/netcdf&gt;</pre>
 <ol>
   <li>The aggregation is declared as type <strong>forecastModelRunSingleCollection</strong>, whose forecast time units vary. </li>
   <li>All the files in <strong>/data/grib/rtmodels/ </strong> whose full pathname matches the <a href="http://www.regular-expressions.info/">regular expression</a> <strong>&quot;.*_nmm\.GrbF[0-9]{5}$&quot;</strong> are used. </li>
@@ -129,8 +141,20 @@
 <p>Another example:</p>
 <pre>    &lt;scanFmrc <strong>location</strong>=&quot;C:/data/rap/&quot; suffix=&quot;.nc&quot; subdirs=&quot;true&quot;<br>              <strong>runDateMatcher</strong>=&quot;yyyyMMddHH#/wrfout_d01_#&quot;<br>              <strong>forecastDateMatcher</strong>=&quot;#/wrfout_d01_#yyyy-MM-dd_HHmm&quot;/&gt;
 </pre>
-<p>works on the files in the directory <strong>C:/data/rap/</strong> and its subdirectories that end in &quot;<strong>.nc</strong>&quot;. These files are named, for example <strong>C:/data/rap/2006070611/wrfout_d01_2006-07-06_080000.DPG_F.nc</strong>. The <strong>runDateMatcher</strong> matches the literal <strong>&quot;/wrfout_d01_&quot; </strong>in the file's full pathname<strong>,</strong> then applies the <em>SimpleDateFormat</em> <strong>yyyyMMddHH </strong>to the 10 characters that come before the match, to derive the run date coordinate. The <strong>forecastDateMatcher</strong> also matches the literal <strong>&quot;/wrfout_d01_&quot;,</strong> then applies the <em>SimpleDateFormat</em> <strong>yyyy-MM-dd_HHmm</strong> to the 15 characters that come after the match, to derive the forecast time coordinate. Note that in this forecastDateMatcher example, the &quot;-&quot; and &quot;_&quot; characters are literals, and the other chanarcters &quot;y&quot;, &quot;M&quot;, &quot;d&quot;, &quot;H&quot; are special characters that match year, month, day and hour numbers, respectively. The dates are assumed to be GMT unless otherwise specified.  See <a href="AnnotatedSchema.html#SimpleDateFormat"><em><strong>java.text.SimpleDateFormat</strong></em></a> for more details of how date matching works.<br>
-</p>
+<p>works on the files in the directory <strong>C:/data/rap/</strong> and its subdirectories that end in &quot;<strong>.nc</strong>&quot;. These files are named, for example <strong>C:/data/rap/2006070611/wrfout_d01_2006-07-06_080000.DPG_F.nc</strong>. The <strong>runDateMatcher</strong> matches the literal <strong>&quot;/wrfout_d01_&quot; </strong>in the file's full pathname<strong>,</strong> then applies the <em>SimpleDateFormat</em> <strong>yyyyMMddHH </strong>to the 10 characters that come before the match, to derive the run date coordinate. The <strong>forecastDateMatcher</strong> also matches the literal <strong>&quot;/wrfout_d01_&quot;,</strong> then applies the <em>SimpleDateFormat</em> <strong>yyyy-MM-dd_HHmm</strong> to the 15 characters that come after the match, to derive the forecast time coordinate. Note that in this forecastDateMatcher example, the &quot;-&quot; and &quot;_&quot; characters are literals, and the other chanarcters &quot;y&quot;, &quot;M&quot;, &quot;d&quot;, &quot;H&quot; are special characters that match year, month, day and hour numbers, respectively. The dates are assumed to be GMT unless otherwise specified.  See <a href="AnnotatedSchema.html#SimpleDateFormat"><em><strong>java.text.SimpleDateFormat</strong></em></a> for more details of how date matching works.</p>
+<h3>Notes common to all cases</h3>
+<ul>
+  <li> A Variable that is also a Coordinate will not be promoted to use the runtime dimension, unless you explicitly tell it to do so, eg:</li>
+</ul>
+<blockquote>
+  <pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+ &lt;aggregation dimName=&quot;runtime&quot; type=&quot;forecastModelRunCollection&quot; recheckEvery=&quot;10min&quot; timeUnitsChange=&quot;true&quot;&gt;
+   <strong>&lt;variableAgg name=&quot;my_vertical_coord&quot;/&gt;</strong>
+   &lt;scan location=&quot;test&quot; dateFormatMark=&quot;ncom_glb_reg7_#yyyyMMdd&quot; subdirs=&quot;false&quot;/&gt;
+ &lt;/aggregation&gt;
+&lt;/netcdf&gt;
+    </pre>
+</blockquote>
 <h2><strong>4. Forecast Model Run Collection</strong></h2>
 <p>In Figure 1, a ten day forecast with daily output snapshots is made once a day. </p>
 <p><img src="modelAggs.jpg" width="522" height="795"></p>
@@ -193,7 +217,7 @@
 </ol>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by John Caron and was last updated on June 24, 2009
+<img src="../nc.gif" width="64" height="64"> This document is maintained by John Caron and was last updated on November 2009
 </address>
 </body>
 </html>

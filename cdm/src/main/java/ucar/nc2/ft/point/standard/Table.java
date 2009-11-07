@@ -355,7 +355,7 @@ public abstract class Table {
 
   /**
    * When theres no seperate station table, but info is duplicated in the obs structure.
-   * Must have a TableParentId child table
+   * Must have a ParentId child table
    * No variables are added to cols.
    * <p/>
    * Used by:
@@ -517,7 +517,7 @@ public abstract class Table {
 
   ///////////////////////////////////////////////////////
   /**
-   * The children have a field containing the index of the parent.
+   * The children have a field containing the id of the parent.
    * For efficiency, we scan this data and construct an IndexMap( parentIndex -> list of children),
    * i.e. we compute the inverse link, parent -> children.
    * TableParentIndex is the children, config.struct describes the cols.
@@ -537,6 +537,9 @@ public abstract class Table {
       Map<Object, ParentInfo> parentHash;
       try {
         Variable rpIndex = ds.findVariable(parentIdName);
+        if (rpIndex == null)
+          rpIndex = struct.findVariable(parentIdName);
+
         Array index = rpIndex.read();
         if (index instanceof ArrayChar)
           index = ((ArrayChar)index).make1DStringArray();
@@ -570,7 +573,7 @@ public abstract class Table {
       }
       ArrayStructure as = new ArrayStructureW(struct.makeStructureMembers(), new int[] {n}, parentData);
 
-      // find the parent TableCOnstruct and inject the ArrayStructure
+      // find the parent TableConstruct and inject the ArrayStructure
       Table t = this;
       while (t.parent != null) {
         t = t.parent;

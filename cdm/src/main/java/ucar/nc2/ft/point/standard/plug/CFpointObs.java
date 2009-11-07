@@ -228,10 +228,10 @@ public class CFpointObs extends TableConfigurerImpl {
       case flat:
         obsTable = makeStructTable(ds, FeatureType.STATION, new EncodingInfo(Encoding.flat, obsDim), errlog);
         obsTable.parentIndex = parentId.getName();
-        obsTable.stnId = findNameVariableWithStandardNameAndDimension(ds, STATION_ID, obsDim, errlog);
-        obsTable.stnDesc = findNameVariableWithStandardNameAndDimension(ds, STATION_DESC, obsDim, errlog);
-        obsTable.stnWmoId = findNameVariableWithStandardNameAndDimension(ds, STATION_WMOID, obsDim, errlog);
-        obsTable.stnAlt = findNameVariableWithStandardNameAndDimension(ds, STATION_ALTITUDE, obsDim, errlog);
+        obsTable.stnId = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_ID, obsDim, errlog);
+        obsTable.stnDesc = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_DESC, obsDim, errlog);
+        obsTable.stnWmoId = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_WMOID, obsDim, errlog);
+        obsTable.stnAlt = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_ALTITUDE, obsDim, errlog);
         break;
     }
     if (obsTable == null) return null;
@@ -450,7 +450,7 @@ public class CFpointObs extends TableConfigurerImpl {
       case raggedContiguous: {
         zDim = z.getDimension(0);
 
-        Variable stationIndex = findVariableWithStandardNameAndNotDimension(ds, RAGGED_PARENTINDEX, stationDim, errlog);
+        Variable stationIndex = findVariableWithStandardNameAndNotDimension(ds, CF.RAGGED_PARENTINDEX, stationDim, errlog);
         if (stationIndex == null) {
           errlog.format("stationProfile stationIndex: must have a ragged_parentIndex variable with profile dimension%n");
           return null;
@@ -461,7 +461,7 @@ public class CFpointObs extends TableConfigurerImpl {
         }
         profileDim = stationIndex.getDimension(0);
 
-        Variable numObs = findVariableWithStandardNameAndDimension(ds, RAGGED_ROWSIZE, profileDim, errlog);
+        Variable numObs = findVariableWithStandardNameAndDimension(ds, CF.RAGGED_ROWSIZE, profileDim, errlog);
         if (numObs == null) {
           errlog.format("stationProfile numObs: must have a ragged_rowSize variable with profile dimension %s%n", profileDim);
           return null;
@@ -490,7 +490,7 @@ public class CFpointObs extends TableConfigurerImpl {
           return null;
         }
 
-        Variable profileIndex = findVariableWithStandardNameAndDimension(ds, RAGGED_PARENTINDEX, zDim, errlog);
+        Variable profileIndex = findVariableWithStandardNameAndDimension(ds, CF.RAGGED_PARENTINDEX, zDim, errlog);
         if (profileIndex == null) {
           errlog.format("stationProfile raggedIndex must have a ragged_rowSize variable for observations%n");
           return null;
@@ -501,7 +501,7 @@ public class CFpointObs extends TableConfigurerImpl {
         }
         profileDim = profileIndex.getDimension(0);
 
-        Variable stationIndex = findVariableWithStandardNameAndNotDimension(ds, RAGGED_PARENTINDEX, zDim, errlog);
+        Variable stationIndex = findVariableWithStandardNameAndNotDimension(ds, CF.RAGGED_PARENTINDEX, zDim, errlog);
         if (stationIndex == null) {
           errlog.format("stationProfile raggedIndex must have a ragged_parentIndex for profiles with dimension %s%n", stationDim);
           return null;
@@ -523,10 +523,10 @@ public class CFpointObs extends TableConfigurerImpl {
 
         TableConfig profileTable = makeStructTable(ds, FeatureType.SECTION, info, errlog);
         profileTable.parentIndex = parentId.getName();
-        profileTable.stnId = findNameVariableWithStandardNameAndDimension(ds, STATION_ID, profileDim, errlog);
-        profileTable.stnDesc = findNameVariableWithStandardNameAndDimension(ds, STATION_DESC, profileDim, errlog);
-        profileTable.stnWmoId = findNameVariableWithStandardNameAndDimension(ds, STATION_WMOID, profileDim, errlog);
-        profileTable.stnAlt = findNameVariableWithStandardNameAndDimension(ds, STATION_ALTITUDE, profileDim, errlog);
+        profileTable.stnId = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_ID, profileDim, errlog);
+        profileTable.stnDesc = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_DESC, profileDim, errlog);
+        profileTable.stnWmoId = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_WMOID, profileDim, errlog);
+        profileTable.stnAlt = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_ALTITUDE, profileDim, errlog);
         stationTable.addChild(profileTable);
 
         zDim = z.getDimension(z.getRank() - 1); // may be z(z) or z(profile, z)
@@ -665,7 +665,7 @@ public class CFpointObs extends TableConfigurerImpl {
       case raggedContiguous: {
         zDim = z.getDimension(0);
 
-        Variable sectionIndex = findVariableWithStandardNameAndNotDimension(ds, RAGGED_PARENTINDEX, sectionDim, errlog);
+        Variable sectionIndex = findVariableWithStandardNameAndNotDimension(ds, CF.RAGGED_PARENTINDEX, sectionDim, errlog);
         if (sectionIndex == null) {
           errlog.format("section sectionIndex: must have a ragged_parentIndex variable with profile dimension%n");
           return null;
@@ -676,7 +676,7 @@ public class CFpointObs extends TableConfigurerImpl {
         }
         profileDim = sectionIndex.getDimension(0);
 
-        Variable numObs = findVariableWithStandardNameAndDimension(ds, RAGGED_ROWSIZE, profileDim, errlog);
+        Variable numObs = findVariableWithStandardNameAndDimension(ds, CF.RAGGED_ROWSIZE, profileDim, errlog);
         if (numObs == null) {
           errlog.format("section numObs: must have a ragged_rowSize variable with profile dimension %s%n", profileDim);
           return null;
@@ -743,7 +743,7 @@ public class CFpointObs extends TableConfigurerImpl {
   }
 
   private EncodingInfo identifyEncoding(NetcdfDataset ds, CF.FeatureType ftype, Formatter errlog) {
-    Variable ragged_rowSize = Evaluator.getVariableWithAttribute(ds, STANDARD_NAME, RAGGED_ROWSIZE);
+    Variable ragged_rowSize = Evaluator.getVariableWithAttribute(ds, CF.STANDARD_NAME, CF.RAGGED_ROWSIZE);
     if (ragged_rowSize != null) {
       if (ftype == CF.FeatureType.section) {
         Variable parentId = identifyParent(ds, ftype);
@@ -756,7 +756,7 @@ public class CFpointObs extends TableConfigurerImpl {
       return new EncodingInfo(Encoding.raggedContiguous, ragged_rowSize);
     }
 
-    Variable ragged_parentIndex = Evaluator.getVariableWithAttribute(ds, STANDARD_NAME, RAGGED_PARENTINDEX);
+    Variable ragged_parentIndex = Evaluator.getVariableWithAttribute(ds, CF.STANDARD_NAME, CF.RAGGED_PARENTINDEX);
     if (ragged_parentIndex != null) {
       Variable ragged_parentId = identifyParent(ds, ftype);
       return new EncodingInfo(Encoding.raggedIndex, ragged_parentId);
@@ -806,13 +806,13 @@ public class CFpointObs extends TableConfigurerImpl {
     switch (ftype) {
       case stationProfile:
       case stationTimeSeries:
-        return Evaluator.getVariableWithAttribute(ds, STANDARD_NAME, STATION_ID);
+        return Evaluator.getVariableWithAttribute(ds, CF.STANDARD_NAME, CF.STATION_ID);
       case trajectory:
-        return Evaluator.getVariableWithAttribute(ds, STANDARD_NAME, TRAJ_ID);
+        return Evaluator.getVariableWithAttribute(ds, CF.STANDARD_NAME, CF.TRAJ_ID);
       case profile:
-        return Evaluator.getVariableWithAttribute(ds, STANDARD_NAME, PROFILE_ID);
+        return Evaluator.getVariableWithAttribute(ds, CF.STANDARD_NAME, CF.PROFILE_ID);
       case section:
-        return Evaluator.getVariableWithAttribute(ds, STANDARD_NAME, SECTION_ID);
+        return Evaluator.getVariableWithAttribute(ds, CF.STANDARD_NAME, CF.SECTION_ID);
     }
     return null;
   }
@@ -831,10 +831,10 @@ public class CFpointObs extends TableConfigurerImpl {
     String name = (stationDim == null) ? " single" : stationDim.getName();
     TableConfig stnTable = new TableConfig(stationTableType, name);
     stnTable.featureType = ftype;
-    stnTable.stnId = findNameVariableWithStandardNameAndDimension(ds, STATION_ID, stationDim, errlog);
-    stnTable.stnDesc = findNameVariableWithStandardNameAndDimension(ds, STATION_DESC, stationDim, errlog);
-    stnTable.stnWmoId = findNameVariableWithStandardNameAndDimension(ds, STATION_WMOID, stationDim, errlog);
-    stnTable.stnAlt = findNameVariableWithStandardNameAndDimension(ds, STATION_ALTITUDE, stationDim, errlog);
+    stnTable.stnId = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_ID, stationDim, errlog);
+    stnTable.stnDesc = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_DESC, stationDim, errlog);
+    stnTable.stnWmoId = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_WMOID, stationDim, errlog);
+    stnTable.stnAlt = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_ALTITUDE, stationDim, errlog);
     stnTable.lat = lat.getName();
     stnTable.lon = lon.getName();
 
@@ -932,7 +932,7 @@ public class CFpointObs extends TableConfigurerImpl {
     obsTable.structureType = obsIsStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
 
     Dimension outer = ds.findDimension(parentTable.dimName);
-    obsTable.numRecords = findNameVariableWithStandardNameAndDimension(ds, RAGGED_ROWSIZE, outer, errlog);
+    obsTable.numRecords = findNameVariableWithStandardNameAndDimension(ds, CF.RAGGED_ROWSIZE, outer, errlog);
     if (null == obsTable.numRecords) {
       errlog.format("there must be a ragged_rowSize variable with outer dimension that matches latitude/longitude dimension %s%n", parentTable.dimName);
       return null;
@@ -954,7 +954,7 @@ public class CFpointObs extends TableConfigurerImpl {
     obsTable.structName = obsIsStruct ? "record" : childDim.getName();
     obsTable.structureType = obsIsStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
 
-    obsTable.parentIndex = findNameVariableWithStandardNameAndDimension(ds, RAGGED_PARENTINDEX, childDim, errlog);
+    obsTable.parentIndex = findNameVariableWithStandardNameAndDimension(ds, CF.RAGGED_PARENTINDEX, childDim, errlog);
     if (null == obsTable.parentIndex)
       return null;
 

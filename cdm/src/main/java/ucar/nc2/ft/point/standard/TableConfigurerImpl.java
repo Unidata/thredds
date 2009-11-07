@@ -38,6 +38,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CF;
 
 import java.util.Formatter;
 
@@ -47,17 +48,6 @@ import java.util.Formatter;
  * @since Jan 21, 2009
  */
 public abstract class TableConfigurerImpl implements TableConfigurer {
-  // CF names
-  public static final String STANDARD_NAME = "standard_name";
-  public static final String RAGGED_ROWSIZE = "ragged_row_size";
-  public static final String RAGGED_PARENTINDEX = "ragged_parent_index";
-  public static final String STATION_ID = "station_id";
-  public static final String STATION_DESC = "station_desc";
-  public static final String STATION_ALTITUDE = "station_altitude";
-  public static final String STATION_WMOID = "station_wmoid";
-  public static final String TRAJ_ID = "trajectory_id";
-  public static final String PROFILE_ID = "profile_id";
-  public static final String SECTION_ID = "section_id";
 
   public String getConvName() {
     return convName;
@@ -84,7 +74,7 @@ public abstract class TableConfigurerImpl implements TableConfigurer {
 
   protected Variable findVariableWithStandardNameAndDimension(NetcdfDataset ds, String standard_name, Dimension outer, Formatter errlog) {
     for (Variable v : ds.getVariables()) {
-      String stdName = ds.findAttValueIgnoreCase(v, STANDARD_NAME, null);
+      String stdName = ds.findAttValueIgnoreCase(v, CF.STANDARD_NAME, null);
       if ((stdName != null) && stdName.equals(standard_name)) {
         if (v.getRank() > 0 && v.getDimension(0).equals(outer))
           return v;
@@ -97,7 +87,7 @@ public abstract class TableConfigurerImpl implements TableConfigurer {
 
   protected Variable findVariableWithStandardNameAndNotDimension(NetcdfDataset ds, String standard_name, Dimension outer, Formatter errlog) {
     for (Variable v : ds.getVariables()) {
-      String stdName = ds.findAttValueIgnoreCase(v, STANDARD_NAME, null);
+      String stdName = ds.findAttValueIgnoreCase(v, CF.STANDARD_NAME, null);
       if ((stdName != null) && stdName.equals(standard_name) && v.getRank() > 0 && !v.getDimension(0).equals(outer))
         return v;
     }
@@ -141,16 +131,16 @@ public abstract class TableConfigurerImpl implements TableConfigurer {
   protected CoordinateAxis findZAxisNotStationAlt(NetcdfDataset ds) {
     CoordinateAxis z = CoordSysEvaluator.findCoordByType(ds, AxisType.Height, new CoordSysEvaluator.Predicate() {
       public boolean match(CoordinateAxis axis) {
-        Attribute stdName = axis.findAttribute(STANDARD_NAME);
-        return ((stdName == null) || !STATION_ALTITUDE.equals(stdName.getStringValue()));
+        Attribute stdName = axis.findAttribute(CF.STANDARD_NAME);
+        return ((stdName == null) || !CF.STATION_ALTITUDE.equals(stdName.getStringValue()));
       }
     });
     if (z != null) return z;
 
     z = CoordSysEvaluator.findCoordByType(ds, AxisType.Pressure, new CoordSysEvaluator.Predicate() {
       public boolean match(CoordinateAxis axis) {
-        Attribute stdName = axis.findAttribute(STANDARD_NAME);
-        return ((stdName == null) || !STATION_ALTITUDE.equals(stdName.getStringValue()));
+        Attribute stdName = axis.findAttribute(CF.STANDARD_NAME);
+        return ((stdName == null) || !CF.STATION_ALTITUDE.equals(stdName.getStringValue()));
       }
     });
     return z;

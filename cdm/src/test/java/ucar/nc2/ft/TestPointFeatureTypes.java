@@ -170,7 +170,10 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   public void testProblem() throws IOException {
-    assert 8157 == testPointDataset(topdir + "ft/trajectory/raf/raftrack.nc", FeatureType.TRAJECTORY, false);
+    //assert 28818 == testPointDataset("D:\\formats\\bufr\\test\\fslprofilers.bufr", FeatureType.STATION_PROFILE, false);
+    // assert 44288 == testPointDataset("D:\\formats\\bufr\\test\\KBOU-ISXT40.bufr", FeatureType.STATION, false);
+    // assert 21060 == testPointDataset("D:\\formats\\bufr\\test\\KBOU-IUPT03.bufr", FeatureType.STATION_PROFILE, false);
+    assert 21060 == testPointDataset("D:/formats/bufr/test/KNES-JUTX.bufr", FeatureType.PROFILE, false);
   }
 
   public void testCF() throws IOException {

@@ -173,7 +173,8 @@ public class BufrIosp extends AbstractIOServiceProvider {
       }
 
       //System.out.println("read obs"+obsIndex+" in msg "+msgf.msgIndex);
-      readOneObs(msg, msgf.obsOffsetInMessage(obsIndex), abb, bb, m2dd);
+      boolean addTime = construct.hasTime && (s.findVariable(ConstructNC.TIME_NAME) != null);
+      readOneObs(msg, msgf.obsOffsetInMessage(obsIndex), abb, bb, m2dd, addTime);
     }
 
     return abb;
@@ -241,8 +242,8 @@ public class BufrIosp extends AbstractIOServiceProvider {
   }
 
   // want the data from the msgOffset-th data subset in the message.
-  private void readOneObs(Message m, int obsOffsetInMessage, ArrayStructureBB abb, ByteBuffer bb, List<MemberDD> m2dd) throws IOException {
-    if (construct.hasTime) {
+  private void readOneObs(Message m, int obsOffsetInMessage, ArrayStructureBB abb, ByteBuffer bb, List<MemberDD> m2dd, boolean addTime) throws IOException {
+    if (addTime) {
       bb.putInt(0); // placeholder
     }
 
@@ -255,7 +256,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
       readDataUncompressed(reader, bitCounter, 0, m2dd, abb, bb);
     }
 
-    if (construct.hasTime) {
+    if (addTime) {
       double val = construct.makeObsTimeValue(abb); 
       bb.putInt(0, (int) val); // first field in the bb
     }

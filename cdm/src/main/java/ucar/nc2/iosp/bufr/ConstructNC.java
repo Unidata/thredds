@@ -53,6 +53,7 @@ import java.io.IOException;
 
 class ConstructNC {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ConstructNC.class);
+  static final String TIME_NAME = "time";
 
   private ucar.nc2.NetcdfFile ncfile;
   private FeatureType ftype;
@@ -72,8 +73,8 @@ class ConstructNC {
 
     // the category
     int cat = proto.ids.getCategory();
-    String category = proto.getCategoryName();
-    if (cat == 0) {
+    int subcat = proto.ids.getSubCategory();
+    if ((cat == 0) || (cat == 12 && subcat == 0)) {
       ftype = FeatureType.STATION;
     } else if (cat == 2) {
       ftype = FeatureType.STATION_PROFILE;
@@ -85,19 +86,17 @@ class ConstructNC {
       // log.warn("unknown category=" + category);
     }
 
-    String centerName = proto.getCenterName();
-
     // global Attributes
-    ncfile.addAttribute(null, new Attribute("history", "direct read of BUFR data by CDM version 4.0"));
+    ncfile.addAttribute(null, new Attribute("history", "direct read of BUFR data by CDM version 4.1"));
     ncfile.addAttribute(null, new Attribute("location", nc.getLocation()));
     ncfile.addAttribute(null, new Attribute("BUFR:edition", proto.is.getBufrEdition()));
-    ncfile.addAttribute(null, new Attribute("BUFR:categoryName", category));
+    ncfile.addAttribute(null, new Attribute("BUFR:categoryName", proto.getCategoryName()));
     ncfile.addAttribute(null, new Attribute("BUFR:category", cat));
-    ncfile.addAttribute(null, new Attribute("BUFR:subCategory", proto.ids.getSubCategory()));
+    ncfile.addAttribute(null, new Attribute("BUFR:subCategory", subcat));
     ncfile.addAttribute(null, new Attribute("BUFR:localSubCategory", proto.ids.getLocalSubCategory()));
-    ncfile.addAttribute(null, new Attribute("BUFR:centerName", centerName));
+    ncfile.addAttribute(null, new Attribute("BUFR:centerName", proto.getCenterName()));
     ncfile.addAttribute(null, new Attribute("BUFR:center", proto.ids.getCenterId()));
-    ncfile.addAttribute(null, new Attribute("BUFR:subCenter", proto.ids.getCenterId()));
+    ncfile.addAttribute(null, new Attribute("BUFR:subCenter", proto.ids.getSubCenterId()));
     //ncfile.addAttribute(null, new Attribute("BUFR:tableName", proto.ids.getMasterTableFilename()));
     ncfile.addAttribute(null, new Attribute("BUFR:table", proto.ids.getMasterTableId()));
     ncfile.addAttribute(null, new Attribute("BUFR:tableVersion", proto.ids.getMasterTableVersion()));
@@ -147,7 +146,7 @@ class ConstructNC {
 
     DataDescriptor root = proto.getRootDataDescriptor();
     if (hasTime()) {
-      Variable timev = recordStructure.addMemberVariable(new Variable(ncfile, null, recordStructure, "time", DataType.INT, ""));
+      Variable timev = recordStructure.addMemberVariable(new Variable(ncfile, null, recordStructure, TIME_NAME, DataType.INT, ""));
       timev.addAttribute(new Attribute("units", dateUnit.getUnitsString()));
       timev.addAttribute(new Attribute("long_name", "time of observation"));
       timev.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
@@ -374,18 +373,18 @@ class ConstructNC {
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
     }
 
-    if (id.equals("0-1-7") || id.equals("0-1-11")|| id.equals("0-1-18")) {
-      v.addAttribute(new Attribute("standard_name", "station_name"));
+    if (id.equals("0-1-7") || id.equals("0-1-11") || id.equals("0-1-18") || (id.equals("0-1-194") && (proto.ids.getCenterId() == 59))) {
+      v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.STATION_ID));
     }
 
     if (id.equals("0-1-2")) {
-      v.addAttribute(new Attribute("standard_name", "wmo_station"));
+      v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.STATION_WMOID));
     }
 
   }
 
   boolean hasTime;
-  private String yearName, monthName, dayName, hourName, minName, secName;
+  private String yearName, monthName, dayName, hourName, minName, secName, doyName;
   private DateUnit dateUnit;
   private Calendar cal;
 
@@ -402,6 +401,8 @@ class ConstructNC {
         monthName = dkey.name;
       if (key.equals("0-4-3") && (dayName == null))
         dayName = dkey.name;
+      if (key.equals("0-4-43") && (doyName == null))
+        doyName = dkey.name;
       if (key.equals("0-4-4") && (hourName == null))
         hourName = dkey.name;
       if (key.equals("0-4-5") && (minName == null))
@@ -410,7 +411,7 @@ class ConstructNC {
         secName = dkey.name;
     }
 
-    hasTime = (yearName != null) && (monthName != null) && (dayName != null) && (hourName != null);
+    hasTime = (yearName != null) && (((monthName != null) && (dayName != null)) || (doyName != null)) && (hourName != null);
 
     if (hasTime) {
       String u;
@@ -439,13 +440,22 @@ class ConstructNC {
 
   double makeObsTimeValue(ArrayStructure abb) {
     int year = abb.convertScalarInt(0, abb.findMember(yearName));
-    int month = abb.convertScalarInt(0, abb.findMember(monthName));
-    int day = abb.convertScalarInt(0, abb.findMember(dayName));
     int hour = abb.convertScalarInt(0, abb.findMember(hourName));
     int min = (minName == null) ? 0 : abb.convertScalarInt(0, abb.findMember(minName));
     int sec = (secName == null) ? 0 : abb.convertScalarInt(0, abb.findMember(secName));
 
-    cal.set(year, month-1, day, hour, min, sec);
+    if (dayName != null) {
+      int day = abb.convertScalarInt(0, abb.findMember(dayName));
+      int month = abb.convertScalarInt(0, abb.findMember(monthName));
+      cal.set(year, month-1, day, hour, min, sec);
+    } else {
+      int doy = abb.convertScalarInt(0, abb.findMember(doyName));
+      cal.set(Calendar.YEAR, year);
+      cal.set(Calendar.DAY_OF_YEAR, doy);
+      cal.set(Calendar.HOUR_OF_DAY, hour);
+      cal.set(Calendar.MINUTE, min);
+      cal.set(Calendar.SECOND, sec);
+    }
     Date d = cal.getTime();
     return dateUnit.makeValue(d);
   }

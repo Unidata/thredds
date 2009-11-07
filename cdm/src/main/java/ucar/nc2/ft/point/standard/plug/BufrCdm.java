@@ -70,12 +70,12 @@ public class BufrCdm extends TableConfigurerImpl {
     String ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt, null);
     CF.FeatureType ftype = (ftypeS == null) ? CF.FeatureType.point : CF.FeatureType.valueOf(ftypeS);
     switch (ftype) {
-     /*  case point:
+      case point:
         return getPointConfig(ds, errlog);
-      case station:
+      case stationTimeSeries:
         return getStationConfig(ds, errlog);
       case profile:
-        return getProfileConfig(ds, errlog);   */
+        return getProfileConfig(ds, errlog);
       case trajectory:
         return getTrajectoryConfig(ds, errlog);
       case stationProfile:
@@ -85,7 +85,7 @@ public class BufrCdm extends TableConfigurerImpl {
     }
   }
 
-  protected TableConfig getTrajectoryConfig(NetcdfDataset ds, Formatter errlog) {
+  protected TableConfig getPointConfig(NetcdfDataset ds, Formatter errlog) {
 
     // the profile values are the inner sequence
     TableConfig obsTable = new TableConfig(Table.Type.Structure, "obsRecord");
@@ -100,6 +100,71 @@ public class BufrCdm extends TableConfigurerImpl {
     return obsTable;
   }
 
+  protected TableConfig getStationConfig(NetcdfDataset ds, Formatter errlog) {
+     // construct the station table by reading through the timeseries
+     TableConfig stnTable = new TableConfig(Table.Type.Construct, "station");
+     stnTable.featureType = FeatureType.STATION;
+     stnTable.structName = "obsRecord";
+
+     // the time series is just the outer structure
+     TableConfig timeTable = new TableConfig(Table.Type.ParentId, "obsRecord");
+
+     Structure stnStruct = (Structure) ds.findVariable("obsRecord");
+     timeTable.lat = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Lat.toString());
+     timeTable.lon = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Lon.toString());
+     timeTable.stnAlt = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Height.toString());
+
+     timeTable.stnId = Evaluator.getNameOfVariableWithAttribute(stnStruct, CF.STANDARD_NAME, CF.STATION_ID);
+     timeTable.stnWmoId = Evaluator.getNameOfVariableWithAttribute(stnStruct, CF.STANDARD_NAME, CF.STATION_WMOID);
+     if (timeTable.stnId == null) timeTable.stnId = timeTable.stnWmoId;
+     timeTable.parentIndex = timeTable.stnId;
+
+     timeTable.time = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Time.toString());
+     timeTable.structName = "obsRecord";
+     stnTable.addChild(timeTable);
+
+     return stnTable;
+   }
+
+  protected TableConfig getTrajectoryConfig(NetcdfDataset ds, Formatter errlog) {
+
+    TableConfig topTable = new TableConfig(Table.Type.Top, "singleTrajectory");
+
+    // the profile values are the inner sequence
+    TableConfig obsTable = new TableConfig(Table.Type.Structure, "obsRecord");
+    Structure obsStruct = (Structure) ds.findVariable("obsRecord");
+    obsTable.structName = obsStruct.getName();
+    obsTable.nestedTableName = obsStruct.getShortName();
+    obsTable.lat = Evaluator.getNameOfVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Lat.toString());
+    obsTable.lon = Evaluator.getNameOfVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Lon.toString());
+    obsTable.elev = Evaluator.getNameOfVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Height.toString());
+    obsTable.time = Evaluator.getNameOfVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Time.toString());
+    topTable.addChild(obsTable);
+
+    return topTable;
+  }
+
+  protected TableConfig getProfileConfig(NetcdfDataset ds, Formatter errlog) {
+     // construct the station table by reading through the timeseries
+     TableConfig profileTable = new TableConfig(Table.Type.Structure, "profile");
+     profileTable.featureType = FeatureType.PROFILE;
+     profileTable.structName = "obsRecord";
+     Structure profileStruct = (Structure) ds.findVariable("obsRecord");
+     profileTable.lat = Evaluator.getNameOfVariableWithAttribute(profileStruct, _Coordinate.AxisType, AxisType.Lat.toString());
+     profileTable.lon = Evaluator.getNameOfVariableWithAttribute(profileStruct, _Coordinate.AxisType, AxisType.Lon.toString());
+     profileTable.time = Evaluator.getNameOfVariableWithAttribute(profileStruct, _Coordinate.AxisType, AxisType.Time.toString());
+
+     // the time series is just the outer structure
+     TableConfig obsTable = new TableConfig(Table.Type.NestedStructure, "struct5");
+     Structure obsStruct = (Structure) profileStruct.findVariable("struct5");
+     obsTable.structName = obsStruct.getName();
+     obsTable.nestedTableName = obsStruct.getShortName();
+     obsTable.elev = Evaluator.getNameOfVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Pressure.toString()); // HEY not height
+     profileTable.addChild(obsTable);
+    
+     return profileTable;
+   }
+
 
   protected TableConfig getStationProfileConfig(NetcdfDataset ds, Formatter errlog) {
     // construct the station table by reading through the timeseries
@@ -107,28 +172,32 @@ public class BufrCdm extends TableConfigurerImpl {
     stnTable.featureType = FeatureType.STATION_PROFILE;
     stnTable.structName = "obsRecord";
 
-    Structure stnStruct = (Structure) ds.findVariable("obsRecord");
-    stnTable.lat = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Lat.toString());
-    stnTable.lon = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Lon.toString());
-    stnTable.stnAlt = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Height.toString());
-
-    stnTable.stnId = Evaluator.getNameOfVariableWithAttribute(stnStruct, "standard_name", "station_name");
-    stnTable.stnWmoId = Evaluator.getNameOfVariableWithAttribute(stnStruct, "standard_name", "wmo_station");
-    if (stnTable.stnId == null) stnTable.stnId = stnTable.stnWmoId;
-
     // the time series is just the outer structure
-    TableConfig timeseriesTable = new TableConfig(Table.Type.Structure, "obsRecord");
-    timeseriesTable.time = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Time.toString());
-    timeseriesTable.structName = "obsRecord";
-    stnTable.addChild(timeseriesTable);
+    TableConfig timeTable = new TableConfig(Table.Type.ParentId, "obsRecord");
+
+    Structure stnStruct = (Structure) ds.findVariable("obsRecord");
+    timeTable.lat = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Lat.toString());
+    timeTable.lon = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Lon.toString());
+    timeTable.stnAlt = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Height.toString());
+
+    timeTable.stnId = Evaluator.getNameOfVariableWithAttribute(stnStruct, CF.STANDARD_NAME, CF.STATION_ID);
+    timeTable.stnWmoId = Evaluator.getNameOfVariableWithAttribute(stnStruct, CF.STANDARD_NAME, CF.STATION_WMOID);
+    if (timeTable.stnId == null) timeTable.stnId = timeTable.stnWmoId;
+    timeTable.parentIndex = timeTable.stnId;
+
+    timeTable.time = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Time.toString());
+    timeTable.structName = "obsRecord";
+    stnTable.addChild(timeTable);
 
     // the profile values are the inner sequence
-    TableConfig obsTable = new TableConfig(Table.Type.NestedStructure, "seq1"); // LOOK name seq1 not good ?
-    Structure obsStruct = (Structure) stnStruct.findVariable("seq1");
+    TableConfig obsTable = new TableConfig(Table.Type.NestedStructure, "levels");
+    Structure obsStruct = (Structure) stnStruct.findVariable("seq1"); // kludgerino
+    if (obsStruct == null)
+      obsStruct = (Structure) stnStruct.findVariable("struct1");
     obsTable.structName = obsStruct.getName();
     obsTable.nestedTableName = obsStruct.getShortName();
     obsTable.elev = Evaluator.getNameOfVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Height.toString());
-    timeseriesTable.addChild(obsTable);
+    timeTable.addChild(obsTable);
 
     return stnTable;
   }

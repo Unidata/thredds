@@ -382,10 +382,10 @@ public class GempakCdm extends TableConfigurerImpl {
     stnTable.lat= lat.getName();
     stnTable.lon= lon.getName();
 
-    stnTable.stnId = findNameVariableWithStandardNameAndDimension(ds, STATION_ID, stationDim, errlog);
-    stnTable.stnDesc = findNameVariableWithStandardNameAndDimension(ds, STATION_DESC, stationDim, errlog);
-    stnTable.stnWmoId = findNameVariableWithStandardNameAndDimension(ds, STATION_WMOID, stationDim, errlog);
-    stnTable.stnAlt = findNameVariableWithStandardNameAndDimension(ds, STATION_ALTITUDE, stationDim, errlog);
+    stnTable.stnId = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_ID, stationDim, errlog);
+    stnTable.stnDesc = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_DESC, stationDim, errlog);
+    stnTable.stnWmoId = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_WMOID, stationDim, errlog);
+    stnTable.stnAlt = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_ALTITUDE, stationDim, errlog);
 
     if (stnTable.stnId == null) {
       errlog.format("Must have a Station id variable with standard name station_id");
