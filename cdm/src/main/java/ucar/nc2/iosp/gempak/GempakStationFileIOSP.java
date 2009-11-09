@@ -408,13 +408,14 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
         List<String>   stnKeyNames = gemreader.getStationKeyNames();
         for (String varName : stnKeyNames) {
             Variable  v        = makeStationVariable(varName, dim);
+            // use STNM or STID as the name or description
             Attribute stIDAttr = new Attribute("standard_name", "station_id");
             if (varName.equals(GempakStation.STID) && useSTID) {
                 v.addAttribute(stIDAttr);
-            }
+            } 
             if (varName.equals(GempakStation.STNM) && !useSTID) {
                 v.addAttribute(stIDAttr);
-            }
+            } 
             vars.add(v);
         }
         // see if we fill these in completely now
@@ -531,6 +532,7 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
             unit     = "meter";
             type     = DataType.FLOAT;
             attrs.add(new Attribute("positive", "up"));
+            attrs.add(new Attribute("standard_name", "station_altitude"));
         } else if (varname.equals(GempakStation.STAT)) {
             longName = "state or province";
             dims.add(DIM_LEN2);

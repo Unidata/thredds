@@ -91,7 +91,7 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
     /** climate surface file id */
     public static final String UNMERGED = "unmerged";
 
-    /** number of parameters */
+    /** vertical coordinate */
     private int ivert = -1;
 
     /** list of unmerged parts */
