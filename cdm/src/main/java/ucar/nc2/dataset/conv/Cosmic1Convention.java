@@ -86,7 +86,7 @@ public class Cosmic1Convention extends CoordSysBuilder {
     int n = dim.getLength();
     double incr = (stop - start) / n;
 
-    String timeUnits = "seconds since 1980-01-01 00:00 UTC";
+    String timeUnits = "seconds since 1980-01-06 00:00:00";
     Variable timeVar = new VariableDS(ds, null, null, "time", DataType.DOUBLE, dim.getName(), timeUnits, null);
     ds.addVariable(null, timeVar);
     timeVar.addAttribute(new Attribute("units", timeUnits));
