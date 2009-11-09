@@ -86,7 +86,7 @@ public class Cosmic1Convention extends CoordSysBuilder {
     int n = dim.getLength();
     double incr = (stop - start) / n;
 
-    String timeUnits = "seconds since 1970-01-01 00:00 UTC";
+    String timeUnits = "seconds since 1980-01-01 00:00 UTC";
     Variable timeVar = new VariableDS(ds, null, null, "time", DataType.DOUBLE, dim.getName(), timeUnits, null);
     ds.addVariable(null, timeVar);
     timeVar.addAttribute(new Attribute("units", timeUnits));
@@ -94,7 +94,7 @@ public class Cosmic1Convention extends CoordSysBuilder {
 
     ArrayDouble.D1 data = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, new int[] {n});
     for (int i=0; i<n; i++)
-      data.set(i, start + i * incr);
+      data.set(i, stop - i * incr);
     timeVar.setCachedData(data, false);
 
     Variable v = ds.findVariable("Lat");
