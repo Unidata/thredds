@@ -32,8 +32,6 @@
  */
 
 
-
-
 package ucar.nc2.iosp.gempak;
 
 
@@ -218,6 +216,14 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
 
         return true;
 
+    }
+
+    /**
+     * Get the vertical coordinate
+     * @return the vertical coordinate (PRES_COORD, THTA_COORD, HGHT_COORD)
+     */
+    public int getVerticalCoordinate() {
+        return ivert;
     }
 
     /**

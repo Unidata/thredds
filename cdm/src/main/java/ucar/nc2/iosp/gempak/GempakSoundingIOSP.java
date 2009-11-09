@@ -31,15 +31,16 @@
  */
 
 
-
 package ucar.nc2.iosp.gempak;
 
 
 import ucar.ma2.*;
 
 import ucar.nc2.*;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.constants._Coordinate;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 
 import ucar.nc2.iosp.IOServiceProvider;
@@ -427,7 +428,9 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
         Sequence sVar = new Sequence(ncfile, null, parent, partName);
         sVar.setDimensions("");
         for (GempakParameter param : params) {
-            sVar.addMemberVariable(makeParamVariable(param, null));
+            Variable v = makeParamVariable(param, null);
+            addVerticalCoordAttribute(v);
+            sVar.addMemberVariable(v);
         }
         if (includeMissing) {
             sVar.addMemberVariable(makeMissingVariable());
@@ -435,6 +438,32 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
         return sVar;
     }
 
+    /**
+     * Add the vertical coordinate variables if necessary
+     *
+     * @param v  the variable
+     */
+    private void addVerticalCoordAttribute(Variable v) {
+
+        GempakSoundingFileReader gsfr = (GempakSoundingFileReader) gemreader;
+        int                      vertType = gsfr.getVerticalCoordinate();
+        String                   pName    = v.getName();
+        if (gemreader.getFileSubType().equals(
+                GempakSoundingFileReader.MERGED)) {
+            if ((vertType == gsfr.PRES_COORD) && pName.equals("PRES")) {
+                v.addAttribute(new Attribute(_Coordinate.AxisType,
+                                             AxisType.Pressure.name()));
+            } else if ((vertType == gsfr.HGHT_COORD)
+                       && (pName.equals("HGHT") || pName.equals("MHGT")
+                           || pName.equals("DHGT"))) {
+                v.addAttribute(new Attribute(_Coordinate.AxisType,
+                                             AxisType.Height.name()));
+            }
+        } else if (pName.equals("PRES")) {
+            v.addAttribute(new Attribute(_Coordinate.AxisType,
+                                         AxisType.Pressure.name()));
+        }
+    }
 
     /**
      * An empty sequence iterator
