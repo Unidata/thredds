@@ -172,7 +172,7 @@ public class BufrIdentificationSection {
       if (lyear > 100)
         lyear -= 100;
       year = lyear + 2000;
-      month = raf.read() - 1;
+      month = raf.read();
       day = raf.read();
       hour = raf.read();
       minute = raf.read();
@@ -271,7 +271,7 @@ public class BufrIdentificationSection {
    */
   public final Date getReferenceTime() {
     if (refTime == null) {
-      Calendar cal = new GregorianCalendar(year, month, day, hour, minute, second);
+      Calendar cal = new GregorianCalendar(year, month-1, day, hour, minute, second);
       refTime = cal.getTime();
     }
     return refTime;

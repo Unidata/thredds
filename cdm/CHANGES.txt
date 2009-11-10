@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  9:
+  BUFR edition 4 had month+1 on reference time
   OPeNDAP scalars like NcSDInt32 were assuming Array.D0
  8:
   Add -isLargeFile option to FileWriter to generate 64-bit offset files
