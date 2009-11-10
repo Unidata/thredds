@@ -3,6 +3,8 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.1:
+ 9:
+  OPeNDAP scalars like NcSDInt32 were assuming Array.D0
  8:
   Add -isLargeFile option to FileWriter to generate 64-bit offset files
   DefaultConventions: allow multiple forced time coords

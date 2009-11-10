@@ -3241,7 +3241,7 @@ public class ToolsUI extends JPanel {
 
           NetcdfFile compareFile = null;
           try {
-            compareFile = NetcdfDataset.acquireDataset(filename, null);
+            compareFile = openFile(filename, addCoords, null);
 
             Formatter f = new Formatter();
             CompareNetcdf cn = new CompareNetcdf(true, false, false);

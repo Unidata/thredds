@@ -72,8 +72,7 @@ public class NcSDByte extends SDByte implements HasNetcdfVariable {
   }
 
   public void setData(Array data) {
-    ArrayByte.D0 a = (ArrayByte.D0) data;
-    setValue(a.get());
+    setValue(data.getByte(data.getIndex()));     
     setRead(true);
   }
 

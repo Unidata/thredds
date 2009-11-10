@@ -71,8 +71,7 @@ public class NcSDInt16 extends SDInt16 implements HasNetcdfVariable {
   }
 
   public void setData(Array data) {
-    ArrayShort.D0 a = (ArrayShort.D0) data;
-    setValue(a.get());
+    setValue(data.getShort(data.getIndex()));
     setRead(true);
   }
 

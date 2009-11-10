@@ -71,8 +71,7 @@ public class NcSDFloat64 extends SDFloat64 implements HasNetcdfVariable {
   }
 
   public void setData(Array data) {
-    ArrayDouble.D0 a = (ArrayDouble.D0) data;
-    setValue(a.get());
+    setValue(data.getDouble(data.getIndex()));     
     setRead(true);
   }
 

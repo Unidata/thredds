@@ -49,7 +49,7 @@ import java.util.Random;
  * @since Aug 14, 2008
  */
 public class TestBerkeleyDBIndexer {
-  private static File myDbEnvPath = new File("D:/bufr/bdb/");
+  private static File myDbEnvPath = new File("C:/data/ldm/bdb/");
 
   private class MyKey {
     int fileno;
