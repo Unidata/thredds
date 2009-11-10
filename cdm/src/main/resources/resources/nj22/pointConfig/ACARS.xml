@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pointConfig featureType="TRAJECTORY">
+  <tableConfigurer class="ucar.nc2.ft.point.standard.plug.ACARS" />
+
+  <table type="Top" structName="traj">
+    <table type="Structure" subtype="PsuedoStructure" dim="numFlight">
+        <variable>flight</variable>
+        <variable>tailNumber</variable>
+        <variable>enTailNumber</variable>
+        <variable>dataType</variable>
+        <variable>dataSource</variable>
+        <variable>dataDescriptor</variable>
+        <variable>nStaticIds</variable>
+        <variable>staticIds</variable>
+        <variable>lastRecord</variable>
+        <variable>inventory</variable>
+        <variable>globalInventory</variable>
+        <variable>firstOverflow</variable>
+        <variable>isOverflow</variable>
+        <variable>firstInBin</variable>
+        <variable>lastInBin</variable>
+        <variable>QCT</variable>
+        <variable>ICT</variable>
+        <variable>missingInputMinutes</variable>
+        <variable>minDate</variable>
+        <variable>maxDate</variable>
+        <variable>minSecs</variable>
+        <variable>maxSecs</variable>
+
+
+        <table type="Structure" subtype="PsuedoStructure" >
+          <coordinate type="Lat">latitude</coordinate>
+          <coordinate type="Lon">longitude</coordinate>
+          <coordinate type="Elev">altitude</coordinate>
+          <coordinate type="Time">timeObs</coordinate>
+            <variable>latitudeDD</variable>
+            <variable>latitudeQCA</variable>
+            <variable>latitudeQCR</variable>
+            <variable>latitudeQCD</variable>
+            <variable>longtitudeDD</variable>
+            <variable>longtitudeQCA</variable>
+            <variable>longtitudeQCR</variable>
+            <variable>longtitudeQCD</variable>
+            <variable>altitudeDD</variable>
+            <variable>altitudeQCA</variable>
+            <variable>altitudeQCR</variable>
+            <variable>altitudeQCD</variable>
+            <variable>GPSaltitude</variable>
+            <variable>baroAltitude</variable>
+            <variable>timeObsDD</variable>
+            <variable>timeObsQCA</variable>
+            <variable>timeObsQCR</variable>
+            <variable>timeObsQCD</variable>
+
+            <variable>invTime</variable>
+            <variable>preRecord</variable>
+            <variable>temperature</variable>
+            <variable>temperatureDD</variable>
+            <variable>temperatureQCA</variable>
+            <variable>temperatureQCR</variable>
+            <variable>temperatureQCD</variable>
+            <variable>temperatureICA</variable>
+            <variable>temperatureICR</variable>
+            <variable>windDir</variable>
+            <variable>windDirDD</variable>
+            <variable>windDirQCA</variable>
+            <variable>windDirQCR</variable>
+            <variable>windDirQCD</variable>
+            <variable>windSpeed</variable>
+            <variable>windSpeedDD</variable>
+            <variable>windSpeedQCA</variable>
+            <variable>windSpeedQCR</variable>
+            <variable>windSpeedQCD</variable>
+            <variable>heading</variable>
+            <variable>mach</variable>
+            <variable>trueAirSpeed</variable>
+            <variable>trueAirSpeedDD</variable>
+            <variable>trueAirSpeedQCA</variable>
+            <variable>trueAirSpeedQCR</variable>
+            <variable>trueAirSpeedQCD</variable>
+            <variable>waterVaporMR</variable>
+            <variable>downlinkedRH</variable> 
+            <variable>RHfromWVMR</variable>
+            <variable>rhUncertainty</variable>
+            <variable>sensor1RelativeHumidity</variable>
+            <variable>sensor2RelativeHumidity</variable>
+            <variable>dewpoint</variable>
+            <variable>dewpointDD</variable>
+            <variable>dewpointQCA</variable>
+            <variable>dewpointQCR</variable>
+            <variable>dewpointQCD</variable>
+            <variable>dewpointICA</variable>
+            <variable>dewpointICR</variable>
+            <variable>dewpointUncertainty</variable>
+            <variable>medTurbulence</variable>
+            <variable>medEDR</variable>
+            <variable>medEDRDD</variable>
+            <variable>medEDRQCA</variable>
+            <variable>medEDRQCR</variable>
+            <variable>medEDRQCD</variable>
+            <variable>maxTurbulence</variable>
+            <variable>maxEDR</variable>
+            <variable>maxEDRDD</variable>
+            <variable>maxEDRQCA</variable>
+            <variable>maxEDRQCR</variable>
+            <variable>maxEDRQCD</variable>
+            <variable>turbIndex</variable>
+            <variable>turbIndexDD</variable>
+            <variable>turbIndexQCA</variable>
+            <variable>turbIndexQCR</variable>
+            <variable>turbIndexQCD</variable>
+            <variable>timeMaxTurbulence</variable>
+            <variable>verAccel</variable>
+            <variable>vertGust</variable>
+            <variable>icingCondition</variable>
+            <variable>icingConditionDD</variable>
+            <variable>icingConditionQCA</variable>
+            <variable>icingConditionQCR</variable>
+            <variable>icingConditionQCD</variable>
+            <variable>errorType</variable>
+            <variable>rollFlag</variable>
+            <variable>rollQuality</variable>
+            <variable>waterVaporQC</variable>
+            <variable>interpolatedTime</variable>
+            <variable>interpolatedLL</variable>
+            <variable>tempError</variable>
+            <variable>dewpointError</variable>
+            <variable>windDirError</variable>
+            <variable>windSpeedError</variable>
+            <variable>speedError</variable>
+            <variable>bounceError</variable>
+            <variable>icingError</variable>
+            <variable>trueAirSpeedError</variable>
+            <variable>turbulenceError</variable>
+            <variable>correctedFlag</variable>
+            <variable>rptStation</variable>
+            <variable>timeReceived</variable>
+            <variable>fileTimeFSL</variable>
+            <variable>origAirport</variable>
+            <variable>orig_airport_id</variable>
+            <variable>destAirport</variable>
+            <variable>dest_airport_id</variable>
+            <variable>indAltitude</variable>
+            <variable>relHumidity</variable>
+            <variable>sounding_flag</variable>
+            <variable>soundingSecs</variable>
+            <variable>sounding_airport_id</variable>
+            <variable>phaseFlight</variable>
+            <variable>tamdarCarrier</variable>
+            <variable>tamdarAcType</variable>
+            <variable>filterSetNum</variable>
+
+        </table>
+    </table>
+  </table>
+</pointConfig>
