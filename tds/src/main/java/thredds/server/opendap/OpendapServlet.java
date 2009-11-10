@@ -81,7 +81,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
   private int ascLimit = 50;
   private int binLimit = 500;
 
-  private boolean track = false;
+  private boolean debugSession = false;
 
   public void init() throws javax.servlet.ServletException {
     super.init();
@@ -777,7 +777,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
     }
   }
 
-  /**
+  /*
    * *********************** dataset caching ***********************************************
    */
 
@@ -821,7 +821,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
       session.setAttribute(CookieFilter.SESSION_PATH, cookiePath);
       //session.setAttribute("dataset", ncd.getLocation());  // for UsageValve
       // session.setMaxInactiveInterval(30); // 30 second timeout !!
-      System.out.printf(" added gdataset %s in session %s cookiePath %s %n", reqPath, session.getId(), cookiePath);
+      if (debugSession) System.out.printf(" added gdataset %s in session %s cookiePath %s %n", reqPath, session.getId(), cookiePath);
       if (log.isDebugEnabled()) log.debug(" added gdataset " + gdataset + " in session " + session.getId());
     } /* else {
       session = req.getSession();
