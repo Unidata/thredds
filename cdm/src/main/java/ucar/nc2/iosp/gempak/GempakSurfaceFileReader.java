@@ -183,6 +183,11 @@ public class GempakSurfaceFileReader extends AbstractGempakStationFileReader {
         int           stnIndex = (getFileSubType().equals(CLIMATE))
                                  ? row
                                  : col;
+        List<GempakStation> stations = getStations();
+        if (stations.isEmpty() || stnIndex > stations.size()) {
+            System.out.println("\nNo data available");
+            return;
+        }
         GempakStation station  = getStations().get(stnIndex - 1);
         StringBuilder builder  = new StringBuilder();
         builder.append("\nStation:\n");

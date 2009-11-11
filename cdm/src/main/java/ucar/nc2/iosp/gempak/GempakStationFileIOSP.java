@@ -32,8 +32,6 @@
  */
 
 
-
-
 package ucar.nc2.iosp.gempak;
 
 
@@ -395,9 +393,8 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
      */
     protected List<Variable> makeStationVars(List<GempakStation> stations,
                                              Dimension dim) {
-        int           numStations = stations.size();
-        GempakStation sample      = stations.get(0);
-        boolean       useSTID     = true;
+        int     numStations = stations.size();
+        boolean useSTID     = true;
         for (GempakStation station : stations) {
             if (station.getSTID().equals("")) {
                 useSTID = false;
@@ -407,19 +404,19 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
         List<Variable> vars        = new ArrayList<Variable>();
         List<String>   stnKeyNames = gemreader.getStationKeyNames();
         for (String varName : stnKeyNames) {
-            Variable  v        = makeStationVariable(varName, dim);
+            Variable v = makeStationVariable(varName, dim);
             // use STNM or STID as the name or description
             Attribute stIDAttr = new Attribute("standard_name", "station_id");
             if (varName.equals(GempakStation.STID) && useSTID) {
                 v.addAttribute(stIDAttr);
-            } 
+            }
             if (varName.equals(GempakStation.STNM) && !useSTID) {
                 v.addAttribute(stIDAttr);
-            } 
+            }
             vars.add(v);
         }
         // see if we fill these in completely now
-        if (dim != null) {
+        if ((dim != null) && (numStations > 0)) {
             for (Variable v : vars) {
                 Array varArray;
                 if (v.getDataType().equals(DataType.CHAR)) {
@@ -581,8 +578,6 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
      *
      * @param msg        message to print
      * @param maxLines   number of lines in the stack to print
-     * @param onlyIfTraceContainsThisString  if true, only print if it
-     *                                       contains this String
      */
     protected void printStack(String msg, int maxLines) {
         String trace = getStackTrace();

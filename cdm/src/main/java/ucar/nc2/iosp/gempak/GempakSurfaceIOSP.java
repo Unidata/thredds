@@ -33,7 +33,6 @@
 
 
 
-
 package ucar.nc2.iosp.gempak;
 
 
@@ -513,7 +512,8 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
         List<GempakStation> stations = gemreader.getStations();
         int                 numObs   = stations.size();
         Trace.msg("GEMPAKSIOSP: now have " + numObs + " stations");
-        Dimension record = new Dimension("record", numObs, true);
+        Dimension record = new Dimension("record", numObs, true,
+                                         (numObs == 0), false);
         ncfile.addDimension(null, record);
         List<Dimension> records = new ArrayList(1);
         records.add(record);
@@ -539,7 +539,9 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
         // loop through and add to ncfile
         boolean hasElevation = false;
         for (Variable stnVar : stationVars) {
-            if (stnVar.getName().equals("SELV")) hasElevation = true;
+            if (stnVar.getName().equals("SELV")) {
+                hasElevation = true;
+            }
             sVar.addMemberVariable(stnVar);
         }
         sVar.addMemberVariable(timeVar);
@@ -550,7 +552,9 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
         }
         sVar.addMemberVariable(makeMissingVariable());
         String coords = "Obs.time Obs.SLAT Obs.SLON";
-        if (hasElevation) coords = coords + " Obs.SELV";
+        if (hasElevation) {
+            coords = coords + " Obs.SELV";
+        }
         sVar.addAttribute(new Attribute("coordinates", coords));
         ncfile.addVariable(null, sVar);
         ncfile.addAttribute(null,
