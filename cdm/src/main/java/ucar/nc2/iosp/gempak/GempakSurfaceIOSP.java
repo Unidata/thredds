@@ -488,23 +488,6 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
         stationTime.add(station);
         stationTime.add(times);
         // TODO: handle other parts
-        /*
-        List<GempakParameter> params = gemreader.getParameters(GempakSurfaceFileReader.SFDT);
-        if (params == null) {
-            return;
-        }
-        int j = 0;
-        for (GempakParameter param : params) {
-            if (j > 0) {
-                break;
-            }
-            Variable v = makeParamVariable(param, stationTime);
-            v.addAttribute(new Attribute("coordinates",
-                                         "time SLAT SLON SELV"));
-            ncfile.addVariable(null, v);
-            j++;
-        }
-        */
         Structure sfData = makeStructure(GempakSurfaceFileReader.SFDT,
                                          stationTime, true);
         if (sfData == null) {
@@ -554,7 +537,9 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
         Structure sVar = new Structure(ncfile, null, null, "Obs");
         sVar.setDimensions(records);
         // loop through and add to ncfile
+        boolean hasElevation = false;
         for (Variable stnVar : stationVars) {
+            if (stnVar.getName().equals("SELV")) hasElevation = true;
             sVar.addMemberVariable(stnVar);
         }
         sVar.addMemberVariable(timeVar);
@@ -564,9 +549,9 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
             sVar.addMemberVariable(var);
         }
         sVar.addMemberVariable(makeMissingVariable());
-        sVar.addAttribute(
-            new Attribute(
-                "coordinates", "Obs.time Obs.SLAT Obs.SLON Obs.SELV"));
+        String coords = "Obs.time Obs.SLAT Obs.SLON";
+        if (hasElevation) coords = coords + " Obs.SELV";
+        sVar.addAttribute(new Attribute("coordinates", coords));
         ncfile.addVariable(null, sVar);
         ncfile.addAttribute(null,
                             new Attribute("CF:featureType",
