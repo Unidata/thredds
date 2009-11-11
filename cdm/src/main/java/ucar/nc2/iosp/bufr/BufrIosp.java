@@ -502,8 +502,8 @@ public class BufrIosp extends AbstractIOServiceProvider {
   // read in the data into an ArrayStructureBB
   private ArraySequence makeArraySequence(BitReader reader, BitCounterUncompressed bitCounterNested, MemberDD mdd) throws IOException {
     DataDescriptor seqdd = mdd.dd;
-    Sequence s = (Sequence) seqdd.refersTo;
-    assert s != null;
+    Sequence seq = (Sequence) seqdd.refersTo;
+    assert seq != null;
 
     // for the obs structure
     int count = bitCounterNested.getNumberRows();
@@ -511,12 +511,12 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
     // allocate ArrayStructureBB for outer structure
     int offset = 0;
-    StructureMembers members = s.makeStructureMembers();
+    StructureMembers members = seq.makeStructureMembers();
     for (StructureMembers.Member m : members.getMembers()) {
       m.setDataParam(offset);
       //System.out.println(m.getName()+" offset="+offset);
 
-      Variable mv = s.findVariable(m.getName());
+      Variable mv = seq.findVariable(m.getName());
       if (mv == null)
         System.out.println("HEY");
 

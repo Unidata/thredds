@@ -41,6 +41,7 @@ import java.util.ArrayList;
 /**
  * Sequence is a one-dimensional Structure with indeterminate length.
  * The only data access is through getStructureIterator().
+ * However, read() will read in the entire data and return an ArraySequence.
  *
  * @author caron
  * @since Feb 23, 2008
@@ -61,6 +62,10 @@ public class Sequence extends Structure {
     dims.add(Dimension.VLEN);
     setDimensions(dims);
     this.dataType = DataType.SEQUENCE;
+  }
+
+  public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
+    return ncfile.getStructureIterator(this, bufferSize);
   }
 
   /**
@@ -100,18 +105,18 @@ public class Sequence extends Structure {
    */
   @Override
   public Array read(ucar.ma2.Section section) throws java.io.IOException, ucar.ma2.InvalidRangeException {
-    throw new UnsupportedOperationException();
+    return read();
   }
 
-  /**
+  /*
    * UnsupportedOperation
    *
    * @throws UnsupportedOperationException
-   */
+   *
   @Override
   public Array read() throws IOException {
     throw new UnsupportedOperationException();
-  }
+  } */
 
   /**
    * UnsupportedOperation

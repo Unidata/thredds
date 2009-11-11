@@ -1183,8 +1183,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   private Variable convertVariable(Group g, Variable v) {
     Variable newVar;
-    if (v instanceof Structure) {
-      newVar = new StructureDS(g, (Structure) v);
+    if (v instanceof Sequence) {
+      newVar = new SequenceDS(g, (Sequence) v);
+    } else if (v instanceof Structure) {
+        newVar = new StructureDS(g, (Structure) v);
     } else {
       newVar = new VariableDS(g, v, false); // enhancement done later
     }

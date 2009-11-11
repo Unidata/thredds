@@ -160,12 +160,12 @@ public class Madis extends TableConfigurerImpl  {
     return stnTable;
   }
 
-  private class VNames {
+  protected class VNames {
     String lat, lon, elev, obsTime, nominalTime;
     String stnId, stnDesc;
   }
 
-  private VNames getVariableNames(NetcdfDataset ds, Formatter errlog) {
+  protected VNames getVariableNames(NetcdfDataset ds, Formatter errlog) {
     VNames vn = new VNames();
 
     String val = ds.findAttValueIgnoreCase(null, "stationLocationVariables", null);
@@ -206,6 +206,8 @@ public class Madis extends TableConfigurerImpl  {
     } else {
       vn.stnId = val;
     }
+
+    vn.elev = "elevation";
 
     return vn;
   }

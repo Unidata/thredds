@@ -5,17 +5,15 @@
       <configuration />
     </facet>
   </component>
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_6" inherit-compiler-output="false">
-    <output url="file://$MODULE_DIR$/../../ldm/target/classes" />
-    <output-test url="file://$MODULE_DIR$/../../ldm/target/test/classes" />
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../ldm/src/main">
       <sourceFolder url="file://$MODULE_DIR$/../../ldm/src/main" isTestSource="false" />
     </content>
     <orderEntry type="jdk" jdkName="1.6" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="cdm" exported="" />
-    <orderEntry type="module" module-name="common" exported="" />
+    <orderEntry type="module" module-name="common" />
+    <orderEntry type="module" module-name="cdm" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -25,7 +23,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="Spring" level="project" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -35,6 +32,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="Spring" level="project" />
   </component>
 </module>
 

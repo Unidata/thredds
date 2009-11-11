@@ -169,11 +169,8 @@ public class TestPointFeatureTypes extends TestCase {
     assert 420 == testPointDataset(CFpointObs_topdir + "sectionFlat.nc", FeatureType.SECTION, false);
   }
 
-  public void testProblem() throws IOException {
-    //assert 28818 == testPointDataset("D:\\formats\\bufr\\test\\fslprofilers.bufr", FeatureType.STATION_PROFILE, false);
-    // assert 44288 == testPointDataset("D:\\formats\\bufr\\test\\KBOU-ISXT40.bufr", FeatureType.STATION, false);
-    // assert 21060 == testPointDataset("D:\\formats\\bufr\\test\\KBOU-IUPT03.bufr", FeatureType.STATION_PROFILE, false);
-    assert 21060 == testPointDataset("D:/formats/bufr/test/KNES-JUTX.bufr", FeatureType.PROFILE, false);
+  public void utestProblem() throws IOException {
+    assert 3483 == testPointDataset(TestAll.testdataDir + "lightning/uspln/uspln_20061023.18", FeatureType.POINT, false);
   }
 
   public void testCF() throws IOException {
@@ -236,13 +233,28 @@ public class TestPointFeatureTypes extends TestCase {
     assert 55856 == testPointDataset(topdir + "ft/point/20091030_syn.gem", FeatureType.POINT, false);
     assert 28328 == testPointDataset(topdir + "ft/point/20091030_syn.gem", FeatureType.STATION, false);
 
-    // netcdf buoy / synoptic (from fsl ? or are these robb's perl decoders ?
+    // netcdf buoy / synoptic ( robb's perl decoders i think) ?
     assert 32452 == testPointDataset(topdir + "ft/point/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, false);
     assert 1516 == testPointDataset(topdir + "ft/point/Surface_Synoptic_20090921_0000.nc", FeatureType.POINT, false);
 
     //RAF-Nimbus
     assert 7741 == testPointDataset(topdir + "ft/trajectory/raf/135_ordrd.nc", FeatureType.TRAJECTORY, false);
     assert 8157 == testPointDataset(topdir + "ft/trajectory/raf/raftrack.nc", FeatureType.TRAJECTORY, false);
+
+    // Madis
+    assert 5063 == testPointDataset(topdir + "ft/trajectory/acars/acars_20091109_0800.nc", FeatureType.TRAJECTORY, false);
+    assert 2499 == testPointDataset(TestAll.testdataDir + "point/netcdf/19981110_1200", FeatureType.POINT, false);
+    assert 1374 == testPointDataset(TestAll.testdataDir + "station/madis2/hydro/20050729_1200", FeatureType.STATION, false);
+
+    // unidata point obs
+    assert 5023 == testPointDataset(TestAll.testdataDir + "point/netcdf/200501q3h-gr.nc", FeatureType.STATION, false);
+    assert 277477 == testPointDataset(TestAll.testdataDir + "point/netcdf/20080814_LMA.ncml", FeatureType.POINT, false);
+
+    // nldn
+    assert 1165 == testPointDataset(TestAll.testdataDir + "lightning/nldn/200929100.ingest", FeatureType.POINT, false);
+
+    // uspln
+    assert 3483 == testPointDataset(TestAll.testdataDir + "lightning/uspln/uspln_20061023.18", FeatureType.POINT, false);
 
   }
 
@@ -273,9 +285,6 @@ public class TestPointFeatureTypes extends TestCase {
     //testPointVsAny("Q:/cdmUnitTest/formats/gempak/surface/20090521_sao.gem", true);
   }
 
-  public void utestProblem() throws IOException {
-    testPointDataset("D:\\datasets\\metars\\Surface_METAR_20070513_0000.nc", FeatureType.STATION, true);
-  }
 
   public void utestCollectionGempak() throws IOException {
     //testPointDataset("collection:C:/data/formats/gempak/surface/#yyyyMMdd#_sao\\.gem", FeatureType.STATION, true);
@@ -504,7 +513,8 @@ public class TestPointFeatureTypes extends TestCase {
 
     int n = pfc.size();
     if (n <= 0) {
-      System.out.println("  empty " + pfc);
+      System.out.println("  empty " + pfc.getName());
+      //pfc.calcBounds();
       return 0; // empty
     }
 

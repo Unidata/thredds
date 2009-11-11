@@ -200,7 +200,7 @@ The specifics for the binary NLDN data record contained in the IDD is:
     ncfile.addAttribute(null, new Attribute("title", "NLDN Lightning Data"));
     ncfile.addAttribute(null, new Attribute("history", "Read directly by Netcdf Java IOSP"));
 
-    ncfile.addAttribute(null, new Attribute("Conventions", "CF-1"));
+    ncfile.addAttribute(null, new Attribute("Conventions", "NLDN-CDM"));
     ncfile.addAttribute(null, new Attribute("CFfeatureType", "point"));
 
     ncfile.finish();

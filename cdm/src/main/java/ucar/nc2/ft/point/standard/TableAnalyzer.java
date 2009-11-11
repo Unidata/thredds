@@ -65,6 +65,7 @@ public class TableAnalyzer {
 
   // search in the order added
   static {
+
     registerAnalyzer("CF-1.", CFpointObs.class, new ConventionNameOk() {
       public boolean isMatch(String convName, String wantName) {
         return convName.startsWith(wantName) && !convName.equals("CF-1.0"); // throw 1.0 to default analyser
@@ -77,11 +78,13 @@ public class TableAnalyzer {
     registerAnalyzer("Cosmic", Cosmic.class, null);
     registerAnalyzer("FslWindProfiler", FslWindProfiler.class, null);
     registerAnalyzer("IRIDL", Iridl.class, null);
+    registerAnalyzer("MADIS-ACARS", MadisAcars.class, null); // must be before Madis
     registerAnalyzer("MADIS surface observations, v1.0", Madis.class, null);
     registerAnalyzer("Ndbc", Ndbc.class, null);
     registerAnalyzer("Suomi-Station-CDM", Suomi.class, null);
     registerAnalyzer("BuoyShip-NetCDF", BuoyShipSynop.class, null);
     registerAnalyzer("NCAR-RAF/nimbus", RafNimbus.class, null);
+    registerAnalyzer("NLDN-CDM", Nldn.class, null);
 
     // further calls to registerConvention are by the user
     userMode = true;

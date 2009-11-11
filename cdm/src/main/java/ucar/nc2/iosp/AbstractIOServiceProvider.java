@@ -53,6 +53,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
 
   protected ucar.unidata.io.RandomAccessFile raf;
 
+  @Override
   public void close() throws java.io.IOException {
     if (raf != null)
       raf.close();
@@ -62,6 +63,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   // default implementation, reads into an Array, then writes to WritableByteChannel
   // subclasses should override if possible
   // LOOK DataOutputStream uses big-endian
+  @Override
   public long readToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
       throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
@@ -148,34 +150,42 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   }
 
 
+  @Override
   public ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException {
     return IospHelper.readSection(cer);  //  IOSPs can optimize by overriding
   }
 
+  @Override
   public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
     return null;
   }
 
+  @Override
   public Object sendIospMessage(Object message) {
     return null;
   }
 
+  @Override
   public boolean syncExtend() throws IOException {
     return false;
   }
 
+  @Override
   public boolean sync() throws IOException {
     return false;
   }
 
+  @Override
   public String toStringDebug(Object o) {
     return "";
   }
 
+  @Override
   public String getDetailInfo() {
     return "";
   }
 
+  @Override
   public String getFileTypeVersion() {
     return "N/A";
   }

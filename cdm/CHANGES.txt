@@ -4,6 +4,9 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  9:
+  point datasets: NLDN, USPLN, Madis-ACARS
+  add SequenceDS extends StructureDS
+  NetcdfFile, IOSP getStructureIterator() for top-level sequences
   BUFR edition 4 had month+1 on reference time
   OPeNDAP scalars like NcSDInt32 were assuming Array.D0
  8:

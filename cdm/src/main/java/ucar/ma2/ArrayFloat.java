@@ -288,6 +288,8 @@ public class ArrayFloat extends Array {
     }
     private D2 (Index i, float[] store) {
       super(i, store);
+ //     if (!(indexCalc instanceof Index2D))
+ //       System.out.printf("HEY%n");
       ix = (Index2D) indexCalc;
     }
     /** get the value. */

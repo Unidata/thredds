@@ -389,7 +389,9 @@ public class PointFeatureDatasetViewer extends JPanel {
     PointFeatureCollectionIterator iter = profileCollection.getPointFeatureCollectionIterator(-1);
     while (iter.hasNext()) {
       PointFeatureCollection pob = iter.next();
-      beans.add(new ProfileFeatureBean( (ProfileFeature) pob));
+      ProfileFeatureBean bean = new ProfileFeatureBean((ProfileFeature) pob);
+      if (bean.pf != null) // may have missing values
+        beans.add(bean);
     }
 
     stnTable.setBeans(beans);
@@ -403,7 +405,9 @@ public class PointFeatureDatasetViewer extends JPanel {
     PointFeatureCollectionIterator iter = trajCollection.getPointFeatureCollectionIterator(-1);
     while (iter.hasNext()) {
       PointFeatureCollection pob = iter.next();
-      beans.add(new TrajectoryFeatureBean( (TrajectoryFeature) pob));
+      TrajectoryFeatureBean trajBean = new TrajectoryFeatureBean((TrajectoryFeature) pob);
+      if (trajBean.pf != null) // may have missing values
+        beans.add(trajBean);
     }
 
     stnTable.setBeans(beans);
@@ -417,7 +421,9 @@ public class PointFeatureDatasetViewer extends JPanel {
     NestedPointFeatureCollectionIterator iter = sectionCollection.getNestedPointFeatureCollectionIterator(-1);
     while (iter.hasNext()) {
       NestedPointFeatureCollection pob = iter.next();
-      beans.add(new SectionFeatureBean( (SectionFeature) pob));
+      SectionFeatureBean bean = new SectionFeatureBean((SectionFeature) pob);
+      if (bean.pf != null) // may have missing values
+        beans.add(bean);
     }
 
     stnTable.setBeans(beans);

@@ -282,7 +282,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
           return true;
       }
 
-      if (v instanceof StructureDS) {
+      else if (v instanceof StructureDS) {
         StructureDS nested = (StructureDS) v;
         if (nested.convertNeeded(null))
           return true;
@@ -300,7 +300,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   //   1) scale/offset/enum conversion
   //   2) name, info change
   //   3) variable with cached data added to StructureDS through NcML
-  private ArrayStructure convert(Array data, Section section) throws IOException {
+  protected ArrayStructure convert(Array data, Section section) throws IOException {
     ArrayStructure orgAS = (ArrayStructure) data;
     if (!convertNeeded(orgAS.getStructureMembers())) {
       // name, info change only
@@ -382,7 +382,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   /* convert original structureData to one that conforms to this Structure */
-  private StructureData convert(StructureData sdata, int recno) throws IOException {
+  protected StructureData convert(StructureData sdata, int recno) throws IOException {
     if (!convertNeeded(sdata.getStructureMembers())) {
       // name, info change only
       convertMemberInfo(sdata.getStructureMembers());

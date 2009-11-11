@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pointConfig featureType="POINT">
+  <table type="Structure" subtype="Structure" structName="record">
+    <coordinate type="Lat">lat</coordinate>
+    <coordinate type="Lon">lon</coordinate>
+    <coordinate type="Time">tsec</coordinate>
+  </table>
+</pointConfig>

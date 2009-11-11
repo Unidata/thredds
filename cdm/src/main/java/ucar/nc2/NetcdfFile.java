@@ -1777,6 +1777,11 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     return spi.readToByteChannel(v, section, wbc);
   }
 
+
+  protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
+    return spi.getStructureIterator(s, bufferSize);
+  }
+
   /* public long readToByteChannel(ucar.nc2.Variable v, WritableByteChannel wbc) throws java.io.IOException {
     try {
       return readToByteChannel(v, v.getShapeAsSection(), wbc);
