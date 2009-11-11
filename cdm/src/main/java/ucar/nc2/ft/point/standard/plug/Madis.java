@@ -207,7 +207,7 @@ public class Madis extends TableConfigurerImpl  {
       vn.stnId = val;
     }
 
-    vn.elev = "elevation";
+    vn.elev = "altitude";
 
     return vn;
   }
