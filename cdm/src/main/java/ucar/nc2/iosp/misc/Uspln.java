@@ -279,7 +279,7 @@ public class Uspln extends AbstractIOServiceProvider {
         lon.setDimensions("");
         lon.setDataType(DataType.DOUBLE);
         lon.addAttribute(new Attribute("long_name", "longitude"));
-        lat.addAttribute(new Attribute("standard_name", "longitude"));
+        lon.addAttribute(new Attribute("standard_name", "longitude"));
         lon.addAttribute(new Attribute("units", "degrees_east"));
         lon.addAttribute(new Attribute(_Coordinate.AxisType,
                                        AxisType.Lon.toString()));
