@@ -7,11 +7,6 @@
       <coordinate type="Lon">Lon</coordinate>
       <coordinate type="Elev">MSL_alt</coordinate>
       <coordinate type="Time">time</coordinate>
-      <variable>Temp</variable>
-      <variable>Vp</variable>
-      <variable>Pres</variable>
-      <variable>Ref</variable>
-      <variable>Ref_obs</variable>
     </table>
   </table>
 </pointConfig>
