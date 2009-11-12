@@ -124,6 +124,14 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
     }
 
     /**
+     * Get the CF feature type
+     * @return the feature type
+     */
+    public String getCFFeatureType() {
+        return CF.FeatureType.stationProfile.toString();
+    }
+
+    /**
      * Read the data for the variable
      * @param v2  Variable to read
      * @param section   section infomation

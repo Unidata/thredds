@@ -121,6 +121,17 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
     }
 
     /**
+     * Get the CF feature type
+     * @return the feature type
+     */
+    public String getCFFeatureType() {
+        if (gemreader.getFileSubType().equals(GempakSurfaceFileReader.SHIP)) {
+           return CF.FeatureType.point.toString();
+        }
+        return CF.FeatureType.stationTimeSeries.toString();
+    }
+
+    /**
      * Read the data for the variable
      * @param v2  Variable to read
      * @param section   section infomation

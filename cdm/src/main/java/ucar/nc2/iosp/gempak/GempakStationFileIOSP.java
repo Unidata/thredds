@@ -354,6 +354,7 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
                             new Attribute("history",
                                           "Direct read of " + fileType
                                           + " into NetCDF-Java 4.1 API"));  //  at " + dateFormat.toDateTimeStringISO(new Date())));
+        ncfile.addAttribute(null, new Attribute(CF.featureTypeAtt, getCFFeatureType()));
     }
 
     /**
@@ -362,6 +363,14 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
      */
     public String getConventions() {
         return "GEMPAK/CDM";
+    }
+
+    /**
+     * Get the CF feature type, subclasses should override
+     * @return the feature type
+     */
+    public String getCFFeatureType() {
+        return CF.FeatureType.point.toString();
     }
 
     /**
