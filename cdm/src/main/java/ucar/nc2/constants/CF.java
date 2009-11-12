@@ -48,6 +48,7 @@ public class CF {
 
   // CF names
   public static final String STANDARD_NAME = "standard_name";
+  public static final String UNITS = "units";
   public static final String RAGGED_ROWSIZE = "ragged_row_size";
   public static final String RAGGED_PARENTINDEX = "ragged_parent_index";
   public static final String STATION_ID = "station_id";
