@@ -452,16 +452,14 @@ public class Message {
     return msg_nbits;
   }
 
-
-  /* int ncounters() {
-    if (counterFlds == null) return 0;
-    int ncounters = 0;
+  public void showCounters(Formatter out) throws IOException {
+    out.format("   total   offset size name%n");    
     for (BitCounterCompressed counter : counterFlds)
-      if (counter != null) ncounters += counter.ncounters();
-    return ncounters;
-  } */
+      counter.show(out, 0);
+  }
 
-  public BitCounterCompressed[] getCounterFlds() throws IOException {
+
+  public BitCounterCompressed[] getBitCounterCompressed() throws IOException {
     if (counterFlds == null)
       countBitsCompressed(null);
     return counterFlds;
@@ -480,8 +478,10 @@ public class Message {
     } outer(60);
 
     layout is comp(i1,60), comp(i2,60), ... comp(inner,60), ...
-    where comp(inner,60) = [comp(f1,60), comp(f2(60)] * 18
+    where comp(inner,60) = [comp(f1,60), comp(f2,60)] * 18
     where comp = compressed structure = (minValue, dataWidth, n * dataWidth)
+
+    compSequence = [m, 6, comp(f1,60), comp(f2,60), ...] * m
 
     see p 11 of "definition" document
    */
@@ -515,7 +515,7 @@ public class Message {
        bitOffset += dkey.replicationCountSize;
 
        int extra = reader.bits2UInt(6);
-       System.out.printf("EXTRA bits %d at %d %n", extra, bitOffset);
+       // System.out.printf("EXTRA bits %d at %d %n", extra, bitOffset);
        if (null != out)
           out.format("--sequence %s bitOffset=%d replication=%s %n", dkey.getFxyName(), bitOffset, count);
         bitOffset += 6; // LOOK seems to be an extra 6 bits. not yet getting counted
@@ -574,9 +574,9 @@ public class Message {
               byte[] b = new byte[nchars];
               for (int j = 0; j < nchars; j++)
                 b[j] = (byte) reader.bits2UInt(8);
-              out.format(" %s,", new String(b));
+              if (showData) out.format(" %s,", new String(b));
             }
-            out.format("%n");
+            if (showData) out.format("%n");
 
           } else { // numeric
 
@@ -586,26 +586,27 @@ public class Message {
             for (int i = 0; i < n; i++) {
               int val = reader.bits2UInt(dataWidth);
               if (val == BufrNumbers.missing_value[dataWidth]) // is this a missing value ??
-                out.format(" %d (MISSING)", val);
+                if (showData) out.format(" %d (MISSING)", val);
               else {
                 float fval = (dataMin + val + dkey.refVal);
-                out.format(" %d (%f)", val, scale * fval);
+                if (showData) out.format(" %d (%f)", val, scale * fval);
               }
             }
 
-            out.format("%n");
+            if (showData) out.format("%n");
           }
         } else {
           // show the constant value
           double scale = Math.pow(10.0, -dkey.scale); // LOOK could precompute for efficiency
           float fval = (dataMin + dkey.refVal);
-          out.format(" all values= %d (%f) %n", dataMin, scale * fval);
+          if (showData) out.format(" all values= %d (%f) %n", dataMin, scale * fval);
         }
       }
     }
 
     return bitOffset;
   }
+  boolean showData = false;
 
   ///////////////////////////////////////////////////////////////////
 
@@ -635,7 +636,7 @@ public class Message {
   // better to preprocess the dds and pass in the actual fldidx we want.
   private void readDataCompressed(BitReader reader, List<Integer> indexFlds, Object[][] result) throws IOException {
     int nobs = getNumberDatasets();
-    BitCounterCompressed[] bitCounter = getCounterFlds();
+    BitCounterCompressed[] bitCounter = getBitCounterCompressed();
     int count = 0;
 
     for (int index : indexFlds) {

@@ -32,6 +32,8 @@
  */
 package ucar.nc2.iosp.bufr;
 
+import java.util.Formatter;
+
 /**
  * Count size of compressed fields
  *
@@ -108,6 +110,18 @@ public class BitCounterCompressed {
           if (counter != null) ncounters += counter.ncounters();
       }
       return ncounters;
+    }
+  }
+
+  public void show(Formatter out, int indent) {
+    for (int i=0; i<indent; i++) out.format(" ");
+    out.format("%8d %8d %4d %s %n", getTotalBits(), bitOffset, dataWidth, dkey.name);
+    if (nested != null) {
+      for (BitCounterCompressed[] counters : nested) {
+        if (counters == null) continue;
+        for (BitCounterCompressed counter : counters)
+          if (counter != null) counter.show(out, indent+2);
+      }
     }
   }
 

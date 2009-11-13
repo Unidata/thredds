@@ -249,7 +249,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
     BitReader reader = new BitReader(raf, m.dataSection.getDataPos() + 4);
     if (m.dds.isCompressed()) {
-      BitCounterCompressed[] bitCounter = m.getCounterFlds();      
+      BitCounterCompressed[] bitCounter = m.getBitCounterCompressed();      
       readDataCompressed(reader, m.getRootDataDescriptor(), obsOffsetInMessage, bitCounter, bb);
     } else {
       BitCounterUncompressed bitCounter = m.getBitCounterUncompressed(obsOffsetInMessage);
@@ -355,6 +355,39 @@ public class BufrIosp extends AbstractIOServiceProvider {
       [i1, i2, ..., [f1, f2] * 18, ...] * 60
 
    */
+
+  /*
+  sequences (delayed replication)
+  From FM94REG-11-2007.pdf:
+
+  "The binary data in compressed form may be described as follows:
+     Ro1, NBINC1, I11, I12, . . . I1n
+     Ro2, NBINC2, I21, I22, . . . I2n
+     ...
+     Ros, NBINCs, Is1, Is2, . . . Isn
+
+  where Ro1, Ro2, . . . Ros are local reference values for the set of values for each data element (number of bits as Table B).
+  NBINC1 . . . NBINCs contain, as 6-bit quantities, the number of bits occupied by the increments (I11 . . . I1n) . . . (Is1 . . . Isn).
+  s is the number of data elements per data subset and n is the number of data subsets per BUFR message."
+
+  What happens if we combine compression with replication?
+
+  Let C be the entire compressed block for one dataset, as above. Then regular replication just repeats C for each dataset in the replication:
+
+    C1, C2,... Cm
+
+  One might guess that delayed replication would look just like regular replication preceded by the replication count, that is:
+
+    m, C1, C2,... Cm
+
+  where m is the replication count using the number of bits specified in the replication descriptor element.
+  However, for some BUFR records, I am seeing an extra 6 bits, that is:
+
+    m, x, C1, C2,... Cm
+
+  Where x appears to be 6 zero bits.
+   */
+
   // read data for a particular obs
   private void readDataCompressed(BitReader reader, DataDescriptor parent, int msgOffset, BitCounterCompressed[] counters, ByteBuffer bb) throws IOException {
     //Formatter out = new Formatter(System.out);
@@ -366,9 +399,25 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
       BitCounterCompressed counter = counters[fldidx];
 
-      // sequence : probably works the same way as structure
       if (dkey.replication == 0) {
-        continue; // skip for the moment
+        // sequence : works the same way as structure
+        // except that theres the count stored first
+        int bitOffset = counter.getStartingBitPos();
+        reader.setBitOffset(bitOffset);
+        int count = reader.bits2UInt(dkey.replicationCountSize);
+        bitOffset += dkey.replicationCountSize;
+        System.out.printf("compressed replication count = %d %n", count);
+        int extra = reader.bits2UInt(6);
+        System.out.printf("EXTRA bits %d at %d %n", extra, bitOffset);
+        bitOffset += 6; // LOOK seems to be an extra 6 bits. not yet getting counted
+
+        // counter.addNestedCounters(count);
+        for (int i = 0; i < count; i++) {
+          BitCounterCompressed[] nested = counter.getNestedCounters(i);
+          readDataCompressed(reader, dkey, msgOffset, nested, bb);
+        }
+
+        continue;
       }
 
       // structure

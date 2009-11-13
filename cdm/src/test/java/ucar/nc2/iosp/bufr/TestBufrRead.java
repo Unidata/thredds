@@ -35,9 +35,11 @@ package ucar.nc2.iosp.bufr;
 
 import ucar.nc2.TestAll;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.*;
+import java.util.Formatter;
 
 import junit.framework.TestCase;
 
@@ -62,10 +64,10 @@ public class TestBufrRead extends TestCase {
     }
   }
 
-  public void testReadOneBufrMessage() throws IOException {
+  public void testReadAllInDir() throws IOException {
     //readandCountAllInDir(testDir, null);
     int count = 0;
-    count += TestAll.actOnAll("R:/testdata/bufr/edition3/", new MyFileFilter(), new TestAll.Act() {
+    count += TestAll.actOnAll("C:/data/formats/bufr3/ISIS01.bufr", new MyFileFilter(), new TestAll.Act() {
       public int doAct(String filename) throws IOException {
         return readBufr(filename);
       }
@@ -73,8 +75,8 @@ public class TestBufrRead extends TestCase {
     System.out.println("***READ " + count + " files");
   }
 
-  public void testScanOne() throws IOException {
-    openNetdf("R:/testdata/bufr/edition3/idd/profiler/PROFILER_1.bufr");
+  public void testReadOneBufrMessage() throws IOException {
+     readBufr("C:/data/formats/bufr3/ISIS01.bufr");
   }
 
   private int readBufr(String filename) throws IOException {
@@ -89,13 +91,18 @@ public class TestBufrRead extends TestCase {
       if (m == null) continue;
       int totalObs = m.getNumberDatasets();
       System.out.println("Total number observations =" + totalObs);
+      m.calcTotalBits( null); // new Formatter(System.out));
+      m.showCounters( new Formatter(System.out));
       break;
     }
     return 1;
   }
 
-  private void openNetdf(String filename) throws IOException {
-    NetcdfFile.open(filename);
+  public void testCompressedSequence() throws IOException {
+    NetcdfFile ncfile = NetcdfFile.open("C:/data/formats/bufr3/ISIS01.bufr");
+    Variable v = ncfile.findVariable("obsRecord");
+    v.read();
+    ncfile.close();
   }
 
 }
