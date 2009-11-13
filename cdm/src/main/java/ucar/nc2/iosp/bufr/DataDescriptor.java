@@ -142,7 +142,7 @@ public class DataDescriptor {
   }
 
   public boolean isOkForVariable() {
-    return (f == 0) || (f == 1);
+    return (f == 0) || (f == 1) || ((f == 2) && (x == 5));
   }
 
   public boolean isLocal() {

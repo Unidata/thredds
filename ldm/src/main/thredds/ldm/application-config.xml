@@ -26,8 +26,8 @@
   <bean id="messageDispatch" class="thredds.ldm.MessageDispatchDDS">
     <constructor-arg type="java.util.concurrent.CompletionService" ref="completionService"/>
     <constructor-arg type="java.lang.String" value="null"/>
-    <constructor-arg type="java.lang.String" value="D:/bufr/ncepBug2/dispatch/"/>
-    <property name="inputFilenameOut" value="D:/bufr/ncepBug2/dispatchOut.csv"/>
+    <constructor-arg type="java.lang.String" value="D:/formats/bufr/tmp/dispatch/"/>
+    <property name="inputFilenameOut" value="D:/formats/bufr/tmp/dispatch/dispatchOut.csv"/>
   </bean>
 
   <bean id="messageBroker" class="thredds.ldm.MessageBroker">
@@ -37,8 +37,9 @@
     <constructor-arg type="thredds.ldm.MessageDispatchDDS" ref="messageDispatch"/>
   </bean>
 
-  <bean id="testDriver" class="thredds.ldm.TestDriver">
+  <bean id="testDriver" class="thredds.ldm.TestBufrDispatch">
     <property name="messageBroker" ref="messageBroker"/>
+    <property name="testDir" value="D:/formats/bufr/idd/"/>
   </bean>
 
 </beans>

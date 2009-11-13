@@ -129,7 +129,7 @@ public class Scanner {
   //////////////////////////////////////////////////////////////
 
   // o = minimal, 1=header, 2=dump dds
-  static int scan(String filename, int mode) throws IOException {
+  static int dumpMessages(String filename, int mode) throws IOException {
     long start = System.nanoTime();
     RandomAccessFile raf = new RandomAccessFile(filename, "r");
     out.format("\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
@@ -729,7 +729,7 @@ public class Scanner {
   ////////////////////////////////////////////////////////
 
   // extract the msgno-th message to fileOut
-  static void extract(String filein, int msgno, String fileout) throws IOException {
+  static void extractNthMessage(String filein, int msgno, String fileout) throws IOException {
     FileOutputStream fos = new FileOutputStream(fileout);
     WritableByteChannel wbc = fos.getChannel();
 
@@ -749,7 +749,7 @@ public class Scanner {
   }
 
   // extract the first message that contains the header string to fileOut
-  static void extract(String filein, String header, String fileout) throws IOException {
+  static void extractFirstMessageWithHeader(String filein, String header, String fileout) throws IOException {
     FileOutputStream fos = new FileOutputStream(fileout);
     WritableByteChannel wbc = fos.getChannel();
 
@@ -768,8 +768,8 @@ public class Scanner {
     }
   }
 
-    // extract the first message that contains the header string to fileOut
-  static void extract(String filein, Pattern p, WritableByteChannel wbc) throws IOException {
+    // extract all messages that contains the header string to fileOut
+  static void extractAllWithHeader(String filein, Pattern p, WritableByteChannel wbc) throws IOException {
     System.out.println("extract "+filein);
     RandomAccessFile raf = new RandomAccessFile(filein, "r");
     MessageScanner scan = new MessageScanner(raf);
@@ -803,10 +803,10 @@ public class Scanner {
     fos.close();
     // */
 
-    // dump messages
-    test("R:/testdata/bufr/problems/", new MClosure() {
+    /* dump messages
+    test("D:/formats/bufr/idd/", new MClosure() {
       public void run(String filename) throws IOException {
-        scan(filename, -1);
+        dumpMessages(filename, -1);
       }
     }); // */
 
@@ -819,12 +819,12 @@ public class Scanner {
      }); // */
 
     /* look for all message types in the files
-     test("C:/data/bufr2/asampleAll.bufr", new MClosure() {
+     test("D:/formats/bufr/idd/", new MClosure() {
         public void run(String filename) throws IOException {
           scanMessageTypes(filename);
         }
       });
-    Formatter ddsCsv = new Formatter( new FileOutputStream("C:/data/bufr2/out/ddsm.csv"));
+    Formatter ddsCsv = new Formatter( new FileOutputStream("D:/formats/bufr/tmp/idd.csv"));
     showTypes(ddsCsv);
     ddsCsv.close(); // */
 
@@ -837,7 +837,7 @@ public class Scanner {
        }
      }); // */
 
-    /* extract unique DDS  // 20080707_1900.bufr
+    // extract unique DDS  // 20080707_1900.bufr
      test("R:/testdata/bufr/problems/", new MClosure() {
        public void run(String filename) throws IOException {
          scanMessageDDS(filename);

@@ -73,6 +73,8 @@ public class MessageDispatchDDS {
   boolean showBad = false;
   boolean showConfig = false;
   boolean showResults = false;
+  boolean useSubdirs = false;
+  boolean writeIndex = false;
   boolean writeSamples = true;
 
   WritableByteChannel badWbc;
@@ -109,7 +111,7 @@ public class MessageDispatchDDS {
       allWbc = fos.getChannel();
     }
 
-    MessageWriter.setRootDir(dispatchDir);
+    // MessageWriter.setRootDir(dispatchDir);
 
     // read config file
     if (inputFilename != null) {
@@ -249,7 +251,7 @@ public class MessageDispatchDDS {
       for (MessType mtype : mtypes) {
         if (mtype.proto == null) {
           if (showResults) out.format(" MessType %s count=%d fileout= %s\n", mtype.name, mtype.count, mtype.fileout);
-          cfg.format("%d, %s, %s, %s, %5d, %8d, %5f %n",
+          cfg.format("Ox%x, %s, %s, %s, %5d, %8d, %5f %n",
                   mtype.hash, mtype.fileout, mtype.name, mtype.index,
                   mtype.count, mtype.countObs, mtype.countBytes / 1000);
           continue;
@@ -257,7 +259,7 @@ public class MessageDispatchDDS {
         Message m = mtype.proto;
         boolean hasBadMessages = badHashSet.contains(m.hashCode()); // did we find any messages that fail bit count ??
         if (showResults) out.format(" MessType %s count=%d fileout= %s\n", mtype.name, mtype.count, mtype.fileout);
-        cfg.format("%d, %s, %s, %s, %5d, %8d, %5f, %5s, %5s, %d, %s, %s, %s, %s%n",
+        cfg.format("Ox%x, %s, %s, %s, %5d, %8d, %5f, %5s, %5s, %d, %s, %s, %s, %s%n",
                 mtype.hash, mtype.fileout, mtype.name, mtype.index,
                 mtype.count, mtype.countObs, mtype.countBytes / 1000,
                 m.isTablesComplete(), !hasBadMessages, mtype.nbad,
@@ -295,12 +297,14 @@ public class MessageDispatchDDS {
       if (bitsOk.equalsIgnoreCase("true"))
         this.checkBad = false; // dont need to check bits
 
-      this.index = index.trim();
-      if (!ignore && !this.index.equalsIgnoreCase("no")) {
-        try {
-          indexer = BerkeleyDBIndexer.factory( dispatchDir + fileout, index);
-        } catch (Exception e) {
-          logger.error("Cant open BerkeleyDBIndexer", e);
+      if (writeIndex) {
+        this.index = index.trim();
+        if (!ignore && !this.index.equalsIgnoreCase("no")) {
+          try {
+            indexer = BerkeleyDBIndexer.factory( dispatchDir + fileout, index);
+          } catch (Exception e) {
+            logger.error("Cant open BerkeleyDBIndexer", e);
+          }
         }
       }
 
@@ -329,14 +333,37 @@ public class MessageDispatchDDS {
     }
 
     boolean scheduleWrite(Message m) {
-      Calendar cal = Calendar.getInstance();
-      cal.setTime(m.ids.getReferenceTime());
-      int day = cal.get(Calendar.DAY_OF_MONTH);
-      String writerName = fileout + "-" + day;
+      String writerName;
+      Calendar cal = null;
+
+      if (useSubdirs) {
+        cal = Calendar.getInstance();
+        cal.setTime(m.ids.getReferenceTime());
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        writerName = fileout + "-" + day;
+      } else {
+        writerName = fileout;
+      }
+
+      // fetch or create the MessageWriter
       MessageWriter writer = writers.get(writerName);
       if (writer == null) {
         try {
-          writer = new MessageWriter(executor, indexer, fileno, fileout, cal);
+          File file;
+
+          if (useSubdirs) {
+            File dir = new File(dispatchDir + fileout);
+            dir.mkdirs();
+            String date = cal.get( Calendar.YEAR)+"-"+(1+cal.get( Calendar.MONTH))+"-"+cal.get( Calendar.DAY_OF_MONTH);
+            file = new File(dir, fileout+"-"+date+  ".bufr");
+
+          } else {
+            File dir = new File(dispatchDir);
+            dir.mkdirs();
+            file = new File(dir, writerName + ".bufr");
+          }
+
+          writer = new MessageWriter(executor, indexer, file, fileno);
           writers.put(writerName, writer);
           fileno++;
           

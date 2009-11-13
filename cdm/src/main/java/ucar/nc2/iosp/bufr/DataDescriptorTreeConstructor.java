@@ -194,6 +194,11 @@ public class DataDescriptorTreeConstructor {
           iter.remove();
           hasAssFields = true;
 
+        } else if (dd.x == 5) { // char data
+          dd.type = 1; // String
+          dd.bitWidth = dd.y * 8;
+          dd.name = "Note";
+
         } else if (dd.x == 6) {
           // see L3-82 (3.1.6.5)
           // "Y bits of data are described by the immediately following descriptor". could they speak English?

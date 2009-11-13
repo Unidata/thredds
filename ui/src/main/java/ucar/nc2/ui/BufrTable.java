@@ -388,8 +388,8 @@ public class BufrTable extends JPanel {
       return m.getMessageSize();
     }
 
-    public int getHash() {
-      return m.hashCode();
+    public String getHash() {
+      return Integer.toHexString( m.hashCode());
     }
 
     public String getCompress() {

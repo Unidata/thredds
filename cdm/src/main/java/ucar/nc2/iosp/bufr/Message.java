@@ -553,7 +553,8 @@ public class Message {
       reader.setBitOffset(bitOffset);
       int dataMin = reader.bits2UInt(dkey.bitWidth);
       int dataWidth = reader.bits2UInt(6);  // increment data width - always in 6 bits, so max is 2^6 = 64
-      if (dataWidth > dkey.bitWidth && (null != out)) out.format(" BAD WIDTH ");
+      if (dataWidth > dkey.bitWidth && (null != out))
+        out.format(" BAD WIDTH ");
       if (dkey.type == 1) dataWidth *= 8; // char data count is in bytes
       counter.setDataWidth(dataWidth);
 

@@ -49,7 +49,7 @@ import java.util.Collections;
  * @author caron
  * @since Aug 8, 2008
  */
-public class TestDriver {
+public class TestBufrDispatch {
 
   interface MClosure {
     void run(String filename) throws IOException;
@@ -150,12 +150,17 @@ public class TestDriver {
     System.out.printf("%s done reading %d in %.1f secs, rate = %.0f msg/sec %n",filename, n, secs, rate);
   }
 
-  TestDriver()  {
+  TestBufrDispatch()  {
   }
 
   MessageBroker broker;
   public void setMessageBroker( MessageBroker broker) {
     this.broker = broker;
+  }
+
+  private String testDir;
+   public void setTestDir( String testDir) {
+    this.testDir = testDir;
   }
 
   void doScan() throws IOException {
@@ -166,7 +171,7 @@ public class TestDriver {
     long start = System.nanoTime();
 
     //test("D:/bufr/ncepBug2/20081008_0800.bufr", new MClosure() {
-    test("D:/bufr/mlode1008/", new MClosure() {
+    test(testDir, new MClosure() {
     //test("D:/bufr/nlode/snap080808/","20080805", new MClosure() {
     //test("D:/bufr/nlode/snap080808/", new MClosure() {
     //test("D:/bufr/dispatch/fslprofilers/fslprofilers-2008-7-28.bufr", new MClosure() {
@@ -195,7 +200,7 @@ public class TestDriver {
     ApplicationContext springContext =
         new FileSystemXmlApplicationContext("file:C:/dev/tds/thredds/ldm/src/main/thredds/ldm/application-config.xml");
 
-    TestDriver driver = (TestDriver) springContext.getBean("testDriver");
+    TestBufrDispatch driver = (TestBufrDispatch) springContext.getBean("testDriver");
     driver.doScan();
   }
 

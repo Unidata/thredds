@@ -41,7 +41,6 @@ import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 import java.io.File;
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.ArrayList;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -53,10 +52,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @since Aug 19, 2008
  */
 public class MessageWriter implements Callable<IndexerTask> {
-  private static String rootDir = "./";
-  static void setRootDir( String _rootDir) {
-    rootDir = _rootDir;
-  }
+  //private static String rootDir = "./";
+  //static void setRootDir( String _rootDir) {
+  //  rootDir = _rootDir;
+  //}
 
   private final ConcurrentLinkedQueue<Message> q; // unbounded, threadsafe
   private final WritableByteChannel wbc;
@@ -70,16 +69,17 @@ public class MessageWriter implements Callable<IndexerTask> {
   private long lastModified;
   private long filePos = 0;
 
-  MessageWriter(CompletionService<IndexerTask> executor, Indexer indexer, short fileno, String fileout, Calendar mcal) throws FileNotFoundException {
+  //MessageWriter(CompletionService<IndexerTask> executor, Indexer indexer, short fileno, String fileout, Calendar mcal) throws FileNotFoundException {
+  MessageWriter(CompletionService<IndexerTask> executor, Indexer indexer, File file, short fileno) throws FileNotFoundException {
     this.executor = executor;
     this.indexer = indexer;
     this.fileno = fileno;
-    File dir = new File(rootDir + fileout);
+    /* File dir = new File(rootDir + fileout);
     dir.mkdirs();
 
     String date = mcal.get( Calendar.YEAR)+"-"+(1+mcal.get( Calendar.MONTH))+"-"+mcal.get( Calendar.DAY_OF_MONTH);
 
-    File file = new File(rootDir + fileout + "/"+fileout+"-"+date+  ".bufr");
+    File file = new File(rootDir + fileout + "/"+fileout+"-"+date+  ".bufr");  */
     if (file.exists())
       filePos = file.length();
 
