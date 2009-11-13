@@ -86,6 +86,10 @@ public abstract class AbstractLightningIOSP extends AbstractIOServiceProvider {
     /** The record dimension name */
     public static final String RECORD = "record";
 
+    /** time unit */
+    public final static String secondsSince1970 = 
+         "seconds since 1970-01-01 00:00:00";
+
     /**
      * Make lightning variables
      * @param  ncfile      the netCDF file
@@ -137,5 +141,11 @@ public abstract class AbstractLightningIOSP extends AbstractIOServiceProvider {
             new Attribute("history", "Read directly by Netcdf Java IOSP"));
     }
 
+    /**
+     * Make the sequence that holds the data.
+     * @param the netcdf file to add to.
+     * @return the Sequence
+     */
+    //protected abstract Sequence makeSequence(NetcdfFile ncfile);
 }
 

@@ -32,6 +32,7 @@
  */
 
 
+
 package ucar.nc2.iosp.misc;
 
 
@@ -42,7 +43,6 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.io.RandomAccessFile;
@@ -50,7 +50,11 @@ import ucar.unidata.util.StringUtil;
 
 import java.io.IOException;
 
+import java.nio.ByteBuffer;
+
 import java.text.ParseException;
+
+import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -177,9 +181,11 @@ public class Uspln extends AbstractLightningIOSP {
     /** max/min time */
     private double time_min, time_max;
 
-    /** time unit */
-    private final static String timeUnit =
-        "seconds since 1970-01-01 00:00:00";
+    /** The structure members */
+    private StructureMembers sm;
+
+    /** the date format */
+    private SimpleDateFormat isoDateFormat = null;
 
     /**
      * Check if this is a valid file for this IOServiceProvider.
@@ -218,112 +224,84 @@ public class Uspln extends AbstractLightningIOSP {
                      CancelTask cancelTask)
             throws IOException {
 
-        this.raf = raf;
-
-        int n;
-        try {
-            n = readAllData(raf);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            throw new IOException("bad data");
-        }
-
-        Dimension recordDim = new Dimension(RECORD, n, true, true, false);
-        ncfile.addDimension(null, recordDim);
-
-        Structure struct = new Structure(ncfile, null, null, "record");
-        struct.setDimensions("record");
-        ncfile.addVariable(null, struct);
-
-        Variable time = new Variable(ncfile, null, null, TIME);
-        time.setDimensions("");
-        time.setDataType(DataType.DOUBLE);
-        time.addAttribute(new Attribute("long_name", "time of stroke"));
-        time.addAttribute(new Attribute("units", timeUnit));
-        time.addAttribute(new Attribute(_Coordinate.AxisType,
-                                        AxisType.Time.toString()));
-        struct.addMemberVariable(time);
-        time.setSPobject(new IospData(0));
-
-        Variable lat = new Variable(ncfile, null, null, LAT);
-        lat.setDimensions("");
-        lat.setDataType(DataType.DOUBLE);
-        lat.addAttribute(new Attribute("long_name", "latitude"));
-        lat.addAttribute(new Attribute("units", "degrees_north"));
-        lat.addAttribute(new Attribute("standard_name", "latitude"));
-        lat.addAttribute(new Attribute(_Coordinate.AxisType,
-                                       AxisType.Lat.toString()));
-        struct.addMemberVariable(lat);
-        lat.setSPobject(new IospData(1));
-
-        Variable lon = new Variable(ncfile, null, null, LON);
-        lon.setDimensions("");
-        lon.setDataType(DataType.DOUBLE);
-        lon.addAttribute(new Attribute("long_name", "longitude"));
-        lon.addAttribute(new Attribute("standard_name", "longitude"));
-        lon.addAttribute(new Attribute("units", "degrees_east"));
-        lon.addAttribute(new Attribute(_Coordinate.AxisType,
-                                       AxisType.Lon.toString()));
-        struct.addMemberVariable(lon);
-        lon.setSPobject(new IospData(2));
-
-        Variable amp = new Variable(ncfile, null, null, SIGNAL);
-        amp.setDimensions("");
-        amp.setDataType(DataType.DOUBLE);
-        amp.addAttribute(new Attribute("long_name",
-                                       "signal strength (amplitude)"));
-        amp.addAttribute(new Attribute("units", "kAmps"));
-        amp.addAttribute(new Attribute("missing_value", new Double(999)));
-        struct.addMemberVariable(amp);
-        amp.setSPobject(new IospData(3));
-
-        if (isExtended) {
-            // major axis
-            Variable majorAxis = new Variable(ncfile, null, null, MAJOR_AXIS);
-            majorAxis.setDimensions("");
-            majorAxis.setDataType(DataType.DOUBLE);
-            majorAxis.addAttribute(new Attribute("long_name",
-                    "error ellipse major axis"));
-            majorAxis.addAttribute(new Attribute("units", "km"));
-            struct.addMemberVariable(majorAxis);
-            majorAxis.setSPobject(new IospData(4));
-
-            // minor axis
-            Variable minorAxis = new Variable(ncfile, null, null, MINOR_AXIS);
-            minorAxis.setDimensions("");
-            minorAxis.setDataType(DataType.DOUBLE);
-            minorAxis.addAttribute(new Attribute("long_name",
-                    "error ellipse minor axis"));
-            minorAxis.addAttribute(new Attribute("units", "km"));
-            struct.addMemberVariable(minorAxis);
-            minorAxis.setSPobject(new IospData(5));
-
-            // major axis orientation
-            Variable axisOrient = new Variable(ncfile, null, null,
-                                      ELLIPSE_ANGLE);
-            axisOrient.setDimensions("");
-            axisOrient.setDataType(DataType.INT);
-            axisOrient.addAttribute(new Attribute("long_name",
-                    "orientation of error ellipse major axis"));
-            axisOrient.addAttribute(new Attribute("units", "degrees"));
-            struct.addMemberVariable(axisOrient);
-            axisOrient.setSPobject(new IospData(6));
-        } else {  // original format
-            // number of strokes
-            Variable nstrokes = new Variable(ncfile, null, null,
-                                             MULTIPLICITY);
-            nstrokes.setDimensions("");
-            nstrokes.setDataType(DataType.INT);
-            nstrokes.addAttribute(new Attribute("long_name",
-                    "multiplicity [#strokes per flash]"));
-            nstrokes.addAttribute(new Attribute("units", ""));
-            struct.addMemberVariable(nstrokes);
-            nstrokes.setSPobject(new IospData(4));
-        }
-
+        this.raf      = raf;
+        isExtended    = checkFormat();
+        isoDateFormat = new SimpleDateFormat();
+        isoDateFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+        isoDateFormat.applyPattern(isExtended
+                                   ? TIME_FORMAT_EX
+                                   : TIME_FORMAT);
+        Sequence seq = makeSequence(ncfile);
+        ncfile.addVariable(null, seq);
         addLightningGlobalAttributes(ncfile);
         ncfile.finish();
+        sm = seq.makeStructureMembers();
+        int size = ArrayStructureBB.setOffsets(sm);
+        sm.setStructureSize(size);
 
+    }
+
+    /**
+     * _more_
+     *
+     * @param ncfile _more_
+     *
+     * @return _more_
+     */
+    protected Sequence makeSequence(NetcdfFile ncfile) {
+
+        Sequence seq = new Sequence(ncfile, null, null, RECORD);
+
+        Variable v = makeLightningVariable(ncfile, null, seq, TIME,
+                                           DataType.DOUBLE, "",
+                                           "time of stroke", null,
+                                           secondsSince1970, AxisType.Time);
+        seq.addMemberVariable(v);
+
+        v = makeLightningVariable(ncfile, null, seq, LAT, DataType.DOUBLE,
+                                  "", "latitude", "latitude",
+                                  "degrees_north", AxisType.Lat);
+        seq.addMemberVariable(v);
+
+        v = makeLightningVariable(ncfile, null, seq, LON, DataType.DOUBLE,
+                                  "", "longitude", "longitude",
+                                  "degrees_east", AxisType.Lon);
+        seq.addMemberVariable(v);
+
+        v = makeLightningVariable(ncfile, null, seq, SIGNAL, DataType.FLOAT,
+                                  "",
+                                  "signed peak amplitude (signal strength)",
+                                  null, "kAmps", null);
+        v.addAttribute(new Attribute("missing_value", new Double(999)));
+        seq.addMemberVariable(v);
+
+        if (isExtended) {  // extended
+            v = makeLightningVariable(ncfile, null, seq, MAJOR_AXIS,
+                                      DataType.FLOAT, "",
+                                      "error ellipse semi-major axis", null,
+                                      "km", null);
+            seq.addMemberVariable(v);
+
+            v = makeLightningVariable(ncfile, null, seq, MINOR_AXIS,
+                                      DataType.FLOAT, "",
+                                      "error ellipse minor axis ", null,
+                                      "km", null);
+            seq.addMemberVariable(v);
+
+            v = makeLightningVariable(
+                ncfile, null, seq, ELLIPSE_ANGLE, DataType.INT, "",
+                "error ellipse axis angle of orientation ", null, "degrees",
+                null);
+            seq.addMemberVariable(v);
+
+        } else {  // original format
+            v = makeLightningVariable(ncfile, null, seq, MULTIPLICITY,
+                                      DataType.INT, "",
+                                      "multiplicity [#strokes per flash]",
+                                      null, "", null);
+            seq.addMemberVariable(v);
+        }
+        return seq;
     }
 
     /**
@@ -334,19 +312,20 @@ public class Uspln extends AbstractLightningIOSP {
     protected void addLightningGlobalAttributes(NetcdfFile ncfile) {
         super.addLightningGlobalAttributes(ncfile);
         ncfile.addAttribute(null,
-                            new Attribute("title", "USPN Lightning Data"));
+                            new Attribute("title", "USPLN Lightning Data"));
         ncfile.addAttribute(null,
                             new Attribute("file_format",
                                           "USPLN1 " + (isExtended
                 ? "(extended)"
                 : "(original)")));
 
+        /*
         ncfile.addAttribute(null,
                             new Attribute("time_coverage_start",
-                                          time_min + " " + timeUnit));
+                                          time_min + " " + secondsSince1970));
         ncfile.addAttribute(null,
                             new Attribute("time_coverage_end",
-                                          time_max + " " + timeUnit));
+                                          time_max + " " + secondsSince1970));
 
         ncfile.addAttribute(null,
                             new Attribute("geospatial_lat_min",
@@ -361,7 +340,33 @@ public class Uspln extends AbstractLightningIOSP {
         ncfile.addAttribute(null,
                             new Attribute("geospatial_lon_max",
                                           new Double(lon_max)));
+        */
 
+    }
+
+    /**
+     * Read all the data and return the number of strokes
+     * @return true if extended format
+     *
+     * @throws IOException  if read error
+     */
+    private boolean checkFormat() throws IOException {
+
+        raf.seek(0);
+        boolean extended = false;
+        while (true) {
+            long   offset = raf.getFilePointer();
+            String line   = raf.readLine();
+            if (line == null) {
+                break;
+            }
+            if (StringUtil.regexpMatch(line, MAGIC)
+                    || StringUtil.regexpMatch(line, MAGIC_OLD)) {
+                extended = StringUtil.regexpMatch(line, MAGIC_EX);
+                break;
+            }
+        }
+        return extended;
     }
 
     /**
@@ -456,7 +461,6 @@ public class Uspln extends AbstractLightningIOSP {
         return count;
     }
 
-
     /**
      * Read data from a top level Variable and return a memory resident Array.
      * This Array has the same element type as the Variable, and the requested shape.
@@ -472,78 +476,149 @@ public class Uspln extends AbstractLightningIOSP {
      */
     public Array readData(Variable v2, Section section)
             throws IOException, InvalidRangeException {
+        return new ArraySequence(sm, getStructureIterator(null, 0), 0);
+    }
 
-        java.text.SimpleDateFormat isoDateTimeFormat =
-            new java.text.SimpleDateFormat();
-        isoDateTimeFormat.applyPattern(isExtended
-                                       ? TIME_FORMAT_EX
-                                       : TIME_FORMAT);
-        isoDateTimeFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+    /**
+     * Get the structure iterator
+     *
+     * @param s  the Structure
+     * @param bufferSize  the buffersize
+     *
+     * @return the data iterator
+     *
+     * @throws java.io.IOException if problem reading data
+     */
+    public StructureDataIterator getStructureIterator(Structure s,
+            int bufferSize)
+            throws java.io.IOException {
+        return new UsplnSeqIter();
+    }
 
-        Structure struct       = (Structure) v2;
 
-        int[]     sectionShape = section.getShape();
-        ArrayStructureMA structData =
-            new ArrayStructureMA(struct.makeStructureMembers(), sectionShape);
-        ArrayDouble.D1 timeArray =
-            (ArrayDouble.D1) Array.factory(DataType.DOUBLE, sectionShape);
-        ArrayDouble.D1 latArray =
-            (ArrayDouble.D1) Array.factory(DataType.DOUBLE, sectionShape);
-        ArrayDouble.D1 lonArray =
-            (ArrayDouble.D1) Array.factory(DataType.DOUBLE, sectionShape);
-        ArrayDouble.D1 ampArray =
-            (ArrayDouble.D1) Array.factory(DataType.DOUBLE, sectionShape);
+    /**
+     * Uspln Sequence Iterator
+     *
+     * @author Unidata Development Team
+     */
+    private class UsplnSeqIter implements StructureDataIterator {
 
-        ArrayInt.D1 nstrokesArray = (ArrayInt.D1) Array.factory(DataType.INT,
-                                        sectionShape);
-        ArrayDouble.D1 majorAxisArray =
-            (ArrayDouble.D1) Array.factory(DataType.DOUBLE, sectionShape);
-        ArrayDouble.D1 minorAxisArray =
-            (ArrayDouble.D1) Array.factory(DataType.DOUBLE, sectionShape);
-        ArrayInt.D1 axisOrientArray =
-            (ArrayInt.D1) Array.factory(DataType.INT, sectionShape);
+        /** the wrapped asbb */
+        private ArrayStructureBB asbb = null;
 
-        structData.setMemberArray(TIME, timeArray);
-        structData.setMemberArray(LAT, latArray);
-        structData.setMemberArray(LON, lonArray);
-        structData.setMemberArray(SIGNAL, ampArray);
-        if (isExtended) {
-            structData.setMemberArray(MAJOR_AXIS, majorAxisArray);
-            structData.setMemberArray(MINOR_AXIS, minorAxisArray);
-            structData.setMemberArray(ELLIPSE_ANGLE, axisOrientArray);
-        } else {
-            structData.setMemberArray(MULTIPLICITY, nstrokesArray);
+        /** number read */
+        int numFlashes = 0;
+
+        /**
+         * Create a new one
+         *
+         * @throws IOException problem reading the file
+         */
+        UsplnSeqIter() throws IOException {
+            raf.seek(0);
         }
 
-        int            count = 0;
-        Range          r     = section.getRange(0);
-        Range.Iterator riter = r.getIterator();
-        while (riter.hasNext()) {
-            int  index  = riter.next();
-            long offset = offsets[index];
+        @Override public StructureDataIterator reset() {
+            numFlashes = 0;
             try {
-                Stroke s = new Stroke(offset, isoDateTimeFormat);
-                timeArray.set(count, s.secs);
-                latArray.set(count, s.lat);
-                lonArray.set(count, s.lon);
-                ampArray.set(count, s.amp);
-                if (isExtended) {
-                    majorAxisArray.set(count, s.axisMajor);
-                    minorAxisArray.set(count, s.axisMinor);
-                    axisOrientArray.set(count, s.axisOrient);
-                } else {
-                    nstrokesArray.set(count, s.n);
-                }
-                count++;
+                raf.seek(0);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return this;
+        }
 
-            } catch (ParseException e) {
-                throw new IOException(e.getMessage());
+        @Override public boolean hasNext() throws IOException {
+            return readStroke();
+        }
+
+        @Override public StructureData next() throws IOException {
+            numFlashes++;
+            return asbb.getStructureData(0);
+        }
+
+        /**
+         * Read the header
+         *
+         * @return  true if okay
+         *
+         * @throws IOException problem reading file
+         */
+        private boolean readStroke() throws IOException {
+            String line = raf.readLine();
+            if (line == null) {
+                return false;
+            }
+            if (StringUtil.regexpMatch(line, MAGIC)
+                    || StringUtil.regexpMatch(line, MAGIC_OLD)) {
+                return readStroke();
             }
 
+            // 2006-10-23T17:59:39,18.415434,-93.480526,-26.8,1             (original)
+            // 2006-10-23T17:59:39,18.415434,-93.480526,-26.8,0.25,0.5,80   (extended)
+            Stroke          stroke = null;
+
+            StringTokenizer stoker = new StringTokenizer(line, ",\r\n");
+            try {
+                while (stoker.hasMoreTokens()) {
+                    Date   date     = isoDateFormat.parse(stoker.nextToken());
+                    double lat      = Double.parseDouble(stoker.nextToken());
+                    double lon      = Double.parseDouble(stoker.nextToken());
+                    double amp      = Double.parseDouble(stoker.nextToken());
+                    int    nstrokes = 1;
+                    double axisMaj  = Double.NaN;
+                    double axisMin  = Double.NaN;
+                    int    orient   = 0;
+                    if (isExtended) {
+                        axisMaj = Double.parseDouble(stoker.nextToken());
+                        axisMin = Double.parseDouble(stoker.nextToken());
+                        orient  = Integer.parseInt(stoker.nextToken());
+                    } else {
+                        nstrokes = Integer.parseInt(stoker.nextToken());
+                    }
+
+                    stroke = isExtended
+                             ? new Stroke(date, lat, lon, amp, axisMaj,
+                                          axisMin, orient)
+                             : new Stroke(date, lat, lon, amp, nstrokes);
+                }
+            } catch (Exception e) {
+                //System.out.println("bad flash: " + line.trim());
+                return false;
+            }
+
+            byte[]     data   = new byte[sm.getStructureSize()];
+            ByteBuffer bbdata = ByteBuffer.wrap(data);
+            for (String mbrName : sm.getMemberNames()) {
+                if (mbrName.equals(TIME)) {
+                    bbdata.putDouble(stroke.secs);
+                } else if (mbrName.equals(LAT)) {
+                    bbdata.putDouble(stroke.lat);
+                } else if (mbrName.equals(LON)) {
+                    bbdata.putDouble(stroke.lon);
+                } else if (mbrName.equals(SIGNAL)) {
+                    bbdata.putFloat((float) stroke.amp);
+                } else if (mbrName.equals(MULTIPLICITY)) {
+                    bbdata.putInt(stroke.n);
+                } else if (mbrName.equals(MAJOR_AXIS)) {
+                    bbdata.putFloat((float) stroke.axisMajor);
+                } else if (mbrName.equals(MINOR_AXIS)) {
+                    bbdata.putFloat((float) stroke.axisMinor);
+                } else if (mbrName.equals(ELLIPSE_ANGLE)) {
+                    bbdata.putInt(stroke.axisOrient);
+                }
+            }
+            asbb = new ArrayStructureBB(sm, new int[] { 1 }, bbdata, 0);
+            return true;
         }
 
-        return structData;
+        @Override public void setBufferSize(int bytes) {}
+
+        @Override public int getCurrentRecno() {
+            return numFlashes - 1;
+        }
     }
+
 
     /**
      * Get a unique id for this file type.

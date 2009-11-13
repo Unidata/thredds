@@ -184,9 +184,9 @@ public class Nldn extends AbstractLightningIOSP {
                               String units, AxisType type) {
         */
         Variable v =
-            makeLightningVariable(ncfile, null, seq, "tsec", DataType.INT,
+            makeLightningVariable(ncfile, null, seq, TSEC, DataType.INT,
                                   "", "time of stroke", null,
-                                  "seconds since 1970-01-01 00:00:00",
+                                  secondsSince1970,
                                   AxisType.Time);
         seq.addMemberVariable(v);
 
@@ -209,7 +209,7 @@ public class Nldn extends AbstractLightningIOSP {
 
         v = makeLightningVariable(
             ncfile, null, seq, SIGNAL, DataType.SHORT, "",
-            "signal strength [150 NLDN measures ~= 30 kAmps]", null, "",
+            "signal strength/polarity [150 NLDN measures ~= 30 kAmps]", null, "",
             null);
         v.addAttribute(new Attribute("scale_factor", new Float(1.0e-1)));
         seq.addMemberVariable(v);
