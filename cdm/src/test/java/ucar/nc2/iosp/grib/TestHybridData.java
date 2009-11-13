@@ -32,6 +32,12 @@ package ucar.nc2.iosp.grib;
 * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
 */
+/**
+ * Created by IntelliJ IDEA.
+ * User: Robb
+ * Date: Nov 6, 2009
+ * Time: 3:38:51 PM
+ */
 
 import ucar.nc2.TestAll;
 import ucar.nc2.NetcdfFile;
@@ -43,12 +49,7 @@ import java.io.File;
 
 import junit.framework.TestCase;
 
-/**
- * Created by IntelliJ IDEA.
- * User: Robb
- * Date: Nov 6, 2009
- * Time: 3:38:51 PM
- */
+
 public class TestHybridData extends TestCase {
   public TestHybridData(String name) {
     super(name);
@@ -101,12 +102,20 @@ public class TestHybridData extends TestCase {
           System.out.println("Time to create Netcdf object  " +
               (System.currentTimeMillis() - start) + "  ms");
 
-          if (child.equals( "ECMWF.hybrid.grib1")) {
+          if (child.equals( "ECMWF.hybrid.grib1") ){
             Variable Hybrid = ncfile.findVariable( "hybrid");
+            assert( Hybrid.getNameAndDimensions().equals( "hybrid(hybrid=91)"));
+            Variable Hybrida = ncfile.findVariable( "hybrida");
+            assert( Hybrida.getNameAndDimensions().equals( "hybrida(hybrid=91)"));
+            Variable Hybridb = ncfile.findVariable( "hybridb");
+            assert( Hybridb.getNameAndDimensions().equals( "hybridb(hybrid=91)"));
+
             int idx = Hybrid.findDimensionIndex( "hybrid");
             Dimension dim = Hybrid.getDimension( idx );
 
           } else if (child.equals( "07010418_arw_d01.GrbF01500")) {
+            Variable Hybrid = ncfile.findVariable( "hybrid");
+            assert(Hybrid.getNameAndDimensions().equals( "hybrid(hybrid=2)"));
           }
           ncfile .close();
         }
