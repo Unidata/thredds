@@ -166,11 +166,12 @@ public class BufrTable extends JPanel {
 
         Formatter out = new Formatter();
         try {
+          infoTA.clear();
+
           int nbitsCounted = m.calcTotalBits(out);
           int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
           boolean ok = Math.abs(m.getCountedDataBytes() - m.dataSection.getDataLength()) <= 1; // radiosondes dataLen not even number
 
-          infoTA.clear();
           if (!ok) out.format("*** BAD BIT COUNT %n");
           long last = m.dataSection.getDataPos() + m.dataSection.getDataLength();
           DataDescriptor root = m.getRootDataDescriptor();

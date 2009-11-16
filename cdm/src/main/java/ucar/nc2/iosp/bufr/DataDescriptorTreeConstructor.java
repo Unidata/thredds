@@ -168,6 +168,7 @@ public class DataDescriptorTreeConstructor {
   private void operate(List<DataDescriptor> tree) {
     if (tree == null) return;
     boolean hasAssFields = false;
+    boolean hasDpiFields = false;
     DataDescriptor.AssociatedField assField = null; // 02 04 Y
 
     Iterator<DataDescriptor> iter = tree.iterator();
@@ -208,6 +209,10 @@ public class DataDescriptorTreeConstructor {
             next.bitWidth = dd.y;
           }
 
+        } else if ((dd.x == 24) && (dd.y == 0)) { // only souls already damned should enter through this gate
+          dd.dpi = processDataPresentIndicator(tree, 24);
+          hasDpiFields = true;
+
         } else {
           iter.remove();          
         }
@@ -235,6 +240,7 @@ public class DataDescriptorTreeConstructor {
     }
 
     if (hasAssFields) addAssFields(tree);
+    if (hasDpiFields) addDpiFields(tree);
   }
 
   private void addAssFields(List<DataDescriptor> tree) {
@@ -259,5 +265,81 @@ public class DataDescriptorTreeConstructor {
 
       index++;
     }
+  }
+
+  private void addDpiFields(List<DataDescriptor> tree) {
+    if (tree == null) return;
+
+    Iterator<DataDescriptor> iter = tree.iterator();
+    while (iter.hasNext()) {
+      DataDescriptor dd = iter.next();
+      if (dd.dpi != null) { // make this into a compound type
+        dd.name = "firstOrderStatistics";
+        dd.type = 3;
+        dd.replication = 1;
+        dd.subKeys = new ArrayList<DataDescriptor>();
+        while (iter.hasNext()) {
+          DataDescriptor dd2 = iter.next();
+          iter.remove();
+          if (dd2 == dd.dpi.stop) {
+            DataDescriptor extra = dd.dpi.linear.get(184); // temp kludge
+            for (int i=0; i< dd2.replication; i++)
+              dd.subKeys.add(extra);
+            break;
+          }
+          dd.subKeys.add(dd2);
+        }
+        System.out.printf("addDpiFields for %s %n", dd);
+      }
+    }
+  }
+
+  private DataPresentIndicator processDataPresentIndicator(List<DataDescriptor> tree, int hellRealmIndex) {
+    DataPresentIndicator dpi = new DataPresentIndicator();
+    Iterator<DataDescriptor> iter = tree.iterator();
+    while (iter.hasNext()) {
+      DataDescriptor dd = iter.next();
+      if ((dd.f == 2) && (dd.x == hellRealmIndex) && (dd.y == 0)) {
+        dpi.start = dd;
+
+        while (iter.hasNext()) {
+          dd = iter.next();
+          if (dd.f == 1) {
+            for (DataDescriptor dd2 : dd.getSubKeys()){
+              if ((dd2.f == 2) && (dd2.x == hellRealmIndex) && (dd2.y == 255)) {
+                dpi.stop = dd;
+
+              } else if ((dd2.f == 0) && (dd2.x == 31) && (dd2.y == 31)) {
+                dpi.dataPresent = dd;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    dpi.linear = new ArrayList<DataDescriptor>();
+    linearize(tree, dpi);
+    System.out.printf("data count = %d linear count = %d %n", dpi.dataPresent.replication, dpi.linear.size());
+
+    return dpi;
+  }
+
+  private void linearize(List<DataDescriptor> tree, DataPresentIndicator dpi) {
+    for (DataDescriptor dd : tree){
+      if (dd == dpi.start) return;
+      if (dd.f == 0) {
+        dpi.linear.add(dd);
+
+      } else if (dd.f == 1) {
+        for (int i=0; i< dd.replication; i++) // whut about defered replication hahahahahah
+          linearize(dd.getSubKeys(), dpi);
+      }
+    }
+  }
+
+  class DataPresentIndicator {
+    DataDescriptor start, stop, dataPresent;
+    List<DataDescriptor> linear = new  ArrayList<DataDescriptor>();
   }
 }

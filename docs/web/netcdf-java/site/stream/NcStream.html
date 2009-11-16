@@ -96,6 +96,7 @@ dl {margin: 10px 5px 5px 15px;)
 </ul>
 <p><strong>Variable length types (String, Opaque): </strong>First the number of objects is written, then each object, preceeded by its length in bytes as a vlen. Strings are encoded as UTF-8 bytes. Opaque is just a bag of bytes. <em>what about vlen? eg int (3, *) ??</em></p>
 <p><strong>Structure types (Structure, Sequence): </strong>An array of StructureData. Can be encoded in row or col (?). <em>What about vlens ??</em></p>
+<p>Should have a way to efficiently encode sparse data. Look at Bigtable/hBase.</p>
 <p>&nbsp;</p>
 <hr width="100%" />
 <address>

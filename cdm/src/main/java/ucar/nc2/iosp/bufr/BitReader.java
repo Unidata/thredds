@@ -37,6 +37,7 @@ import java.io.IOException;
 
 /**
  * Helper for reading data that has been bit packed.
+ *
  * @author caron
  * @since Apr 7, 2008
  */
@@ -60,9 +61,9 @@ public class BitReader {
 
   /**
    * Constructor
-   * @param raf
+   * @param raf the RandomAccessFile
    * @param startPos pints to start of data in data section
-   * @throws IOException
+   * @throws IOException on read error
    */
   public BitReader( RandomAccessFile raf, long startPos) throws IOException {
     this.raf = raf;

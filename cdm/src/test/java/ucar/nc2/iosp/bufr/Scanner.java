@@ -70,7 +70,7 @@ public class Scanner {
     }
   }
 
-
+                                                             
   static void testAllInDir(File dir, MClosure closure) {
     List<File> list = Arrays.asList(dir.listFiles());
     Collections.sort(list);

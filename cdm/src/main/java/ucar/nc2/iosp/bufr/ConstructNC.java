@@ -59,6 +59,7 @@ class ConstructNC {
   private FeatureType ftype;
   private int nobs;
 
+  Structure recordStructure;
   private Message proto;
 
   ConstructNC(Message proto, int nobs, ucar.nc2.NetcdfFile nc) throws IOException {
@@ -140,7 +141,7 @@ class ConstructNC {
     Dimension obsDim = new Dimension("record", nobs);
     ncfile.addDimension(null, obsDim);
 
-    Structure recordStructure = new Structure(ncfile, null, null, BufrIosp.obsRecord);
+    recordStructure = new Structure(ncfile, null, null, BufrIosp.obsRecord);
     ncfile.addVariable(null, recordStructure);
     recordStructure.setDimensions("record");
 
@@ -167,6 +168,9 @@ class ConstructNC {
         } else if (subKeys.size() > 1) {
           addStructure(recordStructure, dkey, dkey.replication);
         }
+
+      } else if (dkey.dpi != null) {
+          addDpiStructure(recordStructure, dkey);
 
       } else {
         addVariable(recordStructure, dkey, dkey.replication);
@@ -234,6 +238,26 @@ class ConstructNC {
       addVariable(parent, dkey, dkey.replication);
     }
   }
+
+  private void addDpiStructure(Structure parent, DataDescriptor dataDesc) {
+    String structName = findUnique(parent, dataDesc.name);
+    Structure struct = new Structure(ncfile, null, parent, structName);
+    try {
+      struct.setDimensionsAnonymous(new int[]{1}); // anon vector
+    } catch (InvalidRangeException e) {
+      log.error("illegal count= " + 1 + " for " + dataDesc);
+    }
+
+    for (DataDescriptor subKey : dataDesc.getSubKeys())
+      addMember(struct, subKey);
+
+    parent.addMemberVariable(struct);
+    struct.setSPobject(dataDesc);
+
+    dataDesc.name = structName;
+    dataDesc.refersTo = struct;
+  }
+
 
   private Variable addVariable(Structure struct, DataDescriptor dataDesc, int count) {
     String name = findUnique(struct, dataDesc.name);

@@ -83,6 +83,8 @@ public class BitCounterCompressed {
         for (BitCounterCompressed counter : counters)
           if (counter != null) totalBits += counter.getTotalBits();
       }
+      if (dkey.replicationCountSize > 0)
+        totalBits += dkey.replicationCountSize + 6; // 6 boit count, 6 bit extra
       return totalBits;
     }
   }

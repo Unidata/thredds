@@ -68,7 +68,7 @@ public class Message {
   // bit counting
   private BitCounterUncompressed[] counterDatasets; // uncompressed: one for each dataset
   private BitCounterCompressed[] counterFlds; // compressed: one for each field
-  private int msg_nbits;
+  int msg_nbits;
   //private boolean showCountCompressedValues = true;
   //private boolean showCountDetail = false;
 
@@ -440,7 +440,7 @@ public class Message {
     return scale * fval;
   }
 
-  // count the bits in a compressd message
+  // count the bits in a compressed message
   private int countBitsCompressed(Formatter out) throws IOException {
     BitReader reader = new BitReader(raf, dataSection.getDataPos() + 4);
     counterFlds = new BitCounterCompressed[root.subKeys.size()];
@@ -606,16 +606,19 @@ public class Message {
 
     return bitOffset;
   }
-  boolean showData = false;
+
+  boolean showData = true;
 
   ///////////////////////////////////////////////////////////////////
 
   /**
    * Get values of selected fields. Must be in the top row (not nested).
+   * Used by BerkeleyDBIndexer.
+   * 
    * @param indexFlds index of desired field in the dds
    * @return field values as Object[nobs][nfields]
    * @throws IOException on read error
-   */
+   *
   public Object[][] readValues(List<Integer> indexFlds) throws IOException {
     getRootDataDescriptor();
     BitReader reader = new BitReader(raf, dataSection.getDataPos() + 4);
@@ -715,7 +718,7 @@ public class Message {
         bitOffset += dkey.getBitWidth();
       } // loop over dkeys
     } // loop over obs
-  }
+  } */
 
   ///////////////////////////////////////////////////////////////////
 

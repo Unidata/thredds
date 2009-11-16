@@ -40,6 +40,7 @@ import java.nio.channels.WritableByteChannel;
 
 /**
  * Sequentially scans a BUFR file, extracts the messages.
+ * 
  * @author caron
  * @since May 9, 2008
  */

@@ -36,13 +36,14 @@ import ucar.nc2.iosp.bufr.tables.TableC;
 import ucar.nc2.iosp.bufr.tables.TableB;
 
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Essentially a TableB entry, modified by any relevent TableC operators.
  * TableD has been expanded.
  * Replication gets made into nested DataDesccriptors, which we map to Structures (fixed replication) or
  * Sequences (deferred replication).
- * Most of the processing is done by BufrDataDescriptionSection.convert().
+ * Most of the processing is done by DataDescriptorTreeConstructor.convert().
  * Here we encapsolate the final result, ready to map to the CDM.
  *
  * @author caron
@@ -73,6 +74,7 @@ public class DataDescriptor {
 
   AssociatedField assField; // associated field == 02 04 Y, Y number of extra bits
   Object refersTo; // temporary place to put a sequence object
+  DataDescriptorTreeConstructor.DataPresentIndicator dpi;
 
   DataDescriptor() {
   }
@@ -142,7 +144,7 @@ public class DataDescriptor {
   }
 
   public boolean isOkForVariable() {
-    return (f == 0) || (f == 1) || ((f == 2) && (x == 5));
+    return (f == 0) || (f == 1) || ((f == 2) && (x == 5)) || ((f == 2) && (x == 24));
   }
 
   public boolean isLocal() {
