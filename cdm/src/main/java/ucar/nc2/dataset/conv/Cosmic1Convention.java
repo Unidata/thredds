@@ -83,6 +83,9 @@ public class Cosmic1Convention extends CoordSysBuilder {
     double stop =  ds.readAttributeDouble(null, "stop_time", Double.NaN);
 
     Dimension dim = ds.findDimension("MSL_alt");
+    Variable dimV = ds.findVariable("MSL_alt");
+    Array dimU = dimV.read();
+    int inscr = ( dimU.getFloat(1) - dimU.getFloat(0)) > 0 ? 1 : 0;
     int n = dim.getLength();
     double incr = (stop - start) / n;
 
@@ -91,10 +94,20 @@ public class Cosmic1Convention extends CoordSysBuilder {
     ds.addVariable(null, timeVar);
     timeVar.addAttribute(new Attribute("units", timeUnits));
     timeVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
-
+    int dir = ds.readAttributeInteger(null, "irs", 1);
     ArrayDouble.D1 data = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, new int[] {n});
-    for (int i=0; i<n; i++)
-      data.set(i, stop - i * incr);
+    if(inscr == 0) {
+        if(dir == 1) {
+            for (int i=0; i<n; i++)
+                data.set(i, start + i * incr);
+        } else {
+            for (int i=0; i<n; i++)
+                data.set(i, stop - i * incr);
+        }
+    } else {
+        for (int i=0; i<n; i++)
+            data.set(i, stop - i * incr);
+    }
     timeVar.setCachedData(data, false);
 
     Variable v = ds.findVariable("Lat");
