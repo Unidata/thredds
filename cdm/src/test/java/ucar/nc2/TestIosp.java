@@ -38,6 +38,7 @@ import ucar.ma2.Array;
 import ucar.ma2.Section;
 import ucar.ma2.Range;
 import ucar.nc2.util.CompareNetcdf;
+import ucar.nc2.iosp.grib.TestHybridData;
 
 import java.io.IOException;
 import java.util.Random;
@@ -50,6 +51,7 @@ public class TestIosp {
 
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();
+    suite.addTest( new TestSuite(ucar.nc2.iosp.grib.TestHybridData.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestIndexUpdating.class));
 
     suite.addTest( new TestSuite( ucar.nc2.iosp.dmsp.TestDmspIosp.class));
@@ -64,6 +66,7 @@ public class TestIosp {
     
     suite.addTest( ucar.nc2.iosp.hdf5.TestH5.suite());
     suite.addTest( ucar.nc2.iosp.hdf4.TestH4.suite());
+
     return suite;
   }
 
