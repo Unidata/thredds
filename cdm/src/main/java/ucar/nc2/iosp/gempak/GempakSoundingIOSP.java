@@ -184,7 +184,6 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
 
             Structure                     pdata        = (Structure) v2;
             StructureMembers members = pdata.makeStructureMembers();
-            List<StructureMembers.Member> mmembers     = members.getMembers();
             ArrayStructureBB.setOffsets(members);
             ArrayStructureBB abb = new ArrayStructureBB(members,
                                        new int[] { size });
@@ -260,14 +259,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
         }
         int numLevels = values.length / params.size();
         StructureMembers              members = seq.makeStructureMembers();
-        List<StructureMembers.Member> mbers         = members.getMembers();
-        int                           offset        = 0;
-        int                           numBytes      = 0;
-        int                           totalNumBytes = 0;
-        for (StructureMembers.Member member : mbers) {
-            member.setDataParam(offset);
-            offset += 4;
-        }
+        int offset = ArrayStructureBB.setOffsets(members);
         members.setStructureSize(offset);
 
         int        size  = offset * numLevels;
