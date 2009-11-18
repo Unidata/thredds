@@ -1,4 +1,3 @@
-// $Id: NPController.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -54,7 +53,6 @@ import java.beans.PropertyChangeListener;
  * An abstract superclass for Navigated Panel controllers
  *
  * @author John Caron
- * @version $Id: NPController.java 50 2006-07-12 16:30:06Z caron $
  */
 public class NPController extends JPanel {
   protected NavigatedPanel np;
@@ -178,30 +176,3 @@ public class NPController extends JPanel {
   }
 
 }
-
-/* Change History:
-   $Log: NPController.java,v $
-   Revision 1.5  2005/06/11 19:03:58  caron
-   no message
-
-   Revision 1.4  2004/09/24 03:26:40  caron
-   merge nj22
-
-   Revision 1.3  2003/04/08 18:16:23  john
-   nc2 v2.1
-
-   Revision 1.2  2003/03/17 21:12:39  john
-   new viewer
-
-   Revision 1.1  2002/12/13 00:55:08  caron
-   pass 2
-
-   Revision 1.3  2002/04/29 22:23:33  caron
-   NP detects seam crossings and throws NewProjectionEvent instead of NewMapAreaEvent
-
-   Revision 1.1.1.1  2002/02/26 17:24:53  caron
-   import sources
-*/
-
-
-

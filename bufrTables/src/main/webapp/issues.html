@@ -50,7 +50,10 @@
 <pre wrap="">  m, x, C1, C2,... Cm</pre>
 <p wrap="">Where x appears to be 6 zero bits. </p>
 <p wrap="">There is no description of how compression with delayed replication is encoded in <a href="http://www.wmo.int/pages/prog/www/WMOCodes/Operational/BUFR/FM94REG-11-2007.pdf">FM94REG-11-2007.pdf</a>. The <a href="http://www.ecmwf.int/products/data/d/check/">ECMWF BUFR/CREX format checker</a> decodes <a href="bufrData/LNDSYN.bufr">this example of compression with delayed replication</a> correctly, so it must be assuming the extra 6 bits. Do other decoders? This should be clarified in the official documentation.</p>
-<p wrap="">&nbsp;</p>
+<p wrap="">Examples - possibly malformed</p>
+<ul>
+  <li>IUST53.bufr, IUSV53.bufr, IUSZ53.bufr all from NTWSTG</li>
+</ul>
 <h2 wrap="">4. BUFR  encoding complexities</h2>
 <p wrap="">&quot;Table C operator descriptors 2 22 000 through 2 37 255 provide a more sophisticated method of including quality assessment information in BUFR&quot;. These methods are so badly done as to warp the very fabric of space-time. Therefore, they should be avoided by writers. However, it should be noted that decoding them produces a not-unpleasant feeling of disembodiment and lightheadedness, and deep compassion for tortured minds, and incurable insanity wherever it is found. </p>
 <hr width="100%" />

@@ -1,4 +1,3 @@
-// $Id: IndependentWindow.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -52,7 +51,6 @@ import javax.swing.*;
  *   </pre>
  *
  * @author John Caron
- * @version $Id: IndependentWindow.java 50 2006-07-12 16:30:06Z caron $
  */
 public class IndependentWindow extends JFrame {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(IndependentWindow.class);

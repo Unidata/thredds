@@ -57,7 +57,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
   static final String obsIndex = "obsRecordIndex";
 
   // debugging
-  static private boolean debugCompress = true;
+  static private boolean debugCompress = false;
   static private boolean debugOpen = false;
 
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
@@ -701,12 +701,15 @@ public class BufrIosp extends AbstractIOServiceProvider {
      if (!m.dds.isCompressed()) {
        MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
        reader.readData(construct.recordStructure, protoMessage, m, raf, null);
+     } else {
+       MessageCompressedDataReader reader = new MessageCompressedDataReader();
+       reader.readData(construct.recordStructure, protoMessage, m, raf, null);       
      }
     }
   }
 
     public static void main(String arg[]) throws IOException, InvalidRangeException {
-      NetcdfFile ncfile = NetcdfFile.open("C:/data/formats/bufr3//IUTX07.bufr");
+      NetcdfFile ncfile = NetcdfFile.open("D:/formats/bufr/tmp/IUCN51.bufr");
       BufrIosp iosp =  (BufrIosp) ncfile.getIosp();
       iosp.readAll();
     }

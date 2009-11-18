@@ -248,8 +248,10 @@ class ConstructNC {
       log.error("illegal count= " + 1 + " for " + dataDesc);
     }
 
-    for (DataDescriptor subKey : dataDesc.getSubKeys())
-      addMember(struct, subKey);
+    for (DataDescriptor subKey : dataDesc.getSubKeys()) {
+      if (subKey.dpi != null) addDpiSequence(struct, subKey);
+      else addMember(struct, subKey);
+    }
 
     parent.addMemberVariable(struct);
     struct.setSPobject(dataDesc);
@@ -258,6 +260,25 @@ class ConstructNC {
     dataDesc.refersTo = struct;
   }
 
+  private void addDpiSequence(Structure parent, DataDescriptor dataDesc) {
+    Structure struct = new Structure(ncfile, null, parent, "statistics");
+    try {
+      struct.setDimensionsAnonymous(new int[] {dataDesc.replication}); // scalar
+    } catch (InvalidRangeException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    }
+    Variable v = new Variable(ncfile, null, struct, "name");
+    v.setDataType(DataType.STRING); // scalar
+    v.setDimensions(""); // scalar
+    struct.addMemberVariable(v);
+
+    v = new Variable(ncfile, null, struct, "data");
+    v.setDataType(DataType.FLOAT); // scalar
+    v.setDimensions(""); // scalar
+    struct.addMemberVariable(v);
+
+    parent.addMemberVariable(struct);    
+  }
 
   private Variable addVariable(Structure struct, DataDescriptor dataDesc, int count) {
     String name = findUnique(struct, dataDesc.name);

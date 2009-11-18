@@ -35,6 +35,7 @@ package ucar.nc2.ui;
 
 import ucar.nc2.ft.*;
 import ucar.nc2.ui.point.StationRegionDateChooser;
+import ucar.nc2.ui.point.PointController;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.constants.FeatureType;
@@ -79,8 +80,11 @@ public class PointFeatureDatasetViewer extends JPanel {
   private StationRegionDateChooser stationMap;
   private StructureTable obsTable;
   private JSplitPane splitFeatures, splitMap, splitObs;
-  private IndependentDialog infoWindow;
+  private IndependentDialog infoWindow, pointDisplayWindow;
   private TextHistoryPane infoTA;
+
+  private PointController pointController;
+
 
   private DateFormatter df = new DateFormatter();
 
@@ -258,11 +262,17 @@ public class PointFeatureDatasetViewer extends JPanel {
     add(splitObs, BorderLayout.CENTER);
   }
 
+  void makePointController() {
+    pointController = new PointController();
+    pointDisplayWindow = new IndependentDialog(null, false, "Point Data", pointController);
+    pointDisplayWindow.setBounds((Rectangle) prefs.getBean("PointDisplayBounds", new Rectangle(300, 300, 500, 300)));
+  }
 
   public void save() {
     fcTable.saveState(false);
     stnTable.saveState(false);
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
+    prefs.putBeanObject("PointDisplayBounds", pointDisplayWindow.getBounds());
     prefs.putInt("splitPosO", splitObs.getDividerLocation());
     prefs.putInt("splitPosF", splitFeatures.getDividerLocation());
     prefs.putInt("splitPosM", splitMap.getDividerLocation());
@@ -274,6 +284,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     stnTable.setBeans(new ArrayList());
     stationMap.setStations(new ArrayList());
     obsTable.clear();
+    selectedCollection = null;
 
     // set the feature collection table - all use this
     List<FeatureCollectionBean> fcBeans = new ArrayList<FeatureCollectionBean>();
@@ -657,6 +668,11 @@ public class PointFeatureDatasetViewer extends JPanel {
       return;
     }
     obsTable.setPointFeatureData(obsList);
+    
+    if (pointController == null) makePointController();
+    pointController.setDrawConnectingLine(false);
+    pointController.setPointFeatures(obsList);
+    pointDisplayWindow.setVisible(true);
   }
 
   public PreferencesExt getPrefs() {
@@ -735,7 +751,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
 
     public String getWmoId() {
-      return "";
+      return s.getWmoId();
     }
 
     // all the station dependent methods need to be overridden

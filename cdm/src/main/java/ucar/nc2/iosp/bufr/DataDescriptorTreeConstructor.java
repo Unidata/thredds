@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * Convert a list of data descriptors to a tree of DataDescriptor onjects.
+ * Convert a list of data descriptors to a tree of DataDescriptor objects.
  * Expand Table D, process table C operators.
  *
  * @author caron
@@ -281,13 +281,18 @@ public class DataDescriptorTreeConstructor {
         while (iter.hasNext()) {
           DataDescriptor dd2 = iter.next();
           iter.remove();
+          dd.subKeys.add(dd2);
           if (dd2 == dd.dpi.stop) {
-            DataDescriptor extra = dd.dpi.linear.get(184); // temp kludge
-            for (int i=0; i< dd2.replication; i++)
-              dd.subKeys.add(extra);
+            dd2.subKeys = new ArrayList<DataDescriptor>();
+
+            dd2.subKeys.add(dd.dpi.statField);
+            dd.dpi.statField.dpi = dd.dpi; // also need it here
+            //dd.dpi = null;
+           // DataDescriptor extra = dd.dpi.linear.get(184); // temp kludge
+          //  for (int i=0; i< dd2.replication; i++)
+           //   dd.subKeys.add(extra);
             break;
           }
-          dd.subKeys.add(dd2);
         }
         System.out.printf("addDpiFields for %s %n", dd);
       }
@@ -308,7 +313,7 @@ public class DataDescriptorTreeConstructor {
             for (DataDescriptor dd2 : dd.getSubKeys()){
               if ((dd2.f == 2) && (dd2.x == hellRealmIndex) && (dd2.y == 255)) {
                 dpi.stop = dd;
-
+                dpi.statField = dd2;
               } else if ((dd2.f == 0) && (dd2.x == 31) && (dd2.y == 31)) {
                 dpi.dataPresent = dd;
               }
@@ -339,7 +344,7 @@ public class DataDescriptorTreeConstructor {
   }
 
   class DataPresentIndicator {
-    DataDescriptor start, stop, dataPresent;
+    DataDescriptor start, stop, dataPresent, statField;
     List<DataDescriptor> linear = new  ArrayList<DataDescriptor>();
   }
 }

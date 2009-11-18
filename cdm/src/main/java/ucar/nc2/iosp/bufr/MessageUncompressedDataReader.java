@@ -29,6 +29,7 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package ucar.nc2.iosp.bufr;
 
 import ucar.ma2.*;
@@ -74,7 +75,7 @@ import java.nio.ByteOrder;
    A delayed replicated field (sequence) takes a group of fields and replicates them, and adds the number of replications
    in the data :
 
-     dr, Ri1, (Ri2, Ri3)*dr, . . . Ris
+     Ri1, dri, (Ri2, Ri3)*dri, . . . Ris
 
    where the width (nbits) of dr is set in the data descriptor. This dr can be different for each dataset in the message.
    It can be 0. When it has a bit width of 1, it indicates an optional set of fields.
@@ -87,6 +88,7 @@ public class MessageUncompressedDataReader {
     DataDescriptor.transferInfo(proto.getRootDataDescriptor().getSubKeys(), m.getRootDataDescriptor().getSubKeys());
 
     // allocate ArrayStructureBB for outer structure
+    // This assumes that all of the fields and all of the datasets are being read
     StructureMembers members = s.makeStructureMembers();
     ArrayStructureBB.setOffsets(members);
 
@@ -100,14 +102,18 @@ public class MessageUncompressedDataReader {
   }
 
   // read / count the bits in an uncompressed message
+  // This assumes that all of the fields and all of the datasets are being read
+
   public int readDataUncompressed(Message m, RandomAccessFile raf, Formatter f, ArrayStructureBB abb) throws IOException {
     BitReader reader = new BitReader(raf, m.dataSection.getDataPos() + 4);
     DataDescriptor root = m.getRootDataDescriptor();
+    if (root.isBad) return 0;
 
     int n = m.getNumberDatasets();
     BitCounterUncompressed[] counterDatasets = new BitCounterUncompressed[n]; // one for each dataset
     m.msg_nbits = 0;
-    // count the bits in each obs
+
+    // loop over the rows
     for (int i = 0; i < n; i++) {
       if (f != null) f.format("Count bits in observation %d\n", i);
       // the top table always has exactly one "row", since we are working with a single obs
@@ -116,10 +122,6 @@ public class MessageUncompressedDataReader {
       readDataUncompressed(out, reader, counterDatasets[i], root.subKeys, 0, abb);
       m.msg_nbits += counterDatasets[i].countBits(m.msg_nbits);
     }
-
-    int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
-    System.out.printf("nbits counted = %d expected=%d %n", m.msg_nbits, nbitsGiven);
-    System.out.printf("nbytes counted = %d expected=%d %n", m.getCountedDataBytes(), m.dataSection.getDataLength());
 
     return m.msg_nbits;
   }
@@ -163,10 +165,12 @@ public class MessageUncompressedDataReader {
         BitCounterUncompressed bitCounterNested = table.makeNested(dkey, count, row, dkey.replicationCountSize);
 
         // make an ArraySequence for this observation
-        ArraySequence seq = makeArraySequenceUncompressed(out, reader, bitCounterNested, dkey);
+        ArraySequence seq = makeArraySequenceUncompressed(out, reader, bitCounterNested, dkey, (abb == null));
 
-        int index = abb.addObjectToHeap(seq);
-        bb.putInt(index); // an index into the Heap
+        if (abb != null) {
+          int index = abb.addObjectToHeap(seq);
+          bb.putInt(index); // an index into the Heap
+        }
         continue;
       }
 
@@ -178,11 +182,13 @@ public class MessageUncompressedDataReader {
               out.fldno++, out.indent(), dkey.getFxyName(), dkey.replication);
 
         for (int i = 0; i < dkey.replication; i++) {
-          if (out != null)
+          if (out != null) {
             out.f.format("%s read row %d (struct %s) of %s %n", out.indent(), i, dkey.getFxyName(), out.where);
-
-          String whereNested = (out == null) ? null : out.where + " row " + i + "( struct " + dkey.getFxyName() + ")";
-          out.fldno = readDataUncompressed(out.nested(whereNested), reader, nested, dkey.subKeys, i, abb);
+            String whereNested = (out == null) ? null : out.where + " row " + i + "( struct " + dkey.getFxyName() + ")";
+            out.fldno = readDataUncompressed( out.nested(whereNested), reader, nested, dkey.subKeys, i, abb);
+          } else {
+            readDataUncompressed( null, reader, nested, dkey.subKeys, i, abb);
+          }
         }
         continue;
       }
@@ -202,7 +208,7 @@ public class MessageUncompressedDataReader {
       int val = readNumericData(dkey, reader, bb);
       if (out != null)
         out.f.format("%4d %s read %s bitWidth=%d end at= 0x%x raw=%d convert=%f\n",
-            out.fldno++, out.indent(), dkey.getFxyName(), dkey.bitWidth, reader.getPos(), val, convert(dkey, val));
+            out.fldno++, out.indent(), dkey.getFxyName(), dkey.bitWidth, reader.getPos(), val, dkey.convert(val));
     }
 
     return (out == null) ? 0 : out.fldno;
@@ -250,84 +256,56 @@ public class MessageUncompressedDataReader {
     return result;
   }
 
-  private float convert(DataDescriptor dkey, int raw) {
-    // bpacked = (value * 10^scale - refVal)
-    // value = (bpacked + refVal) / 10^scale
-    float scale = (float) Math.pow(10.0, -dkey.scale); // LOOK precompute ??
-    float fval = (raw + dkey.refVal);
-    return scale * fval;
-  }
-
   // read in the data into an ArrayStructureBB, wrapped by an ArraySequence
-  private ArraySequence makeArraySequenceUncompressed(DebugOut out, BitReader reader, BitCounterUncompressed bitCounterNested, DataDescriptor seqdd) throws IOException {
-    Sequence seq = (Sequence) seqdd.refersTo;
-    assert seq != null;
+  private ArraySequence makeArraySequenceUncompressed(DebugOut out, BitReader reader, BitCounterUncompressed bitCounterNested,
+          DataDescriptor seqdd, boolean countOnly) throws IOException {
 
-    // for the obs structure
     int count = bitCounterNested.getNumberRows();
-    int[] shape = new int[]{count};
+    ArrayStructureBB abb = null;
+    StructureMembers members = null;
 
-    // allocate ArrayStructureBB for outer structure
-    int offset = 0;
-    StructureMembers members = seq.makeStructureMembers();
-    for (StructureMembers.Member m : members.getMembers()) {
-      m.setDataParam(offset);
-      //System.out.println(m.getName()+" offset="+offset);
+    if (!countOnly) {
+      Sequence seq = (Sequence) seqdd.refersTo;
+      assert seq != null;
 
-      Variable mv = seq.findVariable(m.getName());
-      if (mv == null)
-        System.out.println("HEY");
+      // for the obs structure
+      int[] shape = new int[]{count};
 
-      DataDescriptor dk = (DataDescriptor) mv.getSPobject();
-      if (dk.replication == 0)
-        offset += 4;
-      else
-        offset += dk.getByteWidthCDM();
-    }
+      // allocate ArrayStructureBB for outer structure
+      int offset = 0;
+      members = seq.makeStructureMembers();
+      for (StructureMembers.Member m : members.getMembers()) {
+        m.setDataParam(offset);
+        //System.out.println(m.getName()+" offset="+offset);
 
-    ArrayStructureBB abb = new ArrayStructureBB(members, shape);
-    ByteBuffer bb = abb.getByteBuffer();
-    bb.order(ByteOrder.BIG_ENDIAN);
+        Variable mv = seq.findVariable(m.getName());
+        if (mv == null)
+          System.out.println("HEY");
 
-    // loop through desired obs
-    for (int i = 0; i < count; i++) {
-      if (out != null) { // bitCount output
-        out.f.format("%s read row %d (seq %s) of %s %n", out.indent(), i, seqdd.getFxyName(), out.where);
+        DataDescriptor dk = (DataDescriptor) mv.getSPobject();
+        if (dk.replication == 0)
+          offset += 4;
+        else
+          offset += dk.getByteWidthCDM();
       }
-      String whereNested = (out == null) ? null : out.where + " row " + i + "( seq " + seqdd.getFxyName() + ")";
-      readDataUncompressed(out.nested(whereNested), reader, bitCounterNested, seqdd.getSubKeys(), i, abb);
+
+      abb = new ArrayStructureBB(members, shape);
+      ByteBuffer bb = abb.getByteBuffer();
+      bb.order(ByteOrder.BIG_ENDIAN);
     }
 
-    return new ArraySequence(members, new SequenceIterator(count, abb), count);
-  }
-
-
-  private class DebugOut {
-    Formatter f;
-    String where;
-    int indent;
-    int fldno; // track fldno to compare with EU output
-
-
-    DebugOut(Formatter f, String where, int indent, int fldno) {
-      this.f = f;
-      this.where = where;
-      this.indent = indent;
-      this.fldno = fldno;
+    // loop through nested obs
+    for (int i = 0; i < count; i++) {
+      if (out != null) {
+        out.f.format("%s read row %d (seq %s) of %s %n", out.indent(), i, seqdd.getFxyName(), out.where);
+        String whereNested = (out == null) ? null : out.where + " row " + i + "( seq " + seqdd.getFxyName() + ")";
+        readDataUncompressed(out.nested(whereNested), reader, bitCounterNested, seqdd.getSubKeys(), i, abb);
+        
+      } else {
+        readDataUncompressed( null, reader, bitCounterNested, seqdd.getSubKeys(), i, abb);
+      }
     }
 
-    String indent() { return blank(indent); }
-
-    DebugOut nested(String where) {
-      return new DebugOut(f, where, indent+2, fldno);
-    }
+    return countOnly ? null : new ArraySequence(members, new SequenceIterator(count, abb), count);
   }
-
-
-  // LOOK change this
-  private String blanks = "                      ";
-  private String blank(int indent) {
-    return blanks.substring(0, indent + 1);
-  }
-
 }

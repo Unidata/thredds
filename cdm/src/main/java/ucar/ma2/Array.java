@@ -803,7 +803,7 @@ public abstract class Array {
    *
    * @param shape the new shape
    * @return the new Array
-   * @throws IllegalArgumentException a and b are not conformable
+   * @throws IllegalArgumentException new shape is not conformable
    */
   public Array reshape(int[] shape) {
     Array result = factory(this.getElementType(), shape);
@@ -812,6 +812,20 @@ public abstract class Array {
 
     result.setUnsigned( isUnsigned());
     Array.arraycopy(this, 0, result, 0, (int) getSize());
+    return result;
+  }
+
+  /**
+   * Reshape this array without copying data
+   *
+   * @param shape the new shape
+   * @return the new Array, using same backing object
+   * @throws IllegalArgumentException new shape is not conformable
+   */
+  public Array reshapeNoCopy(int[] shape) {
+    Array result = factory(this.getElementType(), shape, getStorage());
+    if (result.getSize() != getSize())
+      throw new IllegalArgumentException("reshape arrays must have same total size");
     return result;
   }
 

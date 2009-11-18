@@ -4,6 +4,12 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  9:
+  BUFR fixes - combine countBits and read
+  Variable.getShapeAll()
+  Array.reshapeNoCopy()
+  ArrayStructureMA.factoryMA()
+  add Point viewing widget
+  CF doesnt require feature type - will default to point
   point datasets: NLDN, USPLN, Madis-ACARS
   add SequenceDS extends StructureDS
   NetcdfFile, IOSP getStructureIterator() for top-level sequences

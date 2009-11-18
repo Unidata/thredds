@@ -32,6 +32,10 @@
  */
 package ucar.ma2;
 
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
+import ucar.nc2.Sequence;
+
 import java.io.IOException;
 
 /**
@@ -87,73 +91,92 @@ import java.io.IOException;
   public void testMA() throws IOException, InvalidRangeException {
     StructureMembers members = new StructureMembers("s");
 
-    StructureMembers.Member m = new StructureMembers.Member("f1", "desc", "units", DataType.FLOAT, new int[] {1});
-    members.addMember( m);
-    Array data = Array.factory(DataType.FLOAT, new int[] {4});
-    m.setDataObject( data);
+    StructureMembers.Member m = members.addMember("f1", "desc", "units", DataType.FLOAT, new int[]{1});
+    Array data = Array.factory(DataType.FLOAT, new int[]{4});
+    m.setDataArray(data);
     fill(data);
 
-    m = new StructureMembers.Member("f2", "desc", "units", DataType.SHORT, new int[] {3});
-    members.addMember( m);
-    data = Array.factory(DataType.SHORT, new int[] {4, 3});
-    m.setDataObject( data);
+    m = members.addMember("f2", "desc", "units", DataType.SHORT, new int[]{3});
+    data = Array.factory(DataType.SHORT, new int[]{4, 3});
+    m.setDataArray(data);
     fill(data);
 
-    m = new StructureMembers.Member("nested1", "desc", "units", DataType.STRUCTURE, new int[] {9});
-    members.addMember( m);
-    data = makeNested1( m);
-    m.setDataObject( data);
+    m = members.addMember("nested1", "desc", "units", DataType.STRUCTURE, new int[]{9});
+    data = makeNested1(m);
+    m.setDataArray(data);
 
-    ArrayStructureMA as = new ArrayStructureMA( members, new int[] {4});
+    ArrayStructureMA as = new ArrayStructureMA(members, new int[]{4});
+    //System.out.println( NCdumpW.printArray(as, "", null));
+    new TestStructureArray().testArrayStructure(as);
+
+    // get f2 out of the 3nd "s"
+    StructureMembers.Member f2 = as.getStructureMembers().findMember("f2");
+    short[] f2data = as.getJavaArrayShort(2, f2);
+    assert f2data[0] == 20;
+    assert f2data[1] == 21;
+    assert f2data[2] == 22;
+
+    // get nested1 out of the 3nd "s"
+    StructureMembers.Member nested1 = as.getStructureMembers().findMember("nested1");
+    ArrayStructure nested1Data = as.getArrayStructure(2, nested1);
+
+    // get g1 out of the 7th "nested1"
+    StructureMembers.Member g1 = nested1Data.getStructureMembers().findMember("g1");
+    int g1data = nested1Data.getScalarInt(6, g1);
+    assert g1data == 26;
+
+    // get nested2 out of the 7th "nested1"
+    StructureMembers.Member nested2 = nested1Data.getStructureMembers().findMember("nested2");
+    ArrayStructure nested2Data = nested1Data.getArrayStructure(6, nested2);
+
+    // get h1 out of the 4th "nested2"
+    StructureMembers.Member h1 = nested2Data.getStructureMembers().findMember("h1");
+    int val = nested2Data.getScalarInt(4, h1);
+    assert (val == 264);
   }
+
 
   public ArrayStructure makeNested1(StructureMembers.Member parent) throws IOException, InvalidRangeException {
     StructureMembers members = new StructureMembers(parent.getName());
-    parent.setStructureMembers( members);
+    parent.setStructureMembers(members);
 
-    StructureMembers.Member m = new StructureMembers.Member("g1", "desc", "units", DataType.INT, new int[] {1});
-    members.addMember( m);
-    Array data = Array.factory(DataType.INT, new int[] {4, 9});
-    m.setDataObject( data);
+    StructureMembers.Member m = members.addMember("g1", "desc", "units", DataType.INT, new int[]{1});
+    Array data = Array.factory(DataType.INT, new int[]{4, 9});
+    m.setDataArray(data);
     fill(data);
 
-    m = new StructureMembers.Member("g2", "desc", "units", DataType.DOUBLE, new int[] {2});
-    members.addMember( m);
-    data = Array.factory(DataType.DOUBLE, new int[] {4, 9, 2});
-    m.setDataObject( data);
+    m = members.addMember("g2", "desc", "units", DataType.DOUBLE, new int[]{2});
+    data = Array.factory(DataType.DOUBLE, new int[]{4, 9, 2});
+    m.setDataArray(data);
     fill(data);
 
-    m = new StructureMembers.Member("g3", "desc", "units", DataType.DOUBLE, new int[] {3, 4});
-    members.addMember( m);
-    data = Array.factory(DataType.DOUBLE, new int[] {4, 9, 3, 4});
-    m.setDataObject( data);
+    m = members.addMember("g3", "desc", "units", DataType.DOUBLE, new int[]{3, 4});
+    data = Array.factory(DataType.DOUBLE, new int[]{4, 9, 3, 4});
+    m.setDataArray(data);
     fill(data);
 
-    m = new StructureMembers.Member("nested2", "desc", "units", DataType.STRUCTURE, new int[] {7});
-    members.addMember( m);
-    data = makeNested2( m);
-    m.setDataObject( data);
+    m = members.addMember("nested2", "desc", "units", DataType.STRUCTURE, new int[]{7});
+    data = makeNested2(m);
+    m.setDataArray(data);
 
-    return new ArrayStructureMA( members, new int[] {4, 9});
+    return new ArrayStructureMA(members, new int[]{4, 9});
   }
 
   public ArrayStructure makeNested2(StructureMembers.Member parent) throws IOException, InvalidRangeException {
     StructureMembers members = new StructureMembers(parent.getName());
-    parent.setStructureMembers( members);
+    parent.setStructureMembers(members);
 
-    StructureMembers.Member m = new StructureMembers.Member("h1", "desc", "units", DataType.INT, new int[] {1});
-    members.addMember( m);
-    Array data = Array.factory(DataType.INT, new int[] {4, 9, 7});
-    m.setDataObject( data);
+    StructureMembers.Member m = members.addMember("h1", "desc", "units", DataType.INT, new int[]{1});
+    Array data = Array.factory(DataType.INT, new int[]{4, 9, 7});
+    m.setDataArray(data);
     fill(data);
 
-    m = new StructureMembers.Member("h2", "desc", "units", DataType.DOUBLE, new int[] {2});
-    members.addMember( m);
-    data = Array.factory(DataType.DOUBLE, new int[] {4, 9, 7, 2});
-    m.setDataObject( data);
+    m = members.addMember("h2", "desc", "units", DataType.DOUBLE, new int[]{2});
+    data = Array.factory(DataType.DOUBLE, new int[]{4, 9, 7, 2});
+    m.setDataArray(data);
     fill(data);
 
-    return new ArrayStructureMA( members, new int[] {4, 9, 7});
+    return new ArrayStructureMA(members, new int[]{4, 9, 7});
   }
  </pre>
 
@@ -219,5 +242,35 @@ public class ArrayStructureMA extends ArrayStructure {
     StructureMembers.Member m = members.findMember( memberName);
     m.setDataArray( data);
   }
+
+  /**
+   * Create an ArrayStructure for a Structure. Allow nested Structures.
+   * Create the data arrays, and an iterator.
+   *
+   * @param from copy from here. If from is a ArrayStructureMA, return it.
+   * @return equivilent ArrayStructureMA
+   * @throws java.io.IOException on error reading a sequence
+   */
+  static public ArrayStructureMA factoryMA(Structure from, int[] shape) throws IOException {
+    StructureMembers sm = from.makeStructureMembers();
+    for (Variable v : from.getVariables()) {
+      Array data;
+      if (v instanceof Sequence) {
+        Structure s = (Structure) v;
+        StructureMembers smn = s.makeStructureMembers();
+        data = new ArraySequenceNested(smn, (int) Index.computeSize(v.getShapeAll())); // ??
+
+      } else if (v instanceof Structure)
+        data = ArrayStructureMA.factoryMA((Structure) v, v.getShape());
+      else
+        data = Array.factory(v.getDataType(), v.getShapeAll());
+
+      StructureMembers.Member m = sm.findMember(v.getShortName());
+      m.setDataArray(data);
+    }
+
+    return new ArrayStructureMA(sm, shape);
+  }
+
 
 }

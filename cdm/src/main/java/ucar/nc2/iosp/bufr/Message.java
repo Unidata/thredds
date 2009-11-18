@@ -243,6 +243,11 @@ public class Message {
     return msg_nbytes;
   }
 
+  public int getCountedDataBits() {
+    return msg_nbits;
+  }
+
+
   /**
    * Get the offset of this obs from the start of the message data.
    * Use only for non compressed data
@@ -585,9 +590,9 @@ public class Message {
             double scale = Math.pow(10.0, -dkey.scale); // LOOK could precompute for efficiency
             for (int i = 0; i < n; i++) {
               int val = reader.bits2UInt(dataWidth);
-              if (val == BufrNumbers.missing_value[dataWidth]) // is this a missing value ??
+              if (val == BufrNumbers.missing_value[dataWidth]) {// is this a missing value ??
                 if (showData) out.format(" %d (MISSING)", val);
-              else {
+              } else {
                 float fval = (dataMin + val + dkey.refVal);
                 if (showData) out.format(" %d (%f)", val, scale * fval);
               }

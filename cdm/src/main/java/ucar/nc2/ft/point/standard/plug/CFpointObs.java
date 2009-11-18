@@ -62,7 +62,7 @@ public class CFpointObs extends TableConfigurerImpl {
   }
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
-    // find datatype
+    /* find datatype
     String datatype = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt, null);
     if (datatype == null)
       datatype = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt2, null);
@@ -72,7 +72,7 @@ public class CFpointObs extends TableConfigurerImpl {
       return false;
 
     if (CF.FeatureType.valueOf(datatype) == null)
-      return false;
+      return false;   */
 
     String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);
     if (conv == null) return false;

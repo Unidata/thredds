@@ -182,7 +182,15 @@ public class DataDescriptor {
 
   public String getUnits() {
     return units;
-  }  
+  }
+
+  public float convert( int raw) {
+    // bpacked = (value * 10^scale - refVal)
+    // value = (bpacked + refVal) / 10^scale
+    float fscale = (float) Math.pow(10.0, -scale); // LOOK precompute ??
+    float fval = (raw + refVal);
+    return fscale * fval;
+  }
 
   /**
    * Transfer info from the "proto message" to another message with the exact same structure.

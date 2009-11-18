@@ -278,6 +278,7 @@ public class NestedTable {
     }
 
     public boolean isMissing(StructureData sdata) {
+      if (isString()) return false;
       double val = getCoordValue(sdata);
       return varTop.isMissing(val);
     }
@@ -573,29 +574,13 @@ public class NestedTable {
     return leaf.parent.getStructureDataIterator(cursor, bufferSize);  // the middle table
   }
 
-  /* Station Profile
-  public StructureDataIterator getStationProfileDataIterator(Cursor cursor, int bufferSize) throws IOException {
-    if (cursor.what instanceof StationConstruct) {
-      StationConstruct sc = (StationConstruct) cursor.what;
-      return sc.getStructureDataIterator(bufferSize);
-    }
-    return leaf.parent.getStructureDataIterator(cursor, bufferSize);  // the middle table
-  }
-
-  public StructureDataIterator getStationProfileObsDataIterator(Cursor cursor, int bufferSize) throws IOException {
-    if (getFeatureType() != FeatureType.STATION_PROFILE)
-      throw new UnsupportedOperationException("Not a StationProfileFeatureCollection");
-
-    return leaf.getStructureDataIterator(cursor, bufferSize);
-  }  */
-
   // also called from StandardPointFeatureIterator
   Station makeStation(StructureData stationData) {
     if (stnVE.isMissing(stationData)) return null;
     String stationName = stnVE.getCoordValueAsString(stationData);
 
-    String stationDesc = (stnDescVE == null) ? "" : stnDescVE.getCoordValueString(stationData);
-    String stnWmoId = (wmoVE == null) ? "" : wmoVE.getCoordValueString(stationData);
+    String stationDesc = (stnDescVE == null) ? "" : stnDescVE.getCoordValueAsString(stationData);
+    String stnWmoId = (wmoVE == null) ? "" : wmoVE.getCoordValueAsString(stationData);
 
     double lat = latVE.getCoordValue(stationData);
     double lon = lonVE.getCoordValue(stationData);

@@ -36,9 +36,7 @@ package ucar.nc2.ui;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.nc2.iosp.bufr.Message;
-import ucar.nc2.iosp.bufr.MessageScanner;
-import ucar.nc2.iosp.bufr.DataDescriptor;
+import ucar.nc2.iosp.bufr.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -76,8 +74,8 @@ public class BufrTable extends JPanel {
   private BeanTableSorted messageTable, obsTable, ddsTable;
   private JSplitPane split, split2;
 
-  private TextHistoryPane infoTA;
-  private IndependentWindow infoWindow;
+  private TextHistoryPane infoTA, infoTA2;
+  private IndependentWindow infoWindow, infoWindow2;
 
   private StructureTable dataTable;
   private IndependentWindow dataWindow;
@@ -194,11 +192,47 @@ public class BufrTable extends JPanel {
         infoWindow.showIfNotIconified();
       }
     });
+    varPopup.addAction("Bit Count 2", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        MessageBean mb = (MessageBean) messageTable.getSelectedBean();
+        Message m = mb.m;
+
+        Formatter out = new Formatter();
+        try {
+          infoTA2.clear();
+          if (!m.dds.isCompressed()) {
+            MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
+            reader.readDataUncompressed(m, raf, out, null);
+          } else {
+            MessageCompressedDataReader reader = new MessageCompressedDataReader();
+            reader.readDataCompressed(m, raf, out, null);
+          }
+          int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
+          DataDescriptor root = m.getRootDataDescriptor();
+          out.format("Message nobs=%d compressed=%s vlen=%s countBits= %d givenBits=%d %n",
+              m.getNumberDatasets(), m.dds.isCompressed(), root.isVarLength(),
+              m.getCountedDataBits(), nbitsGiven);
+          out.format(" countBits= %d givenBits=%d %n", m.getCountedDataBits(), nbitsGiven);
+          out.format(" countBytes= %d dataSize=%d %n", m.getCountedDataBytes(), m.dataSection.getDataLength());
+          out.format("%n");
+          infoTA2.appendLine(out.toString());
+
+        } catch (Exception ex) {
+          ByteArrayOutputStream bos = new ByteArrayOutputStream();
+          ex.printStackTrace(new PrintStream(bos));
+          infoTA2.appendLine(out.toString());
+          infoTA2.appendLine(bos.toString());
+        }
+
+        infoTA2.gotoTop();
+        infoWindow2.showIfNotIconified();
+      }
+    });
     varPopup.addAction("Write Message", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
         try {
-          String defloc = (location == null) ? "." : location;
+          String defloc = (raf.getLocation() == null)  ? "." : raf.getLocation();
           int pos = defloc.lastIndexOf(".");
           if (pos > 0)
             defloc = defloc.substring(0, pos);
@@ -235,6 +269,11 @@ public class BufrTable extends JPanel {
     infoTA = new TextHistoryPane();
     infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), infoTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
+
+    // the info window 2
+    infoTA2 = new TextHistoryPane();
+    infoWindow2 = new IndependentWindow("Extra Information-2", BAMutil.getImage("netcdfUI"), infoTA2);
+    infoWindow2.setBounds((Rectangle) prefs.getBean("InfoWindowBounds2", new Rectangle(300, 300, 500, 300)));
 
     split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, ddsTable, obsTable);
     split2.setDividerLocation(prefs.getInt("splitPos2", 800));
@@ -287,15 +326,16 @@ public class BufrTable extends JPanel {
     ddsTable.saveState(false);
     obsTable.saveState(false);
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
+    prefs.putBeanObject("InfoWindowBounds2", infoWindow2.getBounds());
     prefs.putInt("splitPos", split.getDividerLocation());
     prefs.putInt("splitPos2", split2.getDividerLocation());
   }
 
-  private String location;
+  private RandomAccessFile raf;
   private MessageScanner scan;
 
   public void setBufrFile(RandomAccessFile raf) throws IOException {
-    this.location = raf.getLocation();
+    this.raf = raf;
     long start = System.nanoTime();
     java.util.List<MessageBean> beanList = new ArrayList<MessageBean>();
 

@@ -439,8 +439,9 @@ public class FileCache {
     Collections.sort(allFiles); // sort so oldest are on top
 
     format.format("FileCache %s (%d):%n", name, allFiles.size());
+    format.format("isLocked  accesses lastAccess                   location %n");
     for (CacheElement.CacheFile file : allFiles) {
-      format.format("  %s%n", file);
+      format.format("%8s %9d %s %s %n", file.isLocked, file.countAccessed,new Date(file.lastAccessed), file.ncfile.getLocation());
     }
   }
 
@@ -623,7 +624,7 @@ public class FileCache {
       }
 
       public String toString() {
-        return isLocked + " " + hashKey + " " + countAccessed + " " + new Date(lastAccessed);
+        return isLocked  + " " + countAccessed + " " + new Date(lastAccessed) + " " + ncfile.getLocation();
       }
 
       public int compareTo(CacheFile o) {

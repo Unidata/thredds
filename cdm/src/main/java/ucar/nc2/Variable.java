@@ -1691,6 +1691,16 @@ public class Variable implements VariableIF {
       result.add( v.getDimension(i));
   }
 
+  public int[] getShapeAll() {
+    if (parent == null) return getShape();
+    List<Dimension> dimAll = getDimensionsAll();
+    int[] shapeAll = new int[dimAll.size()];
+    for (int i=0; i<dimAll.size(); i++)
+      shapeAll[i] = dimAll.get(i).getLength();
+    return shapeAll;
+  }
+
+
   /*
    * Read data in all structures for this Variable, using a string sectionSpec to specify the section.
    * See readAllStructures(Section section, boolean flatten) method for details.

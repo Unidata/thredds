@@ -33,6 +33,7 @@
 package ucar.nc2.iosp.bufr;
 
 import ucar.unidata.io.RandomAccessFile;
+import ucar.ma2.ArrayStructureBB;
 
 import java.io.*;
 import java.util.*;
@@ -729,6 +730,32 @@ public class Scanner {
   ////////////////////////////////////////////////////////
 
   // extract the msgno-th message to fileOut
+
+  static void scanReader(String filein) throws IOException {
+    Formatter f = new Formatter(System.out);
+
+    RandomAccessFile raf = new RandomAccessFile(filein, "r");
+    MessageScanner scan = new MessageScanner(raf);
+    while (scan.hasNext()) {
+      Message m = scan.next();
+      m.dumpHeader(out);
+      if (!m.dds.isCompressed()) {
+        MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
+        reader.readDataUncompressed(m, raf, null, null);
+      } else {
+        MessageCompressedDataReader reader = new MessageCompressedDataReader();
+        reader.readDataCompressed(m, raf, f, null);
+      }
+
+      int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
+      System.out.printf("nbits counted = %d expected=%d %n", m.msg_nbits, nbitsGiven);
+      System.out.printf("nbytes counted = %d expected=%d %n", m.getCountedDataBytes(), m.dataSection.getDataLength());
+      if (m.isTablesComplete() && !m.isBitCountOk())
+        System.out.printf("BAD BIT COUNT %n%n");
+    }
+  }
+
+  // extract the msgno-th message to fileOut
   static void extractNthMessage(String filein, int msgno, String fileout) throws IOException {
     FileOutputStream fos = new FileOutputStream(fileout);
     WritableByteChannel wbc = fos.getChannel();
@@ -837,7 +864,7 @@ public class Scanner {
        }
      }); // */
 
-    // extract unique DDS  // 20080707_1900.bufr
+    /* extract unique DDS  // 20080707_1900.bufr
      test("R:/testdata/bufr/problems/", new MClosure() {
        public void run(String filename) throws IOException {
          scanMessageDDS(filename);
@@ -857,6 +884,15 @@ public class Scanner {
          scanDDS(filename);
        }
      }); // */
+
+    // new reader
+    //test("D:/formats/bufr/tmp/dispatch/asample.bufr", new MClosure() {
+    test("D:/formats/bufr/tmp/JUTX52.bufr", new MClosure() {
+      public void run(String filename) throws IOException {
+        scanReader(filename);
+      }
+    }); // */
+
 
   }
 
