@@ -334,7 +334,7 @@ public class StructureMembers {
      */
     public void setDataArray(Array data) {
       this.dataArray = data;
-      dtype = DataType.getType( data.getElementType());
+      // dtype = DataType.getType( data.getElementType());
     }
 
     /**

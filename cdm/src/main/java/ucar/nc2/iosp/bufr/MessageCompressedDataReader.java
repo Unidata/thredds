@@ -117,9 +117,9 @@ public class MessageCompressedDataReader {
       if (data instanceof ArrayStructureMA) {
         setIterators( (ArrayStructureMA) data);
 
-      } else if (data instanceof ArraySequenceNested) {
-        setIterators( (ArrayStructureMA) data);
-
+      } else  if (data instanceof ArraySequenceNested) {
+          System.out.println("HEY");
+        
       } else {
         int[] shape = data.getShape();
         if ((shape.length > 1) && (sm.getDataType() != DataType.CHAR)) {
@@ -131,7 +131,6 @@ public class MessageCompressedDataReader {
       }
     }
   }
-
 
   void associateMessage2Members(StructureMembers members, DataDescriptor parent, HashMap<DataDescriptor, StructureMembers.Member> map) throws IOException {
     for (DataDescriptor dkey : parent.getSubKeys()) {
@@ -150,6 +149,12 @@ public class MessageCompressedDataReader {
           ArrayStructure nested = (ArrayStructure) m.getDataArray();
           associateMessage2Members(nested.getStructureMembers(), dkey, map);
         }
+
+        else if (m.getDataType() == DataType.SEQUENCE) {
+          ArraySequenceNested nested = (ArraySequenceNested) m.getDataArray();
+          associateMessage2Members(nested.getStructureMembers(), dkey, map);
+        }
+
       } else {
         System.out.printf("Cant find %s%n", dkey);
       }

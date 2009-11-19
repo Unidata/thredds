@@ -279,7 +279,7 @@ public class Message {
     if (dds.isCompressed())
       throw new IllegalArgumentException("cant call BufrMessage.getBitOffset() on compressed message");
 
-    getTotalBits(); // make sure its been set
+    calcTotalBits(null); // make sure its been set
     return counterDatasets[obsOffsetInMessage];
   }
 

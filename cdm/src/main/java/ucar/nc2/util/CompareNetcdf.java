@@ -281,6 +281,9 @@ public class CompareNetcdf {
   }
 
   static public void compareData(Array data1, Array data2, double tol) {
+    if (data1.getSize() != data2.getSize())
+      System.out.println("HEY");
+
     assert data1.getSize() == data2.getSize();
     assert data1.getElementType() == data2.getElementType() : data1.getElementType() + "!=" + data2.getElementType();
     DataType dt = DataType.getType(data1.getElementType());
@@ -328,15 +331,19 @@ public class CompareNetcdf {
     }
   }
 
-  static public void compareStructureData(StructureData data1, StructureData data2, double tol) {
-    StructureMembers sm1 = data1.getStructureMembers();
-    StructureMembers sm2 = data2.getStructureMembers();
+  static public void compareStructureData(StructureData sdata1, StructureData sdata2, double tol) {
+    StructureMembers sm1 = sdata1.getStructureMembers();
+    StructureMembers sm2 = sdata2.getStructureMembers();
     assert sm1.getMembers().size() == sm2.getMembers().size();
 
     for (StructureMembers.Member m1 : sm1.getMembers()) {
       if (m1.getName().equals("time")) continue;
       StructureMembers.Member m2 = sm2.findMember(m1.getName());
-      compareData( data1.getArray(m1), data2.getArray(m2), tol);
+      if (m1.getDataType() == DataType.SEQUENCE)
+        System.out.println("HEY");
+      Array data1 = sdata1.getArray(m1);
+      Array data2 = sdata2.getArray(m2);
+      compareData( data1, data2, tol);
     }
 
   }

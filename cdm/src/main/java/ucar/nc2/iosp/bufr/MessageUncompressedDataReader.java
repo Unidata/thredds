@@ -119,6 +119,9 @@ public class MessageUncompressedDataReader {
       // the top table always has exactly one "row", since we are working with a single obs
       counterDatasets[i] = new BitCounterUncompressed(root, 1, 0);
       DebugOut out = (f == null) ? null : new DebugOut(f, "obs " + i, 0, 1);
+
+      if (abb != null)
+        abb.getByteBuffer().putInt(0); // placeholder for time assumes an int   
       readDataUncompressed(out, reader, counterDatasets[i], root.subKeys, 0, abb);
       m.msg_nbits += counterDatasets[i].countBits(m.msg_nbits);
     }

@@ -463,9 +463,9 @@ public class BufrIosp extends AbstractIOServiceProvider {
         reader.setBitOffset(bitOffset);
         int count = reader.bits2UInt(dkey.replicationCountSize);
         bitOffset += dkey.replicationCountSize;
-        System.out.printf("compressed replication count = %d %n", count);
+        // System.out.printf("compressed replication count = %d %n", count);
         int extra = reader.bits2UInt(6);
-        System.out.printf("EXTRA bits %d at %d %n", extra, bitOffset);
+        // System.out.printf("EXTRA bits %d at %d %n", extra, bitOffset);
         bitOffset += 6; // LOOK seems to be an extra 6 bits. not yet getting counted
 
         // make an ArraySequence for this observation
@@ -732,7 +732,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
   }
 
     public static void main(String arg[]) throws IOException, InvalidRangeException {
-      NetcdfFile ncfile = NetcdfFile.open("D:/formats/bufr/tmp/IUCN51.bufr");
+      NetcdfFile ncfile = NetcdfFile.open("C:/data/formats/bufr3/ISIS01.bufr");
       BufrIosp iosp =  (BufrIosp) ncfile.getIosp();
       iosp.compare(iosp.construct.recordStructure);
     }
