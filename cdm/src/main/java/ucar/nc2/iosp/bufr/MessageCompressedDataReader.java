@@ -97,7 +97,8 @@ import java.util.HashMap;
    An iterator is stored in member.getDataObject() which keeps track of where we are.
    For fixed length nested Structures, we need fld(dataset, inner) but we have fld(inner, dataset) se we transpose the dimensions
      before we set the iterator.
-   For Sequences, inner.length is the same for all datasets in the message. However, it may vary across messages.
+   For Sequences, inner.length is the same for all datasets in the message. However, it may vary across messages. However, we
+     only iterate ober the inner sequence, never across all messages. So the implementation can be specific to the meassage.
 
    */
 
