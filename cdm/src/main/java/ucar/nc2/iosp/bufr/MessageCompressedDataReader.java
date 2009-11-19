@@ -98,7 +98,7 @@ import java.util.HashMap;
    For fixed length nested Structures, we need fld(dataset, inner) but we have fld(inner, dataset) se we transpose the dimensions
      before we set the iterator.
    For Sequences, inner.length is the same for all datasets in the message. However, it may vary across messages. However, we
-     only iterate ober the inner sequence, never across all messages. So the implementation can be specific to the meassage.
+     only iterate over the inner sequence, never across all messages. So the implementation can be specific to the meassage.
 
    */
 
@@ -351,7 +351,7 @@ public class MessageCompressedDataReader {
   }
 
   // read in the data into an ArrayStructureBB, wrapped by an ArraySequence
-  private void makeArraySequenceCompressed(DebugOut out, BitReader reader, BitCounterCompressed bitCounterNested, int msgOffset,
+  private void makeArraySequenceCompressed(DebugOut out, BitReader reader, BitCounterCompressed bitCounterNested, int index,
                          DataDescriptor seqdd, int count, HashMap<DataDescriptor, StructureMembers.Member> map) throws IOException {
 
     // all other fields
@@ -390,7 +390,7 @@ public class MessageCompressedDataReader {
     for (int i = 0; i < count; i++) {
       //out.format("%nRead parent=%s obe=%d level=%d%n",dkey.name, msgOffset, i);
       BitCounterCompressed[] nested = bitCounterNested.getNestedCounters(i);
-      readDataCompressed(reader, nested, msgOffset, seqdd, ama);
+      // LOOK readDataCompressed(reader, nested, msgOffset, seqdd, ama);
     }
 
     ArraySequence arrSeq = new ArraySequence(members, new SequenceIterator(count, ama), count);
