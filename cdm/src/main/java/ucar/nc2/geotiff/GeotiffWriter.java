@@ -43,6 +43,7 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
+import ucar.unidata.geoloc.projection.proj4.AlbersEqualAreaEllipse;
 
 import java.io.IOException;
 
@@ -985,6 +986,7 @@ public class GeotiffWriter {
                 && !(gcs.getProjection() instanceof Stereographic)
                 && !(gcs.getProjection() instanceof Mercator)
         //  && !(gcs.getProjection() instanceof TransverseMercator)
+                && !(gcs.getProjection() instanceof AlbersEqualAreaEllipse)
         && !(gcs.getProjection() instanceof AlbersEqualArea)) {
             throw new IllegalArgumentException(
                 "Must be lat/lon or LambertConformal or Mercator and grid = "
@@ -1124,6 +1126,8 @@ public class GeotiffWriter {
                 (TransverseMercator) gcs.getProjection());
         } else if (gcs.getProjection() instanceof AlbersEqualArea) {
             addAlbersEqualAreaTags((AlbersEqualArea) gcs.getProjection());
+        } else if (gcs.getProjection() instanceof AlbersEqualAreaEllipse) {
+            addAlbersEqualAreaEllipseTags((AlbersEqualAreaEllipse) gcs.getProjection());
         }
 
         geotiff.writeMetadata(imageNumber);
@@ -1447,6 +1451,66 @@ public class GeotiffWriter {
 
     }
 
+    /**
+     * _more_
+     *
+     * @param proj _more_
+     */
+
+    private void addAlbersEqualAreaEllipseTags(AlbersEqualAreaEllipse proj) {
+        geotiff.addGeoKey(new GeoKey(GeoKey.Tag.GTModelTypeGeoKey,
+                                     GeoKey.TagValue.ModelType_Projected));
+        geotiff.addGeoKey(new GeoKey(GeoKey.Tag.GTRasterTypeGeoKey,
+                                     GeoKey.TagValue.RasterType_Area));
+
+        // define the "geographic Coordinate System"
+        geotiff.addGeoKey(new GeoKey(GeoKey.Tag.GeographicTypeGeoKey,
+                                     GeoKey.TagValue.GeographicType_WGS_84));
+        geotiff.addGeoKey(new GeoKey(GeoKey.Tag.GeogLinearUnitsGeoKey,
+                                     GeoKey.TagValue.ProjLinearUnits_METER));
+
+        geotiff.addGeoKey(new GeoKey(GeoKey.Tag.GeogSemiMajorAxisGeoKey,
+                                      proj.getEarth().getMajor()));
+        geotiff.addGeoKey(new GeoKey(GeoKey.Tag.GeogSemiMinorAxisGeoKey,
+                                      proj.getEarth().getMinor()));
+
+        geotiff.addGeoKey(
+            new GeoKey(
+                GeoKey.Tag.GeogAngularUnitsGeoKey,
+                GeoKey.TagValue.GeogAngularUnits_DEGREE));
+
+        // define the "coordinate transformation"
+        geotiff.addGeoKey(
+            new GeoKey(
+                GeoKey.Tag.ProjectedCSTypeGeoKey,
+                GeoKey.TagValue.ProjectedCSType_UserDefined));
+        geotiff.addGeoKey(new GeoKey(GeoKey.Tag.PCSCitationGeoKey,
+                                     "Albers Conial Equal Area"));
+        geotiff.addGeoKey(
+            new GeoKey(
+                GeoKey.Tag.ProjectionGeoKey,
+                GeoKey.TagValue.ProjectedCSType_UserDefined));
+        geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjLinearUnitsGeoKey,
+                                     GeoKey.TagValue.ProjLinearUnits_METER));
+        //geotiff.addGeoKey( new GeoKey( GeoKey.Tag.ProjLinearUnitsSizeGeoKey, 1.0)); // units of km
+
+        // the specifics for mercator
+        geotiff.addGeoKey(
+            new GeoKey(
+                GeoKey.Tag.ProjCoordTransGeoKey,
+                GeoKey.TagValue.ProjCoordTrans_AlbersEqualAreaEllipse));
+        geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjNatOriginLatGeoKey,
+                                     proj.getOriginLat()));
+        geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjNatOriginLongGeoKey,
+                                     proj.getOriginLon()));
+        geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjStdParallel1GeoKey,
+                                     proj.getParallelOne()));
+        geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjStdParallel2GeoKey,
+                                     proj.getParallelTwo()));
+        geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjFalseEastingGeoKey, 0.0));
+        geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjFalseNorthingGeoKey,
+                                     0.0));
+    }
     /**
      * _more_
      *
