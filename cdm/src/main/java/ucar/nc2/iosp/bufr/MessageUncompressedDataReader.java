@@ -79,6 +79,12 @@ import java.nio.ByteOrder;
 
    where the width (nbits) of dr is set in the data descriptor. This dr can be different for each dataset in the message.
    It can be 0. When it has a bit width of 1, it indicates an optional set of fields.
+
+   --------------------------
+
+   We use an ArrayStructureBB to hold the data, and fill it sequentially as we scan the message.
+   Fixed length nested Structures are kept in the ArrayStructureBB.
+   Variable length objects (Strings, Sequences) are added to the heap.
  */
 
 public class MessageUncompressedDataReader {

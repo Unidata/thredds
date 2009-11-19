@@ -57,7 +57,7 @@ public class ArraySequence extends ArrayStructure {
     this.count = count;
   }
 
-  /**
+  /**                                                             n
    * @return StructureDataIterator.class
    */
   @Override
