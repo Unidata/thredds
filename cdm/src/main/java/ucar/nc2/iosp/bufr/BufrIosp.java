@@ -37,6 +37,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.CompareNetcdf;
 
 import ucar.unidata.io.RandomAccessFile;
 
@@ -698,20 +699,42 @@ public class BufrIosp extends AbstractIOServiceProvider {
   public void readAll() throws IOException, InvalidRangeException {
    Formatter f = new Formatter(System.out);
    for (Message m : msgs) {
+     Array data;
      if (!m.dds.isCompressed()) {
        MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
-       reader.readData(construct.recordStructure, protoMessage, m, raf, null);
+       data = reader.readData(construct.recordStructure, protoMessage, m, raf, null);
      } else {
        MessageCompressedDataReader reader = new MessageCompressedDataReader();
-       reader.readData(construct.recordStructure, protoMessage, m, raf, null);       
+       data = reader.readData(construct.recordStructure, protoMessage, m, raf, null);
      }
+     NCdumpW.printArray(data, "test", new PrintWriter(System.out), null);
     }
+  }
+
+  public void compare(Structure obs) throws IOException, InvalidRangeException {
+    int start = 0;
+   for (Message m : msgs) {
+     Array data1;
+     if (!m.dds.isCompressed()) {
+       MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
+       data1 = reader.readData(construct.recordStructure, protoMessage, m, raf, null);
+     } else {
+       MessageCompressedDataReader reader = new MessageCompressedDataReader();
+       data1 = reader.readData(construct.recordStructure, protoMessage, m, raf, null);
+     }
+
+     int n = m.getNumberDatasets();
+     Array data2 = obs.read(new Section().appendRange(start, start+n-1));
+     CompareNetcdf.compareData(data1, data2);
+
+     start += n;
+   }
   }
 
     public static void main(String arg[]) throws IOException, InvalidRangeException {
       NetcdfFile ncfile = NetcdfFile.open("D:/formats/bufr/tmp/IUCN51.bufr");
       BufrIosp iosp =  (BufrIosp) ncfile.getIosp();
-      iosp.readAll();
+      iosp.compare(iosp.construct.recordStructure);
     }
 
 } // end BufrIosp

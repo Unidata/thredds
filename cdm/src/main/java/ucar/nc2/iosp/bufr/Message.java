@@ -39,6 +39,8 @@ import ucar.nc2.iosp.bufr.tables.TableB;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -60,6 +62,7 @@ public class Message {
   private RandomAccessFile raf;
   private TableLookup lookup;
   private DataDescriptor root;
+  private GregorianCalendar cal;
 
   private String header; // wmo header
   private long startPos; // starting pos in raf
@@ -72,12 +75,14 @@ public class Message {
   //private boolean showCountCompressedValues = true;
   //private boolean showCountDetail = false;
 
-  public Message(RandomAccessFile raf, BufrIndicatorSection is, BufrIdentificationSection ids, BufrDataDescriptionSection dds, BufrDataSection dataSection) throws IOException {
+  public Message(RandomAccessFile raf, BufrIndicatorSection is, BufrIdentificationSection ids, BufrDataDescriptionSection dds,
+                 BufrDataSection dataSection, GregorianCalendar cal) throws IOException {
     this.raf = raf;
     this.is = is;
     this.ids = ids;
     this.dds = dds;
     this.dataSection = dataSection;
+    this.cal = cal;
     lookup = new TableLookup(is, ids);
   }
 
@@ -118,6 +123,9 @@ public class Message {
     return ids.getMasterTableId() + "." + ids.getMasterTableVersion() + "." + ids.getLocalTableVersion();
   }
 
+  public final Date getReferenceTime() {
+    return ids.getReferenceTime( cal);
+  }
 
   ///////////////////////////////////////////////////////////////////////////
 
@@ -765,7 +773,7 @@ public class Message {
   public void dump(Formatter out) throws IOException {
 
     out.format(" BUFR edition %d time= %s wmoHeader=%s hash=[0x%x] %n",
-            is.getBufrEdition(), ids.getReferenceTime(), getHeader(), hashCode());
+            is.getBufrEdition(), getReferenceTime(), getHeader(), hashCode());
     out.format("   Category= %s %s %n", getCategoryNo(), getCategoryName());
     out.format("   Center= %s %n", getCenterName());
     out.format("   Table= %s wmoTable= %s localTable= %s%n",
@@ -836,7 +844,7 @@ public class Message {
 
   public void dumpHeader(Formatter out) throws IOException {
 
-    out.format(" BUFR edition %d time= %s wmoHeader=%s %n", is.getBufrEdition(), ids.getReferenceTime(), getHeader());
+    out.format(" BUFR edition %d time= %s wmoHeader=%s %n", is.getBufrEdition(), getReferenceTime(), getHeader());
     out.format("   Category= %d %s %s %n", ids.getCategory(), getCategoryName(), getCategoryNo());
     out.format("   Center= %s %s %n", getCenterName(), getCenterNo());
     out.format("   Table= %d.%d local= %d wmoTable= %s localTable= %s %n",

@@ -34,6 +34,9 @@ package ucar.nc2.iosp.bufr;
 
 import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.ArrayStructureBB;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Structure;
 
 import java.io.*;
 import java.util.*;
@@ -54,14 +57,15 @@ public class Scanner {
     void run(String filename) throws IOException;
   }
 
-  static void test(String filename, MClosure closure) throws IOException {
+  static void test(String filename, boolean subdirs, MClosure closure) throws IOException {
     File f = new File(filename);
     if (!f.exists()) {
       System.out.println(filename + " does not exist");
       return;
     }
-    if (f.isDirectory()) testAllInDir(f, closure);
-    else {
+    if (f.isDirectory()) {
+      testAllInDir(f, subdirs, closure);
+    } else {
       try {
         closure.run(f.getPath());
       } catch (Exception ioe) {
@@ -71,8 +75,8 @@ public class Scanner {
     }
   }
 
-                                                             
-  static void testAllInDir(File dir, MClosure closure) {
+
+  static void testAllInDir(File dir, boolean subdirs, MClosure closure) {
     List<File> list = Arrays.asList(dir.listFiles());
     Collections.sort(list);
 
@@ -83,16 +87,16 @@ public class Scanner {
       if (f.getName().endsWith("csh")) continue;
       if (f.getName().endsWith("rtf")) continue;
 
-      if (f.isDirectory())
-        testAllInDir(f, closure);
-      else {
-        try {
-          closure.run(f.getPath());
-        } catch (Exception ioe) {
-          System.out.println("Failed on " + f.getPath() + ": " + ioe.getMessage());
-          ioe.printStackTrace();
+      if (f.isDirectory()) {
+        if (subdirs) testAllInDir(f, subdirs, closure);
+      } else {
+          try {
+            closure.run(f.getPath());
+          } catch (Exception ioe) {
+            System.out.println("Failed on " + f.getPath() + ": " + ioe.getMessage());
+            ioe.printStackTrace();
+          }
         }
-      }
     }
   }
 
@@ -116,7 +120,7 @@ public class Scanner {
 
       long startPos = m.is.getStartPos();
       out.format(" msg= %d time=%s starts=%d len=%d end=%d dataEnd=%d\n",
-              count, m.ids.getReferenceTime(), startPos, m.is.getBufrLength(), (startPos + m.is.getBufrLength()),
+              count, m.getReferenceTime(), startPos, m.is.getBufrLength(), (startPos + m.is.getBufrLength()),
               (m.dataSection.getDataPos() + m.dataSection.getDataLength()));
       out.format("  ndatasets=%d isCompressed=%s datatype=0x%x header=%s\n",
               m.getNumberDatasets(), m.dds.isCompressed(), m.dds.getDataType(), m.getHeader());
@@ -149,7 +153,7 @@ public class Scanner {
       if (mode >= 0) {
         long startPos = m.is.getStartPos();
         out.format(" msg= %d time=%s starts=%d len=%d end=%d dataEnd=%d hash=[0x%x]\n",
-                count, m.ids.getReferenceTime(), startPos, m.is.getBufrLength(), (startPos + m.is.getBufrLength()),
+                count, m.getReferenceTime(), startPos, m.is.getBufrLength(), (startPos + m.is.getBufrLength()),
                 (m.dataSection.getDataPos() + m.dataSection.getDataLength()), m.hashCode());
         out.format("  ndatasets=%d isCompressed=%s datatype=0x%x header=%s\n",
                 m.getNumberDatasets(), m.dds.isCompressed(), m.dds.getDataType(), m.getHeader());
@@ -185,7 +189,7 @@ public class Scanner {
       if (m == null) continue;
       //if (count == 0) new BufrDump2().dump(out, m);
 
-      out.format(" %s time=%s\n", m.getHeader(), m.ids.getReferenceTime());
+      out.format(" %s time=%s\n", m.getHeader(), m.getReferenceTime());
       count++;
     }
     raf.close();
@@ -755,6 +759,13 @@ public class Scanner {
     }
   }
 
+  static void scanReader2(String filein) throws IOException, InvalidRangeException {
+    NetcdfFile ncfile = NetcdfFile.open(filein);
+    BufrIosp iosp =  (BufrIosp) ncfile.getIosp();
+    iosp.compare((Structure) ncfile.findVariable("obsRecord"));
+  }
+
+
   // extract the msgno-th message to fileOut
   static void extractNthMessage(String filein, int msgno, String fileout) throws IOException {
     FileOutputStream fos = new FileOutputStream(fileout);
@@ -887,9 +898,14 @@ public class Scanner {
 
     // new reader
     //test("D:/formats/bufr/tmp/dispatch/asample.bufr", new MClosure() {
-    test("D:/formats/bufr/tmp/JUTX52.bufr", new MClosure() {
+    test("D:/formats/bufr/tmp/", false, new MClosure() {
       public void run(String filename) throws IOException {
-        scanReader(filename);
+        if (!(filename.endsWith(".bufr"))) return;
+        try {
+          scanReader2(filename);
+        } catch (InvalidRangeException e) {
+          e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
       }
     }); // */
 

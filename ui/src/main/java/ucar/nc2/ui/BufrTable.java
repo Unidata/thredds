@@ -42,6 +42,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.Structure;
 import ucar.nc2.Attribute;
+import ucar.nc2.units.DateFormatter;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureData;
 
@@ -80,9 +81,22 @@ public class BufrTable extends JPanel {
   private StructureTable dataTable;
   private IndependentWindow dataWindow;
   private FileManager fileChooser;
+  private DateFormatter df = new DateFormatter();
+  private boolean useReader = false;
 
-  public BufrTable(PreferencesExt prefs) {
+  public BufrTable(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
+
+    AbstractAction useReaderAction = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Boolean state = (Boolean) getValue(BAMutil.STATE);
+        useReader = state.booleanValue();
+        System.out.printf("useReader=%s%n", useReader);
+      }
+    };
+    BAMutil.setActionProperties(useReaderAction, "addCoords", "use new reader", true, 'C', -1);
+    useReaderAction.putValue(BAMutil.STATE, new Boolean(useReader));
+    BAMutil.addActionToContainer(buttPanel, useReaderAction);
 
     messageTable = new BeanTableSorted(MessageBean.class, (PreferencesExt) prefs.node("GridRecordBean"), false);
     messageTable.addListSelectionListener(new ListSelectionListener() {
@@ -174,8 +188,8 @@ public class BufrTable extends JPanel {
           long last = m.dataSection.getDataPos() + m.dataSection.getDataLength();
           DataDescriptor root = m.getRootDataDescriptor();
           out.format("Message nobs=%d compressed=%s vlen=%s countBits= %d givenBits=%d %n",
-              m.getNumberDatasets(), m.dds.isCompressed(), root.isVarLength(),
-              nbitsCounted, nbitsGiven);
+                  m.getNumberDatasets(), m.dds.isCompressed(), root.isVarLength(),
+                  nbitsCounted, nbitsGiven);
           out.format(" countBits= %d givenBits=%d %n", nbitsCounted, nbitsGiven);
           out.format(" countBytes= %d dataSize=%d %n", m.getCountedDataBytes(), m.dataSection.getDataLength());
           out.format("%n");
@@ -192,6 +206,7 @@ public class BufrTable extends JPanel {
         infoWindow.showIfNotIconified();
       }
     });
+
     varPopup.addAction("Bit Count 2", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
@@ -210,8 +225,8 @@ public class BufrTable extends JPanel {
           int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
           DataDescriptor root = m.getRootDataDescriptor();
           out.format("Message nobs=%d compressed=%s vlen=%s countBits= %d givenBits=%d %n",
-              m.getNumberDatasets(), m.dds.isCompressed(), root.isVarLength(),
-              m.getCountedDataBits(), nbitsGiven);
+                  m.getNumberDatasets(), m.dds.isCompressed(), root.isVarLength(),
+                  m.getCountedDataBits(), nbitsGiven);
           out.format(" countBits= %d givenBits=%d %n", m.getCountedDataBits(), nbitsGiven);
           out.format(" countBytes= %d dataSize=%d %n", m.getCountedDataBytes(), m.dataSection.getDataLength());
           out.format("%n");
@@ -228,11 +243,12 @@ public class BufrTable extends JPanel {
         infoWindow2.showIfNotIconified();
       }
     });
+
     varPopup.addAction("Write Message", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
         try {
-          String defloc = (raf.getLocation() == null)  ? "." : raf.getLocation();
+          String defloc = (raf.getLocation() == null) ? "." : raf.getLocation();
           int pos = defloc.lastIndexOf(".");
           if (pos > 0)
             defloc = defloc.substring(0, pos);
@@ -259,6 +275,7 @@ public class BufrTable extends JPanel {
         }
       }
     });
+    
     varPopup.addAction("Dump distinct DDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         dumpDDS();
@@ -294,7 +311,7 @@ public class BufrTable extends JPanel {
 
   private void dumpDDS() {
     List<MessageBean> beans = messageTable.getBeans();
-    HashMap<Integer, Message> map = new HashMap<Integer, Message>(2*beans.size());
+    HashMap<Integer, Message> map = new HashMap<Integer, Message>(2 * beans.size());
 
     for (MessageBean mb : beans) {
       map.put(mb.m.hashCode(), mb.m);
@@ -304,7 +321,7 @@ public class BufrTable extends JPanel {
     String dirName = "C:/temp/";
     for (Message m : map.values()) {
       try {
-        File file = new File(dirName+"bufr"+count+".txt");
+        File file = new File(dirName + "bufr" + count + ".txt");
         FileOutputStream fos = new FileOutputStream(file);
         Formatter f = new Formatter(fos);
         m.dump(f);
@@ -316,7 +333,7 @@ public class BufrTable extends JPanel {
       }
       count++;
     }
-    JOptionPane.showMessageDialog(BufrTable.this, count+" successfully written to "+dirName);
+    JOptionPane.showMessageDialog(BufrTable.this, count + " successfully written to " + dirName);
 
 
   }
@@ -336,17 +353,14 @@ public class BufrTable extends JPanel {
 
   public void setBufrFile(RandomAccessFile raf) throws IOException {
     this.raf = raf;
-    long start = System.nanoTime();
     java.util.List<MessageBean> beanList = new ArrayList<MessageBean>();
 
     scan = new MessageScanner(raf);
-    int count = 0;
     while (scan.hasNext()) {
       Message m = scan.next();
       if (m == null) continue;
 
       beanList.add(new MessageBean(m));
-      count++;
     }
 
     messageTable.setBeans(beanList);
@@ -370,7 +384,7 @@ public class BufrTable extends JPanel {
   }
 
   private void setObs(Message m) {
-    
+
     java.util.List<ObsBean> beanList = new ArrayList<ObsBean>();
     try {
       NetcdfDataset ncd = getBufrMessageAsDataset(m);
@@ -379,7 +393,7 @@ public class BufrTable extends JPanel {
         Structure obs = (Structure) v;
         StructureDataIterator iter = obs.getStructureIterator();
         while (iter.hasNext()) {
-          beanList.add( new ObsBean(obs, iter.next())); 
+          beanList.add(new ObsBean(obs, iter.next()));
         }
       }
     } catch (Exception ex) {
@@ -430,15 +444,15 @@ public class BufrTable extends JPanel {
     }
 
     public String getHash() {
-      return Integer.toHexString( m.hashCode());
+      return Integer.toHexString(m.hashCode());
     }
 
     public String getCompress() {
       return m.dds.isCompressed() ? "true" : "false";
     }
 
-    public Date getDate() {
-      return m.ids.getReferenceTime();
+    public String getDate() {
+      return df.toDateTimeString(m.getReferenceTime());
     }
 
     public String getComplete() {
@@ -530,105 +544,113 @@ public class BufrTable extends JPanel {
     // create from a dataset
     public ObsBean(Structure obs, StructureData sdata) {
       // first choice
-       for (Variable v : obs.getVariables()) {
-         Attribute att = v.findAttribute("BUFR:TableB_descriptor");
-         if (att == null) continue;
-         String val = att.getStringValue();
-         if (val.equals("0-5-1") && Double.isNaN(lat)) {
-           lat = sdata.convertScalarDouble(v.getShortName());
-         } else if (val.equals("0-6-1") && Double.isNaN(lon)) {
-           lon = sdata.convertScalarDouble(v.getShortName());
-         } else if (val.equals("0-7-30") && Double.isNaN(alt)) {
+      for (Variable v : obs.getVariables()) {
+        Attribute att = v.findAttribute("BUFR:TableB_descriptor");
+        if (att == null) continue;
+        String val = att.getStringValue();
+        if (val.equals("0-5-1") && Double.isNaN(lat)) {
+          lat = sdata.convertScalarDouble(v.getShortName());
+        } else if (val.equals("0-6-1") && Double.isNaN(lon)) {
+          lon = sdata.convertScalarDouble(v.getShortName());
+        } else if (val.equals("0-7-30") && Double.isNaN(alt)) {
 
-           alt = sdata.convertScalarDouble(v.getShortName());
-         } else if (val.equals("0-4-1") && (year<0)) {
-           year = sdata.convertScalarInt(v.getShortName());
-         } else if (val.equals("0-4-2")&& (month<0)) {
-           month = sdata.convertScalarInt(v.getShortName());
-         } else if (val.equals("0-4-3")&& (day<0)) {
-           day = sdata.convertScalarInt(v.getShortName());
-         } else if (val.equals("0-4-4")&& (hour<0)) {
-           hour = sdata.convertScalarInt(v.getShortName());
-         } else if (val.equals("0-4-5")&& (minute<0)) {
-           minute = sdata.convertScalarInt(v.getShortName());
-         } else if (val.equals("0-4-6")&& (sec<0)) {
-           sec = sdata.convertScalarInt(v.getShortName());
+          alt = sdata.convertScalarDouble(v.getShortName());
+        } else if (val.equals("0-4-1") && (year < 0)) {
+          year = sdata.convertScalarInt(v.getShortName());
+        } else if (val.equals("0-4-2") && (month < 0)) {
+          month = sdata.convertScalarInt(v.getShortName());
+        } else if (val.equals("0-4-3") && (day < 0)) {
+          day = sdata.convertScalarInt(v.getShortName());
+        } else if (val.equals("0-4-4") && (hour < 0)) {
+          hour = sdata.convertScalarInt(v.getShortName());
+        } else if (val.equals("0-4-5") && (minute < 0)) {
+          minute = sdata.convertScalarInt(v.getShortName());
+        } else if (val.equals("0-4-6") && (sec < 0)) {
+          sec = sdata.convertScalarInt(v.getShortName());
 
-         } else if (val.equals("0-1-1")&& (wmo_block<0)) {
-           wmo_block = sdata.convertScalarInt(v.getShortName());
-         } else if (val.equals("0-1-2")&& (wmo_id<0)) {
-           wmo_id = sdata.convertScalarInt(v.getShortName());
+        } else if (val.equals("0-1-1") && (wmo_block < 0)) {
+          wmo_block = sdata.convertScalarInt(v.getShortName());
+        } else if (val.equals("0-1-2") && (wmo_id < 0)) {
+          wmo_id = sdata.convertScalarInt(v.getShortName());
 
-         } else if ((stn == null) &&
-             (val.equals("0-1-7") || val.equals("0-1-194") || val.equals("0-1-11") || val.equals("0-1-18") )) {
-           if (v.getDataType().isString())
-             stn = sdata.getScalarString(v.getShortName());
-           else
-             stn = Integer.toString( sdata.convertScalarInt(v.getShortName()));
-         }
-       }
+        } else if ((stn == null) &&
+                (val.equals("0-1-7") || val.equals("0-1-194") || val.equals("0-1-11") || val.equals("0-1-18"))) {
+          if (v.getDataType().isString())
+            stn = sdata.getScalarString(v.getShortName());
+          else
+            stn = Integer.toString(sdata.convertScalarInt(v.getShortName()));
+        }
+      }
 
       // second choice
-       for (Variable v : obs.getVariables()) {
-         Attribute att = v.findAttribute("BUFR:TableB_descriptor");
-         if (att == null) continue;
-         String val = att.getStringValue();
-         if (val.equals("0-5-2") && Double.isNaN(lat)) {
-           lat = sdata.convertScalarDouble(v.getShortName());
-         } else if (val.equals("0-6-2") && Double.isNaN(lon)) {
-           lon = sdata.convertScalarDouble(v.getShortName());
-         } else if (val.equals("0-7-1") && Double.isNaN(alt)) {
-           alt = sdata.convertScalarDouble(v.getShortName());
-         } else if ((val.equals("0-4-7")) && (sec<0)) {
-           sec = sdata.convertScalarInt(v.getShortName());
-         } 
-       }
+      for (Variable v : obs.getVariables()) {
+        Attribute att = v.findAttribute("BUFR:TableB_descriptor");
+        if (att == null) continue;
+        String val = att.getStringValue();
+        if (val.equals("0-5-2") && Double.isNaN(lat)) {
+          lat = sdata.convertScalarDouble(v.getShortName());
+        } else if (val.equals("0-6-2") && Double.isNaN(lon)) {
+          lon = sdata.convertScalarDouble(v.getShortName());
+        } else if (val.equals("0-7-1") && Double.isNaN(alt)) {
+          alt = sdata.convertScalarDouble(v.getShortName());
+        } else if ((val.equals("0-4-7")) && (sec < 0)) {
+          sec = sdata.convertScalarInt(v.getShortName());
+        }
+      }
 
       // third choice
-       for (Variable v : obs.getVariables()) {
-         Attribute att = v.findAttribute("BUFR:TableB_descriptor");
-         if (att == null) continue;
-         String val = att.getStringValue();
-         if (val.equals("0-7-10") && Double.isNaN(alt)) {
-           alt = sdata.convertScalarDouble(v.getShortName());
-         } else if (val.equals("0-7-2") && Double.isNaN(alt)) {
-           alt = sdata.convertScalarDouble(v.getShortName());
-         }
+      for (Variable v : obs.getVariables()) {
+        Attribute att = v.findAttribute("BUFR:TableB_descriptor");
+        if (att == null) continue;
+        String val = att.getStringValue();
+        if (val.equals("0-7-10") && Double.isNaN(alt)) {
+          alt = sdata.convertScalarDouble(v.getShortName());
+        } else if (val.equals("0-7-2") && Double.isNaN(alt)) {
+          alt = sdata.convertScalarDouble(v.getShortName());
+        }
 
-       }
+      }
 
     }
 
     public double getLat() {
       return lat;
     }
+
     public double getLon() {
       return lon;
     }
+
     public double getHeight() {
       return alt;
     }
+
     public int getYear() {
       return year;
     }
+
     public int getMonth() {
       return month;
     }
+
     public int getDay() {
       return day;
     }
+
     public int getHour() {
       return hour;
     }
+
     public int getMinute() {
       return minute;
     }
+
     public int getSec() {
       return sec;
     }
 
     public String getWmoId() {
-      return wmo_block+"/"+wmo_id;
+      return wmo_block + "/" + wmo_id;
     }
 
     public String getStation() {

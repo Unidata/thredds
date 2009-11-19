@@ -37,6 +37,8 @@ import ucar.unidata.io.KMPMatch;
 
 import java.io.*;
 import java.nio.channels.WritableByteChannel;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 /**
  * Sequentially scans a BUFR file, extracts the messages.
@@ -72,13 +74,15 @@ public class MessageScanner {
   /////////////////////////////////
 
   private ucar.unidata.io.RandomAccessFile raf = null;
+  private GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+
   //private BufrMessage first = null;
   private int countMsgs = 0;
   private int countObs = 0;
   private byte[] header;
   private long startPos = 0;
   private long lastPos = 0;
-  private long nbytes = 0;
+  //private long nbytes = 0;
 
   public MessageScanner(RandomAccessFile raf) throws IOException {
     this(raf, 0);
@@ -119,7 +123,7 @@ public class MessageScanner {
     int dataLength = BufrNumbers.uint3(raf);
     BufrDataSection dataSection = new BufrDataSection(dataPos, dataLength);
     lastPos = dataPos + dataLength + 4; // position to the end message plus 1
-    nbytes +=  lastPos - startPos;
+    //nbytes +=  lastPos - startPos;
 
     /* length consistency checks
     if (is.getBufrLength() > MAX_MESSAGE_SIZE) {
@@ -158,7 +162,7 @@ public class MessageScanner {
       }
     }
 
-    Message m = new Message(raf, is, ids, dds, dataSection);
+    Message m = new Message(raf, is, ids, dds, dataSection, cal);
     m.setHeader( cleanup(header));
     m.setStartPos( start);
 

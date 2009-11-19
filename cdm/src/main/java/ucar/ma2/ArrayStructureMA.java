@@ -248,6 +248,7 @@ public class ArrayStructureMA extends ArrayStructure {
    * Create the data arrays, and an iterator.
    *
    * @param from copy from here. If from is a ArrayStructureMA, return it.
+   * @param shape the shape of the ArrayStructure
    * @return equivilent ArrayStructureMA
    * @throws java.io.IOException on error reading a sequence
    */
@@ -261,7 +262,8 @@ public class ArrayStructureMA extends ArrayStructure {
         data = new ArraySequenceNested(smn, (int) Index.computeSize(v.getShapeAll())); // ??
 
       } else if (v instanceof Structure)
-        data = ArrayStructureMA.factoryMA((Structure) v, v.getShape());
+        data = ArrayStructureMA.factoryMA((Structure) v, v.getShapeAll());
+
       else
         data = Array.factory(v.getDataType(), v.getShapeAll());
 

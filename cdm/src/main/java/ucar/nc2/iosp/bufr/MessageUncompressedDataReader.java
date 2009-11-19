@@ -197,7 +197,7 @@ public class MessageUncompressedDataReader {
       if (dkey.type == 1) {
         byte[] vals = readCharData(dkey, reader, bb);
         if (out != null) {
-          String s = new String(vals, "UTF=8");
+          String s = new String(vals, "UTF-8");
           out.f.format("%4d %s read char %s bitWidth=%d end at= 0x%x val=%s\n",
               out.fldno++, out.indent(), dkey.getFxyName(), dkey.bitWidth, reader.getPos(), s);
         }

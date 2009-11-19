@@ -80,7 +80,8 @@ public class PointFeatureDatasetViewer extends JPanel {
   private StationRegionDateChooser stationMap;
   private StructureTable obsTable;
   private JSplitPane splitFeatures, splitMap, splitObs;
-  private IndependentDialog infoWindow, pointDisplayWindow;
+  private IndependentDialog infoWindow;
+  //private IndependentWindow pointDisplayWindow;
   private TextHistoryPane infoTA;
 
   private PointController pointController;
@@ -240,6 +241,8 @@ public class PointFeatureDatasetViewer extends JPanel {
       }
     });
 
+    pointController = new PointController();    
+
     // the obs table
     obsTable = new StructureTable((PreferencesExt) prefs.node("ObsBean"));
 
@@ -263,16 +266,15 @@ public class PointFeatureDatasetViewer extends JPanel {
   }
 
   void makePointController() {
-    pointController = new PointController();
-    pointDisplayWindow = new IndependentDialog(null, false, "Point Data", pointController);
-    pointDisplayWindow.setBounds((Rectangle) prefs.getBean("PointDisplayBounds", new Rectangle(300, 300, 500, 300)));
+    //pointDisplayWindow = new IndependentWindow("PointData", BAMutil.getImage( "thredds"), pointController);
+    //pointDisplayWindow.setBounds((Rectangle) prefs.getBean("PointDisplayBounds", new Rectangle(300, 300, 500, 300)));
   }
 
   public void save() {
     fcTable.saveState(false);
     stnTable.saveState(false);
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
-    prefs.putBeanObject("PointDisplayBounds", pointDisplayWindow.getBounds());
+    //if (pointDisplayWindow != null) prefs.putBeanObject("PointDisplayBounds", pointDisplayWindow.getBounds());
     prefs.putInt("splitPosO", splitObs.getDividerLocation());
     prefs.putInt("splitPosF", splitFeatures.getDividerLocation());
     prefs.putInt("splitPosM", splitMap.getDividerLocation());
@@ -317,7 +319,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     if (ftype == FeatureType.POINT) {
       //PointFeatureCollection pfc = (PointFeatureCollection) fcb.fc;
       //setPointCollection(pfc);
-      changingPane.add( stnTable, BorderLayout.CENTER);
+      changingPane.add( pointController, BorderLayout.CENTER);
 
     } else if (ftype == FeatureType.PROFILE) {
       ProfileFeatureCollection pfc = (ProfileFeatureCollection) fcb.fc;
@@ -670,9 +672,9 @@ public class PointFeatureDatasetViewer extends JPanel {
     obsTable.setPointFeatureData(obsList);
     
     if (pointController == null) makePointController();
-    pointController.setDrawConnectingLine(false);
+    pointController.setDrawConnectingLine(true);
     pointController.setPointFeatures(obsList);
-    pointDisplayWindow.setVisible(true);
+    //pointDisplayWindow.setVisible(true);
   }
 
   public PreferencesExt getPrefs() {

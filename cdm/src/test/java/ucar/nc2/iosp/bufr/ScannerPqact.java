@@ -330,7 +330,7 @@ public class ScannerPqact extends Scanner {
 
 
     // extract based on pqact table
-    test("D:/bufr2/", new MClosure() {
+    test("D:/bufr2/", true, new MClosure() {
       public void run(String filename) throws IOException {
         extract(filename);
       }

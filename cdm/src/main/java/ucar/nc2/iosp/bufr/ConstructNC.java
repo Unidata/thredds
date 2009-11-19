@@ -56,7 +56,7 @@ class ConstructNC {
   static final String TIME_NAME = "time";
 
   private ucar.nc2.NetcdfFile ncfile;
-  private FeatureType ftype;
+  //private FeatureType ftype;
   private int nobs;
 
   Structure recordStructure;
@@ -75,7 +75,7 @@ class ConstructNC {
     // the category
     int cat = proto.ids.getCategory();
     int subcat = proto.ids.getSubCategory();
-    if ((cat == 0) || (cat == 12 && subcat == 0)) {
+    /* if ((cat == 0) || (cat == 12 && subcat == 0)) {
       ftype = FeatureType.STATION;
     } else if (cat == 2) {
       ftype = FeatureType.STATION_PROFILE;
@@ -85,7 +85,7 @@ class ConstructNC {
       ftype = FeatureType.TRAJECTORY;
     } else {
       // log.warn("unknown category=" + category);
-    }
+    }  */
 
     // global Attributes
     ncfile.addAttribute(null, new Attribute("history", "direct read of BUFR data by CDM version 4.1"));
@@ -105,11 +105,12 @@ class ConstructNC {
 
     ncfile.addAttribute(null, new Attribute("Conventions", "BUFR/CDM"));
 
-    if (ftype != null) {
+    // cant tell what the ttype is - defere to BufrCdm plugin
+    /* if (ftype != null) {
       CF.FeatureType cf = CF.FeatureType.convert( ftype);
       if (ftype != null)
         ncfile.addAttribute(null, new Attribute(CF.featureTypeAtt, cf.toString()));
-    }
+    } */
 
     makeObsRecord();
     //makeReportIndexStructure();
@@ -468,7 +469,7 @@ class ConstructNC {
         u = "hours";
       try {
         DateFormatter format = new DateFormatter();
-        dateUnit = new DateUnit(u + " since " +format.toDateTimeStringISO(proto.ids.getReferenceTime()));
+        dateUnit = new DateUnit(u + " since " +format.toDateTimeStringISO(proto.getReferenceTime()));
       } catch (Exception e) {
         log.error("BufrIosp failed to create date unit", e);
         hasTime = false;

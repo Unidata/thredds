@@ -34,7 +34,6 @@ package ucar.nc2.iosp.bufr;
 
 import ucar.unidata.io.RandomAccessFile;
 
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Date;
 import java.io.IOException;
@@ -99,7 +98,6 @@ public class BufrIdentificationSection {
    * Time of the obs (nominal)
    */
   private final int year, month, day, hour, minute, second;
-  private Date refTime;
 
   private final byte[] localUse;
 
@@ -267,14 +265,13 @@ public class BufrIdentificationSection {
   /**
    * return record header time as a Date
    *
+   * @param cal use this calendar to construct the date
    * @return referenceTime
    */
-  public final Date getReferenceTime() {
-    if (refTime == null) {
-      Calendar cal = new GregorianCalendar(year, month-1, day, hour, minute, second);
-      refTime = cal.getTime();
-    }
-    return refTime;
+  public final Date getReferenceTime(GregorianCalendar cal) {
+    cal.clear();
+    cal.set(year, month-1, day, hour, minute, second);
+    return cal.getTime();
   }
 
   public final int getCategory() {

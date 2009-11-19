@@ -36,9 +36,7 @@ package ucar.nc2.util;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.*;
-import ucar.ma2.Array;
-import ucar.ma2.IndexIterator;
-import ucar.ma2.DataType;
+import ucar.ma2.*;
 
 import java.util.List;
 import java.util.Formatter;
@@ -113,7 +111,6 @@ public class CompareNetcdf {
 
     return ok;
   }
-
 
 
   private boolean compareGroups(Group org, Group copy, Formatter f) {
@@ -280,7 +277,7 @@ public class CompareNetcdf {
   }
 
   static public void compareData(Array data1, Array data2) {
-    compareData(data1, data2, TOL);  
+    compareData(data1, data2, TOL);
   }
 
   static public void compareData(Array data1, Array data2, double tol) {
@@ -324,7 +321,24 @@ public class CompareNetcdf {
         byte v2 = iter2.getByteNext();
         assert v1 == v2 : v1 + " != " + v2 + " count=" + iter1;
       }
+    } else if (dt == DataType.STRUCTURE) {
+      while (iter1.hasNext() && iter2.hasNext()) {
+        compareStructureData((StructureData) iter1.next(), (StructureData) iter2.next(), tol);
+      }
     }
+  }
+
+  static public void compareStructureData(StructureData data1, StructureData data2, double tol) {
+    StructureMembers sm1 = data1.getStructureMembers();
+    StructureMembers sm2 = data2.getStructureMembers();
+    assert sm1.getMembers().size() == sm2.getMembers().size();
+
+    for (StructureMembers.Member m1 : sm1.getMembers()) {
+      if (m1.getName().equals("time")) continue;
+      StructureMembers.Member m2 = sm2.findMember(m1.getName());
+      compareData( data1.getArray(m1), data2.getArray(m2), tol);
+    }
+
   }
 
   static private final double TOL = 1.0e-5;

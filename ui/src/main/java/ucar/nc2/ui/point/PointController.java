@@ -34,7 +34,11 @@ package ucar.nc2.ui.point;
 
 import ucar.nc2.ft.PointFeature;
 
+import javax.swing.*;
 import java.io.IOException;
+import java.awt.event.ActionEvent;
+
+import thredds.ui.BAMutil;
 
 /**
  * Describe
@@ -44,9 +48,23 @@ import java.io.IOException;
  */
 public class PointController extends thredds.viewer.ui.geoloc.NPController {
   private PointRenderer pointRenderer;
+  private boolean drawConnectingLine = false;
+
   public PointController() {
     pointRenderer = new PointRenderer();
     addRenderer(pointRenderer);
+
+    AbstractAction useReaderAction = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Boolean state = (Boolean) getValue(BAMutil.STATE);
+        setDrawConnectingLine(state.booleanValue());
+        System.out.printf("drawConnectingLine=%s%n", drawConnectingLine);
+      }
+    };
+    BAMutil.setActionProperties(useReaderAction, "addCoords", "use new reader", true, 'C', -1);
+    useReaderAction.putValue(BAMutil.STATE, new Boolean(drawConnectingLine));
+    BAMutil.addActionToContainer(toolPanel, useReaderAction);
+
   }
 
   public void setPointFeatures( java.util.List<PointFeature> obs) throws IOException {
@@ -55,6 +73,7 @@ public class PointController extends thredds.viewer.ui.geoloc.NPController {
   }
 
   public void setDrawConnectingLine(boolean drawConnectingLine) {
+    this.drawConnectingLine = drawConnectingLine;
     pointRenderer.setDrawConnectingLine(drawConnectingLine);
   }
 }

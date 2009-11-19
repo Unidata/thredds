@@ -1918,7 +1918,7 @@ public class ToolsUI extends JPanel {
 
     BufrPanel(PreferencesExt p) {
       super(p, "file:", true, false);
-      bufrTable = new BufrTable(prefs);
+      bufrTable = new BufrTable(prefs, buttPanel);
       add(bufrTable, BorderLayout.CENTER);
     }
 

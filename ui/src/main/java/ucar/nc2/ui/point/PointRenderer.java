@@ -62,7 +62,7 @@ public class PointRenderer implements thredds.viewer.ui.Renderer {
   private int circleRadius = 3;
   private Rectangle2D circleBB = new Rectangle2D.Double(-circleRadius, -circleRadius, 2*circleRadius, 2*circleRadius);
   private FontUtil.StandardFont textFont;
-  private boolean drawConnectingLine = true;
+  private boolean drawConnectingLine = false;
 
   // working objects to minimize excessive gc
  // private Point2D.Double ptN = new Point2D.Double();
@@ -262,7 +262,8 @@ public class PointRenderer implements thredds.viewer.ui.Renderer {
     }
 
     g.setColor(color);
-    if (drawConnectingLine) g.draw( path);
+    if (drawConnectingLine) 
+      g.draw( path);
 
     // draw selected
     if (selected != null)
