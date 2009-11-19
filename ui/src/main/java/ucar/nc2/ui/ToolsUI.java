@@ -4026,8 +4026,8 @@ public class ToolsUI extends JPanel {
         GridDatatype grid = (GridDatatype) grids.get(0);
         ucar.ma2.Array data = grid.readDataSlice(0, 0, -1, -1); // first time, level
 
-        String name = Integer.toString(filename.hashCode());
-        String fileOut = "C:/temp/" + name + ".tif";
+        String fileOut = fileChooser.chooseFilenameToSave(filename+".tif");
+        if (fileOut == null) return false;
 
         ucar.nc2.geotiff.GeotiffWriter writer = new ucar.nc2.geotiff.GeotiffWriter(fileOut);
         writer.writeGrid(gridDs, grid, data, false);
