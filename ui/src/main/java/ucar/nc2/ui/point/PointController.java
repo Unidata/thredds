@@ -61,7 +61,7 @@ public class PointController extends thredds.viewer.ui.geoloc.NPController {
         System.out.printf("drawConnectingLine=%s%n", drawConnectingLine);
       }
     };
-    BAMutil.setActionProperties(useReaderAction, "addCoords", "use new reader", true, 'C', -1);
+    BAMutil.setActionProperties(useReaderAction, "addCoords", "draw connecting lines", true, 'C', -1);
     useReaderAction.putValue(BAMutil.STATE, new Boolean(drawConnectingLine));
     BAMutil.addActionToContainer(toolPanel, useReaderAction);
 

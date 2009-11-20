@@ -129,10 +129,15 @@ public class MessageUncompressedDataReader {
       m.counterDatasets[i] = new BitCounterUncompressed(root, 1, 0);
       DebugOut out = (f == null) ? null : new DebugOut(f);
 
-      if (abb != null)
-        abb.getByteBuffer().putInt(0); // placeholder for time assumes an int
-      readDataUncompressed(out, reader, m.counterDatasets[i], root.subKeys, 0, req.setRow(i));
-      if (req.wantRow()) count++;
+      req.setRow(i);
+      int timePos = 0;
+      if (req.wantRow()) {
+        timePos = req.bb.position();
+        req.bb.putInt(0); // placeholder for time assumes an int
+        count++;
+      }
+
+      readDataUncompressed(out, reader, m.counterDatasets[i], root.subKeys, 0, req);
       m.msg_nbits += m.counterDatasets[i].countBits(m.msg_nbits);
     }
 
@@ -161,10 +166,6 @@ public class MessageUncompressedDataReader {
       if (abb == null) return false;
       if (r == null) return true;
       return r.contains(row);
-    }
-
-    Request sub() {
-      return new Request(abb, null);
     }
 
   }
@@ -333,19 +334,21 @@ public class MessageUncompressedDataReader {
       bb.order(ByteOrder.BIG_ENDIAN);
     }
 
+    Request nreq = (req == null) ? null : new Request(abb, null);
+
     // loop through nested obs
     for (int i = 0; i < count; i++) {
       if (out != null) {
         out.f.format("%s read row %d (seq %s) %n", out.indent(), i, seqdd.getFxyName());
         out.indent.incr();
-        readDataUncompressed(out, reader, bitCounterNested, seqdd.getSubKeys(), i, req);
+        readDataUncompressed(out, reader, bitCounterNested, seqdd.getSubKeys(), i, nreq);
         out.indent.decr();
 
       } else {
-        readDataUncompressed(null, reader, bitCounterNested, seqdd.getSubKeys(), i, req);
+        readDataUncompressed(null, reader, bitCounterNested, seqdd.getSubKeys(), i, nreq);
       }
     }
 
-    return req.wantRow() ? null : new ArraySequence(members, abb.getStructureDataIterator(), count);
+    return req.wantRow() ? new ArraySequence(members, abb.getStructureDataIterator(), count) : null;
   }
 }

@@ -197,7 +197,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
         count += reader.readDataUncompressed(m, raf, null, abb, use);
       }
     }
-    assert count == n;
+    //assert count == n;
 
     return result;
   }

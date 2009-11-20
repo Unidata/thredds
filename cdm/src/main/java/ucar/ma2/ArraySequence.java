@@ -45,16 +45,15 @@ import java.io.IOException;
  */
 public class ArraySequence extends ArrayStructure {
   private StructureDataIterator iter;
-  private int count;
 
   protected ArraySequence(StructureMembers sm, int[] shape) {
     super(sm, shape);
   }
 
-  public ArraySequence(StructureMembers members, StructureDataIterator iter, int count) {
+  public ArraySequence(StructureMembers members, StructureDataIterator iter, int nelems) {
     super(members, new int[] {0});
     this.iter = iter;
-    this.count = count;
+    this.nelems = nelems;
   }
 
   /**                                                             n
@@ -72,12 +71,12 @@ public class ArraySequence extends ArrayStructure {
   }
 
   public int getStructureDataCount() {
-    return count;
+    return nelems;
   }
 
     @Override
   public long getSizeBytes() {
-    return count * members.getStructureSize(); // LOOK we may not know the count ???
+    return nelems * members.getStructureSize(); // LOOK we may not know the count ???
   }
 
   @Override
@@ -97,7 +96,7 @@ public class ArraySequence extends ArrayStructure {
     int[] mshape = m.getShape();
     int rrank = 1 + mshape.length;
     int[] rshape = new int[rrank];
-    rshape[0] = count;
+    rshape[0] = nelems;
     System.arraycopy(mshape, 0, rshape, 1, mshape.length);
 
     // create an empty array to hold the result
@@ -195,7 +194,7 @@ public class ArraySequence extends ArrayStructure {
 
   @Override
   public String toString() {
-    return "Seq@"+hashCode();
+    return Integer.toString(nelems); // "Seq@"+hashCode();
   }
 
 }

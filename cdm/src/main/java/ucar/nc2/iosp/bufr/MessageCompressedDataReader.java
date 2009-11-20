@@ -170,11 +170,6 @@ public class MessageCompressedDataReader {
           associateMessage2Members(nested.getStructureMembers(), dkey, map);
         }
 
-        else if (m.getDataType() == DataType.SEQUENCE) {
-          ArraySequenceNested nested = (ArraySequenceNested) m.getDataArray();
-          associateMessage2Members(nested.getStructureMembers(), dkey, map);
-        }
-
       } else {
         System.out.printf("Cant find %s%n", dkey);
       }
@@ -384,8 +379,8 @@ public class MessageCompressedDataReader {
       ama = ArrayStructureMA.factoryMA(seq, shape);
       setIterators(ama);
 
-      nmap = new HashMap<DataDescriptor, StructureMembers.Member>(2*members.getMembers().size());
       members = ama.getStructureMembers();
+      nmap = new HashMap<DataDescriptor, StructureMembers.Member>(2*members.getMembers().size());
       associateMessage2Members(members, seqdd, nmap);
     }
 

@@ -539,6 +539,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       super(orgSeq.getStructureMembers(), orgSeq.getShape());
       this.orgStruct = orgStruct;
       this.orgSeq = orgSeq;
+      this.nelems = orgSeq.getStructureDataCount();
 
       // copay and convert the members
       members = new StructureMembers(orgSeq.getStructureMembers());

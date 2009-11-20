@@ -354,6 +354,7 @@ public class BufrTable extends JPanel {
     prefs.putBeanObject("InfoWindowBounds2", infoWindow2.getBounds());
     prefs.putInt("splitPos", split.getDividerLocation());
     prefs.putInt("splitPos2", split2.getDividerLocation());
+    if (fileChooser != null) fileChooser.save();
   }
 
   private RandomAccessFile raf;

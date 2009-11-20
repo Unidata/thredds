@@ -745,7 +745,7 @@ public class Scanner {
       m.dumpHeader(out);
       if (!m.dds.isCompressed()) {
         MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
-        reader.readDataUncompressed(m, raf, null, null);
+        reader.readDataUncompressed(m, raf, null, null, null);
       } else {
         MessageCompressedDataReader reader = new MessageCompressedDataReader();
         reader.readDataCompressed(m, raf, f, null);

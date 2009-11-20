@@ -672,7 +672,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     obsTable.setPointFeatureData(obsList);
     
     if (pointController == null) makePointController();
-    pointController.setDrawConnectingLine(true);
     pointController.setPointFeatures(obsList);
     //pointDisplayWindow.setVisible(true);
   }

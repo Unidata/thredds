@@ -103,6 +103,9 @@ class ConstructNC {
     ncfile.addAttribute(null, new Attribute("BUFR:tableVersion", proto.ids.getMasterTableVersion()));
     ncfile.addAttribute(null, new Attribute("BUFR:localTableVersion", proto.ids.getLocalTableVersion()));
 
+    String header = proto.getHeader();
+    if (header != null)
+      ncfile.addAttribute(null, new Attribute("WMO Header", header));
     ncfile.addAttribute(null, new Attribute("Conventions", "BUFR/CDM"));
 
     // cant tell what the ttype is - defere to BufrCdm plugin
