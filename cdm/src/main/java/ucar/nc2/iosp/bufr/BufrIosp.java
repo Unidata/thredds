@@ -49,7 +49,6 @@ import java.nio.ByteOrder;
 /**
  * IOSP for BUFR data
  *
- * @author rkambic
  * @author caron
  */
 public class BufrIosp extends AbstractIOServiceProvider {
@@ -159,6 +158,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
     Structure s = (Structure) v2;
     Range want = section.getRange(0);
     int n = want.length();
+    boolean addTime = (s.findVariable(ConstructNC.TIME_NAME) != null);
 
     ArrayStructure result;
     ArrayStructureBB abb = null;
@@ -191,10 +191,10 @@ public class BufrIosp extends AbstractIOServiceProvider {
       DataDescriptor.transferInfo(protoMessage.getRootDataDescriptor().getSubKeys(), m.getRootDataDescriptor().getSubKeys());
       if (m.dds.isCompressed()) {
         MessageCompressedDataReader reader = new MessageCompressedDataReader();
-        reader.readDataCompressed(m, raf, null, ama);
+        reader.readData(ama, m, raf, use, addTime, null);
       } else {
         MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
-        count += reader.readDataUncompressed(m, raf, null, abb, use);
+        count += reader.readData(abb, m, raf, use, addTime, null);
       }
     }
     //assert count == n;
@@ -774,9 +774,8 @@ public class BufrIosp extends AbstractIOServiceProvider {
       Array data1;
       if (!m.isTablesComplete()) continue;
       if (!m.dds.isCompressed()) {
-        continue;
-        //MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
-        //data1 = reader.readData(construct.recordStructure, protoMessage, m, raf, null);
+        MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
+        data1 = reader.readEntireMessage(construct.recordStructure, protoMessage, m, raf, null);
       } else {
         MessageCompressedDataReader reader = new MessageCompressedDataReader();
         data1 = reader.readEntireMessage(construct.recordStructure, protoMessage, m, raf, null);

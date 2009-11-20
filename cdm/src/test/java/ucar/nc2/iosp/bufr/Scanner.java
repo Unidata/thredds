@@ -33,10 +33,7 @@
 package ucar.nc2.iosp.bufr;
 
 import ucar.unidata.io.RandomAccessFile;
-import ucar.ma2.ArrayStructureBB;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Structure;
 
 import java.io.*;
 import java.util.*;
@@ -745,10 +742,10 @@ public class Scanner {
       m.dumpHeader(out);
       if (!m.dds.isCompressed()) {
         MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
-        reader.readDataUncompressed(m, raf, null, null, null);
+        reader.readData(null, m, raf, null, false, null);
       } else {
         MessageCompressedDataReader reader = new MessageCompressedDataReader();
-        reader.readDataCompressed(m, raf, f, null);
+        reader.readData(null, m, raf, null, false, f);
       }
 
       int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
@@ -761,9 +758,10 @@ public class Scanner {
 
   static void scanReader2(String filein) throws IOException, InvalidRangeException {
     System.out.printf("scanReader2 %s%n", filein);
-    NetcdfFile ncfile = NetcdfFile.open(filein);
-    BufrIosp iosp =  (BufrIosp) ncfile.getIosp();
-    iosp.compare((Structure) ncfile.findVariable("obsRecord"));
+    BufrIosp.doon(filein);
+    //NetcdfFile ncfile = NetcdfFile.open(filein);
+    //BufrIosp iosp =  (BufrIosp) ncfile.getIosp();
+    //iosp.compare((Structure) ncfile.findVariable("obsRecord"));
   }
 
 
@@ -899,13 +897,14 @@ public class Scanner {
 
     // new reader
     //test("D:/formats/bufr/tmp/dispatch/asample.bufr", new MClosure() {
-    test("D:/formats/bufr/tmp/", false, new MClosure() {
+    test("C:/data/formats/bufr3/split/", false, new MClosure() {
       public void run(String filename) throws IOException {
         if (!(filename.endsWith(".bufr"))) return;
         try {
           scanReader2(filename);
-        } catch (InvalidRangeException e) {
-          e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (Exception e) {
+          System.err.printf("ERROR %s %n", filename);
+          e.printStackTrace();
         }
       }
     }); // */

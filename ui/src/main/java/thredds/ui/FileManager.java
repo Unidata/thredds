@@ -265,13 +265,20 @@ public class FileManager {
    return null;
  } */
 
-   public String chooseFilenameToSave(String defaultFilename) {
-     chooser.setDialogType(JFileChooser.SAVE_DIALOG);
-     String result = (defaultFilename == null) ? chooseFilename() : chooseFilename(defaultFilename);
-     chooser.setDialogType(JFileChooser.OPEN_DIALOG);
+  public String chooseFilenameToSave(String defaultFilename) {
+    chooser.setDialogType(JFileChooser.SAVE_DIALOG);
+    String result = (defaultFilename == null) ? chooseFilename() : chooseFilename(defaultFilename);
+    chooser.setDialogType(JFileChooser.OPEN_DIALOG);
 
-     return result;
-   }
+    return result;
+  }
+
+  public String chooseDirectory(String defaultDirectory) {
+    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    String result = (defaultDirectory == null) ? chooseFilename() : chooseFilename(defaultDirectory);
+    chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+    return result;
+  }
 
   /**
    * Allow user to select file, then return the filename, in canonical form,

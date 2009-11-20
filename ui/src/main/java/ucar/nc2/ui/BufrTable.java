@@ -84,7 +84,7 @@ public class BufrTable extends JPanel {
   private DateFormatter df = new DateFormatter();
   private boolean useReader = false;
 
-  public BufrTable(PreferencesExt prefs, JPanel buttPanel) {
+  public BufrTable(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
     AbstractAction useReaderAction = new AbstractAction() {
@@ -151,7 +151,7 @@ public class BufrTable extends JPanel {
         }
         infoTA.appendLine(f.toString());
         infoTA.gotoTop();
-        infoWindow.showIfNotIconified();
+        infoWindow.show();
       }
     });
     varPopup.addAction("Data Table", new AbstractAction() {
@@ -163,7 +163,7 @@ public class BufrTable extends JPanel {
           if ((v != null) && (v instanceof Structure)) {
             if (dataTable == null) makeDataTable();
             dataTable.setStructure((Structure) v);
-            dataWindow.showIfNotIconified();
+            dataWindow.show();
           }
         } catch (Exception ex) {
           JOptionPane.showMessageDialog(BufrTable.this, ex.getMessage());
@@ -203,7 +203,7 @@ public class BufrTable extends JPanel {
         }
 
         infoTA.gotoTop();
-        infoWindow.showIfNotIconified();
+        infoWindow.show();
       }
     });
 
@@ -217,10 +217,10 @@ public class BufrTable extends JPanel {
           infoTA2.clear();
           if (!m.dds.isCompressed()) {
             MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
-            reader.readDataUncompressed(m, raf, out, null, null);
+            reader.readData(null, m, raf, null, false, out);
           } else {
             MessageCompressedDataReader reader = new MessageCompressedDataReader();
-            reader.readDataCompressed(m, raf, out, null);
+            reader.readData(null, m, raf, null, false, out);
           }
           int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
           DataDescriptor root = m.getRootDataDescriptor();
@@ -240,7 +240,7 @@ public class BufrTable extends JPanel {
         }
 
         infoTA2.gotoTop();
-        infoWindow2.showIfNotIconified();
+        infoWindow2.show();
       }
     });
 
@@ -262,7 +262,7 @@ public class BufrTable extends JPanel {
           defloc = header;
 
           if (fileChooser == null)
-            fileChooser = new FileManager(null);
+            fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
 
           String filename = fileChooser.chooseFilenameToSave(defloc + ".bufr");
           if (filename == null) return;
@@ -287,6 +287,12 @@ public class BufrTable extends JPanel {
     varPopup.addAction("Dump distinct DDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         dumpDDS();
+      }
+    });
+
+    varPopup.addAction("Write all distinct messages", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        writeAll();
       }
     });
 
@@ -317,6 +323,48 @@ public class BufrTable extends JPanel {
     dataWindow.setBounds((Rectangle) prefs.getBean("dataWindow", new Rectangle(50, 300, 1000, 600)));
   }
 
+  private void writeAll() {
+    List<MessageBean> beans = messageTable.getBeans();
+    HashMap<Integer, Message> map = new HashMap<Integer, Message>(2 * beans.size());
+
+    for (MessageBean mb : beans) {
+      map.put(mb.m.hashCode(), mb.m);
+    }
+
+    if (fileChooser == null)
+      fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
+
+    String defloc = (raf.getLocation() == null) ? "." : raf.getLocation();
+    String dirName = fileChooser.chooseDirectory(defloc);
+    if (dirName == null) return;
+
+    try {
+      int count = 0;
+      for (Message m : map.values()) {
+        String header = m.getHeader();
+        if (header != null) {
+          header = header.split(" ")[0];
+        } else {
+          header = Integer.toString( Math.abs(m.hashCode()));
+        }
+
+        File file = new File(dirName+"/"+header+".bufr");
+        FileOutputStream fos = new FileOutputStream(file);
+        WritableByteChannel wbc = fos.getChannel();
+        wbc.write(ByteBuffer.wrap(m.getHeader().getBytes()));
+        byte[] raw = scan.getMessageBytes(m);
+        wbc.write(ByteBuffer.wrap(raw));
+        wbc.close();
+        count++;
+      }
+      JOptionPane.showMessageDialog(BufrTable.this, count + " successfully written to " + dirName);
+
+    } catch (IOException e1) {
+      JOptionPane.showMessageDialog(BufrTable.this, e1.getMessage());
+      e1.printStackTrace();
+    }
+  }
+
   private void dumpDDS() {
     List<MessageBean> beans = messageTable.getBeans();
     HashMap<Integer, Message> map = new HashMap<Integer, Message>(2 * beans.size());
@@ -325,25 +373,34 @@ public class BufrTable extends JPanel {
       map.put(mb.m.hashCode(), mb.m);
     }
 
-    int count = 0;
-    String dirName = "C:/temp/";
-    for (Message m : map.values()) {
-      try {
-        File file = new File(dirName + "bufr" + count + ".txt");
-        FileOutputStream fos = new FileOutputStream(file);
+    if (fileChooser == null)
+      fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
+
+    String defloc = (raf.getLocation() == null) ? "." : raf.getLocation();
+    int pos = defloc.lastIndexOf(".");
+    if (pos > 0)
+      defloc = defloc.substring(0, pos);
+    String filename = fileChooser.chooseFilenameToSave(defloc + ".txt");
+    if (filename == null) return;
+
+    try {
+      File file = new File(filename);
+      FileOutputStream fos = new FileOutputStream(file);
+
+      int count = 0;
+      for (Message m : map.values()) {
         Formatter f = new Formatter(fos);
         m.dump(f);
         f.flush();
-        fos.close();
-      } catch (IOException e1) {
-        JOptionPane.showMessageDialog(BufrTable.this, e1.getMessage());
-        e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        count++;
       }
-      count++;
+      fos.close();
+      JOptionPane.showMessageDialog(BufrTable.this, count + " successfully written to " + filename);
+
+    } catch (IOException e1) {
+      JOptionPane.showMessageDialog(BufrTable.this, e1.getMessage());
+      e1.printStackTrace();
     }
-    JOptionPane.showMessageDialog(BufrTable.this, count + " successfully written to " + dirName);
-
-
   }
 
   public void save() {

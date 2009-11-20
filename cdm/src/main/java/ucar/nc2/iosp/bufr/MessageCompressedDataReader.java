@@ -121,7 +121,7 @@ public class MessageCompressedDataReader {
     return ama;
   }
 
-  public void readDataCompressed(Message m, RandomAccessFile raf, Formatter f, ArrayStructureMA ama) throws IOException {
+  public void readData(ArrayStructureMA ama, Message m, RandomAccessFile raf, Range r, boolean addTime, Formatter f) throws IOException {
     // map dkey to Member recursively
     HashMap<DataDescriptor, StructureMembers.Member> map = new HashMap<DataDescriptor, StructureMembers.Member>(100);
     associateMessage2Members(ama.getStructureMembers(), m.getRootDataDescriptor(), map);

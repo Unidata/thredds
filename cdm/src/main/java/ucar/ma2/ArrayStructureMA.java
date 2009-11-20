@@ -263,16 +263,25 @@ public class ArrayStructureMA extends ArrayStructure {
         // data = new ArraySequenceNested(smn, (int) Index.computeSize(v.getShapeAll())); // ??
 
       } else if (v instanceof Structure)
-        data = ArrayStructureMA.factoryMA((Structure) v, v.getShapeAll());
+        data = ArrayStructureMA.factoryMA((Structure) v, combine(shape, v.getShape()));
 
       else
-        data = Array.factory(v.getDataType(), v.getShapeAll());
+        data = Array.factory(v.getDataType(), combine(shape, v.getShape()));
 
       StructureMembers.Member m = sm.findMember(v.getShortName());
+      if (m == null)
+        System.out.println("HEY");
       m.setDataArray(data);
     }
 
     return new ArrayStructureMA(sm, shape);
+  }
+
+  static private int[] combine(int[] shape1, int[] shape2) {
+    int[] result = new int[shape1.length + shape2.length];
+    System.arraycopy(shape1, 0, result, 0, shape1.length);
+    System.arraycopy(shape2, 0, result, shape1.length, shape2.length);
+    return result;
   }
 
 

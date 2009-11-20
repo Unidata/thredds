@@ -72,8 +72,6 @@ public class Message {
   BitCounterUncompressed[] counterDatasets; // uncompressed: one for each dataset
   BitCounterCompressed[] counterFlds; // compressed: one for each field
   int msg_nbits;
-  //private boolean showCountCompressedValues = true;
-  //private boolean showCountDetail = false;
 
   public Message(RandomAccessFile raf, BufrIndicatorSection is, BufrIdentificationSection ids, BufrDataDescriptionSection dds,
                  BufrDataSection dataSection, GregorianCalendar cal) throws IOException {

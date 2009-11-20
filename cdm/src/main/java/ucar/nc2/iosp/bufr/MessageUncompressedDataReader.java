@@ -89,7 +89,17 @@ import java.nio.ByteOrder;
 
 public class MessageUncompressedDataReader {
 
-  public ArrayStructure readEntireMessage(Structure s, Message proto, Message m, RandomAccessFile raf, Formatter f) throws IOException, InvalidRangeException {
+  /**
+   * Read all datasets from a single message
+   * @param s outer variables
+   * @param proto prototype message, has been processed
+   * @param m   read this message
+   * @param raf from this file
+   * @param f  output bit count debugging info (may be null)
+   * @return  ArraySTructure with all the data from the message in it.
+   * @throws IOException on read error
+   */
+  public ArrayStructure readEntireMessage(Structure s, Message proto, Message m, RandomAccessFile raf, Formatter f) throws IOException {
     // transfer info from proto message
     DataDescriptor.transferInfo(proto.getRootDataDescriptor().getSubKeys(), m.getRootDataDescriptor().getSubKeys());
 
@@ -102,7 +112,8 @@ public class MessageUncompressedDataReader {
     ByteBuffer bb = abb.getByteBuffer();
     bb.order(ByteOrder.BIG_ENDIAN);
 
-    readDataUncompressed(m, raf, f, abb, null);
+    boolean addTime = (s.findVariable(ConstructNC.TIME_NAME) != null);
+    readData(abb, m, raf, null, addTime, f);
 
     return abb;
   }
@@ -110,7 +121,19 @@ public class MessageUncompressedDataReader {
   // read / count the bits in an uncompressed message
   // This assumes that all of the fields and all of the datasets are being read
 
-  public int readDataUncompressed(Message m, RandomAccessFile raf, Formatter f, ArrayStructureBB abb, Range r) throws IOException {
+  /**
+   * Read some or all datasets from a single message
+   *
+   * @param abb place info into here in order (may be null)
+   * @param m   read this message
+   * @param raf from this file
+   * @param r which datasets, reletive to this message. null == all.
+   * @param addTime add the time coordinate
+   * @param f  output bit count debugging info (may be null)
+   * @return number of datasets read
+   * @throws IOException on read error
+   */
+  public int readData(ArrayStructureBB abb, Message m, RandomAccessFile raf, Range r, boolean addTime, Formatter f) throws IOException {
     BitReader reader = new BitReader(raf, m.dataSection.getDataPos() + 4);
     DataDescriptor root = m.getRootDataDescriptor();
     if (root.isBad) return 0;
@@ -131,13 +154,13 @@ public class MessageUncompressedDataReader {
 
       req.setRow(i);
       int timePos = 0;
-      if (req.wantRow()) {
+      if (req.wantRow() && addTime) {
         timePos = req.bb.position();
         req.bb.putInt(0); // placeholder for time assumes an int
         count++;
       }
 
-      readDataUncompressed(out, reader, m.counterDatasets[i], root.subKeys, 0, req);
+      readData(out, reader, m.counterDatasets[i], root.subKeys, 0, req);
       m.msg_nbits += m.counterDatasets[i].countBits(m.msg_nbits);
     }
 
@@ -181,7 +204,7 @@ public class MessageUncompressedDataReader {
    * @param req    read data into here, may be null
    * @throws IOException on read error
    */
-  private void readDataUncompressed(DebugOut out, BitReader reader, BitCounterUncompressed table, List<DataDescriptor> dkeys,
+  private void readData(DebugOut out, BitReader reader, BitCounterUncompressed table, List<DataDescriptor> dkeys,
                                     int nestedRow, Request req) throws IOException {
 
     for (DataDescriptor dkey : dkeys) {
@@ -225,10 +248,10 @@ public class MessageUncompressedDataReader {
           if (out != null) {
             out.f.format("%s read row %d (struct %s) %n", out.indent(), i, dkey.getFxyName());
             out.indent.incr();
-            readDataUncompressed(out, reader, nested, dkey.subKeys, i, req);
+            readData(out, reader, nested, dkey.subKeys, i, req);
             out.indent.incr();
           } else {
-            readDataUncompressed(null, reader, nested, dkey.subKeys, i, req);
+            readData(null, reader, nested, dkey.subKeys, i, req);
           }
         }
         continue;
@@ -341,11 +364,11 @@ public class MessageUncompressedDataReader {
       if (out != null) {
         out.f.format("%s read row %d (seq %s) %n", out.indent(), i, seqdd.getFxyName());
         out.indent.incr();
-        readDataUncompressed(out, reader, bitCounterNested, seqdd.getSubKeys(), i, nreq);
+        readData(out, reader, bitCounterNested, seqdd.getSubKeys(), i, nreq);
         out.indent.decr();
 
       } else {
-        readDataUncompressed(null, reader, bitCounterNested, seqdd.getSubKeys(), i, nreq);
+        readData(null, reader, bitCounterNested, seqdd.getSubKeys(), i, nreq);
       }
     }
 
