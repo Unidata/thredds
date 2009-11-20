@@ -37,6 +37,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
+import ucar.nc2.util.Indent;
 import ucar.nc2.dataset.VariableDS;
 import ucar.ma2.*;
 
@@ -243,43 +244,6 @@ public class Bufr2Xml {
 
 
     staxWriter.writeEndElement();
-  }
-
-  private static class Indent {
-    private int nspaces = 0;
-    private int level = 0;
-    private StringBuilder blanks;
-    private String indent = "";
-
-    // nspaces = how many spaces each level adds.
-    // max 100 levels
-    public Indent(int nspaces) {
-      this.nspaces = nspaces;
-      blanks = new StringBuilder();
-      for (int i = 0; i < 100 * nspaces; i++)
-        blanks.append(" ");
-    }
-
-    public Indent incr() {
-      level++;
-      setIndentLevel(level);
-      return this;
-    }
-
-    public Indent decr() {
-      level--;
-      setIndentLevel(level);
-      return this;
-    }
-
-    public String toString() {
-      return indent;
-    }
-
-    public void setIndentLevel(int level) {
-      this.level = level;
-      indent = blanks.substring(0, level * nspaces);
-    }
   }
 
   Formatter out = new Formatter(System.out);

@@ -30,54 +30,49 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.ma2;
+package ucar.nc2.iosp.bufr;
 
+import ucar.ma2.StructureMembers;
+import ucar.ma2.DataType;
+import ucar.ma2.ArrayStructure;
+import ucar.ma2.ArraySequenceNested;
+
+import java.nio.ByteBuffer;
 import java.io.IOException;
+import java.util.HashMap;
 
 /**
- * Creates a StructureDataIterator by wrapping a section of a ArrayStructure.
+ * Describe
  *
  * @author caron
- * @since Nov 16, 2009
+ * @since Nov 19, 2009
  */
+public class MessageDataReader {
 
+  void associateMessage2Members(StructureMembers members, DataDescriptor parent, HashMap<DataDescriptor, StructureMembers.Member> map) throws IOException {
+    for (DataDescriptor dkey : parent.getSubKeys()) {
+      if (dkey.name == null) {
+        //System.out.printf("ass skip %s%n", dkey);
+        if (dkey.getSubKeys() != null)
+          associateMessage2Members(members, dkey, map);
+        continue;
+      }
+      //System.out.printf("ass %s%n", dkey.name);
+      StructureMembers.Member m = members.findMember(dkey.name);
+      if (m != null) {
+        map.put(dkey, m);
 
-public class SequenceIterator implements StructureDataIterator {
-  private int start, size, count;
-  private ArrayStructure abb;
+        if (m.getDataType() == DataType.STRUCTURE) {
+          ArrayStructure nested = (ArrayStructure) m.getDataArray();
+          associateMessage2Members(nested.getStructureMembers(), dkey, map);
+        } else if (m.getDataType() == DataType.SEQUENCE) {
+          ArraySequenceNested nested = (ArraySequenceNested) m.getDataArray();
+          associateMessage2Members(nested.getStructureMembers(), dkey, map);
+        }
 
-  public SequenceIterator(int start, int size, ArrayStructure abb) {
-    this.start = start;
-    this.size = size;
-    this.abb = abb;
-    this.count = 0;
+      } else {
+        System.out.printf("Cant find %s%n", dkey);
+      }
+    }
   }
-
-  @Override
-  public boolean hasNext() throws IOException {
-    return (count < size);
-  }
-
-  @Override
-  public StructureData next() throws IOException {
-    StructureData result = abb.getStructureData(start + count);
-    count++;
-    return result;
-  }
-
-  @Override
-  public void setBufferSize(int bytes) {
-  }
-
-  @Override
-  public StructureDataIterator reset() {
-    count = 0;
-    return this;
-  }
-
-  @Override
-  public int getCurrentRecno() {
-    return count;
-  }
-
 }

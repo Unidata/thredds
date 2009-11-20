@@ -35,6 +35,7 @@ package ucar.nc2;
 import ucar.ma2.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.URLnaming;
+import ucar.nc2.util.Indent;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
@@ -617,46 +618,6 @@ public class NCdumpW {
       if (ct != null && ct.isCancel()) return;
     }
     indent.decr();
-  }
-
-  /**
-   * Maintains indentation level for printing nested structures.
-   */
-  private static class Indent {
-    private int nspaces = 0;
-    private int level = 0;
-    private StringBuilder blanks;
-    private String indent = "";
-
-    // nspaces = how many spaces each level adds.
-    // max 100 levels
-    public Indent(int nspaces) {
-      this.nspaces = nspaces;
-      blanks = new StringBuilder();
-      for (int i = 0; i < 100 * nspaces; i++)
-        blanks.append(" ");
-    }
-
-    public Indent incr() {
-      level++;
-      setIndentLevel(level);
-      return this;
-    }
-
-    public Indent decr() {
-      level--;
-      setIndentLevel(level);
-      return this;
-    }
-
-    public String toString() {
-      return indent;
-    }
-
-    public void setIndentLevel(int level) {
-      this.level = level;
-      indent = blanks.substring(0, level * nspaces);
-    }
   }
 
   /**

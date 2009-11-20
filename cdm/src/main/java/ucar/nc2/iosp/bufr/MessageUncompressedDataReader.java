@@ -89,7 +89,7 @@ import java.nio.ByteOrder;
 
 public class MessageUncompressedDataReader {
 
-  public Array readData(Structure s, Message proto, Message m, RandomAccessFile raf, Formatter f) throws IOException, InvalidRangeException {
+  public ArrayStructure readEntireMessage(Structure s, Message proto, Message m, RandomAccessFile raf, Formatter f) throws IOException, InvalidRangeException {
     // transfer info from proto message
     DataDescriptor.transferInfo(proto.getRootDataDescriptor().getSubKeys(), m.getRootDataDescriptor().getSubKeys());
 
@@ -98,11 +98,11 @@ public class MessageUncompressedDataReader {
     StructureMembers members = s.makeStructureMembers();
     ArrayStructureBB.setOffsets(members);
 
-    ArrayStructureBB abb = new ArrayStructureBB(members, new int[] {m.getNumberDatasets()} );
+    ArrayStructureBB abb = new ArrayStructureBB(members, new int[]{m.getNumberDatasets()});
     ByteBuffer bb = abb.getByteBuffer();
     bb.order(ByteOrder.BIG_ENDIAN);
 
-    readDataUncompressed(m, raf, f, abb);
+    readDataUncompressed(m, raf, f, abb, null);
 
     return abb;
   }
@@ -110,48 +110,78 @@ public class MessageUncompressedDataReader {
   // read / count the bits in an uncompressed message
   // This assumes that all of the fields and all of the datasets are being read
 
-  public int readDataUncompressed(Message m, RandomAccessFile raf, Formatter f, ArrayStructureBB abb) throws IOException {
+  public int readDataUncompressed(Message m, RandomAccessFile raf, Formatter f, ArrayStructureBB abb, Range r) throws IOException {
     BitReader reader = new BitReader(raf, m.dataSection.getDataPos() + 4);
     DataDescriptor root = m.getRootDataDescriptor();
     if (root.isBad) return 0;
 
+    Request req = new Request(abb, r);
+
     int n = m.getNumberDatasets();
-    BitCounterUncompressed[] counterDatasets = new BitCounterUncompressed[n]; // one for each dataset
+    m.counterDatasets = new BitCounterUncompressed[n]; // one for each dataset
     m.msg_nbits = 0;
 
     // loop over the rows
+    int count = 0;
     for (int i = 0; i < n; i++) {
       if (f != null) f.format("Count bits in observation %d\n", i);
       // the top table always has exactly one "row", since we are working with a single obs
-      counterDatasets[i] = new BitCounterUncompressed(root, 1, 0);
-      DebugOut out = (f == null) ? null : new DebugOut(f, "obs " + i, 0, 1);
+      m.counterDatasets[i] = new BitCounterUncompressed(root, 1, 0);
+      DebugOut out = (f == null) ? null : new DebugOut(f);
 
       if (abb != null)
-        abb.getByteBuffer().putInt(0); // placeholder for time assumes an int   
-      readDataUncompressed(out, reader, counterDatasets[i], root.subKeys, 0, abb);
-      m.msg_nbits += counterDatasets[i].countBits(m.msg_nbits);
+        abb.getByteBuffer().putInt(0); // placeholder for time assumes an int
+      readDataUncompressed(out, reader, m.counterDatasets[i], root.subKeys, 0, req.setRow(i));
+      if (req.wantRow()) count++;
+      m.msg_nbits += m.counterDatasets[i].countBits(m.msg_nbits);
     }
 
-    return m.msg_nbits;
+    return count;
+  }
+
+  private class Request {
+    ArrayStructureBB abb;
+    ByteBuffer bb;
+    Range r;
+    int row;
+
+    Request(ArrayStructureBB abb, Range r) {
+      this.abb = abb;
+      if (abb != null) bb = abb.getByteBuffer();
+      this.r = r;
+      this.row = 0;
+    }
+
+    Request setRow(int row) {
+      this.row = row;
+      return this;
+    }
+
+    boolean wantRow() {
+      if (abb == null) return false;
+      if (r == null) return true;
+      return r.contains(row);
+    }
+
+    Request sub() {
+      return new Request(abb, null);
+    }
+
   }
 
   /**
-   * count the bits in one row of a "nested table", defined by List<DataDescriptor> dkeys.
+   * count/read the bits in one row of a "nested table", defined by List<DataDescriptor> dkeys.
    *
    * @param out    optional debug output, may be null
    * @param reader read data with this
    * @param dkeys  the fields of the table
    * @param table  put the results here
-   * @param row    which row of the table
-   * @param abb    read data into here, may be null
+   * @param nestedRow    which row of the table
+   * @param req    read data into here, may be null
    * @throws IOException on read error
-   *
-   * @return the current fldno
    */
-  private int readDataUncompressed(DebugOut out, BitReader reader, BitCounterUncompressed table, List<DataDescriptor> dkeys,
-                                    int row, ArrayStructureBB abb) throws IOException {
-
-    ByteBuffer bb = (abb == null) ? null : abb.getByteBuffer();
+  private void readDataUncompressed(DebugOut out, BitReader reader, BitCounterUncompressed table, List<DataDescriptor> dkeys,
+                                    int nestedRow, Request req) throws IOException {
 
     for (DataDescriptor dkey : dkeys) {
       if (!dkey.isOkForVariable()) {// misc skip
@@ -168,35 +198,36 @@ public class MessageUncompressedDataReader {
 
         if ((out != null) && (count > 0)) {
           out.f.format("%4d %s read sequence %s count= %d bitSize=%d start at=0x%x %n",
-              out.fldno++, out.indent(), dkey.getFxyName(), count, dkey.replicationCountSize, reader.getPos());
+                  out.fldno++, out.indent(), dkey.getFxyName(), count, dkey.replicationCountSize, reader.getPos());
         }
 
-        BitCounterUncompressed bitCounterNested = table.makeNested(dkey, count, row, dkey.replicationCountSize);
+        BitCounterUncompressed bitCounterNested = table.makeNested(dkey, count, nestedRow, dkey.replicationCountSize);
 
         // make an ArraySequence for this observation
-        ArraySequence seq = makeArraySequenceUncompressed(out, reader, bitCounterNested, dkey, (abb == null));
+        ArraySequence seq = makeArraySequenceUncompressed(out, reader, bitCounterNested, dkey, req);
 
-        if (abb != null) {
-          int index = abb.addObjectToHeap(seq);
-          bb.putInt(index); // an index into the Heap
+        if (req.wantRow()) {
+          int index = req.abb.addObjectToHeap(seq);
+          req.bb.putInt(index); // an index into the Heap
         }
         continue;
       }
 
       // compound
       if (dkey.type == 3) {
-        BitCounterUncompressed nested = table.makeNested(dkey, dkey.replication, row, 0);
+        BitCounterUncompressed nested = table.makeNested(dkey, dkey.replication, nestedRow, 0);
         if (out != null)
           out.f.format("%4d %s read structure %s count= %d\n",
-              out.fldno++, out.indent(), dkey.getFxyName(), dkey.replication);
+                  out.fldno++, out.indent(), dkey.getFxyName(), dkey.replication);
 
         for (int i = 0; i < dkey.replication; i++) {
           if (out != null) {
-            out.f.format("%s read row %d (struct %s) of %s %n", out.indent(), i, dkey.getFxyName(), out.where);
-            String whereNested = (out == null) ? null : out.where + " row " + i + "( struct " + dkey.getFxyName() + ")";
-            out.fldno = readDataUncompressed( out.nested(whereNested), reader, nested, dkey.subKeys, i, abb);
+            out.f.format("%s read row %d (struct %s) %n", out.indent(), i, dkey.getFxyName());
+            out.indent.incr();
+            readDataUncompressed(out, reader, nested, dkey.subKeys, i, req);
+            out.indent.incr();
           } else {
-            readDataUncompressed( null, reader, nested, dkey.subKeys, i, abb);
+            readDataUncompressed(null, reader, nested, dkey.subKeys, i, req);
           }
         }
         continue;
@@ -204,61 +235,60 @@ public class MessageUncompressedDataReader {
 
       // char data
       if (dkey.type == 1) {
-        byte[] vals = readCharData(dkey, reader, bb);
+        byte[] vals = readCharData(dkey, reader, req);
         if (out != null) {
           String s = new String(vals, "UTF-8");
           out.f.format("%4d %s read char %s bitWidth=%d end at= 0x%x val=%s\n",
-              out.fldno++, out.indent(), dkey.getFxyName(), dkey.bitWidth, reader.getPos(), s);
+                  out.fldno++, out.indent(), dkey.getFxyName(), dkey.bitWidth, reader.getPos(), s);
         }
         continue;
       }
 
       // otherwise read a number
-      int val = readNumericData(dkey, reader, bb);
+      int val = readNumericData(dkey, reader, req);
       if (out != null)
         out.f.format("%4d %s read %s bitWidth=%d end at= 0x%x raw=%d convert=%f\n",
-            out.fldno++, out.indent(), dkey.getFxyName(), dkey.bitWidth, reader.getPos(), val, dkey.convert(val));
+                out.fldno++, out.indent(), dkey.getFxyName(), dkey.bitWidth, reader.getPos(), val, dkey.convert(val));
     }
 
-    return (out == null) ? 0 : out.fldno;
   }
 
-  private byte[] readCharData(DataDescriptor dkey, BitReader reader, ByteBuffer bb) throws IOException {
+  private byte[] readCharData(DataDescriptor dkey, BitReader reader, Request req) throws IOException {
     int nchars = dkey.getByteWidthCDM();
     byte[] b = new byte[nchars];
     for (int i = 0; i < nchars; i++)
       b[i] = (byte) reader.bits2UInt(8);
 
-    if (bb != null) {
+    if (req.wantRow()) {
       for (int i = 0; i < nchars; i++)
-        bb.put(b[i]);
+        req.bb.put(b[i]);
     }
     return b;
   }
 
-  private int readNumericData(DataDescriptor dkey, BitReader reader, ByteBuffer bb) throws IOException {
-      // numeric data
-      int result = reader.bits2UInt(dkey.bitWidth);
+  private int readNumericData(DataDescriptor dkey, BitReader reader, Request req) throws IOException {
+    // numeric data
+    int result = reader.bits2UInt(dkey.bitWidth);
 
-    if (bb != null) {
+    if (req.wantRow()) {
 
       // place into byte buffer
       if (dkey.getByteWidthCDM() == 1) {
-        bb.put((byte) result);
+        req.bb.put((byte) result);
       } else if (dkey.getByteWidthCDM() == 2) {
         int b1 = result & 0xff;
         int b2 = (result & 0xff00) >> 8;
-        bb.put((byte) b2);
-        bb.put((byte) b1);
+        req.bb.put((byte) b2);
+        req.bb.put((byte) b1);
       } else {
         int b1 = result & 0xff;
         int b2 = (result & 0xff00) >> 8;
         int b3 = (result & 0xff0000) >> 16;
         int b4 = (result & 0xff000000) >> 24;
-        bb.put((byte) b4);
-        bb.put((byte) b3);
-        bb.put((byte) b2);
-        bb.put((byte) b1);
+        req.bb.put((byte) b4);
+        req.bb.put((byte) b3);
+        req.bb.put((byte) b2);
+        req.bb.put((byte) b1);
       }
     }
 
@@ -267,13 +297,13 @@ public class MessageUncompressedDataReader {
 
   // read in the data into an ArrayStructureBB, wrapped by an ArraySequence
   private ArraySequence makeArraySequenceUncompressed(DebugOut out, BitReader reader, BitCounterUncompressed bitCounterNested,
-          DataDescriptor seqdd, boolean countOnly) throws IOException {
+                                                      DataDescriptor seqdd, Request req) throws IOException {
 
     int count = bitCounterNested.getNumberRows();
     ArrayStructureBB abb = null;
     StructureMembers members = null;
 
-    if (!countOnly) {
+    if (req.wantRow()) {
       Sequence seq = (Sequence) seqdd.refersTo;
       assert seq != null;
 
@@ -306,15 +336,16 @@ public class MessageUncompressedDataReader {
     // loop through nested obs
     for (int i = 0; i < count; i++) {
       if (out != null) {
-        out.f.format("%s read row %d (seq %s) of %s %n", out.indent(), i, seqdd.getFxyName(), out.where);
-        String whereNested = (out == null) ? null : out.where + " row " + i + "( seq " + seqdd.getFxyName() + ")";
-        readDataUncompressed(out.nested(whereNested), reader, bitCounterNested, seqdd.getSubKeys(), i, abb);
-        
+        out.f.format("%s read row %d (seq %s) %n", out.indent(), i, seqdd.getFxyName());
+        out.indent.incr();
+        readDataUncompressed(out, reader, bitCounterNested, seqdd.getSubKeys(), i, req);
+        out.indent.decr();
+
       } else {
-        readDataUncompressed( null, reader, bitCounterNested, seqdd.getSubKeys(), i, abb);
+        readDataUncompressed(null, reader, bitCounterNested, seqdd.getSubKeys(), i, req);
       }
     }
 
-    return countOnly ? null : new ArraySequence(members, new SequenceIterator(count, abb), count);
+    return req.wantRow() ? null : new ArraySequence(members, abb.getStructureDataIterator(), count);
   }
 }

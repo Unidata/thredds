@@ -69,8 +69,8 @@ public class Message {
   private byte[] raw; // raw bytes
 
   // bit counting
-  private BitCounterUncompressed[] counterDatasets; // uncompressed: one for each dataset
-  private BitCounterCompressed[] counterFlds; // compressed: one for each field
+  BitCounterUncompressed[] counterDatasets; // uncompressed: one for each dataset
+  BitCounterCompressed[] counterFlds; // compressed: one for each field
   int msg_nbits;
   //private boolean showCountCompressedValues = true;
   //private boolean showCountDetail = false;
@@ -303,14 +303,8 @@ public class Message {
   public int calcTotalBits(Formatter out) {
     boolean compressed = dds.isCompressed();
 
-    /* fixedLength
-    if (!compressed && !varLength) {
-      msg_nbits = root.total_nbits * getNumberDatasets();
-      return;
-    } */
-
     try {
-      getRootDataDescriptor(); // make sure root has been caclulated
+      getRootDataDescriptor(); // make sure root has been done
 
       if (compressed)
         return countBitsCompressed(out);  // compressed

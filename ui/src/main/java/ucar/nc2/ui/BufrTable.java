@@ -217,7 +217,7 @@ public class BufrTable extends JPanel {
           infoTA2.clear();
           if (!m.dds.isCompressed()) {
             MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
-            reader.readDataUncompressed(m, raf, out, null);
+            reader.readDataUncompressed(m, raf, out, null, null);
           } else {
             MessageCompressedDataReader reader = new MessageCompressedDataReader();
             reader.readDataCompressed(m, raf, out, null);
@@ -248,15 +248,23 @@ public class BufrTable extends JPanel {
       public void actionPerformed(ActionEvent e) {
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
         try {
-          String defloc = (raf.getLocation() == null) ? "." : raf.getLocation();
-          int pos = defloc.lastIndexOf(".");
-          if (pos > 0)
-            defloc = defloc.substring(0, pos);
+          String defloc;
+          String header = mb.m.getHeader();
+          if (header != null) {
+            header = header.split(" ")[0];
+          }
+          if (header == null) {
+            defloc = (raf.getLocation() == null) ? "." : raf.getLocation();
+            int pos = defloc.lastIndexOf(".");
+            if (pos > 0)
+              defloc = defloc.substring(0, pos);
+          } else
+          defloc = header;
 
           if (fileChooser == null)
             fileChooser = new FileManager(null);
 
-          String filename = fileChooser.chooseFilenameToSave(defloc + ".save1.bufr");
+          String filename = fileChooser.chooseFilenameToSave(defloc + ".bufr");
           if (filename == null) return;
 
           File file = new File(filename);

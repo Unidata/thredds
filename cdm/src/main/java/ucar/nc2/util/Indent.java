@@ -30,54 +30,44 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.ma2;
-
-import java.io.IOException;
+package ucar.nc2.util;
 
 /**
- * Creates a StructureDataIterator by wrapping a section of a ArrayStructure.
- *
- * @author caron
- * @since Nov 16, 2009
+ * Maintains indentation level for printing nested structures.
  */
+public class Indent {
+  private int nspaces = 0;
+  private int level = 0;
+  private StringBuilder blanks;
+  private String indent = "";
 
-
-public class SequenceIterator implements StructureDataIterator {
-  private int start, size, count;
-  private ArrayStructure abb;
-
-  public SequenceIterator(int start, int size, ArrayStructure abb) {
-    this.start = start;
-    this.size = size;
-    this.abb = abb;
-    this.count = 0;
+  // nspaces = how many spaces each level adds.
+  // max 100 levels
+  public Indent(int nspaces) {
+    this.nspaces = nspaces;
+    blanks = new StringBuilder();
+    for (int i = 0; i < 100 * nspaces; i++)
+      blanks.append(" ");
   }
 
-  @Override
-  public boolean hasNext() throws IOException {
-    return (count < size);
-  }
-
-  @Override
-  public StructureData next() throws IOException {
-    StructureData result = abb.getStructureData(start + count);
-    count++;
-    return result;
-  }
-
-  @Override
-  public void setBufferSize(int bytes) {
-  }
-
-  @Override
-  public StructureDataIterator reset() {
-    count = 0;
+  public Indent incr() {
+    level++;
+    setIndentLevel(level);
     return this;
   }
 
-  @Override
-  public int getCurrentRecno() {
-    return count;
+  public Indent decr() {
+    level--;
+    setIndentLevel(level);
+    return this;
   }
 
+  public String toString() {
+    return indent;
+  }
+
+  public void setIndentLevel(int level) {
+    this.level = level;
+    indent = blanks.substring(0, level * nspaces);
+  }
 }

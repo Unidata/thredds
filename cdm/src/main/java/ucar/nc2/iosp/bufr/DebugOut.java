@@ -32,6 +32,8 @@
 
 package ucar.nc2.iosp.bufr;
 
+import ucar.nc2.util.Indent;
+
 import java.util.Formatter;
 
 /**
@@ -41,26 +43,19 @@ import java.util.Formatter;
  * @since Nov 16, 2009
  */
 class DebugOut {
-  private static final String blanks = "                      ";
   Formatter f;
-  String where;
-  int indent;
+  Indent indent;
   int fldno; // track fldno to compare with EU output
 
-
-  DebugOut(Formatter f, String where, int indent, int fldno) {
+  DebugOut(Formatter f) {
     this.f = f;
-    this.where = where;
-    this.indent = indent;
-    this.fldno = fldno;
+    this.indent = new Indent(2);
+    this.indent.setIndentLevel(0);
+    this.fldno = 1;
   }
 
   String indent() {
-    return blanks.substring(0, indent + 1);
-  }  // LOOK change this
-
-  DebugOut nested(String where) {
-    return new DebugOut(f, where, indent + 2, fldno);
+    return indent.toString();
   }
 
 }

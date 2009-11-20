@@ -328,6 +328,14 @@ public final class Range {
   }
 
 
+  /**
+   * If this range is completely past the wanted range
+   * @param want desired range
+   * @return true if  first() > want.last()
+   */
+  public boolean past(Range want) {
+    return (first() > want.last());
+  }
 
   /**
    * Create a new Range by making the union with a Range using same interval as this Range.

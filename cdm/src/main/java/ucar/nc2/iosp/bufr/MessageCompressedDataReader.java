@@ -34,7 +34,6 @@ package ucar.nc2.iosp.bufr;
 
 import ucar.ma2.*;
 import ucar.nc2.Structure;
-import ucar.nc2.Variable;
 import ucar.nc2.Sequence;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -105,22 +104,34 @@ import java.util.HashMap;
 public class MessageCompressedDataReader {
   boolean showData = true;
 
-  public Array readData(Structure s, Message proto, Message m, RandomAccessFile raf, Formatter f) throws IOException, InvalidRangeException {
-    // transfer info from proto message
+  public ArrayStructure readEntireMessage(Structure s, Message proto, Message m, RandomAccessFile raf, Formatter f) throws IOException, InvalidRangeException {
+    // transfer info (refersTo, name) from the proto message
     DataDescriptor.transferInfo(proto.getRootDataDescriptor().getSubKeys(), m.getRootDataDescriptor().getSubKeys());
 
-    // allocate ArrayStructureBB for outer structure
+    // allocate ArrayStructureMA for outer structure
     ArrayStructureMA ama = ArrayStructureMA.factoryMA(s, s.getShape());
     setIterators(ama);
 
+    // map dkey to Member recursively
     HashMap<DataDescriptor, StructureMembers.Member> map = new HashMap<DataDescriptor, StructureMembers.Member>(100);
     associateMessage2Members(ama.getStructureMembers(), m.getRootDataDescriptor(), map);
 
-    readDataCompressed(m, raf, f, map);
+    readData(m, raf, f, map);
 
     return ama;
   }
 
+  public void readDataCompressed(Message m, RandomAccessFile raf, Formatter f, ArrayStructureMA ama) throws IOException {
+    // map dkey to Member recursively
+    HashMap<DataDescriptor, StructureMembers.Member> map = new HashMap<DataDescriptor, StructureMembers.Member>(100);
+    associateMessage2Members(ama.getStructureMembers(), m.getRootDataDescriptor(), map);
+
+    readData(m, raf, f, map);
+  }
+
+  // An iterator is stored in member.getDataObject() which keeps track of where we are.
+  // For fixed length nested Structures, we need fld(dataset, inner) but we have fld(inner, dataset) se we transpose the dimensions
+  //   before we set the iterator.
   private void setIterators(ArrayStructureMA ama) {
     StructureMembers sms = ama.getStructureMembers();
     for (StructureMembers.Member sm : sms.getMembers()) {
@@ -129,9 +140,6 @@ public class MessageCompressedDataReader {
       if (data instanceof ArrayStructureMA) {
         setIterators( (ArrayStructureMA) data);
 
-      } else  if (data instanceof ArraySequenceNested) {
-          System.out.println("HEY");
-        
       } else {
         int[] shape = data.getShape();
         if ((shape.length > 1) && (sm.getDataType() != DataType.CHAR)) {
@@ -174,15 +182,15 @@ public class MessageCompressedDataReader {
   }
 
   // read / count the bits in a compressed message
-  public int readDataCompressed(Message m, RandomAccessFile raf, Formatter f,
+  public int readData(Message m, RandomAccessFile raf, Formatter f,
                                 HashMap<DataDescriptor, StructureMembers.Member> map) throws IOException {
     BitReader reader = new BitReader(raf, m.dataSection.getDataPos() + 4);
     DataDescriptor root = m.getRootDataDescriptor();
     if (root.isBad) return 0;
 
-    DebugOut out = (f == null) ? null : new DebugOut(f, "top ", 0, 1);
+    DebugOut out = (f == null) ? null : new DebugOut(f);
     BitCounterCompressed[] counterFlds = new BitCounterCompressed[root.subKeys.size()]; // one for each field
-    readDataCompressed(out, reader, counterFlds, root, 0, m.getNumberDatasets(), map);
+    readData(out, reader, counterFlds, root, 0, m.getNumberDatasets(), map);
 
     m.msg_nbits = 0;
     for (BitCounterCompressed counter : counterFlds)
@@ -190,8 +198,19 @@ public class MessageCompressedDataReader {
     return m.msg_nbits;
   }
 
-
-  private int readDataCompressed(DebugOut out, BitReader reader, BitCounterCompressed[] counters, DataDescriptor parent, int bitOffset,
+  /**
+   *
+   * @param out       debug info; may be null
+   * @param reader    raf wrapper for bit reading
+   * @param fldCounters one for each field
+   * @param parent    parent.subkeys() holds the fields
+   * @param bitOffset bit offset from beginning of data
+   * @param ndatasets number of compressed datasets
+   * @param map       for writing into the ArrayStructure; may be null
+   * @return bitOffset
+   * @throws IOException  on read error
+   */
+  private int readData(DebugOut out, BitReader reader, BitCounterCompressed[] fldCounters, DataDescriptor parent, int bitOffset,
                                   int ndatasets, HashMap<DataDescriptor, StructureMembers.Member> map) throws IOException {
 
     List<DataDescriptor> flds = parent.getSubKeys();
@@ -202,10 +221,10 @@ public class MessageCompressedDataReader {
         continue;
       }
       if ((dkey.f == 2) && (dkey.x == 24) && (dkey.y == 255))
-         System.out.printf("HEY%n");
+         System.out.printf("HEY gotta dpi%n");
 
       BitCounterCompressed counter = new BitCounterCompressed(dkey, ndatasets, bitOffset);
-      counters[fldidx] = counter;
+      fldCounters[fldidx] = counter;
 
       if (dkey.replication == 0) {
         reader.setBitOffset(bitOffset);
@@ -215,36 +234,37 @@ public class MessageCompressedDataReader {
         reader.bits2UInt(6);
         // System.out.printf("EXTRA bits %d at %d %n", extra, bitOffset);
         if (null != out)
-          out.f.format("--sequence %s bitOffset=%d replication=%s %n", dkey.getFxyName(), bitOffset, count);
+          out.f.format("%s--sequence %s bitOffset=%d replication=%s %n", out.indent(), dkey.getFxyName(), bitOffset, count);
         bitOffset += 6; // LOOK seems to be an extra 6 bits.
 
         counter.addNestedCounters(count);
 
         // make an ArrayObject of ArraySequence, place it into the data array
-        makeArraySequenceCompressed(out, reader, counter, 0 /*msgOffset*/, dkey, count, map);
-        if (null != out) out.f.format("--back %s %d %n", dkey.getFxyName(), bitOffset);
-
-        /* for (int i = 0; i < count; i++) {
-          if (null != out) out.f.format("%n");
-          BitCounterCompressed[] nested = counter.getNestedCounters(i);
-          bitOffset = readDataCompressed(out, reader, nested, dkey, bitOffset, ndatasets, map); // count subfields
-        }  */
+        bitOffset = makeArraySequenceCompressed(out, reader, counter, dkey, bitOffset, ndatasets, count, map);
+        // if (null != out) out.f.format("--back %s %d %n", dkey.getFxyName(), bitOffset);
         continue;
       }
 
       // structure
       if (dkey.type == 3) {
         if (null != out)
-          out.f.format("--nested %s bitOffset=%d replication=%s %n", dkey.getFxyName(), bitOffset, dkey.replication);
+          out.f.format("%s--structure %s bitOffset=%d replication=%s %n",
+                  out.indent(), dkey.getFxyName(), bitOffset, dkey.replication);
 
         // p 11 of "standard", doesnt really describe the case of replication AND compression
         counter.addNestedCounters(dkey.replication);
         for (int i = 0; i < dkey.replication; i++) {
-          if (null != out) out.f.format("%n");
           BitCounterCompressed[] nested = counter.getNestedCounters(i);
-          bitOffset = readDataCompressed(out, reader, nested, dkey, bitOffset, ndatasets, map); // count subfields
+          if (null != out) {
+            out.f.format("%n");
+            out.indent.incr();
+            bitOffset = readData(out, reader, nested, dkey, bitOffset, ndatasets, map);
+            out.indent.decr();
+          } else {
+            bitOffset = readData(null, reader, nested, dkey, bitOffset, ndatasets, map);
+          }
         }
-        if (null != out) out.f.format("--back %s %d %n", dkey.getFxyName(), bitOffset);
+        //if (null != out) out.f.format("--back %s %d %n", dkey.getFxyName(), bitOffset);
 
         continue;
       }
@@ -254,7 +274,7 @@ public class MessageCompressedDataReader {
       if (map != null) {
         StructureMembers.Member m = map.get(dkey);
         if (m == null)
-          System.out.printf("HEY %s%n", dkey);
+          System.out.printf("HEY missing %s%n", dkey);
         iter = (IndexIterator) m.getDataObject();
       }
 
@@ -272,8 +292,8 @@ public class MessageCompressedDataReader {
         bitOffset += totalWidth; // bitOffset now points to the next field
  
         if (null != out)
-          out.f.format("  read %s (%s) bitWidth=%d defValue=%s dataWidth=%d n=%d bitOffset=%d %n",
-                  dkey.name, dkey.getFxyName(), dkey.bitWidth, new String(minValue, "UTF-8"), dataWidth, ndatasets, bitOffset);
+          out.f.format("%s read %d %s (%s) bitWidth=%d defValue=%s dataWidth=%d n=%d bitOffset=%d %n",
+                  out.indent(), out.fldno++, dkey.name, dkey.getFxyName(), dkey.bitWidth, new String(minValue, "UTF-8"), dataWidth, ndatasets, bitOffset);
 
         for (int dataset = 0; dataset < ndatasets; dataset++) {
           if (dataWidth == 0) { // use the min value
@@ -315,8 +335,8 @@ public class MessageCompressedDataReader {
       bitOffset += totalWidth; // bitOffset now points to the next field
 
       if (null != out)
-        out.f.format("  read %s (%s) bitWidth=%d dataMin=%d (%f) dataWidth=%d n=%d bitOffset=%d %n",
-                dkey.name, dkey.getFxyName(), dkey.bitWidth, dataMin, dkey.convert(dataMin), dataWidth, ndatasets, bitOffset);
+        out.f.format("%s read %d, %s (%s) bitWidth=%d dataMin=%d (%f) dataWidth=%d n=%d bitOffset=%d %n",
+                out.indent(), out.fldno++, dkey.name, dkey.getFxyName(), dkey.bitWidth, dataMin, dkey.convert(dataMin), dataWidth, ndatasets, bitOffset);
 
       // numeric fields
 
@@ -351,52 +371,51 @@ public class MessageCompressedDataReader {
   }
 
   // read in the data into an ArrayStructureBB, wrapped by an ArraySequence
-  private void makeArraySequenceCompressed(DebugOut out, BitReader reader, BitCounterCompressed bitCounterNested, int index,
-                         DataDescriptor seqdd, int count, HashMap<DataDescriptor, StructureMembers.Member> map) throws IOException {
+  private int makeArraySequenceCompressed(DebugOut out, BitReader reader, BitCounterCompressed bitCounterNested, DataDescriptor seqdd,
+                         int bitOffset, int ndatasets, int count, HashMap<DataDescriptor, StructureMembers.Member> map) throws IOException {
 
-    // all other fields
-    ArrayObject arrObj = null;
+    // construct ArrayStructureMA and associated map
+    ArrayStructureMA ama = null;
+    StructureMembers members = null;
+    HashMap<DataDescriptor, StructureMembers.Member> nmap = null;
+    if (map != null) {
+      Sequence seq = (Sequence) seqdd.refersTo;
+      int[] shape = new int[]{ndatasets, count};  // seems unlikely this can handle recursion
+      ama = ArrayStructureMA.factoryMA(seq, shape);
+      setIterators(ama);
+
+      nmap = new HashMap<DataDescriptor, StructureMembers.Member>(2*members.getMembers().size());
+      members = ama.getStructureMembers();
+      associateMessage2Members(members, seqdd, nmap);
+    }
+
+    // iterate over the number of replications, reading ndataset compressed values at each iteration
+    if (out != null) out.indent.incr();
+    for (int i = 0; i < count; i++) {
+      BitCounterCompressed[] nested = bitCounterNested.getNestedCounters(i);
+      bitOffset = readData(out, reader, nested, seqdd, bitOffset, ndatasets, nmap);
+    }
+    if (out != null) out.indent.decr();
+
+    // add ArraySequence to the ArrayObject in the outer structure
     if (map != null) {
       StructureMembers.Member m = map.get(seqdd);
       if (m == null)
-        System.out.printf("HEY %s%n", seqdd);
-      arrObj = (ArrayObject) m.getDataArray();
+        System.out.printf("HEY missing seq %s%n", seqdd);
+      ArrayObject arrObj = (ArrayObject) m.getDataArray();
+
+      // we need to break ama into seperate sequences, one for each dataset
+      int start = 0;
+      for (int i = 0; i < ndatasets; i++) {
+        ArraySequence arrSeq = new ArraySequence(members, new SequenceIterator(start, count, ama), count);
+        arrObj.setObject(i, arrSeq);
+        start += count;
+      }
     }
 
-
-    Sequence seq = (Sequence) seqdd.refersTo;
-    assert seq != null;
-
-    // for the obs structure
-    int[] shape = new int[]{count};
-
-    // allocate ArrayStructureBB for outer structure
-    int offset = 0;
-    StructureMembers members = seq.makeStructureMembers();
-    for (StructureMembers.Member m : members.getMembers()) {
-      m.setDataParam(offset);
-      Variable mv = seq.findVariable(m.getName());
-      DataDescriptor dk = (DataDescriptor) mv.getSPobject();
-      if (dk.replication == 0)
-        offset += 4;
-      else
-        offset += dk.getByteWidthCDM();
-    }
-
-    // allocate ArrayStructureBB for outer structure
-    ArrayStructureMA ama = ArrayStructureMA.factoryMA(seq, shape);
-    setIterators(ama);
-
-    for (int i = 0; i < count; i++) {
-      //out.format("%nRead parent=%s obe=%d level=%d%n",dkey.name, msgOffset, i);
-      BitCounterCompressed[] nested = bitCounterNested.getNestedCounters(i);
-      // LOOK readDataCompressed(reader, nested, msgOffset, seqdd, ama);
-    }
-
-    ArraySequence arrSeq = new ArraySequence(members, new SequenceIterator(count, ama), count);
-    arrObj.setObject(index, arrSeq);
-
+    return bitOffset;
   }
+
   /* read data for a particular obs
   private void readDataCompressed(BitReader reader, BitCounterCompressed[] counters, int msgOffset, DataDescriptor parent, ArrayStructureBB abb) throws IOException {
     ByteBuffer bb = abb.getByteBuffer();

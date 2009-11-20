@@ -316,6 +316,8 @@ public class CompareNetcdf {
       while (iter1.hasNext() && iter2.hasNext()) {
         short v1 = iter1.getShortNext();
         short v2 = iter2.getShortNext();
+        if (v1 != v2)
+          System.out.println("HEY");
         assert v1 == v2 : v1 + " != " + v2 + " count=" + iter1;
       }
     } else if (dt == DataType.BYTE) {
@@ -339,7 +341,7 @@ public class CompareNetcdf {
     for (StructureMembers.Member m1 : sm1.getMembers()) {
       if (m1.getName().equals("time")) continue;
       StructureMembers.Member m2 = sm2.findMember(m1.getName());
-      if (m1.getDataType() == DataType.SEQUENCE)
+      if (m1.getName().startsWith("Radiosonde ascension number (see Note 12)"))
         System.out.println("HEY");
       Array data1 = sdata1.getArray(m1);
       Array data2 = sdata2.getArray(m2);

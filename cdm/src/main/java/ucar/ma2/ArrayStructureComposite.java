@@ -32,52 +32,60 @@
 
 package ucar.ma2;
 
-import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
- * Creates a StructureDataIterator by wrapping a section of a ArrayStructure.
+ * An ArrayStructure compose of other ArrayStructures.
+ * Doesnt work because of read(StructureMembers.Member). this need to be withdrawn.
+ *
+ *    int total = 0;
+    List<ArrayStructure> list = new ArrayList<ArrayStructure> (msgs.size());
+    for (Message m : msgs) {
+     ArrayStructure oneMess;
+     if (!m.dds.isCompressed()) {
+       MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
+       oneMess = reader.readEntireMessage(s, protoMessage, m, raf, null);
+     } else {
+       MessageCompressedDataReader reader = new MessageCompressedDataReader();
+       oneMess = reader.readEntireMessage(s, protoMessage, m, raf, null);
+     }
+      list.add(oneMess);
+      total += (int) oneMess.getSize();
+    }
+
+    return (list.size() == 1) ? list.get(0) : new ArrayStructureComposite(sm, list, total);
+         
  *
  * @author caron
- * @since Nov 16, 2009
+ * @since Nov 19, 2009
  */
+public class ArrayStructureComposite extends ArrayStructure {
+  private List<ArrayStructure> compose = new ArrayList<ArrayStructure>();
+  private int[] start;
 
+  public ArrayStructureComposite(StructureMembers members, List<ArrayStructure> c, int total) {
+    super(members, new int[total]);
+    this.compose = c;
 
-public class SequenceIterator implements StructureDataIterator {
-  private int start, size, count;
-  private ArrayStructure abb;
-
-  public SequenceIterator(int start, int size, ArrayStructure abb) {
-    this.start = start;
-    this.size = size;
-    this.abb = abb;
-    this.count = 0;
+    start = new int[total];
+    int count = 0;
+    int i = 0;
+    for (ArrayStructure as : compose) {
+      start[i++] = count;
+      count += (int) as.getSize();
+    }
   }
+
 
   @Override
-  public boolean hasNext() throws IOException {
-    return (count < size);
+  protected StructureData makeStructureData(ArrayStructure me, int recno) {
+    for (int i=0; i< start.length; i++) {
+      if (recno >= start[i]) {
+        ArrayStructure as = compose.get(i);
+        return as.makeStructureData(as, recno - start[i]);
+      }
+    }
+    throw new IllegalArgumentException();
   }
-
-  @Override
-  public StructureData next() throws IOException {
-    StructureData result = abb.getStructureData(start + count);
-    count++;
-    return result;
-  }
-
-  @Override
-  public void setBufferSize(int bytes) {
-  }
-
-  @Override
-  public StructureDataIterator reset() {
-    count = 0;
-    return this;
-  }
-
-  @Override
-  public int getCurrentRecno() {
-    return count;
-  }
-
 }

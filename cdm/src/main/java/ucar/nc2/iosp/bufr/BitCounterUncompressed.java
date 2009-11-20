@@ -47,9 +47,11 @@ public class BitCounterUncompressed {
   private final int nrows; // number of rows in this table
   private final int replicationCountSize; // number of bits taken up by the count variable (non-zero only for sequences)
 
+  private Map<DataDescriptor, Integer> bitPosition;
   private Map<DataDescriptor, BitCounterUncompressed[]> subCounters; // nested tables; null for regular fields
   private int[] startBit; // from start of data section, for each row
   private int countBits; // total nbits in this table
+  private int bitOffset = 0; // count bits
 
   static private boolean debug = false;
 
@@ -64,6 +66,18 @@ public class BitCounterUncompressed {
     this.nrows = nrows;
     this.replicationCountSize = replicationCountSize;
   }
+
+  // not used yet
+  public void setBitOffset(DataDescriptor dkey) {
+    if (bitPosition == null)
+      bitPosition = new HashMap<DataDescriptor, Integer>(2 * parent.getSubKeys().size());
+    bitPosition.put(dkey, bitOffset);
+    bitOffset += dkey.getBitWidth();
+  }
+  public int getOffset(DataDescriptor dkey) {
+    return bitPosition.get(dkey);
+  }
+
 
   /**
    * Track nested Tables.
