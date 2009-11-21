@@ -36,6 +36,7 @@ package ucar.nc2.thredds.monitor;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.nc2.units.TimeUnit;
+import ucar.nc2.units.DateFormatter;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -612,8 +613,8 @@ public class AccessLogTable extends JPanel {
   private void showTimeSeriesAll(java.util.List<LogReader.Log> logs) {
     // 09/Apr/2009:16:38:28 -0600
     //SimpleDateFormat df = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z");
-    SimpleDateFormat df = new SimpleDateFormat("yyyy-MMM-ddTHH:mm:ss");
-
+    //SimpleDateFormat df = new SimpleDateFormat("yyyy-MMM-dd'T'HH:mm:ss");
+    DateFormatter df = new DateFormatter();
     TimeSeries bytesSentData = new TimeSeries("Bytes Sent", Minute.class);
     TimeSeries timeTookData = new TimeSeries("Average Latency", Minute.class);
     TimeSeries nreqData = new TimeSeries("Number of Requests", Minute.class);
@@ -632,28 +633,28 @@ public class AccessLogTable extends JPanel {
     long bytes = 0;
     long timeTook = 0;
     long count = 0;
-    try {
-      for (LogReader.Log log : logs) {
-        Date d = df.parse(log.getDate());
-        long msecs = d.getTime();
-        if (msecs - current > period) {
-          if (current > 0) {
-            addPoint(bytesSentData, timeTookData, nreqData, new Date(current), bytes, count, timeTook);
-          }
-          bytes = 0;
-          count = 0;
-          timeTook = 0;
-          current = msecs;
-        }
-        bytes += log.getBytes();
-        timeTook += log.getMsecs();
-        count++;
+    for (LogReader.Log log : logs) {
+      Date d = df.getISODate(log.getDate());
+      if (d == null) {
+        System.out.printf("Cant parsse date=%s%n", log.getDate());
+        continue;
       }
-      addPoint(bytesSentData, timeTookData, nreqData, new Date(current), bytes, count, timeTook);
-
-    } catch (ParseException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      long msecs = d.getTime();
+      if (msecs - current > period) {
+        if (current > 0) {
+          addPoint(bytesSentData, timeTookData, nreqData, new Date(current), bytes, count, timeTook);
+        }
+        bytes = 0;
+        count = 0;
+        timeTook = 0;
+        current = msecs;
+      }
+      bytes += log.getBytes();
+      timeTook += log.getMsecs();
+      count++;
     }
+    addPoint(bytesSentData, timeTookData, nreqData, new Date(current), bytes, count, timeTook);
+
 
     MultipleAxisChart mc = new MultipleAxisChart("Access Logs", intervalS + " average", "Mbytes Sent", bytesSentData);
     mc.addSeries("Number of Requests", nreqData);

@@ -58,8 +58,7 @@ import java.nio.ByteOrder;
 
     R11, R12, R13, . . . R1s
     R21, R22, R23, . . . R2s
-    ………………………
-    ………………………
+    ....
     Rn1, Rn2, Rn3, . . . Rns
 
    where Rij is the jth value of the ith data subset. 

@@ -376,7 +376,7 @@ public class ReadTdsLogs {
 
   static private int total_submit = 0;
   static private int skip_submit = -1;
-  static private int max_submit = 10000; // Integer.MAX_VALUE;
+  static private int max_submit = Integer.MAX_VALUE;
 
   void sendRequests(String filename, int max) throws IOException {
     int submit = 0;
@@ -403,10 +403,10 @@ public class ReadTdsLogs {
         continue;
       }
 
-      if (!(log.path.indexOf("dodsC") > 0))  {    // opendap only
+      /* if (!(log.path.indexOf("dodsC") > 0))  {    // opendap only
        skip++;
        continue;
-     }
+     } */
 
       if (log.path.indexOf("fileServer") > 0) {
         // System.out.println(" *** skip fmrc " + log);
@@ -659,7 +659,7 @@ public class ReadTdsLogs {
   }
 
   static String serverLive = null; // "http://motherlode.ucar.edu:8080";
-  static String serverTest = "http://motherlode.ucar.edu:9080";
+  static String serverTest = "http://motherlode.ucar.edu:8081";
 
   public static void main(String args[]) throws IOException {
     out = null; // new Formatter(new FileOutputStream("C:/TEMP/readTdsLogs.txt"));
@@ -679,7 +679,7 @@ public class ReadTdsLogs {
 
     //String accessLogs = "D:\\logs\\motherlode\\live\\access";
     //String accessLogs = "C:\\Documents and Settings\\caron.UNIDATA_DOMAIN\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access";
-    String accessLogs = "/home/caron/tdsMonitor/motherlode%3A8080/access/access.2009-09-27.log";
+    String accessLogs = "/home/caron/tdsMonitor/motherlode%3A8080/access/";
 
     read(accessLogs, new MClosure() {
       public void run(String filename) throws IOException {
