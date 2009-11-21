@@ -172,7 +172,8 @@ public class CoordSysTable extends JPanel {
     axisPopup.addAction("Show Values", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         AxisBean bean = (AxisBean) axisTable.getSelectedBean();
-        CoordinateAxis axis = (CoordinateAxis) ds.findVariable( bean.getName());
+        //CoordinateAxis axis = (CoordinateAxis) ds.findVariable( bean.getName());
+        CoordinateAxis axis = bean.axis;
         infoTA.clear();
         try {
           infoTA.appendLine(NCdumpW.printVariableData(axis, null));

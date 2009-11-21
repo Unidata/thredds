@@ -86,27 +86,27 @@ public class ArraySequence extends ArrayStructure {
   }
 
   @Override
-  public Array extractMemberArray(StructureMembers.Member m) throws IOException {
-    if (m.getDataArray() != null)
-      return m.getDataArray();
+  public Array extractMemberArray(StructureMembers.Member proxym) throws IOException {
+    if (proxym.getDataArray() != null)
+      return proxym.getDataArray();
 
-    DataType dataType = m.getDataType();
-    boolean isScalar = (m.getSize() == 1) || (dataType == DataType.SEQUENCE);
+    DataType dataType = proxym.getDataType();
+    boolean isScalar = (proxym.getSize() == 1) || (dataType == DataType.SEQUENCE);
 
     // combine the shapes
-    int[] mshape = m.getShape();
+    int[] mshape = proxym.getShape();
     int rrank = 1 + mshape.length;
     int[] rshape = new int[rrank];
     rshape[0] = nelems;
     System.arraycopy(mshape, 0, rshape, 1, mshape.length);
 
     if (nelems < 0)
-      return extractMemberArrayFromIteration(m, rshape);
+      return extractMemberArrayFromIteration(proxym, rshape);
 
     // create an empty array to hold the result
     Array result;
     if (dataType == DataType.STRUCTURE) {
-      StructureMembers membersw = new StructureMembers(m.getStructureMembers()); // no data arrays get propagated
+      StructureMembers membersw = new StructureMembers(proxym.getStructureMembers()); // no data arrays get propagated
       result = new ArrayStructureW(membersw, rshape);
     } else {
       result = Array.factory(dataType.getPrimitiveClassType(), rshape);
@@ -117,73 +117,74 @@ public class ArraySequence extends ArrayStructure {
 
     while (sdataIter.hasNext()) {
       StructureData sdata = sdataIter.next();
+      StructureMembers.Member realm = sdata.getStructureMembers().findMember(proxym.getName());
 
       if (isScalar) {
         if (dataType == DataType.DOUBLE)
-          resultIter.setDoubleNext(sdata.getScalarDouble(m));
+          resultIter.setDoubleNext(sdata.getScalarDouble(realm));
 
         else if (dataType == DataType.FLOAT)
-          resultIter.setFloatNext(sdata.getScalarFloat(m));
+          resultIter.setFloatNext(sdata.getScalarFloat(realm));
 
         else if ((dataType == DataType.BYTE) || (dataType == DataType.ENUM1))
-          resultIter.setByteNext(sdata.getScalarByte(m));
+          resultIter.setByteNext(sdata.getScalarByte(realm));
 
         else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2))
-          resultIter.setShortNext(sdata.getScalarShort(m));
+          resultIter.setShortNext(sdata.getScalarShort(realm));
 
         else if ((dataType == DataType.INT) || (dataType == DataType.ENUM4))
-          resultIter.setIntNext(sdata.getScalarInt(m));
+          resultIter.setIntNext(sdata.getScalarInt(realm));
 
         else if (dataType == DataType.LONG)
-          resultIter.setLongNext(sdata.getScalarLong(m));
+          resultIter.setLongNext(sdata.getScalarLong(realm));
 
         else if (dataType == DataType.CHAR)
-          resultIter.setCharNext(sdata.getScalarChar(m));
+          resultIter.setCharNext(sdata.getScalarChar(realm));
 
         else if (dataType == DataType.STRING)
-          resultIter.setObjectNext(sdata.getScalarString(m));
+          resultIter.setObjectNext(sdata.getScalarString(realm));
 
         else if (dataType == DataType.STRUCTURE)
-          resultIter.setObjectNext( sdata.getScalarStructure(m));
+          resultIter.setObjectNext( sdata.getScalarStructure(realm));
 
         else if (dataType == DataType.SEQUENCE)
-          resultIter.setObjectNext( sdata.getArraySequence(m));
+          resultIter.setObjectNext( sdata.getArraySequence(realm));
 
     } else {
         if (dataType == DataType.DOUBLE) {
-          double[] data = sdata.getJavaArrayDouble(m);
+          double[] data = sdata.getJavaArrayDouble(realm);
           for (double aData : data) resultIter.setDoubleNext(aData);
 
         } else if (dataType == DataType.FLOAT) {
-          float[] data = sdata.getJavaArrayFloat(m);
+          float[] data = sdata.getJavaArrayFloat(realm);
           for (float aData : data) resultIter.setFloatNext(aData);
 
         } else if ((dataType == DataType.BYTE) || (dataType == DataType.ENUM1)) {
-          byte[] data = sdata.getJavaArrayByte(m);
+          byte[] data = sdata.getJavaArrayByte(realm);
           for (byte aData : data) resultIter.setByteNext(aData);
 
         } else if ((dataType == DataType.SHORT)|| (dataType == DataType.ENUM2)) {
-          short[] data = sdata.getJavaArrayShort(m);
+          short[] data = sdata.getJavaArrayShort(realm);
           for (short aData : data) resultIter.setShortNext(aData);
 
         } else if ((dataType == DataType.INT)|| (dataType == DataType.ENUM4)) {
-          int[] data = sdata.getJavaArrayInt(m);
+          int[] data = sdata.getJavaArrayInt(realm);
           for (int aData : data) resultIter.setIntNext(aData);
 
         } else if (dataType == DataType.LONG) {
-          long[] data = sdata.getJavaArrayLong(m);
+          long[] data = sdata.getJavaArrayLong(realm);
           for (long aData : data) resultIter.setLongNext(aData);
 
         } else if (dataType == DataType.CHAR) {
-          char[] data = sdata.getJavaArrayChar(m);
+          char[] data = sdata.getJavaArrayChar(realm);
           for (char aData : data) resultIter.setCharNext(aData);
 
         } else if (dataType == DataType.STRING) {
-          String[] data = sdata.getJavaArrayString(m);
+          String[] data = sdata.getJavaArrayString(realm);
           for (String aData : data) resultIter.setObjectNext(aData);
 
         } else if (dataType == DataType.STRUCTURE) {
-          ArrayStructure as = sdata.getArrayStructure(m);
+          ArrayStructure as = sdata.getArrayStructure(realm);
           StructureDataIterator innerIter = as.getStructureDataIterator();
           while (innerIter.hasNext())
             resultIter.setObjectNext( innerIter.next());
@@ -198,17 +199,20 @@ public class ArraySequence extends ArrayStructure {
 
   private int initial = 1000; // ??
   // when we dont know how many in the iteration
-  private Array extractMemberArrayFromIteration(StructureMembers.Member m, int[] rshape) throws IOException {
-    DataType dataType = m.getDataType();
+  private Array extractMemberArrayFromIteration(StructureMembers.Member proxym, int[] rshape) throws IOException {
+    DataType dataType = proxym.getDataType();
     StructureDataIterator sdataIter = getStructureDataIterator();
     Object dataArray = null;
+    int count = 0;
 
     if (dataType == DataType.DOUBLE) {
       ArrayList<Double> result = new ArrayList<Double>(initial);
       while (sdataIter.hasNext()) {
         StructureData sdata = sdataIter.next();
-        double[] data = sdata.getJavaArrayDouble(m);
+        StructureMembers.Member realm = sdata.getStructureMembers().findMember(proxym.getName());
+        double[] data = sdata.getJavaArrayDouble(realm);
         for (double aData : data) result.add(aData);
+        count++;
       }
       double[] da = new double[result.size()];
       int i = 0;
@@ -219,8 +223,10 @@ public class ArraySequence extends ArrayStructure {
       ArrayList<Float> result = new ArrayList<Float>(initial);
       while (sdataIter.hasNext()) {
         StructureData sdata = sdataIter.next();
-        float[] data = sdata.getJavaArrayFloat(m);
+        StructureMembers.Member realm = sdata.getStructureMembers().findMember(proxym.getName());
+        float[] data = sdata.getJavaArrayFloat(realm);
         for (float aData : data) result.add(aData);
+        count++;
       }
       float[] da = new float[result.size()];
       int i = 0;
@@ -231,8 +237,10 @@ public class ArraySequence extends ArrayStructure {
       ArrayList<Byte> result = new ArrayList<Byte>(initial);
       while (sdataIter.hasNext()) {
         StructureData sdata = sdataIter.next();
-        byte[] data = sdata.getJavaArrayByte(m);
+        StructureMembers.Member realm = sdata.getStructureMembers().findMember(proxym.getName());
+        byte[] data = sdata.getJavaArrayByte(realm);
         for (byte aData : data) result.add(aData);
+        count++;
       }
       byte[] da = new byte[result.size()];
       int i = 0;
@@ -243,8 +251,10 @@ public class ArraySequence extends ArrayStructure {
       ArrayList<Short> result = new ArrayList<Short>(initial);
       while (sdataIter.hasNext()) {
         StructureData sdata = sdataIter.next();
-        short[] data = sdata.getJavaArrayShort(m);
+        StructureMembers.Member realm = sdata.getStructureMembers().findMember(proxym.getName());
+        short[] data = sdata.getJavaArrayShort(realm);
         for (short aData : data) result.add(aData);
+        count++;
       }
       short[] da = new short[result.size()];
       int i = 0;
@@ -255,8 +265,10 @@ public class ArraySequence extends ArrayStructure {
       ArrayList<Integer> result = new ArrayList<Integer>(initial);
       while (sdataIter.hasNext()) {
         StructureData sdata = sdataIter.next();
-        int[] data = sdata.getJavaArrayInt(m);
+        StructureMembers.Member realm = sdata.getStructureMembers().findMember(proxym.getName());
+        int[] data = sdata.getJavaArrayInt(realm);
         for (int aData : data) result.add(aData);
+        count++;
       }
       int[] da = new int[result.size()];
       int i = 0;
@@ -267,8 +279,10 @@ public class ArraySequence extends ArrayStructure {
       ArrayList<Long> result = new ArrayList<Long>(initial);
       while (sdataIter.hasNext()) {
         StructureData sdata = sdataIter.next();
-        long[] data = sdata.getJavaArrayLong(m);
+        StructureMembers.Member realm = sdata.getStructureMembers().findMember(proxym.getName());
+        long[] data = sdata.getJavaArrayLong(realm);
         for (long aData : data) result.add(aData);
+        count++;
       }
       long[] da = new long[result.size()];
       int i = 0;
@@ -279,8 +293,10 @@ public class ArraySequence extends ArrayStructure {
       ArrayList<Character> result = new ArrayList<Character>(initial);
       while (sdataIter.hasNext()) {
         StructureData sdata = sdataIter.next();
-        char[] data = sdata.getJavaArrayChar(m);
+        StructureMembers.Member realm = sdata.getStructureMembers().findMember(proxym.getName());
+        char[] data = sdata.getJavaArrayChar(realm);
         for (char aData : data) result.add(aData);
+        count++;
       }
       char[] da = new char[result.size()];
       int i = 0;
@@ -291,8 +307,10 @@ public class ArraySequence extends ArrayStructure {
       ArrayList<String> result = new ArrayList<String>(initial);
       while (sdataIter.hasNext()) {
         StructureData sdata = sdataIter.next();
-        String[] data = sdata.getJavaArrayString(m);
+        StructureMembers.Member realm = sdata.getStructureMembers().findMember(proxym.getName());
+        String[] data = sdata.getJavaArrayString(realm);
         for (String aData : data) result.add(aData);
+        count++;
       }
       String[] da = new String[result.size()];
       int i = 0;
@@ -303,17 +321,21 @@ public class ArraySequence extends ArrayStructure {
       ArrayList<StructureData> result = new ArrayList<StructureData>(initial);
       while (sdataIter.hasNext()) {
         StructureData sdata = sdataIter.next();
-        ArrayStructure as = sdata.getArrayStructure(m);
+        StructureMembers.Member realm = sdata.getStructureMembers().findMember(proxym.getName());
+        ArrayStructure as = sdata.getArrayStructure(realm);
         StructureDataIterator innerIter = as.getStructureDataIterator();
         while (innerIter.hasNext())
           result.add( innerIter.next());
+        count++;
       }
       StructureData[] da = new StructureData[result.size()];
-      StructureMembers membersw = new StructureMembers(m.getStructureMembers()); // no data arrays get propagated
+      rshape[0] = count;
+      StructureMembers membersw = new StructureMembers(proxym.getStructureMembers()); // no data arrays get propagated
       return new ArrayStructureW(membersw, rshape, da);
     }
 
     // create an array to hold the result
+    rshape[0] = count;
     return Array.factory(dataType.getPrimitiveClassType(), rshape, dataArray);
   }
 

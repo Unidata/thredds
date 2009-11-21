@@ -153,7 +153,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
   }
 
 
-  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
+  /* public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
     Structure s = construct.recordStructure; // LOOK always read all members (!)
     Range want = section.getRange(0);
     int n = want.length();
@@ -201,7 +201,13 @@ public class BufrIosp extends AbstractIOServiceProvider {
     if (addTime) addTime(result);
 
     return result;
-  }
+  }  */
+
+  private int nelems = -1;
+   public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
+      Structure s = construct.recordStructure;
+      return new ArraySequence(s.makeStructureMembers(), new SeqIter(), nelems);
+    }
 
   private void addTime(ArrayStructure as) throws IOException {
     int n = (int) as.getSize();
@@ -212,7 +218,6 @@ public class BufrIosp extends AbstractIOServiceProvider {
       ii.setDoubleNext(construct.makeObsTimeValue(iter.next()));
     StructureMembers.Member m = as.findMember(ConstructNC.TIME_NAME);
     m.setDataArray(timeData);
-
   }
 
   /**
@@ -251,7 +256,10 @@ public class BufrIosp extends AbstractIOServiceProvider {
     public boolean hasNext() throws IOException {
       if (currIter == null) {
         currIter = readNextMessage();
-        if (currIter == null) return false;
+        if (currIter == null) {
+          nelems = recnum;
+          return false;
+        }
       }
 
       if (!currIter.hasNext()) {
