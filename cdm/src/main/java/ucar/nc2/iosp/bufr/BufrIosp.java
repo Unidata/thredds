@@ -53,7 +53,7 @@ import java.nio.ByteOrder;
  */
 public class BufrIosp extends AbstractIOServiceProvider {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrIosp.class);
-  static final String obsRecord = "obsRecord";
+  static public final String obsRecord = "obs";
   static final String obsIndex = "obsRecordIndex";
 
   // debugging
@@ -134,28 +134,27 @@ public class BufrIosp extends AbstractIOServiceProvider {
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
   private class MsgFinder {
-     int msgIndex = 0;
+    int msgIndex = 0;
 
-     Message find(int index) {
-       while (msgIndex < msgs.size()) {  // LOOK use binary search
-         Message m = msgs.get(msgIndex);
-         if ((obsStart[msgIndex] <= index) && (index < obsStart[msgIndex] + m.getNumberDatasets()))
-           return m;
-         msgIndex++;
-       }
-       return null;
-     }
+    Message find(int index) {
+      while (msgIndex < msgs.size()) {  // LOOK use binary search
+        Message m = msgs.get(msgIndex);
+        if ((obsStart[msgIndex] <= index) && (index < obsStart[msgIndex] + m.getNumberDatasets()))
+          return m;
+        msgIndex++;
+      }
+      return null;
+    }
 
-     // the offset in the message for this observation
-     int obsOffsetInMessage(int index) {
-       return index - obsStart[msgIndex];
-     }
-   }
+    // the offset in the message for this observation
+    int obsOffsetInMessage(int index) {
+      return index - obsStart[msgIndex];
+    }
+  }
 
 
   public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
-
-    Structure s = (Structure) v2;
+    Structure s = construct.recordStructure; // LOOK always read all members (!)
     Range want = section.getRange(0);
     int n = want.length();
     boolean addTime = (s.findVariable(ConstructNC.TIME_NAME) != null);
@@ -165,6 +164,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
     ArrayStructureMA ama = null;
     if (protoMessage.dds.isCompressed()) {
       ama = ArrayStructureMA.factoryMA(s, new int[]{n});
+      MessageCompressedDataReader.setIterators(ama);
       result = ama;
     } else {
       StructureMembers members = s.makeStructureMembers();
@@ -178,7 +178,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
     int count = 0;
     int begin = 0;
     for (Message m : msgs) {
-      Range have = new Range(begin, begin + m.getNumberDatasets()-1);
+      Range have = new Range(begin, begin + m.getNumberDatasets() - 1);
       int start = begin;
       begin += m.getNumberDatasets();
       if (have.past(want)) break;
@@ -186,72 +186,166 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
       // need some of this one
       Range use = want.intersect(have);
-      use.shiftOrigin(start);
+      use = use.shiftOrigin(start);
 
       DataDescriptor.transferInfo(protoMessage.getRootDataDescriptor().getSubKeys(), m.getRootDataDescriptor().getSubKeys());
       if (m.dds.isCompressed()) {
         MessageCompressedDataReader reader = new MessageCompressedDataReader();
-        reader.readData(ama, m, raf, use, addTime, null);
+        reader.readData(ama, m, raf, use, null);
       } else {
         MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
         count += reader.readData(abb, m, raf, use, addTime, null);
       }
     }
-    //assert count == n;
+
+    if (addTime) addTime(result);
 
     return result;
   }
 
+  private void addTime(ArrayStructure as) throws IOException {
+    int n = (int) as.getSize();
+    Array timeData = Array.factory(double.class, new int[]{n});
+    IndexIterator ii = timeData.getIndexIterator();
+    StructureDataIterator iter = as.getStructureDataIterator();
+    while (iter.hasNext())
+      ii.setDoubleNext(construct.makeObsTimeValue(iter.next()));
+    StructureMembers.Member m = as.findMember(ConstructNC.TIME_NAME);
+    m.setDataArray(timeData);
+
+  }
+
+  /**
+   * Get the structure iterator
+   *
+   * @param s          the Structure
+   * @param bufferSize the buffersize
+   * @return the data iterator
+   * @throws java.io.IOException if problem reading data
+   */
+  public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
+    return new SeqIter();
+  }
+
+  private class SeqIter implements StructureDataIterator {
+    StructureDataIterator currIter;
+    Iterator<Message> messIter;
+    int recnum = 0;
+    int bufferSize = -1;
+    boolean addTime;
+
+    SeqIter() {
+      addTime = (construct.recordStructure.findVariable(ConstructNC.TIME_NAME) != null);
+      reset();
+    }
+
+    @Override
+    public StructureDataIterator reset() {
+      recnum = 0;
+      messIter = msgs.iterator();
+      currIter = null;
+      return this;
+    }
+
+    @Override
+    public boolean hasNext() throws IOException {
+      if (currIter == null) {
+        currIter = readNextMessage();
+        if (currIter == null) return false;
+      }
+
+      if (!currIter.hasNext()) {
+        currIter = readNextMessage();
+        return hasNext();
+      }
+
+      return true;
+    }
+
+    @Override
+    public StructureData next() throws IOException {
+      recnum++;
+      return currIter.next();
+    }
+
+    private StructureDataIterator readNextMessage() throws IOException {
+      if (!messIter.hasNext()) return null;
+      Message m = messIter.next();
+      ArrayStructure as;
+      if (m.dds.isCompressed()) {
+        MessageCompressedDataReader reader = new MessageCompressedDataReader();
+        as = reader.readEntireMessage(construct.recordStructure, protoMessage, m, raf, null);
+      } else {
+        MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
+        as = reader.readEntireMessage(construct.recordStructure, protoMessage, m, raf, null);
+      }
+
+      if (addTime) addTime(as);
+      return as.getStructureDataIterator();
+    }
+
+    @Override
+    public void setBufferSize(int bufferSize) {
+      this.bufferSize = bufferSize;
+    }
+
+    @Override
+    public int getCurrentRecno() {
+      return recnum - 1;
+    }
+  }
+
+
   /* public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
 
- Structure s = (Structure) v2;
- if (v2.getName().equals(obsIndex)) {  // LOOK
-   return readIndex(s, section);
- }
+Structure s = (Structure) v2;
+if (v2.getName().equals(obsIndex)) {  // LOOK
+  return readIndex(s, section);
+}
 
- // allocate ArrayStructureBB for outer structure
- StructureMembers members = s.makeStructureMembers();
- ArrayStructureBB.setOffsets(members);
+// allocate ArrayStructureBB for outer structure
+StructureMembers members = s.makeStructureMembers();
+ArrayStructureBB.setOffsets(members);
 
- ArrayStructureBB abb = new ArrayStructureBB(members, section.getShape());
- ByteBuffer bb = abb.getByteBuffer();
- bb.order(ByteOrder.BIG_ENDIAN);
- if (debugCompress) System.out.printf("bb.capacity= %d %n", bb.capacity());
+ArrayStructureBB abb = new ArrayStructureBB(members, section.getShape());
+ByteBuffer bb = abb.getByteBuffer();
+bb.order(ByteOrder.BIG_ENDIAN);
+if (debugCompress) System.out.printf("bb.capacity= %d %n", bb.capacity());
 
- // long total_offset = offset * section.computeSize();
- //System.out.println("offset=" + offset + " nelems= " + section.computeSize());
- //System.out.println("total offset=" + total_offset + " bb_size= " + bb.capacity());
- // assert offset == bb.capacity() : "total offset="+offset+ " bb_size= "+bb.capacity();
+// long total_offset = offset * section.computeSize();
+//System.out.println("offset=" + offset + " nelems= " + section.computeSize());
+//System.out.println("total offset=" + total_offset + " bb_size= " + bb.capacity());
+// assert offset == bb.capacity() : "total offset="+offset+ " bb_size= "+bb.capacity();
 
- MsgFinder msgf = new MsgFinder();
- Message current = null;
- List<MemberDD> m2dd = null;
+MsgFinder msgf = new MsgFinder();
+Message current = null;
+List<MemberDD> m2dd = null;
 
- // loop through the obs dimension index
- Range range = section.getRange(0);
- for (int obsIndex = range.first(); obsIndex <= range.last(); obsIndex += range.stride()) {
-   Message msg = msgf.find(obsIndex);
-   if (msg == null) {
-     log.error("MsgFinder failed on index " + obsIndex);
-     throw new IllegalStateException("MsgFinder failed on index " + obsIndex);
+// loop through the obs dimension index
+Range range = section.getRange(0);
+for (int obsIndex = range.first(); obsIndex <= range.last(); obsIndex += range.stride()) {
+  Message msg = msgf.find(obsIndex);
+  if (msg == null) {
+    log.error("MsgFinder failed on index " + obsIndex);
+    throw new IllegalStateException("MsgFinder failed on index " + obsIndex);
 
-   } else if (msg != current) {
-     // transfer info from proto message
-     DataDescriptor.transferInfo(protoMessage.getRootDataDescriptor().getSubKeys(), msg.getRootDataDescriptor().getSubKeys());
-     // create message to member mapping
-     m2dd = associateMessage2Members( msg.getRootDataDescriptor().getSubKeys(), members); // connect this message to the desired StructureMembers
-     current = msg;
-   }
+  } else if (msg != current) {
+    // transfer info from proto message
+    DataDescriptor.transferInfo(protoMessage.getRootDataDescriptor().getSubKeys(), msg.getRootDataDescriptor().getSubKeys());
+    // create message to member mapping
+    m2dd = associateMessage2Members( msg.getRootDataDescriptor().getSubKeys(), members); // connect this message to the desired StructureMembers
+    current = msg;
+  }
 
-   //System.out.println("read obs"+obsIndex+" in msg "+msgf.msgIndex);
-   boolean addTime = construct.hasTime && (s.findVariable(ConstructNC.TIME_NAME) != null);
-   readOneObs(msg, msgf.obsOffsetInMessage(obsIndex), abb, m2dd, addTime);
- }
+  //System.out.println("read obs"+obsIndex+" in msg "+msgf.msgIndex);
+  boolean addTime = construct.hasTime && (s.findVariable(ConstructNC.TIME_NAME) != null);
+  readOneObs(msg, msgf.obsOffsetInMessage(obsIndex), abb, m2dd, addTime);
+}
 
- return abb;
+return abb;
 }   */
 
-  // sequentially scan through messages to find the correct observation
+  /* sequentially scan through messages to find the correct observation
 
 
   List<MemberDD> associateMessage2Members(List<DataDescriptor> dkeys, StructureMembers members) throws IOException {
@@ -272,11 +366,6 @@ public class BufrIosp extends AbstractIOServiceProvider {
       bitOffset += dkey.getBitWidth();
     }
 
-    /* for (StructureMembers.Member m : members.getMembers()) {
-      if () {
-        log.error("associateMessage2Members cant find "+m.getName());
-      }
-    } */
 
     return result;
   }
@@ -315,9 +404,9 @@ public class BufrIosp extends AbstractIOServiceProvider {
       double val = construct.makeObsTimeValue(abb);
       abb.getByteBuffer().putInt(0, (int) val); // first field in the bb // LOOK maybe double ??
     }
-  }
+  } */
 
-  /**
+  /*
    * Read uncompressed data for one observation
    *
    * @param reader     reads bits from teh raf
@@ -326,7 +415,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
    * @param m2dd       maps Member to DD
    * @param abb        the ArrayStructureBB
    * @throws IOException on read error
-   */
+   *
   private void readDataUncompressed(BitReader reader, BitCounterUncompressed bitCounter, int row, List<MemberDD> m2dd, ArrayStructureBB abb) throws IOException {
     ByteBuffer bb = abb.getByteBuffer();
 
@@ -494,7 +583,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
     m, x, C1, C2,... Cm
 
   Where x appears to be 6 zero bits.
-   */
+
 
   // read data for a particular obs
 
@@ -703,7 +792,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
       timeArray.set(count, getTime(obs));
       nameArray.set(count, obs.getName());
       count++;
-    }  */
+    }
 
     return ama;
   }
@@ -717,7 +806,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
         e.printStackTrace();
       }
     return obs.time;
-  } */
+  }
 
   private Structure find(List<Variable> vars) {
     Structure s;
@@ -730,7 +819,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
       }
     }
     return null;
-  }
+  }  */
 
 
   public String getDetailInfo() {

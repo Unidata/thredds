@@ -476,8 +476,9 @@ public class Uspln extends AbstractLightningIOSP {
      */
     public Array readData(Variable v2, Section section)
             throws IOException, InvalidRangeException {
-        return new ArraySequence(sm, getStructureIterator(null, 0), 0);
+        return new ArraySequence(sm, getStructureIterator(null, 0), nelems);
     }
+    private int nelems = -1;
 
     /**
      * Get the structure iterator
@@ -547,6 +548,7 @@ public class Uspln extends AbstractLightningIOSP {
         private boolean readStroke() throws IOException {
             String line = raf.readLine();
             if (line == null) {
+                nelems = numFlashes; // track this for next time
                 return false;
             }
             if (StringUtil.regexpMatch(line, MAGIC)

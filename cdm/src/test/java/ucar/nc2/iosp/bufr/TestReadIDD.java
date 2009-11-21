@@ -69,7 +69,7 @@ public class TestReadIDD extends TestCase {
         byte[] mbytes = scan.getMessageBytes(m);
         NetcdfFile ncfile = NetcdfFile.openInMemory("test", mbytes);
         ncd = new NetcdfDataset(ncfile);
-        Structure s = (Structure) ncd.findVariable("obsRecord");
+        Structure s = (Structure) ncd.findVariable(BufrIosp.obsRecord);
         assert s != null;
         readAll(s);
 

@@ -39,10 +39,6 @@ import ucar.ma2.*;
 
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.constants.CF;
-import ucar.nc2.constants._Coordinate;
-
-import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.io.RandomAccessFile;
@@ -331,8 +327,9 @@ public class Nldn extends AbstractLightningIOSP {
      */
     public Array readData(Variable v2, Section section)
             throws IOException, InvalidRangeException {
-        return new ArraySequence(sm, new SeqIter(), 0);
+        return new ArraySequence(sm, new SeqIter(), nelems);
     }
+    private int nelems = -1;
 
     /**
      * Get the structure iterator
@@ -421,6 +418,7 @@ public class Nldn extends AbstractLightningIOSP {
          */
         private boolean readHeader() throws IOException {
             if ((bytesRead + recHeader) > totalBytes) {
+                nelems = done; // record the number of elements for next time
                 return false;
             }
 

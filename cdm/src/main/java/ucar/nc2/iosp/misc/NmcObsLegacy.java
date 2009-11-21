@@ -688,7 +688,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
       // need an empty one
       CatIterator iter = new CatIterator(new Entry[0], useStructure);
-      ArraySequence seq = new ArraySequence(iter.members, iter, 0);
+      ArraySequence seq = new ArraySequence(iter.members, iter, -1); // ??
       int index = abb.addObjectToHeap(seq);
       bb.putInt(index);
     }

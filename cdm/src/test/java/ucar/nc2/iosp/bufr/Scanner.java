@@ -745,7 +745,7 @@ public class Scanner {
         reader.readData(null, m, raf, null, false, null);
       } else {
         MessageCompressedDataReader reader = new MessageCompressedDataReader();
-        reader.readData(null, m, raf, null, false, f);
+        reader.readData(null, m, raf, null, f);
       }
 
       int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
@@ -783,6 +783,23 @@ public class Scanner {
       }
       count++;
     }
+  }
+
+  // extract n messages to fileOut
+  static void extractNMessages(String filein, int n, String fileout) throws IOException {
+    FileOutputStream fos = new FileOutputStream(fileout);
+    WritableByteChannel wbc = fos.getChannel();
+
+    RandomAccessFile raf = new RandomAccessFile(filein, "r");
+    MessageScanner scan = new MessageScanner(raf);
+    int count = 0;
+    while (scan.hasNext() && (count < n)) {
+      Message m = scan.next();
+        scan.writeCurrentMessage(wbc);
+      count++;
+    }
+    wbc.close();
+    raf.close();
   }
 
   // extract the first message that contains the header string to fileOut
@@ -823,6 +840,8 @@ public class Scanner {
 
   static Formatter out = new Formatter(System.out);
   static public void main(String args[]) throws IOException {
+    extractNMessages("D:/formats/bufr/tmp/dispatch/KNES-ISXX03.bufr", 3, "D:/formats/bufr/tmp/ISXX03-3.bufr");
+
     //extract("D:/bufr/dispatch/EGRR-IUAD01.bufr", 0, "D:/bufr/out/EGRR-IUAD01-1.bufr");
     //extract("D:/bufr/dispatch/IUPT0KBOU.bufr", 0, "D:/bufr/out/IUPT0KBOU-1.bufr");
     //extract("D:/bufr/mlodeRaw/20080709_0200.bufr", "IUAD01 EGRR", "D:/bufr/out/IUAD01EGRR-1.bufr");
@@ -895,9 +914,9 @@ public class Scanner {
        }
      }); // */
 
-    // new reader
+    /* new reader
     //test("D:/formats/bufr/tmp/dispatch/asample.bufr", new MClosure() {
-    test("C:/data/formats/bufr3/split/", false, new MClosure() {
+    test("D:/formats/bufr/tmp/split/", false, new MClosure() {
       public void run(String filename) throws IOException {
         if (!(filename.endsWith(".bufr"))) return;
         try {

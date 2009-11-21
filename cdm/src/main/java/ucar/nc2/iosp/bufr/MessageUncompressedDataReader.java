@@ -107,7 +107,8 @@ public class MessageUncompressedDataReader {
     StructureMembers members = s.makeStructureMembers();
     ArrayStructureBB.setOffsets(members);
 
-    ArrayStructureBB abb = new ArrayStructureBB(members, new int[]{m.getNumberDatasets()});
+    int n = m.getNumberDatasets();
+    ArrayStructureBB abb = new ArrayStructureBB(members, new int[]{n});
     ByteBuffer bb = abb.getByteBuffer();
     bb.order(ByteOrder.BIG_ENDIAN);
 
@@ -123,7 +124,7 @@ public class MessageUncompressedDataReader {
   /**
    * Read some or all datasets from a single message
    *
-   * @param abb place info into here in order (may be null)
+   * @param abb place data into here in order (may be null)
    * @param m   read this message
    * @param raf from this file
    * @param r which datasets, reletive to this message. null == all.

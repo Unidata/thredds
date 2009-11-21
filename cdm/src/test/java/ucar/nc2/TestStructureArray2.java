@@ -36,6 +36,7 @@ import junit.framework.*;
 import ucar.ma2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.StructurePseudo;
+import ucar.nc2.iosp.bufr.BufrIosp;
 
 import java.io.*;
 
@@ -93,7 +94,7 @@ public class TestStructureArray2 extends TestCase {
     NetcdfFile ncf = NetcdfFile.open(fileIn);
     System.out.println(ncf.toString());
 
-    Structure s = (Structure) ncf.findVariable("obsRecord");
+    Structure s = (Structure) ncf.findVariable(BufrIosp.obsRecord);
     Array data = s.read();
     test.testArrayStructure( (ArrayStructure) data);
 
@@ -111,7 +112,7 @@ public class TestStructureArray2 extends TestCase {
     NetcdfDataset ncf = NetcdfDataset.openDataset(fileIn);
     System.out.println(ncf.toString());
 
-    Structure s = (Structure) ncf.findVariable("obsRecord");
+    Structure s = (Structure) ncf.findVariable(BufrIosp.obsRecord);
     Array data = s.read();
     test.testArrayStructure( (ArrayStructure) data);
 

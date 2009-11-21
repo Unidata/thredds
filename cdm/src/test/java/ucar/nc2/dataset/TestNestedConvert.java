@@ -36,6 +36,7 @@ import junit.framework.TestCase;
 import ucar.nc2.TestAll;
 import ucar.nc2.Structure;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.iosp.bufr.BufrIosp;
 import ucar.ma2.StructureData;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.ArrayStructure;
@@ -56,7 +57,7 @@ public class TestNestedConvert extends TestCase {
   public void utestNestedTable() throws IOException, InvalidRangeException {
     String filename = TestAll.cdmLocalTestDataDir + "dataset/nestedTable.bufr";
     NetcdfFile ncfile = ucar.nc2.dataset.NetcdfDataset.openFile(filename, null);
-    Structure outer = (Structure) ncfile.findVariable("obsRecord");
+    Structure outer = (Structure) ncfile.findVariable(BufrIosp.obsRecord);
     StructureData data = outer.readStructure(0);
     //NCdumpW.printStructureData( new PrintWriter(System.out), data);
 
@@ -72,7 +73,7 @@ public class TestNestedConvert extends TestCase {
   public void utestNestedTableEnhanced() throws IOException, InvalidRangeException {
     String filename = TestAll.cdmLocalTestDataDir + "dataset/nestedTable.bufr";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
-    Structure outer = (Structure) ncd.findVariable("obsRecord");
+    Structure outer = (Structure) ncd.findVariable(BufrIosp.obsRecord);
     StructureData data = outer.readStructure(0);
     //NCdumpW.printStructureData( new PrintWriter(System.out), data);
 

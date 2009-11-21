@@ -36,6 +36,7 @@ package ucar.nc2.util.xml;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.iosp.bufr.MessageScanner;
 import ucar.nc2.iosp.bufr.Message;
+import ucar.nc2.iosp.bufr.BufrIosp;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
@@ -179,7 +180,7 @@ public class TimeBufr2Xml {
       staxWriter.writeCharacters(message.getCategoryFullName());
       staxWriter.writeEndElement();
 
-      Structure obs = (Structure) ncfile.findVariable("obsRecord");
+      Structure obs = (Structure) ncfile.findVariable(BufrIosp.obsRecord);
       ArrayStructure obsData = (ArrayStructure) obs.read();
       StructureDataIterator sdataIter = obsData.getStructureDataIterator();
       while (sdataIter.hasNext()) {

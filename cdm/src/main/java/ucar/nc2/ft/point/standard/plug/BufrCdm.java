@@ -39,6 +39,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.Structure;
+import ucar.nc2.iosp.bufr.BufrIosp;
 
 import java.util.StringTokenizer;
 import java.util.Formatter;
@@ -88,8 +89,8 @@ public class BufrCdm extends TableConfigurerImpl {
   protected TableConfig getPointConfig(NetcdfDataset ds, Formatter errlog) {
 
     // the profile values are the inner sequence
-    TableConfig obsTable = new TableConfig(Table.Type.Structure, "obsRecord");
-    Structure obsStruct = (Structure) ds.findVariable("obsRecord");
+    TableConfig obsTable = new TableConfig(Table.Type.Structure, BufrIosp.obsRecord);
+    Structure obsStruct = (Structure) ds.findVariable(BufrIosp.obsRecord);
     obsTable.structName = obsStruct.getName();
     obsTable.nestedTableName = obsStruct.getShortName();
     obsTable.lat = Evaluator.getNameOfVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Lat.toString());
@@ -104,12 +105,12 @@ public class BufrCdm extends TableConfigurerImpl {
      // construct the station table by reading through the timeseries
      TableConfig stnTable = new TableConfig(Table.Type.Construct, "station");
      stnTable.featureType = FeatureType.STATION;
-     stnTable.structName = "obsRecord";
+     stnTable.structName = BufrIosp.obsRecord;
 
      // the time series is just the outer structure
-     TableConfig timeTable = new TableConfig(Table.Type.ParentId, "obsRecord");
+     TableConfig timeTable = new TableConfig(Table.Type.ParentId, BufrIosp.obsRecord);
 
-     Structure stnStruct = (Structure) ds.findVariable("obsRecord");
+     Structure stnStruct = (Structure) ds.findVariable(BufrIosp.obsRecord);
      timeTable.lat = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Lat.toString());
      timeTable.lon = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Lon.toString());
      timeTable.stnAlt = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Height.toString());
@@ -120,7 +121,7 @@ public class BufrCdm extends TableConfigurerImpl {
      timeTable.parentIndex = timeTable.stnId;
 
      timeTable.time = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Time.toString());
-     timeTable.structName = "obsRecord";
+     timeTable.structName = BufrIosp.obsRecord;
      stnTable.addChild(timeTable);
 
      return stnTable;
@@ -131,8 +132,8 @@ public class BufrCdm extends TableConfigurerImpl {
     TableConfig topTable = new TableConfig(Table.Type.Top, "singleTrajectory");
 
     // the profile values are the inner sequence
-    TableConfig obsTable = new TableConfig(Table.Type.Structure, "obsRecord");
-    Structure obsStruct = (Structure) ds.findVariable("obsRecord");
+    TableConfig obsTable = new TableConfig(Table.Type.Structure, BufrIosp.obsRecord);
+    Structure obsStruct = (Structure) ds.findVariable(BufrIosp.obsRecord);
     obsTable.structName = obsStruct.getName();
     obsTable.nestedTableName = obsStruct.getShortName();
     obsTable.lat = Evaluator.getNameOfVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Lat.toString());
@@ -148,8 +149,8 @@ public class BufrCdm extends TableConfigurerImpl {
      // construct the station table by reading through the timeseries
      TableConfig profileTable = new TableConfig(Table.Type.Structure, "profile");
      profileTable.featureType = FeatureType.PROFILE;
-     profileTable.structName = "obsRecord";
-     Structure profileStruct = (Structure) ds.findVariable("obsRecord");
+     profileTable.structName = BufrIosp.obsRecord;
+     Structure profileStruct = (Structure) ds.findVariable(BufrIosp.obsRecord);
      profileTable.lat = Evaluator.getNameOfVariableWithAttribute(profileStruct, _Coordinate.AxisType, AxisType.Lat.toString());
      profileTable.lon = Evaluator.getNameOfVariableWithAttribute(profileStruct, _Coordinate.AxisType, AxisType.Lon.toString());
      profileTable.time = Evaluator.getNameOfVariableWithAttribute(profileStruct, _Coordinate.AxisType, AxisType.Time.toString());
@@ -170,12 +171,12 @@ public class BufrCdm extends TableConfigurerImpl {
     // construct the station table by reading through the timeseries
     TableConfig stnTable = new TableConfig(Table.Type.Construct, "station");
     stnTable.featureType = FeatureType.STATION_PROFILE;
-    stnTable.structName = "obsRecord";
+    stnTable.structName = BufrIosp.obsRecord;
 
     // the time series is just the outer structure
-    TableConfig timeTable = new TableConfig(Table.Type.ParentId, "obsRecord");
+    TableConfig timeTable = new TableConfig(Table.Type.ParentId, BufrIosp.obsRecord);
 
-    Structure stnStruct = (Structure) ds.findVariable("obsRecord");
+    Structure stnStruct = (Structure) ds.findVariable(BufrIosp.obsRecord);
     timeTable.lat = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Lat.toString());
     timeTable.lon = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Lon.toString());
     timeTable.stnAlt = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Height.toString());
@@ -186,7 +187,7 @@ public class BufrCdm extends TableConfigurerImpl {
     timeTable.parentIndex = timeTable.stnId;
 
     timeTable.time = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Time.toString());
-    timeTable.structName = "obsRecord";
+    timeTable.structName = BufrIosp.obsRecord;
     stnTable.addChild(timeTable);
 
     // the profile values are the inner sequence

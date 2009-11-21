@@ -238,7 +238,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
     private ArraySequence makeEmptySequence(Sequence seq) {
         StructureMembers members = seq.makeStructureMembers();
         return new ArraySequence(members, new EmptyStructureDataIterator(),
-                                 0);
+                                 -1);
     }
 
     /**

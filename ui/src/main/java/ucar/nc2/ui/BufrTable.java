@@ -220,7 +220,7 @@ public class BufrTable extends JPanel {
             reader.readData(null, m, raf, null, false, out);
           } else {
             MessageCompressedDataReader reader = new MessageCompressedDataReader();
-            reader.readData(null, m, raf, null, false, out);
+            reader.readData(null, m, raf, null, out);
           }
           int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
           DataDescriptor root = m.getRootDataDescriptor();

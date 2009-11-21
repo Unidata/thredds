@@ -33,6 +33,7 @@
 package ucar.ma2;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * ArraySequence is the way to contain the data for a Sequence, using a StructureDataIterator.
@@ -98,6 +99,9 @@ public class ArraySequence extends ArrayStructure {
     int[] rshape = new int[rrank];
     rshape[0] = nelems;
     System.arraycopy(mshape, 0, rshape, 1, mshape.length);
+
+    if (nelems < 0)
+      return extractMemberArrayFromIteration(m, rshape);
 
     // create an empty array to hold the result
     Array result;
@@ -190,6 +194,127 @@ public class ArraySequence extends ArrayStructure {
     }
 
     return result;
+  }
+
+  private int initial = 1000; // ??
+  // when we dont know how many in the iteration
+  private Array extractMemberArrayFromIteration(StructureMembers.Member m, int[] rshape) throws IOException {
+    DataType dataType = m.getDataType();
+    StructureDataIterator sdataIter = getStructureDataIterator();
+    Object dataArray = null;
+
+    if (dataType == DataType.DOUBLE) {
+      ArrayList<Double> result = new ArrayList<Double>(initial);
+      while (sdataIter.hasNext()) {
+        StructureData sdata = sdataIter.next();
+        double[] data = sdata.getJavaArrayDouble(m);
+        for (double aData : data) result.add(aData);
+      }
+      double[] da = new double[result.size()];
+      int i = 0;
+      for (Double d : result) da[i++] = d;
+      dataArray = da;
+
+    } else if (dataType == DataType.FLOAT) {
+      ArrayList<Float> result = new ArrayList<Float>(initial);
+      while (sdataIter.hasNext()) {
+        StructureData sdata = sdataIter.next();
+        float[] data = sdata.getJavaArrayFloat(m);
+        for (float aData : data) result.add(aData);
+      }
+      float[] da = new float[result.size()];
+      int i = 0;
+      for (Float d : result) da[i++] = d;
+      dataArray = da;
+
+    } else if ((dataType == DataType.BYTE) || (dataType == DataType.ENUM1)) {
+      ArrayList<Byte> result = new ArrayList<Byte>(initial);
+      while (sdataIter.hasNext()) {
+        StructureData sdata = sdataIter.next();
+        byte[] data = sdata.getJavaArrayByte(m);
+        for (byte aData : data) result.add(aData);
+      }
+      byte[] da = new byte[result.size()];
+      int i = 0;
+      for (Byte d : result) da[i++] = d;
+      dataArray = da;
+
+    } else if ((dataType == DataType.SHORT)|| (dataType == DataType.ENUM2)) {
+      ArrayList<Short> result = new ArrayList<Short>(initial);
+      while (sdataIter.hasNext()) {
+        StructureData sdata = sdataIter.next();
+        short[] data = sdata.getJavaArrayShort(m);
+        for (short aData : data) result.add(aData);
+      }
+      short[] da = new short[result.size()];
+      int i = 0;
+      for (Short d : result) da[i++] = d;
+      dataArray = da;
+
+    } else if ((dataType == DataType.INT)|| (dataType == DataType.ENUM4)) {
+      ArrayList<Integer> result = new ArrayList<Integer>(initial);
+      while (sdataIter.hasNext()) {
+        StructureData sdata = sdataIter.next();
+        int[] data = sdata.getJavaArrayInt(m);
+        for (int aData : data) result.add(aData);
+      }
+      int[] da = new int[result.size()];
+      int i = 0;
+      for (Integer d : result) da[i++] = d;
+      dataArray = da;
+
+    } else if (dataType == DataType.LONG) {
+      ArrayList<Long> result = new ArrayList<Long>(initial);
+      while (sdataIter.hasNext()) {
+        StructureData sdata = sdataIter.next();
+        long[] data = sdata.getJavaArrayLong(m);
+        for (long aData : data) result.add(aData);
+      }
+      long[] da = new long[result.size()];
+      int i = 0;
+      for (Long d : result) da[i++] = d;
+      dataArray = da;
+
+    } else if (dataType == DataType.CHAR) {
+      ArrayList<Character> result = new ArrayList<Character>(initial);
+      while (sdataIter.hasNext()) {
+        StructureData sdata = sdataIter.next();
+        char[] data = sdata.getJavaArrayChar(m);
+        for (char aData : data) result.add(aData);
+      }
+      char[] da = new char[result.size()];
+      int i = 0;
+      for (Character d : result) da[i++] = d;
+      dataArray = da;
+
+    } else if (dataType == DataType.STRING) {
+      ArrayList<String> result = new ArrayList<String>(initial);
+      while (sdataIter.hasNext()) {
+        StructureData sdata = sdataIter.next();
+        String[] data = sdata.getJavaArrayString(m);
+        for (String aData : data) result.add(aData);
+      }
+      String[] da = new String[result.size()];
+      int i = 0;
+      for (String d : result) da[i++] = d;
+      dataArray = da;
+
+    } else if (dataType == DataType.STRUCTURE) {
+      ArrayList<StructureData> result = new ArrayList<StructureData>(initial);
+      while (sdataIter.hasNext()) {
+        StructureData sdata = sdataIter.next();
+        ArrayStructure as = sdata.getArrayStructure(m);
+        StructureDataIterator innerIter = as.getStructureDataIterator();
+        while (innerIter.hasNext())
+          result.add( innerIter.next());
+      }
+      StructureData[] da = new StructureData[result.size()];
+      StructureMembers membersw = new StructureMembers(m.getStructureMembers()); // no data arrays get propagated
+      return new ArrayStructureW(membersw, rshape, da);
+    }
+
+    // create an array to hold the result
+    return Array.factory(dataType.getPrimitiveClassType(), rshape, dataArray);
   }
 
   @Override

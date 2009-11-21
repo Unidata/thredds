@@ -100,7 +100,7 @@ public class TestBufrRead extends TestCase {
 
   public void testCompressedSequence() throws IOException {
     NetcdfFile ncfile = NetcdfFile.open("C:/data/formats/bufr3/JUTX52.bufr");
-    Variable v = ncfile.findVariable("obsRecord");
+    Variable v = ncfile.findVariable(BufrIosp.obsRecord);
     v.read();
     ncfile.close();
   }

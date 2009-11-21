@@ -59,7 +59,7 @@ class ConstructNC {
   //private FeatureType ftype;
   private int nobs;
 
-  Structure recordStructure;
+  Sequence recordStructure;
   private Message proto;
 
   ConstructNC(Message proto, int nobs, ucar.nc2.NetcdfFile nc) throws IOException {
@@ -145,9 +145,9 @@ class ConstructNC {
     Dimension obsDim = new Dimension("record", nobs);
     ncfile.addDimension(null, obsDim);
 
-    recordStructure = new Structure(ncfile, null, null, BufrIosp.obsRecord);
+    recordStructure = new Sequence(ncfile, null, null, BufrIosp.obsRecord);
     ncfile.addVariable(null, recordStructure);
-    recordStructure.setDimensions("record");
+    //recordStructure.setDimensions("record");
 
     DataDescriptor root = proto.getRootDataDescriptor();
     if (hasTime()) {
@@ -499,6 +499,29 @@ class ConstructNC {
       cal.set(year, month-1, day, hour, min, sec);
     } else {
       int doy = abb.convertScalarInt(0, abb.findMember(doyName));
+      cal.set(Calendar.YEAR, year);
+      cal.set(Calendar.DAY_OF_YEAR, doy);
+      cal.set(Calendar.HOUR_OF_DAY, hour);
+      cal.set(Calendar.MINUTE, min);
+      cal.set(Calendar.SECOND, sec);
+    }
+    Date d = cal.getTime();
+    return dateUnit.makeValue(d);
+  }
+
+  double makeObsTimeValue(StructureData sdata) {
+
+    int year = sdata.convertScalarInt(yearName);
+    int hour = sdata.convertScalarInt(hourName);
+    int min = (minName == null) ? 0 : sdata.convertScalarInt(minName);
+    int sec = (secName == null) ? 0 : sdata.convertScalarInt(secName);
+
+    if (dayName != null) {
+      int day = sdata.convertScalarInt(dayName);
+      int month = sdata.convertScalarInt(monthName);
+      cal.set(year, month-1, day, hour, min, sec);
+    } else {
+      int doy = sdata.convertScalarInt(doyName);
       cal.set(Calendar.YEAR, year);
       cal.set(Calendar.DAY_OF_YEAR, doy);
       cal.set(Calendar.HOUR_OF_DAY, hour);
