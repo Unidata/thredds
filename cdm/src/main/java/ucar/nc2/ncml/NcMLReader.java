@@ -632,6 +632,8 @@ public class NcMLReader {
 
     // see if it already exists
     Dimension dim = refg.findDimension(nameInFile);
+    if (dim == null )
+      dim = refg.findDimension(name);
     if (dim == null) { // nope - create it
       String lengthS = dimElem.getAttributeValue("length");
       String isUnlimitedS = dimElem.getAttributeValue("isUnlimited");
