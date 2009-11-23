@@ -433,6 +433,7 @@
       <fileset dir="${root.dir}/..">
         <include name="cdm/build.xml"/>
         <include name="cdm/README.TEMPLATE"/>
+        <include name="cdm/CHANGES.txt"/>
         <include name="cdm/src/main/**"/>
         <include name="common/src/**"/>
         <include name="lib/external/**"/>
