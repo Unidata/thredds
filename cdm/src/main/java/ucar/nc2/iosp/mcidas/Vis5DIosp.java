@@ -309,8 +309,8 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
             }
         }
         varTable = new Hashtable<Variable, Integer>();
-        String dim3D    = TIME + " " + LEVEL + " " + ROW + " " + COLUMN;
-        String dim2D    = TIME + " " + ROW + " " + COLUMN;
+        String dim3D    = TIME + " " + LEVEL + " " + COLUMN + " " + ROW;
+        String dim2D    = TIME + " " + COLUMN + " " + ROW;
         String coords3D = TIME + " " + vert.getName() + " " + LAT + " " + LON;
         String coords2D = TIME + " " + LAT + " " + LON;
 
@@ -358,7 +358,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
      */
     public Array readData(Variable v2, Section section)
             throws IOException, InvalidRangeException {
-        long    start  = System.currentTimeMillis();
+        long    startTime  = System.currentTimeMillis();
         Integer varIdx = varTable.get(v2);
         if (varIdx == null) {
             throw new IOException("unable to find variable index");
@@ -405,6 +405,33 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
                 throw new IOException("Vis5DIosp.readData: bad read "
                                       + v2.getName());
             }
+            /*
+      //- invert rows
+      float[] tmp_data = new float[grid_size];
+
+      if ( zRange == null) {
+        int cnt = 0;
+        for ( int mm = 0; mm < nx; mm++ ) {
+          int start = (mm+1)*ny - 1;
+          for ( int nn = 0; nn < ny; nn++ ) {
+            tmp_data[cnt++] = data[start--];
+          }
+        }
+      } else {
+        int cnt = 0;
+        for ( int ll = 0; ll < nz; ll++ ) {
+          for ( int mm = 0; mm < nx; mm++ ) {
+            int start = ((mm+1)*ny - 1) + ny*nx*ll;
+            for ( int nn = 0; nn < ny; nn++ ) {
+              tmp_data[cnt++] = data[start--];
+            }
+          }
+        }
+      }
+      System.arraycopy(tmp_data, 0, data, 0, grid_size);
+      tmp_data = null;
+      */
+
             // otherwise read it
             if (zRange != null) {
                 for (int z = yRange.first(); z <= zRange.last();
@@ -430,7 +457,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
             }
         }
 
-        long end = System.currentTimeMillis() - start;
+        long end = System.currentTimeMillis() - startTime;
         return dataArray;
     }
 
@@ -614,7 +641,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
                     nc);
 
             Variable lat = new Variable(ncfile, null, null, LAT);
-            lat.setDimensions(ROW + " " + COLUMN);
+            lat.setDimensions(COLUMN + " " + ROW);
             lat.setDataType(DataType.DOUBLE);
             lat.addAttribute(new Attribute("long_name", "latitude"));
             lat.addAttribute(new Attribute(CF.UNITS, "degrees_north"));
@@ -624,7 +651,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
             ncfile.addVariable(null, lat);
 
             Variable lon = new Variable(ncfile, null, null, LON);
-            lon.setDimensions(ROW + " " + COLUMN);
+            lon.setDimensions(COLUMN + " " + ROW);
             lon.setDataType(DataType.DOUBLE);
             lon.addAttribute(new Attribute(CF.UNITS, "degrees_east"));
             lon.addAttribute(new Attribute("long_name", "longitude"));
@@ -633,13 +660,13 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
                                            AxisType.Lon.toString()));
             ncfile.addVariable(null, lon);
 
-            int[]      shape    = new int[] { nr, nc };
+            int[]      shape    = new int[] { nc, nr };
             Array      latArray = Array.factory(DataType.DOUBLE, shape);
             Array      lonArray = Array.factory(DataType.DOUBLE, shape);
             double[][] rowcol   = new double[2][nr * nc];
-            for (int y = 0; y < nr; y++) {
-                for (int x = 0; x < nc; x++) {
-                    int index = y * nc + x;
+            for (int x = 0; x < nc; x++) {
+                for (int y = 0; y < nr; y++) {
+                    int index = x * nr + y;
                     rowcol[0][index] = y;
                     rowcol[1][index] = x;
                 }
@@ -647,15 +674,20 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
             double[][] latlon = coord_sys.toReference(rowcol);
             Index latIndex = latArray.getIndex();
             Index lonIndex = lonArray.getIndex();
+            /*
             for (int y = 0; y < nr; y++) {
                 for (int x = 0; x < nc; x++) {
                     int index = y * nc + x;
-                    latArray.setDouble(latIndex.set(y, x), latlon[0][index]);
-                    lonArray.setDouble(lonIndex.set(y, x), latlon[1][index]);
+            */
+            for (int x = 0; x < nc; x++) {
+                for (int y = 0; y < nr; y++) {
+                    int index = x * nr + y;
                     /*
+                    latArray.setDouble(latIndex.set(x, y), latlon[0][index]);
+                    lonArray.setDouble(lonIndex.set(x, y), latlon[1][index]);
+                    */
                     latArray.setDouble(index, latlon[0][index]);
                     lonArray.setDouble(index, latlon[1][index]);
-                    */
                 }
             }
             lat.setCachedData(latArray, false);
