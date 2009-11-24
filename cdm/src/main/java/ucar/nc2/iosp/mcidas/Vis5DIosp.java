@@ -138,12 +138,24 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
      * @throws IOException  problem reading file
      */
     public boolean isValidFile(RandomAccessFile raf) throws IOException {
+        // quick test
+        raf.order(raf.BIG_ENDIAN);
         raf.seek(0);
         int    n = V5D.length();
         byte[] b = new byte[n];
         raf.read(b);
         String got = new String(b);
-        return got.equals(V5D);
+        if (got.equals(V5D)) {
+           return true;
+        } else { // more rigorous test
+           V5DStruct vv       = null;
+           try {
+               vv = V5DStruct.v5dOpenFile(raf);
+           } catch (BadFormException bfe) {
+               vv = null;
+           }
+           return vv != null;
+        }
     }
 
     /**
@@ -407,6 +419,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
                                       + v2.getName());
             }
 
+            // invert the rows
             float[] tmp_data = new float[grid_size];
 
             if (zRange == null) {
@@ -430,9 +443,8 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
             }
             data = tmp_data;
 
-            // otherwise read it
             if (zRange != null) {
-                for (int z = yRange.first(); z <= zRange.last();
+                for (int z = zRange.first(); z <= zRange.last();
                         z += zRange.stride()) {
                     for (int y = yRange.first(); y <= yRange.last();
                             y += yRange.stride()) {
@@ -584,7 +596,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
           case (0) :
           case (1) :
               for (int i = 0; i < n_levels; i++) {
-                  data.set(i, vert_args[0] + vert_args[1] * 1);
+                  data.set(i, vert_args[0] + vert_args[1] * i);
               }
               break;
 
