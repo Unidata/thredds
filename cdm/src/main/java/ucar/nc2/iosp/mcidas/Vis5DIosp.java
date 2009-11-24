@@ -1,4 +1,4 @@
- /*
+/*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
@@ -30,6 +30,7 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 
 package ucar.nc2.iosp.mcidas;
 
@@ -358,8 +359,8 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
      */
     public Array readData(Variable v2, Section section)
             throws IOException, InvalidRangeException {
-        long    startTime  = System.currentTimeMillis();
-        Integer varIdx = varTable.get(v2);
+        long    startTime = System.currentTimeMillis();
+        Integer varIdx    = varTable.get(v2);
         if (varIdx == null) {
             throw new IOException("unable to find variable index");
         }
@@ -405,32 +406,29 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
                 throw new IOException("Vis5DIosp.readData: bad read "
                                       + v2.getName());
             }
-            /*
-      //- invert rows
-      float[] tmp_data = new float[grid_size];
 
-      if ( zRange == null) {
-        int cnt = 0;
-        for ( int mm = 0; mm < nx; mm++ ) {
-          int start = (mm+1)*ny - 1;
-          for ( int nn = 0; nn < ny; nn++ ) {
-            tmp_data[cnt++] = data[start--];
-          }
-        }
-      } else {
-        int cnt = 0;
-        for ( int ll = 0; ll < nz; ll++ ) {
-          for ( int mm = 0; mm < nx; mm++ ) {
-            int start = ((mm+1)*ny - 1) + ny*nx*ll;
-            for ( int nn = 0; nn < ny; nn++ ) {
-              tmp_data[cnt++] = data[start--];
+            float[] tmp_data = new float[grid_size];
+
+            if (zRange == null) {
+                int cnt = 0;
+                for (int mm = 0; mm < ny; mm++) {
+                    int start = (mm + 1) * nx - 1;
+                    for (int nn = 0; nn < nx; nn++) {
+                        tmp_data[cnt++] = data[start--];
+                    }
+                }
+            } else {
+                int cnt = 0;
+                for (int ll = 0; ll < nz; ll++) {
+                    for (int mm = 0; mm < ny; mm++) {
+                        int start = ((mm + 1) * nx - 1) + nx * ny * ll;
+                        for (int nn = 0; nn < nx; nn++) {
+                            tmp_data[cnt++] = data[start--];
+                        }
+                    }
+                }
             }
-          }
-        }
-      }
-      System.arraycopy(tmp_data, 0, data, 0, grid_size);
-      tmp_data = null;
-      */
+            data = tmp_data;
 
             // otherwise read it
             if (zRange != null) {
@@ -484,9 +482,9 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
         RandomAccessFile  rf       = new RandomAccessFile(args[0], "r", 2048);
         NetcdfFile ncfile = new MakeNetcdfFile(areaiosp, rf, args[0], null);
         System.out.println(ncfile);
-        //if (args.length > 1) {
-        //    ucar.nc2.FileWriter.writeToFile(ncfile, args[1]);
-        //}
+        if (args.length > 1) {
+            ucar.nc2.FileWriter.writeToFile(ncfile, args[1]);
+        }
     }
 
     /**
@@ -671,9 +669,9 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
                     rowcol[1][index] = x;
                 }
             }
-            double[][] latlon = coord_sys.toReference(rowcol);
-            Index latIndex = latArray.getIndex();
-            Index lonIndex = lonArray.getIndex();
+            double[][] latlon   = coord_sys.toReference(rowcol);
+            Index      latIndex = latArray.getIndex();
+            Index      lonIndex = lonArray.getIndex();
             /*
             for (int y = 0; y < nr; y++) {
                 for (int x = 0; x < nc; x++) {
