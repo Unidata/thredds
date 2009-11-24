@@ -3,6 +3,13 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.1:
+ 10:
+  Aggregation bug with  netcdf elements with no referenced dataset
+  Remove nested structures from PointFeature where needed
+  ProfileFeature now has a nominal time
+  Default Conventions look for altitude in description
+  DateUnit checks for NaN
+  various improvements to Bufr IOSP UI
  9:
   NetdfDataset, VariableDS: do not share dimensions with orgVar, make new copy.
     messes up NcML rename dimension with file caching

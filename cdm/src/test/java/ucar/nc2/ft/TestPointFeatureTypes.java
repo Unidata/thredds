@@ -170,7 +170,7 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   public void testProblem() throws IOException {
-    assert 3337 == testPointDataset(topdir + "ft/point/2009103008_sb.gem", FeatureType.POINT, false);
+    assert 8769 == testPointDataset(TestAll.testdataDir+"sounding/gempak/19580807_upa.ncml", FeatureType.STATION_PROFILE, true);
   }
 
   public void testCF() throws IOException {
@@ -403,6 +403,9 @@ public class TestPointFeatureTypes extends TestCase {
       } else if (fc instanceof SectionFeatureCollection) {
         count = testSectionFeatureCollection((SectionFeatureCollection) fc, show);
 
+      } else if (fc instanceof ProfileFeatureCollection) {
+        count = testProfileFeatureCollection((ProfileFeatureCollection) fc, show);
+
       } else {
         count = testNestedPointFeatureCollection((NestedPointFeatureCollection) fc, show);
       }
@@ -441,6 +444,9 @@ public class TestPointFeatureTypes extends TestCase {
       spf.resetIteration();
       while (spf.hasNext()) {
         ucar.nc2.ft.ProfileFeature pf = spf.next();
+        assert pf.getName() != null;
+        //assert pf.getTime() != null;
+
         if (show)
           System.out.printf(" ProfileFeature=%s %n", pf);
         count += testPointFeatureCollection(pf, show);
@@ -453,27 +459,46 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   int testSectionFeatureCollection(SectionFeatureCollection sectionFeatureCollection, boolean show) throws IOException {
-    long start = System.currentTimeMillis();
-    int count = 0;
-    sectionFeatureCollection.resetIteration();
-    while (sectionFeatureCollection.hasNext()) {
-      ucar.nc2.ft.SectionFeature spf = sectionFeatureCollection.next();
+     long start = System.currentTimeMillis();
+     int count = 0;
+     sectionFeatureCollection.resetIteration();
+     while (sectionFeatureCollection.hasNext()) {
+       ucar.nc2.ft.SectionFeature spf = sectionFeatureCollection.next();
 
-      spf.resetIteration();
-      while (spf.hasNext()) {
-        ucar.nc2.ft.ProfileFeature pf = spf.next();
-        if (show)
-          System.out.printf(" ProfileFeature=%s %n", pf);
-        count += testPointFeatureCollection(pf, show);
-      }
-    }
-    long took = System.currentTimeMillis() - start;
-    if (show)
-      System.out.println(" testStationProfileFeatureCollection complete count= " + count + " full iter took= " + took + " msec");
-    return count;
-  }
+       spf.resetIteration();
+       while (spf.hasNext()) {
+         ucar.nc2.ft.ProfileFeature pf = spf.next();
+         assert pf.getName() != null;
+         // assert pf.getTime() != null;
 
-  void showStructureData(StationProfileFeatureCollection stationProfileFeatureCollection) throws IOException {
+         if (show)
+           System.out.printf(" ProfileFeature=%s %n", pf);
+         count += testPointFeatureCollection(pf, show);
+       }
+     }
+     long took = System.currentTimeMillis() - start;
+     if (show)
+       System.out.println(" testStationProfileFeatureCollection complete count= " + count + " full iter took= " + took + " msec");
+     return count;
+   }
+
+  int testProfileFeatureCollection(ProfileFeatureCollection profileFeatureCollection, boolean show) throws IOException {
+     long start = System.currentTimeMillis();
+     int count = 0;
+     profileFeatureCollection.resetIteration();
+     while (profileFeatureCollection.hasNext()) {
+       ucar.nc2.ft.ProfileFeature pf = profileFeatureCollection.next();
+       assert pf.getName() != null;
+       // assert pf.getTime() != null;
+       count += testPointFeatureCollection(pf, show);
+     }
+     long took = System.currentTimeMillis() - start;
+     if (show)
+       System.out.println(" testStationProfileFeatureCollection complete count= " + count + " full iter took= " + took + " msec");
+     return count;
+   }
+
+   void showStructureData(StationProfileFeatureCollection stationProfileFeatureCollection) throws IOException {
     PrintWriter pw = new PrintWriter(System.out);
 
     stationProfileFeatureCollection.resetIteration();

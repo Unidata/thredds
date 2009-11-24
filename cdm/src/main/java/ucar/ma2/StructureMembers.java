@@ -76,7 +76,6 @@ public class StructureMembers {
     members.add(m);
     if (memberHash != null)
       memberHash.put(m.getName(), m);
-
   }
 
   public Member addMember(String name, String desc, String units, DataType dtype, int[] shape) {
@@ -85,6 +84,12 @@ public class StructureMembers {
     return m;
   }
 
+  // LOOK seems wrong
+  public void hideMember(Member m) {
+    if (m == null) return;
+    members.remove(m);
+  }
+  
   /**
    * Get the total size of the Structure in bytes.
    *

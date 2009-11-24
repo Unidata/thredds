@@ -840,7 +840,7 @@ public class Scanner {
 
   static Formatter out = new Formatter(System.out);
   static public void main(String args[]) throws IOException {
-    extractNMessages("D:/formats/bufr/tmp/dispatch/KNES-ISXX03.bufr", 3, "D:/formats/bufr/tmp/ISXX03-3.bufr");
+    //extractNMessages("D:/formats/bufr/tmp/dispatch/KNES-ISXX03.bufr", 3, "D:/formats/bufr/tmp/ISXX03-3.bufr");
 
     //extract("D:/bufr/dispatch/EGRR-IUAD01.bufr", 0, "D:/bufr/out/EGRR-IUAD01-1.bufr");
     //extract("D:/bufr/dispatch/IUPT0KBOU.bufr", 0, "D:/bufr/out/IUPT0KBOU-1.bufr");
@@ -914,7 +914,7 @@ public class Scanner {
        }
      }); // */
 
-    /* new reader
+    // new reader
     //test("D:/formats/bufr/tmp/dispatch/asample.bufr", new MClosure() {
     test("D:/formats/bufr/tmp/split/", false, new MClosure() {
       public void run(String filename) throws IOException {

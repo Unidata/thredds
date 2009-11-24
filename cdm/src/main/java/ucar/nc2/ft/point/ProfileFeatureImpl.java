@@ -38,6 +38,8 @@ import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 
+import java.util.Date;
+
 /**
  * Abstract superclass for implementations of ProfileFeature.
  *
@@ -46,10 +48,12 @@ import ucar.unidata.geoloc.LatLonPointImpl;
  */
 public abstract class ProfileFeatureImpl extends PointCollectionImpl implements ProfileFeature {
   private LatLonPoint latlonPoint;
+  protected double time;
 
-  public ProfileFeatureImpl( String name, double lat, double lon, int npts) {
+  public ProfileFeatureImpl( String name, double lat, double lon, double time, int npts) {
     super(name);
     this.latlonPoint = new LatLonPointImpl(lat,lon);
+    this.time = time;
     this.npts = npts;
   }
 

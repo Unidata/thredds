@@ -655,6 +655,7 @@ public abstract class Table {
 
   ///////////////////////////////////////////////////////
 
+  // the inner struct of a 2D multdim(outer, inner) with unlimited dimension
   public static class TableMultidimInner extends Table {
      StructureMembers sm; // the inner structure members
      Dimension inner, outer;
@@ -982,6 +983,9 @@ public abstract class Table {
 
       StructureMembers members = parentStruct.getStructureMembers();
       StructureMembers.Member m = members.findMember(nestedTableName);
+      members.hideMember(m); // LOOK ??
+      if (m == null)
+        System.out.println("HEY");
       if (m.getDataType() == DataType.SEQUENCE) {
         ArraySequence seq = parentStruct.getArraySequence(m);
         return seq.getStructureDataIterator();
@@ -991,7 +995,7 @@ public abstract class Table {
         return as.getStructureDataIterator();
       }
 
-      throw new IllegalStateException("Cant fing memmber " + nestedTableName);
+      throw new IllegalStateException("Cant find nested table member = " + nestedTableName);
     }
 
         @Override

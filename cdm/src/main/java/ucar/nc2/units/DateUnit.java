@@ -185,6 +185,7 @@ public class DateUnit { // extends SimpleUnit {
    * @return Date .
    */
   public Date makeDate(double val) {
+    if (Double.isNaN(val)) return null;
     double secs = timeUnit.getValueInSeconds(val); //
     return new Date( getDateOrigin().getTime() + (long)(1000*secs));
   }

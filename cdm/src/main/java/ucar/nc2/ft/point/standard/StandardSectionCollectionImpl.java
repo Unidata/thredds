@@ -41,6 +41,7 @@ import ucar.ma2.StructureDataIterator;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * Nested Table implementation of SectionCollection.
@@ -72,6 +73,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
         cursor.recnum[2] = sdataIter.getCurrentRecno();
         cursor.tableData[2] = nextSection; // obs(leaf) = 0, profile=1, section(root)=2
         cursor.currentIndex = 2;
+        ft.addParentJoin(cursor); // there may be parent joins
 
         return new StandardSectionFeature(cursor);
       }
@@ -128,9 +130,10 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
       cursorIter.tableData[1] = iter.next();
       cursorIter.recnum[1] = iter.getCurrentRecno();
       cursorIter.currentIndex = 1;
+      ft.addParentJoin(cursor); // there may be parent joins
 
       // double time = ft.getObsTime(cursorIter);
-      return new StandardSectionProfileFeature(cursorIter);
+      return new StandardSectionProfileFeature(cursorIter, ft.getObsTime(cursor));
     }
 
     public void setBufferSize(int bytes) {
@@ -146,9 +149,24 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
   private class StandardSectionProfileFeature extends ProfileFeatureImpl {
     Cursor cursor;
 
-    StandardSectionProfileFeature(Cursor cursor) {
-      super(ft.getFeatureName(cursor), ft.getLatitude(cursor), ft.getLongitude(cursor), -1);
+    StandardSectionProfileFeature(Cursor cursor, double time) {
+      super( timeUnit.makeStandardDateString(time), ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);
       this.cursor = cursor;
+
+      if (Double.isNaN(time)) { // gotta read an obs to get the time
+        try {
+          PointFeatureIterator iter = getPointFeatureIterator(-1);
+          if (iter.hasNext()) {
+            PointFeature pf = iter.next();
+            this.time = pf.getObservationTime();
+            this.name = timeUnit.makeStandardDateString(this.time);
+          } else {
+            this.name = "empty";
+          }
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
     }
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
@@ -158,6 +176,11 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
       if ((boundingBox == null) || (dateRange == null) || (npts < 0))
         iter.setCalculateBounds(this);
       return iter;
+    }
+
+    @Override
+    public Date getTime() {
+      return timeUnit.makeDate(time);
     }
   }
 

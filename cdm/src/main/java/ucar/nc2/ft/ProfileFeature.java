@@ -34,9 +34,12 @@ package ucar.nc2.ft;
 
 import ucar.unidata.geoloc.LatLonPoint;
 
+import java.util.Date;
+
 /**
  * A set of observations along the vertical (z) axis.
- * All obs have the same lat/lon. Time is either constant, or it may vary with z.
+ * A profile has a nominal lat/lon and time.
+ * Actual time may be constant, or vary with z.
  * The z coordinates are monotonic, and may be increasing or decreasing.
  *
  * @author caron
@@ -45,15 +48,20 @@ import ucar.unidata.geoloc.LatLonPoint;
 public interface ProfileFeature extends PointFeatureCollection {
 
   /**
+   * Nominal location of this profile
+   * @return the nominal location of this profile
+   */
+  public LatLonPoint getLatLon();
+
+  /**
+   * Nominal time of the profile
+   * @return the nominal time of this profile
+   */
+  public Date getTime();
+
+  /**
    * The number of points along the z axis. May not be known until after iterating through the collection.
    * @return number of points along the z axis, or -1 if not known.
    */
   public int size();
-
-  /**
-   * Location of this profile
-   * @return the location of this observation as a lat/lon point
-   */
-  public LatLonPoint getLatLon();
-
 }

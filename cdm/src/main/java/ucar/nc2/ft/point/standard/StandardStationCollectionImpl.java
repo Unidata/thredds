@@ -108,6 +108,8 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
       cursor.recnum[1] = recnum;
       cursor.tableData[1] = stationData;
       cursor.currentIndex = 1;
+      ft.addParentJoin(cursor); // there may be parent joins
+
       StructureDataIterator obsIter = ft.getLeafFeatureDataIterator(cursor, bufferSize);
       StandardPointFeatureIterator iter = new StandardPointFeatureIterator(ft, timeUnit, obsIter, cursor);
       if ((boundingBox == null) || (dateRange == null) || (npts < 0))

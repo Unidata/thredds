@@ -43,6 +43,7 @@ import ucar.ma2.StructureData;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * Nested Table implementation of ProfileCollection
@@ -109,7 +110,8 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
       cursor.tableData[1] = nextProfileData;
       cursor.recnum[1] = structIter.getCurrentRecno();
       cursor.currentIndex = 1;
-      return new StandardProfileFeature(cursor);
+      ft.addParentJoin(cursor); // there may be parent joins
+      return new StandardProfileFeature(cursor, ft.getObsTime(cursor));
     }
 
     public void setBufferSize(int bytes) { }
@@ -121,9 +123,24 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
 
   private class StandardProfileFeature extends ProfileFeatureImpl {
     Cursor cursor;
-    StandardProfileFeature( Cursor cursor) {
-      super( ft.getFeatureName(cursor), ft.getLatitude(cursor), ft.getLongitude(cursor), -1);
+    StandardProfileFeature( Cursor cursor, double time) {
+      super( timeUnit.makeStandardDateString(time), ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);
       this.cursor = cursor;
+
+      if (Double.isNaN(time)) { // gotta read an obs to get the time
+        try {
+          PointFeatureIterator iter = getPointFeatureIterator(-1);
+          if (iter.hasNext()) {
+            PointFeature pf = iter.next();
+            this.time = pf.getObservationTime();
+            this.name = timeUnit.makeStandardDateString(this.time);
+          } else {
+            this.name = "empty";
+          }
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
     }
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
@@ -133,6 +150,11 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
       if ((boundingBox == null) || (dateRange == null) || (npts < 0))
         iter.setCalculateBounds(this);
       return iter;
+    }
+
+    @Override
+    public Date getTime() {
+      return timeUnit.makeDate(time);
     }
 
     class StandardProfileFeatureIterator extends StandardPointFeatureIterator {

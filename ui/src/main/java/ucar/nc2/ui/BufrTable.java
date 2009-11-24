@@ -82,7 +82,7 @@ public class BufrTable extends JPanel {
   private IndependentWindow dataWindow;
   private FileManager fileChooser;
   private DateFormatter df = new DateFormatter();
-  private boolean useReader = false;
+  private boolean useReader = false, seperateWindow = false;
 
   public BufrTable(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
@@ -91,12 +91,21 @@ public class BufrTable extends JPanel {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
         useReader = state.booleanValue();
-        System.out.printf("useReader=%s%n", useReader);
       }
     };
     BAMutil.setActionProperties(useReaderAction, "addCoords", "use new reader", true, 'C', -1);
     useReaderAction.putValue(BAMutil.STATE, new Boolean(useReader));
     BAMutil.addActionToContainer(buttPanel, useReaderAction);
+
+    AbstractAction seperateWindowAction = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Boolean state = (Boolean) getValue(BAMutil.STATE);
+        seperateWindow = state.booleanValue();
+      }
+    };
+    BAMutil.setActionProperties(seperateWindowAction, "addCoords", "seperate DDS window", true, 'C', -1);
+    useReaderAction.putValue(BAMutil.STATE, new Boolean(seperateWindow));
+    BAMutil.addActionToContainer(buttPanel, seperateWindowAction);
 
     messageTable = new BeanTableSorted(MessageBean.class, (PreferencesExt) prefs.node("GridRecordBean"), false);
     messageTable.addListSelectionListener(new ListSelectionListener() {
@@ -135,7 +144,7 @@ public class BufrTable extends JPanel {
     varPopup.addAction("Show DDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean vb = (MessageBean) messageTable.getSelectedBean();
-        infoTA.clear();
+        if (!seperateWindow) infoTA.clear();
         Formatter f = new Formatter();
         try {
           if (!vb.m.isTablesComplete()) {
@@ -149,9 +158,19 @@ public class BufrTable extends JPanel {
           JOptionPane.showMessageDialog(BufrTable.this, e1.getMessage());
           e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-        infoTA.appendLine(f.toString());
-        infoTA.gotoTop();
-        infoWindow.show();
+        if (seperateWindow) {
+          TextHistoryPane ta = new TextHistoryPane();
+          IndependentWindow info = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), ta);
+          info.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
+          ta.appendLine(f.toString());
+          ta.gotoTop();
+          info.show();
+                    
+        } else {
+          infoTA.appendLine(f.toString());
+          infoTA.gotoTop();
+          infoWindow.show();
+        }
       }
     });
     varPopup.addAction("Data Table", new AbstractAction() {
@@ -159,7 +178,7 @@ public class BufrTable extends JPanel {
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
         try {
           NetcdfDataset ncd = getBufrMessageAsDataset(mb.m);
-          Variable v = ncd.findVariable("obsRecord");
+          Variable v = ncd.findVariable(BufrIosp.obsRecord);
           if ((v != null) && (v instanceof Structure)) {
             if (dataTable == null) makeDataTable();
             dataTable.setStructure((Structure) v);
@@ -454,7 +473,7 @@ public class BufrTable extends JPanel {
     java.util.List<ObsBean> beanList = new ArrayList<ObsBean>();
     try {
       NetcdfDataset ncd = getBufrMessageAsDataset(m);
-      Variable v = ncd.findVariable("obsRecord");
+      Variable v = ncd.findVariable(BufrIosp.obsRecord);
       if ((v != null) && (v instanceof Structure)) {
         Structure obs = (Structure) v;
         StructureDataIterator iter = obs.getStructureIterator();

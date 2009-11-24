@@ -41,6 +41,7 @@ import ucar.unidata.geoloc.Station;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Date;
 
 /**
  * Object Heirarchy:
@@ -122,6 +123,8 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       cursor.recnum[2] = recnum; // the station record
       cursor.tableData[2] = stationData; // obs(leaf) = 0, profile=1, station(root)=2
       cursor.currentIndex = 2;
+      ft.addParentJoin(cursor); // there may be parent joins
+
       return new TimeSeriesOfProfileFeatureIterator(cursor);
     }
 
@@ -146,6 +149,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
           cursor.tableData[1] = iter.next();
           cursor.recnum[1] = iter.getCurrentRecno();
           cursor.currentIndex = 1;
+          ft.addParentJoin(cursor); // there may be parent joins
           if (!ft.isMissing(cursor)) break;
         }
         return true;
@@ -153,7 +157,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
 
       public PointFeatureCollection next() throws IOException {
         count++;
-        return new StandardProfileFeature(s, cursor.copy());
+        return new StandardProfileFeature(s, ft.getObsTime(cursor), cursor.copy());
       }
 
       public void setBufferSize(int bytes) {
@@ -169,10 +173,24 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
   private class StandardProfileFeature extends ProfileFeatureImpl {
     private Cursor cursor;
 
-    StandardProfileFeature(Station s, Cursor cursor) throws IOException {
-      super(ft.getFeatureName(cursor), s.getLatitude(), s.getLongitude(), -1);
+    StandardProfileFeature(Station s, double time, Cursor cursor) throws IOException {
+      super(timeUnit.makeStandardDateString(time), s.getLatitude(), s.getLongitude(), time, -1);
       this.cursor = cursor;
-      //this.desc = "time=" + time + "stn=" + s.getDescription();
+
+      if (Double.isNaN(time)) { // gotta read an obs to get the time
+        try {
+          PointFeatureIterator iter = getPointFeatureIterator(-1);
+          if (iter.hasNext()) {
+            PointFeature pf = iter.next();
+            this.time = pf.getObservationTime();
+            this.name = timeUnit.makeStandardDateString(this.time);
+          } else {
+            this.name = "empty";
+          }
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
     }
 
     // iterate over obs in the profile
@@ -183,6 +201,11 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       if ((boundingBox == null) || (dateRange == null) || (npts < 0))
         iter.setCalculateBounds(this);
       return iter;
+    }
+
+    @Override
+    public Date getTime() {
+      return timeUnit.makeDate(time);
     }
   }
 

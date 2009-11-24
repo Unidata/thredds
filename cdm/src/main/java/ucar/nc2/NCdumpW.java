@@ -634,6 +634,12 @@ public class NCdumpW {
     }
   }
 
+  static public void printArray(Array ma) {
+    PrintWriter out = new PrintWriter(System.out);
+    printArray(ma, out);
+    out.flush();
+  }
+
   //////////////////////////////////////////////////////////////////////////////////////
   // standard NCML writing.
 

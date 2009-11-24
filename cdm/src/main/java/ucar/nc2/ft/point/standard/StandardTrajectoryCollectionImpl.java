@@ -109,6 +109,7 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
       cursor.recnum[1] = structIter.getCurrentRecno();
       cursor.tableData[1] = nextTraj;
       cursor.currentIndex = 1;
+      ft.addParentJoin(cursor); // there may be parent joins
 
       return new StandardTrajectoryFeature(cursor);
     }

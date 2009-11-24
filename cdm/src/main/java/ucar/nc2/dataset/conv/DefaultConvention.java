@@ -64,7 +64,6 @@ public class DefaultConvention extends CoordSysBuilder {
     }
 
     public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
-
       projCT = makeProjectionCT(ds);
       if (projCT != null) {
         VariableDS v = makeCoordinateTransformVariable(ds, projCT);
@@ -75,7 +74,6 @@ public class DefaultConvention extends CoordSysBuilder {
         if (xname != null && yname != null)
           v.addAttribute(new Attribute(_Coordinate.Axes, xname + " " + yname));
       }
-
       ds.finish();
     }
 
@@ -190,6 +188,9 @@ public class DefaultConvention extends CoordSysBuilder {
       Variable v = (Variable) ve;
       String vname = v.getName();
       String unit = v.getUnitsString();
+      if (unit == null) unit = "";
+      String desc = v.getDescription();
+      if (desc == null) desc = "";
 
       if (vname.equalsIgnoreCase("x") || findAlias(ds, v).equalsIgnoreCase("x"))
         return AxisType.GeoX;
@@ -208,7 +209,7 @@ public class DefaultConvention extends CoordSysBuilder {
         return AxisType.GeoZ;
 
       if (vname.equalsIgnoreCase("z") || findAlias(ds, v).equalsIgnoreCase("z") ||
-          vname.equalsIgnoreCase("altitude") || vname.equalsIgnoreCase("depth") ||
+          vname.equalsIgnoreCase("altitude") || desc.contains("altitude") || vname.equalsIgnoreCase("depth") ||
           vname.equalsIgnoreCase("elev") || vname.equalsIgnoreCase("elevation")) {
         if ((unit != null) && SimpleUnit.isCompatible("m", unit)) // units of meters
           return AxisType.Height;

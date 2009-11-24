@@ -430,6 +430,7 @@ public class NestedTable {
 
   private double getTime(CoordVarExtractor cve, StructureData[] tableData) {
     if (cve == null) return Double.NaN;
+    if (tableData[cve.nestingLevel] == null) return Double.NaN;
 
     if (cve.isString()) {
       String timeString = timeVE.getCoordValueString(tableData);
@@ -517,7 +518,7 @@ public class NestedTable {
     return StructureDataFactory.make(cursor.tableData);
   }
 
-  public void addParentJoin(Cursor cursor) throws IOException {
+  /* public void addParentJoin(Cursor cursor) throws IOException {
     Table t = leaf;
     int level = 0;
     while (t != null) {
@@ -525,9 +526,12 @@ public class NestedTable {
       level++;
       t = t.parent;
     }
-  }
+  }  */
 
-  private void addParentJoin(Table t, int level, Cursor cursor) throws IOException {
+  // add table join to this cursor level
+  void addParentJoin(Cursor cursor) throws IOException {
+    int level = cursor.currentIndex;
+    Table t = getTable(level);
     if (t.extraJoins != null) {
       List<StructureData> sdata = new ArrayList<StructureData>(3);
       sdata.add(cursor.tableData[level]);
@@ -536,6 +540,16 @@ public class NestedTable {
       }
       cursor.tableData[level] = StructureDataFactory.make(sdata.toArray(new StructureData[sdata.size()]));  // LOOK should try to consolidate
     }
+  }
+
+  private Table getTable(int level) {
+    Table t = leaf;
+    int count = 0;
+    while (count < level) {
+      count++;
+      t = t.parent;
+    }
+    return t;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -33,6 +33,7 @@
 package thredds.bufrtables;
 
 import ucar.nc2.iosp.bufr.Message;
+import ucar.nc2.iosp.bufr.BufrIosp;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
@@ -84,7 +85,7 @@ public class Bufr2Xml {
       staxWriter.writeCharacters(message.getCategoryFullName());
       staxWriter.writeEndElement();
 
-      Structure obs = (Structure) ncfile.findVariable("obsRecord");
+      Structure obs = (Structure) ncfile.findVariable(BufrIosp.obsRecord);
       ArrayStructure obsData = (ArrayStructure) obs.read();
       StructureDataIterator sdataIter = obsData.getStructureDataIterator();
       while (sdataIter.hasNext()) {

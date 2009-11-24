@@ -608,7 +608,7 @@ public abstract class Aggregation implements ProxyReader {
     public String getId() {
       if (id != null) return id;
       if (location != null) return location;
-      return null;
+      return Integer.toString(this.hashCode());
     }
 
     public NetcdfFile acquireFile(CancelTask cancelTask) throws IOException {
@@ -700,11 +700,13 @@ public abstract class Aggregation implements ProxyReader {
       if (this == oo) return true;
       if (!(oo instanceof Dataset)) return false;
       Dataset other = (Dataset) oo;
-      return location.equals(other.location);
+      if (location != null)
+        return location.equals(other.location);
+      return super.equals(oo);
     }
 
     public int hashCode() {
-      return location.hashCode();
+      return (location != null) ? location.hashCode() : super.hashCode();
     }
 
     public int compareTo(Object o) {
