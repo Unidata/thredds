@@ -463,6 +463,7 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
         Trace.msg("GEMPAKSIOSP: now have " + stations.size() + " stations");
         Dimension station = new Dimension("station", stations.size(), true);
         ncfile.addDimension(null, station);
+        ncfile.addDimension(null, DIM_LEN8);
         ncfile.addDimension(null, DIM_LEN4);
         ncfile.addDimension(null, DIM_LEN2);
         List<Variable> stationVars = makeStationVars(stations, station);
@@ -536,6 +537,7 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
             new Attribute("units", "seconds since 1970-01-01 00:00:00"));
         timeVar.addAttribute(new Attribute("long_name", TIME_VAR));
 
+        ncfile.addDimension(null, DIM_LEN8);
         ncfile.addDimension(null, DIM_LEN4);
         ncfile.addDimension(null, DIM_LEN2);
         List<Variable> stationVars = makeStationVars(stations, null);

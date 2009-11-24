@@ -1166,7 +1166,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       g.addEnumeration(et);
 
     for (Dimension d : from.getDimensions())
-      g.addDimension(d);
+      g.addDimension( new Dimension(d.getName(), d));
 
     for (Attribute a : from.getAttributes())
       g.addAttribute(a);

@@ -169,8 +169,8 @@ public class TestPointFeatureTypes extends TestCase {
     assert 420 == testPointDataset(CFpointObs_topdir + "sectionFlat.nc", FeatureType.SECTION, false);
   }
 
-  public void utestProblem() throws IOException {
-    assert 3483 == testPointDataset(TestAll.testdataDir + "lightning/uspln/uspln_20061023.18", FeatureType.POINT, false);
+  public void testProblem() throws IOException {
+    assert 3337 == testPointDataset(topdir + "ft/point/2009103008_sb.gem", FeatureType.POINT, false);
   }
 
   public void testCF() throws IOException {

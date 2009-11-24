@@ -117,6 +117,8 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
    */
   public VariableDS( Group g, Variable orgVar, boolean enhance) {
     super(orgVar);
+    if (g != null) this.group = g; // otherwise super() sets group; this affects the long name and the dimensions.
+    setDimensions( getDimensionsString()); // reset the dimensions
 
     if (orgVar instanceof Structure)
       throw new IllegalArgumentException("VariableDS must not wrap a Structure; name="+orgVar.getName());
@@ -130,7 +132,6 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
 
     this.orgVar = orgVar;
     this.orgDataType = orgVar.getDataType();
-    if (g != null) this.group = g; // otherwise super() sets group; this affects the long name.
 
     if (orgVar instanceof VariableDS) {
       VariableDS ncVarDS = (VariableDS) orgVar;
@@ -162,6 +163,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
    */
   public VariableDS(Group group, Structure parent, String shortName, Variable orgVar) {
     super(null, group, parent, shortName);
+    setDimensions( getDimensionsString()); // reset the dimensions
 
     if (orgVar instanceof Structure)
       throw new IllegalArgumentException("VariableDS must not wrap a Structure; name="+orgVar.getName());

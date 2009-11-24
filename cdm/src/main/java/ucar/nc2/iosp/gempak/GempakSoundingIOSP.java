@@ -343,6 +343,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
         List<GempakStation> stations = gemreader.getStations();
         Dimension station = new Dimension("station", stations.size(), true);
         ncfile.addDimension(null, station);
+        ncfile.addDimension(null, DIM_LEN8);
         ncfile.addDimension(null, DIM_LEN4);
         ncfile.addDimension(null, DIM_LEN2);
         List<Variable> stationVars = makeStationVars(stations, station);

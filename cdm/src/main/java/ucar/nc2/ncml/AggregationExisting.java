@@ -66,7 +66,6 @@ public class AggregationExisting extends AggregationOuterDimension {
   }
 
   protected void buildNetcdfDataset(CancelTask cancelTask) throws IOException {
-
     // open a "typical"  nested dataset and copy it to newds
     Dataset typicalDataset = getTypicalDataset();
     NetcdfFile typical = typicalDataset.acquireFile(null);

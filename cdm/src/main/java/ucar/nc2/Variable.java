@@ -253,7 +253,7 @@ public class Variable implements VariableIF {
    * Get the list of Dimension names, space delineated.
    * @return Dimension names, space delineated
    */
-  public String getDimensionsString() {
+  /* public String getDimensionsStringOld() {
     StringBuilder buff = new StringBuilder();
     for (int i = 0; i < dimensions.size(); i++) {
       Dimension dim = dimensions.get(i);
@@ -261,8 +261,28 @@ public class Variable implements VariableIF {
       buff.append(dim.getName());
     }
     return buff.toString();
-  }
+  }  */
 
+  public String getDimensionsString() {
+    Formatter buf = new Formatter();
+    for (int i = 0; i < dimensions.size(); i++) {
+      Dimension myd = dimensions.get(i);
+      String dimName = myd.getName();
+
+      if (i != 0) buf.format(" ");
+
+      if (myd.isVariableLength()) {
+        buf.format("*");
+      } else if (myd.isShared()) {
+        buf.format("%s", dimName);
+      } else {
+        //if (dimName != null)          // LOOK losing anon dim name
+        //  buf.format("%s=", dimName);
+        buf.format("%d", myd.getLength());
+      }
+    }
+    return buf.toString();
+  }
   /**
    * Find the index of the named Dimension in this Variable.
    *

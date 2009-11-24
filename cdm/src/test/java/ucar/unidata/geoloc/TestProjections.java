@@ -265,7 +265,7 @@ public class TestProjections extends TestCase {
     assert p.equals(p2);  // */
   }
 
-  public void testVerticalPerspectiveView() {
+  public void utestVerticalPerspectiveView() {
     testProjectionLonMax(new VerticalPerspectiveView(), 66, 60);
     VerticalPerspectiveView p = new VerticalPerspectiveView();
     VerticalPerspectiveView p2 = (VerticalPerspectiveView) p.constructCopy();

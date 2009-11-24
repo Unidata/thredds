@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  9:
+  NetdfDataset, VariableDS: do not share dimensions with orgVar, make new copy.
+    messes up NcML rename dimension with file caching
   BUFR fixes - combine countBits and read
   Variable.getShapeAll()
   Array.reshapeNoCopy()
