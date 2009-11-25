@@ -249,7 +249,7 @@ public class TestPointFeatureTypes extends TestCase {
 
     // FslRaob
     assert 17 == testPointDataset(TestAll.testdataDir + "sounding/netcdf/raob_soundings20216.cdf", FeatureType.STATION_PROFILE, false);
-    assert 4638 == testPointDataset(TestAll.testdataDir + "soundin/netcdf/Upperair_20060621_0000.nc", FeatureType.STATION_PROFILE, false);
+    assert 4638 == testPointDataset(TestAll.testdataDir + "sounding/netcdf/Upperair_20060621_0000.nc", FeatureType.STATION_PROFILE, false);
 
     // unidata point obs
     assert 5023 == testPointDataset(TestAll.testdataDir + "point/netcdf/200501q3h-gr.nc", FeatureType.STATION, false);
