@@ -78,7 +78,7 @@ public class TestPointFeatureTypes extends TestCase {
     TestAll.actOnAll(dir, ff, new TestAll.Act() {
 
       public int doAct(String filename) throws IOException {
-        testPointDataset(filename, FeatureType.ANY_POINT, true);
+        checkPointDataset(filename, FeatureType.ANY_POINT, true);
         //testPointDataset(filename, FeatureType.POINT, true);
         return 1;
       }
@@ -101,171 +101,171 @@ public class TestPointFeatureTypes extends TestCase {
   // these are internal, synthetic (ncml) datasets with (almost) all possible combinations for proposed CF point obs
   String CFpointObs_topdir = TestAll.cdmLocalTestDataDir + "/point/";
   public void testCFcanonical() throws IOException {
-    assert 3 == testPointDataset(CFpointObs_topdir + "point.ncml", FeatureType.POINT, false);
-    assert 3 == testPointDataset(CFpointObs_topdir + "pointUnlimited.nc", FeatureType.POINT, false);
-    assert 4 == testPointDataset(CFpointObs_topdir + "pointMissing.ncml", FeatureType.POINT, false);
+    assert 3 == checkPointDataset(CFpointObs_topdir + "point.ncml", FeatureType.POINT, false);
+    assert 3 == checkPointDataset(CFpointObs_topdir + "pointUnlimited.nc", FeatureType.POINT, false);
+    assert 4 == checkPointDataset(CFpointObs_topdir + "pointMissing.ncml", FeatureType.POINT, false);
 
-    assert 3 == testPointDataset(CFpointObs_topdir + "stationSingle.ncml", FeatureType.STATION, false);
-    assert 3 == testPointDataset(CFpointObs_topdir + "stationSingleWithZLevel.ncml", FeatureType.STATION, false);
-    assert 15 == testPointDataset(CFpointObs_topdir + "stationMultidim.ncml", FeatureType.STATION, false);
-    assert 15 == testPointDataset(CFpointObs_topdir + "stationMultidimTimeJoin.ncml", FeatureType.STATION, false);
-    assert 15 == testPointDataset(CFpointObs_topdir + "stationMultidimUnlimited.nc", FeatureType.STATION, false);
-    assert 12 == testPointDataset(CFpointObs_topdir + "stationMultidimMissingTime.ncml", FeatureType.STATION, false);
-    assert 9 == testPointDataset(CFpointObs_topdir + "stationMultidimMissingId.ncml", FeatureType.STATION, true);
-    assert 12 == testPointDataset(CFpointObs_topdir + "stationMultidimMissingIdString.ncml", FeatureType.STATION, true);
-    assert 6 == testPointDataset(CFpointObs_topdir + "stationRaggedContig.ncml", FeatureType.STATION, false);
-    assert 6 == testPointDataset(CFpointObs_topdir + "stationRaggedIndex.ncml", FeatureType.STATION, false);
-    assert 5 == testPointDataset(CFpointObs_topdir + "stationRaggedMissing.ncml", FeatureType.STATION, false);
-    assert 13 == testPointDataset(CFpointObs_topdir + "stationFlat.ncml", FeatureType.STATION, false);
-    assert 13 == testPointDataset(CFpointObs_topdir + "stationFlat.nc", FeatureType.STATION, false);
+    assert 3 == checkPointDataset(CFpointObs_topdir + "stationSingle.ncml", FeatureType.STATION, false);
+    assert 3 == checkPointDataset(CFpointObs_topdir + "stationSingleWithZLevel.ncml", FeatureType.STATION, false);
+    assert 15 == checkPointDataset(CFpointObs_topdir + "stationMultidim.ncml", FeatureType.STATION, false);
+    assert 15 == checkPointDataset(CFpointObs_topdir + "stationMultidimTimeJoin.ncml", FeatureType.STATION, false);
+    assert 15 == checkPointDataset(CFpointObs_topdir + "stationMultidimUnlimited.nc", FeatureType.STATION, false);
+    assert 12 == checkPointDataset(CFpointObs_topdir + "stationMultidimMissingTime.ncml", FeatureType.STATION, false);
+    assert 9 == checkPointDataset(CFpointObs_topdir + "stationMultidimMissingId.ncml", FeatureType.STATION, true);
+    assert 12 == checkPointDataset(CFpointObs_topdir + "stationMultidimMissingIdString.ncml", FeatureType.STATION, true);
+    assert 6 == checkPointDataset(CFpointObs_topdir + "stationRaggedContig.ncml", FeatureType.STATION, false);
+    assert 6 == checkPointDataset(CFpointObs_topdir + "stationRaggedIndex.ncml", FeatureType.STATION, false);
+    assert 5 == checkPointDataset(CFpointObs_topdir + "stationRaggedMissing.ncml", FeatureType.STATION, false);
+    assert 13 == checkPointDataset(CFpointObs_topdir + "stationFlat.ncml", FeatureType.STATION, false);
+    assert 13 == checkPointDataset(CFpointObs_topdir + "stationFlat.nc", FeatureType.STATION, false);
 
-    assert 10 == testPointDataset(CFpointObs_topdir + "trajSingle.ncml", FeatureType.TRAJECTORY, false);
-    assert 20 == testPointDataset(CFpointObs_topdir + "trajMultidim.ncml", FeatureType.TRAJECTORY, false);
-    assert 30 == testPointDataset(CFpointObs_topdir + "trajMultidimMissingId.ncml", FeatureType.TRAJECTORY, false);
-    assert 18 == testPointDataset(CFpointObs_topdir + "trajMultidimMissingTime.ncml", FeatureType.TRAJECTORY, false);
-    assert 6 == testPointDataset(CFpointObs_topdir + "trajRaggedContig.ncml", FeatureType.TRAJECTORY, false);
-    assert 6 == testPointDataset(CFpointObs_topdir + "trajRaggedIndex.ncml", FeatureType.TRAJECTORY, false);
-    assert 5 == testPointDataset(CFpointObs_topdir + "trajRaggedMissing.ncml", FeatureType.TRAJECTORY, false);
+    assert 10 == checkPointDataset(CFpointObs_topdir + "trajSingle.ncml", FeatureType.TRAJECTORY, false);
+    assert 20 == checkPointDataset(CFpointObs_topdir + "trajMultidim.ncml", FeatureType.TRAJECTORY, false);
+    assert 30 == checkPointDataset(CFpointObs_topdir + "trajMultidimMissingId.ncml", FeatureType.TRAJECTORY, false);
+    assert 18 == checkPointDataset(CFpointObs_topdir + "trajMultidimMissingTime.ncml", FeatureType.TRAJECTORY, false);
+    assert 6 == checkPointDataset(CFpointObs_topdir + "trajRaggedContig.ncml", FeatureType.TRAJECTORY, false);
+    assert 6 == checkPointDataset(CFpointObs_topdir + "trajRaggedIndex.ncml", FeatureType.TRAJECTORY, false);
+    assert 5 == checkPointDataset(CFpointObs_topdir + "trajRaggedMissing.ncml", FeatureType.TRAJECTORY, false);
 
-    assert 13 ==  testPointDataset(CFpointObs_topdir + "profileSingle.ncml", FeatureType.PROFILE, false);
-    assert 12 ==  testPointDataset(CFpointObs_topdir + "profileSingleTimeJoin.ncml", FeatureType.PROFILE, false);
-    assert 50 ==  testPointDataset(CFpointObs_topdir + "profileMultidim.ncml", FeatureType.PROFILE, false);
-    assert 50 ==  testPointDataset(CFpointObs_topdir + "profileMultidimTimeJoin.ncml", FeatureType.PROFILE, false);
-    assert 50 ==  testPointDataset(CFpointObs_topdir + "profileMultidimZJoin.ncml", FeatureType.PROFILE, false);
-    assert 50 ==  testPointDataset(CFpointObs_topdir + "profileMultidimTimeZJoin.ncml", FeatureType.PROFILE, false);
-    assert 40 ==  testPointDataset(CFpointObs_topdir + "profileMultidimMissingId.ncml", FeatureType.PROFILE, false);
-    assert 14 == testPointDataset(CFpointObs_topdir + "profileMultidimMissingAlt.ncml", FeatureType.PROFILE, false);
-    assert 6 ==  testPointDataset(CFpointObs_topdir + "profileRaggedContig.ncml", FeatureType.PROFILE, false);
-    assert 6 ==  testPointDataset(CFpointObs_topdir + "profileRaggedContigTimeJoin.ncml", FeatureType.PROFILE, false);
-    assert 22 ==  testPointDataset(CFpointObs_topdir + "profileRaggedIndex.ncml", FeatureType.PROFILE, false);
-    assert 22 ==  testPointDataset(CFpointObs_topdir + "profileRaggedIndexTimeJoin.ncml", FeatureType.PROFILE, false);
+    assert 13 ==  checkPointDataset(CFpointObs_topdir + "profileSingle.ncml", FeatureType.PROFILE, false);
+    assert 12 ==  checkPointDataset(CFpointObs_topdir + "profileSingleTimeJoin.ncml", FeatureType.PROFILE, false);
+    assert 50 ==  checkPointDataset(CFpointObs_topdir + "profileMultidim.ncml", FeatureType.PROFILE, false);
+    assert 50 ==  checkPointDataset(CFpointObs_topdir + "profileMultidimTimeJoin.ncml", FeatureType.PROFILE, false);
+    assert 50 ==  checkPointDataset(CFpointObs_topdir + "profileMultidimZJoin.ncml", FeatureType.PROFILE, false);
+    assert 50 ==  checkPointDataset(CFpointObs_topdir + "profileMultidimTimeZJoin.ncml", FeatureType.PROFILE, false);
+    assert 40 ==  checkPointDataset(CFpointObs_topdir + "profileMultidimMissingId.ncml", FeatureType.PROFILE, false);
+    assert 14 == checkPointDataset(CFpointObs_topdir + "profileMultidimMissingAlt.ncml", FeatureType.PROFILE, false);
+    assert 6 ==  checkPointDataset(CFpointObs_topdir + "profileRaggedContig.ncml", FeatureType.PROFILE, false);
+    assert 6 ==  checkPointDataset(CFpointObs_topdir + "profileRaggedContigTimeJoin.ncml", FeatureType.PROFILE, false);
+    assert 22 ==  checkPointDataset(CFpointObs_topdir + "profileRaggedIndex.ncml", FeatureType.PROFILE, false);
+    assert 22 ==  checkPointDataset(CFpointObs_topdir + "profileRaggedIndexTimeJoin.ncml", FeatureType.PROFILE, false);
 
-    assert 9 == testPointDataset(CFpointObs_topdir + "stationProfileSingle.ncml", FeatureType.STATION_PROFILE, false);
-    assert 9 == testPointDataset(CFpointObs_topdir + "stationProfileSingleTimeJoin.ncml", FeatureType.STATION_PROFILE, false);
-    assert 18 == testPointDataset(CFpointObs_topdir + "stationProfileMultidim.ncml", FeatureType.STATION_PROFILE, false);
-    assert 18 == testPointDataset(CFpointObs_topdir + "stationProfileMultidimUnlimited.nc", FeatureType.STATION_PROFILE, false);
-    assert 24 == testPointDataset(CFpointObs_topdir + "stationProfileMultidimJoinZ.ncml", FeatureType.STATION_PROFILE, false);
-    assert 18 == testPointDataset(CFpointObs_topdir + "stationProfileMultidimJoinTime.ncml", FeatureType.STATION_PROFILE, false);
-    assert 36 == testPointDataset(CFpointObs_topdir + "stationProfileMultidimJoinTimeAndZ.ncml", FeatureType.STATION_PROFILE, false);
-    assert 27 == testPointDataset(CFpointObs_topdir + "stationProfileMultidimMissingId.ncml", FeatureType.STATION_PROFILE, false);
-    assert 27 == testPointDataset(CFpointObs_topdir + "stationProfileMultidimMissingIdString.ncml", FeatureType.STATION_PROFILE, true);
-    assert 16 == testPointDataset(CFpointObs_topdir + "stationProfileMultidimMissingTime.ncml", FeatureType.STATION_PROFILE, true);
-    assert 15 == testPointDataset(CFpointObs_topdir + "stationProfileMultidimMissingAlt.ncml", FeatureType.STATION_PROFILE, true);
-    assert 14 == testPointDataset(CFpointObs_topdir + "stationProfileRagged.ncml", FeatureType.STATION_PROFILE, false);
-    assert 14 == testPointDataset(CFpointObs_topdir + "stationProfileRaggedJoinTime.ncml", FeatureType.STATION_PROFILE, false);
-    assert 420 == testPointDataset(CFpointObs_topdir + "stationProfileFlat.ncml", FeatureType.STATION_PROFILE, false);
-    assert 420 == testPointDataset(CFpointObs_topdir + "stationProfileFlat.nc", FeatureType.STATION_PROFILE, false);
+    assert 9 == checkPointDataset(CFpointObs_topdir + "stationProfileSingle.ncml", FeatureType.STATION_PROFILE, false);
+    assert 9 == checkPointDataset(CFpointObs_topdir + "stationProfileSingleTimeJoin.ncml", FeatureType.STATION_PROFILE, false);
+    assert 18 == checkPointDataset(CFpointObs_topdir + "stationProfileMultidim.ncml", FeatureType.STATION_PROFILE, false);
+    assert 18 == checkPointDataset(CFpointObs_topdir + "stationProfileMultidimUnlimited.nc", FeatureType.STATION_PROFILE, false);
+    assert 24 == checkPointDataset(CFpointObs_topdir + "stationProfileMultidimJoinZ.ncml", FeatureType.STATION_PROFILE, false);
+    assert 18 == checkPointDataset(CFpointObs_topdir + "stationProfileMultidimJoinTime.ncml", FeatureType.STATION_PROFILE, false);
+    assert 36 == checkPointDataset(CFpointObs_topdir + "stationProfileMultidimJoinTimeAndZ.ncml", FeatureType.STATION_PROFILE, false);
+    assert 27 == checkPointDataset(CFpointObs_topdir + "stationProfileMultidimMissingId.ncml", FeatureType.STATION_PROFILE, false);
+    assert 27 == checkPointDataset(CFpointObs_topdir + "stationProfileMultidimMissingIdString.ncml", FeatureType.STATION_PROFILE, true);
+    assert 16 == checkPointDataset(CFpointObs_topdir + "stationProfileMultidimMissingTime.ncml", FeatureType.STATION_PROFILE, true);
+    assert 15 == checkPointDataset(CFpointObs_topdir + "stationProfileMultidimMissingAlt.ncml", FeatureType.STATION_PROFILE, true);
+    assert 14 == checkPointDataset(CFpointObs_topdir + "stationProfileRagged.ncml", FeatureType.STATION_PROFILE, false);
+    assert 14 == checkPointDataset(CFpointObs_topdir + "stationProfileRaggedJoinTime.ncml", FeatureType.STATION_PROFILE, false);
+    assert 420 == checkPointDataset(CFpointObs_topdir + "stationProfileFlat.ncml", FeatureType.STATION_PROFILE, false);
+    assert 420 == checkPointDataset(CFpointObs_topdir + "stationProfileFlat.nc", FeatureType.STATION_PROFILE, false);
 
-    assert 100 == testPointDataset(CFpointObs_topdir + "sectionMultidim.ncml", FeatureType.SECTION, false);
-    assert 100 == testPointDataset(CFpointObs_topdir + "sectionMultidimJoinZ.ncml", FeatureType.SECTION, false);
-    assert 100 == testPointDataset(CFpointObs_topdir + "sectionMultidimMissingId.ncml", FeatureType.SECTION, false);
-    assert 100 == testPointDataset(CFpointObs_topdir + "sectionMultidimMissingIdString.ncml", FeatureType.SECTION, false);
-    assert 28 == testPointDataset(CFpointObs_topdir + "sectionMultidimMissingTime.ncml", FeatureType.SECTION, false);
-    assert 18 == testPointDataset(CFpointObs_topdir + "sectionMultidimMissingAlt.ncml", FeatureType.SECTION, false);
-    assert 50 == testPointDataset(CFpointObs_topdir + "sectionSingle.ncml", FeatureType.SECTION, false);
-    assert 12 == testPointDataset(CFpointObs_topdir + "sectionRagged.ncml", FeatureType.SECTION, false);
+    assert 100 == checkPointDataset(CFpointObs_topdir + "sectionMultidim.ncml", FeatureType.SECTION, false);
+    assert 100 == checkPointDataset(CFpointObs_topdir + "sectionMultidimJoinZ.ncml", FeatureType.SECTION, false);
+    assert 100 == checkPointDataset(CFpointObs_topdir + "sectionMultidimMissingId.ncml", FeatureType.SECTION, false);
+    assert 100 == checkPointDataset(CFpointObs_topdir + "sectionMultidimMissingIdString.ncml", FeatureType.SECTION, false);
+    assert 28 == checkPointDataset(CFpointObs_topdir + "sectionMultidimMissingTime.ncml", FeatureType.SECTION, false);
+    assert 18 == checkPointDataset(CFpointObs_topdir + "sectionMultidimMissingAlt.ncml", FeatureType.SECTION, false);
+    assert 50 == checkPointDataset(CFpointObs_topdir + "sectionSingle.ncml", FeatureType.SECTION, false);
+    assert 12 == checkPointDataset(CFpointObs_topdir + "sectionRagged.ncml", FeatureType.SECTION, false);
 
-    assert 420 == testPointDataset(CFpointObs_topdir + "sectionFlat.ncml", FeatureType.SECTION, false);
-    assert 420 == testPointDataset(CFpointObs_topdir + "sectionFlat.nc", FeatureType.SECTION, false);
+    assert 420 == checkPointDataset(CFpointObs_topdir + "sectionFlat.ncml", FeatureType.SECTION, false);
+    assert 420 == checkPointDataset(CFpointObs_topdir + "sectionFlat.nc", FeatureType.SECTION, false);
   }
 
   public void testProblem() throws IOException {
-    assert 4638 == testPointDataset("Q:\\sounding\\netcdf\\Upperair_20060621_0000.nc", FeatureType.STATION_PROFILE, true);
+    checkPointDataset("C:\\data\\ft\\stationProfile\\Upperair_20070401_0000.nc", FeatureType.STATION_PROFILE, true);
   }
 
   public void testCF() throws IOException {
 
     /////// POINT
     // CF 1.1 psuedo-structure
-    assert 1001 == testPointDataset(topdir + "cfPoint/point/filtered_apriori_super_calibrated_binned1.nc", FeatureType.POINT, true);
+    assert 1001 == checkPointDataset(topdir + "cfPoint/point/filtered_apriori_super_calibrated_binned1.nc", FeatureType.POINT, true);
 
     // CF 1.5 psuedo-structure
-    assert 1196 == testPointDataset(topdir + "cfPoint/point/nmcbob.shp.nc", FeatureType.POINT, true);
+    assert 1196 == checkPointDataset(topdir + "cfPoint/point/nmcbob.shp.nc", FeatureType.POINT, true);
 
     /////// STATION
     // CF 1.3 ragged contiguous, single station
-    assert 17280 == testPointDataset(topdir + "cfPoint/station/rig_tower.2009-02-01.ncml", FeatureType.STATION, true);
+    assert 17280 == checkPointDataset(topdir + "cfPoint/station/rig_tower.2009-02-01.ncml", FeatureType.STATION, true);
 
     // CF 1.5 station unlimited, multidim
-    assert 78912 == testPointDataset(topdir + "cfPoint/station/billNewDicast.nc", FeatureType.STATION, true);
+    assert 78912 == checkPointDataset(topdir + "cfPoint/station/billNewDicast.nc", FeatureType.STATION, true);
 
     // CF 1.5 station regular (not unlimited), multidim
-    assert 19728 == testPointDataset(topdir + "cfPoint/station/billOldDicast.nc", FeatureType.STATION, true);
+    assert 19728 == checkPointDataset(topdir + "cfPoint/station/billOldDicast.nc", FeatureType.STATION, true);
 
     // CF 1.0 multidim with dimensions reversed
     //testPointDataset(topdir+"cfPoint/station/solrad_point_pearson.ncml", FeatureType.STATION, true);
 
     // CF 1.5 multidim stations, stn dim unlimited, must distinguish station table from obs.
-    assert 1728 == testPointDataset(topdir + "cfPoint/station/sampleDataset.nc", FeatureType.STATION, true);
+    assert 1728 == checkPointDataset(topdir + "cfPoint/station/sampleDataset.nc", FeatureType.STATION, true);
 
     // CF 1.5 single trajectory (prob actually multiple - flat)
-    assert 53176 == testPointDataset(topdir + "cfPoint/trajectory/rt_20090512_willy2.ncml", FeatureType.TRAJECTORY, true);
+    assert 53176 == checkPointDataset(topdir + "cfPoint/trajectory/rt_20090512_willy2.ncml", FeatureType.TRAJECTORY, true);
 
     // CF 1.5 single trajectory (prob actually profile)
-    assert 245 == testPointDataset(topdir + "cfPoint/trajectory/p1140004.ncml", FeatureType.TRAJECTORY, true);
+    assert 245 == checkPointDataset(topdir + "cfPoint/trajectory/p1140004.ncml", FeatureType.TRAJECTORY, true);
 
   }
 
   public void testPlug() throws IOException {
 
     // cosmic
-    assert 383 == testPointDataset(topdir + "ft/trajectory/cosmic/wetPrf_C005.2007.294.16.22.G17_0001.0002_nc", FeatureType.TRAJECTORY, true);
+    assert 383 == checkPointDataset(topdir + "ft/trajectory/cosmic/wetPrf_C005.2007.294.16.22.G17_0001.0002_nc", FeatureType.TRAJECTORY, true);
 
     // ndbc
-    assert 1405 == testPointDataset(topdir + "ft/station/nbdc/41001h1976.nc", FeatureType.STATION, false);
+    assert 1405 == checkPointDataset(topdir + "ft/station/nbdc/41001h1976.nc", FeatureType.STATION, false);
 
     // suomi
-    assert 124 == testPointDataset(topdir + "ft/station/suomi/suoHWV_2006.105.00.00.0060_nc", FeatureType.STATION, false);
-    assert 4848 == testPointDataset(topdir + "ft/station/suomi/gsuPWV_2006.105.00.00.1440_nc", FeatureType.STATION, false);
+    assert 124 == checkPointDataset(topdir + "ft/station/suomi/suoHWV_2006.105.00.00.0060_nc", FeatureType.STATION, false);
+    assert 4848 == checkPointDataset(topdir + "ft/station/suomi/gsuPWV_2006.105.00.00.1440_nc", FeatureType.STATION, false);
 
     // fsl wind profilers
-    assert 198 == testPointDataset(topdir + "ft/station_profile/PROFILER_RASS_01hr_20091027_1500.nc", FeatureType.STATION_PROFILE, false);
-    assert 198 == testPointDataset(topdir + "ft/station_profile/PROFILER_RASS_06min_20091028_2318.nc", FeatureType.STATION_PROFILE, false);
-    assert 1728 == testPointDataset(topdir + "ft/station_profile/PROFILER_wind_01hr_20091024_1200.nc", FeatureType.STATION_PROFILE, false);
-    assert 2088 == testPointDataset(topdir + "ft/station_profile/PROFILER_wind_06min_20091030_2330.nc", FeatureType.STATION_PROFILE, false);
+    assert 198 == checkPointDataset(topdir + "ft/station_profile/PROFILER_RASS_01hr_20091027_1500.nc", FeatureType.STATION_PROFILE, false);
+    assert 198 == checkPointDataset(topdir + "ft/station_profile/PROFILER_RASS_06min_20091028_2318.nc", FeatureType.STATION_PROFILE, false);
+    assert 1728 == checkPointDataset(topdir + "ft/station_profile/PROFILER_wind_01hr_20091024_1200.nc", FeatureType.STATION_PROFILE, false);
+    assert 2088 == checkPointDataset(topdir + "ft/station_profile/PROFILER_wind_06min_20091030_2330.nc", FeatureType.STATION_PROFILE, false);
 
     //gempack sounding
-    assert 8769 == testPointDataset(TestAll.testdataDir+"sounding/gempak/19580807_upa.ncml", FeatureType.STATION_PROFILE, false);
+    assert 8769 == checkPointDataset(TestAll.testdataDir+"sounding/gempak/19580807_upa.ncml", FeatureType.STATION_PROFILE, false);
 
     // gempak surface
-    assert 3337 == testPointDataset(topdir + "ft/point/2009103008_sb.gem", FeatureType.POINT, false);
-    assert 938 == testPointDataset(topdir + "ft/point/2009110100_ship.gem", FeatureType.POINT, false);
-    assert 55856 == testPointDataset(topdir + "ft/point/20091030_syn.gem", FeatureType.POINT, false);
-    assert 28328 == testPointDataset(topdir + "ft/point/20091030_syn.gem", FeatureType.STATION, false);
+    assert 3337 == checkPointDataset(topdir + "ft/point/2009103008_sb.gem", FeatureType.POINT, false);
+    assert 938 == checkPointDataset(topdir + "ft/point/2009110100_ship.gem", FeatureType.POINT, false);
+    assert 55856 == checkPointDataset(topdir + "ft/point/20091030_syn.gem", FeatureType.POINT, false);
+    assert 28328 == checkPointDataset(topdir + "ft/point/20091030_syn.gem", FeatureType.STATION, false);
 
     // netcdf buoy / synoptic ( robb's perl decoders i think) ?
-    assert 32452 == testPointDataset(topdir + "ft/point/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, false);
-    assert 1516 == testPointDataset(topdir + "ft/point/Surface_Synoptic_20090921_0000.nc", FeatureType.POINT, false);
+    assert 32452 == checkPointDataset(topdir + "ft/point/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, false);
+    assert 1516 == checkPointDataset(topdir + "ft/point/Surface_Synoptic_20090921_0000.nc", FeatureType.POINT, false);
 
     //RAF-Nimbus
-    assert 7741 == testPointDataset(topdir + "ft/trajectory/raf/135_ordrd.nc", FeatureType.TRAJECTORY, false);
-    assert 8157 == testPointDataset(topdir + "ft/trajectory/raf/raftrack.nc", FeatureType.TRAJECTORY, false);
+    assert 7741 == checkPointDataset(topdir + "ft/trajectory/raf/135_ordrd.nc", FeatureType.TRAJECTORY, false);
+    assert 8157 == checkPointDataset(topdir + "ft/trajectory/raf/raftrack.nc", FeatureType.TRAJECTORY, false);
 
     // Madis
-    assert 5063 == testPointDataset(topdir + "ft/trajectory/acars/acars_20091109_0800.nc", FeatureType.TRAJECTORY, false);
-    assert 2499 == testPointDataset(TestAll.testdataDir + "point/netcdf/19981110_1200", FeatureType.POINT, false);
-    assert 1374 == testPointDataset(TestAll.testdataDir + "station/madis2/hydro/20050729_1200", FeatureType.STATION, false);
-    assert 1788 == testPointDataset(TestAll.testdataDir + "sounding/netcdf/20070612_1200", FeatureType.STATION_PROFILE, false);
+    assert 5063 == checkPointDataset(topdir + "ft/trajectory/acars/acars_20091109_0800.nc", FeatureType.TRAJECTORY, false);
+    assert 2499 == checkPointDataset(TestAll.testdataDir + "point/netcdf/19981110_1200", FeatureType.POINT, false);
+    assert 1374 == checkPointDataset(TestAll.testdataDir + "station/madis2/hydro/20050729_1200", FeatureType.STATION, false);
+    assert 1788 == checkPointDataset(TestAll.testdataDir + "sounding/netcdf/20070612_1200", FeatureType.STATION_PROFILE, false);
 
     // FslRaob
-    assert 17 == testPointDataset(TestAll.testdataDir + "sounding/netcdf/raob_soundings20216.cdf", FeatureType.STATION_PROFILE, false);
-    assert 4638 == testPointDataset(TestAll.testdataDir + "sounding/netcdf/Upperair_20060621_0000.nc", FeatureType.STATION_PROFILE, false);
+    assert 17 == checkPointDataset(TestAll.testdataDir + "sounding/netcdf/raob_soundings20216.cdf", FeatureType.STATION_PROFILE, false);
+    assert 4638 == checkPointDataset(TestAll.testdataDir + "sounding/netcdf/Upperair_20060621_0000.nc", FeatureType.STATION_PROFILE, false);
 
     // unidata point obs
-    assert 5023 == testPointDataset(TestAll.testdataDir + "point/netcdf/200501q3h-gr.nc", FeatureType.STATION, false);
-    assert 277477 == testPointDataset(TestAll.testdataDir + "point/netcdf/20080814_LMA.ncml", FeatureType.POINT, false);
+    assert 5023 == checkPointDataset(TestAll.testdataDir + "point/netcdf/200501q3h-gr.nc", FeatureType.STATION, false);
+    assert 277477 == checkPointDataset(TestAll.testdataDir + "point/netcdf/20080814_LMA.ncml", FeatureType.POINT, false);
 
     // nldn
-    assert 1165 == testPointDataset(TestAll.testdataDir + "lightning/nldn/200929100.ingest", FeatureType.POINT, false);
+    assert 1165 == checkPointDataset(TestAll.testdataDir + "lightning/nldn/200929100.ingest", FeatureType.POINT, false);
 
     // uspln
-    assert 3483 == testPointDataset(TestAll.testdataDir + "lightning/uspln/uspln_20061023.18", FeatureType.POINT, false);
+    assert 3483 == checkPointDataset(TestAll.testdataDir + "lightning/uspln/uspln_20061023.18", FeatureType.POINT, false);
 
   }
 
   public void testGempak() throws IOException {
     // (GEMPAK IOSP) stn = psuedoStruct, obs = multidim Structure, time(time) as extraJoin
-    testPointDataset(TestAll.cdmUnitTestDir + "formats/gempak/surface/19580807_sao.gem", FeatureType.STATION, true);
+    checkPointDataset(TestAll.cdmUnitTestDir + "formats/gempak/surface/19580807_sao.gem", FeatureType.STATION, true);
 
     // stationAsPoint (GEMPAK IOSP) stn = psuedoStruct, obs = multidim Structure, time(time) as extraJoin
     //testPointDataset(TestAll.cdmUnitTestDir + "formats/gempak/surface/20090521_sao.gem", FeatureType.POINT, true);
@@ -275,8 +275,8 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   public void testGempakAll(String filename) throws IOException {
-    testPointDataset(filename, FeatureType.ANY_POINT, true);
-    testLocation(filename, FeatureType.ANY_POINT, true);
+    checkPointDataset(filename, FeatureType.ANY_POINT, true);
+    checkLocation(filename, FeatureType.ANY_POINT, true);
     //testPointDataset(filename, FeatureType.POINT, true);
     //testLocation(filename, FeatureType.POINT, true);
   }
@@ -293,18 +293,18 @@ public class TestPointFeatureTypes extends TestCase {
 
   public void utestCollectionGempak() throws IOException {
     //testPointDataset("collection:C:/data/formats/gempak/surface/#yyyyMMdd#_sao\\.gem", FeatureType.STATION, true);
-    testPointDataset("collection:D:/formats/gempak/surface/#yyyyMMdd#_sao\\.gem", FeatureType.STATION, true);
+    checkPointDataset("collection:D:/formats/gempak/surface/#yyyyMMdd#_sao\\.gem", FeatureType.STATION, true);
   }
 
   public void utestCollection() throws IOException {
     //Surface_METAR_20070326_0000.nc
-    testPointDataset("collection:C:/data/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc", FeatureType.STATION, true);
+    checkPointDataset("collection:C:/data/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc", FeatureType.STATION, true);
     //testPointDataset("collection:D:/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc", FeatureType.STATION, true);
   }
 
   public void utestCdmRemote() throws IOException {
     //testPointDataset("cdmremote:http://motherlode.ucar.edu:8081/thredds/cdmremote/idd/metar/gempak", FeatureType.STATION, true);
-    testPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocal", FeatureType.STATION, true);
+    checkPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocal", FeatureType.STATION, true);
   }
 
   public void utestCdmRemoteCollection() throws Exception {
@@ -345,13 +345,13 @@ public class TestPointFeatureTypes extends TestCase {
     int n = stnFeature.size();
     System.out.printf(" n=%d from %s ", n, stnFeature);
 
-    testPointFeatureCollection(stnFeature, true);
+    checkPointFeatureCollection(stnFeature, true);
 
     fdataset.close();
   }
   
 
-  private int  testPointDataset(String location, FeatureType type, boolean show) throws IOException {
+  private int checkPointDataset(String location, FeatureType type, boolean show) throws IOException {
     System.out.printf("================ TestPointFeatureCollection read %s %n", location);
     long start = System.currentTimeMillis();
 
@@ -393,26 +393,26 @@ public class TestPointFeatureTypes extends TestCase {
 
       if (fc instanceof PointFeatureCollection) {
         PointFeatureCollection pfc = (PointFeatureCollection) fc;
-        count = testPointFeatureCollection(pfc, show);
+        count = checkPointFeatureCollection(pfc, show);
         System.out.println("PointFeatureCollection getData count= " + count + " size= " + pfc.size());
         assert count == pfc.size();
 
       } else if (fc instanceof StationTimeSeriesFeatureCollection) {
-        count = testStationFeatureCollection((StationTimeSeriesFeatureCollection) fc);
+        count = checkStationFeatureCollection((StationTimeSeriesFeatureCollection) fc);
         //testNestedPointFeatureCollection((StationTimeSeriesFeatureCollection) fc, show);
 
       } else if (fc instanceof StationProfileFeatureCollection) {
-        count = testStationProfileFeatureCollection((StationProfileFeatureCollection) fc, show);
+        count = checkStationProfileFeatureCollection((StationProfileFeatureCollection) fc, show);
         if (showStructureData) showStructureData((StationProfileFeatureCollection) fc );
 
       } else if (fc instanceof SectionFeatureCollection) {
-        count = testSectionFeatureCollection((SectionFeatureCollection) fc, show);
+        count = checkSectionFeatureCollection((SectionFeatureCollection) fc, show);
 
       } else if (fc instanceof ProfileFeatureCollection) {
-        count = testProfileFeatureCollection((ProfileFeatureCollection) fc, show);
+        count = checkProfileFeatureCollection((ProfileFeatureCollection) fc, show);
 
       } else {
-        count = testNestedPointFeatureCollection((NestedPointFeatureCollection) fc, show);
+        count = checkNestedPointFeatureCollection((NestedPointFeatureCollection) fc, show);
       }
     }
 
@@ -423,7 +423,7 @@ public class TestPointFeatureTypes extends TestCase {
     return count;
   }
 
-  int testNestedPointFeatureCollection(NestedPointFeatureCollection npfc, boolean show) throws IOException {
+  int checkNestedPointFeatureCollection(NestedPointFeatureCollection npfc, boolean show) throws IOException {
     long start = System.currentTimeMillis();
     int count = 0;
     PointFeatureCollectionIterator iter = npfc.getPointFeatureCollectionIterator(-1);
@@ -431,7 +431,7 @@ public class TestPointFeatureTypes extends TestCase {
       PointFeatureCollection pfc = iter.next();
       if (show)
         System.out.printf(" PointFeatureCollection=%s %n", pfc);
-      count += testPointFeatureCollection(pfc, show);
+      count += checkPointFeatureCollection(pfc, show);
     }
     long took = System.currentTimeMillis() - start;
     if (show)
@@ -439,12 +439,18 @@ public class TestPointFeatureTypes extends TestCase {
     return count;
   }
 
-  int testStationProfileFeatureCollection(StationProfileFeatureCollection stationProfileFeatureCollection, boolean show) throws IOException {
+  int checkStationProfileFeatureCollection(StationProfileFeatureCollection stationProfileFeatureCollection, boolean show) throws IOException {
     long start = System.currentTimeMillis();
     int count = 0;
     stationProfileFeatureCollection.resetIteration();
     while (stationProfileFeatureCollection.hasNext()) {
       ucar.nc2.ft.StationProfileFeature spf = stationProfileFeatureCollection.next();
+      List<Date> times = spf.getTimes();
+      if (show) {
+        System.out.printf("times= ");
+        for (Date t : times) System.out.printf("%s, ", t);
+        System.out.printf("%n");
+      }
 
       spf.resetIteration();
       while (spf.hasNext()) {
@@ -454,7 +460,7 @@ public class TestPointFeatureTypes extends TestCase {
 
         if (show)
           System.out.printf(" ProfileFeature=%s %n", pf);
-        count += testPointFeatureCollection(pf, show);
+        count += checkPointFeatureCollection(pf, show);
       }
     }
     long took = System.currentTimeMillis() - start;
@@ -463,7 +469,7 @@ public class TestPointFeatureTypes extends TestCase {
     return count;
   }
 
-  int testSectionFeatureCollection(SectionFeatureCollection sectionFeatureCollection, boolean show) throws IOException {
+  int checkSectionFeatureCollection(SectionFeatureCollection sectionFeatureCollection, boolean show) throws IOException {
      long start = System.currentTimeMillis();
      int count = 0;
      sectionFeatureCollection.resetIteration();
@@ -478,7 +484,7 @@ public class TestPointFeatureTypes extends TestCase {
 
          if (show)
            System.out.printf(" ProfileFeature=%s %n", pf);
-         count += testPointFeatureCollection(pf, show);
+         count += checkPointFeatureCollection(pf, show);
        }
      }
      long took = System.currentTimeMillis() - start;
@@ -487,7 +493,7 @@ public class TestPointFeatureTypes extends TestCase {
      return count;
    }
 
-  int testProfileFeatureCollection(ProfileFeatureCollection profileFeatureCollection, boolean show) throws IOException {
+  int checkProfileFeatureCollection(ProfileFeatureCollection profileFeatureCollection, boolean show) throws IOException {
      long start = System.currentTimeMillis();
      int count = 0;
      profileFeatureCollection.resetIteration();
@@ -495,7 +501,7 @@ public class TestPointFeatureTypes extends TestCase {
        ucar.nc2.ft.ProfileFeature pf = profileFeatureCollection.next();
        assert pf.getName() != null;
        // assert pf.getTime() != null;
-       count += testPointFeatureCollection(pf, show);
+       count += checkPointFeatureCollection(pf, show);
      }
      long took = System.currentTimeMillis() - start;
      if (show)
@@ -528,7 +534,7 @@ public class TestPointFeatureTypes extends TestCase {
 
 
 
-  int testPointFeatureCollection(PointFeatureCollection pfc, boolean show) throws IOException {
+  int checkPointFeatureCollection(PointFeatureCollection pfc, boolean show) throws IOException {
     if (show) {
       System.out.printf("----------- testPointFeatureCollection -----------------%n");
       System.out.println(" test PointFeatureCollection " + pfc.getName());
@@ -560,7 +566,7 @@ public class TestPointFeatureTypes extends TestCase {
     pfc.resetIteration();
     while (pfc.hasNext()) {
       PointFeature pf = pfc.next();
-      testPointFeature(pf);
+      checkPointFeature(pf);
       assert bb.contains(pf.getLocation().getLatLon()) : pf.getLocation().getLatLon();
       if (!dr.contains(pf.getObservationTimeAsDate()))
         System.out.printf("  date out of Range= %s on %s %n", pf.getObservationTimeAsDate(), pfc.getName());
@@ -586,7 +592,7 @@ public class TestPointFeatureTypes extends TestCase {
       assert bb2.contains(pf.getLocation().getLatLon()) : bb2.toString2() + " does not contains point " + pf.getLocation().getLatLon();
       //System.out.printf(" contains point %s%n",pf.getLocation().getLatLon());
 
-      testPointFeature(pf);
+      checkPointFeature(pf);
       counts++;
     }
     took = System.currentTimeMillis() - start;
@@ -598,7 +604,7 @@ public class TestPointFeatureTypes extends TestCase {
 
   // check that the location and times are filled out
   // read and test the data
-  private void testPointFeature(PointFeature pobs) throws java.io.IOException {
+  private void checkPointFeature(PointFeature pobs) throws java.io.IOException {
 
     EarthLocation loc = pobs.getLocation();
     assert loc != null;
@@ -612,11 +618,11 @@ public class TestPointFeatureTypes extends TestCase {
 
     StructureData sdata = pobs.getData();
     assert null != sdata;
-    testData(sdata);
+    checkData(sdata);
   }
 
   // read each field, check datatype
-  private void testData(StructureData sdata) {
+  private void checkData(StructureData sdata) {
 
     for (StructureMembers.Member member : sdata.getMembers()) {
       DataType dt = member.getDataType();
@@ -655,7 +661,7 @@ public class TestPointFeatureTypes extends TestCase {
 
   ////////////////////////////////////////////////////////////
 
-  int testStationFeatureCollection(StationTimeSeriesFeatureCollection sfc) throws IOException {
+  int checkStationFeatureCollection(StationTimeSeriesFeatureCollection sfc) throws IOException {
     System.out.printf("--------------------------\nComplete Iteration for %s %n", sfc.getName());
     int countStns = countLocations(sfc);
 
@@ -713,7 +719,7 @@ public class TestPointFeatureTypes extends TestCase {
   /////////////////////////////////////////////////////////
 
 
-  void testLocation(String location, FeatureType type, boolean show) throws IOException {
+  void checkLocation(String location, FeatureType type, boolean show) throws IOException {
     Formatter out = new Formatter();
     FeatureDataset fdataset = FeatureDatasetFactoryManager.open(type, location, null, out);
     if (fdataset == null) {

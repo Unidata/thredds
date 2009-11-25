@@ -70,63 +70,78 @@ public abstract class StationProfileFeatureImpl extends OneNestedPointCollection
     this.timeSeriesNpts = npts;
   }
 
+  @Override
   public String getWmoId() {
     return s.getWmoId();
   }
 
+  @Override
   public int size() {
     return timeSeriesNpts;
   }
 
+  @Override
   public String getName() {
     return s.getName();
   }
 
+  @Override
   public String getDescription() {
     return s.getDescription();
   }
 
+  @Override
   public double getLatitude() {
     return s.getLatitude();
   }
 
+  @Override
   public double getLongitude() {
     return s.getLongitude();
   }
 
+  @Override
   public double getAltitude() {
     return s.getAltitude();
   }
 
+  @Override
   public LatLonPoint getLatLon() {
     return s.getLatLon();
   }
   
+  @Override
   public boolean isMissing() {
     return Double.isNaN(getLatitude()) || Double.isNaN(getLongitude());
   }
 
+  @Override
   public boolean hasNext() throws IOException {
     if (localIterator == null) resetIteration();
     return localIterator.hasNext();
   }
 
+  @Override
   public ProfileFeature next() throws IOException {
     return (ProfileFeature) localIterator.next();
   }
 
+  @Override
   public void resetIteration() throws IOException {
     localIterator = getPointFeatureCollectionIterator(-1);
   }
 
+  @Override
   public int compareTo(Station so) {
     return s.getName().compareTo( so.getName());
   }
 
+  @Override
   public StationProfileFeature subset(DateRange dateRange) throws IOException {
     return null;  // LOOK
   }
 
+  @Override
   public StationProfileFeature subset(LatLonRect dateRange) throws IOException {
     return this;
   }

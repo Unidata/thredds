@@ -668,6 +668,8 @@ public abstract class Table {
        assert config.innerName != null;
        this.inner = ds.findDimension(config.innerName);
        this.outer = ds.findDimension(config.outerName);
+       assert this.inner != null : config.innerName;
+       assert this.outer != null : config.outerName;
 
        sm = new StructureMembers(config.name);
        if (config.vars != null) {

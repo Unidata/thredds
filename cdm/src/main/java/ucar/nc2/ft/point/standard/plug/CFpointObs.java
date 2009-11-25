@@ -157,6 +157,8 @@ public class CFpointObs extends TableConfigurerImpl {
       ok = false;
     }
 
+    if (!ok) return false;
+
     // dimensions must match
     List<Dimension> dimLat = lat.getDimensions();
     List<Dimension> dimLon = lon.getDimensions();

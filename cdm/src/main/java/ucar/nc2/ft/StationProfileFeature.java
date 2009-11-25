@@ -36,6 +36,8 @@ import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.Station;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Time series of ProfileFeature at named locations.
@@ -79,4 +81,19 @@ public interface StationProfileFeature extends Station, NestedPointFeatureCollec
    */
   public StationProfileFeature subset(DateRange dateRange) throws IOException;
 
+
+  /**
+   * Get the list of times in the time series of profiles. Note that this may be as costly as iterating over the collection.
+   * @return list of times in the time series of profiles.
+   * @throws java.io.IOException on read error
+   */
+  public List<Date> getTimes() throws IOException;
+
+  /**
+   * Get a particular profile by date. Note that this may be as costly as iterating over the collection.
+   * @param date get profile matching this date.
+   * @return profile whose date matches the given date
+   * @throws java.io.IOException on read error
+   */
+  public ProfileFeature getProfileByDate(Date date) throws IOException;
 }

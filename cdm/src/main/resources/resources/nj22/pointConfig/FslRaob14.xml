@@ -12,6 +12,18 @@
       <table type="MultidimInner" dim0="recNum" dim1="manLevel" subtype="Structure" structName="record">
         <coordinate type="Elev">prMan</coordinate>
       </table>
+      <table type="MultidimInner" dim0="recNum" dim1="sigTLevel" subtype="Structure" structName="record">
+        <coordinate type="Elev">prSigT</coordinate>
+      </table>
+      <table type="MultidimInner" dim0="recNum" dim1="sigWLevel" subtype="Structure" structName="record">
+        <coordinate type="Elev">htSigW</coordinate>
+      </table>
+      <table type="MultidimInner" dim0="recNum" dim1="mTropNum" subtype="Structure" structName="record">
+        <coordinate type="Elev">prTrop</coordinate>
+      </table>
+      <table type="MultidimInner" dim0="recNum" dim1="mWndNum" subtype="Structure" structName="record">
+        <coordinate type="Elev">prMaxW</coordinate>
+      </table>
     </table>
   </table>
 </pointConfig>

@@ -42,6 +42,8 @@ import ucar.unidata.geoloc.Station;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Object Heirarchy:
@@ -126,6 +128,27 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       ft.addParentJoin(cursor); // there may be parent joins
 
       return new TimeSeriesOfProfileFeatureIterator(cursor);
+    }
+
+    @Override
+    public List<Date> getTimes() throws IOException {
+      List<Date> result = new ArrayList<Date>();
+      resetIteration();
+      while (hasNext()) {
+        ProfileFeature pf = next();
+        result.add(pf.getTime());
+      }
+      return result;
+    }
+
+    @Override
+    public ProfileFeature getProfileByDate(Date date) throws IOException {
+     resetIteration();
+      while (hasNext()) {
+        ProfileFeature pf = next();
+        if (pf.getTime().equals(date)) return pf;
+      }
+      return null;
     }
 
     private class TimeSeriesOfProfileFeatureIterator implements PointFeatureCollectionIterator {

@@ -5,6 +5,7 @@
      <coordinate type="Lon">staLon</coordinate>
      <coordinate type="Time">timeObs</coordinate>
      <coordinate type="StnId">staName</coordinate>
+     <coordinate type="StnAlt">staElev</coordinate>
      <coordinate type="WmoId">wmoStaNum</coordinate>
 
     <table type="Singleton">

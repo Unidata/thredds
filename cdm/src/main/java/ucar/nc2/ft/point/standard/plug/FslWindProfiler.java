@@ -66,8 +66,8 @@ public class FslWindProfiler extends TableConfigurerImpl  {
     PointConfigXML reader = new PointConfigXML();
     TableConfig tc = reader.readConfigXMLfromResource(xml, wantFeatureType, ds, errlog);
 
-    TableConfig inner = tc.children.get(0).children.get(0);
-    makeMultidimInner(ds, tc, inner, inner.outerName, inner.innerName);
+    for (TableConfig inner : tc.children.get(0).children)
+      makeMultidimInner(ds, tc, inner, inner.outerName, inner.innerName);
     return tc;
   }
 

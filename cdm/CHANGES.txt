@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  10:
+  multiple profiles in the FslRaob plugin
+  StationProfileFeature.getTimes(), getProfileByDate()
   Aggregation bug with  netcdf elements with no referenced dataset
   Remove nested structures from PointFeature where needed
   ProfileFeature now has a nominal time
