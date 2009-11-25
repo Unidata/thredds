@@ -173,7 +173,8 @@ public class TestOffAggFmrcNonuniform extends TestCase {
       while (dataI.hasNext()) {
         double val = dataI.getDoubleNext();
         Date date = du.makeDate(val);
-        System.out.println(" date= "+ formatter.toDateTimeStringISO(date));
+        if (date != null)
+          System.out.println(" date= "+ formatter.toDateTimeStringISO(date));
       }
 
     } catch (IOException io) {

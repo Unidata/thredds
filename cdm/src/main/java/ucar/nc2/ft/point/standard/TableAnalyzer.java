@@ -68,7 +68,7 @@ public class TableAnalyzer {
 
     registerAnalyzer("CF-1.", CFpointObs.class, new ConventionNameOk() {
       public boolean isMatch(String convName, String wantName) {
-        return convName.startsWith(wantName) && !convName.equals("CF-1.0"); // throw 1.0 to default analyser
+        return convName.startsWith(wantName); //  && !convName.equals("CF-1.0"); // throw 1.0 to default analyser
       }
     });
     registerAnalyzer("BUFR/CDM", BufrCdm.class, null);
@@ -77,9 +77,11 @@ public class TableAnalyzer {
 
     registerAnalyzer("Cosmic", Cosmic.class, null);
     registerAnalyzer("FslWindProfiler", FslWindProfiler.class, null);
-    registerAnalyzer("IRIDL", Iridl.class, null);
     registerAnalyzer("MADIS-ACARS", MadisAcars.class, null); // must be before Madis
-    registerAnalyzer("MADIS surface observations, v1.0", Madis.class, null);
+    registerAnalyzer("MADIS surface observations, v1.0", Madis.class, null);  // must be before FslRaob
+    registerAnalyzer("FSL Raobs", FslRaob.class, null);  // must be before FslRaob
+
+    registerAnalyzer("IRIDL", Iridl.class, null);
     registerAnalyzer("Ndbc", Ndbc.class, null);
     registerAnalyzer("Suomi-Station-CDM", Suomi.class, null);
     registerAnalyzer("BuoyShip-NetCDF", BuoyShipSynop.class, null);

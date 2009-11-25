@@ -170,7 +170,7 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   public void testProblem() throws IOException {
-    assert 8769 == testPointDataset(TestAll.testdataDir+"sounding/gempak/19580807_upa.ncml", FeatureType.STATION_PROFILE, true);
+    assert 4638 == testPointDataset("Q:\\sounding\\netcdf\\Upperair_20060621_0000.nc", FeatureType.STATION_PROFILE, true);
   }
 
   public void testCF() throws IOException {
@@ -212,20 +212,20 @@ public class TestPointFeatureTypes extends TestCase {
     assert 383 == testPointDataset(topdir + "ft/trajectory/cosmic/wetPrf_C005.2007.294.16.22.G17_0001.0002_nc", FeatureType.TRAJECTORY, true);
 
     // ndbc
-    assert 1405 == testPointDataset(topdir + "ft/station/nbdc/41001h1976.nc", FeatureType.STATION, true);
+    assert 1405 == testPointDataset(topdir + "ft/station/nbdc/41001h1976.nc", FeatureType.STATION, false);
 
     // suomi
-    assert 124 == testPointDataset(topdir + "ft/station/suomi/suoHWV_2006.105.00.00.0060_nc", FeatureType.STATION, true);
-    assert 4848 == testPointDataset(topdir + "ft/station/suomi/gsuPWV_2006.105.00.00.1440_nc", FeatureType.STATION, true);
+    assert 124 == testPointDataset(topdir + "ft/station/suomi/suoHWV_2006.105.00.00.0060_nc", FeatureType.STATION, false);
+    assert 4848 == testPointDataset(topdir + "ft/station/suomi/gsuPWV_2006.105.00.00.1440_nc", FeatureType.STATION, false);
 
     // fsl wind profilers
-    assert 198 == testPointDataset(topdir + "ft/station_profile/PROFILER_RASS_01hr_20091027_1500.nc", FeatureType.STATION_PROFILE, true);
-    assert 198 == testPointDataset(topdir + "ft/station_profile/PROFILER_RASS_06min_20091028_2318.nc", FeatureType.STATION_PROFILE, true);
-    assert 1728 == testPointDataset(topdir + "ft/station_profile/PROFILER_wind_01hr_20091024_1200.nc", FeatureType.STATION_PROFILE, true);
-    assert 2088 == testPointDataset(topdir + "ft/station_profile/PROFILER_wind_06min_20091030_2330.nc", FeatureType.STATION_PROFILE, true);
+    assert 198 == testPointDataset(topdir + "ft/station_profile/PROFILER_RASS_01hr_20091027_1500.nc", FeatureType.STATION_PROFILE, false);
+    assert 198 == testPointDataset(topdir + "ft/station_profile/PROFILER_RASS_06min_20091028_2318.nc", FeatureType.STATION_PROFILE, false);
+    assert 1728 == testPointDataset(topdir + "ft/station_profile/PROFILER_wind_01hr_20091024_1200.nc", FeatureType.STATION_PROFILE, false);
+    assert 2088 == testPointDataset(topdir + "ft/station_profile/PROFILER_wind_06min_20091030_2330.nc", FeatureType.STATION_PROFILE, false);
 
     //gempack sounding
-    assert 8769 == testPointDataset(TestAll.testdataDir+"sounding/gempak/19580807_upa.ncml", FeatureType.STATION_PROFILE, true);
+    assert 8769 == testPointDataset(TestAll.testdataDir+"sounding/gempak/19580807_upa.ncml", FeatureType.STATION_PROFILE, false);
 
     // gempak surface
     assert 3337 == testPointDataset(topdir + "ft/point/2009103008_sb.gem", FeatureType.POINT, false);
@@ -245,6 +245,11 @@ public class TestPointFeatureTypes extends TestCase {
     assert 5063 == testPointDataset(topdir + "ft/trajectory/acars/acars_20091109_0800.nc", FeatureType.TRAJECTORY, false);
     assert 2499 == testPointDataset(TestAll.testdataDir + "point/netcdf/19981110_1200", FeatureType.POINT, false);
     assert 1374 == testPointDataset(TestAll.testdataDir + "station/madis2/hydro/20050729_1200", FeatureType.STATION, false);
+    assert 1788 == testPointDataset(TestAll.testdataDir + "sounding/netcdf/20070612_1200", FeatureType.STATION_PROFILE, false);
+
+    // FslRaob
+    assert 17 == testPointDataset(TestAll.testdataDir + "sounding/netcdf/raob_soundings20216.cdf", FeatureType.STATION_PROFILE, false);
+    assert 4638 == testPointDataset(TestAll.testdataDir + "soundin/netcdf/Upperair_20060621_0000.nc", FeatureType.STATION_PROFILE, false);
 
     // unidata point obs
     assert 5023 == testPointDataset(TestAll.testdataDir + "point/netcdf/200501q3h-gr.nc", FeatureType.STATION, false);

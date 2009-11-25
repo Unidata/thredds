@@ -36,6 +36,7 @@ import ucar.nc2.ft.point.standard.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.constants.AxisType;
 
 import java.util.Formatter;
 
@@ -47,7 +48,8 @@ import java.util.Formatter;
 public class Madis extends TableConfigurerImpl  {
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
-    if ((wantFeatureType != FeatureType.ANY_POINT) && (wantFeatureType != FeatureType.STATION) && (wantFeatureType != FeatureType.POINT))
+    if ((wantFeatureType != FeatureType.ANY_POINT) && (wantFeatureType != FeatureType.STATION) && (wantFeatureType != FeatureType.POINT)
+            && (wantFeatureType != FeatureType.STATION_PROFILE))
       return false;
 
     if (!ds.hasUnlimitedDimension()) return false;
@@ -99,6 +101,10 @@ public class Madis extends TableConfigurerImpl  {
 
     boolean hasStruct = Evaluator.hasRecordStructure(ds);
     FeatureType ft = Evaluator.getFeatureType(ds, ":thredds_data_type", errlog);
+    if (null == ft) {
+      if (ds.findDimension("manLevel") != null)
+        ft = FeatureType.STATION_PROFILE;
+    }
     if (null == ft) ft = FeatureType.POINT;
 
     // points
@@ -118,46 +124,54 @@ public class Madis extends TableConfigurerImpl  {
       return ptTable;
      }
 
-    /* otherwise its a station
-    TableConfig stnTable = new TableConfig(Table.Type.Structure, "station");
-    stnTable.featureType = FeatureType.STATION;
-    stnTable.structureType = TableConfig.StructureType.PsuedoStructure;
+    if (ft == FeatureType.STATION) {
+      TableConfig stnTable = new TableConfig(Table.Type.Construct, "station");
+      stnTable.featureType = FeatureType.STATION;
 
-    stnTable.dimName = Evaluator.getDimensionName(ds, "maxStaticIds", errlog);
-    stnTable.limit = Evaluator.getVariableName(ds, "nStaticIds", errlog);
-    stnTable.stnId = Evaluator.getVariableName(ds, "staticIds", errlog);
+      TableConfig obs = new TableConfig(Table.Type.ParentId, "record");
+      obs.parentIndex = vn.stnId;
+      obs.dimName = Evaluator.getDimensionName(ds, "recNum", errlog);
+      obs.time = vn.obsTime;
+      obs.timeNominal = vn.nominalTime;
 
-    TableConfig obs = new TableConfig(Table.Type.LinkedList, "record");
-    obs.dimName = Evaluator.getDimensionName(ds, "recNum", errlog);
-    obs.time = vn.obsTime;
-    obs.timeNominal = vn.nominalTime;
-    obs.start =  Evaluator.getVariableName(ds, "lastRecord", errlog);
-    obs.next =  Evaluator.getVariableName(ds, "prevRecord", errlog);
+      obs.stnId = vn.stnId;
+      obs.stnDesc = vn.stnDesc;
+      obs.lat = vn.lat;
+      obs.lon = vn.lon;
+      obs.elev = vn.elev;
 
-    obs.stnId = vn.stnId;
-    obs.stnDesc = vn.stnDesc;
-    obs.lat = vn.lat;
-    obs.lon = vn.lon;
-    obs.elev = vn.elev; */
+      stnTable.addChild(obs);
+      return stnTable;
+    }
 
-        // otherwise its a station
-    TableConfig stnTable = new TableConfig(Table.Type.Construct, "station");
-    stnTable.featureType = FeatureType.STATION;
+    else if (ft == FeatureType.STATION_PROFILE) {
+      TableConfig stnTable = new TableConfig(Table.Type.Construct, "station");
+      stnTable.featureType = FeatureType.STATION_PROFILE;
 
-    TableConfig obs = new TableConfig(Table.Type.ParentId, "record");
-    obs.parentIndex = vn.stnId;
-    obs.dimName = Evaluator.getDimensionName(ds, "recNum", errlog);
-    obs.time = vn.obsTime;
-    obs.timeNominal = vn.nominalTime;
+      TableConfig obs = new TableConfig(Table.Type.ParentId, "record");
+      obs.parentIndex = vn.stnId;
+      obs.dimName = Evaluator.getDimensionName(ds, "recNum", errlog);
+      obs.time = vn.obsTime;
+      obs.timeNominal = vn.nominalTime;
 
-    obs.stnId = vn.stnId;
-    obs.stnDesc = vn.stnDesc;
-    obs.lat = vn.lat;
-    obs.lon = vn.lon;
-    obs.elev = vn.elev;
+      obs.stnId = vn.stnId;
+      obs.stnDesc = vn.stnDesc;
+      obs.lat = vn.lat;
+      obs.lon = vn.lon;
+      obs.elev = vn.elev;
+  
+      stnTable.addChild(obs);
 
-    stnTable.addChild(obs);
-    return stnTable;
+      TableConfig lev = new TableConfig(Table.Type.MultidimInner, "mandatory");
+      lev.elev = "prMan";
+      lev.outerName = obs.dimName;
+      lev.innerName = "manLevel";
+      obs.addChild(lev);
+
+      return stnTable;
+    }
+
+    return null;
   }
 
   protected class VNames {
@@ -169,6 +183,8 @@ public class Madis extends TableConfigurerImpl  {
     VNames vn = new VNames();
 
     String val = ds.findAttValueIgnoreCase(null, "stationLocationVariables", null);
+    if (val == null)
+      val = ds.findAttValueIgnoreCase(null, "latLonVars", null);
     if (val == null) {
       if (errlog != null) errlog.format(" Cant find global attribute stationLocationVariables\n");
       vn.lat = "latitude";
@@ -200,6 +216,8 @@ public class Madis extends TableConfigurerImpl  {
     }
 
     val = ds.findAttValueIgnoreCase(null, "stationIdVariable", null);
+    if (val == null)
+      val = ds.findAttValueIgnoreCase(null, "idVariables", null);
     if (val == null) {
       if (errlog != null) errlog.format(" Cant find global attribute stationIdVariable\n");
       vn.stnId = "stationId";

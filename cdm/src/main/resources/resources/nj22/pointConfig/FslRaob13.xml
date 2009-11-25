@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pointConfig featureType="STATION_PROFILE">
+  <table type="Structure" subtype="Structure" structName="record">
+    <coordinate type="Lat">staLat</coordinate>
+    <coordinate type="Lon">staLon</coordinate>
+    <coordinate type="StnAlt">staElev</coordinate>
+    <coordinate type="Time">synTime</coordinate>
+    <coordinate type="StnId">staName</coordinate>
+    <coordinate type="WmoId">wmoStat</coordinate>
+
+    <table type="Singleton">
+      <table type="MultidimInner" dim0="recNum" dim1="manLevel" subtype="Structure" structName="record">
+        <coordinate type="Elev">prMan</coordinate>
+      </table>
+    </table>
+  </table>
+</pointConfig>
