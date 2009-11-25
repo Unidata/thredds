@@ -441,7 +441,8 @@ public class FileCache {
     format.format("FileCache %s (%d):%n", name, allFiles.size());
     format.format("isLocked  accesses lastAccess                   location %n");
     for (CacheElement.CacheFile file : allFiles) {
-      format.format("%8s %9d %s %s %n", file.isLocked, file.countAccessed,new Date(file.lastAccessed), file.ncfile.getLocation());
+      String loc = file.ncfile != null ? file.ncfile.getLocation() : "null";
+      format.format("%8s %9d %s %s %n", file.isLocked, file.countAccessed, new Date(file.lastAccessed), loc);
     }
   }
 
