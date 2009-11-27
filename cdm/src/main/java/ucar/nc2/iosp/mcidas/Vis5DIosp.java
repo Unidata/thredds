@@ -32,6 +32,7 @@
  */
 
 
+
 package ucar.nc2.iosp.mcidas;
 
 
@@ -146,15 +147,15 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
         raf.read(b);
         String got = new String(b);
         if (got.equals(V5D)) {
-           return true;
-        } else { // more rigorous test
-           V5DStruct vv       = null;
-           try {
-               vv = V5DStruct.v5dOpenFile(raf);
-           } catch (BadFormException bfe) {
-               vv = null;
-           }
-           return vv != null;
+            return true;
+        } else {  // more rigorous test
+            V5DStruct vv = null;
+            try {
+                vv = V5DStruct.v5dOpenFile(raf);
+            } catch (BadFormException bfe) {
+                vv = null;
+            }
+            return vv != null;
         }
     }
 
@@ -504,6 +505,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
      *  static class for testing
      */
     protected static class MakeNetcdfFile extends NetcdfFile {
+
         MakeNetcdfFile(IOServiceProvider spi, RandomAccessFile raf,
                        String location, CancelTask cancelTask)
                 throws IOException {
@@ -644,6 +646,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
     private void addLatLonVariables(int map_proj, double[] proj_args, int nr,
                                     int nc)
             throws IOException {
+        //printProjArgs(map_proj, proj_args);
 
         Vis5DCoordinateSystem coord_sys;
         try {
@@ -706,6 +709,121 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
             throw new IOException("Vis5DIosp.addLatLon: " + ve.getMessage());
         }
 
+    }
+
+    /** _more_          */
+    private static final int PROJ_GENERIC = 0;
+
+    /** _more_          */
+    private static final int PROJ_LINEAR = 1;
+
+    /** _more_          */
+    private static final int PROJ_CYLINDRICAL = 20;
+
+    /** _more_          */
+    private static final int PROJ_SPHERICAL = 21;
+
+    /** _more_          */
+    private static final int PROJ_LAMBERT = 2;
+
+    /** _more_          */
+    private static final int PROJ_STEREO = 3;
+
+    /** _more_          */
+    private static final int PROJ_ROTATED = 4;
+
+    /**
+     * _more_
+     *
+     * @param Projection _more_
+     * @param projargs _more_
+     */
+    private void printProjArgs(int Projection, double[] projargs) {
+        double NorthBound;
+        double SouthBound;
+        double WestBound;
+        double EastBound;
+        double RowInc;
+        double ColInc;
+        double Lat1;
+        double Lat2;
+        double PoleRow;
+        double PoleCol;
+        double CentralLat;
+        double CentralLon;
+        double CentralRow;
+        double CentralCol;
+        double Rotation;  /* radians */
+        double Cone;
+        double Hemisphere;
+        double ConeFactor;
+        double CosCentralLat;
+        double SinCentralLat;
+        double StereoScale;
+        double InvScale;
+        double CylinderScale;
+        switch (Projection) {
+
+          case PROJ_GENERIC :
+          case PROJ_LINEAR :
+          case PROJ_CYLINDRICAL :
+          case PROJ_SPHERICAL :
+              NorthBound = projargs[0];
+              WestBound  = projargs[1];
+              RowInc     = projargs[2];
+              ColInc     = projargs[3];
+              System.out.println("Generic, Linear, Cylindrical, Spherical:");
+              System.out.println("NB: " + NorthBound + ", WB: " + WestBound
+                                 + ", rowInc: " + RowInc + ", colInc: "
+                                 + ColInc);
+              break;
+
+          case PROJ_ROTATED :
+              NorthBound = projargs[0];
+              WestBound  = projargs[1];
+              RowInc     = projargs[2];
+              ColInc     = projargs[3];
+              CentralLat = projargs[4];
+              CentralLon = projargs[5];
+              Rotation   = projargs[6];
+              System.out.println("Rotated:");
+              System.out.println("NB: " + NorthBound + ", WB: " + WestBound
+                                 + ", rowInc: " + RowInc + ", colInc: "
+                                 + ColInc + ", clat: " + CentralLat
+                                 + ", clon: " + CentralLon + ", rotation: "
+                                 + Rotation);
+              break;
+
+          case PROJ_LAMBERT :
+              Lat1       = projargs[0];
+              Lat2       = projargs[1];
+              PoleRow    = projargs[2];
+              PoleCol    = projargs[3];
+              CentralLon = projargs[4];
+              ColInc     = projargs[5];
+              System.out.println("Lambert: ");
+              System.out.println("lat1: " + Lat1 + ", lat2: " + Lat2
+                                 + ", poleRow: " + PoleRow + ", PoleCol: "
+                                 + PoleCol + ", clon: " + CentralLon
+                                 + ", colInc: " + ColInc);
+              break;
+
+          case PROJ_STEREO :
+              CentralLat = projargs[0];
+              CentralLon = projargs[1];
+              CentralRow = projargs[2];
+              CentralCol = projargs[3];
+              ColInc     = projargs[4];
+              System.out.println("Stereo: ");
+              System.out.println("clat: " + CentralLat + ", clon: "
+                                 + CentralLon + ", cRow: " + CentralRow
+                                 + ", cCol: " + CentralCol + ", colInc: "
+                                 + ColInc);
+              break;
+
+          default :
+              System.out.println("Projection unknown");
+        }
     }
 
 }
