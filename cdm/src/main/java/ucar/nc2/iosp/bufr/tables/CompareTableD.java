@@ -37,7 +37,11 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 
 import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.FileInputStream;
 import java.util.*;
+import java.nio.charset.Charset;
 
 import ucar.unidata.util.StringUtil;
 
@@ -46,11 +50,16 @@ import ucar.unidata.util.StringUtil;
  * @since Jul 24, 2008
  */
 public class CompareTableD {
+  final int default_size = 1200;
 
-  String bmt = "file:C:\\docs\\bufr\\britishMet\\WORKING\\bufr\\Code Tables 2007\\edited/BUFR_Tab_D_6.xml";
+  //String bmt = "file:C:\\docs\\bufr\\britishMet\\WORKING\\bufr\\Code Tables 2007\\edited/BUFR_Tab_D_6.xml";
   String robbt = "C:\\dev\\tds\\bufr\\resources\\resources\\source\\wmo\\verified\\B4M-000-013-D";
-  String robbxml = "file:C:\\dev\\tds\\bufr\\resources\\resources\\source\\wmo\\xml/B4M-000-013-D.xml";
+  String robbxml = "file:C:/dev/tds/bufr/resources/source/wmo/xml/B4M-000-013-D.xml";
 
+  ////////////////////////////////////////////////////////////////////
+  // read brit met table
+
+  String bmt = "file:C:/dev/tds/bufr/resources/source/ukmet/original/BUFR_D_080731.xml";
   static Map<Integer, Sequence> bmTable = new TreeMap<Integer, Sequence>();
   public void readBmt() throws IOException {
     org.jdom.Document doc;
@@ -86,7 +95,7 @@ public class CompareTableD {
         String name = featureCollect.getChild("annotation").getChildTextNormalize("documentation");
 
         int fxy = (f << 16) + (x << 8) + y;
-        Sequence seq = new Sequence(fxy, name);
+        Sequence seq = new Sequence(x, y, name);
         bmTable.put(fxy, seq);
 
         List<Element> features = featureCollect.getChildren("feature");
@@ -109,7 +118,86 @@ public class CompareTableD {
     return StringUtil.remove(s, ' ');
   }
 
+  //////////////////////////////////////////////////////////////
+   // Read WMO csv format
+  static Map<Integer, Sequence> wmoMap = new TreeMap<Integer, Sequence>();
 
+   void readWmoCsv(String filename, Map<Integer, Sequence> map) throws IOException {
+     BufferedReader dataIS = new BufferedReader(new InputStreamReader(new FileInputStream(filename), Charset.forName("UTF8")));
+     int count = 0;
+     int currSeqno = -1;
+     Sequence currSeq = null;
+     while (true) {
+       String line = dataIS.readLine();
+       count++;
+
+       if (line == null) break;
+       if (line.startsWith("#")) continue;
+
+       if (count==1) {
+         System.out.println("header line == " + line);
+         continue;
+       }
+
+       // commas embedded in quotes - replace with blanks for now
+       int pos1 = line.indexOf('"');
+       if (pos1 >= 0) {
+         int pos2 = line.indexOf('"', pos1+1);
+         StringBuffer sb = new StringBuffer(line);
+         for (int i=pos1; i<pos2; i++)
+           if(sb.charAt(i)==',') sb.setCharAt(i, ' ');
+         line = sb.toString();
+       }
+
+       String[] flds = line.split(",");
+       if (flds.length < 5) {
+         System.out.printf("%d INCOMPLETE line == %s%n", count, line);
+         continue;
+       }
+
+       int fldidx = 0;
+       try {
+         int sno = Integer.parseInt(flds[fldidx++]);
+         int cat = Integer.parseInt(flds[fldidx++]);
+         int seq = Integer.parseInt(flds[fldidx++]);
+         String seqName = flds[fldidx++];
+         String featno = flds[fldidx++];
+         if (featno.trim().length() == 0) {
+           System.out.printf("%d skip line == %s%n", count, line);
+           continue;
+         }
+         String featName =  (flds.length > 5) ? flds[fldidx++] : "n/a";
+
+         if (currSeqno != seq) {
+           int y = seq % 1000;
+           int w = seq / 1000;
+           int x = w % 100;
+           currSeq = new Sequence(x, y, seqName);
+           wmoMap.put(currSeq.fxy, currSeq);
+           currSeqno = seq;
+         }
+
+         int fno = Integer.parseInt(featno);
+         int y = fno % 1000;
+         int w = fno / 1000;
+         int x = w % 100;
+         int f = w / 100;
+
+         int fxy = (f << 16) + (x << 8) + y;
+         Feature feat = new Feature(fxy, featName);
+         currSeq.features.add( feat);
+
+       } catch (Exception e) {
+         System.out.printf("%d %d BAD line == %s%n", count, fldidx, line);
+       }
+     }
+     int n = map.values().size();
+     System.out.printf("%s lines=%d elems=%d%n", filename, count, n);
+   }
+
+
+  ///////////////////////////////////////////////////
+  // read robb's table
 
   public void readTable() throws IOException {
     org.jdom.Document doc;
@@ -135,7 +223,7 @@ public class CompareTableD {
       String name = ""; // seqElem.getChildTextNormalize("name");
 
       int fxy = (f << 16) + (x << 8) + y;
-      Sequence seq = new Sequence(fxy, name);
+      Sequence seq = new Sequence(x, y, name);
       map.put(fxy, seq);
 
       List<Element> elemList = seqElem.getChildren("element");
@@ -158,12 +246,16 @@ public class CompareTableD {
       Sequence seq1 = thisMap.get(key);
       Sequence seq2 = thatMap.get(key);
       if (seq2 == null)
-        System.out.printf(" No key %s %n", fxy(key));
+        System.out.printf(" No key %s in second table %n", fxy(key));
       else {
         //if (!f1.name.equals(f2.name)) System.out.printf("%n key %s%n  %s%n  %s %n", fxy(key), f1.name, f2.name);
-        if (seq1.features.size() != seq2.features.size())
-          System.out.printf(" key %s size %d != %d %n", fxy(key), seq1.features.size(), seq2.features.size());
-        else {
+        if (seq1.features.size() != seq2.features.size()) {
+          System.out.printf(" key %s size %d != %d %n  ", fxy(key), seq1.features.size(), seq2.features.size());
+          for (Feature f1 : seq1.features) System.out.printf(" %s,", f1);
+          System.out.printf("%n  ");
+          for (Feature f2 : seq2.features) System.out.printf(" %s,", f2);
+          System.out.printf("%n");
+        } else {
           for (int i=0; i<seq1.features.size(); i++) {
             Feature f1 = seq1.features.get(i);
             Feature f2 = seq2.features.get(i);
@@ -180,12 +272,13 @@ public class CompareTableD {
     int fxy;
     String name;
     List<Feature> features;
-    Sequence(int fxy, String name) {
-      this.fxy = fxy;
+    Sequence(int x, int y, String name) {
+      this.fxy = (3 << 16) + (x << 8) + y;
       this.name = name.trim();
       features = new ArrayList<Feature>(10);
     }
   }
+
 
   class Feature {
     int fxy;
@@ -194,6 +287,8 @@ public class CompareTableD {
       this.fxy = fxy;
       this.name = name.trim();
     }
+
+    public String toString() { return fxy(fxy); }
   }
 
   String fxy( int fxy) {
@@ -206,11 +301,11 @@ public class CompareTableD {
 
   static public void main( String args[]) throws IOException {
     CompareTableD ct = new CompareTableD();
-    ct.readBmt();
+    ct.readWmoCsv("C:/docs/B_TableD.csv", wmoMap);
     ct.readTable();
-    System.out.printf("Compare britMet to ours %n");
-    ct.compare(bmTable, map);
-    System.out.printf("%nCompare ours to britMet %n");
-    ct.compare(map, bmTable);
+    System.out.printf("Compare wmoMap to ours %n");
+    ct.compare(wmoMap, map);
+    System.out.printf("%nCompare ours to wmoMap %n");
+    ct.compare(map, wmoMap);
   }
 }

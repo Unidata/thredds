@@ -60,7 +60,7 @@ public class TableC {
 
   static public String getOperatorName(int index) {
     if ((index < 0 ) || (index >= tableCdesc.length)) return "unknown";
-    return (tableCdesc[index] == null) ? "unkown" : tableCdesc[index];
+    return (tableCdesc[index] == null) ? "unknown" : tableCdesc[index];
   }
 
 }

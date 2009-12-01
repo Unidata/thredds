@@ -53,9 +53,9 @@ import ucar.nc2.iosp.bufr.Descriptor;
  * @since Jul 24, 2008
  */
 public class CompareTableB {
-
-  String bmt = "file:C:/dev/tds/bufr/resources/source/britMet/BUFR_B_080731.xml";
-  String robbt = "C:/dev/tds/bufr/resources/resources/bufr/tables/B4M-000-013-B";
+  static String btRoot = "C:/dev/tds/thredds/bufrTables/";
+  static String bmt = "file:C:/dev/tds/bufr/resources/source/ukmet/original/BUFR_B_080731.xml";
+  static String robbt = "C:/dev/tds/bufr/resources/resources/bufr/tables/B4M-000-013-B";
 
   String diffTableDir = "C:/dev/tds/bufr/resources/resources/bufr/tables/";
   String[] diffTable = {
@@ -76,6 +76,8 @@ public class CompareTableB {
   Pattern pattern = Pattern.compile("(.*)\\([sS]ee [nN]ote.*");
 
   //////////////////////////////////////////////////////////////////////
+  // read British met table  XML format
+
   static Map<Integer, Feature> bmTable = new TreeMap<Integer, Feature>();
 
   public void readBmt() throws IOException {
@@ -151,7 +153,99 @@ public class CompareTableB {
     return StringUtil.remove(s, ' ');
   }
 
+  public void compareBrit() throws IOException {
+    readBmt();
+
+    Map<Integer, Feature> robbMap = new TreeMap<Integer, Feature>();
+    readTable(robbt, robbMap);
+
+    System.out.printf("Compare britMet to ours %n");
+    compare(bmt, bmTable, robbMap);
+    System.out.printf("%n Compare britMet to ours %n");
+    compare2(robbMap, bmTable);
+  }
+
+  static public void mainBrit(String args[]) throws IOException {
+    CompareTableB ct = new CompareTableB();
+    ct.compareBrit();
+  }
+
   //////////////////////////////////////////////////////////////
+  // Read WMO csv format
+  void readWmoCsv(String filename, Map<Integer, Feature> map) throws IOException {
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(new FileInputStream(filename), Charset.forName("UTF8")));
+    int avg = 0;
+    int count = 0;
+    while (true) {
+      String line = dataIS.readLine();
+      count++;
+
+      if (line == null) break;
+      if (line.startsWith("#")) continue;
+
+      if (count==1) {
+        System.out.println("header line == " + line);
+        continue;
+      }
+
+      // commas embedded in quotes - replace with blanks for now
+      int pos1 = line.indexOf('"');
+      if (pos1 >= 0) {
+        int pos2 = line.indexOf('"', pos1+1);
+        StringBuffer sb = new StringBuffer(line);
+        for (int i=pos1; i<pos2; i++)
+          if(sb.charAt(i)==',') sb.setCharAt(i, ' ');
+        line = sb.toString();
+      }
+
+      String[] flds = line.split(",");
+      if (flds.length < 7) {
+        System.out.printf("%d BAD line == %s%n", count, line);
+        continue;
+      }
+
+      int fldidx = 0;
+      try {
+        int classId = Integer.parseInt(flds[fldidx++]);
+        int xy = Integer.parseInt(flds[fldidx++]);
+        String name = flds[fldidx++];
+        String units = flds[fldidx++];
+        int scale = Integer.parseInt(clean(flds[fldidx++]));
+        int reference = Integer.parseInt(clean(flds[fldidx++]));
+        int width = Integer.parseInt(clean(flds[fldidx++]));
+
+        int x = xy / 1000;
+        int y = xy % 1000;
+        int fxy = (x << 8) + y;  // f always 0
+        Feature feat = new Feature(fxy, norm(name), units, scale, reference, width);
+        map.put(fxy, feat);
+        avg += name.length();
+
+      } catch (Exception e) {
+        System.out.printf("%d %d BAD line == %s%n", count, fldidx, line);
+      }
+    }
+    int n = map.values().size();
+    System.out.printf("%s lines=%d elems=%d avg name len=%d%n", filename, count, n, avg/n);
+  }
+
+  static public void main(String args[]) throws IOException {
+    CompareTableB ct = new CompareTableB();
+    Map<Integer, Feature> wmoMap = new TreeMap<Integer, Feature>();
+    ct.readWmoCsv("C:/docs/BC_TableB.csv", wmoMap);
+    
+    Map<Integer, Feature> robbMap = new TreeMap<Integer, Feature>();
+    ct.readTable(robbt, robbMap);
+    //ct.readBmt();
+
+    System.out.printf("Compare ours to wmo %n");
+    ct.compare(robbt, robbMap, wmoMap);
+    System.out.printf("%n Compare wmo to ours %n");
+    ct.compare2(wmoMap, robbMap);
+  }
+
+  //////////////////////////////////////////////////////////////
+  // Read robbs format
   public void readTable(String filename, Map<Integer, Feature> map) throws IOException {
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(new FileInputStream(filename), Charset.forName("UTF8")));
     int count = 0;
@@ -184,7 +278,11 @@ public class CompareTableB {
     System.out.println(filename + " count= " + count);
   }
 
+
+
   //////////////////////////////////////////////////////////
+  // compare tables, accumulate problem messages
+
   /* public void readTableXML() throws IOException {
     org.jdom.Document doc;
     try {
@@ -240,26 +338,35 @@ public class CompareTableB {
       Feature f1 = thisMap.get(key);
       Feature f2 = thatMap.get(key);
       if (f2 == null)
-        System.out.printf(" No key %s %n", fxy(key));
+        System.out.printf("%n No key %s in second table %n", fxy(key));
       else {
-        //if (!f1.name.equals(f2.name))
-        //  System.out.printf("%n key %s%n  %s%n  %s %n", fxy(key), f1.name, f2.name);
-        //if (!f1.units.equalsIgnoreCase(f2.units))
-        //  System.out.printf("%n key %s units %s != %s %n", fxy(key), f1.units, f2.units);
+         if (!equiv(f1.name,f2.name))
+          System.out.printf("%n key %s name%n  %s%n  %s%n", fxy(key), f1.name, f2.name);
+        if (!equiv(f1.units,f2.units))
+          System.out.printf("%n key %s units%n  %s%n  %s%n", fxy(key), f1.units, f2.units); // */
+        
         if (f1.scale != f2.scale) {
-          System.out.printf(" key %s scale %d != %d %n", fxy(key), f1.scale, f2.scale);
+          System.out.printf("%n key %s scale %d != %d %n", fxy(key), f1.scale, f2.scale);
           addProblem(fname, key, "scale " + f1.scale + " != " + f2.scale);
         }
         if (f1.reference != f2.reference) {
-          System.out.printf(" key %s reference %d != %d %n", fxy(key), f1.reference, f2.reference);
+          System.out.printf("%n key %s reference %d != %d %n", fxy(key), f1.reference, f2.reference);
           addProblem(fname, key, "refer " + f1.reference + " != " + f2.reference);
         }
         if (f1.width != f2.width) {
-          System.out.printf(" key %s width %d != %d %n", fxy(key), f1.width, f2.width);
+          System.out.printf("%n key %s width %d != %d %n", fxy(key), f1.width, f2.width);
           addProblem(fname, key, "width " + f1.width + " != " + f2.width);
         }
       }
     }
+  }
+
+  char[] remove = new char[] {'(', ')', ' ', '"', ',', '*', '-'};
+  String[] replace = new String[] {"", "", "", "", "", "", ""};
+  boolean equiv(String org1, String org2) {
+    String s1 = StringUtil.replace(org1, remove, replace).toLowerCase();
+    String s2 = StringUtil.replace(org2, remove, replace).toLowerCase();
+    return s1.equals(s2);
   }
 
   public void compare2(Map<Integer, Feature> thisMap, Map<Integer, Feature> thatMap) {
@@ -267,7 +374,7 @@ public class CompareTableB {
       Feature f1 = thisMap.get(key);
       Feature f2 = thatMap.get(key);
       if (f2 == null)
-        System.out.printf(" No key %s %n", fxy(key));
+        System.out.printf(" No key %s in second table %n", fxy(key));
     }
   }
 
@@ -275,13 +382,14 @@ public class CompareTableB {
     int fxy, scale, reference, width;
     String name, units;
 
+    // 1300 entries. dominated by size of name. max 65K (fxy)
     Feature(int fxy, String name, String units, int scale, int reference, int width) {
-      this.fxy = fxy;
+      this.fxy = fxy; // short
       this.name = name.trim();
-      this.units = units.trim();
-      this.scale = scale;
-      this.reference = reference;
-      this.width = width;
+      this.units = units.trim(); // most are common - Code Table, Flag Table, Numeric, CCITT IA5
+      this.scale = scale;  // 0-13
+      this.reference = reference; // int 62M to -1G
+      this.width = width;  // 0-256
     }
   }
 
@@ -313,23 +421,6 @@ public class CompareTableB {
       for (String p : list)
         System.out.printf(" %s%n", p);
     }
-  }
-
-  public void compareBrit() throws IOException {
-    readBmt();
-
-    Map<Integer, Feature> robbMap = new TreeMap<Integer, Feature>();
-    readTable(robbt, robbMap);
-
-    System.out.printf("Compare britMet to ours %n");
-    compare(bmt, bmTable, robbMap);
-    System.out.printf("%n Compare britMet to ours %n");
-    compare2(robbMap, bmTable);
-  }
-
-  static public void main2(String args[]) throws IOException {
-    CompareTableB ct = new CompareTableB();
-    ct.compareBrit();
   }
 
   ///////////////////////////////////////////////////
@@ -472,7 +563,7 @@ public class CompareTableB {
     return sb.toString();
   }
 
-  static public void main(String args[]) throws IOException {
+  static public void main2(String args[]) throws IOException {
     CompareTableB ct = new CompareTableB();
     ct.compareAll();
   }

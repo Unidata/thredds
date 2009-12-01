@@ -122,6 +122,7 @@ public class ToolsUI extends JPanel {
   // UI
   private AggPanel aggPanel;
   private BufrPanel bufrPanel;
+  private Bufr2Panel bufr2Panel;
   private CoordSysPanel coordSysPanel;
   private FeatureScanPanel ftPanel;
   private FmrcPanel fmrcPanel;
@@ -356,6 +357,10 @@ public class ToolsUI extends JPanel {
     } else if (title.equals("BUFR")) {
       bufrPanel = new BufrPanel((PreferencesExt) mainPrefs.node("bufr"));
       c = bufrPanel;
+
+    } else if (title.equals("BUFR2")) {
+      bufrPanel = new BufrPanel((PreferencesExt) mainPrefs.node("bufr2"));
+      c = bufr2Panel;
 
     } else if (title.equals("GRIB")) {
       gribPanel = new GribPanel((PreferencesExt) mainPrefs.node("grib"));
@@ -822,6 +827,7 @@ public class ToolsUI extends JPanel {
 
     if (aggPanel != null) aggPanel.save();
     if (bufrPanel != null) bufrPanel.save();
+    if (bufr2Panel != null) bufr2Panel.save();
     if (coordSysPanel != null) coordSysPanel.save();
     if (ftPanel != null) ftPanel.save();
     if (fmrcPanel != null) fmrcPanel.save();
@@ -1919,6 +1925,56 @@ public class ToolsUI extends JPanel {
     BufrPanel(PreferencesExt p) {
       super(p, "file:", true, false);
       bufrTable = new BufrTable(prefs, buttPanel);
+      add(bufrTable, BorderLayout.CENTER);
+    }
+
+    boolean process(Object o) {
+      String command = (String) o;
+      boolean err = false;
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        if (raf != null)
+          raf.close();
+        raf = new ucar.unidata.io.RandomAccessFile(command, "r");
+
+        bufrTable.setBufrFile(raf);
+
+      } catch (FileNotFoundException ioe) {
+        JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
+        ta.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
+        err = true;
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        e.printStackTrace(new PrintStream(bos));
+        ta.setText(bos.toString());
+        err = true;
+      }
+
+      return !err;
+    }
+
+    void save() {
+      bufrTable.save();
+      super.save();
+    }
+
+  }
+
+  /////////////////////////////////////////////////////////////////////
+  private class Bufr2Panel extends OpPanel {
+    ucar.unidata.io.RandomAccessFile raf = null;
+    Bufr2Table bufrTable;
+
+    boolean useDefinition = false;
+    JComboBox defComboBox;
+    IndependentWindow defWindow;
+    AbstractButton defButt;
+
+    Bufr2Panel(PreferencesExt p) {
+      super(p, "file:", true, false);
+      bufrTable = new Bufr2Table(prefs, buttPanel);
       add(bufrTable, BorderLayout.CENTER);
     }
 

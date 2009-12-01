@@ -172,7 +172,6 @@ public class BufrTables {
         if (m.group(2).equals("FOR EXPERIMENTAL USE")) continue;
         String cat = m.group(2).trim();
         categories.put(Short.valueOf(m.group(1)), cat);
-
       }
     }
     dataIS.close();

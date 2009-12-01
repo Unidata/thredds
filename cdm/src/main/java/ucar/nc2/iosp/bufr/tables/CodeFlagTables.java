@@ -50,7 +50,7 @@ import ucar.unidata.util.StringUtil;
  */
 public class CodeFlagTables {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CodeFlagTables.class);
-  static private Map<Short, CodeFlagTables> tableMap;
+  static Map<Short, CodeFlagTables> tableMap;
 
   static public CodeFlagTables getTable(short id) {
     if (tableMap == null) init();
@@ -114,6 +114,14 @@ public class CodeFlagTables {
     }
   }
 
+    public static void main(String arg[]) {
+      init();
+      for (Short key : tableMap.keySet()) {
+        CodeFlagTables t = tableMap.get(key);
+        System.out.printf("%s %n",t.fxy());
+      }
+    }
+
   ////////////////////////////////////////////////
   private short fxy;
   private String name;
@@ -143,6 +151,14 @@ public class CodeFlagTables {
 
   private void addValue(int value, String text) {
     map.put(value,text);  
+  }
+
+  String fxy() {
+    int f = fxy >> 16;
+    int x = (fxy & 0xff00) >> 8;
+    int y = (fxy & 0xff);
+
+    return f +"-"+x+"-"+y;
   }
 
 }

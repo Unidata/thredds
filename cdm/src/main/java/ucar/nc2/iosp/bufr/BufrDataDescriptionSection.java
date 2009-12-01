@@ -33,9 +33,7 @@
 package ucar.nc2.iosp.bufr;
 
 /*
- * Section 3 of BUFR data record
- * @author  Robb Kambic
- * @version 2.0
+ * Data Description Section (4) of a BUFR record.
  */
 
 import ucar.unidata.io.RandomAccessFile;
@@ -46,7 +44,6 @@ import java.util.List;
 
 /**
  * A class that represents the Data Description Section (4) of a BUFR record.
- * The descriptors are used to interpret the raw observation data.
  */
 
 public class BufrDataDescriptionSection {

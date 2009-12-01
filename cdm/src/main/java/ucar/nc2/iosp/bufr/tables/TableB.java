@@ -32,6 +32,8 @@
  */
 package ucar.nc2.iosp.bufr.tables;
 
+import net.jcip.annotations.Immutable;
+
 import java.util.*;
 
 /**
@@ -85,6 +87,7 @@ public class TableB {
   }
 
   // inner class
+  @Immutable
   public class Descriptor {
 
     private final short x, y;

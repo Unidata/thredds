@@ -104,7 +104,7 @@ public class BufrTable extends JPanel {
       }
     };
     BAMutil.setActionProperties(seperateWindowAction, "addCoords", "seperate DDS window", true, 'C', -1);
-    useReaderAction.putValue(BAMutil.STATE, new Boolean(seperateWindow));
+    seperateWindowAction.putValue(BAMutil.STATE, new Boolean(seperateWindow));
     BAMutil.addActionToContainer(buttPanel, seperateWindowAction);
 
     messageTable = new BeanTableSorted(MessageBean.class, (PreferencesExt) prefs.node("GridRecordBean"), false);
