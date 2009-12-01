@@ -88,6 +88,25 @@ public class TestTransforms extends TestCase {
     ncd.close();
   }
 
+  public void testHybridSigmaPressure3() throws IOException, InvalidRangeException {
+    String filename = TestAll.testdataDir + "grid/grib/grib1/ecmwf/HIRLAMhybrid.ncml";
+    //String filename =   "/local/robb/data/grib/hybrid/HIRLAMhybrid.ncml";
+    NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
+    VerticalTransform vt = test(ncd, "hybrid", "Relative_humidity", "time", VerticalCT.Type.HybridSigmaPressure, HybridSigmaPressure.class,
+        SimpleUnit.pressureUnit);
+
+    Dimension timeDim = ncd.findDimension("time");
+    for (int i = 0; i < timeDim.getLength(); i++) {
+      ucar.ma2.ArrayDouble.D3 coordVals = vt.getCoordinateArray(i);
+      int[] shape = coordVals.getShape();
+      assert shape[0] == ncd.findDimension("hybrid").getLength();
+      assert shape[1] == ncd.findDimension("y").getLength();
+      assert shape[2] == ncd.findDimension("x").getLength();
+    }
+
+    ncd.close();
+  }
+
   public void testOceanS() throws IOException, InvalidRangeException {
     String filename = TestAll.testdataDir + testDir+ "OceanS.nc";
     test(filename, "s_rho", "salt", "ocean_time", VerticalCT.Type.OceanS, OceanS.class, SimpleUnit.meterUnit);
