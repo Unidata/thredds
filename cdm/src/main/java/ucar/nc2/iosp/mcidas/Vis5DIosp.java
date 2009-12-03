@@ -325,7 +325,9 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
         varTable = new Hashtable<Variable, Integer>();
         String dim3D    = TIME + " " + LEVEL + " " + COLUMN + " " + ROW;
         String dim2D    = TIME + " " + COLUMN + " " + ROW;
-        String coords3D = TIME + " " + vert.getName() + " " + LAT + " " + LON;
+        //String coords3D = TIME + " " + vert.getName() + " " + LAT + " " + LON;
+        String coords3D = "unknown";
+        if (vert != null) coords3D = TIME + " Height " + LAT + " " + LON;
         String coords2D = TIME + " " + LAT + " " + LON;
 
         for (int i = 0; i < nvars; i++) {
