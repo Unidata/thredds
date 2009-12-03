@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.GregorianCalendar;
 
 import ucar.nc2.iosp.bufr.*;
 import ucar.unidata.io.RandomAccessFile;
@@ -251,7 +252,8 @@ public class MessageBroker {
         return null;
       }
 
-      return new Message(raf, is, ids, dds, dataSection);
+      GregorianCalendar cal = new GregorianCalendar(); // ??      
+      return new Message(raf, is, ids, dds, dataSection, cal);
     }
   }
 

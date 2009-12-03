@@ -48,6 +48,7 @@ import ucar.unidata.util.StringUtil;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.util.GregorianCalendar;
 
 /**
  * @author caron
@@ -88,6 +89,7 @@ public class BtValidateController extends AbstractCommandController {
     rootElem.setAttribute("fileName", filename);
     rootElem.setAttribute("fileSize", Long.toString(f.length()));
 
+    GregorianCalendar cal = new GregorianCalendar();
     RandomAccessFile raf = new RandomAccessFile(f.getPath(), "r");
     try {
       int count = 0;
@@ -130,7 +132,7 @@ public class BtValidateController extends AbstractCommandController {
         bufrMessage.addContent(new Element("WMOheader").setText(m.extractWMO()));
         bufrMessage.addContent(new Element("center").setText(m.getCenterName()));
         bufrMessage.addContent(new Element("category").setText(m.getCategoryFullName()));
-        bufrMessage.addContent(new Element("date").setText(format.toDateTimeString(m.ids.getReferenceTime())));
+        bufrMessage.addContent(new Element("date").setText(format.toDateTimeString(m.ids.getReferenceTime(cal))));
         count++;
       }
       return doc;

@@ -301,7 +301,7 @@ public class MessageDispatchDDS {
         this.index = index.trim();
         if (!ignore && !this.index.equalsIgnoreCase("no")) {
           try {
-            indexer = BerkeleyDBIndexer.factory( dispatchDir + fileout, index);
+            // LOOK indexer = BerkeleyDBIndexer.factory( dispatchDir + fileout, index);
           } catch (Exception e) {
             logger.error("Cant open BerkeleyDBIndexer", e);
           }
@@ -337,8 +337,10 @@ public class MessageDispatchDDS {
       Calendar cal = null;
 
       if (useSubdirs) {
+        GregorianCalendar gcal = new GregorianCalendar(); // ??
+
         cal = Calendar.getInstance();
-        cal.setTime(m.ids.getReferenceTime());
+        cal.setTime(m.ids.getReferenceTime(gcal));  // LOOK
         int day = cal.get(Calendar.DAY_OF_MONTH);
         writerName = fileout + "-" + day;
       } else {
