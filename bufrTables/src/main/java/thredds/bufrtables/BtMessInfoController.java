@@ -241,7 +241,12 @@ public class BtMessInfoController extends AbstractController {
       if (scan.hasNext()) {
         message = scan.next();
         byte[] mbytes = scan.getMessageBytesFromLast(message);
-        NetcdfFile ncfile = NetcdfFile.openInMemory("test", mbytes);
+        NetcdfFile ncfile = null;
+        try {
+          ncfile = NetcdfFile.openInMemory("test", mbytes, "ucar.nc2.iosp.bufr.BufrIosp");
+        } catch (Exception e) {
+          throw new IOException(e);
+    }
         ncd = new NetcdfDataset(ncfile);
       }
 

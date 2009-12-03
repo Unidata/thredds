@@ -53,6 +53,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Formatter;
+import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -277,7 +278,12 @@ public class BtServlet extends HttpServlet {
         if (message == null) continue;
         if (count == messno) {
           byte[] mbytes = scan.getMessageBytesFromLast(message);
-          NetcdfFile ncfile = NetcdfFile.openInMemory("test", mbytes);
+          NetcdfFile ncfile = null;
+          try {
+            ncfile = NetcdfFile.openInMemory("test", mbytes, "ucar.nc2.iosp.bufr.BufrIosp");
+          } catch (Exception e) {
+            throw new IOException(e);
+          }
           ncd = new NetcdfDataset(ncfile);
           break;
         }
@@ -324,7 +330,12 @@ public class BtServlet extends HttpServlet {
         if (m == null) continue;
         if (count == messno) {
           byte[] mbytes = scan.getMessageBytesFromLast(m);
-          NetcdfFile ncfile = NetcdfFile.openInMemory("test", mbytes);
+          NetcdfFile ncfile = null;
+          try {
+            ncfile = NetcdfFile.openInMemory("test", mbytes, "ucar.nc2.iosp.bufr.BufrIosp");
+          } catch (Exception e) {
+            throw new IOException(e);
+          }
           NetcdfDataset ncd = new NetcdfDataset(ncfile);
           return ncd;
         }
@@ -492,6 +503,7 @@ public class BtServlet extends HttpServlet {
     Document doc = new Document(rootElem);
     rootElem.setAttribute("fileName", cacheName);
     rootElem.setAttribute("fileSize", Long.toString(raf.length()));
+    GregorianCalendar cal = new GregorianCalendar();
 
     MessageScanner scan = new MessageScanner(raf);
     int count = 0;
@@ -526,7 +538,7 @@ public class BtServlet extends HttpServlet {
       bufrMessage.addContent(new Element("WMOheader").setText(extractWMO(m.getHeader())));
       bufrMessage.addContent(new Element("center").setText(m.getCenterName()));
       bufrMessage.addContent(new Element("category").setText(m.getCategoryFullName()));
-      bufrMessage.addContent(new Element("date").setText( format.toDateTimeString(m.ids.getReferenceTime())));
+      bufrMessage.addContent(new Element("date").setText( format.toDateTimeString(m.ids.getReferenceTime(cal))));
       count++;
     }
     raf.close();
