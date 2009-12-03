@@ -218,6 +218,7 @@ public class ToolsUI extends JPanel {
 
     // nested tab - iosp
     iospTabPane.addTab("BUFR", new JLabel("BUFR"));
+    iospTabPane.addTab("BUFRTableB", new JLabel("BUFRTableB"));
     iospTabPane.addTab("GRIB", new JLabel("GRIB"));
     iospTabPane.addTab("GRIB2", new JLabel("GRIB2"));
     iospTabPane.addTab("HDF5", new JLabel("HDF5"));
@@ -358,8 +359,8 @@ public class ToolsUI extends JPanel {
       bufrPanel = new BufrPanel((PreferencesExt) mainPrefs.node("bufr"));
       c = bufrPanel;
 
-    } else if (title.equals("BUFR2")) {
-      bufrPanel = new BufrPanel((PreferencesExt) mainPrefs.node("bufr2"));
+    } else if (title.equals("BUFRTableB")) {
+      bufr2Panel = new Bufr2Panel((PreferencesExt) mainPrefs.node("bufr2"));
       c = bufr2Panel;
 
     } else if (title.equals("GRIB")) {
@@ -1480,9 +1481,7 @@ public class ToolsUI extends JPanel {
           String units = vs.getUnitsString();
           StringBuilder sb = new StringBuilder();
           sb.append("   ").append(vs.getName()).append(" has unit= <").append(units).append(">");
-          if (units != null)
-
-          {
+          if (units != null)  {
             try {
               SimpleUnit su = SimpleUnit.factoryWithExceptions(units);
               sb.append(" unit convert = ").append(su.toString());
@@ -1915,7 +1914,7 @@ public class ToolsUI extends JPanel {
   /////////////////////////////////////////////////////////////////////
   private class BufrPanel extends OpPanel {
     ucar.unidata.io.RandomAccessFile raf = null;
-    BufrTable bufrTable;
+    BufrMessageViewer bufrTable;
 
     boolean useDefinition = false;
     JComboBox defComboBox;
@@ -1924,7 +1923,7 @@ public class ToolsUI extends JPanel {
 
     BufrPanel(PreferencesExt p) {
       super(p, "file:", true, false);
-      bufrTable = new BufrTable(prefs, buttPanel);
+      bufrTable = new BufrMessageViewer(prefs, buttPanel);
       add(bufrTable, BorderLayout.CENTER);
     }
 
@@ -1964,17 +1963,20 @@ public class ToolsUI extends JPanel {
 
   /////////////////////////////////////////////////////////////////////
   private class Bufr2Panel extends OpPanel {
-    ucar.unidata.io.RandomAccessFile raf = null;
-    Bufr2Table bufrTable;
+    BufrTableViewer bufrTable;
 
     boolean useDefinition = false;
     JComboBox defComboBox;
     IndependentWindow defWindow;
     AbstractButton defButt;
+    JComboBox modes;
 
     Bufr2Panel(PreferencesExt p) {
       super(p, "file:", true, false);
-      bufrTable = new Bufr2Table(prefs, buttPanel);
+      modes = new JComboBox(new String[] {"robb","ncep","ecmwf","wmo","bmet"});
+      buttPanel.add(modes);
+
+      bufrTable = new BufrTableViewer(prefs, buttPanel);
       add(bufrTable, BorderLayout.CENTER);
     }
 
@@ -1984,14 +1986,11 @@ public class ToolsUI extends JPanel {
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        if (raf != null)
-          raf.close();
-        raf = new ucar.unidata.io.RandomAccessFile(command, "r");
-
-        bufrTable.setBufrFile(raf);
+        String mode = (String) modes.getSelectedItem();
+        bufrTable.setBufrTableB(command, mode);
 
       } catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
+        JOptionPane.showMessageDialog(null, "BufrTableViewer cant open " + command + "\n" + ioe.getMessage());
         ta.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
         err = true;
 

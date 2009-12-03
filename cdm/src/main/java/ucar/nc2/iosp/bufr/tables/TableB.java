@@ -69,7 +69,7 @@ public class TableB {
     return map.get(id);
   }
 
-  Collection<Descriptor> getDescriptors() {
+  public Collection<Descriptor> getDescriptors() {
     return map.values();
   }
 
@@ -88,7 +88,7 @@ public class TableB {
 
   // inner class
   @Immutable
-  public class Descriptor {
+  public class Descriptor implements Comparable<Descriptor> {
 
     private final short x, y;
     private final int scale;
@@ -104,10 +104,10 @@ public class TableB {
       this.scale = scale;
       this.refVal = refVal;
       this.width = width;
-      this.name = name;
-      this.units = units;
+      this.name = name.trim();
+      this.units = units.trim().intern();
 
-      this.numeric = !units.equals("CCITT_IA5") && !units.equals("CCITT IA5");
+      this.numeric = !units.startsWith("CCITT");
     }
 
 
@@ -183,6 +183,9 @@ public class TableB {
       return numeric;
     }
 
+    public boolean isLocal() {
+      return ((x >= 48) || (y >= 192));
+    }
 
     public String toString() {
       Formatter out = new Formatter();
@@ -194,6 +197,11 @@ public class TableB {
     void show(Formatter out) {
       out.format(" %8s scale=%d refVal=%d width=%d  units=(%s) name=(%s)",
               getFxy(), scale, refVal, width, units, name);
+    }
+
+    @Override
+    public int compareTo(Descriptor o) {
+      return getId() - o.getId();
     }
   }
 

@@ -467,7 +467,7 @@ public class CompareTableB {
 
   void addToMap(TableName t, Map<Short, DescTrack> mapAll) throws IOException {
     System.out.printf("Read (" + t.filename + ")%n");
-    TableB tableB = BufrTables.readTableB(tableDirName + t.filename);
+    TableB tableB = BufrTables.readRobbTableB(tableDirName + t.filename);
     Collection<TableB.Descriptor> desc = tableB.getDescriptors();
 
     for (TableB.Descriptor d : desc) {

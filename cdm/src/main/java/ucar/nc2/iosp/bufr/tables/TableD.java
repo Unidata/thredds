@@ -59,9 +59,11 @@ public class TableD {
     return location;
   }
 
-  void addDescriptor(short x, short y, String name, List<Short> seq) {
+  Descriptor addDescriptor(short x, short y, String name, List<Short> seq) {
     short id = (short) ((3 << 14) + (x << 8) + y);
-    map.put( id, new Descriptor(x, y, name, seq));
+    Descriptor d = new Descriptor(x, y, name, seq);
+    map.put( id, d);
+    return d;
   }
 
   public Descriptor getDescriptor(short id) {
@@ -92,9 +94,13 @@ public class TableD {
       this.seq = seq;
     }
 
-     public List<Short> getSequence() {
-      return seq;
-    }
+    public List<Short> getSequence() {
+     return seq;
+   }
+
+    public void addFeature(short f) {
+     seq.add(f);
+   }
 
     public String getName() {
       return name;

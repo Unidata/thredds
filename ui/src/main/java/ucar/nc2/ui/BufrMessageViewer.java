@@ -69,7 +69,7 @@ import java.nio.channels.WritableByteChannel;
  * @author caron
  * @since Aug 15, 2008
  */
-public class BufrTable extends JPanel {
+public class BufrMessageViewer extends JPanel {
   private PreferencesExt prefs;
 
   private BeanTableSorted messageTable, obsTable, ddsTable;
@@ -84,7 +84,7 @@ public class BufrTable extends JPanel {
   private DateFormatter df = new DateFormatter();
   private boolean useReader = false, seperateWindow = false;
 
-  public BufrTable(final PreferencesExt prefs, JPanel buttPanel) {
+  public BufrMessageViewer(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
     AbstractAction useReaderAction = new AbstractAction() {
@@ -119,7 +119,7 @@ public class BufrTable extends JPanel {
           setDataDescriptors(beanList, mb.m.getRootDataDescriptor(), 0);
           setObs(mb.m);
         } catch (IOException e1) {
-          JOptionPane.showMessageDialog(BufrTable.this, e1.getMessage());
+          JOptionPane.showMessageDialog(BufrMessageViewer.this, e1.getMessage());
           e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         ddsTable.setBeans(beanList);
@@ -155,7 +155,7 @@ public class BufrTable extends JPanel {
 
           vb.m.dump(f);
         } catch (IOException e1) {
-          JOptionPane.showMessageDialog(BufrTable.this, e1.getMessage());
+          JOptionPane.showMessageDialog(BufrMessageViewer.this, e1.getMessage());
           e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         if (seperateWindow) {
@@ -185,7 +185,7 @@ public class BufrTable extends JPanel {
             dataWindow.show();
           }
         } catch (Exception ex) {
-          JOptionPane.showMessageDialog(BufrTable.this, ex.getMessage());
+          JOptionPane.showMessageDialog(BufrMessageViewer.this, ex.getMessage());
           ex.printStackTrace();
         }
       }
@@ -294,10 +294,10 @@ public class BufrTable extends JPanel {
           byte[] raw = scan.getMessageBytes(mb.m);
           wbc.write(ByteBuffer.wrap(raw));
           wbc.close();
-          JOptionPane.showMessageDialog(BufrTable.this, filename + " successfully written");
+          JOptionPane.showMessageDialog(BufrMessageViewer.this, filename + " successfully written");
 
         } catch (Exception ex) {
-          JOptionPane.showMessageDialog(BufrTable.this, "ERROR: " + ex.getMessage());
+          JOptionPane.showMessageDialog(BufrMessageViewer.this, "ERROR: " + ex.getMessage());
           ex.printStackTrace();
         }
       }
@@ -376,10 +376,10 @@ public class BufrTable extends JPanel {
         wbc.close();
         count++;
       }
-      JOptionPane.showMessageDialog(BufrTable.this, count + " successfully written to " + dirName);
+      JOptionPane.showMessageDialog(BufrMessageViewer.this, count + " successfully written to " + dirName);
 
     } catch (IOException e1) {
-      JOptionPane.showMessageDialog(BufrTable.this, e1.getMessage());
+      JOptionPane.showMessageDialog(BufrMessageViewer.this, e1.getMessage());
       e1.printStackTrace();
     }
   }
@@ -414,10 +414,10 @@ public class BufrTable extends JPanel {
         count++;
       }
       fos.close();
-      JOptionPane.showMessageDialog(BufrTable.this, count + " successfully written to " + filename);
+      JOptionPane.showMessageDialog(BufrMessageViewer.this, count + " successfully written to " + filename);
 
     } catch (IOException e1) {
-      JOptionPane.showMessageDialog(BufrTable.this, e1.getMessage());
+      JOptionPane.showMessageDialog(BufrMessageViewer.this, e1.getMessage());
       e1.printStackTrace();
     }
   }
@@ -455,7 +455,12 @@ public class BufrTable extends JPanel {
 
   private NetcdfDataset getBufrMessageAsDataset(Message m) throws IOException {
     byte[] mbytes = scan.getMessageBytes(m);
-    NetcdfFile ncfile = NetcdfFile.openInMemory("test", mbytes);
+    NetcdfFile ncfile = null;
+    try {
+      ncfile = NetcdfFile.openInMemory("test", mbytes, "ucar.nc2.iosp.bufr.BufrIosp");
+    } catch (Exception e) {
+      throw new IOException(e);
+    }
     return new NetcdfDataset(ncfile);
   }
 
@@ -482,7 +487,7 @@ public class BufrTable extends JPanel {
         }
       }
     } catch (Exception ex) {
-      JOptionPane.showMessageDialog(BufrTable.this, ex.getMessage());
+      JOptionPane.showMessageDialog(BufrMessageViewer.this, ex.getMessage());
       ex.printStackTrace();
     }
     obsTable.setBeans(beanList);

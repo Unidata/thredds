@@ -87,11 +87,14 @@ public class DataDescriptor {
 
     TableB.Descriptor db = null;
     if (f == 0) {
-      db = lookup.getDescriptorTableB( fxy);
-      bad = (db == null);
+      db = lookup.getDescriptorTableB(fxy);
+      if (db != null)
+        setDescriptor(db);
+      else {
+        bad = true;
+        if (f != 1) this.name = "*NOT FOUND";
+      }
     }
-    if (db != null)
-      setDescriptor(db);
 
     if (f == 1) // replication
       this.type = 3; // compound

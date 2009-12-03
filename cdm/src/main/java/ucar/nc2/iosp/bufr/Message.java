@@ -769,7 +769,7 @@ public class Message {
     out.format("   Category= %s %s %n", getCategoryNo(), getCategoryName());
     out.format("   Center= %s %n", getCenterName());
     out.format("   Table= %s wmoTable= %s localTable= %s%n",
-            getTableName(), lookup.getWmoTableName(),lookup.getLocalTableName());
+            getTableName(), lookup.getWmoTableName(), lookup.getLocalTableName());
 
     out.format("  DDS nsubsets=%d type=0x%x isObs=%b isCompressed=%b\n", dds.getNumberDatasets(), dds.getDataType(),
             dds.isObserved(), dds.isCompressed());

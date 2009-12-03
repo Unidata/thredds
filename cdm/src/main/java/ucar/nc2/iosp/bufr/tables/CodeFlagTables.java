@@ -65,7 +65,7 @@ public class CodeFlagTables {
 
   static void init() {
     tableMap = new HashMap<Short, CodeFlagTables>(100);
-    String filename = BufrTables.RESOURCE_PATH + "codes/Code-FlagTables.xml";
+    String filename = BufrTables.RESOURCE_PATH + "wmo/Code-FlagTables.xml";
     InputStream is = CodeFlagTables.class.getResourceAsStream(filename);
 
     try {

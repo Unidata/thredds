@@ -67,10 +67,10 @@ MLB      000302 MELBOURNE/Melbourne              FL US  2810  -8065    11  0 NWS
  grammer:
   format = {field,}
   field = endPos type
-  endPos = ending pos in the line
+  endPos = ending pos in the line, 0 based, exclusive, ie String.substring(start, end)
   type = i=integer, d=double else String
-  field[0] goes from 0 to endPos[0]
-  field[i] goes from endPos[i-1]+1 to endPos[i]
+  field[0] goes from [0, endPos[0])
+  field[i] goes from [endPos[i-1] to endPos[i])
 
 </pre>
  *
@@ -129,7 +129,7 @@ public class TableParser {
 
       int end = Integer.parseInt( tok);
       fields.add( new Field( start, end, type));
-      start = end+1;
+      start = end;
     }
 
     List<Record> records = new ArrayList<Record>();
@@ -139,6 +139,7 @@ public class TableParser {
     while ((maxLines < 0) || (count < maxLines)) {
       String line = dataIS.readLine();
       if (line == null) break;
+      if (line.startsWith("#")) continue;
       records.add(new Record( line, fields));
       count++;
     }
@@ -161,7 +162,9 @@ public class TableParser {
     }
 
     Object parse( String line) throws NumberFormatException {
-      String svalue = line.substring(start, end).trim();
+      String svalue = (end > line.length()) ? line.substring(start) : line.substring(start, end);
+      svalue = svalue.trim();
+      //System.out.printf("  [%d,%d) = %s %n",start, end, svalue);
 
       if (type == String.class)
         return svalue;
@@ -171,9 +174,11 @@ public class TableParser {
           return new Double( svalue);
         if (type == int.class)
           return new Integer( svalue);
-      } catch (NumberFormatException e) {
-        e.printStackTrace();
 
+      } catch (NumberFormatException e) {
+        System.out.printf("Bad line=%s %n",line);
+        System.out.printf("  [%d,%d) = %s %n",start, end, svalue);
+        e.printStackTrace();
       }
       return null;
     }

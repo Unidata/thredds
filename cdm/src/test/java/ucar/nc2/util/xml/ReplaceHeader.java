@@ -32,8 +32,6 @@
  */
 package ucar.nc2.util.xml;
 
-import ucar.nc2.util.TableParser;
-
 import java.io.*;
 
 /**

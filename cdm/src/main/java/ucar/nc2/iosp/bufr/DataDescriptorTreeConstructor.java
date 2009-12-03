@@ -137,12 +137,13 @@ public class DataDescriptorTreeConstructor {
     return tree;
   }
 
-  // flatten the compounds (type 3) remove any bad ones
+  // flatten the compounds (type 3); but dont remove bad ones
   private void flatten(List<DataDescriptor> result, List<DataDescriptor> tree) {
 
     for (DataDescriptor key : tree) {
       if (key.bad) {
         root.isBad = true;
+        result.add(key); // add it anyway so we can see it in debug
         continue;
       }
 
@@ -325,7 +326,7 @@ public class DataDescriptorTreeConstructor {
 
     dpi.linear = new ArrayList<DataDescriptor>();
     linearize(tree, dpi);
-    System.out.printf("data count = %d linear count = %d %n", dpi.dataPresent.replication, dpi.linear.size());
+    System.out.printf("DPI: data count = %d linear count = %d %n", dpi.dataPresent.replication, dpi.linear.size());
 
     return dpi;
   }

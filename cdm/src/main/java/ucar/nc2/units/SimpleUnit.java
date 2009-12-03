@@ -311,10 +311,24 @@ public class SimpleUnit {
     ucar.units.Unit uu = getUnit();
     if (uu instanceof ucar.units.UnknownUnit)
       return true;
+    if (uu instanceof ucar.units.DerivedUnit)
+      return isUnknownUnit((ucar.units.DerivedUnit) uu);
     if (uu instanceof ucar.units.ScaledUnit) {
       ucar.units.ScaledUnit scu = (ucar.units.ScaledUnit) uu;
       Unit u = scu.getUnit();
       if (u instanceof ucar.units.UnknownUnit)
+        return true;
+
+      if (u instanceof ucar.units.DerivedUnit)
+        return isUnknownUnit((ucar.units.DerivedUnit) u);
+    }
+    return false;
+  }
+
+  private boolean isUnknownUnit(ucar.units.DerivedUnit du) {
+    UnitDimension dim = du.getDimension();
+    for (Factor f : dim.getFactors()) {
+      if (f.getBase() instanceof ucar.units.UnknownUnit)
         return true;
     }
     return false;

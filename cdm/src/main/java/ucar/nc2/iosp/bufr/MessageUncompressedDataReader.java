@@ -218,7 +218,10 @@ public class MessageUncompressedDataReader {
 
         int count = reader.bits2UInt(dkey.replicationCountSize);
         if (out != null) out.f.format("%4d delayed replication %d %n", out.fldno++, count);
-        //if (count == 0) continue;
+        if (count < 0) {
+          System.out.println("HEY");
+          count = 0;
+        }
 
         if ((out != null) && (count > 0)) {
           out.f.format("%4d %s read sequence %s count= %d bitSize=%d start at=0x%x %n",
@@ -333,6 +336,8 @@ public class MessageUncompressedDataReader {
 
       // for the obs structure
       int[] shape = new int[]{count};
+      if (count <= 0)
+          System.out.println("HEY");
 
       // allocate ArrayStructureBB for outer structure
       int offset = 0;

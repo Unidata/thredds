@@ -54,21 +54,21 @@ public class Doradeheader {
   private HashMap paramMap;
   private float[] lat_min, lat_max, lon_min, lon_max, hi_max, hi_min;
 
-  static public boolean isValidFile( ucar.unidata.io.RandomAccessFile raf )
-  {
-        try {
-            //RandomAccessFile f = raf.;
-            boolean t = DoradeSweep.isDoradeSweep(raf.getRandomAccessFile());
-            if (!t) return false;
-            //DoradeSweep mySweep = new DoradeSweep(raf.getLocation());
-        } catch (DoradeSweep.DoradeSweepException ex) {
-            ex.printStackTrace();
-            return false;
-       // } catch (java.io.IOException ex) {
+  static public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
+    try {
+      java.io.RandomAccessFile file = raf.getRandomAccessFile();
+      if (file == null) return false;
+      boolean t = DoradeSweep.isDoradeSweep(file);
+      if (!t) return false;
+      //DoradeSweep mySweep = new DoradeSweep(raf.getLocation());
+    } catch (DoradeSweep.DoradeSweepException ex) {
+      ex.printStackTrace();
+      return false;
+      // } catch (java.io.IOException ex) {
       //      ex.printStackTrace();
-       //     return false;
-        }
-      return true;
+      //     return false;
+    }
+    return true;
   }
 
   void read(DoradeSweep mySweep, ucar.nc2.NetcdfFile ncfile, PrintStream out) throws IOException, DoradeSweep.DoradeSweepException {
