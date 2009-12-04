@@ -70,6 +70,10 @@ public class TableD {
     return map.get(Short.valueOf(id));
   }
 
+  public Collection<Descriptor> getDescriptors() {
+    return map.values();
+  }
+
   public void show( Formatter out) {
     Collection<Short> keys = map.keySet();
     List<Short> sortKeys = new ArrayList<Short>(keys);
@@ -82,7 +86,7 @@ public class TableD {
     }
   }
 
-  public class Descriptor {
+  public class Descriptor implements Comparable<Descriptor> {
     private short x, y;
     private String name;
     private List<Short> seq;
@@ -131,6 +135,11 @@ public class TableD {
       for (short s : seq)
         out.format(" %s,", ucar.nc2.iosp.bufr.Descriptor.makeString(s));
       out.format("%n");
+    }
+
+        @Override
+    public int compareTo(Descriptor o) {
+      return getId() - o.getId();
     }
 
   }

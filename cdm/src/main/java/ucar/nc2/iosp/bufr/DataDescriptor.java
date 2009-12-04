@@ -79,7 +79,7 @@ public class DataDescriptor {
   DataDescriptor() {
   }
 
-  DataDescriptor(short fxy, TableLookup lookup) {
+  public DataDescriptor(short fxy, TableLookup lookup) {
     this.fxy = fxy;
     this.f = (fxy & 0xC000) >> 14;
     this.x = (fxy & 0x3F00) >> 8;

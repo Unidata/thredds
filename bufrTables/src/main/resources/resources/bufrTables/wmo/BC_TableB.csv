@@ -767,6 +767,7 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
 20,20036,Ice situation,Code table,0,0,5,Code table,0,2
 20,20037,Ice development,Code table,0,0,5,Code table,0,2
 20,20038,Bearing of ice edge (see Note 3),Degree true,0,0,12,Degree true,0,3
+20,20039,Ice distance,m,-1,0,13
 20,20040,Evolution of drift snow,Code table,0,0,4,Code table,0,2
 20,20041,Airframe icing,Code table,0,0,4,Code table,0,2
 20,20042,Airframe icing present,Code table,0,0,2,Code table,0,1
@@ -1191,6 +1192,7 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
 26,26002,Principal time of daily reading in UTC of minimum temperature,Hour,1,0,12,Hour,1,3
 26,26003,Time difference,Minute,0,-1440,12,Minute,0,4
 26,26010,Hours included,Flag table,0,0,26,Flag table,0,9
+26,26020,Duration of precipitation,Minute,0,0,11
 26,26030,Measurement integration time,Second,2,0,8,Second,2,3
 27,27001,Latitude (high accuracy),Degree,5,-9000000,25,Degree,5,7
 27,27002,Latitude (coarse accuracy),Degree,2,-9000,15,Degree,2,4

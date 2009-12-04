@@ -225,7 +225,7 @@ public class MessageUncompressedDataReader {
 
         if ((out != null) && (count > 0)) {
           out.f.format("%4d %s read sequence %s count= %d bitSize=%d start at=0x%x %n",
-                  out.fldno++, out.indent(), dkey.getFxyName(), count, dkey.replicationCountSize, reader.getPos());
+                  out.fldno, out.indent(), dkey.getFxyName(), count, dkey.replicationCountSize, reader.getPos());
         }
 
         BitCounterUncompressed bitCounterNested = table.makeNested(dkey, count, nestedRow, dkey.replicationCountSize);
@@ -245,14 +245,14 @@ public class MessageUncompressedDataReader {
         BitCounterUncompressed nested = table.makeNested(dkey, dkey.replication, nestedRow, 0);
         if (out != null)
           out.f.format("%4d %s read structure %s count= %d\n",
-                  out.fldno++, out.indent(), dkey.getFxyName(), dkey.replication);
+                  out.fldno, out.indent(), dkey.getFxyName(), dkey.replication);
 
         for (int i = 0; i < dkey.replication; i++) {
           if (out != null) {
             out.f.format("%s read row %d (struct %s) %n", out.indent(), i, dkey.getFxyName());
             out.indent.incr();
             readData(out, reader, nested, dkey.subKeys, i, req);
-            out.indent.incr();
+            out.indent.decr();
           } else {
             readData(null, reader, nested, dkey.subKeys, i, req);
           }
@@ -274,8 +274,8 @@ public class MessageUncompressedDataReader {
       // otherwise read a number
       int val = readNumericData(dkey, reader, req);
       if (out != null)
-        out.f.format("%4d %s read %s bitWidth=%d end at= 0x%x raw=%d convert=%f\n",
-                out.fldno++, out.indent(), dkey.getFxyName(), dkey.bitWidth, reader.getPos(), val, dkey.convert(val));
+        out.f.format("%4d %s read %s (%s) bitWidth=%d end at= 0x%x raw=%d convert=%f\n",
+                out.fldno++, out.indent(), dkey.getFxyName(), dkey.getName(), dkey.bitWidth, reader.getPos(), val, dkey.convert(val));
     }
 
   }

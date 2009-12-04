@@ -326,7 +326,7 @@ public class DataDescriptorTreeConstructor {
 
     dpi.linear = new ArrayList<DataDescriptor>();
     linearize(tree, dpi);
-    System.out.printf("DPI: data count = %d linear count = %d %n", dpi.dataPresent.replication, dpi.linear.size());
+    // LOOK System.out.printf("DPI: data count = %d linear count = %d %n", dpi.dataPresent.replication, dpi.linear.size());
 
     return dpi;
   }

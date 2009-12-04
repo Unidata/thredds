@@ -225,7 +225,7 @@ public class Message {
     }
   }
 
-  TableLookup getTableLookup() {
+  public TableLookup getTableLookup() {
     return lookup;
   }
 

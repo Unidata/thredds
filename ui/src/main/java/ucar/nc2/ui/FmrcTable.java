@@ -35,19 +35,13 @@ package ucar.nc2.ui;
 
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
-import ucar.unidata.io.RandomAccessFile;
-import ucar.nc2.iosp.bufr.Message;
-import ucar.nc2.iosp.bufr.MessageScanner;
 import ucar.nc2.iosp.bufr.DataDescriptor;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.Structure;
 import ucar.nc2.Attribute;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dt.fmrc.FmrcImpl;
-import ucar.nc2.ncml.Aggregation;
-import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureData;
 
 import javax.swing.*;
@@ -57,15 +51,11 @@ import javax.swing.event.ListSelectionEvent;
 import thredds.ui.TextHistoryPane;
 import thredds.ui.IndependentWindow;
 import thredds.ui.BAMutil;
-import thredds.ui.FileManager;
 
 import java.awt.event.ActionEvent;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
-import java.util.List;
-import java.nio.ByteBuffer;
-import java.nio.channels.WritableByteChannel;
 
 /**
  * ToolsUI/NcML/Aggregation

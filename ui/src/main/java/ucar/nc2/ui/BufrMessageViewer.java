@@ -534,7 +534,8 @@ public class BufrMessageViewer extends JPanel {
     }
 
     public String getHash() {
-      return Integer.toHexString(m.hashCode());
+      return  Integer.toHexString(m.dds.getDataDescriptors().hashCode());
+      // return Integer.toHexString(m.hashCode());
     }
 
     public String getCompress() {

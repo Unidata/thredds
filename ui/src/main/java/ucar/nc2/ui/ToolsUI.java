@@ -122,7 +122,8 @@ public class ToolsUI extends JPanel {
   // UI
   private AggPanel aggPanel;
   private BufrPanel bufrPanel;
-  private Bufr2Panel bufr2Panel;
+  private BufrTableBPanel bufrTableBPanel;
+  private BufrTableDPanel bufrTableDPanel;
   private CoordSysPanel coordSysPanel;
   private FeatureScanPanel ftPanel;
   private FmrcPanel fmrcPanel;
@@ -219,6 +220,7 @@ public class ToolsUI extends JPanel {
     // nested tab - iosp
     iospTabPane.addTab("BUFR", new JLabel("BUFR"));
     iospTabPane.addTab("BUFRTableB", new JLabel("BUFRTableB"));
+    iospTabPane.addTab("BUFRTableD", new JLabel("BUFRTableD"));
     iospTabPane.addTab("GRIB", new JLabel("GRIB"));
     iospTabPane.addTab("GRIB2", new JLabel("GRIB2"));
     iospTabPane.addTab("HDF5", new JLabel("HDF5"));
@@ -360,8 +362,12 @@ public class ToolsUI extends JPanel {
       c = bufrPanel;
 
     } else if (title.equals("BUFRTableB")) {
-      bufr2Panel = new Bufr2Panel((PreferencesExt) mainPrefs.node("bufr2"));
-      c = bufr2Panel;
+      bufrTableBPanel = new BufrTableBPanel((PreferencesExt) mainPrefs.node("bufr2"));
+      c = bufrTableBPanel;
+
+    } else if (title.equals("BUFRTableD")) {
+      bufrTableDPanel = new BufrTableDPanel((PreferencesExt) mainPrefs.node("bufrD"));
+      c = bufrTableDPanel;
 
     } else if (title.equals("GRIB")) {
       gribPanel = new GribPanel((PreferencesExt) mainPrefs.node("grib"));
@@ -483,35 +489,6 @@ public class ToolsUI extends JPanel {
     parent.setComponentAt(idx, c);
     if (debugTab) System.out.println("tabbedPane changed " + title + " added ");
   }
-
-  /* deffered creation of components to minimize startup
-  private void makeComponentNested(JTabbedPane parent, String title) {
-    // find the correct index
-    int n = parent.getTabCount();
-    int idx;
-    for (idx = 0; idx < n; idx++) {
-      String cTitle = parent.getTitleAt(idx);
-      if (cTitle.equals(title)) break;
-    }
-    if (idx >= n) {
-      if (debugTab) System.out.println("tabbedPaneNested cant find " + title);
-      return;
-    }
-
-    Component c;
-    if (title.equals("BUFR")) {
-      bufrPanel = new BufrPanel((PreferencesExt) mainPrefs.node("bufr"));
-      c = bufrPanel;
-
-    } else {
-      System.out.println("tabbedPaneNested unknown component " + title);
-      return;
-    }
-
-    parent.setComponentAt(idx, c);
-    if (debugTab) System.out.println("tabbedPaneNested changed " + title + " added ");
-  } */
-
 
   private void makeMenuBar() {
     JMenuBar mb = new JMenuBar();
@@ -828,7 +805,8 @@ public class ToolsUI extends JPanel {
 
     if (aggPanel != null) aggPanel.save();
     if (bufrPanel != null) bufrPanel.save();
-    if (bufr2Panel != null) bufr2Panel.save();
+    if (bufrTableBPanel != null) bufrTableBPanel.save();
+    if (bufrTableDPanel != null) bufrTableDPanel.save();
     if (coordSysPanel != null) coordSysPanel.save();
     if (ftPanel != null) ftPanel.save();
     if (fmrcPanel != null) fmrcPanel.save();
@@ -1962,8 +1940,8 @@ public class ToolsUI extends JPanel {
   }
 
   /////////////////////////////////////////////////////////////////////
-  private class Bufr2Panel extends OpPanel {
-    BufrTableViewer bufrTable;
+  private class BufrTableBPanel extends OpPanel {
+    BufrTableBViewer bufrTable;
 
     boolean useDefinition = false;
     JComboBox defComboBox;
@@ -1971,12 +1949,12 @@ public class ToolsUI extends JPanel {
     AbstractButton defButt;
     JComboBox modes;
 
-    Bufr2Panel(PreferencesExt p) {
-      super(p, "file:", true, false);
+    BufrTableBPanel(PreferencesExt p) {
+      super(p, "tableB:", true, false);
       modes = new JComboBox(new String[] {"robb","ncep","ecmwf","wmo","bmet"});
       buttPanel.add(modes);
 
-      bufrTable = new BufrTableViewer(prefs, buttPanel);
+      bufrTable = new BufrTableBViewer(prefs, buttPanel);
       add(bufrTable, BorderLayout.CENTER);
     }
 
@@ -1988,6 +1966,56 @@ public class ToolsUI extends JPanel {
       try {
         String mode = (String) modes.getSelectedItem();
         bufrTable.setBufrTableB(command, mode);
+
+      } catch (FileNotFoundException ioe) {
+        JOptionPane.showMessageDialog(null, "BufrTableViewer cant open " + command + "\n" + ioe.getMessage());
+        ta.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
+        err = true;
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        e.printStackTrace(new PrintStream(bos));
+        ta.setText(bos.toString());
+        err = true;
+      }
+
+      return !err;
+    }
+
+    void save() {
+      bufrTable.save();
+      super.save();
+    }
+
+  }
+
+    /////////////////////////////////////////////////////////////////////
+  private class BufrTableDPanel extends OpPanel {
+    BufrTableDViewer bufrTable;
+
+    boolean useDefinition = false;
+    JComboBox defComboBox;
+    IndependentWindow defWindow;
+    AbstractButton defButt;
+    JComboBox modes;
+
+    BufrTableDPanel(PreferencesExt p) {
+      super(p, "tableD:", true, false);
+      modes = new JComboBox(new String[] {"robb","ncep","ecmwf","wmo","bmet"});
+      buttPanel.add(modes);
+
+      bufrTable = new BufrTableDViewer(prefs, buttPanel);
+      add(bufrTable, BorderLayout.CENTER);
+    }
+
+    boolean process(Object o) {
+      String command = (String) o;
+      boolean err = false;
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        String mode = (String) modes.getSelectedItem();
+        bufrTable.setBufrTableD(command, mode);
 
       } catch (FileNotFoundException ioe) {
         JOptionPane.showMessageDialog(null, "BufrTableViewer cant open " + command + "\n" + ioe.getMessage());

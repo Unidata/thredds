@@ -549,6 +549,33 @@ public class Scanner {
     }
   }
 
+  ///////////////////////////////////////////////////////////
+
+  static Set<Message> messSet = new HashSet<Message>();
+
+  static void writeUniqueDDS(String filename, WritableByteChannel wbc) throws IOException {
+    RandomAccessFile raf = new RandomAccessFile(filename, "r");
+
+    MessageScanner scan = new MessageScanner(raf);
+    int count = 0;
+    while (scan.hasNext()) {
+
+      Message m = scan.next();
+      if (m == null) {
+        bad_msgs++;
+        continue;
+      }
+
+      if (!messSet.contains(m)) {
+        scan.writeCurrentMessage(wbc);
+        messSet.add(m);
+      }
+
+      count++;
+    }
+    raf.close();
+  }
+
 
   //////////////////////////////////////////////////////////////
 
@@ -893,8 +920,19 @@ public class Scanner {
        }
      }); // */
 
-    /* extract unique DDS  // 20080707_1900.bufr
-     test("R:/testdata/bufr/problems/", new MClosure() {
+    // extract unique DDS
+    FileOutputStream fos = new FileOutputStream("C:/data/formats/bufr3/unique.bufr");
+    final WritableByteChannel wbc = fos.getChannel();
+    test("C:\\data\\formats\\bufr", true, new MClosure() {
+       public void run(String filename) throws IOException {
+         writeUniqueDDS(filename, wbc);
+       }
+     });
+    System.out.printf("# messages = %d %n",messSet.size());
+    wbc.close();
+
+     /* extract unique DDS  // 20080707_1900.bufr
+     test("C:\\data\\formats\\bufr", true, new MClosure() {
        public void run(String filename) throws IOException {
          scanMessageDDS(filename);
        }
@@ -915,7 +953,7 @@ public class Scanner {
      }); // */
 
     // new reader
-    //test("D:/formats/bufr/tmp/dispatch/asample.bufr", new MClosure() {
+    /* test("D:/formats/bufr/tmp/dispatch/asample.bufr", new MClosure() {
     test("D:/formats/bufr/tmp/split/", false, new MClosure() {
       public void run(String filename) throws IOException {
         if (!(filename.endsWith(".bufr"))) return;

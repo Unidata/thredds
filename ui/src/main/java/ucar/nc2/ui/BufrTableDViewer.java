@@ -33,21 +33,13 @@ package ucar.nc2.ui;
 
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
-import ucar.util.prefs.ui.Debug;
-import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.SimpleUnit;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.Variable;
-import ucar.nc2.Structure;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Attribute;
 import ucar.nc2.iosp.bufr.*;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
-import ucar.nc2.iosp.bufr.tables.TableB;
-import ucar.nc2.iosp.bufr.tables.CompareTableB;
-import ucar.ma2.StructureDataIterator;
-import ucar.ma2.StructureData;
+import ucar.nc2.iosp.bufr.tables.TableD;
 import ucar.unidata.util.StringUtil;
+import ucar.unidata.io.RandomAccessFile;
+import ucar.ma2.DataType;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -55,7 +47,6 @@ import javax.swing.event.ListSelectionEvent;
 
 import thredds.ui.TextHistoryPane;
 import thredds.ui.IndependentWindow;
-import thredds.ui.FileManager;
 import thredds.ui.BAMutil;
 
 import java.awt.event.ActionEvent;
@@ -64,18 +55,16 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.io.*;
-import java.nio.channels.WritableByteChannel;
-import java.nio.ByteBuffer;
 
 /**
- * Class Description
+ * View BUFR Table D
  *
  * @author caron
  * @since Dec 1, 2009
  */
 
 
-public class BufrTableViewer extends JPanel {
+public class BufrTableDViewer extends JPanel {
   private PreferencesExt prefs;
 
   private BeanTableSorted ddsTable, variantTable;
@@ -84,15 +73,11 @@ public class BufrTableViewer extends JPanel {
   private TextHistoryPane compareTA, infoTA2;
   private IndependentWindow infoWindow, infoWindow2;
 
-  private TableB currTable;
+  private TableD currTable;
 
-  private StructureTable dataTable;
-  private IndependentWindow dataWindow;
-  private FileManager fileChooser;
-  private DateFormatter df = new DateFormatter();
   private boolean skipNames = false, skipUnits = false;
 
-  public BufrTableViewer(final PreferencesExt prefs, JPanel buttPanel) {
+  public BufrTableDViewer(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
     ddsTable = new BeanTableSorted(DdsBean.class, (PreferencesExt) prefs.node("DdsBean"), false);
@@ -111,9 +96,20 @@ public class BufrTableViewer extends JPanel {
     });
 
     thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(ddsTable.getJTable(), "Options");
-    varPopup.addAction("Dump distinct DDS", new AbstractAction() {
+    varPopup.addAction("Show uses", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        // dumpDDS();
+        Formatter out = new Formatter();
+        DdsBean csb = (DdsBean) ddsTable.getSelectedBean();
+        if (usedDds != null) {
+          List<String> list = usedDds.get(csb.dds.getId());
+          if (list != null) {
+            for (String use : list)
+              out.format(" %s%n", use);
+          }
+        }
+        compareTA.setText(out.toString());
+        compareTA.gotoTop();
+        infoWindow.setVisible(true);
       }
     });
 
@@ -123,7 +119,7 @@ public class BufrTableViewer extends JPanel {
 
         try {
           Formatter out = new Formatter();
-          TableB wmoTable = BufrTables.getWmoTableB();
+          TableD wmoTable = BufrTables.getWmoTableD();
           compare(currTable, wmoTable, out);
 
           compareTA.setText(out.toString());
@@ -142,23 +138,17 @@ public class BufrTableViewer extends JPanel {
     });
     buttPanel.add(compareButton);
 
-    AbstractAction skipAction = new AbstractAction() {
-       public void actionPerformed(ActionEvent e) {
-         Boolean state = (Boolean) getValue(BAMutil.STATE);
-         skipNames = state.booleanValue();
-       }
-     };
-     BAMutil.setActionProperties(skipAction, "addCoords", "skipNames", true, 'C', -1);
-     BAMutil.addActionToContainer(buttPanel, skipAction);
-
-    AbstractAction skipAction2 = new AbstractAction() {
-       public void actionPerformed(ActionEvent e) {
-         Boolean state = (Boolean) getValue(BAMutil.STATE);
-         skipUnits = state.booleanValue();
-       }
-     };
-     BAMutil.setActionProperties(skipAction2, "addCoords", "skipUnits", true, 'C', -1);
-     BAMutil.addActionToContainer(buttPanel, skipAction2);
+    AbstractAction usedAction = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        try {
+          showUsed();
+        } catch (IOException e1) {
+          e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+      }
+    };
+    BAMutil.setActionProperties(usedAction, "dd", "showUsed", true, 'C', -1);
+    BAMutil.addActionToContainer(buttPanel, usedAction);
 
     // the info window
     compareTA = new TextHistoryPane();
@@ -190,95 +180,141 @@ public class BufrTableViewer extends JPanel {
     //if (fileChooser != null) fileChooser.save();
   }
 
-  public void setBufrTableB(String filename, String mode) throws IOException {
-    TableB tableB = BufrTables.readTableB(filename, mode);
+  public void setBufrTableD(String filename, String mode) throws IOException {
+    TableD tableD = BufrTables.readTableD(filename, mode);
     int pos = filename.lastIndexOf("/");
-    String src = (pos > 0) ? filename.substring(pos+1) : filename;
+    String src = (pos > 0) ? filename.substring(pos + 1) : filename;
 
-    List<TableB.Descriptor> listDesc = new ArrayList<TableB.Descriptor>(tableB.getDescriptors());
+    List<TableD.Descriptor> listDesc = new ArrayList<TableD.Descriptor>(tableD.getDescriptors());
     Collections.sort(listDesc);
     List<DdsBean> dds = new ArrayList<DdsBean>(listDesc.size());
-    for (TableB.Descriptor d : listDesc) {
+    for (TableD.Descriptor d : listDesc) {
       dds.add(new DdsBean(src, d));
     }
     ddsTable.setBeans(dds);
-    currTable = tableB;
+    currTable = tableD;
   }
 
-  private void compare(TableB t1, TableB t2, Formatter out) {
-    List<TableB.Descriptor> listDesc = new ArrayList<TableB.Descriptor>(t1.getDescriptors());
+  private void compare(TableD t1, TableD t2, Formatter out) {
+    out.format("Compare %s and %s %n", t1.getName(), t2.getName());
+    boolean err = false;
+    List<TableD.Descriptor> listDesc = new ArrayList<TableD.Descriptor>(t1.getDescriptors());
     Collections.sort(listDesc);
-    for (TableB.Descriptor d1 : listDesc) {
-      TableB.Descriptor d2 = t2.getDescriptor(d1.getId());
-      if (d2 == null)
-        out.format("**No key %s in second table %n", d1.getFxy());
-      else {
-        if (!skipNames) {
-          if (!equiv(d1.getName(), d2.getName()))
-            out.format(" %s name%n   %s%n   %s%n", d1.getFxy(), d1.getName(), d2.getName());
+    for (TableD.Descriptor d1 : listDesc) {
+      TableD.Descriptor d2 = t2.getDescriptor(d1.getId());
+      if (d2 == null) {
+        err = true;
+        out.format(" **No key %s in second table %n", d1.getFxy());
+      } else {
+        List<Short> seq1 = d1.getSequence();
+        List<Short> seq2 = d2.getSequence();
+        if (seq1.size() != seq2.size()) {
+          err = true;
+          out.format(" **key %s size %d != %d %n  ", d1.getFxy(), seq1.size(), seq2.size());
+          for (Short f1 : seq1) out.format(" %s,", fxy(f1));
+          out.format("%n  ");
+          for (Short f2 : seq2) out.format(" %s,", fxy(f2));
+          out.format("%n");
+        } else {
+          for (int i = 0; i < seq1.size(); i++) {
+            short fxy1 = seq1.get(i);
+            short fxy2 = seq2.get(i);
+            if (fxy1 != fxy2) {
+              err = true;
+              out.format(" **MISMATCH key %s feature %s != %s %n", d1.getFxy(), fxy(fxy1), fxy(fxy2));
+              for (Short f1 : seq1) out.format(" %s,", fxy(f1));
+              out.format("%n");
+              for (Short f2 : seq2) out.format(" %s,", fxy(f2));
+              out.format("%n");
+            }
+          }
         }
-        if (!skipUnits) {
-          if (!equivUnits(d1.getUnits(), d2.getUnits()))
-            out.format(" %s units%n   %s%n   %s%n", d1.getFxy(), d1.getUnits(), d2.getUnits());
-        }
-        if (d1.getScale() != d2.getScale())
-          out.format(" %s scale %d != %d %n", d1.getFxy(), d1.getScale(), d2.getScale());
-        if (d1.getRefVal() != d2.getRefVal())
-          out.format(" %s refVal %d != %d %n", d1.getFxy(), d1.getRefVal(), d2.getRefVal());
-        if (d1.getWidth() != d2.getWidth())
-          out.format(" %s scale %d != %d %n", d1.getFxy(), d1.getWidth(), d2.getWidth());
       }
     }
+    if (!err) out.format("All OK%n");
+
+    // see whats missing
+    for (TableD.Descriptor d2 : t2.getDescriptors()) {
+      TableD.Descriptor d1 = t1.getDescriptor(d2.getId());
+      if (d2 == null) {
+        err = true;
+        out.format(" **No key %s in first table %n", d1.getFxy());
+      }
+    }
+
   }
 
-  private char[] remove = new char[]{'(', ')', ' ', '"', ',', '*', '-'};
-  private String[] replace = new String[]{"", "", "", "", "", "", ""};
-
-  private boolean equiv(String org1, String org2) {
-    String s1 = StringUtil.replace(org1, remove, replace).toLowerCase();
-    String s2 = StringUtil.replace(org2, remove, replace).toLowerCase();
-    return s1.equals(s2);
+  String fxy(short id) {
+    return ucar.nc2.iosp.bufr.Descriptor.makeString(id);
   }
 
-  private boolean equivUnits(String unitS1, String unitS2) {
-    String lower1 = unitS1.toLowerCase();
-    String lower2 = unitS2.toLowerCase();
-    if (lower1.equals(lower2)) return true;
-    if (lower1.startsWith("code") && lower2.startsWith("code") ) return true;
-    if (lower1.startsWith("flag") && lower2.startsWith("flag") ) return true;
-    if (unitS1.startsWith("CCITT") && unitS2.startsWith("CCITT") ) return true;
-    
-    try {
-      return SimpleUnit.isCompatibleWithExceptions(unitS1, unitS2);
+  //////////////////////////////////////////////////////////
 
-    } catch (Exception e) {
-      return equiv(unitS1, unitS2);
+  private HashMap<Short, List<String>> usedDds = null;
+
+  private void showUsed() throws IOException {
+    usedDds = new HashMap<Short, List<String>>(3000);
+    scanFileForDds("C:/data/formats/bufr3/asampleAll.bufr");
+    scanFileForDds("C:/data/formats/bufr3/unique.bufr");
+  }
+
+  public void scanFileForDds(String filename) throws IOException {
+    RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(filename, "r");
+
+    MessageScanner scan = new MessageScanner(raf);
+    while (scan.hasNext()) {
+      Message m = scan.next();
+      if (m == null) continue;
+      TableLookup lookup = m.getTableLookup();
+      List<Short> raw = m.dds.getDataDescriptors();
+      String src = m.getHeader().trim() +"("+Integer.toHexString(m.hashCode())+")";
+      setDataDescriptors(src, lookup, raw);
     }
   }
+
+  private void setDataDescriptors(String src, TableLookup lookup, List<Short> seq) {
+    for (Short key : seq) {
+      int f = (key & 0xC000) >> 14;
+      if (f != 3) continue;
+
+      List<String> list = usedDds.get(key);
+      if (list == null) {
+        list = new ArrayList<String>();
+        usedDds.put(key, list);
+      }
+      if (!list.contains(src))
+        list.add(src);
+
+      List<Short> subseq = lookup.getDescriptorsTableD(key);
+      if (subseq != null)
+        setDataDescriptors(src, lookup, subseq);
+    }
+  }
+  ////////////////////////////////////////////////////////
 
   private HashMap<Short, List<DdsBean>> allVariants = null;
 
   private void loadVariants() {
     allVariants = new HashMap<Short, List<DdsBean>>();
     try {
-      loadVariant("wmo-v14", BufrTables.readTableB("resource:wmo/BC_TableB.csv", "wmo"));
-      loadVariant("ours-v13", BufrTables.readTableB("C:/dev/tds/thredds/bufrTables/src/main/resources/resources/bufrTables/local/B4M-000-013-B", "robb"));
-      loadVariant("ncep-v13", BufrTables.readTableB("C:/dev/tds/thredds/bufrTables/src/main/sources/ncep/bufrtab.TableB_STD_0_13", "ncep"));
-      loadVariant("ncep-v14", BufrTables.readTableB("C:/dev/tds/thredds/bufrTables/src/main/sources/ncep/bufrtab.TableB_STD_0_14", "ncep"));
-      loadVariant("ecmwf-v13", BufrTables.readTableB("C:/dev/tds/thredds/bufrTables/src/main/sources/ecmwf/B0000000000098013001.TXT", "ecmwf"));
-      loadVariant("bmet-v13", BufrTables.readTableB("C:/dev/tds/thredds/bufrTables/src/main/sources/bmet/BUFR_B_080731.xml", "bmet"));
+      loadVariant("wmo-v14", BufrTables.readTableD("resource:wmo/B_TableD.csv", "wmo"));
+      loadVariant("ours-v13", BufrTables.readTableD("resource:local/B4M-000-013-D", "robb"));
+      loadVariant("ncep-v13", BufrTables.readTableD("C:/dev/tds/thredds/bufrTables/src/main/sources/ncep/bufrtab.TableD_STD_0_13", "ncep"));
+      loadVariant("ncep-v14", BufrTables.readTableD("C:/dev/tds/thredds/bufrTables/src/main/sources/ncep/bufrtab.TableD_STD_0_14", "ncep"));
+      loadVariant("ecmwf-v13", BufrTables.readTableD("C:/dev/tds/thredds/bufrTables/src/main/sources/ecmwf/D0000000000098013001.TXT", "ecmwf"));
+      /* loadVariant("bmet-v13", BufrTables.readTableD("C:/dev/tds/thredds/bufrTables/src/main/sources/bmet/BUFR_B_080731.xml", "bmet")); // */
     } catch (IOException e) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }
   }
 
-  private void loadVariant(String src, TableB tableB) {
-    List<TableB.Descriptor> listDesc = new ArrayList<TableB.Descriptor>(tableB.getDescriptors());
-    for (TableB.Descriptor d : listDesc) {
+  private void loadVariant(String src, TableD table) {
+    List<TableD.Descriptor> listDesc = new ArrayList<TableD.Descriptor>(table.getDescriptors());
+    for (TableD.Descriptor d : listDesc) {
       List<DdsBean> list = allVariants.get(d.getId());
       if (list == null) {
-         list = new ArrayList<DdsBean>(10);
-        allVariants.put(d.getId(),list);
+        list = new ArrayList<DdsBean>(10);
+        allVariants.put(d.getId(), list);
       }
       list.add(new DdsBean(src, d));
     }
@@ -286,23 +322,26 @@ public class BufrTableViewer extends JPanel {
 
   private void showVariants(DdsBean bean) {
     if (allVariants == null) loadVariants();
-     List<DdsBean> all = allVariants.get(bean.getId());
-     List<DdsBean> dds =new ArrayList<DdsBean>(10);
-     dds.add(bean);
+    List<DdsBean> all = allVariants.get(bean.dds.getId());
+    List<DdsBean> dds = new ArrayList<DdsBean>(10);
+    dds.add(bean);
     if (all != null) dds.addAll(all);
-     variantTable.setBeans(dds);
-   }
+    variantTable.setBeans(dds);
+  }
+
+  /////////////////////////////////////////////////////////
 
   public class DdsBean {
-    TableB.Descriptor dds;
+    TableD.Descriptor dds;
     String source;
+    String udunits;
 
     // no-arg constructor
     public DdsBean() {
     }
 
     // create from a dataset
-    public DdsBean(String source, TableB.Descriptor dds) {
+    public DdsBean(String source, TableD.Descriptor dds) {
       this.source = source;
       this.dds = dds;
     }
@@ -311,8 +350,8 @@ public class BufrTableViewer extends JPanel {
       return dds.getFxy();
     }
 
-    public short getId() {
-      return dds.getId();
+    public int getId() {
+      return DataType.unsignedShortToInt(dds.getId());
     }
 
     public String getSource() {
@@ -323,38 +362,18 @@ public class BufrTableViewer extends JPanel {
       return dds.getName();
     }
 
-    public String getUnits() {
-      return dds.getUnits();
+    public String getSequence() {
+      Formatter out = new Formatter();
+      for (short s : dds.getSequence())
+        out.format(" %s,", ucar.nc2.iosp.bufr.Descriptor.makeString(s));
+      return out.toString();
     }
 
-    public String getUdunits() {
-      try {
-        SimpleUnit su = SimpleUnit.factoryWithExceptions(dds.getUnits());
-        return su.isUnknownUnit() ? "" : su.toString();
-
-      } catch (Exception ioe) {
-        return(" unit convert failed ");
-      }
-    }
-
-    public int getWidth() {
-      return dds.getWidth();
-    }
-
-    public int getScale() {
-      return dds.getScale();
-    }
-
-    public int getReference() {
-      return dds.getRefVal();
-    }
-
-    public boolean isNumeric() {
-      return dds.isNumeric();
-    }
-
-    public boolean isLocal() {
-      return dds.isLocal();
+    public int getUsed() {
+      if (usedDds == null) return 0;
+      List<String> list = usedDds.get(dds.getId());
+      if (list == null) return 0;
+      return list.size();
     }
 
   }
