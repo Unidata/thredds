@@ -104,14 +104,7 @@ public class McGridDefRecord extends GridDefRecord {
     }
 
     /**
-     * Print out the navibation block so it looks something like this:
-     * <pre>
-     *        PROJECTION:          LCC
-     *        ANGLES:                25.0   -95.0    25.0
-     *        GRID SIZE:           93  65
-     *        LL CORNER:              12.19   -133.46
-     *        UR CORNER:              57.29    -49.38
-     * </pre>
+     * Print out a string representation of this
      *
      * @return  a String representation of this.
      */

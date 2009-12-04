@@ -32,8 +32,13 @@
  */
 
 
-
 package ucar.nc2.iosp.mcidas;
+
+
+import ucar.grid.GridDefRecord;
+import ucar.grid.GridParameter;
+import ucar.grid.GridRecord;
+import ucar.grid.GridTableLookup;
 
 
 import ucar.ma2.*;
@@ -46,6 +51,7 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 
 import ucar.nc2.iosp.IOServiceProvider;
+import ucar.nc2.iosp.grid.GridHorizCoordSys;
 import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.io.RandomAccessFile;
@@ -59,6 +65,8 @@ import visad.data.vis5d.Vis5DCoordinateSystem;
 import visad.data.vis5d.Vis5DVerticalSystem;
 
 import java.io.IOException;
+
+import java.util.Date;
 
 import java.util.Hashtable;
 
@@ -323,11 +331,13 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
             }
         }
         varTable = new Hashtable<Variable, Integer>();
-        String dim3D    = TIME + " " + LEVEL + " " + COLUMN + " " + ROW;
-        String dim2D    = TIME + " " + COLUMN + " " + ROW;
+        String dim3D = TIME + " " + LEVEL + " " + COLUMN + " " + ROW;
+        String dim2D = TIME + " " + COLUMN + " " + ROW;
         //String coords3D = TIME + " " + vert.getName() + " " + LAT + " " + LON;
         String coords3D = "unknown";
-        if (vert != null) coords3D = TIME + " Height " + LAT + " " + LON;
+        if (vert != null) {
+            coords3D = TIME + " Height " + LAT + " " + LON;
+        }
         String coords2D = TIME + " " + LAT + " " + LON;
 
         for (int i = 0; i < nvars; i++) {
@@ -359,6 +369,8 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
             projargs
         });
         addLatLonVariables(map_proj[0], proj_args[0], nr, nc);
+        Vis5DGridDefRecord gridDef = new Vis5DGridDefRecord(map_proj[0],
+                                         proj_args[0], nr, nc);
         ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.0"));
         ncfile.finish();
     }
@@ -648,7 +660,11 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
     private void addLatLonVariables(int map_proj, double[] proj_args, int nr,
                                     int nc)
             throws IOException {
-        //printProjArgs(map_proj, proj_args);
+        //Vis5DGridDefRecord.printProjArgs(map_proj, proj_args);
+        Vis5DGridDefRecord vgd = new Vis5DGridDefRecord(map_proj, proj_args,
+                                     nr, nc);
+        GridHorizCoordSys ghc = new GridHorizCoordSys(vgd, new Vis5DLookup(),
+                                    null);
 
         Vis5DCoordinateSystem coord_sys;
         try {
@@ -710,123 +726,200 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
         } catch (VisADException ve) {
             throw new IOException("Vis5DIosp.addLatLon: " + ve.getMessage());
         }
-
     }
 
-    /** _more_          */
-    private static final int PROJ_GENERIC = 0;
-
-    /** _more_          */
-    private static final int PROJ_LINEAR = 1;
-
-    /** _more_          */
-    private static final int PROJ_CYLINDRICAL = 20;
-
-    /** _more_          */
-    private static final int PROJ_SPHERICAL = 21;
-
-    /** _more_          */
-    private static final int PROJ_LAMBERT = 2;
-
-    /** _more_          */
-    private static final int PROJ_STEREO = 3;
-
-    /** _more_          */
-    private static final int PROJ_ROTATED = 4;
 
     /**
-     * _more_
-     *
-     * @param Projection _more_
-     * @param projargs _more_
+     * Get all the information about a Vis5D file
      */
-    private void printProjArgs(int Projection, double[] projargs) {
-        double NorthBound;
-        double SouthBound;
-        double WestBound;
-        double EastBound;
-        double RowInc;
-        double ColInc;
-        double Lat1;
-        double Lat2;
-        double PoleRow;
-        double PoleCol;
-        double CentralLat;
-        double CentralLon;
-        double CentralRow;
-        double CentralCol;
-        double Rotation;  /* radians */
-        double Cone;
-        double Hemisphere;
-        double ConeFactor;
-        double CosCentralLat;
-        double SinCentralLat;
-        double StereoScale;
-        double InvScale;
-        double CylinderScale;
-        switch (Projection) {
+    public class Vis5DLookup implements GridTableLookup {
 
-          case PROJ_GENERIC :
-          case PROJ_LINEAR :
-          case PROJ_CYLINDRICAL :
-          case PROJ_SPHERICAL :
-              NorthBound = projargs[0];
-              WestBound  = projargs[1];
-              RowInc     = projargs[2];
-              ColInc     = projargs[3];
-              System.out.println("Generic, Linear, Cylindrical, Spherical:");
-              System.out.println("NB: " + NorthBound + ", WB: " + WestBound
-                                 + ", rowInc: " + RowInc + ", colInc: "
-                                 + ColInc);
-              break;
+        /**
+         *
+         * Gets a representative grid for this lookup
+         */
+        public Vis5DLookup() {}
 
-          case PROJ_ROTATED :
-              NorthBound = projargs[0];
-              WestBound  = projargs[1];
-              RowInc     = projargs[2];
-              ColInc     = projargs[3];
-              CentralLat = projargs[4];
-              CentralLon = projargs[5];
-              Rotation   = projargs[6];
-              System.out.println("Rotated:");
-              System.out.println("NB: " + NorthBound + ", WB: " + WestBound
-                                 + ", rowInc: " + RowInc + ", colInc: "
-                                 + ColInc + ", clat: " + CentralLat
-                                 + ", clon: " + CentralLon + ", rotation: "
-                                 + Rotation);
-              break;
-
-          case PROJ_LAMBERT :
-              Lat1       = projargs[0];
-              Lat2       = projargs[1];
-              PoleRow    = projargs[2];
-              PoleCol    = projargs[3];
-              CentralLon = projargs[4];
-              ColInc     = projargs[5];
-              System.out.println("Lambert: ");
-              System.out.println("lat1: " + Lat1 + ", lat2: " + Lat2
-                                 + ", poleRow: " + PoleRow + ", PoleCol: "
-                                 + PoleCol + ", clon: " + CentralLon
-                                 + ", colInc: " + ColInc);
-              break;
-
-          case PROJ_STEREO :
-              CentralLat = projargs[0];
-              CentralLon = projargs[1];
-              CentralRow = projargs[2];
-              CentralCol = projargs[3];
-              ColInc     = projargs[4];
-              System.out.println("Stereo: ");
-              System.out.println("clat: " + CentralLat + ", clon: "
-                                 + CentralLon + ", cRow: " + CentralRow
-                                 + ", cCol: " + CentralCol + ", colInc: "
-                                 + ColInc);
-              break;
-
-          default :
-              System.out.println("Projection unknown");
+        /**
+         * .
+         * @param gds
+         * @return ShapeName.
+         */
+        public String getShapeName(GridDefRecord gds) {
+            return "Spherical";
         }
-    }
 
+        /**
+         * gets the grid type.
+         * @param gds
+         * @return GridName
+         */
+        public final String getGridName(GridDefRecord gds) {
+            return gds.toString();
+        }
+
+        /**
+         * gets parameter table, then grib1 parameter based on number.
+         * @param gr GridRecord
+         * @return Parameter
+         */
+        public final GridParameter getParameter(GridRecord gr) {
+            // not needed for this implementation
+            return null;
+        }
+
+        /**
+         * gets the DisciplineName.
+         * @param  gr
+         * @return DisciplineName
+         */
+        public final String getDisciplineName(GridRecord gr) {
+            // all disciplines are the same in Vis5D
+            return "Meteorological Products";
+        }
+
+        /**
+         * gets the CategoryName.
+         * @param  gr
+         * @return CategoryName
+         */
+        public final String getCategoryName(GridRecord gr) {
+            // no categories in Vis5D
+            return "Meteorological Parameters";
+        }
+
+        /**
+         * gets the LevelName.
+         * @param  gr
+         * @return LevelName
+         */
+        public final String getLevelName(GridRecord gr) {
+            // not needed for this implementation
+            return null;
+        }
+
+        /**
+         * gets the LevelDescription.
+         * @param  gr
+         * @return LevelDescription
+         */
+        public final String getLevelDescription(GridRecord gr) {
+            // not needed for this implementation
+            return null;
+        }
+
+        /**
+         * gets the LevelUnit.
+         * @param  gr
+         * @return LevelUnit
+         */
+        public final String getLevelUnit(GridRecord gr) {
+            // not needed for this implementation
+            return null;
+        }
+
+        /**
+         * gets the TimeRangeUnitName.
+         * @return TimeRangeUnitName
+         */
+        public final String getFirstTimeRangeUnitName() {
+            return "second";
+        }
+
+        /**
+         * gets the BaseTime Forecastime.
+         * @return BaseTime
+         */
+        public final java.util.Date getFirstBaseTime() {
+            return new Date();
+        }
+
+        /**
+         * is this a LatLon grid.
+         * @param  gds
+         * @return isLatLon
+         */
+        public final boolean isLatLon(GridDefRecord gds) {
+            return getProjectionName(gds).equals("GENERIC")
+                   || getProjectionName(gds).equals("LINEAR")
+                   || getProjectionName(gds).equals("CYLINDRICAL")
+                   || getProjectionName(gds).equals("SPHERICAL");
+        }
+
+        /**
+         * gets the ProjectionType.
+         * @param  gds
+         * @return ProjectionType
+         */
+        public final int getProjectionType(GridDefRecord gds) {
+            String name = getProjectionName(gds).trim();
+            if (name.equals("LAMBERT")) {
+                return LambertConformal;
+            } else if (name.equals("STEREO")) {
+                return PolarStereographic;
+            } else {
+                return -1;
+            }
+        }
+
+        /**
+         * is this a VerticalCoordinate.
+         * @param  gr
+         * @return isVerticalCoordinate
+         */
+        public final boolean isVerticalCoordinate(GridRecord gr) {
+            // not needed for this implementation
+            return false;
+        }
+
+        /**
+         * is this a PositiveUp VerticalCoordinate.
+         * @param  gr
+         * @return isPositiveUp
+         */
+        public final boolean isPositiveUp(GridRecord gr) {
+            // not needed for this implementation
+            return false;
+        }
+
+        /**
+         * gets the MissingValue.
+         * @return MissingValue
+         */
+        public final float getFirstMissingValue() {
+            return -9999;
+        }
+
+        /**
+         * Is this a layer?
+         *
+         * @param gr  record to check
+         *
+         * @return true if a layer
+         */
+        public boolean isLayer(GridRecord gr) {
+            return false;
+        }
+
+        /**
+         * Get the projection name
+         *
+         * @param gds  the projection name
+         *
+         * @return the name or null if not set
+         */
+        private String getProjectionName(GridDefRecord gds) {
+            return gds.getParam(gds.PROJ);
+        }
+
+        /**
+         * Get the grid type for labelling
+         * @return the grid type
+         */
+        public String getGridType() {
+            return "Vis5D";
+        }
+
+    }
 }
 
