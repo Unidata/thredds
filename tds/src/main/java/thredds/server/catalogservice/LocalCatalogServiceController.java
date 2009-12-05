@@ -184,7 +184,7 @@ public class LocalCatalogServiceController extends AbstractController
       DataRootHandler drh = DataRootHandler.getInstance();
 
       InvCatalog catalog = null;
-      String baseUriString = request.getRequestURI();
+      String baseUriString = request.getRequestURL().toString();
       try
       {
         catalog = drh.getCatalog( catalogPath, new URI( baseUriString ) );
