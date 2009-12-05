@@ -54,8 +54,12 @@ public class StructureMembers {
   public StructureMembers(StructureMembers from) {
     this.name = from.name;
     members = new ArrayList<Member>(from.getMembers().size());
-    for (Member m : from.members)
-      addMember( new Member(m)); // make copy - without the data info
+    for (Member m : from.members) {
+      Member nm = new Member(m); // make copy - without the data info
+      addMember( nm);
+      if (m.members != null) // recurse
+        nm.members = new StructureMembers(m.members);
+    }
   }
 
   /**

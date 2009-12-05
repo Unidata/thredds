@@ -220,7 +220,7 @@ public class ArrayStructureMA extends ArrayStructure {
     if (from instanceof ArrayStructureMA)
       return (ArrayStructureMA) from;
 
-    StructureMembers tosm = new StructureMembers(from.getStructureMembers());
+    StructureMembers tosm = new StructureMembers( new StructureMembers(from.getStructureMembers()));
     ArrayStructureMA to = new ArrayStructureMA(tosm, from.getShape());
     for (StructureMembers.Member m : from.getMembers()) {
       to.setMemberArray(m.getName(), from.extractMemberArray(m));

@@ -106,7 +106,8 @@ public class BufrTables {
   }
 
   // LOOK
-  static public TableA readLookupTable(String tablename) throws IOException {
+  static public TableA getLookupTable() throws IOException {
+    String tablename = "tablelookup.txt";
     InputStream ios = open(tablename);
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
     Map<Short, String> categories = new HashMap<Short, String>();
@@ -162,18 +163,41 @@ public class BufrTables {
 
   static void addTableB(String tablename, TableB b) {
     tablesB.put(tablename, b);
-  }  
+  }
 
-  static public TableB getWmoTableB() throws IOException {
-    String name = "wmo version 14 table B";
-    String location = RESOURCE_PATH + "wmo/BC_TableB.csv";
-    InputStream ios = BufrTables.class.getResourceAsStream(location);
-    TableB b = new TableB(name, location);
-    readWmoTableB(ios, b);
-    return b;
+  //
+
+  static String version13 = "wmo.v13.composite";
+  static String version13diff = "wmo/version13.csv";
+  static String version14 = "wmo/BC_TableB.csv";
+
+  static public TableB getWmoTableB(int version) throws IOException {
+    String name = (version == 14) ? "resource:" + version14 : version13;
+    TableB tb = tablesB.get(name);
+    if (tb != null) return tb;
+
+    // always read version 14 in
+    String location = "resource:"+version14;
+    TableB result = readTableB(location, "wmo");
+
+    // if this is another version, make a composite
+    if (version < 14) {
+      location = "resource:"+version13diff;
+      TableB b13 = readTableB(location, "wmo");
+      TableB.Composite bb = new TableB.Composite(version13, version13);
+      bb.addTable(b13); // check in 13 first
+      bb.addTable(result); // then in 14
+      result = bb;
+    }
+
+    addTableB(result.getLocation(), result);
+    return result;
   }
 
   static public TableB readTableB(String location, String mode) throws IOException {
+    TableB tb = tablesB.get(location);
+    if (tb != null) return tb;
+
     InputStream ios = openStream(location);
     TableB b = new TableB(location, location);
     if (mode.equals("wmo"))
@@ -182,11 +206,12 @@ public class BufrTables {
       readNcepTableB(ios, b);
     else if (mode.equals("ecmwf"))
       readEcmwfTableB(ios, b);
-    else if (mode.equals("bmet"))
+    else if (mode.equals("ukmet"))
       readBmetTableB(ios, b);
     else
       readRobbTableB(ios, b);
 
+    addTableB(location, b);
     return b;
   }
 
@@ -240,6 +265,7 @@ public class BufrTables {
         if (showReadErrs) System.out.printf("%d %d BAD line == %s%n", count, fldidx, line);
       }
     }
+    dataIS.close();
   }
 
   static private String clean(String s) {
@@ -422,27 +448,27 @@ public class BufrTables {
 
   ///////////////////////////////////////////////////////
 
-  static public TableD readTableD(String location, String mode) throws IOException {
-    InputStream ios = openStream(location);
-    TableD b = new TableD(location, location);
-    if (mode.equals("wmo"))
-      readWmoTableD(ios, b);
-    else if (mode.equals("ncep"))
-      readNcepTableD(ios, b);
-    else if (mode.equals("ecmwf"))
-      readEcmwfTableD(ios, b);
-    else
-      readRobbTableD(ios, b);
-
-    return b;
+  static public TableD getWmoTableD(int version) throws IOException {
+    String location = "resource:wmo/B_TableD.csv";
+    return readTableD(location, "wmo");
   }
 
-  static public TableD getWmoTableD() throws IOException {
-    String tablename = RESOURCE_PATH + "wmo/B_TableD.csv";
-    InputStream ios = BufrTables.class.getResourceAsStream(tablename);
-    TableD d = new TableD(tablename, tablename);
+  static public TableD readTableD(String location, String mode) throws IOException {
+    TableD tb = tablesD.get(location);
+    if (tb != null) return tb;
 
-    readWmoTableD(ios, d);
+    InputStream ios = openStream(location);
+    TableD d = new TableD(location, location);
+    if (mode.equals("wmo"))
+      readWmoTableD(ios, d);
+    else if (mode.equals("ncep"))
+      readNcepTableD(ios, d);
+    else if (mode.equals("ecmwf"))
+      readEcmwfTableD(ios, d);
+    else
+      readRobbTableD(ios, d);
+
+    addTableD(location, d);
     return d;
   }
 
@@ -779,10 +805,10 @@ public class BufrTables {
     TableA tableA = BufrTables.getWmoTableA();
     tableA.show(out);
 
-    TableB tableB = BufrTables.getWmoTableB();
+    TableB tableB = BufrTables.getWmoTableB(13);
     tableB.show(out);
 
-    TableD tableD = BufrTables.getWmoTableD();
+    TableD tableD = BufrTables.getWmoTableD(13);
     tableD.show(out);
   }
 }

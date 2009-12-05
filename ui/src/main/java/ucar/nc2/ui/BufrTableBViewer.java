@@ -136,7 +136,7 @@ public class BufrTableBViewer extends JPanel {
 
         try {
           Formatter out = new Formatter();
-          TableB wmoTable = BufrTables.getWmoTableB();
+          TableB wmoTable = BufrTables.getWmoTableB(13);
           compare(currTable, wmoTable, out);
 
           compareTA.setText(out.toString());
@@ -198,7 +198,7 @@ public class BufrTableBViewer extends JPanel {
           FileOutputStream fos = new FileOutputStream(file);
 
           Formatter out = new Formatter(fos);
-          writeDiff(BufrTables.getWmoTableB(), currTable, out);
+          writeDiff(BufrTables.getWmoTableB(14), currTable, out);
           fos.close();
           JOptionPane.showMessageDialog(BufrTableBViewer.this, filename + " successfully written");
           
@@ -257,6 +257,7 @@ public class BufrTableBViewer extends JPanel {
   }
 
   private void compare(TableB t1, TableB t2, Formatter out) {
+    out.format("Compare %s and %s %n", t1.getName(), t2.getName());
     List<TableB.Descriptor> listDesc = new ArrayList<TableB.Descriptor>(t1.getDescriptors());
     Collections.sort(listDesc);
     for (TableB.Descriptor d1 : listDesc) {
@@ -280,6 +281,15 @@ public class BufrTableBViewer extends JPanel {
           out.format(" %s scale %d != %d %n", d1.getFxy(), d1.getWidth(), d2.getWidth());
       }
     }
+
+    // see whats missing
+    for (TableB.Descriptor d2 : t2.getDescriptors()) {
+      TableB.Descriptor d1 = t1.getDescriptor(d2.getId());
+      if (d1 == null) {
+        out.format(" **No key %s in first table %n", d2.getFxy());
+      }
+    }
+
   }
 
   /*
@@ -346,7 +356,8 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
     while (scan.hasNext()) {
       Message m = scan.next();
       if (m == null) continue;
-      setDataDescriptors(m.getHeader(), m.getRootDataDescriptor());
+      String src = m.getHeader().trim() +"("+Integer.toHexString(m.hashCode())+")";
+      setDataDescriptors(src, m.getRootDataDescriptor());
     }
   }
 
@@ -371,8 +382,8 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
   private void loadVariants() {
     allVariants = new HashMap<Short, List<DdsBean>>();
     try {
-      loadVariant("wmo-v14", BufrTables.readTableB("resource:wmo/BC_TableB.csv", "wmo"));
-      loadVariant("ours-v13", BufrTables.readTableB("resource:wmo/version13.csv", "wmo"));
+      loadVariant("wmo-v14", BufrTables.getWmoTableB(14));
+      loadVariant("ours-v13", BufrTables.getWmoTableB(13));
       loadVariant("ncep-v13", BufrTables.readTableB("C:/dev/tds/thredds/bufrTables/src/main/sources/ncep/bufrtab.TableB_STD_0_13", "ncep"));
       loadVariant("ncep-v14", BufrTables.readTableB("C:/dev/tds/thredds/bufrTables/src/main/sources/ncep/bufrtab.TableB_STD_0_14", "ncep"));
       loadVariant("ecmwf-v13", BufrTables.readTableB("C:/dev/tds/thredds/bufrTables/src/main/sources/ecmwf/B0000000000098013001.TXT", "ecmwf"));

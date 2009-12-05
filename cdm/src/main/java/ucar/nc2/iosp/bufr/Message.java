@@ -35,6 +35,7 @@ package ucar.nc2.iosp.bufr;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.iosp.bufr.tables.TableCenters;
 import ucar.nc2.iosp.bufr.tables.TableB;
+import ucar.nc2.iosp.bufr.tables.TableDataSubcategories;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -819,7 +820,7 @@ public class Message {
   public String getCategoryFullName() throws IOException {
     try {
       String catName = lookup.getDataCategory(ids.getCategory());
-      String subcatName = lookup.getSubCategory(ids.getCategory(), ids.getSubCategory());
+      String subcatName = TableDataSubcategories.getSubCategory(ids.getCategory(), ids.getSubCategory());
       //String subcatName = ids.getSubCategory_idName(ids.getCategory(), ids.getSubCategory());
       boolean hasSubName = !subcatName.equalsIgnoreCase("Unknown");
       if (hasSubName)

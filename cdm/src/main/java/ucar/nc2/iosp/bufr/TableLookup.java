@@ -54,21 +54,17 @@ public final class TableLookup {
 
   private static TableA tablelookup;
   private static TableA wmoTableA;
-  private static TableB wmoTableB;
-  private static TableD wmoTableD;
+  //private static TableB wmoTableB;
+  //private static TableD wmoTableD;
   // private static String wmoTableName;
 
-  static {
+  static private void init() {
+    if (tablelookup != null) return;
     try {
-      tablelookup = BufrTables.readLookupTable("tablelookup.txt");
-
-      // get wmo tables
-      //wmoTableName = tablelookup.getDataCategory((short) 0);
-
+      tablelookup = BufrTables.getLookupTable();
       wmoTableA = BufrTables.getWmoTableA();
-
-      wmoTableB = BufrTables.getWmoTableB();
-      wmoTableD = BufrTables.getWmoTableD();
+      //wmoTableB = BufrTables.getWmoTableB();
+      //wmoTableD = BufrTables.getWmoTableD();
     } catch (IOException ioe) {
       log.error("Filed to read BUFR table ", ioe);
     }
@@ -80,17 +76,23 @@ public final class TableLookup {
   private TableB localTableB;
   private TableD localTableD;
 
+  private TableB wmoTableB;
+  private TableD wmoTableD;
+
   public Mode mode = Mode.wmoOnly;
 
   public TableLookup(BufrIndicatorSection is, BufrIdentificationSection ids) throws IOException {
+    init();
+    this.wmoTableB = BufrTables.getWmoTableB(is.getBufrEdition());
+    this.wmoTableD = BufrTables.getWmoTableD(is.getBufrEdition());
 
     // check tablelookup for special local table
     // create key from category and possilbly center id
     localTableName = tablelookup.getCategory( makeLookupKey(ids.getCategory(), ids.getCenterId()));
 
     if (localTableName == null) {
-      this.localTableB = wmoTableB;
-      this.localTableD = wmoTableD;
+      this.localTableB = BufrTables.getWmoTableB(is.getBufrEdition());
+      this.localTableD = BufrTables.getWmoTableD(is.getBufrEdition());
       return;
 
     } else if (localTableName.contains("-ABD")) {
@@ -131,10 +133,6 @@ public final class TableLookup {
 
   public String getDataCategory(int cat) {
     return wmoTableA.getDataCategory((short) cat);
-  }
-
-  public String getSubCategory(int cat, int subCat) {
-    return TableDataSubcategories.getSubCategory(cat, subCat);
   }
 
   public final String getWmoTableName() {

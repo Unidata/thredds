@@ -3,6 +3,10 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.1:
+ 11:
+  UI tabs for examining BUFR tables B and D
+  refactor BUFR tables
+  bug in NetcdfDataetCOnvert on converting enums in nested structures
  10:
   multiple profiles in the FslRaob plugin
   StationProfileFeature.getTimes(), getProfileByDate()

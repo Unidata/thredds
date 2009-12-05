@@ -54,11 +54,11 @@ public class BufrIndicatorSection {
    */
   private final int bufrLength;
 
-  /**
+  /*
    * Length in bytes of BufrIndicatorSection.
    * Currently only BUFR edition 3 supported - length is 8 octets/bytes.
    */
-  private final int length;
+  //private final int length;
 
   /**
    * Edition of BUFR specification used.
@@ -77,7 +77,7 @@ public class BufrIndicatorSection {
     this.startPos = raf.getFilePointer() - 4; // start of BUFR message, including "BUFR"
     bufrLength = BufrNumbers.uint3(raf);
     edition = raf.read();
-    length = 8;
+    //length = 8;
   }
 
   /**
@@ -89,14 +89,14 @@ public class BufrIndicatorSection {
     return bufrLength;
   }
 
-  /**
+  /*
    * Get the byte length of the IndicatorSection0 section.
    *
    * @return length in bytes of IndicatorSection0 section
-   */
+   *
   public final int getLength() {
     return length;
-  }
+  }  */
 
   /**
    * Get the edition of the BUFR specification used.
@@ -108,7 +108,7 @@ public class BufrIndicatorSection {
   }
 
   /**
-   * Get starting position in the file.
+   * Get starting position in the file. This should point to the "BUFR" chars .
    *
    * @return byte offset in file of start of BUFR meessage.
    */

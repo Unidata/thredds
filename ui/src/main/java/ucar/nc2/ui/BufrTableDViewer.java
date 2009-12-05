@@ -119,7 +119,7 @@ public class BufrTableDViewer extends JPanel {
 
         try {
           Formatter out = new Formatter();
-          TableD wmoTable = BufrTables.getWmoTableD();
+          TableD wmoTable = BufrTables.getWmoTableD(14);
           compare(currTable, wmoTable, out);
 
           compareTA.setText(out.toString());
@@ -236,9 +236,8 @@ public class BufrTableDViewer extends JPanel {
     // see whats missing
     for (TableD.Descriptor d2 : t2.getDescriptors()) {
       TableD.Descriptor d1 = t1.getDescriptor(d2.getId());
-      if (d2 == null) {
-        err = true;
-        out.format(" **No key %s in first table %n", d1.getFxy());
+      if (d1 == null) {
+        out.format(" **No key %s in first table %n", d2.getFxy());
       }
     }
 
@@ -265,7 +264,7 @@ public class BufrTableDViewer extends JPanel {
     while (scan.hasNext()) {
       Message m = scan.next();
       if (m == null) continue;
-      TableLookup lookup = m.getTableLookup();
+      TableLookup lookup = m.getTableLookup(); // bad
       List<Short> raw = m.dds.getDataDescriptors();
       String src = m.getHeader().trim() +"("+Integer.toHexString(m.hashCode())+")";
       setDataDescriptors(src, lookup, raw);

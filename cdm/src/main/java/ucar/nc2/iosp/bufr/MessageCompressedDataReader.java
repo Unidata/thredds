@@ -100,7 +100,6 @@ import java.util.HashMap;
    */
 
 public class MessageCompressedDataReader {
-  boolean showData = true;
 
   /**
    * Read all datasets from a single message

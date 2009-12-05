@@ -140,6 +140,7 @@ public class TableParser {
       String line = dataIS.readLine();
       if (line == null) break;
       if (line.startsWith("#")) continue;
+      if (line.trim().length() == 0) continue;
       records.add(new Record( line, fields));
       count++;
     }

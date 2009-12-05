@@ -45,11 +45,12 @@ import java.util.*;
 public class TableB {
   private String name;
   private String location;
-  private Map<Short, Descriptor> map = new HashMap<Short, Descriptor>();
+  private Map<Short, Descriptor> map;
 
   public TableB(String name, String location) {
     this.name = name;
     this.location = location;
+    map = new HashMap<Short, Descriptor>();
   }
 
   void addDescriptor(short x, short y, int scale, int refVal, int width, String name, String units) {
@@ -73,16 +74,59 @@ public class TableB {
     return map.values();
   }
 
+  public Collection<Short> getKeys() {
+    return map.keySet();
+  }
+
   public void show(Formatter out) {
-    Collection<Short> keys = map.keySet();
-    List<Short> sortKeys = new ArrayList(keys);
+    List<Short> sortKeys = new ArrayList<Short>(getKeys());
     Collections.sort(sortKeys);
 
     out.format("Table B %s %n", name);
     for (Short key : sortKeys) {
-      Descriptor dd = map.get(key);
+      Descriptor dd = getDescriptor(key);
       dd.show(out);
       out.format("%n");
+    }
+  }
+
+  /**
+   * Composite pattern - collection of TableB
+   */
+  static public class Composite extends TableB {
+    List<TableB> list = new ArrayList<TableB>(3);
+
+    public Composite(String name, String location) {
+      super(name, location);
+    }
+
+    public void addTable(TableB b) {
+      list.add(b);
+    }
+
+    @Override
+    public Descriptor getDescriptor(short id) {
+      for (TableB b : list) {
+        Descriptor d = b.getDescriptor(id);
+        if (d != null) return d;
+      }
+      return null;
+    }
+
+    @Override
+    public Collection<Descriptor> getDescriptors() {
+      ArrayList<Descriptor> result = new ArrayList<Descriptor>(3000);
+      for (TableB b : list)
+        result.addAll(b.getDescriptors());
+      return result;
+    }
+
+    @Override
+    public Collection<Short> getKeys() {
+      ArrayList<Short> result = new ArrayList<Short>(3000);
+      for (TableB b : list)
+        result.addAll(b.getKeys());
+      return result;
     }
   }
 
@@ -110,48 +154,22 @@ public class TableB {
       this.numeric = !units.startsWith("CCITT");
     }
 
-
-    /**
-     * scale of descriptor.
-     *
-     * @return scale
-     */
     public int getScale() {
       return scale;
     }
 
-    /**
-     * refVal of descriptor.
-     *
-     * @return refVal
-     */
     public int getRefVal() {
       return refVal;
     }
 
-    /**
-     * width of descriptor.
-     *
-     * @return width
-     */
     public int getWidth() {
       return width;
     }
 
-    /**
-     * units of descriptor.
-     *
-     * @return units
-     */
     public String getUnits() {
       return units;
     }
 
-    /**
-     * short name of descriptor.
-     *
-     * @return name
-     */
     public String getName() {
       return name;
     }
@@ -192,7 +210,6 @@ public class TableB {
       show(out);
       return out.toString();
     }
-    //public String toString() { return getFxy()+": "+getName(); }
 
     void show(Formatter out) {
       out.format(" %8s scale=%d refVal=%d width=%d  units=(%s) name=(%s)",

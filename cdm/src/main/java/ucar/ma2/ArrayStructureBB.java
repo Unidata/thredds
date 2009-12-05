@@ -414,8 +414,8 @@ public class ArrayStructureBB extends ArrayStructure {
     int offset = calcOffsetSetOrder(recnum, m);
     int count = m.getSize();
     int index = bbuffer.getInt(offset);
-    if (heap == null)
-      System.out.println("hey!");
+    if (index > heap.size())
+    System.out.println("HEY");
     String[] data = (String[]) heap.get(index);
 
     for (int i = 0; i < count; i++)
@@ -440,7 +440,9 @@ public class ArrayStructureBB extends ArrayStructure {
     if (m.getDataArray() != null) return super.getArrayStructure(recnum, m);
 
     int offset = calcOffsetSetOrder(recnum, m);
-    return new ArrayStructureBB(m.getStructureMembers(), m.getShape(), this.bbuffer, offset);
+    ArrayStructureBB result = new ArrayStructureBB(m.getStructureMembers(), m.getShape(), this.bbuffer, offset);
+    result.heap = this.heap; // share the heap
+    return result;
   }
 
   @Override
