@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.util.Formatter;
 import java.util.List;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 /**
  * Reads through the data of a message.
@@ -150,10 +151,13 @@ public class MessageCompressedDataReader {
     readData(m, raf, f, new Request(ama, map, r));
   }
 
+  // manage the request
   private class Request {
-    ArrayStructureMA ama;
-    HashMap<DataDescriptor, StructureMembers.Member> map;
-    Range r;
+    ArrayStructureMA ama; // data goes here, may be null
+    HashMap<DataDescriptor, StructureMembers.Member> map; // map of DataDescriptor to members of ama, may be null
+    Range r; // requested range
+    DpiTracker dpiTracker; // may be null
+    int outerRow; // if inner process needs to know what row its on
 
     Request(ArrayStructureMA ama, HashMap<DataDescriptor, StructureMembers.Member> map, Range r) {
       this.ama = ama;
@@ -175,6 +179,8 @@ public class MessageCompressedDataReader {
     StructureMembers sms = ama.getStructureMembers();
     for (StructureMembers.Member sm : sms.getMembers()) {
       //System.out.printf("doin %s%n", sm.getName());
+      //if (sm.getName().startsWith("first"))
+      //  System.out.println("HEY");
       Array data = sm.getDataArray();
       if (data instanceof ArrayStructureMA) {
         setIterators( (ArrayStructureMA) data);
@@ -206,11 +212,14 @@ public class MessageCompressedDataReader {
 
         if (m.getDataType() == DataType.STRUCTURE) {
           ArrayStructure nested = (ArrayStructure) m.getDataArray();
-          associateMessage2Members(nested.getStructureMembers(), dkey, map);
+          if (dkey.getSubKeys() != null)
+            associateMessage2Members(nested.getStructureMembers(), dkey, map);
         }
 
       } else {
         System.out.printf("Cant find %s%n", dkey);
+        if (dkey.getSubKeys() != null)
+          associateMessage2Members(members, dkey, map);
       }
     }
   }
@@ -250,16 +259,23 @@ public class MessageCompressedDataReader {
     List<DataDescriptor> flds = parent.getSubKeys();
     for (int fldidx = 0; fldidx < flds.size(); fldidx++) {
       DataDescriptor dkey = flds.get(fldidx);
-      if (!dkey.isOkForVariable()) {// misc skip
-        System.out.printf("HEY skipping %s %n", dkey);
+      if (!dkey.isOkForVariable()) { // dds with no data to read
+
+        // the dpi nightmare
+        if ((dkey.f == 2) && (dkey.x == 36)) {
+          req.dpiTracker = new DpiTracker( dkey.dpi, dkey.dpi.getNfields());
+          //System.out.printf("HEY gotta dpiTracker %n");
+        }
+
+        if (out != null) out.f.format("%s %d %s (%s) %n", out.indent(), out.fldno++, dkey.name, dkey.getFxyName());
+        // System.out.printf("HEY skipping %s %n", dkey);
         continue;
       }
-      if ((dkey.f == 2) && (dkey.x == 24) && (dkey.y == 255))
-         System.out.printf("HEY gotta dpi%n");
 
       BitCounterCompressed counter = new BitCounterCompressed(dkey, ndatasets, bitOffset);
       fldCounters[fldidx] = counter;
 
+      // sequence
       if (dkey.replication == 0) {
         reader.setBitOffset(bitOffset);
         int count = reader.bits2UInt(dkey.replicationCountSize);
@@ -288,6 +304,7 @@ public class MessageCompressedDataReader {
         counter.addNestedCounters(dkey.replication);
         for (int i = 0; i < dkey.replication; i++) {
           BitCounterCompressed[] nested = counter.getNestedCounters(i);
+          req.outerRow = i;
           if (null != out) {
             out.f.format("%n");
             out.indent.incr();
@@ -303,14 +320,18 @@ public class MessageCompressedDataReader {
       }
 
       // all other fields
+
       IndexIterator iter = null;
+      ArrayStructure dataDpi = null; // if iter is missing - for the dpi case
       if (req.map != null) {
         StructureMembers.Member m = req.map.get(dkey);
         if (m == null)
           System.out.printf("HEY missing member %s%n", dkey);
         iter = (IndexIterator) m.getDataObject();
-        if (iter == null)
-          System.out.printf("HEY missing iter %s%n", dkey);
+        if (iter == null) {
+          //System.out.printf("HEY missing iter %s%n", dkey);
+          dataDpi = (ArrayStructure) m.getDataArray();
+        }
       }
 
       reader.setBitOffset(bitOffset);  // ?? needed ??
@@ -358,20 +379,31 @@ public class MessageCompressedDataReader {
       }
 
       // numeric fields
+      int useBitWidth = dkey.bitWidth;
 
-      int dataMin = reader.bits2UInt(dkey.bitWidth);
+      // a dpi Field needs to be substituted
+      boolean isDpi = ((dkey.f == 0) && (dkey.x == 31) && (dkey.y == 31));
+      boolean isDpiField = false;
+      if ((dkey.f == 2) && (dkey.x == 24) && (dkey.y == 255)) {
+        isDpiField = true;
+        DataDescriptor dpiDD = req.dpiTracker.getDpiDD(req.outerRow);
+        useBitWidth = dpiDD.bitWidth;
+        //System.out.printf("HEY gotta dpiField bitWidth=%d %n", useBitWidth);
+      }
+
+      int dataMin = reader.bits2UInt(useBitWidth);
       int dataWidth = reader.bits2UInt(6);  // increment data width - always in 6 bits, so max is 2^6 = 64
-      if (dataWidth > dkey.bitWidth && (null != out))
+      if (dataWidth > useBitWidth && (null != out))
         out.f.format(" BAD WIDTH ");
       if (dkey.type == 1) dataWidth *= 8; // char data count is in bytes
       counter.setDataWidth(dataWidth);
 
-      int totalWidth = dkey.bitWidth + 6 + dataWidth * ndatasets; // total width in bits for this compressed set of values
+      int totalWidth = useBitWidth + 6 + dataWidth * ndatasets; // total width in bits for this compressed set of values
       bitOffset += totalWidth; // bitOffset now points to the next field
 
       if (null != out)
         out.f.format("%s read %d, %s (%s) bitWidth=%d dataMin=%d (%f) dataWidth=%d n=%d bitOffset=%d %n",
-                out.indent(), out.fldno++, dkey.name, dkey.getFxyName(), dkey.bitWidth, dataMin, dkey.convert(dataMin), dataWidth, ndatasets, bitOffset);
+                out.indent(), out.fldno++, dkey.name, dkey.getFxyName(), useBitWidth, dataMin, dkey.convert(dataMin), dataWidth, ndatasets, bitOffset);
 
       // numeric fields
 
@@ -382,20 +414,37 @@ public class MessageCompressedDataReader {
         if (dataWidth > 0) {
           int cv = reader.bits2UInt(dataWidth);
           if (cv == BufrNumbers.missing_value[dataWidth]) // is this a missing value ??
-            value = BufrNumbers.missing_value[dkey.bitWidth]; // set to missing value
+            value = BufrNumbers.missing_value[useBitWidth]; // set to missing value
           else // add to minimum
             value += cv;
         }
 
         // workaround for malformed messages
-        if (dataWidth > dkey.bitWidth) {
-          int missingVal = BufrNumbers.missing_value[dkey.bitWidth];
+        if (dataWidth > useBitWidth) {
+          int missingVal = BufrNumbers.missing_value[useBitWidth];
           if ((value & missingVal) != value) // overflow
             value = missingVal;     // replace with missing value
         }
 
-        if (req.wantRow(dataset))
-          iter.setIntNext(value);
+        if (req.wantRow(dataset)) {
+          if (isDpiField) {
+            DataDescriptor dpiDD = req.dpiTracker.getDpiDD(req.outerRow);
+
+            StructureMembers sms = dataDpi.getStructureMembers();
+            StructureMembers.Member m0 = sms.getMember(0);
+            IndexIterator iter2 = (IndexIterator) m0.getDataObject();
+            iter2.setObjectNext(dpiDD.getName());
+
+            StructureMembers.Member m1 = sms.getMember(1);
+            iter2 = (IndexIterator) m1.getDataObject();
+            iter2.setFloatNext(dpiDD.convert( value));
+          } else {
+            iter.setIntNext(value);
+          }
+        }
+        // since dpi must be the same for all datasets, just keep the first one
+        if (isDpi && (dataset == 0))
+          req.dpiTracker.setDpiValue(req.outerRow, value); // keep track of dpi values in the tracker - perhaps not expose
 
         if ((out != null) && (dataWidth > 0)) out.f.format(" %d (%f)", value, dkey.convert(value));
       }
@@ -429,6 +478,7 @@ public class MessageCompressedDataReader {
     if (out != null) out.indent.incr();
     for (int i = 0; i < count; i++) {
       BitCounterCompressed[] nested = bitCounterNested.getNestedCounters(i);
+      nreq.outerRow = i;
       bitOffset = readData(out, reader, nested, seqdd, bitOffset, ndatasets, nreq);
     }
     if (out != null) out.indent.decr();
@@ -452,125 +502,38 @@ public class MessageCompressedDataReader {
     return bitOffset;
   }
 
-  /* read data for a particular obs
-  private void readDataCompressed(BitReader reader, BitCounterCompressed[] counters, int msgOffset, DataDescriptor parent, ArrayStructureBB abb) throws IOException {
-    ByteBuffer bb = abb.getByteBuffer();
+  private class DpiTracker {
+    DataDescriptorTreeConstructor.DataPresentIndicator dpi;
+    boolean[] isPresent;
+    List<DataDescriptor> dpiDD = null;
 
-    for (int fldidx = 0; fldidx < parent.getSubKeys().size(); fldidx++) {
-      DataDescriptor dkey = parent.getSubKeys().get(fldidx);
-      if (!dkey.isOkForVariable()) // misc skip
-        continue;
-      if ((dkey.f == 2) && (dkey.x == 24))
-        System.out.printf("HEY%n");
-
-      BitCounterCompressed counter = counters[fldidx];
-
-      if (dkey.replication == 0) {
-        // sequence : works the same way as structure
-        // except that theres also the count stored first
-        int bitOffset = counter.getStartingBitPos();
-        reader.setBitOffset(bitOffset);
-        int count = reader.bits2UInt(dkey.replicationCountSize);
-        bitOffset += dkey.replicationCountSize;
-        System.out.printf("compressed replication count = %d %n", count);
-        int extra = reader.bits2UInt(6);
-        System.out.printf("EXTRA bits %d at %d %n", extra, bitOffset);
-        bitOffset += 6; // LOOK seems to be an extra 6 bits. not yet getting counted
-
-        // make an ArraySequence for this observation
-        ArraySequence seq = makeArraySequenceCompressed(reader, counter, msgOffset, dkey, count);
-        int index = abb.addObjectToHeap(seq);
-        bb.putInt(index); // an index into the Heap
-        continue;
-      }
-
-      // structure
-      if (dkey.type == 3) {
-        for (int i = 0; i < dkey.replication; i++) {
-          //out.format("%nRead parent=%s obe=%d level=%d%n",dkey.name, msgOffset, i);
-          BitCounterCompressed[] nested = counter.getNestedCounters(i);
-          readDataCompressed(reader, nested, msgOffset, dkey, abb);
-        }
-        continue;
-      }
-
-      // skip to where this variable starts
-      reader.setBitOffset(counter.getStartingBitPos());
-
-      // char data special case
-      if (dkey.type == 1) {
-        int n = dkey.bitWidth / 8;
-        byte[] minValue = new byte[n];
-        for (int i = 0; i < n; i++)
-          minValue[i] = (byte) reader.bits2UInt(8);
-        int dataWidth = reader.bits2UInt(6); // incremental data width
-
-        if (dataWidth == 0) { // use the min value
-          for (int i = 0; i < n; i++)
-            bb.put(minValue[i]);
-
-        } else { // read the incremental value
-          reader.setBitOffset(counter.getBitPos(msgOffset));
-          int nt = Math.min(n, dataWidth);
-          for (int i = 0; i < nt; i++) {
-            int cval = reader.bits2UInt(8);
-            if (cval < 32 || cval > 126) cval = 0; // printable ascii KLUDGE!
-            bb.put((byte) cval);
-          }
-          for (int i = nt; i < n; i++) // can dataWidth < n ?
-            bb.put((byte) 0);
-        }
-        continue;
-      }
-
-      // numeric fields
-
-      int value = reader.bits2UInt(dkey.bitWidth); // read min value
-      int dataWidth = reader.bits2UInt(6); // incremental data width
-
-      // if dataWidth == 0, just use min value, otherwise read the compressed value here
-      if (dataWidth > 0) {
-        // skip to where this observation starts in the variable data, and read the incremental value
-        reader.setBitOffset(counter.getBitPos(msgOffset));
-        int cv = reader.bits2UInt(dataWidth);
-
-        if (dataWidth > BufrNumbers.missing_value.length)
-          System.out.printf("HEY%n");
-
-        if (cv == BufrNumbers.missing_value[dataWidth]) // is this a missing value ??
-          value = BufrNumbers.missing_value[dkey.bitWidth]; // set to missing value
-        else // add to minimum
-          value += cv;
-      }
-
-      // workaround for misformed messages
-      if (dataWidth > dkey.bitWidth) {
-        int missingVal = BufrNumbers.missing_value[dkey.bitWidth];
-        if ((value & missingVal) != value) // overflow
-          value = missingVal;     // replace with missing value
-      }
-
-      // place into byte buffer
-      if (dkey.getByteWidthCDM() == 1) {
-        bb.put((byte) value);
-      } else if (dkey.getByteWidthCDM() == 2) {
-        int b1 = value & 0xff;
-        int b2 = (value & 0xff00) >> 8;
-        bb.put((byte) b2);
-        bb.put((byte) b1);
-      } else {
-        int b1 = value & 0xff;
-        int b2 = (value & 0xff00) >> 8;
-        int b3 = (value & 0xff0000) >> 16;
-        int b4 = (value & 0xff000000) >> 24;
-        bb.put((byte) b4);
-        bb.put((byte) b3);
-        bb.put((byte) b2);
-        bb.put((byte) b1);
-      }
-
+    DpiTracker(DataDescriptorTreeConstructor.DataPresentIndicator dpi, int nPresentFlags) {
+      this.dpi = dpi;
+      isPresent = new boolean[nPresentFlags];
     }
-  }  */
 
+    void setDpiValue(int fldidx, int value) {
+      isPresent[fldidx] = (value == 0); // present if the value is zero
+    }
 
+    DataDescriptor getDpiDD(int fldPresentIndex) {
+      if (dpiDD == null) {
+        dpiDD = new ArrayList<DataDescriptor>();
+        for (int i=0; i<isPresent.length; i++) {
+          if (isPresent[i])
+             dpiDD.add(dpi.linear.get(i));
+        }
+      }
+      return dpiDD.get(fldPresentIndex);
+    }
+
+    boolean isDpiDDs(DataDescriptor dkey) {
+      return (dkey.f == 2) && (dkey.x == 24) && (dkey.y == 255);
+    }
+
+    boolean isDpiField(DataDescriptor dkey) {
+      return (dkey.f == 2) && (dkey.x == 24) && (dkey.y == 255);
+    }
+
+  }
 }

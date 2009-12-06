@@ -96,8 +96,12 @@ public class DataDescriptor {
       }
     }
 
-    if (f == 1) // replication
+    else if (f == 1) // replication
       this.type = 3; // compound
+
+    else if (f == 2) {
+      this.name = TableC.getOperatorName(x);
+    }
   }
 
   private void setDescriptor(TableB.Descriptor d) {
@@ -117,19 +121,32 @@ public class DataDescriptor {
     }
   }
 
-  // for associated fields
-  DataDescriptor(DataDescriptor d, int bitWidth) {
-    this.name = d.name + "_associated_field";
-    this.units = "";
-    this.refVal = 0;
-    this.scale = 0;
-    this.bitWidth = bitWidth;
-    this.type = 0;
+  /* for dpi fields
+  DataDescriptor makeStatField(String statType) {
+    DataDescriptor statDD = new DataDescriptor();
+    statDD.name = name + "_" + statType;
+    statDD.units = units;
+    statDD.refVal = 0;
 
-    this.f = 0;
-    this.x = 31;
-    this.y = 22;
-    this.fxy =  (short) ((f << 14) + (x << 8) + (y));
+    return statDD;
+  } */
+
+  // for associated fields
+  DataDescriptor makeAssociatedField(int bitWidth) {
+    DataDescriptor assDD = new DataDescriptor();
+    assDD.name = name + "_associated_field";
+    assDD.units = "";
+    assDD.refVal = 0;
+    assDD.scale = 0;
+    assDD.bitWidth = bitWidth;
+    assDD.type = 0;
+
+    assDD.f = 0;
+    assDD.x = 31;
+    assDD.y = 22;
+    assDD.fxy =  (short) ((f << 14) + (x << 8) + (y));
+
+    return assDD;
   }
 
   static class AssociatedField {
@@ -147,7 +164,7 @@ public class DataDescriptor {
   }
 
   public boolean isOkForVariable() {
-    return (f == 0) || (f == 1) || ((f == 2) && (x == 5)) || ((f == 2) && (x == 24));
+    return (f == 0) || (f == 1) || ((f == 2) && (x == 5) || ((f == 2) && (x == 24) && (y == 255)));
   }
 
   public boolean isLocal() {
@@ -188,6 +205,7 @@ public class DataDescriptor {
   }
 
   public float convert( int raw) {
+    if (raw == BufrNumbers.missing_value[bitWidth]) return Float.NaN;
     // bpacked = (value * 10^scale - refVal)
     // value = (bpacked + refVal) / 10^scale
     float fscale = (float) Math.pow(10.0, -scale); // LOOK precompute ??
@@ -215,7 +233,7 @@ public class DataDescriptor {
     }
   }
 
-
+  ///////////////////////////////////////////////////////////////////////////////////////////////
   private int total_nbytesCDM = 0;
 
   /**

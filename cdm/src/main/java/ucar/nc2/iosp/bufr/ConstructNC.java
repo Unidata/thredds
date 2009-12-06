@@ -37,7 +37,6 @@ import ucar.nc2.iosp.bufr.tables.CodeFlagTables;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
 import ucar.ma2.*;
@@ -142,9 +141,6 @@ class ConstructNC {
 
 
   private void makeObsRecord() throws IOException {
-    Dimension obsDim = new Dimension("record", nobs);
-    ncfile.addDimension(null, obsDim);
-
     recordStructure = new Sequence(ncfile, null, null, BufrIosp.obsRecord);
     ncfile.addVariable(null, recordStructure);
     //recordStructure.setDimensions("record");
@@ -167,14 +163,16 @@ class ConstructNC {
         List<DataDescriptor> subKeys = dkey.subKeys;
         if (subKeys.size() == 1) {
           DataDescriptor sub = dkey.subKeys.get(0);
-          Variable v = addVariable(recordStructure, sub, dkey.replication);
-          v.setSPobject(dkey); // set the replicating dkey as SPI object
+          if (sub.dpi != null) {
+            addDpiStructure(recordStructure, dkey, sub);
+
+          } else {
+            Variable v = addVariable(recordStructure, sub, dkey.replication);
+            v.setSPobject(dkey); // set the replicating dkey as SPI object
+          }
         } else if (subKeys.size() > 1) {
           addStructure(recordStructure, dkey, dkey.replication);
         }
-
-      } else if (dkey.dpi != null) {
-          addDpiStructure(recordStructure, dkey);
 
       } else {
         addVariable(recordStructure, dkey, dkey.replication);
@@ -243,25 +241,34 @@ class ConstructNC {
     }
   }
 
-  private void addDpiStructure(Structure parent, DataDescriptor dataDesc) {
-    String structName = findUnique(parent, dataDesc.name);
+  private void addDpiStructure(Structure parent, DataDescriptor parentDD, DataDescriptor dpiField) {
+    String structName = findUnique(parent, dpiField.name);
     Structure struct = new Structure(ncfile, null, parent, structName);
+    int n = parentDD.replication;
     try {
-      struct.setDimensionsAnonymous(new int[]{1}); // anon vector
+      struct.setDimensionsAnonymous(new int[]{n}); // anon vector
     } catch (InvalidRangeException e) {
-      log.error("illegal count= " + 1 + " for " + dataDesc);
+      log.error("illegal count= " + 1 + " for " + dpiField);
     }
 
-    for (DataDescriptor subKey : dataDesc.getSubKeys()) {
-      if (subKey.dpi != null) addDpiSequence(struct, subKey);
-      else addMember(struct, subKey);
-    }
+    Variable v = new Variable(ncfile, null, struct, "name");
+    v.setDataType(DataType.STRING); // scalar
+    v.setDimensions(""); // scalar
+    struct.addMemberVariable(v);
+
+    v = new Variable(ncfile, null, struct, "data");
+    v.setDataType(DataType.FLOAT); // scalar
+    v.setDimensions(""); // scalar
+    struct.addMemberVariable(v);
 
     parent.addMemberVariable(struct);
-    struct.setSPobject(dataDesc);
+    struct.setSPobject(dpiField);  // ??
 
-    dataDesc.name = structName;
-    dataDesc.refersTo = struct;
+    dpiField.name = structName;
+    dpiField.refersTo = struct;
+
+    // add some fake dkeys corresponding to above
+    // DataDescriptor nameDD = new DataDescriptor();
   }
 
   private void addDpiSequence(Structure parent, DataDescriptor dataDesc) {
@@ -269,7 +276,7 @@ class ConstructNC {
     try {
       struct.setDimensionsAnonymous(new int[] {dataDesc.replication}); // scalar
     } catch (InvalidRangeException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      e.printStackTrace();  
     }
     Variable v = new Variable(ncfile, null, struct, "name");
     v.setDataType(DataType.STRING); // scalar

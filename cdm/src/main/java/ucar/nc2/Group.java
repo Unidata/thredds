@@ -250,7 +250,7 @@ public class Group {
    */
   public EnumTypedef findEnumeration(String name) {
     if (name == null) return null;
-    name =  NetcdfFile.unescapeName(name);
+    name =  NetcdfFile.unescapeName(name); // LOOK: why ??
     for (EnumTypedef d : enumTypedefs) {
       if (name.equals(d.getName()))
         return d;

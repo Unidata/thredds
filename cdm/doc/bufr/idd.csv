@@ -1,4 +1,14 @@
 hash, header, nMess, nObs, complete, center, table, edition, category , problem,
+Ox4438144a, JUSA41 KWNO,77520,439280, false,7.3, 0.12.0,3,241,"missing keys= 3-62-001, 3-60-002, 3-62-002, 3-62-101, 3-62-103, 3-62-104, 3-62-102, 3-60-002, 3-62-110, 3-62-105, ",
+Oxa8138fa6, JUSA41 KWBC,26040,317688, false,7.3, 0.12.0,3,243,"missing keys= 0-04-194, 0-01-205, 0-10-194, 0-11-229, 0-10-195, 0-12-198, 0-13-209, 0-13-210, 0-11-196, 0-11-197, 0-13-198, 0-13-232, 0-13-233, 0-13-234, 0-13-235, ",
+Oxda41f28b, JUGE86 KKCI,10,10, false,7.8, 0.12.0,3,13.1,exception,nesting
+Oxda42c8e4, JUHE00 KKCI,5,5, false,7.8, 0.12.0,3,13.2,exception,nesting
+Oxda439f3d, JUIE00 KKCI,5,5, false,7.8, 0.12.0,3,13.3,exception,nesting
+Oxd2cf0e5c, ISAI01 SBBR,243,9792, false,255, 0.13.0,3,0,,
+Oxfa179aa4, IUST53 KWBC,106,375, true,8, 0.13.0,3,2,bitCount,NWS error
+Ox348304f4, IUSV53 KWBC,106,375, true,8, 0.13.0,3,2,bitCount,NWS error
+Oxf0bd66bc, IUSZ54 KWBC,105,352, true,8, 0.13.0,3,2,bitCount,NWS error
+Oxa3cf9007, JUTX52 KNES,23,1150, true,160, 0.11.0,3,5.89,,
 Oxd508900d, INAC14 RJTD,498,73110, true,34.24, 0.13.0,4, 3.3.3 ,,
 Oxd50c4ef5, INAS08 NZGP,237,34740, true,204.101, 0.13.0,4, 3.3.3 ,,
 Oxd508ac41, INAX01 BAWX,156,57030, true,39.225, 0.13.0,4, 3.3.3 ,,
@@ -22,7 +32,6 @@ Oxd509829c, INMX11 BAWX,315,185940, true,39.225, 0.13.0,4, 3.6.6 ,,
 Oxd509aa18, INMX16 SBBR,416,185940, true,46.1, 0.13.0,4, 3.6.11 ,,
 Oxd5098840, INMX19 RKSL,235,105210, true,40.245, 0.12.0,4, 3.6.11 ,,
 Oxd508b1e8, INMX20 AMMC,3138,1402200, true,2.201, 0.13.0,4, 3.6.11 ,,
-Oxd2cf0e5c, ISAI01 SBBR,243,9792, false,255, 0.13.0,3,0,bitCount,convert
 Oxd2c5d895, ISII06 SBBR,18,86, true,255, 0.13.0,3,0.1,,
 Oxd2c0b0ad, ISIN20 DAMM,24,198, true,21, 0.13.0,4, 0.1.0 ,,
 Oxd2c1cab5, ISIS01 NFFN,4,60, true,71, 0.13.0,4, 0.1.1 ,,
@@ -62,18 +71,15 @@ Oxd45730e0, IUSD08 EDZW,17,17, true,78, 0.12.0,4, 2.4.255 ,,
 Oxd457585c, IUSN16 LFPW,8,8, true,85, 0.13.0,4, 2.4.0 ,,
 Ox13ce8e54, IUST51 KWBC,106,415, true,8, 0.13.0,3,2,,
 Ox13cf3454, IUST52 KWBC,103,397, true,8, 0.13.0,3,2,,
-Oxfa179aa4, IUST53 KWBC,106,375, true,8, 0.13.0,3,2,bitCount,NWS error
 Oxf1c60bbc, IUST54 KWBC,105,352, true,8, 0.13.0,3,2,,
 Ox54b15d54, IUST56 KWBC,172,594, true,8, 0.13.0,3,2,,
 Ox89077ea4, IUSV51 KWBC,106,415, true,8, 0.13.0,3,2,,
 Oxc29d02c, IUSV52 KWBC,103,397, true,8, 0.13.0,3,2,,
-Ox348304f4, IUSV53 KWBC,106,375, true,8, 0.13.0,3,2,bitCount,NWS error
 Oxac302a5c, IUSV54 KWBC,105,352, true,8, 0.13.0,3,2,,
 Oxb8483d9, IUSX40 EDZW,7,7, true,78, 0.13.0,4, 2.5.255 ,,
 Ox6ba1f04, IUSZ51 KWBC,106,415, true,8, 0.13.0,3,2,,
 Oxd429388c, IUSZ52 KWBC,103,397, true,8, 0.13.0,3,2,,
 Oxcb154d54, IUSZ53 KWBC,106,375, true,8, 0.13.0,3,2,,
-Oxf0bd66bc, IUSZ54 KWBC,105,352, true,8, 0.13.0,3,2,bitCount,NWS error
 Ox240f1674, IUSZ56 KWBC,344,1188, true,8, 0.13.0,3,2,,
 Oxd5181f51, IUTE14 EKMI,458,458, true,94, 0.12.1,3,3.255,,
 Oxeb92d1ee, IUTX07 KNES,5616,165058, true,7.3, 0.4.0,3,3.104,,
@@ -92,20 +98,14 @@ Ox3b0015f2, JUCE00 EGRR,6,6, true,74, 0.11.1,3,7,,
 Ox3afe9d05, JUCE00 KKCI,6,6, true,7, 0.11.0,3,7.255,,
 Ox47f86d72, JUFE00 EGRR,6,6, true,74, 0.11.1,3,7,,
 Oxf289748d, JUFE00 KKCI,6,6, true,7, 0.11.0,3,7.255,,
-Oxda41f28b, JUGE86 KKCI,10,10, false,7.8, 0.12.0,3,13.1,exception,nesting
-Oxda42c8e4, JUHE00 KKCI,5,5, false,7.8, 0.12.0,3,13.2,exception,nesting
-Oxda439f3d, JUIE00 KKCI,5,5, false,7.8, 0.12.0,3,13.3,exception,nesting
 Oxaf26ccf2, JUNE00 EGRR,1,1, true,74, 0.11.1,3,7,,
 Oxad2331f2, JUNE00 EGRR,1,1, true,74, 0.11.1,3,7,,
 Ox95dd435a, JUNE00 EGRR,1,1, true,74, 0.11.1,3,7,,
 Ox6122de05, JUNE00 KKCI,2,2, true,7, 0.11.0,3,7.255,,
 Oxe96cc26d, JUNE00 KKCI,1,1, true,7, 0.11.0,3,7.255,,
-Oxa8138fa6, JUSA41 KWBC,26040,317688, false,7.3, 0.12.0,3,243,"missing keys= 0-04-194, 0-01-205, 0-10-194, 0-11-229, 0-10-195, 0-12-198, 0-13-209, 0-13-210, 0-11-196, 0-11-197, 0-13-198, 0-13-232, 0-13-233, 0-13-234, 0-13-235, ",
-Ox4438144a, JUSA41 KWNO,77520,439280, false,7.3, 0.12.0,3,241,"missing keys= 3-62-001, 3-60-002, 3-62-002, 3-62-101, 3-62-103, 3-62-104, 3-62-102, 3-60-002, 3-62-110, 3-62-105, ",
 Ox95d15592, JUTE97 EGRR,6,6, true,74, 0.11.1,3,7,,
 Ox95cfdca5, JUTE97 KKCI,6,6, true,7, 0.11.0,3,7.255,,
 Oxf57855e, JUTX07 KNES,2008,107595, true,7.255, 0.2.0,2,3,,
-Oxa3cf9007, JUTX52 KNES,23,1150, true,160, 0.11.0,3,5.89,bitCount,0-31-31 data present indicator
 Oxa65a6eaa, JUVE00 EGRR,2,2, true,74, 0.11.1,3,7,,
 Oxa6b1a8ea, JUVE00 EGRR,1,1, true,74, 0.11.1,3,7,,
 Ox15ee5aad, JUVE00 KKCI,3,3, true,7, 0.11.0,3,7.255,,

@@ -412,6 +412,8 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
         log.warn("StructureDataDS.convert Cant find member " + m.getName());
         continue;
       }
+      if (m.getName().startsWith("first"))
+        System.out.println("HEY");
 
       StructureMembers.Member mResult = smResult.findMember(m.getName());
 
@@ -430,7 +432,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       // recurse into sub-structures
       if (v2 instanceof StructureDS) {
         StructureDS innerStruct = (StructureDS) v2;
-        if (innerStruct.convertNeeded(null)) {
+       // if (innerStruct.convertNeeded(null)) {
 
           if (innerStruct.getDataType() == DataType.SEQUENCE) {
             Array a = sdata.getArray(m);
@@ -456,7 +458,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
             mdata = innerStruct.convert(mdata, null);
             result.setMemberData(mResult, mdata);
           }
-        }
+        //}
 
         // always convert the inner StructureMembers
         innerStruct.convertMemberInfo(mResult.getStructureMembers());

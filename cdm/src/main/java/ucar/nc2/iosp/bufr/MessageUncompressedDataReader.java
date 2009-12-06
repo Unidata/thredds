@@ -209,7 +209,7 @@ public class MessageUncompressedDataReader {
 
     for (DataDescriptor dkey : dkeys) {
       if (!dkey.isOkForVariable()) {// misc skip
-        System.out.printf("HEY skipping %s %n", dkey);
+        if (out != null) out.f.format("%s %d %s (%s) %n", out.indent(), out.fldno++, dkey.name, dkey.getFxyName());
         continue;
       }
 

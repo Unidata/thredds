@@ -165,11 +165,12 @@ public class DataDescriptorTreeConstructor {
   private DataDescriptor changeWidth = null; // 02 01 Y
   private DataDescriptor changeScale = null; // 02 02 Y
   private DataDescriptor changeRefval = null; // 02 03 Y
+  private DataPresentIndicator dpi = null; // assume theres only one in effect at a time
 
   private void operate(List<DataDescriptor> tree) {
     if (tree == null) return;
     boolean hasAssFields = false;
-    boolean hasDpiFields = false;
+    // boolean hasDpiFields = false;
     DataDescriptor.AssociatedField assField = null; // 02 04 Y
 
     Iterator<DataDescriptor> iter = tree.iterator();
@@ -196,7 +197,7 @@ public class DataDescriptorTreeConstructor {
           iter.remove();
           hasAssFields = true;
 
-        } else if (dd.x == 5) { // char data
+        } else if (dd.x == 5) { // char data - this allows arbitrary string to be inserted
           dd.type = 1; // String
           dd.bitWidth = dd.y * 8;
           dd.name = "Note";
@@ -210,12 +211,19 @@ public class DataDescriptorTreeConstructor {
             next.bitWidth = dd.y;
           }
 
-        } else if ((dd.x == 24) && (dd.y == 0)) { // only souls already damned should enter through this gate
-          dd.dpi = processDataPresentIndicator(tree, 24);
-          hasDpiFields = true;
+        } else if (dd.x == 36) { 
+          if (iter.hasNext()) {
+            DataDescriptor dpi_dd = iter.next(); // this should be a replicated data present field
+            dpi = new DataPresentIndicator(tree, dpi_dd);
+            dd.dpi = dpi;
+            dpi_dd.dpi = dpi;
+          }
+          
+        } else if ((dd.x == 37) && (dd.y == 255)) { // cancel dpi
+          dpi = null;
 
-        } else {
-          iter.remove();          
+        } else if ((dd.x == 24) && (dd.y == 255)) {
+           dd.dpi = dpi;
         }
 
       } else if (dd.subKeys != null) {
@@ -241,7 +249,7 @@ public class DataDescriptorTreeConstructor {
     }
 
     if (hasAssFields) addAssFields(tree);
-    if (hasDpiFields) addDpiFields(tree);
+    // if (hasDpiFields) addDpiFields(tree);
   }
 
   private void addAssFields(List<DataDescriptor> tree) {
@@ -258,7 +266,7 @@ public class DataDescriptorTreeConstructor {
           dd.assField = null;
 
         } else {
-          DataDescriptor assDD = new DataDescriptor(dd, assField.nbits);
+          DataDescriptor assDD = dd.makeAssociatedField(assField.nbits);
           tree.add(index, assDD);
           index++;
         }
@@ -268,7 +276,7 @@ public class DataDescriptorTreeConstructor {
     }
   }
 
-  private void addDpiFields(List<DataDescriptor> tree) {
+  /* private void addDpiFields(List<DataDescriptor> tree) {
     if (tree == null) return;
 
     Iterator<DataDescriptor> iter = tree.iterator();
@@ -300,7 +308,7 @@ public class DataDescriptorTreeConstructor {
     }
   }
 
-  private DataPresentIndicator processDataPresentIndicator(List<DataDescriptor> tree, int hellRealmIndex) {
+  /* private DataPresentIndicator processDataPresentIndicator(List<DataDescriptor> tree, int hellRealmIndex) {
     DataPresentIndicator dpi = new DataPresentIndicator();
     Iterator<DataDescriptor> iter = tree.iterator();
     while (iter.hasNext()) {
@@ -329,23 +337,32 @@ public class DataDescriptorTreeConstructor {
     // LOOK System.out.printf("DPI: data count = %d linear count = %d %n", dpi.dataPresent.replication, dpi.linear.size());
 
     return dpi;
-  }
+  }  */
 
-  private void linearize(List<DataDescriptor> tree, DataPresentIndicator dpi) {
-    for (DataDescriptor dd : tree){
-      if (dd == dpi.start) return;
-      if (dd.f == 0) {
-        dpi.linear.add(dd);
+  static class DataPresentIndicator {
+    DataDescriptor dataPresent; // replication of bit present field
+    List<DataDescriptor> linear = new ArrayList<DataDescriptor>(); // linear list of dds
 
-      } else if (dd.f == 1) {
-        for (int i=0; i< dd.replication; i++) // whut about defered replication hahahahahah
-          linearize(dd.getSubKeys(), dpi);
+    DataPresentIndicator(List<DataDescriptor> tree, DataDescriptor dpi_dd) {
+      this.dataPresent = dpi_dd;
+
+      linear = new ArrayList<DataDescriptor>();
+      linearize(tree);
+    }
+
+    int getNfields() { return dataPresent.replication; }
+
+    private void linearize(List<DataDescriptor> tree) {
+      for (DataDescriptor dd : tree) {
+        if (dd.f == 0) {
+          linear.add(dd);
+
+        } else if (dd.f == 1) {
+          for (int i = 0; i < dd.replication; i++) // whut about defered replication hahahahahah
+            linearize(dd.getSubKeys());
+        }
       }
     }
   }
 
-  class DataPresentIndicator {
-    DataDescriptor start, stop, dataPresent, statField;
-    List<DataDescriptor> linear = new  ArrayList<DataDescriptor>();
-  }
 }

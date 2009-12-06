@@ -685,7 +685,12 @@ public class StringUtil {
             }
             b[0] = sb.charAt(pos + 1);
             b[1] = sb.charAt(pos + 2);
-            int value = Integer.parseInt(new String(b), 16);
+            int value;
+            try {
+              value = Integer.parseInt(new String(b), 16);
+            } catch (NumberFormatException e) {
+              continue;   // not a hex number
+            }
             c = (char) value;
             sb.setCharAt(pos, c);
             sb.delete(pos + 1, pos + 3);
