@@ -36,7 +36,10 @@ package ucar.nc2.iosp;
 import ucar.ma2.*;
 import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Structure;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.util.CancelTask;
 import ucar.nc2.stream.NcStream;
+import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
 import java.io.DataOutputStream;
@@ -44,6 +47,25 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.channels.Channels;
 import java.nio.ByteBuffer;
 
+/**
+ * Abstract base class for IOSP implementations that provides default implementations
+ * of readToByteChannel(...) and readSection(...).
+ *
+ * <p>Implementations should make sure to handle the RandomAccessFile properly by
+ * doing one of the following:
+ *
+ * <ol>
+ *   <li> Write your own open(...) and close() methods that keep track of the
+ *     RandomAccessFile, be sure to close the RandomAccessFile in your close()
+ *     method.</li>
+ *   <li> Write your own open(...) and close() methods that call the open(...)
+ *     and close() methods defined here, use the "raf" variable also defined
+ *     here.</li>
+ *   <li> Don't write an open(...) or close() method, so that those defined
+ *     here are used.</li>
+ * </ol>
+ *
+ */
 public abstract class AbstractIOServiceProvider implements IOServiceProvider {
 
   // a no-op but leave it in in case we change our minds
@@ -51,7 +73,18 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
     return name;
   }
 
+  /**
+   * Subclasses that use AbstractIOServiceProvider.open(...) or .close()
+   * should use this (instead of their own private variable).
+   */
   protected ucar.unidata.io.RandomAccessFile raf;
+
+  @Override
+  public void open( RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask )
+          throws IOException
+  {
+    this.raf = raf;
+  }
 
   @Override
   public void close() throws java.io.IOException {
