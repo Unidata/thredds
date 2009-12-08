@@ -78,37 +78,39 @@ public class Cosmic1Convention extends CoordSysBuilder {
 
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
 
-    // create a time variable - assume its linear along the vertical dimension
-    double start =  ds.readAttributeDouble(null, "start_time", Double.NaN);
-    double stop =  ds.readAttributeDouble(null, "stop_time", Double.NaN);
+    if (ds.findVariable("time") == null) {
+      // create a time variable - assume its linear along the vertical dimension
+      double start =  ds.readAttributeDouble(null, "start_time", Double.NaN);
+      double stop =  ds.readAttributeDouble(null, "stop_time", Double.NaN);
 
-    Dimension dim = ds.findDimension("MSL_alt");
-    Variable dimV = ds.findVariable("MSL_alt");
-    Array dimU = dimV.read();
-    int inscr = ( dimU.getFloat(1) - dimU.getFloat(0)) > 0 ? 1 : 0;
-    int n = dim.getLength();
-    double incr = (stop - start) / n;
+      Dimension dim = ds.findDimension("MSL_alt");
+      Variable dimV = ds.findVariable("MSL_alt");
+      Array dimU = dimV.read();
+      int inscr = ( dimU.getFloat(1) - dimU.getFloat(0)) > 0 ? 1 : 0;
+      int n = dim.getLength();
+      double incr = (stop - start) / n;
 
-    String timeUnits = "seconds since 1980-01-06 00:00:00";
-    Variable timeVar = new VariableDS(ds, null, null, "time", DataType.DOUBLE, dim.getName(), timeUnits, null);
-    ds.addVariable(null, timeVar);
-    timeVar.addAttribute(new Attribute("units", timeUnits));
-    timeVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
-    int dir = ds.readAttributeInteger(null, "irs", 1);
-    ArrayDouble.D1 data = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, new int[] {n});
-    if(inscr == 0) {
-        if(dir == 1) {
-            for (int i=0; i<n; i++)
-                data.set(i, start + i * incr);
-        } else {
-            for (int i=0; i<n; i++)
-                data.set(i, stop - i * incr);
-        }
-    } else {
-        for (int i=0; i<n; i++)
-            data.set(i, stop - i * incr);
+      String timeUnits = "seconds since 1980-01-06 00:00:00";
+      Variable timeVar = new VariableDS(ds, null, null, "time", DataType.DOUBLE, dim.getName(), timeUnits, null);
+      ds.addVariable(null, timeVar);
+      timeVar.addAttribute(new Attribute("units", timeUnits));
+      timeVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
+      int dir = ds.readAttributeInteger(null, "irs", 1);
+      ArrayDouble.D1 data = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, new int[] {n});
+      if(inscr == 0) {
+          if(dir == 1) {
+              for (int i=0; i<n; i++)
+                  data.set(i, start + i * incr);
+          } else {
+              for (int i=0; i<n; i++)
+                  data.set(i, stop - i * incr);
+          }
+      } else {
+          for (int i=0; i<n; i++)
+              data.set(i, stop - i * incr);
+      }
+      timeVar.setCachedData(data, false);
     }
-    timeVar.setCachedData(data, false);
 
     Variable v = ds.findVariable("Lat");
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
