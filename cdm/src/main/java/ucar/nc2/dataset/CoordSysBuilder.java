@@ -141,6 +141,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     registerConvention("GDV", GDVConvention.class, null);
 
     registerConvention("ATDRadar", ATDRadarConvention.class, null);
+    registerConvention("CEDRICRadar", CEDRICRadarConvention.class, null);
     registerConvention("Zebra", ZebraConvention.class, null);
     registerConvention("GIEF/GIEF-F", GIEFConvention.class, null);
     registerConvention("IRIDL", IridlConvention.class, null);
