@@ -1,11 +1,12 @@
 <!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
 <html><head>
+
+
   
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
   
-  <meta name="Author" content="John Caron"><title>Catalog Spec 1.0.2</title></head>
-<body>
+  <meta name="Author" content="John Caron"><title>Catalog Spec 1.0.2</title></head><body>
 <div class="head"> 
   <h1> <img alt="THREDDS" src="../../images/THREDDSlogo.jpg" height="54" width="67"> Dataset Inventory Catalog Specification, Version 1.0.2<br>
 </h1>
@@ -755,23 +756,49 @@ dataset. Additional information can be encoded in service properties.</p>
 </p><hr style="width: 100%; height: 2px;">
 <h3><a name="Dataset_Access_Methods"></a>Dataset Access Methods</h3>
 
-<p>A dataset access method can be specified in several ways. Each specification references a <i>service</i> element and provides a <i>urlPath</i> attribute from which a dataset access URL is formed (see <a href="#constructingURLs">constructing URLs</a>).<br>
+<p>There are two ways a dataset's access methods can be specified:<br>
 </p>
 
-<p>1) A dataset element has a urlPath attribute and inherits a
-serviceName element from a parent/ancestor dataset. This is probably
+<ol>
+<li>A <em>dataset</em> element may include a <em>urlPath</em> attribute. The value of the <em>urlPath</em> attribute along with  the <em>dataset</em> element's "default" service (see <a href="#Precedence_for_a_Datasets_Default">below</a>) specify one or more [<a href="#note_compoundService">*</a>] access methods.</li><li>A <em>dataset</em> element may include child <em>access</em> elements. Each <em>access</em> element defines one or more [<a href="#note_compoundService">*</a>]<a href="#Access_Methods_and_Compound_Services_"></a> access methods. The values of the <em>access</em> element's <em>urlPath</em> and <em>serviceName</em> attributes specify one or more access methods. If the <em>access</em> element does not include a <em>serviceName</em> attribute,  the <em>dataset</em> element's "default" service (see <a href="#Precedence_for_a_Datasets_Default">below</a>) is used instead.<br>
+</li>
+</ol>
+
+<p>[<a name="note_compoundService"></a>*] Multiple access methods are defined whenever the service element that is referenced is a compound service. More on this in the "<a href="#Access_Methods_and_Compound_Services_">Access Methods and Compound Services</a>" section below.<br>
+</p>
+<p>How a dataset access URL is constructed from the <em>service</em> element and <em>urlPath</em> attribute is discussed in the following section, "<a href="#constructingURLs">Constructing Dataset Access URLs</a>".<br>
+</p>
+<h4><a name="Precedence_for_a_Datasets_Default"></a>Precedence for a Dataset's "Default" Service</h4>
+
+<p>There are a number of ways a <em>service</em> element can be referenced by a <em>dataset</em>.
+When multiple references come into play for a given dataset, the
+following is the precedence for deciding on the default service to use
+with access methods:<br>
+</p>
+
+<ol>
+<li>A child <em>serviceName</em> element (XPath:&nbsp;"<code>./serviceName</code>").</li><li>A child <em>serviceName</em> element of a child <em>metadata</em> element (XPath:&nbsp;"<code>./metadata/serviceName</code>")</li><li>[<strong>DEPRECATED</strong>] A dataset element's serviceName attribute (XPath:&nbsp;"@serviceName") [<strong>Deprecated</strong>: use a child <em>serviceName</em> element instead.]<br></li><li>The <em>serviceName</em> element in an inherited <em>metadata</em> element of the closest ancestor <em>dataset</em> (XPath: the first item in the set given by "<code>ancestor::dataset/metadata[@inherited=true]/serviceName</code>")<br>
+  </li>
+</ol>
+
+<p>The <em>service</em> with the highest precedence is the "default" service for that <em>dataset</em> element.<br>
+</p>
+<h4>Examples<br>
+</h4>
+<p>1) A <em>dataset</em> element has a <em>urlPath</em> attribute and inherits a
+<em>serviceName</em> element from a parent/ancestor dataset. This is probably
 the most common case as many catalogs will contain datasets that all
-refer to one service. Example:<br>
+refer to one service.<br>
 </p>
 
 <pre>&lt;dataset name="collection of data"&gt;<br>  &lt;metadata inherited="true"&gt;<br>    &lt;serviceName&gt;myservice&lt;/serviceName&gt;<br>  &lt;/metadata&gt;<br>  &lt;dataset name="my dataset" urlPath="myData.nc" /&gt;<br>  &lt;dataset name="our dataset" urlPath="ourData.nc" /&gt;<br>  &lt;dataset name="their dataset" urlPath="theirData.nc" /&gt;<br>  ...<br>&lt;/dataset&gt;<br></pre>
 
-<p>2) A dataset element has a urlPath attribute and directly contains a serviceName element.<br>
+<p>2) A <em>dataset</em> element has a <em>urlPath</em> attribute and directly contains a <em>serviceName</em> element.<br>
 </p>
 
 <pre>&lt;dataset name="my dataset" urlPath="myData.nc"&gt;<br>  &lt;serviceName&gt;myservice&lt;/serviceName&gt;<br>&lt;/dataset&gt;<br></pre>
 
-<p>3) A dataset element contains an access method. Example:<br>
+<p>3) A <em>dataset</em> element contains a child <em>access</em> element. Example:<br>
 </p>
 
 <pre>&lt;dataset name="my dataset"&gt;<br>  &lt;access serviceName="myservice" urlPath="myData.nc" /&gt;<br>&lt;/dataset&gt;<br></pre>
@@ -779,18 +806,27 @@ refer to one service. Example:<br>
 <p>There are several ways for a dataset to have more than one access method:<br>
 </p>
 
-<p>4) An access method can reference a <a href="#compoundService">compound service</a>.<br>
+<p>4) An access method can reference a <a href="#compoundService">compound service</a>. More on access methods and compound service <a href="#Access_Methods_and_Compound_Services_">below</a>.<br>
 </p>
 
 <p>5) A dataset can contain multiple access elements. Example:<br>
 </p>
 
-<pre>&lt;dataset name="my dataset"&gt;<br>  &lt;access serviceName="myservice" urlPath="myData.nc" /&gt;<br>  &lt;access serviceName="ftpservice" urlPath="mine/myData.nc"<br>&lt;/dataset&gt;<br></pre>
-
+<pre>&lt;dataset name="my dataset"&gt;<br>  &lt;access serviceName="myservice" urlPath="myData.nc" /&gt;<br>  &lt;access serviceName="ftpservice" urlPath="mine/myData.nc" /&gt;<br>&lt;/dataset&gt;<br></pre><h4><a name="Access_Methods_and_Compound_Services_"></a>Access Methods and Compound Services<br>
+</h4>
+<p>Any <a href="#compoundService">compound service</a> (i.e., any <em>service</em> element of type "Compound") used in the construction of
+access methods results in one access method for each non-"Compound",
+nested service.<br>
+</p>
+<p>For example:<br>
+</p>
+<pre style="margin-left: 40px;">&lt;service name="all" serviceType="Compound" base="" &gt;<br>  &lt;service name="odap" serviceType="OPENDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;service name="wcs" serviceType="WCS" base="/thredds/wcs/" /&gt;<br>&lt;/service&gt;<br>&lt;dataset name="cool data" urlPath="cool/data.nc"&gt;<br>  &lt;serviceName&gt;all&lt;/serviceName&gt;<br>&lt;/dataset&gt;<br></pre>
+<p>results in two access methods for "cool data"; one using the "odap" <em>service</em> element and the other using the "wcs" <em>service</em> element, both using the <em>urlPath</em> attribute value "cool/data.nc"<br>
+</p>
 <h3><em></em></h3>
 <hr size="2" width="100%"><h3><em></em>Constructing URLs<a name="constructingURLs"></a></h3>
 
-<p>A dataset URL is constructed by concatenating the service base URL 
+<p>A dataset access URL is constructed by concatenating the service base URL 
   with the access urlPath. If the service has a suffix attribute, that is then appended:</p>
 
 <pre>   URL = service.base + access.urlPath + service.suffix<br></pre>
