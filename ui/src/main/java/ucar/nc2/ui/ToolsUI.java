@@ -1951,16 +1951,27 @@ public class ToolsUI extends JPanel {
 
     BufrTableBPanel(PreferencesExt p) {
       super(p, "tableB:", true, false);
-      modes = new JComboBox(new String[] {"robb","ncep","ecmwf","wmo","ukmet"});
+      modes = new JComboBox(new String[] {"mel-bufr","ncep","ecmwf","wmo","ukmet"});
       buttPanel.add(modes);
+
+      JButton accept = new JButton("Accept");
+      buttPanel.add(accept);
+      accept.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          accept();
+        }
+      });
 
       bufrTable = new BufrTableBViewer(prefs, buttPanel);
       add(bufrTable, BorderLayout.CENTER);
     }
 
-    boolean process(Object o) {
-      String command = (String) o;
-      boolean err = false;
+    boolean process(Object command) {
+      return true;
+    }
+
+    void accept() {
+      String command = (String) cb.getSelectedItem();
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
@@ -1969,17 +1980,16 @@ public class ToolsUI extends JPanel {
 
       } catch (FileNotFoundException ioe) {
         JOptionPane.showMessageDialog(null, "BufrTableViewer cant open " + command + "\n" + ioe.getMessage());
-        ta.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
-        err = true;
+        detailTA.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
+        detailTA.setVisible(true);
 
       } catch (Exception e) {
         e.printStackTrace();
         e.printStackTrace(new PrintStream(bos));
-        ta.setText(bos.toString());
-        err = true;
+        detailTA.setText(bos.toString());
+        detailTA.setVisible(true);
       }
 
-      return !err;
     }
 
     void save() {
@@ -2001,7 +2011,7 @@ public class ToolsUI extends JPanel {
 
     BufrTableDPanel(PreferencesExt p) {
       super(p, "tableD:", true, false);
-      modes = new JComboBox(new String[] {"robb","ncep","ecmwf","wmo","ukmet"});
+      modes = new JComboBox(new String[] {"mel-bufr","ncep","ecmwf","wmo","ukmet"});
       buttPanel.add(modes);
 
       bufrTable = new BufrTableDViewer(prefs, buttPanel);
@@ -2019,13 +2029,15 @@ public class ToolsUI extends JPanel {
 
       } catch (FileNotFoundException ioe) {
         JOptionPane.showMessageDialog(null, "BufrTableViewer cant open " + command + "\n" + ioe.getMessage());
-        ta.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
+        detailTA.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
+        detailTA.setVisible(true);
         err = true;
 
       } catch (Exception e) {
         e.printStackTrace();
         e.printStackTrace(new PrintStream(bos));
-        ta.setText(bos.toString());
+        detailTA.setText(bos.toString());
+        detailTA.setVisible(true);
         err = true;
       }
 

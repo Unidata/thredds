@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  11:
+  NcMLReader bug when no ref dataset
+  BUFR tables refactor
   UI tabs for examining BUFR tables B and D
   refactor BUFR tables
   bug in NetcdfDataetCOnvert on converting enums in nested structures

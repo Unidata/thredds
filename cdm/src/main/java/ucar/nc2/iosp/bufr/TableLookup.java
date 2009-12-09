@@ -52,13 +52,13 @@ public final class TableLookup {
     localOverride   // look in local first, then wmo
   }
 
-  private static TableA tablelookup;
-  private static TableA wmoTableA;
+  //private static TableA tablelookup;
+  //private static TableA wmoTableA;
   //private static TableB wmoTableB;
   //private static TableD wmoTableD;
   // private static String wmoTableName;
 
-  static private void init() {
+  /* static private void init() {
     if (tablelookup != null) return;
     try {
       tablelookup = BufrTables.getLookupTable();
@@ -68,59 +68,25 @@ public final class TableLookup {
     } catch (IOException ioe) {
       log.error("Filed to read BUFR table ", ioe);
     }
-  }
+  } */
   static private final boolean showErrors = true;
 
   /////////////////////////////////////////
-  private final String localTableName;
+  //private final String localTableName;
   private TableB localTableB;
   private TableD localTableD;
 
   private TableB wmoTableB;
   private TableD wmoTableD;
-
   public Mode mode = Mode.wmoOnly;
 
-  public TableLookup(BufrIndicatorSection is, BufrIdentificationSection ids) throws IOException {
-    init();
-    this.wmoTableB = BufrTables.getWmoTableB(is.getBufrEdition());
-    this.wmoTableD = BufrTables.getWmoTableD(is.getBufrEdition());
+  public TableLookup(BufrIdentificationSection ids) throws IOException {
+    //init();
+    this.wmoTableB = BufrTables.getWmoTableB(ids);
+    this.wmoTableD = BufrTables.getWmoTableD(ids);
 
-    // check tablelookup for special local table
-    // create key from category and possilbly center id
-    localTableName = tablelookup.getCategory( makeLookupKey(ids.getCategory(), ids.getCenterId()));
-
-    if (localTableName == null) {
-      this.localTableB = BufrTables.getWmoTableB(is.getBufrEdition());
-      this.localTableD = BufrTables.getWmoTableD(is.getBufrEdition());
-      return;
-
-    } else if (localTableName.contains("-ABD")) {
-      localTableB = BufrTables.getTableB(localTableName.replace("-ABD", "-B"));
-      localTableD = BufrTables.getTableD(localTableName.replace("-ABD", "-D"));
-      return;
-
-      // check if localTableName(Mnemonic) table has already been processed
-    } else if (BufrTables.hasTableB(localTableName)) {
-      localTableB = BufrTables.getTableB(localTableName); // LOOK localTableName needs "-B" or something
-      localTableD = BufrTables.getTableD(localTableName);
-      return;
-    }
-
-    // Mnemonic tables
-    ucar.nc2.iosp.bufr.tables.BufrReadMnemonic brm = new ucar.nc2.iosp.bufr.tables.BufrReadMnemonic();
-    brm.readMnemonic(localTableName);
-    this.localTableB = brm.getTableB();
-    this.localTableD = brm.getTableD();
-  }
-
-  private short makeLookupKey(int cat, int center_id) {
-    if ((center_id == 7) || (center_id == 8) || (center_id == 9)) {
-      if (cat < 240 || cat > 254)
-        return (short) center_id;
-      return (short) (center_id * 1000 + cat);
-    }
-    return (short) center_id;
+    this.localTableB = BufrTables.getLocalTableB(ids);
+    this.localTableD = BufrTables.getLocalTableD(ids);
   }
 
   public void setMode(Mode mode) {
@@ -132,42 +98,51 @@ public final class TableLookup {
   }
 
   public String getDataCategory(int cat) {
-    return wmoTableA.getDataCategory((short) cat);
+    return BufrTables.getDataCategory( cat);
   }
 
-  public final String getWmoTableName() {
-    return "wmo table version 14";
+  public final String getWmoTableBName() {
+    return wmoTableB.getName();
   }
 
-  public final String getLocalTableName() {
-    return localTableName;
+ public final String getLocalTableBName() {
+    return localTableB == null ? "none" : localTableB.getName();
   }
 
-  public TableB.Descriptor getDescriptorTableB(short fxy) {
+  public final String getLocalTableDName() {
+    return localTableD == null ? "none" : localTableD.getName();
+  }
+
+  public final String getWmoTableDName() {
+    return wmoTableD.getName();
+  }
+
+   public TableB.Descriptor getDescriptorTableB(short fxy) {
     TableB.Descriptor b = null;
     boolean isWmoRange = Descriptor.isWmoRange(fxy);
 
-    if (isWmoRange && mode.equals(Mode.wmoOnly)) {
+    if (isWmoRange && (mode == Mode.wmoOnly)) {
       b = wmoTableB.getDescriptor(fxy);
 
-    } else if (isWmoRange && mode.equals(Mode.wmoLocal)) {
+    } else if (isWmoRange && (mode == Mode.wmoLocal)) {
       b = wmoTableB.getDescriptor(fxy);
-      if (b == null)
+      if ((b == null) && (localTableB != null))
         b = localTableB.getDescriptor(fxy);
 
-    } else if (isWmoRange && mode.equals(Mode.localOverride)) {
+    } else if (isWmoRange && (mode == Mode.localOverride)) {
       if (localTableB != null)
         b = localTableB.getDescriptor(fxy);
       if (b == null)
         b = wmoTableB.getDescriptor(fxy);
 
-    } else {  
+    } else if (!isWmoRange) {
       if (localTableB != null)
         b = localTableB.getDescriptor(fxy);
     }
 
     if (b == null && showErrors)
-      System.out.println(" TableLookup cant find Table B descriptor =" + Descriptor.makeString(fxy) + " in tables= " + localTableName + "," + wmoTableB.getName());
+      System.out.printf(" TableLookup cant find Table B descriptor = %s in tables %s, %s mode=%s%n", Descriptor.makeString(fxy),
+          getLocalTableBName(), getWmoTableBName(), mode);
     return b;
   }
 
@@ -192,15 +167,15 @@ public final class TableLookup {
     TableD.Descriptor d = null;
     boolean isWmoRange = Descriptor.isWmoRange(fxy);
 
-    if (isWmoRange && mode.equals(Mode.wmoOnly)) {
+    if (isWmoRange && (mode == Mode.wmoOnly)) {
       d = wmoTableD.getDescriptor(fxy);
 
-    } else if (isWmoRange && mode.equals(Mode.wmoLocal)) {
+    } else if (isWmoRange && (mode == Mode.wmoLocal)) {
       d = wmoTableD.getDescriptor(fxy);
-      if (d == null)
+      if ((d == null) && (localTableD != null))
         d = localTableD.getDescriptor(fxy);
 
-    } else if (isWmoRange && mode.equals(Mode.localOverride)) {
+    } else if (isWmoRange && (mode == Mode.localOverride)) {
       if (localTableD != null)
         d = localTableD.getDescriptor(fxy);
       if (d == null)
@@ -212,7 +187,8 @@ public final class TableLookup {
     }
 
     if (d == null && showErrors)
-      System.out.printf(" TableLookup cant find Table D descriptor %s in tables %s,%s%n", Descriptor.makeString(fxy), localTableName, wmoTableD.getName());
+      System.out.printf(" TableLookup cant find Table D descriptor %s in tables %s,%s mode=%s%n", Descriptor.makeString(fxy),
+          getLocalTableDName(), getWmoTableDName(), mode);
     return d;
   }
 

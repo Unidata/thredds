@@ -86,7 +86,7 @@ public class BufrTableBViewer extends JPanel {
   private TextHistoryPane compareTA, infoTA2;
   private IndependentWindow infoWindow, infoWindow2;
 
-  private TableB currTable;
+  private TableB currTable, refTable;
 
   private StructureTable dataTable;
   private IndependentWindow dataWindow;
@@ -136,8 +136,9 @@ public class BufrTableBViewer extends JPanel {
 
         try {
           Formatter out = new Formatter();
-          TableB wmoTable = BufrTables.getWmoTableB(13);
-          compare(currTable, wmoTable, out);
+          if (refTable == null)
+            refTable = BufrTables.getWmoTableB(13);
+          compare(currTable, refTable, out);
 
           compareTA.setText(out.toString());
           compareTA.gotoTop();
@@ -173,12 +174,20 @@ public class BufrTableBViewer extends JPanel {
     BAMutil.setActionProperties(skipAction2, "Dataset", "skipUnits", true, 'C', -1);
     BAMutil.addActionToContainer(buttPanel, skipAction2);
 
+    AbstractAction refAction = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        refTable = currTable;
+      }
+    };
+    BAMutil.setActionProperties(refAction, "Dataset", "useAsRef", false, 'C', -1);
+    BAMutil.addActionToContainer(buttPanel, refAction);
+
     AbstractAction usedAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         try {
           showUsed();
         } catch (IOException e1) {
-          e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+          e1.printStackTrace(); 
         }
       }
     };
@@ -257,7 +266,7 @@ public class BufrTableBViewer extends JPanel {
   }
 
   private void compare(TableB t1, TableB t2, Formatter out) {
-    out.format("Compare %s and %s %n", t1.getName(), t2.getName());
+    out.format("Compare%n %s%n %s %n", t1.getName(), t2.getName());
     List<TableB.Descriptor> listDesc = new ArrayList<TableB.Descriptor>(t1.getDescriptors());
     Collections.sort(listDesc);
     for (TableB.Descriptor d1 : listDesc) {
@@ -387,7 +396,7 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
       loadVariant("ncep-v13", BufrTables.readTableB("C:/dev/tds/thredds/bufrTables/src/main/sources/ncep/bufrtab.TableB_STD_0_13", "ncep"));
       loadVariant("ncep-v14", BufrTables.readTableB("C:/dev/tds/thredds/bufrTables/src/main/sources/ncep/bufrtab.TableB_STD_0_14", "ncep"));
       loadVariant("ecmwf-v13", BufrTables.readTableB("C:/dev/tds/thredds/bufrTables/src/main/sources/ecmwf/B0000000000098013001.TXT", "ecmwf"));
-      loadVariant("bmet-v13", BufrTables.readTableB("C:/dev/tds/thredds/bufrTables/src/main/sources/bmet/BUFR_B_080731.xml", "bmet"));
+      loadVariant("bmet-v13", BufrTables.readTableB("C:/dev/tds/thredds/bufrTables/src/main/sources/ukmet/BUFR_B_080731.xml", "bmet"));
     } catch (IOException e) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }

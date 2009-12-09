@@ -35,7 +35,7 @@ package ucar.nc2.iosp.bufr.tables;
 
 /**
  * COMMON CODE TABLE C-1: Identification of originating/generating centre
- * This should be kept in an external table so it can be updated regularly.
+ * LOOK should be in an external table
  *
  * @see "http://www.wmo.int/pages/prog/www/WMOCodes/Operational/CommonTables/BufrCommon-11-2007.pdf"
  * @author caron

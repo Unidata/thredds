@@ -33,6 +33,8 @@
 
 package ucar.nc2.util;
 
+import ucar.unidata.util.StringUtil;
+
 import java.io.*;
 import java.util.*;
 import java.net.URL;
@@ -141,7 +143,9 @@ public class TableParser {
       if (line == null) break;
       if (line.startsWith("#")) continue;
       if (line.trim().length() == 0) continue;
-      records.add(new Record( line, fields));
+      Record r = Record.make( line, fields);
+      if (r != null)
+        records.add(r);
       count++;
     }
 
@@ -164,7 +168,7 @@ public class TableParser {
 
     Object parse( String line) throws NumberFormatException {
       String svalue = (end > line.length()) ? line.substring(start) : line.substring(start, end);
-      svalue = svalue.trim();
+      svalue = StringUtil.remove(svalue,' ');
       //System.out.printf("  [%d,%d) = %s %n",start, end, svalue);
 
       if (type == String.class)
@@ -177,10 +181,10 @@ public class TableParser {
           return new Integer( svalue);
 
       } catch (NumberFormatException e) {
-        System.out.printf("Bad line=%s %n",line);
-        System.out.printf("  [%d,%d) = %s %n",start, end, svalue);
-        e.printStackTrace();
+        System.out.printf("  [%d,%d) = <%s> %n",start, end, svalue);
+        throw e;
       }
+
       return null;
     }
 
@@ -192,12 +196,21 @@ public class TableParser {
   static public class Record {
     private List<Object> values = new ArrayList<Object>();
 
-    Record( String line, List fields) {
-      for (Object field : fields) {
-        Field f = (Field) field;
-        values.add(f.parse(line));
+    static Record make( String line, List fields) {
+      try {
+        Record r = new Record();
+        for (Object field : fields) {
+          Field f = (Field) field;
+          r.values.add(f.parse(line));
+        }
+        return r;
+      } catch (NumberFormatException e) {
+        System.out.printf("Bad line=%s %n",line);
+        return null;
       }
     }
+
+    public int nfields() { return values.size(); }
 
     /**
      * Get the kth value of this record. Will be a String, Double, or Integer. 

@@ -631,9 +631,7 @@ public class NcMLReader {
     if (nameInFile == null) nameInFile = name;
 
     // see if it already exists
-    Dimension dim = refg.findDimension(nameInFile);
-    //if (dim == null )
-    //  dim = refg.findDimension(name);
+    Dimension dim = (refg == null) ? null : refg.findDimension(nameInFile);
     if (dim == null) { // nope - create it
       String lengthS = dimElem.getAttributeValue("length");
       String isUnlimitedS = dimElem.getAttributeValue("isUnlimited");
@@ -814,7 +812,7 @@ public class NcMLReader {
     if (nameInFile == null) nameInFile = name;
 
     // see if it already exists
-    Variable refv = refg.findVariable(nameInFile);
+    Variable refv = (refg == null) ? null : refg.findVariable(nameInFile);
     if (refv == null) { // new
       if (debugConstruct) System.out.println(" add new var = " + name);
       g.addVariable(readVariableNew(ds, g, null, varElem));

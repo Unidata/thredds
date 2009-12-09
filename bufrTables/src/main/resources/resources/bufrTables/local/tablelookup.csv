@@ -1,0 +1,19 @@
+#
+# BUFR TableLookup
+#
+# ids = Identification Section. bytes refer to editions 3 or 4. 0 means dont match
+#
+# center = originating/generating centre  (ed3=ids bytes 6, ed4=ids byte 5,6)
+# subcenter = originating/generating sub-centre  (ed3=ids byte 5, ed4=ids byte 7,8)
+# master = Version number of master tables used (ed3=ids byte 11, ed4=ids byte 14)
+# local = Version number of local tables used to augment the master table (ed3=ids byte 12, ed4=ids byte 15)
+# tableB,tableD = file name or resource name
+# format = "wmo","ncep,"ecmwf","ukmet", or "mel-bufr"
+#
+center,subcenter,master,local,tableB,tableBformat,                                        tableD,tableDformat
+0,     0,        14,    0,    resource:/resources/bufrTables/wmo/TableB.v14corr.csv, wmo, resource:/resources/bufrTables/wmo/TableD.v14corr.csv, wmo
+0,     0,        13,    0,    resource:/resources/bufrTables/wmo/tableB.v13.csv, wmo    , , ,    
+#
+# FSL
+# B table from Pauk Hamer, unknown provenence on the D table
+59,    -1,       -1,    -1,    resource:/resources/bufrTables/local/B3L-059000-003003-B.txt, mel-bufr, resource:/resources/bufrTables/local/B3L-059-003-D.diff, mel-bufr

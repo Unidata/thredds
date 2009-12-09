@@ -33,6 +33,7 @@
 package ucar.nc2.iosp.bufr.tables;
 
 import ucar.nc2.iosp.bufr.Descriptor;
+import ucar.nc2.iosp.bufr.BufrIdentificationSection;
 import ucar.nc2.util.TableParser;
 import ucar.unidata.util.StringUtil;
 
@@ -66,6 +67,7 @@ public class BufrTables {
   private static final boolean debugTable = true;
   private static final boolean showReadErrs = false;
 
+  private static List<TableConfig> tables;
   private static TableA tableA;
   private static Map<String, TableB> tablesB = new ConcurrentHashMap<String, TableB>();
   private static Map<String, TableD> tablesD = new ConcurrentHashMap<String, TableD>();
@@ -74,38 +76,139 @@ public class BufrTables {
   private static final Pattern threeInts = Pattern.compile("^\\s*(\\d+)\\s+(\\d+)\\s+(\\d+)");  // get 3 integers from beginning of line
   private static final Pattern negOne = Pattern.compile("^\\s*-1");  // check for -1 sequence terminator
 
-  static public TableA getWmoTableA() throws IOException {
-    String tablename = RESOURCE_PATH + "wmo/TableA-11-2008.txt";
-    if (tableA == null) {
-      InputStream ios = BufrTables.class.getResourceAsStream(tablename);
-      BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
-      Map<Short, String> categories = new HashMap<Short, String>();
+  // center,subcenter,master,local,tableB,tableBformat,tableD,tableDformat
+  static private void readTableLookup() {
+    tables = new ArrayList<TableConfig>();
 
-      // read table A to store categories
-      Matcher m;
+    String name = RESOURCE_PATH + "local/tablelookup.csv";
+    try {
+      InputStream ios = openStream("resource:" + name);
+      BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, Charset.forName("UTF8")));
+      int count = 0;
       while (true) {
         String line = dataIS.readLine();
         if (line == null) break;
-        if (line.startsWith("#") || line.length() == 0)
-          continue;
+        if (line.startsWith("#")) continue;
+        count++;
 
-        m = category.matcher(line); // overkill
-        if (m.find()) {
-          if (m.group(2).equals("RESERVED")) continue;
-          if (m.group(2).equals("FOR EXPERIMENTAL USE")) continue;
-          String cat = m.group(2).trim();
-          categories.put(Short.valueOf(m.group(1)), cat);
+        // first line is the header
+        if (count == 1) {
+          if (showReadErrs) System.out.println("header line == " + line);
+          continue;
+        }
+
+        String[] flds = line.split(",");
+        if (flds.length < 8) {
+          if (showReadErrs) System.out.printf("%d BAD line == %s%n", count, line);
+          continue;
+        }
+
+        int fldidx = 0;
+        try {
+          TableConfig table = new TableConfig();
+          table.center = Integer.parseInt(flds[fldidx++].trim());
+          table.subcenter = Integer.parseInt(flds[fldidx++].trim());
+          table.master = Integer.parseInt(flds[fldidx++].trim());
+          table.local = Integer.parseInt(flds[fldidx++].trim());
+          table.tableBname = flds[fldidx++].trim();
+          table.tableBformat = flds[fldidx++].trim();
+          table.tableDname = flds[fldidx++].trim();
+          table.tableDformat = flds[fldidx++].trim();
+
+          tables.add(table);
+
+        } catch (Exception e) {
+          if (showReadErrs) System.out.printf("%d %d BAD line == %s%n", count, fldidx, line);
         }
       }
       dataIS.close();
-
-      tableA = new TableA(tablename, tablename, categories);
+    } catch (IOException ioe) {
+      String mess = "Need BUFR tables in path; looking for " + name;
+      throw new RuntimeException(mess, ioe);
     }
-
-    return tableA;
   }
 
-  // LOOK
+  private static class TableConfig {
+    int center, subcenter, master, local;
+    String tableBname,tableBformat,tableDname,tableDformat;
+
+    boolean matches(int center, int subcenter, int master, int local) {
+      if ((this.center >= 0) && (center >= 0) && (center != this.center)) return false;
+      if ((this.subcenter >= 0) && (subcenter >= 0) && (subcenter != this.subcenter)) return false;
+      if ((this.master >= 0) && (master >= 0) && (master != this.master)) return false;
+      if ((this.local >= 0) && (local >= 0) && (local != this.local)) return false;
+      return true;
+    }
+  }
+
+  private static TableConfig matchTableConfig(int center, int subcenter, int master, int local) {
+    if (tables == null) readTableLookup();
+
+    for (TableConfig tc : tables) {
+      if (tc.matches(center,subcenter,master,local))
+        return tc;
+    }
+    return null;
+  }
+
+  private static TableConfig matchTableConfig(BufrIdentificationSection ids) {
+    if (tables == null) readTableLookup();
+
+    int center = ids.getCenterId();
+    int subcenter = ids.getSubCenterId();
+    int master = ids.getMasterTableVersion();
+    int local = ids.getLocalTableVersion();
+
+    return matchTableConfig(center, subcenter, master, local);
+  }
+
+
+  /* public void tableLookup(BufrIndicatorSection is, BufrIdentificationSection ids) throws IOException {
+    init();
+    this.wmoTableB = BufrTables.getWmoTableB(is.getBufrEdition());
+    this.wmoTableD = BufrTables.getWmoTableD(is.getBufrEdition());
+
+    // check tablelookup for special local table
+    // create key from category and possilbly center id
+
+    String localTableName = tablelookup.getCategory( makeLookupKey(ids.getCategory(), ids.getCenterId()));
+
+    if (localTableName == null) {
+      //this.localTableB = BufrTables.getWmoTableB(is.getBufrEdition());
+      //this.localTableD = BufrTables.getWmoTableD(is.getBufrEdition());
+      return;
+
+    } else if (localTableName.contains("-ABD")) {
+      localTableB = BufrTables.getTableB(localTableName.replace("-ABD", "-B"));
+      localTableD = BufrTables.getTableD(localTableName.replace("-ABD", "-D"));
+      return;
+
+      // check if localTableName(Mnemonic) table has already been processed
+    } else if (BufrTables.hasTableB(localTableName)) {
+      localTableB = BufrTables.getTableB(localTableName); // LOOK localTableName needs "-B" or something
+      localTableD = BufrTables.getTableD(localTableName);
+      return;
+    }
+
+    // Mnemonic tables
+    ucar.nc2.iosp.bufr.tables.BufrReadMnemonic brm = new ucar.nc2.iosp.bufr.tables.BufrReadMnemonic();
+    brm.readMnemonic(localTableName);
+    this.localTableB = brm.getTableB();
+    this.localTableD = brm.getTableD();
+  }
+
+  private short makeLookupKey(int cat, int center_id) {
+    if ((center_id == 7) || (center_id == 8) || (center_id == 9)) {
+      if (cat < 240 || cat > 254)
+        return (short) center_id;
+      return (short) (center_id * 1000 + cat);
+    }
+    return (short) center_id;
+  }
+
+  
+
+    // LOOK
   static public TableA getLookupTable() throws IOException {
     String tablename = "tablelookup.txt";
     InputStream ios = open(tablename);
@@ -134,6 +237,25 @@ public class BufrTables {
     return new TableA(tablename, tablename, categories);
   }
 
+  static private TableB readRobbTableB(String tablename) throws IOException {
+    InputStream ios = open(tablename);
+    TableB b = new TableB(tablename, tablename);
+
+    readRobbTableB(ios, b);
+    return b;
+  }
+
+     static public TableB getTableB(String tablename) throws IOException {
+    TableB b = tablesB.get(tablename);
+    if (b == null) {
+      b = readRobbTableB(tablename);
+      tablesB.put(tablename, b);
+    }
+    return b;
+  }
+
+  */
+
   ///////////////////////
 
   /* Note Robb has this cleanup in DescriptorTableB
@@ -148,70 +270,63 @@ public class BufrTables {
       desc = desc.replaceFirst( "2-", "Two-" );
    */
 
-  static public boolean hasTableB(String tablename) {
-    return tablesB.get(tablename) != null;
-  }
-
-  static public TableB getTableB(String tablename) throws IOException {
-    TableB b = tablesB.get(tablename);
-    if (b == null) {
-      b = readRobbTableB(tablename);
-      tablesB.put(tablename, b);
-    }
-    return b;
-  }
-
-  static void addTableB(String tablename, TableB b) {
-    tablesB.put(tablename, b);
+  static public TableB getLocalTableB(BufrIdentificationSection ids) throws IOException {
+    TableConfig tc = matchTableConfig(ids);
+    if (tc == null) return null;
+    return readTableB(tc.tableBname, tc.tableBformat);
   }
 
   //
 
-  static String version13 = "wmo.v13.composite";
-  static String version13diff = "wmo/version13.csv";
-  static String version14 = "wmo/BC_TableB.csv";
+  static private String version13 = "wmo.v13.composite";
+  static private String version14 = "wmo.v14";
+
+  static public TableB getWmoTableB(BufrIdentificationSection ids) throws IOException {
+    return getWmoTableB( ids.getMasterTableVersion());
+  }
 
   static public TableB getWmoTableB(int version) throws IOException {
-    String name = (version == 14) ? "resource:" + version14 : version13;
-    TableB tb = tablesB.get(name);
+    String tableName = (version == 14) ? version14 : version13;
+    TableB tb = tablesB.get(tableName);
     if (tb != null) return tb;
 
-    // always read version 14 in
-    String location = "resource:"+version14;
-    TableB result = readTableB(location, "wmo");
+    // always read 14 in
+    TableConfig tc14 = matchTableConfig(0, 0, 14, 0);
+    TableB result = readTableB(tc14.tableBname, tc14.tableBformat);
+    tablesB.put(version14, result); // hash by standard name
 
-    // if this is another version, make a composite
+    // everyone else uses 13 : cant override - do it in local if needed
     if (version < 14) {
-      location = "resource:"+version13diff;
-      TableB b13 = readTableB(location, "wmo");
+      TableConfig tc = matchTableConfig(0, 0, 13, 0);
+      TableB b13 = readTableB(tc.tableBname, tc.tableBformat);
       TableB.Composite bb = new TableB.Composite(version13, version13);
-      bb.addTable(b13); // check in 13 first
+      bb.addTable(b13); // check in 13 first, so it overrides
       bb.addTable(result); // then in 14
       result = bb;
+      tablesB.put(version13, result); // hash by standard name
     }
 
-    addTableB(result.getLocation(), result);
     return result;
   }
 
-  static public TableB readTableB(String location, String mode) throws IOException {
+  static public TableB readTableB(String location, String format) throws IOException {
     TableB tb = tablesB.get(location);
     if (tb != null) return tb;
 
     InputStream ios = openStream(location);
     TableB b = new TableB(location, location);
-    if (mode.equals("wmo"))
+    if (format.equals("wmo"))
       readWmoTableB(ios, b);
-    else if (mode.equals("ncep"))
+    else if (format.equals("ncep"))
       readNcepTableB(ios, b);
-    else if (mode.equals("ecmwf"))
+    else if (format.equals("ecmwf"))
       readEcmwfTableB(ios, b);
-    else if (mode.equals("ukmet"))
+    else if (format.equals("ukmet"))
       readBmetTableB(ios, b);
     else
-      readRobbTableB(ios, b);
+      readMelbufrTableB(ios, b);
 
-    addTableB(location, b);
+    tablesB.put(location, b);
     return b;
   }
 
@@ -272,16 +387,8 @@ public class BufrTables {
     return StringUtil.remove(s, ' ');
   }
 
-  static public TableB readRobbTableB(String tablename) throws IOException {
-    InputStream ios = open(tablename);
-    TableB b = new TableB(tablename, tablename);
-
-    readRobbTableB(ios, b);
-    return b;
-  }
-
-  // tables are in robb's format
-  static private TableB readRobbTableB(InputStream ios, TableB b) throws IOException {
+  // tables are in mel-bufr format
+  static private TableB readMelbufrTableB(InputStream ios, TableB b) throws IOException {
 
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
 
@@ -373,6 +480,9 @@ public class BufrTables {
     int count = 0;
     List<TableParser.Record> recs = TableParser.readTable(ios, "4i,7i,72,97,102i,114i,119i", 50000);
     for (TableParser.Record record : recs) {
+      if (record.nfields() < 7) {
+        continue;
+      }
       int x = (Integer) record.get(0);
       int y = (Integer) record.get(1);
       String name = (String) record.get(2);
@@ -448,9 +558,43 @@ public class BufrTables {
 
   ///////////////////////////////////////////////////////
 
-  static public TableD getWmoTableD(int version) throws IOException {
-    String location = "resource:wmo/B_TableD.csv";
-    return readTableD(location, "wmo");
+  /*  static public TableD getTableD(String tablename) throws IOException {
+    TableD d = tablesD.get(tablename);
+    if (d == null) {
+      d = readRobbTableD(tablename);
+      tablesD.put(tablename, d);
+    }
+    return d;
+  }
+
+  // local tables are in robb format
+  static public TableD readRobbTableD(String tablename) throws IOException {
+    InputStream ios = open(tablename);
+    TableD t = new TableD(tablename, tablename);
+
+    readRobbTableD(ios, t);
+    return t;
+  } */
+
+  static public TableD getLocalTableD(BufrIdentificationSection ids) throws IOException {
+    TableConfig tc = matchTableConfig(ids);
+    if (tc == null) return null;
+    if (tc.tableDname == null) return null;
+    if (tc.tableDname.trim().length() == 0) return null;
+    
+    return readTableD(tc.tableDname, tc.tableDformat);
+  }
+
+  static public TableD getWmoTableD(BufrIdentificationSection ids) throws IOException {
+    TableD tb = tablesD.get(version14);
+    if (tb != null) return tb;
+
+    // always use version 14
+    TableConfig tc14 = matchTableConfig(0, 0, 14, 0);
+    TableD result = readTableD(tc14.tableDname, tc14.tableDformat);
+    tablesD.put(version14, result); // hash by standard name
+
+    return result;
   }
 
   static public TableD readTableD(String location, String mode) throws IOException {
@@ -466,9 +610,9 @@ public class BufrTables {
     else if (mode.equals("ecmwf"))
       readEcmwfTableD(ios, d);
     else
-      readRobbTableD(ios, d);
+      readMelbufrTableD(ios, d);
 
-    addTableD(location, d);
+    tablesD.put(location, d);
     return d;
   }
 
@@ -542,30 +686,7 @@ public class BufrTables {
     }
   }
 
-  static public TableD getTableD(String tablename) throws IOException {
-    TableD d = tablesD.get(tablename);
-    if (d == null) {
-      d = readRobbTableD(tablename);
-      tablesD.put(tablename, d);
-    }
-    return d;
-  }
-
-
-  static void addTableD(String tablename, TableD d) {
-    tablesD.put(tablename, d);
-  }
-
-  // local tables are in robb format
-  static public TableD readRobbTableD(String tablename) throws IOException {
-    InputStream ios = open(tablename);
-    TableD t = new TableD(tablename, tablename);
-
-    readRobbTableD(ios, t);
-    return t;
-  }
-
-  static private void readRobbTableD(InputStream ios, TableD t) throws IOException {
+  static private void readMelbufrTableD(InputStream ios, TableD t) throws IOException {
 
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
     int count = 0;
@@ -753,6 +874,7 @@ public class BufrTables {
     }
     dataIS.close();
   }
+
   /////////////////////////////////////////////////////////////////////////////////////////
 
   private static InputStream open(String location) throws IOException {
@@ -780,10 +902,9 @@ public class BufrTables {
 
     if (location.startsWith("resource:")) {
       location = location.substring(9);
-      String tmp = RESOURCE_PATH + location;
-      ios = BufrTables.class.getResourceAsStream(tmp);
+      ios = BufrTables.class.getResourceAsStream(location);
       if (ios != null) {
-        if (debugTable) System.out.printf("BufrTables open %s %n", tmp);
+        if (debugTable) System.out.printf("BufrTables open %s %n", location);
         return ios;
       }
     }
@@ -797,18 +918,57 @@ public class BufrTables {
     return ios;
   }
 
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  // Table A
+  
+  static public String getDataCategory(int cat) {
+    String tablename = RESOURCE_PATH + "wmo/TableA-11-2008.txt";
+    if (tableA == null) {
+      InputStream ios = BufrTables.class.getResourceAsStream(tablename);
+      BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
+      Map<Short, String> categories = new HashMap<Short, String>();
 
+      try {
+        // read table A to store categories
+        Matcher m;
+        while (true) {
+          String line = dataIS.readLine();
+          if (line == null) break;
+          if (line.startsWith("#") || line.length() == 0)
+            continue;
+
+          m = category.matcher(line); // overkill
+          if (m.find()) {
+            if (m.group(2).equals("RESERVED")) continue;
+            if (m.group(2).equals("FOR EXPERIMENTAL USE")) continue;
+            String cats = m.group(2).trim();
+            categories.put(Short.valueOf(m.group(1)), cats);
+          }
+        }
+        dataIS.close();
+
+        tableA = new TableA(tablename, tablename, categories);
+      } catch (IOException ioe) {
+        String mess = "Need BUFR tables in path; looking for "+tablename;
+        throw new RuntimeException(mess, ioe);
+      }
+    }
+
+    return tableA.getDataCategory((short) cat);
+  }
+
+  ///////////////////////////////
   // debug
   public static void main(String args[]) throws IOException {
     Formatter out = new Formatter(System.out);
 
-    TableA tableA = BufrTables.getWmoTableA();
+    BufrTables.getDataCategory(1); // trigger read
     tableA.show(out);
 
     TableB tableB = BufrTables.getWmoTableB(13);
     tableB.show(out);
 
-    TableD tableD = BufrTables.getWmoTableD(13);
+    TableD tableD = BufrTables.getWmoTableD(null);
     tableD.show(out);
   }
 }

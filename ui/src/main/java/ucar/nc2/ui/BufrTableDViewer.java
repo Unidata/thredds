@@ -119,7 +119,7 @@ public class BufrTableDViewer extends JPanel {
 
         try {
           Formatter out = new Formatter();
-          TableD wmoTable = BufrTables.getWmoTableD(14);
+          TableD wmoTable = BufrTables.getWmoTableD(null);
           compare(currTable, wmoTable, out);
 
           compareTA.setText(out.toString());

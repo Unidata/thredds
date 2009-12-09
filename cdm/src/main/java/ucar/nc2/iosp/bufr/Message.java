@@ -82,7 +82,7 @@ public class Message {
     this.dds = dds;
     this.dataSection = dataSection;
     this.cal = cal;
-    lookup = new TableLookup(is, ids);
+    lookup = new TableLookup(ids);
   }
 
   public void close() throws IOException {
@@ -770,7 +770,7 @@ public class Message {
     out.format("   Category= %s %s %n", getCategoryNo(), getCategoryName());
     out.format("   Center= %s %n", getCenterName());
     out.format("   Table= %s wmoTable= %s localTable= %s%n",
-            getTableName(), lookup.getWmoTableName(), lookup.getLocalTableName());
+            getTableName(), lookup.getWmoTableBName(), lookup.getLocalTableBName());
 
     out.format("  DDS nsubsets=%d type=0x%x isObs=%b isCompressed=%b\n", dds.getNumberDatasets(), dds.getDataType(),
             dds.isObserved(), dds.isCompressed());
@@ -830,7 +830,7 @@ public class Message {
 
     } catch (Exception e) {
       e.printStackTrace();
-      System.out.println("***BAD getMasterTableFilename=" + lookup.getWmoTableName());
+      System.out.println("***BAD getMasterTableFilename=" + lookup.getWmoTableBName());
       return " (" + ids.getCategory() + "." + ids.getSubCategory() + ")";
     }
   }
@@ -840,9 +840,9 @@ public class Message {
     out.format(" BUFR edition %d time= %s wmoHeader=%s %n", is.getBufrEdition(), getReferenceTime(), getHeader());
     out.format("   Category= %d %s %s %n", ids.getCategory(), getCategoryName(), getCategoryNo());
     out.format("   Center= %s %s %n", getCenterName(), getCenterNo());
-    out.format("   Table= %d.%d local= %d wmoTable= %s localTable= %s %n",
-            ids.getMasterTableId(), ids.getMasterTableVersion(), ids.getLocalTableVersion(), lookup.getWmoTableName(),
-            lookup.getLocalTableName());
+    out.format("   Table= %d.%d local= %d wmoTables= %s,%s localTables= %s,%s %n",
+            ids.getMasterTableId(), ids.getMasterTableVersion(), ids.getLocalTableVersion(),
+            lookup.getWmoTableBName(),lookup.getWmoTableDName(),lookup.getLocalTableBName(),lookup.getLocalTableDName());
 
     out.format("  DDS nsubsets=%d type=0x%x isObs=%b isCompressed=%b\n", dds.getNumberDatasets(), dds.getDataType(),
             dds.isObserved(), dds.isCompressed());
