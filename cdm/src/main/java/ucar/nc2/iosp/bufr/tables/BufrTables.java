@@ -65,7 +65,7 @@ public class BufrTables {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrTables.class);
 
   private static final boolean debugTable = true;
-  private static final boolean showReadErrs = false;
+  private static final boolean showReadErrs = true;
 
   private static List<TableConfig> tables;
   private static TableA tableA;
@@ -76,7 +76,7 @@ public class BufrTables {
   private static final Pattern threeInts = Pattern.compile("^\\s*(\\d+)\\s+(\\d+)\\s+(\\d+)");  // get 3 integers from beginning of line
   private static final Pattern negOne = Pattern.compile("^\\s*-1");  // check for -1 sequence terminator
 
-  // center,subcenter,master,local,tableB,tableBformat,tableD,tableDformat
+  // center,subcenter,master,local,cat,tableB,tableBformat,tableD,tableDformat
   static private void readTableLookup() {
     tables = new ArrayList<TableConfig>();
 
@@ -110,6 +110,7 @@ public class BufrTables {
           table.subcenter = Integer.parseInt(flds[fldidx++].trim());
           table.master = Integer.parseInt(flds[fldidx++].trim());
           table.local = Integer.parseInt(flds[fldidx++].trim());
+          table.cat = Integer.parseInt(flds[fldidx++].trim());
           table.tableBname = flds[fldidx++].trim();
           table.tableBformat = flds[fldidx++].trim();
           table.tableDname = flds[fldidx++].trim();
@@ -129,23 +130,24 @@ public class BufrTables {
   }
 
   private static class TableConfig {
-    int center, subcenter, master, local;
+    int center, subcenter, master, local, cat;
     String tableBname,tableBformat,tableDname,tableDformat;
 
-    boolean matches(int center, int subcenter, int master, int local) {
+    boolean matches(int center, int subcenter, int master, int local, int cat) {
       if ((this.center >= 0) && (center >= 0) && (center != this.center)) return false;
       if ((this.subcenter >= 0) && (subcenter >= 0) && (subcenter != this.subcenter)) return false;
       if ((this.master >= 0) && (master >= 0) && (master != this.master)) return false;
       if ((this.local >= 0) && (local >= 0) && (local != this.local)) return false;
+      if ((this.cat >= 0) && (cat >= 0) && (cat != this.cat)) return false;
       return true;
     }
   }
 
-  private static TableConfig matchTableConfig(int center, int subcenter, int master, int local) {
+  private static TableConfig matchTableConfig(int center, int subcenter, int master, int local, int cat) {
     if (tables == null) readTableLookup();
 
     for (TableConfig tc : tables) {
-      if (tc.matches(center,subcenter,master,local))
+      if (tc.matches(center,subcenter,master,local,cat))
         return tc;
     }
     return null;
@@ -158,8 +160,9 @@ public class BufrTables {
     int subcenter = ids.getSubCenterId();
     int master = ids.getMasterTableVersion();
     int local = ids.getLocalTableVersion();
+    int cat = ids.getCategory();
 
-    return matchTableConfig(center, subcenter, master, local);
+    return matchTableConfig(center, subcenter, master, local, cat);
   }
 
 
@@ -270,13 +273,45 @@ public class BufrTables {
       desc = desc.replaceFirst( "2-", "Two-" );
    */
 
-  static public TableB getLocalTableB(BufrIdentificationSection ids) throws IOException {
-    TableConfig tc = matchTableConfig(ids);
-    if (tc == null) return null;
-    return readTableB(tc.tableBname, tc.tableBformat);
+  public static class Tables {
+    public TableB b;
+    public TableD d;
+    Tables() {}
+    Tables(TableB b, TableD d) {
+      this.b = b;
+      this.d = d;
+    }
   }
 
-  //
+  static public Tables getLocalTables(BufrIdentificationSection ids) throws IOException {
+    TableConfig tc = matchTableConfig(ids);
+    if (tc == null) return null;
+
+    if (tc.tableBformat.equals("ncep-nm")) {
+      // see if we already have it
+      TableB b = tablesB.get(tc.tableBname);
+      TableD d = tablesD.get(tc.tableBname);
+      if ((b != null) && (d != null)) return new Tables(b, d);
+
+      // read it
+      b = new TableB(tc.tableBname, tc.tableBname);
+      d = new TableD(tc.tableBname, tc.tableBname);
+      Tables t = new Tables(b, d);
+      InputStream ios = openStream(tc.tableBname);
+      NcepMnemonic.read(ios, t);
+
+      // cache 
+      tablesB.put(tc.tableBname, t.b);
+      tablesD.put(tc.tableBname, t.d);
+      return t;
+    }
+
+    Tables tables = new Tables();
+    tables.b = readTableB(tc.tableBname, tc.tableBformat);
+    tables.d = readTableD(tc.tableDname, tc.tableDformat);
+
+    return tables;
+  }
 
   static private String version13 = "wmo.v13.composite";
   static private String version14 = "wmo.v14";
@@ -291,13 +326,13 @@ public class BufrTables {
     if (tb != null) return tb;
 
     // always read 14 in
-    TableConfig tc14 = matchTableConfig(0, 0, 14, 0);
+    TableConfig tc14 = matchTableConfig(0, 0, 14, 0, -1);
     TableB result = readTableB(tc14.tableBname, tc14.tableBformat);
     tablesB.put(version14, result); // hash by standard name
 
     // everyone else uses 13 : cant override - do it in local if needed
     if (version < 14) {
-      TableConfig tc = matchTableConfig(0, 0, 13, 0);
+      TableConfig tc = matchTableConfig(0, 0, 13, 0, -1);
       TableB b13 = readTableB(tc.tableBname, tc.tableBformat);
       TableB.Composite bb = new TableB.Composite(version13, version13);
       bb.addTable(b13); // check in 13 first, so it overrides
@@ -319,12 +354,19 @@ public class BufrTables {
       readWmoTableB(ios, b);
     else if (format.equals("ncep"))
       readNcepTableB(ios, b);
-    else if (format.equals("ecmwf"))
+    else if (format.equals("ncep-nm")) {
+      Tables t = new Tables(b,null);
+      NcepMnemonic.read(ios, t);
+    } else if (format.equals("ecmwf"))
       readEcmwfTableB(ios, b);
     else if (format.equals("ukmet"))
       readBmetTableB(ios, b);
-    else
+    else if (format.equals("mel-bufr"))
       readMelbufrTableB(ios, b);
+    else {
+      System.out.printf("Unknown format= %s %n",format);
+      return null;
+    }
 
     tablesB.put(location, b);
     return b;
@@ -363,13 +405,13 @@ public class BufrTables {
 
       int fldidx = 0;
       try {
-        int classId = Integer.parseInt(flds[fldidx++]);
-        int xy = Integer.parseInt(flds[fldidx++]);
+        int classId = Integer.parseInt(flds[fldidx++].trim());
+        int xy = Integer.parseInt(flds[fldidx++].trim());
         String name = StringUtil.remove(flds[fldidx++], '"');
         String units = StringUtil.remove(flds[fldidx++], '"');
-        int scale = Integer.parseInt(clean(flds[fldidx++]));
-        int refVal = Integer.parseInt(clean(flds[fldidx++]));
-        int width = Integer.parseInt(clean(flds[fldidx++]));
+        int scale = Integer.parseInt(clean(flds[fldidx++].trim()));
+        int refVal = Integer.parseInt(clean(flds[fldidx++].trim()));
+        int width = Integer.parseInt(clean(flds[fldidx++].trim()));
 
         int x = xy / 1000;
         int y = xy % 1000;
@@ -411,6 +453,7 @@ public class BufrTables {
         b.addDescriptor(x, y, scale, refVal, width, split[7], split[6]);
       } catch (Exception e) {
         log.error("Bad table " + b.getName() + " entry=<" + line + ">", e);
+        continue;
       }
     }
     dataIS.close();
@@ -576,41 +619,43 @@ public class BufrTables {
     return t;
   } */
 
-  static public TableD getLocalTableD(BufrIdentificationSection ids) throws IOException {
-    TableConfig tc = matchTableConfig(ids);
-    if (tc == null) return null;
-    if (tc.tableDname == null) return null;
-    if (tc.tableDname.trim().length() == 0) return null;
-    
-    return readTableD(tc.tableDname, tc.tableDformat);
-  }
-
-  static public TableD getWmoTableD(BufrIdentificationSection ids) throws IOException {
+ static public TableD getWmoTableD(BufrIdentificationSection ids) throws IOException {
     TableD tb = tablesD.get(version14);
     if (tb != null) return tb;
 
     // always use version 14
-    TableConfig tc14 = matchTableConfig(0, 0, 14, 0);
+    TableConfig tc14 = matchTableConfig(0, 0, 14, 0, -1);
     TableD result = readTableD(tc14.tableDname, tc14.tableDformat);
     tablesD.put(version14, result); // hash by standard name
 
     return result;
   }
 
-  static public TableD readTableD(String location, String mode) throws IOException {
+  static public TableD readTableD(String location, String format) throws IOException {
+    if (location == null) return null;
+    if (location.trim().length() == 0) return null;
+
     TableD tb = tablesD.get(location);
     if (tb != null) return tb;
 
     InputStream ios = openStream(location);
     TableD d = new TableD(location, location);
-    if (mode.equals("wmo"))
+    if (format.equals("wmo"))
       readWmoTableD(ios, d);
-    else if (mode.equals("ncep"))
+    else if (format.equals("ncep"))
       readNcepTableD(ios, d);
-    else if (mode.equals("ecmwf"))
+    else if (format.equals("ncep-nm")) {
+      Tables t = new Tables(null, d);
+      NcepMnemonic reader = new NcepMnemonic();
+      NcepMnemonic.read(ios, t);
+    } else if (format.equals("ecmwf"))
       readEcmwfTableD(ios, d);
-    else
+    else if (format.equals("mel-bufr"))
       readMelbufrTableD(ios, d);
+    else {
+      System.out.printf("Unknown format= %s %n", format);
+      return null;
+    }
 
     tablesD.put(location, d);
     return d;
@@ -897,7 +942,7 @@ public class BufrTables {
     return ios;
   }
 
-  private static InputStream openStream(String location) throws IOException {
+  static InputStream openStream(String location) throws IOException {
     InputStream ios = null;
 
     if (location.startsWith("resource:")) {

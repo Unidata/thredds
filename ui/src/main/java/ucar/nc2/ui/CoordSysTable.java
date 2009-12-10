@@ -361,9 +361,8 @@ public class CoordSysTable extends JPanel {
     List<CoordinateSystem> csList = v.getCoordinateSystems();
     for (CoordinateSystem cs : csList) {
       buff.format("%s:", cs.getName());
-      if (GridCoordSys.isGridCoordSys(buff, cs)) {
-        GridCoordSys gcs = new GridCoordSys(cs, buff);
-        buff.format("GRID %s%n", (gcs.isComplete(v) ? " COMPLETE" : " NOT COMPLETE"));
+      if (GridCoordSys.isGridCoordSys(buff, cs, v)) {
+        buff.format("GRID OK%n");
       } else {
         buff.format(" NOT GRID");
       }
@@ -422,14 +421,12 @@ public class CoordSysTable extends JPanel {
         buff.append(cs.getName());
 
         Formatter gridBuff = new Formatter();
-        if (GridCoordSys.isGridCoordSys(gridBuff, cs)) {
-          GridCoordSys gcs = new GridCoordSys(cs, gridBuff);
-          if (gcs.isComplete(v))
+        if (GridCoordSys.isGridCoordSys(gridBuff, cs, v)) {
             addDataType("grid");
 
-        } //else if (PointDatasetDefaultHandler.isPointFeatureDataset(ds)) {
-          //addDataType("point");
-        //} 
+        } /* else if (PointDatasetDefaultHandler.isPointFeatureDataset(ds)) {
+          addDataType("point");
+        } */
 
       }
       setCoordSys(buff.toString());
@@ -515,7 +512,7 @@ public class CoordSysTable extends JPanel {
       setDomainRank(cs.getDomain().size());
       setRangeRank(cs.getCoordinateAxes().size());
 
-      if (GridCoordSys.isGridCoordSys(parseInfo, cs)) {
+      if (GridCoordSys.isGridCoordSys(parseInfo, cs, null)) {
         addDataType("grid");
       }
 

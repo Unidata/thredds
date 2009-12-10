@@ -52,27 +52,9 @@ public final class TableLookup {
     localOverride   // look in local first, then wmo
   }
 
-  //private static TableA tablelookup;
-  //private static TableA wmoTableA;
-  //private static TableB wmoTableB;
-  //private static TableD wmoTableD;
-  // private static String wmoTableName;
-
-  /* static private void init() {
-    if (tablelookup != null) return;
-    try {
-      tablelookup = BufrTables.getLookupTable();
-      wmoTableA = BufrTables.getWmoTableA();
-      //wmoTableB = BufrTables.getWmoTableB();
-      //wmoTableD = BufrTables.getWmoTableD();
-    } catch (IOException ioe) {
-      log.error("Filed to read BUFR table ", ioe);
-    }
-  } */
   static private final boolean showErrors = true;
 
   /////////////////////////////////////////
-  //private final String localTableName;
   private TableB localTableB;
   private TableD localTableD;
 
@@ -81,12 +63,16 @@ public final class TableLookup {
   public Mode mode = Mode.wmoOnly;
 
   public TableLookup(BufrIdentificationSection ids) throws IOException {
-    //init();
     this.wmoTableB = BufrTables.getWmoTableB(ids);
     this.wmoTableD = BufrTables.getWmoTableD(ids);
 
-    this.localTableB = BufrTables.getLocalTableB(ids);
-    this.localTableD = BufrTables.getLocalTableD(ids);
+    BufrTables.Tables tables = BufrTables.getLocalTables(ids);
+    if (tables == null)
+      System.out.println("HEY");
+    else {
+      this.localTableB = tables.b;
+      this.localTableD = tables.d;
+    }
   }
 
   public void setMode(Mode mode) {

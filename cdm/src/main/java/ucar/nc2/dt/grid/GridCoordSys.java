@@ -76,7 +76,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridCoordSys.class);
 
   /**
-   * Determine if this CoordinateSystem can be made into a GridCoordSys.
+   * Determine if this CoordinateSystem can be made into a GridCoordSys. Optionally for a given variable.
    * This currently assumes that the CoordinateSystem:
    * <ol>
    * <li> is georeferencing (cs.isGeoReferencing())
@@ -85,12 +85,13 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * <li> domain rank > 1
    * </ol>
    *
-   * @param cs    the CoordinateSystem to test
    * @param sbuff place information messages here, may be null
+   * @param cs    the CoordinateSystem to test
+   * @param v     can it be used for this variable; v may be null
    * @return true if it can be made into a GridCoordSys.
    * @see CoordinateSystem#isGeoReferencing
    */
-  public static boolean isGridCoordSys(Formatter sbuff, CoordinateSystem cs) {
+  public static boolean isGridCoordSys(Formatter sbuff, CoordinateSystem cs, VariableEnhanced v) {
     // must be at least 2 axes
     if (cs.getRankDomain() < 2) {
       if (sbuff != null) {
@@ -209,6 +210,13 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
      return false;
    } */
 
+    if (v != null) {
+      if (!cs.isComplete(v)) {
+        if (sbuff != null) sbuff.format(" NOT complete\n");
+        return false;
+      }
+    }
+
     return true;
   }
 
@@ -226,14 +234,11 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       v.getNameAndDimensions(sbuff, false, true);
       sbuff.format(" check CS %s: ", cs.getName());
     }
-    if (isGridCoordSys(sbuff, cs)) {
-      GridCoordSys gcs = new GridCoordSys(cs, sbuff);  // LOOK inefficient !!!
-      if (gcs.isComplete(v)) {
-        if (sbuff != null) sbuff.format(" OK\n");
-        return gcs;
-      } else {
-        if (sbuff != null) sbuff.format(" NOT complete\n");
-      }
+
+    if (isGridCoordSys(sbuff, cs, v)) {
+      GridCoordSys gcs = new GridCoordSys(cs, sbuff);
+      if (sbuff != null) sbuff.format(" OK\n");
+      return gcs;
     }
 
     return null;
@@ -293,7 +298,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     ProjectionImpl projOrig = cs.getProjection();
     if (projOrig != null) {
       proj = projOrig.constructCopy();
-      proj.setDefaultMapArea(getBoundingBox());
+      proj.setDefaultMapArea(getBoundingBox());  // LOOK too expensive for 2D
     }
 
     // LOOK: require 1D vertical - need to generalize to nD vertical.
@@ -1029,6 +1034,12 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
       // x,y may be 2D
       if (!(horizXaxis instanceof CoordinateAxis1D) || !(horizYaxis instanceof CoordinateAxis1D)) {
+        /*  could try to optimize this - just get cord=ners or something
+        CoordinateAxis2D xaxis2 = (CoordinateAxis2D) horizXaxis;
+        CoordinateAxis2D yaxis2 = (CoordinateAxis2D) horizYaxis;
+        MAMath.MinMax
+        */
+
         mapArea = new ProjectionRect(horizXaxis.getMinValue(), horizYaxis.getMinValue(),
                 horizXaxis.getMaxValue(), horizYaxis.getMaxValue());
 

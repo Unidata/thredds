@@ -142,5 +142,10 @@ public class TableD {
       return getId() - o.getId();
     }
 
+
+    public boolean isLocal() {
+      return ((x >= 48) || (y >= 192));
+    }
+
   }
 }

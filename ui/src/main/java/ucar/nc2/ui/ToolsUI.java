@@ -1951,7 +1951,7 @@ public class ToolsUI extends JPanel {
 
     BufrTableBPanel(PreferencesExt p) {
       super(p, "tableB:", true, false);
-      modes = new JComboBox(new String[] {"mel-bufr","ncep","ecmwf","wmo","ukmet"});
+      modes = new JComboBox(new String[] {"mel-bufr","ncep","ncep-nm","ecmwf","wmo","ukmet"});
       buttPanel.add(modes);
 
       JButton accept = new JButton("Accept");
@@ -2011,7 +2011,7 @@ public class ToolsUI extends JPanel {
 
     BufrTableDPanel(PreferencesExt p) {
       super(p, "tableD:", true, false);
-      modes = new JComboBox(new String[] {"mel-bufr","ncep","ecmwf","wmo","ukmet"});
+      modes = new JComboBox(new String[] {"mel-bufr","ncep","ncep-nm","ecmwf","wmo","ukmet"});
       buttPanel.add(modes);
 
       bufrTable = new BufrTableDViewer(prefs, buttPanel);

@@ -375,6 +375,11 @@ public class BufrTableDViewer extends JPanel {
       return list.size();
     }
 
+
+    public boolean isLocal() {
+      return dds.isLocal();
+    }
+
   }
 
 }

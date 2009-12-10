@@ -819,14 +819,14 @@ public class Message {
 
   public String getCategoryFullName() throws IOException {
     try {
-      String catName = lookup.getDataCategory(ids.getCategory());
+      String catName = getCategoryName();
       String subcatName = TableDataSubcategories.getSubCategory(ids.getCategory(), ids.getSubCategory());
-      //String subcatName = ids.getSubCategory_idName(ids.getCategory(), ids.getSubCategory());
       boolean hasSubName = !subcatName.equalsIgnoreCase("Unknown");
+
       if (hasSubName)
-        return catName + " / " + subcatName + " (" + ids.getCategory() + "." + ids.getSubCategory() + "." + ids.getLocalSubCategory() + ")";
+        return getCategoryNo() + "="+ catName + " / " + subcatName;
       else
-        return catName + " (" + ids.getCategory() + "." + ids.getSubCategory() + "." + ids.getLocalSubCategory() + ")";
+        return getCategoryNo() + "="+ catName;
 
     } catch (Exception e) {
       e.printStackTrace();

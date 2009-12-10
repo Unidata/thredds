@@ -210,7 +210,7 @@ public class BufrTableBViewer extends JPanel {
           writeDiff(BufrTables.getWmoTableB(14), currTable, out);
           fos.close();
           JOptionPane.showMessageDialog(BufrTableBViewer.this, filename + " successfully written");
-          
+
         } catch (Exception ex) {
           JOptionPane.showMessageDialog(BufrTableBViewer.this, "ERROR: " + ex.getMessage());
           ex.printStackTrace();
@@ -219,6 +219,32 @@ public class BufrTableBViewer extends JPanel {
     };
     BAMutil.setActionProperties(diffAction, "dd", "write diff", false, 'C', -1);
     BAMutil.addActionToContainer(buttPanel, diffAction);
+
+    AbstractAction localAction = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        try {
+          String defloc = "C:/dev/tds/thredds/bufrTables/src/main/resources/resources/bufrTables/local";
+          if (fileChooser == null)
+            fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
+
+          String filename = fileChooser.chooseFilenameToSave(defloc + ".csv");
+          if (filename == null) return;
+          File file = new File(filename);
+          FileOutputStream fos = new FileOutputStream(file);
+
+          Formatter out = new Formatter(fos);
+          writeLocal(currTable, out);
+          fos.close();
+          JOptionPane.showMessageDialog(BufrTableBViewer.this, filename + " successfully written");
+
+        } catch (Exception ex) {
+          JOptionPane.showMessageDialog(BufrTableBViewer.this, "ERROR: " + ex.getMessage());
+          ex.printStackTrace();
+        }
+      }
+    };
+    BAMutil.setActionProperties(localAction, "dd", "write local", false, 'C', -1);
+    BAMutil.addActionToContainer(buttPanel, localAction);
 
     // the info window
     compareTA = new TextHistoryPane();
@@ -317,7 +343,24 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
         int f = (fxy & 0xC000) >> 14;
         int x  = (fxy & 0x3F00) >> 8;
         int y  = fxy & 0xFF;
-        out.format("%d,%2d%03d,%s,%s,%d,%d,%d%n",x,x,y,d2.getName(), d1.getUnits(), d1.getScale(), d1.getRefVal(), d1.getWidth());
+        out.format("%d,%2d%03d,\"%s\",%s,%d,%d,%d%n",x,x,y,d2.getName(), d1.getUnits(), d1.getScale(), d1.getRefVal(), d1.getWidth());
+      }
+    }
+    out.flush();
+  }
+
+  private void writeLocal(TableB t, Formatter out) {
+    out.format("#%n# BUFR local only from %s %n#%n", t.getName());
+    out.format("Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_Bits%n");
+    List<TableB.Descriptor> listDesc = new ArrayList<TableB.Descriptor>(t.getDescriptors());
+    Collections.sort(listDesc);
+    for (TableB.Descriptor d1 : listDesc) {
+      if (d1.isLocal()) {
+        short fxy = d1.getId();
+        int f = (fxy & 0xC000) >> 14;
+        int x  = (fxy & 0x3F00) >> 8;
+        int y  = fxy & 0xFF;
+        out.format("%d,%d%03d,\"%s\",%s,%d,%d,%d%n",x,x,y,d1.getName(), d1.getUnits(), d1.getScale(), d1.getRefVal(), d1.getWidth());
       }
     }
     out.flush();
@@ -396,7 +439,7 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
       loadVariant("ncep-v13", BufrTables.readTableB("C:/dev/tds/thredds/bufrTables/src/main/sources/ncep/bufrtab.TableB_STD_0_13", "ncep"));
       loadVariant("ncep-v14", BufrTables.readTableB("C:/dev/tds/thredds/bufrTables/src/main/sources/ncep/bufrtab.TableB_STD_0_14", "ncep"));
       loadVariant("ecmwf-v13", BufrTables.readTableB("C:/dev/tds/thredds/bufrTables/src/main/sources/ecmwf/B0000000000098013001.TXT", "ecmwf"));
-      loadVariant("bmet-v13", BufrTables.readTableB("C:/dev/tds/thredds/bufrTables/src/main/sources/ukmet/BUFR_B_080731.xml", "bmet"));
+      loadVariant("ukmet-v13", BufrTables.readTableB("C:/dev/tds/thredds/bufrTables/src/main/sources/ukmet/BUFR_B_080731.xml", "ukmet"));
     } catch (IOException e) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }

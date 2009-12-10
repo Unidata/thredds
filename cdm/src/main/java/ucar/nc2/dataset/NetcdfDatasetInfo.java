@@ -103,10 +103,8 @@ public class NetcdfDatasetInfo {
   public GridCoordSys getGridCoordSys(VariableEnhanced ve) {
     List<CoordinateSystem> csList = ve.getCoordinateSystems();
     for (CoordinateSystem cs : csList) {
-      if (GridCoordSys.isGridCoordSys(null, cs)) {
-        GridCoordSys gcs = new GridCoordSys(cs, null);
-        if (gcs.isComplete(ve))
-          return gcs;
+      if (GridCoordSys.isGridCoordSys(null, cs, ve)) {
+        return new GridCoordSys(cs, null);
       }
     }
     return null;
@@ -153,7 +151,7 @@ public class NetcdfDatasetInfo {
     List<CoordinateSystem> csList = ds.getCoordinateSystems();
     for (CoordinateSystem cs : csList) {
       Element csElem;
-      if (GridCoordSys.isGridCoordSys(null, cs)) {
+      if (GridCoordSys.isGridCoordSys(null, cs, null)) {
         GridCoordSys gcs = new GridCoordSys(cs, null);
         csElem = new Element("gridCoordSystem");
         csElem.setAttribute("name", cs.getName());
