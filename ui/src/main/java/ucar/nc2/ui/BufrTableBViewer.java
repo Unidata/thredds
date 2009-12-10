@@ -327,6 +327,19 @@ public class BufrTableBViewer extends JPanel {
 
   }
 
+  private boolean checkDiff(TableB.Descriptor want) {
+    if (refTable == null) return true;
+    for (TableB.Descriptor d1 : refTable.getDescriptors()) {
+      if (d1.getId() != want.getId()) continue;
+      if (d1.getScale() != want.getScale()) return true;
+      if (d1.getRefVal() != want.getRefVal()) return true;
+      if (d1.getWidth() != want.getWidth()) return true;
+      return false;
+    }
+    return true;
+  }
+
+
   /*
 Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_Bits,CREX_Unit,CREX_Scale,CREX_DataWidth
 20,20009,General weather indicator (TAF/METAR),Code table,0,0,4,Code table,0,2
@@ -460,16 +473,17 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
   private void showVariants(DdsBean bean) {
     if (allVariants == null) loadVariants();
     List<DdsBean> all = allVariants.get(bean.getId());
-    List<DdsBean> dds = new ArrayList<DdsBean>(10);
-    dds.add(bean);
-    if (all != null) dds.addAll(all);
-    variantTable.setBeans(dds);
+    List<DdsBean> ddsBean = new ArrayList<DdsBean>(10);
+    ddsBean.add(bean);
+    if (all != null) ddsBean.addAll(all);
+    variantTable.setBeans(ddsBean);
   }
 
   public class DdsBean {
     TableB.Descriptor dds;
     String source;
     String udunits;
+    boolean checkDiff, isDiff;
 
     // no-arg constructor
     public DdsBean() {
@@ -532,6 +546,14 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
 
     public boolean isLocal() {
       return dds.isLocal();
+    }
+
+    public boolean isDiff() {
+      if (!checkDiff && refTable != null) {
+        isDiff = checkDiff(dds);
+        checkDiff = true;
+      }
+      return isDiff;
     }
 
     public int getUsed() {

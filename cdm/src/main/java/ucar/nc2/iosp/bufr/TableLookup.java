@@ -67,9 +67,7 @@ public final class TableLookup {
     this.wmoTableD = BufrTables.getWmoTableD(ids);
 
     BufrTables.Tables tables = BufrTables.getLocalTables(ids);
-    if (tables == null)
-      System.out.println("HEY");
-    else {
+    if (tables != null) {
       this.localTableB = tables.b;
       this.localTableD = tables.d;
     }

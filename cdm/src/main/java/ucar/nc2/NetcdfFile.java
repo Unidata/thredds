@@ -147,7 +147,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
     try {
-      URL url = NetcdfFile.class.getResource("/resources/bufrTables/local/tablelookup.txt"); // only load if bufrTables.jar is present
+      URL url = NetcdfFile.class.getResource("/resources/bufrTables/local/tablelookup.csv"); // only load if bufrTables.jar is present
       //log.info("load BUFR URL= "+url);
       if (null != url)
         registerIOProvider("ucar.nc2.iosp.bufr.BufrIosp");

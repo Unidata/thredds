@@ -53,7 +53,10 @@ public class DataDescriptorTreeConstructor {
     root = new DataDescriptor();
 
     // convert ids to DataDescriptor
-    List<DataDescriptor> keys = convert(dds.getDataDescriptors(), lookup);
+    List<DataDescriptor> keys = decode(dds.getDataDescriptors(), lookup);
+
+    // unwind replications inside compound (!!??)
+    keys = preflatten(keys);
 
     // make replicated keys into subKeys, constituting a tree
     List<DataDescriptor> tree = replicate(keys);
@@ -72,7 +75,7 @@ public class DataDescriptorTreeConstructor {
   }
 
   // convert ids to DataDescriptors, expand table D
-  private List<DataDescriptor> convert(List<Short> keyDesc, TableLookup lookup) {
+  private List<DataDescriptor> decode(List<Short> keyDesc, TableLookup lookup) {
     if (keyDesc == null) return null;
 
     List<DataDescriptor> keys = new ArrayList<DataDescriptor>();
@@ -84,7 +87,7 @@ public class DataDescriptorTreeConstructor {
         if (subDesc == null)
           dd.bad = true;
         else
-          dd.subKeys = convert(subDesc, lookup);
+          dd.subKeys = decode(subDesc, lookup);
       }
     }
     return keys;
@@ -135,6 +138,57 @@ public class DataDescriptorTreeConstructor {
     }
 
     return tree;
+  }
+
+  /* Use case:
+   3-62-1  : HEADR
+      0-4-194 : FORECAST TIME
+      0-1-205 : STATION NUMBER -- 6 DIGITS
+      0-1-198 : REPORT IDENTIFIER
+      0-5-2   : Latitude (coarse accuracy)
+      0-6-2   : Longitude (coarse accuracy)
+      0-10-194: GRID-POINT ELEVATION
+      0-2-196 : CLASS OF PROFILE OUTPUT
+    3-60-2  :
+      1-01-000: replication
+      0-31-1  : Delayed descriptor replication factor
+    3-62-2  : PROFILE
+      0-10-4  : Pressure
+      0-12-1  : Temperature/dry-bulb temperature
+      0-11-3  : u-component
+
+     where the 3-62-2 should be replicated.
+     This is from NCEP bufrtab.ETACLS1. Not sure if others use this idiom.
+   */
+  // preflatten replications inside a top level compound (!)
+  private List<DataDescriptor> preflatten(List<DataDescriptor> tree) {
+    List<DataDescriptor> result = new ArrayList<DataDescriptor>(tree.size());
+    for (DataDescriptor key : tree) {
+      boolean preflatten = false;
+
+      if ((key.f == 3) && (key.subKeys != null)) {
+        List<DataDescriptor> subkeys = key.subKeys;
+        for (int i=0; i<subkeys.size();i++) {
+          DataDescriptor subkey = subkeys.get(i);
+          if (subkey.f == 1)  {
+            int need = subkey.x;
+            int have = subkeys.size() - i - 1;
+            if (subkey.y == 0) have--;
+            if (need > have) {
+              preflatten = true;
+              // System.out.printf("preflatten replication %d > %d%n", need, have);
+            }
+          }
+        }
+      }
+
+      if (preflatten)
+        result.addAll(key.subKeys);
+      else
+       result.add(key);
+
+    }
+    return result;
   }
 
   // flatten the compounds (type 3); but dont remove bad ones

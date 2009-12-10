@@ -2,12 +2,12 @@ hash, header, nMess, nObs, complete, center, table, edition, category , problem,
 Oxda41f28b, JUGE86 KKCI,10,10, false,7.8, 0.12.0,3,13.1,exception,nesting
 Oxda42c8e4, JUHE00 KKCI,5,5, false,7.8, 0.12.0,3,13.2,exception,nesting
 Oxda439f3d, JUIE00 KKCI,5,5, false,7.8, 0.12.0,3,13.3,exception,nesting
-Ox4438144a, JUSA41 KWNO,77520,439280, false,7.3, 0.12.0,3,241,bitCount,
+Ox4438144a, JUSA41 KWNO,77520,439280, false,7.3, 0.12.0,3,241,,
 Oxd2cf0e5c, ISAI01 SBBR,243,9792, false,255, 0.13.0,3,0,bitCount,
 Oxfa179aa4, IUST53 KWBC,106,375, true,8, 0.13.0,3,2,bitCount,NWS error
 Ox348304f4, IUSV53 KWBC,106,375, true,8, 0.13.0,3,2,bitCount,NWS error
 Oxf0bd66bc, IUSZ54 KWBC,105,352, true,8, 0.13.0,3,2,bitCount,NWS error
-Oxa3cf9007, JUTX52 KNES,23,1150, true,160, 0.11.0,3,5.89,bitCount,
+Oxa3cf9007, JUTX52 KNES,23,1150, true,160, 0.11.0,3,5.89,bitCount,may have extra bytes at end - reads ok
 Oxa8138fa6, JUSA41 KWBC,26040,317688, false,7.3, 0.12.0,3,243,,
 Oxd508900d, INAC14 RJTD,498,73110, true,34.24, 0.13.0,4, 3.3.3 ,,
 Oxd50c4ef5, INAS08 NZGP,237,34740, true,204.101, 0.13.0,4, 3.3.3 ,,

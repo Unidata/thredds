@@ -53,10 +53,9 @@ import java.io.IOException;
 class ConstructNC {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ConstructNC.class);
   static final String TIME_NAME = "time";
+  static private final boolean warnUnits = false;
 
   private ucar.nc2.NetcdfFile ncfile;
-  //private FeatureType ftype;
-  private int nobs;
 
   Sequence recordStructure;
   private Message proto;
@@ -64,7 +63,6 @@ class ConstructNC {
   ConstructNC(Message proto, int nobs, ucar.nc2.NetcdfFile nc) throws IOException {
     this.proto = proto;
     this.ncfile = nc;
-    this.nobs = nobs;
 
     //dkeyRoot = dds.getDescriptorRoot();
     //int nbits = dds.getTotalBits();
@@ -306,7 +304,7 @@ class ConstructNC {
     }
 
     if (dataDesc.units == null)
-      log.warn("dataDesc.units == null for " + name);
+      if (warnUnits) log.warn("dataDesc.units == null for " + name);
     else {
       if (dataDesc.units.equalsIgnoreCase("Code_Table") || dataDesc.units.equalsIgnoreCase("Code Table"))
         v.addAttribute(new Attribute("units", "CodeTable " + dataDesc.getFxyName()));
