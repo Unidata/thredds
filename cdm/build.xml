@@ -29,6 +29,7 @@
   <property name="timingSrc.dir" location="${root.dir}/src/timing/java"/>
   <property name="commonSrc.dir" location="${root.dir}/../common/src/java"/>
   <property name="resources.dir" location="${root.dir}/src/main/resources"/>
+  <property name="bufrTables.dir" location="${root.dir}/../bufrTables/src/main/resources/"/>
   <property name="doc.dir" location="${root.dir}/doc"/>
   <property name="lib.dir" location="${root.dir}/../lib"/>
 
@@ -50,7 +51,7 @@
   <!-- property name="bzip2.jar" value="bzip2.jar"/ -->
   <!-- property name="gnu-regexp.jar" value="gnu-regexp-1.1.4.jar"/ -->
   <property name="bounce.jar" value="bounce-0.14.jar"/>
-  <property name="bufrTables.jar" value="bufrTables-1.5.jar"/>
+  <property name="bufrTables.jar" value="bufrTables-2.0.jar"/>
   <property name="ehcache.jar" value="ehcache-1.6.0.jar"/>
   <property name="grib.jar" value="grib-8.0.jar"/>
   <property name="httpclient.jar" value="commons-httpclient-3.1.jar"/>
@@ -261,6 +262,13 @@
       <patternset refid="sources"/>
       <classpath refid="compile.classpath"/>
     </javac>
+  </target>
+
+  <!-- make bufr Tables jar -->
+  <target name="makeBufrTables" description="make BUFR Tables jar">
+    <jar jarfile="${lib.dir}/release/${bufrTables.jar}" duplicate="preserve">
+      <zipfileset dir="${bufrTables.dir}/resources" prefix="resources"/>
+    </jar>
   </target>
 
   <!-- make library jars -->
@@ -757,7 +765,7 @@
 
   </target>
 
-  <target name="makeAll" depends="makeCore, makeMain, makeMainComplete, makeUI, makeAllzip, makeToolsUI" description="create netcdfAll zip file"/>
+  <target name="makeAll" depends="makeCore, makeMain, makeBufrTables, makeMainComplete, makeUI, makeAllzip, makeToolsUI" description="create netcdfAll zip file"/>
 
   <property name="jarResourcesOptional" value="resourcesOptional-${release.version}.jar"/>
   <target name="makeResourcesOptional" description="make resourcesOptional.jar">
