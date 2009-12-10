@@ -159,6 +159,10 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       return false;
     }
 
+    List<CoordinateAxis> testAxis = new ArrayList<CoordinateAxis>();
+    testAxis.add(xaxis);
+    testAxis.add(yaxis);
+
     //int countRangeRank = 2;
 
     CoordinateAxis z = cs.getHeightAxis();
@@ -170,6 +174,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       }
       return false;
     }
+    if (z != null)
+      testAxis.add(z);
 
     CoordinateAxis t = cs.getTaxis();
     if ((t != null) && !(t instanceof CoordinateAxis1D) && (t.getRank() != 0)) {
@@ -203,15 +209,19 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
         return false;
       }
     }
-    // if (t != null) countRangeRank++;
+    if (t != null)
+      testAxis.add(t);
 
-    /* if (cs.getRankDomain() < countRangeRank) {
-     if (sbuff != null) sbuff.append(" domain rank "+ cs.getRankDomain()+" < range rank "+countRangeRank+" \n");
-     return false;
-   } */
 
-    if (v != null) {
-      if (!cs.isComplete(v)) {
+    if (v != null) { // test to see that v doesnt have extra dimensions. LOOK RELAX THIS
+      List<Dimension> testDomain = new ArrayList<Dimension>();
+      for (CoordinateAxis axis : testAxis) {
+        for (Dimension dim : axis.getDimensions()) {
+          if (!testDomain.contains(dim))
+            testDomain.add(dim);
+        }
+      }
+      if (!CoordinateSystem.isSubset(v.getDimensionsAll(), testDomain)) {
         if (sbuff != null) sbuff.format(" NOT complete\n");
         return false;
       }

@@ -15,6 +15,9 @@ center,subcenter,master,local,cat,tableB,tableBformat,                          
 0,     0,        13,    0,    -1, resource:/resources/bufrTables/wmo/tableB.v13.csv, wmo    , , ,
 #
 # NCEP
+# see http://www.emc.ncep.noaa.gov/mmb/data_processing/bufrtab_tablea.htm#1
+# also http://www.emc.ncep.noaa.gov/mmb/data_processing/bufrtab_tabled.htm
+# also http://www.nco.ncep.noaa.gov/pmb/codes/nwprod/parm/
 7,    3,       -1,    -1,    241, resource:/resources/bufrTables/local/bufrtab.ETACLS1, ncep-nm, , ,
 7,    3,       -1,    -1,    242, resource:/resources/bufrTables/local/bufrtab.NGMCLS1, ncep-nm, , ,
 7,    3,       -1,    -1,    243, resource:/resources/bufrTables/local/bufrtab.GFSCLS1, ncep-nm, , ,
