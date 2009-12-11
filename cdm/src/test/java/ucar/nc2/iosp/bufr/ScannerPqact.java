@@ -267,15 +267,11 @@ public class ScannerPqact extends Scanner {
       if (first == null) {
         first = m;
       } else if (m.hashCode() != first.hashCode()) {
-        try {
           System.out.println(" DDS doesnt match pqact= " + pats);
           first.dumpHeader(out);
           m.dumpHeader(out);
           System.out.println();
           badmatch++;
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
         return false;
       }
       count++;

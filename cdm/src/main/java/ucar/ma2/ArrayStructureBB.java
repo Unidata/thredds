@@ -414,8 +414,6 @@ public class ArrayStructureBB extends ArrayStructure {
     int offset = calcOffsetSetOrder(recnum, m);
     int count = m.getSize();
     int index = bbuffer.getInt(offset);
-    if (index > heap.size())
-    System.out.println("HEY");
     String[] data = (String[]) heap.get(index);
 
     for (int i = 0; i < count; i++)

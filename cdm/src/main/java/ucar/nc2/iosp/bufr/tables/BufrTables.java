@@ -382,12 +382,12 @@ public class BufrTables {
       if (line.startsWith("#")) continue;
       count++;
 
-      if (count == 1) {
+      if (count == 1) { // skip first line - its the header
         if (showReadErrs) System.out.println("header line == " + line);
         continue;
       }
 
-      // commas embedded in quotes - replace with blanks for now
+      // any commas that are embedded in quotes - replace with blanks for now so split works
       int pos1 = line.indexOf('"');
       if (pos1 >= 0) {
         int pos2 = line.indexOf('"', pos1 + 1);
@@ -408,7 +408,7 @@ public class BufrTables {
         int classId = Integer.parseInt(flds[fldidx++].trim());
         int xy = Integer.parseInt(flds[fldidx++].trim());
         String name = StringUtil.remove(flds[fldidx++], '"');
-        String units = StringUtil.remove(flds[fldidx++], '"');
+        String units = StringUtil.filter(flds[fldidx++], " %+-_/()*");  // alphanumeric plus these chars
         int scale = Integer.parseInt(clean(flds[fldidx++].trim()));
         int refVal = Integer.parseInt(clean(flds[fldidx++].trim()));
         int width = Integer.parseInt(clean(flds[fldidx++].trim()));

@@ -118,10 +118,10 @@ public class BufrTableBViewer extends JPanel {
         Formatter out = new Formatter();
         DdsBean csb = (DdsBean) ddsTable.getSelectedBean();
         if (usedDds != null) {
-          List<String> list = usedDds.get(csb.getId());
+          List<Message> list = usedDds.get(csb.getId());
           if (list != null) {
-            for (String use : list)
-              out.format(" %s%n", use);
+            for (Message use : list)
+              use.dumpHeaderShort(out);
           }
         }
         compareTA.setText(out.toString());
@@ -137,7 +137,7 @@ public class BufrTableBViewer extends JPanel {
         try {
           Formatter out = new Formatter();
           if (refTable == null)
-            refTable = BufrTables.getWmoTableB(13);
+            refTable = BufrTables.getWmoTableB(14);
           compare(currTable, refTable, out);
 
           compareTA.setText(out.toString());
@@ -177,6 +177,7 @@ public class BufrTableBViewer extends JPanel {
     AbstractAction refAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         refTable = currTable;
+        loadVariant(refTable.getName(), refTable);
       }
     };
     BAMutil.setActionProperties(refAction, "Dataset", "useAsRef", false, 'C', -1);
@@ -298,7 +299,7 @@ public class BufrTableBViewer extends JPanel {
     for (TableB.Descriptor d1 : listDesc) {
       TableB.Descriptor d2 = t2.getDescriptor(d1.getId());
       if (d2 == null)
-        out.format("**No key %s in second table %n", d1.getFxy());
+        out.format("**No key %s in second table; local=%s%n", d1.getFxy(), d1.isLocal());
       else {
         if (!skipNames) {
           if (!equiv(d1.getName(), d2.getName()))
@@ -318,25 +319,26 @@ public class BufrTableBViewer extends JPanel {
     }
 
     // see whats missing
+    out.format("%n Missing in first table %n");
     for (TableB.Descriptor d2 : t2.getDescriptors()) {
       TableB.Descriptor d1 = t1.getDescriptor(d2.getId());
       if (d1 == null) {
-        out.format(" **No key %s in first table %n", d2.getFxy());
+        out.format("   %s%n", d2.getFxy());
       }
     }
 
   }
 
-  private boolean checkDiff(TableB.Descriptor want) {
-    if (refTable == null) return true;
+  private String checkDiff(TableB.Descriptor want) {
+    if (refTable == null) return "n/a";
     for (TableB.Descriptor d1 : refTable.getDescriptors()) {
       if (d1.getId() != want.getId()) continue;
-      if (d1.getScale() != want.getScale()) return true;
-      if (d1.getRefVal() != want.getRefVal()) return true;
-      if (d1.getWidth() != want.getWidth()) return true;
-      return false;
+      if (d1.getScale() != want.getScale()) return "diff";
+      if (d1.getRefVal() != want.getRefVal()) return "diff";
+      if (d1.getWidth() != want.getWidth()) return "diff";
+      return "";
     }
-    return true;
+    return want.isLocal() ? "local" : "new";
   }
 
 
@@ -406,10 +408,10 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
 
   //////////////////////////////////////////////////////////
 
-  private HashMap<Short, List<String>> usedDds = null;
+  private HashMap<Short, List<Message>> usedDds = null;
 
   private void showUsed() throws IOException {
-    usedDds = new HashMap<Short, List<String>>(3000);
+    usedDds = new HashMap<Short, List<Message>>(3000);
     scanFileForDds("C:/data/formats/bufr3/asampleAll.bufr");
     scanFileForDds("C:/data/formats/bufr3/unique.bufr");
   }
@@ -421,16 +423,16 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
     while (scan.hasNext()) {
       Message m = scan.next();
       if (m == null) continue;
-      String src = m.getHeader().trim() +"("+Integer.toHexString(m.hashCode())+")";
-      setDataDescriptors(src, m.getRootDataDescriptor());
+      // String src = m.getHeader().trim() +"("+Integer.toHexString(m.hashCode())+")";
+      setDataDescriptors(m, m.getRootDataDescriptor());
     }
   }
 
-  private void setDataDescriptors(String src, DataDescriptor dds) {
+  private void setDataDescriptors(Message src, DataDescriptor dds) {
     for (DataDescriptor key : dds.getSubKeys()) {
-      List<String> list = usedDds.get(key.getFxy());
+      List<Message> list = usedDds.get(key.getFxy());
       if (list == null) {
-        list = new ArrayList<String>();
+        list = new ArrayList<Message>();
         usedDds.put(key.getFxy(), list);
       }
       if (!list.contains(src))
@@ -445,7 +447,7 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
   private HashMap<Short, List<DdsBean>> allVariants = null;
 
   private void loadVariants() {
-    allVariants = new HashMap<Short, List<DdsBean>>();
+    if (allVariants == null) allVariants = new HashMap<Short, List<DdsBean>>();
     try {
       loadVariant("wmo-v14", BufrTables.getWmoTableB(14));
       loadVariant("ours-v13", BufrTables.getWmoTableB(13));
@@ -459,6 +461,8 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
   }
 
   private void loadVariant(String src, TableB tableB) {
+    if (allVariants == null) allVariants = new HashMap<Short, List<DdsBean>>();
+
     List<TableB.Descriptor> listDesc = new ArrayList<TableB.Descriptor>(tableB.getDescriptors());
     for (TableB.Descriptor d : listDesc) {
       List<DdsBean> list = allVariants.get(d.getId());
@@ -483,7 +487,8 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
     TableB.Descriptor dds;
     String source;
     String udunits;
-    boolean checkDiff, isDiff;
+    boolean checkDiff;
+    String isDiff;
 
     // no-arg constructor
     public DdsBean() {
@@ -548,7 +553,7 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
       return dds.isLocal();
     }
 
-    public boolean isDiff() {
+    public String getDiff() {
       if (!checkDiff && refTable != null) {
         isDiff = checkDiff(dds);
         checkDiff = true;
@@ -558,7 +563,7 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
 
     public int getUsed() {
       if (usedDds == null) return 0;
-      List<String> list = usedDds.get(dds.getId());
+      List<Message> list = usedDds.get(dds.getId());
       if (list == null) return 0;
       return list.size();
     }

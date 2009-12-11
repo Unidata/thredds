@@ -1,0 +1,33 @@
+#
+# BUFR TableLookup
+# purpose:
+# -Designates the latest WMO table, basically the default table so all the other table descriptors
+# don't have to be loaded. The other tables are diffs between itself and the latestWMO.
+# -If center id is 7,8,9, the category is checked for special cases 241-254
+# -Use for Local centers tables
+#
+# Used to designate latest WMO == 0 Bufr table
+  0 B4M-000-013
+#
+#
+   7    B4L-007-013-ABD.diff
+#  NAM/RUC Soundings
+   7241	bufrtab.ETACLS1
+#  7241	bufrtab.RUCCLS1 NCEP Conflict here
+#  	NGM Soundings
+   7242	bufrtab.NGMCLS1
+#	GFS Soundings
+   7243	bufrtab.GFSCLS1
+   8    B4L-007-013-ABD.diff
+   9    B4L-007-013-ABD.diff
+# Brazil
+  46    B4L-046-013-ABD.diff
+ 255    B4L-046-013-ABD.diff
+# FNMOC
+  58    B4L-058-013-B.diff
+# FSL
+  59    B3L-059-003-ABD.diff
+# ECMWF
+  98    B4L-098-013-ABD.diff  
+# Eumetsat
+ 254    B3L-254-011-ABD.diff

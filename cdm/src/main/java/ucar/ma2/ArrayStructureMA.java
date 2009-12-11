@@ -269,8 +269,6 @@ public class ArrayStructureMA extends ArrayStructure {
         data = Array.factory(v.getDataType(), combine(shape, v.getShape()));
 
       StructureMembers.Member m = sm.findMember(v.getShortName());
-      if (m == null)
-        System.out.println("HEY");
       m.setDataArray(data);
     }
 

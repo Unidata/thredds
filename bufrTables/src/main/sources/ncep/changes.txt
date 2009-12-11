@@ -1,0 +1,84 @@
+NCEP v14 vs WMO v14
+
+ 0-7-8 refVal 10000 != -10000 
+
+ 0-11-49 scale 1 != 0 
+
+ 0-22-39 scale 12 != 13
+
+
+units:
+
+ 0-13-44 units
+   C
+   K
+
+ 0-14-45 units
+   W m**-2 sr**-1
+   W m-2 sr-1 cm-1
+
+ 0-24-11 units
+   mSv/mSv (NCEP)
+   mSv*/** (WMO)
+   mSv (ECMWF)
+
+-
+
+Compare C:/dev/tds/thredds/bufrTables/src/main/sources/ncep/bufrtab.TableD_STD_0_14 and /resources/bufrTables/wmo/B_TableD.csv 
+ **key 3-1-48 size 15 != 14 
+   0-02-104, 0-02-121, 0-02-113, 0-02-026, 0-02-027, 0-02-111, 0-02-140, 2-02-127, 0-01-013, 2-02-000, 2-02-126, 0-07-001, 2-02-000, 0-25-010, 0-21-064,
+   0-02-104, 0-02-121, 0-02-113, 0-02-026, 0-02-027, 0-02-111, 0-02-140, 2-02-127, 0-01-013, 2-02-126, 0-07-001, 2-02-000, 0-25-010, 0-21-064,
+ **key 3-12-11 size 10 != 9 
+   2-02-131, 2-01-149, 0-04-006, 2-01-000, 2-02-000, 2-02-126, 0-10-002, 2-02-000, 0-05-043, 0-05-053,
+   2-02-131, 2-01-149, 0-04-006, 2-01-000, 2-02-126, 0-10-002, 2-02-000, 0-05-043, 0-05-053,
+
+
+---
+
+Compare
+ C:/dev/tds/thredds/bufrTables/src/main/sources/ncep/bufrtab.TableB_LOC_0_7_1
+ resource:/resources/bufrTables/wmo/TableB-121109.v14.csv 
+
+ 0-2-191 units
+   %
+   Code table
+
+ 0-2-191 scale 7 != 4 
+
+ 0-7-11 scale 14 != 30 
+
+ 0-14-44 units
+   W m**-2 sr**-1
+   Wm-2sr-1cm
+
+ 0-15-21 scale 0 != 11 
+ 0-15-21 scale 10 != 31 
+ 0-15-29 scale 0 != 9 
+ 0-15-29 scale 10 != 30 
+
+ 0-20-59 scale 0 != -1 
+ 0-20-59 scale 10 != 9 
+ 0-20-60 scale 0 != -1 
+ 0-20-121 scale 0 != 3 
+
+ 0-20-126 units
+   Code table
+   Numeric
+
+ 0-20-126 scale 8 != 23 
+
+ 0-40-15 refVal 0 != -100 
+ 0-40-15 scale 16 != 8 
+
+ 0-40-18 units
+   W/m**2/sr/m**-1
+   W/(m2 sr m-1)
+
+ 0-40-19 units
+   W/m**2/sr/m**-1
+   W/(m2 sr m-1)
+
+There are now only two non-local entries in yours that are not in wmo:
+
+**No key 0-12-158 in second table; local=false
+**No key 0-12-159 in second table; local=false

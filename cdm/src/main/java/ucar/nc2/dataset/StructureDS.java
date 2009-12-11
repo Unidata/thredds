@@ -412,9 +412,6 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
         log.warn("StructureDataDS.convert Cant find member " + m.getName());
         continue;
       }
-      if (m.getName().startsWith("first"))
-        System.out.println("HEY");
-
       StructureMembers.Member mResult = smResult.findMember(m.getName());
 
       if (v2 instanceof VariableDS) {

@@ -98,11 +98,11 @@ public class Message {
     return dds.getNumberDatasets();
   }
 
-  public String getCategoryName() throws IOException {
+  public String getCategoryName() {
     return lookup.getDataCategory( ids.getCategory());
   }
 
-  public String getCategoryNo() throws IOException {
+  public String getCategoryNo() {
     String result = ids.getCategory() + "." + ids.getSubCategory();
     if (ids.getLocalSubCategory() >= 0) result += "." + ids.getLocalSubCategory();
     return result;
@@ -835,7 +835,7 @@ public class Message {
     }
   }
 
-  public void dumpHeader(Formatter out) throws IOException {
+  public void dumpHeader(Formatter out) {
 
     out.format(" BUFR edition %d time= %s wmoHeader=%s %n", is.getBufrEdition(), getReferenceTime(), getHeader());
     out.format("   Category= %d %s %s %n", ids.getCategory(), getCategoryName(), getCategoryNo());
@@ -848,7 +848,7 @@ public class Message {
             dds.isObserved(), dds.isCompressed());
   }
 
-  public void dumpHeaderShort(Formatter out) throws IOException {
+  public void dumpHeaderShort(Formatter out) {
     out.format(" %s, Cat= %s, Center= %s (%s), Table= %d.%d.%d %n", getHeader(),
             getCategoryName(), getCenterName(), getCenterNo(),
             ids.getMasterTableId(), ids.getMasterTableVersion(), ids.getLocalTableVersion());

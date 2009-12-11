@@ -1,0 +1,94 @@
+.------------------------------------------------------------------------------.
+| ------------   USER DEFINITIONS FOR TABLE-A TABLE-B TABLE D   -------------- |
+|------------------------------------------------------------------------------|
+| MNEMONIC | NUMBER | DESCRIPTION                                              |
+|----------|--------|----------------------------------------------------------|
+|          |        |                                                          |
+| NGM      | A60242 | TABLE A ENTRY - NGM MODEL MESSAGES                       |
+|          |        |                                                          |
+| HEADR    | 362001 | TABLE D ENTRY - PROFILE COORDINATES                      |
+| PROFILE  | 362002 | TABLE D ENTRY - PROFILE DATA                             |
+|          |        |                                                          |
+| CLS0     | 362101 | TABLE D ENTRY - CLASS 0 SUBGROUP OF SFC DATA             |
+| FLXRAD   | 362102 | TABLE D ENTRY - FLUX SUBGROUP OF SFC DATA                |
+| MISC     | 362103 | TABLE D ENTRY - MISCELLANEOUS SUBGROUP OF SFC DATA       |
+|          |        |                                                          |
+| FTIM     | 004194 | TABLE B ENTRY - FORECAST TIME                            |
+| STNM     | 001205 | TABLE B ENTRY - STATION NUMBER -- 5 DIGITS               |
+| CLAT     | 005002 | TABLE B ENTRY - LATITUDE                                 |
+| CLON     | 006002 | TABLE B ENTRY - LONGITUDE                                |
+| GELV     | 010194 | TABLE B ENTRY - GRID POINT ELEVATION                     |
+|          |        |                                                          |
+| PRES     | 010004 | TABLE B ENTRY - PRESSURE                                 |
+| TMDB     | 012001 | TABLE B ENTRY - TEMPERATURE                              |
+| UWND     | 011003 | TABLE B ENTRY - U WIND                                   |
+| VWND     | 011004 | TABLE B ENTRY - V WIND                                   |
+| SPFH     | 013001 | TABLE B ENTRY - SPECIFIC HUMIDITY                        |
+| OMEG     | 011229 | TABLE B ENTRY - OMEGA                                    |
+| DTAR     | 014226 | TABLE B ENTRY - NET RADIATIVE HEATING RATE               |
+|          |        |                                                          |
+| PMSL     | 010051 | TABLE B ENTRY - PRESSURE AT MEAN SEA LEVEL               |
+| PRSS     | 010195 | TABLE B ENTRY - SURFACE PRESSURE                         |
+| TMSK     | 012061 | TABLE B ENTRY - SKIN TEMPERATURE                         |
+| TP01     | 013019 | TABLE B ENTRY - TOTAL PRECIP IN PAST HOUR                |
+| C01M     | 013208 | TABLE B ENTRY - CONVECTIVE PRECIP IN PAST HOUR           |
+| FXLH     | 012199 | TABLE B ENTRY - 1-HR AVG FLUX OF LATENT HEAT             |
+| FXSH     | 012201 | TABLE B ENTRY - 1-HR AVG FLUX OF SENSIBLE HEAT           |
+| FXSS     | 012202 | TABLE B ENTRY - 1-HR AVG FLUX OF SUB-SURFACE HEAT        |
+| SWRD     | 014198 | TABLE B ENTRY - 1-HR AVG SHORT-WAVE RAD DOWNWARD FLUX    |
+| LWRU     | 014201 | TABLE B ENTRY - 1-HR AVG LONG-WAVE RAD UPWARD FLUX       |
+| STC1     | 012198 | TABLE B ENTRY - SOIL TEMPERATURE (1 LAYER)               |
+| LCLD     | 020051 | TABLE B ENTRY - LOW CLOUD FRACTION                       |
+| MCLD     | 020052 | TABLE B ENTRY - MIDDLE CLOUD FRACTION                    |
+| HCLD     | 020053 | TABLE B ENTRY - HIGH CLOUD FRACTION                      |
+| CLPL     | 020226 | TABLE B ENTRY - LOW CLOUD PRESSURE                       |
+| CLPM     | 020227 | TABLE B ENTRY - MIDDLE CLOUD PRESSURE                    |
+| CLPH     | 020228 | TABLE B ENTRY - HIGH CLOUD PRESSURE                      |
+|          |        |                                                          |
+|------------------------------------------------------------------------------|
+| MNEMONIC | SEQUENCE                                                          |
+|----------|-------------------------------------------------------------------|
+|          |                                                                   |
+| NGM      | HEADR {PROFILE} CLS0 FLXRAD MISC                                  |
+| HEADR    | FTIM STNM CLAT CLON GELV                                          |
+| PROFILE  | PRES TMDB UWND VWND SPFH OMEG DTAR                                |
+| CLS0     | PMSL PRSS TMSK TP01 C01M                                          |
+| FLXRAD   | FXLH FXSH FXSS SWRD LWRU                                          |
+| MISC     | STC1 LCLD MCLD HCLD CLPL CLPM CLPH                                |
+|          |                                                                   |
+|------------------------------------------------------------------------------|
+| MNEMONIC | SCAL | REFERENCE   | BIT | UNITS                    |-------------|
+|----------|------|-------------|-----|--------------------------|-------------|
+|          |      |             |     |                          |-------------|
+| FTIM     |    0 |           0 |  24 | SECONDS                  |-------------|
+| STNM     |    0 |           0 |  17 | NUMERIC ID               |-------------|
+| CLAT     |    2 |       -9000 |  15 | DEG N                    |-------------|
+| CLON     |    2 |      -18000 |  16 | DEG E                    |-------------|
+| GELV     |    0 |        -400 |  15 | M                        |-------------|
+|          |      |             |     |                          |-------------|
+| PRES     |   -1 |           0 |  14 | PA                       |-------------|
+| TMDB     |    1 |           0 |  12 | K                        |-------------|
+| UWND     |    1 |       -4096 |  13 | M/S                      |-------------|
+| VWND     |    1 |       -4096 |  13 | M/S                      |-------------|
+| SPFH     |    5 |           0 |  14 | KG/KG                    |-------------|
+| OMEG     |    1 |        -512 |  10 | PA/S                     |-------------|
+| DTAR     |    7 |      -12000 |  15 | K/S                      |-------------|
+|          |      |             |     |                          |-------------|
+| PMSL     |   -1 |           0 |  14 | PA                       |-------------|
+| PRSS     |   -1 |           0 |  14 | PA                       |-------------|
+| TMSK     |    1 |           0 |  12 | K                        |-------------|
+| TP01     |    1 |          -1 |  14 | KG/M**2                  |-------------|
+| C01M     |    1 |          -1 |  14 | KG/M**2                  |-------------|
+| FXLH     |    1 |      -10000 |  15 | W/M**2                   |-------------|
+| FXSH     |    1 |      -10000 |  15 | W/M**2                   |-------------|
+| FXSS     |    1 |       -5000 |  14 | W/M**2                   |-------------|
+| SWRD     |    1 |           0 |  14 | W/M**2                   |-------------|
+| LWRU     |    1 |       -8192 |  13 | W/M**2 (+:DOWNWARD)      |-------------|
+| STC1     |    1 |           0 |  12 | K                        |-------------|
+| LCLD     |    0 |           0 |   7 | %                        |-------------|
+| MCLD     |    0 |           0 |   7 | %                        |-------------|
+| HCLD     |    0 |           0 |   7 | %                        |-------------|
+| CLPL     |   -1 |           0 |  14 | PA                       |-------------|
+| CLPM     |   -1 |           0 |  14 | PA                       |-------------|
+| CLPH     |   -1 |           0 |  14 | PA                       |-------------|
+`------------------------------------------------------------------------------'

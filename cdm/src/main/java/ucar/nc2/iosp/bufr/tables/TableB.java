@@ -151,7 +151,7 @@ public class TableB {
       this.name = name.trim();
       this.units = units.trim().intern();
 
-      this.numeric = !units.startsWith("CCITT");
+      this.numeric = !this.units.startsWith("CCITT");
     }
 
     public int getScale() {

@@ -1,0 +1,143 @@
+0) Convert WMO xls to csv:
+
+delete other columns, so you just have:
+
+Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_Bits <other columns ok>
+
+"save as" csv.
+
+1) Changes against latest WMO table B, Dec 11, 2009:
+
+From Jeff Ator:
+
+re: 0-13-044, the units are actually supposed to be C, not K.  This was intended to be corrected as an editorial change a couple of years ago, but it looks like the change never made it into the actual WMO tables.  See paragraph 3.3.5 (and the corresponding annex) in http://www.wmo.int/pages/prog/www/ISS/Reports/ET-DRC_EUMETSAT2007.doc  I am also CCing Atsushi on this apparent oversight.
+
+verified against message
+425IUGA01 EUMG 051200, Cat= Single level upper-air data (satellite), Center= 254.0 (EUMETSAT Operation Centre) (254.0), Table= 0.12.0 
+
+
+2) Units
+
+2.1) these two have a non-standard "degree" char before the C:
+
+ 0-12-23 units
+ 0-12-24 units
+
+Could remove when reading in.
+
+2.2) assume wmo is correct ???
+
+0-14-45 units
+   W m**-2 sr**-1     (NCEP)
+   W m-2 sr-1 cm-1    (WMO)
+   (W/M**2)*(1/SR)*CM (ECMWF)
+
+
+///////////////
+
+NCEP v14 vs WMO v14
+
+ 0-7-8 refVal 10000 != -10000 
+ 0-11-49 scale 1 != 0 
+
+ 0-11-75 units
+   m**(2/3)/s
+   m2/3 s-1
+
+ 0-11-76 units
+   m**(2/3)/s
+   m2/3 s-1
+
+ 0-13-44 units
+   C
+   K
+
+ 0-14-45 units
+   W m**-2 sr**-1
+   W m-2 sr-1 cm-1
+
+**No key 0-20-39 in second table 
+
+ 0-22-39 scale 12 != 13 
+
+ 0-24-11 units
+   mSv/mSv (NCEP)
+   mSv*/** (WMO)
+   mSv (ECMWF)
+
+**No key 0-26-20 in second table 
+
+///////
+
+Ecmwf ver 13 vs WMO v 14 
+
+0-1-24 scale 24 != 5 
+**No key 0-2-98 in second table 
+
+**No key 0-7-11 in second table 
+**No key 0-8-44 in second table 
+**No key 0-8-45 in second table 
+
+ 0-11-72 units
+   KM/S
+   K m s-1
+
+ 0-12-23 units
+   C
+    C
+ 0-12-24 units
+   C
+    C
+**No key 0-12-73 in second table 
+ 0-12-82 scale 16 != 12 
+
+ 0-14-1 refVal -2048 != -65536 
+ 0-14-1 scale 12 != 17 
+ 0-14-2 refVal -2048 != -65536 
+ 0-14-2 scale 12 != 17 
+ 0-14-3 refVal -2048 != -65536 
+ 0-14-3 scale 12 != 17 
+ 0-14-4 refVal -2048 != -65536 
+ 0-14-4 scale 12 != 17 
+ 0-14-11 refVal -2048 != -65536 
+ 0-14-11 scale 12 != 17 
+ 0-14-12 refVal -2048 != -65536 
+ 0-14-12 scale 12 != 17 
+ 0-14-13 refVal -2048 != -65536 
+ 0-14-13 scale 12 != 17 
+ 0-14-14 refVal -2048 != -65536 
+ 0-14-14 scale 12 != 17 
+ 0-14-17 scale -3 != 0 
+ 0-14-17 refVal -2048 != -512 
+ 0-14-17 scale 12 != 10 
+ 0-14-18 scale -3 != 0 
+ 0-14-28 scale 16 != 20 
+ 0-14-29 scale 16 != 20 
+ 0-14-30 scale 16 != 20
+ 
+ 0-14-45 units
+   (W/M**2)*(1/SR)*CM
+   W m-2 sr-1 cm-1
+
+**No key 0-14-61 in second table 
+**No key 0-14-62 in second table 
+**No key 0-20-39 in second table 
+
+ 0-22-39 scale 12 != 13 
+
+ 0-24-11 units
+   mSv
+   mSv*/**
+
+
+**No key 0-25-144 in second table  
+**No key 0-26-20 in second table 
+**No key 0-33-9 in second table 
+**No key 0-33-66 in second table 
+**No key 0-33-67 in second table 
+
+ 0-40-14 units
+   TM
+   m
+
+

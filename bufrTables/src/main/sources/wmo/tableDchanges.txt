@@ -1,0 +1,43 @@
+1) bad character in FXY1:
+
+22 3 BAD line == 21,01,301002?,,001003,WMO Region number
+23 3 BAD line == 22,01,301002?,,001004,WMO Region sub-area
+24 3 BAD line == 23,01,301002?,,001005,Buoy/platform identifier
+
+2) extra space in field 5 (FXY2):
+
+304 5 BAD line == 303,01,301121,(Radiosonde launch point location),0 07031,Height of barometer above MSL
+656 5 BAD line == 655,02,302074,(Present and past weather),0 20003,Present weather
+1594 5 BAD line == 1593,07,307091,(BUFR template for surface observations from one-hour period with national ..
+
+3) Extra entry:
+
+3841 5 BAD line == 3841,16,316075,(GFA IFR Ceiling and Visibility),"2=Exclusive upper limit ",
+
+4) multiple lines in field 6 (enElementName2) :
+
+1465:
+'Qualifier for number of missing values in calculation of statistic = 1 (pressure) = 2 (temperature) = 4 (vapour pressure) = 7 (maximum temperature) = 8 (minimum temperature)
+
+1471:
+'Qualifier for number of missing values in calculation of statistic
+= 6 (sunshine duration)
+
+1507:
+'Qualifier for number of missing values in calculation of statistic
+= 5 (precipitation)
+
+1557:
+'Qualifier for number of missing values in calculation of statistic = 1 (pressure), = 2 (temperature), = 3 (extreme temperatures), (see note 4) = 4 (vapour pressure),
+= 5 (precipitation),
+= 6 (sunshine duration) = 7 (maximum temperature), (see note 4)
+
+-
+
+i think this is a typo in the version 13 doc:
+
+474    02    302044    (Evaporation data)    013003    Evaporation /evapotranspiration
+
+should be:
+
+474    02    302044    (Evaporation data)    013033    Evaporation /evapotranspiration

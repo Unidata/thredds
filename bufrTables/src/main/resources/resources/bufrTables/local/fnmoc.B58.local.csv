@@ -1,0 +1,291 @@
+#
+# BUFR local only from C:/dev/tds/thredds/bufrTables/src/main/sources/archive/B4L-058-013-B.diff 
+#
+Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_Bits
+1,1192,"Receiving circuit",CCITT_IA5,0,0,24
+1,1193,"Global octant",Code_Table,0,0,4
+1,1194,"Beam position",Numeric,0,0,4
+1,1195,"Decimal point value (dp)",Numeric,0,0,4
+1,1196,"Observation number",CCITT_IA5,0,0,64
+1,1197,"Runway number",Numeric,0,0,6
+1,1198,"Marsden square number",Code_Table,0,0,10
+1,1199,"nature of mission",CCITT_IA5,0,0,64
+1,1200,"Radar Capability indicator (XXX)",Code_Table,0,0,2
+1,1201,"Country or agency that operates the satellite",Code_Table,0,0,8
+1,1203,"Satellite name",CCITT_IA5,0,0,16
+1,1204,"Satellite series",CCITT_IA5,0,0,16
+1,1206,"TOVS generating center name",CCITT_IA5,0,0,32
+1,1207,"File name",CCITT_IA5,0,0,72
+1,1208,"Satellite data type",Code_Table,0,0,4
+1,1209,"Observation type for MCSST",Code_Table,0,0,8
+1,1210,"Observation source",Code_Table,0,0,7
+1,1211,"Beam position",Numeric,0,0,5
+1,1212,"Data processing block number",Numeric,0,0,24
+1,1213,"Tip source type identifier",Code_Table,0,0,3
+1,1214,"Header originator",CCITT_IA5,0,0,32
+1,1215,"Bulletin header update or correction indicator",CCITT_IA5,0,0,48
+1,1216,"Engineering status",Numeric,0,0,14
+1,1217,"Satellite number",Numeric,0,0,5
+1,1218,"Sequence (report) type",CCITT_IA5,0,0,176
+1,1219,"Mission number",CCITT_IA5,0,0,40
+1,1220,"Observation number",Numeric,0,0,7
+1,1221,"Surface type",Code_Table,0,0,8
+1,1222,"Report modifier",CCITT_IA5,0,0,32
+1,1223,"Runway parallel indicator",Code_Table,0,0,3
+1,1224,"Terrain code identifier",Code_Table,0,0,5
+2,2192,"Wind units source ID",Code_Table,0,0,2
+2,2193,"satellite channels used in computation",Numeric,0,0,20
+2,2194,"satellite channels used in computation",Numeric,0,0,15
+2,2195,"Reason for no report OR ground equipment",Code_Table,0,0,4
+2,2196,"Type of thermodynamic sensing equipment (eTeT)",Code_Table,0,0,7
+2,2197,"Correction technique (cT, cw)",Code_Table,0,0,3
+2,2198,"Data reduction method (mr)",Code_Table,0,0,4
+2,2199,"grp_pos_ind",Numeric,0,0,4
+2,2200,"Indicator for frequency or wave number (Ia)",Code_Table,0,0,3
+2,2201,"Type of rocket motor (rm)",Code_Table,0,0,3
+2,2202,"Type of wind sensing equipment (ewew)",Code_Table,0,0,7
+2,2203,"Method of determining direction of moving platform",Code_Table,0,0,3
+2,2204,"Method of determining speed of moving platform",Code_Table,0,0,3
+2,2205,"Ozone flag",Code_Table,0,0,3
+2,2206,"Algorithm identifier",Code_Table,0,0,4
+2,2207,"Equation identifier",Code_Table,0,0,5
+2,2208,"Type of method for measuring pressure",Code_Table,0,0,2
+2,2209,"Xbt instrument type (IxIxIx)",Code_Table,0,0,10
+2,2210,"Recorder type (XRXR)",Code_Table,0,0,7
+2,2211,"Sensor status flag",Flag_Table,0,0,8
+2,2212,"Maintenance Check flag",Flag_Table,0,0,2
+2,2213,"satellite channels used in computation",Numeric,0,0,5
+4,4192,"Precipitation time period (tR)",Code_Table,0,0,4
+4,4193,"Last time that this observation record was",Numeric,0,0,31
+4,4206,"GMT seconds",s,3,0,27
+5,5192,"Image line number",Numeric,0,0,3
+5,5193,"Image sample number",Numeric,0,0,4
+5,5194,"Orbit number",Numeric,0,0,14
+5,5195,"six decimal pt latitude",deg,6,-90000000,28
+5,5196,"Orbit number",Numeric,0,0,16
+5,5197,"Frame number",Numeric,0,0,8
+5,5198,"Orbit number",Numeric,0,0,24
+5,5199,"Orbit number",Numeric,0,0,20
+6,6192,"six decimal pt longitude",deg,6,-180000000,29
+7,7192,"Local zenith angle",deg,2,0,13
+7,7196,"Station height precision",Code_Table,0,0,4
+7,7197,"Solar zenith angle",deg,1,0,11
+7,7198,"Satellite zenith angle",deg,2,-6000,14
+7,7199,"Solar azimuth angle",deg,1,0,11
+7,7200,"Geopotential height",Pa,2,0,17
+7,7223,"Solar zenith angle",deg,2,0,14
+7,7224,"Surface elevation",m,1,0,14
+8,8194,"Flight condition (fc)",Code_Table,0,0,4
+10,10197,"Index pertaining to geopotential height (j)",Code_Table,0,0,4
+10,10199,"Geopotential height difference",m,0,-1024,16
+10,10200,"Geopotental height correction",m,0,-1024,16
+10,10201,"Pressure tendency QC ID",Code_Table,0,0,14
+10,10203,"Geopotential height quality control flag",Code_Table,0,0,4
+10,10213,"Geopotential height",m,0,-1024,16
+10,10224,"Station level pressure QC ID",Code_Table,0,0,4
+10,10251,"Mean sea level pressure QC ID",Code_Table,0,0,4
+11,11195,"Wind type at flight altitude (dt)",Code_Table,0,0,2
+11,11200,"Wind QC ID",Code_Table,0,0,4
+11,11203,"Wind u-component difference",m/s,1,-4096,13
+11,11204,"Wind v-component difference",m/s,1,-4096,13
+11,11205,"Turbulence (B) (WMO code table 0300)",Code_Table,0,0,4
+11,11206,"Flight level wind method (da)",Code_Table,0,0,2
+11,11207,"Extreme wind speed ID",Code_Table,0,0,2
+11,11213,"Wind u-component correction",m/s,1,-4096,13
+11,11214,"Wind v-component correction",m/s,1,-4096,13
+11,11244,"Direction of wind",deg_true,0,0,16
+11,11245,"wnd_spd",m/s,2,0,16
+11,11246,"Ocean surface wind speed",m/s,1,0,8
+12,12192,"Wet bulb temperature indicator",Code_Table,0,0,4
+12,12193,"SSU brightness temperature",deg_K,2,0,16
+12,12194,"Dewpoint",deg_K,2,0,16
+12,12195,"Dewpoint, aircraft altitude, air temperature indicator (id)",Code_Table,0,0,4
+12,12196,"Dewpoint difference",deg_K,2,0,16
+12,12201,"Air temperature QC ID",Code_Table,0,0,4
+12,12213,"Dewpoint QC ID",Code_Table,0,0,4
+12,12215,"Temperature precision flag",Code_Table,0,0,2
+12,12220,"HIRS brightness temperature",deg_K,2,0,16
+12,12221,"MSU brightness temperature",deg_K,2,0,16
+13,13192,"Precipitation identifier (iR)",Code_Table,0,0,4
+13,13193,"Precipitation amount",Code_Table,0,0,10
+13,13194,"First guess mixing ratios",g/kg,3,-9210,16
+13,13195,"Density (p1p1p1)",kg/m**3,0,0,10
+13,13196,"Soil moisture",mm,0,0,7
+13,13197,"Rain indicator",Code_Table,0,0,3
+13,13198,"Total precipatable water",cm,2,0,11
+13,13199,"prcp_ind_id",Numeric,0,0,2
+13,13203,"Relative humidity QC ID",Code_Table,0,0,4
+13,13217,"Precipitation flag (SSM/T)",Numeric,0,0,8
+13,13218,"Cloud water",kg/(m**2),2,0,11
+13,13219,"Ocean water vapor",kg/(m**2),1,0,10
+13,13220,"Rain rate",mm/hr,1,0,9
+13,13221,"Cloud Liquid Water",kg/(m**2),2,0,14
+20,20192,"Remark",CCITT_IA5,0,0,2040
+20,20193,"128 char plain language text remark",CCITT_IA5,0,0,1024
+20,20194,"cloud liquid water",kg/m**2,0,0,11
+20,20196,"Runway visibility tendency",CCITT_IA5,0,0,8
+20,20197,"Landing wind shear indicator",Flag_Table,0,0,2
+20,20199,"Visibility direction",deg_true,0,0,9
+20,20205,"Cloud significant convection",CCITT_IA5,0,0,24
+20,20206,"Significant present weather conditions",CCITT_IA5,0,0,64
+20,20207,"Pressure and altitude significance",Code_Table,0,0,4
+20,20208,"Significant weather changes (Ws)",Code_Table,0,0,4
+20,20209,"Distance of weather changes (Ss)",Code_Table,0,0,4
+20,20210,"Distant weather (Wd)",Code_Table,0,0,4
+20,20211,"Bearing of distant weather (dw)",Code_Table,0,0,4
+20,20213,"Icing and contrail types (It)",Code_Table,0,0,4
+20,20216,"Altitude of layer base where icing occurred",Code_Table,0,0,7
+20,20219,"Distance to center or line midpoint",Code_Table,0,0,4
+20,20220,"Orientation of ellipse (Sr)",Code_Table,0,0,4
+20,20221,"Echo width or diameter (Ew)",m,-3,0,16
+20,20222,"Echo axis length (El)",m,-3,0,16
+20,20223,"Echo CCITT_IA5 (ce)",Code_Table,0,0,8
+20,20224,"Intensity of echo (Ie)",Code_Table,0,0,4
+20,20225,"In flight horizontal visibility (Vi)",Code_Table,0,0,3
+20,20236,"Cloud base height",CCITT_IA5,0,0,8
+20,20237,"Horizontal visbility",Code_Table,0,0,7
+20,20240,"Present weather (w)",Code_Table,0,0,4
+20,20242,"Bearing of ice edge",Code_Table,0,0,5
+20,20244,"cloud base height",Code_Table,0,0,4
+20,20245,"Remarks in plain language",CCITT_IA5,0,0,640
+20,20246,"Ice coverage",percent,0,0,7
+20,20247,"Ice plain language text remarks",CCITT_IA5,0,0,1656
+20,20248,"Ice age identifier",Code_Table,0,0,2
+20,20249,"Ice edge identifier",Code_Table,0,0,2
+20,20254,"Extreme value indicator",CCITT_IA5,0,0,8
+20,20255,"Plain language text remarks",CCITT_IA5,0,0,2040
+21,21192,"Heave sensor spectral peak length",m,0,0,14
+21,21193,"Heave sensor spectral peak period",s,1,0,14
+21,21194,"AVHRR channel average",percent,2,0,14
+21,21195,"Space view channel standard deviation",percent,2,0,14
+21,21196,"Algorithm identifier",deg_K,2,0,15
+21,21197,"AVHRR channel average",deg_K,2,0,15
+21,21198,"Backscatter",dB,2,-5000,13
+21,21199,"Noise figure percentage",percent,1,0,10
+21,21200,"aerosol_optical_depth",m,3,0,12
+21,21201,"NAAPS sulfate optical depth",mg/m**3,3,0,16
+21,21202,"NAAPS smoke optical depth",mg/m**3,3,0,16
+21,21203,"NAAPS dust optical depth",mg/m**3,3,0,16
+21,21204,"NAAPS total optical depth",mg/m**3,3,0,16
+22,22192,"corrected sea sfc ht",cm,6,-10000000,25
+22,22194,"Wave spectra exponent (x)",Code_Table,0,0,4
+22,22196,"Number of wave bands affected by the",Numeric,0,0,7
+22,22200,"Distance sample interval (SSSS)",m,0,0,14
+22,22203,"Frequency increment (fdfdfd)",Hz,3,0,10
+22,22204,"Wave number increment (fdfdfd)",1/m,5,0,13
+22,22205,"Wave spectra",m**2/(Hz*rad),3,0,20
+22,22206,"Drag coefficient",Numeric,4,0,10
+22,22207,"Maximum wave height",m,2,0,16
+22,22208,"Significant wave height",m,2,0,16
+22,22209,"directional spread",Code_Table,0,0,7
+22,22211,"Bogus water mass classification",Code_Table,0,0,8
+22,22212,"Discriminant water mass classification",Code_Table,0,0,8
+22,22213,"Classification probability",percent,1,0,10
+22,22218,"Slope sensor band number",Numeric,0,0,7
+22,22219,"Slope sensor ratio",percent,0,0,7
+22,22220,"Front number",Code_Table,0,0,8
+22,22224,"Distance to front",m,-2,0,14
+22,22232,"Sea surface temperature method indicator",Code_Table,0,0,4
+22,22233,"Sea temperature averaging period",Code_Table,0,0,3
+22,22236,"Swell wave direction",Code_Table,0,0,8
+22,22237,"Significant wave height",m,-2,0,14
+22,22238,"Maximum wave height",m,-2,0,14
+22,22239,"Wave spectra direction count",Numeric,0,0,6
+22,22240,"Wave spectra frequency count",Numeric,0,0,6
+22,22241,"Wave stress u-component",Nt/m**2,3,-32768,16
+22,22242,"Wave stress v-component",Nt/m**2,3,-32768,16
+22,22243,"Whitecap probability",percent,0,0,7
+22,22245,"Surface temperature",deg_K,2,0,16
+22,22246,"Wind stress u-component",Nt/m**2,3,-32768,16
+22,22247,"Wind stress v-component",Nt/m**2,3,-32768,16
+22,22248,"Wind wave direction",deg_true,0,0,16
+22,22249,"Height of wind wave",m,2,0,16
+22,22250,"Period of wind waves",s,1,0,16
+22,22251,"Wave spectra direction",Numeric,0,0,6
+22,22252,"Wave spectra frequency",Numeric,0,0,6
+22,22253,"Direction of swell waves",deg_true,0,0,16
+22,22254,"Height of swell waves",m,2,0,16
+22,22255,"Period of swell waves",s,1,0,16
+25,25192,"Type of correction",Code_Table,0,0,8
+25,25193,"Land/sea flag",Code_Table,0,0,3
+25,25194,"Day/night flag",Code_Table,0,0,2
+25,25195,"Surface model pressure",Numeric,0,0,6
+25,25196,"Scan line count",Numeric,0,0,16
+25,25197,"Box counter",Numeric,0,0,5
+25,25198,"Minibox counter",Numeric,0,0,3
+25,25199,"Water vapor flag",Code_Table,0,0,3
+25,25200,"TOVS retrieval low 20",Code_Table,0,0,3
+25,25201,"TOVS retrieval temps high 20",Code_Table,0,0,3
+25,25202,"TOVS super adiabatic flag",Code_Table,0,0,2
+25,25203,"TOVS skin temperature flag",Code_Table,0,0,2
+25,25204,"Stratospheric sounding unit flag",Code_Table,0,0,2
+25,25205,"Latitude zones",Code_Table,0,0,4
+25,25206,"TOVS instrument combinations",Code_Table,0,0,4
+25,25207,"HIRS scan position number",Numeric,0,0,6
+25,25208,"TARM flag",Code_Table,0,0,8
+25,25209,"DMSP flag",Code_Table,0,0,4
+25,25211,"B-scan start time",Numeric,0,0,17
+25,25212,"Counter (1-64)",Numeric,0,0,7
+25,25213,"Calculated surface type",Code_Table,0,0,5
+25,25214,"Season flag",Code_Table,0,0,3
+25,25215,"Missing packet counter",Numeric,0,-127,8
+25,25216,"Observation Quality Code",Code_Table,0,0,3
+31,31192,"Associated QC indicator",Code_Table,0,0,8
+31,31193,"QC description identifier, indicates why a value",Code_Table,0,0,8
+31,31194,"Associated correlation",Numeric,2,0,7
+31,31195,"Associated probability of error",Numeric,2,0,7
+31,31196,"UWI product confidence flag",Flag_Table,0,0,13
+31,31197,"Solution probability",Numeric,0,0,12
+48,48001,"Classification",CCITT_IA5,0,0,128
+48,48002,"Classification modifier",CCITT_IA5,0,0,128
+48,48003,"Release as",CCITT_IA5,0,0,552
+48,48004,"Declassification - year",yr,0,0,12
+48,48005,"Declassification - month",mo,0,0,4
+48,48006,"Declassification - day",day,0,0,6
+48,48007,"Release not",CCITT_IA5,0,0,552
+48,48008,"Sender of original observation data",CCITT_IA5,0,0,64
+48,48009,"Declassification instructions",CCITT_IA5,0,0,80
+48,48010,"Send - year",yr,0,0,12
+48,48011,"Send - month",mo,0,0,4
+48,48012,"Send - day",day,0,0,6
+48,48013,"Send - hour",hr,0,0,4
+48,48014,"Send - minutes",min,0,0,6
+48,48015,"Release to information",CCITT_IA5,0,0,552
+48,48016,"Send - hour",hr,0,0,5
+48,48017,"Release to",CCITT_IA5,0,0,1104
+48,48018,"Release not",CCITT_IA5,0,0,552
+48,48019,"Declassification instructions",CCITT_IA5,0,0,552
+48,48020,"Classification modifier",CCITT_IA5,0,0,552
+48,48021,"Sender of observational data",CCITT_IA5,0,0,552
+48,48022,"Classification",CCITT_IA5,0,0,160
+48,48027,"Receipt - year",yr,0,0,12
+48,48028,"Receipt - month",mo,0,0,4
+48,48029,"Receipt - day",day,0,0,6
+48,48030,"Receipt - hour",hr,0,0,5
+48,48031,"Receipt - minutes",min,0,0,6
+48,48032,"Bulletin header update or correction indicator",CCITT_IA5,0,0,48
+48,48033,"Receiving circuit",CCITT_IA5,0,0,24
+48,48034,"Near-duplicate combination count",Numeric,0,0,6
+50,50001,"Quality of measurement of pressure, sst, air",Code_Table,0,0,2
+50,50002,"Quality of buoy satellite transmission (QN)",Code_Table,0,0,2
+50,50003,"IGOSS quality codes (Qd, Qd1, Qd2, Q1,",Code_Table,0,0,4
+50,50006,"Location quality codes (QL)",Code_Table,0,0,3
+50,50010,"GDEM temperature",deg_K,2,0,15
+50,50011,"Reliability Classification Category",Code_Table,0,0,8
+50,50012,"Proximity Confidence value",Numeric,0,0,8
+50,50014,"Feature model temperature",deg_K,2,0,15
+50,50018,"Reliability",Numeric,0,0,16
+50,50033,"Count of boundary points",Numeric,0,0,8
+50,50034,"Frequency ratio",Numeric,3,0,16
+50,50035,"Time step of data (time increment)",s,0,0,12
+50,50042,"Mean wave direction",Numeric,2,0,12
+50,50043,"Mean wave frequency",Numeric,3,0,12
+50,50044,"First frequency",Numeric,4,0,12
+50,50100,"Analysis DTG - year",yr,0,0,12
+50,50101,"Analysis DTG - month",mo,0,0,4
+50,50102,"Analysis DTG - day",day,0,0,6
+50,50103,"Analysis DTG - hour",hr,0,0,5
+50,50104,"Last observed sea depth",Numeric,0,0,6
+51,51003,"Processing status",Flag_Table,0,0,5
+51,51006,"Combination count",Numeric,0,0,6
+51,51007,"Quality control process status",Code_Table,0,0,2
