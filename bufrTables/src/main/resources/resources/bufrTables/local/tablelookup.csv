@@ -12,7 +12,7 @@
 #
 center,subcenter,master,local,cat,tableB,tableBformat,                                        tableD,tableDformat
 0,     0,        14,    0,    -1, resource:/resources/bufrTables/wmo/TableB.v14corr.csv, wmo, resource:/resources/bufrTables/wmo/TableD.v14corr.csv, wmo
-0,     0,        13,    0,    -1, resource:/resources/bufrTables/wmo/tableB.v13.csv, wmo    , , ,
+0,     0,        13,    0,    -1, resource:/resources/bufrTables/wmo/TableB.v13.csv, wmo    , , ,
 #
 # NCEP
 # see http://www.emc.ncep.noaa.gov/mmb/data_processing/bufrtab_tablea.htm#1

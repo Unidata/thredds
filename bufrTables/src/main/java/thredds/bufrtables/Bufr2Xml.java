@@ -34,12 +34,12 @@ package thredds.bufrtables;
 
 import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.iosp.bufr.BufrIosp;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Structure;
-import ucar.nc2.Variable;
-import ucar.nc2.Attribute;
+import ucar.nc2.*;
 import ucar.nc2.util.Indent;
 import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.SequenceDS;
+import ucar.nc2.dataset.StructureDS;
 import ucar.ma2.*;
 
 import javax.xml.stream.XMLStreamException;
@@ -55,7 +55,7 @@ import java.util.Formatter;
  */
 public class Bufr2Xml {
 
-  void writeMessage(Message message, NetcdfFile ncfile) {
+  void writeMessage(Message message, NetcdfDataset ncfile) {
     Indent indent = new Indent(1);
     indent.setIndentLevel(1);
 
@@ -85,9 +85,8 @@ public class Bufr2Xml {
       staxWriter.writeCharacters(message.getCategoryFullName());
       staxWriter.writeEndElement();
 
-      Structure obs = (Structure) ncfile.findVariable(BufrIosp.obsRecord);
-      ArrayStructure obsData = (ArrayStructure) obs.read();
-      StructureDataIterator sdataIter = obsData.getStructureDataIterator();
+      SequenceDS obs = (SequenceDS) ncfile.findVariable(BufrIosp.obsRecord);
+      StructureDataIterator sdataIter = obs.getStructureIterator(-1);
       while (sdataIter.hasNext()) {
         StructureData sdata = sdataIter.next();
         staxWriter.writeCharacters("\n");
@@ -103,10 +102,10 @@ public class Bufr2Xml {
             writeVariable((VariableDS) v, mdata, indent);
 
           } else if (m.getDataType() == DataType.STRUCTURE) {
-            writeStructureArray((Structure) v, (ArrayStructure) mdata, indent);
+            writeStructureArray((StructureDS) v, (ArrayStructure) mdata, indent);
 
           } else if (m.getDataType() == DataType.SEQUENCE) {
-            writeSequence((Structure) v, (ArraySequence) mdata, indent);
+            writeSequence((SequenceDS) v, (ArraySequence) mdata, indent);
           }
         }
 
@@ -128,7 +127,7 @@ public class Bufr2Xml {
     }
   }
 
-  void writeStructureArray(Structure s, ArrayStructure data, Indent indent) throws IOException, XMLStreamException {
+  void writeStructureArray(StructureDS s, ArrayStructure data, Indent indent) throws IOException, XMLStreamException {
     StructureDataIterator sdataIter = data.getStructureDataIterator();
     while (sdataIter.hasNext()) {
       StructureData sdata = sdataIter.next();
@@ -144,10 +143,10 @@ public class Bufr2Xml {
           writeVariable((VariableDS) v, sdata.getArray(m), indent);
 
         } else if (m.getDataType() == DataType.STRUCTURE) {
-          writeStructureArray((Structure) v, (ArrayStructure) sdata.getArray(m), indent);
+          writeStructureArray((StructureDS) v, (ArrayStructure) sdata.getArray(m), indent);
 
         } else if (m.getDataType() == DataType.SEQUENCE) {
-          writeSequence((Structure) v, (ArraySequence) sdata.getArray(m), indent);
+          writeSequence((SequenceDS) v, (ArraySequence) sdata.getArray(m), indent);
         }
 
         if (m.getDataType().isString() || m.getDataType().isNumeric()) {
@@ -162,7 +161,7 @@ public class Bufr2Xml {
     }
   }
 
-  void writeSequence(Structure s, ArraySequence data, Indent indent) throws IOException, XMLStreamException {
+  void writeSequence(SequenceDS s, ArraySequence data, Indent indent) throws IOException, XMLStreamException {
     StructureDataIterator sdataIter = data.getStructureDataIterator();
     while (sdataIter.hasNext()) {
       StructureData sdata = sdataIter.next();
@@ -178,10 +177,10 @@ public class Bufr2Xml {
           writeVariable((VariableDS) v, sdata.getArray(m), indent);
 
         } else if (m.getDataType() == DataType.STRUCTURE) {
-          writeStructureArray((Structure) v, (ArrayStructure) sdata.getArray(m), indent);
+          writeStructureArray((StructureDS) v, (ArrayStructure) sdata.getArray(m), indent);
 
         } else if (m.getDataType() == DataType.SEQUENCE) {
-          writeSequence((Structure) v, (ArraySequence) sdata.getArray(m), indent);
+          writeSequence((SequenceDS) v, (ArraySequence) sdata.getArray(m), indent);
         }
 
       }
@@ -250,23 +249,23 @@ public class Bufr2Xml {
   Formatter out = new Formatter(System.out);
   XMLStreamWriter staxWriter;
 
-  Bufr2Xml(Message message, NetcdfFile ncfile, OutputStream os) throws IOException {
+  Bufr2Xml(Message message, NetcdfDataset ncfile, OutputStream os) throws IOException {
     try {
-    XMLOutputFactory fac = XMLOutputFactory.newInstance();
-    staxWriter = fac.createXMLStreamWriter(os, "UTF-8");
+      XMLOutputFactory fac = XMLOutputFactory.newInstance();
+      staxWriter = fac.createXMLStreamWriter(os, "UTF-8");
 
-    staxWriter.writeStartDocument("UTF-8", "1.0");
-    staxWriter.writeCharacters("\n");
-    staxWriter.writeStartElement("bufrMessages");
+      staxWriter.writeStartDocument("UTF-8", "1.0");
+      staxWriter.writeCharacters("\n");
+      staxWriter.writeStartElement("bufrMessages");
 
-    writeMessage(message, ncfile);
+      writeMessage(message, ncfile);
 
-    staxWriter.writeCharacters("\n");
-    staxWriter.writeEndDocument();
-    staxWriter.flush();
-    os.close();
+      staxWriter.writeCharacters("\n");
+      staxWriter.writeEndDocument();
+      staxWriter.flush();
+      os.close();
 
-    out.flush();
+      out.flush();
     } catch (XMLStreamException e) {
       throw new IOException(e.getMessage());
     }

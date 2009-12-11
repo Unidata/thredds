@@ -11,6 +11,7 @@
         </descriptors>
         <webroots>
           <root url="file://$MODULE_DIR$/../../bufrTables/src/main/webapp" relative="/" />
+          <root url="file://$MODULE_DIR$/../../bufrTables/src/main/resources" relative="/WEB-INF/classes" />
         </webroots>
         <sourceRoots />
         <building>
@@ -65,21 +66,6 @@
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/lib" />
-            <url>jar://$MODULE_DIR$/../../lib/external/commons-fileupload-1.1.1.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/lib" />
-            <url>jar://$MODULE_DIR$/../../lib/external/commons-httpclient-3.1.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
-            <url>jar://$MODULE_DIR$/../../lib/external/commons-io-1.2.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-logging-1.1.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -113,16 +99,6 @@
             <url>jar://$MODULE_DIR$/../../lib/external/junit.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
-            <url>jar://$MODULE_DIR$/../../lib/external/nlog4j-1.2.25.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-            <url>file://$MODULE_DIR$/../../../bufr/resources</url>
-          </containerElement>
-          <containerElement type="library" level="module">
             <attribute name="method" value="0" />
             <attribute name="URI" value="/WEB-INF/classes" />
             <url>file://$MODULE_DIR$/../../../grib/resources</url>
@@ -153,24 +129,18 @@
             <url>jar://$MODULE_DIR$/../../lib/external/commons-io-1.4.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
-            <url>jar://$MODULE_DIR$/../../lib/release/netcdf-4.0.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
-            <url>jar://$MODULE_DIR$/../../../lib/external/junit.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
             <attribute name="method" value="0" />
             <attribute name="URI" value="/WEB-INF/lib" />
             <url>jar://$MODULE_DIR$/../../../lib/external/slf4j-jdk14-1.2.jar!/</url>
           </containerElement>
+          <containerElement type="library" name="Logging" level="project">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib" />
+          </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-            <url>file://$MODULE_DIR$/../../../../bufr/resources</url>
+            <attribute name="URI" value="/WEB-INF/lib" />
+            <url>jar://$MODULE_DIR$/../../lib/external/commons-httpclient-3.1.jar!/</url>
           </containerElement>
         </packaging>
       </configuration>
@@ -185,10 +155,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$APPLICATION_HOME_DIR$/lib/javaee.jar!/" />
+          <root url="file://$MODULE_DIR$/../../bufrTables/src/main/resources" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -196,17 +166,8 @@
     </orderEntry>
     <orderEntry type="module" module-name="cdm" exported="" />
     <orderEntry type="module" module-name="common" exported="" />
-    <orderEntry type="library" name="JSTL" level="project" />
-    <orderEntry type="library" name="Spring" level="project" />
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/commons-io-1.4.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
+    <orderEntry type="library" exported="" name="Spring" level="project" />
+    <orderEntry type="library" exported="" name="Logging" level="project" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
@@ -216,10 +177,28 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/commons-io-1.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="file://$MODULE_DIR$/../../bufrTables/src/main/resources" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/javaee.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/commons-httpclient-3.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

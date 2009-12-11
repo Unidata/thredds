@@ -948,10 +948,9 @@ public class BufrTables {
     if (location.startsWith("resource:")) {
       location = location.substring(9);
       ios = BufrTables.class.getResourceAsStream(location);
-      if (ios != null) {
-        if (debugTable) System.out.printf("BufrTables open %s %n", location);
-        return ios;
-      }
+      if (ios == null)
+        throw new RuntimeException("resource not found=<"+location+">");
+      return ios;
     }
 
     if (location.startsWith("http:")) {

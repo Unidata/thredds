@@ -42,15 +42,11 @@ import javax.servlet.http.HttpServletResponse;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.iosp.bufr.Message;
-import ucar.nc2.iosp.bufr.DataDescriptor;
-import ucar.nc2.iosp.bufr.MessageScanner;
+import ucar.nc2.iosp.bufr.*;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.util.Formatter;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 
 /**
  * Class Description.
@@ -149,7 +145,7 @@ public class BtMessInfoController extends AbstractController {
     }
   }
 
-  private void showMessSize(HttpServletResponse res, File file, String cacheName, long messPos) throws IOException {
+  private void showMessSizeOld(HttpServletResponse res, File file, String cacheName, long messPos) throws IOException {
     Message m = null;
     try {
       m = getBufrMessageByPos(file, messPos);
@@ -187,6 +183,55 @@ public class BtMessInfoController extends AbstractController {
       if (m != null) {
         m.close();
       }
+    }
+  }
+
+  private void showMessSize(HttpServletResponse res, File file, String cacheName, long messPos) throws IOException {
+    RandomAccessFile raf = null;
+    Message m = null;
+    try {
+      raf = new RandomAccessFile(file.getPath(), "r");
+      MessageScanner scan = new MessageScanner(raf, messPos);
+      if (scan.hasNext())
+        m = scan.next();
+
+      if (m == null) {
+        res.sendError(HttpServletResponse.SC_NOT_FOUND, "message " + messPos + " not found in " + cacheName);
+        return;
+      }
+
+      res.setContentType("text/plain");
+      OutputStream out = res.getOutputStream();
+      Formatter f = new Formatter(out);
+      f.format("File %s message at pos %d %n%n", cacheName, messPos);
+      if (!m.dds.isCompressed()) {
+        MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
+        reader.readData(null, m, raf, null, false, f);
+      } else {
+        MessageCompressedDataReader reader = new MessageCompressedDataReader();
+        reader.readData(null, m, raf, null, f);
+      }
+
+      int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
+      DataDescriptor root = m.getRootDataDescriptor();
+      f.format("Message nobs=%d compressed=%s vlen=%s countBits= %d givenBits=%d %n",
+          m.getNumberDatasets(), m.dds.isCompressed(), root.isVarLength(),
+          m.getCountedDataBits(), nbitsGiven);
+      f.format(" countBits= %d givenBits=%d %n", m.getCountedDataBits(), nbitsGiven);
+      f.format(" countBytes= %d dataSize=%d %n", m.getCountedDataBytes(), m.dataSection.getDataLength());
+      f.format("%n");
+      f.flush();
+
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
+
+    } finally {
+      if (m != null) {
+        m.close();
+      }
+
+      if (raf != null) raf.close();
     }
   }
 
@@ -246,7 +291,7 @@ public class BtMessInfoController extends AbstractController {
           ncfile = NetcdfFile.openInMemory("test", mbytes, "ucar.nc2.iosp.bufr.BufrIosp");
         } catch (Exception e) {
           throw new IOException(e);
-    }
+        }
         ncd = new NetcdfDataset(ncfile);
       }
 
@@ -255,13 +300,13 @@ public class BtMessInfoController extends AbstractController {
         return;
       }
 
-      res.setContentType("text/xml; charset=UTF-8");
+      res.setContentType("application/xml; charset=UTF-8");
       try {
         OutputStream out = res.getOutputStream();
         new Bufr2Xml(message, ncd, out);
         out.flush();
       } catch (Exception e) {
-        logger.warn("Exception on file "+cacheName,e);
+        logger.warn("Exception on file " + cacheName, e);
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, "message at pos=" + messPos + " cant be read, filename= " + cacheName);
       }
 

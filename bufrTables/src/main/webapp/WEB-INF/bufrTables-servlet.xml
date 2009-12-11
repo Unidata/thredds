@@ -18,10 +18,10 @@
   </bean>
 
  <bean id="cache" class="ucar.nc2.util.DiskCache2" destroy-method="exit">
-    <constructor-arg value="C:/temp/bt2/"/>
-    <constructor-arg value="false"/>
-    <constructor-arg value="3600"/>
-    <constructor-arg value="3600"/>
+    <constructor-arg type="java.lang.String" value="C:/temp/cache" />
+    <constructor-arg type="boolean" value="false"/>
+    <constructor-arg type="int" value="3600"/>
+    <constructor-arg type="int" value="3600"/>
     <property name="policy" value="1"/>
   </bean>
 
