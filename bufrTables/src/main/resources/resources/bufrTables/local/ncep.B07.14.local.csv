@@ -65,18 +65,18 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
 4,4217,"PREPBUFR: Receipt time",Hour,2,0,12
 4,4218,"PREPBUFR: Radiosonde balloon drift time minus cycle time",Hour,3,-24000,16
 4,4219,"PREPBUFR: Forecast hour",Hour,1,0,12
-5,5197,"Latitude of superob (coarse accuracy)",Degree(N+,S-),2,-9000,15
+5,5197,"Latitude of superob (coarse accuracy)",Degree,2,-9000,15
 5,5201,"Scan number",Numeric,0,0,14
 5,5202,"Position number",Numeric,0,0,10
-5,5203,"Latitude for SSM/I 85 GHz brightness temperature data (course accuracy)",Degree(N+,S-),2,-9000,15
+5,5203,"Latitude for SSM/I 85 GHz brightness temperature data (course accuracy)",Degree,2,-9000,15
 5,5204,"Channel number for SSM/I 85 GHz brightness temperature data",Numeric,0,0,6
 5,5205,"Position number for SSM/I 85 GHz brightness temperature data",Numeric,0,0,10
-5,5241,"PREPBUFR: Radiosonde balloon drift latitude",Degree(N+,S-),2,-9000,15
+5,5241,"PREPBUFR: Radiosonde balloon drift latitude",Degree,2,-9000,15
 6,6193,"SST obs type",Code table,0,0,8
 6,6194,"SST obs source",Code table,0,0,7
-6,6196,"Longitude at which satellite track crosses equator",Degree(E+,W-),2,-18000,16
-6,6197,"Longitude of superob (coarse accuracy)",Degree(E+,W-),2,-18000,16
-6,6203,"Longitude for SSM/I 85 GHz brightness temperature",Degree(E+,W-),2,-18000,16
+6,6196,"Longitude at which satellite track crosses equator",Degree,2,-18000,16
+6,6197,"Longitude of superob (coarse accuracy)",Degree,2,-18000,16
+6,6203,"Longitude for SSM/I 85 GHz brightness temperature",Degree,2,-18000,16
 6,6210,"Distance in eighths of a kilometer",125*m,0,0,12
 6,6240,"PREPBUFR: Longitude (coarse accuracy)",Degrees East,2,-18000,16
 6,6241,"PREPBUFR: Radiosonde balloon drift longitude",Degrees East,2,-18000,16

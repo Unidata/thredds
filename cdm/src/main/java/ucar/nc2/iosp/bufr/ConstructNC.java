@@ -303,9 +303,11 @@ class ConstructNC {
       log.error("illegal count= " + count + " for " + dataDesc);
     }
 
-    if (dataDesc.units == null)
+    if (dataDesc.units == null) {
       if (warnUnits) log.warn("dataDesc.units == null for " + name);
-    else {
+    } else {
+        if ((dataDesc == null) || (dataDesc.units == null))
+            System.out.println("HEY");
       if (dataDesc.units.equalsIgnoreCase("Code_Table") || dataDesc.units.equalsIgnoreCase("Code Table"))
         v.addAttribute(new Attribute("units", "CodeTable " + dataDesc.getFxyName()));
       else if (dataDesc.units.equalsIgnoreCase("Flag_Table") || dataDesc.units.equalsIgnoreCase("Flag Table"))

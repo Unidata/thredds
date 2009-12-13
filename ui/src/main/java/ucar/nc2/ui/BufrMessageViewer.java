@@ -555,6 +555,7 @@ public class BufrMessageViewer extends JPanel {
 
     public String getBitsOk() {
       try {
+        if (!getComplete().equals("true")) return "incomplete";
         return m.isBitCountOk() ? "true" : "false"; // LOOK using bit count 1
       } catch (Exception e) {
         return "exception";

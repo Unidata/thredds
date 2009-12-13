@@ -65,18 +65,18 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
 4,4217,"PREPBUFR: Receipt time",Hour,2,0,12
 4,4218,"PREPBUFR: Radiosonde balloon drift time minus cycle time",Hour,3,-24000,16
 4,4219,"PREPBUFR: Forecast hour",Hour,1,0,12
-5,5197,"Latitude of superob (coarse accuracy)",Degree (North +, South -),2,-9000,15
+5,5197,"Latitude of superob (coarse accuracy)",Degree,2,-9000,15
 5,5201,"Scan number",Numeric,0,0,14
 5,5202,"Position number",Numeric,0,0,10
-5,5203,"Latitude for SSM/I 85 GHz brightness temperature data (course accuracy)",Degree (North +, South -),2,-9000,15
+5,5203,"Latitude for SSM/I 85 GHz brightness temperature data (course accuracy)",Degree,2,-9000,15
 5,5204,"Channel number for SSM/I 85 GHz brightness temperature data",Numeric,0,0,6
 5,5205,"Position number for SSM/I 85 GHz brightness temperature data",Numeric,0,0,10
-5,5241,"PREPBUFR: Radiosonde balloon drift latitude",Degree (North +, South -),2,-9000,15
+5,5241,"PREPBUFR: Radiosonde balloon drift latitude",Degree,2,-9000,15
 6,6193,"SST obs type",Code table,0,0,8
 6,6194,"SST obs source",Code table,0,0,7
-6,6196,"Longitude at which satellite track crosses equator",Degree (East +, West -),2,-18000,16
-6,6197,"Longitude of superob (coarse accuracy)",Degree (East +, West -),2,-18000,16
-6,6203,"Longitude for SSM/I 85 GHz brightness temperature",Degree (East +, West -),2,-18000,16
+6,6196,"Longitude at which satellite track crosses equator",Degree,2,-18000,16
+6,6197,"Longitude of superob (coarse accuracy)",Degree,2,-18000,16
+6,6203,"Longitude for SSM/I 85 GHz brightness temperature",Degree,2,-18000,16
 6,6210,"Distance in eighths of a kilometer",125*m,0,0,12
 6,6240,"PREPBUFR: Longitude (coarse accuracy)",Degree (East),2,-18000,16
 6,6241,"PREPBUFR: Radiosonde balloon drift longitude",Degree (East),2,-18000,16
@@ -382,12 +382,12 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
 33,33216,"SDMEDIT quality mark for NESDIS produced satellite winds",Code table,0,0,4
 33,33217,"SSM/I rain flag (derived wind product quality indicator)",Code table,0,0,3
 33,33218,"SDMEDIT quality mark for sea-surface temperature",Code table,0,0,4
-33,33219,"MODS "QC results" flag",Flag table,0,0,8
-33,33220,"FSL "QC data" flag",CCITT IA5,0,0,8
-33,33221,"FSL "QC applied" flag for surface data (surface, hydro, satellite winds)",Flag table,0,0,11
-33,33222,"FSL "QC results" flag for surface data (surface, hydro, satellite winds)",Flag table,0,0,11
-33,33223,"FSL "QC applied" flag for upper air data (radiosonde, NPN and CAP profiler, ACARS, ACARSP, radiometer, TAMDAR)",Flag table,0,0,13
-33,33224,"FSL "QC results" flag for upper air data (radiosonde, NPN and CAP profiler, ACARS, ACARSP, radiometer, TAMDAR)",Flag table,0,0,13
+33,33219,"MODS QC results flag",Flag table,0,0,8
+33,33220,"FSL QC data flag",CCITT IA5,0,0,8
+33,33221,"FSL QC applied flag for surface data (surface, hydro, satellite winds)",Flag table,0,0,11
+33,33222,"FSL QC results flag for surface data (surface, hydro, satellite winds)",Flag table,0,0,11
+33,33223,"FSL QC applied flag for upper air data (radiosonde, NPN and CAP profiler, ACARS, ACARSP, radiometer, TAMDAR)",Flag table,0,0,13
+33,33224,"FSL QC results flag for upper air data (radiosonde, NPN and CAP profiler, ACARS, ACARSP, radiometer, TAMDAR)",Flag table,0,0,13
 33,33225,"FSL decoding correction indicator",Code table,0,0,4
 33,33226,"FSL location interpolation indicator",Code table,0,0,2
 33,33227,"FSL time interpolation indicator",Code table,0,0,2
@@ -801,12 +801,12 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
 60,60150,"Unconditional probability of severe weather during past 6 hrs",%,0,0,7
 60,60151,"Unconditional probability of severe weather during past 12 hrs",%,0,0,7
 60,60152,"Unconditional probability of severe weather during past 24 hrs",%,0,0,7
-60,60160,"Probability of liquid equivalent precipitation = 0.01", past 1 hr",%,0,0,7
-60,60161,"Probability of liquid equivalent precipitation = 0.01", past 3 hrs",%,0,0,7
-60,60162,"Probability of liquid equivalent precipitation = 0.10", past 3 hrs",%,0,0,7
-60,60163,"Probability of liquid equivalent precipitation = 0.25", past 3 hrs",%,0,0,7
-60,60164,"Probability of liquid equivalent precipitation = 0.50", past 3 hrs",%,0,0,7
-60,60165,"Probability of liquid equivalent precipitation = 1.00", past 3 hrs",%,0,0,7
+60,60160,"Probability of liquid equivalent precipitation = 0.01", past 1 hr %,0,0,7
+60,60161,"Probability of liquid equivalent precipitation = 0.01", past 3 hrs %,0,0,7
+60,60162,"Probability of liquid equivalent precipitation = 0.10", past 3 hrs %,0,0,7
+60,60163,"Probability of liquid equivalent precipitation = 0.25", past 3 hrs %,0,0,7
+60,60164,"Probability of liquid equivalent precipitation = 0.50", past 3 hrs %,0,0,7
+60,60165,"Probability of liquid equivalent precipitation = 1.00", past 3 hrs %,0,0,7
 60,60170,"Conditional probability of precip type - ice pellets",%,0,0,7
 60,60171,"Conditional probability of precip type - mixed snow/rain",%,0,0,7
 60,60172,"Conditional probability of freezing, past 3 hrs",%,0,0,7

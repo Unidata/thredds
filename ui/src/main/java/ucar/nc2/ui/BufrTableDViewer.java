@@ -296,7 +296,7 @@ public class BufrTableDViewer extends JPanel {
   private void loadVariants() {
     allVariants = new HashMap<Short, List<DdsBean>>();
     try {
-      loadVariant("wmo-v14", BufrTables.readTableD("resource:wmo/B_TableD.csv", "wmo"));
+      loadVariant("wmo-v14", BufrTables.readTableD("resource:wmo/B_TableD.csv", "csv"));
       loadVariant("ours-v13", BufrTables.readTableD("resource:local/B4M-000-013-D", "robb"));
       loadVariant("ncep-v13", BufrTables.readTableD("C:/dev/tds/thredds/bufrTables/src/main/sources/ncep/bufrtab.TableD_STD_0_13", "ncep"));
       loadVariant("ncep-v14", BufrTables.readTableD("C:/dev/tds/thredds/bufrTables/src/main/sources/ncep/bufrtab.TableD_STD_0_14", "ncep"));

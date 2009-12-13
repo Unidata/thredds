@@ -65,7 +65,7 @@ public class BufrTables {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrTables.class);
 
   private static final boolean debugTable = false;
-  private static final boolean showReadErrs = false;
+  private static final boolean showReadErrs = true;
 
   private static List<TableConfig> tables;
   private static TableA tableA;
@@ -347,10 +347,11 @@ public class BufrTables {
   static public TableB readTableB(String location, String format) throws IOException {
     TableB tb = tablesB.get(location);
     if (tb != null) return tb;
+    if (showReadErrs) System.out.printf("Read BufrTable %s format=%s%n", location, format);
 
     InputStream ios = openStream(location);
     TableB b = new TableB(location, location);
-    if (format.equals("wmo"))
+    if (format.equals("csv"))
       readWmoTableB(ios, b);
     else if (format.equals("ncep"))
       readNcepTableB(ios, b);
@@ -373,7 +374,6 @@ public class BufrTables {
   }
 
   static private void readWmoTableB(InputStream ios, TableB b) throws IOException {
-
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, Charset.forName("UTF8")));
     int count = 0;
     while (true) {
@@ -399,7 +399,7 @@ public class BufrTables {
 
       String[] flds = line.split(",");
       if (flds.length < 7) {
-        if (showReadErrs) System.out.printf("%d BAD line == %s%n", count, line);
+        if (showReadErrs) System.out.printf("%d BAD split == %s%n", count, line);
         continue;
       }
 
@@ -640,7 +640,7 @@ public class BufrTables {
 
     InputStream ios = openStream(location);
     TableD d = new TableD(location, location);
-    if (format.equals("wmo"))
+    if (format.equals("csv"))
       readWmoTableD(ios, d);
     else if (format.equals("ncep"))
       readNcepTableD(ios, d);
