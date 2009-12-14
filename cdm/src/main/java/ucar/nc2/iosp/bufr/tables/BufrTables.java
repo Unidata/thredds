@@ -347,7 +347,7 @@ public class BufrTables {
   static public TableB readTableB(String location, String format) throws IOException {
     TableB tb = tablesB.get(location);
     if (tb != null) return tb;
-    if (showReadErrs) System.out.printf("Read BufrTable %s format=%s%n", location, format);
+    if (showReadErrs) System.out.printf("Read BufrTable B %s format=%s%n", location, format);
 
     InputStream ios = openStream(location);
     TableB b = new TableB(location, location);
@@ -634,6 +634,7 @@ public class BufrTables {
   static public TableD readTableD(String location, String format) throws IOException {
     if (location == null) return null;
     if (location.trim().length() == 0) return null;
+    if (showReadErrs) System.out.printf("Read BufrTable D %s format=%s%n", location, format);
 
     TableD tb = tablesD.get(location);
     if (tb != null) return tb;

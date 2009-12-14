@@ -554,6 +554,7 @@ public class Scanner {
   static Set<Message> messSet = new HashSet<Message>();
 
   static void writeUniqueDDS(String filename, WritableByteChannel wbc) throws IOException {
+    System.out.printf("open %s %n",filename);
     RandomAccessFile raf = new RandomAccessFile(filename, "r");
 
     MessageScanner scan = new MessageScanner(raf);
@@ -563,6 +564,7 @@ public class Scanner {
       Message m = scan.next();
       if (m == null) {
         bad_msgs++;
+        System.out.printf("Bad Message%n");
         continue;
       }
 
@@ -921,9 +923,9 @@ public class Scanner {
      }); // */
 
     // extract unique DDS
-    FileOutputStream fos = new FileOutputStream("C:/data/formats/bufr3/unique.bufr");
+    FileOutputStream fos = new FileOutputStream("C:/data/formats/bufr3/uniqueRoy.bufr");
     final WritableByteChannel wbc = fos.getChannel();
-    test("C:\\data\\formats\\bufr", true, new MClosure() {
+    test("C:\\data\\formats\\bufrRoy", true, new MClosure() {
        public void run(String filename) throws IOException {
          writeUniqueDDS(filename, wbc);
        }

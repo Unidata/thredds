@@ -8,6 +8,16 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
 
 1) Changes against latest WMO table B, Dec 11, 2009:
 
+(change char to '-')
+541 6 BAD line == 11,011101,Aircraft velocity u-component,m s-1,1,?4096,13,m s-1,1,4,Validation
+542 6 BAD line == 11,011102,Aircraft velocity v-component,m s-1,1,?4096,13,m s-1,1,4,Validation
+543 6 BAD line == 11,011103,Aircraft velocity w-component,m s-1,1,?512,10,m s-1,1,4,Validation
+
+(remove)
+1363 5 BAD line == 33,033001,Reserved,,,,,,,,Operational
+1366 5 BAD line == 33,033004,Reserved,,,,,,,,Operational
+1457 BAD split == ,,,,,,,,,,
+
 From Jeff Ator:
 
 re: 0-13-044, the units are actually supposed to be C, not K.  This was intended to be corrected as an editorial change a couple of years ago, but it looks like the change never made it into the actual WMO tables.  See paragraph 3.3.5 (and the corresponding annex) in http://www.wmo.int/pages/prog/www/ISS/Reports/ET-DRC_EUMETSAT2007.doc  I am also CCing Atsushi on this apparent oversight.
@@ -15,22 +25,12 @@ re: 0-13-044, the units are actually supposed to be C, not K.  This was intended
 verified against message
 425IUGA01 EUMG 051200, Cat= Single level upper-air data (satellite), Center= 254.0 (EUMETSAT Operation Centre) (254.0), Table= 0.12.0 
 
+(change units to C)
+
 
 2) Units
 
-2.1) these two have a non-standard "degree" char before the C:
-
- 0-12-23 units
- 0-12-24 units
-
-Could remove when reading in.
-
-2.2) assume wmo is correct ???
-
-0-14-45 units
-   W m**-2 sr**-1     (NCEP)
-   W m-2 sr-1 cm-1    (WMO)
-   (W/M**2)*(1/SR)*CM (ECMWF)
+all non ascii char are removed from units.
 
 
 ///////////////

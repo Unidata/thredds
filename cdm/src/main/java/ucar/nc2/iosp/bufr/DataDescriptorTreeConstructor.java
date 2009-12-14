@@ -176,7 +176,7 @@ public class DataDescriptorTreeConstructor {
             if (subkey.y == 0) have--;
             if (need > have) {
               preflatten = true;
-              // System.out.printf("preflatten replication %d > %d%n", need, have);
+              // ScannerSystem.out.printf("preflatten replication %d > %d%n", need, have);
             }
           }
         }

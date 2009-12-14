@@ -538,9 +538,9 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
 11,011097,Wind speed from altimeter,m s-1,2,0,12,m s-1,2,4,Operational
 11,011098,Wind speed from radiometer,m s-1,2,0,12,m s-1,2,4,Operational
 11,011100,True aircraft speed,m s-1,1,0,12,m s-1,1,4,Validation
-11,011101,Aircraft velocity u-component,m s-1,1,–4096,13,m s-1,1,4,Validation
-11,011102,Aircraft velocity v-component,m s-1,1,–4096,13,m s-1,1,4,Validation
-11,011103,Aircraft velocity w-component,m s-1,1,–512,10,m s-1,1,4,Validation
+11,011101,Aircraft velocity u-component,m s-1,1,-4096,13,m s-1,1,4,Validation
+11,011102,Aircraft velocity v-component,m s-1,1,-4096,13,m s-1,1,4,Validation
+11,011103,Aircraft velocity w-component,m s-1,1,-512,10,m s-1,1,4,Validation
 11,011104,Aircraft true heading,Degree true,0,0,9,Degree true,0,3,Validation
 11,011105,EDR algorithm version,numeric,0,0,6,numeric,0,2,Validation
 11,011106,Running minimum confidence,numeric,1,0,4,numeric,1,2,Validation
@@ -1360,10 +1360,8 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
 31,031012,Extended delayed descriptor and data repetition factor,Numeric,0,0,16,,,,Operational
 31,031021,Associated field significance,Code table,0,0,6,,,,Operational
 31,031031,Data present indicator,Flag table,0,0,1,,,,Operational
-33,033001,Reserved,,,,,,,,Operational
 33,033002,Quality information,Code table,0,0,2,Code table,0,1,Operational
 33,033003,Quality information,Code table,0,0,3,Code table,0,1,Operational
-33,033004,Reserved,,,,,,,,Operational
 33,033005,Quality information (AWS data),Flag table,0,0,30,Flag table,0,10,Operational
 33,033006,Internal measurement status information (AWS),Code table,0,0,3,Code table,0,1,Operational
 33,033007,Per cent confidence,%,0,0,7,%,0,3,Operational
@@ -1454,4 +1452,3 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
 40,040023,Auxiliary altimeter state flags,Flag table,0,0,5,,,,Validation
 40,040024,Meteorological map availability,Code table,0,0,3,,,,Validation
 40,040025,Interpolation flag for mean diurnal tide,Code table,0,0,2,,,,Validation
-,,,,,,,,,,

@@ -26,6 +26,7 @@
 <h2>2. Use of BUFR Tables </h2>
 <h3>1. Use of <strong>standard WMO data descriptor ranges in local tables </strong></h3>
 <p>For both table B and table D, the areas x &lt; 48, and y &lt; 192 are reserved for  standard WMO tables. We sometimes see local tables using descriptors in this range. We assume that this is incorrect, and BUFR records that rely on this kind of <em>local override</em> will fail, at least in the CDM BUFR library.</p>
+<p>Its appears that national centers sometimes use non-allocated standard data descriptors, probably simultaneously proposing them as standard entries. However, there is no mechanism for recognizing these elements until they are added to the standard table, and if the FXY has to change due to conflicts, these messages become unuseable. </p>
 <h3>2.  Incorrect use of master table version numbers </h3>
 <p>We sometimes see BUFR records where the  version number of the master table is incorrectly specified, typically assuming elements from a later version of the master table. We assume that all versions of the master table are backwards compatible up to version 13. Therefore, we use version 13 table no matter what the BUFR record says, and so we tolerate the incorrect encoding of the master table version.</p>
 <p>Starting with version 14, master tables will no longer be backwards compatible, therefore data providers must correctly encode the master table version for versions 14 and greater.</p>
@@ -55,12 +56,17 @@
   <li>IUST53.bufr, IUSV53.bufr, IUSZ53.bufr all from NTWSTG</li>
 </ul>
 <h2 wrap="">4. BUFR  encoding complexities</h2>
-<p wrap="">&quot;Table C operator descriptors 2 22 000 through 2 37 255 provide a more sophisticated method of including quality assessment information in BUFR&quot;. These methods are so badly done as to warp the very fabric of space-time. Therefore, they should be avoided by writers. However, it should be noted that decoding them produces a not-unpleasant feeling of disembodiment and lightheadedness, and deep compassion for tortured minds, and incurable insanity wherever it is found. </p>
+<p wrap="">There are  optional features that can be used to encode BUFR messages that make decoding much more complex. We suggest avoiding these features if you are writing messages that are intended to be decoded by others' software, and especially for messages that may be part of a long-term archive. Alternative encoding methods for this kind of information are available.</p>
+<ul>
+  <li>Associated Fields (2 04 Y)</li>
+  <li>Data Not Present (2 21 Y)</li>
+  <li>Quality Assessment Information (2 22
+  000 through 2 37 255)</li>
+</ul>
 <hr width="100%" />
 <p><a href="index.html">BUFR Tables Home page</a></p>
-<p>&nbsp;</p>
 <address>
-<a href="NetcdfUsers.htm"><img src="nc.gif" alt="vv" width="64" height="64" border="0" /></a> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 26, 2008
+<a href="NetcdfUsers.htm"><img src="nc.gif" alt="vv" width="64" height="64" border="0" /></a> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Dec 14, 2009
 </address>
 </body>
 </html>
