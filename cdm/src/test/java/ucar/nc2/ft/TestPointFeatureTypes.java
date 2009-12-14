@@ -170,7 +170,7 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   public void testProblem() throws IOException {
-    checkPointDataset("C:\\data\\ft\\stationProfile\\Upperair_20070401_0000.nc", FeatureType.STATION_PROFILE, true);
+    assert 63 == checkPointDataset(TestAll.testdataDir + "sounding/netcdf/raob_soundings20216.cdf", FeatureType.STATION_PROFILE, true);
   }
 
   public void testCF() throws IOException {
@@ -248,7 +248,7 @@ public class TestPointFeatureTypes extends TestCase {
     assert 1788 == checkPointDataset(TestAll.testdataDir + "sounding/netcdf/20070612_1200", FeatureType.STATION_PROFILE, false);
 
     // FslRaob
-    assert 17 == checkPointDataset(TestAll.testdataDir + "sounding/netcdf/raob_soundings20216.cdf", FeatureType.STATION_PROFILE, false);
+    assert 63 == checkPointDataset(TestAll.testdataDir + "sounding/netcdf/raob_soundings20216.cdf", FeatureType.STATION_PROFILE, false);
     assert 4638 == checkPointDataset(TestAll.testdataDir + "sounding/netcdf/Upperair_20060621_0000.nc", FeatureType.STATION_PROFILE, false);
 
     // unidata point obs

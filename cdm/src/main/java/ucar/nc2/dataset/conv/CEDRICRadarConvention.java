@@ -57,7 +57,7 @@ import java.util.List;
  * Time: 10:40:47 AM
  * To change this template use File | Settings | File Templates.
  */
-public class CEDRICRadarConvention extends CoordSysBuilder {
+public class CEDRICRadarConvention extends CF1Convention {
 
   /**
    * @param ncfile test this NetcdfFile
@@ -95,6 +95,8 @@ public class CEDRICRadarConvention extends CoordSysBuilder {
     ncDataset.getReferencedFile().addVariable(null, ct);
    */
     NcMLReader.wrapNcMLresource(ncDataset, CoordSysBuilder.resourcesDir + "CEDRICRadar.ncml", cancelTask);
+
+    super.augmentDataset(ncDataset, cancelTask);
 
   //  ncDataset.finish();
   }

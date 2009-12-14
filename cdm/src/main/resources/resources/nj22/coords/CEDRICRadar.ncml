@@ -29,7 +29,7 @@
 
   <variable name="U">
     <attribute name="grid_mapping" value="flat_earth" />
-    <attribute name="_CoordinateAxies  " value="time z y x" />
+    <attribute name="_CoordinateAxes  " value="time z y x" />
   </variable>
 
    <variable name="Projection" type="char">

@@ -61,7 +61,7 @@ public class CSMConvention extends COARDSConvention {
     this.conventionName = "NCAR-CSM";
   }
 
-  public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
+  public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
 
     List<Variable> vars = ds.getVariables();
     for (Variable var : vars) {

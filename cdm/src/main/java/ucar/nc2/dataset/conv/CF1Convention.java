@@ -101,7 +101,7 @@ public class CF1Convention extends CSMConvention {
     this.conventionName = "CF-1.X";
   }
 
-  public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
+  public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
 
     // look for transforms
     List<Variable> vars = ds.getVariables();
