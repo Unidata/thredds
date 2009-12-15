@@ -1,0 +1,123 @@
+#
+# cut-and-paste from http://www.wmo.int/pages/prog/www/WMOCodes/Operational/CommonTables/BufrCommon-11-2008.doc
+# 12/15/2009
+# 
+00034	Tokyo (RSMC), Japan Meteorological Agency
+        207	Syowa
+		240	Kiyose
+00039	Beijing (RSMC)
+	    225	Beijing
+		226	Guangzhou
+		228	Urumuqi
+00040	Seoul
+	    243	Seoul
+		245	Jincheon
+00110	Hong-Kong, China
+	    229	Hong-Kong
+00046	Brazilian Space Agency ­ INPE
+	    10	Cachoeira Paulista (INPE)
+		11	Cuiaba (INPE)
+ 	 	12	Brasilia (INMET)
+ 	 	13	Fortaleza (FUNCEME)	   
+ 	 	14	Natal (Navy Hygrog. Centre)
+ 	 	15	Manaus (SIVAM)
+00147	COmision Nacional de Actividades Espaciales (CONAE) - Argentina
+	    10	Córdoba
+		20	Marambio
+ 	 	30	Santiago de Chile
+ 	 	40	Punta Arenas
+ 	 	50	Base Presidente Frei
+		60	Cotopaxi
+00007	US National Weather Service, NCEP
+	    1	NCEP Reanalysis Project
+		2	NCEP Ensemble Products
+ 	 	3	NCEP Central Operations
+		4	Environmental Modeling Center
+		5	Hydrometeorological Prediction Center
+ 	 	6	Ocean Prediction Center
+		7	Climate Prediction Center
+		8	Aviation Weather Center
+ 	 	9	Storm Prediction Center
+ 	 	10	National Hurricane Center
+ 	 	11	NWS Techniques Development Laboratory
+ 	 	12	NESDIS Office of Research and Applications
+		13	Federal Aviation Administration
+		14	NWS Meteorological Development Laboratory
+ 	 	15	North American Regional Reanalysis Project
+		16	Space Weather Prediction Center
+00160	U.S. NOAA/NESDIS
+	    10	Tromso (Norway)
+		11	McMurdo (Antarctica)
+00161	U.S. NOAA Office of Oceanic and Atmospheric Research (NOAA/OAR)
+	    1	Great Lakes Environmental Research Laboratory
+		2	Earth System Research Laboratory
+00173	US National Aeronautics and Space Administration (NASA)
+	    1 	Ames Research Center
+		2 	Dryden Flight Research Center
+		3 	Glenn Research Center
+ 	 	4 	Goddard Space Flight Center
+ 	 	5 	Jet Propulsion Laboratory
+ 	 	6 	Johnson Space Center
+ 	 	7 	Kennedy Space Center
+ 	 	8 	Langley Research Center
+ 	 	9 	Marshall Space Flight Center
+ 	 	10 	Stennis Space Center
+ 	 	11 	Goddard Institute for Space Studies
+ 	 	12 	Independent Verification and Validation Facility
+ 	 	13 	NASA Shared Service Center
+		14 	Wallops Flight Facility
+00002	Melbourne
+	    201	Casey
+		203	Davis
+ 	 	211	Melbourne Crib Point 1
+ 	 	214	Darwin
+ 	 	217	Perth
+ 	 	219	Townsville
+ 	 	232	Fiji
+ 	 	235	Noumea
+ 	 	237	Papeete
+ 	 	250	Vladivostock
+		251	Guam
+		252	Honolulu
+00069	Wellington (RSMC)
+	    243	Kelburn
+00072	Singapore
+	    249	Singapore
+00074	UK M.O., Exeter (RSMC)
+	    1	Shanwick Oceanic Area Control Centre
+		2	Fucino
+ 	 	3	Gatineau
+ 	 	4	Maspalomas
+ 	 	5	ESA ERS Central Facility
+ 	 	6	Prince Albert
+ 	 	7	West Freugh
+ 	 	13	Tromso
+ 	 	21	Agenzia Spaziale Italiana (Italy)
+ 	 	22	Centre National de la Recherche Scientifique (France)
+ 	 	23	GeoForschungsZentrum (Germany)
+ 	 	24	Geodetic Observatory Pecny (Czech Republic)
+ 	 	25	Institut d'Estudis Espacials de Catalunya (Spain)
+ 	 	26	Swiss Federal Office of Topography
+		27	Nordic Commission of Geodesy (Norway)
+		28	Nordic Commission of Geodesy (Sweden)
+		29	Institute de Geodesie National (France)
+ 	 	30	Bundesamt für Kartographie und Geodäsie (Germany)
+		31	Institute of Engineering Satellite Surveying and Geodesy (U.K.)
+00254	EUMETSAT Operation Centre
+	    10	Tromso (Norway)
+		20	Maspalomas (Spain)
+ 	 	30	Kangerlussuaq (Greenland)
+ 	 	40	Edmonton (Canada)
+ 	 	50	Bedford (Canada)
+ 	 	60	Gander (Canada)
+ 	 	70	Monterey (USA)
+ 	 	80	Wallops Island (USA)
+		90	Gilmor Creek (USA)
+		100	Athens (Greece
+ 	 	120	Ewa Beach, Hawaii
+ 	 	130	Miami, Florida
+		140	Lannion, France
+		150	Svalbard, Norway
+		170	St Denis (La Réunion)
+		180	Moscow
+ 	 	190	Muscat

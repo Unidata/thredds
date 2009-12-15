@@ -7,6 +7,8 @@
 # subcenter = originating/generating sub-centre  (ed3=ids byte 5, ed4=ids byte 7,8)
 # master = Version number of master tables used (ed3=ids byte 11, ed4=ids byte 14)
 # local = Version number of local tables used to augment the master table (ed3=ids byte 12, ed4=ids byte 15)
+# cat = data category (ed3=ids byte 9, ed4=ids byte 11)
+# mode = 
 # tableB,tableD = file name or resource name
 # format = "csv","ncep,"ecmwf","ukmet", or "mel-bufr"
 #

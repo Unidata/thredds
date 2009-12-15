@@ -168,13 +168,13 @@ public class TableParser {
 
     Object parse( String line) throws NumberFormatException {
       String svalue = (end > line.length()) ? line.substring(start) : line.substring(start, end);
-      svalue = StringUtil.remove(svalue,' ');
       //System.out.printf("  [%d,%d) = %s %n",start, end, svalue);
 
       if (type == String.class)
         return svalue;
 
       try {
+        svalue = StringUtil.remove(svalue,' ');
         if (type == double.class)
           return new Double( svalue);
         if (type == int.class)

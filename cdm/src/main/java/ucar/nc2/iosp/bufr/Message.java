@@ -109,8 +109,9 @@ public class Message {
   }
 
   public String getCenterName() {
-    String name = ids.getCenterId() == 7 ? TableCenters.getNCEPSubCenterName(ids.getSubCenterId()) :
-      TableCenters.getCenterName(ids.getCenterId());
+    String name = TableCenters.getCenterName(ids.getCenterId());
+    String subname = TableCenters.getSubCenterName(ids.getCenterId(), ids.getSubCenterId());
+    if (subname != null) name = name +" / " + subname;
     return ids.getCenterId() + "." + ids.getSubCenterId() + " (" + name + ")";
   }
 

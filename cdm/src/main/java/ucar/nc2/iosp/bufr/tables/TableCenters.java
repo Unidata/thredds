@@ -33,209 +33,131 @@
 
 package ucar.nc2.iosp.bufr.tables;
 
+import ucar.nc2.util.TableParser;
+import ucar.unidata.util.StringUtil;
+
+import java.io.InputStream;
+import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.nio.charset.Charset;
+
 /**
  * COMMON CODE TABLE C-1: Identification of originating/generating centre
- * LOOK should be in an external table
+ * COMMON CODE TABLE C-12: Sub-Centres of Originating Centres
  *
- * @see "http://www.wmo.int/pages/prog/www/WMOCodes/Operational/CommonTables/BufrCommon-11-2007.pdf"
  * @author caron
- * @since Oct 24, 2008
+ * @see "http://www.wmo.int/pages/prog/www/WMOCodes/Operational/CommonTables/BufrCommon-11-2008.doc"
+ * @since Dec 15, 2009
  */
 public class TableCenters {
-  
+  private static String[] tableC1 = null;
+  private static Map<Integer, String> tableC12 = null;
+
+  static private void initC1() {
+    String location = BufrTables.RESOURCE_PATH + "wmo/wmoTableC1.txt";
+    InputStream ios = BufrTables.class.getResourceAsStream(location);
+    tableC1 = new String[256];
+
+    try {
+      String prev = null;
+      List<TableParser.Record> recs = TableParser.readTable(ios, "8,13i,120", 500);
+      for (TableParser.Record record : recs) {
+        int no = (Integer) record.get(1);
+        String name = (String) record.get(2);
+        name = name.trim();
+        tableC1[no] = name.equals(")") ? prev : name;
+        prev = name;
+      }
+
+    } catch (IOException ioe) {
+
+    } finally {
+      if (ios != null)
+        try {
+          ios.close();
+        }
+        catch (IOException ioe) {
+        }
+    }
+  }
+
+  static private void initC12() {
+    String location = BufrTables.RESOURCE_PATH + "wmo/wmoTableC12.txt";
+    InputStream ios = BufrTables.class.getResourceAsStream(location);
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, Charset.forName("UTF-8")));
+    tableC12 = new HashMap<Integer, String>(200);
+    int count = 0;
+
+    int center_id = 0, subcenter_id = 0;
+
+    try {
+      while (true) {
+        String line = dataIS.readLine();
+        count++;
+        if (line == null) break;
+        if (line.startsWith("#")) continue;
+
+        String[] flds = line.split("[ \t]+"); // 1 or more whitespace
+
+        if (flds[0].startsWith("00")) {
+          center_id =  Integer.parseInt(flds[0]);
+        } else {
+          subcenter_id =  Integer.parseInt(flds[1]);
+          StringBuffer sbuff = new StringBuffer();
+          for (int i=2; i<flds.length; i++) {
+            if (i>2) sbuff.append(" ");
+            sbuff.append(flds[i]);
+          }
+          // System.out.printf("add %d %d %s %n",center_id, subcenter_id, sbuff);
+          int subid = center_id << 16 + subcenter_id;
+          tableC12.put(subid, sbuff.toString());
+        }
+      }
+
+    } catch (IOException ioe) {
+
+    } finally {
+      if (ios != null)
+        try {
+          ios.close();
+        }
+        catch (IOException ioe) {
+        }
+    }
+  }
+
   /**
-   * Name of Identification of center.
+   * Center name, from table C-1
    *
    * @param center_id center id
-   * @return center name
+   * @return center name, or "unknown"
    */
   static public String getCenterName(int center_id) {
-
-    switch (center_id) {
-      case 0:
-        return "WMO Secretariat";
-      case 1:
-      case 2:
-        return "Melbourne";
-      case 4:
-      case 5:
-        return "Moscow";
-      case 7:
-        return "US National Weather Service (NCEP)";
-      case 8:
-        return "US National Weather Service (NWSTG)";
-      case 9:
-        return "US National Weather Service (other)";
-      case 10:
-        return "Cairo (RSMC/RAFC)";
-      case 12:
-        return "Dakar (RSMC/RAFC)";
-      case 14:
-        return "Nairobi (RSMC/RAFC)";
-      case 18:
-        return "Tunis Casablanca (RSMC)";
-      case 20:
-        return "Las Palmas (RAFC)";
-      case 21:
-        return "Algiers (RSMC)";
-      case 24:
-        return "Pretoria (RSMC)";
-      case 25:
-        return "La Reunion (RSMC)";
-      case 26:
-        return "Khabarovsk (RSMC)";
-      case 28:
-        return "New Delhi (RSMC/RAFC)";
-      case 30:
-        return "Novosibirsk (RSMC)";
-      case 32:
-        return "Tashkent (RSMC)";
-      case 33:
-        return "Jeddah (RSMC)";
-      case 34:
-        return "Tokyo (RSMC), Japan Meteorological Agency";
-      case 36:
-        return "Bangkok";
-      case 37:
-        return "Ulan Bator";
-      case 38:
-        return "Beijing (RSMC)";
-      case 40:
-        return "Seoul";
-      case 41:
-        return "Buenos Aires (RSMC/RAFC)";
-      case 43:
-        return "Brasilia (RSMC/RAFC)";
-      case 45:
-        return "Santiago";
-      case 46:
-        return "Brazilian Space Agency ? INPE";
-      case 51:
-        return "Miami (RSMC/RAFC)";
-      case 52:
-        return "Miami RSMC, National Hurricane Center";
-      case 53:
-        return "Montreal (RSMC)";
-      case 55:
-        return "San Francisco";
-      case 57:
-        return "Air Force Weather Agency";
-      case 58:
-        return "Fleet Numerical Meteorology and Oceanography Center";
-      case 59:
-        return "The NOAA Forecast Systems Laboratory";
-      case 60:
-        return "United States National Centre for Atmospheric Research (NCAR)";
-      case 64:
-        return "Honolulu";
-      case 65:
-        return "Darwin (RSMC)";
-      case 67:
-        return "Melbourne (RSMC)";
-      case 69:
-        return "Wellington (RSMC/RAFC)";
-      case 71:
-        return "Nadi (RSMC)";
-      case 74:
-        return "UK Meteorological Office Bracknell (RSMC)";
-      case 76:
-        return "Moscow (RSMC/RAFC)";
-      case 78:
-        return "Offenbach (RSMC)";
-      case 80:
-        return "Rome (RSMC)";
-      case 82:
-        return "Norrkoping";
-      case 85:
-        return "Toulouse (RSMC)";
-      case 86:
-        return "Helsinki";
-      case 87:
-        return "Belgrade";
-      case 88:
-        return "Oslo";
-      case 89:
-        return "Prague";
-      case 90:
-        return "Episkopi";
-      case 91:
-        return "Ankara";
-      case 92:
-        return "Frankfurt/Main (RAFC)";
-      case 93:
-        return "London (WAFC)";
-      case 94:
-        return "Copenhagen";
-      case 95:
-        return "Rota";
-      case 96:
-        return "Athens";
-      case 97:
-        return "European Space Agency (ESA)";
-      case 98:
-        return "ECMWF, RSMC";
-      case 99:
-        return "De Bilt";
-      case 110:
-        return "Hong-Kong";
-      case 160:
-        return "US NOAA/NESDIS";
-      case 210:
-        return "Frascati (ESA/ESRIN)";
-      case 211:
-        return "Lanion";
-      case 212:
-        return "Lisboa";
-      case 213:
-        return "Reykjavik";
-      case 254:
-        return "EUMETSAT Operation Centre";
-
-      default:
-        return "Unknown center=" + center_id;
-    }
+    if (tableC1 == null) initC1();
+    String result = ((center_id < 0 || center_id > 255)) ? null : tableC1[center_id];
+    return result != null ? result : "Unknown center=" + center_id;
   }
 
   /**
-   * Name of NCEP subcenter.
-   * Source?
-   * @param subcenter_id NCEP subcenter id
-   * @return subcenter name
+   * Subcenter name, from table C-12
+   *
+   * @param center_id    center id
+   * @param subcenter_id subcenter id
+   * @return subcenter name, or null if not found
    */
-  static public String getNCEPSubCenterName(int subcenter_id) {
-      switch (subcenter_id) {
-        case 1:
-          return "NCEP / Re-Analysis Project";
-        case 2:
-          return "NCEP /  Ensemble Products";
-        case 3:
-          return "NCEP /  Central Operations";
-        case 4:
-          return "NCEP / Environmental Modeling Center";
-        case 5:
-          return "NCEP / Hydrometeorological Prediction Center";
-        case 6:
-          return "NCEP / Marine Prediction Center";
-        case 7:
-          return "NCEP / Climate Prediction Center";
-        case 8:
-          return "NCEP / Aviation Weather Center";
-        case 9:
-          return "NCEP / Storm Prediction Center";
-        case 10:
-          return "NCEP / Tropical Prediction Center";
-        case 11:
-          return "NCEP / NWS Techniques Development Laboratory";
-        case 12:
-          return "NCEP / NESDIS Office of Research and Applications";
-        case 13:
-          return "NCEP / FAA";
-        case 14:
-          return "NCEP / NWS Meteorological Development Laboratory";
-        case 15:
-          return "NCEP / The North American Regional Reanalysis (NARR) Project";
-        default:
-          return "US National Weather Service (NCEP) subcenter=" + subcenter_id;
-    }
+  static public String getSubCenterName(int center_id, int subcenter_id) {
+    if (tableC12 == null) initC12();
+    int subid = center_id << 16 + subcenter_id;
+    return tableC12.get(subid);
   }
+
+  public static void main(String arg[]) throws IOException {
+    initC12();
+  }
+
 }

@@ -56,7 +56,6 @@ import org.jdom.JDOMException;
 
 /**
  * Reads BUFR tables of various forms. Interacts with TableLookup.
- * Some hardcoding - TODO make user configurable
  */
 
 public class BufrTables {
