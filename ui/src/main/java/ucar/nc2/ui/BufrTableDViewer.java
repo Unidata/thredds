@@ -33,11 +33,9 @@ package ucar.nc2.ui;
 
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
-import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.iosp.bufr.*;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.nc2.iosp.bufr.tables.TableD;
-import ucar.unidata.util.StringUtil;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.DataType;
 

@@ -1,40 +1,135 @@
-1) bad character in FXY1:
+0) Convert WMO xls to csv:
 
-22 3 BAD line == 21,01,301002?,,001003,WMO Region number
-23 3 BAD line == 22,01,301002?,,001004,WMO Region sub-area
-24 3 BAD line == 23,01,301002?,,001005,Buoy/platform identifier
+delete other columns, so you just have:
 
-2) extra space in field 5 (FXY2):
+SNo,Category,FXY1,enElementName1,FXY2,enElementName2 <other columns ok>
 
-304 5 BAD line == 303,01,301121,(Radiosonde launch point location),0 07031,Height of barometer above MSL
-656 5 BAD line == 655,02,302074,(Present and past weather),0 20003,Present weather
-1594 5 BAD line == 1593,07,307091,(BUFR template for surface observations from one-hour period with national ..
+"save as" csv.
 
-3) Extra entry:
+1) embedded newline in enElementName1:
 
-3841 5 BAD line == 3841,16,316075,(GFA IFR Ceiling and Visibility),"2=Exclusive upper limit ",
+1069,03,303055,"(Temperature, dew-point, relative humidity and wind
+data at height levels with radiosonde position)",,"Temperature, dew-point, relative humidity and wind data at a height level with radiosonde position",Validation
+1070,03,303055,"(Temperature, dew-point, relative humidity and wind
+data at height levels with radiosonde position)",004086,Long time period or displacement (since launch time),Validation
+1071,03,303055,"(Temperature, dew-point, relative humidity and wind
+data at height levels with radiosonde position)",008042,Extended vertical sounding significance,Validation
+1072,03,303055,"(Temperature, dew-point, relative humidity and wind
+data at height levels with radiosonde position)",007009,Geopotential height,Validation
+1073,03,303055,"(Temperature, dew-point, relative humidity and wind
+data at height levels with radiosonde position)",005015,Latitude displacement since launch site (high accuracy),Validation
+1074,03,303055,"(Temperature, dew-point, relative humidity and wind
+data at height levels with radiosonde position)",006015,Longitude displacement since launch site (high accuracy),Validation
+1075,03,303055,"(Temperature, dew-point, relative humidity and wind
+data at height levels with radiosonde position)",012101,Temperature/dry-bulb temperature (scale 2),Validation
+1076,03,303055,"(Temperature, dew-point, relative humidity and wind
+data at height levels with radiosonde position)",013009,Relative humidity (see Note 4),Validation
+1077,03,303055,"(Temperature, dew-point, relative humidity and wind
+data at height levels with radiosonde position)",012103,Dew-point temperature (scale 2) (see Note 4),Validation
+1078,03,303055,"(Temperature, dew-point, relative humidity and wind
+data at height levels with radiosonde position)",011001,Wind direction,Validation
+1079,03,303055,"(Temperature, dew-point, relative humidity and wind
+data at height levels with radiosonde position)",011002,Wind speed,Validation
 
-4) multiple lines in field 6 (enElementName2) :
+1663,07,307071,(Monthly values of a land station),008050,"Qualifier for number of missing values in calculation of statistic
+= 1 (pressure)
+= 2 (temperature)
+= 4 (vapour pressure)
+= 7 (maximum temperature)
+= 8 (minimum temperature)",Operational
 
-1465:
-'Qualifier for number of missing values in calculation of statistic = 1 (pressure) = 2 (temperature) = 4 (vapour pressure) = 7 (maximum temperature) = 8 (minimum temperature)
+1668,07,307071,(Monthly values of a land station),008050,"Qualifier for number of missing values in calculation of statistic
+= 6 (sunshine duration)",Operational
 
-1471:
-'Qualifier for number of missing values in calculation of statistic
-= 6 (sunshine duration)
+1705,07,307071,(Monthly values of a land station),008050,"Qualifier for number of missing values in calculation of statistic
+= 5 (precipitation)",Operational
 
-1507:
-'Qualifier for number of missing values in calculation of statistic
-= 5 (precipitation)
+1755,07,307072,(Monthly normals for a land station),008050,"Qualifier for number of missing values in calculation of statistic = 1 (pressure), = 2 (temperature), = 3 (extreme temperatures) (see Note 4) 
+= 4 (vapour pressure), = 5 (precipitation), = 6 (sunshine duration), = 7 (maximum temperature) (see Note 4), = 8",Operational
 
-1557:
-'Qualifier for number of missing values in calculation of statistic = 1 (pressure), = 2 (temperature), = 3 (extreme temperatures), (see note 4) = 4 (vapour pressure),
-= 5 (precipitation),
-= 6 (sunshine duration) = 7 (maximum temperature), (see note 4)
+-----
 
--
+2) internal spaces in FXY2
 
-i think this is a typo in the version 13 doc:
+ 340 6 BAD line == 339,01,301121,(Radiosonde launch point location),0 07031,Height of barometer above MSL,Operational : For input string: "0 07031"
+4108 6 BAD line == 4107,15,315006,(Typically reported underwater sounding without optional fields),001 011,Ship?s call sign,Validation : For input string: "001 011"
+
+3) missing FXY2. It appears that these are group headings, and should be ignored. howeve i have not hand checked many of them.
+
+220 no fxy specified; line == 219,01,301058,(Date/time of lightning event),,Horizontal and vertical coordinates of lightning event,Validation
+228 no fxy specified; line == 227,01,301058,(Date/time of lightning event),, Emission information,Validation
+239 no fxy specified; line == 238,01,301058,(Date/time of lightning event),,Sensor Processing,Validation
+642 no fxy specified; line == 641,02,302062,"(SHIP ""instantaneous"" data from VOS)",,Precipitation past 24 hours,Validation
+647 no fxy specified; line == 646,02,302062,"(SHIP ""instantaneous"" data from VOS)",,Cloud data,Validation
+661 no fxy specified; line == 660,02,302062,"(SHIP ""instantaneous"" data from VOS)",,Icing and ice,Validation
+665 no fxy specified; line == 664,02,302062,"(SHIP ""instantaneous"" data from VOS)",,Sea/water temperature,Validation
+669 no fxy specified; line == 668,02,302062,"(SHIP ""instantaneous"" data from VOS)",,Waves,Validation
+677 no fxy specified; line == 676,02,302063,"(SHIP ""period"" data from VOS)",,Precipitation measurement,Validation
+681 no fxy specified; line == 680,02,302063,"(SHIP ""period"" data from VOS)",,Extreme temperature data,Validation
+685 no fxy specified; line == 684,02,302063,"(SHIP ""period"" data from VOS)",,Wind data,Validation
+866 no fxy specified; line == 865,02,302085,"(""Period"" data of sequence 307096)",,Wind data,Operational
+1070 no fxy specified; line == 1069,03,303055,"(Temperature  dew-point  relative humidity and wind data at height levels with radiosonde position)",,"Temperature, dew-point, relative humidity and wind data at a height level with radiosonde position",Validation
+1646 no fxy specified; line == 1645,07,307071,(Monthly values of a land station),,"Monthly mean values of pressure  temperature  extreme temperatures and vapour pressure:",Operational
+1666 no fxy specified; line == 1665,07,307071,(Monthly values of a land station),,Sunshine duration,Operational
+1671 no fxy specified; line == 1670,07,307071,(Monthly values of a land station),,Numbers of days of occurrence,Operational
+1675 no fxy specified; line == 1674,07,307071,(Monthly values of a land station),,Occurrence of extreme values of temperature and wind speed:,Operational
+1698 no fxy specified; line == 1697,07,307071,(Monthly values of a land station),,Precipitation,Operational
+1708 no fxy specified; line == 1707,07,307071,(Monthly values of a land station),,Numbers of days of occurrence,Operational
+1712 no fxy specified; line == 1711,07,307071,(Monthly values of a land station),,Occurrence of extreme precipitation,Operational
+1724 no fxy specified; line == 1723,07,307072,(Monthly normals for a land station),,"Normals of monthly mean pressure  temperatures  vapour pressure and of standard deviation:",Operational
+1740 no fxy specified; line == 1739,07,307072,(Monthly normals for a land station),,Normal of sunshine duration:,Operational
+1743 no fxy specified; line == 1742,07,307072,(Monthly normals for a land station),,Normals of precipitation:,Operational
+1985 6 BAD line == 1984,07,307092,(BUFR template for surface observations from n-minute period with national and WMO station identification),(set to missing to cancel the previous value),,Validation : For input string: "(set to missing to cancel the previous value)"
+1987 6 BAD line == 1986,07,307092,(BUFR template for surface observations from n-minute period with national and WMO station identification),(set to missing to cancel the previous value),,Validation : For input string: "(set to missing to cancel the previous value)"
+1998 no fxy specified; line == 1997,07,307092,(BUFR template for surface observations from n-minute period with national and WMO station identification),,(end of the replicated sequence),Validation
+2116 no fxy specified; line == 2115,08,308011,(Monthly values from an ocean weather station - CLIMAT SHIP),,"Monthly mean values of pressure  temperature  vapour pressure and sea/water temperature:",Operational
+2129 no fxy specified; line == 2128,08,308011,(Monthly values from an ocean weather station - CLIMAT SHIP),,Precipitation,Operational
+2145 no fxy specified; line == 2144,08,308012,(Monthly normals from an ocean weather station),,"Normals of monthly mean pressure  temperatures  vapour pressure and sea/water temperature:",Operational
+2162 no fxy specified; line == 2161,08,308012,(Monthly normals from an ocean weather station),,Normals of precipitation:,Operational
+2173 no fxy specified; line == 2172,08,308015,(Template for WAVEOB data expressed as frequency (Ia=0 in FM-65 WAVEOB),,Identification,Validation
+2186 no fxy specified; line == 2185,08,308015,(Template for WAVEOB data expressed as frequency (Ia=0 in FM-65 WAVEOB),,Basic data (WAVEOB  Section 0),Validation
+2200 no fxy specified; line == 2199,08,308015,(Template for WAVEOB data expressed as frequency (Ia=0 in FM-65 WAVEOB),,Spectral Data (WAVEOB Section 1 - 5),Validation
+2225 no fxy specified; line == 2224,08,308016,(BUFR template for WAVEOB data expressed as the wave number (Ia=1 in FM-65 WAVEOB),,Identification,Validation
+2238 no fxy specified; line == 2237,08,308016,(BUFR template for WAVEOB data expressed as the wave number (Ia=1 in FM-65 WAVEOB),,Basic data (WAVEOB  Section 0),Validation
+2252 no fxy specified; line == 2251,08,308016,(BUFR template for WAVEOB data expressed as the wave number (Ia=1 in FM-65 WAVEOB),,Spectral Data (WAVEOB Section 1 - 5),Validation
+2424 no fxy specified; line == 2423,09,309054,(Sequence for representation of CLIMAT TEMP and CLIMAT TEMP SHIP data),,Monthly mean data:,Operational
+4881 no fxy specified; line == 4880,40,340005,(JASON2 OGDR data),,Datation,Operational
+4888 no fxy specified; line == 4887,40,340005,(JASON2 OGDR data),,Location and Surface Type,Operational
+4894 no fxy specified; line == 4893,40,340005,(JASON2 OGDR data),,Flags,Operational
+4905 no fxy specified; line == 4904,40,340005,(JASON2 OGDR data),,Altimeter: Ku Band,Operational
+4923 no fxy specified; line == 4922,40,340005,(JASON2 OGDR data),,Altimeter: C band,Operational
+4941 no fxy specified; line == 4940,40,340005,(JASON2 OGDR data),,Radiometer,Operational
+4950 no fxy specified; line == 4949,40,340005,(JASON2 OGDR data),,Wind,Operational
+4957 no fxy specified; line == 4956,40,340005,(JASON2 OGDR data),,Dynamic topography,Operational
+4982 no fxy specified; line == 4981,40,340006,(IASI principal component scores),,Satellilte processing information,Validation
+4987 no fxy specified; line == 4986,40,340006,(IASI principal component scores),,Date and time,Validation
+4999 no fxy specified; line == 4998,40,340006,(IASI principal component scores),,Location information,Validation
+5016 no fxy specified; line == 5015,40,340006,(IASI principal component scores),,Quality information,Validation
+5023 no fxy specified; line == 5022,40,340006,(IASI principal component scores),,AVHRR scene analysis,Validation
+5033 no fxy specified; line == 5032,40,340006,(IASI principal component scores),,Instrument band definition,Validation
+5039 no fxy specified; line == 5038,40,340006,(IASI principal component scores),,Principal component scores for band,Validation
+5100 no fxy specified; line == 5099,40,340008,"(IASI sequence combining PC scores  channel selection and enhanced data)",,Satellite processing information,Validation
+5105 no fxy specified; line == 5104,40,340008,"(IASI sequence combining PC scores  channel selection and enhanced data)",,Date and time,Validation
+5116 no fxy specified; line == 5115,40,340008,"(IASI sequence combining PC scores  channel selection and enhanced data)",,Location information,Validation
+5134 no fxy specified; line == 5133,40,340008,"(IASI sequence combining PC scores  channel selection and enhanced data)",,Quality information,Validation
+5145 no fxy specified; line == 5144,40,340008,"(IASI sequence combining PC scores  channel selection and enhanced data)",,IASI subset of channels,Validation
+5154 no fxy specified; line == 5153,40,340008,"(IASI sequence combining PC scores  channel selection and enhanced data)",,Instrument band definition,Validation
+5161 no fxy specified; line == 5160,40,340008,"(IASI sequence combining PC scores  channel selection and enhanced data)",,Principal component scores for band,Validation
+5165 no fxy specified; line == 5164,40,340008,"(IASI sequence combining PC scores  channel selection and enhanced data)",,AVHRR scene analysis,Validation
+5201 no fxy specified; line == 5200,40,340010,(JASON-2 OGDR data),,Satellite,Validation
+5209 no fxy specified; line == 5208,40,340010,(JASON-2 OGDR data),,Datation,Validation
+5216 no fxy specified; line == 5215,40,340010,(JASON-2 OGDR data),,Location and Surface Type,Validation
+5222 no fxy specified; line == 5221,40,340010,(JASON-2 OGDR data),,Flags,Validation
+5236 no fxy specified; line == 5235,40,340010,(JASON-2 OGDR data),,Altimeter: Ku Band,Validation
+5254 no fxy specified; line == 5253,40,340010,(JASON-2 OGDR data),,Altimeter: C band,Validation
+5272 no fxy specified; line == 5271,40,340010,(JASON-2 OGDR data),,Radiometer,Validation
+5281 no fxy specified; line == 5280,40,340010,(JASON-2 OGDR data),,Wind,Validation
+5288 no fxy specified; line == 5287,40,340010,(JASON-2 OGDR data),,Dynamic Topography,Validation
+
+--------------
+
+
+4) i think this is a typo in the version 13 doc:
 
 474    02    302044    (Evaporation data)    013003    Evaporation /evapotranspiration
 

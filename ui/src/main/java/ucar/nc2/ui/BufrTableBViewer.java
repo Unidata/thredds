@@ -33,22 +33,12 @@ package ucar.nc2.ui;
 
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
-import ucar.util.prefs.ui.Debug;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.SimpleUnit;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.Variable;
-import ucar.nc2.Structure;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Attribute;
 import ucar.nc2.iosp.bufr.*;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.nc2.iosp.bufr.tables.TableB;
-import ucar.nc2.iosp.bufr.tables.CompareTableB;
-import ucar.ma2.StructureDataIterator;
-import ucar.ma2.StructureData;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.io.*;
 import ucar.unidata.io.RandomAccessFile;
 
 import javax.swing.*;

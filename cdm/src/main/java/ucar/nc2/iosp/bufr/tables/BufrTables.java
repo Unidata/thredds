@@ -700,9 +700,9 @@ public class BufrTables {
         int cat = Integer.parseInt(flds[fldidx++]);
         int seq = Integer.parseInt(flds[fldidx++]);
         String seqName = flds[fldidx++];
-        String featno = flds[fldidx++];
-        if (featno.trim().length() == 0) {
-          if (showReadErrs) System.out.printf("%d no fxy specified; line == %s%n", count, line);
+        String featno = flds[fldidx++].trim();
+        if (featno.length() == 0) {
+          if (showReadErrs) System.out.printf("%d no FXY2 specified; line == %s%n", count, line);
           continue;
         }
         String featName = (flds.length > 5) ? flds[fldidx++] : "n/a";
