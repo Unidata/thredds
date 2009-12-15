@@ -75,7 +75,7 @@
   </patternset>
 
   <!-- Project libraries needed for compile. -->
-  <property name="bufrTables.jar" value="release/bufrTables-1.5.jar"/>
+  <property name="bufrTables.jar" value="release/bufrTables-2.0.jar"/>
   <property name="netcdf.jar" value="release/netcdf-4.1.jar"/>
   <property name="grib.jar" value="release/grib-8.0.jar"/>
   <property name="prefs.jar" value="release/prefsAll.jar"/>
