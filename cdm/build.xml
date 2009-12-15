@@ -795,7 +795,7 @@
   <target name="dist" depends="makeAll, makeIDVjar, makeSrc-CDM, javadoc, javadocAll"
           description="create a full distribution"/>
 
-  <target  name="cleanReleaseInternal" depends="clean, makeIDVjar, releaseInternal" />
+  <target  name="cleanReleaseInternal" depends="clean, makeAll, makeIDVjar, releaseInternal" />
 
   <!-- release library -->
   <target name="releaseInternal" description="internal release to lib">

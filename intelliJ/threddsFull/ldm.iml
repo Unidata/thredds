@@ -9,8 +9,8 @@
     <output url="file://$MODULE_DIR$/../../ldm/target/classes" />
     <output-test url="file://$MODULE_DIR$/../../ldm/target/test/classes" />
     <exclude-output />
-    <content url="file://$MODULE_DIR$/../../ldm/src/main">
-      <sourceFolder url="file://$MODULE_DIR$/../../ldm/src/main" isTestSource="false" />
+    <content url="file://$MODULE_DIR$/../../ldm">
+      <excludeFolder url="file://$MODULE_DIR$/../../ldm/src/main/thredds" />
     </content>
     <orderEntry type="jdk" jdkName="1.6" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
