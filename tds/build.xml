@@ -536,7 +536,7 @@
 
   <!-- Make source release. -->
   <property name="tdsSrcRelease.jar" value="tdsSrc-${release.version}.jar"/>
-  <target name="makeSrc-TDS" description="create TDS source release">
+  <target name="makeSrc-TDS" depends="init" description="create TDS source release">
     <jar jarfile="${build.dir}/${tdsSrcRelease.jar}" index="true" duplicate="preserve">
       <fileset dir="${root.dir}/..">
         <include name="common/**" />

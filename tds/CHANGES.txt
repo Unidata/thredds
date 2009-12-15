@@ -3,7 +3,19 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Release Details 4.1:
- 0:
+ alpha 14 ():
+   netCDF-Java/CDM:
+     Vis5D IOSP: new
+     more BUFR
+     add AlbersEllipse to GeoTIFF writer
+ alpha 13 (2009-11-09):
+   fix cdmremote station protocol
+   netCDF-Java/CDM:
+     CF PointObs including lots of BUFR additions/fixes
+     GRIB: improve accumulated data representation, hybrid levels
+     GEMPAK IOSP: various fixes
+   clean up debug flags
+ alpha 12 (2009-10-23):
   include fix for Gempak grid IOSP
   catalog?dataset=id with unknown id now returns 404 not 400
   add pointstream error handling

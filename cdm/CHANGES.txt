@@ -31,13 +31,14 @@ Changes in version 4.1:
   CF doesnt require feature type - will default to point
   point datasets: NLDN, USPLN, Madis-ACARS
   add SequenceDS extends StructureDS
+  Add GEMPAK sounding IOSP
   NetcdfFile, IOSP getStructureIterator() for top-level sequences
   BUFR edition 4 had month+1 on reference time
   OPeNDAP scalars like NcSDInt32 were assuming Array.D0
  8:
   Add -isLargeFile option to FileWriter to generate 64-bit offset files
   DefaultConventions: allow multiple forced time coords
-  Grib: precipitation accumulation
+  Grib: precipitation accumulation, hybrid sigma levels
   point datasets: CF-1.5, Suomi, FslWindProfiler, Cosmic, GempakSurface, Madis, UnidataObs, GempakSounding
   catch illegal bounds shapes in CoordAxis1D.makeBounds()
   UAMIV iosp not handling file seperator generally
