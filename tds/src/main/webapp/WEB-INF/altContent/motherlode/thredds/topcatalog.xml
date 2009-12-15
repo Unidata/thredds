@@ -18,9 +18,13 @@
                 xlink:title="IRI/LDEO Climate Data Library" name="" />
     <catalogRef xlink:href="http://dataportal.ucar.edu/metadata/ucar.thredds"
                 xlink:title="NCAR Data Portal" name="" />
-    <dataset name="NOAA/NCDC NOMADS">
+    <dataset name="NOAA NOMADS">
       <catalogRef xlink:href="http://nomads.ncdc.noaa.gov/thredds/catalog.xml"
-                  xlink:title="NCDC NOMADS Data Server" name="" />
+                  xlink:title="NCDC NOMADS Data Server (TDS)" name="" />
+      <catalogRef xlink:href="http://nomads.ncdc.noaa.gov/dods/thredds"
+                  xlink:title="NCDC NOMADS Data Server (GDS)" name="" />
+      <catalogRef xlink:href="http://nomads.ncep.noaa.gov:9090/dods/thredds"
+                  xlink:title="NCEP NOMADS Data Server" name="" />
     </dataset>
 
     <catalogRef xlink:href="http://coast-enviro.er.usgs.gov/thredds/bathy_catalog.xml"
