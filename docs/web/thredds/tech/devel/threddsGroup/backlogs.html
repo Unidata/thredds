@@ -1,8 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head>
-  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-  <title>THREDDS Group - Planning</title></head>
-<body>
+
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>THREDDS Group - Planning</title></head><body>
 
 <h1>THREDDS Group - Planning</h1>
 
@@ -29,7 +28,10 @@
 
 <h2>Version 4.2 [Dec 15]</h2>
 <ul>
-  <li>catalog2 on server</li><li>consider non-catalog config mechanism</li><ul><li>catalog2</li><li>follow Spring bean wiring paradigm</li><li>GUI interface hides XML</li></ul><li>generic config mechanism for point datasets</li><li>[FileSystem DatasetScan] Use FileSystem for tracking collections of
+  <li>catalog2 on server</li><li>consider non-catalog config mechanism</li><ul><li>catalog2</li><li>follow Spring bean wiring paradigm</li><li>GUI interface hides XML</li></ul><li>caching, aggregation, changing datasets<br>
+</li>
+  <li>generic config mechanism for point datasets</li>
+<li>[FileSystem DatasetScan] Use FileSystem for tracking collections of
     datasets for DatasetScan/CatalogGen.</li><li>[DatasetSource] Extract and use new interface for locating datasets given
     an ID.</li><ul><li>GOAL: separate data location from HTTP request processing; allow
     TDS, ncWMS, RAMADDA to use same interface. ("<code>TDS Services -&gt;|&lt;- DatasetSource interface -&gt;|&lt;- TDS State</code>")</li><li>Register IDs or ID groups that are handled (state impl side of things)</li><li>Handle restricted data?
@@ -51,7 +53,12 @@ TdsContext] Update RadarServer to use TdsContext and FileSource for
 locating config directories and files (Spring Bean? Spring MVC?).</li>
 </ul>
 
-<h2>Version 4.3 []</h2><ul><li>[Unidata Real-time Regional WRF model] Improve the "idd/rtmodels.xml" catalog to separate out model runs,&nbsp;extract lat/lon bounding box for each run, and aggregate over the forecast hours for each run. [[??Use pluggable DatasetCollection to organize data. Use [AutoMetadataExtraction] for lat/lon bounding box. ??]]</li><li>[TDS Config State]</li><li>[FMRC Refactor] ???</li></ul><h2>Product Backlog</h2>
+<h2>Version 4.3 []</h2><ul><li>[Unidata Real-time Regional WRF model]
+Improve the "idd/rtmodels.xml" catalog to separate out model
+runs,&nbsp;extract lat/lon bounding box for each run, and aggregate
+over the forecast hours for each run. [[??Use pluggable
+DatasetCollection to organize data. Use [AutoMetadataExtraction] for
+lat/lon bounding box. ??]]</li><li>[TDS Config State]</li><li>[FMRC Refactor] ???</li></ul><h2>Product Backlog</h2>
 
 <ul>
   <li>[FileSystem Updater] Extend FileSystem to support pluggable update
