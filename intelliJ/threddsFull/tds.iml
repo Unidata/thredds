@@ -133,11 +133,6 @@
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/lib" />
-            <url>jar://$MODULE_DIR$/../../lib/ncWMS/ehcache-1.4.0.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
             <url>jar://$MODULE_DIR$/../../lib/ncWMS/geoapi-nogenerics-2.1.0.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -305,10 +300,6 @@
             <attribute name="URI" value="&lt;N/A&gt;" />
             <url>jar://$MODULE_DIR$/../../lib/external/tomcat-5.5.20_servlet-api.jar!/</url>
           </containerElement>
-          <containerElement type="library" name="protobuf" level="application">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
-          </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/lib" />
@@ -318,6 +309,15 @@
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/lib" />
             <url>jar://$MODULE_DIR$/../../lib/external/jdom.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib" />
+            <url>jar://$MODULE_DIR$/../../lib/external/protobuf-java-2.1.0.jar!/</url>
+          </containerElement>
+          <containerElement type="library" name="ehcache" level="project">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib" />
           </containerElement>
         </packaging>
       </configuration>
@@ -1446,15 +1446,6 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/commons-io-1.4.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/ncWMS/ehcache-1.4.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

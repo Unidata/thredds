@@ -147,7 +147,7 @@
     </facet>
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
-    <output url="file://$MODULE_DIR$/../../bufrTables/target/WEB-INF/classes" />
+    <output url="file://$MODULE_DIR$/../../bufrTables/target/classes" />
     <output-test url="file://$MODULE_DIR$/../../bufrTables/target/test/classes" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../bufrTables">

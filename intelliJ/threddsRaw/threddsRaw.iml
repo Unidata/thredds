@@ -40,8 +40,8 @@
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/../../threddsRaw/target/classes" />
-    <exclude-output />
     <output-test url="file://$MODULE_DIR$/../../threddsRaw/target/test/classes" />
+    <exclude-output />
     <content url="file://$MODULE_DIR$/../.." />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
