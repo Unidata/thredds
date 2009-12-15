@@ -146,7 +146,7 @@ public class FeatureScan {
     return (pos > 0) ? name.substring(0, pos) : name;
   }
 
-  private boolean debug = true;
+  private boolean debug = false;
   public class Bean {
     public File f;
     String fileType;

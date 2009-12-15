@@ -702,7 +702,7 @@ public class BufrTables {
         String seqName = flds[fldidx++];
         String featno = flds[fldidx++];
         if (featno.trim().length() == 0) {
-          if (showReadErrs) System.out.printf("%d skip line == %s%n", count, line);
+          if (showReadErrs) System.out.printf("%d no fxy specified; line == %s%n", count, line);
           continue;
         }
         String featName = (flds.length > 5) ? flds[fldidx++] : "n/a";
@@ -726,7 +726,7 @@ public class BufrTables {
         currDesc.addFeature((short) fxy);
 
       } catch (Exception e) {
-        if (showReadErrs) System.out.printf("%d %d BAD line == %s%n", count, fldidx, line);
+        if (showReadErrs) System.out.printf("%d %d BAD line == %s : %s%n", count, fldidx, line, e.getMessage());
       }
     }
   }

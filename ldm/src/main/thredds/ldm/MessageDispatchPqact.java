@@ -214,15 +214,11 @@ public class MessageDispatchPqact {
       if (first == null) {
         first = m;
       } else if (m.hashCode() != first.hashCode() && !ignore) {
-        try {
           out.format(" DDS doesnt match pqact= %s %n", pats);
           first.dumpHeader(out);
           m.dumpHeader(out);
           out.format("%n");
           mixedDDS++;
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
         return false;
       }
       count++;
