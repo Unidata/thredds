@@ -33,9 +33,8 @@
 package ucar.nc2.iosp.bufr;
 
 import ucar.unidata.io.RandomAccessFile;
-import ucar.nc2.iosp.bufr.tables.TableCenters;
+import ucar.nc2.iosp.bufr.tables.CommonCodeTables;
 import ucar.nc2.iosp.bufr.tables.TableB;
-import ucar.nc2.iosp.bufr.tables.TableDataSubcategories;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -109,8 +108,8 @@ public class Message {
   }
 
   public String getCenterName() {
-    String name = TableCenters.getCenterName(ids.getCenterId());
-    String subname = TableCenters.getSubCenterName(ids.getCenterId(), ids.getSubCenterId());
+    String name = CommonCodeTables.getCenterName(ids.getCenterId());
+    String subname = CommonCodeTables.getSubCenterName(ids.getCenterId(), ids.getSubCenterId());
     if (subname != null) name = name +" / " + subname;
     return ids.getCenterId() + "." + ids.getSubCenterId() + " (" + name + ")";
   }
@@ -768,7 +767,7 @@ public class Message {
 
     out.format(" BUFR edition %d time= %s wmoHeader=%s hash=[0x%x] %n",
             is.getBufrEdition(), getReferenceTime(), getHeader(), hashCode());
-    out.format("   Category= %s %s %n", getCategoryNo(), getCategoryName());
+    out.format("   Category= %s %s %n", getCategoryNo(), getCategoryFullName());
     out.format("   Center= %s %n", getCenterName());
     out.format("   Table= %s wmoTable= %s localTable= %s%n",
             getTableName(), lookup.getWmoTableBName(), lookup.getLocalTableBName());
@@ -821,7 +820,7 @@ public class Message {
   public String getCategoryFullName() throws IOException {
     try {
       String catName = getCategoryName();
-      String subcatName = TableDataSubcategories.getSubCategory(ids.getCategory(), ids.getSubCategory());
+      String subcatName = CommonCodeTables.getDataSubcategoy(ids.getCategory(), ids.getSubCategory());
       boolean hasSubName = !subcatName.equalsIgnoreCase("Unknown");
 
       if (hasSubName)

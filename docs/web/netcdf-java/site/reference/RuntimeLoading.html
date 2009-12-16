@@ -44,7 +44,12 @@ dl {margin: 10px 5px 5px 15px;)
 <pre wrap=""> <strong> ucar.grib.grib1.GribPDSParamTable.addParameterUserLookup</strong>( String filename);
   <strong>ucar.grib.grib2.ParameterTable.addParametersUser</strong>( String filename);</pre>
 <p wrap="">  The 
-    table must follow the GRIB1 and GRIB2 <a href="http://www.unidata.ucar.edu/software/decoders/grib/javadoc/Parameters.txt">table formats</a>, respectively.<br>
+table must follow the GRIB1 and GRIB2 <a href="http://www.unidata.ucar.edu/software/decoders/grib/javadoc/Parameters.txt">table formats</a>, respectively.</p>
+<h3>Register a BUFR Table lookup:</h3>
+<pre wrap=""> <strong> ucar.nc2.iosp.bufr.tables.BufrTables.addLookupFile</strong>( String filename) throws throws FileNotFoundException;</pre>
+<p wrap=""> The 
+  file must be a <a href="BufrTables.html">BUFR table lookup file</a>.</p>
+<p wrap=""><br>
 </p>
 <h2>Runtime Configuration<a name="XML"></a> </h2>
 <p>Instead of calling the above routines in your code, you can pass the nj22 library an XML configuration file, that looks like this: </p>
@@ -61,15 +66,17 @@ dl {margin: 10px 5px 5px 15px;)
 
 <strong>5)</strong> &lt;<strong>table</strong> type="GRIB1" filename="/home/rkambic/grib/tables/userlookup.lst"/&gt;
 
-<strong>6)</strong> &lt;<strong>table</strong> type="GRIB2" filename="/home/rkambic/grib/tables/grib2userparameters&quot; /&gt;</pre>
-<pre>&lt;/nj22Config&gt;</pre>
+<strong>6)</strong> &lt;<strong>table</strong> type="GRIB2" filename="/home/rkambic/grib/tables/grib2userparameters&quot; /&gt;
+<strong>7)</strong> &lt;<strong>bufrtable</strong> filename="C:/my/files/lookup.txt&quot; /&gt;
+&lt;/nj22Config&gt;</pre>
 <ol>
   <li>Loads an <strong>IOServiceProvider</strong> with the given class name</li>
   <li> Loads a <strong>CoordSysBuilderIF</strong> with the given class name, which looks for the given <strong>Convention</strong> attribute value. </li>
   <li>Loads a <strong>CoordTransBuilderIF</strong> with the given class name, which looks for the given <strong>transformName </strong>in the dataset. The type must be <em>vertical</em> or <em>projection</em>. </li>
   <li>Loads a <strong>TypedDatasetFactoryIF</strong> with the given class name. Currently supported datatypes are <em>Grid, Point, Station, Trajectory </em>and<em> Radial</em>. Others will be added from the enumeration in <strong>thredds.catalog.DataType</strong>.</li>
-  <li>Load a GRIB-1 parameter table</li>
-  <li>Load a GRIB-2 parameter table. </li>
+  <li>Load a <a href="GribTables.html">GRIB-1 parameter table</a></li>
+  <li>Load a <a href="GribTables.html">GRIB-2 parameter table</a>.</li>
+  <li>Load a <a href="BufrTables.html">BUFR table lookup</a> file </li>
 </ol>
 <p>There are several ways pass the XML to library. From your application, you can pass a <strong>java.io.InputStream</strong> (or <a href="http://www.jdom.org/">JDOM</a> element) to ucar.nc2.util.RuntimeConfigParser, as in the following examples: </p>
 <pre>  // Example 1: read from file
@@ -96,7 +103,7 @@ dl {margin: 10px 5px 5px 15px;)
 <p>&nbsp;</p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on October, 2009
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on December, 2009
 </address>
 </body>
 </html>

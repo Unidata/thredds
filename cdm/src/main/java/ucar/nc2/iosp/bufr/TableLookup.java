@@ -46,12 +46,6 @@ import java.io.IOException;
 public final class TableLookup {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TableLookup.class);
 
-  public enum Mode {
-    wmoOnly,        // wmo entries only found from wmo table
-    wmoLocal,       // if wmo entries not found in wmo table, look in local table
-    localOverride   // look in local first, then wmo
-  }
-
   static private final boolean showErrors = true;
 
   /////////////////////////////////////////
@@ -60,7 +54,7 @@ public final class TableLookup {
 
   private TableB wmoTableB;
   private TableD wmoTableD;
-  public Mode mode = Mode.wmoOnly;
+  public BufrTables.Mode mode = BufrTables.Mode.wmoOnly;
 
   public TableLookup(BufrIdentificationSection ids) throws IOException {
     this.wmoTableB = BufrTables.getWmoTableB(ids);
@@ -70,19 +64,12 @@ public final class TableLookup {
     if (tables != null) {
       this.localTableB = tables.b;
       this.localTableD = tables.d;
+      this.mode = (tables.mode == null) ? BufrTables.Mode.wmoOnly : tables.mode;
     }
   }
 
-  public void setMode(Mode mode) {
-    this.mode = mode;
-  }
-
-  public Mode getMode() {
-    return mode;
-  }
-
   public String getDataCategory(int cat) {
-    return BufrTables.getDataCategory( cat);
+    return CommonCodeTables.getDataCategory( cat);
   }
 
   public final String getWmoTableBName() {
@@ -105,15 +92,15 @@ public final class TableLookup {
     TableB.Descriptor b = null;
     boolean isWmoRange = Descriptor.isWmoRange(fxy);
 
-    if (isWmoRange && (mode == Mode.wmoOnly)) {
+    if (isWmoRange && (mode == BufrTables.Mode.wmoOnly)) {
       b = wmoTableB.getDescriptor(fxy);
 
-    } else if (isWmoRange && (mode == Mode.wmoLocal)) {
+    } else if (isWmoRange && (mode == BufrTables.Mode.wmoLocal)) {
       b = wmoTableB.getDescriptor(fxy);
       if ((b == null) && (localTableB != null))
         b = localTableB.getDescriptor(fxy);
 
-    } else if (isWmoRange && (mode == Mode.localOverride)) {
+    } else if (isWmoRange && (mode == BufrTables.Mode.localOverride)) {
       if (localTableB != null)
         b = localTableB.getDescriptor(fxy);
       if (b == null)
@@ -151,15 +138,15 @@ public final class TableLookup {
     TableD.Descriptor d = null;
     boolean isWmoRange = Descriptor.isWmoRange(fxy);
 
-    if (isWmoRange && (mode == Mode.wmoOnly)) {
+    if (isWmoRange && (mode == BufrTables.Mode.wmoOnly)) {
       d = wmoTableD.getDescriptor(fxy);
 
-    } else if (isWmoRange && (mode == Mode.wmoLocal)) {
+    } else if (isWmoRange && (mode == BufrTables.Mode.wmoLocal)) {
       d = wmoTableD.getDescriptor(fxy);
       if ((d == null) && (localTableD != null))
         d = localTableD.getDescriptor(fxy);
 
-    } else if (isWmoRange && (mode == Mode.localOverride)) {
+    } else if (isWmoRange && (mode == BufrTables.Mode.localOverride)) {
       if (localTableD != null)
         d = localTableD.getDescriptor(fxy);
       if (d == null)

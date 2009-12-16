@@ -34,7 +34,6 @@
 package ucar.nc2.iosp.bufr.tables;
 
 import ucar.nc2.util.TableParser;
-import ucar.unidata.util.StringUtil;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -43,20 +42,49 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.ArrayList;
 import java.nio.charset.Charset;
 
 /**
  * COMMON CODE TABLE C-1: Identification of originating/generating centre
  * COMMON CODE TABLE C-12: Sub-Centres of Originating Centres
+ * COMMON CODE TABLE C-13: Data sub categories of categories defined by entries in BUFR Table A
  *
  * @author caron
  * @see "http://www.wmo.int/pages/prog/www/WMOCodes/Operational/CommonTables/BufrCommon-11-2008.doc"
  * @since Dec 15, 2009
  */
-public class TableCenters {
+public class CommonCodeTables {
   private static String[] tableC1 = null;
+  private static String[] tableA = null;
   private static Map<Integer, String> tableC12 = null;
+  private static Map<Integer, String> tableC13 = null;
+
+  static private void initTableA() {
+    String location = BufrTables.RESOURCE_PATH + "wmo/TableA-11-2008.txt";
+    InputStream ios = BufrTables.class.getResourceAsStream(location);
+    tableA = new String[256];
+
+    try {
+      List<TableParser.Record> recs = TableParser.readTable(ios, "3i,60", 255);
+      for (TableParser.Record record : recs) {
+        int no = (Integer) record.get(0);
+        String name = (String) record.get(1);
+        name = name.trim();
+        tableA[no] = name;
+        //System.out.printf("add %d %s%n", no, name);
+      }
+
+    } catch (IOException ioe) {
+
+    } finally {
+      if (ios != null)
+        try {
+          ios.close();
+        }
+        catch (IOException ioe) {
+        }
+    }
+  }
 
   static private void initC1() {
     String location = BufrTables.RESOURCE_PATH + "wmo/wmoTableC1.txt";
@@ -131,6 +159,52 @@ public class TableCenters {
     }
   }
 
+  static private void initC13() {
+    String location = BufrTables.RESOURCE_PATH + "wmo/wmoTableC13.txt";
+    InputStream ios = BufrTables.class.getResourceAsStream(location);
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, Charset.forName("UTF-8")));
+    tableC13 = new HashMap<Integer, String>(200);
+    int count = 0;
+
+    int cat = 0, subcat = 0;
+
+    try {
+      while (true) {
+        String line = dataIS.readLine();
+        count++;
+        if (line == null) break;
+        if (line.startsWith("#")) continue;
+
+        String[] flds = line.split("[ \t]+"); // 1 or more whitespace
+        //System.out.printf("flds[0] = <%s>%n",flds[0]);
+
+        if (flds[0].length() > 0) {
+          cat =  Integer.parseInt(flds[0]);
+        } else {
+          subcat =  Integer.parseInt(flds[1]);
+          StringBuffer sbuff = new StringBuffer();
+          for (int i=2; i<flds.length; i++) {
+            if (i>2) sbuff.append(" ");
+            sbuff.append(flds[i]);
+          }
+          //System.out.printf("add %d %d %s %n",cat, subcat, sbuff);
+          int subid = cat << 16 + subcat;
+          tableC13.put(subid, sbuff.toString());
+        }
+      }
+
+    } catch (IOException ioe) {
+
+    } finally {
+      if (ios != null)
+        try {
+          ios.close();
+        }
+        catch (IOException ioe) {
+        }
+    }
+  }
+
   /**
    * Center name, from table C-1
    *
@@ -156,8 +230,35 @@ public class TableCenters {
     return tableC12.get(subid);
   }
 
+  /**
+   * data subcategory name, from table C-13
+   *
+   * @param cat    data category
+   * @param subcat data subcategory
+   * @return subcategory name, or null if not found
+   */
+  static public String getDataSubcategoy(int cat, int subcat) {
+    if (tableC13 == null) initC13();
+    int subid = cat << 16 + subcat;
+    return tableC13.get(subid);
+  }
+
+  /**
+   * data category name, from table A
+   *
+   * @param cat    data category
+   * @return category name, or null if not found
+   */
+  static public String getDataCategory(int cat) {
+    if (tableA == null) initTableA();
+    String result = ((cat < 0 || cat > 255)) ? null : tableA[cat];
+    return result != null ? result : "Unknown category=" + cat;
+  }
+
+  /////////////////////////////////////////////////////
+
   public static void main(String arg[]) throws IOException {
-    initC12();
+    initTableA();
   }
 
 }

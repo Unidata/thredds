@@ -33,7 +33,7 @@
 package ucar.nc2.iosp.bufr.tables;
 
 /**
- * LOOK should be in an external table
+ * NCEP specific I guess ???
  * @author caron
  * @since Oct 25, 2008
  */

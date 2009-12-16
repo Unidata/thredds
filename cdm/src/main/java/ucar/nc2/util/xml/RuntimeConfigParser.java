@@ -151,7 +151,16 @@ public class RuntimeConfigParser {
           } catch (Exception e) {
             errlog.append("table read failed on  "+filename+" = "+e.getMessage()+"\n");
           }
+
+        } else if (elem.getName().equals("bufrtable")) {
+          String filename = elem.getAttributeValue("filename");
+          try {
+            ucar.nc2.iosp.bufr.tables.BufrTables.addLookupFile( filename);
+          } catch (Exception e) {
+            errlog.append("bufrtable read failed on  "+filename+" = "+e.getMessage()+"\n");
+          }
         }
+
       }
     }
 
