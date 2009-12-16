@@ -767,7 +767,7 @@ public class Message {
 
     out.format(" BUFR edition %d time= %s wmoHeader=%s hash=[0x%x] %n",
             is.getBufrEdition(), getReferenceTime(), getHeader(), hashCode());
-    out.format("   Category= %s %s %n", getCategoryNo(), getCategoryFullName());
+    out.format("   Category= %s %n", getCategoryFullName());
     out.format("   Center= %s %n", getCenterName());
     out.format("   Table= %s wmoTable= %s localTable= %s%n",
             getTableName(), lookup.getWmoTableBName(), lookup.getLocalTableBName());
@@ -818,21 +818,13 @@ public class Message {
   }
 
   public String getCategoryFullName() throws IOException {
-    try {
-      String catName = getCategoryName();
-      String subcatName = CommonCodeTables.getDataSubcategoy(ids.getCategory(), ids.getSubCategory());
-      boolean hasSubName = !subcatName.equalsIgnoreCase("Unknown");
+    String catName = getCategoryName();
+    String subcatName = CommonCodeTables.getDataSubcategoy(ids.getCategory(), ids.getSubCategory());
 
-      if (hasSubName)
-        return getCategoryNo() + "="+ catName + " / " + subcatName;
-      else
-        return getCategoryNo() + "="+ catName;
-
-    } catch (Exception e) {
-      e.printStackTrace();
-      System.out.println("***BAD getMasterTableFilename=" + lookup.getWmoTableBName());
-      return " (" + ids.getCategory() + "." + ids.getSubCategory() + ")";
-    }
+    if (subcatName != null)
+      return getCategoryNo() + "="+ catName + " / " + subcatName;
+    else
+      return getCategoryNo() + "="+ catName;
   }
 
   public void dumpHeader(Formatter out) {
