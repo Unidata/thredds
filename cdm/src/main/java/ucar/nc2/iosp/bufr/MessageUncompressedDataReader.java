@@ -216,8 +216,8 @@ public class MessageUncompressedDataReader {
       // sequence
       if (dkey.replication == 0) {
 
-        int count = reader.bits2UInt(dkey.replicationCountSize);
-        if (out != null) out.f.format("%4d delayed replication %d %n", out.fldno++, count);
+        int count = (int) reader.bits2UInt(dkey.replicationCountSize);
+        if (out != null) out.f.format("%4d delayed replication count=%d %n", out.fldno++, count);
         /* if (count < 0) {
           System.out.println("HEY");
           count = 0;
@@ -265,17 +265,17 @@ public class MessageUncompressedDataReader {
         byte[] vals = readCharData(dkey, reader, req);
         if (out != null) {
           String s = new String(vals, "UTF-8");
-          out.f.format("%4d %s read char %s bitWidth=%d end at= 0x%x val=%s\n",
-                  out.fldno++, out.indent(), dkey.getFxyName(), dkey.bitWidth, reader.getPos(), s);
+          out.f.format("%4d %s read char %s (%s) width=%d end at= 0x%x val=<%s>\n",
+                  out.fldno++, out.indent(), dkey.getFxyName(), dkey.getName(), dkey.bitWidth, reader.getPos(), s);
         }
         continue;
       }
 
       // otherwise read a number
-      int val = readNumericData(dkey, reader, req);
+      long val = readNumericData(dkey, reader, req);
       if (out != null)
-        out.f.format("%4d %s read %s (%s) bitWidth=%d end at= 0x%x raw=%d convert=%f\n",
-                out.fldno++, out.indent(), dkey.getFxyName(), dkey.getName(), dkey.bitWidth, reader.getPos(), val, dkey.convert(val));
+        out.f.format("%4d %s read %s (%s %s) bitWidth=%d end at= 0x%x raw=%d convert=%f\n",
+                out.fldno++, out.indent(), dkey.getFxyName(), dkey.getName(), dkey.getUnits(), dkey.bitWidth, reader.getPos(), val, dkey.convert(val));
     }
 
   }
@@ -293,29 +293,49 @@ public class MessageUncompressedDataReader {
     return b;
   }
 
-  private int readNumericData(DataDescriptor dkey, BitReader reader, Request req) throws IOException {
+  private long readNumericData(DataDescriptor dkey, BitReader reader, Request req) throws IOException {
     // numeric data
-    int result = reader.bits2UInt(dkey.bitWidth);
+    long result = reader.bits2UInt(dkey.bitWidth);
 
     if (req.wantRow()) {
 
       // place into byte buffer
       if (dkey.getByteWidthCDM() == 1) {
         req.bb.put((byte) result);
+
       } else if (dkey.getByteWidthCDM() == 2) {
-        int b1 = result & 0xff;
-        int b2 = (result & 0xff00) >> 8;
-        req.bb.put((byte) b2);
-        req.bb.put((byte) b1);
-      } else {
-        int b1 = result & 0xff;
-        int b2 = (result & 0xff00) >> 8;
-        int b3 = (result & 0xff0000) >> 16;
-        int b4 = (result & 0xff000000) >> 24;
-        req.bb.put((byte) b4);
-        req.bb.put((byte) b3);
-        req.bb.put((byte) b2);
-        req.bb.put((byte) b1);
+        byte b1 = (byte) (result & 0xff);
+        byte b2 = (byte) ((result & 0xff00) >> 8);
+        req.bb.put( b2);
+        req.bb.put( b1);
+
+      } else if (dkey.getByteWidthCDM() == 4) {
+        byte b1 = (byte) (result & 0xff);
+        byte b2 = (byte) ((result & 0xff00) >> 8);
+        byte b3 = (byte) ((result & 0xff0000) >> 16);
+        byte b4 = (byte) ((result & 0xff000000) >> 24);
+        req.bb.put(b4);
+        req.bb.put(b3);
+        req.bb.put(b2);
+        req.bb.put(b1);
+
+      } else  {
+        byte b1 = (byte)  (result & 0xff);
+        byte b2 = (byte) ((result & 0xff00) >> 8);
+        byte b3 = (byte) ((result & 0xff0000) >> 16);
+        byte b4 = (byte) ((result & 0xff000000) >> 24);
+        byte b5 = (byte) ((result & 0xff00000000L) >> 32);
+        byte b6 = (byte) ((result & 0xff0000000000L) >> 40);
+        byte b7 = (byte) ((result & 0xff000000000000L) >> 48);
+        byte b8 = (byte) ((result & 0xff00000000000000L) >> 56);
+        req.bb.put(b8);
+        req.bb.put(b7);
+        req.bb.put(b6);
+        req.bb.put(b5);
+        req.bb.put(b4);
+        req.bb.put(b3);
+        req.bb.put(b2);
+        req.bb.put(b1);
       }
     }
 

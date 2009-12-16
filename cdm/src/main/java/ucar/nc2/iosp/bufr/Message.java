@@ -358,7 +358,7 @@ public class Message {
       // sequence
       if (dkey.replication == 0) {
 
-        int count = reader.bits2UInt(dkey.replicationCountSize);
+        int count = (int) reader.bits2UInt(dkey.replicationCountSize);
         if (out != null) out.format("%4d delayed replication %d %n", fldno++, count);
         //if (count == 0) continue;
 
@@ -408,10 +408,10 @@ public class Message {
       }
 
       // otherwise read a number
-      int val = reader.bits2UInt(dkey.bitWidth);
+      long val = reader.bits2UInt(dkey.bitWidth);
       if (out != null)
         out.format("%4d %s read %s bitWidth=%d end at= 0x%x raw=%d convert=%f\n",
-                fldno++, blank(indent), dkey.getFxyName(), dkey.bitWidth, reader.getPos(), val, convert(dkey, val));
+                fldno++, blank(indent), dkey.getFxyName(), dkey.bitWidth, reader.getPos(), val, dkey.convert(val));
     }
 
     return fldno;
@@ -431,20 +431,20 @@ public class Message {
     return b;
   }
 
-  private Number readNumericData(DataDescriptor dkey, BitReader reader) throws IOException {
+  /* private Number readNumericData(DataDescriptor dkey, BitReader reader) throws IOException {
     int val = reader.bits2UInt(dkey.bitWidth);
     if (dkey.scale == 0)
       return val + dkey.refVal; // remain an integer
     return convert(dkey, val);
-  }
+  } */
 
-  private float convert(DataDescriptor dkey, int raw) {
+  /* private float convert(DataDescriptor dkey, int raw) {
     // bpacked = (value * 10^scale - refVal)
     // value = (bpacked + refVal) / 10^scale
     float scale = (float) Math.pow(10.0, -dkey.scale);
     float fval = (raw + dkey.refVal);
     return scale * fval;
-  }
+  } */
 
   // count the bits in a compressed message
   private int countBitsCompressed(Formatter out) throws IOException {
@@ -517,10 +517,10 @@ public class Message {
 
         // except that theres the count stored first
        reader.setBitOffset(bitOffset);
-       int count = reader.bits2UInt(dkey.replicationCountSize);
+       int count = (int) reader.bits2UInt(dkey.replicationCountSize);
        bitOffset += dkey.replicationCountSize;
 
-       int extra = reader.bits2UInt(6);
+       int extra = (int) reader.bits2UInt(6);
        // System.out.printf("EXTRA bits %d at %d %n", extra, bitOffset);
        if (null != out)
           out.format("--sequence %s bitOffset=%d replication=%s %n", dkey.getFxyName(), bitOffset, count);
@@ -557,8 +557,8 @@ public class Message {
       // all other fields
 
       reader.setBitOffset(bitOffset);
-      int dataMin = reader.bits2UInt(dkey.bitWidth);
-      int dataWidth = reader.bits2UInt(6);  // increment data width - always in 6 bits, so max is 2^6 = 64
+      long dataMin = reader.bits2UInt(dkey.bitWidth);
+      int dataWidth = (int) reader.bits2UInt(6);  // increment data width - always in 6 bits, so max is 2^6 = 64
       if (dataWidth > dkey.bitWidth && (null != out))
         out.format(" BAD WIDTH ");
       if (dkey.type == 1) dataWidth *= 8; // char data count is in bytes
@@ -590,8 +590,8 @@ public class Message {
             // value = (bpacked + refVal) / 10^scale
             double scale = Math.pow(10.0, -dkey.scale); // LOOK could precompute for efficiency
             for (int i = 0; i < n; i++) {
-              int val = reader.bits2UInt(dataWidth);
-              if (val == BufrNumbers.missing_value[dataWidth]) {// is this a missing value ??
+              long val = reader.bits2UInt(dataWidth);
+              if (val == BufrNumbers.missingValue(dataWidth)) {// is this a missing value ??
                 if (showData) out.format(" %d (MISSING)", val);
               } else {
                 float fval = (dataMin + val + dkey.refVal);

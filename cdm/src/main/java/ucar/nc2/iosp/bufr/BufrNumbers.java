@@ -31,13 +31,6 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 package ucar.nc2.iosp.bufr;
-
-/*
- * BufrNumbers.java  1.0  1/9/2006
- *
- * (C) Robb Kambic
- */
-
 import java.io.IOException;
 
 import ucar.unidata.io.RandomAccessFile;
@@ -45,26 +38,29 @@ import ucar.unidata.io.RandomAccessFile;
 /**
  * A class that contains static methods for converting multiple
  * bytes into one float or integer.
- *
- * @author Robb Kambic
- * @version 2.0
  */
 
 final public class BufrNumbers {
 
   // used to check missing values when value is packed with all 1's
-  static public final int missing_value[] = new int[33];
-  static private final double bitsmv1[] = new double[33];
+  static private final long missing_value[] = new long[65];
 
   static {
-    for (int i = 0; i < 33; i++) {
-      bitsmv1[i] = java.lang.Math.pow((double) 2, (double) i) - 1;
-      missing_value[i] = (int) bitsmv1[i];
-      //System.out.println( "DS bitsmv1[ "+ i +" ] =" + bitsmv1[ i ] );
+    long accum = 0;
+    for (int i = 0; i < 65; i++) {
+      missing_value[i] = accum;
+      //System.out.printf("BufrNumbers %2d : %20d = %s %n", i, accum, Long.toBinaryString(accum));
+      accum = accum * 2 + 1;
     }
-
   }
 
+  static boolean isMissing(long raw, int bitWidth) {
+    return (raw == BufrNumbers.missing_value[bitWidth]);
+  }
+
+  static long missingValue(int bitWidth) {
+    return BufrNumbers.missing_value[bitWidth];
+  }
 
   /**
    * if missing value is not defined use this value.

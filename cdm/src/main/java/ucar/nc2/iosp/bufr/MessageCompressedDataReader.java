@@ -278,7 +278,7 @@ public class MessageCompressedDataReader {
       // sequence
       if (dkey.replication == 0) {
         reader.setBitOffset(bitOffset);
-        int count = reader.bits2UInt(dkey.replicationCountSize);
+        int count = (int) reader.bits2UInt(dkey.replicationCountSize);
         bitOffset += dkey.replicationCountSize;
 
         reader.bits2UInt(6);
@@ -342,7 +342,7 @@ public class MessageCompressedDataReader {
         byte[] minValue = new byte[nc];
         for (int i = 0; i < nc; i++)
           minValue[i] = (byte) reader.bits2UInt(8);
-        int dataWidth = reader.bits2UInt(6); // incremental data width in bytes
+        int dataWidth = (int) reader.bits2UInt(6); // incremental data width in bytes
         counter.setDataWidth(8*dataWidth);
         int totalWidth = dkey.bitWidth + 6 + 8*dataWidth * ndatasets; // total width in bits for this compressed set of values
         bitOffset += totalWidth; // bitOffset now points to the next field
@@ -391,8 +391,8 @@ public class MessageCompressedDataReader {
         //System.out.printf("HEY gotta dpiField bitWidth=%d %n", useBitWidth);
       }
 
-      int dataMin = reader.bits2UInt(useBitWidth);
-      int dataWidth = reader.bits2UInt(6);  // increment data width - always in 6 bits, so max is 2^6 = 64
+      long dataMin = reader.bits2UInt(useBitWidth);
+      int dataWidth = (int) reader.bits2UInt(6);  // increment data width - always in 6 bits, so max is 2^6 = 64
       if (dataWidth > useBitWidth && (null != out))
         out.f.format(" BAD WIDTH ");
       if (dkey.type == 1) dataWidth *= 8; // char data count is in bytes
@@ -409,19 +409,19 @@ public class MessageCompressedDataReader {
 
       // if dataWidth == 0, just use min value, otherwise read the compressed value here
       for (int dataset = 0; dataset < ndatasets; dataset++) {
-        int value = dataMin;
+        long value = dataMin;
 
         if (dataWidth > 0) {
-          int cv = reader.bits2UInt(dataWidth);
-          if (cv == BufrNumbers.missing_value[dataWidth]) // is this a missing value ??
-            value = BufrNumbers.missing_value[useBitWidth]; // set to missing value
+          long cv = reader.bits2UInt(dataWidth);
+          if ( BufrNumbers.isMissing(cv, dataWidth))
+            value = BufrNumbers.missingValue(useBitWidth); // set to missing value
           else // add to minimum
             value += cv;
         }
 
         // workaround for malformed messages
         if (dataWidth > useBitWidth) {
-          int missingVal = BufrNumbers.missing_value[useBitWidth];
+          long missingVal = BufrNumbers.missingValue(useBitWidth);
           if ((value & missingVal) != value) // overflow
             value = missingVal;     // replace with missing value
         }
@@ -439,7 +439,7 @@ public class MessageCompressedDataReader {
             iter2 = (IndexIterator) m1.getDataObject();
             iter2.setFloatNext(dpiDD.convert( value));
           } else {
-            iter.setIntNext(value);
+            iter.setLongNext(value);
           }
         }
         // since dpi must be the same for all datasets, just keep the first one
@@ -512,7 +512,7 @@ public class MessageCompressedDataReader {
       isPresent = new boolean[nPresentFlags];
     }
 
-    void setDpiValue(int fldidx, int value) {
+    void setDpiValue(int fldidx, long value) {
       isPresent[fldidx] = (value == 0); // present if the value is zero
     }
 

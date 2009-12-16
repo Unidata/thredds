@@ -36,7 +36,6 @@ import ucar.nc2.iosp.bufr.tables.TableC;
 import ucar.nc2.iosp.bufr.tables.TableB;
 
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Essentially a TableB entry, modified by any relevent TableC operators.
@@ -204,8 +203,9 @@ public class DataDescriptor {
     return units;
   }
 
-  public float convert( int raw) {
-    if (raw == BufrNumbers.missing_value[bitWidth]) return Float.NaN;
+  public float convert( long raw) {
+    if ( BufrNumbers.isMissing(raw, bitWidth)) return Float.NaN;
+
     // bpacked = (value * 10^scale - refVal)
     // value = (bpacked + refVal) / 10^scale
     float fscale = (float) Math.pow(10.0, -scale); // LOOK precompute ??
@@ -276,16 +276,17 @@ public class DataDescriptor {
    * @return the number of bytes the CDM datatype will take
    */
   public int getByteWidthCDM() {
-    if (type == 1)
+    if (type == 1) // string
       return bitWidth / 8;
 
-    if (type == 3)
+    if (type == 3) // compound
       return total_nbytesCDM;
 
     // numeric or enum
     if (bitWidth < 9) return 1;
     if (bitWidth < 17) return 2;
-    return 4;
+    if (bitWidth < 33) return 4;
+    return 8;
   }
 
   public String toString() {

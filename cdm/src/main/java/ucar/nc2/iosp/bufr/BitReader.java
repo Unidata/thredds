@@ -103,13 +103,13 @@ public class BitReader {
   }
 
   /**
-   * Read the next nb bits and return an Unsigned Int .
+   * Read the next nb bits and return an Unsigned Long .
    *
-   * @param nb the number of bits to convert to int, must be < 32.
+   * @param nb the number of bits to convert to int, must be <= 64.
    * @return result
    * @throws java.io.IOException on read error
    */
-  public int bits2UInt(int nb) throws IOException {
+  public long bits2UInt(int nb) throws IOException {
 
     int bitsLeft = nb;
     int result = 0;

@@ -350,26 +350,35 @@ class ConstructNC {
 
     } else {
       int nbits = dataDesc.bitWidth;
-      int nbytes = (nbits % 8 == 0) ? nbits / 8 : nbits / 8 + 1;
-      if (nbytes == 1) {
+      // use of unsigend seems fishy, since only ime it uses high bit is for missing
+      // not necessarily true, just when they "add one bit" to deal with missing case
+      if (nbits < 9) {
         v.setDataType(DataType.BYTE);
         if (nbits == 8) {
           v.addAttribute(new Attribute("_Unsigned", "true"));
-          v.addAttribute(new Attribute("missing_value", (short) BufrNumbers.missing_value[nbits]));
+          v.addAttribute(new Attribute("missing_value", (short) BufrNumbers.missingValue(nbits)));
         } else
-          v.addAttribute(new Attribute("missing_value", (byte) BufrNumbers.missing_value[nbits]));
+          v.addAttribute(new Attribute("missing_value", (byte) BufrNumbers.missingValue(nbits)));
 
-      } else if (nbytes == 2) {
+      } else if (nbits < 17) {
         v.setDataType(DataType.SHORT);
         if (nbits == 16) {
           v.addAttribute(new Attribute("_Unsigned", "true"));
-          v.addAttribute(new Attribute("missing_value", BufrNumbers.missing_value[nbits]));
+          v.addAttribute(new Attribute("missing_value", BufrNumbers.missingValue(nbits)));
         } else
-          v.addAttribute(new Attribute("missing_value", (short) BufrNumbers.missing_value[nbits]));
+          v.addAttribute(new Attribute("missing_value", (short) BufrNumbers.missingValue(nbits)));
 
-      } else {
+      } else if (nbits < 33) {
         v.setDataType(DataType.INT);
-        v.addAttribute(new Attribute("missing_value", BufrNumbers.missing_value[nbits]));
+        if (nbits == 32) {
+          v.addAttribute(new Attribute("_Unsigned", "true"));
+          v.addAttribute(new Attribute("missing_value", (int) BufrNumbers.missingValue(nbits)));
+        } else
+          v.addAttribute(new Attribute("missing_value", BufrNumbers.missingValue(nbits)));
+
+      } else  {
+        v.setDataType(DataType.LONG);
+        v.addAttribute(new Attribute("missing_value", BufrNumbers.missingValue(nbits)));
       }
 
       // value = scale_factor * packed + add_offset
