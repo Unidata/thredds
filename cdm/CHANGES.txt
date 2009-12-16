@@ -4,9 +4,10 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  11:
+  CEDRIC radar coordSysBuilder
   BUFR can read JUSA41
   isGridCoordSys: improve performance. should optimize for 2D coords, maybe wait for swath datatype?
-  NcMLReader bug when no ref dataset
+  NcMLReader bug when no reference dataset
   BUFR tables refactor
   UI tabs for examining BUFR tables B and D
   refactor BUFR tables

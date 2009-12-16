@@ -32,7 +32,7 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
 <h2>Overview<b></b></h2>
 <p>The NetCDF-Java library  implements a <a href="CDM/index.html">Common Data Model </a>(CDM),  a generalization of the NetCDF, OpenDAP and HDF5 data models. The   library is  a prototype for the <a href="http://www.unidata.ucar.edu/software/netcdf/netcdf-4/index.html">NetCDF-4 project</a>, which provides a C language  API for the &quot;data access layer&quot; of the CDM, on top of the <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/H5.format.html">HDF5 file format</a>. The NetCDF-Java  library is a 100% Java framework for  <em>reading</em>  netCDF and other file formats into the CDM, as well as <em>writing</em> to the netCDF-3 file format. The NetCDF-Java  library also implements  <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NcML</a>, which allows you to add  metadata to CDM datasets, as well as to create virtual datasets through aggregation.</p>
 <p><strong>Which jar files do I need?</strong> See <a href="reference/JarDependencies.html">Jar Dependencies</a> for explanation of which library you want. </p>
-<p><strong>Which version? </strong>The current stable version (4.1) requires  Java 6 or above. The previous release (4.0) requires Java 5 or above. The NetCDF-Java 2.2.20 release requires Java 1.4. No  bug fixes are done on these earlier versions. </p>
+<p><strong>Which version? </strong>The current stable version (4.1) requires  Java 6 or above. The previous release (4.0) requires Java 5 or above. The last release using 1.4 was  2.2.20. No  bug fixes are done on these earlier versions. </p>
 <h3><strong><a name="v41"></a>Current stable release version 4.1 (requires  Java 1.6) </strong></h3>
 <p>See <a href="reference/JarDependencies.html">Jar Dependencies</a> for explanation of which library you want:</p>
 <ul>
@@ -70,23 +70,7 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
   <li><a href="transition4.html">Transitioning to version 4.0</a> </li>
   <li><a href="http://ulisse.pin.unifi.it:8080/archiva/browse/essi-unidata/netcdf-java/4.0.41">Maven repository</a></li>
 </ul>
-<h3><strong><a name="v22"></a>Previous stable version 2.2 (requires Java 1.5+)</strong></h3>
-<ul>
-  <li> The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.22/ncCore-2.2.22.jar">minimal library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.22/ncCore-2.2.22.jar.MD5">MD5</a>) just reads netcdf-3 (eventually netcdf-4) files.</li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.22/netcdf-2.2.22.jar">netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.22/netcdf-2.2.22.jar.MD5">MD5</a>) implements the full CDM model. </li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.22/netcdfUI-2.2.22.jar">netcdfUI library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.22/netcdfUI-2.2.22.jar.MD5">MD5</a>) includes the netCDF library plus the user interface classes for the netCDF ToolsUI application.</li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.22/netcdfAll-2.2.22.zip">complete zip file</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.22/netcdfAll-2.2.22.zip.MD5">MD5</a>) includes the netcdfUI library plus all other jar files you might need. </li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.22/toolsUI-2.2.22.jar">toolsUI.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2./toolsUI-2.2.22.jar.MD5">MD5</a>) is a nice fat jar containing everything in a single jar. You can run the netCDF ToolsUI application directly from it. </li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.22/nc2.2.jar">nc2.2.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.22/nc2.2.jar.MD5">MD5</a>), which you can use in the IDV. </li>
-  <li>The<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.22/ncSrc-2.2.22.zip"> source code </a>(<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.22/ncSrc-2.2.22.zip.MD5">MD5</a>) (unzip and follow the <a href="v2.2.22/README">README</a>)</li>
-  <li>See <a href="v2.2.22/CHANGES">CHANGES</a> for version changes.</li>
-  <li>Try out the <strong> 2.2.22</strong> version of ToolsUI application: <a href="v2.2/webstart-dev/index.html">launch from webstart</a>.</li>
-</ul>
-<ul>
-  <li> <a href="v2.2.22/javadoc/index.html">Public javadoc</a>: This is the public interface. </li>
-  <li><a href="v2.2.22/javadocAll/index.html">All javadoc: </a>Javadoc for all packages and all methods except private. CAREFUL, some of this may change.</li>
-</ul>
-<h3><strong>Version 2.2.20 for Java 1.4.2+ </strong></h3>
+<h3><strong>Last version 2.2.20 for Java 1.4.2+ </strong></h3>
 <ul>
   <li> The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/ncCore-2.2.20.jar">minimal library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/ncCore-2.2.20.jar.MD5">MD5</a>) just reads netcdf-3 (eventually netcdf-4) files.</li>
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/netcdf-2.2.20.jar">netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/netcdf-2.2.20.jar.MD5">MD5</a>) implements the full CDM model. </li>
@@ -160,7 +144,6 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
   <li><a href="http://www.slf4j.org/">Simple Logging Facade for Java</a> (SLF4J) for logging </li>
   <li><a href="http://www.springframework.org/">Spring</a> lightweight application framework. Used in ToolsUI application.</li>
   <li><a href="http://www.ssec.wisc.edu/%7Ebillh/visad.html">VisAD</a> for reading McIDAS AREA files.</li>
-  <li><a href="http://xerces.apache.org/xerces2-j/">Xerces</a> for parsing XML (pre jdk 1.5) </li>
 </ul>
 <h3> Applications using the Netcdf-Java library (partial list):</h3>
 <ul>
@@ -192,7 +175,7 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
 <hr WIDTH="100%">
 <address>
 <a href="NetcdfUsers.htm"><img src="nc.gif" width="64" height="64" border="0"></a> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> 
-and was last updated October 20, 2009
+and was last updated December 16, 2009
 </address>
 
 </body>
