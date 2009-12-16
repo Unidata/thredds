@@ -8,20 +8,22 @@
   <offsetHours id="1">0.0 6.0 12.0 18.0 24.0 30.0 36.0 42.0 48.0 54.0 60.0 66.0 72.0 78.0 84.0 90.0 96.0 102.0 108.0 114.0 120.0 126.0 132.0 138.0 144.0 150.0 156.0 162.0 168.0 174.0 180.0 186.0 192.0 198.0 204.0 210.0 216.0 222.0 228.0 234.0 240.0 246.0 252.0 258.0 264.0 270.0 276.0 282.0 288.0 294.0 300.0 306.0 312.0 318.0 324.0 330.0 336.0 342.0 348.0 354.0 360.0 366.0 372.0 378.0 384.0</offsetHours>
   <offsetHours id="2">0.0</offsetHours>
   <runSequence allUseSeq="0">
-    <variable name="Categorical_Freezing_Rain_stdDev_surface" />
-    <variable name="Categorical_Freezing_Rain_unweightedMean_surface" />
-    <variable name="Categorical_Ice_Pellets_stdDev_surface" />
-    <variable name="Categorical_Ice_Pellets_unweightedMean_surface" />
-    <variable name="Categorical_Rain_stdDev_surface" />
-    <variable name="Categorical_Rain_unweightedMean_surface" />
-    <variable name="Categorical_Snow_stdDev_surface" />
-    <variable name="Categorical_Snow_unweightedMean_surface" />
-    <variable name="Maximum_temperature_stdDev_height_above_ground" vertCoord="2" />
-    <variable name="Maximum_temperature_unweightedMean_height_above_ground" vertCoord="2" />
-    <variable name="Minimum_temperature_stdDev_height_above_ground" vertCoord="2" />
-    <variable name="Minimum_temperature_unweightedMean_height_above_ground" vertCoord="2" />
-    <variable name="Total_precipitation_stdDev_surface" />
-    <variable name="Total_precipitation_unweightedMean_surface" />
+    <variable name="Categorical_Freezing_Rain_6hours_stdDev_surface" />
+    <variable name="Categorical_Freezing_Rain_6hours_unweightedMean_surface" />
+    <variable name="Categorical_Ice_Pellets_6hours_stdDev_surface" />
+    <variable name="Categorical_Ice_Pellets_6hours_unweightedMean_surface" />
+    <variable name="Categorical_Rain_6hours_stdDev_surface" />
+    <variable name="Categorical_Rain_6hours_unweightedMean_surface" />
+    <variable name="Categorical_Snow_6hours_stdDev_surface" />
+    <variable name="Categorical_Snow_6hours_unweightedMean_surface" />
+    <variable name="Maximum_temperature_6hours_stdDev_height_above_ground" vertCoord="2" />
+    <variable name="Maximum_temperature_6hours_unweightedMean_height_above_ground" vertCoord="2" />
+    <variable name="Minimum_temperature_6hours_stdDev_height_above_ground" vertCoord="2" />
+    <variable name="Minimum_temperature_6hours_unweightedMean_height_above_ground" vertCoord="2" />
+    <variable name="Total_cloud_cover_6hours_stdDev_entire_atmosphere" />
+    <variable name="Total_cloud_cover_6hours_unweightedMean_entire_atmosphere" />
+    <variable name="Total_precipitation_6hours_stdDev_surface" />
+    <variable name="Total_precipitation_6hours_unweightedMean_surface" />
   </runSequence>
   <runSequence allUseSeq="1">
     <variable name="Convective_available_potential_energy_stdDev_pressure_difference_layer" vertCoord="0" />
@@ -42,8 +44,6 @@
     <variable name="Temperature_stdDev_pressure" vertCoord="1" />
     <variable name="Temperature_unweightedMean_height_above_ground" vertCoord="2" />
     <variable name="Temperature_unweightedMean_pressure" vertCoord="1" />
-    <variable name="Total_cloud_cover_stdDev_entire_atmosphere" />
-    <variable name="Total_cloud_cover_unweightedMean_entire_atmosphere" />
     <variable name="U-component_of_wind_stdDev_height_above_ground" vertCoord="3" />
     <variable name="U-component_of_wind_stdDev_pressure" vertCoord="1" />
     <variable name="U-component_of_wind_unweightedMean_height_above_ground" vertCoord="3" />
@@ -56,5 +56,7 @@
   <runSequence allUseSeq="2">
     <variable name="Geopotential_height_stdDev_surface" />
     <variable name="Geopotential_height_unweightedMean_surface" />
+    <variable name="Total_cloud_cover_0hours_stdDev_entire_atmosphere" />
+    <variable name="Total_cloud_cover_0hours_unweightedMean_entire_atmosphere" />
   </runSequence>
 </fmrcDefinition>
