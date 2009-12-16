@@ -471,7 +471,7 @@ public class TestTransforms extends TestCase {
   public void testMercator() throws IOException, InvalidRangeException {
     String filename = TestAll.testdataDir + testDir+ "Mercator.grib1";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
-    VariableDS lev = (VariableDS) ncd.findVariable("Mercator_Projection_Grid");
+    VariableDS lev = (VariableDS) ncd.findVariable("Mercator");
     assert lev != null;
     System.out.println(" dump of ctv = \n" + lev);
 
