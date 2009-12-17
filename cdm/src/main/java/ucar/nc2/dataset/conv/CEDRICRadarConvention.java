@@ -78,25 +78,34 @@ public class CEDRICRadarConvention extends CF1Convention {
   }
       
   public void augmentDataset(NetcdfDataset ncDataset, CancelTask cancelTask) throws IOException {
- /*   float lat = 40.45f;
+  /*  float lat = 40.45f;
     float lon = -104.64f;
     ProjectionImpl projection = new FlatEarth(lat, lon);
 
     Variable ct = new Variable( ncDataset, null, null, projection.getClassName());
     ct.setDataType( DataType.CHAR);
     ct.setDimensions( "");
-    List params = projection.getProjectionParameters();
-    for (int i = 0; i < params.size(); i++) {
-      Parameter p = (Parameter) params.get(i);
-      ct.addAttribute( new Attribute(p));
-    }
+
+    ct.addAttribute( new Attribute("grid_mapping_name", "flat_earth"));
     ct.addAttribute( new Attribute(_Coordinate.TransformType, "Projection"));
     ct.addAttribute( new Attribute(_Coordinate.Axes, "GeoX GeoY"));
-    ncDataset.getReferencedFile().addVariable(null, ct);
-   */
-    NcMLReader.wrapNcMLresource(ncDataset, CoordSysBuilder.resourcesDir + "CEDRICRadar.ncml", cancelTask);
+    ncDataset.addVariable(null, ct);
+  */
 
+
+
+    NcMLReader.wrapNcMLresource(ncDataset, CoordSysBuilder.resourcesDir + "CEDRICRadar.ncml", cancelTask);
+      Variable lat = ncDataset.findVariable("radar_latitude");
+      Variable lon = ncDataset.findVariable("radar_longitude");
+      float    latv = (float)lat.readScalarDouble();
+      float    lonv = (float)lon.readScalarDouble();
+      Variable pv = ncDataset.findVariable("Projection");
+      pv.addAttribute(new Attribute("longitude_of_projection_origin", lonv) );
+      pv.addAttribute(new Attribute("latitude_of_projection_origin", latv) );
     super.augmentDataset(ncDataset, cancelTask);
+
+    
+    System.out.println("here\n");
 
   //  ncDataset.finish();
   }
