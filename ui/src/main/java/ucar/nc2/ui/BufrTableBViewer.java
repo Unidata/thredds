@@ -283,7 +283,7 @@ public class BufrTableBViewer extends JPanel {
   }
 
   private void compare(TableB t1, TableB t2, Formatter out) {
-    out.format("Compare%n %s%n %s %n", t1.getName(), t2.getName());
+    out.format("Compare Table B%n %s%n %s %n", t1.getName(), t2.getName());
     List<TableB.Descriptor> listDesc = new ArrayList<TableB.Descriptor>(t1.getDescriptors());
     Collections.sort(listDesc);
     for (TableB.Descriptor d1 : listDesc) {

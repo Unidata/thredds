@@ -88,6 +88,10 @@ public final class TableLookup {
     return wmoTableD.getName();
   }
 
+  public BufrTables.Mode getMode() {
+    return mode;
+  }
+
    public TableB.Descriptor getDescriptorTableB(short fxy) {
     TableB.Descriptor b = null;
     boolean isWmoRange = Descriptor.isWmoRange(fxy);

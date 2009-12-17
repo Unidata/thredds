@@ -52,6 +52,59 @@ import org.jdom.JDOMException;
 
 /**
  * Reads BUFR tables of various forms. Interacts with TableLookup.
+ * <pre>
+ Table B:
+ csv
+   Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_Bits,CREX_Unit,CREX_Scale,CREX_DataWidth,Status
+   00,000001,Table A: entry,CCITT IA5,0,0,24,Character,0,3,Operational
+
+ mel-bufr
+  0; 7; 190; 1; -1024; 12; M; HEIGHT INCREMENT
+
+ ncep
+#====================================================================================================
+# F-XX-YYY |SCALE| REFERENCE   | BIT |      UNIT      | MNEMONIC ;DESC ;  ELEMENT NAME
+#          |     |   VALUE     |WIDTH|                |          ;CODE ;
+#====================================================================================================
+  0-00-001 |   0 |           0 |  24 | CCITT IA5      | TABLAE   ;     ; Table A: entry
+
+  ecmwf
+ 000001 TABLE A:  ENTRY                                                  CCITTIA5                   0            0  24 CHARACTER                 0          3
+
+ Table D:
+ csv
+ SNo,Category,FXY1,enElementName1,FXY2,enElementName2,Status
+  1,00,300002,,000002,"Table A category, line 1",Operational
+
+ mel-bufr
+  3   1 192  optional_name
+    0   1   7
+    0  25  60
+    0   1  33
+    1   1   2
+    3  61 169
+    0   5  40
+   -1
+
+ ncep
+ #====================================================================================================
+ # F-XX-YYY | MNEMONIC   ;DCOD ; NAME           <-- sequence definition
+ #          | F-XX-YYY > | NAME                 <-- element definition (first thru next-to-last)
+ #          | F-XX-YYY   | NAME                 <-- element definition (last)
+ #====================================================================================================
+
+   3-00-002 | TABLACAT   ;     ; Table A category definition
+            | 0-00-002 > | Table A category, line 1
+            | 0-00-003   | Table A category, line 2
+
+ ecmwf
+ 300002  2 000002
+           000003
+ 300003  3 000010
+           000011
+           000012
+ 
+  </pre>
  */
 
 public class BufrTables {
@@ -775,8 +828,9 @@ public class BufrTables {
       if (line.startsWith("#") || line.length() == 0)
         continue;
 
+      line = line.trim();
       String[] split = line.split("[ \t]+"); // 1 or more whitespace
-      if (split.length < 4) break;
+      if (split.length < 3) continue;
       if (split[0].equals("END")) break;
       
       try {
@@ -823,7 +877,7 @@ public class BufrTables {
         }
       } catch (Exception e) {
         log.warn("TableD " + t.getName() + " Failed on line " + count + " = " + line + "\n " + e);
-        e.printStackTrace();
+        //e.printStackTrace();
       }
     }
     dataIS.close();
