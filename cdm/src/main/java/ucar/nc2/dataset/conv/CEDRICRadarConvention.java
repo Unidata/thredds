@@ -34,21 +34,27 @@ package ucar.nc2.dataset.conv;
 
 import ucar.nc2.dataset.CoordSysBuilder;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants._Coordinate;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.projection.FlatEarth;
 import ucar.unidata.util.Parameter;
+import ucar.unidata.util.DateUtil;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
+import ucar.ma2.ArrayInt;
+import ucar.ma2.ArrayDouble;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Date;
 
 /**
  * Created by IntelliJ IDEA.
@@ -91,21 +97,36 @@ public class CEDRICRadarConvention extends CF1Convention {
     ct.addAttribute( new Attribute(_Coordinate.Axes, "GeoX GeoY"));
     ncDataset.addVariable(null, ct);
   */
+        NcMLReader.wrapNcMLresource(ncDataset, CoordSysBuilder.resourcesDir + "CEDRICRadar.ncml", cancelTask);
+        Variable lat = ncDataset.findVariable("radar_latitude");
+        Variable lon = ncDataset.findVariable("radar_longitude");
+        float    latv = (float)lat.readScalarDouble();
+        float    lonv = (float)lon.readScalarDouble();
+        Variable pv = ncDataset.findVariable("Projection");
+        pv.addAttribute(new Attribute("longitude_of_projection_origin", lonv) );
+        pv.addAttribute(new Attribute("latitude_of_projection_origin", latv) );
 
+        Variable sdate = ncDataset.findVariable("start_date");
+        Variable stime = ncDataset.findVariable("start_time");
+        Variable tvar = ncDataset.findVariable("time");
+        String dateStr = sdate.readScalarString();
+        String timeStr = stime.readScalarString();
+        Date dt = null;
+        try {
+          dt = DateUtil.parse(dateStr + " " + timeStr);
+        } catch (Exception e) {}
 
+        int nt = 1;
 
-    NcMLReader.wrapNcMLresource(ncDataset, CoordSysBuilder.resourcesDir + "CEDRICRadar.ncml", cancelTask);
-      Variable lat = ncDataset.findVariable("radar_latitude");
-      Variable lon = ncDataset.findVariable("radar_longitude");
-      float    latv = (float)lat.readScalarDouble();
-      float    lonv = (float)lon.readScalarDouble();
-      Variable pv = ncDataset.findVariable("Projection");
-      pv.addAttribute(new Attribute("longitude_of_projection_origin", lonv) );
-      pv.addAttribute(new Attribute("latitude_of_projection_origin", latv) );
-    super.augmentDataset(ncDataset, cancelTask);
+        ArrayDouble.D1 data = new ArrayDouble.D1(nt);
 
-    
-    System.out.println("here\n");
+        data.setDouble(0, dt.getTime());
+
+        tvar.setCachedData(data, false);
+
+        super.augmentDataset(ncDataset, cancelTask);
+
+        System.out.println("here\n");
 
   //  ncDataset.finish();
   }
