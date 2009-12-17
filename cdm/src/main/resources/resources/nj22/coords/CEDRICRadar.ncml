@@ -21,10 +21,9 @@
     <attribute name="units" value="km"/>
   </variable>
 
-  <variable name="time" shape="time" type="int">
+  <variable name="time" shape="time" type="double">
     <attribute name="_CoordinateAxisType" value="Time" />
-    <attribute name="units" type="String" value="hours" />
-    <values>18</values>
+    <attribute name="units" type="String" value="seconds since 1970-01-01 00:00:00" />
   </variable>
 
   <variable name="U">
