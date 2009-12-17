@@ -36,8 +36,6 @@
     <attribute name="grid_mapping_name" value="flat_earth" />
     <attribute name="_CoordinateTransformType " value="Projection" />
     <attribute name="_CoordinateAxisTypes  " value="GeoX GeoY" />
-    <attribute name="longitude_of_projection_origin" type="float" value="-104.64" />
-    <attribute name="latitude_of_projection_origin" type="float" value="40.45" />
   </variable>
 
 </netcdf>
