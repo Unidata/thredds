@@ -3,6 +3,8 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Release Details 4.1:
+ alpha 15 (2009-12-17):
+  CdmInit: set default aggregation.typicalDataset to penultimate, so it uses recent dataset for template
  alpha 14 (2009-12-15):
    Use absolute URL for catalog docBaseURI in LocalCatalogServiceController. 
    netCDF-Java/CDM:

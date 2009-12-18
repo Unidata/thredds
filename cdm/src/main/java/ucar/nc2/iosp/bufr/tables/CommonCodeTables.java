@@ -48,6 +48,9 @@ import java.nio.charset.Charset;
  * COMMON CODE TABLE C-1: Identification of originating/generating centre
  * COMMON CODE TABLE C-12: Sub-Centres of Originating Centres
  * COMMON CODE TABLE C-13: Data sub categories of categories defined by entries in BUFR Table A
+ * Table A: data categories
+ * 
+ * Apparently C-11 is the same as C-1, but C-11 is for GRIB and C-1 is for BUFR
  *
  * @author caron
  * @see "http://www.wmo.int/pages/prog/www/WMOCodes/Operational/CommonTables/BufrCommon-11-2008.doc"

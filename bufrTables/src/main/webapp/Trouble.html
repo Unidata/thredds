@@ -20,14 +20,14 @@
 </ol>
 <h3>2. There is no reference implementation for validation that a BUFR message is correctly formed.</h3>
 <p>For example, I am seeing messages &quot;in the field&quot; where the data length is not an even number of bytes, despite (1) stating it must be.</p>
-<p>I expect that coders &quot;validate&quot; against their own decoders. This makes the format specification ad-hoc, dependent upon specific software. Thiss was also noted in the ET/DR&amp;C May 2006 final report, section 6.7.</p>
+<p>I expect that coders &quot;validate&quot; against their own decoders. This makes the format specification ad-hoc, dependent upon specific software. This was also noted in the ET/DR&amp;C May 2006 final report, section 6.7.</p>
 <p>There is a <a href="http://www.ecmwf.int/products/data/d/check/">validator service at ECMWF</a> which is useful, although its tables are limited.</p>
 <h3>3. Table-driven parsing is extremely brittle.</h3>
 <p>There is no way to be completely sure if a decoder is using the right table. If a decoder does not use the exact version of the coders' tables, the values will be wrong, and may very well be silently wrong. If bit widths are wrong, the message is unparseable.</p>
 <p>Table C operators can modify the encoding of the values. If those are incorrect or misunderstood, all values in the message may be incorrect.</p>
 <p>The presence of an element descriptor that is not understood makes the entire message unreadable.</p>
 <h3>4. There is no authoritative registry of Tables.</h3>
-<p>There is no place that versioned, canonical, machine-readable tables are registered. Only the latest WMO master table is apparrently available online, and it is not machine reable. It is quite difficult and error-prone to extract machine-readable tables for the WMO Word and PDF docs. These docs apparenyly have typeos in them, for example element 0-22-39 in the <a href="http://www.wmo.int/pages/prog/www/WMOCodes/Operational/BUFR/BufrTabB-11-2007.pdf">latest Table B document</a>.</p>
+<p>There is no place that versioned, canonical, machine-readable tables are registered. Only the latest WMO master table is apparrently available online, and it is not machine reable. It is quite difficult and error-prone to extract machine-readable tables for the WMO Word and PDF docs. These docs apparenyly have typos in them, for example element 0-22-39 in the <a href="http://www.wmo.int/pages/prog/www/WMOCodes/Operational/BUFR/BufrTabB-11-2007.pdf">version 13 Table B document</a>.</p>
 <p>Local tables must be found in an ad-hoc way. There is no way to confirm if you have the correct table.</p>
 <p>This makes problem #3 very serious as an exchange format. As an archive format, probably not tenable, as we will be unable to confidently parse arbitrary BUFR messages.</p>
 <h3>5. Table versions</h3>
@@ -43,7 +43,7 @@
   <li>21-17 has different reference </li>
   <li>25-30 has completely changed </li>
 </ul>
-<p>If master entries are allowed to be overrided locally, then a generic parser MUST have the local table. If they cannot be overriden, then the ansence of any local elements means that the master table can be used in confidence.</p>
+<p>If master entries are allowed to be overrided locally, then a generic parser MUST have the local table. If they cannot be overriden, then the absence of any local elements means that the master table can be used in confidence.</p>
 <p>If local tables must always be used, then the local center must be contacted and tables obtained. This is akin to reading files written with unformatted binary FORTRAN writes. The only way to read such files is to obtain documentaion or the actual program that made the write. This makes BUFR files effectively NOT self-describing.</p>
 <h3>7. BUFR is too complex without real gain.</h3>
 <p>Some of the complexity of the BUFR format comes from an ad-hoc compression scheme that is out-of-date. The brittleness of the encoding format is partly caused by traying making the record as small as possible. Its likely that using an external compression on a message will acheive the same goal.</p>
@@ -60,9 +60,12 @@
 <p>Coordinate ranges defined by &quot;back to back&quot; identical coordinates (see L3-25). &quot;There is not much a general decoder program can do with this coordinate information&quot;.</p>
 <p>&nbsp;</p>
 <p> as if this is a real streaming environment.</p>
-<p>8. lack of name/value attributes <br />
-  9. multiple fields with same name <br />
-10. wrong canonicality of some variables - should be on the schema, not duplicated on the observation </p>
+<p>8. lack of name/value attributes </p>
+<p>The 2 05 Y can be used for inclusion of character data. The Y allows var lebgth. Does our hashcode make this into seperate messge type ??</p>
+<p><br />
+  9. multiple fields with same name </p>
+<p><br />
+  10. wrong canonicality of some variables - should be on the schema, not duplicated on the observation </p>
 <p>9.1 C:/data/bufr2/mlodeSorted/ISXAB40KWNO.bufr <br />
   <br />
   ISXA40 KWNO 071800     Category= 7 Synoptic features 7.0 local= 0     Center= NCEP /  Central Operations 7.3   ... <br />

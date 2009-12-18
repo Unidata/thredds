@@ -125,9 +125,8 @@ public class CdmInit {
     Aggregation.setPersistenceCache(aggCache);
 
     // how to choose the typical dataset ?
-    String typicalDataset = ThreddsConfig.get("Aggregation.typicalDataset", null);
-    if (null != typicalDataset)
-      Aggregation.setTypicalDatasetMode(typicalDataset);
+    String typicalDataset = ThreddsConfig.get("Aggregation.typicalDataset", "penultimate");
+    Aggregation.setTypicalDatasetMode(typicalDataset);
 
     // Nj22 disk cache
     dir = ThreddsConfig.get("DiskCache.dir", new File( tdsContext.getContentDirectory(), "cache" ).getPath());

@@ -196,19 +196,18 @@ public class GridIndexToNC {
       System.out.println(" number of products = " + records.size());
     }
     for (GridRecord gribRecord : records) {
-      if (firstRecord == null) {
+      if (firstRecord == null)
         firstRecord = gribRecord;
-      }
 
       GridHorizCoordSys hcs =   hcsHash.get(gribRecord.getGridDefRecordId());
       String name = makeVariableName(gribRecord, lookup);
       // combo gds, param name and level name
       GridVariable pv = (GridVariable) hcs.varHash.get(name);
       if (null == pv) {
-        String pname =
-            lookup.getParameter(gribRecord).getDescription();
+        String pname = lookup.getParameter(gribRecord).getDescription();
         pv = new GridVariable(name, pname, hcs, lookup);
         hcs.varHash.put(name, pv);
+        //System.out.printf("Add name=%s pname=%s%n", name, pname);
 
         // keep track of all products with same parameter name
         List<GridVariable> plist = hcs.productHash.get(pname);

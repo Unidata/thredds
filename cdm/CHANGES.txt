@@ -3,6 +3,8 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.1:
+ 12:
+  BUFR: use new WMO CodeFlagTable
  11:
   CEDRIC radar coordSysBuilder
   BUFR can read JUSA41

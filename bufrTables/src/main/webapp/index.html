@@ -19,7 +19,7 @@ body {
 <p>We are publishing our BUFR tables in machine-readable format along with a <a href="validate.html">validation service</a> that allows users to upload BUFR records and test them against our reader. In this way we hope  that centers/users will help verify that our tables and software are correct, validate their BUFR formats, and contribute their own local tables as needed. Ideally a canonical repository of machine-readable BUFR tables will eventually be  hosted by the WMO. </p>
 <p><em>What follows is our current understanding of BUFR. Please send corrections and comments to  <a href="mailto:caron@unidata.ucar.edu">John Caron</a> or to the <a href="mailto:bufrtables@unidata.ucar.edu">bufrtables email list</a> for discussion (you must <a href="http://www.unidata.ucar.edu/support/mailinglist/mailing-list-form.html">sign up</a> first).</em></p>
 <h3>Standard WMO BUFR Tables </h3>
-<p>Specific areas of BUFR tables B and D are reserved for <em><strong>local data descriptors</strong></em>, namely categories 48-63 inclusive, and entries 192-255 inclusive (cf p L3-49 of the <a href="http://www.wmo.int/pages/prog/www/WMOCodes/Guides/BUFRCREXPreface_en.html">BUFR Guide</a>). All other entries in tables B and D are  reserved for globally shared descriptors, which we call <strong><em> standard WMO data descriptors</em></strong>. The <a href="http://www.wmo.int/pages/prog/www/WMOCodes/OperationalCodes.html">standard WMO tables</a> are available from the WMO in Microsoft Word and PDF format. Extracting   tables from these formats is an error-prone and time-consuming process, that is to say, neither Word nor PDF is  machine readable  in this context. However, there is now an effort at WMO to publish their tables in Excel format, which are easy to extract programatically. </p>
+<p>Specific areas of BUFR tables B and D are reserved for <em><strong>local data descriptors</strong></em>, namely categories 48-63 inclusive, and entries 192-255 inclusive (cf p L3-49 of the <a href="http://www.wmo.int/pages/prog/www/WMOCodes/Guides/BUFRCREXPreface_en.html">BUFR Guide</a>). All other entries in tables B and D are  reserved for globally shared descriptors, which we call <strong><em> standard WMO data descriptors</em></strong>. The <a href="http://www.wmo.int/pages/prog/www/WMOCodes/TDCFtables.html">standard WMO tables</a> are available from the WMO in Microsoft Word and PDF format. Extracting   tables from these formats is an error-prone and time-consuming process, that is to say, neither Word nor PDF is  machine readable  in this context. However, there is now an effort at WMO to publish their tables in Excel format, which are easy to extract programatically. </p>
 <p>Past practice at national centers in creating local data descriptors and proposing new standard descriptors has been confusing. After some discussion, we think that the following are the agreed-upon assumptions on how to handle BUFR Tables:</p>
 <ul>
   <li>BUFR tables do not depend on the edition number of the BUFR record</li>
@@ -38,39 +38,23 @@ body {
   <li><a href="mailto:bufrtables@unidata.ucar.edu">Add or remove</a> yourself to the <strong>bufrtables</strong> email list</li>
   <li><a href="http://www.unidata.ucar.edu/mailing_lists/archives/bufrtables/">Archives</a><a href="http://www.unidata.ucar.edu/mailing_lists/archives/bufrtables/"></a></li>
 </ul>
-<h3>&nbsp;</h3>
+<h3>Other Documents</h3>
+<ul>
+  <li><a href="issues.html">Issues encountered</a></li>
+</ul>
 <hr />
 <h2>External links</h2>
 <h3>WMO</h3>
 <ul>
-  <li><a href="http://www.wmo.int/pages/prog/www/WMOCodes.html">WMO Codes</a>
-      <ul>
-        <li><a href="http://www.wmo.int/pages/prog/www/WMOCodes/OperationalCodes.html">Operational Codes&nbsp; TAC - BUFR - CREX   - GRIB</a></li>
-        <li><a href="http://www.wmo.int/pages/prog/www/WMOCodes/ManualCodesGuides.html">WMO No. 306 - Manual on Codes</a></li>
-        <li><a href="http://www.wmo.int/pages/prog/www/WMOCodes/Guides/BUFRCREXPreface_en.html">Guide to WMO Table-Driven      Code Forms: FM 94 BUFR and FM 95 CREX</a></li>
-      </ul>
-  </li>
+  <li><a href="http://www.wmo.int/pages/prog/www/WMOCodes.html">WMO Codes</a>  </li>
+  <li><a href="http://www.wmo.int/pages/prog/www/WMOCodes/TDCFtables.html">TDCF tables extracted from the Manual on Codes</a></li>
+  <li><a href="http://www.wmo.int/pages/prog/www/WMOCodes/OperationalCodes.html">Operational Codes&nbsp; TAC - BUFR - CREX   - GRIB</a></li>
+  <li><a href="http://www.wmo.int/pages/prog/www/WMOCodes/Guides/BUFRCREXPreface_en.html">Guide to WMO Table-Driven      Code Forms</a></li>
 </ul>
 <h3>NCEP</h3>
 <ul>
   <li><a href="http://www.emc.ncep.noaa.gov/mmb/data_processing/data_processing/">Observational  Data  Processing  at NCEP</a></li>
-  <li><a href="http://www.emc.ncep.noaa.gov/mmb/data_processing/data_dumping.doc/table_1.htm">List of valid BUFR data types</a></li>
-  <li><a href="http://www.emc.ncep.noaa.gov/mmb/data_processing/">Data Processing Pages</a>
-      <ul>
-        <li><a href="http://www.emc.ncep.noaa.gov/mmb/data_processing/bufrtab_tablea.htm">BUFR Table A</a></li>
-        <li><a href="http://www.emc.ncep.noaa.gov/mmb/data_processing/bufrtab_tableb.htm">BUFR Table B</a></li>
-        <li><a href="http://www.emc.ncep.noaa.gov/mmb/data_processing/bufrtab_tabled.htm">BUFR Table D</a></li>
-        <li><span lang="EN-GB" xml:lang="EN-GB"><a href="http://www.emc.ncep.noaa.gov/mmb/data_processing/common_tbl_c1-c5.htm">Common Code Tables C-1, C-2, C-3, C-4, C-5</a></span></li>
-        <li><a href="http://www.emc.ncep.noaa.gov/mmb/data_processing/common_tbl_c6-c7.htm">Common Code Tables C-6, C-7</a></li>
-        <li><a href="http://www.emc.ncep.noaa.gov/mmb/data_processing/common_tbl_c8-c13.htm">Common Code Tables <span lang="EN-GB" xml:lang="EN-GB">C-8, C-11, C-12, C-13</span></a></li>
-        <li><u><span lang="EN-GB" xml:lang="EN-GB"><a href="http://www.emc.ncep.noaa.gov/mmb/data_processing/table_1-2.htm">Class 01-02 WMO Code/Flag Tables associated with BUFR Table B</a></span></u></li>
-        <li><a href="http://www.emc.ncep.noaa.gov/mmb/data_processing/table_3-8.htm"><u><span lang="EN-GB" xml:lang="EN-GB">Class 03-08 WMO Code/Flag Tables associated with BUFR Table B</span></u></a></li>
-        <li><a href="http://www.emc.ncep.noaa.gov/mmb/data_processing/table_9-19.htm"><u><span lang="EN-GB" xml:lang="EN-GB">Class 09-19 WMO Code/Flag Tables associated with BUFR Table B</span></u></a></li>
-        <li><a href="http://www.emc.ncep.noaa.gov/mmb/data_processing/table_20.htm"><u><span lang="EN-GB" xml:lang="EN-GB">Class 20 WMO Code/Flag Tables associated with BUFR Table B</span></u></a></li>
-        <li><a href="http://www.emc.ncep.noaa.gov/mmb/data_processing/table_21-24.htm"><u><span lang="EN-GB" xml:lang="EN-GB">Class 21-24 WMO Code/Flag Tables associated with BUFR Table B</span></u></a></li>
-        <li><a href="http://www.emc.ncep.noaa.gov/mmb/data_processing/table_25-35.htm"><u><span lang="EN-GB" xml:lang="EN-GB">Class  25-35 WMO Code/Flag Tables associated with BUFR Table B</span></u></a></li>
-      </ul>
-  </li>
+  <li><a href="http://www.emc.ncep.noaa.gov/mmb/data_processing/">Data Processing Pages</a></li>
   <li><a href="http://www.nco.ncep.noaa.gov/sib/decoders/BUFRLIB/">BUFRLIB decoder</a>
       <ul>
         <li><a href="http://www.nco.ncep.noaa.gov/pmb/codes/nwprod/fix/">NCEP internal tables</a></li>
@@ -89,7 +73,7 @@ body {
 <hr WIDTH="100%">
 <address>
 <a href="NetcdfUsers.htm"><img src="nc.gif" width="64" height="64" border="0"></a> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> 
-and was last updated on Dec 14, 2009
+and was last updated on Dec 17, 2009
 </address>
 
 </body>
