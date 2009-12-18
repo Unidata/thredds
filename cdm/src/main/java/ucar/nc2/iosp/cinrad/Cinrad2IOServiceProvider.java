@@ -41,11 +41,11 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.util.DateUtil;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
+import java.text.ParseException;
 
 /**
  * An IOServiceProvider for CINRAD level II files.
@@ -58,7 +58,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
   static private final int MISSING_INT = -9999;
   static private final float MISSING_FLOAT = Float.NaN;
 
-  public boolean isValidFile( RandomAccessFile raf) {
+  public boolean isValidFileOld( RandomAccessFile raf) {
     try {
       String loc = raf.getLocation();
       int posFirst = loc.lastIndexOf('/') + 1;
@@ -74,6 +74,73 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
         return false;
     }
   }
+
+
+  public boolean isValidFile( RandomAccessFile raf) {
+      int data_msecs = 0;
+      short data_julian_date = 0;
+
+      try{
+          raf.order(RandomAccessFile.LITTLE_ENDIAN);
+          raf.seek(0);
+          raf.skipBytes(14);
+          short message_type  = raf.readShort();
+          if (message_type != 1) return false;
+
+          raf.skipBytes(12);
+          // data header
+          byte [] b4 = raf.readBytes(4);
+          data_msecs    = bytesToInt(b4, true);
+          byte [] b2 =  raf.readBytes(2);
+          data_julian_date  = (short)bytesToShort(b2, true);
+          java.util.Date dd =Cinrad2Record.getDate(data_julian_date,data_msecs);
+
+          Calendar cal = new GregorianCalendar(new SimpleTimeZone(0, "GMT"));
+          cal.clear();
+          cal.setTime(dd);
+          int year = cal.get(Calendar.YEAR);
+          cal.setTime(new Date());
+          int cyear = cal.get(Calendar.YEAR);
+          if(year < 1990 || year > cyear )  return false;
+          return true;
+      } catch (IOException ioe) {
+          return false;
+      }
+
+  }
+
+    public static int bytesToInt(byte [] bytes, boolean swapBytes) {
+        byte a = bytes[0];
+        byte b = bytes[1];
+        byte c = bytes[2];
+        byte d = bytes[3];
+        if (swapBytes) {
+            return ((a & 0xff) ) +
+                ((b & 0xff) << 8 ) +
+                ((c & 0xff) << 16 ) +
+                ((d & 0xff) << 24);
+        } else {
+            return ((a & 0xff) << 24 ) +
+                ((b & 0xff) << 16 ) +
+                ((c & 0xff) << 8 ) +
+                ((d & 0xff) );
+        }
+    }
+    public static int bytesToShort(byte [] bytes, boolean swapBytes) {
+        byte a = bytes[0];
+        byte b = bytes[1];
+
+        if (swapBytes) {
+            return ((a & 0xff) ) +
+                ((b & 0xff) << 8 );
+
+        } else {
+            return ((a & 0xff) << 24 ) +
+                ((b & 0xff) << 16 );
+
+        }
+    }
+
 
   public String getFileTypeId() {
     return "CINRAD";
@@ -224,7 +291,8 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
 
     // int julianDays = volScan.getTitleJulianDays();
     // Date d = Cinrad2Record.getDate( julianDays, 0);
-    Date d = Cinrad2Record.getDate(volScan.getTitleJulianDays(), volScan.getTitleMsecs());
+   // Date d = Cinrad2Record.getDate(volScan.getTitleJulianDays(), volScan.getTitleMsecs());
+    Date d= volScan.getStartDate();
     String units = "msecs since "+formatter.toDateTimeStringISO(d);
 
     timeVar.addAttribute( new Attribute("long_name", "time since base date"));

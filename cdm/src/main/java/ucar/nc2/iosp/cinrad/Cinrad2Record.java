@@ -335,8 +335,10 @@ public class Cinrad2Record {
     if (message_type != 1) return;
 
     // data header
-    data_msecs    = din.readInt();   // collection time for this radial, msecs since midnight
-    data_julian_date  = din.readShort(); // prob "collection time"
+    byte[] b4 = din.readBytes(4);
+    data_msecs    = bytesToInt(b4, true); //din.readInt();   // collection time for this radial, msecs since midnight
+    byte[] b2 = din.readBytes(2);
+    data_julian_date  = (short)bytesToShort(b2, true); //din.readShort(); // prob "collection time"
       java.util.Date dd =  getDate();
     unamb_range   = din.readShort(); // unambiguous range
     azimuth_ang   = din.readUnsignedShort(); // LOOK why unsigned ??
@@ -370,6 +372,39 @@ public class Cinrad2Record {
     hasDopplerData = (doppler_gate_count > 0);
     //  dump(System.out);
   }
+
+    public static int bytesToInt(byte [] bytes, boolean swapBytes) {
+       byte a = bytes[0];
+       byte b = bytes[1];
+       byte c = bytes[2];
+       byte d = bytes[3];
+       if (swapBytes) {
+           return ((a & 0xff) ) +
+               ((b & 0xff) << 8 ) +
+               ((c & 0xff) << 16 ) +
+               ((d & 0xff) << 24);
+       } else {
+           return ((a & 0xff) << 24 ) +
+               ((b & 0xff) << 16 ) +
+               ((c & 0xff) << 8 ) +
+               ((d & 0xff) );
+       }
+    }
+
+    public static int bytesToShort(byte [] bytes, boolean swapBytes) {
+       byte a = bytes[0];
+       byte b = bytes[1];
+
+       if (swapBytes) {
+           return ((a & 0xff) ) +
+               ((b & 0xff) << 8 );
+
+       } else {
+           return ((a & 0xff) << 24 ) +
+               ((b & 0xff) << 16 );
+
+       }
+    }
 
   public void dumpMessage(PrintStream out, java.util.Date d) {
     out.println(recno+" ---------------------");
