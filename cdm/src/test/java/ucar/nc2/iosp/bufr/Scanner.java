@@ -554,7 +554,7 @@ public class Scanner {
   static Set<Message> messSet = new HashSet<Message>();
 
   static void writeUniqueDDS(String filename, WritableByteChannel wbc) throws IOException {
-    System.out.printf("open %s %n",filename);
+    System.out.printf("open %s ",filename);
     RandomAccessFile raf = new RandomAccessFile(filename, "r");
 
     MessageScanner scan = new MessageScanner(raf);
@@ -576,6 +576,8 @@ public class Scanner {
       count++;
     }
     raf.close();
+    System.out.printf(" read  = %d%n ", count);
+
   }
 
 
@@ -923,9 +925,9 @@ public class Scanner {
      }); // */
 
     // extract unique DDS
-    FileOutputStream fos = new FileOutputStream("C:/data/formats/bufr3/uniqueRoy.bufr");
+    FileOutputStream fos = new FileOutputStream("D:/formats/bufr/brasil/uniqueBrasil.bufr");
     final WritableByteChannel wbc = fos.getChannel();
-    test("C:\\data\\formats\\bufrRoy", true, new MClosure() {
+    test("D:/formats/bufr/brasil/", true, new MClosure() {
        public void run(String filename) throws IOException {
          writeUniqueDDS(filename, wbc);
        }
@@ -933,14 +935,14 @@ public class Scanner {
     System.out.printf("# messages = %d %n",messSet.size());
     wbc.close();
 
-     /* extract unique DDS  // 20080707_1900.bufr
-     test("C:\\data\\formats\\bufr", true, new MClosure() {
+     //extract unique DDS  // 20080707_1900.bufr
+     test("D:/formats/bufr/brasil/", true, new MClosure() {
        public void run(String filename) throws IOException {
          scanMessageDDS(filename);
        }
      });
-    Formatter messCsv = new Formatter( new FileOutputStream("R:/testdata/bufr/mess.csv"));
-    Formatter ddsCsv = new Formatter( new FileOutputStream("R:/testdata/bufr/dds.csv"));
+    Formatter messCsv = new Formatter( new FileOutputStream("D:/formats/bufr/brasil/mess.csv"));
+    Formatter ddsCsv = new Formatter( new FileOutputStream("D:/formats/bufr/brasil/dds.csv"));
     showDDS(messCsv, ddsCsv);
     //showDDS(null, null);
     ddsCsv.close();

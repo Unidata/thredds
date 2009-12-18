@@ -173,8 +173,9 @@ public class MessageCompressedDataReader {
   }
 
   // An iterator is stored in member.getDataObject() which keeps track of where we are.
-  // For fixed length nested Structures, we need fld(dataset, inner) but we have fld(inner, dataset) se we transpose the dimensions
-  //   before we set the iterator.
+  // For fixed length nested Structures, we need fld(dataset, inner1, inner2,  ...) but we have fld(inner1, inner2, ... , dataset)
+  //  so we permute the dimensions
+  //  before we set the iterator.
   public static void setIterators(ArrayStructureMA ama) {
     StructureMembers sms = ama.getStructureMembers();
     for (StructureMembers.Member sm : sms.getMembers()) {
@@ -188,7 +189,14 @@ public class MessageCompressedDataReader {
       } else {
         int[] shape = data.getShape();
         if ((shape.length > 1) && (sm.getDataType() != DataType.CHAR)) {
-          Array datap = data.transpose(0, 1);
+          Array datap;
+          if (shape.length == 2)
+            datap = data.transpose(0, 1);
+          else {
+            int[] pdims = new int[shape.length]; // (0,1,2,3...) -> (1,2,3...,0)
+            for (int i=0; i< shape.length-1; i++) pdims[i] = i+1;
+            datap = data.permute( pdims);
+          }
           sm.setDataObject(datap.getIndexIterator());
         } else {
           sm.setDataObject(data.getIndexIterator());
@@ -454,7 +462,7 @@ public class MessageCompressedDataReader {
     return bitOffset;
   }
 
-  // read in the data into an ArrayStructureMA, holding an ArrObject() of ArraySequence
+  // read in the data into an ArrayStructureMA, holding an ArrayObject() of ArraySequence
   private int makeArraySequenceCompressed(DebugOut out, BitReader reader, BitCounterCompressed bitCounterNested, DataDescriptor seqdd,
                          int bitOffset, int ndatasets, int count, Request req) throws IOException {
 

@@ -172,8 +172,8 @@ public class BufrDataDump {
   }
 
   public static void main(String[] args) throws IOException {
-    //new BufrDataDump("D:/formats/bufr/tmp/IUPT42.bufr", System.out);
-    new BufrDataDump("D:/work/michelle/DART.bufr", System.out);
+    new BufrDataDump("D:/formats/bufr/tmp/964IOZK01.bufr", System.out);
+    //new BufrDataDump("D:/work/michelle/DART.bufr", System.out);
   }
 
 }

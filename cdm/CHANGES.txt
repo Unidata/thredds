@@ -4,8 +4,10 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  12:
+  BUFR: compressed data: permutation wrong when ndims > 2, ie more than one nested structure
   BUFR: use new WMO CodeFlagTable
  11:
+  Grib1BinaryDataSection get data array dimension from Grib1Data  when bit-map size not available
   CEDRIC radar coordSysBuilder
   BUFR can read JUSA41
   isGridCoordSys: improve performance. should optimize for 2D coords, maybe wait for swath datatype?
@@ -13,7 +15,7 @@ Changes in version 4.1:
   BUFR tables refactor
   UI tabs for examining BUFR tables B and D
   refactor BUFR tables
-  bug in NetcdfDataetCOnvert on converting enums in nested structures
+  bug in NetcdfDatasetConvert on converting enums in nested structures
  10:
   multiple profiles in the FslRaob plugin
   StationProfileFeature.getTimes(), getProfileByDate()

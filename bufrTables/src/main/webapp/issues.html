@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>Untitled Document</title>
+<title>BUFR issues</title>
 </head>
 
 <body>
@@ -63,10 +63,65 @@
   <li>Quality Assessment Information (2 22
   000 through 2 37 255)</li>
 </ul>
+<hr />
+<p>12/18/2009</p>
+<h3>Possible error in code flag table 0-21-076<br />
+</h3>
+<p>From <a href="http://www.wmo.int/pages/prog/www/WMOCodes/CodeFlagTables_112009.doc">http://www.wmo.int/pages/prog/www/WMOCodes/CodeFlagTables_112009.doc</a> :</p>
+<p align="left"><strong>0  21 076</strong></p>
+<p align="left"><strong><em>Representation  of intensities</em></strong><strong><u> </u></strong></p>
+
+  <table width="351" border="2" cellpadding="0" cellspacing="0">
+    <tr>
+      <td width="102" valign="top"><p align="center">Code figure</p></td>
+      <td width="241" valign="top"><p>&nbsp;</p></td>
+    </tr>
+    <tr>
+      <td width="102" valign="top"><p align="center">1</p></td>
+      <td width="241" valign="top"><p>Linear</p></td>
+    </tr>
+    <tr>
+      <td width="102" valign="top"><p align="center">2</p></td>
+      <td width="241" valign="top"><p>Logarithmic (base e)</p></td>
+    </tr>
+    <tr>
+      <td width="102" valign="top"><p align="center">3</p></td>
+      <td width="241" valign="top"><p>Logarithmic (base 10)</p></td>
+    </tr>
+    <tr>
+      <td width="102" valign="top"><p align="center">3-6</p></td>
+      <td width="241" valign="top"><p>Reserved</p></td>
+    </tr>
+    <tr>
+      <td width="102" valign="top"><p align="center">7</p></td>
+      <td width="241" valign="top"><p>Missing value</p></td>
+    </tr>
+  </table>
+<p><br />
+</p>
+Atsushi Shimazaki wrote: 
+<p>  In WMO publication it starts from 0 to 2 for the three entries and 3-6 are reserved and 7 is for missing value. I have checked some supplements to the Manual, and confirmed it.</p>
+<blockquote cite="mid:4B2B54870200008D0005E1A6@gateway.wmo.int" type="cite">
+  <pre>3072,021076,0,Linear,,
+3073,021076,1,Logarithmic (base e),,
+3074,021076,2,Logarithmic (base 10),,
+3075,021076,3-6,Reserved,,
+3076,021076,7,Missing value,,</pre>
+</blockquote>
+<p>    0 21 076 is included implicitly or explicitly in 3 12 019, 3 12 020, 3 12 024 and 3 12 025 for wind scatterometer products.<br />
+  <br />
+  I have one example message that uses 0 21 076 (attached both <a href="bufrData/IOWA55.bufr">binary</a> and an <a href="bufrData/IOWA55.asc">ascii</a> dump). Hard to tell what the right value is.<br />
+  <br />
+  Representation of intensities =2 CodeTable 0-21-76.<br />
+</p>
+<blockquote cite="mid:4B2B54870200008D0005E1A6@gateway.wmo.int" type="cite">
+  <pre wrap=""><br />
+</pre>
+</blockquote>
 <hr width="100%" />
 <p><a href="index.html">BUFR Tables Home page</a></p>
 <address>
-<a href="NetcdfUsers.htm"><img src="nc.gif" alt="vv" width="64" height="64" border="0" /></a> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Dec 14, 2009
+<a href="NetcdfUsers.htm"><img src="nc.gif" alt="vv" width="64" height="64" border="0" /></a> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Dec 18, 2009
 </address>
 </body>
 </html>
