@@ -477,7 +477,8 @@ public class GridIndexToNC {
           // finally, add the variables
           for (int k = 0; k < plist.size(); k++) {
             GridVariable pv = plist.get(k);
-            if (isGrib2 &&  g2lookup.isEnsemble( pv.getFirstRecord()) ||
+            if (isGrib2 &&  ( g2lookup.isEnsemble( pv.getFirstRecord()) ||
+                g2lookup.isProbability( pv.getFirstRecord() ) ) ||
                 (lookup instanceof GempakLookup) || (lookup instanceof McIDASLookup ) ) {
               ncfile.addVariable(hcs.getGroup(), pv.makeVariable(ncfile, hcs.getGroup(), false));
             } else {
