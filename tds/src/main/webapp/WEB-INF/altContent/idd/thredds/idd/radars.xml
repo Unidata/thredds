@@ -291,6 +291,7 @@
         </metadata>
         <filter>
           <include wildcard="Level3*.gini" atomic="true" collection="false" />
+          <exclude wildcard="current" atomic="false" collection="true" />
         </filter>
         <addID />
         <sort>
