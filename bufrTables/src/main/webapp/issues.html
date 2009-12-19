@@ -17,7 +17,7 @@
    0 02 004 Type of instrument for evaporation or crop type for evapotranspiration
    0 13 003 Relative humidity 
 </pre>
-<p wrap=""> however it should be: </p>
+<p wrap=""> however it possibly should be: </p>
 <pre wrap="">
    0 04 024 Time period in hours
    0 02 004 Type of instrument for evaporation or crop type for evapotranspiration
@@ -55,7 +55,7 @@
 <ul>
   <li>IUST53.bufr, IUSV53.bufr, IUSZ53.bufr all from NTWSTG</li>
 </ul>
-<h2 wrap="">4. BUFR  encoding complexities</h2>
+<h3 wrap="">2. BUFR  encoding complexities</h3>
 <p wrap="">There are  optional features that can be used to encode BUFR messages that make decoding much more complex. We suggest avoiding these features if you are writing messages that are intended to be decoded by others' software, and especially for messages that may be part of a long-term archive. Alternative encoding methods for this kind of information are available.</p>
 <ul>
   <li>Associated Fields (2 04 Y)</li>
@@ -64,8 +64,8 @@
   000 through 2 37 255)</li>
 </ul>
 <hr />
-<p>12/18/2009</p>
-<h3>Possible error in code flag table 0-21-076<br />
+<h2>4. Errors in Code / Flag tables</h2>
+<h3>1. Possible error in code flag table 0-21-076 (12/18/2009)<br />
 </h3>
 <p>From <a href="http://www.wmo.int/pages/prog/www/WMOCodes/CodeFlagTables_112009.doc">http://www.wmo.int/pages/prog/www/WMOCodes/CodeFlagTables_112009.doc</a> :</p>
 <p align="left"><strong>0  21 076</strong></p>
@@ -97,9 +97,7 @@
       <td width="241" valign="top"><p>Missing value</p></td>
     </tr>
   </table>
-<p><br />
-</p>
-Atsushi Shimazaki wrote: 
+<p>But Atsushi Shimazaki wrote:</p>
 <p>  In WMO publication it starts from 0 to 2 for the three entries and 3-6 are reserved and 7 is for missing value. I have checked some supplements to the Manual, and confirmed it.</p>
 <blockquote cite="mid:4B2B54870200008D0005E1A6@gateway.wmo.int" type="cite">
   <pre>3072,021076,0,Linear,,
@@ -114,10 +112,7 @@ Atsushi Shimazaki wrote:
   <br />
   Representation of intensities =2 CodeTable 0-21-76.<br />
 </p>
-<blockquote cite="mid:4B2B54870200008D0005E1A6@gateway.wmo.int" type="cite">
-  <pre wrap=""><br />
-</pre>
-</blockquote>
+<blockquote cite="mid:4B2B54870200008D0005E1A6@gateway.wmo.int" type="cite">&nbsp;</blockquote>
 <hr width="100%" />
 <p><a href="index.html">BUFR Tables Home page</a></p>
 <address>
