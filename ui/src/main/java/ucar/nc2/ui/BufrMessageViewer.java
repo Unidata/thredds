@@ -188,7 +188,7 @@ public class BufrMessageViewer extends JPanel {
         }
       }
     });
-    varPopup.addAction("Bit Count", new AbstractAction() {
+    /* varPopup.addAction("Bit Count", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
         Message m = mb.m;
@@ -222,7 +222,7 @@ public class BufrMessageViewer extends JPanel {
         infoTA.gotoTop();
         infoWindow.show();
       }
-    });
+    });   */
 
     varPopup.addAction("Bit Count 2", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {

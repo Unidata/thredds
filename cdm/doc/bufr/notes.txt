@@ -1,8 +1,14 @@
 Dec 18,2009:
 
-Checking for % of missing values on idd stream, one day:
+Checking for % of missing values:
+
+on idd stream, one day:
 
 Grand Total nmess=331373 count=2039245861 miss=312624823 15.330414 % 
+
+on roys' data (fnmoc):
+
+Grand Total nmess=77 count=52720587 miss=2980885 5.654120 % 
 
 
 ===============

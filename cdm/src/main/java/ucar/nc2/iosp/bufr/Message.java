@@ -235,8 +235,8 @@ public class Message {
 
   public boolean isBitCountOk() throws IOException {
     getRootDataDescriptor();
-    int nbitsCounted = getTotalBits();
-    int nbitsGiven = 8 * (dataSection.getDataLength() - 4);
+    //int nbitsCounted = getTotalBits();
+    //int nbitsGiven = 8 * (dataSection.getDataLength() - 4);
     int nbytesCounted = getCountedDataBytes();
     int nbytesGiven = dataSection.getDataLength();
     return Math.abs(nbytesCounted - nbytesGiven) <= 1; // radiosondes dataLen not even number of bytes
@@ -293,30 +293,38 @@ public class Message {
     return msg_nbits;
   }
 
-  /*  total bits taken by this message
-     there are 3 cases to cover
-     1. compressed
-     2. varLength : non-compressed, with delayed replication
-     3. fixedLength : non-compressed, without delayed replication
-  */
+  // sets msg_nbits as side-effect
   public int calcTotalBits(Formatter out) {
-    boolean compressed = dds.isCompressed();
-
     try {
-      getRootDataDescriptor(); // make sure root has been done
-
-      if (compressed)
-        return countBitsCompressed(out);  // compressed
-      else
-        return countBitsUncompressed(out); // varLength
-
-    } catch (IOException e) {
-      e.printStackTrace();
-      throw new RuntimeException(e.getMessage());
+      if (!dds.isCompressed()) {
+        MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
+        reader.readData(null, this, raf, null, false, out);
+      } else {
+        MessageCompressedDataReader reader = new MessageCompressedDataReader();
+        reader.readData(null, this, raf, null, out);
+      }
+    } catch (IOException ioe) {
+      return 0;
     }
+    return msg_nbits;
+
+    /* boolean compressed = dds.isCompressed();
+
+   try {
+     getRootDataDescriptor(); // make sure root has been done
+
+     if (compressed)
+       return countBitsCompressed(out);  // compressed
+     else
+       return countBitsUncompressed(out); // varLength
+
+   } catch (IOException e) {
+     e.printStackTrace();
+     throw new RuntimeException(e.getMessage());
+   } */
   }
 
-  // count the bits in an uncompressed message
+  /* count the bits in an uncompressed message
   private int countBitsUncompressed(Formatter out) throws IOException {
     BitReader reader = new BitReader(raf, dataSection.getDataPos() + 4);
 
@@ -336,7 +344,7 @@ public class Message {
     return msg_nbits;
   }
 
-  /**
+  /*
    * count the bits in one row of a "nested table", defined by List<DataDescriptor> dkeys.
    *
    * @param out    optional debug poutput, may be null
@@ -347,7 +355,7 @@ public class Message {
    * @param fldno track fldno to compare with EU output
 
    * @throws IOException on read error
-   */
+   *
   private int countBitsUncompressed(Formatter out, BitReader reader, List<DataDescriptor> dkeys, BitCounterUncompressed tc,
           int row, String where, int indent, int fldno) throws IOException {
 
@@ -444,7 +452,7 @@ public class Message {
     float scale = (float) Math.pow(10.0, -dkey.scale);
     float fval = (raw + dkey.refVal);
     return scale * fval;
-  } */
+  }
 
   // count the bits in a compressed message
   private int countBitsCompressed(Formatter out) throws IOException {
@@ -491,7 +499,7 @@ public class Message {
 
     see p 11 of "definition" document
    */
-  /**
+  /*
    * Count bits in a compressed message
    * @param out optional debug output, may be null
    * @param reader read from here
@@ -501,7 +509,7 @@ public class Message {
    * @param parent the parent descriptor
    * @return the ending bitOffset
    * @throws IOException on I/O error
-   */
+   *
   private int countBitsCompressed(Formatter out, BitReader reader, BitCounterCompressed[] counters, int bitOffset, int n, DataDescriptor parent) throws IOException {
 
     for (int fldidx = 0; fldidx < parent.getSubKeys().size(); fldidx++) {
@@ -613,7 +621,7 @@ public class Message {
     return bitOffset;
   }
 
-  boolean showData = true;
+  boolean showData = true;  */
 
   ///////////////////////////////////////////////////////////////////
 
