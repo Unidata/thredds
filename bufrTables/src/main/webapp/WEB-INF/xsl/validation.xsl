@@ -14,7 +14,7 @@
 
         <table border="1">
           <tr>
-            <th>record</th>
+            <th>data</th>
             <th>nobs</th>
             <th>WMO Header</th>
             <th>center</th>

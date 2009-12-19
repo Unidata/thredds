@@ -46,6 +46,7 @@
   <bean id="btValidateController" class="thredds.bufrtables.BtValidateController">
     <property name="commandClass" value="thredds.bufrtables.FileValidateBean"/>
     <property name="cache" ref="cache"/>
+    <property name="uniqueMessageFile" value="C:/temp/cache/uniqueMessages.bufr"/>
   </bean>
 
   <!-- controller for getting info from individual messages -->

@@ -69,8 +69,7 @@ import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.iosp.bufr.DataDescriptor;
 
 /**
- * @author caron
- * @since Aug 9, 2008
+ * NOT USED - replaced with spring beans
  */
 public class BtServlet extends HttpServlet {
   protected org.slf4j.Logger log;

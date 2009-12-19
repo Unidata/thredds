@@ -48,17 +48,103 @@ import ucar.unidata.util.StringUtil;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.IOException;
+import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 import java.util.GregorianCalendar;
+import java.util.Set;
+import java.util.HashSet;
+import java.nio.channels.WritableByteChannel;
 
 /**
  * @author caron
  * @since Oct 3, 2008
  */
 public class BtValidateController extends AbstractCommandController {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BtValidateController.class);
+
   private DiskCache2 diskCache = null;
+  private Set<Message> messSet = new HashSet<Message>();
+  private WritableByteChannel wbc = null;
+  private FileOutputStream fos;
 
   public void setCache(DiskCache2 cache) {
     diskCache = cache;
+  }
+
+  public void setUniqueMessageFile(String filename) {
+    File f = new File(filename);
+    if (f.exists()) {
+
+      // read in the file
+      RandomAccessFile raf = null;
+      try {
+        raf = new RandomAccessFile(filename, "r");
+
+        MessageScanner scan = new MessageScanner(raf);
+        while (scan.hasNext()) {
+          Message m = scan.next();
+          if (m == null) {
+            log.warn("Bad message in file "+filename);
+            continue;
+          }
+
+          if (!messSet.contains(m)) {
+            messSet.add(m);
+          }
+        }
+
+      } catch (IOException e) {
+        log.error("Failed to read in unique message file "+filename, e);
+
+      } finally {
+        if (raf != null)
+          try { raf.close(); }
+          catch (IOException e) { }
+      }
+    }
+
+    // reopen for writing
+    try {
+      fos = new FileOutputStream(filename, true);
+      wbc = fos.getChannel();
+    } catch (FileNotFoundException e) {
+      log.error("Failed to open for writing unique message file "+filename, e);
+    }
+
+  }
+
+  private synchronized void addUniqueMessages(String filename) {
+    if (wbc == null) return;
+
+    RandomAccessFile raf = null;
+    try {
+      raf = new RandomAccessFile(filename, "r");
+
+      MessageScanner scan = new MessageScanner(raf);
+      while (scan.hasNext()) {
+        Message m = scan.next();
+        if (m == null) {
+          log.warn("Bad message in file "+filename);
+          continue;
+        }
+
+        if (!messSet.contains(m)) {
+          scan.writeCurrentMessage(wbc);
+          messSet.add(m);
+        }
+      }
+      fos.flush();
+
+    } catch (IOException e) {
+      log.error("Failed to read message file "+filename, e);
+
+    } finally {
+      if (raf != null)
+        try { raf.close(); }
+        catch (IOException e) { }
+    }
+
   }
 
   protected ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
@@ -67,6 +153,7 @@ public class BtValidateController extends AbstractCommandController {
 
     String fname = StringUtil.unescape(bean.getFilename());
     File dest = diskCache.getCacheFile(fname);
+    addUniqueMessages(dest.getPath());
 
     try {
       Document doc = makeXml(dest, fname);

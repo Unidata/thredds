@@ -187,6 +187,8 @@ public class BtMessInfoController extends AbstractController {
   }
 
   private void showMessSize(HttpServletResponse res, File file, String cacheName, long messPos) throws IOException {
+    res.setContentType("text/plain");
+
     RandomAccessFile raf = null;
     Message m = null;
     try {
@@ -236,6 +238,7 @@ public class BtMessInfoController extends AbstractController {
   }
 
   private void showMessTable(HttpServletResponse res, File file, String cacheName, long messPos) throws IOException {
+    res.setContentType("text/plain");
     Message m = null;
     try {
       m = getBufrMessageByPos(file, messPos);

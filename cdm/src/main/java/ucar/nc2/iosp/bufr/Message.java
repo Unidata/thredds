@@ -234,8 +234,8 @@ public class Message {
   // bit counting
 
   public boolean isBitCountOk() throws IOException {
-    getRootDataDescriptor();
-    //int nbitsCounted = getTotalBits();
+    getRootDataDescriptor(); // make sure root is calculated
+    getTotalBits(); // make sure buts are counted
     //int nbitsGiven = 8 * (dataSection.getDataLength() - 4);
     int nbytesCounted = getCountedDataBytes();
     int nbytesGiven = dataSection.getDataLength();

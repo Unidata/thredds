@@ -89,9 +89,11 @@ public class MessageScanner {
   }
 
   public MessageScanner(RandomAccessFile raf, long startPos) throws IOException {
+    startPos = (startPos < 30) ? 0 : startPos - 30; // look for the header
     this.raf = raf;
     raf.seek(startPos);
     raf.order(RandomAccessFile.BIG_ENDIAN);
+    lastPos = startPos;
   }
 
   public boolean hasNext() throws IOException {
