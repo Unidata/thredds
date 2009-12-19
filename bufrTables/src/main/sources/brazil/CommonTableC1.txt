@@ -1,0 +1,256 @@
+000	WMO Secretariat
+001	Melbourne
+002	Melbourne
+003	)
+004	Moscow
+005	Moscow
+006	)
+007	US National Weather Service, National Centres for Environmental Prediction(NCEP)
+008	US National Weather Service TelecommunicationsGateway (NWSTG)
+009	US National Weather Service - Other
+010	Cairo (RSMC/RAFC)
+011	)
+012	Dakar (RSMC/RAFC)
+013	)
+014	Nairobi (RSMC/RAFC)
+015	)
+016	Casablanca (RSMC)
+017	Tunis (RSMC)
+018	Tunis Casablanca (RSMC)
+019	)
+020	Las Palmas (RAFC)
+021	Algiers (RSMC)
+022	ACMAD
+023	Mozambique NMC
+024	Pretoria (RSMC)
+025	La Réunion (RSMC)
+026	Khabarovsk (RSMC)
+027	)
+028	New Delhi (RSMC/RAFC)
+029	)
+030	Novosibirsk (RSMC)
+031	)
+032	Tashkent (RSMC)
+033	Jeddah (RSMC)
+034	Tokyo (RSMC), Japan Meteorological Agency
+035	)
+036	Bangkok
+037	Ulan Bator
+038	Beijing (RSMC)
+039	)
+040	Seoul
+041	Buenos Aires (RSMC/RAFC)
+042	)
+043	Brasilia (RSMC/RAFC)
+044	)
+045	Santiago
+046	Brazilian Space Agency ­ INPE
+047	Colombia NMC
+048	Ecuador NMC
+049	Peru NMC
+050	Venezuela NMC
+051	Miami (RSMC/RAFC)
+052	Miami RSMC, National Hurricane Center
+053	Montreal (RSMC)
+054	)
+055	San Francisco
+056	ARINC Centre
+057	U.S. Air Force Air Force Global Weather Central 
+058	Fleet Numerical Meteorology and Oceanography Center, Monterey, CA
+059	The NOAA Forecast Systems Laboratory, Boulder, CO, USA
+060	United States National Centre for Atmospheric Research (NCAR)
+061	Service ARGOS - Landover
+062	U.S. Naval Oceanographic Office
+063	Reserved for another centre in Region IV
+064	Honolulu (RSMC)
+065	Darwin (RSMC)
+066	)
+067	Melbourne (RSMC)
+068	Reserved
+069	Wellington (RSMC/RAFC)
+070	)
+071	Nadi (RSMC)
+072	Singapore
+073	Malaysia NMC
+074	UK Meteorological Office ­ Exeter (RSMC)
+075	)
+076	Moscow (RSMC/RAFC)
+077	Reserved
+078	Offenbach (RSMC)
+079	)
+080	Rome (RSMC)
+081	)
+082	Norrköping
+083	)
+084	Toulouse (RSMC)
+085	Toulouse (RSMC)
+086	Helsinki
+087	Belgrade
+088	Oslo
+089	Prague
+090	Episkopi
+091	Ankara
+092	Frankfurt/Main (RAFC)
+093	London (WAFC)
+094	Copenhagen
+095	Rota
+096	Athens
+097	European Space Agency (ESA)
+098	European Centre for Medium-range Weather Forecast (ECMWF), (RSMC)
+099	De Bilt
+100	Brazzaville 
+101	Abidjan 
+102	Libyan Arab Jamahiriya NMC
+103	Madagascar NMC
+104	Mauritius NMC
+105	Niger NMC
+106	Seychelles NMC
+107	Uganda NMC
+108	Tanzania NMC
+109	Zimbabwe NMC
+110	Hong-Kong, China
+111	Afghanistan NMC
+112	Bahrain NMC
+113	Bangladesh NMC
+114	Bhutan NMC
+115	Cambodia NMC
+116	Democratic People's Republic of Korea NMC
+117	Islamic Republic of Iran NMC
+118	Iraq NMC
+119	Kazakhstan NMC
+120	Kuwait NMC
+121	Kyrgyz Republic NMC
+122	Lao People's Democratic Republic NMC
+123	Macao, China
+124	Maldives NMC
+125	Myanmar NMC
+126	Nepal NMC
+127	Oman NMC
+128	Pakistan NMC
+129	Qatar NMC
+130	Republic of Yemen NMC
+131	Sri Lanka NMC
+132	Tajikistan NMC
+133	Turkmenistan NMC
+134	United Arab Emirates NMC
+135	Uzbekistan NMC
+136	Socialist Republic of Viet Nam NMC
+137	
+138	
+139	
+140	Bolivia NMC
+141	Guyana NMC
+142	Paraguay NMC
+143	Suriname NMC
+144	Uruguay NMC
+145	French Guyana
+146	Brazilian Navy Hydrographic Centre
+147	
+148	
+149	
+150	Antigua and Barbuda NMC
+151	Bahamas NMC
+152	Barbados NMC
+153	Belize NMC
+154	British Caribbean Territories Centre
+155	San Jose
+156	Cuba NMC
+157	Dominica NMC
+158	Dominican Republic NMC
+159	El Salvador NMC
+160	US NOAA/NESDIS  
+161	US NOAA Office of Oceanic and Atmospheric Research
+162	Guatemala NMC
+163	Haiti NMC
+164	Honduras NMC
+165	Jamaica NMC
+166	Mexico
+167	Netherlands Antilles and Aruba NMC
+168	Nicaragua NMC
+169	Panama NMC
+170	Saint Lucia NMC
+171	Trinidad and Tobago NMC
+172	French Departments in RA IV
+173	
+174	
+175	
+176	
+177	
+178	
+179	
+180	
+181	
+182	
+183	
+184	
+185	
+186	
+187	
+188	
+189	
+190	Cook Islands NMC
+191	French Polynesia NMC
+192	Tonga NMC
+193	Vanuatu NMC
+194	Brunei Darussalam NMC
+195	Indonesia NMC
+196	Kiribati NMC
+197	Federated States of Micronesia NMC 
+198	New Caledonia NMC
+199	Niue
+200	Papua New Guinea NMC
+201	Philippines NMC
+202	Samoa NMC
+203	Solomon Islands NMC
+204	
+205	
+206	
+207	
+208	
+209	
+210	Frascati (ESA/ESRIN)
+211	Lanion
+212	Lisboa
+213	Reykjavik
+214	Madrid
+215	Zürich
+216	Service ARGOS Toulouse
+217	Bratislava
+218	Budapest
+219	Ljubljana
+220	Warsaw
+221	Zagreb
+222	Albania NMC
+223	Armenia NMC
+224	Austria NMC
+225	Azerbaijan NMC
+226	Belarus NMC
+227	Belgium NMC
+228	Bosnia and Herzegovina NMC
+229	Bulgaria NMC
+230	Cyprus NMC
+231	Estonia NMC
+232	Georgia NMC
+233	Dublin
+234	Israel NMC
+235	Jordan NMC
+236	Latvia NMC
+237	Lebanon NMC
+238	Lithuania NMC
+239	Luxembourg
+240	Malta NMC
+241	Monaco
+242	Romania NMC
+243	Syrian Arab Republic NMC
+244	The former Yugoslav Republic of Macedonia NMC
+245	Ukraine NMC
+246	Republic of Moldova NMC
+247	
+248	
+249	
+250	
+251	
+252	
+253	
+254	EUMETSAT Operation Centre
+255	Missing value

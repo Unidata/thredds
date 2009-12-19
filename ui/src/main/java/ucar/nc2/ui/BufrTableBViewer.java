@@ -346,7 +346,7 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
         int f = (fxy & 0xC000) >> 14;
         int x  = (fxy & 0x3F00) >> 8;
         int y  = fxy & 0xFF;
-        out.format("%d,%2d%03d,\"%s\",%s,%d,%d,%d%n",x,x,y,d2.getName(), d1.getUnits(), d1.getScale(), d1.getRefVal(), d1.getDataWidth());
+        out.format("%d,%2d%03d,\"%s\",%s,%d,%d,%d%n",x,x,y, d1.getName(), d1.getUnits(), d1.getScale(), d1.getRefVal(), d1.getDataWidth());
       }
     }
     out.flush();

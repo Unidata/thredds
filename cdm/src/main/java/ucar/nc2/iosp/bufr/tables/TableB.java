@@ -141,6 +141,7 @@ public class TableB {
     private final String units;
     private final String name;
     private final boolean numeric;
+    private boolean localOverride;
 
     Descriptor(short x, short y, int scale, int refVal, int width, String name, String units) {
       this.x = x;
@@ -205,7 +206,15 @@ public class TableB {
       return ((x >= 48) || (y >= 192));
     }
 
-    public String toString() {
+    public void setLocalOverride( boolean isOverride) {
+      this.localOverride = isOverride;
+    }
+
+    public boolean getLocalOverride() {
+      return localOverride;
+    }
+
+     public String toString() {
       Formatter out = new Formatter();
       show(out);
       return out.toString();

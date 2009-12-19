@@ -1,0 +1,3 @@
+# MBUFR module configuration
+# NumMasterTab,centre,VerMasterTab,VerLocTabCENTER, BUFR_EDITION
+             0,    255,          13,              0,            4

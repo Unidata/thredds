@@ -105,6 +105,8 @@ public final class TableLookup {
         b = localTableB.getDescriptor(fxy);
       if (b == null)
         b = wmoTableB.getDescriptor(fxy);
+      else
+        b.setLocalOverride(true);
 
     } else if (!isWmoRange) {
       if (localTableB != null)
@@ -151,6 +153,8 @@ public final class TableLookup {
         d = localTableD.getDescriptor(fxy);
       if (d == null)
         d = wmoTableD.getDescriptor(fxy);
+      else
+        d.setLocalOverride(true);
 
     } else {
       if (localTableD != null)

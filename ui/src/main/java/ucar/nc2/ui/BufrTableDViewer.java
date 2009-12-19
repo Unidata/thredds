@@ -251,8 +251,10 @@ public class BufrTableDViewer extends JPanel {
 
   private void showUsed() throws IOException {
     usedDds = new HashMap<Short, List<String>>(3000);
-    scanFileForDds("C:/data/formats/bufr3/asampleAll.bufr");
-    scanFileForDds("C:/data/formats/bufr3/unique.bufr");
+    //scanFileForDds("C:/data/formats/bufr/asampleAll.bufr");
+    //scanFileForDds("C:/data/formats/bufr/unique.bufr");
+    scanFileForDds("C:/data/formats/bufr/uniqueBrasil.bufr");
+    //scanFileForDds("C:/data/formats/bufr/uniqueFnmoc.bufr");
   }
 
   public void scanFileForDds(String filename) throws IOException {

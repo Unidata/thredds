@@ -1,0 +1,294 @@
+000 Surface data — land
+001 Surface data — sea
+002 Vertical soundings (other than satellite)
+003 Vertical soundings (satellite)
+004 Single level upper-air data (other than satellite)
+005 Single level upper-air data (satellite)
+006 Radar data
+007 Synoptic features
+008 Physical/chemical constituents
+009 Dispersal and transport
+010 Radiological data
+011 BUFR tables, complete replacement or update
+012 Surface data (satellite)
+013 Forecasts
+014 Warnings
+015 Reserved
+016 Reserved
+017 Reserved
+018 Reserved
+019 Reserved
+020 Status information
+021 Radiances (satellite measured)
+022 Reserved
+023 Reserved
+024 Reserved
+025 Reserved
+026 Reserved
+027 Reserved
+028 Reserved
+029 Reserved
+030 Reserved
+031 Oceanographic data
+032 Reserved
+034 Reserved
+035 Reserved
+036 Reserved
+037 Reserved
+038 Reserved
+039 Reserved
+040 Reserved
+041 Reserved
+042 Reserved
+043 Reserved
+044 Reserved
+045 Reserved
+046 Reserved
+047 Reserved
+048 Reserved
+049 Reserved
+050 Reserved
+051 Reserved
+052 Reserved
+053 Reserved
+054 Reserved
+055 Reserved
+056 Reserved
+057 Reserved
+058 Reserved
+059 Reserved
+060 Reserved
+061 Reserved
+062 Reserved
+063 Reserved
+064 Reserved
+065 Reserved
+066 Reserved
+067 Reserved
+068 Reserved
+069 Reserved
+070 Reserved
+032 Reserved
+033 Reserved
+034 Reserved
+035 Reserved
+036 Reserved
+037 Reserved
+038 Reserved
+039 Reserved
+040 Reserved
+041 Reserved
+042 Reserved
+043 Reserved
+044 Reserved
+045 Reserved
+046 Reserved
+047 Reserved
+048 Reserved
+049 Reserved
+050 Reserved
+051 Reserved
+052 Reserved
+053 Reserved
+054 Reserved
+055 Reserved
+056 Reserved
+057 Reserved
+058 Reserved
+059 Reserved
+060 Reserved
+061 Reserved
+062 Reserved
+063 Reserved
+064 Reserved
+065 Reserved
+066 Reserved
+067 Reserved
+068 Reserved
+069 Reserved
+070 Reserved
+071 Reserved
+072 Reserved
+073 Reserved
+074 Reserved
+075 Reserved
+076 Reserved
+077 Reserved
+078 Reserved
+079 Reserved
+080 Reserved
+081 Reserved
+082 Reserved
+083 Reserved
+084 Reserved
+085 Reserved
+086 Reserved
+087 Reserved
+088 Reserved
+089 Reserved
+090 Reserved
+091 Reserved
+092 Reserved
+093 Reserved
+094 Reserved
+095 Reserved
+096 Reserved
+097 Reserved
+098 Reserved
+099 Reserved
+100 Reserved
+101 Image data
+102 Reserved
+103 Reserved
+104 Reserved
+105 Reserved
+106 Reserved
+107 Reserved
+108 Reserved
+109 Reserved
+110 Reserved
+111 Reserved
+112 Reserved
+113 Reserved
+114 Reserved
+115 Reserved
+116 Reserved
+117 Reserved
+118 Reserved
+119 Reserved
+120 Reserved
+121 Reserved
+122 Reserved
+123 Reserved
+124 Reserved
+125 Reserved
+126 Reserved
+127 Reserved
+128 Reserved
+129 Reserved
+130 Reserved
+131 Reserved
+132 Reserved
+133 Reserved
+134 Reserved
+135 Reserved
+136 Reserved
+137 Reserved
+138 Reserved
+139 Reserved
+140 Reserved
+141 Reserved
+142 Reserved
+143 Reserved
+144 Reserved
+145 Reserved
+146 Reserved
+147 Reserved
+148 Reserved
+149 Reserved
+150 Reserved
+151 Reserved
+152 Reserved
+153 Reserved
+154 Reserved
+155 Reserved
+156 Reserved
+157 Reserved
+158 Reserved
+159 Reserved
+160 Reserved
+161 Reserved
+162 Reserved
+163 Reserved
+164 Reserved
+165 Reserved
+166 Reserved
+167 Reserved
+168 Reserved
+169 Reserved
+170 Reserved
+171 Reserved
+172 Reserved
+173 Reserved
+174 Reserved
+175 Reserved
+176 Reserved
+177 Reserved
+178 Reserved
+179 Reserved
+180 Reserved
+181 Reserved
+182 Reserved
+183 Reserved
+184 Reserved
+185 Reserved
+186 Reserved
+187 Reserved
+188 Reserved
+189 Reserved
+190 Reserved
+191 Reserved
+192 Reserved
+193 Reserved
+194 Reserved
+195 Reserved
+196 Reserved
+197 Reserved
+198 Reserved
+199 Reserved
+200 Reserved
+201 Reserved
+202 Reserved
+203 Reserved
+204 Reserved
+205 Reserved
+206 Reserved
+207 Reserved
+208 Reserved
+209 Reserved
+210 Reserved
+211 Reserved
+212 Reserved
+213 Reserved
+214 Reserved
+215 Reserved
+216 Reserved
+217 Reserved
+218 Reserved
+219 Reserved
+220 Reserved
+221 Reserved
+222 Reserved
+223 Reserved
+224 Reserved
+225 Reserved
+226 Reserved
+227 Reserved
+228 Reserved
+229 Reserved
+230 Reserved
+231 Reserved
+232 Reserved
+233 Reserved
+234 Reserved
+235 Reserved
+236 Reserved
+237 Reserved
+238 Reserved
+239 Reserved
+240 For experimental use
+241 For experimental use
+242 For experimental use
+243 For experimental use
+244 For experimental use
+245 For experimental use
+246 For experimental use
+247 For experimental use
+248 For experimental use
+249 For experimental use
+250 For experimental use
+251 For experimental use
+252 For experimental use
+253 For experimental use
+254 For experimental use
+255 Indicator for local use, with sub-category

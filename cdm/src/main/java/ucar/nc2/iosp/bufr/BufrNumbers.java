@@ -54,7 +54,7 @@ final public class BufrNumbers {
     }
   }
 
-  static boolean isMissing(long raw, int bitWidth) {
+  static public boolean isMissing(long raw, int bitWidth) {
     return (raw == BufrNumbers.missing_value[bitWidth]);
   }
 

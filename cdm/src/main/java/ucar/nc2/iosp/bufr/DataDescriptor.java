@@ -58,6 +58,7 @@ public class DataDescriptor {
   int f, x, y;
   String name, units;
   boolean bad;  // no descriptor found
+  boolean localOverride;
 
   // may get modified by TableC operators
   int scale;
@@ -109,6 +110,7 @@ public class DataDescriptor {
     this.refVal = d.getRefVal();
     this.scale = d.getScale();
     this.bitWidth = d.getDataWidth();
+    this.localOverride = d.getLocalOverride();
 
     if (units.equalsIgnoreCase("CCITT IA5") || units.equalsIgnoreCase("CCITT_IA5")) {
       this.type = 1; // String
@@ -173,6 +175,10 @@ public class DataDescriptor {
         return true;
     }
     return false;
+  }
+
+  public boolean isLocalOverride() {
+    return localOverride;
   }
 
   public String getFxyName() {

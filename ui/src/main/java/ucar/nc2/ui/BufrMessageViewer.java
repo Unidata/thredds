@@ -635,6 +635,7 @@ public class BufrMessageViewer extends JPanel {
     }
 
     public String getLocal() {
+      if (dds.isLocalOverride()) return "override";
       return dds.isLocal() ? "true" : "false";
     }
 

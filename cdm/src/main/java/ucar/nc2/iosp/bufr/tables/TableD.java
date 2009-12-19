@@ -90,6 +90,7 @@ public class TableD {
     private short x, y;
     private String name;
     private List<Short> seq;
+    private boolean localOverride;
 
     Descriptor(short x, short y, String name, List<Short> seq) {
       this.x = x;
@@ -145,6 +146,14 @@ public class TableD {
 
     public boolean isLocal() {
       return ((x >= 48) || (y >= 192));
+    }
+
+    public void setLocalOverride( boolean isOverride) {
+      this.localOverride = isOverride;
+    }
+
+    public boolean getLocalOverride() {
+      return localOverride;
     }
 
   }

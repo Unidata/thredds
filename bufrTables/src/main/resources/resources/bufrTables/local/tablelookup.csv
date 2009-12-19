@@ -26,6 +26,11 @@ center,subcenter,master,local,cat,tableB,tableBformat,                          
 7,   -1,       14,    -1,    -1, resource:/resources/bufrTables/local/ncep.B07.14.local.csv, csv, resource:/resources/bufrTables/local/B4L-007-013-D.diff, mel-bufr
 7,   -1,       -1,    -1,    -1, resource:/resources/bufrTables/local/ncep.B07.local.csv, csv, resource:/resources/bufrTables/local/B4L-007-013-D.diff, mel-bufr
 #
+# Brasil
+# B table from http://downloads.cptec.inpe.br/publicacoes/distribuicao.jsp (MBUFRTOOLS), diffed
+46,    -1,     13,    -1,   -1, resource:/resources/bufrTables/local/brasil.B46.13.diff.csv, csv, , , localWmo
+#255,    -1,     13,    -1,   -1, C:/dev/tds/thredds/bufrTables/src/main/sources/brazil/B0000431200.txt, ecmwf, C:/dev/tds/thredds/bufrTables/src/main/sources/brazil/D0000431200.txt, ecmwf, localWmo
+#
 # FNMOC
 58,    -1,       -1,    -1,   -1, resource:/resources/bufrTables/local/fnmoc.B58.local.csv, csv, , ,
 #
