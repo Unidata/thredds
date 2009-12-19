@@ -137,7 +137,7 @@ public class TableB {
     private final short x, y;
     private final int scale;
     private final int refVal;
-    private final int width;
+    private final int dataWidth;
     private final String units;
     private final String name;
     private final boolean numeric;
@@ -147,7 +147,7 @@ public class TableB {
       this.y = y;
       this.scale = scale;
       this.refVal = refVal;
-      this.width = width;
+      this.dataWidth = width;
       this.name = name.trim();
       this.units = units.trim().intern();
 
@@ -162,8 +162,8 @@ public class TableB {
       return refVal;
     }
 
-    public int getWidth() {
-      return width;
+    public int getDataWidth() {
+      return dataWidth;
     }
 
     public String getUnits() {
@@ -213,7 +213,7 @@ public class TableB {
 
     void show(Formatter out) {
       out.format(" %8s scale=%d refVal=%d width=%d  units=(%s) name=(%s)",
-              getFxy(), scale, refVal, width, units, name);
+              getFxy(), scale, refVal, dataWidth, units, name);
     }
 
     @Override

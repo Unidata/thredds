@@ -68,10 +68,6 @@ public final class TableLookup {
     }
   }
 
-  public String getDataCategory(int cat) {
-    return CommonCodeTables.getDataCategory( cat);
-  }
-
   public final String getWmoTableBName() {
     return wmoTableB.getName();
   }

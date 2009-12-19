@@ -108,10 +108,11 @@ public class DataDescriptor {
     this.units = d.getUnits().trim();
     this.refVal = d.getRefVal();
     this.scale = d.getScale();
-    this.bitWidth = d.getWidth();
+    this.bitWidth = d.getDataWidth();
 
     if (units.equalsIgnoreCase("CCITT IA5") || units.equalsIgnoreCase("CCITT_IA5")) {
       this.type = 1; // String
+      //this.bitWidth *= 8;
     }
 
     // LOOK what about flag table ??

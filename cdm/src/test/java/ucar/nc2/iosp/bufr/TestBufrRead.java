@@ -44,19 +44,12 @@ import java.util.Formatter;
 import junit.framework.TestCase;
 
 /**
- * Class Description.
+ * Saanity check on bufr messages
  *
  * @author caron
  * @since Apr 1, 2008
  */
 public class TestBufrRead extends TestCase {
-
-  public void testReadAll() throws IOException {
-    //readandCountAllInDir(testDir, null);
-    int count = 0;
-    count += TestAll.readAllDir("C:/data/bufr2/mlode/", new MyFileFilter());
-    System.out.println("***READ " + count + " files");
-  }
 
   class MyFileFilter implements java.io.FileFilter {
     public boolean accept(File pathname) {
@@ -64,10 +57,9 @@ public class TestBufrRead extends TestCase {
     }
   }
 
-  public void testReadAllInDir() throws IOException {
-    //readandCountAllInDir(testDir, null);
+  public void utestReadAllInDir() throws IOException {
     int count = 0;
-    count += TestAll.actOnAll("C:/data/formats/bufr3/ISIS01.bufr", new MyFileFilter(), new TestAll.Act() {
+    count += TestAll.actOnAll(TestAll.cdmUnitTestDir + "iosp/bufr", new MyFileFilter(), new TestAll.Act() {
       public int doAct(String filename) throws IOException {
         return readBufr(filename);
       }
@@ -75,34 +67,52 @@ public class TestBufrRead extends TestCase {
     System.out.println("***READ " + count + " files");
   }
 
-  public void testReadOneBufrMessage() throws IOException {
-     readBufr("C:/data/formats/bufr3/ISIS01.bufr");
+  public void testReadMessages() throws IOException {
+    int count = 0;
+    assert 5471 == (count = readBufr(TestAll.cdmUnitTestDir + "iosp/bufr/uniqueIDD.bufr")) : count;
+    assert 11246 == (count = readBufr(TestAll.cdmUnitTestDir + "iosp/bufr/uniqueBrasil.bufr")) : count;
+    assert 12682 == (count = readBufr(TestAll.cdmUnitTestDir + "iosp/bufr/uniqueExamples.bufr")) : count;
   }
 
   private int readBufr(String filename) throws IOException {
-    boolean oneRecord = true;
-    boolean getData = false;
+    System.out.printf("%n***READ bufr %s%n", filename);
+    int count = 0;
+    int totalObs = 0;
+    RandomAccessFile raf = null;
+    try {
+      raf = new RandomAccessFile(filename, "r");
 
-    // Reading of Bufr files must be inside a try-catch block
-    RandomAccessFile raf = new RandomAccessFile(filename, "r");
-    MessageScanner scan = new MessageScanner(raf);
-    while (scan.hasNext()) {
-      Message m = scan.next();
-      if (m == null) continue;
-      int totalObs = m.getNumberDatasets();
-      System.out.println("Total number observations =" + totalObs);
-      m.calcTotalBits( null); // new Formatter(System.out));
-      m.showCounters( new Formatter(System.out));
-      break;
+      MessageScanner scan = new MessageScanner(raf);
+      while (scan.hasNext()) {
+        try {
+          
+          Message m = scan.next();
+          if (m == null) continue;
+          int nobs = m.getNumberDatasets();
+          System.out.printf(" %3d nobs = %4d %s", count++, nobs, m.getHeader());
+          if (m.isTablesComplete()) {
+            if (m.isBitCountOk()) {
+              totalObs += nobs;
+              System.out.printf("%n");
+            } else
+              System.out.printf(" BITS NOT OK%n");
+          } else
+            System.out.printf(" TABLES NOT COMPLETE%n");
+
+        } catch (Exception e) {
+          System.out.printf(" CANT READ %n");
+          e.printStackTrace();
+        }
+
+      }
+
+    } finally {
+      if (raf != null)
+        raf.close();
     }
-    return 1;
+
+    return totalObs;
   }
 
-  public void testCompressedSequence() throws IOException {
-    NetcdfFile ncfile = NetcdfFile.open("C:/data/formats/bufr3/JUTX52.bufr");
-    Variable v = ncfile.findVariable(BufrIosp.obsRecord);
-    v.read();
-    ncfile.close();
-  }
 
 }

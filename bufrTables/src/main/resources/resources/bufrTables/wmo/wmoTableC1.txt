@@ -10,8 +10,8 @@
 04  004   4  Moscow     
 05  005   5  Moscow
 06  006   6  )
-07  007   7  US National Weather Service, National Centres for Environmental Prediction(NCEP)
-08  008   8  US National Weather Service TelecommunicationsGateway (NWSTG)
+07  007   7  US National Weather Service (NCEP)
+08  008   8  US National Weather Service Telecommunications Gateway (NWSTG)
 09  009   9  US National Weather Service - Other
 10  010  10  Cairo (RSMC)
 11  011  11  )     

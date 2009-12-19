@@ -38,7 +38,6 @@ import ucar.ma2.Array;
 import ucar.ma2.Section;
 import ucar.ma2.Range;
 import ucar.nc2.util.CompareNetcdf;
-import ucar.nc2.iosp.grib.TestHybridData;
 
 import java.io.IOException;
 import java.util.Random;
@@ -63,7 +62,10 @@ public class TestIosp {
     suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestGridGribIosp.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestBinaryTextIndexes.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.gempak.TestReadingGempak.class));
-    
+    suite.addTest( new TestSuite( ucar.nc2.iosp.TestMiscIosp.class));
+    suite.addTest( new TestSuite( ucar.nc2.iosp.bufr.TestBufrRead.class));
+
+    // slow !!
     suite.addTest( ucar.nc2.iosp.hdf5.TestH5.suite());
     suite.addTest( ucar.nc2.iosp.hdf4.TestH4.suite());
 

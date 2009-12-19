@@ -556,7 +556,7 @@ public class CompareTableB {
       sb.append(" refVal");
     }
 
-    if (f1.getWidth() != f2.getWidth()) {
+    if (f1.getDataWidth() != f2.getDataWidth()) {
       sb.append(" width");
     }
 

@@ -69,6 +69,7 @@ public class BufrDataDump {
    */
   public BufrDataDump(String filename, OutputStream os) throws IOException {
     out = new PrintStream(os);
+    out.format("Dump %s%n", filename);
     indent.setIndentLevel(0);
 
     try {
@@ -172,7 +173,7 @@ public class BufrDataDump {
   }
 
   public static void main(String[] args) throws IOException {
-    new BufrDataDump("D:/formats/bufr/tmp/964IOZK01.bufr", System.out);
+    new BufrDataDump("D:/formats/bufr/tmp/JUGE86.bufr", System.out);
     //new BufrDataDump("D:/work/michelle/DART.bufr", System.out);
   }
 

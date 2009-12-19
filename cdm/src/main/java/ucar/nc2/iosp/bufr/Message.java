@@ -98,7 +98,7 @@ public class Message {
   }
 
   public String getCategoryName() {
-    return lookup.getDataCategory( ids.getCategory());
+    return CommonCodeTables.getDataCategory( ids.getCategory());
   }
 
   public String getCategoryNo() {

@@ -56,8 +56,6 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.io.*;
-import java.nio.channels.WritableByteChannel;
-import java.nio.ByteBuffer;
 
 /**
  * Class Description
@@ -303,8 +301,8 @@ public class BufrTableBViewer extends JPanel {
           out.format(" %s scale %d != %d %n", d1.getFxy(), d1.getScale(), d2.getScale());
         if (d1.getRefVal() != d2.getRefVal())
           out.format(" %s refVal %d != %d %n", d1.getFxy(), d1.getRefVal(), d2.getRefVal());
-        if (d1.getWidth() != d2.getWidth())
-          out.format(" %s scale %d != %d %n", d1.getFxy(), d1.getWidth(), d2.getWidth());
+        if (d1.getDataWidth() != d2.getDataWidth())
+          out.format(" %s scale %d != %d %n", d1.getFxy(), d1.getDataWidth(), d2.getDataWidth());
       }
     }
 
@@ -325,7 +323,7 @@ public class BufrTableBViewer extends JPanel {
       if (d1.getId() != want.getId()) continue;
       if (d1.getScale() != want.getScale()) return "diff";
       if (d1.getRefVal() != want.getRefVal()) return "diff";
-      if (d1.getWidth() != want.getWidth()) return "diff";
+      if (d1.getDataWidth() != want.getDataWidth()) return "diff";
       return "";
     }
     return want.isLocal() ? "local" : "new";
@@ -343,12 +341,12 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
     Collections.sort(listDesc);
     for (TableB.Descriptor d1 : listDesc) {
       TableB.Descriptor d2 = wmo.getDescriptor(d1.getId());
-      if ((d2 == null) || (d1.getScale() != d2.getScale()) || (d1.getRefVal() != d2.getRefVal()) || (d1.getWidth() != d2.getWidth())) {
+      if ((d2 == null) || (d1.getScale() != d2.getScale()) || (d1.getRefVal() != d2.getRefVal()) || (d1.getDataWidth() != d2.getDataWidth())) {
         short fxy = d1.getId();
         int f = (fxy & 0xC000) >> 14;
         int x  = (fxy & 0x3F00) >> 8;
         int y  = fxy & 0xFF;
-        out.format("%d,%2d%03d,\"%s\",%s,%d,%d,%d%n",x,x,y,d2.getName(), d1.getUnits(), d1.getScale(), d1.getRefVal(), d1.getWidth());
+        out.format("%d,%2d%03d,\"%s\",%s,%d,%d,%d%n",x,x,y,d2.getName(), d1.getUnits(), d1.getScale(), d1.getRefVal(), d1.getDataWidth());
       }
     }
     out.flush();
@@ -365,7 +363,7 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
         int f = (fxy & 0xC000) >> 14;
         int x  = (fxy & 0x3F00) >> 8;
         int y  = fxy & 0xFF;
-        out.format("%d,%d%03d,\"%s\",%s,%d,%d,%d%n",x,x,y,d1.getName(), d1.getUnits(), d1.getScale(), d1.getRefVal(), d1.getWidth());
+        out.format("%d,%d%03d,\"%s\",%s,%d,%d,%d%n",x,x,y,d1.getName(), d1.getUnits(), d1.getScale(), d1.getRefVal(), d1.getDataWidth());
       }
     }
     out.flush();
@@ -524,7 +522,7 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
     }
 
     public int getWidth() {
-      return dds.getWidth();
+      return dds.getDataWidth();
     }
 
     public int getScale() {

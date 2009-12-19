@@ -925,9 +925,9 @@ public class Scanner {
      }); // */
 
     // extract unique DDS
-    FileOutputStream fos = new FileOutputStream("D:/formats/bufr/brasil/uniqueBrasil.bufr");
+    FileOutputStream fos = new FileOutputStream("D:/formats/bufr/uniqueExamples.bufr");
     final WritableByteChannel wbc = fos.getChannel();
-    test("D:/formats/bufr/brasil/", true, new MClosure() {
+    test("D:/formats/bufr/examples/", true, new MClosure() {
        public void run(String filename) throws IOException {
          writeUniqueDDS(filename, wbc);
        }
@@ -935,7 +935,7 @@ public class Scanner {
     System.out.printf("# messages = %d %n",messSet.size());
     wbc.close();
 
-     //extract unique DDS  // 20080707_1900.bufr
+     /* extract unique DDS  // 20080707_1900.bufr
      test("D:/formats/bufr/brasil/", true, new MClosure() {
        public void run(String filename) throws IOException {
          scanMessageDDS(filename);
