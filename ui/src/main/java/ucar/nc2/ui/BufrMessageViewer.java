@@ -37,6 +37,7 @@ import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.iosp.bufr.*;
+import ucar.nc2.iosp.bufr.writer.Bufr2Xml;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.SequenceDS;
 import ucar.nc2.*;
@@ -188,43 +189,8 @@ public class BufrMessageViewer extends JPanel {
         }
       }
     });
-    /* varPopup.addAction("Bit Count", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        MessageBean mb = (MessageBean) messageTable.getSelectedBean();
-        Message m = mb.m;
 
-        Formatter out = new Formatter();
-        try {
-          infoTA.clear();
-
-          int nbitsCounted = m.calcTotalBits(out);
-          int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
-          boolean ok = Math.abs(m.getCountedDataBytes() - m.dataSection.getDataLength()) <= 1; // radiosondes dataLen not even number
-
-          if (!ok) out.format("*** BAD BIT COUNT %n");
-          long last = m.dataSection.getDataPos() + m.dataSection.getDataLength();
-          DataDescriptor root = m.getRootDataDescriptor();
-          out.format("Message nobs=%d compressed=%s vlen=%s countBits= %d givenBits=%d %n",
-                  m.getNumberDatasets(), m.dds.isCompressed(), root.isVarLength(),
-                  nbitsCounted, nbitsGiven);
-          out.format(" countBits= %d givenBits=%d %n", nbitsCounted, nbitsGiven);
-          out.format(" countBytes= %d dataSize=%d %n", m.getCountedDataBytes(), m.dataSection.getDataLength());
-          out.format("%n");
-          infoTA.appendLine(out.toString());
-
-        } catch (Exception ex) {
-          ByteArrayOutputStream bos = new ByteArrayOutputStream();
-          ex.printStackTrace(new PrintStream(bos));
-          infoTA.appendLine(out.toString());
-          infoTA.appendLine(bos.toString());
-        }
-
-        infoTA.gotoTop();
-        infoWindow.show();
-      }
-    });   */
-
-    varPopup.addAction("Bit Count 2", new AbstractAction() {
+    varPopup.addAction("Bit Count", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
         Message m = mb.m;
@@ -312,6 +278,32 @@ public class BufrMessageViewer extends JPanel {
         writeAll();
       }
     });
+
+    varPopup.addAction("Show XML", new AbstractAction() {
+       public void actionPerformed(ActionEvent e) {
+         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
+         Message m = mb.m;
+
+         ByteArrayOutputStream out = new ByteArrayOutputStream(1000 * 100);
+         try {
+           infoTA.clear();
+
+            NetcdfDataset ncd = getBufrMessageAsDataset(mb.m);
+            new Bufr2Xml(m, ncd, out, true);
+            infoTA.setText( out.toString());
+
+         } catch (Exception ex) {
+           ByteArrayOutputStream bos = new ByteArrayOutputStream();
+           ex.printStackTrace(new PrintStream(bos));
+           infoTA.appendLine(out.toString());
+           infoTA.appendLine(bos.toString());
+         }
+
+         infoTA.gotoTop();
+         infoWindow.show();
+       }
+     });
+
 
     // the info window
     infoTA = new TextHistoryPane();

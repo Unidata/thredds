@@ -30,7 +30,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.bufrtables;
+package ucar.nc2.iosp.bufr.writer;
 
 import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.iosp.bufr.BufrIosp;

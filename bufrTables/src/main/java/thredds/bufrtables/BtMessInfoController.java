@@ -43,6 +43,7 @@ import ucar.nc2.util.DiskCache2;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.iosp.bufr.*;
+import ucar.nc2.iosp.bufr.writer.Bufr2Xml;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.util.Formatter;
@@ -306,7 +307,7 @@ public class BtMessInfoController extends AbstractController {
       res.setContentType("application/xml; charset=UTF-8");
       try {
         OutputStream out = res.getOutputStream();
-        new Bufr2Xml(message, ncd, out);
+        new Bufr2Xml(message, ncd, out, false);
         out.flush();
       } catch (Exception e) {
         logger.warn("Exception on file " + cacheName, e);

@@ -67,6 +67,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.iosp.bufr.MessageScanner;
 import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.iosp.bufr.DataDescriptor;
+import ucar.nc2.iosp.bufr.writer.Bufr2Xml;
 
 /**
  * NOT USED - replaced with spring beans
@@ -296,7 +297,7 @@ public class BtServlet extends HttpServlet {
 
       res.setContentType("text/plain");
       OutputStream out = res.getOutputStream();
-      new Bufr2Xml(message, ncd, out);
+      new Bufr2Xml(message, ncd, out, false);
       out.flush();
 
     } finally {

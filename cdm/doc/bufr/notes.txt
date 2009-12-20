@@ -1,3 +1,26 @@
+Dec 19 2009
+
+Write to xml and zip
+
+origFile          size(k)  	xml         all zip     indivZip 	%
+uniqueBrasil	 508 					      2323	     +457
+uniqueFnmoc   	5427		73,159	3801		3804        -30%
+uniqueIDD		 744						3060
+uniqueExamples    4637						6036		
+		
+uniqueMessages   10582	     323,157     11195	     12031	      +14%
+
+probably zip file is sharing dictionary, so this is not a fair test.
+
+eliminate bad messages
+
+origFile          size(k)  	indivZip 	%
+
+uniqueFnmoc   	1146		 474       
+uniqueExamples    1114		2970		
+
+
+
 Dec 18,2009:
 
 Checking for % of missing values:
