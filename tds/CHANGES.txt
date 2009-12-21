@@ -3,6 +3,8 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Release Details 4.1:
+ alpha 17 (2009-12-21):
+   Update to FMRC definition files (for motherlode).
  alpha 16 (2009-12-21):
    Fix GRIB variable name truncation on probability generated variables.
  alpha 15 (2009-12-18):
