@@ -120,13 +120,13 @@ public class CEDRICRadarConvention extends CF1Convention {
 
         ArrayDouble.D1 data = new ArrayDouble.D1(nt);
 
-        data.setDouble(0, dt.getTime());
+        data.setDouble(0, dt.getTime()/1000);
 
         tvar.setCachedData(data, false);
 
         super.augmentDataset(ncDataset, cancelTask);
 
-        System.out.println("here\n");
+   //     System.out.println("here\n");
 
   //  ncDataset.finish();
   }
