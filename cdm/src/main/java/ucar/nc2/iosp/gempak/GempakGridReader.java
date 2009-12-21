@@ -60,6 +60,10 @@ import java.util.List;
  */
 public class GempakGridReader extends GempakFileReader {
 
+    /** logger */
+    private static org.slf4j.Logger log =
+            org.slf4j.LoggerFactory.getLogger( GempakGridReader.class);
+
     /** Grid identifier */
     public static final String GRID = "GRID";
 
@@ -322,19 +326,19 @@ public class GempakGridReader extends GempakFileReader {
         int irow = 1;  // Always 1 for grids
         int icol = gridNumber;
         if ((icol < 1) || (icol > dmLabel.kcol)) {
-            System.out.println("bad grid number " + icol);
+            log.warn("bad grid number " + icol);
             return -9;
         }
         int iprt = getPartNumber("GRID");
         if (iprt == 0) {
-            System.out.println("couldn't find part");
+            log.warn("couldn't find part");
             return -10;
         }
         // gotta subtract 1 because parts are 1 but List is 0 based
         DMPart part = (DMPart) parts.get(iprt - 1);
         // check for valid data type
         if (part.ktyprt != MDGRID) {
-            System.out.println("Not a valid type");
+            log.warn("Not a valid type");
             return -21;
         }
         int ilenhd = part.klnhdr;
@@ -349,12 +353,12 @@ public class GempakGridReader extends GempakFileReader {
         int length = DM_RINT(istart);
         int isword = istart + 1;
         if (length <= ilenhd) {
-            System.out.println("length (" + length
+            log.warn("length (" + length
                                + ") is less than header length (" + ilenhd
                                + ")");
             return -15;
         } else if (Math.abs(length) > 10000000) {
-            System.out.println("length is huge");
+            log.warn("length is huge");
             return -34;
         }
         int[] header = new int[ilenhd];
