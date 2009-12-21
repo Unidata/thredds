@@ -337,7 +337,7 @@ public class WMSController extends AbstractController {
       dataset = isRemote ? ucar.nc2.dt.grid.GridDataset.open(datasetPath, enhanceMode) : DatasetHandler.openGridDataset(req, res, datasetPath, enhanceMode);
 
     } catch (IOException e) {
-      log.warn("WMSController: Failed to open dataset <" + datasetPath + ">: " + e.getMessage());
+      log.info("WMSController: Failed to open dataset <" + datasetPath + ">: " + e.getMessage());
       throw new WmsException("Failed to open dataset, \"" + datasetPath + "\".");
     }
 
