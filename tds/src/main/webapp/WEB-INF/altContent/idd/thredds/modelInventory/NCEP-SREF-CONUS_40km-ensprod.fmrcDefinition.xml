@@ -8,16 +8,18 @@
   <vertCoord id="3" name="pressure_difference_layer" units="Pa">0.0,3000.0</vertCoord>
   <offsetHours id="0">0.0 3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0 87.0</offsetHours>
   <offsetHours id="1">12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0 87.0</offsetHours>
-  <offsetHours id="2">9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0 87.0</offsetHours>
-  <offsetHours id="3">6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0 87.0</offsetHours>
-  <offsetHours id="4">15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0 87.0</offsetHours>
+  <offsetHours id="2">6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0 87.0</offsetHours>
+  <offsetHours id="3">15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0 87.0</offsetHours>
+  <offsetHours id="4">9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0 87.0</offsetHours>
   <offsetHours id="5">27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0 87.0</offsetHours>
   <runSequence allUseSeq="0">
     <variable name="Categorical_Freezing_Rain" />
     <variable name="Categorical_Ice_Pellets" />
     <variable name="Categorical_Rain" />
     <variable name="Categorical_Snow" />
-    <variable name="Convective_available_potential_energy" />
+    <variable name="Convective_available_potential_energy_probability_above_1000_surface" />
+    <variable name="Convective_available_potential_energy_probability_above_2000_surface" />
+    <variable name="Convective_available_potential_energy_probability_above_3000_surface" />
     <variable name="Convective_available_potential_energy_probability_above_4000_surface" />
     <variable name="Convective_available_potential_energy_probability_above_500_surface" />
     <variable name="Dew_point_temperature_stdDev_height_above_ground" vertCoord="0" />
@@ -29,8 +31,9 @@
     <variable name="Geopotential_height_probability_below_914p6_cloud_ceiling" />
     <variable name="Geopotential_height_stdDev_pressure" vertCoord="2" />
     <variable name="Geopotential_height_weightedMean_pressure" vertCoord="2" />
-    <variable name="Parcel_lifted_index_to_500_hPa" vertCoord="3" />
     <variable name="Parcel_lifted_index_to_500_hPa_probability_below_-4_pressure_difference_layer" vertCoord="3" />
+    <variable name="Parcel_lifted_index_to_500_hPa_probability_below_-8_pressure_difference_layer" vertCoord="3" />
+    <variable name="Parcel_lifted_index_to_500_hPa_probability_below_0_pressure_difference_layer" vertCoord="3" />
     <variable name="Precipitable_water_stdDev_entire_atmosphere" />
     <variable name="Precipitable_water_weightedMean_entire_atmosphere" />
     <variable name="Pressure_reduced_to_MSL_stdDev_msl" />
@@ -45,23 +48,13 @@
     <variable name="U-component_of_wind_weightedMean_pressure" vertCoord="2" />
     <variable name="V-component_of_wind_weightedMean_height_above_ground" vertCoord="5" />
     <variable name="V-component_of_wind_weightedMean_pressure" vertCoord="2" />
-    <variable name="Visibility" />
+    <variable name="Visibility_probability_below_1609_surface" />
+    <variable name="Visibility_probability_below_4827_surface" />
     <variable name="Wind_speed_probability_above_12p89_height_above_ground" vertCoord="5" />
     <variable name="Wind_speed_probability_above_17p5_height_above_ground" vertCoord="5" />
     <variable name="Wind_speed_probability_above_25p78_height_above_ground" vertCoord="5" />
     <variable name="Wind_speed_stdDev_height_above_ground" vertCoord="5" />
     <variable name="Wind_speed_stdDev_pressure" vertCoord="2" />
-  </runSequence>
-  <runSequence allUseSeq="0">
-    <variable name="Convective_available_potential_energy_probability_above_1000_surface" />
-    <variable name="Parcel_lifted_index_to_500_hPa_probability_below_0_pressure_difference_layer" vertCoord="3" />
-  </runSequence>
-  <runSequence allUseSeq="0">
-    <variable name="Convective_available_potential_energy_probability_above_2000_surface" />
-  </runSequence>
-  <runSequence allUseSeq="0">
-    <variable name="Convective_available_potential_energy_probability_above_3000_surface" />
-    <variable name="Visibility_probability_below_1609_surface" />
   </runSequence>
   <runSequence allUseSeq="1">
     <variable name="Large_scale_snow_12hours_probability_above_101p6_surface" />
@@ -71,10 +64,7 @@
     <variable name="Large_scale_snow_12hours_stdDev_surface" />
     <variable name="Large_scale_snow_12hours_weightedMean_surface" />
   </runSequence>
-  <runSequence allUseSeq="0">
-    <variable name="Parcel_lifted_index_to_500_hPa_probability_below_-8_pressure_difference_layer" vertCoord="3" />
-  </runSequence>
-  <runSequence allUseSeq="4">
+  <runSequence allUseSeq="3">
     <variable name="Total_precipitation_12hours_probability_above_0p25_surface" />
     <variable name="Total_precipitation_12hours_probability_above_12p7_surface" />
     <variable name="Total_precipitation_12hours_probability_above_25p4_surface" />
@@ -92,7 +82,7 @@
     <variable name="Total_precipitation_24hours_stdDev_surface" />
     <variable name="Total_precipitation_24hours_weightedMean_surface" />
   </runSequence>
-  <runSequence allUseSeq="3">
+  <runSequence allUseSeq="2">
     <variable name="Total_precipitation_3hours_probability_above_0p25_surface" />
     <variable name="Total_precipitation_3hours_probability_above_12p7_surface" />
     <variable name="Total_precipitation_3hours_probability_above_25p4_surface" />
@@ -100,15 +90,12 @@
     <variable name="Total_precipitation_3hours_stdDev_surface" />
     <variable name="Total_precipitation_3hours_weightedMean_surface" />
   </runSequence>
-  <runSequence allUseSeq="2">
+  <runSequence allUseSeq="4">
     <variable name="Total_precipitation_6hours_probability_above_0p25_surface" />
     <variable name="Total_precipitation_6hours_probability_above_12p7_surface" />
     <variable name="Total_precipitation_6hours_probability_above_25p4_surface" />
     <variable name="Total_precipitation_6hours_probability_above_6p35_surface" />
     <variable name="Total_precipitation_6hours_stdDev_surface" />
     <variable name="Total_precipitation_6hours_weightedMean_surface" />
-  </runSequence>
-  <runSequence allUseSeq="0">
-    <variable name="Visibility_probability_below_4827_surface" />
   </runSequence>
 </fmrcDefinition>
