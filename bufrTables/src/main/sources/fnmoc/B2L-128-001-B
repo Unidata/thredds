@@ -1,0 +1,95 @@
+#
+# B2L-128-001-B.001 - Local BUFR Table B for center 128 (NRL Monterey),
+# Minor Local Version 1
+#
+#					Data
+#F	X	Y	Scale	RefVal	Width	Units	Element Name
+0	0	0	0	0	0	undef	undefined used for SSMI - temporary
+
+0	1	50	0	0	48	CCITT_IA5	NMC report identifier
+0	1	62	0	0	40	CCITT_IA5	National assigned station identifier
+
+0	2	28	0	0	32	Flag_Table	Geostationary sounder satellite channels used
+0	2	29	0	0	8	Flag_Table	Geostationary sounder satellite channels used
+0	2	190	0	0	8	Code_Table	U, v quality indicator
+0	2	191	0	0	4	Code_Table	W quality indicator
+
+0	4	44	0	0	3	Code_Table	Day of the week
+
+0	5	3	2	-9000	15	deg	Alternate latitude
+0	5	50	5	0	17	Numeric	Sigma level
+
+0	6	3	2	-18000	16	deg	Alternate longtiude
+
+0	8	0	0	0	4	Code_Table	Vertical significance (forecast soundings)
+0	8	31	0	0	8	BUFR Table A	Data category
+0	8	32	0	0	14	Code_Table	Data significance for simulated forecast
+0	8	33	0	0	3	Code_Table	Data significance for corrected forecast
+0	8	34	0	0	3	Code_Table	Data significance for simulated retrievals
+0	8	35	0	0	3	Code_Table	Data significance for corrected retrievals
+0	8	36	0	0	3	Code_Table	Data significance for simulated analysis
+0	8	37	0	0	3	Code_Table	Data significance for corrected analysis
+0	8	38	0	0	3	Code_Table	Data significance for sigma level data
+
+0	12	20	2	-2000	12	deg_K/day	Radiative heating profile
+0	12	40	-3	-2048	12	W/m**2	Sensible heat flux
+
+0	13	40	-3	-2048	12	W/m**2	Latent heat flux
+
+0	14	41	0	0	7	percent	Short wave albedo
+
+0	20	9	-1	-40	11	m	Ceiling
+0	20	18	-1	40	11	m	Low estimated height of cloud top
+0	20	19	-1	40	11	m	High estimated height of cloud top
+0	20	20	0	0	4	Code_Table	Low cloud amount
+0	20	21	0	0	4	Code_Table	Middle cloud amount
+0	20	22	0	0	4	Code_Table	High cloud amount
+0	20	23	0	0	7	percent	Satellite sensed effective cloud amount
+0	20	49	0	0	10	Code_Table	Type of stability measure
+0	20	50	0	0	10	Numeric	Value of stability
+
+0	22	105	-1	0	6	deg_true	Direction of waves
+0	22	143	2	2650	13	deg_K	Sea temperature
+
+0	25	31	0	0	2	Code_Table	15 day SST availability
+0	25	35	0	0	3	Code_Table	First guess adjustment
+0	25	36	3	-5000	14	Numeric	NSTAR average value
+0	25	37	0	0	2	Code_Table	HIRS-8 surface air temperature
+0	25	38	0	0	3	Code_Table	TOVS filter flags
+
+0	50	200	2	636700	24	km	Altitude(km)
+0	50	201	6	0	24	Rad(Si)/sec	Dosage
+0	50	202	6	0	24	Gauss	B-Field
+0	50	203	3	-20000	24	Re	Coordinate
+0	50	204	3	0	24	-	L-Shell
+
+0	51	200	-2	0	24	KeV/(cm2-s-Sr)	e-Energy Flux
+0	51	201	-2	0	24	#/(cm2-s-Sr)	e-Number Flux
+0	51	202	-2	0	24	KeV/(cm2-s-Sr)	i-Energy Flux
+0	51	203	-2	0	24	#/(cm2-s-Sr)	i-Number Flux
+0	51	204	6	-10	24	mhos	Ped Conduct.
+0	51	205	6	-10	24	mhos	Hall Conduct.
+
+0	52	200	5	0	26	-	S4
+0	52	201	5	0	25	-	SI
+0	52	202	5	0	24	-	PCT
+0	52	203	5	0	24	-	PRMS
+
+0	53	200	-1	0	25	cm**-3	Ne
+0	53	201	3	0	24	MHz	FE
+0	53	202	3	0	24	MHz	FoF2
+0	53	203	3	0	20	km	HE
+0	53	204	3	0	20	km	HF2
+
+#
+# Table definitions
+#
+0	63	000	0	0	0	-	End of Table Descriptors
+0	63	001	0	0	8	Numeric	Number of Dimensions
+0	63	002	0	0	8	Numeric	Dimension Size
+0	63	003	0	0	8	Code_Table	Object Type
+0	63	004	0	0	8	Flag_Table	Flags
+0	63	005	0	0	16	Numeric	Object Count
+0	63	006	0	0	16	Numeric	Object Offset
+0	63	007	0	0	8	Code_Table	Axis Label
+0       22      203     2  -18000      16      summary break angle

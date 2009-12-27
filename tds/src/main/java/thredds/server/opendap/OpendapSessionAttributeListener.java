@@ -36,6 +36,7 @@ import javax.servlet.http.HttpSessionAttributeListener;
 import javax.servlet.http.HttpSessionBindingEvent;
 
 public class OpendapSessionAttributeListener implements HttpSessionAttributeListener {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OpendapSessionAttributeListener.class);
 
    // HttpSessionAttributeListener
     public void attributeRemoved(HttpSessionBindingEvent e) {
@@ -43,7 +44,8 @@ public class OpendapSessionAttributeListener implements HttpSessionAttributeList
       if (e.getValue() instanceof GuardedDatasetImpl) {
         GuardedDatasetImpl gdataset = (GuardedDatasetImpl) e.getValue();
         gdataset.close();
-        System.out.printf(" close gdataset %s in session %s %n", gdataset, e.getSession().getId());
+        //System.out.printf(" close gdataset %s in session %s %n", gdataset, e.getSession().getId());
+        if (log.isDebugEnabled()) log.debug(" close gdataset " + gdataset + " in session " + e.getSession().getId());
       }
     }
 

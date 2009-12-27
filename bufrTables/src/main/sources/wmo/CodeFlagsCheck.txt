@@ -1,0 +1,90 @@
+1) lines have non-printing chars and probably newlines in them
+
+450,002025,21,HIRS*,"Group 5 - Channel combinations used to obtain mean temperatures for the layers 100 to
+70 hPa, 70 to 50 hPa, 50 to 30 hPa, 30 to 10 hPa, 10 to 5 hPa, 5 to 2 hPa, 2 to 1 hPa,
+1 to 0.4 hPa",
+
+451,002025,22,SSU,"Group 5 - Channel combinations used to obtain mean temperatures for the layers 100 to
+70 hPa, 70 to 50 hPa, 50 to 30 hPa, 30 to 10 hPa, 10 to 5 hPa, 5 to 2 hPa, 2 to 1 hPa,
+1 to 0.4 hPa",
+
+452,002025,23,"MSU (3, 4)","Group 5 - Channel combinations used to obtain mean temperatures for the layers 100 to
+70 hPa, 70 to 50 hPa, 50 to 30 hPa, 30 to 10 hPa, 10 to 5 hPa, 5 to 2 hPa, 2 to 1 hPa,
+1 to 0.4 hPa",
+
+453,002025,24,Reserved,"Group 5 - Channel combinations used to obtain mean temperatures for the layers 100 to
+70 hPa, 70 to 50 hPa, 50 to 30 hPa, 30 to 10 hPa, 10 to 5 hPa, 5 to 2 hPa, 2 to 1 hPa,
+1 to 0.4 hPa",
+
+2504,020011,15,"Cloud cover is indiscernible for reasons other than fog or other meteorological
+phenomena, or observation is not made",,
+
+3505,025096,2,"Mode 1 Calibration sequence indicator (0 if normal data taking either Mode 1 or 2, 1 if Mode 1 Calibration sequence)
+'Bits 3 and 4 indicate active 23.8 GHz channel",,
+
+3644,031021,1,1 bit indicator of quality,"0 = good
+1 = suspect or bad",
+
+3645,031021,2,2 bit indicator of quality,"0 = good
+1 = slightly suspect
+2 = highly suspect
+3 = bad",
+
+3647,031021,6,4-bit indicator of quality control class according to GTSPP,"0 = Unqualified
+1 = Correct value (all checks passed)
+2 = Probably good but value inconsistent with statistics (differ from climatology)
+3 = Probably bad (spike, gradient, if other tests passed)
+4 = Bad value, impossible value (out of scale, vertical",
+
+3650,031021,21,1 bit indicator of correction (see Note (2)),"0 = original value
+1 = substituted/corrected value",
+
+3653,031031,1,"0   Data present
+1   Data not present",,
+
+2) line 456 has asterisk in code field
+
+456,002030,1*,ADCP (Acoustic Doppler Current Profiler),,
+
+3) line 2162 has some duplicate text with non-printing chars and possibly newlines 
+
+2162,020003,32,Slight or moderate duststorm or sandstorm,"has begun or has increased during the preceding hour
+has begun or has increased during the preceding
+has begun or has increased during the preceding hour",
+
+4) unprintable or non-standard char:
+
+0-2-33
+   1 "In situ sensor  accuracy better than 0.02 ?"
+   2 "In situ sensor  accuracy less than 0.02 ?"
+
+0-8-40
+   5 Begin missing data (all ele?ments) 
+   31 Incremental height level (gener?ated)
+   40 Significant thermodynamic level (inver?sion) 
+
+0-13-56
+   9 Variable ? alternatively light and heavy 
+
+0-19-102
+   1 Elliptical ? the minor axis is at least 3/4 the length of the major axis 
+   2 Elliptical ? the minor axis is less than 3/4 the length    well defined of the major axis 
+
+0-19-109
+   0 Less than 1? of latitude 
+   1 1? to less than 2? of latitude 
+   2 2? to less than 3? of latitude 
+   3 3? to less than 4? of latitude 
+   4 4? to less than 5? of latitude 
+   5 5? to less than 6? of latitude 
+   6 6? to less than 7? of latitude 
+   7 7? to less than 8? of latitude 
+   8 8? to less than 9? of latitude 
+   9 9? of latitude or more 
+
+0-25-150
+   1 The Dvorak?s VIS (VISual imagery) intensity analysis 
+   2 The Dvorak?s EIR (Enhanced InfraRed imagery) intensity analysis 
+
+0-33-50
+   3 "Probably bad (spike  gradient  ? if other tests passed)" 

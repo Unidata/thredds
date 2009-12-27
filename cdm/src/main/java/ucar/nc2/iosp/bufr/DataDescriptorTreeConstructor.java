@@ -285,7 +285,7 @@ public class DataDescriptorTreeConstructor {
 
       } else if (dd.f == 0) {
 
-        if (dd.type == 0) {
+        if ((dd.type == 0) || (dd.type == 1)) {  // numeric or string
           if (changeWidth != null)
             dd.bitWidth += changeWidth.y-128;
           if (changeScale != null)

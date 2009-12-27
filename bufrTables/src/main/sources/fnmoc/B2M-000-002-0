@@ -1,0 +1,308 @@
+##############################################################################
+# BUFR Table 0
+#
+#
+# Notes
+# -----
+#
+# * This table comes from GRIB Code Table 0 (Identification of center)
+#
+# * A value of 1 in the first column indicates a center that uses minor
+#   version numbers with local tables.  Since minor local table version
+#   numbers are stored in Section 1, Octet 18, the value in the first
+#   column must not be set if a center uses Section 1, Octet 18 for other
+#   purposes (i.e., ECMWF).
+#
+#
+##############################################################################
+
+0	  0	RESERVED
+
+# 1-9: WMCs
+
+0	  1	Melbourne
+0	  2	Melbourne
+0	  3	Melbourne
+0	  4	Moscow
+0	  5	Moscow
+0	  6	Moscow
+0	  7	US Weather Service - National Meteorological Center (NMC)
+0	  8	US National Weather Service Telecommunications Gateway (NWSTG)
+0	  9	Reserved for USA
+
+# 10-25: Centers in Region I
+
+0	 10	Cairo (RSMC/RAFC)
+0	 11	Cairo (RSMC/RAFC)
+0	 12	Dakar (RSMC/RAFC)
+0	 13	Dakar (RSMC/RAFC)
+0	 14	Nairobi (RSMC/RAFC)
+0	 15	Nairobi (RSMC/RAFC)
+0	 16	Antananarivo (RSMC)
+0	 17	Antananarivo (RSMC)
+0	 18	Tunis-Casablanca (RSMC/RAFC)
+0	 19	Tunis-Casablanca (RSMC/RAFC)
+0	 20	Las Palmas (RAFC)
+0	 21	Algiers (RSMC)
+0	 22	Lagos (RSMC)
+0	 23	Lagos (RSMC)
+0	 24	Reserved for other centers in Region I
+0	 25	Reserved for other centers in Region I
+
+# 26-40 Centers in Region II
+
+0	 26	Khabarovsk (RSMC)
+0	 27	Khabarovsk (RSMC)
+0	 28	New Delhi (RSMC/RAFC)
+0	 29	New Delhi (RSMC/RAFC)
+0	 30	Novosibirsk (RSMC)
+0	 31	Novosibirsk (RSMC)
+0	 32	Tashkent (RSMC)
+0	 33	Tashkent (RSMC)
+0	 34	Tokyo (RSMC), Japan Meteorological Agency
+0	 35	Tokyo (RSMC/RAFC)
+0	 36	Bangkok (RAFC)
+0	 37	Ulan Bator
+0	 38	Beijing (RSMC)
+0	 39	Beijing (RSMC)
+0	 40	Reserved for other centers in Region II
+
+# 41-50: Centers in Region III
+
+0	 41	Buenos Aires (RSMC/RAFC)
+0	 42	Buenos Aires (RSMC/RAFC)
+0	 43	Brasilia (RSMC/RAFC)
+0	 44	Brasilia (RSMC/RAFC)
+0	 45	Santiago
+0	 46	Brazilian Space Agency - INPE
+0	 47	Reserved for other centers in Region III
+0	 48	Reserved for other centers in Region III
+0	 49	Reserved for other centers in Region III
+0	 50	Reserved for other centers in Region III
+
+# 51-63: Centers in Region IV
+
+0	 51	Miami (RSMC/RAFC)
+0	 52	Miami (RSMC), National Hurricane Center
+0	 53	Montreal (RSMC)
+0	 54	Montreal (RSMC)
+0	 55	San Francisco
+0	 56	RESERVED
+0	 57	US Air Force - Air Force Global Weather Central (AFGWC)
+1	 58	Fleet Numerical Oceanography Center (FNOC), Monterey, CA, USA
+0	 59	The NOAA Forecast Systems Laboratory, Boulder, CO, USA
+0	 60	Reserved for other centers in Region IV
+0	 61	Reserved for other centers in Region IV
+0	 62	Reserved for other centers in Region IV
+0	 63	Reserved for other centers in Region IV
+
+# 64-73: Centers in Region V
+
+0	 64	Honolulu (RAFC)
+0	 65	Darwin (RSMC/RAFC)
+0	 66	Darwin (RSMC/RAFC)
+0	 67	Melbourne (RSMC)
+0	 68	RESERVED
+0	 69	Wellington (RSMC/RAFC)
+0	 70	Wellington (RSMC/RAFC)
+0	 71	Reserved for other centers in Region V
+0	 72	Reserved for other centers in Region V
+0	 73	Reserved for other centers in Region V
+
+# 74-98: Centers in Region VI
+
+0	 74	UK Meteorological Office - Bracknell
+0	 75	UK Meteorological Office - Bracknell
+0	 76	Moscow (RSMC/RAFC)
+0	 77	RESERVED
+0	 78	Offenbach (RSMC)
+0	 79	Offenbach (RSMC)
+0	 80	Rome (RSMC/RAFC)
+0	 81	Rome (RSMC/RAFC)
+0	 82	Norrkoping (RSMC)
+0	 83	Norrkoping (RSMC)
+0	 84	Paris (RAFC)
+0	 85	Toulouse
+0	 86	Helsinki
+0	 87	Belgrade
+0	 88	Oslo
+0	 89	Prague
+0	 90	Episkopi
+0	 91	Ankara
+0	 92	Francfort/Main (RAFC)
+0	 93	London (WAFC)
+0	 94	Copenhagen
+0	 95	Rota
+0	 96	Athens
+0	 97	European Space Agency (ESA)
+
+# ECMWF (Center 98) does not support minor local table version numbers
+# so DO NOT set the first value to 1.
+
+0	 98	European Center for Medium Range Weather Forecasts (ECMWF)(RSMC)
+0	 99	De Bilt
+
+# 100-127: RESERVED
+
+0	100	RESERVED
+0	101	RESERVED
+0	102	RESERVED
+0	103	RESERVED
+0	104	RESERVED
+0	105	RESERVED
+0	106	RESERVED
+0	107	RESERVED
+0	108	RESERVED
+0	109	RESERVED
+0	110	RESERVED
+0	111	RESERVED
+0	112	RESERVED
+0	113	RESERVED
+0	114	RESERVED
+0	115	RESERVED
+0	116	RESERVED
+0	117	RESERVED
+0	118	RESERVED
+0	119	RESERVED
+0	120	RESERVED
+0	121	RESERVED
+0	122	RESERVED
+0	123	RESERVED
+0	124	RESERVED
+0	125	RESERVED
+0	126	RESERVED
+0	127	RESERVED
+
+# 128-254: NATIONAL USE
+
+1	128	Naval Research Laboratory (NRL), Monterey CA
+0	129	CAST
+0	130	AFCCC
+0	131	PL
+0	132	ARL
+0	133	WES
+0	134	NATIONAL USE
+0	135	NATIONAL USE
+0	136	NATIONAL USE
+0	137	NATIONAL USE
+0	138	NATIONAL USE
+0	139	NATIONAL USE
+0	140	NATIONAL USE
+0	141	NATIONAL USE
+0	142	NATIONAL USE
+0	143	NATIONAL USE
+0	144	NATIONAL USE
+0	145	NATIONAL USE
+0	146	NATIONAL USE
+0	147	NATIONAL USE
+0	148	NATIONAL USE
+0	149	NATIONAL USE
+0	150	NATIONAL USE
+0	151	NATIONAL USE
+0	152	NATIONAL USE
+0	153	NATIONAL USE
+0	154	NATIONAL USE
+0	155	NATIONAL USE
+0	156	NATIONAL USE
+0	157	NATIONAL USE
+0	158	NATIONAL USE
+0	159	NATIONAL USE
+0	160	NATIONAL USE
+0	161	NATIONAL USE
+0	162	NATIONAL USE
+0	163	NATIONAL USE
+0	164	NATIONAL USE
+0	165	NATIONAL USE
+0	166	NATIONAL USE
+0	167	NATIONAL USE
+0	168	NATIONAL USE
+0	169	NATIONAL USE
+0	170	NATIONAL USE
+0	171	NATIONAL USE
+0	172	NATIONAL USE
+0	173	NATIONAL USE
+0	174	NATIONAL USE
+0	175	NATIONAL USE
+0	176	NATIONAL USE
+0	177	NATIONAL USE
+0	178	NATIONAL USE
+0	179	NATIONAL USE
+0	180	NATIONAL USE
+0	181	NATIONAL USE
+0	182	NATIONAL USE
+0	183	NATIONAL USE
+0	184	NATIONAL USE
+0	185	NATIONAL USE
+0	186	NATIONAL USE
+0	187	NATIONAL USE
+0	188	NATIONAL USE
+0	189	NATIONAL USE
+0	190	NATIONAL USE
+0	191	NATIONAL USE
+0	192	NATIONAL USE
+0	193	NATIONAL USE
+0	194	NATIONAL USE
+0	195	NATIONAL USE
+0	196	NATIONAL USE
+0	197	NATIONAL USE
+0	198	NATIONAL USE
+0	199	NATIONAL USE
+0	200	NATIONAL USE
+0	201	NATIONAL USE
+0	202	NATIONAL USE
+0	203	NATIONAL USE
+0	204	NATIONAL USE
+0	205	NATIONAL USE
+0	206	NATIONAL USE
+0	207	NATIONAL USE
+0	208	NATIONAL USE
+0	209	NATIONAL USE
+0	210	NATIONAL USE
+0	211	NATIONAL USE
+0	212	NATIONAL USE
+0	213	NATIONAL USE
+0	214	NATIONAL USE
+0	215	NATIONAL USE
+0	216	NATIONAL USE
+0	217	NATIONAL USE
+0	218	NATIONAL USE
+0	219	NATIONAL USE
+0	220	NATIONAL USE
+0	221	NATIONAL USE
+0	222	NATIONAL USE
+0	223	NATIONAL USE
+0	224	NATIONAL USE
+0	225	NATIONAL USE
+0	226	NATIONAL USE
+0	227	NATIONAL USE
+0	228	NATIONAL USE
+0	229	NATIONAL USE
+0	230	NATIONAL USE
+0	231	NATIONAL USE
+0	232	NATIONAL USE
+0	233	NATIONAL USE
+0	234	NATIONAL USE
+0	235	NATIONAL USE
+0	236	NATIONAL USE
+0	237	NATIONAL USE
+0	238	NATIONAL USE
+0	239	NATIONAL USE
+0	240	NATIONAL USE
+0	241	NATIONAL USE
+0	242	NATIONAL USE
+0	243	NATIONAL USE
+0	244	NATIONAL USE
+0	245	NATIONAL USE
+0	246	NATIONAL USE
+0	247	NATIONAL USE
+0	248	NATIONAL USE
+0	249	NATIONAL USE
+0	250	NATIONAL USE
+0	251	NATIONAL USE
+0	252	NATIONAL USE
+0	253	NATIONAL USE
+0	254	NATIONAL USE
+
+# 255: Used to indicate missing or unknown center
+
+0	255	MISSING VALUE

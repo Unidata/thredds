@@ -25,8 +25,9 @@
 <hr width="100%" />
 <h2>2. Use of BUFR Tables </h2>
 <h3>1. Use of <strong>standard WMO data descriptor ranges in local tables </strong></h3>
-<p>For both table B and table D, the areas x &lt; 48, and y &lt; 192 are reserved for  standard WMO tables. We sometimes see local tables using descriptors in this range. We assume that this is incorrect, and BUFR records that rely on this kind of <em>local override</em> will fail, at least in the CDM BUFR library.</p>
+<p>For both table B and table D, the areas x &lt; 48, and y &lt; 192 are reserved for  standard WMO tables. We sometimes see local tables using descriptors in this range. We assume that this is incorrect, and BUFR records that rely on this kind of <em>local override</em> will fail, at least in the CDM BUFR library, unless  override tables are specificly configured.</p>
 <p>Its appears that national centers sometimes use non-allocated standard data descriptors, probably simultaneously proposing them as standard entries. However, there is no mechanism for recognizing these elements until they are added to the standard table, and if the FXY has to change due to conflicts, these messages become unuseable. </p>
+<p>We also see centers overriding WMO entries in their local tables. The problem with this practice is that a reader no longer can count on having correct entries, even for those in the standard WMO area. Thus reading any message involves contacting the data producer to get their tables.</p>
 <h3>2.  Incorrect use of master table version numbers </h3>
 <p>We sometimes see BUFR records where the  version number of the master table is incorrectly specified, typically assuming elements from a later version of the master table. We assume that all versions of the master table are backwards compatible up to version 13. Therefore, we use version 13 table no matter what the BUFR record says, and so we tolerate the incorrect encoding of the master table version.</p>
 <p>Starting with version 14, master tables will no longer be backwards compatible, therefore data providers must correctly encode the master table version for versions 14 and greater.</p>

@@ -54,29 +54,35 @@ import org.jdom.JDOMException;
  * Reads BUFR tables of various forms. Interacts with TableLookup.
  * <pre>
  Table B:
- csv
+ csv----------
    Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_Bits,CREX_Unit,CREX_Scale,CREX_DataWidth,Status
    00,000001,Table A: entry,CCITT IA5,0,0,24,Character,0,3,Operational
 
- mel-bufr
+ mel-bufr-----------
   0; 7; 190; 1; -1024; 12; M; HEIGHT INCREMENT
 
- ncep
+ mel-tabs (tab delimited) ---------------
+ #F	X	Y	Scale	RefVal	Width	Units	Element Name
+0	0	1	0	0	24	CCITT_IA5	Table A: entry
+0	0	2	0	0	256	CCITT_IA5	Table A: data category description, line 1
+
+ ncep-----------
 #====================================================================================================
 # F-XX-YYY |SCALE| REFERENCE   | BIT |      UNIT      | MNEMONIC ;DESC ;  ELEMENT NAME
 #          |     |   VALUE     |WIDTH|                |          ;CODE ;
 #====================================================================================================
   0-00-001 |   0 |           0 |  24 | CCITT IA5      | TABLAE   ;     ; Table A: entry
 
-  ecmwf
+  ecmwf---------
  000001 TABLE A:  ENTRY                                                  CCITTIA5                   0            0  24 CHARACTER                 0          3
 
+============
  Table D:
- csv
+ csv----------
  SNo,Category,FXY1,enElementName1,FXY2,enElementName2,Status
   1,00,300002,,000002,"Table A category, line 1",Operational
 
- mel-bufr
+ mel-bufr------------
   3   1 192  optional_name
     0   1   7
     0  25  60
@@ -97,7 +103,7 @@ import org.jdom.JDOMException;
             | 0-00-002 > | Table A category, line 1
             | 0-00-003   | Table A category, line 2
 
- ecmwf
+ ecmwf-------------
  300002  2 000002
            000003
  300003  3 000010
@@ -446,6 +452,8 @@ public class BufrTables {
       readBmetTableB(ios, b);
     else if (format.equals("mel-bufr"))
       readMelbufrTableB(ios, b);
+    else if (format.equals("mel-tabs"))
+      readMeltabTableB(ios, b);
     else {
       System.out.printf("Unknown format= %s %n",format);
       return null;
@@ -531,6 +539,40 @@ public class BufrTables {
         int scale = Integer.parseInt(split[3].trim());
         int refVal = Integer.parseInt(split[4].trim());
         int width = Integer.parseInt(split[5].trim());
+
+        b.addDescriptor(x, y, scale, refVal, width, split[7], split[6]);
+      } catch (Exception e) {
+        log.error("Bad table " + b.getName() + " entry=<" + line + ">", e);
+        continue;
+      }
+    }
+    dataIS.close();
+
+    return b;
+  }
+
+  // tables are in mel-bufr format
+  // #F	X	Y	Scale	RefVal	Width	Units	Element Name
+  // 0	0	1	0	0	24	CCITT_IA5	Table A: entry
+  static private TableB readMeltabTableB(InputStream ios, TableB b) throws IOException {
+
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
+
+    // read table B looking for descriptors
+    while (true) {
+      String line = dataIS.readLine();
+      if (line == null) break;
+      if (line.startsWith("#") || line.length() == 0)
+        continue;
+
+      try {
+        String[] split = line.split("\t");
+        short x = Short.parseShort(split[1].trim());
+        short y = Short.parseShort(split[2].trim());
+        int scale = Integer.parseInt(split[3].trim());
+        int refVal = Integer.parseInt(split[4].trim());
+        int width = Integer.parseInt(split[5].trim());
+        System.out.printf("%s = %d %d, %d %d %d %s %s %n", line, x, y, scale, refVal, width, split[7], split[6]);
 
         b.addDescriptor(x, y, scale, refVal, width, split[7], split[6]);
       } catch (Exception e) {

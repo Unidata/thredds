@@ -1,0 +1,71 @@
+Ecmwf ver 13 vs WMO v 14 
+
+0-1-24 scale 24 != 5 
+
+**No key 0-2-98 in second table 
+**No key 0-7-11 in second table 
+**No key 0-8-44 in second table 
+**No key 0-8-45 in second table 
+
+ 0-11-72 units
+   KM/S
+   K m s-1
+
+ 0-12-23 units
+   C
+    C
+ 0-12-24 units
+   C
+    C
+**No key 0-12-73 in second table 
+ 0-12-82 scale 16 != 12 
+
+ 0-14-1 refVal -2048 != -65536 
+ 0-14-1 scale 12 != 17 
+ 0-14-2 refVal -2048 != -65536 
+ 0-14-2 scale 12 != 17 
+ 0-14-3 refVal -2048 != -65536 
+ 0-14-3 scale 12 != 17 
+ 0-14-4 refVal -2048 != -65536 
+ 0-14-4 scale 12 != 17 
+ 0-14-11 refVal -2048 != -65536 
+ 0-14-11 scale 12 != 17 
+ 0-14-12 refVal -2048 != -65536 
+ 0-14-12 scale 12 != 17 
+ 0-14-13 refVal -2048 != -65536 
+ 0-14-13 scale 12 != 17 
+ 0-14-14 refVal -2048 != -65536 
+ 0-14-14 scale 12 != 17 
+ 0-14-17 scale -3 != 0 
+ 0-14-17 refVal -2048 != -512 
+ 0-14-17 scale 12 != 10 
+ 0-14-18 scale -3 != 0 
+ 0-14-28 scale 16 != 20 
+ 0-14-29 scale 16 != 20 
+ 0-14-30 scale 16 != 20
+ 
+ 0-14-45 units
+   (W/M**2)*(1/SR)*CM
+   W m-2 sr-1 cm-1
+
+**No key 0-14-61 in second table 
+**No key 0-14-62 in second table 
+**No key 0-20-39 in second table 
+
+ 0-22-39 scale 12 != 13 
+
+ 0-24-11 units
+   mSv
+   mSv*/**
+
+
+**No key 0-25-144 in second table  
+**No key 0-26-20 in second table 
+**No key 0-33-9 in second table 
+**No key 0-33-66 in second table 
+**No key 0-33-67 in second table 
+
+ 0-40-14 units
+   TM
+   m
+
