@@ -260,7 +260,7 @@ public class DataDescriptorTreeConstructor {
           // see L3-82 (3.1.6.5)
           // "Y bits of data are described by the immediately following descriptor". could they speak English?
           iter.remove();
-          if (iter.hasNext()) {
+          if ((dd.y != 0) && iter.hasNext()) {  // fnmoc using 2-6-0 as cancel (apparently)
             DataDescriptor next = iter.next();
             next.bitWidth = dd.y;
           }
@@ -285,7 +285,7 @@ public class DataDescriptorTreeConstructor {
 
       } else if (dd.f == 0) {
 
-        if ((dd.type == 0) || (dd.type == 1)) {  // numeric or string
+        if (dd.type != 3) {  // numeric or string or enum, not compound
           if (changeWidth != null)
             dd.bitWidth += changeWidth.y-128;
           if (changeScale != null)
