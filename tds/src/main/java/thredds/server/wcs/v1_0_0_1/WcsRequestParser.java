@@ -84,7 +84,9 @@ public class WcsRequestParser
       if ( datasetPath == null )
       {
         log.debug( "parseRequest(): Request did not specify dataset." );
-        throw new WcsException( WcsException.Code.CoverageNotDefined, "", "Request did not specify dataset. See \"" + req.getContextPath() + "/catalog.xml\" for available datasets." );
+        throw new WcsException( WcsException.Code.CoverageNotDefined, "",
+                                "Request did not specify dataset. See \"" + req.getContextPath()
+                                + "/catalog.xml\" for available datasets." );
       }
 
 
@@ -102,7 +104,8 @@ public class WcsRequestParser
       if ( operation == null )
       {
         log.debug( "parseRequest(): Unsupported operation request [" + requestParam + "].");
-        throw new WcsException( WcsException.Code.InvalidParameterValue, "Request", "Unsupported operation request [" + requestParam + "]." );
+        throw new WcsException( WcsException.Code.InvalidParameterValue, "Request",
+                                "Unsupported operation request [" + requestParam + "]." );
       }
 
       // Handle "GetCapabilities" request.
@@ -117,7 +120,8 @@ public class WcsRequestParser
         if ( section == null )
         {
           log.debug( "parseRequest(): Unsupported GetCapabilities section requested [" + sectionParam + "]." );
-          throw new WcsException( WcsException.Code.InvalidParameterValue, "Section", "Unsupported GetCapabilities section requested [" + sectionParam + "]." );
+          throw new WcsException( WcsException.Code.InvalidParameterValue, "Section",
+                                  "Unsupported GetCapabilities section requested [" + sectionParam + "]." );
         }
 
         return new GetCapabilities( operation, version, wcsDataset, serverURI, section, updateSequenceParam, null);
@@ -180,13 +184,12 @@ public class WcsRequestParser
       {
         log.debug( "parseRequest(): Invalid request operation [" + requestParam + "].");
       }
-      throw new WcsException( WcsException.Code.InvalidParameterValue, "Request", "Invalid requested operation [" + requestParam + "]." );
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "Request",
+                              "Invalid requested operation [" + requestParam + "]." );
     }
-    catch ( WcsException e )
-    {
+    finally {
       if ( gridDataset != null )
         gridDataset.close();
-      throw e;
     }
   }
 
@@ -231,22 +234,33 @@ public class WcsRequestParser
     if ( bboxSplit.length != 4 )
     {
       log.debug( "parseBoundingBox(): BBOX [" + bboxString + "] not limited to X and Y." );
-      throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", "BBOX [" + bboxString + "] has more values [" + bboxSplit.length + "] than expected [4]." );
+      throw new WcsException( WcsException.Code.InvalidParameterValue,
+                              "BBOX", "BBOX [" + bboxString + "] has more values [" + bboxSplit.length
+                                      + "] than expected [4]." );
     }
-    double minx = Double.parseDouble( bboxSplit[0] );
-    double miny = Double.parseDouble( bboxSplit[1] );
-    double maxx = Double.parseDouble( bboxSplit[2] );
-    double maxy = Double.parseDouble( bboxSplit[3] );
-
     double[] minP = new double[2];
-    minP[0] = Double.parseDouble( bboxSplit[0] );
-    minP[1] = Double.parseDouble( bboxSplit[1] );
     double[] maxP = new double[2];
-    maxP[0] = Double.parseDouble( bboxSplit[2] );
-    maxP[1] = Double.parseDouble( bboxSplit[3] );
+    try
+    {
+      double minx = Double.parseDouble( bboxSplit[0] );
+      double miny = Double.parseDouble( bboxSplit[1] );
+      double maxx = Double.parseDouble( bboxSplit[2] );
+      double maxy = Double.parseDouble( bboxSplit[3] );
+
+      minP[0] = Double.parseDouble( bboxSplit[0] );
+      minP[1] = Double.parseDouble( bboxSplit[1] );
+      maxP[0] = Double.parseDouble( bboxSplit[2] );
+      maxP[1] = Double.parseDouble( bboxSplit[3] );
+    }
+    catch ( NumberFormatException e )
+    {
+      throw new WcsException( WcsException.Code.InvalidParameterValue,
+                              "BBOX", "BBOX [" + bboxString + "] contains an invalid number(s)." );
+    }
 
     if ( minP[0] > maxP[0] || minP[1] > maxP[1])
-      throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", "BBOX [" + bboxString + "] minimum point larger than maximum point.");
+      throw new WcsException( WcsException.Code.InvalidParameterValue,
+                              "BBOX", "BBOX [" + bboxString + "] minimum point larger than maximum point.");
 
     return new Request.BoundingBox( minP, maxP);
   }
@@ -275,7 +289,8 @@ public class WcsRequestParser
         if ( timeRange.length != 2 )
         {
           log.debug( "parseTime(): Unsupported time parameter (time range with resolution) [" + time + "]." );
-          throw new WcsException( WcsException.Code.InvalidParameterValue, "TIME", "Not currently supporting time range with resolution." );
+          throw new WcsException( WcsException.Code.InvalidParameterValue, "TIME",
+                                  "Not currently supporting time range with resolution." );
         }
         dateRange = new DateRange( new DateType( timeRange[0], null, null ),
                                    new DateType( timeRange[1], null, null ), null, null );
@@ -307,15 +322,18 @@ public class WcsRequestParser
     if ( rangeSetAxisSelectionString.indexOf( "," ) != -1 )
     {
       log.debug( "parseRangeSetAxisValues(): Vertical value list not supported [" + rangeSetAxisSelectionString + "]." );
-      throw new WcsException( WcsException.Code.InvalidParameterValue, "Vertical", "Not currently supporting list of Vertical values (just range, i.e., \"min/max\")." );
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "Vertical",
+                              "Not currently supporting list of Vertical values (just range, i.e., \"min/max\")." );
     }
     else if ( rangeSetAxisSelectionString.indexOf( "/" ) != -1 )
     {
       String[] rangeSplit = rangeSetAxisSelectionString.split( "/" );
       if ( rangeSplit.length != 2 )
       {
-        log.debug( "parseRangeSetAxisValues(): Unsupported Vertical value (range with resolution) [" + rangeSetAxisSelectionString + "]." );
-        throw new WcsException( WcsException.Code.InvalidParameterValue, "Vertical", "Not currently supporting vertical range with resolution." );
+        log.debug( "parseRangeSetAxisValues(): Unsupported Vertical value (range with resolution) ["
+                   + rangeSetAxisSelectionString + "]." );
+        throw new WcsException( WcsException.Code.InvalidParameterValue, "Vertical",
+                                "Not currently supporting vertical range with resolution." );
       }
       double minValue = 0;
       double maxValue = 0;
