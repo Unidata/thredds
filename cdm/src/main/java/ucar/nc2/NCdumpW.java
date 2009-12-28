@@ -816,7 +816,7 @@ public class NCdumpW {
       if (j != 0)
         out.format(" ");
       if (dim.isShared())
-        out.format(StringUtil.quoteXmlAttribute(dim.getName()));
+        out.format("%s", StringUtil.quoteXmlAttribute(dim.getName()));
       else
         out.format("%d", dim.getLength());
     }
@@ -829,7 +829,7 @@ public class NCdumpW {
     if (att.isString()) {
       for (int i = 0; i < att.getLength(); i++) {
         if (i > 0) out.format("\\, "); // ??
-        out.format(StringUtil.quoteXmlAttribute(att.getStringValue(i)));
+        out.format("%s", StringUtil.quoteXmlAttribute(att.getStringValue(i)));
       }
     } else {
       for (int i = 0; i < att.getLength(); i++) {
@@ -859,7 +859,7 @@ public class NCdumpW {
       out.format("%n%s", indent);
       width = indent.toString().length();
     }
-    out.format(s);
+    out.format("%s", s);
     width += len;
     return width;
   }
