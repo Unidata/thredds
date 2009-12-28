@@ -91,4 +91,11 @@ public class PolarStereographic extends AbstractCoordTransBuilder {
     ucar.unidata.geoloc.projection.Stereographic proj = new ucar.unidata.geoloc.projection.Stereographic( lat0, lon0, scale, false_easting, false_northing);
     return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
   }
+
+    public static void main(String arg[]) {
+      double stdpar = 70;
+      double sin = Math.abs(Math.sin( Math.toRadians( stdpar)));
+      double scale = (1.0 + sin)/2;
+      System.out.printf("stdpar = %f has scale = %f %n",stdpar, scale );
+    }
 }

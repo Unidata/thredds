@@ -266,7 +266,7 @@ public class BufrTableBViewer extends JPanel {
   }
 
   public void setBufrTableB(String filename, String mode) throws IOException {
-    TableB tableB = BufrTables.readTableB(filename, mode);
+    TableB tableB = BufrTables.readTableB(filename, mode, true); // force read
     int pos = filename.lastIndexOf("/");
     String src = (pos > 0) ? filename.substring(pos + 1) : filename;
 
@@ -439,10 +439,10 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
     try {
       loadVariant("wmo-v14", BufrTables.getWmoTableB(14));
       loadVariant("ours-v13", BufrTables.getWmoTableB(13));
-      loadVariant("ncep-v13", BufrTables.readTableB("C:/dev/tds/thredds/bufrTables/src/main/sources/ncep/bufrtab.TableB_STD_0_13", "ncep"));
-      loadVariant("ncep-v14", BufrTables.readTableB("C:/dev/tds/thredds/bufrTables/src/main/sources/ncep/bufrtab.TableB_STD_0_14", "ncep"));
-      loadVariant("ecmwf-v13", BufrTables.readTableB("C:/dev/tds/thredds/bufrTables/src/main/sources/ecmwf/B0000000000098013001.TXT", "ecmwf"));
-      loadVariant("ukmet-v13", BufrTables.readTableB("C:/dev/tds/thredds/bufrTables/src/main/sources/ukmet/BUFR_B_080731.xml", "ukmet"));
+      loadVariant("ncep-v13", BufrTables.readTableB("C:/dev/tds/thredds/bufrTables/src/main/sources/ncep/bufrtab.TableB_STD_0_13", "ncep", false));
+      loadVariant("ncep-v14", BufrTables.readTableB("C:/dev/tds/thredds/bufrTables/src/main/sources/ncep/bufrtab.TableB_STD_0_14", "ncep", false));
+      loadVariant("ecmwf-v13", BufrTables.readTableB("C:/dev/tds/thredds/bufrTables/src/main/sources/ecmwf/B0000000000098013001.TXT", "ecmwf", false));
+      loadVariant("ukmet-v13", BufrTables.readTableB("C:/dev/tds/thredds/bufrTables/src/main/sources/ukmet/BUFR_B_080731.xml", "ukmet", false));
     } catch (IOException e) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }

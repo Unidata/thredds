@@ -802,6 +802,7 @@ public class ToolsUI extends JPanel {
 
   public void save() {
     fileChooser.save();
+    if (bufrFileChooser != null) bufrFileChooser.save();
 
     if (aggPanel != null) aggPanel.save();
     if (bufrPanel != null) bufrPanel.save();
@@ -1940,6 +1941,12 @@ public class ToolsUI extends JPanel {
   }
 
   /////////////////////////////////////////////////////////////////////
+  private FileManager bufrFileChooser = null;
+
+  private void initBufrFileChooser() {
+    bufrFileChooser = new FileManager(parentFrame, null, null, (PreferencesExt) prefs.node("bufrFileManager"));
+  }
+
   private class BufrTableBPanel extends OpPanel {
     BufrTableBViewer bufrTable;
 
@@ -1950,7 +1957,19 @@ public class ToolsUI extends JPanel {
     JComboBox modes;
 
     BufrTableBPanel(PreferencesExt p) {
-      super(p, "tableB:", true, false);
+      super(p, "tableB:", false, false);
+
+      AbstractAction fileAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          if (bufrFileChooser == null) initBufrFileChooser();
+          String filename = bufrFileChooser.chooseFilename();
+          if (filename == null) return;
+          cb.setSelectedItem(filename);
+        }
+      };
+      BAMutil.setActionProperties(fileAction, "FileChooser", "open Local table...", false, 'L', -1);
+      BAMutil.addActionToContainer(buttPanel, fileAction);
+
       modes = new JComboBox(new String[] {"mel-bufr","ncep","ncep-nm","ecmwf","csv","ukmet"});
       buttPanel.add(modes);
 
@@ -2010,41 +2029,64 @@ public class ToolsUI extends JPanel {
     JComboBox modes;
 
     BufrTableDPanel(PreferencesExt p) {
-      super(p, "tableD:", true, false);
+      super(p, "tableD:", false, false);
+
+      AbstractAction fileAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          if (bufrFileChooser == null) initBufrFileChooser();
+          String filename = bufrFileChooser.chooseFilename();
+          if (filename == null) return;
+          cb.setSelectedItem(filename);
+        }
+      };
+      BAMutil.setActionProperties(fileAction, "FileChooser", "open Local table...", false, 'L', -1);
+      BAMutil.addActionToContainer(buttPanel, fileAction);
+
       modes = new JComboBox(new String[] {"mel-bufr","ncep","ncep-nm","ecmwf","csv","ukmet"});
       buttPanel.add(modes);
+
+      JButton accept = new JButton("Accept");
+      buttPanel.add(accept);
+      accept.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          accept();
+        }
+      });
 
       bufrTable = new BufrTableDViewer(prefs, buttPanel);
       add(bufrTable, BorderLayout.CENTER);
     }
 
-    boolean process(Object o) {
-      String command = (String) o;
-      boolean err = false;
-
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      try {
-        String mode = (String) modes.getSelectedItem();
-        bufrTable.setBufrTableD(command, mode);
-
-      } catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "BufrTableViewer cant open " + command + "\n" + ioe.getMessage());
-        detailTA.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
-        detailTA.setVisible(true);
-        err = true;
-
-      } catch (Exception e) {
-        e.printStackTrace();
-        e.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
-        detailTA.setVisible(true);
-        err = true;
+      boolean process(Object command) {
+        return true;
       }
 
-      return !err;
-    }
+      void accept() {
+        String command = (String) cb.getSelectedItem();
+        boolean err = false;
 
-    void save() {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+        try {
+          String mode = (String) modes.getSelectedItem();
+          bufrTable.setBufrTableD(command, mode);
+
+        } catch (FileNotFoundException ioe) {
+          JOptionPane.showMessageDialog(null, "BufrTableViewer cant open " + command + "\n" + ioe.getMessage());
+          detailTA.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
+          detailTA.setVisible(true);
+          err = true;
+
+        } catch (Exception e) {
+          e.printStackTrace();
+          e.printStackTrace(new PrintStream(bos));
+          detailTA.setText(bos.toString());
+          detailTA.setVisible(true);
+          err = true;
+        }
+
+      }
+
+      void save() {
       bufrTable.save();
       super.save();
     }

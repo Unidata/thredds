@@ -295,7 +295,7 @@ public class DatasetHandler {
    * @param path the complete path name of the dataset
    * @return ResourceControl for this dataset, or null if none
    */
-  static private String findResourceControl(String path) {
+  static public String findResourceControl(String path) {
     if (!hasResourceControl) return null;
 
     if (path.startsWith("/"))

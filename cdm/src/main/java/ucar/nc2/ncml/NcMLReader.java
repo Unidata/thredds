@@ -59,6 +59,7 @@ import java.util.*;
 
 public class NcMLReader {
   static public final Namespace ncNS = Namespace.getNamespace("nc", XMLEntityResolver.NJ22_NAMESPACE);
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcMLReader.class);
 
   private static boolean debugURL = false, debugXML = false, showParsedXML = false;
   private static boolean debugOpen = false, debugConstruct = false, debugCmd = false;
@@ -333,7 +334,7 @@ public class NcMLReader {
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
-  //private boolean enhance = false;
+  private String location;
   private boolean explicit = false;
   private Formatter errlog = new Formatter();
 
@@ -444,6 +445,7 @@ public class NcMLReader {
    * @throws IOException on read error
    */
   public void readNetcdf(String ncmlLocation, NetcdfDataset targetDS, NetcdfFile refds, Element netcdfElem, CancelTask cancelTask) throws IOException {
+    this.location = ncmlLocation; // log messages need this
 
     if (debugOpen)
       System.out.println("NcMLReader.readNetcdf ncml= " + ncmlLocation + " referencedDatasetUri= " + refds.getLocation());
@@ -1380,13 +1382,14 @@ public class NcMLReader {
   // command procesing
 
   private void cmdRemove(Group g, String type, String name) {
+    boolean err = false;
     if (type.equals("dimension")) {
       Dimension dim = g.findDimension(name);
       if (dim != null) {
         g.remove(dim);
         if (debugCmd) System.out.println("CMD remove " + type + " " + name);
       } else
-        System.out.println("CMD remove " + type + " CANT find " + name);
+        err = true;
 
     } else if (type.equals("variable")) {
       Variable v = g.findVariable(name);
@@ -1394,7 +1397,7 @@ public class NcMLReader {
         g.remove(v);
         if (debugCmd) System.out.println("CMD remove " + type + " " + name);
       } else
-        System.out.println("CMD remove " + type + " CANT find " + name);
+        err = true;
 
     } else if (type.equals("attribute")) {
       ucar.nc2.Attribute a = g.findAttribute(name);
@@ -1402,19 +1405,27 @@ public class NcMLReader {
         g.remove(a);
         if (debugCmd) System.out.println("CMD remove " + type + " " + name);
       } else
-        System.out.println("CMD remove " + type + " CANT find " + name);
+        err = true;
+    }
+
+    if (err) {
+      Formatter f = new Formatter();
+      f.format("CMD remove %s CANT find %s location %s%n", type, name, location);
+      log.info(f.toString());
     }
   }
 
   private void cmdRemove(Variable v, String type, String name) {
+    boolean err = false;
+
     if (type.equals("attribute")) {
       ucar.nc2.Attribute a = v.findAttribute(name);
       if (a != null) {
         v.remove(a);
         if (debugCmd) System.out.println("CMD remove " + type + " " + name);
       } else
-        System.out.println("CMD remove " + type + " CANT find " + name);
-
+        err = true;
+      
     } else if (type.equals("variable") && v instanceof Structure) {
       Structure s = (Structure) v;
       Variable nested = s.findVariable(name);
@@ -1422,8 +1433,14 @@ public class NcMLReader {
         s.removeMemberVariable(nested);
         if (debugCmd) System.out.println("CMD remove " + type + " " + name);
       } else
-        System.out.println("CMD remove " + type + " CANT find " + name);
+        err = true;
 
+    }
+
+    if (err) {
+      Formatter f = new Formatter();
+      f.format("CMD remove %s CANT find %s location %s%n", type, name, location);
+      log.info(f.toString());
     }
   }
 

@@ -75,6 +75,7 @@ import org.jdom.JDOMException;
 
   ecmwf---------
  000001 TABLE A:  ENTRY                                                  CCITTIA5                   0            0  24 CHARACTER                 0          3
+ 000001 TABLE A:  ENTRY                                                  CCITTIA5                   0            0  24 CHARACTER                 0         3
 
 ============
  Table D:
@@ -394,8 +395,8 @@ public class BufrTables {
     }
 
     Tables tables = new Tables();
-    tables.b = readTableB(tc.tableBname, tc.tableBformat);
-    tables.d = readTableD(tc.tableDname, tc.tableDformat);
+    tables.b = readTableB(tc.tableBname, tc.tableBformat, false);
+    tables.d = readTableD(tc.tableDname, tc.tableDformat, false);
     tables.mode = tc.mode;
 
     return tables;
@@ -415,13 +416,13 @@ public class BufrTables {
 
     // always read 14 in
     TableConfig tc14 = matchTableConfig(0, 0, 14, 0, -1);
-    TableB result = readTableB(tc14.tableBname, tc14.tableBformat);
+    TableB result = readTableB(tc14.tableBname, tc14.tableBformat, false);
     tablesB.put(version14, result); // hash by standard name
 
     // everyone else uses 13 : cant override - do it in local if needed
     if (version < 14) {
       TableConfig tc = matchTableConfig(0, 0, 13, 0, -1);
-      TableB b13 = readTableB(tc.tableBname, tc.tableBformat);
+      TableB b13 = readTableB(tc.tableBname, tc.tableBformat, false);
       TableB.Composite bb = new TableB.Composite(version13, version13);
       bb.addTable(b13); // check in 13 first, so it overrides
       bb.addTable(result); // then in 14
@@ -432,9 +433,11 @@ public class BufrTables {
     return result;
   }
 
-  static public TableB readTableB(String location, String format) throws IOException {
-    TableB tb = tablesB.get(location);
-    if (tb != null) return tb;
+  static public TableB readTableB(String location, String format, boolean force) throws IOException {
+    if (!force) {
+      TableB tb = tablesB.get(location);
+      if (tb != null) return tb;
+    }
     if (showReadErrs) System.out.printf("Read BufrTable B %s format=%s%n", location, format);
 
     InputStream ios = openStream(location);
@@ -749,19 +752,21 @@ public class BufrTables {
 
     // always use version 14
     TableConfig tc14 = matchTableConfig(0, 0, 14, 0, -1);
-    TableD result = readTableD(tc14.tableDname, tc14.tableDformat);
+    TableD result = readTableD(tc14.tableDname, tc14.tableDformat, false);
     tablesD.put(version14, result); // hash by standard name
 
     return result;
   }
 
-  static public TableD readTableD(String location, String format) throws IOException {
+  static public TableD readTableD(String location, String format, boolean force) throws IOException {
     if (location == null) return null;
     if (location.trim().length() == 0) return null;
     if (showReadErrs) System.out.printf("Read BufrTable D %s format=%s%n", location, format);
 
-    TableD tb = tablesD.get(location);
-    if (tb != null) return tb;
+    if (!force) {
+      TableD tb = tablesD.get(location);
+      if (tb != null) return tb;
+    }
 
     InputStream ios = openStream(location);
     TableD d = new TableD(location, location);

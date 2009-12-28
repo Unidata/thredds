@@ -32,7 +32,8 @@ center,subcenter,master,local,cat,tableB,tableBformat,                          
 #255,    -1,     13,    -1,   -1, C:/dev/tds/thredds/bufrTables/src/main/sources/brazil/B0000431200.txt, ecmwf, C:/dev/tds/thredds/bufrTables/src/main/sources/brazil/D0000431200.txt, ecmwf, localWmo
 #
 # FNMOC
-58,    -1,       -1,    -1,   -1, resource:/resources/bufrTables/local/fnmoc.B58.local.csv, csv, , ,
+#58,    -1,       -1,    -1,   -1, resource:/resources/bufrTables/local/fnmoc.B58.local.csv, csv, , ,
+58,    -1,       0,    -1,   -1, C:/dev/tds/thredds/bufrTables/src/main/sources/fnmoc/B2L-058-000-B, mel-tabs, C:/dev/tds/thredds/bufrTables/src/main/sources/fnmoc/B2L-058-000-D, mel-bufr , localWmo
 #
 # FSL
 # B table from Paul Hamer, unknown provenence on the D table

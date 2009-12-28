@@ -773,8 +773,9 @@ public class Message {
 
   public void dump(Formatter out) throws IOException {
 
-    out.format(" BUFR edition %d time= %s wmoHeader=%s hash=[0x%x] %n",
-            is.getBufrEdition(), getReferenceTime(), getHeader(), hashCode());
+    int listHash = dds.getDataDescriptors().hashCode();
+    out.format(" BUFR edition %d time= %s wmoHeader=%s hash=[0x%x] listHash=[0x%x] (%d) %n",
+            is.getBufrEdition(), getReferenceTime(), getHeader(), hashCode(), listHash, listHash);
     out.format("   Category= %s %n", getCategoryFullName());
     out.format("   Center= %s %n", getCenterName());
     out.format("   Table B= wmoTable= %s localTable= %s mode=%s%n", lookup.getWmoTableBName(), lookup.getLocalTableBName(), lookup.getMode());

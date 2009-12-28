@@ -816,6 +816,29 @@ public class Scanner {
     }
   }
 
+  // extract the message matching listHash
+  static void extractMessageByListhash(String filein, int want, String fileout) throws IOException {
+    FileOutputStream fos = new FileOutputStream(fileout);
+    WritableByteChannel wbc = fos.getChannel();
+
+    int count = 0;
+    RandomAccessFile raf = new RandomAccessFile(filein, "r");
+    MessageScanner scan = new MessageScanner(raf);
+    while (scan.hasNext()) {
+      Message m = scan.next();
+      int listHash = m.dds.getDataDescriptors().hashCode();
+
+      if (listHash == want) {
+        scan.writeCurrentMessage(wbc);
+        wbc.close();
+        raf.close();
+        System.out.printf("output %d from %s %n",count, filein);
+        return;
+      }
+      count++;
+    }
+  }
+
   // extract n messages to fileOut
   static void extractNMessages(String filein, int n, String fileout) throws IOException {
     FileOutputStream fos = new FileOutputStream(fileout);
@@ -872,7 +895,8 @@ public class Scanner {
   static Formatter out = new Formatter(System.out);
   static public void main(String args[]) throws IOException {
     //extractNMessages("D:/formats/bufr/tmp/dispatch/KNES-ISXX03.bufr", 3, "D:/formats/bufr/tmp/ISXX03-3.bufr");
-
+    extractMessageByListhash("C:\\data\\formats\\bufrRoy/US058MCUS-BUFtdp.SPOUT_00011_sfc_ship_20091101042700.bufr", 1118454047, "C:\\data\\formats\\bufrRoy/out.bufr");
+    
     //extract("D:/bufr/dispatch/EGRR-IUAD01.bufr", 0, "D:/bufr/out/EGRR-IUAD01-1.bufr");
     //extract("D:/bufr/dispatch/IUPT0KBOU.bufr", 0, "D:/bufr/out/IUPT0KBOU-1.bufr");
     //extract("D:/bufr/mlodeRaw/20080709_0200.bufr", "IUAD01 EGRR", "D:/bufr/out/IUAD01EGRR-1.bufr");
@@ -924,7 +948,7 @@ public class Scanner {
        }
      }); // */
 
-    // extract unique DDS
+    /* extract unique DDS
     FileOutputStream fos = new FileOutputStream("D:/formats/bufr/uniqueExamples.bufr");
     final WritableByteChannel wbc = fos.getChannel();
     test("D:/formats/bufr/examples/", true, new MClosure() {
@@ -933,7 +957,7 @@ public class Scanner {
        }
      });
     System.out.printf("# messages = %d %n",messSet.size());
-    wbc.close();
+    wbc.close();  */
 
      /* extract unique DDS  // 20080707_1900.bufr
      test("D:/formats/bufr/brasil/", true, new MClosure() {
