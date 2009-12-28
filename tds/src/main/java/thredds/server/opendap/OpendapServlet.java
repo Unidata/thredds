@@ -168,8 +168,9 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
 
       if (baseURI == null) { // first time, set baseURI
         URI reqURI = ServletUtil.getRequestURI(request);
-        baseURI = reqURI.resolve("/thredds/dodsC/");
-        //rootCatalog.setBaseURI( baseURI);
+        // Build base URI from request (rather than hard-coding "/thredds/dodsC/").
+        String baseUriString = request.getContextPath() + request.getServletPath() + "/";
+        baseURI = reqURI.resolve( baseUriString);
         log.debug("doGet(): baseURI was set = {}", baseURI);
       }
 

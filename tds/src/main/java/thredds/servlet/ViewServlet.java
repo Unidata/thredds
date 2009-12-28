@@ -208,8 +208,8 @@ public class ViewServlet extends AbstractServlet {
         base = base.substring(0, base.length()-5)+".xml";
       Formatter query = new Formatter();
       query.format("<a href='%s/view/ToolsUI.jnlp?", req.getContextPath());
-      query.format("catalog=http://%s:%s%s&amp;dataset=%s'>NetCDF-Java ToolsUI (webstart)</a>",
-        req.getServerName(), req.getServerPort(), base, ds.getID());
+      query.format("catalog=%s&amp;dataset=%s'>NetCDF-Java ToolsUI (webstart)</a>",
+        base, ds.getID());
       return query.toString();
     }
   }
