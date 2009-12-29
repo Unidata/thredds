@@ -3,7 +3,8 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Release Details 4.1:
- 4.1.0 (2009-12-28)
+ 4.1.0 (2009-12-29)
+   Fix early closing of WCS dataset.
    Clean up logging and improve some exception handling.
    Resource control (authorization) API: allow for external access to and use of information (e.g., in a Servlet Filter)
    Fix base URI used by OPeNDAP servlet.
