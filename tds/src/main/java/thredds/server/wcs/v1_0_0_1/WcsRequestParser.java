@@ -187,9 +187,10 @@ public class WcsRequestParser
       throw new WcsException( WcsException.Code.InvalidParameterValue, "Request",
                               "Invalid requested operation [" + requestParam + "]." );
     }
-    finally {
+    catch ( WcsException e ) {
       if ( gridDataset != null )
         gridDataset.close();
+      throw e;
     }
   }
 
@@ -233,10 +234,10 @@ public class WcsRequestParser
     String[] bboxSplit = bboxString.split( "," );
     if ( bboxSplit.length != 4 )
     {
-      log.debug( "parseBoundingBox(): BBOX [" + bboxString + "] not limited to X and Y." );
-      throw new WcsException( WcsException.Code.InvalidParameterValue,
-                              "BBOX", "BBOX [" + bboxString + "] has more values [" + bboxSplit.length
-                                      + "] than expected [4]." );
+      String msg = "BBOX [" + bboxString + "] has more values [" + bboxSplit.length
+                   + "] than expected [4] (not limited to X and Y).";
+      log.debug( "parseBoundingBox(): " + msg );
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", msg );
     }
     double[] minP = new double[2];
     double[] maxP = new double[2];
@@ -254,13 +255,17 @@ public class WcsRequestParser
     }
     catch ( NumberFormatException e )
     {
-      throw new WcsException( WcsException.Code.InvalidParameterValue,
-                              "BBOX", "BBOX [" + bboxString + "] contains an invalid number(s)." );
+      String msg = "BBOX [" + bboxString + "] contains an invalid number(s).";
+      log.debug( "parseBoundingBox(): " + msg );
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", msg );
     }
 
     if ( minP[0] > maxP[0] || minP[1] > maxP[1])
-      throw new WcsException( WcsException.Code.InvalidParameterValue,
-                              "BBOX", "BBOX [" + bboxString + "] minimum point larger than maximum point.");
+    {
+      String msg = "BBOX [" + bboxString + "] minimum point larger than maximum point.";
+      log.debug( "parseBoundingBox(): " + msg );
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", msg );
+    }
 
     return new Request.BoundingBox( minP, maxP);
   }
