@@ -62,7 +62,7 @@ public class CrawlRandomDatasetsOnMotherlodeTds
     @Parameterized.Parameters
     public static Collection<Object[]> getDatasetUrls()
     {
-        String tdsUrl = "http://motherlode.ucar.edu/thredds/";
+        String tdsUrl = "http://motherlode.ucar.edu:8080/thredds/";
         StringBuilder log = new StringBuilder();
 
         List<String> catalogUrls = new ArrayList<String>();
