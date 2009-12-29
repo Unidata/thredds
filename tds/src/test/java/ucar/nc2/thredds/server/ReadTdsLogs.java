@@ -678,8 +678,8 @@ public class ReadTdsLogs {
     long startElapsed = System.nanoTime();
 
     //String accessLogs = "D:\\logs\\motherlode\\live\\access";
-    //String accessLogs = "C:\\Documents and Settings\\caron.UNIDATA_DOMAIN\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access";
-    String accessLogs = "/home/caron/tdsMonitor/motherlode%3A8080/access/";
+    String accessLogs = "C:\\Documents and Settings\\caron.UNIDATA_DOMAIN\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access";
+    //String accessLogs = "/home/caron/tdsMonitor/motherlode%3A8080/access/";
 
     read(accessLogs, new MClosure() {
       public void run(String filename) throws IOException {

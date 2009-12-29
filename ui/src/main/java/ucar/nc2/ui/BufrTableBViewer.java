@@ -302,7 +302,7 @@ public class BufrTableBViewer extends JPanel {
         if (d1.getRefVal() != d2.getRefVal())
           out.format(" %s refVal %d != %d %n", d1.getFxy(), d1.getRefVal(), d2.getRefVal());
         if (d1.getDataWidth() != d2.getDataWidth())
-          out.format(" %s scale %d != %d %n", d1.getFxy(), d1.getDataWidth(), d2.getDataWidth());
+          out.format(" %s bitWidth %d != %d %n", d1.getFxy(), d1.getDataWidth(), d2.getDataWidth());
       }
     }
 

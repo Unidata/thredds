@@ -778,8 +778,9 @@ public class Message {
             is.getBufrEdition(), getReferenceTime(), getHeader(), hashCode(), listHash, listHash);
     out.format("   Category= %s %n", getCategoryFullName());
     out.format("   Center= %s %n", getCenterName());
-    out.format("   Table B= wmoTable= %s localTable= %s mode=%s%n", lookup.getWmoTableBName(), lookup.getLocalTableBName(), lookup.getMode());
-    out.format("   Table D= wmoTable= %s localTable= %s%n", lookup.getWmoTableDName(), lookup.getLocalTableDName());
+    out.format("   Table= %s %n", getTableName());
+    out.format("    Table B= wmoTable= %s localTable= %s mode=%s%n", lookup.getWmoTableBName(), lookup.getLocalTableBName(), lookup.getMode());
+    out.format("    Table D= wmoTable= %s localTable= %s%n", lookup.getWmoTableDName(), lookup.getLocalTableDName());
 
     out.format("  DDS nsubsets=%d type=0x%x isObs=%b isCompressed=%b\n", dds.getNumberDatasets(), dds.getDataType(),
             dds.isObserved(), dds.isCompressed());

@@ -536,7 +536,7 @@ public class BufrTables {
       //System.out.println("Table B line =" + line);
 
       try {
-        String[] split = line.split("; ");
+        String[] split = line.split(";");
         short x = Short.parseShort(split[1].trim());
         short y = Short.parseShort(split[2].trim());
         int scale = Integer.parseInt(split[3].trim());
@@ -545,7 +545,7 @@ public class BufrTables {
 
         b.addDescriptor(x, y, scale, refVal, width, split[7], split[6]);
       } catch (Exception e) {
-        log.error("Bad table " + b.getName() + " entry=<" + line + ">", e);
+        log.error("Bad table B entry: table=" + b.getName() + " entry=<" + line + ">", e.getMessage());
         continue;
       }
     }

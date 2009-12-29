@@ -70,7 +70,7 @@ public class TestBufrRead extends TestCase {
   public void testReadMessages() throws IOException {
     int count = 0;
     assert 5519 == (count = readBufr(TestAll.cdmUnitTestDir + "iosp/bufr/uniqueIDD.bufr")) : count;
-    assert 11246 == (count = readBufr(TestAll.cdmUnitTestDir + "iosp/bufr/uniqueBrasil.bufr")) : count;
+    assert 11249 == (count = readBufr(TestAll.cdmUnitTestDir + "iosp/bufr/uniqueBrasil.bufr")) : count;
     assert 12727 == (count = readBufr(TestAll.cdmUnitTestDir + "iosp/bufr/uniqueExamples.bufr")) : count;
     assert 9929 == (count = readBufr(TestAll.cdmUnitTestDir + "iosp/bufr/uniqueFnmoc.bufr")) : count;
   }

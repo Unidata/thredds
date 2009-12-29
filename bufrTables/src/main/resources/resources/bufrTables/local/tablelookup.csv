@@ -23,6 +23,7 @@ center,subcenter,master,local,cat,tableB,tableBformat,                          
 7,    3,       -1,    -1,    241, resource:/resources/bufrTables/local/bufrtab.ETACLS1, ncep-nm, , ,
 7,    3,       -1,    -1,    242, resource:/resources/bufrTables/local/bufrtab.NGMCLS1, ncep-nm, , ,
 7,    3,       -1,    -1,    243, resource:/resources/bufrTables/local/bufrtab.GFSCLS1, ncep-nm, , ,
+7,    8,       12,    -1,    -1, resource:/resources/bufrTables/local/ncepAwc.v12.override.csv, csv, , , localWmo
 7,   -1,       14,    -1,    -1, resource:/resources/bufrTables/local/ncep.B07.14.local.csv, csv, resource:/resources/bufrTables/local/B4L-007-013-D.diff, mel-bufr
 7,   -1,       -1,    -1,    -1, resource:/resources/bufrTables/local/ncep.B07.local.csv, csv, resource:/resources/bufrTables/local/B4L-007-013-D.diff, mel-bufr
 #
