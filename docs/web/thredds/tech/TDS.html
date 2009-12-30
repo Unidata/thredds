@@ -1,9 +1,8 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html><head>
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <title>TDS</title>
-</head>
-<body>
+
+
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>TDS</title></head><body>
     <h1 align="left"> <img src="images/unidataLogo.png" alt="Unidata" align="middle" height="75" width="75"><strong>THREDDS Data Server</strong></h1>
     <hr>
 <h2> Overview</h2>
@@ -47,24 +46,39 @@ you need regular access to large amounts of data, please contact <a href="mailto
   <li><a href="http://java.sun.com/">Java</a> 1.6 or above.</li>
   <li><a href="http://tomcat.apache.org/">Tomcat</a> 5.5 or above, we recommend the latest version of Tomcat 6.x </li>
 </ul>
-<h2>Downloads</h2>
-<p><strong>TDS version 4.0 is the stable release.</strong></p>
+<h2>Downloads</h2><p><strong>TDS version 4.1 is  the stable release.</strong></p>
+<ul>
+  <li><a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.1/thredds.war">Download</a> the latest version 4.1 (requires Java 1.6.) <a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.1/CHANGES.txt">Change Log</a>.</li>
+  <li><a href="tds4.0/reference/index.html">TDS 4.x Reference Documentation</a></li>
+
+</ul>
+<p>TDS 4.1 uses the netCDF-Java 4.1 library and includes many bug fixes. Some of the key changes/improvements:<br>
+</p>
+<ul>
+  <li>Improved use of NcML for dataset modification and aggregation.</li>
+  <li>Improved handling of GRIB ensemble data (including a new GRIB index format).</li>
+  <li>Improved handling of various PointObs feature types.</li>
+  <li>Improved tracking of dataset collections (used in aggregation and PointObs collections).</li>
+  <li>Uses <a href="http://ehcache.org/">ehcache</a> to cache file directory scan information.<br>
+  </li>
+</ul>
+<p><strong>TDS version 4.0</strong> is the previous stable release.<br>
+</p>
 <ul>
   <li><a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.0/thredds.war">Download</a> the latest version 4.0 (requires Java 1.6.) <a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.0/CHANGES.txt">Change Log</a>. </li>
-  <li><a href="tds4.0/UpgradingTo4.0.html">Upgrading to TDS 4.0</a></li>
-  <li><a href="tds4.0/reference/index.html">TDS 4.0 Reference Documentation</a></li>
+<li><a href="tds4.0/UpgradingTo4.0.html">Upgrading to TDS 4.0</a></li><li><a href="tds4.0/reference/index.html">TDS 4.0 Reference Documentation</a></li>
 </ul>
+
 <p>TDS 4.0 has many bug fixes and
 improvements "under the covers" that are not in the 3.17 release.
 Besides using the netcdf-java 4.0 library, the main new feature is the
 addition of an OGC WMS service, thanks to our collaborators Jon Blower
 (Univ. Reading UK) and Pauline Mak (Australian Research Collaboration
 Service) who did the hard work. </p>
-<p><strong>TDS version 4.1 is  the development (alpha) release.</strong></p>
-<ul>
-  <li><a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.1/thredds.war">Download</a> the latest version 4.1 (requires Java 1.6.) <a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.1/CHANGES.txt">Change Log</a>. </li>
-</ul>
-<p><strong>TDS version 3.17 </strong>is the previous stable release. It requires Java 1.5+. It is no longer being improved, and only critical bugs are being fixed. </p>
+
+<strong></strong><p><strong>TDS version 3.17 </strong>is the latest of
+the pre-4.0 stable releases. It requires Java 1.5+. It is no longer
+being improved, and only critical bugs are being fixed. </p>
 <ul>
   <li><a href="ftp://ftp.unidata.ucar.edu/pub/thredds/3.17/thredds.war">Download</a> the latest stable version (3.17). <a href="ftp://ftp.unidata.ucar.edu/pub/thredds/3.17/CHANGES.txt">Change Log</a>.</li>
   <li><a href="tds3.17/reference/index.html">TDS 3.17 Reference Documentation</a> </li>
