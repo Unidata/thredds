@@ -102,21 +102,23 @@ public class WcsHandler implements VersionHandler
       {
         res.setContentType( "text/xml" );
         res.setStatus( HttpServletResponse.SC_OK );
-        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ));
 
         PrintWriter pw = res.getWriter();
         ((GetCapabilities) request).writeCapabilitiesReport( pw );
         pw.flush();
+
+        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
       }
       else if ( request.getOperation().equals( Request.Operation.DescribeCoverage ) )
       {
         res.setContentType( "text/xml" );
         res.setStatus( HttpServletResponse.SC_OK );
-        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ));
 
         PrintWriter pw = res.getWriter();
         ((DescribeCoverage) request).writeDescribeCoverageDoc( pw );
         pw.flush();
+
+        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
       }
       else if ( request.getOperation().equals( Request.Operation.GetCoverage ) )
       {
