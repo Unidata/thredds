@@ -7,7 +7,7 @@
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
     <service name="ncServer" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" />
   </service>
-  <dataset name="DGEX Model">
+  <dataset name="DGEX Model" ID="idv/NCEP/DGEX">
     <metadata inherited="true">
       <serviceName>all</serviceName>
       <authority>edu.ucar.unidata</authority>
@@ -30,7 +30,7 @@
         <duration>60 days</duration>
       </timeCoverage>
     </metadata>
-    <datasetScan name="NCEP DGEX CONUS 12km" harvest="true" ID="NCEP/DGEX/CONUS_12km" path="model/NCEP/DGEX/CONUS_12km" location="/data/ldm/pub/native/grid/NCEP/DGEX/CONUS_12km/">
+    <datasetScan name="NCEP DGEX CONUS 12km" harvest="true" ID="idv/NCEP/DGEX/CONUS_12km" path="model/NCEP/DGEX/CONUS_12km" location="/data/ldm/pub/native/grid/NCEP/DGEX/CONUS_12km/">
       <dataFormat>GRIB-2</dataFormat>
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/DGEX/CONUS_12km/" xlink:title="Available Inventory" />
       <geospatialCoverage zpositive="down">
@@ -95,7 +95,7 @@
               datasetNameMatchPattern="DGEX_CONUS_12km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$"
               startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="192 hours"/>
     </datasetScan>
-    <datasetScan name="NCEP DGEX Alaska 12km" harvest="true" ID="NCEP/DGEX/Alaska_12km" path="model/NCEP/DGEX/Alaska_12km" location="/data/ldm/pub/native/grid/NCEP/DGEX/Alaska_12km/">
+    <datasetScan name="NCEP DGEX Alaska 12km" harvest="true" ID="idv/NCEP/DGEX/Alaska_12km" path="model/NCEP/DGEX/Alaska_12km" location="/data/ldm/pub/native/grid/NCEP/DGEX/Alaska_12km/">
       <dataFormat>GRIB-2</dataFormat>
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/DGEX/Alaska_12km/" xlink:title="Available Inventory" />
       <metadata inherited="true">

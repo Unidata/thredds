@@ -7,7 +7,7 @@
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
     <service name="ncServer" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
   </service>
-  <dataset name="North American Model">
+  <dataset name="North American Model" ID="idv/NCEP/NAM">
     <metadata inherited="true">
       <serviceName>all</serviceName>
       <authority>edu.ucar.unidata</authority>
@@ -30,7 +30,7 @@
         <duration>60 days</duration>
       </timeCoverage>
     </metadata>
-    <datasetScan name="NCEP NAM Alaska 11 km" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/NAM/Alaska_11km" path="model/NCEP/NAM/Alaska_11km" location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/">
+    <datasetScan name="NCEP NAM Alaska 11 km" collectionType="ForecastModelRuns" harvest="true" ID="idv/NCEP/NAM/Alaska_11km" path="model/NCEP/NAM/Alaska_11km" location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/">
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/NAM/Alaska_11km/" xlink:title="Available Inventory" />
       <metadata inherited="true">
         <dataFormat>GRIB-2</dataFormat>
@@ -126,7 +126,7 @@
       <addDatasetSize />
       <addTimeCoverage datasetNameMatchPattern="NAM_Alaska_11km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib2$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="84 hours" />
     </datasetScan>
-    <datasetScan name="NCEP NAM Alaska 22 km" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/NAM/Alaska_22km" path="model/NCEP/NAM/Alaska_22km" location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_22km/">
+    <datasetScan name="NCEP NAM Alaska 22 km" collectionType="ForecastModelRuns" harvest="true" ID="idv/NCEP/NAM/Alaska_22km" path="model/NCEP/NAM/Alaska_22km" location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_22km/">
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/NAM/Alaska_22km/" xlink:title="Available Inventory" />
       <metadata inherited="true">
         <documentation type="summary">NCEP North American Model: AWIPS 217 (Y) Grid over Alaska - Double Resolution. Model runs are made at 0 and 12Z, with analysis and forecasts every 3 hours out to 60 hours. Horizontal = 277 by 213 points, resolution 22.5 km, Polar Stereographic projection. Vertical = surface, height above ground, pressure layer (2D levels only)</documentation>
@@ -189,7 +189,7 @@
       <addDatasetSize />
       <addTimeCoverage datasetNameMatchPattern="NAM_Alaska_22km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib1$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="60 hours" />
     </datasetScan>
-    <dataset name="NCEP NAM Alaska 45 km">
+    <dataset name="NCEP NAM Alaska 45 km" ID="idv/NCEP/NAM/Alaska_45km">
       <metadata inherited="true">
         <geospatialCoverage zpositive="down">
           <northsouth>
@@ -210,7 +210,7 @@
           </updown>
         </geospatialCoverage>
       </metadata>
-      <datasetScan name="noaaport" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/NAM/Alaska_45km/noaaport" path="model/NCEP/NAM/Alaska_45km/noaaport" location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/noaaport/">
+      <datasetScan name="noaaport" collectionType="ForecastModelRuns" harvest="true" ID="idv/NCEP/NAM/Alaska_45km/noaaport" path="model/NCEP/NAM/Alaska_45km/noaaport" location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/noaaport/">
         <documentation xlink:href="/thredds/modelInventory/model/NCEP/NAM/Alaska_45km/noaaport/" xlink:title="Available Inventory" />
         <metadata inherited="true">
           <documentation type="summary">NCEP North American Model : AWIPS 216 (V) grid over Alaska. Model runs are made at 0 and 12Z, with analysis and forecasts every 3 hours out to 60 hours. Horizontal = 139 by 107 points, resolution 45.0 km, Polar Stereographic projection. Vertical = 1000 to 50 hPa pressure levels.</documentation>
@@ -253,7 +253,7 @@
         <addTimeCoverage datasetNameMatchPattern="NAM_Alaska_45km.*([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib1$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="60 hours" />
       </datasetScan>
       <datasetScan name="conduit" collectionType="ForecastModelRuns" harvest="true"
-                   ID="NCEP/NAM/Alaska_45km/conduit" path="model/NCEP/NAM/Alaska_45km/conduit"
+                   ID="idv/NCEP/NAM/Alaska_45km/conduit" path="model/NCEP/NAM/Alaska_45km/conduit"
                    location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/conduit/">
         <documentation xlink:href="/thredds/modelInventory/model/NCEP/NAM/Alaska_45km/conduit/" xlink:title="Available Inventory" />
         <metadata inherited="true">
@@ -419,7 +419,7 @@
                          startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="84 hours" />
       </datasetScan>
     </dataset>
-    <datasetScan name="NCEP NAM Alaska 95 km" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/NAM/Alaska_95km" path="model/NCEP/NAM/Alaska_95km" location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_95km/">
+    <datasetScan name="NCEP NAM Alaska 95 km" collectionType="ForecastModelRuns" harvest="true" ID="idv/NCEP/NAM/Alaska_95km" path="model/NCEP/NAM/Alaska_95km" location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_95km/">
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/NAM/Alaska_95km/" xlink:title="Available Inventory" />
       <metadata inherited="true">
         <documentation type="summary">NCEP North American Model : AWIPS 207 (N) Regional - Alaska. Model runs are made at 0 and 12Z, with analysis and forecasts every 6 hours out to 60 hours. Horizontal = 49 by 35 points, resolution 95.25 km, Stereographic projection. Vertical = 1000 to 100 hPa pressure levels.</documentation>
@@ -487,7 +487,7 @@
       <addDatasetSize />
       <addTimeCoverage datasetNameMatchPattern="NAM_Alaska_95km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib1$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="60 hours" />
     </datasetScan>
-    <datasetScan name="NCEP NAM CONUS 12 km" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/NAM/CONUS_12km" path="model/NCEP/NAM/CONUS_12km" location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km/">
+    <datasetScan name="NCEP NAM CONUS 12 km" collectionType="ForecastModelRuns" harvest="true" ID="idv/NCEP/NAM/CONUS_12km" path="model/NCEP/NAM/CONUS_12km" location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km/">
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/NAM/CONUS_12km/" xlink:title="Available Inventory" />
       <metadata inherited="true">
         <dataFormat>GRIB-2</dataFormat>
@@ -583,7 +583,7 @@
       <addDatasetSize />
       <addTimeCoverage datasetNameMatchPattern="NAM_CONUS_12km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib2$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="84 hours" />
     </datasetScan>
-    <dataset name="NCEP NAM CONUS 20 km">
+    <dataset name="NCEP NAM CONUS 20 km" ID="idv/NCEP/NAM/CONUS_20km">
       <documentation type="summary">NCEP North American Model : AWIPS 215(U) grid over the continental United States - Quadruple Resolution. Horizontal = 369 by 257 points, resolution 20.31 km, LambertConformal projection. Vertical = surface, height above ground, 2D only.</documentation>
       <metadata inherited="true">
         <geospatialCoverage>
@@ -604,7 +604,7 @@
           </updown>
         </geospatialCoverage>
       </metadata>
-      <datasetScan name="surface" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/NAM/CONUS_20km/surface" path="model/NCEP/NAM/CONUS_20km/surface" location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/surface/">
+      <datasetScan name="surface" collectionType="ForecastModelRuns" harvest="true" ID="idv/NCEP/NAM/CONUS_20km/surface" path="model/NCEP/NAM/CONUS_20km/surface" location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/surface/">
         <documentation xlink:href="/thredds/modelInventory/model/NCEP/NAM/CONUS_20km/surface/" xlink:title="Available Inventory" />
         <metadata inherited="true">
           <documentation type="summary">NCEP North American Model : AWIPS 215(U) grid over the continental United States - Quadruple Resolution. Model runs are made at 00Z, 06Z, 12Z, and 18Z, with analysis and forecasts every 3 hours out to 84 hours. Horizontal = 369 by 257 points, resolution 20.31 km, LambertConformal projection. Vertical = surface, height above ground, layers, and 1000 to 150 hPa pressure levels.</documentation>
@@ -679,7 +679,7 @@
         <addDatasetSize />
         <addTimeCoverage datasetNameMatchPattern="NAM_CONUS_20km_.*_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib2$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="72 hours" />
       </datasetScan>
-      <datasetScan name="selectsurface" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/NAM/CONUS_20km/selectsurface" path="model/NCEP/NAM/CONUS_20km/selectsurface" location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/selectsurface/">
+      <datasetScan name="selectsurface" collectionType="ForecastModelRuns" harvest="true" ID="idv/NCEP/NAM/CONUS_20km/selectsurface" path="model/NCEP/NAM/CONUS_20km/selectsurface" location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/selectsurface/">
         <documentation xlink:href="/thredds/modelInventory/model/NCEP/NAM/CONUS_20km/selectsurface/" xlink:title="Available Inventory" />
         <metadata inherited="true">
           <documentation type="summary">NCEP North American Model : AWIPS 215(U) grid over the continental United States - Quadruple Resolution. Model runs are made at 00Z, and 12Z with analysis and forecasts every 3 hours out to 84 hours; and at 06Z, and 18Z with analysis and forecasts every 3 hours out to 48 hours. Horizontal = 369 by 257 points, resolution 20.31 km, LambertConformal projection. Vertical = surface, 2m, and 10m, 2D fields only.</documentation>
@@ -713,7 +713,7 @@
         <addDatasetSize />
         <addTimeCoverage datasetNameMatchPattern="NAM_CONUS_20km_.*_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib2$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="48 hours" />
       </datasetScan>
-      <datasetScan name="noaaport" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/NAM/CONUS_20km/noaaport" path="model/NCEP/NAM/CONUS_20km/noaaport" location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/noaaport/">
+      <datasetScan name="noaaport" collectionType="ForecastModelRuns" harvest="true" ID="idv/NCEP/NAM/CONUS_20km/noaaport" path="model/NCEP/NAM/CONUS_20km/noaaport" location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/noaaport/">
         <documentation xlink:href="/thredds/modelInventory/model/NCEP/NAM/CONUS_20km/noaaport/" xlink:title="Available Inventory" />
         <metadata inherited="true">
           <documentation type="summary">NCEP North American Model : AWIPS 215(U) grid over the continental United States - Quadruple Resolution. Model runs are made at 00Z, 06Z, 12Z, and 18Z, with analysis and forecasts every 3 hours out to 48 hours. Horizontal = 369 by 257 points, resolution 20.31 km, LambertConformal projection. Vertical = surface, height above ground, and 1000 to 30 hPa pressure levels.</documentation>
@@ -786,7 +786,7 @@
         <addTimeCoverage datasetNameMatchPattern="NAM_CONUS_20km_.*_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib1$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="48 hours" />
       </datasetScan>
     </dataset>
-    <dataset name="NCEP NAM CONUS 40 km">
+    <dataset name="NCEP NAM CONUS 40 km" ID="idv/NCEP/NAM/CONUS_40km">
       <documentation type="summary">NCEP North American Model : AWIPS 212 (R) Regional - CONUS - Double Resolution. Horizontal = 185 by 129 points, resolution 40.63 km; LambertConformal projection. Vertical = 1000 to 50 hPa pressure levels.</documentation>
       <metadata inherited="true">
         <geospatialCoverage zpositive="down">
@@ -808,7 +808,7 @@
           </updown>
         </geospatialCoverage>
       </metadata>
-      <datasetScan name="conduit" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/NAM/CONUS_40km/conduit" path="model/NCEP/NAM/CONUS_40km/conduit" location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_40km/conduit/">
+      <datasetScan name="conduit" collectionType="ForecastModelRuns" harvest="true" ID="idv/NCEP/NAM/CONUS_40km/conduit" path="model/NCEP/NAM/CONUS_40km/conduit" location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_40km/conduit/">
         <documentation xlink:href="/thredds/modelInventory/model/NCEP/NAM/CONUS_40km/conduit/" xlink:title="Available Inventory" />
         <metadata inherited="true">
           <documentation type="summary">NCEP North American Model : AWIPS 212 (R) Regional - CONUS - Double Resolution. Model runs are made at 00Z, 06Z, 12Z, and 18Z and have analysis and forecasts every 3 hours out to 84 hours. Horizontal = 185 by 129 points, resolution 40.63 km, LambertConformal projection. Vertical = surface, 1000 to 50 hPa pressure levels, layers, and depth.</documentation>
@@ -998,7 +998,7 @@
         <addTimeCoverage datasetNameMatchPattern="NAM_CONUS_40km.*([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="84 hours" />
       </datasetScan>
     </dataset>
-    <datasetScan name="NCEP NAM CONUS 80 km" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/NAM/CONUS_80km" path="model/NCEP/NAM/CONUS_80km" location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_80km/">
+    <datasetScan name="NCEP NAM CONUS 80 km" collectionType="ForecastModelRuns" harvest="true" ID="idv/NCEP/NAM/CONUS_80km" path="model/NCEP/NAM/CONUS_80km" location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_80km/">
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/NAM/CONUS_80km/" xlink:title="Available Inventory" />
       <metadata inherited="true">
         <documentation type="summary">NCEP North American Model : AWIPS 211 (Q) Regional - CONUS (Lambert Conformal). Model runs are made at 12Z and 00Z, with analysis and forecasts every 6 hours out to 60 hours. Horizontal = 93 by 65 points, resolution 81.27 km, LambertConformal projection. Vertical = 1000 to 100 hPa pressure levels.</documentation>
@@ -1078,7 +1078,7 @@
       <addDatasetSize />
       <addTimeCoverage datasetNameMatchPattern="NAM_CONUS_80km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib1$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="60 hours" />
     </datasetScan>
-    <datasetScan name="NCEP NAM Polar 90 km" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/NAM/Polar_90km" path="model/NCEP/NAM/Polar_90km" location="/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/">
+    <datasetScan name="NCEP NAM Polar 90 km" collectionType="ForecastModelRuns" harvest="true" ID="idv/NCEP/NAM/Polar_90km" path="model/NCEP/NAM/Polar_90km" location="/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/">
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/NAM/Polar_90km/" xlink:title="Available Inventory" />
       <metadata inherited="true">
         <documentation type="summary">NCEP North American Model : AWIPS 105 Grid. Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 3 hours out to 84 hours. Horizontal = 147 by 110 points, resolution 90.75 km, Polar Stereographic projection. Vertical = 1000 to 50 hPa pressure levels.</documentation>

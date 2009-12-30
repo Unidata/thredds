@@ -7,7 +7,7 @@
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
     <service name="ncServer" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
   </service>
-  <dataset ID="NCEP/SREF" name="Short Range Ensemble Forecasting">
+  <dataset name="Short Range Ensemble Forecasting" ID="idv/NCEP/SREF">
       <metadata inherited="true">
           <serviceName>all</serviceName>
           <authority>edu.ucar.unidata</authority>
@@ -34,7 +34,7 @@
           </timeCoverage>
       </metadata>
 
-      <dataset ID="NCEP/SREF/CONUS_40km" name="NCEP SREF CONUS 40km">
+      <dataset ID="idv/NCEP/SREF/CONUS_40km" name="NCEP SREF CONUS 40km">
           <metadata inherited="true">
               <documentation type="summary">
                   NCEP Short Range Ensemble Forecast (SREF) over CONUS with
@@ -60,7 +60,7 @@
                   </updown>
               </geospatialCoverage>
           </metadata>
-          <datasetScan ID="NCEP/SREF/CONUS_40km/ensprod_biasc" name="Bias-corrected mean, spread, and probability products"
+          <datasetScan ID="idv/NCEP/SREF/CONUS_40km/ensprod_biasc" name="Bias-corrected mean, spread, and probability products"
                        path="model/NCEP/SREF/CONUS_40km/ensprod_biasc"
                        location="/data/ldm/pub/native/grid/NCEP/SREF/CONUS_40km/ensprod_biasc"
                        collectionType="ForecastModelRuns" harvest="true">
@@ -207,7 +207,7 @@
                       datasetNameMatchPattern="SREF_CONUS_40km_ensprod_biasc_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib2"
                       startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="87 hours"/>
           </datasetScan>
-          <datasetScan ID="NCEP/SREF/CONUS_40km/pgrb_biasc" name="Bias-corrected Products"
+          <datasetScan ID="idv/NCEP/SREF/CONUS_40km/pgrb_biasc" name="Bias-corrected Products"
                        path="model/NCEP/SREF/CONUS_40km/pgrb_biasc"
                        location="/data/ldm/pub/native/conduit/data/nccf/com/sref/prod"
                        collectionType="ForecastModelRuns" harvest="true">
@@ -277,7 +277,7 @@
                       datasetNameMatchPattern="SREF_CONUS_40km_pgrb_biasc_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib2"
                       startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="87 hours"/-->
           </datasetScan>
-        <datasetScan ID="NCEP/SREF/CONUS_40km/ensprod"
+        <datasetScan ID="idv/NCEP/SREF/CONUS_40km/ensprod"
                      name=" NCEP SREF CONUS 40km: Mean, spread, and probability products"
                      path="model/NCEP/SREF/CONUS_40km/ensprod"
                      location="/data/ldm/pub/native/grid/NCEP/SREF/CONUS_40km/ensprod"
@@ -306,7 +306,7 @@
         </datasetScan>
 
       </dataset>
-    <datasetScan ID="NCEP/SREF/Alaska_45km/ensprod" name=" NCEP SREF Alaska 45km: Mean, spread, and probability products"
+    <datasetScan ID="idv/NCEP/SREF/Alaska_45km/ensprod" name=" NCEP SREF Alaska 45km: Mean, spread, and probability products"
                  path="model/NCEP/SREF/Alaska_45km/ensprod"
                  location="/data/ldm/pub/native/grid/NCEP/SREF/Alaska_45km/ensprod"
                  collectionType="ForecastModelRuns" harvest="true">
@@ -332,7 +332,7 @@
               datasetNameMatchPattern="SREF_Alaska_45km_ensprod_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib2"
               startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="87 hours"/>
     </datasetScan>
-    <datasetScan ID="NCEP/SREF/PacificNE_0p4/ensprod" name="NCEP SREF NE Pacific 0.4 degree: Mean, spread, and probability products"
+    <datasetScan ID="idv/NCEP/SREF/PacificNE_0p4/ensprod" name="NCEP SREF NE Pacific 0.4 degree: Mean, spread, and probability products"
                  path="model/NCEP/SREF/PacificNE_0p4/ensprod"
                  location="/data/ldm/pub/native/grid/NCEP/SREF/PacificNE_0p4/ensprod"
                  collectionType="ForecastModelRuns" harvest="true">

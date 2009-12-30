@@ -7,7 +7,7 @@
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
     <service name="ncServer" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
   </service>
-  <dataset name="NWS National Digital Forecast Database">
+  <dataset name="NWS National Digital Forecast Database" ID="idv/NCEP/NDFD">
     <metadata inherited="true">
       <serviceName>all</serviceName>
       <authority>edu.ucar.unidata</authority>
@@ -32,7 +32,7 @@
       <variables vocabulary="GRIB-2" />
     </metadata>
     <datasetScan name="NWS National Digital Forecast Database 5km CONUS" collectionType="ForecastModelRuns" harvest="true"
-                 ID="NCEP/NDFD/CONUS_5km"
+                 ID="idv/NCEP/NDFD/CONUS_5km"
                  path="model/NCEP/NDFD/CONUS_5km"
                  location="/data/ldm/pub/native/grid/NCEP/NDFD/CONUS_5km/">
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/NDFD/CONUS_5km/" xlink:title="Available Inventory" />

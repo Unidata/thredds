@@ -7,7 +7,7 @@
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
     <service name="ncServer" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
   </service>
-  <dataset name="NCEP Rapid Update Cycle Model">
+  <dataset name="NCEP Rapid Update Cycle Model" ID="idv/NCEP/RUC">
     <metadata inherited="true">
       <serviceName>all</serviceName>
       <authority>edu.ucar.unidata</authority>
@@ -29,7 +29,7 @@
         <duration>60 days</duration>
       </timeCoverage>
     </metadata>
-    <dataset name="NCEP RUC2 CONUS 20km">
+    <dataset name="NCEP RUC2 CONUS 20km" ID="idv/NCEP/RUC2/CONUS_20km">
       <metadata inherited="true">
         <documentation type="summary">NCEP Rapid Update Cycle 2 (RUC2). Model runs are made hourly, with analysis and hourly forecasts out to 3 hours; on the 0, 3, 6, 9, 12, 15, 18, and 21Z runs, there are also 6, 9, and 12 hour forecasts. Horizontal = 301 by 225 points, resolution 20.31 km, Lambert Conformal projection.</documentation>
         <geospatialCoverage zpositive="down">
@@ -50,7 +50,7 @@
           </updown>
         </geospatialCoverage>
       </metadata>
-      <datasetScan name="surface" ID="NCEP/RUC2/CONUS_20km/surface"
+      <datasetScan name="surface" ID="idv/NCEP/RUC2/CONUS_20km/surface"
                    path="model/NCEP/RUC2/CONUS_20km/surface"
                    location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/surface/">
         <documentation xlink:href="/thredds/modelInventory/model/NCEP/RUC2/CONUS_20km/surface/" xlink:title="Available Inventory" />
@@ -101,7 +101,7 @@
                 datasetNameMatchPattern="RUC2_CONUS_20km_surface_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$"
                 startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="12 hours"/>
       </datasetScan>
-      <datasetScan name="pressure" ID="NCEP/RUC2/CONUS_20km/pressure"
+      <datasetScan name="pressure" ID="idv/NCEP/RUC2/CONUS_20km/pressure"
                    path="model/NCEP/RUC2/CONUS_20km/pressure"
                    location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/pressure/">
         <documentation xlink:href="/thredds/modelInventory/model/NCEP/RUC2/CONUS_20km/pressure/" xlink:title="Available Inventory" />
@@ -197,7 +197,7 @@
                 datasetNameMatchPattern="RUC2_CONUS_20km_pressure_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$"
                 startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="12 hours"/>
       </datasetScan>
-      <datasetScan name="hybrid" ID="NCEP/RUC2/CONUS_20km/hybrid" path="model/NCEP/RUC2/CONUS_20km/hybrid" location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/hybrid/">
+      <datasetScan name="hybrid" ID="idv/NCEP/RUC2/CONUS_20km/hybrid" path="model/NCEP/RUC2/CONUS_20km/hybrid" location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/hybrid/">
         <documentation xlink:href="/thredds/modelInventory/model/NCEP/RUC2/CONUS_20km/hybrid/" xlink:title="Available Inventory" />
         <metadata inherited="true">
           <documentation type="summary">NCEP RUC2, parameters on hybrid levels.</documentation>
@@ -271,7 +271,7 @@
                 startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="12 hours"/>
       </datasetScan>
     </dataset>
-    <datasetScan name="NCEP RUC CONUS 80km" harvest="true" ID="NCEP/RUC/CONUS_80km" path="model/NCEP/RUC/CONUS_80km" location="/data/ldm/pub/native/grid/NCEP/RUC/CONUS_80km/">
+    <datasetScan name="NCEP RUC CONUS 80km" harvest="true" ID="idv/NCEP/RUC/CONUS_80km" path="model/NCEP/RUC/CONUS_80km" location="/data/ldm/pub/native/grid/NCEP/RUC/CONUS_80km/">
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/RUC/CONUS_80km/" xlink:title="Available Inventory" />
       <metadata inherited="true">
         <documentation type="summary">NCEP Model output Rapid Update Cycle (RUC). Model runs are made hourly, with analysis and 3 hour forecast; on the 0, 3, 6, 9, 12, 15, 18, and 21Z runs, there are also 6, 9, and 12 hour forecasts. horizontal = 93 by 65 points, resolution 81.27 km LambertConformal projection</documentation>
