@@ -58,10 +58,10 @@ public class TestProjections extends TestCase {
   private void doOne(ProjectionImpl proj, double lat, double lon) {
     LatLonPointImpl startL = new LatLonPointImpl(lat, lon);
     ProjectionPoint p = proj.latLonToProj(startL);
-    LatLonPoint endL = proj.projToLatLon(p);
+    LatLonPointImpl endL = (LatLonPointImpl) proj.projToLatLon(p);
 
-    System.out.println("start  = " + startL);
-    System.out.println("end  = " + endL);
+    System.out.println("start  = " + startL.toString(8));
+    System.out.println("end  = " + endL.toString(8));
 
   }
 
@@ -83,7 +83,7 @@ public class TestProjections extends TestCase {
     ProjectionPointImpl startP = new ProjectionPointImpl();
     for (int i = 0; i < NTRIALS; i++) {
       startP.setLocation(10000.0 * (r.nextDouble() - .5),  // random proj point
-              10000.0 * (r.nextDouble() - .5));
+          10000.0 * (r.nextDouble() - .5));
 
       LatLonPoint ll = proj.projToLatLon(startP);
       ProjectionPoint endP = proj.latLonToProj(ll);
@@ -155,8 +155,8 @@ public class TestProjections extends TestCase {
           System.out.println("end  = " + endP);
         }
 
-        assert TestAll.closeEnough(startP.getX(), endP.getX(), 5.0e-4) : " failed start= " + startP.getX() + " end = " + endP.getX() + "; x,y="+ startP;
-        assert TestAll.closeEnough(startP.getY(), endP.getY(), 5.0e-4) : " failed start= " + startP.getY() + " end = " + endP.getY() + "; x,y="+ startP;
+        assert TestAll.closeEnough(startP.getX(), endP.getX(), 5.0e-4) : " failed start= " + startP.getX() + " end = " + endP.getX() + "; x,y=" + startP;
+        assert TestAll.closeEnough(startP.getY(), endP.getY(), 5.0e-4) : " failed start= " + startP.getY() + " end = " + endP.getY() + "; x,y=" + startP;
       } catch (IllegalArgumentException e) {
         System.out.printf("IllegalArgumentException=%s%n", e.getMessage());
         continue;
@@ -255,14 +255,85 @@ public class TestProjections extends TestCase {
   }
 
   // UTM failing - no not use
-  public void utestUTM() {
+  public void testUTM() {
+    // The central meridian = (zone * 6 - 183) degrees, where zone in [1,60].
+    // zone = (lon + 183)/6
     // 33.75N 15.25E end = 90.0N 143.4W
-    //doOne(new UtmProjection(), 33.75, 15.25);
+    // doOne(new UtmProjection(10, true), 33.75, -122);
+    testProjectionUTM(-12.89, .07996);
 
-    testProjectionLonMax(new UtmProjection(), 150, 90);
+    testProjectionUTM();
+
     UtmProjection p = new UtmProjection();
     UtmProjection p2 = (UtmProjection) p.constructCopy();
     assert p.equals(p2);  // */
+  }
+
+  private void testProjectionUTM(double lat, double lon) {
+    LatLonPointImpl startL = new LatLonPointImpl();
+
+    startL.setLatitude(lat);
+    startL.setLongitude(lon);
+    int zone = (int) ((lon + 183) / 6);
+    UtmProjection proj = new UtmProjection(zone, lat >= 0.0);
+
+    ProjectionPoint p = proj.latLonToProj(startL);
+    LatLonPoint endL = proj.projToLatLon(p);
+
+    if (show) {
+      System.out.println("startL  = " + startL);
+      System.out.println("inter  = " + p);
+      System.out.println("endL  = " + endL);
+    }
+
+    assert (TestAll.closeEnough(startL.getLatitude(), endL.getLatitude(), 1.3e-4)) : proj.getClass().getName() + " failed start= " + startL + " end = " + endL;
+    assert (TestAll.closeEnough(startL.getLongitude(), endL.getLongitude(), 1.3e-4)) : proj.getClass().getName() + " failed start= " + startL + " end = " + endL;
+  }
+
+
+  private void testProjectionUTM() {
+    java.util.Random r = new java.util.Random((long) this.hashCode());
+    LatLonPointImpl startL = new LatLonPointImpl();
+
+    for (int i = 0; i < NTRIALS; i++) {
+      startL.setLatitude(180.0 * (r.nextDouble() - .5)); // random latlon point
+      startL.setLongitude(360.0 * (r.nextDouble() - .5));
+
+      double lat = startL.getLatitude();
+      double lon = startL.getLongitude();
+      int zone = (int) ((lon + 183) / 6);
+      UtmProjection proj = new UtmProjection(zone, lat >= 0.0);
+
+      ProjectionPoint p = proj.latLonToProj(startL);
+      LatLonPoint endL = proj.projToLatLon(p);
+
+      if (show) {
+        System.out.println("startL  = " + startL);
+        System.out.println("inter  = " + p);
+        System.out.println("endL  = " + endL);
+      }
+
+      assert (TestAll.closeEnough(startL.getLatitude(), endL.getLatitude(), 1.0e-4)) : proj.getClass().getName() + " failed start= " + startL + " end = " + endL;
+      assert (TestAll.closeEnough(startL.getLongitude(), endL.getLongitude(), 1.0e-4)) : proj.getClass().getName() + " failed start= " + startL + " end = " + endL;
+    }
+
+    /* ProjectionPointImpl startP = new ProjectionPointImpl();
+    for (int i = 0; i < NTRIALS; i++) {
+      startP.setLocation(10000.0 * (r.nextDouble() - .5),  // random proj point
+              10000.0 * (r.nextDouble() - .5));
+
+      double lon =  startL.getLongitude();
+      int zone = (int) ((lon + 183)/6);
+      UtmProjection proj = new UtmProjection(zone, lon >= 0.0);
+
+      LatLonPoint ll = proj.projToLatLon(startP);
+      ProjectionPoint endP = proj.latLonToProj(ll);
+
+      assert (TestAll.closeEnough(startP.getX(), endP.getX()));
+      assert (TestAll.closeEnough(startP.getY(), endP.getY()));
+    }  */
+
+    System.out.println("Tested " + NTRIALS + " pts for UTM projection ");
   }
 
   public void utestVerticalPerspectiveView() {

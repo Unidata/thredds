@@ -225,7 +225,8 @@ public class TestAll {
 
   static public boolean closeEnough( double d1, double d2, double tol) {
     if (d1 < tol) return Math.abs(d1-d2) < tol;
-    return Math.abs((d1-d2)/d1) < tol;
+    double pd = (d1-d2)/d1;
+    return Math.abs(pd) < tol;
   }
 
   static public boolean closeEnough( float d1, float d2) {
