@@ -54,8 +54,8 @@ import java.util.*;
  * <p/>
  * Note: Apparently WRF netcdf files before version 2 didnt output the projection origin, so
  * we cant properly georeference them.
- *
- * This Convention currently only supports ARW output.
+ * <p/>
+ * This Convention currently only supports ARW output, identified as DYN_OPT=2 or GRIDTYPE=C
  *
  * @author caron
  */
@@ -147,6 +147,17 @@ may be set to different values.
 10. MOAD_STAND_LONS (=STAND_LON): This is one entry specifying the longitude in degrees East (-
 180->180) that is parallel to the y-axis of your grid, (sometimes referred to as the
 orientation of the grid). This should be set equal to the center longitude in most cases.
+
+---------------------------------
+version 3.1
+http://www.mmm.ucar.edu/wrf/users/docs/user_guide_V3.1/users_guide_chap5.htm
+
+The definition for map projection options:
+
+map_proj =  1: Lambert Conformal
+            2: Polar Stereographic
+            3: Mercator
+            6: latitude and longitude (including global)
 */
 
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
@@ -165,6 +176,7 @@ orientation of the grid). This should be set equal to the center longitude in mo
     // make projection transform
     Attribute att = ds.findGlobalAttribute("MAP_PROJ");
     int projType = att.getNumericValue().intValue();
+    boolean isLatLon = false;
 
     if (projType == 203) {
 
@@ -228,21 +240,59 @@ orientation of the grid). This should be set equal to the center longitude in mo
         case 2:
           // Thanks to Heiko Klein for figuring out WRF Stereographic
           double lon0 = (Double.isNaN(standardLon)) ? centralLon : standardLon;
-          double scaleFactor = (1+Math.abs(Math.sin(Math.toRadians(lat1))))/2.;  // R Schmunk 9/10/07
+          double scaleFactor = (1 + Math.abs(Math.sin(Math.toRadians(lat1)))) / 2.;  // R Schmunk 9/10/07
           //double scaleFactor = (1 + Math.sin(Math.toRadians(lat1))) / 2.;
           proj = new Stereographic(lat2, lon0, scaleFactor);
           projCT = new ProjectionCT("Stereographic", "FGDC", proj);
           break;
         case 3:
-          proj = new Mercator(standardLon, standardLat); // thanks to Robert Scmunk
+          proj = new Mercator(standardLon, standardLat); // thanks to Robert Schmunk
           projCT = new ProjectionCT("Mercator", "FGDC", proj);
           // proj = new TransverseMercator(standardLat, standardLon, 1.0);
           //projCT = new ProjectionCT("TransverseMercator", "FGDC", proj);
+          break;
+        case 6:
+          // version 3 "lat-lon", including global
+          // http://www.mmm.ucar.edu/wrf/users/workshops/WS2008/presentations/1-2.pdf
+          // use 2D XLAT, XLONG
+          isLatLon = true;
+          for (Variable v : vlist) {
+            if (v.getShortName().startsWith("XLAT")) {
+              v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
+              int[] shape = v.getShape();
+              if (v.getRank() == 3 && shape[0] == 1) { // remove time dependcies - MAJOR KLUDGE
+                List<Dimension> dims = v.getDimensions();
+                dims.remove(0);
+                v.setDimensions(dims);
+              }
+            } else if (v.getShortName().startsWith("XLONG")) {
+              v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
+              int[] shape = v.getShape();
+              if (v.getRank() == 3 && shape[0] == 1) { // remove time dependcies - MAJOR KLUDGE
+                List<Dimension> dims = v.getDimensions();
+                dims.remove(0);
+                v.setDimensions(dims);
+              }
+            }
+          }
           break;
         default:
           parseInfo.format("ERROR: unknown projection type = %s\n", projType);
           break;
       }
+
+      for (Variable v : vlist) {
+        if (v.getShortName().equals("T")) { // ANOTHER MAJOR KLUDGE to pick up 4D fields
+          v.addAttribute(new Attribute(_Coordinate.Axes, "Time XLAT XLONG z"));
+        } else if (v.getShortName().equals("U")) {
+          v.addAttribute(new Attribute(_Coordinate.Axes, "Time XLAT_U XLONG_U z"));
+        } else if (v.getShortName().equals("V")) {
+          v.addAttribute(new Attribute(_Coordinate.Axes, "Time XLAT_V XLONG_V z"));
+        } else if (v.getShortName().equals("W")) {
+          v.addAttribute(new Attribute(_Coordinate.Axes, "Time XLAT XLONG z_stag"));
+        }
+      }
+
 
       if (proj != null) {
         LatLonPointImpl lpt1 = new LatLonPointImpl(centralLat, centralLon); // center of the grid
@@ -256,10 +306,12 @@ orientation of the grid). This should be set equal to the center longitude in mo
       }
 
       // make axes
-      ds.addCoordinateAxis(makeXCoordAxis(ds, "x", ds.findDimension("west_east")));
-      ds.addCoordinateAxis(makeXCoordAxis(ds, "x_stag", ds.findDimension("west_east_stag")));
-      ds.addCoordinateAxis(makeYCoordAxis(ds, "y", ds.findDimension("south_north")));
-      ds.addCoordinateAxis(makeYCoordAxis(ds, "y_stag", ds.findDimension("south_north_stag")));
+      if (!isLatLon) {
+        ds.addCoordinateAxis(makeXCoordAxis(ds, "x", ds.findDimension("west_east")));
+        ds.addCoordinateAxis(makeXCoordAxis(ds, "x_stag", ds.findDimension("west_east_stag")));
+        ds.addCoordinateAxis(makeYCoordAxis(ds, "y", ds.findDimension("south_north")));
+        ds.addCoordinateAxis(makeYCoordAxis(ds, "y_stag", ds.findDimension("south_north_stag")));
+      }
       ds.addCoordinateAxis(makeZCoordAxis(ds, "z", ds.findDimension("bottom_top")));
       ds.addCoordinateAxis(makeZCoordAxis(ds, "z_stag", ds.findDimension("bottom_top_stag")));
 
@@ -508,7 +560,7 @@ orientation of the grid). This should be set equal to the center longitude in mo
           Date d = dateFormat.parse(dateS);
           values.set(count++, (double) d.getTime() / 1000);
         } catch (java.text.ParseException e) {
-          parseInfo.format("ERROR: cant parse Time string = <%s> err= %s\n",dateS, e.getMessage());
+          parseInfo.format("ERROR: cant parse Time string = <%s> err= %s\n", dateS, e.getMessage());
 
           // one more try
           String startAtt = ds.findAttValueIgnoreCase(null, "START_DATE", null);
@@ -617,7 +669,7 @@ orientation of the grid). This should be set equal to the center longitude in mo
           VerticalCT vct = makeWRFEtaVerticalCoordinateTransform(ncDataset, cs);
           if (vct != null)
             cs.addCoordinateTransform(vct);
-          parseInfo.format("***Added WRFEta verticalCoordinateTransform to %s\n",cs.getName());
+          parseInfo.format("***Added WRFEta verticalCoordinateTransform to %s\n", cs.getName());
         }
       }
     }

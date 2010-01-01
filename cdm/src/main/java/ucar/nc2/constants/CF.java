@@ -41,12 +41,13 @@ package ucar.nc2.constants;
 public class CF {
   public final static String POSITIVE_UP = "up";
   public final static String POSITIVE_DOWN = "down";
+  public final static String COORDINATES = "coordinates";
 
   public static final String featureTypeAtt = "CF:featureType";
   public static final String featureTypeAtt2 = "CF-featureType";
   public static final String featureTypeAtt3 = "CFfeatureType";
 
-  // CF names
+  // CF standard names
   public static final String STANDARD_NAME = "standard_name";
   public static final String UNITS = "units";
   public static final String RAGGED_ROWSIZE = "ragged_row_size";

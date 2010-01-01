@@ -741,6 +741,10 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    * @param ncDataset why
    */
   protected void makeCoordinateSystemsImplicit(NetcdfDataset ncDataset) {
+    // do largest rank first
+    //List<VarProcess> varsSorted = new ArrayList<VarProcess>(varList);
+    //Collections.sort(varsSorted, new VarProcessSorter());
+
     for (VarProcess vp : varList) {
       if (!vp.hasCoordinateSystem() && vp.maybeData()) {
         List<CoordinateAxis> dataAxesList = vp.findCoordinateAxes(true);
@@ -750,18 +754,25 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         VariableEnhanced ve = (VariableEnhanced) vp.v;
         String csName = CoordinateSystem.makeName(dataAxesList);
         CoordinateSystem cs = ncDataset.findCoordinateSystem(csName);
-        if (cs != null) {
+        if ((cs != null) && cs.isComplete(vp.v)) { // DANGER WILL ROGERS!
           ve.addCoordinateSystem(cs);
           parseInfo.format(" assigned implicit CoordSystem '%s' for var= %s\n", cs.getName(), vp.v.getName());
         } else {
           CoordinateSystem csnew = new CoordinateSystem(ncDataset, dataAxesList, null);
           csnew.setImplicit(true);
-
-          ve.addCoordinateSystem(csnew);
-          ncDataset.addCoordinateSystem(csnew);
-          parseInfo.format(" created implicit CoordSystem '%s' for var= %s\n", csnew.getName(), vp.v.getName());
+          if (csnew.isComplete(vp.v)) {
+            ve.addCoordinateSystem(csnew);
+            ncDataset.addCoordinateSystem(csnew);
+            parseInfo.format(" created implicit CoordSystem '%s' for var= %s\n", csnew.getName(), vp.v.getName());
+          }
         }
       }
+    }
+  }
+
+  private class VarProcessSorter implements Comparator<VarProcess> {
+    public int compare(VarProcess o1, VarProcess o2) {
+      return o2.v.getRank() - o1.v.getRank();
     }
   }
 
