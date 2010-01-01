@@ -273,6 +273,14 @@ map_proj =  1: Lambert Conformal
                 dims.remove(0);
                 v.setDimensions(dims);
               }
+            } else if (v.getShortName().equals("T")) { // ANOTHER MAJOR KLUDGE to pick up 4D fields
+              v.addAttribute(new Attribute(_Coordinate.Axes, "Time XLAT XLONG z"));
+            } else if (v.getShortName().equals("U")) {
+              v.addAttribute(new Attribute(_Coordinate.Axes, "Time XLAT_U XLONG_U z"));
+            } else if (v.getShortName().equals("V")) {
+              v.addAttribute(new Attribute(_Coordinate.Axes, "Time XLAT_V XLONG_V z"));
+            } else if (v.getShortName().equals("W")) {
+              v.addAttribute(new Attribute(_Coordinate.Axes, "Time XLAT XLONG z_stag"));
             }
           }
           break;
@@ -280,19 +288,6 @@ map_proj =  1: Lambert Conformal
           parseInfo.format("ERROR: unknown projection type = %s\n", projType);
           break;
       }
-
-      for (Variable v : vlist) {
-        if (v.getShortName().equals("T")) { // ANOTHER MAJOR KLUDGE to pick up 4D fields
-          v.addAttribute(new Attribute(_Coordinate.Axes, "Time XLAT XLONG z"));
-        } else if (v.getShortName().equals("U")) {
-          v.addAttribute(new Attribute(_Coordinate.Axes, "Time XLAT_U XLONG_U z"));
-        } else if (v.getShortName().equals("V")) {
-          v.addAttribute(new Attribute(_Coordinate.Axes, "Time XLAT_V XLONG_V z"));
-        } else if (v.getShortName().equals("W")) {
-          v.addAttribute(new Attribute(_Coordinate.Axes, "Time XLAT XLONG z_stag"));
-        }
-      }
-
 
       if (proj != null) {
         LatLonPointImpl lpt1 = new LatLonPointImpl(centralLat, centralLon); // center of the grid
@@ -589,7 +584,7 @@ map_proj =  1: Lambert Conformal
     }
 
     CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getName(),
-        "secs since 1970-01-01 00:00:00", "synthesized time coordinate from Times(time)");
+            "secs since 1970-01-01 00:00:00", "synthesized time coordinate from Times(time)");
     v.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
     if (!axisName.equals(dim.getName()))
       v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getName()));
@@ -677,7 +672,7 @@ map_proj =  1: Lambert Conformal
 
   private VerticalCT makeWRFEtaVerticalCoordinateTransform(NetcdfDataset ds, CoordinateSystem cs) {
     if ((null == ds.findVariable("PH")) || (null == ds.findVariable("PHB")) ||
-        (null == ds.findVariable("P")) || (null == ds.findVariable("PB")))
+            (null == ds.findVariable("P")) || (null == ds.findVariable("PB")))
       return null;
 
     WRFEtaTransformBuilder builder = new WRFEtaTransformBuilder(cs);
