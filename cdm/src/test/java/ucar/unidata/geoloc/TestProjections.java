@@ -262,7 +262,7 @@ public class TestProjections extends TestCase {
     // doOne(new UtmProjection(10, true), 33.75, -122);
     testProjectionUTM(-12.89, .07996);
 
-    testProjectionUTM();
+    testProjectionUTM(NTRIALS);
 
     UtmProjection p = new UtmProjection();
     UtmProjection p2 = (UtmProjection) p.constructCopy();
@@ -291,11 +291,11 @@ public class TestProjections extends TestCase {
   }
 
 
-  private void testProjectionUTM() {
+  private void testProjectionUTM(int n) {
     java.util.Random r = new java.util.Random((long) this.hashCode());
     LatLonPointImpl startL = new LatLonPointImpl();
 
-    for (int i = 0; i < NTRIALS; i++) {
+    for (int i = 0; i < n; i++) {
       startL.setLatitude(180.0 * (r.nextDouble() - .5)); // random latlon point
       startL.setLongitude(360.0 * (r.nextDouble() - .5));
 
@@ -313,8 +313,10 @@ public class TestProjections extends TestCase {
         System.out.println("endL  = " + endL);
       }
 
-      assert (TestAll.closeEnough(startL.getLatitude(), endL.getLatitude(), 1.0e-4)) : proj.getClass().getName() + " failed start= " + startL + " end = " + endL;
-      assert (TestAll.closeEnough(startL.getLongitude(), endL.getLongitude(), 1.0e-4)) : proj.getClass().getName() + " failed start= " + startL + " end = " + endL;
+      double late = endL.getLatitude();
+      double lone = endL.getLongitude();
+      assert (TestAll.closeEnough(lat, late, 1.0e-4)) : proj.getClass().getName() + " lat failed start= " + startL + " end = " + endL + " diff = " + TestAll.howClose(lat, late);
+      assert (TestAll.closeEnough(lon, lone, .004)) : proj.getClass().getName() + " lon failed start= " + startL + " end = " + endL + " diff = " + TestAll.howClose(lon, lone);
     }
 
     /* ProjectionPointImpl startP = new ProjectionPointImpl();
@@ -333,7 +335,7 @@ public class TestProjections extends TestCase {
       assert (TestAll.closeEnough(startP.getY(), endP.getY()));
     }  */
 
-    System.out.println("Tested " + NTRIALS + " pts for UTM projection ");
+    System.out.println("Tested " + n + " pts for UTM projection ");
   }
 
   public void utestVerticalPerspectiveView() {
