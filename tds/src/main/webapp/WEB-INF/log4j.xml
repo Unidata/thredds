@@ -64,7 +64,7 @@
     </layout>
   </appender>
 
-  <!-- special log for FMRC -->
+  <!-- special log for grib processing -->
   <appender name="modelLog" class="org.apache.log4j.RollingFileAppender">
     <param name="File" value="${tds.log.dir}/models.log"/>
     <param name="MaxFileSize" value="5MB"/>
@@ -81,7 +81,7 @@
   </logger>
 
   <logger name="thredds.filesystem.CacheManager" additivity="false">
-    <level value="DEBUG"/>
+    <level value="INFO"/>
     <appender-ref ref="cacheLog"/>
   </logger>
 
@@ -127,7 +127,7 @@
   </logger>
   <!-- end grib debugging -->
 
-  <!-- fmrc debugging -->
+  <!-- fmrc debugging --
   <logger name="ucar.nc2.dt.fmrc" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="modelLog"/>

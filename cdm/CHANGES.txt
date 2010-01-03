@@ -4,6 +4,10 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  12:
+  WRF v3 lat/lon grids. works, but ignores coordsys lat/lon time dependency (is there any?)
+  UTM projection bug
+  NcML write: fix possible problems with '%' in string values
+  BUFR: process 2-1-Y "change width" for enums and chars, ignore 2-6-0 (fnmoc uses as cancel)
   BUFR: compressed data: permutation wrong when ndims > 2, ie more than one nested structure
   BUFR: use new WMO CodeFlagTable
  11:
