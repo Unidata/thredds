@@ -1,6 +1,4 @@
 /*
- * $Id: IDV-Style.xjs,v 1.3 2007/02/16 19:18:30 dmurray Exp $
- *
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
@@ -34,8 +32,8 @@
  */
 
 
-
 package ucar.nc2.iosp.gempak;
+
 
 import ucar.unidata.util.StringUtil;
 
@@ -448,6 +446,43 @@ public final class GempakUtil {
               break;
         }
         return packingType;
+    }
+
+    /**
+     * Get a name for the data packing type
+     *
+     * @param typrt   data type
+     *
+     * @return  String version of data type
+     */
+    public static String getDataType(int typrt) {
+        String dataType = "" + typrt;
+        switch (typrt) {
+
+          case GempakConstants.MDREAL :
+              dataType = "MDREAL";
+              break;
+
+          case GempakConstants.MDINTG :
+              dataType = "MDINTG";
+              break;
+
+          case GempakConstants.MDCHAR :
+              dataType = "MDCHAR";
+              break;
+
+          case GempakConstants.MDRPCK :
+              dataType = "MDRPCK";
+              break;
+
+          case GempakConstants.MDGRID :
+              dataType = "MDGRID";
+              break;
+
+          default :
+              break;
+        }
+        return dataType;
     }
 
 }

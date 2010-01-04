@@ -1,6 +1,4 @@
 /*
- * $Id: IDV-Style.xjs,v 1.3 2007/02/16 19:18:30 dmurray Exp $
- *
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
@@ -34,8 +32,6 @@
  */
 
 
-
-
 package ucar.nc2.iosp.gempak;
 
 
@@ -62,7 +58,7 @@ public class GempakGridReader extends GempakFileReader {
 
     /** logger */
     private static org.slf4j.Logger log =
-            org.slf4j.LoggerFactory.getLogger( GempakGridReader.class);
+        org.slf4j.LoggerFactory.getLogger(GempakGridReader.class);
 
     /** Grid identifier */
     public static final String GRID = "GRID";
@@ -129,7 +125,7 @@ public class GempakGridReader extends GempakFileReader {
 
         // Modeled after GD_OFIL
         if (dmLabel.kftype != MFGD) {
-            logError("not a grid file ");
+            logError("not a grid file");
             return false;
         }
         // find the part for GRID
@@ -326,19 +322,20 @@ public class GempakGridReader extends GempakFileReader {
         int irow = 1;  // Always 1 for grids
         int icol = gridNumber;
         if ((icol < 1) || (icol > dmLabel.kcol)) {
-            log.warn("bad grid number " + icol);
+            logWarning("bad grid number " + icol);
             return -9;
         }
         int iprt = getPartNumber("GRID");
         if (iprt == 0) {
-            log.warn("couldn't find part");
+            logWarning("couldn't find part: GRID");
             return -10;
         }
         // gotta subtract 1 because parts are 1 but List is 0 based
         DMPart part = (DMPart) parts.get(iprt - 1);
         // check for valid data type
         if (part.ktyprt != MDGRID) {
-            log.warn("Not a valid type");
+            logWarning("Not a valid type: "
+                       + GempakUtil.getDataType(part.ktyprt));
             return -21;
         }
         int ilenhd = part.klnhdr;
@@ -353,12 +350,11 @@ public class GempakGridReader extends GempakFileReader {
         int length = DM_RINT(istart);
         int isword = istart + 1;
         if (length <= ilenhd) {
-            log.warn("length (" + length
-                               + ") is less than header length (" + ilenhd
-                               + ")");
+            logWarning("length (" + length + ") is less than header length ("
+                       + ilenhd + ")");
             return -15;
         } else if (Math.abs(length) > 10000000) {
-            log.warn("length is huge");
+            logWarning("length is huge: " + length);
             return -34;
         }
         int[] header = new int[ilenhd];
@@ -526,7 +522,7 @@ public class GempakGridReader extends GempakFileReader {
         return null;
     }
 
-    /** flag for using DP_UGRB or not*/
+    /** flag for using DP_UGRB or not */
     public static boolean useDP = true;
 
     /**
@@ -603,7 +599,7 @@ public class GempakGridReader extends GempakFileReader {
             //
             ibit += nbits;
             if (ibit > 32) {
-                ibit  -= 32;
+                ibit -= 32;
                 iword++;
             }
             /*
@@ -983,6 +979,14 @@ public class GempakGridReader extends GempakFileReader {
             }
             next--;
         }
+    }
+
+    /**
+     * Log a warning message
+     * @param message the warning message
+     */
+    private void logWarning(String message) {
+        log.warn(rf.getLocation() + ": " + message);
     }
 
 }
