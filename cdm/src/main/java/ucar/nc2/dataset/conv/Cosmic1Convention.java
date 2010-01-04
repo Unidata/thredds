@@ -64,9 +64,9 @@ public class Cosmic1Convention extends CoordSysBuilder {
     //   :start_time = 9.17028312E8; // double
    // :stop_time = 9.170284104681826E8; // double
 
-    if (null == ncfile.findDimension("MSL_alt")) return false;
-    if (null == ncfile.findGlobalAttribute( "start_time")) return false;
-    if (null == ncfile.findGlobalAttribute( "stop_time")) return false;
+    if (null == ncfile.findDimension("MSL_alt") && null == ncfile.findDimension("time")) return false;
+   // if (null == ncfile.findGlobalAttribute( "start_time")) return false;
+   // if (null == ncfile.findGlobalAttribute( "stop_time")) return false;
 
     String center = ncfile.findAttValueIgnoreCase(null, "center", null);
     return (center != null) && center.equals("UCAR/CDAAC");
@@ -77,55 +77,86 @@ public class Cosmic1Convention extends CoordSysBuilder {
   }
 
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+    Attribute leoAtt = ds.findGlobalAttribute("leoId");
 
-    if (ds.findVariable("time") == null) {
-      // create a time variable - assume its linear along the vertical dimension
-      double start =  ds.readAttributeDouble(null, "start_time", Double.NaN);
-      double stop =  ds.readAttributeDouble(null, "stop_time", Double.NaN);
+    if( leoAtt == null ) {
+        if (ds.findVariable("time") == null) {
+          // create a time variable - assume its linear along the vertical dimension
+          double start =  ds.readAttributeDouble(null, "start_time", Double.NaN);
+          double stop =  ds.readAttributeDouble(null, "stop_time", Double.NaN);
 
-      Dimension dim = ds.findDimension("MSL_alt");
-      Variable dimV = ds.findVariable("MSL_alt");
-      Array dimU = dimV.read();
-      int inscr = ( dimU.getFloat(1) - dimU.getFloat(0)) > 0 ? 1 : 0;
-      int n = dim.getLength();
-      double incr = (stop - start) / n;
+         if(Double.isNaN(start) && Double.isNaN(stop)){
+             double top = ds.readAttributeDouble(null, "toptime", Double.NaN);
+             double bot = ds.readAttributeDouble(null, "bottime", Double.NaN);
 
-      String timeUnits = "seconds since 1980-01-06 00:00:00";
-      Variable timeVar = new VariableDS(ds, null, null, "time", DataType.DOUBLE, dim.getName(), timeUnits, null);
-      ds.addVariable(null, timeVar);
-      timeVar.addAttribute(new Attribute("units", timeUnits));
-      timeVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
-      int dir = ds.readAttributeInteger(null, "irs", 1);
-      ArrayDouble.D1 data = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, new int[] {n});
-      if(inscr == 0) {
-          if(dir == 1) {
-              for (int i=0; i<n; i++)
-                  data.set(i, start + i * incr);
+             this.conventionName = "Cosmic2";
+             if(top > bot) {
+                 stop = top;
+                 start = bot;
+             } else {
+                 stop = bot;
+                 start = top;
+             }
+
+         }
+
+          Dimension dim = ds.findDimension("MSL_alt");
+          Variable dimV = ds.findVariable("MSL_alt");
+          Array dimU = dimV.read();
+          int inscr = ( dimU.getFloat(1) - dimU.getFloat(0)) > 0 ? 1 : 0;
+          int n = dim.getLength();
+          double incr = (stop - start) / n;
+
+          String timeUnits = "seconds since 1980-01-06 00:00:00";
+          Variable timeVar = new VariableDS(ds, null, null, "time", DataType.DOUBLE, dim.getName(), timeUnits, null);
+          ds.addVariable(null, timeVar);
+          timeVar.addAttribute(new Attribute("units", timeUnits));
+          timeVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
+          int dir = ds.readAttributeInteger(null, "irs", 1);
+          ArrayDouble.D1 data = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, new int[] {n});
+          if(inscr == 0) {
+              if(dir == 1) {
+                  for (int i=0; i<n; i++)
+                      data.set(i, start + i * incr);
+              } else {
+                  for (int i=0; i<n; i++)
+                      data.set(i, stop - i * incr);
+              }
           } else {
               for (int i=0; i<n; i++)
                   data.set(i, stop - i * incr);
           }
-      } else {
-          for (int i=0; i<n; i++)
-              data.set(i, stop - i * incr);
-      }
-      timeVar.setCachedData(data, false);
-    }
+          timeVar.setCachedData(data, false);
+        }
 
-    Variable v = ds.findVariable("Lat");
-    v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-    v = ds.findVariable("Lon");
-    v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
-
+        Variable v = ds.findVariable("Lat");
+        if(v == null)
+            v = ds.findVariable("GEO_lat");
+        v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
+        Variable v1 = ds.findVariable("Lon");
+        if(v1==null)
+            v1 = ds.findVariable("GEO_lon");
+        v1.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
+    }/* else {
+        this.conventionName = "Cosmic3";
+        Variable v = ds.findVariable("xLeo");
+        v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.GeoX.toString()));
+        Variable v1 = ds.findVariable("yLeo");
+        v1.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.GeoY.toString()));
+        Variable v2 = ds.findVariable("zLeo");
+        v2.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
+    }  */
     ds.finish();
   }
 
   protected AxisType getAxisType(NetcdfDataset ncDataset, VariableEnhanced v) {
     String name =  v.getShortName();
     if (name.equals("time")) return AxisType.Time;
-    if (name.equals("Lat")) return AxisType.Lat;
-    if (name.equals("Lon")) return AxisType.Lon;
-    if (name.equals("MSL_alt")) return AxisType.Height;    
+    if (name.equals("Lat") || name.equals("GEO_lat")) return AxisType.Lat;
+    if (name.equals("Lon") || name.equals("GEO_lon")) return AxisType.Lon;
+    // if (name.equals("xLeo") ) return AxisType.GeoX;
+    // if (name.equals("yLeo") ) return AxisType.GeoY;
+    if (name.equals("MSL_alt") ) return AxisType.Height;  // || name.equals("zLeo")) return AxisType.Height;
     return null;
   }
 }
