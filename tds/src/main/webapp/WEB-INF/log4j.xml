@@ -127,7 +127,7 @@
   </logger>
   <!-- end grib debugging -->
 
-  <!-- fmrc debugging --
+  <!-- fmrc debugging
   <logger name="ucar.nc2.dt.fmrc" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="modelLog"/>
@@ -142,7 +142,7 @@
     <level value="INFO"/>
     <appender-ref ref="threddsServlet"/>
   </logger>
-  <!-- end fmrc debugging -->
+  end fmrc debuggimg -->
 
   <!-- All normal logging messages go to threddsServlet.log -->
   <logger name="opendap" additivity="false">
