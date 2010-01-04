@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pointConfig featureType="TRAJECTORY">
+  <tableConfigurer class="ucar.nc2.ft.point.standard.plug.Cosmic" />
+  <table type="Top" structName="traj">
+    <table type="Structure" subtype="PsuedoStructure" dim="MSL_alt">
+      <coordinate type="Lat">GEO_lat</coordinate>
+      <coordinate type="Lon">GEO_lon</coordinate>
+      <coordinate type="Elev">MSL_alt</coordinate>
+      <coordinate type="Time">time</coordinate>
+    </table>
+  </table>
+</pointConfig>
