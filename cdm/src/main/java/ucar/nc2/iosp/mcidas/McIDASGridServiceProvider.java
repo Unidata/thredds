@@ -87,18 +87,18 @@ public class McIDASGridServiceProvider extends GridServiceProvider {
     }
 
     /**
-     * _more_
+     * Get the file type id
      *
-     * @return _more_
+     * @return the file type id
      */
     public String getFileTypeId() {
         return "McIDASGrid";
     }
 
     /**
-     * _more_
+     * Get the file type description
      *
-     * @return _more_
+     * @return the file type description
      */
     public String getFileTypeDescription() {
         return "McIDAS Grid file";

@@ -179,19 +179,28 @@ public class McIDASGridReader {
         if (label.indexOf("GEMPAK DATA MANAGEMENT FILE") >= 0) {
             logError("label indicates this is a GEMPAK grid");
             return false;
+        } else { // check that they are all printable ASCII chars
+            for (int i=0; i<label.length(); i++) {
+               String s0 = label.substring(i, i+1);
+               if (!(0 <= s0.compareTo(" ") && s0.compareTo("~") <= 0)) {
+                   logError("bad label, not a McIDAS grid");
+                   return false;
+               }
+            }
         }
-        // System.out.println("label = " + label);
+
+        //System.out.println("label = " + label);
 
         int project = readInt(8);
-        // System.out.println("Project = " + project);
+        //System.out.println("Project = " + project);
 
         int date = readInt(9);
         // dates are supposed to be yyyddd, but account for ccyyddd up to year 4000
-        if ((date < 1000) || (date > 4000000)) {
-            logError("not a McIDAS grid");
+        if ((date < 10000) || (date > 400000)) {
+            logError("date wrong, not a McIDAS grid");
             return false;
         }
-        // System.out.println("date = " + date);
+        //System.out.println("date = " + date);
 
         int[] entries = new int[numEntries];
         for (int i = 0; i < numEntries; i++) {
