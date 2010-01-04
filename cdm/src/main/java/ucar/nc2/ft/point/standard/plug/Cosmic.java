@@ -64,7 +64,14 @@ public class Cosmic extends TableConfigurerImpl {
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
     PointConfigXML reader = new PointConfigXML();
-    return reader.readConfigXMLfromResource("resources/nj22/pointConfig/Cosmic1.xml", wantFeatureType, ds, errlog);
-    //return reader.readConfigXML("C:\\dev\\tds\\thredds\\cdm\\src\\main\\resources\\resources\\nj22\\pointConfig\\Cosmic1.xml", wantFeatureType, ds, errlog);
+    if(ds.getConventionUsed().equalsIgnoreCase("Cosmic1"))
+        return reader.readConfigXMLfromResource("resources/nj22/pointConfig/Cosmic1.xml", wantFeatureType, ds, errlog);
+    else if(ds.getConventionUsed().equalsIgnoreCase("Cosmic2"))
+        return reader.readConfigXMLfromResource("resources/nj22/pointConfig/Cosmic2.xml", wantFeatureType, ds, errlog);
+   // else if(ds.getConventionUsed().equalsIgnoreCase("Cosmic3"))
+   //     return reader.readConfigXMLfromResource("resources/nj22/pointConfig/Cosmic3.xml", wantFeatureType, ds, errlog);
+    else
+        return null;
+      //return reader.readConfigXML("C:\\dev\\tds\\thredds\\cdm\\src\\main\\resources\\resources\\nj22\\pointConfig\\Cosmic1.xml", wantFeatureType, ds, errlog);
   }
 }
