@@ -45,6 +45,7 @@ import ucar.nc2.iosp.grid.GridIndexToNC;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DiskCache;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.dt.fmrc.FmrcDefinition;
 import ucar.grib.*;
 import ucar.grib.grib1.*;
 import ucar.grib.grib2.*;
@@ -111,7 +112,9 @@ public class GribGridServiceProvider extends GridServiceProvider {
     } else {
       lookup = getLookup1();
     }
-
+    // code to test fmrcCoordSys, need to make sure definition file matches data file
+    //FmrcDefinition fmrcCoordSys = new FmrcDefinition();
+    //fmrcCoordSys.readDefinitionXML("/local/robb/data/grib/SREF/NCEP-SREF-PacificNE_0p4-ensprod.fmrcDefinition.xml");
     // make it into netcdf objects
     new GridIndexToNC().open(index, lookup, saveEdition, ncfile, fmrcCoordSys, cancelTask);
     ncfile.finish();
