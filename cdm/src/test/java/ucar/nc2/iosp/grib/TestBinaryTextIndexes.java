@@ -75,8 +75,6 @@ public class TestBinaryTextIndexes extends TestCase {
 
   void compareNC(String fileBinary, String fileText) throws IOException {
 
-    long start = System.currentTimeMillis();
-
     Class c = ucar.nc2.iosp.grib.GribGridServiceProvider.class;
     IOServiceProvider spiB = null;
     try {
@@ -89,11 +87,7 @@ public class TestBinaryTextIndexes extends TestCase {
     ucar.unidata.io.RandomAccessFile rafB = new ucar.unidata.io.RandomAccessFile(fileBinary, "r");
     rafB.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
     NetcdfFile ncfileBinary = new MyNetcdfFile(spiB, rafB, fileBinary, null);
-    //System.out.println( "Time to create Netcdf object using GridGrib Iosp "+
-    //  (System.currentTimeMillis() - start) );
     System.out.println("Binary Netcdf object created");
-
-    start = System.currentTimeMillis();
 
     try {
       spiB = (IOServiceProvider) c.newInstance();
@@ -108,8 +102,6 @@ public class TestBinaryTextIndexes extends TestCase {
 
     System.out.println("Text Index Netcdf object created");
 
-    //System.out.println( "Time to create Netcdf object using Grid1 Grib2 Iosp "+
-    //  (System.currentTimeMillis() - start) );
     // org,  copy,  _compareData,  _showCompare,  _showEach
     //ucar.nc2.TestCompare.compareFiles(ncfileBinary, ncfileText, true, true, true);
     TestCompareGrib.compareFiles(ncfileBinary, ncfileText, false, true, false);
@@ -118,9 +110,7 @@ public class TestBinaryTextIndexes extends TestCase {
   }
 
   void compareIndexes(String fileBinary, String fileText) throws IOException {
-    long start = System.currentTimeMillis();
     GridIndex giB = new GribReadIndex().open(fileBinary + ".gbx8");
-    //GridIndex giB = new GribReadIndex().open(fileBinary  );
     GridIndex giT = new GribReadIndex().open(fileText + ".gbx");
 
     // Coordinate systems
@@ -133,23 +123,27 @@ public class TestBinaryTextIndexes extends TestCase {
 
       java.util.Set<String> keysB = gdrB.getKeys();
       for (String key : keysB) {
-        if (key.equals("grid_units") || key.equals("created") || key.equals("location") || key.equals("grid_units"))
+        if (key.equals("grid_units") || key.equals("created") || key.equals("location")
+            || key.equals("VectorComponentFlag") || key.equals("GDSkey")
+            || key.equals("grid_name") )
           continue;
         String valueB = gdrB.getParam(key);
         String valueT = gdrT.getParam(key);
         if (!valueB.equals(valueT))
           System.out.println("hcs " + key + " differ for Binary and Text  " + valueB + " " + valueT);
-
+        assert( valueB.equals(valueT) );
       }
       java.util.Set<String> keysT = gdrT.getKeys();
       for (String key : keysT) {
-        if (key.equals("ScanningMode") || key.equals("created") || key.equals("location") || key.equals("grid_units"))
+        if (key.equals("grid_units") || key.equals("created") || key.equals("location")
+            || key.equals("VectorComponentFlag") || key.equals("GDSkey")
+            || key.equals("grid_name") || key.equals("ScanningMode"))
           continue;
         String valueB = gdrB.getParam(key);
         String valueT = gdrT.getParam(key);
         if (!valueT.equals(valueB))
-          System.out.println("hcs " + key + " differ for Binary and Text " + valueB + " " + valueT);
-
+          System.out.println("hcs " + key + " differ for Text and Binary " + valueT + " " + valueB);
+        assert( valueB.equals(valueT) );
       }
     }
 
@@ -158,13 +152,16 @@ public class TestBinaryTextIndexes extends TestCase {
     Map<String, String> attT = giT.getGlobalAttributes();
     java.util.Set<String> keysB = attB.keySet();
     for (String key : keysB) {
-      if (key.equals("basetime") || key.equals("created") || key.equals("location") || key.equals("grid_units"))
+      if (key.equals("basetime") || key.equals("created") || key.equals("location")
+          || key.equals("grid_units") || key.equals("ensemble"))
         continue;
       String valueB = attB.get(key);
       String valueT = attT.get(key);
-      if (!valueB.equals(valueT))
+      if (!valueB.equals(valueT) || key.equals( "index_version"))
         System.out.println("attribute " + key + " differ for Binary and Text  " + valueB + " " + valueT);
-
+      if( key.equals( "index_version") )
+        continue;
+      assert( valueB.equals(valueT) );
     }
     java.util.Set<String> keysT = attT.keySet();
     for (String key : keysT) {
@@ -173,26 +170,13 @@ public class TestBinaryTextIndexes extends TestCase {
         continue;
       String valueB = attB.get(key);
       String valueT = attT.get(key);
-      if (!valueT.equals(valueB))
-        System.out.println("attribute " + key + " differ for Binary and Text " + valueB + " " + valueT);
-
+      if (!valueT.equals(valueB) || key.equals( "index_version"))
+        System.out.println("attribute " + key + " differ for Text and Binary " + valueT + " " + valueB);
+      if( key.equals( "index_version") )
+        continue;
+      assert( valueB.equals(valueT) );
     }
 
-    // records
-    List<GridRecord> grsB = giB.getGridRecords();
-    List<GridRecord> grsT = giT.getGridRecords();
-    //for(int i = 0; i < grsB.size(); i++ ) {
-    int stop = (grsB.size() < 10) ? grsB.size() : 10;
-    for (int i = 0; i < stop; i++) {
-      GribGridRecord grB = (GribGridRecord) grsB.get(i);
-      GribGridRecord grT = (GribGridRecord) grsT.get(i);
-      int valueB = grB.gdsKey;
-      //String valueB = grB.toString();
-      int valueT = grT.gdsKey;
-      //String valueT = grT.toString();
-      if (valueB != valueT)
-        System.out.println("record gdsKey  differ for Binary and Text  " + valueB + "  " + valueT);
-    }
   }
 
 
@@ -206,7 +190,8 @@ public class TestBinaryTextIndexes extends TestCase {
       dirB = args[0] + "/binary"; // "/local/robb/data/grib/idd/binary";
       dirT = args[0] + "/text"; // "/local/robb/data/grib/idd/text";
     }
-    File dir = new File(dirB);
+    //File dir = new File(dirB);
+    File dir = new File(dirT);
     if (dir.isDirectory()) {
       System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
       String[] children = dir.list();
@@ -216,30 +201,30 @@ public class TestBinaryTextIndexes extends TestCase {
         //System.out.println( "child ="+ child.getName() );
         if (aChild.isDirectory()) {
           continue;
-          // skip index *gbx and inventory *xml files
+          // skip old grib1 files, new grib2 Ensemble files, index and inventory files
         } else if (
             child.contains( "Ensemble") ||
             child.contains( "SREF") ||
             child.contains( "GFS_Spectral") || //uses >1 parameter tables
-//            child.contains( "SPECTRAL") || //uses >1 parameter tables
-//            child.contains( "OCEAN") || //uses >1 horizontal coord system
+            child.contains( "SPECTRAL") || //uses >1 parameter tables
+            child.contains( "OCEAN") || //uses >1 horizontal coord system
             child.contains( "ECMWF") || //uses >1 horizontal coord system
-//            child.contains( "RADAR") || //uses >1 horizontal coord system
-//            child.contains( "SST") || //uses >1 horizontal coord system
+            child.contains( "GFS_Extended") || //uses >1 horizontal coord system
+            child.contains( "SST") || //uses >1 horizontal coord system
             child.contains( "UKMET") || //uses >1 horizontal coord system
             child.contains( "ukm") || //uses >1 horizontal coord system
-//            child.contains( "GFS_Global_1p25deg") || //uses >1 horizontal coord system
-                child.endsWith("gbx") ||
-                        child.endsWith("gbx8") ||
-                        child.endsWith("xml") ||
-                        child.endsWith("tmp") || //index in creation process
-                        child.length() == 0) { // zero length file, ugh...
+            child.contains( "GFS_Global_1p25deg") || //uses >1 horizontal coord system
+            child.endsWith("gbx") ||
+            child.endsWith("gbx8") ||
+            child.endsWith("xml") ||
+            child.endsWith("tmp") || //index in creation process
+            child.length() == 0) { // zero length file, ugh...
         } else {
-//          if( ! child.contains( "GFS_Ensemble_1p25deg")) //TODO: remove
-//            continue;
+          //child = "GFS_CONUS_191km_20090313_1200.grib1";
           System.out.println("\n\nComparing File:  " + child);
           System.out.println("  Index comparisons Binary and Text");
           compareIndexes(dirB + "/" + child, dirT + "/" + child);
+          // This test doesn't consider the additions/deletions to the index structure
           System.out.println("  \n  Netcdf Object comparisons Binary and Text");
           compareNC(dirB + "/" + child, dirT + "/" + child);
           System.out.println();
