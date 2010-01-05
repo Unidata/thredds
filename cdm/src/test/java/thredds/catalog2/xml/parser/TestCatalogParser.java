@@ -117,6 +117,8 @@ public class TestCatalogParser
 
         Catalog cat = catBldr.build();
 
+      cat.getServices();
+
         CatalogXmlUtils.writeCatalogXml( cat );
   }
 }

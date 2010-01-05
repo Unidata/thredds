@@ -8,18 +8,19 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLEventReader;
 
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
+import thredds.catalog2.xml.names.ThreddsMetadataElementNames;
 import thredds.catalog2.builder.ThreddsBuilderFactory;
 import thredds.catalog2.builder.ThreddsMetadataBuilder;
 import thredds.catalog2.builder.ThreddsBuilder;
 import thredds.catalog2.simpleImpl.ThreddsBuilderFactoryImpl;
 
 /**
- * Test the thredds.catalog2.xml.parser.stax.TimeCoverageElementParser in isolation.
+ * Test the thredds.catalog2.xml.parser.stax.GeospatialCoverageElementParser in isolation.
  *
  * @author edavis
  * @since 4.0
  */
-public class TimeCoverageElementParserTest
+public class GeospatialCoverageElementParserTest
 {
   private ThreddsBuilderFactory fac;
   private ThreddsMetadataBuilder tmBldr;
@@ -34,6 +35,7 @@ public class TimeCoverageElementParserTest
   @Test
   public void checkFullySpecifiedTimeCoverageElement() throws XMLStreamException, ThreddsXmlParserException
   {
+    ThreddsMetadataElementNames.GeospatialCoverageElement.getLocalPart();
     String elemName = "timeCoverage";
     //QName elemQualName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(), elemName );
 

@@ -53,7 +53,7 @@ import ucar.nc2.units.DateType;
  * @author edavis
  * @since 4.0
  */
-public interface Catalog // extends CatalogObject
+public interface Catalog
 {
   public String getName();
   public URI getDocBaseUri();

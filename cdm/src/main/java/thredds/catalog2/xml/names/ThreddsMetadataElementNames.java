@@ -134,7 +134,32 @@ public class ThreddsMetadataElementNames
   public static final QName GeospatialCoverageElement_NameElement
           = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
                        "name" );
-  // ToDo "geospatialCoverage" attributes
+  public static final QName GeospatialCoverageElement_NorthsouthElement
+          = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
+                       "northsouth" );
+  public static final QName GeospatialCoverageElement_EastwestElement
+          = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
+                       "eastwest" );
+  public static final QName GeospatialCoverageElement_UpdownElement
+          = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
+                       "updown" );
+  public static final QName GeospatialCoverageElement_Zpositive
+          = new QName( XMLConstants.NULL_NS_URI,
+                       "zpositive" );
+
+  public static final QName SpatialRangeType_Start
+          = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
+                       "start" );
+  public static final QName SpatialRangeType_Size
+          = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
+                       "size" );
+  public static final QName SpatialRangeType_Resolution
+          = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
+                       "resolution" );
+  public static final QName SpatialRangeType_Units
+          = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
+                       "units" );
+
 
   public static final QName TimeCoverageElement
           = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),

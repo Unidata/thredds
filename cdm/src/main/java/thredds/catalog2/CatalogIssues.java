@@ -10,11 +10,15 @@ import java.util.List;
  */
 public interface CatalogIssues
 {
-  public List<CatalogIssue> getIssues();
-
   public boolean isValid();
-  public boolean isEmpty();
-  public int size();
+
+  public int getNumFatalIssues();
+  public int getNumErrorIssues();
+  public int getNumWarningIssues();
+  public String getIssuesMessage();
+  public String getFatalIssuesMessage();
+  public String getErrorIssuesMessage();
+  public String getWarningIssuesMessage();
 
   public String toString();
 }
