@@ -145,7 +145,6 @@ public class AggTable extends JPanel {
     });
     buttPanel.add(compareButton);
 
-
     // the info window
     infoTA = new TextHistoryPane();
     infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), infoTA);

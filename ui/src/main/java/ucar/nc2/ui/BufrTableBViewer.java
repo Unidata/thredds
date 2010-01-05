@@ -174,7 +174,11 @@ public class BufrTableBViewer extends JPanel {
     AbstractAction usedAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         try {
-          showUsed();
+          if (fileChooser == null)
+            fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
+          String filename = fileChooser.chooseFilename();
+          if (filename == null) return;
+          showUsed(filename);
         } catch (IOException e1) {
           e1.printStackTrace(); 
         }
@@ -186,7 +190,7 @@ public class BufrTableBViewer extends JPanel {
     AbstractAction diffAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         try {
-          String defloc = "C:/dev/tds/thredds/bufrTables/src/main/resources/resources/bufrTables/diff";
+          String defloc = "C:/dev/tds/thredds/bufrTables/src/main/resources/resources/bufrTables/local";
           if (fileChooser == null)
             fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
 
@@ -262,7 +266,7 @@ public class BufrTableBViewer extends JPanel {
     //prefs.putBeanObject("InfoWindowBounds2", infoWindow2.getBounds());
     prefs.putInt("splitPos", split.getDividerLocation());
     //prefs.putInt("splitPos2", split2.getDividerLocation());
-    //if (fileChooser != null) fileChooser.save();
+    if (fileChooser != null) fileChooser.save();
   }
 
   public void setBufrTableB(String filename, String mode) throws IOException {
@@ -400,8 +404,15 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
 
   private void showUsed() throws IOException {
     usedDds = new HashMap<Short, List<Message>>(3000);
-    scanFileForDds("C:/data/formats/bufr3/asampleAll.bufr");
-    scanFileForDds("C:/data/formats/bufr3/unique.bufr");
+    scanFileForDds("Q:/cdmUnitTest/iosp/bufr/uniqueExamples.bufr");
+    scanFileForDds("Q:/cdmUnitTest/iosp/bufr/uniqueIDD.bufr");
+    scanFileForDds("Q:/cdmUnitTest/iosp/bufr/uniqueBrasil.bufr");
+    scanFileForDds("Q:/cdmUnitTest/iosp/bufr/uniqueFnmoc.bufr");
+  }
+
+  private void showUsed(String filename) throws IOException {
+    usedDds = new HashMap<Short, List<Message>>(3000);
+    scanFileForDds(filename);
   }
 
   public void scanFileForDds(String filename) throws IOException {

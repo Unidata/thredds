@@ -52,7 +52,8 @@ import java.io.IOException;
 
 
 public class GridCoordinate2D {
-  static final private boolean debug = false;
+  static final private boolean debug = true;
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridCoordinate2D.class);
 
   private CoordinateAxis2D latCoord, lonCoord;
   private ArrayDouble.D2 latEdge, lonEdge;
@@ -111,14 +112,18 @@ public class GridCoordinate2D {
 
     int count = 0;
     while (true) {
-      if (debug) System.out.printf("%nIteration %d %n", count++);
+      count++;
+      if (debug) System.out.printf("%nIteration %d %n", count);
       if (contains(wantLat, wantLon, rectIndex))
         return true;
 
       if (!jump(wantLat, wantLon, rectIndex)) return false;
 
       // bouncing around
-      if (count > 100) return false;
+      if (count > 100) {
+        log.error("findCoordElement didnt converge lat,lon = "+wantLat+" "+ wantLon);
+        return false;
+      }
     }
   }
 

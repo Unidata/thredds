@@ -1970,7 +1970,7 @@ public class ToolsUI extends JPanel {
       BAMutil.setActionProperties(fileAction, "FileChooser", "open Local table...", false, 'L', -1);
       BAMutil.addActionToContainer(buttPanel, fileAction);
 
-      modes = new JComboBox(new String[] {"mel-bufr","ncep","ncep-nm","ecmwf","csv","ukmet"});
+      modes = new JComboBox(new String[] {"mel-bufr","ncep","ncep-nm","ecmwf","csv","ukmet","mel-tabs"});
       buttPanel.add(modes);
 
       JButton accept = new JButton("Accept");
@@ -2609,6 +2609,19 @@ public class ToolsUI extends JPanel {
       BAMutil.setActionProperties(transAction, "Import", "read textArea through NcMLReader\n write NcML back out via resulting dataset", false, 'T', -1);
       BAMutil.addActionToContainer(buttPanel, transAction);
 
+      AbstractButton compareButton = BAMutil.makeButtcon("Select", "Check NcML", false);
+      compareButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          checkNcml(f);
+
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(compareButton);
+
       add(scroller, BorderLayout.CENTER);
     }
 
@@ -2686,6 +2699,20 @@ public class ToolsUI extends JPanel {
         editor.setText(bos.toString());
         editor.setCaretPosition(0);
         JOptionPane.showMessageDialog(this, "File successfully transformed");
+
+      } catch (IOException ioe) {
+        JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
+        ioe.printStackTrace();
+      }
+    }
+
+    // read text from textArea through NcMLReader
+    // then write it back out via resulting dataset
+    private void checkNcml(Formatter f) {
+      if (ncmlLocation == null) return;
+      try {
+        NetcdfDataset ncd = NetcdfDataset.openDataset(ncmlLocation);
+        ncd.check( f);
 
       } catch (IOException ioe) {
         JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());

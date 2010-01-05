@@ -846,7 +846,7 @@ public class NcMLReader {
         v.setDimensions(shape); // LOOK check conformable
       if (debugConstruct) System.out.println(" modify existing var = " + nameInFile);
 
-    } else { //explicit
+    } else { //explicit - create new
       if (refv instanceof Structure) {
         v = new StructureDS(g, null, name, (Structure) refv); 
         v.setDimensions(shape);

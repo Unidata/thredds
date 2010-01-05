@@ -169,12 +169,6 @@ public class BufrTables {
         if (line.startsWith("#")) continue;
         count++;
 
-        // first line is the header
-        if (count == 1) {
-          if (showReadErrs) System.out.println("header line == " + line);
-          continue;
-        }
-
         String[] flds = line.split(",");
         if (flds.length < 8) {
           if (showReadErrs) System.out.printf("%d BAD line == %s%n", count, line);
@@ -575,7 +569,7 @@ public class BufrTables {
         int scale = Integer.parseInt(split[3].trim());
         int refVal = Integer.parseInt(split[4].trim());
         int width = Integer.parseInt(split[5].trim());
-        System.out.printf("%s = %d %d, %d %d %d %s %s %n", line, x, y, scale, refVal, width, split[7], split[6]);
+        //System.out.printf("%s = %d %d, %d %d %d %s %s %n", line, x, y, scale, refVal, width, split[7], split[6]);
 
         b.addDescriptor(x, y, scale, refVal, width, split[7], split[6]);
       } catch (Exception e) {

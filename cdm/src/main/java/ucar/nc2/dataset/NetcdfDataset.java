@@ -1556,6 +1556,23 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return "N/A";
   }
 
+  public void check(Formatter f) {
+    for (Variable v : getVariables()) {
+      VariableDS vds =  (VariableDS) v;
+      if (vds.getOriginalDataType() != vds.getDataType()) {
+        f.format("Variable %s has type %s, org = %s%n", vds.getName(), vds.getOriginalDataType(), vds.getDataType());
+      }
+
+      if (vds.getOriginalVariable() != null) {
+        Variable orgVar = vds.getOriginalVariable();
+        if (orgVar.getRank() != vds.getRank())
+          f.format("Variable %s has rank %d, org = %d%n", vds.getName(), vds.getRank(), orgVar.getRank());
+      }
+
+
+    }
+  }
+
   /**
    * Main program - cover to ucar.nc2.FileWriter, for all files that can be read by NetcdfDataset.openFile()
    * <p><strong>ucar.nc2.dataset.NetcdfDataset -in fileIn -out fileOut

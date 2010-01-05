@@ -1,0 +1,9 @@
+#
+# BUFR diff written from D:/formats/bufr/ncepAwc/B3M-000-012-B against resource:/resources/bufrTables/wmo/TableB-121109.v14.csv 
+#
+Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_Bits
+8, 8079,"Change in status of following product",Code_Table,0,0,3
+11,11063,"Wind Shear in 1 km layer",m s-1,1,0,12
+22,22039,"Meteorological residual tidal elevation (surge or offset)",m,3,-5000,12
+27,27035,"Length of phenomenon",m,-3,0,13
+28,28035,"Width of phenomenon",m,-3,0,13

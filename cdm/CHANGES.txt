@@ -4,6 +4,10 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  12:
+  BUFR:  add ecmwf, fnmoc, clean up table names
+  Cosmic CSB improvements
+  McIdasGrid.isValid()
+  Gempak logging
   WRF v3 lat/lon grids. works, but ignores coordsys lat/lon time dependency (is there any?)
   UTM projection bug
   NcML write: fix possible problems with '%' in string values

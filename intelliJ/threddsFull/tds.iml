@@ -79,11 +79,6 @@
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/lib" />
-            <url>jar://$MODULE_DIR$/../../lib/release/bufrTables-1.5.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib" />
             <url>jar://$MODULE_DIR$/../../lib/external/casclient-2.1.1.jar!/</url>
           </containerElement>
           <containerElement type="library" name="catalina" level="project">
@@ -318,6 +313,11 @@
           <containerElement type="library" name="ehcache" level="project">
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/lib" />
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib" />
+            <url>jar://$MODULE_DIR$/../../lib/release/bufrTables-2.0.jar!/</url>
           </containerElement>
         </packaging>
       </configuration>
@@ -1406,10 +1406,10 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/release/bufrTables-1.5.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/release/bufrTables-2.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
