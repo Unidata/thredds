@@ -1221,12 +1221,18 @@ public class DataRootHandler {
       // Check if the cached catalog is stale.
       DateType expiresDateType = catalog.getExpires();
       if (expiresDateType != null) {
-        if (expiresDateType.getDate().getTime() < System.currentTimeMillis()) {
+        if (expiresDateType.getDate().getTime() < System.currentTimeMillis())
+        {
           // If stale, re-read catalog from disk.
           File catFile = this.tdsContext.getConfigFileSource().getFile(workPath);
-          if (catFile != null) {
+          if (catFile != null)
+          {
             String catalogFullPath = catFile.getPath();
-            if (log.isDebugEnabled()) log.debug("getCatalog(): Rereading expired catalog [" + catalogFullPath + "].");
+            String msg = "Rereading expired catalog [" + catalogFullPath + "].";
+            logCatalogInit.info( "**********\n" + msg + "\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]" );
+            if (log.isDebugEnabled())
+              log.debug( "getCatalog(): " + msg );
+
             InvCatalogFactory factory = getCatalogFactory(true);
             InvCatalogImpl reReadCat = readCatalog(factory, workPath, catalogFullPath);
 
