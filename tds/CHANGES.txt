@@ -3,6 +3,11 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Release Details 4.1:
+ 4.1.1 (2010-01-06)
+   Fix to UTM projection
+   Fix for McIDAS IOSP isValid() method
+   Several minor logging fixes and move FMRC logging from models.log to threddsServlet.log
+   Update idv/models.xml IDs (for motherlode)
  4.1.0 (2009-12-29)
    Fix early closing of WCS dataset.
    Clean up logging and improve some exception handling.
