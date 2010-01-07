@@ -38,7 +38,6 @@ import ucar.unidata.geoloc.vertical.WRFEta;
 import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
 import ucar.nc2.dataset.*;
-import ucar.nc2.dataset.transform.AbstractCoordTransBuilder;
 
 /**
  *
@@ -63,9 +62,19 @@ public class WRFEtaTransformBuilder extends AbstractCoordTransBuilder {
     ct.addParameter(new Parameter("pressure formula", "pressure(x,y,z) = P(x,y,z) + PB(x,y,z)"));
     ct.addParameter(new Parameter(WRFEta.PerturbationPressureVariable, "P"));
     ct.addParameter(new Parameter(WRFEta.BasePressureVariable, "PB"));
+
+    if (cs.getXaxis() != null)
     ct.addParameter(new Parameter(WRFEta.IsStaggeredX, ""+isStaggered(cs.getXaxis())));
+    else
+      ct.addParameter(new Parameter(WRFEta.IsStaggeredX, ""+isStaggered2(cs.getLonAxis(), 1)));
+
+    if (cs.getYaxis() != null)
     ct.addParameter(new Parameter(WRFEta.IsStaggeredY, ""+isStaggered(cs.getYaxis())));
+    else
+      ct.addParameter(new Parameter(WRFEta.IsStaggeredY, ""+isStaggered2(cs.getLonAxis(), 0)));
+
     ct.addParameter(new Parameter(WRFEta.IsStaggeredZ, ""+isStaggered(cs.getZaxis())));
+
     ct.addParameter(new Parameter("eta", ""+cs.getZaxis().getName()));
 
     return ct;
@@ -90,6 +99,14 @@ public class WRFEtaTransformBuilder extends AbstractCoordTransBuilder {
   	if (name.endsWith("stag")) return true;
   	return false;
   }
+
+  private boolean isStaggered2(CoordinateAxis axis, int dimIndex) {
+  	if (axis == null) return false;
+  	Dimension dim = axis.getDimension(dimIndex);
+  	if (dim == null) return false;
+  	if (dim.getName().endsWith("stag")) return true;
+  	return false;
+}
 
 }
 
