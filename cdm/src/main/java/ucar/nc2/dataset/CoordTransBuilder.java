@@ -71,6 +71,7 @@ public class CoordTransBuilder {
     registerTransform("transverse_mercator", TransverseMercator.class);
     registerTransform("vertical_perspective", VerticalPerspective.class);
     registerTransform("UTM", UTM.class);
+    registerTransform("MSGnavigation", MSGnavigation.class);
 
     registerTransform("atmosphere_sigma_coordinate", VAtmSigma.class);
     registerTransform("atmosphere_hybrid_sigma_pressure_coordinate", VAtmHybridSigmaPressure.class);

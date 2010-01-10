@@ -219,12 +219,12 @@ public class TestAll {
   }
 
   static public boolean closeEnough( double d1, double d2) {
-    if (d1 < 1.0e-5) return Math.abs(d1-d2) < 1.0e-5;
+    if (Math.abs(d1) < 1.0e-5) return Math.abs(d1-d2) < 1.0e-5;
     return Math.abs((d1-d2)/d1) < 1.0e-5;
   }
 
   static public boolean closeEnough( double d1, double d2, double tol) {
-    if (d1 < tol) return Math.abs(d1-d2) < tol;
+    if (Math.abs(d1) < tol) return Math.abs(d1-d2) < tol;
     double pd = (d1-d2)/d1;
     return Math.abs(pd) < tol;
   }
@@ -235,7 +235,7 @@ public class TestAll {
   }
 
   static public boolean closeEnough( float d1, float d2) {
-    if (d1 < 1.0e-5) return Math.abs(d1-d2) < 1.0e-5;
+    if (Math.abs(d1) < 1.0e-5) return Math.abs(d1-d2) < 1.0e-5;
     return Math.abs((d1-d2)/d1) < 1.0e-5;
   }
 

@@ -1005,7 +1005,7 @@ onePixel = 0;  */
         count += drawPathRun(g, lastColor, ybeg, yend, xaxis1D, xbeg, nx - 1);
       }
 
-      if (debugPts) break;
+      // if (debugPts) break;
     }
     if (debugHorizDraw) System.out.println("debugHorizDraw = " + count);
   }

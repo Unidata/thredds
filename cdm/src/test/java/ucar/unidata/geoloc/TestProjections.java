@@ -35,6 +35,7 @@ package ucar.unidata.geoloc;
 import junit.framework.*;
 
 import ucar.unidata.geoloc.projection.*;
+import ucar.unidata.geoloc.projection.sat.MSGnavigation;
 import ucar.unidata.geoloc.projection.proj4.AlbersEqualAreaEllipse;
 import ucar.unidata.geoloc.projection.proj4.LambertConformalConicEllipse;
 import ucar.nc2.TestAll;
@@ -74,10 +75,13 @@ public class TestProjections extends TestCase {
       startL.setLongitude(360.0 * (r.nextDouble() - .5));
 
       ProjectionPoint p = proj.latLonToProj(startL);
+      if (Double.isNaN(p.getX())) continue;
       LatLonPoint endL = proj.projToLatLon(p);
 
-      assert (TestAll.closeEnough(startL.getLatitude(), endL.getLatitude(), 1.0e-4)) : proj.getClass().getName() + " failed start= " + startL + " end = " + endL;
-      assert (TestAll.closeEnough(startL.getLongitude(), endL.getLongitude(), 1.0e-4)) : proj.getClass().getName() + " failed start= " + startL + " end = " + endL;
+      assert (TestAll.closeEnough(startL.getLatitude(), endL.getLatitude(), 1.0e-3)) :
+          proj.getClass().getName() + " failed start= " + startL + " end = " + endL + " diff = "+ TestAll.howClose(startL.getLatitude(), endL.getLatitude());
+      assert (TestAll.closeEnough(startL.getLongitude(), endL.getLongitude(), 1.0e-3)) :
+          proj.getClass().getName() + " failed start= " + startL + " end = " + endL + " diff = "+ TestAll.howClose(startL.getLongitude(), endL.getLongitude());
     }
 
     ProjectionPointImpl startP = new ProjectionPointImpl();
@@ -86,6 +90,7 @@ public class TestProjections extends TestCase {
           10000.0 * (r.nextDouble() - .5));
 
       LatLonPoint ll = proj.projToLatLon(startP);
+      if (Double.isNaN(ll.getLatitude())) continue;
       ProjectionPoint endP = proj.latLonToProj(ll);
 
       assert (TestAll.closeEnough(startP.getX(), endP.getX()));
@@ -246,6 +251,24 @@ public class TestProjections extends TestCase {
     Mercator p2 = (Mercator) p.constructCopy();
     assert p.equals(p2);
   }
+
+  private void showProjVal(ProjectionImpl proj, double lat, double lon) {
+    LatLonPointImpl startL = new LatLonPointImpl(lat, lon);
+    ProjectionPoint p = proj.latLonToProj(startL);
+    System.out.printf("lat,lon= (%f, %f) x, y= (%f, %f) %n", lat, lon, p.getX(), p.getY());
+  }
+
+  public void testMSG() {
+    doOne(new MSGnavigation(), 60, 60);
+    testProjection(new MSGnavigation());
+
+    MSGnavigation m = new MSGnavigation();
+    showProjVal(m, 0, 0);
+    showProjVal(m, 60, 0);
+    showProjVal(m, -60, 0);
+    showProjVal(m, 0, 60);
+    showProjVal(m, 0, -60);
+   }
 
   public void testRotatedPole() {
     testProjectionLonMax(new RotatedPole(37, 177), 360, 88);
