@@ -3,6 +3,9 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Release Details 4.1:
+ 4.x.x (2010-??-??)
+   Clean up log messages from TDS reinit (catalogInit.log).
+   For motherlode, reorganize test datasets and catalogs: out of catalog.xml (and elsewhere) and into testCatalog.xml.
  4.1.1 (2010-01-06)
    Fix to UTM projection
    Fix for McIDAS IOSP isValid() method
