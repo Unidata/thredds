@@ -214,7 +214,6 @@ public class DataRootHandler {
         logCatalogInit.error("Error on getExtraCatalogs ", e);
       }
     }
-
   }
 
 
@@ -240,6 +239,7 @@ public class DataRootHandler {
     for (ConfigListener cl : configListeners)
       cl.configStart();
 
+    logCatalogInit.info( "\n**************************************\n**************************************\nStarting TDS config catalog reinitialization\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]" );
     // Empty all config catalog information.
     staticCatalogHash = new HashMap<String, InvCatalogImpl>();
     pathMatcher = new PathMatcher();
@@ -251,7 +251,7 @@ public class DataRootHandler {
 
     isReinit = false;
 
-    logCatalogInit.info("\n**************************************\n**************************************\nCatalog reinit\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]");
+    logCatalogInit.info( "\n**************************************\n**************************************\nDone with TDS config catalog reinitialization\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]" );
   }
 
   volatile boolean isReinit = false;
