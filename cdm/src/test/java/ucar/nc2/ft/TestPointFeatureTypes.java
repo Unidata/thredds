@@ -264,6 +264,8 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   public void testGempak() throws IOException {
+    assert 8769 == checkPointDataset(TestAll.testdataDir+"sounding/gempak/19580807_upa.ncml", FeatureType.STATION_PROFILE, false);
+    
     // (GEMPAK IOSP) stn = psuedoStruct, obs = multidim Structure, time(time) as extraJoin
     checkPointDataset(TestAll.cdmUnitTestDir + "formats/gempak/surface/19580807_sao.gem", FeatureType.STATION, true);
 

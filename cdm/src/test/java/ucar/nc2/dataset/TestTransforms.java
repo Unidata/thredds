@@ -42,6 +42,7 @@ import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.vertical.*;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.*;
+import ucar.unidata.geoloc.projection.sat.MSGnavigation;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.ma2.ArrayDouble;
@@ -538,7 +539,7 @@ public class TestTransforms extends TestCase {
     ProjectionCT vct = (ProjectionCT) ct;
     Projection proj = vct.getProjection();
     assert proj != null;
-    assert proj instanceof VerticalPerspectiveView : proj.getClass().getName();
+    assert proj instanceof MSGnavigation : proj.getClass().getName();
 
     VariableDS ctv = CoordTransBuilder.makeDummyTransformVariable(ncd, ct);
     System.out.println(" dump of equivilent ctv = \n" + ctv);
