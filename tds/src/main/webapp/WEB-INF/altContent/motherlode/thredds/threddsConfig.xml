@@ -10,7 +10,7 @@
   </DataRoots>
 
   <catalogRoot>topcatalog.xml</catalogRoot>
-  <catalogRoot>gempakTestCat.xml</catalogRoot>
+  <catalogRoot>testCatalog.xml</catalogRoot>
 
   <catalogRoot>idv/models.xml</catalogRoot>
   <catalogRoot>idv/latestModels.xml</catalogRoot>
