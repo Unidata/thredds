@@ -22,16 +22,30 @@
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="common" exported="" />
-    <orderEntry type="module" module-name="grib" exported="" />
-    <orderEntry type="module" module-name="opendap" exported="" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/jdom.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/release/bufrTables-2.0.jar!/" />
         </CLASSES>
-        <JAVADOC>
-          <root url="http://www.jdom.org/docs/apidocs" />
-        </JAVADOC>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/release/grib-8.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/release/opendap-2.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
@@ -41,6 +55,17 @@
           <root url="jar://$MODULE_DIR$/../../lib/release/visadNoDods.jar!/" />
         </CLASSES>
         <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/jdom.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="http://www.jdom.org/docs/apidocs" />
+        </JAVADOC>
         <SOURCES />
       </library>
     </orderEntry>
@@ -122,15 +147,6 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/easymock-2.5.2.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="file://$MODULE_DIR$/../../bufrTables/src/main/resources" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

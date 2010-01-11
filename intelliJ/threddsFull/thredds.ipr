@@ -435,11 +435,9 @@
       <module fileurl="file://$PROJECT_DIR$/cdm.iml" filepath="$PROJECT_DIR$/cdm.iml" />
       <module fileurl="file://$PROJECT_DIR$/common.iml" filepath="$PROJECT_DIR$/common.iml" />
       <module fileurl="file://$PROJECT_DIR$/docs.iml" filepath="$PROJECT_DIR$/docs.iml" />
-      <module fileurl="file://$PROJECT_DIR$/grib.iml" filepath="$PROJECT_DIR$/grib.iml" />
       <module fileurl="file://$PROJECT_DIR$/intelliJ.iml" filepath="$PROJECT_DIR$/intelliJ.iml" />
       <module fileurl="file://$PROJECT_DIR$/ldm.iml" filepath="$PROJECT_DIR$/ldm.iml" />
       <module fileurl="file://$PROJECT_DIR$/lib.iml" filepath="$PROJECT_DIR$/lib.iml" />
-      <module fileurl="file://$PROJECT_DIR$/opendap.iml" filepath="$PROJECT_DIR$/opendap.iml" />
       <module fileurl="file://$PROJECT_DIR$/tds.iml" filepath="$PROJECT_DIR$/tds.iml" />
       <module fileurl="file://$PROJECT_DIR$/ui.iml" filepath="$PROJECT_DIR$/ui.iml" />
     </modules>
@@ -558,6 +556,170 @@
         <entry key="$PROJECT_DIR$">
           <value>
             <SvnBranchConfiguration>
+              <option name="branchUrls">
+                <list>
+                  <option value="svn://zero/thredds/branch" />
+                  <option value="svn://zero/thredds/tag" />
+                </list>
+              </option>
+              <option name="trunkUrl" value="svn://zero/thredds/trunk" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../../ldm">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="svn://zero/thredds/branch">
+                    <value>
+                      <list>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1262732866400" />
+                          <option name="revision" value="10765" />
+                          <option name="url" value="svn://zero/thredds/branch/TRY-aggRefactor4.2" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1255880238580" />
+                          <option name="revision" value="9771" />
+                          <option name="url" value="svn://zero/thredds/branch/RB-TDS-4.0" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1241540068883" />
+                          <option name="revision" value="8029" />
+                          <option name="url" value="svn://zero/thredds/branch/RB-TDS-3.16-NJ22-2.2.22" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1181595820728" />
+                          <option name="revision" value="1125" />
+                          <option name="url" value="svn://zero/thredds/branch/RB-NJ22-2.2.20" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1177539312150" />
+                          <option name="revision" value="898" />
+                          <option name="url" value="svn://zero/thredds/branch/RB-TDS-3.14-NJ22-2.2.18" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1162933696121" />
+                          <option name="revision" value="379" />
+                          <option name="url" value="svn://zero/thredds/branch/RB-TDS-3.12" />
+                        </SvnBranchItem>
+                      </list>
+                    </value>
+                  </entry>
+                  <entry key="svn://zero/thredds/tag">
+                    <value>
+                      <list>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1261439813960" />
+                          <option name="revision" value="10649" />
+                          <option name="url" value="svn://zero/thredds/tag/REL-TDS-4.1.a17" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1244695884539" />
+                          <option name="revision" value="8528" />
+                          <option name="url" value="svn://zero/thredds/tag/REL-TDS-4.0.17" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1234307095165" />
+                          <option name="revision" value="6860" />
+                          <option name="url" value="svn://zero/thredds/tag/REL-TDS-3.17.02" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1232139604664" />
+                          <option name="revision" value="6627" />
+                          <option name="url" value="svn://zero/thredds/tag/REL-TDS-3.17.01" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1229382874697" />
+                          <option name="revision" value="6333" />
+                          <option name="url" value="svn://zero/thredds/tag/REL-TDS-3.16.47.2" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1221173906930" />
+                          <option name="revision" value="4898" />
+                          <option name="url" value="svn://zero/thredds/tag/REL-TDS-3.16.43.0" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1203462400184" />
+                          <option name="revision" value="3188" />
+                          <option name="url" value="svn://zero/thredds/tag/REL-TDS-3.16.33" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1193267066114" />
+                          <option name="revision" value="2076" />
+                          <option name="url" value="svn://zero/thredds/tag/REL-TDS-3.16.22" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1191954500544" />
+                          <option name="revision" value="1926" />
+                          <option name="url" value="svn://zero/thredds/tag/REL-TDS-3.16.19" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1189451953852" />
+                          <option name="revision" value="1632" />
+                          <option name="url" value="svn://zero/thredds/tag/REL-TDS-3.16.13" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1174073166291" />
+                          <option name="revision" value="741" />
+                          <option name="url" value="svn://zero/thredds/tag/REL-TDS-3.14.04" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1173737453388" />
+                          <option name="revision" value="731" />
+                          <option name="url" value="svn://zero/thredds/tag/REL-TDS-3.14.02" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1166566981187" />
+                          <option name="revision" value="530" />
+                          <option name="url" value="svn://zero/thredds/tag/REL-TDS-3.14-NJ22-2.2.18" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1162933841470" />
+                          <option name="revision" value="381" />
+                          <option name="url" value="svn://zero/thredds/tag/REL-TDS-3.12.07" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1158970224899" />
+                          <option name="revision" value="260" />
+                          <option name="url" value="svn://zero/thredds/tag/REL-TDS-3.13.14" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1158967750437" />
+                          <option name="revision" value="258" />
+                          <option name="url" value="svn://zero/thredds/tag/REL-TDS-3.13.13" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1155597153545" />
+                          <option name="revision" value="176" />
+                          <option name="url" value="svn://zero/thredds/tag/REL-TDS-3.12.04" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1155312753860" />
+                          <option name="revision" value="160" />
+                          <option name="url" value="svn://zero/thredds/tag/REL-TDS-3.12.03" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1154552990807" />
+                          <option name="revision" value="144" />
+                          <option name="url" value="svn://zero/thredds/tag/REL-TDS-3.12.01" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1154123629901" />
+                          <option name="revision" value="132" />
+                          <option name="url" value="svn://zero/thredds/tag/REL-TDS-3.12.00" />
+                        </SvnBranchItem>
+                        <SvnBranchItem>
+                          <option name="creationDateMillis" value="1154118989038" />
+                          <option name="revision" value="124" />
+                          <option name="url" value="svn://zero/thredds/tag/REL-3.11.01" />
+                        </SvnBranchItem>
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
               <option name="branchUrls">
                 <list>
                   <option value="svn://zero/thredds/branch" />

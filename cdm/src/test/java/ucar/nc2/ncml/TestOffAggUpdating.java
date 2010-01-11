@@ -66,7 +66,9 @@ public class TestOffAggUpdating extends TestCase {
     // make sure that the extra file is not in the agg
     for (File f : dirFile.listFiles()) {
       if (f.getName().equals("extra.nc")) {
-        f.renameTo( new File(dirFile, "extra.wait"));
+        if (!f.renameTo( new File(dirFile, "extra.wait"))) {
+          System.out.printf("Rename fails on %s.extra.nc %n", dirFile);
+        }
         break;
       }
     }

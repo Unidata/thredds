@@ -38,14 +38,6 @@
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/classes" />
           </containerElement>
-          <containerElement type="module" name="grib">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-          </containerElement>
-          <containerElement type="module" name="opendap">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-          </containerElement>
           <containerElement type="module" name="tds">
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/classes" />
@@ -350,14 +342,6 @@
             <attribute name="URI" value="/WEB-INF/classes" />
           </containerElement>
           <containerElement type="module" name="common">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-          </containerElement>
-          <containerElement type="module" name="grib">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-          </containerElement>
-          <containerElement type="module" name="opendap">
             <attribute name="method" value="0" />
             <attribute name="URI" value="/WEB-INF/classes" />
           </containerElement>
@@ -729,14 +713,6 @@
             <attribute name="method" value="0" />
             <attribute name="URI" value="/WEB-INF/classes" />
           </containerElement>
-          <containerElement type="module" name="grib">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-          </containerElement>
-          <containerElement type="module" name="opendap">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-          </containerElement>
           <containerElement type="module" name="tds">
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/classes" />
@@ -1099,14 +1075,6 @@
             <attribute name="URI" value="/WEB-INF/classes" />
           </containerElement>
           <containerElement type="module" name="common">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-          </containerElement>
-          <containerElement type="module" name="grib">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-          </containerElement>
-          <containerElement type="module" name="opendap">
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/classes" />
           </containerElement>
