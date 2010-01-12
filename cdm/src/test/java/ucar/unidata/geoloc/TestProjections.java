@@ -70,34 +70,40 @@ public class TestProjections extends TestCase {
     java.util.Random r = new java.util.Random((long) this.hashCode());
     LatLonPointImpl startL = new LatLonPointImpl();
 
+    int countT1 = 0;
     for (int i = 0; i < NTRIALS; i++) {
       startL.setLatitude(180.0 * (r.nextDouble() - .5)); // random latlon point
       startL.setLongitude(360.0 * (r.nextDouble() - .5));
 
       ProjectionPoint p = proj.latLonToProj(startL);
-      if (Double.isNaN(p.getX())) continue;
+      if (Double.isNaN(p.getX()) || Double.isNaN(p.getY())) continue;
       LatLonPoint endL = proj.projToLatLon(p);
+      if (Double.isNaN(endL.getLatitude()) || Double.isNaN(endL.getLongitude())) continue;
 
       assert (TestAll.closeEnough(startL.getLatitude(), endL.getLatitude(), 1.0e-3)) :
           proj.getClass().getName() + " failedddddd start= " + startL + " end = " + endL + " diff = "+ TestAll.howClose(startL.getLatitude(), endL.getLatitude());
       assert (TestAll.closeEnough(startL.getLongitude(), endL.getLongitude(), 1.0e-3)) :
           proj.getClass().getName() + " failedddddd start= " + startL + " end = " + endL + " diff = "+ TestAll.howClose(startL.getLongitude(), endL.getLongitude());
+      countT1++;
     }
 
+    int countT2 = 0;
     ProjectionPointImpl startP = new ProjectionPointImpl();
     for (int i = 0; i < NTRIALS; i++) {
       startP.setLocation(10000.0 * (r.nextDouble() - .5),  // random proj point
           10000.0 * (r.nextDouble() - .5));
 
       LatLonPoint ll = proj.projToLatLon(startP);
-      if (Double.isNaN(ll.getLatitude())) continue;
+      if (Double.isNaN(ll.getLatitude()) || Double.isNaN(ll.getLongitude())) continue;
       ProjectionPoint endP = proj.latLonToProj(ll);
+      if (Double.isNaN(endP.getX()) || Double.isNaN(endP.getY())) continue;
 
       assert (TestAll.closeEnough(startP.getX(), endP.getX()));
       assert (TestAll.closeEnough(startP.getY(), endP.getY()));
+      countT2++;
     }
 
-    System.out.println("Tested " + NTRIALS + " pts for projection " + proj.getClassName());
+    System.out.printf("Tested %d, %d pts for projection %s %n", countT1, countT2, proj.getClassName());
   }
 
   // must have lon within +/- lonMax, lat within +/- latMax
