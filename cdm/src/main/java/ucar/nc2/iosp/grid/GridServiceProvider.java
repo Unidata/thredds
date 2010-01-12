@@ -417,7 +417,6 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
    * @throws InvalidRangeException invalid range
    */
   public boolean isMissingXY(Variable v2, int timeIdx, int ensIdx, int levIdx)
-  //public boolean isMissingXY(Variable v2, int timeIdx, int levIdx)
           throws InvalidRangeException {
     GridVariable pv = (GridVariable) v2.getSPobject();
     if (null == pv) System.out.println("HEY");
@@ -434,14 +433,24 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
   }
 
   /**
-   * Ensemble information  ensembles, pdn, ensTypes[]
+   * Ensemble information for this Variable:
+   *  ensembles - number of ensembles
+   *  pdn - productType of Ensemble
+   *  ensTypes[] - type of Ensemble
+   *
+   *  Both pdn and ensTypes are needed for ensemble type that is either
+   *  perturbed or derived :
+   *  Grib2Tables.getEnsembleType( int productType, int type)
+   *
+   *
    *
    * @param v2      Variable
-   * @return ens[] int[]
+   * @return ensInfo int[]
    */
   public int[] ensembleInfo(Variable v2 ) {
     GridVariable pv = (GridVariable) v2.getSPobject();
     int ensembles = pv.getNEnsembles();
+    // pack ensembles, pdn, ensTypes into int array ensInfo
     int[] ensInfo = new int[ ensembles + 2];
     ensInfo[ 0 ] = ensembles;
     ensInfo[ 1 ] = pv.getPDN();
