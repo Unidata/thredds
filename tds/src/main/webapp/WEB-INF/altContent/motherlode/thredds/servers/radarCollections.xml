@@ -130,6 +130,24 @@
         <variable name="DHR/Digital Hybrid Scan Reflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; " units="dbZ" />
         <variable name="DSP/Storm Total Precipitation" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; " units="in" />
         <variable name="NMD/Mesocyclone" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; " units="" />
+
+        <variable name="N0Q/Base Reflectivity DR Tilt 1" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+        <variable name="NAQ/Base Reflectivity DR Tilt 2" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+        <variable name="N1Q/Base Reflectivity DR Tilt 3" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+        <variable name="NBQ/Base Reflectivity DR Tilt 4" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+        <variable name="N2Q/Base Reflectivity DR Tilt 5" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+        <variable name="N3Q/Base Reflectivity DR Tilt 6" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+
+        <variable name="N0U/Radial Velocity DV Tilt 1" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
+        <variable name="NAU/Radial Velocity DV Tilt 2" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
+        <variable name="N1U/Radial Velocity DV Tilt 3" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
+        <variable name="NBU/Radial Velocity DV Tilt 4" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
+        <variable name="N2U/Radial Velocity DV Tilt 5" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
+        <variable name="N3U/Radial Velocity DV Tilt 6" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
+
+        <variable name="DVL/Digital Vertical Integ Liquid" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Liquid Water Equivalent" units="kg/m2" />
+        <variable name="EET/Enchanced Echo Tops" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Clouds &gt; Cloud Optical Depth/Thickness" units="1000 feet" />
+
       </variables>
       </metadata>
     </datasetScan>
