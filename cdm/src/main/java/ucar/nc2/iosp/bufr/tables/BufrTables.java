@@ -221,6 +221,8 @@ public class BufrTables {
       if ((this.cat >= 0) && (cat >= 0) && (cat != this.cat)) return false;
       return true;
     }
+
+    public String toString() { return tableBname; }
   }
 
   private static TableConfig matchTableConfig(int center, int subcenter, int master, int local, int cat) {

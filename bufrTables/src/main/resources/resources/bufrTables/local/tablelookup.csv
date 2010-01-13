@@ -30,7 +30,7 @@
 # Brasil
 # B table from http://downloads.cptec.inpe.br/publicacoes/distribuicao.jsp (MBUFRTOOLS), diffed
 46,    -1,     13,    -1,   -1, resource:/resources/bufrTables/local/brasil.B46.13.diff.csv, csv, , , localWmo
-#255,    -1,     13,    -1,   -1, C:/dev/tds/thredds/bufrTables/src/main/sources/brazil/B0000431200.txt, ecmwf, C:/dev/tds/thredds/bufrTables/src/main/sources/brazil/D0000431200.txt, ecmwf, localWmo
+#255,   -1,    -1,    -1,   -1, C:/dev/tds4.1/thredds/bufrTables/src/main/sources/brazil/B0000461300.txt, ecmwf, C:/dev/tds4.1/thredds/bufrTables/src/main/sources/brazil/D0000461300.txt, ecmwf, localWmo
 #
 # FNMOC trasnmitted from Roy.Mendelssohn@noaa.gov group
 58,  -1,    -1,    0,   -1, resource:/resources/bufrTables/local/fnmoc.B2L-058-000-B.txt, mel-tabs, , , localWmo

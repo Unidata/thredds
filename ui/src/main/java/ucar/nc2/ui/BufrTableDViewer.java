@@ -111,6 +111,20 @@ public class BufrTableDViewer extends JPanel {
       }
     });
 
+    varPopup = new thredds.ui.PopupMenu(variantTable.getJTable(), "Options");
+    varPopup.addAction("Show", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Formatter out = new Formatter();
+        DdsBean ddsBean = (DdsBean) variantTable.getSelectedBean();
+        if (ddsBean != null) {
+          ddsBean.dds.show(out, false);
+        }
+        compareTA.setText(out.toString());
+        compareTA.gotoTop();
+        infoWindow.setVisible(true);
+      }
+    });
+
     AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to standard table", false);
     compareButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -297,10 +311,10 @@ public class BufrTableDViewer extends JPanel {
     allVariants = new HashMap<Short, List<DdsBean>>();
     try {
       loadVariant("wmo-v14", BufrTables.getWmoTableD(null));
-      loadVariant("ours-v13", BufrTables.readTableD("C:/dev/tds/thredds/bufrTables/src/main/sources/archive/B4M-000-013-D", "mel-bufr", false));
-      loadVariant("ncep-v13", BufrTables.readTableD("C:/dev/tds/thredds/bufrTables/src/main/sources/ncep/bufrtab.TableD_STD_0_13", "ncep", false));
-      loadVariant("ncep-v14", BufrTables.readTableD("C:/dev/tds/thredds/bufrTables/src/main/sources/ncep/bufrtab.TableD_STD_0_14", "ncep", false));
-      loadVariant("ecmwf-v13", BufrTables.readTableD("C:/dev/tds/thredds/bufrTables/src/main/sources/ecmwf/D0000000000098013001.TXT", "ecmwf", false));
+      loadVariant("ours-v13", BufrTables.readTableD("C:/dev/tds4.1/thredds/bufrTables/src/main/sources/archive/B4M-000-013-D", "mel-bufr", false));
+      loadVariant("ncep-v13", BufrTables.readTableD("C:/dev/tds4.1/thredds/bufrTables/src/main/sources/ncep/bufrtab.TableD_STD_0_13", "ncep", false));
+      loadVariant("ncep-v14", BufrTables.readTableD("C:/dev/tds4.1/thredds/bufrTables/src/main/sources/ncep/bufrtab.TableD_STD_0_14", "ncep", false));
+      loadVariant("ecmwf-v13", BufrTables.readTableD("C:/dev/tds4.1/thredds/bufrTables/src/main/sources/ecmwf/D0000000000098013001.TXT", "ecmwf", false));
       /* loadVariant("bmet-v13", BufrTables.readTableD("C:/dev/tds/thredds/bufrTables/src/main/sources/bmet/BUFR_B_080731.xml", "bmet")); // */
     } catch (IOException e) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

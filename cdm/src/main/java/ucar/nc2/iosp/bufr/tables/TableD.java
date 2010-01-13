@@ -82,7 +82,7 @@ public class TableD {
     out.format("Table D %s %n",name);
     for (Short key : sortKeys) {
       Descriptor dd = map.get(key);
-      dd.show(out);
+      dd.show(out, true);
     }
   }
 
@@ -131,11 +131,16 @@ public class TableD {
 
     public String toString() { return getFxy()+" "+getName(); }
     
-    void show(Formatter out) {
+    public void show(Formatter out, boolean oneline) {
       out.format(" %8s: name=(%s) seq=", getFxy(), name);
-      for (short s : seq)
-        out.format(" %s,", ucar.nc2.iosp.bufr.Descriptor.makeString(s));
-      out.format("%n");
+      if (oneline) {
+        for (short s : seq)
+          out.format(" %s,", ucar.nc2.iosp.bufr.Descriptor.makeString(s));
+        out.format("%n");
+      } else {
+        for (short s : seq)
+          out.format("    %s%n", ucar.nc2.iosp.bufr.Descriptor.makeString(s));
+      }
     }
 
         @Override

@@ -97,7 +97,7 @@ public class CoordinateSystem {
   protected List<CoordinateTransform> coordTrans = new ArrayList<CoordinateTransform>();
   protected List<Dimension> domain = new ArrayList<Dimension>(); // set of dimension
   protected String name;
-  protected CoordinateAxis xAxis, yAxis, zAxis, tAxis, latAxis, lonAxis, hAxis, pAxis;
+  protected CoordinateAxis xAxis, yAxis, zAxis, tAxis, latAxis, lonAxis, hAxis, pAxis, ensAxis;
   protected CoordinateAxis aziAxis, elevAxis, radialAxis;
   protected boolean isImplicit;
   protected String dataType; // Grid, Station, etc
@@ -131,6 +131,7 @@ public class CoordinateSystem {
         if (axisType == AxisType.Lon) lonAxis = lesserRank(lonAxis, axis);
         if (axisType == AxisType.Height) hAxis = lesserRank(hAxis, axis);
         if (axisType == AxisType.Pressure) pAxis = lesserRank(pAxis, axis);
+        if (axisType == AxisType.Ensemble) ensAxis = lesserRank(ensAxis, axis);
 
         if (axisType == AxisType.RadialAzimuth) aziAxis = lesserRank(aziAxis, axis);
         if (axisType == AxisType.RadialDistance) radialAxis = lesserRank(radialAxis, axis);
@@ -280,6 +281,13 @@ public class CoordinateSystem {
    *  @return axis of type AxisType.Pressure, or null if none
    */
   public CoordinateAxis getPressureAxis() { return pAxis; }
+
+
+  /** get the CoordinateAxis with AxisType.Ensemble, or null if none.
+   *  if more than one, choose one with smallest rank.
+   *  @return axis of type AxisType.Ensemble, or null if none
+   */
+  public CoordinateAxis getEnsembleAxis() { return ensAxis; }
 
   /** get the CoordinateAxis with AxisType.RadialAzimuth, or null if none.
    *  if more than one, choose one with smallest rank

@@ -212,6 +212,9 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     if (t != null)
       testAxis.add(t);
 
+    CoordinateAxis ens = cs.getEnsembleAxis();
+    if (ens != null)
+      testAxis.add(ens);
 
     if (v != null) { // test to see that v doesnt have extra dimensions. LOOK RELAX THIS
       List<Dimension> testDomain = new ArrayList<Dimension>();
