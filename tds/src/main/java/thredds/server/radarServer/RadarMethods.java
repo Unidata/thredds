@@ -115,6 +115,20 @@ public class RadarMethods {
        nexradVars.add( "NTP");
        nexradVars.add( "NVL");
        nexradVars.add( "NVW");
+       nexradVars.add( "N0Q"); // new vars starting on Feb 8, 2010
+       nexradVars.add( "NAQ");
+       nexradVars.add( "N1Q");
+       nexradVars.add( "NBQ");
+       nexradVars.add( "N2Q");
+       nexradVars.add( "N3Q");
+       nexradVars.add( "N0U");
+       nexradVars.add( "NAU");
+       nexradVars.add( "N1U");
+       nexradVars.add( "NBU");
+       nexradVars.add( "N2U");
+       nexradVars.add( "N3U");
+       nexradVars.add( "DVL");
+       nexradVars.add( "EET");
        nexradVars.add( "BREF1");// old vars naming conventions
        nexradVars.add( "BREF2");
        nexradVars.add( "BREF248");
