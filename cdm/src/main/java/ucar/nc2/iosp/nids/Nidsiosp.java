@@ -577,7 +577,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
     return pdata;
 
   }
-
+  
   /**
    * Read one scan radar data
    *
@@ -591,12 +591,13 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
     int npixel = vinfo.yt * vinfo.xt;
     byte[] odata = new byte[vinfo.xt];
     byte[] pdata = new byte[npixel];
-
+    // byte[] b2 = new byte[2];
     bos.position(0);
     for (int radial = 0; radial < vinfo.yt; radial++) {
       //bos.get(b2, 0, 2);
       //int test = getInt(b2, 0, 2);
-      int runLen = bos.getShort();   //   getInt(vdata, doff, 2 );
+      int runLen = bos.getShort();   // getInt(vdata, doff, 2 );
+      // int runLen = getInt(b2, 0, 2);
       doff += 2;
       if (vinfo.isRadial) {
         int radialAngle = bos.getShort();
@@ -606,7 +607,6 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
       }
       byte[] rdata = null;
       byte[] bdata = null;
-
 
       if (vinfo.xt != runLen) {
         rdata = new byte[runLen * 2];
@@ -619,7 +619,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
         bos.get(rdata, 0, runLen);
         doff += runLen;
         // sdata = readOneBeamShortData(rdata, runLen, vinfo.xt, vinfo.level);
-        bdata = rdata;
+        bdata = rdata.clone();
       }
 
       if (vinfo.x0 > 0) {
@@ -637,7 +637,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
     int offset = 0;
     if (vName.endsWith("_RAW")) {
       return pdata;
-    } else if (vName.startsWith("BaseReflectivity")) {
+    } else if (vName.startsWith("BaseReflectivity") || vName.startsWith("BaseVelocity")) {
       int[] levels = vinfo.len;
       int iscale = vinfo.code;
       float[] fdata = new float[npixel];
@@ -708,6 +708,40 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
           fdata[i] = Float.NaN; //100 * ival;
       }
       return fdata;
+    }  else if (vName.startsWith("EnhancedEchoTop")) {
+      int[] levels = vinfo.len;
+      int iscale = vinfo.code;
+      float[] fdata = new float[npixel];
+      for (int i = 0; i < npixel; i++) {
+        int ival = unsignedByteToInt(pdata[i]);
+        if (ival == 0 && ival == 1)
+          fdata[i] = Float.NaN;
+        else
+          fdata[i] = (float)( ival & levels[0])/ (float) levels[1] + (float) levels[2];
+      }
+      return fdata;
+
+    } else if (vName.startsWith("DigitalIntegLiquid")) {
+      int[] levels = vinfo.len;
+      int iscale = vinfo.code;
+      float[] fdata = new float[npixel];
+      float a = getHexDecodeValue((short)levels[0]);
+      float b = getHexDecodeValue((short)levels[1]);
+      float c = getHexDecodeValue((short)levels[3]);
+      float d = getHexDecodeValue((short)levels[4]);
+      for (int i = 0; i < npixel; i++) {
+        int ival = unsignedByteToInt(pdata[i]);
+        if(ival == 0 || ival ==1)
+          fdata[i] = Float.NaN;
+        else if (ival < 20)
+          fdata[i] = (float)(ival - b)/a;
+        else {
+          float t =  (float)(ival - d)/c;
+          fdata[i] = (float) Math.exp(t);
+        }
+      }
+      return fdata;
+
     }
 
     /*else if(vName.endsWith( "_Brightness" )){
@@ -736,6 +770,21 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
     return null;
   }
 
+  public float getHexDecodeValue(short val) {
+      float deco;
+
+      int s = (val >> 15) & 1;
+      int e = (val >> 10) & (31);
+      int f = (val) & (1023);
+
+      if( e== 0) {
+           deco =(float) Math.pow(-1, s) * 2 * (0.f +(float) (f/1024.f)) ;
+      } else {
+           deco = (float) (Math.pow(-1, s) *Math.pow(2, e-16)*(1 + (f/1024.f)));
+      }
+
+      return deco;
+  }
   /**
    * read one radial beam data
    *

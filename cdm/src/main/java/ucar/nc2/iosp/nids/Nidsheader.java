@@ -94,6 +94,10 @@ class Nidsheader{
     final static int   Reflect1 = 18;
     final static int   Velocity1 = 19;
     final static int   SPECTRUM1 = 20;
+    final static int   BaseReflectivityDR = 21;
+    final static int   BaseVelocityDV = 22;
+    final static int   EnhancedEcho_Tops = 23;
+    final static int   DigitalVert_Liquid = 24;
     // message header block
     short mcode = 0;
     short mdate = 0;
@@ -1527,13 +1531,17 @@ class Nidsheader{
         bos.get(b2, 0, 2);
         short first_bin = (short)getInt(b2, 2);
         bos.get(b2, 0, 2);
-        short num_bin = (short)getInt(b2, 2);
+        short num_bin = (short)(getUInt(b2, 2));
+        if(this.pcode == 94 || this.pcode == 99)
+            num_bin = addBinSize(num_bin);
         bos.get(b2, 0, 2);
         short radp_i = (short)getInt(b2, 2);
         bos.get(b2, 0, 2);
         short radp_j = (short)getInt(b2, 2);
         bos.get(b2, 0, 2);
         short radp_scale = (short)getInt(b2, 2);
+        if(this.pcode == 134 || this.pcode == 135)
+             radp_scale = (short)(radp_scale * 1000);
         bos.get(b2, 0, 2);
         short num_radials = (short)getInt(b2, 2);
         soff = 12;
@@ -1621,26 +1629,29 @@ class Nidsheader{
         addParameter(vName, lName, ncfile, dims1, att, DataType.DOUBLE, "milliseconds since 1970-01-01 00:00 UTC"
                     ,hoff, hedsiz, isZ, 0);
         //add RAW, BRIT variables for all radial variable
-        if(pcode == 182) {
+        if(pcode == 182 || pcode == 99 ) {
             levels = getTDWRLevels(nlevel, threshold);
             iscale = 10;
-        } else if (pcode == 186) {
+        } else if (pcode == 186 || pcode == 94) {
             threshold[0] = -320;
             threshold[1] = 5;
             threshold[2] = 254;
             levels = getTDWRLevels(nlevel, threshold);
             iscale = 10;
-        } else if (pcode == 32 ) {
+        } else if (pcode == 32  ) {
             levels = getTDWRLevels1(nlevel, threshold);
             iscale = 10;
         } else if (pcode == 138) {
             levels = getTDWRLevels1(nlevel, threshold);
             iscale = 100;
-        }   else {
+        } else if (pcode == 134 ||  pcode == 135) {
+            levels = getTDWRLevels2(nlevel, threshold);
+            iscale = 1;
+        }  else {
             levels = getLevels(nlevel, threshold);
         }
 
-        
+
 
         Variable v = new Variable(ncfile, null, null, cname + "_RAW");
         v.setDataType(DataType.BYTE);
@@ -1649,7 +1660,7 @@ class Nidsheader{
         v.addAttribute( new Attribute("units", cunit));
         String coordinates = "elevation azimuth gate rays_time latitude longitude altitude";
         v.addAttribute( new Attribute(_Coordinate.Axes, coordinates));
-        v.addAttribute( new Attribute("_Unsigned", "true"));
+        v.addAttribute( new Attribute("_unsigned", "true"));
         v.setSPobject( new Vinfo (numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, levels, 0, nlevel));
 
 
@@ -1665,12 +1676,14 @@ class Nidsheader{
           addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT,
                        cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
         }
-        else if (cname.startsWith("RadialVelocity") || cname.startsWith("StormMeanVelocity") ) {
+        else if (cname.startsWith("RadialVelocity") || cname.startsWith("StormMeanVelocity") ||
+                cname.startsWith("BaseVelocity")) {
 
           addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT,
                        cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
         }
-        else if (cname.startsWith("Precip") || cname.endsWith("Precip")) {
+        else if (cname.startsWith("Precip") || cname.endsWith("Precip") ||
+            cname.startsWith("EnhancedEchoTop") ||   cname.startsWith("DigitalIntegLiquid")){
 
            addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT,
                        cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
@@ -1680,6 +1693,18 @@ class Nidsheader{
         return soff;
     }
 
+    /**
+     * for level3 94 and 99 product
+     *
+     * @param num_bin
+     * @return  size
+     */
+    public short addBinSize(short num_bin){
+        if ((num_bin%2) == 0)
+            return num_bin;
+        else
+            return (short)(num_bin+1);
+    }
     /**
      *  get the table to calibrate data value
      *
@@ -1714,11 +1739,11 @@ class Nidsheader{
      * @return
      */
     public int[] getTDWRLevels(int nlevel, short[] th) {
-        int [] levels = new int[ th[2]+2 ];
+        int [] levels = new int[ nlevel]; //th[2]+2 ];
         int inc = th[1];
         levels[0] = -9866;
         levels[1] = -9866;
-        for ( int i = 2; i < nlevel+2; i++ ) {    /* calibrated data values        */
+        for ( int i = 2; i < nlevel; i++ ) {    /* calibrated data values        */
             levels[i] = th[0] + (i-2) * inc;
         }
 
@@ -1732,7 +1757,7 @@ class Nidsheader{
      * @return
      */
     public int[] getTDWRLevels1(int nlevel, short[] th) {
-        int [] levels = new int[ th[2] ];
+        int [] levels = new int[ nlevel]; //th[2] ];
         int inc = th[1];
         for ( int i = 0; i < nlevel; i++ ) {    /* calibrated data values        */
             levels[i] = th[0] + (i) * inc;
@@ -1741,6 +1766,22 @@ class Nidsheader{
         return levels;
     }
 
+    /**
+     * get the calibrate data values for TDWR data
+     * @param nlevel
+     * @param th
+     * @return
+     */
+    public int[] getTDWRLevels2(int nlevel, short[] th) {
+
+        int inc = th.length;
+        int [] levels = new int[ inc]; //th[2] ];
+        for ( int i = 0; i < inc; i++ ) {    /* calibrated data values        */
+            levels[i] = th[i];
+        }
+
+        return levels;
+    }
     /**
      * adding new variable to the netcdf file
      * @param pName                 variable name
@@ -1854,6 +1895,62 @@ class Nidsheader{
                 summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation/10 + 1) +  " and range 32 nm";
             }
         }
+        else if (prod_type == BaseReflectivityDR) {
+            radial               = 1;
+            prod_elevation  = pinfo.p3;
+            cmemo = "Base Reflectivity DR " + prod_elevation/10 + " DEG " + cmode[pinfo.opmode];
+
+            if(prod_elevation== 5)
+              ctilt = pname_lookup(94, 0);
+            else if(prod_elevation== 9)
+              ctilt = pname_lookup(94, 1);
+            else if(prod_elevation==13)
+              ctilt = pname_lookup(94, 2);
+            else if(prod_elevation==18)
+              ctilt = pname_lookup(94, 3);
+            else if(prod_elevation==24)
+              ctilt = pname_lookup(94, 4);
+            else if(prod_elevation==31)
+              ctilt = pname_lookup(94, 6);
+            ctitle = "HighResolution: Base Reflectivity";
+            cunit = "dBz";
+            cname = "BaseReflectivityDR";
+            summary = ctilt + " is a radial image of base reflectivity field and its range 248 nm";
+
+        }
+        else if (prod_type == BaseVelocityDV) {
+            radial               = 1;
+            prod_elevation  = pinfo.p3;
+            cmemo = "Base Velocity DR " + prod_elevation/10 + " DEG " + cmode[pinfo.opmode];
+            if(prod_elevation==5)
+              ctilt = pname_lookup(99, 0);
+            else if(prod_elevation==9)
+              ctilt = pname_lookup(99, 1);
+            else if(prod_elevation==13)
+              ctilt = pname_lookup(99, 2);
+            else if(prod_elevation==18)
+              ctilt = pname_lookup(99, 3);
+            else if(prod_elevation==24)
+              ctilt = pname_lookup(99, 4);
+            else if(prod_elevation==31)
+              ctilt = pname_lookup(99, 6);
+            ctitle = "HighResolution: Base Velocity";
+            cunit = "KT";
+            cname = "BaseVelocityDV";
+            summary = ctilt + " is a radial image of base velocity field and its range 124 nm";
+
+        } else if (prod_type == DigitalVert_Liquid) {
+            radial               = 1;
+            prod_elevation  = pinfo.p3;
+            cmemo = "Digital Hybrid Reflect " + prod_elevation/10 + " DEG " + cmode[pinfo.opmode];
+
+            ctilt = pname_lookup(134, prod_elevation/10);
+            ctitle = "Digital: Vertical Integ Liquid";
+            cunit = "kg/m^2";
+            cname = "DigitalIntegLiquid";
+            summary = ctilt + " is a radial image high resolution vertical integral liquid and range 248 nm";
+
+        }
         else if (prod_type == DigitalHybridReflect) {
             radial               = 1;
             prod_elevation  = pinfo.p3;
@@ -1932,6 +2029,21 @@ class Nidsheader{
             ctitle = "LREF: Layer Composite Reflectivity" ;
             cunit = "dBz" ;
             cname = "LayerCompReflect";
+        } else if (prod_type == EnhancedEcho_Tops) {
+            radial          = 1;
+            prod_elevation  = -1;
+            summary = "EET is a radial image of echo tops at range 186 nm";
+            cmemo = "Enhanced Echo Tops [K FT] " + cmode[pinfo.opmode];
+            ctilt = pname_lookup(135, elevationNumber);
+            ctitle = "TOPS: Enhanced Echo Tops";
+            cunit = "K FT" ;
+            cname = "EnhancedEchoTop";
+            t1 = t1 * 4;
+            t2 = t2 * 4;
+            lat_min = latitude -  t1;
+            lat_max = latitude + t1;
+            lon_min = longitude + t2;
+            lon_max = longitude - t2;
         } else if (prod_type == Echo_Tops) {
             radial          = 3;
             prod_elevation  = -1;
@@ -2554,7 +2666,8 @@ class Nidsheader{
         buf.get(b2, 0, 2);
         p3 = (short)getInt(b2, 2);
         off += 40;
-        if(pcode == 182 || pcode == 186 || pcode == 32) {
+        if(pcode == 182 || pcode == 186 || pcode == 32
+                || pcode == 94 || pcode == 99) {
           for(int i = 0; i< 16; i++) {
             buf.get(b2, 0, 2);
             threshold[i] = (short)bytesToInt(b2[0], b2[1], false);
@@ -2583,7 +2696,7 @@ class Nidsheader{
         buf.get(b2, 0, 2);
         p9 = (short)getInt(b2, 2);
         buf.get(b2, 0, 2);
-        p10 = (short)getInt(b2, 2); //bytesToInt(b2[0], b2[1], true); //
+        p10 = (short)getUInt(b2, 2) ; //bytesToInt(b2[0], b2[1], true); //       getInt(b2, 2); //
         off += 14;
 
         buf.get(b2, 0, 2);
@@ -2987,7 +3100,7 @@ class Nidsheader{
         Other, Base_Reflect, Base_Reflect, Base_Reflect, Base_Reflect,
         BaseReflect248, Base_Reflect, Velocity,                     /*  20- 29 */
         Velocity, Velocity, Velocity, Velocity, Velocity, SPECTRUM, SPECTRUM,
-        SPECTRUM, Other, DigitalHybridReflect, Other, Other,                          /*  30- 39 */
+        SPECTRUM, Other, DigitalHybridReflect, Other, Other,        /*  30- 39 */
         Comp_Reflect, Comp_Reflect, Comp_Reflect, Comp_Reflect, Other,
         Other, Echo_Tops, Other, Other, Other,                      /*  40- 49 */
         Other, Other, Other, VAD, Other,
@@ -3001,15 +3114,15 @@ class Nidsheader{
         Precip_Accum, Precip_Array, Other,                          /*  80- 89 */
         Other, Other, Other, Other, Other, Other, Layer_Reflect_Avg,
         Layer_Reflect_Max, Other, Other, Other,                     /*  90- 99 */
-        Other, Other, Other, Other, Other, Other,
+        BaseReflectivityDR, Other, Other, Other, Other, BaseVelocityDV,
         Other, Other, Other, Other, Other,                          /* 100-109 */
         Other, Other, Other, Other, Other,
         Other, Other, Other, Other, Other,                          /* 110-119 */
         Other, Other, Other, Other, Other,
         Other, Other, Other, Other, Other,                          /* 120-129 */
         Other, Other, Other, Other, Other,
-        Other, Other, Other, Other, Other,                          /* 130-139 */
-        Other, Other, Other, DigitalStormTotalPrecip, Other,
+        Other, Other, Other, Other, DigitalVert_Liquid,             /* 130-139 */
+        EnhancedEcho_Tops, Other, Other, DigitalStormTotalPrecip, Other,
         Other, Other, Other, Other, Other,                          /* 140-149 */
         Other, Other, Other, Other, Other,
         Other, Other, Other, Other, Other,                          /* 150-159 */
@@ -3104,6 +3217,28 @@ class Nidsheader{
           case 90:
             pname = "NHL";
             break;
+          case 94:
+            if(elevation == 1)
+                pname = "NAQ";
+            else if(elevation == 3)
+                pname = "NBQ";
+            else
+                pname = "N" + elevation/2 + "Q";
+            break;
+          case 99:
+            if(elevation == 1)
+                pname = "NAU";
+            else if(elevation == 3)
+                pname = "NBU";
+            else
+                pname = "N" + elevation/2 + "U";
+            break;
+          case 134:
+            pname = "DVL";
+            break;
+          case 135:
+            pname = "EET";
+            break;
           case 182:
             pname = "DV";
             break;
@@ -3151,11 +3286,11 @@ class Nidsheader{
         0,    0,    0,    4,    4,    4,    4,    0,    0,    0,    /*  60- 69 */
         0,    0,    0,    0,    0,    0,    0,    0,    1,    1,    /*  70- 79 */
         1,    0,    0,    0,    0,    0,    0,    0,    0,    4,    /*  80- 89 */
-        4,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /*  90- 99 */
+        4,    0,    0,    0,    1,    0,    0,    0,    0, 0.25,    /*  90- 99 */
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 100-109 */
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 110-119 */
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 120-129 */
-        0,    0,    0,    0,    0,    0,    0,    0,    1,    0,    /* 130-139 */
+        0,    0,    0,    0,    1,    1,    0,    0,    1,    0,    /* 130-139 */
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 140-149 */
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 150-159 */
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 160-169 */
@@ -3193,16 +3328,16 @@ class Nidsheader{
         0,    0,    0,    8,    8,    8,    8,    0,    0,    0,    /*  60- 69 */
         0,    0,    0,    0,    0,    0,    0,    0,   16,   16,    /*  70- 79 */
        16,    0,    0,    0,    0,    0,    0,    0,    0,    8,    /*  80- 89 */
-        8,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /*  90- 99 */
+        8,    0,    0,    0,  256,    0,    0,    0,    0,  256,    /*  90- 99 */
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 100-109 */
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 110-119 */
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 120-129 */
-        0,    0,    0,    0,    0,    0,    0,    0,  256,    0,    /* 130-139 */
+        0,    0,    0,    0,  256,  199,    0,    0,  256,    0,    /* 130-139 */
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 140-149 */
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 150-159 */
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 160-169 */
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 170-179 */
-        0,   16,  254,    0,    0,    0,  254,    0,    0,    0,    /* 180-189 */
+        0,   16,  256,    0,    0,    0,  256,    0,    0,    0,    /* 180-189 */
       };
 
 
