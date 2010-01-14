@@ -36,11 +36,12 @@ package thredds.server.radarServer;
 import java.io.*;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Collections;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 /**
- * Created by IntelliJ IDEA.
  * User: Robb
  * Date: Jan 9, 2010
  * Time: 12:08:55 PM
@@ -62,13 +63,15 @@ public class RadarDayCollection implements Serializable {
 
   /**
    * station/time type directory, typical level2 radar data
+   * or
+   * product/station/time
    */
   boolean stnTime = true;
 
   /**
-   * product/station/time type directory, typical level3 radar data
+   * station/product/time type directory, typical Gempak radar data
    */
-  boolean prodStnTime = false;
+  boolean stnProduct  = false;
 
   /**
    * String yyyymmdd
@@ -79,6 +82,11 @@ public class RadarDayCollection implements Serializable {
    * Radar product, for level II this is null
    */
   String product = null;
+
+  /**
+   * Standard Product Naming ie Level2_KRLX_20100112_1324.ar2v
+   */
+  boolean standardName = true;
 
   /**
    * Map of all the stations for this day, ArrayList of times
@@ -92,10 +100,25 @@ public class RadarDayCollection implements Serializable {
   }
 
   public RadarDayCollection(String dir, boolean type, String yyyymmdd, String product) {
-    this.dir = dir;
+
     this.stnTime = type;
     this.yyyymmdd = yyyymmdd;
     this.product = product;
+
+    if( stnTime ) {
+      if (product == null) {
+        this.dir = dir;
+      } else {
+        this.dir = dir + "/" + product;
+      }
+    } else { //
+      if (product == null) {
+        this.dir = dir;
+      } else {
+        this.dir = dir + "/"+ product +"/"; // product/station type directory
+      }
+    }  
+
   }
 
   /**
@@ -110,7 +133,11 @@ public class RadarDayCollection implements Serializable {
    */
   public boolean populate(String dir, boolean type, String yyyymmdd, String product)
       throws IOException {
-    this.dir = dir;
+    if (product == null) {
+      this.dir = dir;
+    } else {
+      this.dir = dir + "/" + product;
+    }
     this.stnTime = type;
     this.yyyymmdd = yyyymmdd;
     this.product = product;
@@ -130,26 +157,17 @@ public class RadarDayCollection implements Serializable {
   /*
   * returns and ArrayList of stations from a directory
   */
-  private ArrayList getStationsFromDir(String stnDir) throws IOException {
+  private ArrayList<String> getStationsFromDir(String stnDir) throws IOException {
 
     ArrayList<String> stations = new ArrayList<String>();
     File dir = new File(stnDir);
     if (dir.exists() && dir.isDirectory()) {
       System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
       String[] children = dir.list();
-      for (String aChildren : children) {
-        //System.out.println( "children i ="+ children[ i ]);
-        File child = new File(dir, aChildren);
-        //System.out.println( "child ="+ child.getName() );
+      for (String aChild : children) {
+        File child = new File(dir, aChild);
         if (child.isDirectory()) {
-          continue;
-//        } else if (aChildren.endsWith(GribIndexName.oldSuffix ) ||
-//            aChildren.endsWith(GribIndexName.currentSuffix) ||
-//            aChildren.endsWith("xml") ||
-//            aChildren.endsWith("tmp") || //index in creation process
-//            aChildren.length() == 0) { // zero length file, ugh...
-        } else {
-          stations.add(child.getPath());
+          stations.add(aChild);
         }
       }
     } else {
@@ -169,10 +187,12 @@ public class RadarDayCollection implements Serializable {
       System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
       ArrayList<String> hhmm = new ArrayList<String>();
       String[] children = dir.list();
+      if( children.length > 0 ) { // check for standard name
+        if( !children[ 0 ].startsWith( "Level"))
+           standardName = false;
+      }
       for (String aChildren : children) {
-        //System.out.println( "children i ="+ children[ i ]);
         File child = new File(dir, aChildren);
-        //System.out.println( "child ="+ child.getName() );
         if (child.isDirectory()) {
           continue;
         } else {
@@ -180,10 +200,14 @@ public class RadarDayCollection implements Serializable {
           Matcher m;
           m = p_yyyymmdd_hhmm.matcher(aChildren);
           if (m.find()) {
-            hhmm.add(m.group(1));
+            if (standardName )
+              hhmm.add(m.group(1));
+            else
+              hhmm.add(aChildren);
           }
         }
       }
+      Collections.sort(hhmm, new CompareKeyDescend());
       time.put(stn, hhmm);
     } else {
       return false;
@@ -196,7 +220,7 @@ public class RadarDayCollection implements Serializable {
    *
    * @return the set of stations
    */
-  public final java.util.Set<String> getKeys() {
+  public final java.util.Set<String> getStations() {
     return time.keySet();
   }
 
@@ -235,6 +259,7 @@ public class RadarDayCollection implements Serializable {
   /**
    * read / return object
    *
+   * @param sfile  Serialized file
    * @return RadarDayCollection object
    */
   public RadarDayCollection read(String sfile) {
@@ -257,32 +282,59 @@ public class RadarDayCollection implements Serializable {
 
   public static void main(String[] args) throws IOException {
 
+    String tdir = null;
+    boolean type = true;
+    String day = null;
+    String product = null;
+    if (args.length == 4) {
+      tdir = args[0];
+      type = (args[1].equals("true")) ? true : false;
+      day = args[2];
+      product = (args[3].equals("null")) ? null : args[3];
+    } else {
+      System.out.println("Not the correct parameters: tdir, structType, day, product");
+      return;
+    }
+    // create/populate/write
+    RadarDayCollection rdc = new RadarDayCollection();
+    rdc.populate(tdir, type, day, product);
+    String sfile = rdc.write();
+    if (sfile == null) {
+      System.out.println("RadarDayCollection write Unsuccessful");
+    } else {
+      System.out.println("RadarDayCollection write successful");
+    }
+  }
+
+  public static void mainFirst(String[] args) throws IOException {
+
     String tdir = "/data/ldm/pub/native/radar/level2/";
     if (args.length > 0) {
       tdir = args[0];
     }
     // create/populate/write
     RadarDayCollection rdc = new RadarDayCollection();
-    rdc.populate("/data/ldm/pub/native/radar/level2/", true, "20100110", null);
+    rdc.populate(tdir, true, "20100111", null);
     String sfile = rdc.write();
     if (sfile != null)
       System.out.println("Write successful");
 
     // read the RadarDayCollection
-    //RadarDayCollection rdc = null;
-    rdc = null;
-    FileInputStream fis = null;
-    ObjectInputStream in = null;
-    try {
-      fis = new FileInputStream(sfile);
-      in = new ObjectInputStream(fis);
-      rdc = (RadarDayCollection) in.readObject();
-      in.close();
-    } catch (IOException ex) {
-      ex.printStackTrace();
-    } catch (ClassNotFoundException ex) {
-      ex.printStackTrace();
-    }
+    RadarDayCollection rdcNew = rdc.read(sfile);
 
+  }
+
+  protected class CompareKeyDescend implements Comparator<String> {
+    /*
+    public int compare(Object o1, Object o2) {
+      String s1 = (String) o1;
+      String s2 = (String) o2;
+
+      return s2.compareTo(s1);
+    }
+    */
+    public int compare(String s1, String s2) {
+      return s2.compareTo(s1);
+    }
   }
 }
