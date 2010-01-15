@@ -96,7 +96,7 @@ public class TestBufrRead extends TestCase {
               totalObs += nobs;
               System.out.printf("%n");
             } else
-              System.out.printf(" BITS NOT OK%n");
+              System.out.printf(" BITS NOT OK%n");                                                           
           } else
             System.out.printf(" TABLES NOT COMPLETE%n");
 

@@ -1,3 +1,13 @@
+#
+# BUFR Table D
+# hand modified from B_TableD_LATEST.xls file from AShimazaki@wmo.int Dec 15, 2009
+# mods:
+# 1)
+# 1932,07,307091,(BUFR template for surface observations from one-hour period with national and WMO station identification),302175,"Intensity of precipitation, size of precipitation element",Operational
+# should be:
+# 1932,07,307091,(BUFR template for surface observations from one-hour period with national and WMO station identification),302075,"Intensity of precipitation, size of precipitation element",Operational
+# 
+#
 SNo,Category,FXY1,enElementName1,FXY2,enElementName2,Status
 1,00,300002,,000002,"Table A category, line 1",Operational
 2,00,300002,,000003,"Table A category, line 2",Operational
@@ -1930,7 +1940,7 @@ SNo,Category,FXY1,enElementName1,FXY2,enElementName2,Status
 1929,07,307091,(BUFR template for surface observations from one-hour period with national and WMO station identification),302074,Present and past weather,Operational
 1930,07,307091,(BUFR template for surface observations from one-hour period with national and WMO station identification),101000,Delayed replication of 1 descriptor,Operational
 1931,07,307091,(BUFR template for surface observations from one-hour period with national and WMO station identification),031000,Short delayed descriptor replication factor,Operational
-1932,07,307091,(BUFR template for surface observations from one-hour period with national and WMO station identification),302175,"Intensity of precipitation, size of precipitation element",Operational
+1932,07,307091,(BUFR template for surface observations from one-hour period with national and WMO station identification),302075,"Intensity of precipitation, size of precipitation element",Operational
 1933,07,307091,(BUFR template for surface observations from one-hour period with national and WMO station identification),102000,Delayed replication of 2 descriptors,Operational
 1934,07,307091,(BUFR template for surface observations from one-hour period with national and WMO station identification),031000,Short delayed descriptor replication factor,Operational
 1935,07,307091,(BUFR template for surface observations from one-hour period with national and WMO station identification),004025,Time period (=  - 10 minutes),Operational

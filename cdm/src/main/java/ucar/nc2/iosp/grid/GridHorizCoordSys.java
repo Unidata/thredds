@@ -315,13 +315,13 @@ public class GridHorizCoordSys {
               gds.getDouble(GridDefRecord.LO1), gds.getDouble(GridDefRecord.DX), "degrees",
               "x coordinate of projection", "projection_x_coordinate", AxisType.GeoX);
 
-        } else if (lookup.getProjectionType(gds) == GridTableLookup.Orthographic) {
+        /* } else if (lookup.getProjectionType(gds) == GridTableLookup.Orthographic) {
 
           yData = addCoordAxis(ncfile, "y", gds.getInt(GridDefRecord.NY), 1.0, 3.0, "km",  // fake km - really pixel
               "y coordinate of projection", "projection_y_coordinate", AxisType.GeoY);     // dunno what the 3 is
           xData = addCoordAxis(ncfile, "x", gds.getInt(GridDefRecord.NX), 1.0, 3.0, "km",
               "x coordinate of projection", "projection_x_coordinate", AxisType.GeoX);
-
+        */
         } else {
           yData = addCoordAxis(ncfile, "y", gds.getInt(GridDefRecord.NY),
               starty, getDyInKm(), "km", "y coordinate of projection",
@@ -543,7 +543,8 @@ public class GridHorizCoordSys {
         break;
 
       case GridTableLookup.Orthographic:
-        makeMSGgeostationary();
+        makeSpaceViewOrOthographic();
+        // makeMSGgeostationary();
         break;
 
       case GridTableLookup.Curvilinear:
@@ -844,6 +845,85 @@ public class GridHorizCoordSys {
     }
   }
 
+    /**
+   * Make a Space View Orthographic projection
+   */
+  private void makeSpaceViewOrOthographic() {
+    double Lat0 = gds.getDouble(GridDefRecord.LAP);  // sub-satellite point lat
+    double Lon0 = gds.getDouble(GridDefRecord.LOP);  // sub-satellite point lon
+
+    double xp = gds.getDouble(GridDefRecord.XP);  // sub-satellite point in grid lengths
+    double yp = gds.getDouble(GridDefRecord.YP);
+
+    double dx = gds.getDouble(GridDefRecord.DX);  // apparent diameter in units of grid lengths
+    double dy = gds.getDouble(GridDefRecord.DY);
+    // have to check both names because Grib1 and Grib2 used different names
+    double major_axis = gds.getDouble(GridDefRecord.MAJOR_AXIS_EARTH);  // km
+    if (Double.isNaN(major_axis) )
+       major_axis = gds.getDouble("major_axis_earth");
+
+    double minor_axis = gds.getDouble(GridDefRecord.MINOR_AXIS_EARTH);  // km
+    if (Double.isNaN(minor_axis) )
+       minor_axis = gds.getDouble("minor_axis_earth");
+    // Nr = altitude of camera from center, in units of radius
+    double nr = gds.getDouble(GridDefRecord.NR) * 1e-6;
+    double apparentDiameter = 2 * Math.sqrt((nr - 1) / (nr + 1));  // apparent diameter, units of radius (see Snyder p 173)
+
+    // app diameter kmeters / app diameter grid lengths = m per grid length
+    double gridLengthX = major_axis * apparentDiameter / dx;
+    double gridLengthY = minor_axis * apparentDiameter / dy;
+    // have to add to both for consistency
+    gds.addParam(GridDefRecord.DX, String.valueOf(1000 * gridLengthX));  // meters
+    gds.addParam(GridDefRecord.DX, new Double(1000 * gridLengthX));
+    gds.addParam(GridDefRecord.DY, String.valueOf(1000 * gridLengthY));  // meters
+    gds.addParam(GridDefRecord.DY, new Double(1000 * gridLengthY));
+    startx = -gridLengthX * xp;  // km
+    starty = -gridLengthY * yp;
+
+    double radius = Earth.getRadius() / 1000.0;  // km
+
+    if (nr == 1111111111.0) {  // LOOK: not sure how all ones will appear as a double, need example
+      proj = new Orthographic(Lat0, Lon0, radius);
+
+      attributes.add(new Attribute("grid_mapping_name", "orthographic"));
+      attributes.add(new Attribute("longitude_of_projection_origin",
+          new Double(Lon0)));
+      attributes.add(new Attribute("latitude_of_projection_origin",
+          new Double(Lat0)));
+
+    } else {  // "space view perspective"
+
+      double height = (nr - 1.0) * radius;  // height = the height of the observing camera in km
+      proj = new VerticalPerspectiveView(Lat0, Lon0, radius, height);
+
+      attributes.add(new Attribute("grid_mapping_name",
+          "vertical_perspective"));
+      attributes.add(new Attribute("longitude_of_projection_origin",
+          new Double(Lon0)));
+      attributes.add(new Attribute("latitude_of_projection_origin",
+          new Double(Lat0)));
+      attributes.add(new Attribute("height_above_earth",
+          new Double(height)));
+    }
+
+    if (GridServiceProvider.debugProj) {
+
+      double Lo2 = gds.getDouble(GridDefRecord.LO2) + 360.0;
+      double La2 = gds.getDouble(GridDefRecord.LA2);
+      LatLonPointImpl endLL = new LatLonPointImpl(La2, Lo2);
+      System.out.println(
+          "GridHorizCoordSys.makeOrthographic end at latlon "+ endLL);
+
+      ProjectionPointImpl endPP =
+          (ProjectionPointImpl) proj.latLonToProj(endLL);
+      System.out.println("   end at proj coord " + endPP);
+
+      double endx = startx + getNx() * getDxInKm();
+      double endy = starty + getNy() * getDyInKm();
+      System.out.println("   should be x=" + endx + " y=" + endy);
+    }
+  }
+
   /**
    * Make a Eumetsat MSG "Normalized Geostationary Projection" projection.
    * Fake coordinates for now, then see if this can be generalized.
@@ -942,86 +1022,7 @@ public class GridHorizCoordSys {
     }
   }
 
-  /**
-   * Make a Orthographic projection
-   */
-  private void makeOthographic() {
-    double Lat0 = gds.getDouble(GridDefRecord.LAP);  // sub-satellite point lat
-    double Lon0 = gds.getDouble(GridDefRecord.LOP);  // sub-satellite point lon
-
-    double xp = gds.getDouble(GridDefRecord.XP);  // sub-satellite point in grid lengths
-    double yp = gds.getDouble(GridDefRecord.YP);
-
-    double dx = gds.getDouble(GridDefRecord.DX);  // apparent diameter in units of grid lengths
-    double dy = gds.getDouble(GridDefRecord.DY);
-    // have to check both names because Grib1 and Grib2 used different names
-    double major_axis = gds.getDouble(GridDefRecord.MAJOR_AXIS_EARTH);  // km
-    if (Double.isNaN(major_axis))
-      major_axis = gds.getDouble("major_axis_earth");
-
-    double minor_axis = gds.getDouble(GridDefRecord.MINOR_AXIS_EARTH);  // km
-    if (Double.isNaN(minor_axis))
-      minor_axis = gds.getDouble("minor_axis_earth");
-    // Nr = altitude of camera from center, in units of radius
-    double nr = gds.getDouble(GridDefRecord.NR) * 1e-6;
-    double apparentDiameter = 2 * Math.sqrt((nr - 1) / (nr + 1));  // apparent diameter, units of radius (see Snyder p 173)
-
-    // app diameter kmeters / app diameter grid lengths = m per grid length
-    double gridLengthX = major_axis * apparentDiameter / dx;
-    double gridLengthY = minor_axis * apparentDiameter / dy;
-    // have to add to both for consistency
-    gds.addParam(GridDefRecord.DX, String.valueOf(1000 * gridLengthX));  // meters
-    gds.addParam(GridDefRecord.DX, new Double(1000 * gridLengthX));
-    gds.addParam(GridDefRecord.DY, String.valueOf(1000 * gridLengthY));  // meters
-    gds.addParam(GridDefRecord.DY, new Double(1000 * gridLengthY));
-    startx = -gridLengthX * xp;  // km
-    starty = -gridLengthY * yp;
-
-    double radius = Earth.getRadius() / 1000.0;  // km
-
-    if (nr == 1111111111.0) {  // LOOK: not sure how all ones will appear as a double, need example
-      proj = new Orthographic(Lat0, Lon0, radius);
-
-      attributes.add(new Attribute("grid_mapping_name", "orthographic"));
-      attributes.add(new Attribute("longitude_of_projection_origin",
-          new Double(Lon0)));
-      attributes.add(new Attribute("latitude_of_projection_origin",
-          new Double(Lat0)));
-
-    } else {  // "space view perspective"
-
-      double height = (nr - 1.0) * radius;  // height = the height of the observing camera in km
-      proj = new VerticalPerspectiveView(Lat0, Lon0, radius, height);
-
-      attributes.add(new Attribute("grid_mapping_name",
-          "vertical_perspective"));
-      attributes.add(new Attribute("longitude_of_projection_origin",
-          new Double(Lon0)));
-      attributes.add(new Attribute("latitude_of_projection_origin",
-          new Double(Lat0)));
-      attributes.add(new Attribute("height_above_earth",
-          new Double(height)));
-    }
-
-    if (GridServiceProvider.debugProj) {
-
-      double Lo2 = gds.getDouble(GridDefRecord.LO2) + 360.0;
-      double La2 = gds.getDouble(GridDefRecord.LA2);
-      LatLonPointImpl endLL = new LatLonPointImpl(La2, Lo2);
-      System.out.println(
-          "GridHorizCoordSys.makeOrthographic end at latlon " + endLL);
-
-      ProjectionPointImpl endPP =
-          (ProjectionPointImpl) proj.latLonToProj(endLL);
-      System.out.println("   end at proj coord " + endPP);
-
-      double endx = startx + getNx() * getDxInKm();
-      double endy = starty + getNy() * getDyInKm();
-      System.out.println("   should be x=" + endx + " y=" + endy);
-    }
-  }
-
-  /**
+   /**
    * Calculate the dx and dy from startx, starty and projection.
    *
    * @param startx starting x projection point
