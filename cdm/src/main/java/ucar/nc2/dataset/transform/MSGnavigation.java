@@ -36,6 +36,8 @@ import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.Variable;
+import ucar.nc2.Attribute;
+import ucar.unidata.geoloc.ProjectionImpl;
 
 /**
  * Class Description
@@ -56,10 +58,16 @@ public class MSGnavigation extends AbstractCoordTransBuilder {
     }
 
     public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
+
       double lon0 = readAttributeDouble( ctv, "longitude_of_projection_origin", Double.NaN);
       double lat0 = readAttributeDouble( ctv, "latitude_of_projection_origin", Double.NaN);
+      double minor_axis = readAttributeDouble( ctv, "semi_minor_axis", Double.NaN);
+      double major_axis = readAttributeDouble( ctv, "semi_major_axis", Double.NaN);
+      double height = readAttributeDouble( ctv, "height_from_earth_center_km", Double.NaN);
+      double scale_x = readAttributeDouble( ctv, "scale_x", Double.NaN);
+      double scale_y = readAttributeDouble( ctv, "scale_y", Double.NaN);
 
-      ucar.unidata.geoloc.ProjectionImpl proj = new ucar.unidata.geoloc.projection.sat.MSGnavigation();
+      ProjectionImpl proj = new ucar.unidata.geoloc.projection.sat.MSGnavigation(lat0, lon0, minor_axis, major_axis, height, scale_x, scale_y);
       return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
     }
 
