@@ -8,7 +8,7 @@
   <description>THREDDS Data Server</description>
 
   <!-- Provide the context path at init time (otherwise, not available till a request is made). -->
-  <!-- Servlet 2.5 spec provides ServletContext.getContextPath().-->
+  <!-- Servlet 2.5 spec provides ServletContext.getContextPath(). But we aren't requiring Servlet 2.5 yet. -->
   <context-param>
     <param-name>ContextPath</param-name>
     <param-value>thredds</param-value>
@@ -222,25 +222,46 @@
   </filter-mapping-->
 
   <!--
-     Location of the Log4J config file, for initialization.
-     Applied by Log4jConfigListener (currently our listener calls Log4jWebConfigurer.
+     Location of the Log4J config file (relative to the webapp root), for initialization.
    -->
   <context-param>
     <param-name>log4jConfigLocation</param-name>
     <param-value>/WEB-INF/log4j.xml</param-value>
   </context-param>
 
-  <!-- Spring Listener to setup Log4j configuration.
-       Should be listed before any Spring listeners.
-       NOTE: Can't do it here if logs are to go into content/thredds
-        (which isn't fully defined until some Spring config happens).
+  <!--
+     Don't expose the webapp root directory as the "webapp.root" system property.
+     Multiple TDS will clash over this unless we change the name of the system property by defining it with a context-param named "webAppRootKey".
+     It isn't needed because we determine the logging directory ourselves.
    -->
-  <!--listener>
-    <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
-  </listener-->
+  <context-param>
+    <param-name>log4jExposeWebAppRoot</param-name>
+    <param-value>false</param-value>
+  </context-param>
 
-  <!-- Spring listener to bootstrap Spring WebApplicationContext. Used to
-       handle Spring bean configuration outside of SpringMVC configuration.
+
+  <!--
+     Spring Listener to setup Log4j configuration. Should be listed before any other Spring listeners.
+
+     NOTE: We don't use the Log4jConfigListener. Instead, TdsConfigContextListener directly calls
+     Log4jWebConfigurer.initLogging(ServletContext) after determining the log directory and setting
+     the "tds.log.dir" Java system property. The "tds.log.dir" property is used for ${key} replacement
+     in our log4j config file (see "log4jConfigLocation" above). Information needed to determine the
+     log directory is made available once the Spring ContextLoaderListener is run. The Spring
+     ContextLoaderListener is run before logging is configured so we sometimes get error messages
+     that look like the following:
+
+         log4j:WARN No appenders could be found for logger (org.springframework.util.ClassUtils).
+         log4j:WARN Please initialize the log4j system properly.
+         
+  <listener>
+    <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+  </listener>
+   -->
+
+  <!--
+     Spring listener to bootstrap Spring WebApplicationContext. Used to
+     handle Spring bean configuration outside of SpringMVC configuration.
   -->
   <context-param>
     <param-name>contextConfigLocation</param-name>
@@ -250,7 +271,7 @@
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
 
-  <!-- TDS experimental listener. -->
+  <!-- TDS context configuration listener. -->
   <listener>
     <listener-class>thredds.server.config.TdsConfigContextListener</listener-class>
   </listener>
