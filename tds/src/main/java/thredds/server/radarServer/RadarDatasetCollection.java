@@ -39,17 +39,16 @@
 package thredds.server.radarServer;
 
 import java.util.regex.Pattern;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.io.IOException;
 import java.io.File;
 
 /**
  * Maintains the Radar collection of days for a Radar Dataset.  The purpose
- * this class is to consolidate RadarDayCollection classes.
+ * is to consolidate RadarDayCollection objects into one object.
  * 
  */
-public class RadarCollection {
+public class RadarDatasetCollection {
 
   public static final Pattern p_yyyymmdd_hhmm = Pattern.compile("\\d{8}_(\\d{4})");
 
@@ -93,10 +92,10 @@ public class RadarCollection {
   /**
    * constructors
    */
-  public RadarCollection() {
+  public RadarDatasetCollection() {
   }
 
-  public RadarCollection(String tdir,  String product) {
+  public RadarDatasetCollection(String tdir,  String product) {
 
     //this.stnTime = type;
     //this.yyyymmdd = yyyymmdd;
@@ -121,7 +120,7 @@ public class RadarCollection {
       System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
       String[] children = dir.list();
       for (String child : children) {
-        if ( ! child.startsWith( ".2"))
+        if ( ! child.startsWith( "2"))  //TODO: changge back to .2
           continue;
         child = tdir +"/"+ child;
         RadarDayCollection rdc = new RadarDayCollection().read( child );
@@ -137,9 +136,23 @@ public class RadarCollection {
         }
       }
     }
-
   }
 
+  /**
+   * returns the information including times for this station in a RadarStationCollection object
+   * @param station String
+   */
+  public boolean getStationTimes( String station ) {
+    ArrayList<String> dal = yyyymmdd.get( station );
+    Collections.sort(dal, new CompareKeyDescend());
+    for ( String day : dal ) {
+      ArrayList<String> tal = hhmm.get( station + day );
+      for ( String hm : tal ) {
+        System.out.println( day +"_"+ hm );
+      }
+    }
+    return true;
+  }
   
   public static void main(String[] args) throws IOException {
 
@@ -147,17 +160,19 @@ public class RadarCollection {
     boolean type = true;
     String day = null;
     String product = null;
-    if (args.length == 4) {
+    if ( true || args.length == 4) {
       tdir = args[0];
-      type = (args[1].equals("true")) ? true : false;
-      day = args[2];
-      product = (args[3].equals("null")) ? null : args[3];
+      //type = (args[1].equals("true")) ? true : false;
+      //day = args[2];
+      product = (args[1].equals("null")) ? null : args[1];
     } else {
       System.out.println("Not the correct parameters: tdir, structType, day, product");
       return;
     }
     // create/populate
-    RadarCollection rc = new RadarCollection( tdir, product );
+    RadarDatasetCollection rdc = new RadarDatasetCollection( tdir, product );
+    System.out.println( "Dates for station KAMX" );
+    rdc.getStationTimes( "KAMX");
     //rdc.populate(tdir, type, day, product);
     //String sfile = rdc.write();
     //if (sfile == null) {
@@ -165,5 +180,19 @@ public class RadarCollection {
     //} else {
     //  System.out.println("RadarDayCollection write successful");
     //}
+  }
+
+  protected class CompareKeyDescend implements Comparator<String> {
+    /*
+    public int compare(Object o1, Object o2) {
+      String s1 = (String) o1;
+      String s2 = (String) o2;
+
+      return s2.compareTo(s1);
+    }
+    */
+    public int compare(String s1, String s2) {
+      return s2.compareTo(s1);
+    }
   }
 }
