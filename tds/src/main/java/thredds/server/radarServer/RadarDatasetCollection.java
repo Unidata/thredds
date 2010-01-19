@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
 import java.util.*;
 import java.io.IOException;
 import java.io.File;
-
+import java.text.SimpleDateFormat;
 /**
  * Maintains the Radar collection of days for a Radar Dataset.  The purpose
  * is to consolidate RadarDayCollection objects into one object.
@@ -51,6 +51,13 @@ import java.io.File;
 public class RadarDatasetCollection {
 
   public static final Pattern p_yyyymmdd_hhmm = Pattern.compile("\\d{8}_(\\d{4})");
+  public static boolean debug = true;
+
+  /**
+   * date format "yyyy-MM-dd'T'HH:mm:ss'Z'".
+  */
+  //SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd HH'Z'", Locale.US );
+  //dateFormat.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
 
   /**
    * Top Directory of dataset
@@ -120,7 +127,7 @@ public class RadarDatasetCollection {
       System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
       String[] children = dir.list();
       for (String child : children) {
-        if ( ! child.startsWith( "2"))  //TODO: changge back to .2
+        if ( ! child.startsWith( ".2"))  //TODO: change back to .2
           continue;
         child = tdir +"/"+ child;
         RadarDayCollection rdc = new RadarDayCollection().read( child );
@@ -140,15 +147,26 @@ public class RadarDatasetCollection {
 
   /**
    * returns the information including times for this station in a RadarStationCollection object
-   * @param station String
+   * @param rsc RadarStationCollection
    */
-  public boolean getStationTimes( String station ) {
-    ArrayList<String> dal = yyyymmdd.get( station );
+  public boolean getStationTimes( RadarStationCollection rsc ) {
+
+    // get todays times for station
+    Calendar cal = Calendar.getInstance( java.util.TimeZone.getTimeZone("GMT"));
+    Date now =  cal.getTime();
+    SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyyMMdd", Locale.US );
+    dateFormat.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
+    String dir = tdir +"/"+ rsc.stnName +"/"+ dateFormat.format(now);
+
+    ArrayList<String> dal = yyyymmdd.get( rsc.stnName );
     Collections.sort(dal, new CompareKeyDescend());
     for ( String day : dal ) {
-      ArrayList<String> tal = hhmm.get( station + day );
-      for ( String hm : tal ) {
-        System.out.println( day +"_"+ hm );
+      ArrayList<String> tal = hhmm.get( rsc.stnName + day );
+      rsc.time.put( day, tal );
+      if ( debug ) {
+        for ( String hm : tal ) {
+          System.out.println( day +"_"+ hm );
+        }
       }
     }
     return true;
@@ -157,22 +175,20 @@ public class RadarDatasetCollection {
   public static void main(String[] args) throws IOException {
 
     String tdir = null;
-    boolean type = true;
-    String day = null;
     String product = null;
-    if ( true || args.length == 4) {
+    if (  args.length == 2) {
       tdir = args[0];
-      //type = (args[1].equals("true")) ? true : false;
-      //day = args[2];
       product = (args[1].equals("null")) ? null : args[1];
     } else {
-      System.out.println("Not the correct parameters: tdir, structType, day, product");
+      System.out.println("Not the correct parameters: tdir, product");
       return;
     }
-    // create/populate
+    // create/populate dataset
     RadarDatasetCollection rdc = new RadarDatasetCollection( tdir, product );
-    System.out.println( "Dates for station KAMX" );
-    rdc.getStationTimes( "KAMX");
+    System.out.println( "Dates for station KFTG" );
+    //RadarStationCollection rsc =  new RadarStationCollection( tdir,  "KFTG", stnTime,  product);
+    RadarStationCollection rsc =  new RadarStationCollection( tdir,  "KFTG", true,  product);
+    rdc.getStationTimes( rsc );
     //rdc.populate(tdir, type, day, product);
     //String sfile = rdc.write();
     //if (sfile == null) {

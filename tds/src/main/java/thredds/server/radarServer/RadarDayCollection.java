@@ -55,6 +55,7 @@ import java.util.regex.Matcher;
 public class RadarDayCollection implements Serializable {
 
   public static final Pattern p_yyyymmdd_hhmm = Pattern.compile("\\d{8}_(\\d{4})");
+  private static final long serialVersionUID = 20100109L;
 
   /**
    * Base Directory of file names
@@ -62,9 +63,9 @@ public class RadarDayCollection implements Serializable {
   String dir;
 
   /**
-   * station/time type directory, typical level2 radar data
+   * station/time type directory, typical IDD level2 radar data
    * or
-   * product/station/time
+   * product/station/time directory, typical IDD level3 radar data
    */
   boolean stnTime = true;
 
@@ -306,33 +307,7 @@ public class RadarDayCollection implements Serializable {
     }
   }
 
-  public static void mainFirst(String[] args) throws IOException {
-
-    String tdir = "/data/ldm/pub/native/radar/level2/";
-    if (args.length > 0) {
-      tdir = args[0];
-    }
-    // create/populate/write
-    RadarDayCollection rdc = new RadarDayCollection();
-    rdc.populate(tdir, true, "20100111", null);
-    String sfile = rdc.write();
-    if (sfile != null)
-      System.out.println("Write successful");
-
-    // read the RadarDayCollection
-    RadarDayCollection rdcNew = rdc.read(sfile);
-
-  }
-
   protected class CompareKeyDescend implements Comparator<String> {
-    /*
-    public int compare(Object o1, Object o2) {
-      String s1 = (String) o1;
-      String s2 = (String) o2;
-
-      return s2.compareTo(s1);
-    }
-    */
     public int compare(String s1, String s2) {
       return s2.compareTo(s1);
     }
