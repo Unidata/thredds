@@ -58,6 +58,7 @@ public class TdsConfigContextListener
 
   public void contextInitialized( ServletContextEvent event )
   {
+    // ToDo Instead of stdout, use servletContext.log( "...").
     System.out.println( "TdsConfigContextListener.contextInitialized(): start." );
 
     // Get webapp context.
