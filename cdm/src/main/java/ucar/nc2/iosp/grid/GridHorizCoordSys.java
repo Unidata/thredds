@@ -963,6 +963,38 @@ public class GridHorizCoordSys {
     (6) The horizontal and vertical angular resolutions of the sensor (Rx and Ry), needed for navigation equation, can be calculated from the following:
          Rx = 2 * Arcsin (106 )/Nr)/ dx
          Ry = 2 * Arcsin (106 )/Nr)/ dy
+
+   =======
+
+   from  simon.elliott@eumetsat.int
+
+   For products on a single pixel resolution grid, the scan angle is 83.84333 E-6 rad.
+   So dx = 2 * arcsin(10e6/Nr) / 83.84333 E-6 = 3622.30, which encoded to the nearest integer is 3622.
+   This is correctly encoded in our products.
+
+   For products on a 3x3 pixel resolution grid, the scan angle is 3 * 83.84333 E-6 rad = 251.52999 E-6 rad.
+   So dx = 2 * arcsin(10e6/Nr) / 251.52999 E-6 = 1207.43, which encoded to the nearest integer is 1207.
+   This is correctly encoded in our products.
+
+   Due to the elliptical shape of the earth, the calculation is a bit different in the y direction (Nr is in multiples of
+   the equatorial radius, but the tangent point is much closer to the polar radius from the earth's centre.
+   Approximating that the tangent point is actually at the polar radius from the earth's centre:
+     The sine of the angle subtended by the Earths centre and the tangent point on the equator as seen from the spacecraft
+     = Rp / (( Nr * Re) / 10^6) = (Rp * 10^6) / (Re * Nr)
+
+    The angle subtended by the Earth equator as seen by the spacecraft is, by symmetry twice the inverse sine above,
+      = 2 * arcsine ((Rp * 10^6) / (Re * Nr))
+
+  For products on a single pixel resolution grid, the scan angle is 83.84333 E-6 rad.
+   So dy = 2 * arcsine ((Rp * 10^6) / (Re * Nr)) / 83.84333 E-6 = 3610.06, which encoded to the nearest integer is 3610.
+   This is currently encoded in our products as 3568.
+
+  For products on a 3x3 pixel resolution grid, the scan angle is 3 * 83.84333 E-6 rad = 251.52999 E-6 rad.
+   So dy = 2 * arcsine ((Rp * 10^6) / (Re * Nr)) / 251.52999 E-6 = 1203.35, which encoded to the nearest integer is 1203.
+   This is currently encoded in our products as 1189.
+
+   As you can see the dx and dy values we are using will lead to an error of around 1% in the y direction.
+   I will ensure that the values are corrected to those explained here (3610 and 1203) as soon as possible.
    */
   private void makeMSGgeostationary() {
     double Lat0 = gds.getDouble(GridDefRecord.LAP);  // sub-satellite point lat
@@ -975,6 +1007,12 @@ public class GridHorizCoordSys {
 
     double dx = gds.getDouble(GridDefRecord.DX);  // apparent diameter of earth in units of grid lengths
     double dy = gds.getDouble(GridDefRecord.DY);
+
+    // per Simon Eliot 1/18/2010, correct for ellipsoidal earth
+    // should check who the originating center is
+    // "Originating_center" = "EUMETSAT Operation Centre" in the GRIB id (section 1).
+    if ( 1189 == dy ) dy = 1203;
+    else if ( 3568 == dy) dy = 3610;
 
     // have to check both names because Grib1 and Grib2 used different names
     double major_axis = gds.getDouble(GridDefRecord.MAJOR_AXIS_EARTH);  // km
@@ -1000,20 +1038,6 @@ public class GridHorizCoordSys {
     starty = scale_factor * (y_off - ny) / lfac;
     incrx = scale_factor/cfac;
     incry = scale_factor/lfac;
-
-    /* double apparentDiameter = 2 * Math.sqrt((nr - 1) / (nr + 1));  // apparent diameter, units of radius (see Snyder p 173)
-    app diameter kmeters / app diameter grid lengths = m per grid length
-    double gridLengthX = major_axis * apparentDiameter / dx;
-    double gridLengthY = minor_axis * apparentDiameter / dy;
-    // have to add to both for consistency
-    gds.addParam(GridDefRecord.DX, String.valueOf(1000 * gridLengthX));  // meters
-    gds.addParam(GridDefRecord.DX, new Double(1000 * gridLengthX));
-    gds.addParam(GridDefRecord.DY, String.valueOf(1000 * gridLengthY));  // meters
-    gds.addParam(GridDefRecord.DY, new Double(1000 * gridLengthY));
-
-    double radius = Earth.getRadius() / 1000.0;  // km
-
-    double height = (nr - 1.0) * radius;  // height = the height of the observing camera in km */
 
     attributes.add(new Attribute("grid_mapping_name", "MSGnavigation"));
     attributes.add(new Attribute("longitude_of_projection_origin", new Double(Lon0)));
