@@ -125,7 +125,7 @@ public class TestBinaryTextIndexes extends TestCase {
       for (String key : keysB) {
         if (key.equals("grid_units") || key.equals("created") || key.equals("location")
             || key.equals("VectorComponentFlag") || key.equals("GDSkey")
-            || key.equals("grid_name") )
+            || key.equals("grid_name") || key.equals("scanning_mode") )
           continue;
         String valueB = gdrB.getParam(key);
         String valueT = gdrT.getParam(key);
