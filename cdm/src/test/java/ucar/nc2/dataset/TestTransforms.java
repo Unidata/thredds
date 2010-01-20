@@ -539,8 +539,8 @@ public class TestTransforms extends TestCase {
     ProjectionCT vct = (ProjectionCT) ct;
     Projection proj = vct.getProjection();
     assert proj != null;
-    assert proj instanceof VerticalPerspectiveView : proj.getClass().getName();
-    // assert proj instanceof MSGnavigation : proj.getClass().getName();
+    //assert proj instanceof VerticalPerspectiveView : proj.getClass().getName();
+    assert proj instanceof MSGnavigation : proj.getClass().getName();
 
     VariableDS ctv = CoordTransBuilder.makeDummyTransformVariable(ncd, ct);
     System.out.println(" dump of equivilent ctv = \n" + ctv);
