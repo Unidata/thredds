@@ -99,7 +99,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
 
     long start = System.currentTimeMillis();
     if (GridServiceProvider.debugOpen)
-      System.out.println("GribGridServiceProvider open = " + ncfile.getLocation());
+      System.out.println(" open() = " + ncfile.getLocation());
 
     GridIndex index = getIndex(raf.getLocation());
     Map<String, String> attr = index.getGlobalAttributes();
@@ -123,7 +123,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
       long took = System.currentTimeMillis() - start;
       System.out.println(" open " + ncfile.getLocation() + " took=" + took + " msec ");
     }
-    log.debug("GribGridServiceProvider.open " + ncfile.getLocation() + " took " + (System.currentTimeMillis() - start));
+    log.debug(" open() " + ncfile.getLocation() + " took " + (System.currentTimeMillis() - start));
   }
 
 
@@ -138,9 +138,9 @@ public class GribGridServiceProvider extends GridServiceProvider {
 
     if (debugTiming) {
       long took = System.currentTimeMillis() - start;
-      System.out.println(" open " + ncfile.getLocation() + " took=" + took + " msec ");
+      System.out.println(" open() " + ncfile.getLocation() + " took=" + took + " msec ");
     }
-    log.debug("GribGridServiceProvider.open from sync" + ncfile.getLocation() + " took " + (System.currentTimeMillis() - start));
+    log.debug(" open() from sync" + ncfile.getLocation() + " took " + (System.currentTimeMillis() - start));
   }
 
   // debugging
@@ -227,7 +227,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
       String indexLocation = GribIndexName.get( dataLocation );
       InputStream ios = indexExistsAsURL(indexLocation);
       if (ios != null) {
-        log.debug("open HTTP index = " + indexLocation);
+        log.debug(" getIndex() HTTP index = " + indexLocation);
         return new GribReadIndex().open(indexLocation, ios);
       }
     }
@@ -267,7 +267,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
         }
 
       } catch (Exception e) {
-        log.warn("GribReadIndex failed, will try to rewrite at " + indexFile.getPath(), e);
+        log.warn("GribReadIndex() failed, will try to rewrite at " + indexFile.getPath(), e);
         index = writeIndex(indexFile, raf);
       }
 
@@ -303,9 +303,9 @@ public class GribGridServiceProvider extends GridServiceProvider {
       // always check first if the index file lives in the same dir as the regular file, and use it
       indexFile = new File(indexLocation);
       if (!indexFile.exists()) { // look in cache if need be
-        log.debug("GribGridServiceProvider: saveIndexFile not exist " + indexFile.getPath() + " ++ " + indexLocation);
+        log.debug(" saveIndexFile not exist " + indexFile.getPath() + " ++ " + indexLocation);
         indexFile = DiskCache.getFile(indexLocation, alwaysInCache);
-        log.debug("GribGridServiceProvider: use " + indexFile.getPath());
+        log.debug(" use " + indexFile.getPath());
       }
     }
 
@@ -343,26 +343,26 @@ public class GribGridServiceProvider extends GridServiceProvider {
     if (rafLength != raf.length() || indexLength != indexFile.length()) {
       GridIndex index;
       if (indexFileModeOnSync == IndexExtendMode.readonly) {
-        log.debug("  sync read Index = " + indexFile.getPath());
+        log.debug("  sync() read Index = " + indexFile.getPath());
         try {
           index = new GribReadIndex().open(indexFile.getPath());
         } catch (Exception e) {
-          log.error("  sync read Index failed = " + indexFile.getPath(), e);
+          log.warn("  sync() return false: GribReadIndex() failed = " + indexFile.getPath());
           return false;
         }
 
       } else if (indexFileModeOnSync == IndexExtendMode.extendwrite) {
         if ((rafLength <= raf.length()) && (indexLength <= indexFile.length())) {
-          if (log.isDebugEnabled()) log.debug("  extend Index = " + indexFile.getPath());
+          if (log.isDebugEnabled()) log.debug("  sync() extend Index = " + indexFile.getPath());
           index = extendIndex(new File(raf.getLocation()), indexFile, raf);
         } else {
-          if (log.isDebugEnabled()) log.debug("  rewrite index = " + indexFile.getPath());
+          if (log.isDebugEnabled()) log.debug("  sync() rewrite index = " + indexFile.getPath());
           index = writeIndex(indexFile, raf);
         }
 
       } else {
         // write new index
-        log.debug("  sync rewrite index = " + indexFile.getPath());
+        log.debug("  sync() rewrite index = " + indexFile.getPath());
         index = writeIndex(indexFile, raf);
       }
 
