@@ -100,19 +100,19 @@ public class WMSController extends AbstractController {
 
     if (allow) {
       // OGC metadata
-      String defaultMetadataLocation = this.getServletContext().getRealPath("/WEB-INF/OGCMeta.xml");
-      String OGCMetaXmlFile = ThreddsConfig.get("WMS.ogcMetaXML", null);
-      if (OGCMetaXmlFile == null)
-        OGCMetaXmlFile = defaultMetadataLocation;
-      else if (!OGCMetaXmlFile.startsWith("/"))
-        OGCMetaXmlFile = tdsContext.getContentDirectory() + OGCMetaXmlFile;
+      String defaultOgcMetaXmlFilePath = this.getServletContext().getRealPath("/WEB-INF/OGCMeta.xml");
+      String ogcMetaXmlFilePath = ThreddsConfig.get("WMS.ogcMetaXML", null);
+      if ( ogcMetaXmlFilePath == null)
+        ogcMetaXmlFilePath = defaultOgcMetaXmlFilePath;
+      else if (!ogcMetaXmlFilePath.startsWith("/"))
+        ogcMetaXmlFilePath = tdsContext.getContentDirectory().getPath() + "/" + ogcMetaXmlFilePath;
 
       try {
-        config = new Persister().read(Config.class, new File(OGCMetaXmlFile));
-        logServerStartup.debug("Loaded OGCMetaXmlFile from " + OGCMetaXmlFile);
+        config = new Persister().read(Config.class, new File( ogcMetaXmlFilePath ));
+        logServerStartup.debug("Loaded OGCMetaXmlFile from " + ogcMetaXmlFilePath );
       }
       catch (Exception e) {
-        logServerStartup.error("Failed to load OGCMetaXmlFile from " + OGCMetaXmlFile);
+        logServerStartup.error("Failed to load OGCMetaXmlFile from " + ogcMetaXmlFilePath );
         logServerStartup.info( "WMS - initialization done: " + UsageLog.closingMessageNonRequestContext() );
         throw new ServletException("Cannot read OGC config file " + e.toString());
       }
