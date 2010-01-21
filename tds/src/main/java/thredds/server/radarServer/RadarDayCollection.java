@@ -48,7 +48,7 @@ import java.util.regex.Matcher;
  */
 
 /**
- * This class stores radar data file names information.
+ * Stores radar data file names information for one day.
  * The class is serialized so it can later be retrieved by the RadarServer
  * servlet.
  */
@@ -88,6 +88,11 @@ public class RadarDayCollection implements Serializable {
    * Standard Product Naming ie Level2_KRLX_20100112_1324.ar2v
    */
   boolean standardName = true;
+
+  /**
+   * Radar product suffix
+   */
+  String suffix = null;
 
   /**
    * Map of all the stations for this day, ArrayList of times
@@ -191,14 +196,13 @@ public class RadarDayCollection implements Serializable {
       if( children.length > 0 ) { // check for standard name
         if( !children[ 0 ].startsWith( "Level"))
            standardName = false;
+        int start = children[ 0 ].lastIndexOf( '.');
+        if( start > 0 )
+          suffix = children[ 0 ].substring( start );
       }
+      Matcher m;
       for (String aChildren : children) {
-        File child = new File(dir, aChildren);
-        if (child.isDirectory()) {
-          continue;
-        } else {
           // Level2_KFTG_20100108_0654.ar2v
-          Matcher m;
           m = p_yyyymmdd_hhmm.matcher(aChildren);
           if (m.find()) {
             if (standardName )
@@ -206,7 +210,6 @@ public class RadarDayCollection implements Serializable {
             else
               hhmm.add(aChildren);
           }
-        }
       }
       Collections.sort(hhmm, new CompareKeyDescend());
       time.put(stn, hhmm);

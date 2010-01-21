@@ -49,7 +49,7 @@ import java.io.*;
 public class RadarStationCollection {
 
   public static final Pattern p_yyyymmdd_hhmm = Pattern.compile("\\d{8}_(\\d{4})");
-  private static final long serialVersionUID = 20100109L;
+  private static final long serialVersionUID = 20100119L;
 
   /**
    * Base Directory of file names
@@ -69,11 +69,6 @@ public class RadarStationCollection {
   boolean stnProduct  = false;
 
   /**
-   * String yyyymmdd
-   */
-  String yyyymmdd;
-
-  /**
    * String stnName
    */
   String stnName;
@@ -88,10 +83,20 @@ public class RadarStationCollection {
    */
   boolean standardName = true;
 
-  /**
-   * Map of all the stations for this day, ArrayList of times
+   /**
+   * Radar product suffix
    */
-  HashMap<String, ArrayList<String>> time = new HashMap<String, ArrayList<String>>();
+  String suffix = null;
+
+  /**
+   *  ArrayList of yyyyddmm days
+   */
+  ArrayList<String> yyyymmdd = new ArrayList<String>();
+
+  /**
+   *  Map with key day, ArrayList of times for the day
+   */
+  HashMap<String, ArrayList<String>> hhmm = new HashMap<String, ArrayList<String>>();
 
   /**
    * constructors
@@ -122,116 +127,71 @@ public class RadarStationCollection {
   }
 
   /**
-   * reads the data filename information
+   * list of days for this station
    *
-   * @param dir      base directory of where to look for information
-   * @param type     directory type
-   * @param yyyymmdd of all stations in this directory
-   * @param product  if level3 else null for level2
-   * @return success
-   * @throws java.io.IOException bad read
-   */
-  public boolean populate(String dir, boolean type, String yyyymmdd, String product)
-      throws IOException {
-    if (product == null) {
-      this.dir = dir;
-    } else {
-      this.dir = dir + "/" + product;
-    }
-    this.stnTime = type;
-    this.yyyymmdd = yyyymmdd;
-    this.product = product;
-
-    ArrayList<String> stations = null;
-    if (stnTime) {
-      stations = getStationsFromDir(dir);
-    }
-
-    // get the times for each station
-    for (String stn : stations) {
-      populateStationsTimesFromDir(stn, dir + "/" + stn + "/" + yyyymmdd);
-    }
-    return true;
-  }
-
-  /*
-  * returns and ArrayList of stations from a directory
-  */
-  private ArrayList<String> getStationsFromDir(String stnDir) throws IOException {
-
-    ArrayList<String> stations = new ArrayList<String>();
-    File dir = new File(stnDir);
-    if (dir.exists() && dir.isDirectory()) {
-      System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
-      String[] children = dir.list();
-      for (String aChild : children) {
-        File child = new File(dir, aChild);
-        if (child.isDirectory()) {
-          stations.add(aChild);
-        }
-      }
-    } else {
-      return null;
-    }
-    return stations;
-  }
-
-  /*
-  * populates hhmm for a station
-  */
-  private boolean populateStationsTimesFromDir(String stn, String stnDir)
-      throws IOException {
-
-    File dir = new File(stnDir);
-    if (dir.exists() && dir.isDirectory()) {
-      System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
-      ArrayList<String> hhmm = new ArrayList<String>();
-      String[] children = dir.list();
-      if( children.length > 0 ) { // check for standard name
-        if( !children[ 0 ].startsWith( "Level"))
-           standardName = false;
-      }
-      for (String aChildren : children) {
-        File child = new File(dir, aChildren);
-        if (child.isDirectory()) {
-          continue;
-        } else {
-          // Level2_KFTG_20100108_0654.ar2v
-          Matcher m;
-          m = p_yyyymmdd_hhmm.matcher(aChildren);
-          if (m.find()) {
-            if (standardName )
-              hhmm.add(m.group(1));
-            else
-              hhmm.add(aChildren);
-          }
-        }
-      }
-      Collections.sort(hhmm, new CompareKeyDescend());
-      time.put(stn, hhmm);
-    } else {
-      return false;
-    }
-    return true;
-  }
-
-  /**
-   * get the stations
-   *
-   * @return the set of stations
-   */
-  public final java.util.Set<String> getStations() {
-    return time.keySet();
-  }
-
-  /**
-   * list of hhmm for this station
-   *
-   * @param station station times
    * @return times ArrayList
    */
-  public final ArrayList getTimes(String station) {
-    return time.get(station);
+  public final ArrayList getDays() {
+    return yyyymmdd;
+  }
+
+  /**
+   * list of hhmm for this day
+   * @param day String
+   * @return hhmm's ArrayList
+   */
+  public final ArrayList gethhmm( String day ) {
+    return hhmm.get( day );
+  }
+
+  /**
+   * Base Directory of file names
+   * @return dir String
+   */
+  public String getDir() {
+    return dir;
+  }
+
+  /**
+   * station/time type directory, typical IDD level2 radar data
+   * or
+   * product/station/time directory, typical IDD level3 radar data
+   * @return stnTime boolean
+   */
+  public boolean isStnTime() {
+    return stnTime;
+  }
+
+  /**
+   * station/product/time type directory, typical Gempak radar data
+   * @return stnProduct boolean
+   */
+  public boolean isStnProduct() {
+    return stnProduct;
+  }
+
+  /**
+   * String stnName
+   * @return stnName String
+   */
+  public String getStnName() {
+    return stnName;
+  }
+
+  /**
+   * Radar product, for level II this is null
+   * @return product for this dataset
+   */
+  public String getProduct() {
+    return product;
+  }
+
+  /**
+   * Standard Product Naming ie Level2_KRLX_20100112_1324.ar2v
+   * @return standardName IDD naming convention
+   */
+  public boolean isStandardName() {
+    return standardName;
   }
 
   /**
@@ -239,9 +199,9 @@ public class RadarStationCollection {
    *
    * @return String filename of write.
    */
-  public String write() {
+  public String write( String day ) {
 
-    String filename = dir + "/." + yyyymmdd;
+    String filename = dir + "/."+ day;
     FileOutputStream fos = null;
     ObjectOutputStream out = null;
     try {
@@ -288,22 +248,14 @@ public class RadarStationCollection {
     String product = null;
     if (args.length == 4) {
       tdir = args[0];
-      type = (args[1].equals("true")) ? true : false;
+      type = (args[1].equals("true")) ;
       day = args[2];
       product = (args[3].equals("null")) ? null : args[3];
     } else {
       System.out.println("Not the correct parameters: tdir, structType, day, product");
       return;
     }
-    // create/populate/write
     RadarStationCollection rdc = new RadarStationCollection();
-    rdc.populate(tdir, type, day, product);
-    String sfile = rdc.write();
-    if (sfile == null) {
-      System.out.println("RadarStationCollection write Unsuccessful");
-    } else {
-      System.out.println("RadarStationCollection write successful");
-    }
   }
 
   protected class CompareKeyDescend implements Comparator<String> {

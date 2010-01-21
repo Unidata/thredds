@@ -39,13 +39,15 @@
 package thredds.server.radarServer;
 
 import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import java.util.*;
 import java.io.IOException;
 import java.io.File;
 import java.text.SimpleDateFormat;
+
 /**
- * Maintains the Radar collection of days for a Radar Dataset.  The purpose
- * is to consolidate RadarDayCollection objects into one object.
+ * Maintains the Radar collection of stations and days for a Radar Dataset.  The
+ * purpose is to permit quering the collection by station verses time.
  * 
  */
 public class RadarDatasetCollection {
@@ -53,11 +55,13 @@ public class RadarDatasetCollection {
   public static final Pattern p_yyyymmdd_hhmm = Pattern.compile("\\d{8}_(\\d{4})");
   public static boolean debug = true;
 
-  /**
-   * date format "yyyy-MM-dd'T'HH:mm:ss'Z'".
-  */
-  //SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd HH'Z'", Locale.US );
-  //dateFormat.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
+  static Calendar cal;
+  static SimpleDateFormat dateFormat;
+  static {
+    cal = Calendar.getInstance( java.util.TimeZone.getTimeZone("GMT"));
+    dateFormat = new SimpleDateFormat( "yyyyMMdd", Locale.US );
+    dateFormat.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
+  }
 
   /**
    * Top Directory of dataset
@@ -104,10 +108,8 @@ public class RadarDatasetCollection {
 
   public RadarDatasetCollection(String tdir,  String product) {
 
-    //this.stnTime = type;
-    //this.yyyymmdd = yyyymmdd;
     this.product = product;
-
+    // TODO: check
     if( stnTime ) {
       if (product == null) {
         this.tdir = tdir;
@@ -146,23 +148,65 @@ public class RadarDatasetCollection {
   }
 
   /**
-   * returns the information including times for this station in a RadarStationCollection object
+   * returns times for this station in the RadarStationCollection object
    * @param rsc RadarStationCollection
+   * @return success boolean
    */
   public boolean getStationTimes( RadarStationCollection rsc ) {
 
     // get todays times for station
-    Calendar cal = Calendar.getInstance( java.util.TimeZone.getTimeZone("GMT"));
     Date now =  cal.getTime();
-    SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyyMMdd", Locale.US );
-    dateFormat.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
-    String dir = tdir +"/"+ rsc.stnName +"/"+ dateFormat.format(now);
+    String currentDay = dateFormat.format( now );
+    String stnDir = tdir +"/"+ rsc.stnName +"/"+ currentDay;
+    File dir = new File(stnDir);
+    if (dir.exists() && dir.isDirectory()) {
+      System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
+      ArrayList<String> currenthhmm = new ArrayList<String>();
+      String[] children = dir.list();
+      Matcher m;
+      for (String aChildren : children) {
+        //File child = new File(dir, aChildren);
+        //if (child.isDirectory()) {
+        //  continue;
+        //} else {
+          // Level2_KFTG_20100108_0654.ar2v
 
+          m = p_yyyymmdd_hhmm.matcher(aChildren);
+          if (m.find()) {
+            if (standardName )
+              currenthhmm.add(m.group(1));
+            else
+              currenthhmm.add(aChildren);
+          }
+        //}
+      }
+
+      if( currenthhmm.size() > 0 ) {
+        Collections.sort(currenthhmm, new CompareKeyDescend());
+        rsc.yyyymmdd.add( currentDay );
+        rsc.hhmm.put( currentDay, currenthhmm );
+      }
+      if ( debug ) {
+        for ( String hm : currenthhmm ) {
+          System.out.println( currentDay +"_"+ hm );
+        }
+      }
+    }
     ArrayList<String> dal = yyyymmdd.get( rsc.stnName );
     Collections.sort(dal, new CompareKeyDescend());
+    // check for previous day
+    cal.add( Calendar.DAY_OF_MONTH, -1 );
+    now =  cal.getTime();
+    currentDay = dateFormat.format( now );
+    if( !currentDay.equals( dal.get( 0 ))) {
+
+    }
+
+    rsc.yyyymmdd.addAll( dal );
+    // TODO: need check if new day needs added
     for ( String day : dal ) {
       ArrayList<String> tal = hhmm.get( rsc.stnName + day );
-      rsc.time.put( day, tal );
+      rsc.hhmm.put( day, tal );
       if ( debug ) {
         for ( String hm : tal ) {
           System.out.println( day +"_"+ hm );
@@ -171,7 +215,14 @@ public class RadarDatasetCollection {
     }
     return true;
   }
-  
+
+  public RadarStationCollection queryStation( String dir, String stnName, String product ) {
+    RadarStationCollection rsc =  new RadarStationCollection( dir, stnName, stnTime,  product);
+    getStationTimes( rsc );
+
+    return rsc;
+  }
+
   public static void main(String[] args) throws IOException {
 
     String tdir = null;
@@ -186,9 +237,9 @@ public class RadarDatasetCollection {
     // create/populate dataset
     RadarDatasetCollection rdc = new RadarDatasetCollection( tdir, product );
     System.out.println( "Dates for station KFTG" );
-    //RadarStationCollection rsc =  new RadarStationCollection( tdir,  "KFTG", stnTime,  product);
-    RadarStationCollection rsc =  new RadarStationCollection( tdir,  "KFTG", true,  product);
-    rdc.getStationTimes( rsc );
+    RadarStationCollection rsc =  rdc.queryStation( tdir,  "KFTG",  product);
+    //RadarStationCollection rsc =  new RadarStationCollection( tdir,  "KFTG", true,  product);
+    //rdc.getStationTimes( rsc );
     //rdc.populate(tdir, type, day, product);
     //String sfile = rdc.write();
     //if (sfile == null) {
