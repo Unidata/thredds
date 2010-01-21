@@ -70,7 +70,7 @@
     <param name="MaxFileSize" value="5MB"/>
     <param name="MaxBackupIndex" value="5"/>
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="[%d{dd/MMM/yyyy:HH:mm:ss}] %-5p %c : %m%n"/>
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"/>
     </layout>
   </appender>
 
