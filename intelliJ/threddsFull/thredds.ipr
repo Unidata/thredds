@@ -435,9 +435,11 @@
       <module fileurl="file://$PROJECT_DIR$/cdm.iml" filepath="$PROJECT_DIR$/cdm.iml" />
       <module fileurl="file://$PROJECT_DIR$/common.iml" filepath="$PROJECT_DIR$/common.iml" />
       <module fileurl="file://$PROJECT_DIR$/docs.iml" filepath="$PROJECT_DIR$/docs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/grib.iml" filepath="$PROJECT_DIR$/grib.iml" />
       <module fileurl="file://$PROJECT_DIR$/intelliJ.iml" filepath="$PROJECT_DIR$/intelliJ.iml" />
       <module fileurl="file://$PROJECT_DIR$/ldm.iml" filepath="$PROJECT_DIR$/ldm.iml" />
       <module fileurl="file://$PROJECT_DIR$/lib.iml" filepath="$PROJECT_DIR$/lib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/opendap.iml" filepath="$PROJECT_DIR$/opendap.iml" />
       <module fileurl="file://$PROJECT_DIR$/tds.iml" filepath="$PROJECT_DIR$/tds.iml" />
       <module fileurl="file://$PROJECT_DIR$/ui.iml" filepath="$PROJECT_DIR$/ui.iml" />
     </modules>
@@ -625,6 +627,8 @@
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="svn" />
+    <mapping directory="$PROJECT_DIR$/../../../Java-OPeNDAP" vcs="svn" />
+    <mapping directory="$PROJECT_DIR$/../../../grib" vcs="svn" />
     <mapping directory="$PROJECT_DIR$/../../common" vcs="svn" />
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
