@@ -111,8 +111,78 @@ public class BufrDataDump {
     NetcdfDataset ncd = new NetcdfDataset(ncfile);
     SequenceDS obs = (SequenceDS) ncd.findVariable(BufrIosp.obsRecord);
     StructureDataIterator sdataIter = obs.getStructureIterator(-1);
-    writeSequence(obs, sdataIter);
+    //writeSequence(obs, sdataIter);
+    extractFirst(sdataIter, new Extract());
   }
+
+  private class Extract {
+    double platformId;
+    int year,month,day,hour,min,sec,incr,incrS;
+    Array value;
+
+    @Override
+    public String toString() {
+      return "Extract{" +
+              "platformId=" + platformId +
+              ", year=" + year +
+              ", month=" + month +
+              ", day=" + day +
+              ", hour=" + hour +
+              ", min=" + min +
+              ", sec=" + sec +
+              ", incr=" + incr +
+              ", incrS=" + incrS +
+              ", value=" + value +
+              '}';
+    }
+  }
+
+  // iterate through the observations
+private void extractFirst(StructureDataIterator sdataIter, Extract result) throws IOException {
+  while (sdataIter.hasNext()) {
+    StructureData sdata = sdataIter.next();
+
+    for (StructureMembers.Member m : sdata.getMembers()) {
+      if (m.getName().equals("Buoy/platform identifier"))
+        result.platformId = sdata.convertScalarDouble(m);
+
+      else if (m.getDataType() == DataType.SEQUENCE) {
+        ArraySequence data = (ArraySequence) sdata.getArray(m);
+        extractNested(data.getStructureDataIterator(), result);
+      }
+    }
+  }
+}
+
+  // iterate through the observations
+private void extractNested(StructureDataIterator sdataIter, Extract result) throws IOException {
+  while (sdataIter.hasNext()) {
+    StructureData sdata = sdataIter.next();
+
+    for (StructureMembers.Member m : sdata.getMembers()) {
+      if (m.getName().equals("Year"))
+        result.year = sdata.convertScalarInt(m);
+      else if (m.getName().equals("Month"))
+        result.month = sdata.convertScalarInt(m);
+      else if (m.getName().equals("Day"))
+        result.day = sdata.convertScalarInt(m);
+      else if (m.getName().equals("Hour"))
+        result.hour = sdata.convertScalarInt(m);
+      else if (m.getName().equals("Minute"))
+        result.min = sdata.convertScalarInt(m);
+      else if (m.getName().equals("Second"))
+        result.sec = sdata.convertScalarInt(m);
+      else if (m.getName().equals("Time increment"))
+        result.incr = sdata.convertScalarInt(m);
+      else if (m.getName().equals("Short time increment"))
+        result.incrS = sdata.convertScalarInt(m);
+      else if (m.getName().equals("Water column height")) {
+        result.value = sdata.getArray(m);
+        out.format("%s%n", result.toString());
+      }
+    }
+  }
+}
 
   // iterate through the observations
   private void writeSequence(StructureDS s, StructureDataIterator sdataIter) throws IOException {
@@ -173,7 +243,7 @@ public class BufrDataDump {
   }
 
   public static void main(String[] args) throws IOException {
-    new BufrDataDump("D:/formats/bufr/tmp/JUGE86.bufr", System.out);
+    new BufrDataDump("D:/work/michelle/TimeIncr.bufr", System.out);
     //new BufrDataDump("D:/work/michelle/DART.bufr", System.out);
   }
 

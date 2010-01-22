@@ -2128,6 +2128,18 @@ public class ToolsUI extends JPanel {
       });
       buttPanel.add(grib2dump);
 
+      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
+      infoButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            Formatter f = new Formatter();
+            gribTable.showInfo(f);
+            detailTA.setText(f.toString());
+            detailTA.gotoTop();
+            detailWindow.show();
+        }
+      });
+      buttPanel.add(infoButton);
+
     }
 
     boolean process(Object o) {

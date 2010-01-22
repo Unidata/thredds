@@ -42,11 +42,10 @@ import ucar.grib.grib2.Grib2Input;
 import ucar.grib.grib2.Grib2WriteIndex;
 import ucar.grib.GribGridRecord;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.Group;
+import ucar.nc2.Attribute;
 import ucar.nc2.iosp.grib.GribGridServiceProvider;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.grid.GridHorizCoordSys;
-import ucar.nc2.iosp.grid.GridIndexToNC;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -58,7 +57,6 @@ import thredds.ui.BAMutil;
 import thredds.ui.FileManager;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.*;
 import java.util.List;
@@ -122,11 +120,21 @@ public class GribTable extends JPanel {
 
 
     gdsTable = new BeanTableSorted(GdsBean.class, (PreferencesExt) prefs.node("GdsBean"), false);
-    /* obsTable.addListSelectionListener(new ListSelectionListener() {
+    gdsTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        ObsBean csb = (ObsBean) obsTable.getSelectedBean();
+        GdsBean bean = (GdsBean) gdsTable.getSelectedBean();
+        if (bean == null)return;
+        GridDefRecord gds = bean.horizCoordSys.getGds();
+        Formatter f = new Formatter();
+        f.format("GDS keys%n");
+        List<String> attKeys = new ArrayList<String>(gds.getKeys());
+        Collections.sort(attKeys);
+        for (String key : attKeys) {
+          f.format(" %s == %s %n", key, gds.getParam(key));
+        }
+        infoTA.setText( f.toString());
       }
-    }); */
+    });
 
     infoTA = new TextHistoryPane();
 
@@ -163,6 +171,8 @@ public class GribTable extends JPanel {
 
   private String location;
   private GridTableLookup lookup;
+  private GridIndex index = null;
+  private NetcdfFile ncfile;
 
   public void setGribFile(RandomAccessFile raf) throws IOException {
     this.location = raf.getLocation();
@@ -171,7 +181,7 @@ public class GribTable extends JPanel {
 
     // get the lookup
     GribGridServiceProvider iosp = new GribGridServiceProvider();
-    NetcdfFile ncfile = new GribNetcdfFile(iosp, raf);
+    ncfile = new GribNetcdfFile(iosp, raf);
     lookup = iosp.getLookup();
 
     // get the edition
@@ -182,7 +192,6 @@ public class GribTable extends JPanel {
 
     // get the index, write to temp file
     File indexFile = File.createTempFile("GribTable", "gbx");
-    GridIndex index = null;
     if (edition == 1) {
       index = new Grib1WriteIndex().writeGribIndex(gribFile, indexFile.getPath(), raf, true);
     } else if (edition == 2) {
@@ -209,17 +218,22 @@ public class GribTable extends JPanel {
       gdsList.add(new GdsBean(key, hcs));
     }
 
-    Map<String, String> atts = index.getGlobalAttributes();
-    Formatter f = new Formatter();
-    ArrayList<String> attKeys = new ArrayList<String>( atts.keySet());
-    Collections.sort(attKeys);
-    for (String key : attKeys) {
-      f.format("%s == %s %n", key, atts.get(key));
-    }    
-    infoTA.setText(f.toString());
-
     gridRecordTable.setBeans(grList);
     gdsTable.setBeans(gdsList);
+  }
+
+  public void showInfo(Formatter f) {
+    Map<String, String> atts = index.getGlobalAttributes();
+    ArrayList<String> attKeys = new ArrayList<String>( atts.keySet());
+    Collections.sort(attKeys);
+    f.format("Grib Index Global Attributes %n");
+    for (String key : attKeys) {
+      f.format(" %s == %s %n", key, atts.get(key));
+    }
+    f.format("%nFile Global Attributes %n");
+    for (Attribute att : ncfile.getGlobalAttributes()) {
+      f.format(" %s %n", att);
+    }
   }
 
   private class GribNetcdfFile extends NetcdfFile {
@@ -308,7 +322,7 @@ public class GribTable extends JPanel {
   }
 
   public class GdsBean {
-    GridHorizCoordSys gds;
+    GridHorizCoordSys horizCoordSys;
     String key;
 
     // no-arg constructor
@@ -317,7 +331,7 @@ public class GribTable extends JPanel {
 
     public GdsBean(String key, GridHorizCoordSys m) {
       this.key = key;
-      this.gds = m;
+      this.horizCoordSys = m;
     }
 
     public String getKey() {
@@ -325,31 +339,31 @@ public class GribTable extends JPanel {
     }
 
     public String getGridName() {
-      return gds.getGridName();
+      return horizCoordSys.getGridName();
     }
 
     public String getID() {
-      return gds.getID();
+      return horizCoordSys.getID();
     }
 
     public boolean isLatLon() {
-      return gds.isLatLon();
+      return horizCoordSys.isLatLon();
     }
 
     public int getNx() {
-      return gds.getNx();
+      return horizCoordSys.getNx();
     }
 
     public int getNy() {
-      return gds.getNy();
+      return horizCoordSys.getNy();
     }
 
     public double getDxInKm() {
-      return gds.getDxInKm();
+      return horizCoordSys.getDxInKm();
     }
 
     public double getDyInKm() {
-      return gds.getDyInKm();
+      return horizCoordSys.getDyInKm();
     }
 
   }

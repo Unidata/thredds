@@ -1011,8 +1011,16 @@ public class GridHorizCoordSys {
     // per Simon Eliot 1/18/2010, correct for ellipsoidal earth
     // should check who the originating center is
     // "Originating_center" = "EUMETSAT Operation Centre" in the GRIB id (section 1).
-    if ( 1189 == dy ) dy = 1203;
-    else if ( 3568 == dy) dy = 3610;
+    //if ( 1189 == dy ) dy = 1203;
+    //else if ( 3568 == dy) dy = 3610;
+    // we see dy = 1189 or 1188
+    if (dy < 2100) {
+      dx = 1207;
+      dy = 1203;
+    } else {
+      dy = 3622;
+      dy = 3610;
+    }
 
     // have to check both names because Grib1 and Grib2 used different names
     double major_axis = gds.getDouble(GridDefRecord.MAJOR_AXIS_EARTH);  // km
