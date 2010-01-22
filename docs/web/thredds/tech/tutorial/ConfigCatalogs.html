@@ -191,8 +191,11 @@
 </pre>
 
     <p>All generated catalogs that are descendants of this datasetScan will contain
-      all inherit metadata contained in the datasetScan element. For instance, here
-      is a possible resulting child catalog:</p>
+      all inherit metadata contained in the datasetScan element. For instance, given
+      that the <code>testdata</code> directory contained three files
+      (<code>afile.nc</code>, <code>testData.nc</code>, and <code>junk.nc</code>)
+      and one directory (<code>grib</code>), the resulting child catalog will look
+      like:</p>
 
 <pre>
 ...
@@ -208,8 +211,8 @@
               &lt;date type="created"&gt;2008-10-30T14:22&lt;/date&gt;
           &lt;/metadata&gt;
           &lt;dataset name="afile.nc" ID="testDatasetScan/afile.nc" urlPath="<strong>my/test/all</strong>/afile.nc"&gt;
-          &lt;dataset name="testData.nc" ID="testDatasetScan/afile.nc" urlPath="<strong>my/test/all</strong>/testData.nc"&gt;
-          &lt;dataset name="junk.nc" ID="testDatasetScan/afile.nc" urlPath="<strong>my/test/all</strong>/junk.nc"&gt;
+          &lt;dataset name="testData.nc" ID="testDatasetScan/testData.nc" urlPath="<strong>my/test/all</strong>/testData.nc"&gt;
+          &lt;dataset name="junk.nc" ID="testDatasetScan/junk.nc" urlPath="<strong>my/test/all</strong>/junk.nc"&gt;
 
           &lt;catalogRef xlink:title="grib" ID="testDatasetScan/grib" name=""
                       xlink:href="grib/catalog.xml" /&gt;
