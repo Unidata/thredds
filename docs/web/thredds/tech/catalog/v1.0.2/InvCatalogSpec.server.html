@@ -1,5 +1,6 @@
 <!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
 <html><head>
+
   
   
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -7,8 +8,7 @@
 
   
   
-  <meta name="Author" content="John Caron"><title>Server-side InvCatalog Spec v1.0.2</title></head>
-<body>
+  <meta name="Author" content="John Caron"><title>Server-side InvCatalog Spec v1.0.2</title></head><body>
 <div class="head"> 
   <h1> <img alt="THREDDS" src="../../images/THREDDSlogo.jpg" height="54" width="67"> Server-side InvCatalog Specification, Version 1.0.2<br>
 </h1>
@@ -113,12 +113,35 @@ metadata or not.<br>
 </p>
 
 
-<pre>&lt;datasetScan name="GRIB2 Data" path="grib2" location="C:/data/grib2/" &gt;<br>  &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;<br>&lt;/datasetScan &gt;<br></pre>
+<pre>
+&lt;datasetScan name="GRIB2 Data" path="grib2" location="C:/data/grib2/" &gt;
+  &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;
+&lt;/datasetScan &gt;
+</pre>
 
-<p>Might result in the following catalog:<br>
+<p>The client view of the given datasetScan element would look like:<br>
+</p>
+<pre>
+&lt;catalogRef name="" xlink:href="/thredds/catalog/grib2/catalog.xml" xlink:title="GRIB2 Data" /&gt;
+</pre>
+<p>If the <code>grib2</code> directory contained three files (<code>data1.wmo</code>, <code>data2.wmo</code>, and <code>readme.txt</code>) and one directory (<code>test</code>), the catalog at the URL given in the above <span style="font-style: italic;">xlink:href</span> attribute would look something like:<br>
 </p>
 
-<pre>&lt;catalog ...&gt;<br>  &lt;service name="myserv" ... /&gt;<br>  &lt;dataset name="GRIB2 Data"&gt;<br>    &lt;metadata inherited="true"&gt;&lt;serviceName&gt;myserv&lt;/serviceName&gt;&lt;/metadata&gt;<br>    &lt;dataset name="data1.wmo" urlPath="data1.wmo" /&gt;<br>    &lt;dataset name="data2.wmo" urlPath="data2.wmo" /&gt;<br>    &lt;dataset name="readme.txt" urlPath="readme.txt" /&gt;<br>    &lt;catalogRef xlink:title="test" xlink:href="test" name="" /&gt;<br>  &lt;/dataset&gt;<br>&lt;/catalog&gt;</pre>
+
+<pre>
+&lt;catalog ...&gt;
+  &lt;service name="myserv" ... /&gt;
+  &lt;dataset name="GRIB2 Data"&gt;
+    &lt;metadata inherited="true"&gt;
+      &lt;serviceName&gt;myserv&lt;/serviceName&gt;
+    &lt;/metadata&gt;
+    &lt;dataset name="data1.wmo" urlPath="grib2/data1.wmo" /&gt;
+    &lt;dataset name="data2.wmo" urlPath="grib2/data2.wmo" /&gt;
+    &lt;dataset name="readme.txt" urlPath="grib2/readme.txt" /&gt;
+    &lt;catalogRef xlink:title="test" xlink:href="test/catalog.xml" name="" /&gt;
+  &lt;/dataset&gt;
+&lt;/catalog&gt;
+</pre>
 
 <h3><a name="filter_Element"></a>filter Element<br>
 </h3>
@@ -382,8 +405,17 @@ from the datasetRoot location.<br>
     &lt;/xsd:complexContent&gt;
   &lt;/xsd:complexType&gt;
 &lt;/xsd:element&gt;</pre>
-<pre>&lt;xsd:element name="fmrcInventory"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:attribute name="location" type="xsd:string" use="required"/&gt;<br>    &lt;xsd:attribute name="suffix" type="xsd:string"/&gt;<br>    &lt;xsd:attribute name="fmrcDefinition" type="xsd:string" use="required"/&gt;<br>    &lt;xsd:attribute name="olderThan" type="xsd:string" /&gt;
-    &lt;xsd:attribute name="subdirs" type="xsd:string" /&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;</pre>
+<pre>
+&lt;xsd:element name="fmrcInventory"&gt;
+  &lt;xsd:complexType&gt;
+    &lt;xsd:attribute name="location" type="xsd:string" use="required"/&gt;
+    &lt;xsd:attribute name="suffix" type="xsd:string"/&gt;
+    &lt;xsd:attribute name="fmrcDefinition" type="xsd:string" use="required"/&gt;
+    &lt;xsd:attribute name="olderThan" type="xsd:string" /&gt;
+    &lt;xsd:attribute name="subdirs" type="xsd:string" /&gt;
+  &lt;/xsd:complexType&gt;
+&lt;/xsd:element&gt;
+</pre>
 <p>A <strong>datasetFmrc</strong> is a kind of dataset, and so allows all of the attributes and child elements of the dataset element. </p>
 <h4>Example<br>
 </h4>

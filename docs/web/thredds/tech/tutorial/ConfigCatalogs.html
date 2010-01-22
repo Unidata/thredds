@@ -178,9 +178,21 @@
 ...
 </pre>
 
+    <p>The client view of the above datasetScan element will be a catalogRef element
+      which will also contain any metadata contained in the datasetScan element. It will
+      look something like:</p>
+<pre>
+&lt;catalogRef xlink:href="/thredds/catalog/<code>my/test/all</code>/catalog.xml"
+               xlink:name="Test all files in a directory" ID="testDatasetScan" name=""&gt;
+    &lt;metadata inherited="true"&gt;
+        ...
+    &lt;/metadata&gt;
+&lt;/catalogRef &gt;
+</pre>
+
     <p>All generated catalogs that are descendants of this datasetScan will contain
       all inherit metadata contained in the datasetScan element. For instance, here
-      is a resulting child catalog:</p>
+      is a possible resulting child catalog:</p>
 
 <pre>
 ...
@@ -200,7 +212,7 @@
           &lt;dataset name="junk.nc" ID="testDatasetScan/afile.nc" urlPath="<strong>my/test/all</strong>/junk.nc"&gt;
 
           &lt;catalogRef xlink:title="grib" ID="testDatasetScan/grib" name=""
-                      xlink:href="/thredds/catalog/<code>my/test/all</code>/grib/catalog.xml" /&gt;
+                      xlink:href="grib/catalog.xml" /&gt;
       &lt;/dataset&gt;
 ...
 </pre>
