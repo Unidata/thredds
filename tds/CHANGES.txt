@@ -6,7 +6,7 @@ Release Details 4.1:
  4.x.x (2010-??-??)
    Improve ability to run multiple TDS on a single Tomcat instance.
    RadarServer: add new high-res Level 3 products.
-   Clean up log messages from TDS reinit (catalogInit.log).
+   Clean up log messages from TDS reinit (catalogInit.log) and from GRIB IOSP sync().
    For motherlode, reorganize test datasets and catalogs: out of catalog.xml (and elsewhere) and into testCatalog.xml.
    Fix handling of OGCMeta.xml file when its location is configured in threddsConfig.xml with relative path.
    netCDF-Java/CDM:
