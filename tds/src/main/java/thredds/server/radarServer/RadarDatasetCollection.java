@@ -129,7 +129,7 @@ public class RadarDatasetCollection {
       System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
       String[] children = dir.list();
       for (String child : children) {
-        if ( ! child.startsWith( ".2"))  //TODO: change back to .2
+        if ( ! child.startsWith( ".2"))
           continue;
         child = tdir +"/"+ child;
         RadarDayCollection rdc = new RadarDayCollection().read( child );

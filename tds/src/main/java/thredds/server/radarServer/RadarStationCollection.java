@@ -199,21 +199,21 @@ public class RadarStationCollection {
    *
    * @return String filename of write.
    */
-  public String write( String day ) {
+  public boolean write( PrintStream ps ) {
 
-    String filename = dir + "/."+ day;
-    FileOutputStream fos = null;
+    //String filename = dir + "/."+ day;
+    //FileOutputStream fos = null;
     ObjectOutputStream out = null;
     try {
-      fos = new FileOutputStream(filename);
-      out = new ObjectOutputStream(fos);
+      //fos = new FileOutputStream(filename);
+      out = new ObjectOutputStream( ps );
       out.writeObject(this);
       out.close();
     } catch (IOException ex) {
       ex.printStackTrace();
     }
 
-    return filename;  // successful serialization
+    return true;  // successful serialization
   }
 
   /**

@@ -287,6 +287,90 @@ public class RadarMethods {
         ServletUtil.handleException(t, res);
     }
   } // end radarNexradQuery
+
+  // get/check/process query from servlet call
+   public void radarQuery1(RadarServer.RadarType radarType, HttpServletRequest req, HttpServletResponse res, PrintWriter pw )
+             throws ServletException, IOException {
+
+     String radarDir = null;
+     try {
+//      long  startms = System.currentTimeMillis();
+//      long  endms;
+       // need to extract data according to the (dataset) given
+       String pathInfo = req.getPathInfo();
+       if (pathInfo == null) pathInfo = "";
+       if( pathInfo.startsWith( "/"))
+               pathInfo = pathInfo.substring( 1 );
+       Boolean level2 = pathInfo.contains( "level2");
+       radarDir = RadarServer.dataLocation.get( pathInfo );
+       if ( radarDir == null)
+           radarDir = RadarServer.dataLocation.get( "nexrad/level2/IDD" ); // default
+
+       // parse the input
+       QueryParams qp = new QueryParams();
+       if( ! qp.parseQuery(req, res, new String[]{ QueryParams.XML, QueryParams.HTML, QueryParams.RAW, QueryParams.NETCDF}))
+         return; // has sent the error message
+//      endms = System.currentTimeMillis();
+//      System.out.println( "after QueryParams "+ (endms - startms));
+//      startms = System.currentTimeMillis();
+       // check Query Params
+       if( ! checkQueryParms( radarType, qp, level2 ) ) {
+         qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+         return;
+       }
+//      endms = System.currentTimeMillis();
+//      System.out.println( "after checkQueryParms "+ (endms - startms));
+//      startms = System.currentTimeMillis();
+       // check if all data needs to be return, ie not time information given
+      // boolean allTimes = ! ( qp.hasTimePoint || qp.hasDateRange );
+
+       // what type of output wanted XML html
+       String serviceBase;
+       qp.acceptType = qp.acceptType.replaceFirst( ".*/", "" );
+       if( ServerMethods.p_html_i.matcher(qp.acceptType).find()) { // accept html
+         res.setContentType( qp.acceptType );
+         serviceBase =  pathInfo +"/";
+       } else {
+         serviceBase = "/thredds/dodsC/"+ pathInfo +"/";
+       }
+       // writes first part of catalog
+       if( ! writeHeader( radarType,  qp, pathInfo, pw) ) {
+         qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+         return;
+       }
+//      endms = System.currentTimeMillis();
+//      System.out.println( "after writeHeader "+ (endms - startms));
+//      startms = System.currentTimeMillis();
+       // gets products according to stations, time, and variables
+       boolean dataFound = processQuery( radarDir, qp, pw, serviceBase );
+//      endms = System.currentTimeMillis();
+//      System.out.println( "after processQuery "+ (endms - startms));
+//      startms = System.currentTimeMillis();
+       // add ending tags
+       if ( ServerMethods.p_xml_i.matcher(qp.acceptType).find() ) {
+           if (! dataFound ) {
+               pw.println("      <documentation>No data available for station(s) "+
+                   "and time range</documentation>");
+           }
+           pw.println("    </dataset>");
+           pw.println("</catalog>");
+       } else if ( ServerMethods.p_html_i.matcher(qp.acceptType).find()) {
+           pw.println("  </table>");
+           if (! dataFound )
+               pw.println("<p>No data available for station(s) and time range "+
+                       req.getQueryString() +"</p>");
+           pw.println("</html>");
+       }
+//      endms = System.currentTimeMillis();
+//      System.out.println( "after radarQuery "+ (endms - startms));
+//      startms = System.currentTimeMillis();
+     } catch (Throwable t) {
+         log.error(req.getQueryString());
+         log.error("radarServer radarNexradQuery error" );
+         ServletUtil.handleException(t, res);
+     }
+   } // end radarNexradQuery
+
   // check that parms have valid stations, vars or times
   private Boolean checkQueryParms(RadarServer.RadarType radarType, QueryParams qp, Boolean level2 )
     throws IOException {
