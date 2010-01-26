@@ -46,9 +46,6 @@ import ucar.unidata.util.TestDiskCacheUtils;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.iosp.grib.TestBinaryTextIndexes;
-import ucar.nc2.iosp.grib.TestGridGribIosp;
-import ucar.nc2.iosp.gempak.TestReadingGempak;
 
 /**
  * TestSuite that runs all nj22 unit tests.
@@ -60,13 +57,13 @@ public class TestAll {
 
   /**
    * Old test data directory. may have cruft in it
-   * Unidata "shemp:/data/testdata" directory.
+   * Unidata "//fileserver/data/testdata" directory.
    */
   public static String testdataDir = null;
 
   /**
    * New test data directory. do not put temprory files in here. migrate all test data here eventually
-   * Unidata "shemp:/data/testdata/cdmUnitTest" directory.
+   * Unidata "//fileserver/data/testdata/cdmUnitTest" directory.
    */
   public static String cdmUnitTestDir = null;
 
@@ -138,7 +135,7 @@ public class TestAll {
     testdataDir = testdataDirPath;
     cdmUnitTestDir = testdataDirPath + "cdmUnitTest/";
 
-    File file = new File( testdataDir );
+    File file = new File( cdmUnitTestDir );
     if ( ! file.exists() || !file.isDirectory() )
     {
       System.out.println( "**WARN: Non-existence of Level 3 test data directory [" + file.getAbsolutePath() + "]." );
@@ -173,7 +170,7 @@ public class TestAll {
 
     // aggregation, no cache
     suite.addTest( ucar.nc2.ncml.TestNcML.suite());
-    suite.addTest( ucar.nc2.ncml.TestNcMLoffsite.suite()); // */
+    suite.addTest( ucar.nc2.ncml.TestNcMLoffsite.suite()); //
 
     suite.addTest( ucar.nc2.dt.grid.TestGrid.suite()); //
     suite.addTest( ucar.nc2.ft.TestFeatureDatasets.suite());
@@ -184,7 +181,7 @@ public class TestAll {
 
     suite.addTest( thredds.catalog.TestCatalogAll.suite()); //
 
-    suite.addTest( ucar.nc2.TestIosp.suite());   //
+    suite.addTest( ucar.nc2.TestIosp.suite());   //  */
 
    return new TestSetup(suite) {
 
@@ -203,6 +200,8 @@ public class TestAll {
 
         double took = (System.currentTimeMillis() - startTime) * .001;
         System.out.println(" that took= "+took+" secs");
+
+        showFilesUsed();
       }
     };
   }
@@ -215,6 +214,13 @@ public class TestAll {
       }
     } else {
       System.out.println(" no leaks");
+    }
+  }
+
+  static private void showFilesUsed() {
+    System.out.println("All Files Used:");
+    for (String s : RandomAccessFile.getAllFiles()) {
+      System.out.printf(" %s%n", s);
     }
   }
 

@@ -58,7 +58,7 @@ public class TestOffAggExistingSSTA extends TestCase {
     "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
     "    <aggregation dimName='time' type='joinExisting' recheckEvery='15 min'>\n" +
     "      <variableAgg name='ATssta' />\n" +
-    "      <scan dateFormatMark='AT#yyyyDDD_HHmmss' location='" + TestAll.testdataDir + "ncml/nc/pfeg/' suffix='.nc' />\n" +
+    "      <scan dateFormatMark='AT#yyyyDDD_HHmmss' location='" + TestAll.cdmUnitTestDir + "ncml/nc/pfeg/' suffix='.nc' />\n" +
     "    </aggregation>\n" +
     "</netcdf>";
 

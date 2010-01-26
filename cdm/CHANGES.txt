@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  12:
+  HDF5 IOSP now sets the Attribute Array unsigned flag; added a convenience routine Attribute.isUnsigned()
   BUFR:  add ecmwf, fnmoc, clean up table names
   Cosmic CSB improvements
   McIdasGrid.isValid()

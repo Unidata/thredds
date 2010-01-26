@@ -103,6 +103,16 @@ public class Attribute {
   }
 
   /**
+   * Find whether the underlying data should be interpreted as unsigned.
+   * Only affects byte, short, and int.
+   *
+   * @return true if the data is unsigned integer type.
+   */
+  public boolean isUnsigned() {
+    return (values != null) && values.isUnsigned();
+  }
+
+  /**
    * Get the value as an Array.
    *
    * @return Array of values.
@@ -286,10 +296,15 @@ public class Attribute {
         buff.append(getNumericValue(i));
         if (dataType == DataType.FLOAT)
           buff.append("f");
-        else if (dataType == DataType.SHORT)
-          buff.append("s");
-        else if (dataType == DataType.BYTE)
-          buff.append("b");
+        else if (dataType == DataType.SHORT) {
+          if (isUnsigned()) buff.append("US"); else  buff.append("S");
+        } else if (dataType == DataType.BYTE) {
+          if (isUnsigned()) buff.append("UB"); else  buff.append("B");
+        } else if (dataType == DataType.LONG) {
+          if (isUnsigned()) buff.append("UL"); else  buff.append("L");
+        } else if (dataType == DataType.INT) {
+          if (isUnsigned()) buff.append("U");
+        }
       }
     }
     return buff.toString();

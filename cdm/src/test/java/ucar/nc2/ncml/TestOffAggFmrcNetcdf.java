@@ -48,7 +48,7 @@ public class TestOffAggFmrcNetcdf extends TestCase {
   }
 
   public void testNUWGdatasets() throws IOException, InvalidRangeException {
-    String filename = "file:./"+TestNcML.topDir + "offsite/aggFmrcNetcdf.xml";
+    String filename = "file:"+TestAll.cdmUnitTestDir + "ncml/nc/ncmodels/aggFmrcNetcdf.xml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     System.out.println(" TestAggForecastModel.open "+ filename);

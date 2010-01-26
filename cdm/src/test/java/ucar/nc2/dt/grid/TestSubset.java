@@ -329,7 +329,7 @@ public class TestSubset extends TestCase {
   public void testLatLonSubset() throws Exception {
     GridDataset dataset = GridDataset.open(TestAll.testdataDir + "grid/netcdf/cf/SUPER-NATIONAL_latlon_IR_20070222_1600.nc");
     //GridDataset dataset = GridDataset.open("dods://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/NAM/CONUS_12km/NAM_CONUS_12km_20060305_1200.grib2");
-    // GridDataset dataset = GridDataset.open(TestAll.testdataDir + "grid/grib/grib2/test/NAM_CONUS_12km_20060305_1200.grib2");
+    // GridDataset dataset = GridDataset.open(TestAll.cdmUnitTestDir + "grid/grib/grib2/test/NAM_CONUS_12km_20060305_1200.grib2");
     GeoGrid grid = dataset.findGridByName("micron11");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -506,7 +506,7 @@ public class TestSubset extends TestCase {
     //String uri="dods://www.gri.msstate.edu/rsearch_data/nopp/bora_feb.nc";
     //String varName = "temp";
 
-    String uri = TestAll.cdmLocalTestDataDir + "ncml/nc/cg/CG2006158_120000h_usfc.nc";
+    String uri = TestAll.cdmUnitTestDir + "ncml/nc/cg/CG2006158_120000h_usfc.nc";
     String varName = "CGusfc";
 
     GridDataset dataset = GridDataset.open(uri);
@@ -566,7 +566,7 @@ public class TestSubset extends TestCase {
 
   // x,y in meters
   public void testBBSubsetUnits() throws Exception {
-    GridDataset dataset = GridDataset.open(TestAll.testdataDir +"ncml/testBBSubsetUnits.ncml");
+    GridDataset dataset = GridDataset.open(TestAll.cdmUnitTestDir +"ncml/testBBSubsetUnits.ncml");
     System.out.println("file= " + dataset.getLocation());
 
     GeoGrid grid = dataset.findGridByName("pr");

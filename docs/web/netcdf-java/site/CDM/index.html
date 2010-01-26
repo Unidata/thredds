@@ -72,7 +72,14 @@ dl {margin: 10px 5px 5px 15px;)
   <li>OPeNDAP Sequences map to CDM Sequences, but CDM does not support relational constraints at this layer. </li>
 </ul>
 <p>See <a href="Opendap.html">here</a> for  more details on OPeNDAP processing.</p>
-<p></p>
+<h3>Comparision to HDF-5<a name="HDF5"></a></h3>
+<p>As of version 4.1, the CDM can read all versions of HDF5 through version 1.8.4, except for the following HDF5 features:</p>
+<ul>
+  <li>SZIP compression. The <a href="http://www.hdfgroup.org/doc_resource/SZIP/">SZIP library</a> is proprietary and does not have a Java implementation. Its not clear if we can even legally write one if we wanted to. </li>
+  <li>Dataset region references. <a href="http://www.google.com/search?q=HDF5+region+reference">These</a> are used in NPOESS, but their purpose is unclear. Since they point to other datasets that are accessible through the CDM,  all the data in the file can still be read by the CDM. However, whatever information the  region reference represents is not currently accessible.</li>
+  <li>Since HDF5 does not support shared dimensions, however, reading HDF5 files into the higher levels of the CDM (Coordinate Systems, Grids, etc) may not work like you want. For this reason we recommend using the <a href="http://www.unidata.ucar.edu/software/netcdf/">netCDF-4 C library</a> for writing HDF5 files.</li>
+</ul>
+<p>Please send file examples if you find  a problem with the CDM reading HDF5 files, other than the ones listed above.</p>
 <hr WIDTH="100%">
 <h2>Coordinate System Object Model</h2>
 <p><img src="../images/CoordSys.png" alt="CoordSys Object model" width="610" height="341"></p>
@@ -136,7 +143,7 @@ connecting the adjacent coordinates do not intersect each other. </p>
 </ul>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Dec 15, 2008 
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Jan 25, 2009
 </address>
 <p>&nbsp;</p>
 </body>

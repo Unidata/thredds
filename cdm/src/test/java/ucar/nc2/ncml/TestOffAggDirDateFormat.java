@@ -51,7 +51,7 @@ public class TestOffAggDirDateFormat extends TestCase {
   }
 
   public void testNcmlGrid() throws IOException {
-    String filename = "file:./"+TestNcML.topDir + "offsite/aggDateFormat.xml";
+    String filename = "file:"+TestAll.cdmUnitTestDir + "formats/gini/aggDateFormat.xml";
 
     GridDataset gds = ucar.nc2.dt.grid.GridDataset.open( filename);
     System.out.println(" TestNcmlAggDirDateFormat.openGrid "+ filename);

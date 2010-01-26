@@ -63,7 +63,7 @@ dl {margin: 10px 5px 5px 15px;)
 <p>could define ArrayRagged which maps to C multidim arrays.</p>
 <p>its natural to map</p>
 <pre> int data(x,y,*) -&gt; int(*) data(x,y)</pre>
-<p>but it doesnt generalize well to nested vlens. nc4 solution is to declare each tyepe seperately and chain them:</p>
+<p>but it doesnt generalize well to nested vlens. nc4 solution is to declare each type seperately and chain them:</p>
 <pre> int(*) type1;
  type1(*) type2;
  type2 data(x,y);

@@ -38,9 +38,7 @@ import net.jcip.annotations.NotThreadSafe;
 
 import java.io.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Collections;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.nio.channels.WritableByteChannel;
@@ -106,6 +104,17 @@ public class RandomAccessFile implements DataInput, DataOutput {
     return openFiles;
   }
 
+  static public List<String> getAllFiles() {
+    List<String> result = new ArrayList<String>();
+    if (null == allFiles) return null;
+    Iterator<String> iter = allFiles.iterator();
+    while (iter.hasNext()) {
+      result.add( iter.next());
+    }
+    Collections.sort(result);
+    return result;
+  }
+
   /**
    * Debugging, do not use.
    *
@@ -129,6 +138,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
 
   static protected boolean debugLeaks = false;
   static protected boolean debugAccess = false;
+  static protected Set<String> allFiles = new HashSet<String>();
   static protected List<String> openFiles = Collections.synchronizedList(new ArrayList<String>());
   static private AtomicInteger debug_nseeks;
   static private AtomicLong debug_nbytes;
@@ -252,6 +262,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
     init(bufferSize);
     if (debugLeaks) {
       openFiles.add(location);
+      allFiles.add(location);
       if (showOpen)
         System.out.println("  open " + location);
     }

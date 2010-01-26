@@ -152,13 +152,51 @@
         <modules>
           <module name="tds">
             <files>
+              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp-cdmValidator/WEB-INF/web.xml" />
               <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp-dqcServletRedirect/WEB-INF/web.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp-expThredds/WEB-INF/web.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/web.xml" />
               <file url="file://$PROJECT_DIR$/../../tds/threddsFull/target/CdmValidator/WEB-INF/web.xml" />
             </files>
           </module>
           <module name="bufrTables">
             <files>
+              <file url="file://$PROJECT_DIR$/../../bufrTables/src/main/webapp/WEB-INF/web.xml" />
               <file url="file://$PROJECT_DIR$/../../bufrTables/target/WEB-INF/web.xml" />
+            </files>
+          </module>
+        </modules>
+      </facet-type>
+      <facet-type id="Spring">
+        <modules>
+          <module name="bufrTables">
+            <files>
+              <file url="file://$PROJECT_DIR$/../../bufrTables/src/main/webapp/WEB-INF/applicationContext.xml" />
+              <file url="file://$PROJECT_DIR$/../../bufrTables/src/main/webapp/WEB-INF/bufrTables-servlet.xml" />
+            </files>
+          </module>
+          <module name="tds">
+            <files>
+              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp-cdmValidator/WEB-INF/applicationContext-cdmValidatorConfig.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp-cdmValidator/WEB-INF/cdmvalidator-servlet.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp-expThredds/WEB-INF/applicationContext-tdsConfig.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp-expThredds/WEB-INF/catalogService-servlet.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp-expThredds/WEB-INF/root-servlet.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/admin-servlet.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/applicationContext-tdsConfig.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/catalogGen-servlet.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/catalogService-servlet.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/cdmRemote-servlet.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/dqc-servlet.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/ncOpendap-servlet.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/root-servlet.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/view.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/wms-servlet.xml" />
+            </files>
+          </module>
+          <module name="ui">
+            <files>
+              <file url="file://$PROJECT_DIR$/../../ui/src/main/resources/resources/nj22/ui/spring/application-config.xml" />
             </files>
           </module>
         </modules>
@@ -629,7 +667,6 @@
     <mapping directory="" vcs="svn" />
     <mapping directory="$PROJECT_DIR$/../../../Java-OPeNDAP" vcs="svn" />
     <mapping directory="$PROJECT_DIR$/../../../grib" vcs="svn" />
-    <mapping directory="$PROJECT_DIR$/../../common" vcs="svn" />
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
   <component name="com.intellij.jsf.UserDefinedFacesConfigs">

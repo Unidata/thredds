@@ -615,6 +615,7 @@ public class H5header {
     Array attData = null;
     try {
       attData = readAttributeData(matt, vinfo, dtype);
+      attData.setUnsigned(matt.mdt.unsigned);
     } catch (InvalidRangeException e) {
       log.error("failed to read Attrinute "+matt.name, e);
       return null;
@@ -759,7 +760,6 @@ public class H5header {
       readDtype = baseInfo.dataType;
       elemSize = readDtype.getSize();
       byteOrder = baseInfo.byteOrder;
-
     }
 
     Layout layout = new LayoutRegular(matt.dataPos, elemSize, shape, new Section(shape));
@@ -2617,6 +2617,7 @@ public class H5header {
     byte[] flags = new byte[3];
     int byteSize, byteOrder;
     boolean isOK = true;
+    boolean unsigned;
 
     // time (2)
     DataType timeType;
@@ -2648,6 +2649,8 @@ public class H5header {
       sbuff.append(" byteSize= ").append(byteSize);
       DataType dtype = getNCtype(type, byteSize);
       sbuff.append(" NCtype= ").append(dtype);
+      sbuff.append(" flags= ");
+      for (int i=0; i<3; i++) sbuff.append(flags[i]).append(" ");
       if (type == 2)
         sbuff.append(" timeType= ").append(timeType);
       else if (type == 6)
@@ -2685,10 +2688,11 @@ public class H5header {
           + " byteOrder=" + (byteOrder == 0 ? "BIG" : "LITTLE"));
 
       if (type == 0) {  // fixed point
+        unsigned = ((flags[0] & 8) == 0);
         short bitOffset = raf.readShort();
         short bitPrecision = raf.readShort();
         if (debug1)
-          debugOut.println("   type 0 (fixed point): bitOffset= " + bitOffset + " bitPrecision= " + bitPrecision);
+          debugOut.println("   type 0 (fixed point): bitOffset= " + bitOffset + " bitPrecision= " + bitPrecision+ " unsigned= " + unsigned);
         isOK = (bitOffset == 0) && (bitPrecision % 8 == 0);
 
       } else if (type == 1) {  // floating point
