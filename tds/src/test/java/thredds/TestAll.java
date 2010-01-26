@@ -97,8 +97,8 @@ public class TestAll
     if ( path == null )
     {
       // Get default path.
-      System.out.println( "**No \"unidata.upc.share.path\"property, defaulting to \"/upc/share/\"." );
-      path = "/upc/share/";
+      System.out.println( "**No \"unidata.upc.share.path\"property, defaulting to \"/share/\"." );
+      path = "/share/";
     }
     // Make sure path ends with a slash.
     if ( ( !path.endsWith( "/" ) ) && !path.endsWith( "\\" ) )

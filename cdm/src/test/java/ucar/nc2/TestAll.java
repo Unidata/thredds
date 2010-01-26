@@ -128,9 +128,8 @@ public class TestAll {
     // Use default paths if needed.
     if ( testdataDirPath == null )
     {
-      System.out.println( "**No \"unidata.testdata.path\"property, defaulting to \"/upc/share/testdata/\"." );
-      //testdataDirPath = "/data/testdata/";
-      testdataDirPath = "/upc/share/testdata/";
+      System.out.println( "**No \"unidata.testdata.path\"property, defaulting to \"/share/testdata/\"." );
+      testdataDirPath = "/share/testdata/";
     }
     // Make sure paths ends with a slash.
     if ((!testdataDirPath.endsWith( "/")) && !testdataDirPath.endsWith( "\\"))
