@@ -1018,7 +1018,7 @@ public class GridHorizCoordSys {
       dx = 1207;
       dy = 1203;
     } else {
-      dy = 3622;
+      dx = 3622;
       dy = 3610;
     }
 
