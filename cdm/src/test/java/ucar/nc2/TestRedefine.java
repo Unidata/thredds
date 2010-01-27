@@ -45,8 +45,8 @@ public class TestRedefine extends TestCase {
     super(name);
   }
 
-  String filename = TestLocal.cdmTestDataDir + "testRedefine.nc";
-  String filename2 = TestLocal.cdmTestDataDir + "testRedefine2.nc";
+  String filename = TestLocal.temporaryDataDir + "testRedefine.nc";
+  String filename2 = TestLocal.temporaryDataDir + "testRedefine2.nc";
 
   public void testRedefine() throws IOException, InvalidRangeException {
     NetcdfFileWriteable file;
