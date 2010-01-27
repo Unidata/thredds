@@ -3,7 +3,7 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Release Details 4.1:
- 4.x.x (2010-??-??)
+ 4.1.2 (2010-01-27)
    Improve ability to run multiple TDS on a single Tomcat instance.
    RadarServer: add new high-res Level 3 products.
    Clean up log messages from TDS reinit (catalogInit.log) and from GRIB IOSP sync().
@@ -12,6 +12,7 @@ Release Details 4.1:
    netCDF-Java/CDM:
      Add new high-res Level 3 radar products
      Fix for WRF lat/lon vertical transform
+     Fix HDF5 IOSP to set attribute unsigned flag.
      MSG Navigation
      Improve GridDataset/GridCoordSys ensemble dimension handling.
      More BUFR work
