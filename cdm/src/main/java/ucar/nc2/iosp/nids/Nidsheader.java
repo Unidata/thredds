@@ -1904,7 +1904,7 @@ class Nidsheader{
               ctilt = pname_lookup(94, 0);
             else if(prod_elevation== 9)
               ctilt = pname_lookup(94, 1);
-            else if(prod_elevation==13)
+            else if(prod_elevation==13 || prod_elevation==15)
               ctilt = pname_lookup(94, 2);
             else if(prod_elevation==18)
               ctilt = pname_lookup(94, 3);
@@ -1926,7 +1926,7 @@ class Nidsheader{
               ctilt = pname_lookup(99, 0);
             else if(prod_elevation==9)
               ctilt = pname_lookup(99, 1);
-            else if(prod_elevation==13)
+            else if(prod_elevation==13 || prod_elevation==15)
               ctilt = pname_lookup(99, 2);
             else if(prod_elevation==18)
               ctilt = pname_lookup(99, 3);
