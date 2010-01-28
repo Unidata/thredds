@@ -42,6 +42,7 @@ import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.VerticalPerspectiveView;
 import ucar.unidata.geoloc.projection.RotatedPole;
 import ucar.unidata.geoloc.projection.RotatedLatLon;
+import ucar.unidata.geoloc.projection.sat.MSGnavigation;
 import ucar.unidata.geoloc.vertical.*;
 import ucar.ma2.*;
 
@@ -1221,7 +1222,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     double minx, maxx, miny, maxy;
 
     ProjectionImpl proj = getProjection();
-    if (proj != null && !(proj instanceof VerticalPerspectiveView)) { // LOOK kludge - how to do this generrally ??
+    if (proj != null && !(proj instanceof VerticalPerspectiveView) && !(proj instanceof MSGnavigation)) { // LOOK kludge - how to do this generrally ??
       // first clip the request rectangle to the bounding box of the grid
       LatLonRect bb = getLatLonBoundingBox();
       rect = bb.intersect(rect);

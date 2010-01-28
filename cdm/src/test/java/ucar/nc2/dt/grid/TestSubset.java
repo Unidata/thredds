@@ -149,6 +149,36 @@ public class TestSubset extends TestCase {
     dataset.close();
   }
 
+  public void testMSG() throws Exception {
+    GridDataset dataset = GridDataset.open(TestAll.cdmUnitTestDir + "transforms/Eumetsat.VerticalPerspective.grb");
+
+    GeoGrid grid = dataset.findGridByName("Pixel_scene_type");
+    assert null != grid;
+    GridCoordSystem gcs = grid.getCoordinateSystem();
+    assert null != gcs;
+    assert grid.getRank() == 3;
+
+    // bbox =  ll: 16.79S 20.5W+ ur: 14.1N 20.09E
+    LatLonRect bbox = new LatLonRect(new LatLonPointImpl(-16.79, -20.5), 14.1, 20.9);
+
+    ProjectionRect prect = gcs.getProjection().latLonToProjBB(bbox); // must override default implementation
+    System.out.printf("%s -> %s %n", bbox, prect);
+    assert TestAll.closeEnough( prect.getMinX(), -2194.5219);
+    assert TestAll.closeEnough( prect.getWidth(), 2238.8154);
+    assert TestAll.closeEnough( prect.getMinY(), -1831.425);
+    assert TestAll.closeEnough( prect.getHeight(), 1535.2158);
+
+    GeoGrid grid_section = grid.subset(null, null, bbox, 1, 1, 1);
+
+    Array data = grid_section.readDataSlice(-1, -1, -1, -1);
+    int[] shape = data.getShape();
+    assert shape[0] == 1 : data.getShape()[0];
+    assert shape[1] == 171 : data.getShape()[1];
+    assert shape[2] == 250 : data.getShape()[2];
+
+    dataset.close();
+  }
+
   public void testDODS() throws Exception {
     String ds = "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/DGEX/CONUS_12km/files/latest.xml";
     //String dsid = "#NCEP/DGEX/CONUS_12km/latest.xml";
