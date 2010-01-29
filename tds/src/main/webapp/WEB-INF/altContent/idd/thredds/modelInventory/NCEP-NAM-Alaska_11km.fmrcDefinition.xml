@@ -38,7 +38,7 @@
     <variable name="Pressure_reduced_to_MSL" />
     <variable name="Pressure_surface" />
     <variable name="Pressure_tropopause" />
-    <variable name="Probability_of_1_tenth_inch_Precipitation" />
+    <variable name="Probability_of_0p01_inch_Precipitation" />
     <variable name="Probability_of_freezing_Precipitation" />
     <variable name="Probability_of_frozen_Precipitation" />
     <variable name="Relative_humidity" vertCoord="6" />

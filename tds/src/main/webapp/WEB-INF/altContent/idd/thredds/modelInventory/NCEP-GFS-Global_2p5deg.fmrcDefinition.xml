@@ -89,6 +89,7 @@
     <variable name="Specific_humidity" vertCoord="5" />
     <variable name="Specific_humidity_pressure_difference_layer" vertCoord="9" />
     <variable name="Storm_relative_helicity" vertCoord="10" />
+    <variable name="SunShine_Duration" />
     <variable name="Surface_Lifted_Index" />
     <variable name="Temperature" vertCoord="0" />
     <variable name="Temperature_altitude_above_msl" vertCoord="11" />

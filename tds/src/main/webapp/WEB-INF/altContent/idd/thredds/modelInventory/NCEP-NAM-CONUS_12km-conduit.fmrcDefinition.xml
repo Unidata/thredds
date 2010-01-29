@@ -99,7 +99,7 @@
     <variable name="Pressure_shallow_convective_cloud_top" />
     <variable name="Pressure_surface" />
     <variable name="Probability_of_frozen_Precipitation" />
-    <variable name="Radar_Echo_Top_18.3_DBZy" />
+    <variable name="Radar_Echo_Top_18p3_DBZ" />
     <variable name="Relative_humidity" vertCoord="11" />
     <variable name="Relative_humidity_height_above_ground" vertCoord="5" />
     <variable name="Relative_humidity_hybrid" vertCoord="2" />

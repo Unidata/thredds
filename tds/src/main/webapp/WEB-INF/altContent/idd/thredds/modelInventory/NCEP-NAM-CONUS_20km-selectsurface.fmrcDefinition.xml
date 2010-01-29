@@ -205,7 +205,7 @@
     <variable name="Dew_point_temperature_height_above_ground" vertCoord="6" />
     <variable name="Maximum_temperature" vertCoord="6" />
     <variable name="Minimum_temperature" vertCoord="6" />
-    <variable name="Probability_of_1_tenth_inch_Precipitation" />
+    <variable name="Probability_of_0p01_inch_Precipitation" />
     <variable name="Probability_of_freezing_Precipitation" />
     <variable name="Thunderstorm_probability" />
     <variable name="Wind_direction_from_which_blowing" vertCoord="11" />
