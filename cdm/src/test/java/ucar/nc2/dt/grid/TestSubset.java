@@ -41,10 +41,7 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.NCdump;
 import ucar.nc2.TestAll;
 import ucar.nc2.thredds.ThreddsDataFactory;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.geoloc.ProjectionRect;
+import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 
@@ -159,14 +156,18 @@ public class TestSubset extends TestCase {
     assert grid.getRank() == 3;
 
     // bbox =  ll: 16.79S 20.5W+ ur: 14.1N 20.09E
-    LatLonRect bbox = new LatLonRect(new LatLonPointImpl(-16.79, -20.5), 14.1, 20.9);
+    LatLonRect bbox = new LatLonRect(new LatLonPointImpl(-16.79, -20.5), new LatLonPointImpl(14.1, 20.9));
 
-    ProjectionRect prect = gcs.getProjection().latLonToProjBB(bbox); // must override default implementation
+    ProjectionImpl p = gcs.getProjection();
+    ProjectionRect prect = p.latLonToProjBB(bbox); // must override default implementation
     System.out.printf("%s -> %s %n", bbox, prect);
-    assert TestAll.closeEnough( prect.getMinX(), -2194.5219);
-    assert TestAll.closeEnough( prect.getWidth(), 2238.8154);
-    assert TestAll.closeEnough( prect.getMinY(), -1831.425);
-    assert TestAll.closeEnough( prect.getHeight(), 1535.2158);
+    assert TestAll.closeEnough( prect.getMinX(), -2120.3375);
+    assert TestAll.closeEnough( prect.getWidth(), 4279.2196);
+    assert TestAll.closeEnough( prect.getMinY(), -1809.0359);
+    assert TestAll.closeEnough( prect.getHeight(), 3338.2484);
+
+    LatLonRect bb2 = p.projToLatLonBB(prect);
+    System.out.printf("%s -> %s %n", prect, bb2);
 
     GeoGrid grid_section = grid.subset(null, null, bbox, 1, 1, 1);
 
