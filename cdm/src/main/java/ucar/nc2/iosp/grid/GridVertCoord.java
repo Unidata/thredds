@@ -137,6 +137,7 @@ public class GridVertCoord implements Comparable {
    * @param records   list of GridRecords that make up this coord
    * @param levelName the name of the level
    * @param lookup    the lookup table
+   * @param hcs Horizontal coordinate
    */
   GridVertCoord(List<GridRecord> records, String levelName,
                 GridTableLookup lookup, GridHorizCoordSys hcs) {
@@ -317,39 +318,6 @@ public class GridVertCoord implements Comparable {
          factors = g1dr.getVerticalPressureLevels();
       }
       return true;
-
-    /*
-        // add hybrida variable
-          Variable ha = new Variable(ncfile, g, null, "hybrida");
-          vb.setDataType(DataType.INT);
-          if (g == null) {
-            g = ncfile.getRootGroup();
-          }
-          if ( g.findDimension("ncell") == null) {
-            ncfile.addDimension(g, new Dimension("ncell", 2, true));
-          }
-          vb.setDimensions( getName() +" ncell");
-
-          vb.addAttribute(new Attribute("long_name",  interval ));
-          vb.addAttribute(new Attribute("units", timeUnit + " since " + refDate));
-          // add data
-
-        NV = NV / 2 -1;
-        coordValues = new double[ levels.size() * NV ];
-        int idx = 0;
-        for (LevelCoord lc : levels ) {
-          double[] plevels = g1dr.getVerticalPressureLevels( lc.value1  );
-          System.arraycopy( plevels, 0, coordValues, idx, NV );
-          idx += NV;
-        }
-      } else { // add numeric values
-        coordValues = new double[ levels.size()];
-        for (int i = 0; i < levels.size(); i++ ) {
-          LevelCoord lc = levels.get( i );
-          coordValues[ i ] =   lc.value1  ;
-        }
-      */
-
   }
 
   /**
@@ -486,11 +454,40 @@ public class GridVertCoord implements Comparable {
       Variable ha = new Variable(ncfile, g, null, "hybrida");
       ha.setDataType(DataType.DOUBLE);
       ha.addAttribute(new Attribute("long_name",  "level_a_factor" ));
-      //ha.addAttribute(new Attribute("standard_name", "atmosphere_hybrid_sigma_pressure_coordinate" ));
       ha.addAttribute(new Attribute("units", ""));
       ha.setDimensions(getVariableName());
       // add data
       int middle = factors.length / 2;
+      double[] adata;
+      double[] bdata;
+      if( levels.size() < middle ) { // only partial data wanted
+        adata = new double[ levels.size() ];
+        bdata = new double[ levels.size() ];
+      } else {
+        adata = new double[ middle ];
+        bdata = new double[ middle ];
+      }
+      for( int i = 0; i < middle && i < levels.size(); i++ )
+        adata[ i ] = factors[ i ];
+      Array haArray = Array.factory(DataType.DOUBLE, new int[]{adata.length},adata);
+      ha.setCachedData(haArray, true);
+      ncfile.addVariable(g, ha);
+
+      // add hybridb variable
+      Variable hb = new Variable(ncfile, g, null, "hybridb");
+      hb.setDataType(DataType.DOUBLE);
+      hb.addAttribute(new Attribute("long_name",  "level_b_factor" ));
+      hb.addAttribute(new Attribute("units", ""));
+      hb.setDimensions(getVariableName());
+      // add data
+      for( int i = 0; i < middle && i < levels.size(); i++ )
+        bdata[ i ] = factors[ i + middle ];
+      Array hbArray = Array.factory(DataType.DOUBLE, new int[]{bdata.length},bdata);
+      hb.setCachedData(hbArray, true);
+      ncfile.addVariable(g, hb);
+
+
+      /*  // TODO: delete next time modifying code
       double[] adata = new double[ middle ];
       for( int i = 0; i < middle; i++ )
         adata[ i ] = factors[ i ];
@@ -512,6 +509,7 @@ public class GridVertCoord implements Comparable {
       Array hbArray = Array.factory(DataType.DOUBLE, new int[]{bdata.length}, bdata);
       hb.setCachedData(hbArray, true);
       ncfile.addVariable(g, hb);
+      */
     }
   }
 
