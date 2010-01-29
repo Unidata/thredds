@@ -186,33 +186,33 @@ public class Cosmic1Convention extends CoordSysBuilder {
             Dimension dim = ds.findDimension("time");
             int       n   = dim.getLength();
             Variable latVar = new VariableDS(ds, null, null, "Lat",
-                                             DataType.DOUBLE, dim.getName(),
+                                             DataType.FLOAT, dim.getName(),
                                              "degree", null);
             latVar.addAttribute(new Attribute(_Coordinate.AxisType,
                     AxisType.Lat.toString()));
             ds.addVariable(null, latVar);
             Variable lonVar = new VariableDS(ds, null, null, "Lon",
-                                             DataType.DOUBLE, dim.getName(),
+                                             DataType.FLOAT, dim.getName(),
                                              "degree", null);
             lonVar.addAttribute(new Attribute(_Coordinate.AxisType,
                     AxisType.Lon.toString()));
             ds.addVariable(null, lonVar);
             Variable altVar = new VariableDS(ds, null, null, "MSL_alt",
-                                             DataType.DOUBLE, dim.getName(),
+                                             DataType.FLOAT, dim.getName(),
                                              "meter", null);
             altVar.addAttribute(new Attribute(_Coordinate.AxisType,
                     AxisType.Height.toString()));
             ds.addVariable(null, altVar);
 
             // cal data array
-            ArrayDouble.D1 latData =
-                (ArrayDouble.D1) Array.factory(DataType.DOUBLE,
+            ArrayFloat.D1 latData =
+                (ArrayFloat.D1) Array.factory(DataType.FLOAT,
                     new int[] { n });
-            ArrayDouble.D1 lonData =
-                (ArrayDouble.D1) Array.factory(DataType.DOUBLE,
+            ArrayFloat.D1 lonData =
+                (ArrayFloat.D1) Array.factory(DataType.FLOAT,
                     new int[] { n });
-            ArrayDouble.D1 altData =
-                (ArrayDouble.D1) Array.factory(DataType.DOUBLE,
+            ArrayFloat.D1 altData =
+                (ArrayFloat.D1) Array.factory(DataType.FLOAT,
                     new int[] { n });
             ArrayDouble.D1 timeData =
                 (ArrayDouble.D1) Array.factory(DataType.DOUBLE,
@@ -225,6 +225,7 @@ public class Cosmic1Convention extends CoordSysBuilder {
             int min  = ds.readAttributeInteger(null, "minute", 0);
             int sec  = ds.readAttributeInteger(null, "second", 0);
             int t    = 0;
+            double julian = juday(mon, iday, iyr);
             // cal the dtheta based pm attributes
             double   dtheta = gast(iyr, mon, iday, ihr, min, sec, t);
             DateTime dtime  = null;
@@ -233,6 +234,8 @@ public class Cosmic1Convention extends CoordSysBuilder {
             } catch (Exception e) {}
             Variable tVar      = ds.findVariable("time");
             String   timeUnits = dtime.getUnit().toString();
+            tVar.removeAttributeIgnoreCase("valid_range");
+            tVar.removeAttributeIgnoreCase("units");
             tVar.addAttribute(new Attribute("units", timeUnits));
             tVar.addAttribute(new Attribute(_Coordinate.AxisType,
                                             AxisType.Time.toString()));
@@ -245,8 +248,8 @@ public class Cosmic1Convention extends CoordSysBuilder {
             Array         zLeo   = v.read();
             Array         tArray = tVar.read();
             double        pi     = 3.1415926;
-            double        a      = 6378137.0;
-            double        b      = 6356752.3142;
+            double        a      = 6378.1370;
+            double        b      = 6356.7523142;
             IndexIterator iiter0 = xLeo.getIndexIterator();
             IndexIterator iiter1 = yLeo.getIndexIterator();
             IndexIterator iiter2 = zLeo.getIndexIterator();
@@ -255,22 +258,25 @@ public class Cosmic1Convention extends CoordSysBuilder {
             while (iiter0.hasNext()) {
 
                 double[] v_inertial = new double[3];
-                v_inertial[0] = iiter0.getDoubleNext() * 1000;  //.getDouble(i); //.nextDouble();
-                v_inertial[1] = iiter1.getDoubleNext() * 1000;  //.getDouble(i); //.nextDouble();
-                v_inertial[2] = iiter2.getDoubleNext() * 1000;  //.getDouble(i); //.nextDouble();
+                v_inertial[0] = iiter0.getDoubleNext() ;  //.getDouble(i); //.nextDouble();
+                v_inertial[1] = iiter1.getDoubleNext() ;  //.getDouble(i); //.nextDouble();
+                v_inertial[2] = iiter2.getDoubleNext() ;  //.getDouble(i); //.nextDouble();
                 double[] uvz = new double[3];
                 uvz[0] = 0.0;
                 uvz[1] = 0.0;
                 uvz[2] = 1.0;
                 // v_ecef should be in the (approximate) ECEF frame
-                double[] v_ecf = spin(v_inertial, uvz, -180.0 * dtheta / pi);
+
+                // double[] v_ecf = execute(v_inertial, julian);
+                double[] v_ecf = spin(v_inertial, uvz, -1 * dtheta );
 
                 // cal lat/lon here
+               // double [] llh = ECFtoLLA(v_ecf[0]*1000, v_ecf[1]*1000, v_ecf[2]*1000, a,  b);
                 double[] llh = xyzell(a, b, v_ecf);
                 double   llt = tArray.getDouble(i);
-                latData.set(i, llh[0]);
-                lonData.set(i, llh[1]);
-                altData.set(i, llh[2]);
+                latData.set(i, (float)llh[0]);
+                lonData.set(i, (float)llh[1]);
+                altData.set(i, (float)llh[2]);
                 timeData.set(i, tbase + llt);
                 i++;
             }
@@ -426,8 +432,8 @@ public class Cosmic1Convention extends CoordSysBuilder {
 
         }
 
-        xstell[0] = phi;
-        xstell[1] = rlam;
+        xstell[0] = phi*180/3.1415926;
+        xstell[1] = rlam*180/3.1415926;
         xstell[2] = h;
 
         return xstell;
@@ -550,10 +556,10 @@ public class Cosmic1Convention extends CoordSysBuilder {
     public double juday(int M, int D, int Y) {
         double JD;
 
-        int    IY = Y - (12 - M) / 10;
-        int    IM = M + 1 + 12 * ((12 - M) / 10);
-        int    I  = IY / 100;
-        long J = 2 - I + I / 4 + Math.round(365.25 * IY)
+        double    IY = Y - (12 - M) / 10;
+        double    IM = M + 1 + 12 * ((12 - M) / 10);
+        double    I  = IY / 100;
+        double    J = 2 - I + I / 4 + Math.round(365.25 * IY)
                  + Math.round(30.6001 * IM);
         JD = (J + D + 1720994.50);
         return JD;
@@ -679,6 +685,110 @@ public class Cosmic1Convention extends CoordSysBuilder {
 
     }
 
+    protected final static double RTD = 180. / Math.PI;
+    protected final static double DTR = Math.PI / 180.;
+
+    public double [] execute(double [] eci, double julian)
+    {
+        double Xi = eci[0];
+        double Yi = eci[1];
+        double Zi = eci[2];
+
+        double c, s;
+        double GHA;
+
+        double [] ecef = new double[3];
+        //Compute GHAD
+        /* System generated locals */
+        double d__1, d__2, d__3;
+
+        /* Local variables */
+        double tsec, tday, gmst, t, omega, tfrac, tu, dat;
+
+        /*     INPUT IS TIME "secondsSince1970" IN SECONDS AND "TDAY" */
+        /*     WHICH IS WHOLE DAYS FROM 1970 JAN 1 0H */
+        /*     THE OUTPUT IS GREENWICH HOUR ANGLE IN DEGREES */
+        /*     XOMEGA IS ROTATION RATE IN DEGREES/SEC */
+
+        /*     FOR COMPATABILITY */
+         
+        tday = (double) ((int) (julian / 86400.));
+        tsec = julian - tday*86400;
+
+        /*     THE NUMBER OF DAYS FROM THE J2000 EPOCH */
+        /*     TO 1970 JAN 1 0H UT1 IS -10957.5 */
+        t = tday - (float) 10957.5;
+        tfrac = tsec / 86400.;
+        dat = t;
+        tu = dat / 36525.;
+
+        /* Computing 2nd power */
+        d__1 = tu;
+
+        /* Computing 3rd power */
+        d__2 = tu;
+        d__3 = d__2;
+        gmst = tu * 8640184.812866 + 24110.54841 + d__1 * d__1 * .093104 - d__3 * (d__2 * d__2) * 6.2e-6;
+
+        /*     COMPUTE THE EARTH'S ROTATION RATE */
+        /* Computing 2nd power */
+        d__1 = tu;
+        omega = tu * 5.098097e-6 + 86636.55536790872 - d__1 * d__1 * 5.09e-10;
+
+        /*     COMPUTE THE GMST AND GHA */
+        //  da is earth nutation - currently unused
+        double da = 0.0;
+        gmst = gmst + omega * tfrac + da * RTD * 86400. / 360.;
+        gmst = gmst % 86400;
+        if (gmst < 0.)
+            gmst += 86400.;
+        gmst = gmst / 86400. * 360.;
+        //ghan = gmst;
+        //  returns gha in radians
+        gmst = gmst * DTR;
+        GHA = gmst;
+
+        //RotateZ
+        c = Math.cos(GHA);
+        s = Math.sin(GHA);
+        double X = c * Xi + s * Yi;
+        double Y = -s * Xi + c * Yi;
+
+        //Set outputs
+        ecef[0] = X;
+        ecef[1] = Y;
+        ecef[2] = Zi;
+
+        return ecef;
+    }
+
+    public final static double [] ECFtoLLA(double x, double y, double z, double a, double b)
+       {
+            
+           double longitude = Math.atan2(y, x);
+           double ePrimeSquared = (a*a - b*b)/(b*b);
+           double p = Math.sqrt(x*x + y*y);
+           double theta = Math.atan((z*a)/(p*b));
+           double sineTheta = Math.sin(theta);
+           double cosTheta = Math.cos(theta);
+           double f = 1 / 298.257223563;
+           double e2 = 2*f - f*f;
+           double top = z + ePrimeSquared * b * sineTheta * sineTheta * sineTheta;
+           double bottom = p - e2 * a * cosTheta * cosTheta * cosTheta;
+           double geodeticLat = Math.atan(top/bottom);
+           double sineLat = Math.sin(geodeticLat);
+           double N = a / Math.sqrt( 1 - e2 * sineLat * sineLat);
+           double altitude = (p / Math.cos(geodeticLat)) -  N;
+
+           // maintain longitude btw -PI and PI
+           if (longitude > Math.PI)
+                   longitude -= 2*Math.PI;
+
+           else if (longitude < -Math.PI)
+                   longitude += 2*Math.PI;
+
+           return new double [] {geodeticLat,longitude, altitude};
+       }
 
 
 
