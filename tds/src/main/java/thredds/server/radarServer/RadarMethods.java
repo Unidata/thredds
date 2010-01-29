@@ -652,7 +652,7 @@ public class RadarMethods {
       if( ! ( isStns || isDates || isVars ) ) {
         log.error("radarServer processQuery error" );
         pw.println( "<documentation>\n" );
-        pw.println( "Query can't be satisfied :"+ qp.toString() +"\n" );
+        pw.println( "Query can't be satisfied :"+ qp.toString().replaceAll("&", "&amp;") +"\n" );
         pw.println( "</documentation>\n" );
         return numProds > 0; // invalid query
       }
@@ -769,7 +769,7 @@ public class RadarMethods {
       log.error("radarServer processQuery error" );
       log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       pw.println( "<documentation>\n" );
-      pw.println( "Query can't be satisfied :"+ qp.toString() +"\n" );
+      pw.println( "Query can't be satisfied :"+ qp.toString().replaceAll("&", "&amp;") +"\n" );
       pw.println( "</documentation>\n" );
       return numProds > 0; // partial or invalid query
     }
