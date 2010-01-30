@@ -35,6 +35,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import ucar.ma2.Range;
+import ucar.ma2.Array;
+import ucar.ma2.Index;
 import ucar.nc2.Attribute;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dt.GridCoordSystem;
@@ -187,7 +189,6 @@ public class DefaultDataReader extends DataReader
     protected void populatePixelArray(float[] picData, Range tRange, Range zRange,
         PixelMap pixelMap, GridDatatype grid, VariableDS var) throws Exception
     {
-        DataChunk dataChunk = null;
         // Cycle through the y indices, extracting a scanline of
         // data each time from minX to maxX
         for (int j : pixelMap.getJIndices())
@@ -200,13 +201,19 @@ public class DefaultDataReader extends DataReader
             // Read a chunk of data - values will not be unpacked or
             // checked for missing values yet
             GridDatatype subset = grid.makeSubset(null, null, tRange, zRange, yRange, xRange);
+            logger.debug( "Subset shape = {}", Arrays.toString( subset.getShape() ) );
             // Read all of the x-y data in this subset
-            dataChunk = new DataChunk(subset.readDataSlice(0, 0, -1, -1).reduce());
-            
+            Array xySlice = subset.readDataSlice( 0, 0, -1, -1 );
+            logger.debug( "Slice shape = {}", Arrays.toString( xySlice.getShape() ) );
+            // We now have a 2D array in y,x order.  We don't reduce this array
+            // because it will go to zero size if there is only one point in
+            // each direction.
+            Index index = xySlice.getIndex();
+
             // Now copy the scanline's data to the picture array
             for (int i : pixelMap.getIIndices(j))
             {
-                float val = dataChunk.getValue(i - imin);
+                float val = xySlice.getFloat( index.set( 0, i - imin ) );
 
                 // We unpack and check for missing values just for
                 // the points we need to display.
