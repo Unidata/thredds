@@ -39,10 +39,7 @@ import ucar.nc2.units.DateRange;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.UsageLog;
 
-import java.util.List;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.*;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.File;
@@ -905,6 +902,17 @@ public class RadarMethods {
     if( path != null ) {
       File files = new File( path );
       stations = files.list();
+      ArrayList<String> tmp = new ArrayList<String>();
+      for( String station : stations ) {
+        if( station.startsWith( "."))
+          continue;
+        tmp.add( station );
+      }
+      // redo stations array for removal of . files
+      if( stations.length != tmp.size() ) {
+        stations = new String[tmp.size()];
+        stations = (String[]) tmp.toArray( stations );
+      }
       // actually not a station, it's a var so get next dir down
       if( nexradVars.contains( stations[ 0 ].toUpperCase() ) ||
         terminalVars.contains( stations[ 0 ].toUpperCase() )) {
