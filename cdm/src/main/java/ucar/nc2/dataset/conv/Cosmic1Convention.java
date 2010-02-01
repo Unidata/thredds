@@ -31,6 +31,7 @@
  */
 
 
+
 package ucar.nc2.dataset.conv;
 
 
@@ -218,30 +219,34 @@ public class Cosmic1Convention extends CoordSysBuilder {
                 (ArrayDouble.D1) Array.factory(DataType.DOUBLE,
                     new int[] { n });
             this.conventionName = "Cosmic3";
+
             int iyr  = ds.readAttributeInteger(null, "year", 2009);
             int mon  = ds.readAttributeInteger(null, "month", 0);
             int iday = ds.readAttributeInteger(null, "day", 0);
             int ihr  = ds.readAttributeInteger(null, "hour", 0);
             int min  = ds.readAttributeInteger(null, "minute", 0);
             int sec  = ds.readAttributeInteger(null, "second", 0);
-            int t    = 0;
-            double julian = juday(mon, iday, iyr);
+
+            double start = ds.readAttributeDouble(null, "startTime",
+                               Double.NaN);
+            double stop = ds.readAttributeDouble(null, "stopTime",
+                              Double.NaN);
+            double incr = (stop - start) / n;
+            int    t    = 0;
+            // double julian = juday(mon, iday, iyr);
             // cal the dtheta based pm attributes
             double   dtheta = gast(iyr, mon, iday, ihr, min, sec, t);
-            DateTime dtime  = null;
-            try {
-                dtime = getDateTime(iyr, mon, iday, ihr, min, sec);
-            } catch (Exception e) {}
-            Variable tVar      = ds.findVariable("time");
-            String   timeUnits = dtime.getUnit().toString();
+
+            Variable tVar   = ds.findVariable("time");
+            String timeUnits = "seconds since 1980-01-06 00:00:00";  //dtime.getUnit().toString();
             tVar.removeAttributeIgnoreCase("valid_range");
             tVar.removeAttributeIgnoreCase("units");
             tVar.addAttribute(new Attribute("units", timeUnits));
             tVar.addAttribute(new Attribute(_Coordinate.AxisType,
                                             AxisType.Time.toString()));
-            double   tbase = dtime.getValue();
-            Variable v     = ds.findVariable("xLeo");
-            Array    xLeo  = v.read();
+
+            Variable v    = ds.findVariable("xLeo");
+            Array    xLeo = v.read();
             v = ds.findVariable("yLeo");
             Array yLeo = v.read();
             v = ds.findVariable("zLeo");
@@ -258,9 +263,9 @@ public class Cosmic1Convention extends CoordSysBuilder {
             while (iiter0.hasNext()) {
 
                 double[] v_inertial = new double[3];
-                v_inertial[0] = iiter0.getDoubleNext() ;  //.getDouble(i); //.nextDouble();
-                v_inertial[1] = iiter1.getDoubleNext() ;  //.getDouble(i); //.nextDouble();
-                v_inertial[2] = iiter2.getDoubleNext() ;  //.getDouble(i); //.nextDouble();
+                v_inertial[0] = iiter0.getDoubleNext();  //.getDouble(i); //.nextDouble();
+                v_inertial[1] = iiter1.getDoubleNext();  //.getDouble(i); //.nextDouble();
+                v_inertial[2] = iiter2.getDoubleNext();  //.getDouble(i); //.nextDouble();
                 double[] uvz = new double[3];
                 uvz[0] = 0.0;
                 uvz[1] = 0.0;
@@ -268,16 +273,16 @@ public class Cosmic1Convention extends CoordSysBuilder {
                 // v_ecef should be in the (approximate) ECEF frame
 
                 // double[] v_ecf = execute(v_inertial, julian);
-                double[] v_ecf = spin(v_inertial, uvz, -1 * dtheta );
+                double[] v_ecf = spin(v_inertial, uvz, -1 * dtheta);
 
                 // cal lat/lon here
-               // double [] llh = ECFtoLLA(v_ecf[0]*1000, v_ecf[1]*1000, v_ecf[2]*1000, a,  b);
+                // double [] llh = ECFtoLLA(v_ecf[0]*1000, v_ecf[1]*1000, v_ecf[2]*1000, a,  b);
                 double[] llh = xyzell(a, b, v_ecf);
                 double   llt = tArray.getDouble(i);
-                latData.set(i, (float)llh[0]);
-                lonData.set(i, (float)llh[1]);
-                altData.set(i, (float)llh[2]);
-                timeData.set(i, tbase + llt);
+                latData.set(i, (float) llh[0]);
+                lonData.set(i, (float) llh[1]);
+                altData.set(i, (float) llh[2]);
+                timeData.set(i, start + i * incr);
                 i++;
             }
 
@@ -432,8 +437,8 @@ public class Cosmic1Convention extends CoordSysBuilder {
 
         }
 
-        xstell[0] = phi*180/3.1415926;
-        xstell[1] = rlam*180/3.1415926;
+        xstell[0] = phi * 180 / 3.1415926;
+        xstell[1] = rlam * 180 / 3.1415926;
         xstell[2] = h;
 
         return xstell;
@@ -456,7 +461,7 @@ public class Cosmic1Convention extends CoordSysBuilder {
      *
      *      @call vprod.f   spin.f   rnorm.f
      * Calculation of the unit vector normal to the occultation plane
-     * (clockwise rotated from GPS to LEO) 
+     * (clockwise rotated from GPS to LEO)
      *
      * @param iyr _more_
      * @param imon _more_
@@ -544,8 +549,8 @@ public class Cosmic1Convention extends CoordSysBuilder {
 
     /**
      *
-     * JDAY calculates the Julian Day number (JD) from the Gregorian month 
-     * ,day, and year (M,D,Y). (NOT VALID BEFORE 10/15/1582)               
+     * JDAY calculates the Julian Day number (JD) from the Gregorian month
+     * ,day, and year (M,D,Y). (NOT VALID BEFORE 10/15/1582)
      *
      * @param M _more_
      * @param D _more_
@@ -556,11 +561,11 @@ public class Cosmic1Convention extends CoordSysBuilder {
     public double juday(int M, int D, int Y) {
         double JD;
 
-        double    IY = Y - (12 - M) / 10;
-        double    IM = M + 1 + 12 * ((12 - M) / 10);
-        double    I  = IY / 100;
-        double    J = 2 - I + I / 4 + Math.round(365.25 * IY)
-                 + Math.round(30.6001 * IM);
+        double IY = Y - (12 - M) / 10;
+        double IM = M + 1 + 12 * ((12 - M) / 10);
+        double I  = IY / 100;
+        double J = 2 - I + I / 4 + Math.round(365.25 * IY)
+                   + Math.round(30.6001 * IM);
         JD = (J + D + 1720994.50);
         return JD;
     }
@@ -685,19 +690,29 @@ public class Cosmic1Convention extends CoordSysBuilder {
 
     }
 
+    /** _more_          */
     protected final static double RTD = 180. / Math.PI;
+
+    /** _more_          */
     protected final static double DTR = Math.PI / 180.;
 
-    public double [] execute(double [] eci, double julian)
-    {
-        double Xi = eci[0];
-        double Yi = eci[1];
-        double Zi = eci[2];
+    /**
+     * _more_
+     *
+     * @param eci _more_
+     * @param julian _more_
+     *
+     * @return _more_
+     */
+    public double[] execute(double[] eci, double julian) {
+        double   Xi = eci[0];
+        double   Yi = eci[1];
+        double   Zi = eci[2];
 
-        double c, s;
-        double GHA;
+        double   c, s;
+        double   GHA;
 
-        double [] ecef = new double[3];
+        double[] ecef = new double[3];
         //Compute GHAD
         /* System generated locals */
         double d__1, d__2, d__3;
@@ -711,16 +726,16 @@ public class Cosmic1Convention extends CoordSysBuilder {
         /*     XOMEGA IS ROTATION RATE IN DEGREES/SEC */
 
         /*     FOR COMPATABILITY */
-         
+
         tday = (double) ((int) (julian / 86400.));
-        tsec = julian - tday*86400;
+        tsec = julian - tday * 86400;
 
         /*     THE NUMBER OF DAYS FROM THE J2000 EPOCH */
         /*     TO 1970 JAN 1 0H UT1 IS -10957.5 */
-        t = tday - (float) 10957.5;
+        t     = tday - (float) 10957.5;
         tfrac = tsec / 86400.;
-        dat = t;
-        tu = dat / 36525.;
+        dat   = t;
+        tu    = dat / 36525.;
 
         /* Computing 2nd power */
         d__1 = tu;
@@ -728,11 +743,12 @@ public class Cosmic1Convention extends CoordSysBuilder {
         /* Computing 3rd power */
         d__2 = tu;
         d__3 = d__2;
-        gmst = tu * 8640184.812866 + 24110.54841 + d__1 * d__1 * .093104 - d__3 * (d__2 * d__2) * 6.2e-6;
+        gmst = tu * 8640184.812866 + 24110.54841 + d__1 * d__1 * .093104
+               - d__3 * (d__2 * d__2) * 6.2e-6;
 
         /*     COMPUTE THE EARTH'S ROTATION RATE */
         /* Computing 2nd power */
-        d__1 = tu;
+        d__1  = tu;
         omega = tu * 5.098097e-6 + 86636.55536790872 - d__1 * d__1 * 5.09e-10;
 
         /*     COMPUTE THE GMST AND GHA */
@@ -740,13 +756,14 @@ public class Cosmic1Convention extends CoordSysBuilder {
         double da = 0.0;
         gmst = gmst + omega * tfrac + da * RTD * 86400. / 360.;
         gmst = gmst % 86400;
-        if (gmst < 0.)
+        if (gmst < 0.) {
             gmst += 86400.;
+        }
         gmst = gmst / 86400. * 360.;
         //ghan = gmst;
         //  returns gha in radians
         gmst = gmst * DTR;
-        GHA = gmst;
+        GHA  = gmst;
 
         //RotateZ
         c = Math.cos(GHA);
@@ -762,33 +779,46 @@ public class Cosmic1Convention extends CoordSysBuilder {
         return ecef;
     }
 
-    public final static double [] ECFtoLLA(double x, double y, double z, double a, double b)
-       {
-            
-           double longitude = Math.atan2(y, x);
-           double ePrimeSquared = (a*a - b*b)/(b*b);
-           double p = Math.sqrt(x*x + y*y);
-           double theta = Math.atan((z*a)/(p*b));
-           double sineTheta = Math.sin(theta);
-           double cosTheta = Math.cos(theta);
-           double f = 1 / 298.257223563;
-           double e2 = 2*f - f*f;
-           double top = z + ePrimeSquared * b * sineTheta * sineTheta * sineTheta;
-           double bottom = p - e2 * a * cosTheta * cosTheta * cosTheta;
-           double geodeticLat = Math.atan(top/bottom);
-           double sineLat = Math.sin(geodeticLat);
-           double N = a / Math.sqrt( 1 - e2 * sineLat * sineLat);
-           double altitude = (p / Math.cos(geodeticLat)) -  N;
+    /**
+     * comparing api to others
+     *
+     * @param x _more_
+     * @param y _more_
+     * @param z _more_
+     * @param a _more_
+     * @param b _more_
+     *
+     * @return _more_
+     */
+    public final static double[] ECFtoLLA(double x, double y, double z,
+                                          double a, double b) {
 
-           // maintain longitude btw -PI and PI
-           if (longitude > Math.PI)
-                   longitude -= 2*Math.PI;
+        double longitude     = Math.atan2(y, x);
+        double ePrimeSquared = (a * a - b * b) / (b * b);
+        double p             = Math.sqrt(x * x + y * y);
+        double theta         = Math.atan((z * a) / (p * b));
+        double sineTheta     = Math.sin(theta);
+        double cosTheta      = Math.cos(theta);
+        double f             = 1 / 298.257223563;
+        double e2            = 2 * f - f * f;
+        double top = z + ePrimeSquared * b * sineTheta * sineTheta
+                     * sineTheta;
+        double bottom      = p - e2 * a * cosTheta * cosTheta * cosTheta;
+        double geodeticLat = Math.atan(top / bottom);
+        double sineLat     = Math.sin(geodeticLat);
+        double N           = a / Math.sqrt(1 - e2 * sineLat * sineLat);
+        double altitude    = (p / Math.cos(geodeticLat)) - N;
 
-           else if (longitude < -Math.PI)
-                   longitude += 2*Math.PI;
+        // maintain longitude btw -PI and PI
+        if (longitude > Math.PI) {
+            longitude -= 2 * Math.PI;
 
-           return new double [] {geodeticLat,longitude, altitude};
-       }
+        } else if (longitude < -Math.PI) {
+            longitude += 2 * Math.PI;
+        }
+
+        return new double[] { geodeticLat, longitude, altitude };
+    }
 
 
 
