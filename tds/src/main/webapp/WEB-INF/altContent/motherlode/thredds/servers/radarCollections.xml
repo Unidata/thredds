@@ -145,7 +145,7 @@
         <variable name="N2U/Radial Velocity DV Tilt 5" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
         <variable name="N3U/Radial Velocity DV Tilt 6" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
 
-        <variable name="DVL/Digital Vertical Integ Liquid" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Liquid Water Equivalent" units="kg/m2" />
+        <variable name="DVL/Digital Vertical Liquid H2O" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Liquid Water Equivalent" units="kg/m2" />
         <variable name="EET/Enchanced Echo Tops" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Clouds &gt; Cloud Optical Depth/Thickness" units="1000 feet" />
 
       </variables>
