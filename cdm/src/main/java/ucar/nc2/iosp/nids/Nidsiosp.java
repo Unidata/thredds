@@ -717,7 +717,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
         if (ival == 0 && ival == 1)
           fdata[i] = Float.NaN;
         else
-          fdata[i] = (float)( ival & levels[0])/ (float) levels[1] + (float) levels[2];
+          fdata[i] = (float)( ival & levels[0])/ (float) levels[1] - (float) levels[2];
       }
       return fdata;
 
