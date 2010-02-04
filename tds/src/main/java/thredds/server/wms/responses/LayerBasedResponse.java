@@ -82,6 +82,8 @@ abstract public class LayerBasedResponse extends FileBasedResponse
         //not soooo bad.  But beware for future versions....
         // From ncWMS: TODO: support more than one layer (superimposition, difference, mask)
         layer = layers.get(layerNames[0]);
+        if ( layer == null )
+          throw new WmsException( "Layer [" + layerNames[0] + "] not recognized.");
 
         log.debug("layers: " + layerNames[0]);
 

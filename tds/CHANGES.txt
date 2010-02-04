@@ -5,6 +5,8 @@ Build Date = @BUILDTIME@
 Release Details 4.1:
  4.x.x (2010-?-?)
    Fix WMS problem in sampling scheme when a slice results in a single value which is then reduce()-ed to an Array with rank=0 (from ncWMS changeset 464).
+   Fix WMS handling of unknown layer request: catch NPE and throw WmsException.
+   Updated FMRC definition files (motherlode).
  4.1.2 (2010-01-27)
    Improve ability to run multiple TDS on a single Tomcat instance.
    RadarServer: add new high-res Level 3 products.
