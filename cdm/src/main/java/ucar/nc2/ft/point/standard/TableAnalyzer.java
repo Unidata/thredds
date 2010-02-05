@@ -306,7 +306,7 @@ public class TableAnalyzer {
   public boolean featureTypeOk(FeatureType ftype, Formatter errlog) {
     for (NestedTable nt : leaves) {
       if (!nt.hasCoords())
-        errlog.format("Table %s: lat/lon/time coord not found%n", nt.getName());
+        errlog.format("Table %s featureType %s: lat/lon/time coord not found%n", nt.getName(), nt.getFeatureType());
 
       if (!FeatureDatasetFactoryManager.featureTypeOk(ftype, nt.getFeatureType()))
         errlog.format("Table %s featureType %s doesnt match desired type %s%n", nt.getName(), nt.getFeatureType(), ftype);
