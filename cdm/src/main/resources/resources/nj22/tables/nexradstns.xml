@@ -43,10 +43,10 @@
 <station idn="000535" id="JGX" name="Atlanta/State Hwy 96" st="GA" co="US" lat="32:40:31" lon="-83:21:04" elev="159"/>
 <station idn="000510" id="VAX" name="Tallahassee/State Rd 129" st="GA" co="US" lat="30:53:25" lon="-83:00:06" elev="54"/>
 <station idn="000314" id="GUA" name="Guam/Barrigada Communication" st="GU" co="US" lat="13:27:16" lon="144:48:30" elev="80"/>
-<station idn="000336" id="HMO" name="Honolulu/Molokai" st="HI" co="US" lat="21:07:58" lon="-157:10:48" elev="415"/>
-<station idn="000570" id="HWA" name="Honolulu/Hawaii" st="HI" co="US" lat="19:05:42" lon="-155:34:08" elev="421"/>
-<station idn="000377" id="HKM" name="Honolulu/Kohala" st="HI" co="US" lat="20:07:32" lon="-155:46:40" elev="1162"/>
-<station idn="000550" id="HKI" name="Honolulu/Kauai" st="HI" co="US" lat="21:53:39" lon="-159:33:08" elev="55"/>
+<station idn="000336" id="PHMO" name="Honolulu/Molokai" st="HI" co="US" lat="21:07:58" lon="-157:10:48" elev="415"/>
+<station idn="000570" id="PHWA" name="Honolulu/Hawaii" st="HI" co="US" lat="19:05:42" lon="-155:34:08" elev="421"/>
+<station idn="000377" id="PHKM" name="Honolulu/Kohala" st="HI" co="US" lat="20:07:32" lon="-155:46:40" elev="1162"/>
+<station idn="000550" id="PHKI" name="Honolulu/Kauai" st="HI" co="US" lat="21:53:39" lon="-159:33:08" elev="55"/>
 <station idn="000348" id="DMX" name="Des Moines/Johnston" st="IA" co="US" lat="41:43:52" lon="-93:43:22" elev="299"/>
 <station idn="000530" id="DVN" name="Quad Cities/Davenport" st="IA" co="US" lat="41:36:42" lon="-90:34:51" elev="230"/>
 <station idn="000322" id="CBX" name="Boise/Ada County" st="ID" co="US" lat="43:29:26" lon="-116:14:08" elev="933"/>
