@@ -854,11 +854,14 @@ public class RadarMethods {
   public Document makeStationDocument( Document doc, Element rootElem, String[] stations ) throws Exception {
 
     for (String s : stations ) {
-      Station stn;
+      Station stn = null;
       if( s.length() == 3 ) { // level3 station
-         stn = nexradMap.get( "K"+ s );
-         if( stn == null)
-           stn = terminalMap.get( "T"+ s );
+        for( Station stn3 : nexradList ) {
+           if( stn3.getValue().endsWith( s ) ) {
+             stn = stn3;
+             break;
+           }
+        }
       } else {
          stn = nexradMap.get( s );
          if( stn == null)
@@ -947,11 +950,14 @@ public class RadarMethods {
   */
   public void printStations( String[] stations, PrintWriter pw ) throws Exception {
     for (String s : stations ) {
-      Station stn;
+      Station stn = null;
       if( s.length() == 3 ) { // level3 station
-        stn = nexradMap.get( "K"+ s );
-        if( stn == null)
-          stn = terminalMap.get( "T"+ s );
+        for( Station stn3 : nexradList ) {
+           if( stn3.getValue().endsWith( s ) ) {
+             stn = stn3;
+             break;
+           }
+        }
       } else {
           stn = nexradMap.get( s );
           if( stn == null)
