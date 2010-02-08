@@ -862,6 +862,8 @@ public class RadarMethods {
              break;
            }
         }
+        if( stn == null)
+           stn = terminalMap.get( "T"+ s );
       } else {
          stn = nexradMap.get( s );
          if( stn == null)
@@ -958,6 +960,8 @@ public class RadarMethods {
              break;
            }
         }
+        if( stn == null)
+           stn = terminalMap.get( "T"+ s );
       } else {
           stn = nexradMap.get( s );
           if( stn == null)
