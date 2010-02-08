@@ -379,19 +379,19 @@
     <station name="ANCHORAGE/Bethel" value="KABC" state="AK" country="US">
        <location3D latitude="60.78" longitude="-161.87" elevation="49" />
     </station>
-    <station name="HONOLULU/Molokai" value="KHMO" state="HI" country="US">
+    <station name="HONOLULU/Molokai" value="PHMO" state="HI" country="US">
        <location3D latitude="21.12" longitude="-157.17" elevation="415" />
     </station>
     <station name="ANCHORAGE/Nikiski" value="KAHG" state="AK" country="US">
        <location3D latitude="60.72" longitude="-151.35" elevation="74" />
     </station>
-    <station name="HONOLULU/Hawaii" value="KHWA" state="HI" country="US">
+    <station name="HONOLULU/Hawaii" value="PHWA" state="HI" country="US">
        <location3D latitude="19.08" longitude="-155.57" elevation="421" />
     </station>
-    <station name="HONOLULU/Kohala" value="KHKM" state="HI" country="US">
+    <station name="HONOLULU/Kohala" value="PHKM" state="HI" country="US">
        <location3D latitude="20.12" longitude="-155.77" elevation="1162" />
     </station>
-    <station name="HONOLULU/Kauai" value="KHKI" state="HI" country="US">
+    <station name="HONOLULU/Kauai" value="PHKI" state="HI" country="US">
        <location3D latitude="21.88" longitude="-159.55" elevation="55" />
     </station>
     <station name="ANCHORAGE/King_Salmon" value="KAKC" state="AK" country="US">
