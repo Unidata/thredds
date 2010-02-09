@@ -256,7 +256,7 @@ public class RadarMethods {
 //      System.out.println( "after writeHeader "+ (endms - startms));
 //      startms = System.currentTimeMillis();
       // gets products according to stations, time, and variables
-      boolean dataFound = processQuery( radarDir, qp, pw, serviceBase );
+      boolean dataFound = processQuery( radarDir, qp, pw, serviceBase, pathInfo.contains( "terminal") );
 //      endms = System.currentTimeMillis();
 //      System.out.println( "after processQuery "+ (endms - startms));
 //      startms = System.currentTimeMillis();
@@ -339,7 +339,7 @@ public class RadarMethods {
 //      System.out.println( "after writeHeader "+ (endms - startms));
 //      startms = System.currentTimeMillis();
        // gets products according to stations, time, and variables
-       boolean dataFound = processQuery( radarDir, qp, pw, serviceBase );
+       boolean dataFound = processQuery( radarDir, qp, pw, serviceBase, pathInfo.contains( "terminal") );
 //      endms = System.currentTimeMillis();
 //      System.out.println( "after processQuery "+ (endms - startms));
 //      startms = System.currentTimeMillis();
@@ -387,8 +387,7 @@ public class RadarMethods {
       }
 
       if (qp.hasStns ) {
-        if( sm.isStationListEmpty(qp.stns, nexradMap ) &&
-          ( sm.isStationListEmpty(qp.stns, terminalMap ) )) {
+        if( sm.isStationListEmpty(qp.stns, radarType.name().equals( "terminal") )) {
           qp.errs.append("<documentation>ERROR: No valid stations specified</documentation>\n");
           //qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
           return false;
@@ -522,7 +521,7 @@ public class RadarMethods {
         // use all stations
         if( qp.stns.get( 0 ).toUpperCase().equals( "ALL") ) {
             pw.print("stn=ALL&amp;");
-        } else if (qp.hasStns ) { //&& ! sm.isStationListEmpty(qp.stns, nexradMap )) {
+        } else if (qp.hasStns ) {
             for (String station : qp.stns) {
                 pw.print("stn=" + station +"&amp;");
             }
@@ -595,8 +594,7 @@ public class RadarMethods {
         return false;
       }
       // at this point must have stations
-      if (  sm.isStationListEmpty(qp.stns, nexradMap ) &&
-        sm.isStationListEmpty(qp.stns, terminalMap )) {
+      if( sm.isStationListEmpty(qp.stns, radarType.name().equals( "terminal") )) {
         pw.println("      <documentation>No data available for station(s) "+
             "and time range</documentation>");
         pw.println("    </dataset>");
@@ -613,7 +611,7 @@ public class RadarMethods {
   // actual products ie stn/var/time stn/time/var  var/stn/time etc.
   // processQuery is limited by the stns, dates and vars in the query
   private Boolean processQuery( String tdir, QueryParams qp, PrintWriter pw,
-    String serviceBase ) throws IOException {
+    String serviceBase, boolean isTerminal ) throws IOException {
 
     int numProds = 0;
     try { // could have null pointer exceptions on dirs & checks
@@ -629,18 +627,21 @@ public class RadarMethods {
       String[] tdirs = files.list();
       if( tdirs == null )
         return false;
-
-      // decide if directory contains stns, dates or vars, only one true
-      Boolean isStns = false;
-      if( tdirs[ 0 ].length() == 3 ) {
-        isStns = ( nexradMap.get( "K"+ tdirs[ 0 ] ) != null );
-        if( ! isStns )
-          isStns = ( terminalMap.get( "T"+ tdirs[ 0 ] ) != null );
-      } else {
-        isStns = ( nexradMap.get( tdirs[ 0 ] ) != null );
-        if( ! isStns )
-          isStns = ( terminalMap.get( tdirs[ 0 ] ) != null );
+      // need to check/eliminate . file names
+      ArrayList<String> tmp = new ArrayList<String>();
+      for( String name : tdirs ) {
+        if( name.startsWith( "."))
+          continue;
+        tmp.add( name );
       }
+      // redo stations array for removal of . files
+      if( tdirs.length != tmp.size() ) {
+        tdirs = new String[tmp.size()];
+        tdirs = (String[]) tmp.toArray( tdirs );
+      }
+      // decide if directory contains stns, dates or vars, only one true
+      Boolean isStns = sm.isStation(tdirs[ 0 ], isTerminal );
+
       Boolean isDates = ServerMethods.p_yyyymmdd.matcher(tdirs[ 0 ]).find();
       Boolean isVars = nexradVars.contains( tdirs[ 0 ].toUpperCase() );
       if( ! isVars )
@@ -724,8 +725,9 @@ public class RadarMethods {
           if( file.isFile() ) { // products in dir, process dir
             numProds += processProducts( vdirs, vDir.replaceFirst( tdir, "").substring( 1 ),
                dateStart, dateEnd, qp, pw, serviceBase );
-          } else if( nexradMap.get( "K"+ vdirs[ 0 ] ) != null ||
-            terminalMap.get( "T"+ vdirs[ 0 ] ) != null ) { // got to be level3 station
+          // TODO: check and delete
+          // nexradMap.get( "K"+ vdirs[ 0 ] ) != null
+          } else if( sm.isStation(vdirs[ 0 ], isTerminal )) {
             for (String station : qp.stns ) {
               String sDir = vDir +'/'+ station ;
               files = new File( sDir );
@@ -951,22 +953,23 @@ public class RadarMethods {
    * @param stations
    * @param pw 
   */
-  public void printStations( String[] stations, PrintWriter pw ) throws Exception {
+  public void printStations( String[] stations, PrintWriter pw, boolean isTerminal ) throws Exception {
     for (String s : stations ) {
       Station stn = null;
-      if( s.length() == 3 ) { // level3 station
+      // TODO: fix like makeStationDocument
+      if( s.length() == 3 && isTerminal ) { // level3 station
+        stn = terminalMap.get( "T"+ s );
+      } else if( s.length() == 3 ) {
         for( Station stn3 : nexradList ) {
            if( stn3.getValue().endsWith( s ) ) {
              stn = stn3;
              break;
            }
         }
-        if( stn == null)
-           stn = terminalMap.get( "T"+ s );
+      } else if( isTerminal ) {
+        stn = terminalMap.get(  s );
       } else {
           stn = nexradMap.get( s );
-          if( stn == null)
-            stn = terminalMap.get( s );
       }
       if(  stn == null ) {
         pw.println( "   <station id=\""+ s +"\" state=\"XX\" country=\"XX\">");
@@ -993,6 +996,7 @@ public class RadarMethods {
     }
   }
 
+  // TODO: check
   public String getStartDateTime( String path ) throws Exception {
     String timeDir =  RadarServer.dataLocation.get( path );
     log.debug( "timeDir ="+ timeDir );

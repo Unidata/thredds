@@ -182,7 +182,7 @@ public class ServerMethods {
 
     if( stations.get( 0 ).toUpperCase().equals( "ALL") )
         return false;
-      
+
     for (String s : stations ) {
             Station stn;
             if( s.length() == 3 ) { // level3 stns
@@ -197,6 +197,63 @@ public class ServerMethods {
     return true;
   }
 
+  public boolean isStationListEmpty(List<String> stations, boolean isTerminal ) {
+
+    if( stations.get( 0 ).toUpperCase().equals( "ALL") )
+        return false;
+
+    for (String s : stations ) {
+      Station stn = null;
+      if( s.length() == 3 && isTerminal ) { // terminal level3 station
+        stn = RadarMethods.terminalMap.get( "T"+ s );
+      } else if( s.length() == 3 ) {
+        for( Station stn3 : RadarMethods.nexradList ) {
+           if( stn3.getValue().endsWith( s ) ) {
+             stn = stn3;
+             break;
+           }
+        }
+      } else if( isTerminal ) {
+        stn = RadarMethods.terminalMap.get( s );
+      } else {
+         stn = RadarMethods.nexradMap.get( s );
+      }
+      if( stn != null)
+        return false;
+    }
+    return true;
+  }
+
+  /**
+   * returns true if a station
+   * @param station
+   * @param isTerminal
+   * @return  boolean  isStation
+   */
+  public boolean isStation( String station, boolean isTerminal ) {
+
+    if( station.toUpperCase().equals( "ALL") )
+        return true;
+
+    Station stn = null;
+    if( station.length() == 3 && isTerminal ) { // terminal level3 station
+      stn = RadarMethods.terminalMap.get( "T"+ station );
+    } else if( station.length() == 3 ) {
+      for( Station stn3 : RadarMethods.nexradList ) {
+         if( stn3.getValue().endsWith( station ) ) {
+           stn = stn3;
+           break;
+         }
+      }
+    } else if( isTerminal ) {
+      stn = RadarMethods.terminalMap.get( station );
+    } else {
+       stn = RadarMethods.nexradMap.get( station );
+    }
+    if( stn != null)
+      return true;
+    return false;
+  }
   // What happened here!!!!
   //public boolean intersect(DateRange dr, Date start, Date end ) throws IOException {
   //  return dr.intersect(start, end);

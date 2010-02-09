@@ -363,7 +363,7 @@ public class RadarServer extends AbstractServlet {
         }
         pw.println("      </Variables>");
         String[] stations = rm.stationsDS(radarType, dataLocation.get(ds.getPath()));
-        rm.printStations(stations, pw);
+        rm.printStations(stations, pw, pathInfo.contains(  "terminal"));
 
         pw.println("    </metadata>");
         pw.println("  </dataset>");
