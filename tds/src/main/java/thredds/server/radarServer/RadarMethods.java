@@ -193,7 +193,7 @@ public class RadarMethods {
           for( int i = 0; i < stations.length; i++ )
                stations[ i ] = stations[ i ].substring( 1 );
       }
-      doc = makeStationDocument( doc, rootElem, stations );
+      doc = makeStationDocument( doc, rootElem, stations,  path.contains( "terminal"));
       return doc;
   }
 
@@ -851,23 +851,24 @@ public class RadarMethods {
    * @param stations
    * @return Document
   */
-  public Document makeStationDocument( Document doc, Element rootElem, String[] stations ) throws Exception {
+  public Document makeStationDocument( Document doc, Element rootElem, String[] stations, boolean terminal )
+    throws Exception {
 
     for (String s : stations ) {
       Station stn = null;
-      if( s.length() == 3 ) { // level3 station
+      if( s.length() == 3 && terminal ) { // terminal level3 station
+        stn = terminalMap.get( "T"+ s );
+      } else if( s.length() == 3 ) {
         for( Station stn3 : nexradList ) {
            if( stn3.getValue().endsWith( s ) ) {
              stn = stn3;
              break;
            }
         }
-        if( stn == null)
-           stn = terminalMap.get( "T"+ s );
+      } else if( terminal ) {
+        stn = terminalMap.get( s );
       } else {
          stn = nexradMap.get( s );
-         if( stn == null)
-           stn = terminalMap.get( s );
       }
 
       Element sElem = new Element("station");
