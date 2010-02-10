@@ -87,6 +87,7 @@
         <exclude wildcard="TR*" atomic="false" collection="true" />
         <exclude wildcard="TV*" atomic="false" collection="true" />
         <exclude wildcard="TZL" atomic="false" collection="true" />
+        <exclude wildcard=".*" atomic="false" collection="true" />
       </filter>
       <addID />
       <sort>
@@ -161,6 +162,7 @@
         <exclude wildcard="N1S" atomic="false" collection="true" />
         <exclude wildcard="N2S" atomic="false" collection="true" />
         <exclude wildcard="N3S" atomic="false" collection="true" />
+        <exclude wildcard=".*" atomic="false" collection="true"/>
       </filter>
       <addID />
       <sort>
@@ -191,6 +193,7 @@
       </metadata>
       <filter>
         <include wildcard="Level2*.ar2v" atomic="true" collection="false" />
+        <exclude wildcard=".*" atomic="false" collection="true"/>
       </filter>
       <addID />
       <sort>
@@ -244,6 +247,7 @@
         </metadata>
         <filter>
           <include wildcard="RADAR*.grib1" atomic="true" collection="false" />
+          <exclude wildcard=".*" atomic="false" collection="true"/>
         </filter>
         <addID />
         <sort>
@@ -292,6 +296,7 @@
         <filter>
           <include wildcard="Level3*.gini" atomic="true" collection="false" />
           <exclude wildcard="current" atomic="false" collection="true" />
+          <exclude wildcard=".*" atomic="false" collection="true"/>
         </filter>
         <addID />
         <sort>
@@ -326,6 +331,7 @@
           </metadata>
           <filter>
             <include wildcard="Level3*.grib2" atomic="true" collection="false" />
+            <exclude wildcard=".*" atomic="false" collection="true"/>
           </filter>
           <addID />
           <sort>
