@@ -112,9 +112,15 @@ public class GridServlet extends AbstractServlet {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
       return;
     }
-    log.info( UsageLog.setupRequestContext(req));
+    log.info( "doGet(): " + UsageLog.setupRequestContext(req));
 
     String pathInfo = req.getPathInfo();
+    if ( pathInfo == null )
+    {
+      log.info( "doGet(): Path info was null - " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ));
+      res.sendError( HttpServletResponse.SC_BAD_REQUEST);
+      return;
+    }
 
     // the forms and dataset description
     boolean wantXML = pathInfo.endsWith("/dataset.xml");
