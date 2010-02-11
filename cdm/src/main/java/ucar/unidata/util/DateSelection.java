@@ -22,6 +22,7 @@
 
 
 
+
 package ucar.unidata.util;
 
 
@@ -40,48 +41,48 @@ import java.util.List;
 
 public class DateSelection {
 
-    /** date formatter         */
+    /** date formatter */
     private static SimpleDateFormat sdf;
 
-    /** url argument names          */
+    /** url argument names */
     private static final String ARG_PREFIX = "dateselection.";
 
-    /** url argument names          */
+    /** url argument names */
     public static final String ARG_STARTMODE = ARG_PREFIX + "start_mode";
 
-    /** url argument names          */
+    /** url argument names */
     public static final String ARG_ENDMODE = ARG_PREFIX + "end_mode";
 
-    /** url argument names          */
+    /** url argument names */
     public static final String ARG_STARTFIXEDTIME = ARG_PREFIX
                                                     + "start_fixedtime";
 
-    /** url argument names          */
+    /** url argument names */
     public static final String ARG_ENDFIXEDTIME = ARG_PREFIX
                                                   + "end_fixedtime";
 
-    /** url argument names          */
+    /** url argument names */
     public static final String ARG_STARTOFFSET = ARG_PREFIX + "start_offset";
 
-    /** url argument names          */
+    /** url argument names */
     public static final String ARG_ENDOFFSET = ARG_PREFIX + "end_offset";
 
-    /** url argument names          */
+    /** url argument names */
     public static final String ARG_POSTRANGE = ARG_PREFIX + "postrange";
 
-    /** url argument names          */
+    /** url argument names */
     public static final String ARG_PRERANGE = ARG_PREFIX + "prerange";
 
-    /** url argument names          */
+    /** url argument names */
     public static final String ARG_INTERVAL = ARG_PREFIX + "interval";
 
-    /** url argument names          */
+    /** url argument names */
     public static final String ARG_ROUNDTO = ARG_PREFIX + "roundto";
 
-    /** url argument names          */
+    /** url argument names */
     public static final String ARG_COUNT = ARG_PREFIX + "count";
 
-    /** url argument names          */
+    /** url argument names */
     public static final String ARG_SKIP = ARG_PREFIX + "skip";
 
 
@@ -107,7 +108,7 @@ public class DateSelection {
     public static final int TIMEMODE_DATA = 3;
 
 
-    /** string ids for time modes      */
+    /** string ids for time modes */
     public static String[] TIMEMODESTRINGS = { "FIXED", "CURRENT", "RELATIVE",
             "DATA" };
 
@@ -392,20 +393,20 @@ public class DateSelection {
     /**
      * Apply this date selection query to the list of DatedThing-s
      *
-     * @param datedThings input list of DatedThing-s
+     * @param times input list of DatedThing-s
      *
      * @return The filtered list
      */
-    public List apply(List datedThings) {
+    public List apply(List times) {
 
-        datedThings = DatedObject.sort(datedThings, false);
+        List<DatedThing> datedThings = DatedObject.sort(times, false);
 
-        List    result      = new ArrayList();
-        Date[]  range       = getRange();
+        List             result      = new ArrayList();
+        Date[]           range       = getRange(datedThings);
 
-        long    startTime   = range[0].getTime();
-        long    endTime     = range[1].getTime();
-        boolean hasInterval = hasInterval();
+        long             startTime   = range[0].getTime();
+        long             endTime     = range[1].getTime();
+        boolean          hasInterval = hasInterval();
 
         //Get the interval ranges to use
         double beforeRange = getPreRangeToUse();
@@ -620,6 +621,17 @@ public class DateSelection {
      * @return time range. If in doLatest or doAll mode this returns null
      */
     public Date[] getRange() {
+        return getRange(null);
+    }
+
+    /**
+     * _more_
+     *
+     * @param dataTimes _more_
+     *
+     * @return _more_
+     */
+    public Date[] getRange(List<DatedThing> dataTimes) {
         if (doLatest) {
             return null;
         }
@@ -632,16 +644,27 @@ public class DateSelection {
         double start = 0;
         double end   = 0;
 
+
+
         if (startMode == TIMEMODE_CURRENT) {
             start = now;
         } else if (startMode == TIMEMODE_FIXED) {
             start = startFixedTime;
+        } else if (startMode == TIMEMODE_DATA) {
+            if (dataTimes != null) {
+                start = dataTimes.get(dataTimes.size()
+                                      - 1).getDate().getTime();
+            }
         }
 
         if (endMode == TIMEMODE_CURRENT) {
             end = now;
         } else if (endMode == TIMEMODE_FIXED) {
             end = endFixedTime;
+        } else if (startMode == TIMEMODE_DATA) {
+            if (dataTimes != null) {
+                end = dataTimes.get(0).getDate().getTime();
+            }
         }
 
 
@@ -852,7 +875,7 @@ public class DateSelection {
      * @return Have interval defined
      */
     public boolean hasInterval() {
-        return interval > 0;
+        return (interval == interval) && (interval > 0);
     }
 
     /**
