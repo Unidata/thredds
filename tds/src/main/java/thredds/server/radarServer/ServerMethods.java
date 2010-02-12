@@ -178,6 +178,7 @@ public class ServerMethods {
    * @return true if list is empty, ie no names are in the actual station list
    * @throws IOException if read error
    */
+  /*  // TODO: check and delete
   public boolean isStationListEmpty(List<String> stations, HashMap<String, Station> stationMap) {
 
     if( stations.get( 0 ).toUpperCase().equals( "ALL") )
@@ -196,7 +197,7 @@ public class ServerMethods {
     }
     return true;
   }
-
+  */
   public boolean isStationListEmpty(List<String> stations, boolean isTerminal ) {
 
     if( stations.get( 0 ).toUpperCase().equals( "ALL") )
