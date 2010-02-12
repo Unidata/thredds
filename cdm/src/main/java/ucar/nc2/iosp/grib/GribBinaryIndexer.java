@@ -237,16 +237,18 @@ public final class GribBinaryIndexer {
         // gbx older then grib
         if (grib.lastModified() < gbx.lastModified())
           return;
-        System.out.println("IndexExtending " + grib.getName() + " " +
-            Calendar.getInstance().getTime().toString());
         // grib, gbx, gribName, gbxName, false(make index)
+        long start = System.currentTimeMillis();
         new Grib1WriteIndex().extendGribIndex(grib, gbx, args[0], args[1], false);
+        System.out.println("IndexExtending " + grib.getName() +" took "+
+        (System.currentTimeMillis() - start) +" ms BufferSize "+ Grib2WriteIndex.indexRafBufferSize);
         ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
       } else {  // create index
-        System.out.println("Indexing " + grib.getName() + " " +
-            Calendar.getInstance().getTime().toString());
         // grib, gribName, gbxName, false(make index)
+        long start = System.currentTimeMillis();
         new Grib1WriteIndex().writeGribIndex(grib, args[0], args[1], false);
+        System.out.println("Indexing " + grib.getName() +" took "+
+        (System.currentTimeMillis() - start) +" ms BufferSize "+ Grib2WriteIndex.indexRafBufferSize);
         ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
       }
     } catch (Exception e) {
@@ -266,24 +268,20 @@ public final class GribBinaryIndexer {
       if (gbx.exists()) {
         // gbx older than grib, no need to check
         if (grib.lastModified() < gbx.lastModified()) {
-//          File invFile = new File( args[ 0 ] +".fmrInv.xml");
-//          // sometimes an index without inventory file
-//          if( invFile.exists() )
-//            return;
-//          ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
           return;
         }
-        System.out.println("IndexExtending " + grib.getName() + " " +
-            Calendar.getInstance().getTime().toString());
         // grib, gbx, gribName, gbxName, false(make index)
+        long start = System.currentTimeMillis();
         new Grib2WriteIndex().extendGribIndex(grib, gbx, args[0], args[1], false);
-
+        System.out.println("IndexExtending " + grib.getName() +" took "+
+        (System.currentTimeMillis() - start) +" ms BufferSize "+ Grib2WriteIndex.indexRafBufferSize);
         ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
       } else {  // create index
-        System.out.println("Indexing " + grib.getName() + " " +
-            Calendar.getInstance().getTime().toString());
         // grib, gribName, gbxName, false(make index)
+        long start = System.currentTimeMillis();
         new Grib2WriteIndex().writeGribIndex(grib, args[0], args[1], false);
+        System.out.println("Indexing " + grib.getName() +" took "+
+        (System.currentTimeMillis() - start) +" ms BufferSize "+ Grib2WriteIndex.indexRafBufferSize);
         ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
       }
     } catch (Exception e) {
