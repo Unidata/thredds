@@ -72,6 +72,7 @@
   <property name="resourcesOptional.jar" value="resourcesOptional.jar"/>
   <property name="spring.jar" value="spring-2.5.jar"/>
   <property name="stax.jar" value="stax-api-1.0.1.jar"/>
+  <property name="unidatacommon.jar" value="unidatacommon.jar"/>
   <property name="visadNoDods.jar" value="visadNoDods.jar"/>
 
   <!-- source -->
@@ -89,10 +90,12 @@
     <include name="external/${jdom.jar}"/>
     <include name="external/${loggingAPI.jar}"/>
     <include name="external/${protobuf.jar}"/>
+    <include name="release/${unidatacommon.jar}"/>
     <include name="release/${visadNoDods.jar}"/>
     <include name="external/${stax.jar}"/>
   </fileset>
 
+  <!-- ToDo Remove, not used? -->
   <fileset id="compileFromSrc.libraries" dir="${root.dir}">
     <include name="lib/${ehcache.jar}"/>
     <include name="lib/${grib.jar}"/>
@@ -101,6 +104,7 @@
     <include name="lib/${jdom.jar}"/>
     <include name="lib/${loggingAPI.jar}"/>
     <include name="lib/${visadNoDods.jar}"/>
+    <include name="lib/${unidatacommon.jar}"/>
     <include name="lib/${jgoodies.jar}"/>
     <include name="lib/${lucene.jar}"/>
     <include name="lib/${protobuf.jar}"/>
@@ -324,6 +328,7 @@
     <unzip dest="${main.dir}">
       <fileset dir="${lib.dir}">
         <include name="release/${bufrTables.jar}"/>
+        <include name="release/${unidatacommon.jar}"/>
         <include name="release/${grib.jar}"/>
         <include name="external/${jdom.jar}"/>
         <include name="external/${jpeg2000.jar}"/>
@@ -399,6 +404,7 @@
     <unzip dest="${idv.dir}">
       <fileset dir="${lib.dir}">
         <include name="release/${bufrTables.jar}"/>
+        <include name="release/${unidatacommon.jar}"/>
         <include name="release/${grib.jar}"/>
         <include name="external/${jdom.jar}"/>
         <include name="external/${httpclient.jar}"/>
@@ -862,6 +868,8 @@
              signedjar="${webstart_dir}/bounce.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${bufrTables.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/bufrTables.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/release/${unidatacommon.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/unidatacommon.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${ehcache.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/ehcache.jar" storepass="${keystore.password}"/>
      <signjar alias="idv" jar="${lib.dir}/release/${grib.jar}" keystore="${keystore}"
