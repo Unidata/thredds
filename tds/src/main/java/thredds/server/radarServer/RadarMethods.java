@@ -193,7 +193,7 @@ public class RadarMethods {
           for( int i = 0; i < stations.length; i++ )
                stations[ i ] = stations[ i ].substring( 1 );
       }
-      doc = makeStationDocument( doc, rootElem, stations,  path.contains( "terminal"));
+      doc = makeStationDocument( doc, rootElem, stations,  radarType );
       return doc;
   }
 
@@ -229,8 +229,9 @@ public class RadarMethods {
 //      startms = System.currentTimeMillis();
       // check Query Params
       if( ! checkQueryParms( radarType, qp, level2 ) ) {
-        qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-        return;
+        //qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+        log.error( "checkQueryParms Failed "+ req.getQueryString() );
+        throw new Exception( "checkQueryParms Failed "+ req.getQueryString() );
       }
 //      endms = System.currentTimeMillis();
 //      System.out.println( "after checkQueryParms "+ (endms - startms));
@@ -249,14 +250,15 @@ public class RadarMethods {
       }
       // writes first part of catalog
       if( ! writeHeader( radarType,  qp, pathInfo, pw) ) {
-        qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-        return;
+        //qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+        log.error( "Write Header Failed "+ req.getQueryString() );
+        throw new Exception( "Write Header Failed "+ req.getQueryString() );
       }
 //      endms = System.currentTimeMillis();
 //      System.out.println( "after writeHeader "+ (endms - startms));
 //      startms = System.currentTimeMillis();
       // gets products according to stations, time, and variables
-      boolean dataFound = processQuery( radarDir, qp, pw, serviceBase, pathInfo.contains( "terminal") );
+      boolean dataFound = processQuery( radarDir, qp, pw, serviceBase, radarType  );
 //      endms = System.currentTimeMillis();
 //      System.out.println( "after processQuery "+ (endms - startms));
 //      startms = System.currentTimeMillis();
@@ -279,8 +281,7 @@ public class RadarMethods {
 //      System.out.println( "after radarQuery "+ (endms - startms));
 //      startms = System.currentTimeMillis();
     } catch (Throwable t) {
-        log.error(req.getQueryString());
-        log.error("radarServer radarNexradQuery error" );
+        log.error("Query error "+ req.getQueryString());
         ServletUtil.handleException(t, res);
     }
   } // end radarNexradQuery
@@ -289,7 +290,7 @@ public class RadarMethods {
   private Boolean checkQueryParms(RadarServer.RadarType radarType, QueryParams qp, Boolean level2 )
     throws IOException {
     try {
-      if (qp.hasBB) {   
+      if (qp.hasBB) {
         if( radarType.equals( RadarServer.RadarType.nexrad ) )
           qp.stns = sm.getStationNames(qp.getBB(), nexradList );
         else
@@ -297,17 +298,19 @@ public class RadarMethods {
         if( ! level2 )
             qp.stns = sm.convert4to3stations( qp.stns );
         if (qp.stns.size() == 0) {
-          qp.errs.append("<documentation>ERROR: Bounding Box contains no stations</documentation>\n");
+          //qp.errs.append("<documentation>ERROR: Bounding Box contains no stations</documentation>\n");
           //qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-          return false;
+          log.error( "Bounding Box contains no stations " );
+          throw new Exception( "Bounding Box contains no stations " );
         }
       }
 
       if (qp.hasStns ) {
-        if( sm.isStationListEmpty(qp.stns, radarType.equals( RadarServer.RadarType.terminal ) )) {
-          qp.errs.append("<documentation>ERROR: No valid stations specified</documentation>\n");
+        if( isStationListEmpty(qp.stns, radarType )) {
+          //qp.errs.append("<documentation>ERROR: No valid stations specified</documentation>\n");
           //qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-          return false;
+          log.error( "No valid stations specified 1" );
+          throw new Exception( "No valid stations specified" );
         }
       }
 
@@ -320,9 +323,10 @@ public class RadarMethods {
         if( ! level2 )
             qp.stns = sm.convert4to3stations( qp.stns );
       } else if (qp.fatal) {
-        qp.errs.append("<documentation>ERROR: No valid stations specified</documentation>\n");
+        //qp.errs.append("<documentation>ERROR: No valid stations specified</documentation>\n");
         //qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-        return false;
+        log.error( "No valid stations specified 2" );
+        throw new Exception( "No valid stations specified" );
       }
 
       // qp.stns could be null, ouch
@@ -338,8 +342,11 @@ public class RadarMethods {
 
       /*
       if (qp.hasTimePoint && ( sm.filterDataset(qp.time) == null)) {
-        qp.errs.append("<documentation>ERROR: This dataset does not contain the time point= " + qp.time + " </documentation>\n");
+        //qp.errs.append("<documentation>ERROR: This dataset does not contain the time point= " + qp.time + " </documentation>\n");
         //qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+        log.error( "No valid stations specified" );
+        throw new Exception( "No valid stations specified" );
+
         return;
       }
       */
@@ -348,8 +355,10 @@ public class RadarMethods {
       if (qp.hasDateRange) {
         DateRange dr = qp.getDateRange();
         if (! sm.intersect(dr, start, end)) {
-          qp.errs.append("<documentation>ERROR: This dataset does not contain the time range= " + qp.time + " </documentation>\n");
+          //qp.errs.append("<documentation>ERROR: This dataset does not contain the time range= " + qp.time + " </documentation>\n");
           //qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+          log.error( "No valid stations specified" );
+          throw new Exception( "No valid stations specified" );
           return;
         }
       }
@@ -358,6 +367,8 @@ public class RadarMethods {
       if (useAllStations && useAllTimes) {
         qp.errs.append("<documentation>ERROR: You must subset by space or time</documentation>\n");
         //qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+        log.error( "No valid stations specified" );
+        throw new Exception( "No valid stations specified" );
         return;
       }
       */
@@ -368,7 +379,9 @@ public class RadarMethods {
                   qp.time_end = new DateType( "present", null, null);
                   qp.time_start = new DateType(ServerMethods.epic, null, null);
               } catch (java.text.ParseException e) {
-                  qp.errs.append("Illegal param= 'time' must be valid ISO Duration\n");
+                  //qp.errs.append("Illegal param= 'time' must be valid ISO Duration\n");
+                  log.error("Illegal param= 'time' must be valid ISO Duration");
+                  throw new Exception("Illegal param= 'time' must be valid ISO Duration");
               }
           } else {
               qp.time_end = qp.time;
@@ -385,7 +398,9 @@ public class RadarMethods {
              qp.time_end = new DateType( "present", null, null);
              qp.time_start = new DateType(ServerMethods.epic, null, null);
          } catch (java.text.ParseException e) {
-             qp.errs.append("Illegal param= 'time' must be valid ISO Duration\n");
+             //qp.errs.append("Illegal param= 'time' must be valid ISO Duration\n");
+             log.error("Illegal param= 'time' must be valid ISO Duration");
+             throw new Exception("Illegal param= 'time' must be valid ISO Duration");
          }
       }
 
@@ -511,7 +526,7 @@ public class RadarMethods {
         return false;
       }
       // at this point must have stations
-      if( sm.isStationListEmpty(qp.stns, radarType.equals( RadarServer.RadarType.terminal ) )) {
+      if( isStationListEmpty(qp.stns, radarType )) {
         pw.println("      <documentation>No data available for station(s) "+
             "and time range</documentation>");
         pw.println("    </dataset>");
@@ -528,7 +543,7 @@ public class RadarMethods {
   // actual products ie stn/var/time stn/time/var  var/stn/time etc.
   // processQuery is limited by the stns, dates and vars in the query
   private Boolean processQuery( String tdir, QueryParams qp, PrintWriter pw,
-    String serviceBase, boolean isTerminal ) throws IOException {
+    String serviceBase, RadarServer.RadarType radarType  ) throws IOException {
 
     int numProds = 0;
     try { // could have null pointer exceptions on dirs & checks
@@ -557,15 +572,12 @@ public class RadarMethods {
         tdirs = (String[]) tmp.toArray( tdirs );
       }
       // decide if directory contains stns, dates or vars, only one true
-      Boolean isStns = sm.isStation(tdirs[ 0 ], isTerminal );
-
+      Boolean isStns = isStation(tdirs[ 0 ], radarType );
       Boolean isDates = ServerMethods.p_yyyymmdd.matcher(tdirs[ 0 ]).find();
-      Boolean isVars = nexradVars.contains( tdirs[ 0 ].toUpperCase() );
-      if( ! isVars )
-        isVars = terminalVars.contains( tdirs[ 0 ].toUpperCase() );
+      Boolean isVars = isVar( tdirs[ 0 ].toUpperCase(), radarType  );
 
       if( ! ( isStns || isDates || isVars ) ) {
-        log.error("radarServer processQuery error" );
+        log.error("processQuery error, no valid stn, date, or var "+ qp.toString() );
         pw.println( "<documentation>\n" );
         pw.println( "Query can't be satisfied :<![CDATA["+ qp.toString() +"]]>\n" );
         pw.println( "</documentation>\n" );
@@ -585,7 +597,9 @@ public class RadarMethods {
           // need to check next dirs for products, dates or vars
           File file = new File( sDir +"/"+ sdirs[ 0 ] );
           if( file.isFile() ) { // products in dir, process dir
-            numProds += processProducts( sdirs, sDir.replaceFirst( tdir, "").substring( 1 ),
+            // TODO: check and delete
+            //numProds += processProducts( sdirs, sDir.replaceFirst( tdir, "").substring( 1 ),
+            numProds += processProducts( sdirs, sDir.substring( tdir.length() +1),
                dateStart, dateEnd, qp, pw, serviceBase );
           } else if( ServerMethods.p_yyyymmdd.matcher(sdirs[ 0 ]).find() ) { //dates
             java.util.Arrays.sort( sdirs, new CompareKeyDescend() );
@@ -598,7 +612,9 @@ public class RadarMethods {
                 String[] ndirs = files.list();
                 file = new File( dDir +"/"+ ndirs[ 0 ]);
                 if( file.isFile() ) { // products in dir, process dir
-                  numProds += processProducts( ndirs, dDir.replaceFirst( tdir, "").substring( 1 ),
+                  // TODO: check and delete
+                  //numProds += processProducts( ndirs, dDir.replaceFirst( tdir, "").substring( 1 ),
+                  numProds += processProducts( ndirs, dDir.substring( tdir.length() +1),
                      dateStart, dateEnd, qp, pw, serviceBase );
                   if( qp.hasTimePoint ) // only want one product
                     break;
@@ -619,7 +635,9 @@ public class RadarMethods {
               file = new File( vDir +"/"+ vdirs[ 0 ] );
               if( file.isFile() ) { // products in dir, return dir
                 //dirTree.add( vDir );
-                numProds += processProducts( vdirs, vDir.replaceFirst( tdir, "").substring( 1 ),
+                // TODO: check and delete
+               // numProds += processProducts( vdirs, vDir.replaceFirst( tdir, "").substring( 1 ),
+                numProds += processProducts( vdirs, vDir.substring( tdir.length() +1),
                    dateStart, dateEnd, qp, pw, serviceBase );
 
               }
@@ -640,11 +658,13 @@ public class RadarMethods {
           // need to check next dirs for products, dates or stations
           File file = new File( vDir +"/"+ vdirs[ 0 ] );
           if( file.isFile() ) { // products in dir, process dir
-            numProds += processProducts( vdirs, vDir.replaceFirst( tdir, "").substring( 1 ),
+            // TODO: check and delete
+            //numProds += processProducts( vdirs, vDir.replaceFirst( tdir, "").substring( 1 ),
+            numProds += processProducts( vdirs, vDir.substring( tdir.length() +1),
                dateStart, dateEnd, qp, pw, serviceBase );
           // TODO: check and delete
           // nexradMap.get( "K"+ vdirs[ 0 ] ) != null
-          } else if( sm.isStation(vdirs[ 0 ], isTerminal )) {
+          } else if( isStation(vdirs[ 0 ], radarType )) {
             for (String station : qp.stns ) {
               String sDir = vDir +'/'+ station ;
               files = new File( sDir );
@@ -656,7 +676,9 @@ public class RadarMethods {
               // need to check next dirs for products, dates
               file = new File( sDir +"/"+ sdirs[ 0 ] );
               if( file.isFile() ) { // products in dir, return dir
-                numProds += processProducts( sdirs, sDir.replaceFirst( tdir, "").substring( 1 ),
+                 // TODO: check and delete
+                //numProds += processProducts( sdirs, sDir.replaceFirst( tdir, "").substring( 1 ),
+                numProds += processProducts( sdirs, sDir.substring( tdir.length() +1),
                    dateStart, dateEnd, qp, pw, serviceBase );
               } else if( ServerMethods.p_yyyymmdd.matcher(sdirs[ 0 ]).find() ) { //dates
                 java.util.Arrays.sort( sdirs, new CompareKeyDescend() );
@@ -666,7 +688,9 @@ public class RadarMethods {
                     String dDir = sDir +"/"+ sdirs[ k ];
                     files = new File( dDir );
                     String[] ddirs = files.list();
-                    numProds += processProducts( ddirs, dDir.replaceFirst( tdir, "").substring( 1 ),
+                    // TODO: check and delete
+                    //numProds += processProducts( ddirs, dDir.replaceFirst( tdir, "").substring( 1 ),
+                    numProds += processProducts( ddirs, dDir.substring( tdir.length() +1),
                        dateStart, dateEnd, qp, pw, serviceBase);
                     if( qp.hasTimePoint ) // only want one product
                       break;
@@ -764,31 +788,16 @@ public class RadarMethods {
   } // end HTMLdataset
 
   /**
-  * Create an XML station document from this stationMap
+  * Create an XML station document
    * @param doc
    * @param rootElem
    * @param stations
    * @return Document
   */
-  public Document makeStationDocument( Document doc, Element rootElem, String[] stations, boolean terminal )
-    throws Exception {
-
+  public Document makeStationDocument( Document doc, Element rootElem, String[] stations,
+                                       RadarServer.RadarType radarType ) throws Exception {
     for (String s : stations ) {
-      Station stn = null;
-      if( s.length() == 3 && terminal ) { // terminal level3 station
-        stn = terminalMap.get( "T"+ s );
-      } else if( s.length() == 3 ) {
-        for( Station stn3 : nexradList ) {
-           if( stn3.getValue().endsWith( s ) ) {
-             stn = stn3;
-             break;
-           }
-        }
-      } else if( terminal ) {
-        stn = terminalMap.get( s );
-      } else {
-         stn = nexradMap.get( s );
-      }
+      Station stn = getStation( s, radarType );
 
       Element sElem = new Element("station");
       if( stn == null ) { // stn not in table
@@ -838,9 +847,7 @@ public class RadarMethods {
         stations = new String[tmp.size()];
         stations = (String[]) tmp.toArray( stations );
       }
-      // actually not a station, it's a var so get next dir down
-      if( nexradVars.contains( stations[ 0 ].toUpperCase() ) ||
-        terminalVars.contains( stations[ 0 ].toUpperCase() )) {
+      if( isVar( stations[ 0 ].toUpperCase(), radarType ) ) {
         if( radarType.equals( RadarServer.RadarType.nexrad ) ) {
           //path += "/N0R";
           path += "/"+ nexradVars.get( 0 );
@@ -870,24 +877,10 @@ public class RadarMethods {
    * @param stations
    * @param pw 
   */
-  public void printStations( String[] stations, PrintWriter pw, boolean isTerminal ) throws Exception {
+  public void printStations( String[] stations, PrintWriter pw, RadarServer.RadarType radarType ) throws Exception {
     for (String s : stations ) {
-      Station stn = null;
-      // TODO: fix like makeStationDocument
-      if( s.length() == 3 && isTerminal ) { // level3 station
-        stn = terminalMap.get( "T"+ s );
-      } else if( s.length() == 3 ) {
-        for( Station stn3 : nexradList ) {
-           if( stn3.getValue().endsWith( s ) ) {
-             stn = stn3;
-             break;
-           }
-        }
-      } else if( isTerminal ) {
-        stn = terminalMap.get(  s );
-      } else {
-          stn = nexradMap.get( s );
-      }
+      Station stn = getStation( s, radarType );
+
       if(  stn == null ) {
         pw.println( "   <station id=\""+ s +"\" state=\"XX\" country=\"XX\">");
         pw.println( "      <name>Unknown</name>");
@@ -913,7 +906,124 @@ public class RadarMethods {
     }
   }
 
-  // TODO: check
+  /**
+   * Determine if any of the given station names are actually in the dataset.
+   *
+   * @param stations List of station names
+   * @return true if list is empty, ie no names are in the actual station list
+   * @throws IOException if read error
+   */
+  public boolean isStationListEmpty(List<String> stations, RadarServer.RadarType radarType ) {
+
+    if( stations.get( 0 ).toUpperCase().equals( "ALL") )
+        return false;
+
+    for (String s : stations ) {
+      if( isStation( s, radarType ))
+        return false;
+    }
+    return true;
+  }
+
+  /**
+   * returns true if a station
+   * @param station
+   * @param radarType
+   * @return  boolean  isStation
+   */
+  public boolean isStation( String station, RadarServer.RadarType radarType ) {
+
+    if( station.toUpperCase().equals( "ALL") )
+        return true;
+
+    Station stn = null;
+    if( station.length() == 3 && radarType.equals( RadarServer.RadarType.terminal ) ) { // terminal level3 station
+      stn = terminalMap.get( "T"+ station );
+    } else if( station.length() == 3 ) {
+      for( Station stn3 : nexradList ) {
+         if( stn3.getValue().endsWith( station ) ) {
+           stn = stn3;
+           break;
+         }
+      }
+    } else if( radarType.equals( RadarServer.RadarType.terminal ) ) {
+      stn = terminalMap.get( station );
+    } else {
+       stn = nexradMap.get( station );
+    }
+    if( stn != null)
+      return true;
+    return false;
+  }
+
+  /**
+   * returns station or null
+   * @param station
+   * @param radarType
+   * @return  station
+   */
+  public Station getStation( String station, RadarServer.RadarType radarType ) {
+
+    Station stn = null;
+    if( station.length() == 3 && radarType.equals( RadarServer.RadarType.terminal ) ) { // terminal level3 station
+      stn = terminalMap.get( "T"+ station );
+    } else if( station.length() == 3 ) {
+      for( Station stn3 : nexradList ) {
+         if( stn3.getValue().endsWith( station ) ) {
+           stn = stn3;
+           break;
+         }
+      }
+    } else if( radarType.equals( RadarServer.RadarType.terminal ) ) {
+      stn = terminalMap.get( station );
+    } else {
+       stn = nexradMap.get( station );
+    }
+    return stn;
+  }
+
+  /**
+   * returns stations or null
+   * @param radarType
+   * @return  station
+   */
+  public String[] getStations( RadarServer.RadarType radarType ) {
+    String[] stn = null;
+    if( radarType.equals( RadarServer.RadarType.nexrad ) ) {
+      stn = new String[ nexradList.size() ];
+      stn = nexradList.toArray( stn );
+    } else if( radarType.equals( RadarServer.RadarType.terminal ) ) {
+      stn = new String[ terminalList.size() ];
+      stn = terminalList.toArray( stn );
+    }
+    return stn;
+  }
+
+  /**
+   * returns true if a variable
+   * @param var
+   * @param radarType
+   * @return  boolean  isVar
+   */
+  public boolean isVar( String var, RadarServer.RadarType radarType ) {
+
+    if( var.toUpperCase().equals( "ALL") )
+        return true;
+    /*
+    if( radarType.equals( RadarServer.RadarType.nexrad ) ) {
+      return nexradVars.contains( var );
+    } else if( radarType.equals( RadarServer.RadarType.terminal ) ) {
+      return terminalVars.contains( var );
+    }
+    */
+    if( nexradVars.contains( var ) ) {
+      return true;
+    } else if( terminalVars.contains( var ) ) {
+      return true;
+    }
+    return false;
+  }
+
   public String getStartDateTime( String path ) throws Exception {
     String timeDir =  RadarServer.dataLocation.get( path );
     log.debug( "timeDir ="+ timeDir );
