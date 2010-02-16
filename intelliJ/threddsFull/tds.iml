@@ -16,9 +16,9 @@
           <root url="file://$MODULE_DIR$/../../tds/src/main/java" />
         </sourceRoots>
         <building>
-          <setting name="EXPLODED_URL" value="file://" />
-          <setting name="EXPLODED_ENABLED" value="false" />
-          <setting name="JAR_URL" value="file://" />
+          <setting name="EXPLODED_URL" value="file://$MODULE_DIR$/thredds/war" />
+          <setting name="EXPLODED_ENABLED" value="true" />
+          <setting name="JAR_URL" value="file://$MODULE_DIR$/target/thredds.war" />
           <setting name="JAR_ENABLED" value="false" />
           <setting name="EXCLUDE_EXPLODED_DIRECTORY" value="true" />
         </building>
