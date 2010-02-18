@@ -60,6 +60,10 @@ import org.jdom.Element;
 public class HdfEos {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HdfEos.class);
   static boolean showWork = false; // set in debug
+  static private final String GEOLOC_FIELDS = "Geolocation Fields";
+  //static private final String GEOLOC_FIELDS2 = "Geolocation_Fields";
+  static private final String DATA_FIELDS = "Data Fields";
+  //static private final String DATA_FIELDS2 = "Data_Fields";
 
   /**
    * Amend the given NetcdfFile with metadata from HDF-EOS structMetadata.
@@ -144,6 +148,9 @@ public class HdfEos {
         }
         String swathName = swathNameElem.getText();
         Group swathGroup = findGroupNested(rootg, swathName);
+        //if (swathGroup == null)
+        //  swathGroup = findGroupNested(rootg, H4header.createValidObjectName(swathName));
+
         if (swathGroup != null) {
           featureType = amendSwath(ncfile, elemSwath, swathGroup);
         } else {
@@ -164,6 +171,8 @@ public class HdfEos {
         }
         String gridName = gridNameElem.getText();
         Group gridGroup = findGroupNested(rootg, gridName);
+        //if (gridGroup == null)
+        //  gridGroup = findGroupNested(rootg, H4header.createValidObjectName(gridName));
         if (gridGroup != null) {
           featureType = amendGrid(elemGrid, gridGroup);
         } else {
@@ -184,6 +193,8 @@ public class HdfEos {
         }
         String name = nameElem.getText();
         Group ptGroup = findGroupNested(rootg, name);
+        //if (ptGroup == null)
+        //  ptGroup = findGroupNested(rootg, H4header.createValidObjectName(name));
         if (ptGroup != null) {
           featureType = FeatureType.POINT;
         } else {
@@ -208,6 +219,8 @@ public class HdfEos {
     List<Element> dims = (List<Element>) d.getChildren();
     for (Element elem : dims) {
       String name = elem.getChild("DimensionName").getText();
+      name = H4header.createValidObjectName(name);
+
       if (name.equalsIgnoreCase("scalar"))
         continue;
       String sizeS = elem.getChild("Size").getText();
@@ -230,7 +243,10 @@ public class HdfEos {
     List<Element> dimMaps = (List<Element>) dmap.getChildren();
     for (Element elem : dimMaps) {
       String geoDimName = elem.getChild("GeoDimension").getText();
+      geoDimName = H4header.createValidObjectName(geoDimName);
       String dataDimName = elem.getChild("DataDimension").getText();
+      dataDimName = H4header.createValidObjectName(dataDimName);
+
       String offsetS = elem.getChild("Offset").getText();
       String incrS = elem.getChild("Increment").getText();
       int offset = Integer.parseInt(offsetS);
@@ -249,7 +265,7 @@ public class HdfEos {
     }
 
     // Geolocation Variables
-    Group geoFieldsG = parent.findGroup("Geolocation Fields");
+    Group geoFieldsG = parent.findGroup(GEOLOC_FIELDS);
     if (geoFieldsG != null) {
       Variable latAxis = null, lonAxis = null;
       Element floc = swathElem.getChild("GeoField");
@@ -257,6 +273,8 @@ public class HdfEos {
       for (Element elem : varsLoc) {
         String varname = elem.getChild("GeoFieldName").getText();
         Variable v = geoFieldsG.findVariable(varname);
+        //if (v == null)
+        //  v = geoFieldsG.findVariable( H4header.createValidObjectName(varname));
         assert v != null : varname;
         AxisType axis = addAxisType(v);
         if (axis == AxisType.Lat) latAxis = v;
@@ -275,7 +293,7 @@ public class HdfEos {
     }
 
     // Data Variables
-    Group dataG = parent.findGroup("Data Fields");
+    Group dataG = parent.findGroup(DATA_FIELDS);
     if (dataG != null) {
 
       Element f = swathElem.getChild("DataField");
@@ -285,8 +303,10 @@ public class HdfEos {
         if (dataFieldNameElem == null) continue;
         String varname = dataFieldNameElem.getText();
         Variable v = dataG.findVariable(varname);
+        //if (v == null)
+        //  v = dataG.findVariable( H4header.createValidObjectName(varname));
         if (v == null) {
-          log.error("Cant find "+varname);
+          log.error("Cant find variable "+varname);
           continue;
         }
 
@@ -347,6 +367,7 @@ public class HdfEos {
     List<Element> dims = (List<Element>) d.getChildren();
     for (Element elem : dims) {
       String name = elem.getChild("DimensionName").getText();
+      name = H4header.createValidObjectName(name);
       if (name.equalsIgnoreCase("scalar"))
         continue;
 
@@ -369,14 +390,17 @@ public class HdfEos {
     }
 
     // Geolocation Variables
-    Group geoFieldsG = parent.findGroup("Geolocation Fields");
-    if (geoFieldsG != null) {
+    Group geoFieldsG = parent.findGroup(GEOLOC_FIELDS);
+    //if (geoFieldsG == null)  geoFieldsG = parent.findGroup(GEOLOC_FIELDS2);
 
+    if (geoFieldsG != null) {
       Element floc = gridElem.getChild("GeoField");
       List<Element> varsLoc = (List<Element>) floc.getChildren();
       for (Element elem : varsLoc) {
         String varname = elem.getChild("GeoFieldName").getText();
         Variable v = geoFieldsG.findVariable(varname);
+        //if (v == null)
+        //  v = geoFieldsG.findVariable( H4header.createValidObjectName(varname));
         assert v != null : varname;
 
         Element dimList = elem.getChild("DimList");
@@ -386,14 +410,19 @@ public class HdfEos {
     }
 
     // Data Variables
-    Group dataG = parent.findGroup("Data Fields");
-    if (dataG != null) {
+    Group dataG = parent.findGroup(DATA_FIELDS);
+    //if (dataG == null) dataG = parent.findGroup(DATA_FIELDS2);
 
+    if (dataG != null) {
       Element f = gridElem.getChild("DataField");
       List<Element> vars = (List<Element>) f.getChildren();
       for (Element elem : vars) {
         String varname = elem.getChild("DataFieldName").getText();
         Variable v = dataG.findVariable(varname);
+        //if (v == null)
+        //  v = dataG.findVariable( H4header.createValidObjectName(varname));
+        if (v == null)
+          System.out.println("HEY");
         assert v != null : varname;
 
         Element dimList = elem.getChild("DimList");
@@ -451,6 +480,8 @@ public class HdfEos {
     for (int i=0; i<values.size(); i++) {
       Element value = values.get(i);
       String dimName = value.getText();
+      dimName = H4header.createValidObjectName(dimName);
+
       Dimension dim = group.findDimension(dimName);
       Dimension oldDim = oldDims.get(i);
       if (dim == null)
@@ -491,6 +522,7 @@ public class HdfEos {
 
   // look for a group with the given name. recurse into subgroups if needed. breadth first
   private Group findGroupNested(Group parent, String name) {
+
     for (Group g : parent.getGroups()) {
       if (g.getShortName().equals(name))
         return g;

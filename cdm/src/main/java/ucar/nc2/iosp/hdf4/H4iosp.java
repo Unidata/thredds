@@ -463,12 +463,20 @@ public class H4iosp extends AbstractIOServiceProvider {
 
         // uncompress it
         if (compress.compress_type == TagEnum.COMP_CODE_DEFLATE) {
+          // read the stream in and uncompress
           InputStream zin = new java.util.zip.InflaterInputStream(in);
           ByteArrayOutputStream out = new ByteArrayOutputStream(compress.uncomp_length);
           IO.copy(zin, out);
           byte[] buffer = out.toByteArray();
           bb = ByteBuffer.wrap(buffer);
           //System.out.println("  uncompress " + buffer.length + ", wanted=" + compress.uncomp_length);
+          
+        } else if (compress.compress_type == TagEnum.COMP_CODE_NONE) {
+          // just read the stream in
+          ByteArrayOutputStream out = new ByteArrayOutputStream(compress.uncomp_length);
+          IO.copy(in, out);
+          byte[] buffer = out.toByteArray();
+          bb = ByteBuffer.wrap(buffer);
         } else {
           throw new IllegalStateException("unknown compression type =" + compress.compress_type);
         }

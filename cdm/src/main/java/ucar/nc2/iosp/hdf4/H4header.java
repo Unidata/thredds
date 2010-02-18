@@ -34,6 +34,7 @@ package ucar.nc2.iosp.hdf4;
 
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
+import ucar.unidata.util.StringUtil;
 import ucar.nc2.*;
 import ucar.ma2.*;
 
@@ -75,6 +76,10 @@ public class H4header {
     return false;
   }
 
+  static String createValidObjectName(String name ) {
+    return StringUtil.replace(name, ' ', "_"); // added 2/15/2010
+  }
+
   private static boolean debugDD = false; // DDH/DD
    private static boolean debugTag1 = false; // show tags after read(), before read2().
    private static boolean debugTag2 = false;  // show tags after everything is done.
@@ -85,7 +90,7 @@ public class H4header {
    private static boolean debugChunkTable = false; // chunked data
    private static boolean debugChunkDetail = false; // chunked data
    private static boolean debugTracker = false; // memory tracker
-   private static boolean warnings = true; // log messages
+   private static boolean warnings = false; // log messages
 
    private static boolean debugHdfEosOff = false; // allow to turn hdf eos processing off
 
@@ -388,7 +393,7 @@ public class H4header {
     }
 
     boolean isUnlimited = (length == 0);
-    Dimension dim = new Dimension(group.name, length, true, isUnlimited, false);
+    Dimension dim = new Dimension(createValidObjectName(group.name), length, true, isUnlimited, false);
     if (debugConstruct) System.out.println("added dimension " + dim + " from VG " + group.refno);
     ncfile.addDimension(null, dim);
   }
@@ -689,6 +694,7 @@ public class H4header {
 
     Variable v;
     if (vh.nfields == 1) {
+      // String name = createValidObjectName(vh.name);
       v = new Variable(ncfile, null, null, vh.name);
       vinfo.setVariable(v);
       H4type.setDataType(vh.fld_type[0], v);
@@ -723,6 +729,7 @@ public class H4header {
 
       Structure s;
       try {
+        // String name = createValidObjectName(vh.name);
         s = new Structure(ncfile, null, null, vh.name);
         vinfo.setVariable(s);
         //vinfo.recsize = vh.ivsize;
@@ -805,8 +812,10 @@ public class H4header {
       if (tag.code == 1965) {
         TagVGroup vg = (TagVGroup) tag;
         if (vg.className.startsWith("Dim") || vg.className.startsWith("UDim")) {
-          Dimension d = ncfile.getRootGroup().findDimension(vg.name);
-          if (d == null) throw new IllegalStateException();
+          String dimName = H4header.createValidObjectName(vg.name);
+          Dimension d = ncfile.getRootGroup().findDimension(dimName);
+          if (d == null)
+            throw new IllegalStateException();
           dims.add(d);
         }
       }
@@ -1881,6 +1890,7 @@ public class H4header {
 
       short len = raf.readShort();
       name = readString(len);
+      // name = createValidObjectName(name);
       len = raf.readShort();
       className = readString(len);
 

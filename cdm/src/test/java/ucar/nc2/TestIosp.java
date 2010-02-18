@@ -65,9 +65,12 @@ public class TestIosp {
     suite.addTest( new TestSuite( ucar.nc2.iosp.TestMiscIosp.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.bufr.TestBufrRead.class));
 
-    // slow !!
-    // suite.addTest( ucar.nc2.iosp.hdf5.TestH5.suite());
-    // suite.addTest( ucar.nc2.iosp.hdf4.TestH4.suite());
+    suite.addTest( ucar.nc2.iosp.hdf4.TestH4.suite());
+    suite.addTest( ucar.nc2.iosp.hdf5.TestH5.suite());
+
+    // slow - comment out if needed
+    suite.addTest(new TestSuite(ucar.nc2.iosp.hdf4.TestH4subset.class)); //
+    suite.addTest(new TestSuite(ucar.nc2.iosp.hdf5.TestH5subset.class)); //
 
     return suite;
   }

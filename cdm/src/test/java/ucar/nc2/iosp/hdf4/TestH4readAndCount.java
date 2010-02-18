@@ -56,21 +56,22 @@ public class TestH4readAndCount extends TestCase {
     System.out.println("  dims  vars gatts  atts strFlds groups");
 // ---------------Reading directory C:/data/hdf4/
     read(testDir + "17766010.hdf", 0, 2, 2, 0, 8, 0);
-    read(testDir + "96108_08.hdf", 5, 44, 39, 39, 0, 0);
+    read(testDir + "96108_08.hdf", 5, 49, 39, 39, 0, 0);
     read(testDir + "balloon_sonde.o3_knmi000_de.bilt_s2_20060905t112100z_002.hdf", 4, 11, 33, 286, 0, 0);
-    read(testDir + "c402_rp_02.diag.sfc.20020122_0130z.hdf", 3, 86, 6, 590, 0, 0);
+    read(testDir + "c402_rp_02.diag.sfc.20020122_0130z.hdf", 3, 86, 7, 590, 0, 0);
     read(testDir + "f13_owsa_04010_09A.hdf", 0, 7, 3, 35, 0, 0);
     read(testDir + "MI1B2T_B54_O003734_AN_05.hdf", 8, 4, 2, 4, 0, 0);
     read(testDir + "MI1B2T_B55_O003734_AN_05.hdf", 8, 4, 2, 4, 0, 0);
     read(testDir + "MI1B2T_B56_O003734_AN_05.hdf", 8, 4, 2, 4, 0, 0);
-    read(testDir + "TOVS_BROWSE_MONTHLY_AM_B861001.E861031_NF.HDF", 2, 3, 5, 9, 0, 0);
+    read(testDir + "TOVS_BROWSE_MONTHLY_AM_B861001.E861031_NF.HDF", 0, 3, 5, 9, 0, 0);
+    read(testDir + "MYD021KM.A2008349.1800.005.2009329084841.hdf", 20, 41, 54, 179, 14, 3);
 
     System.out.println("\n  dims  vars gatts  atts strFlds groups");
 
 // ---------------Reading directory C:\data\hdf4\eos
-    read(testDir + "eos/amsua/amsua16_2008.001_37503_0001_0108_GC.eos", 2, 19, 23, 22, 0, 4);
-    read(testDir + "eos/amsua/amsua16_2008.001_37506_0431_0625_WI.eos", 2, 19, 23, 22, 0, 4);
-    read(testDir + "eos/amsua/amsua_2000.202_11353_0003_0157_GC.eos", 2, 19, 22, 22, 0, 4);
+    read(testDir + "eos/amsua/amsua16_2008.001_37503_0001_0108_GC.eos", 2, 19, 23, 23, 0, 4);
+    read(testDir + "eos/amsua/amsua16_2008.001_37506_0431_0625_WI.eos", 2, 19, 23, 23, 0, 4);
+    read(testDir + "eos/amsua/amsua_2000.202_11353_0003_0157_GC.eos", 2, 21, 22, 23, 0, 4);
     read(testDir + "eos/aster/AsterSwath.hdf", 4, 15, 6, 11, 0, 4);
     read(testDir + "eos/aster/PR1B0000-2000101203_010_001.hdf", 25, 67, 4, 39, 351, 14);
     read(testDir + "eos/misr/MI1B2T_B54_O003734_AN_05.hdf", 8, 4, 2, 4, 0, 0);
@@ -80,14 +81,14 @@ public class TestH4readAndCount extends TestCase {
     read(testDir + "eos/modis/MOD02SSH.A2000243.1850.003.hdf", 20, 39, 50, 157, 14, 3);
     read(testDir + "eos/modis/MOD35_L2.A2000243.1850.003.hdf", 6, 15, 18, 96, 0, 4);
     read(testDir + "eos/mopitt/MOP03M-200501-L3V81.0.1.hdf", 5, 26, 8, 0, 0, 3);
-    read(testDir + "eos/tmi/tmi_L2c_2008.001_57703_v04.eos", 2, 16, 12, 13, 0, 4);
+    read(testDir + "eos/tmi/tmi_L2c_2008.001_57703_v04.eos", 2, 16, 12, 14, 0, 4);
 
     System.out.println("\n  dims  vars gatts  atts strFlds groups");
 // ---------------Reading directory C:\data\hdf4\ncidc
-    read(testDir + "ncidc/AMSR_E_L2A_BrightnessTemperatures_V08_200801012345_A.hdf", 26, 101, 48, 277, 0, 9);
+    read(testDir + "ncidc/AMSR_E_L2A_BrightnessTemperatures_V08_200801012345_A.hdf", 26, 101, 48, 280, 0, 9);
     read(testDir + "ncidc/AMSR_E_L2_Land_T06_200801012345_A.hdf", 0, 4, 4, 1, 14, 2);
     read(testDir + "ncidc/AMSR_E_L3_DailyLand_B04_20080101.hdf", 4, 36, 38, 34, 0, 6);
-    read(testDir + "ncidc/ESMR-1977131.tne.15", 2, 1, 2, 2, 0, 0);
+    read(testDir + "ncidc/ESMR-1977131.tne.15", 0, 1, 2, 2, 0, 0);
     read(testDir + "ncidc/MOD02HKM.A2007016.0245.005.2007312120020.hdf", 16, 23, 52, 64, 14, 3);
     read(testDir + "ncidc/MOD02OBC.A2007001.0005.005.2007307210540.hdf", 46, 140, 50, 7, 865, 0);
     read(testDir + "ncidc/MOD10A1.A2008001.h23v15.005.2008003161138.hdf", 2, 7, 11, 34, 0, 2);
@@ -95,8 +96,8 @@ public class TestH4readAndCount extends TestCase {
     System.out.println("\n  dims  vars gatts  atts strFlds groups");
 // ---------------Reading directory C:\data\hdf4\ssec
     read(testDir + "ssec/2006166131201_00702_CS_2B-GEOPROF_GRANULE_P_R03_E00.hdf", 2, 27, 188, 35, 0, 4);
-    read(testDir + "ssec/AIRS.2005.08.28.103.L1B.AIRS_Rad.v4.0.9.0.G05241172839.hdf", 9, 216, 284, 20, 0, 4);
-    read(testDir + "ssec/CAL_LID_L1-Launch-V1-06.2006-07-07T21-20-40ZD.hdf", 0, 59, 2, 164, 22, 0);
+    read(testDir + "ssec/AIRS.2005.08.28.103.L1B.AIRS_Rad.v4.0.9.0.G05241172839.hdf", 9, 216, 284, 21, 0, 4);
+    read(testDir + "ssec/CAL_LID_L1-Launch-V1-06.2006-07-07T21-20-40ZD.hdf", 112, 59, 2, 164, 22, 0);
     read(testDir + "ssec/MOD021KM.A2001149.1030.003.2001154234131.hdf", 20, 41, 50, 179, 14, 3);
     read(testDir + "ssec/MYD06_L2.A2006188.1655.005.2006194124315.hdf", 13, 62, 63, 560, 0, 4);
   }
@@ -207,7 +208,8 @@ public class TestH4readAndCount extends TestCase {
 
   }
 
-  public void problem() throws IOException {
+  public void testProblem() throws IOException {
+
     //TestAll.openAllInDir(testDir, null);
 
     //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/tag1 H4header/tagDetail H4header/linked H4header/construct"));
@@ -215,11 +217,11 @@ public class TestH4readAndCount extends TestCase {
     //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/linked"));
 
     //TestAll.readAll(testDir+"ssec/CAL_LID_L1-Launch-V1-06.2006-07-07T21-20-40ZD.hdf");
-    NetcdfFile ncfile = NetcdfFile.open(testDir + "ssec/2006166131201_00702_CS_2B-GEOPROF_GRANULE_P_R03_E00.hdf");
+    //NetcdfFile ncfile = NetcdfFile.open(testDir + "ssec/2006166131201_00702_CS_2B-GEOPROF_GRANULE_P_R03_E00.hdf");
     //Variable v = ncfile.findVariable("Profile_Time");
     //assert v != null;
     //v.read();
-    ncfile.close();
+    //ncfile.close();
   }
 
 }

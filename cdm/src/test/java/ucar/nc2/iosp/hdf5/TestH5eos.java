@@ -90,6 +90,7 @@ public class TestH5eos extends TestCase {
     assert v != null;
     Dimension dim = v.getDimension(0);
     assert dim != null;
+    assert dim.getName() != null;
 
     assert dim.getName().equals("nChans");
     ncfile.close();
