@@ -335,6 +335,10 @@ public class BeanTable extends JPanel {
     makeRowVisible( row);
   }
 
+  public void clearSelection() {
+    jtable.getSelectionModel().clearSelection();
+  }
+
   /**
    * Set which rows are selected.
    * @param beans select these

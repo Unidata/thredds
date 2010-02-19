@@ -35,6 +35,7 @@ package ucar.nc2.iosp.hdf5;
 import junit.framework.*;
 
 
+import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Array;
 import ucar.ma2.Section;
@@ -66,6 +67,7 @@ public class TestOddTypes extends TestCase {
     Array odata = v2.read(new Section("1:20"));
     assert odata.getElementType() == ByteBuffer.class;
     assert odata.getSize() == 20;
+    ncfile.close();
   }
 
   public void testEnum() throws InvalidRangeException, IOException {
@@ -82,6 +84,7 @@ public class TestOddTypes extends TestCase {
 
     data = v2.read();
     assert data.getElementType() == String.class;
+    ncfile.close();
   }
 
   // LOOK this ones failing
@@ -99,6 +102,7 @@ public class TestOddTypes extends TestCase {
 
     data = v2.read();
     assert data.getElementType() == String.class;
+    ncfile.close();
   }
 
   public void testTime() throws IOException {
@@ -116,6 +120,7 @@ public class TestOddTypes extends TestCase {
   public void testBitfield() throws InvalidRangeException, IOException {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     NetcdfFile ncfile = TestH5.openH5("samples/bitfield.h5");
+    ncfile.close();
   }
 
   // attribute vlen String
@@ -123,11 +128,13 @@ public class TestOddTypes extends TestCase {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     NetcdfFile ncfile = TestH5.openH5("support/vlstra.h5");
     System.out.println( "\n**** testReadNetcdf4 done\n\n"+ncfile);
+    ncfile.close();
   }
 
    public void testAttString() throws InvalidRangeException, IOException {
     //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     NetcdfFile ncfile = TestH5.openH5("support/attstr.h5");
+     ncfile.close();
   }
 
   public void testCompoundString() throws InvalidRangeException, IOException {
@@ -146,12 +153,13 @@ public class TestOddTypes extends TestCase {
     ncfile.close();
   }
 
-  public void misc() {
+  public void misc() throws IOException {
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
 
     // bitfields, opaque
     NetcdfFile ncfile = TestH5.openH5("support/bitop.h5");
     System.out.println( "\n"+ncfile);
+    ncfile.close();
   }
 
   public void testMisc() {
@@ -169,4 +177,26 @@ public class TestOddTypes extends TestCase {
     }
     return result;
   }
+
+  public void testAttStruct() throws IOException {
+    NetcdfFile ncfile = NetcdfFile.open(TestAll.testdataDir + "netcdf4/attributeStruct.nc");
+    Variable v = ncfile.findVariable("observations");
+    assert v != null;
+    assert v instanceof Structure;
+
+    Structure s = (Structure) v;
+    Variable v2 = s.findVariable("tempMin");
+    assert v2 != null;
+    assert v2.getDataType() == DataType.FLOAT;
+
+    assert null != v2.findAttribute("units");
+    assert null != v2.findAttribute("coordinates");
+
+    Attribute att =  v2.findAttribute("units");
+    assert att.getStringValue().equals("degF");
+    
+    ncfile.close();
+  }
+
+
 }

@@ -44,7 +44,7 @@ public class TestVariables extends TestCase {
     super(name);
   }
 
-  String urlString = "testHarvest.xml";
+  String urlString = "TestHarvest.xml";
 
   public void testInline() {
     InvCatalogImpl cat = TestCatalogAll.open(urlString, true);

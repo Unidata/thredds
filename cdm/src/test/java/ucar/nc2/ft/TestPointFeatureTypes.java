@@ -106,7 +106,7 @@ public class TestPointFeatureTypes extends TestCase {
     assert 4 == checkPointDataset(CFpointObs_topdir + "pointMissing.ncml", FeatureType.POINT, false);
 
     assert 3 == checkPointDataset(CFpointObs_topdir + "stationSingle.ncml", FeatureType.STATION, false);
-    assert 3 == checkPointDataset(CFpointObs_topdir + "stationSingleWithZLevel.ncml", FeatureType.STATION, false);
+    assert 3 == checkPointDataset(CFpointObs_topdir + "stationSingleWithZlevel.ncml", FeatureType.STATION, false);
     assert 15 == checkPointDataset(CFpointObs_topdir + "stationMultidim.ncml", FeatureType.STATION, false);
     assert 15 == checkPointDataset(CFpointObs_topdir + "stationMultidimTimeJoin.ncml", FeatureType.STATION, false);
     assert 15 == checkPointDataset(CFpointObs_topdir + "stationMultidimUnlimited.nc", FeatureType.STATION, false);

@@ -57,7 +57,7 @@ public class TestLongOffset extends TestCase  {
   }
 
   public void testReadLongOffset() throws IOException {
-    NetcdfFile ncfile = TestLocalNC2.openFile( "LongOffset.nc");
+    NetcdfFile ncfile = TestLocalNC2.openFile( "longOffset.nc");
     ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     NCdump.print(ncfile, "-vall", out, null);
@@ -65,7 +65,7 @@ public class TestLongOffset extends TestCase  {
   }
 
   public void testReadLongOffsetV3mode() throws IOException {
-    NetcdfFile ncfile = TestLocalNC2.openFile( "LongOffset.nc");
+    NetcdfFile ncfile = TestLocalNC2.openFile( "longOffset.nc");
 
     NCdump.print(ncfile, "-vall", out, null);
     ncfile.close();

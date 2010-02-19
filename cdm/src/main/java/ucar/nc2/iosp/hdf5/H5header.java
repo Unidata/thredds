@@ -650,11 +650,30 @@ public class H5header {
 
       StructureMembers sm = new StructureMembers(matt.name);
       for (H5header.StructureMember h5sm : matt.mdt.members) {
-        DataType dt = getNCtype(h5sm.mdt.type, h5sm.mdt.byteSize);
-        StructureMembers.Member m = sm.addMember(h5sm.name, null, null, dt, new int[] {1});
+        // from tkunicki@usgs.gov 2/18/2010 - fix for compound attributes
+        //DataType dt = getNCtype(h5sm.mdt.type, h5sm.mdt.byteSize);
+        //StructureMembers.Member m = sm.addMember(h5sm.name, null, null, dt, new int[] {1});
+
+        DataType dt = null;
+        int[] dim = null;
+        switch (h5sm.mdt.type) {
+          case 9:  // STRING
+            dt = DataType.STRING;
+            dim = new int[]{1};
+            break;
+          case 10: // ARRAY
+            dt = getNCtype(h5sm.mdt.base.type, h5sm.mdt.base.byteSize);
+            dim = h5sm.mdt.dim;
+            break;
+          default: // PRIMITIVE
+            dt = getNCtype(h5sm.mdt.type, h5sm.mdt.byteSize);
+            dim = h5sm.mdt.dim;
+            break;
+        }
+        StructureMembers.Member m = sm.addMember(h5sm.name, null, null, dt, dim);
 
         if (h5sm.mdt.byteOrder >= 0) // apparently each member may have seperate byte order (!!!??)
-          m.setDataObject( h5sm.mdt.byteOrder == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+          m.setDataObject(h5sm.mdt.byteOrder == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
         m.setDataParam((int) (h5sm.offset)); // offset since start of Structure
         if (dt == DataType.STRING)
           hasStrings = true;

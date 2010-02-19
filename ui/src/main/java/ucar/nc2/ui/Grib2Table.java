@@ -36,9 +36,7 @@ package ucar.nc2.ui;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.grid.*;
 import ucar.grib.grib2.*;
-import ucar.nc2.iosp.grid.GridHorizCoordSys;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -52,7 +50,6 @@ import thredds.ui.FileManager;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
-import java.util.List;
 
 /**
  * ToolsUI/Iosp/Bufr
@@ -113,11 +110,14 @@ public class Grib2Table extends JPanel {
 
 
     gdsTable = new BeanTableSorted(GdsBean.class, (PreferencesExt) prefs.node("GdsBean"), false);
-    /* obsTable.addListSelectionListener(new ListSelectionListener() {
+    gdsTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        ObsBean csb = (ObsBean) obsTable.getSelectedBean();
+        GdsBean bean = (GdsBean) gdsTable.getSelectedBean();
+        infoPopup.setText(bean.gds.toString());
+        infoWindow.setVisible(true);
+        gdsTable.clearSelection();
       }
-    }); */
+    });
 
     productTable = new BeanTableSorted(ProductBean.class, (PreferencesExt) prefs.node("ProductBean"), false);
     productTable.addListSelectionListener(new ListSelectionListener() {
@@ -169,6 +169,7 @@ public class Grib2Table extends JPanel {
     if (location.endsWith(".gbx"))
       setGribFileIndex(raf);
 
+    Map<Integer, Grib2GridDefinitionSection> gdsSet = new HashMap<Integer, Grib2GridDefinitionSection>();
     Grib2Input reader = new Grib2Input(raf);
     raf.seek(0);
     reader.scan(false, false);
@@ -176,6 +177,8 @@ public class Grib2Table extends JPanel {
     java.util.List<RecordBean> recordList = new ArrayList<RecordBean>();
     for (Grib2Record gr : reader.getRecords()) {
       recordList.add(new RecordBean(gr));
+      Grib2GridDefinitionSection gds = gr.getGDS();
+      gdsSet.put(gds.getGdsKey(), gds);
     }
     recordTable.setBeans(recordList);
     System.out.printf("num records = %d%n", recordList.size());
@@ -192,10 +195,10 @@ public class Grib2Table extends JPanel {
     productTable.setBeans(productList);
 
     java.util.List<GdsBean> gdsList = new ArrayList<GdsBean>();
-    Map<String, Grib2GridDefinitionSection> gdsHash = reader.getGDSs();
-    for (String key : gdsHash.keySet()) {
-      Grib2GridDefinitionSection gds = gdsHash.get(key);
-      gdsList.add(new GdsBean(key, gds));
+    Iterator<Grib2GridDefinitionSection> iter = gdsSet.values().iterator();
+    while (iter.hasNext()) {
+      Grib2GridDefinitionSection gds = iter.next();
+      gdsList.add(new GdsBean(gds.getGdsKey(), gds));
     }
     gdsTable.setBeans(gdsList);
   }
@@ -326,7 +329,7 @@ public class Grib2Table extends JPanel {
       return pdsv.getCoordinates();
     }
 
-    public final String getId() {
+    public final String getProdId() {
       return pdsv.getParameterCategory() + "-" + pdsv.getProductDefinition() + "-" + pdsv.getParameterNumber();
     }
 
@@ -398,30 +401,42 @@ public class Grib2Table extends JPanel {
 
   public class GdsBean {
     Grib2GridDefinitionSection gds;
-    String key;
+    int key;
 
     // no-arg constructor
     public GdsBean() {
     }
 
-    public GdsBean(String key, Grib2GridDefinitionSection m) {
+    public GdsBean(int key, Grib2GridDefinitionSection m) {
       this.key = key;
       this.gds = m;
     }
 
-    public String getKey() {
+    public int getKey() {
       return key;
+    }
+
+    public int getHashCode() {
+      return gds.hashCode();
+    }
+
+    public int getGridNo() {
+      return gds.getGdtn();
     }
 
     public String getGridName() {
       return gds.getGridName(gds.getGdtn());
     }
 
-    public int getGdtn() {
-      return gds.getGdtn();
+    public String getScanMode() {
+      return Long.toBinaryString(gds.getScanMode());
     }
 
-  }
+    public String getResolution() {
+      return Long.toBinaryString(gds.getResolution());
+    }
+
+   }
 
 
 }

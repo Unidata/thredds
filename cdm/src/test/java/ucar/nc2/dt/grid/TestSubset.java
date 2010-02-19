@@ -147,7 +147,9 @@ public class TestSubset extends TestCase {
   }
 
   public void testMSG() throws Exception {
-    GridDataset dataset = GridDataset.open(TestAll.cdmUnitTestDir + "transforms/Eumetsat.VerticalPerspective.grb");
+    String filename = TestAll.cdmUnitTestDir + "transforms/Eumetsat.VerticalPerspective.grb";
+    GridDataset dataset = GridDataset.open(filename);
+    System.out.printf("open %s%n", filename);
 
     GeoGrid grid = dataset.findGridByName("Pixel_scene_type");
     assert null != grid;
@@ -172,10 +174,11 @@ public class TestSubset extends TestCase {
     GeoGrid grid_section = grid.subset(null, null, bbox, 1, 1, 1);
 
     Array data = grid_section.readDataSlice(-1, -1, -1, -1);
+    assert data.getRank() == 3;
     int[] shape = data.getShape();
     assert shape[0] == 1 : data.getShape()[0];
-    assert shape[1] == 171 : data.getShape()[1];
-    assert shape[2] == 250 : data.getShape()[2];
+    assert shape[1] == 370 : data.getShape()[1];
+    assert shape[2] == 476 : data.getShape()[2];
 
     dataset.close();
   }
