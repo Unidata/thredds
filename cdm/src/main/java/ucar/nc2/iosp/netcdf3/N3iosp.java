@@ -346,14 +346,14 @@ public String NC_check_name(String name) {
   protected ucar.nc2.NetcdfFile ncfile;
   protected boolean readonly;
 
-  protected N3header headerParser;
-  protected int numrecs;
-  protected long recsize;
+  protected N3header header;
+  //protected int numrecs;
+  //protected long recsize;
   protected long lastModified; // used by sync
 
   // used for writing only
-  protected long fileUsed = 0; // how much of the file is written to ?
-  protected long recStart = 0; // where the record data starts
+  // protected long fileUsed = 0; // how much of the file is written to ?
+  // protected long recStart = 0; // where the record data starts
 
   protected boolean debug = false, debugSize = false, debugSPIO = false, debugRecord = false, debugSync = false;
   protected boolean showHeaderBytes = false;
@@ -365,7 +365,7 @@ public String NC_check_name(String name) {
       double size = raf.length() / (1000.0 * 1000.0);
       fout.format(" raf = %s%n", raf.getLocation());
       fout.format(" size= %d (%s Mb)%n%n", raf.length(), Format.dfrac(size, 3));
-      headerParser.showDetail(fout);
+      header.showDetail(fout);
       return fout.toString();
       
     } catch (IOException e) {
@@ -393,12 +393,12 @@ public String NC_check_name(String name) {
 
     // its a netcdf-3 file
     raf.order(RandomAccessFile.BIG_ENDIAN);
-    headerParser = new N3header();
+    header = new N3header();
 
-    headerParser.read(raf, ncfile, null); // read header here
-    numrecs = headerParser.numrecs;
-    recsize = headerParser.recsize;
-    recStart = headerParser.recStart;
+    header.read(raf, ncfile, null); // read header here
+    //numrecs = header.numrecs;
+    //recsize = header.recsize;
+    //recStart = header.recStart;
 
     _open(raf);
 
@@ -421,7 +421,7 @@ public String NC_check_name(String name) {
     DataType dataType = v2.getDataType();
 
     Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), v2.getShape(), section) :
-      new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), recsize, v2.getShape(), section);
+      new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, v2.getShape(), section);
 
     if (layout.getTotalNelems() == 0) {
       return Array.factory(dataType.getPrimitiveClassType(), section.getShape());
@@ -452,17 +452,17 @@ public String NC_check_name(String name) {
     for (StructureMembers.Member m : members.getMembers()) {
       Variable v2 = s.findVariable(m.getName());
       N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
-      m.setDataParam((int) (vinfo.begin - recStart));
+      m.setDataParam((int) (vinfo.begin - header.recStart));
     }
 
     // protect agains too large of reads
-    if (recsize > Integer.MAX_VALUE)
+    if (header.recsize > Integer.MAX_VALUE)
       throw new IllegalArgumentException("Cant read records when recsize > "+Integer.MAX_VALUE);
     long nrecs = section.computeSize();
-    if (nrecs * recsize > Integer.MAX_VALUE)
-      throw new IllegalArgumentException("Too large read: nrecs * recsize= "+(nrecs * recsize) +"bytes exceeds "+Integer.MAX_VALUE);
+    if (nrecs * header.recsize > Integer.MAX_VALUE)
+      throw new IllegalArgumentException("Too large read: nrecs * recsize= "+(nrecs * header.recsize) +"bytes exceeds "+Integer.MAX_VALUE);
 
-    members.setStructureSize((int) recsize);
+    members.setStructureSize((int) header.recsize);
     ArrayStructureBB structureArray = new ArrayStructureBB(members, new int[]{recordRange.length()});
 
     // note dependency on raf; should probably defer to subclass
@@ -471,12 +471,12 @@ public String NC_check_name(String name) {
     int count = 0;
     for (int recnum = recordRange.first(); recnum <= recordRange.last(); recnum += recordRange.stride()) {
       if (debugRecord) System.out.println(" read record " + recnum);
-      raf.seek(recStart + recnum * recsize); // where the record starts
+      raf.seek(header.recStart + recnum * header.recsize); // where the record starts
 
-      if (recnum != numrecs - 1)
-        raf.readFully(result, (int) (count * recsize), (int) recsize);
+      if (recnum != header.numrecs - 1)
+        raf.readFully(result, (int) (count * header.recsize), (int) header.recsize);
       else
-        raf.read(result, (int) (count * recsize), (int) recsize); // "wart" allows file to be one byte short. since its always padding, we allow
+        raf.read(result, (int) (count * header.recsize), (int) header.recsize); // "wart" allows file to be one byte short. since its always padding, we allow
       count++;
     }
 
@@ -501,7 +501,7 @@ public String NC_check_name(String name) {
     for (StructureMembers.Member m : members.getMembers()) {
       Variable v2 = s.findVariable(m.getName());
       N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
-      m.setDataParam((int) (vinfo.begin - recStart)); // offset from start of record
+      m.setDataParam((int) (vinfo.begin - header.recStart)); // offset from start of record
 
       // construct the full shape
       int rank = m.getShape().length;
@@ -549,10 +549,10 @@ public String NC_check_name(String name) {
 
     // construct the full shape for use by RegularIndexer
     int[] fullShape = new int[v2.getRank() + 1];
-    fullShape[0] = numrecs;  // the first dimension
+    fullShape[0] = header.numrecs;  // the first dimension
     System.arraycopy(v2.getShape(), 0, fullShape, 1, v2.getRank()); // the remaining dimensions
 
-    Layout layout = new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), recsize, fullShape, section);
+    Layout layout = new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, fullShape, section);
     Object dataObject = readData(layout, dataType);
     return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), dataObject);
   }
@@ -567,7 +567,7 @@ public String NC_check_name(String name) {
     DataType dataType = v2.getDataType();
 
     Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), v2.getShape(), section) :
-      new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), recsize, v2.getShape(), section);
+      new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, v2.getShape(), section);
 
     return readData(layout, dataType, channel);
   }
@@ -587,14 +587,14 @@ public String NC_check_name(String name) {
     if (stride == 1) {
       int first = recordRange.first();
       int n = recordRange.length();
-      if (false) System.out.println(" read record " + first+" "+ n * recsize+" bytes ");
-      return raf.readToByteChannel(out, recStart + first * recsize, n * recsize);
+      if (false) System.out.println(" read record " + first+" "+ n * header.recsize+" bytes ");
+      return raf.readToByteChannel(out, header.recStart + first * header.recsize, n * header.recsize);
 
     }  else {
       for (int recnum = recordRange.first(); recnum <= recordRange.last(); recnum += recordRange.stride()) {
         if (debugRecord) System.out.println(" read record " + recnum);
-        raf.seek(recStart + recnum * recsize); // where the record starts
-        count += raf.readToByteChannel(out, recStart + recnum * recsize, recsize);
+        raf.seek(header.recStart + recnum * header.recsize); // where the record starts
+        count += raf.readToByteChannel(out, header.recStart + recnum * header.recsize, header.recsize);
       }
     }
 
@@ -637,23 +637,23 @@ public String NC_check_name(String name) {
       myRaf.setLength(preallocateSize);
     }
 
-    headerParser = new N3header();
-    headerParser.create(raf, ncfile, extra, largeFile, null);
+    header = new N3header();
+    header.create(raf, ncfile, extra, largeFile, null);
 
-    recsize = headerParser.recsize;   // record size
-    recStart = headerParser.recStart; // record variables start here
-    fileUsed = headerParser.recStart; // track what is actually used
+    //recsize = header.recsize;   // record size
+    //recStart = header.recStart; // record variables start here
+    //fileUsed = headerParser.getMinLength(); // track what is actually used
 
     _create(raf);
 
     if (fill)
       fillNonRecordVariables();
-    else
-      raf.setMinLength(recStart); // make sure file length is long enough, even if not written to.
+    //else
+    //  raf.setMinLength(recStart); // make sure file length is long enough, even if not written to.
   }
 
   public boolean rewriteHeader(boolean largeFile) throws IOException {
-    return headerParser.rewriteHeader(largeFile, null);
+    return header.rewriteHeader(largeFile, null);
   }
 
 
@@ -675,7 +675,7 @@ public String NC_check_name(String name) {
 
     } else {
       Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), v2.getShape(), section) :
-        new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), recsize, v2.getShape(), section);
+        new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, v2.getShape(), section);
       writeData(values, layout, dataType);
     }
   }
@@ -700,7 +700,7 @@ public String NC_check_name(String name) {
           continue; // this means that the data is missing from the ArrayStructure
 
         N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
-        long begin = vinfo.begin + recnum * recsize;
+        long begin = vinfo.begin + recnum * header.recsize;
         Layout layout = new LayoutRegular(begin, v2.getElementSize(), v2.getShape(), v2.getShapeAsSection());
 
         // Indexer index =  RegularLayout.factory(begin, v2.getElementSize(), -1, v2.getShape(), v2.getShapeAsSection());
@@ -715,13 +715,13 @@ public String NC_check_name(String name) {
 
 
   protected void setNumrecs(int n) throws IOException, InvalidRangeException {
-    if (n <= numrecs) return;
-    int startRec = numrecs;
+    if (n <= header.numrecs) return;
+    int startRec = header.numrecs;
 
     if (debugSize) System.out.println("extend records to = " + n);
-    fileUsed = recStart + recsize * n;
-    headerParser.setNumrecs(n);
-    this.numrecs = n;
+    //fileUsed = recStart + recsize * n;
+    header.setNumrecs(n);
+    //this.numrecs = n;
 
     // need to let unlimited dimension know of new shape
     for (Dimension dim : ncfile.getDimensions()) {
@@ -737,11 +737,11 @@ public String NC_check_name(String name) {
       }
     }
 
-    // handle filling
+    // extend file, handle filling
     if (fill)
       fillRecordVariables(startRec, n);
     else
-      raf.setMinLength(fileUsed);
+      raf.setMinLength( header.calcFileSize());
   }
 
   /**
@@ -755,7 +755,7 @@ public String NC_check_name(String name) {
    * @throws IOException
    */
   public void updateAttribute(ucar.nc2.Variable v2, Attribute att) throws IOException {
-    headerParser.updateAttribute(v2, att);
+    header.updateAttribute(v2, att);
   }
 
   /////////////////////////////////////////////////////////////
@@ -833,9 +833,9 @@ public String NC_check_name(String name) {
   //////////////////////////////////////////////////////////////////////////////////////////////
   @Override
   public boolean syncExtend() throws IOException {
-    boolean result = headerParser.synchNumrecs();
+    boolean result = header.synchNumrecs();
     if (result && log.isDebugEnabled())
-      log.debug(" N3iosp syncExtend " + raf.getLocation() + " numrecs =" + headerParser.numrecs);
+      log.debug(" N3iosp syncExtend " + raf.getLocation() + " numrecs =" + header.numrecs);
     return result;
   }
 
@@ -867,13 +867,13 @@ public String NC_check_name(String name) {
 
   public void flush() throws java.io.IOException {
     raf.flush();
-    headerParser.writeNumrecs();
+    header.writeNumrecs();
     raf.flush();
   }
 
   public void close() throws java.io.IOException {
     if (raf != null) {
-      raf.setMinLength(fileUsed);
+      raf.setMinLength( header.calcFileSize());
       raf.close();
     }
     raf = null;
@@ -889,12 +889,12 @@ public String NC_check_name(String name) {
 
   @Override
   public Object sendIospMessage(Object message) {
-    if (null == headerParser)
+    if (null == header)
       return null;
     if (message == NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)
-      return headerParser.makeRecordStructure();
+      return header.makeRecordStructure();
     else if (message == NetcdfFile.IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE)
-      return headerParser.removeRecordStructure();
+      return header.removeRecordStructure();
 
     return null;
   }

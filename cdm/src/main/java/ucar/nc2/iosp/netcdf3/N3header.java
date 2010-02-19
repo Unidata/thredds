@@ -38,7 +38,6 @@ import ucar.unidata.io.RandomAccessFile;
 
 import java.util.*;
 import java.io.IOException;
-import java.io.File;
 
 
 /**
@@ -58,7 +57,7 @@ public class N3header {
   static final int MAGIC_ATT = 12;
 
   static public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
-    // this is the first time we try to read the file - if theres a problem we get a IOException
+    // this is the first time we try to read the file - if there's a problem we get a IOException
     raf.seek(0);
     byte[] b = new byte[4];
     raf.read(b);
@@ -78,13 +77,15 @@ public class N3header {
   private List<Variable> uvars = new ArrayList<Variable>(); // vars that have the unlimited dimension
   private Dimension udim; // the unlimited dimension
 
-  // N3iosp needs access to thes
+  // N3iosp needs access to these
+  private boolean useLongOffset;
   boolean isStreaming = false; // is streaming (numrecs = -1)
+
   int numrecs = 0; // number of records written
   long recsize = 0; // size of each record (padded)
   long recStart = Integer.MAX_VALUE; // where the record data starts
 
-  private boolean useLongOffset;
+  private long nonRecordDataSize; // size of non-record variables
   private long dataStart = Long.MAX_VALUE; // where the data starts
 
   private long globalAttsPos = 0; // global attributes start here - used for update
@@ -113,7 +114,9 @@ public class N3header {
     //this.out = (fout == null) ? new Formatter(System.out) : fout;
 
     long actualSize = raf.length();
-    long nonRecordData = 0; // length of non-record data
+    nonRecordDataSize = 0; // length of non-record data
+    recsize = 0; // length of single record
+    recStart = Integer.MAX_VALUE; // where the record data starts
 
     // netcdf magic number
     long pos = 0;
@@ -231,17 +234,17 @@ public class N3header {
       // track how big each record is
       if (isRecord) {
         recsize += vsize; // LOOK vsize may be wrong
-        recStart = Math.min(recStart, (int) begin);
+        recStart = Math.min(recStart, begin);
       } else {
-        nonRecordData = Math.max(nonRecordData, begin + vsize);
+        nonRecordDataSize = Math.max(nonRecordDataSize, begin + vsize);
       }
 
       dataStart = Math.min(dataStart, (int) begin);
 
       if (debugVariablePos)
-        System.out.printf("%s begin at=%d end=%d  isRecord=%s nonRecordData=%d\n", var.getName(), begin, (begin + vsize), isRecord, nonRecordData);
+        System.out.printf("%s begin at=%d end=%d  isRecord=%s nonRecordDataSize=%d\n", var.getName(), begin, (begin + vsize), isRecord, nonRecordDataSize);
       if (fout != null)
-        fout.format("%s begin at=%d end=%d  isRecord=%s nonRecordData=%d%n", var.getName(), begin, (begin + vsize), isRecord, nonRecordData);
+        fout.format("%s begin at=%d end=%d  isRecord=%s nonRecordDataSize=%d%n", var.getName(), begin, (begin + vsize), isRecord, nonRecordDataSize);
       if (debugHeaderSize)
         System.out.printf("%s header size=%d data size= %d\n", var.getName(), (raf.getFilePointer() - startPos), vsize);
 
@@ -250,15 +253,15 @@ public class N3header {
 
     pos = (int) raf.getFilePointer();
 
-    if (nonRecordData > 0) // if there are non-record variables
-      nonRecordData -= dataStart;
+    if (nonRecordDataSize > 0) // if there are non-record variables
+      nonRecordDataSize -= dataStart;
     if (uvars.size() == 0) // if there are no record variables
       recStart = 0;
 
     if (debugHeaderSize) {
       System.out.println("  filePointer = " + pos + " dataStart=" + dataStart);
-      System.out.println("  recStart = " + recStart + " dataStart+nonRecordData =" + (dataStart + nonRecordData));
-      System.out.println("  nonRecordData size= " + nonRecordData);
+      System.out.println("  recStart = " + recStart + " dataStart+nonRecordDataSize =" + (dataStart + nonRecordDataSize));
+      System.out.println("  nonRecordDataSize size= " + nonRecordDataSize);
       System.out.println("  recsize= " + recsize);
       System.out.println("  numrecs= " + numrecs);
       System.out.println("  actualSize= " + actualSize);
@@ -284,7 +287,7 @@ public class N3header {
 
     // check for truncated files
     // theres a "wart" that allows a file to be up to 3 bytes smaller than you expect.
-    long calcSize = dataStart + nonRecordData + recsize * numrecs;
+    long calcSize = dataStart + nonRecordDataSize + recsize * numrecs;
     if (calcSize > actualSize + 3) {
       if (disallowFileTruncation)
         throw new IOException("File is truncated calculated size= " + calcSize + " actual = " + actualSize);
@@ -296,23 +299,35 @@ public class N3header {
 
   }
 
+  long calcFileSize() {
+    if (udim != null)
+      return recStart + recsize * numrecs;
+    else
+      return dataStart + nonRecordDataSize;
+  }
+
   void showDetail(Formatter out) throws IOException {
-    out.format("  dataStart= %d%n", dataStart);
-    out.format("  nonRecordData size= %d %n", recStart-dataStart);
-    out.format("  record Data starts = %d %n", recStart);
-    out.format("  recsize = %d %n", recsize);
-    out.format("  numrecs = %d %n", numrecs);
+    long actual = raf.length();
+    out.format("  raf length= %s %n", actual);
     out.format("  isStreaming= %s %n", isStreaming);
     out.format("  useLongOffset= %s %n", useLongOffset);
+    out.format("  dataStart= %d%n", dataStart);
+    out.format("  nonRecordData size= %d %n", nonRecordDataSize);
+    out.format("  unlimited dimension = %s %n", udim);
 
-    long calcSize = recStart + recsize * numrecs;
+    if (udim != null) {
+      out.format("  record Data starts = %d %n", recStart);
+      out.format("  recsize = %d %n", recsize);
+      out.format("  numrecs = %d %n", numrecs);
+    }
+
+    long calcSize = calcFileSize();
     out.format("  computedSize = %d %n", calcSize);
-
-    long actual = raf.length();
     if (actual < calcSize)
       out.format("  TRUNCATED!! actual size = %d (%d bytes) %n", actual, (calcSize-actual));
     else if (actual != calcSize)
       out.format(" actual size larger = %d (%d byte extra) %n", actual, (actual-calcSize));
+
   }
 
   synchronized boolean removeRecordStructure() {
@@ -571,6 +586,9 @@ public class N3header {
 
   void writeHeader(int extra, boolean largeFile, boolean keepDataStart, Formatter fout) throws IOException {
     this.useLongOffset = largeFile;
+    nonRecordDataSize = 0; // length of non-record data
+    recsize = 0; // length of single record
+    recStart = Integer.MAX_VALUE; // where the record data starts
 
     // magic number
     raf.seek(0);
@@ -631,6 +649,9 @@ public class N3header {
         if (fout != null)
           fout.format("  %s begin at = %d end= %d\n", var.getName(), vinfo.begin, (vinfo.begin + vinfo.vsize));
         pos += vinfo.vsize;
+
+        // track how big each record is
+        nonRecordDataSize = Math.max(nonRecordDataSize, vinfo.begin + vinfo.vsize);
       }
     }
 
@@ -651,8 +672,17 @@ public class N3header {
         if (fout != null) fout.format(" %s record begin at = %d\n", var.getName(), dataStart);
         pos += vinfo.vsize;
         uvars.add(var); // track record variables
+
+        // track how big each record is
+        recsize += vinfo.vsize; // LOOK vsize may be wrong
+        recStart = Math.min(recStart, vinfo.begin);
       }
     }
+
+    if (nonRecordDataSize > 0) // if there are non-record variables
+      nonRecordDataSize -= dataStart;
+    if (uvars.size() == 0) // if there are no record variables
+      recStart = 0;
   }
 
   // calculate the size writing a header would take

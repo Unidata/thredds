@@ -323,18 +323,15 @@ public class RandomAccessFile implements DataInput, DataOutput {
 
     // If we are writing and the buffer has been modified, flush the contents
     // of the buffer.
+    flush();
+
+    /*
     if (!readonly && bufferModified) {
       file.seek(bufferStart);
       file.write(buffer, 0, dataSize);
-    }
+    }  */
 
-    /* may need to extend file to minLength
-   if (!readonly &&  minLength > file.length()) {
-     file.seek( minLength-1);
-     file.writeByte(0);
-   } */
-
-    // may need to extend file, in case no fill is neing used
+    // may need to extend file, in case no fill is being used
     // may need to truncate file in case overwriting a longer file
     // use only if minLength is set (by N3iosp)
     if (!readonly && (minLength != 0) && (minLength != file.length())) {
@@ -457,7 +454,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
   /**
    * Copy the contents of the buffer to the disk.
    *
-   * @throws IOException if an I/O error occurrs.
+   * @throws IOException if an I/O error occurs.
    */
   public void flush() throws IOException {
     if (bufferModified) {
@@ -467,10 +464,10 @@ public class RandomAccessFile implements DataInput, DataOutput {
       bufferModified = false;
     }
 
-    // check min length
+    /* check min length
     if (!readonly && (minLength != 0) && (minLength != file.length())) {
       file.setLength(minLength);
-    }
+    } */
   }
 
   /**
