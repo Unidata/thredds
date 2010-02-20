@@ -322,6 +322,10 @@ public class GridHorizCoordSys {
               "y coordinate of projection", "projection_y_coordinate", AxisType.GeoY);     // dunno what the 3 is
           xData = addCoordAxis(ncfile, "x", gds.getInt(GridDefRecord.NX), startx, incrx, "km",
               "x coordinate of projection", "projection_x_coordinate", AxisType.GeoX);
+        } else if (lookup.getProjectionType(gds) ==   GridTableLookup.Curvilinear ) {
+          yData = null;
+          xData = null;
+          curvilinearAxis( ncfile );
         } else {
           yData = addCoordAxis(ncfile, "y", gds.getInt(GridDefRecord.NY),
               starty, getDyInKm(), "km", "y coordinate of projection",
@@ -548,7 +552,8 @@ public class GridHorizCoordSys {
         break;
 
       case GridTableLookup.Curvilinear:
-        return false; // 2D lat/lon must be supplied
+        //return false; // 2D lat/lon must be supplied
+        break;
 
       default:
         throw new UnsupportedOperationException("unknown projection = "
@@ -1074,6 +1079,64 @@ public class GridHorizCoordSys {
     }
   }
 
+  /**
+   * CurvilinearAxis
+   *
+   * Make lat/lon axis from variables that start with Latitude or Longitude
+   */
+  private void curvilinearAxis( NetcdfFile ncfile ) {
+
+    List<Variable> vars = ncfile.getRootGroup().getVariables();
+    for( Variable var : vars ) {
+      if( var.getName().equals( "Latitude_of_Pressure_Point") ) {
+        // remove time dependancy
+
+        int[] shape = var.getShape();
+        if (var.getRank() == 3 && shape[0] == 1) { // remove time dependcies - MAJOR KLUDGE
+              List<Dimension> dims = var.getDimensions();
+              dims.remove(0);
+              var.setDimensions(dims);
+        }
+
+        // add lat attributes
+        var.addAttribute(new Attribute("units", "degrees_north"));
+        var.addAttribute(new Attribute("long_name", "latitude coordinate"));
+        var.addAttribute(new Attribute("standard_name", "latitude"));
+        //var.addAttribute(new Attribute("grid_spacing", incr + " " + units));
+        var.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
+      } else if( var.getName().equals( "Longitude_of_Pressure_Point")) {
+        // remove time dependancy
+
+        int[] shape = var.getShape();
+        if (var.getRank() == 3 && shape[0] == 1) { // remove time dependcies - MAJOR KLUDGE
+              List<Dimension> dims = var.getDimensions();
+              dims.remove(0);
+              var.setDimensions(dims);
+        }
+
+        // add lon attributes
+        var.addAttribute(new Attribute("units", "degrees_east"));
+        var.addAttribute(new Attribute("long_name", "longitude coordinate"));
+        var.addAttribute(new Attribute("standard_name", "longitude"));
+        //var.addAttribute(new Attribute("grid_spacing", incr + " " + units));
+        var.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
+      // check other variable too
+      } else if( var.getName().startsWith( "Latitude") || var.getName().startsWith( "Longitude")
+          || var.getName().startsWith( "time") || var.getName().startsWith( "depth")) {
+        // remove time dependancy
+        int[] shape = var.getShape();
+        if (var.getRank() == 3 && shape[0] == 1) { // remove time dependcies - MAJOR KLUDGE
+              List<Dimension> dims = var.getDimensions();
+              dims.remove(0);
+              var.setDimensions(dims);
+        }
+      } else {
+        // set coordinate system
+        var.addAttribute(new Attribute(":coordinates", "Latitude_of_Pressure_Point Longitude_of_Pressure_Point"));
+      }
+    }
+
+  }
    /**
    * Calculate the dx and dy from startx, starty and projection.
    *
