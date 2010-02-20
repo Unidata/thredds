@@ -169,8 +169,8 @@ public class TestPointFeatureTypes extends TestCase {
     assert 420 == checkPointDataset(CFpointObs_topdir + "sectionFlat.nc", FeatureType.SECTION, false);
   }
 
-  public void utestProblem() throws IOException {
-    assert 63 == checkPointDataset(TestAll.testdataDir + "sounding/netcdf/raob_soundings20216.cdf", FeatureType.STATION_PROFILE, true);
+  public void testProblem() throws IOException {
+    assert 6 == checkPointDataset(topdir + "cfPoint/station/kunicki.nc4", FeatureType.STATION, true);
   }
 
   public void testCF() throws IOException {
@@ -204,6 +204,8 @@ public class TestPointFeatureTypes extends TestCase {
     // CF 1.5 single trajectory (prob actually profile)
     assert 245 == checkPointDataset(topdir + "cfPoint/trajectory/p1140004.ncml", FeatureType.TRAJECTORY, true);
 
+    // netcdf-4 with structure, from tom: tkunicki@usgs.gov
+    assert 6 == checkPointDataset(topdir + "cfPoint/station/kunicki.nc4", FeatureType.STATION, true);
   }
 
   public void testPlug() throws IOException {

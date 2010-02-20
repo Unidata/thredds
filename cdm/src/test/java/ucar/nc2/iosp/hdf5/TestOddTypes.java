@@ -194,7 +194,31 @@ public class TestOddTypes extends TestCase {
 
     Attribute att =  v2.findAttribute("units");
     assert att.getStringValue().equals("degF");
-    
+
+    ncfile.close();
+  }
+
+  public void testAttStruct2() throws IOException {
+    NetcdfFile ncfile = NetcdfFile.open(TestAll.testdataDir + "netcdf4/compound-attribute-test.nc");
+    Variable v = ncfile.findVariable("compound_test");
+    assert v != null;
+    assert v instanceof Structure;
+
+    Structure s = (Structure) v;
+    Variable v2 = s.findVariable("field0");
+    assert v2 != null;
+    assert v2.getDataType() == DataType.FLOAT;
+
+    Attribute att =  v2.findAttribute("att_primitive_test");
+    assert !att.isString();
+    assert att.getNumericValue().floatValue() == 1.0;
+
+    att =  v2.findAttribute("att_string_test");
+    assert att.getStringValue().equals("string for field 0");
+
+    att =  v2.findAttribute("att_char_array_test");
+    assert att.getStringValue().equals("a");
+
     ncfile.close();
   }
 

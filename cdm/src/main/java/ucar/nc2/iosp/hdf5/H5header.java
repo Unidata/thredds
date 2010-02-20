@@ -650,7 +650,8 @@ public class H5header {
 
       StructureMembers sm = new StructureMembers(matt.name);
       for (H5header.StructureMember h5sm : matt.mdt.members) {
-        // from tkunicki@usgs.gov 2/18/2010 - fix for compound attributes
+
+        // from tkunicki@usgs.gov 2/19/2010 - fix for compound attributes
         //DataType dt = getNCtype(h5sm.mdt.type, h5sm.mdt.byteSize);
         //StructureMembers.Member m = sm.addMember(h5sm.name, null, null, dt, new int[] {1});
 
@@ -667,7 +668,7 @@ public class H5header {
             break;
           default: // PRIMITIVE
             dt = getNCtype(h5sm.mdt.type, h5sm.mdt.byteSize);
-            dim = h5sm.mdt.dim;
+            dim = new int[] { 1 };
             break;
         }
         StructureMembers.Member m = sm.addMember(h5sm.name, null, null, dt, dim);

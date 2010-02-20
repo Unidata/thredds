@@ -1291,11 +1291,16 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       int mini = Integer.MAX_VALUE, minj = Integer.MAX_VALUE;
       int maxi = -1, maxj = -1;
 
+      // margolis 2/18/2010
+      //minx = LatLonPointImpl.lonNormal( minx ); // <-- THIS IS NEW
+      //maxx = LatLonPointImpl.lonNormal( maxx ); // <-- THIS IS NEW
+
       // brute force, examine every point LOOK BAD
       for (int j = 0; j < nj; j++) {
         for (int i = 0; i < ni; i++) {
           double lat = lat_axis.getCoordValue(j, i);
           double lon = lon_axis.getCoordValue(j, i);
+          //lon = LatLonPointImpl.lonNormal( lon ); // <-- THIS IS NEW      
 
           if ((lat >= miny) && (lat <= maxy) && (lon >= minx) && (lon <= maxx)) {
             if (i > maxi) maxi = i;

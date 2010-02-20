@@ -208,7 +208,7 @@ public class TestH4readAndCount extends TestCase {
 
   }
 
-  public void testProblem() throws IOException {
+  public void utestProblem() throws IOException {
 
     //TestAll.openAllInDir(testDir, null);
 

@@ -492,9 +492,9 @@
   <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
   <!-- get rid of dods stuff in visad.jar -->
 
-  <property name="visad.jar" value="C:/dev/lib/visad/visad.jar"/>
+  <property name="visad.jar" value="/machine/temp/visad.jar"/>
   <!-- checkout visad.jar from cvs -->
-  <property name="visadNoDods.tempdir" value="C:/dev/lib/visad/temp/"/>
+  <property name="visadNoDods.tempdir" value="/machine/temp/visad/"/>
   <target name="makeVisadNoDods" description="remove dods from visad">
     <delete dir="${visadNoDods.tempdir}" failonerror="false"/>
     <mkdir dir="${visadNoDods.tempdir}"/>

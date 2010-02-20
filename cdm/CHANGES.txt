@@ -3,6 +3,16 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.1:
+ 13:
+  new visadNoDods.jar
+  N3iosp, N3header, RAF: simplify  flushing, file.setLength()
+  N3 writing: bug in redefine mode.  
+  HDF4, HDF-EOS dimensions: replace " " with "_"
+  HDF4: deal with compress.compress_type == TagEnum.COMP_CODE_NONE
+  Switch to use unidataCommon.jar.
+  hawaii station name changed
+  GRIB: Made modification for partial use of Pressure coordinates for Hybrid variables
+  MSGnavigation must override latLonToProjBB(LatLonRect rect)
  12:
   HDF5 IOSP now sets the Attribute Array unsigned flag; added a convenience routine Attribute.isUnsigned()
   BUFR:  add ecmwf, fnmoc, clean up table names

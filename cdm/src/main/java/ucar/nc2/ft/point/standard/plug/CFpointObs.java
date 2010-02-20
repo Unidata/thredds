@@ -33,6 +33,7 @@
 
 package ucar.nc2.ft.point.standard.plug;
 
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft.point.standard.*;
 import ucar.nc2.ft.point.standard.CoordSysEvaluator;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -194,6 +195,14 @@ public class CFpointObs extends TableConfigurerImpl {
     // obs dimension
     VariableDS time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
     Dimension obsDim = time.getDimension(time.getRank() - 1); // may be time(time) or time(stn, obs)
+
+    if (obsDim == null) {
+        // if axis is structure member, try pulling dimension out of parent structure
+        if (time.getParentStructure() != null) {
+            Structure parent = time.getParentStructure();
+            obsDim = parent.getDimension(parent.getRank() - 1);
+        }
+    }
 
     // check for flat - correct the encoding if so 
     Variable parentId = identifyParent(ds, CF.FeatureType.stationTimeSeries);
@@ -1074,6 +1083,32 @@ public class CFpointObs extends TableConfigurerImpl {
 
   private TableConfig makeMiddleTable(NetcdfDataset ds, TableConfig parentTable, Dimension obsDim, Formatter errlog) throws IOException {
     throw new UnsupportedOperationException("CFpointObs: middleTable encoding");
+  }
+
+  // Adds check for dimensions against parent structure if applicable...
+  //
+  // Note to John.  It may be that this implementation can be pushed into the super
+  // class, I don't unserstand enough of the code base to anticipate implementation artifacts.
+  @Override
+  protected String matchAxisTypeAndDimension(NetcdfDataset ds, AxisType type, final Dimension outer) {
+    Variable var = CoordSysEvaluator.findCoordByType(ds, type, new CoordSysEvaluator.Predicate() {
+      public boolean match(CoordinateAxis axis) {
+        if ((outer == null) && (axis.getRank() == 0))
+          return true;
+        if ((outer != null) && (axis.getRank() == 1) && (outer.equals(axis.getDimension(0))))
+          return true;
+        
+        // if axis is structure member, try pulling dimension out of parent structure
+        if (axis.getParentStructure() != null) {
+            Structure parent = axis.getParentStructure();
+            if ((outer != null) && (parent.getRank() == 1) && (outer.equals(parent.getDimension(0))))
+                return true;
+        }
+        return false;
+      }
+    });
+    if (var == null) return null;
+    return var.getShortName();
   }
 
 }
