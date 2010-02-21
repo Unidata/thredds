@@ -237,7 +237,7 @@ public class GridHorizCoordSys {
 
   /**
    * Get the grid spacing in kilometers
-   *
+   * @param type
    * @return the grid spacing in kilometers
    */
   private double getGridSpacingInKm(String type) {
@@ -1082,57 +1082,91 @@ public class GridHorizCoordSys {
   /**
    * CurvilinearAxis
    *
-   * Make lat/lon axis from variables that start with Latitude or Longitude
+   * Make lat/lon axis from variables that start with Latitude/Longitude and then
+   * add the coordinates to the variables. This code is based on the ofs_atl files
+   * received from Rich Signell. This code is ridgit because it expects coordinate names
+   * to start with Latitude/Longitude and other coordinate of depth.
+   * @param ncfile  NetcdfFile
    */
   private void curvilinearAxis( NetcdfFile ncfile ) {
 
     List<Variable> vars = ncfile.getRootGroup().getVariables();
+    String latpp = null, lonpp = null, latU = null, lonU = null, latV = null, lonV = null;
+    // has to be done twice because there's no guarantte that the coordinate variables will be accessed first
     for( Variable var : vars ) {
-      if( var.getName().equals( "Latitude_of_Pressure_Point") ) {
+      if( var.getName().startsWith( "Latitude") ) {
         // remove time dependancy
-
         int[] shape = var.getShape();
         if (var.getRank() == 3 && shape[0] == 1) { // remove time dependcies - MAJOR KLUDGE
               List<Dimension> dims = var.getDimensions();
               dims.remove(0);
               var.setDimensions(dims);
         }
-
         // add lat attributes
         var.addAttribute(new Attribute("units", "degrees_north"));
         var.addAttribute(new Attribute("long_name", "latitude coordinate"));
         var.addAttribute(new Attribute("standard_name", "latitude"));
         //var.addAttribute(new Attribute("grid_spacing", incr + " " + units));
         var.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-      } else if( var.getName().equals( "Longitude_of_Pressure_Point")) {
-        // remove time dependancy
+        if( var.getName().contains( "Pressure_Point")) {
+          latpp = var.getName();
+        } else if( var.getName().contains( "U_Wind_Component")) {
+          latU = var.getName();
+        } else if( var.getName().contains( "V_Wind_Component")) {
+          latV = var.getName();
+        }
 
+      } else if( var.getName().startsWith( "Longitude" )) {
+        // remove time dependancy
         int[] shape = var.getShape();
         if (var.getRank() == 3 && shape[0] == 1) { // remove time dependcies - MAJOR KLUDGE
               List<Dimension> dims = var.getDimensions();
               dims.remove(0);
               var.setDimensions(dims);
         }
-
         // add lon attributes
         var.addAttribute(new Attribute("units", "degrees_east"));
         var.addAttribute(new Attribute("long_name", "longitude coordinate"));
         var.addAttribute(new Attribute("standard_name", "longitude"));
         //var.addAttribute(new Attribute("grid_spacing", incr + " " + units));
         var.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
-      // check other variable too
-      } else if( var.getName().startsWith( "Latitude") || var.getName().startsWith( "Longitude")
-          || var.getName().startsWith( "time") || var.getName().startsWith( "depth")) {
-        // remove time dependancy
+
+        if( var.getName().contains( "Pressure_Point")) {
+          lonpp = var.getName();
+        } else if( var.getName().contains( "U_Wind_Component")) {
+          lonU = var.getName();
+        } else if( var.getName().contains( "V_Wind_Component")) {
+          lonV = var.getName();
+        }
+      }
+   }
+   // add coordinates to variables
+   for( Variable var : vars ) {
+
+     if( var.getName().startsWith( "Latitude") || var.getName().startsWith( "Longitude" )) {
+
+      // check for other coordinate variables
+     } else if( var.getName().startsWith( "time") || var.getName().startsWith( "depth")) {
+        // remove time dependancy if it exists
         int[] shape = var.getShape();
         if (var.getRank() == 3 && shape[0] == 1) { // remove time dependcies - MAJOR KLUDGE
               List<Dimension> dims = var.getDimensions();
               dims.remove(0);
               var.setDimensions(dims);
         }
+      } else if( var.getName().startsWith( "Curvilinear") ) {
+        // nothing at this time
+      } else if( var.getName().startsWith( "U-component") ) {
+        ///var.addAttribute(new Attribute("coordinates", "Latitude_of_U_Wind_Component_of_Velocity Longitude_of_U_Wind_Component_of_Velocity"));
+        var.addAttribute(new Attribute("coordinates", latU +" "+ lonU));
+
+      } else if( var.getName().startsWith( "V-component") ) {
+        //var.addAttribute(new Attribute("coordinates", "Latitude_of_V_Wind_Component_of_Velocity Longitude_of_V_Wind_Component_of_Velocity"));
+        var.addAttribute(new Attribute("coordinates", latV +" "+ lonV));
+        // rest of variables default to Pressure_Point
       } else {
-        // set coordinate system
-        var.addAttribute(new Attribute(":coordinates", "Latitude_of_Pressure_Point Longitude_of_Pressure_Point"));
+        //var.addAttribute(new Attribute("coordinates", "Latitude_of_Pressure_Point Longitude_of_Pressure_Point"));
+        var.addAttribute(new Attribute("coordinates", latpp +" "+ lonpp));
       }
     }
 
@@ -1165,6 +1199,7 @@ public class GridHorizCoordSys {
   /**
    * Calculate  Dx Dy Lat Lon Grid
    * Note: this assumes lo1 < lo2 and dx is positive going east
+   * @return dy double
    */
   private double setLatLonDxDy() {
     double lo1 = gds.getDouble(GridDefRecord.LO1);
@@ -1191,6 +1226,7 @@ public class GridHorizCoordSys {
 
   /**
    * returns the gds for this hcs
+   * @return gds GridDefRecord
    */
   public GridDefRecord getGds() {
     return gds;
