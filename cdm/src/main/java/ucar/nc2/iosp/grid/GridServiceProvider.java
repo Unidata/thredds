@@ -278,7 +278,9 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
     GridVariable pv = (GridVariable) v2.getSPobject();
 
     int count = 0;
-    Range timeRange = section.getRange(count++);
+    Range timeRange = new Range( 0, 0 ); // kludge for coordinate variables without a timeRange
+    if( section.getRank() > 2 )
+      timeRange = section.getRange(count++);
     Range ensRange = pv.hasEnsemble()
             ? section.getRange(count++)
             : null;
