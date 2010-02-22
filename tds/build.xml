@@ -80,6 +80,7 @@
   <property name="grib.jar" value="release/grib-8.0.jar"/>
   <property name="prefs.jar" value="release/prefsAll.jar"/>
   <property name="opendap.jar" value="release/opendap-2.1.jar"/>
+  <property name="unidatacommon.jar" value="release/unidatacommon.jar"/>
   <property name="visadNoDods.jar" value="release/visadNoDods.jar"/>
 
   <!-- Third-party libraries needed for compile. -->
@@ -128,6 +129,7 @@
       <include name="${grib.jar}"/>
       <include name="${opendap.jar}"/>
       <include name="${prefs.jar}"/>
+      <include name="${unidatacommon.jar}"/>
       <include name="${visadNoDods.jar}"/>
 
       <include name="${cas.jar}"/>
