@@ -88,10 +88,15 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
       augment2D(ds, cancelTask);
     else
       augment3D(ds, cancelTask);
+
+    ds.finish();
   }
 
   private void augment3D(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
-    NcMLReader.wrapNcMLresource(ds, CoordSysBuilder.resourcesDir + "NsslRadarMosaic3D.ncml", cancelTask);
+    ds.addAttribute(null, new Attribute("Conventions", "NSSL National Reflectivity Mosaic"));
+
+    addLongName(ds, "mrefl_mosaic", "3-D reflectivity mosaic grid");
+    addCoordinateAxisType(ds, "Height", AxisType.Height);  
     addCoordSystem(ds);
 
     Variable var = ds.findVariable("mrefl_mosaic");
@@ -113,12 +118,24 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
     Array missingData = Array.factory(DataType.SHORT.getPrimitiveClassType(), new int[] {2}, new short[] {-990, -9990});
     var.addAttribute(new Attribute("missing_value", missingData));    
     var.addAttribute(new Attribute(_Coordinate.Axes, "Height Lat Lon"));
-
   }
 
   private void augment2D(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+    ds.addAttribute(null, new Attribute("Conventions", "NSSL National Reflectivity Mosaic"));
 
-    NcMLReader.wrapNcMLresource(ds, CoordSysBuilder.resourcesDir + "NsslRadarMosaic.ncml", cancelTask);
+    addLongName(ds, "cref", "composite reflectivity");
+    addLongName(ds, "hgt_cref", "height associated with the composite reflectivity");
+    addLongName(ds, "etp18", "scho top");
+    addLongName(ds, "shi", "csevere hail index");
+    addLongName(ds, "posh", "probability of severe hail");
+    addLongName(ds, "mehs", "maximum estimated hail size");
+    addLongName(ds, "hsr", "hybrid scan reflectivity");
+    addLongName(ds, "hsrh", "height associated with the hybrid scan reflectivity");
+    addLongName(ds, "vil", "vertically integrated liquid");
+    addLongName(ds, "vilD", "vertically integrated liquid density");
+    addLongName(ds, "pcp_flag", "Radar precipitation flag");
+    addLongName(ds, "pcp_type", "Surface precipitation type");
+
     addCoordSystem(ds);
 
     // fix the variable attributes
@@ -143,6 +160,18 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
     }
 
     ds.finish();
+  }
+
+  private void addLongName(NetcdfDataset ds, String varName, String longName) {
+    Variable v = ds.findVariable(varName);
+    if (v != null)
+      v.addAttribute(new Attribute("long_name", longName));
+  }
+
+    private void addCoordinateAxisType(NetcdfDataset ds, String varName, AxisType type) {
+    Variable v = ds.findVariable(varName);
+    if (v != null)
+      v.addAttribute(new Attribute(_Coordinate.AxisType, type.name()));
   }
 
   private void addCoordSystem(NetcdfDataset ds) throws IOException {
@@ -176,7 +205,6 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
     ds.setValues(v, 1, time, 1);
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
     ds.addCoordinateAxis( v);
-
   }
 
 }
