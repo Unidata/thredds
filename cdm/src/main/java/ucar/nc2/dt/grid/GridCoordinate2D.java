@@ -52,7 +52,7 @@ import java.io.IOException;
 
 
 public class GridCoordinate2D {
-  static final private boolean debug = true;
+  static final private boolean debug = false;
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridCoordinate2D.class);
 
   private CoordinateAxis2D latCoord, lonCoord;
