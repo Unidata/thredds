@@ -101,7 +101,7 @@ import org.bounce.text.xml.XMLDocument;
 import org.bounce.text.xml.XMLEditorKit;
 
 /**
- * Netcdf Tools user interface.
+ * Netcdf Tools user interface .
  *
  * @author caron
  */
