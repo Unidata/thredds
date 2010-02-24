@@ -123,10 +123,10 @@ public class TestBinaryTextIndexes extends TestCase {
 
       java.util.Set<String> keysB = gdrB.getKeys();
       for (String key : keysB) {
-        if (key.equals("grid_units") || key.equals("created") || key.equals("location")
+        if (key.startsWith("grid") || key.equals("created") || key.equals("location")
             || key.equals("VectorComponentFlag") || key.equals("GDSkey")
             || key.equals("grid_name") || key.equals("scanning_mode")
-            || key.equals("grid_shape") )
+            || key.equals("grid_shape") || key.equals("grid_radius_spherical_earth"))
           continue;
         String valueB = gdrB.getParam(key);
         String valueT = gdrT.getParam(key);
@@ -136,10 +136,10 @@ public class TestBinaryTextIndexes extends TestCase {
       }
       java.util.Set<String> keysT = gdrT.getKeys();
       for (String key : keysT) {
-        if (key.equals("grid_units") || key.equals("created") || key.equals("location")
+        if (key.startsWith("grid") || key.equals("created") || key.equals("location")
             || key.equals("VectorComponentFlag") || key.equals("GDSkey")
             || key.equals("grid_name") || key.equals("ScanningMode")
-            || key.equals("grid_shape") )
+            || key.equals("grid_shape") || key.equals("grid_radius_spherical_earth"))
           continue;
         String valueB = gdrB.getParam(key);
         String valueT = gdrT.getParam(key);
