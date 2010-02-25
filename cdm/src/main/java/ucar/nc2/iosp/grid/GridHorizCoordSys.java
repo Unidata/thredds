@@ -552,7 +552,6 @@ public class GridHorizCoordSys {
         break;
 
       case GridTableLookup.Curvilinear:
-        //return false; // 2D lat/lon must be supplied
         break;
 
       default:
@@ -571,15 +570,31 @@ public class GridHorizCoordSys {
       v.addAttribute(att);
     }
 
-    v.addAttribute(new Attribute("earth_shape", shape_name));
-    if (gds.getInt(GridDefRecord.GRID_SHAPE_CODE) == 1) {
-      // have to check both because Grib1 and Grib2 used different names
-      double radius_spherical_earth = gds.getDouble(GridDefRecord.RADIUS_SPHERICAL_EARTH);
-      if (Double.isNaN(radius_spherical_earth))
-        radius_spherical_earth = gds.getDouble("radius_spherical_earth");
+    // add CF Conventions attributes
+    v.addAttribute(new Attribute(GridCF.EARTH_SHAPE, shape_name));
 
-      v.addAttribute(new Attribute("spherical_earth_radius_meters",
-          new Double(radius_spherical_earth)));
+    // spherical earth
+    double radius_spherical_earth = gds.getDouble(GridDefRecord.RADIUS_SPHERICAL_EARTH);
+    // have to check both because Grib1 and Grib2 used different names
+    if (Double.isNaN(radius_spherical_earth))
+      radius_spherical_earth = gds.getDouble("radius_spherical_earth");
+
+    if( ! Double.isNaN(radius_spherical_earth) ) {
+      // TODO: delete if no bug reports
+      //v.addAttribute(new Attribute("spherical_earth_radius_meters",
+      //  new Double(radius_spherical_earth)));
+      v.addAttribute(new Attribute(GridCF.EARTH_RADIUS, new Double(radius_spherical_earth)));
+    } else { // oblate earth
+      double major_axis = gds.getDouble( GridDefRecord.MAJOR_AXIS_EARTH );
+      if (Double.isNaN( major_axis ))
+        major_axis = gds.getDouble("major_axis_earth");
+      double minor_axis = gds.getDouble( GridDefRecord.MINOR_AXIS_EARTH );
+      if (Double.isNaN(minor_axis))
+        minor_axis = gds.getDouble("minor_axis_earth");
+      if ( ! Double.isNaN ( major_axis ) && ! Double.isNaN ( minor_axis )) {
+        v.addAttribute(new Attribute(GridCF.SEMI_MAJOR_AXIS, new Double( major_axis )));
+        v.addAttribute(new Attribute(GridCF.SEMI_MINOR_AXIS, new Double( minor_axis )));
+      }
     }
     addGDSparams(v);
     ncfile.addVariable(g, v);
@@ -685,19 +700,21 @@ public class GridHorizCoordSys {
       System.out.println("   should be x=" + endx + " y=" + endy);
     }
 
-    attributes.add(new Attribute("grid_mapping_name", "lambert_conformal_conic"));
+    attributes.add(new Attribute(GridCF.GRID_MAPPING_NAME, "lambert_conformal_conic"));
     if (gds.getDouble(GridDefRecord.LATIN1) == gds.getDouble(GridDefRecord.LATIN2)) {
-      attributes.add(new Attribute("standard_parallel",
+      attributes.add(new Attribute(GridCF.STANDARD_PARALLEL,
           new Double(gds.getDouble(GridDefRecord.LATIN1))));
     } else {
       double[] data = new double[]{gds.getDouble(GridDefRecord.LATIN1),
           gds.getDouble(GridDefRecord.LATIN2)};
-      attributes.add(new Attribute("standard_parallel",
+      attributes.add(new Attribute(GridCF.STANDARD_PARALLEL,
           Array.factory(DataType.DOUBLE, new int[]{2}, data)));
     }
-    attributes.add(new Attribute("longitude_of_central_meridian",
+    //attributes.add(new Attribute("longitude_of_central_meridian",
+    attributes.add(new Attribute(GridCF.LONGITUDE_OF_CENTRAL_MERIDIAN,
         new Double(gds.getDouble(GridDefRecord.LOV))));
-    attributes.add(new Attribute("latitude_of_projection_origin",
+    //attributes.add(new Attribute("latitude_of_projection_origin",
+    attributes.add(new Attribute(GridCF.LATITUDE_OF_PROJECTION_ORIGIN,
         new Double(gds.getDouble(GridDefRecord.LATIN1))));
   }
 
@@ -736,14 +753,17 @@ public class GridHorizCoordSys {
           + " lon=" + gds.getDouble(GridDefRecord.LO1));
     }
 
-    attributes.add(new Attribute("grid_mapping_name", "polar_stereographic"));
-    attributes.add(new Attribute("longitude_of_projection_origin",
+    attributes.add(new Attribute(GridCF.GRID_MAPPING_NAME, "polar_stereographic"));
+    //attributes.add(new Attribute("longitude_of_projection_origin",
+    attributes.add(new Attribute(GridCF.LONGITUDE_OF_PROJECTION_ORIGIN,
         new Double(gds.getDouble(GridDefRecord.LOV))));
-    attributes.add(new Attribute("straight_vertical_longitude_from_pole",
+    //attributes.add(new Attribute("straight_vertical_longitude_from_pole",
+    attributes.add(new Attribute( GridCF.STRAIGHT_VERTICAL_LONGITUDE_FROM_POLE,
         new Double(gds.getDouble(GridDefRecord.LOV))));
-    attributes.add(new Attribute("scale_factor_at_projection_origin",
+    //attributes.add(new Attribute("scale_factor_at_projection_origin",
+    attributes.add(new Attribute(GridCF.SCALE_FACTOR_AT_PROJECTION_ORIGIN,
         new Double(scale)));
-    attributes.add(new Attribute("latitude_of_projection_origin",
+    attributes.add(new Attribute(GridCF.LATITUDE_OF_PROJECTION_ORIGIN,
         new Double(latOrigin)));
   }
 
@@ -776,9 +796,9 @@ public class GridHorizCoordSys {
       setDxDy(startx, starty, proj);
     }
 
-    attributes.add(new Attribute("grid_mapping_name", "mercator"));
-    attributes.add(new Attribute("standard_parallel", Latin));
-    attributes.add(new Attribute("longitude_of_projection_origin", Lo1));
+    attributes.add(new Attribute(GridCF.GRID_MAPPING_NAME, "mercator"));
+    attributes.add(new Attribute(GridCF.STANDARD_PARALLEL, Latin));
+    attributes.add(new Attribute(GridCF.LONGITUDE_OF_PROJECTION_ORIGIN, Lo1));
 
     if (GridServiceProvider.debugProj) {
       double Lo2 = gds.getDouble(GridDefRecord.LO2);
@@ -816,7 +836,7 @@ public class GridHorizCoordSys {
     addCoordSystemVariable(ncfile, "latLonCoordSys", "time y x");
 
     // splat, splon, spangle
-    attributes.add(new Attribute("grid_mapping_name", "rotated_lat_lon"));
+    attributes.add(new Attribute(GridCF.GRID_MAPPING_NAME, "rotated_lat_lon"));
     attributes.add(new Attribute("grid_south_pole_latitude", new Double(splat)));
     attributes.add(new Attribute("grid_south_pole_longitude", new Double(splon)));
     attributes.add(new Attribute("grid_south_pole_angle", new Double(spangle)));
@@ -890,10 +910,10 @@ public class GridHorizCoordSys {
     if (nr == 1111111111.0) {  // LOOK: not sure how all ones will appear as a double, need example
       proj = new Orthographic(Lat0, Lon0, radius);
 
-      attributes.add(new Attribute("grid_mapping_name", "orthographic"));
-      attributes.add(new Attribute("longitude_of_projection_origin",
+      attributes.add(new Attribute(GridCF.GRID_MAPPING_NAME, "orthographic"));
+      attributes.add(new Attribute(GridCF.LONGITUDE_OF_PROJECTION_ORIGIN,
           new Double(Lon0)));
-      attributes.add(new Attribute("latitude_of_projection_origin",
+      attributes.add(new Attribute(GridCF.LATITUDE_OF_PROJECTION_ORIGIN,
           new Double(Lat0)));
 
     } else {  // "space view perspective"
@@ -901,11 +921,11 @@ public class GridHorizCoordSys {
       double height = (nr - 1.0) * radius;  // height = the height of the observing camera in km
       proj = new VerticalPerspectiveView(Lat0, Lon0, radius, height);
 
-      attributes.add(new Attribute("grid_mapping_name",
+      attributes.add(new Attribute(GridCF.GRID_MAPPING_NAME,
           "vertical_perspective"));
-      attributes.add(new Attribute("longitude_of_projection_origin",
+      attributes.add(new Attribute(GridCF.LONGITUDE_OF_PROJECTION_ORIGIN,
           new Double(Lon0)));
-      attributes.add(new Attribute("latitude_of_projection_origin",
+      attributes.add(new Attribute(GridCF.LATITUDE_OF_PROJECTION_ORIGIN,
           new Double(Lat0)));
       attributes.add(new Attribute("height_above_earth",
           new Double(height)));
@@ -1052,11 +1072,11 @@ public class GridHorizCoordSys {
     incrx = scale_factor/cfac;
     incry = scale_factor/lfac;
 
-    attributes.add(new Attribute("grid_mapping_name", "MSGnavigation"));
-    attributes.add(new Attribute("longitude_of_projection_origin", new Double(Lon0)));
-    attributes.add(new Attribute("latitude_of_projection_origin", new Double(Lat0)));
-    attributes.add(new Attribute("semi_major_axis", new Double(major_axis)));
-    attributes.add(new Attribute("semi_minor_axis", new Double(minor_axis)));
+    attributes.add(new Attribute(GridCF.GRID_MAPPING_NAME, "MSGnavigation"));
+    attributes.add(new Attribute(GridCF.LONGITUDE_OF_PROJECTION_ORIGIN, new Double(Lon0)));
+    attributes.add(new Attribute(GridCF.LATITUDE_OF_PROJECTION_ORIGIN, new Double(Lat0)));
+    //attributes.add(new Attribute("semi_major_axis", new Double(major_axis)));
+    //attributes.add(new Attribute("semi_minor_axis", new Double(minor_axis)));
     attributes.add(new Attribute("height_from_earth_center_km", new Double(nr * major_axis)));
     attributes.add(new Attribute("scale_x", new Double(scale_x)));
     attributes.add(new Attribute("scale_y", new Double(scale_y)));
