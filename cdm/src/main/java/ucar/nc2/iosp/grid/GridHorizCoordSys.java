@@ -1093,12 +1093,14 @@ public class GridHorizCoordSys {
     List<Variable> vars = ncfile.getRootGroup().getVariables();
     String latpp = null, lonpp = null, latU = null, lonU = null, latV = null, lonV = null;
     // has to be done twice because there's no guarantte that the coordinate variables will be accessed first
+    String timeDim = null;
     for( Variable var : vars ) {
       if( var.getName().startsWith( "Latitude") ) {
         // remove time dependancy
         int[] shape = var.getShape();
         if (var.getRank() == 3 && shape[0] == 1) { // remove time dependcies - MAJOR KLUDGE
               List<Dimension> dims = var.getDimensions();
+              timeDim = dims.get( 0 ).getName();
               dims.remove(0);
               var.setDimensions(dims);
         }
@@ -1106,14 +1108,13 @@ public class GridHorizCoordSys {
         var.addAttribute(new Attribute("units", "degrees_north"));
         var.addAttribute(new Attribute("long_name", "latitude coordinate"));
         var.addAttribute(new Attribute("standard_name", "latitude"));
-        //var.addAttribute(new Attribute("grid_spacing", incr + " " + units));
         var.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-        if( var.getName().contains( "Pressure_Point")) {
-          latpp = var.getName();
-        } else if( var.getName().contains( "U_Wind_Component")) {
+        if( var.getName().contains( "U_Wind_Component")) {
           latU = var.getName();
         } else if( var.getName().contains( "V_Wind_Component")) {
           latV = var.getName();
+        } else {
+          latpp = var.getName();
         }
 
       } else if( var.getName().startsWith( "Longitude" )) {
@@ -1128,18 +1129,21 @@ public class GridHorizCoordSys {
         var.addAttribute(new Attribute("units", "degrees_east"));
         var.addAttribute(new Attribute("long_name", "longitude coordinate"));
         var.addAttribute(new Attribute("standard_name", "longitude"));
-        //var.addAttribute(new Attribute("grid_spacing", incr + " " + units));
         var.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
 
-        if( var.getName().contains( "Pressure_Point")) {
-          lonpp = var.getName();
-        } else if( var.getName().contains( "U_Wind_Component")) {
+        if( var.getName().contains( "U_Wind_Component")) {
           lonU = var.getName();
         } else if( var.getName().contains( "V_Wind_Component")) {
           lonV = var.getName();
+        } else {
+          lonpp = var.getName();
         }
       }
    }
+   // remove Latitude/Longitude  time dimension and variable
+   ncfile.getRootGroup().removeDimension( timeDim );
+   ncfile.getRootGroup().removeVariable( timeDim );
+
    // add coordinates to variables
    for( Variable var : vars ) {
 
@@ -1157,15 +1161,12 @@ public class GridHorizCoordSys {
       } else if( var.getName().startsWith( "Curvilinear") ) {
         // nothing at this time
       } else if( var.getName().startsWith( "U-component") ) {
-        ///var.addAttribute(new Attribute("coordinates", "Latitude_of_U_Wind_Component_of_Velocity Longitude_of_U_Wind_Component_of_Velocity"));
         var.addAttribute(new Attribute("coordinates", latU +" "+ lonU));
 
       } else if( var.getName().startsWith( "V-component") ) {
-        //var.addAttribute(new Attribute("coordinates", "Latitude_of_V_Wind_Component_of_Velocity Longitude_of_V_Wind_Component_of_Velocity"));
         var.addAttribute(new Attribute("coordinates", latV +" "+ lonV));
         // rest of variables default to Pressure_Point
       } else {
-        //var.addAttribute(new Attribute("coordinates", "Latitude_of_Pressure_Point Longitude_of_Pressure_Point"));
         var.addAttribute(new Attribute("coordinates", latpp +" "+ lonpp));
       }
     }
