@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+<style type="text/css">
+pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
+code {font-size: 11pt;}
+dl {margin: 10px 5px 5px 15px;)
+.style1 {font-style: italic}
+</style>
+</head>
+
+<body>
+<h1>FMRC Collections</h1>
+<h2>CollectionManager</h2>
+<h3>From a collection specification</h3>
+<p>A <em><strong>collection specification string</strong></em> creates a collection on the fly. See <strong>DatasetCollectionManager</strong> class.</p>
+<pre>
+/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/GFS_Alaska_191km_#yyyyMMdd_HHmm#\.grib1
+</pre>
+<ul>
+  <li>rootDir= /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km</li>
+  <li>subdirs= yes </li>
+  <li>dateFormatMark= GFS_Alaska_191km_#yyyyMMdd_HHmm</li>
+  <li>onName= yes</li>
+  <li>regexp= GFS_Alaska_191km.........\.grib1</li>
+</ul>
+<h3>From a catalog</h3>
+<p>You can use a <em><strong>catalog:catalogURL</strong></em>. All the datasets in the catalog are used, using best remote access capabilty, currently opendap. See <strong>DatasetCollectionFromCatalog</strong> class.</p>
+<h3>From NcML</h3>
+<p>If you pass an ncml file (must end in <strong>.ncml</strong>) the NcML is parsed, and the scan or scanFmrc is extracted. A <strong>DatasetCollectionFromNcml </strong>is returned, along with inner and outer JDOM elements.</p>
+<h2>Date Handling</h2>
+<h3>Run Date</h3>
+<p>If a dateFormatMark is given, a DateExtractor extracts the rundate from the filename or URL. Otherwise look for global attributes <strong>_CoordinateModelBaseDate</strong> or <strong>_CoordinateModelRunDate</strong>.</p>
+<p>One cannot put output from multiple runs in the same file.</p>
+<h3>Forecast Date</h3>
+<p>Each file is opened as a  GridDataset:</p>
+<pre>gds = GridDataset.open( mfile.getPath());
+</pre>
+<p>and the forecast time coordinates are extracted from the grid coordinate system.</p>
+<p>There is no need to specify FmrcSingle vs Fmrc, nor time coordinates change. This is handled automatically.</p>
+<h3>Regulate</h3>
+<p>If true, then all runs for a given offset hour (from 0Z) are assumed to have the same forecast time coordinates. This obviates the need for the fmrc definition files which previously were used. This evens out time coordinates, and allows for missing forecast times in the IDD feed.</p>
+<h3>Persistent Caching</h3>
+<p>An fmrInv.xml file is made the first time the file is seen. It is cached in bdb (MetadataManager). each collection string = bdb database. Each MFile in the collection:</p>
+<pre> mm.put(file.getPath()+key, value);
+</pre>
+<p>ToolsUI collections tab allows you to delete database or individual elements.</p>
+<h3>NcML </h3>
+<p>Each file is opened as a  GridDataset:</p>
+<pre>gds = GridDataset.open( mfile.getPath());
+</pre>
+</body>
+</html>
