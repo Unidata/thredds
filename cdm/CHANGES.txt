@@ -3,6 +3,8 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.1:
+ 14:
+  earth_radius attribute on grid_mapping variable must be in meters
  13:
   new visadNoDods.jar
   N3iosp, N3header, RAF: simplify  flushing, file.setLength()

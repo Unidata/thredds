@@ -72,10 +72,11 @@ public class VerticalPerspective extends AbstractCoordTransBuilder {
       false_northing *= scalef;
     }
 
-    double earthRadius = readAttributeDouble( ctv, "earth_radius", Earth.getRadius() / 1000.0);
+    // these must be in meters, projection needs them in km
+    double earth_radius = readAttributeDouble(ctv, "earth_radius", Earth.getRadius()) * .001;
 
     ucar.unidata.geoloc.projection.VerticalPerspectiveView proj =
-            new ucar.unidata.geoloc.projection.VerticalPerspectiveView(lat0, lon0, earthRadius, distance, false_easting, false_northing);
+            new ucar.unidata.geoloc.projection.VerticalPerspectiveView(lat0, lon0, earth_radius, distance, false_easting, false_northing);
 
     return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
   }

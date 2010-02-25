@@ -71,8 +71,9 @@ public class AlbersEqualArea extends AbstractCoordTransBuilder {
       false_northing *= scalef;
     }
 
-    double earth_radius = readAttributeDouble(ctv, "earth_radius", Earth.getRadius() * .001);
-
+    // these must be in meters, projection needs them in km
+    double earth_radius = readAttributeDouble(ctv, "earth_radius", Earth.getRadius()) * .001;
+    
     double semi_major_axis = readAttributeDouble(ctv, "semi_major_axis", Double.NaN);
     double semi_minor_axis = readAttributeDouble(ctv, "semi_minor_axis", Double.NaN);
     double inverse_flattening = readAttributeDouble(ctv, "inverse_flattening", 0.0);
