@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <project name="cdm" default="makeMain" basedir=".">
   <echo>basedir=${basedir}</echo>
-
   <tstamp>
     <format property="build.time" pattern="yyyy-MM-dd HH:mm:ss" timezone="GMT"/>
     <format property="build.time.number" pattern="yyyyMMdd.HHmm" timezone="GMT"/>
