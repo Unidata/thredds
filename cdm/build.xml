@@ -136,9 +136,9 @@
 
   <!-- LOOK can we generate with pathconvert? -->
   <property name="Class-Path"
-            value="${jgoodies.jar} ${grib.jar} ${jdom.jar} ${opendap.jar} ${http-codec.jar} ${httpclient.jar} ${http-logging.jar} ${loggingAPI.jar} ${logging-minimal.jar} ${jpeg2000.jar} ${protobuf.jar} ${resourcesOptional.jar} ${spring.jar} ${visadNoDods.jar}"/>
+            value="${jgoodies.jar} ${grib.jar} ${jdom.jar} ${opendap.jar} ${http-codec.jar} ${httpclient.jar} ${http-logging.jar} ${loggingAPI.jar} ${logging-minimal.jar} ${jpeg2000.jar} ${protobuf.jar} ${resourcesOptional.jar} ${spring.jar} ${unidatacommon.jar} ${visadNoDods.jar}"/>
   <property name="ClassPath-CommandLine"
-            value="lib/${grib.jar}:lib/${jdom.jar}:lib/${httpclient.jar}:lib/${http-codec.jar}:lib/${http-logging.jar}:lib/${jpeg2000.jar}:lib/${loggingAPI.jar}:lib/${logging-minimal.jar}:lib/${jgoodies.jar}:lib/${spring.jar}:lib/${visadNoDods.jar}"/>
+            value="lib/${grib.jar}:lib/${jdom.jar}:lib/${httpclient.jar}:lib/${http-codec.jar}:lib/${http-logging.jar}:lib/${jpeg2000.jar}:lib/${loggingAPI.jar}:lib/${logging-minimal.jar}:lib/${jgoodies.jar}:lib/${spring.jar}:lib/${unidatacommon.jar}:lib/${visadNoDods.jar}"/>
 
   <target name="test-pathconvert">
     <echo>Class-Path=${Class-Path}</echo>
@@ -455,7 +455,11 @@
         <include name="lib/release/**"/>
         <include name="ui/src/main/**"/>
       </fileset>
-      
+
+      <fileset dir="${root.dir}/../..">
+        <include name="unidataCommon/src/main/**"/>
+      </fileset>
+
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
         <attribute name="Built-On" value="${build.time}"/>

@@ -4,7 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  14:
-  NsslRadarMosaic COnvention: dont use the NcML, test for variable names
+  NsslRadarMosaic Convention: dont use the NcML, test for variable names
   Grib: Curvilinear Orthogonal projection now works
   add Aggregation.FIRST as option for choosing prototype
   earth_radius attribute on grid_mapping variable must be in meters

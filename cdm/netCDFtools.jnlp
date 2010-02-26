@@ -31,6 +31,7 @@
         <jar href="opendap.jar"/>
         <jar href="resourcesOptional.jar"/>
         <jar href="spring.jar"/>
+        <jar href="unidatacommon.jar"/>
         <jar href="visadNoDods.jar"/>
     </resources>
 
