@@ -6,12 +6,14 @@
 <body>
  <h1><img src="../../images/unidataLogo.png" align="middle" height="150" width="146">Annotated TDS Configuration file (version 4.0)</h1>
 <hr>
- <p>These are parameters that control the TDS that can be set by the TDS administrator in <strong>${tomcat_home}/content/thredds/threddsConfig.xml</strong>. </p>
-<p>In
-general, you do not have to change any of these parameters, since the TDS
-will use default settings. If you do change any of these, you must
-restart the thredds webapp (eg through the tomcat manager application)
-for them to take effect. The exception is that the <strong>catalogRoot</strong> elements will be reread by doing a <strong>Debug/Reinit</strong>, if you have remote management enabled.</p>
+ <p>The TDS configuration file (<code>${tomcat_home}/content/thredds/threddsConfig.xml</code>)
+   allows the TDS administrator to set a number of parameters that control the behavior of the TDS.
+ </p>
+ <p>In general, you do not have to change any of these parameters, since the TDS will
+   use default settings. If you do change any of these, you must restart the thredds
+   webapp (e.g., through the tomcat manager application) for them to take effect. The
+   exception is that the <strong>catalogRoot</strong> elements will be reread by
+   doing a <strong>Debug/Reinit</strong>, if you have remote management enabled.</p>
 
  <p>Here is an annotated example<a href="threddsConfig.xml.txt"> threddsConfig.xml</a>.</p>
 
@@ -84,7 +86,9 @@ best to turn off automatic index extension, by setting <strong>setExtendIndex</s
 can control how NcML Aggregation chooses its typical / template
 dataset, the one it uses to populate the metadata for the resulting
 aggregated dataset. Valid values are <strong>random</strong> (default), <strong>latest</strong> and <strong>penultimate</strong> (latest but one). </p>
-<h3>OPeNDAP<a name="opendap" id="opendap"></a> Service</h3>
+
+ <h3><a name="DataAccessServices">Data Access Services</a></h3>
+<h4>OPeNDAP<a name="opendap" id="opendap"></a> Service</h4>
 <pre>  &lt;<strong>Opendap</strong>&gt;<br>    &lt;<strong>ascLimit</strong>&gt;50&lt;/ascLimit&gt;<br>    &lt;<strong>binLimit</strong>&gt;500&lt;/binLimit&gt;<br>    &lt;<strong>serverVersion</strong>&gt;opendap/3.7&lt;/serverVersion&gt;<br>  &lt;/<strong>Opendap</strong>&gt;</pre>
  <p>This controls the <em><strong>OPeNDAP </strong></em>data service. Because its easy for a user to inadvertantly request very large amounts of data,   the TDS  limits the size of the data response. In our experience legitimate requests ask for subset sizes that are well below  the defaults.</p>
 <ol>
@@ -92,7 +96,7 @@ aggregated dataset. Valid values are <strong>random</strong> (default), <strong>
    <li><strong>binLimit</strong>: maximum size of a binary data request , in Megabytes. Default is 500 Mbytes.</li>
    <li><strong>serverVersion</strong>:  this is the String thats returned by the OPeNDAP <strong>getVersion</strong> request, and also placed into the  <strong><em>XDOS-Server</em></strong> HTTP Header on all OPeNDAP responses.</li>
  </ol>
-<h3>WCS<a name="WCS"></a> Service </h3>
+<h4>WCS<a name="WCS"></a> Service </h4>
  <pre>  &lt;<strong>WCS</strong>&gt;<br>    &lt;<strong>allow</strong>&gt;false&lt;/allow&gt;<br>    &lt;<strong>dir</strong>&gt;/temp/ncache/&lt;/dir&gt;<br>    &lt;<strong>scour</strong>&gt;15 min&lt;/scour&gt;<br>    &lt;<strong>maxAge</strong>&gt;30 min&lt;/maxAge&gt;<br>  &lt;/WCS&gt;</pre>
  <p>This controls the <em><strong>Web Coverage Service (WCS) </strong></em>,
 which allows WCS clients to specify a subset of a dataset and download
@@ -106,7 +110,8 @@ how long to leave the files in the working directory while the download
 is occurring. The files are deleted after a successful download. </li>
 </ol>
  <p>If <strong>WCS</strong> is allowed but the directory is not set, the TDS will use the <strong>${tomcat_home}/content/thredds/wcs/wcache</strong>/ directory for temporary files. </p>
- <h3>WMS<a name="WMS" id="WMS"></a> Service</h3>
+
+ <h4>WMS<a name="WMS" id="WMS"></a> Service</h4>
 <pre>  &lt;<strong>WMS</strong>&gt;<br>    &lt;<strong>allow</strong>&gt;false&lt;/allow&gt;<br>&nbsp;&nbsp;&nbsp; &lt;<strong>paletteLocationDir</strong>&gt;/data/my/pallettes/&lt;/paletteLocationDir&gt;<br>    &lt;<strong>ogcMetaXML</strong>&gt;OGCMeta.xml&lt;/ogcMetaXML&gt;  <br>    &lt;<strong>dir</strong>&gt;/temp/ncache/&lt;/dir&gt;<br>    &lt;<strong>scour</strong>&gt;15 min&lt;/scour&gt;<br>    &lt;<strong>maxAge</strong>&gt;30 min&lt;/maxAge&gt;<br>  &lt;/WMS&gt;</pre>
 <p>This controls the <em><strong>Web Map Service (WMS) </strong></em>,
    which allows WMS clients to get images of gridded datasets. By default, this service is off. </p>
@@ -126,6 +131,39 @@ the path is absolute, otherwise it is relative to <strong>${tomcat_home}/content
      how long to leave the files in the working directory while the download
      is occurring. The files are deleted after a successful download. </li>
  </ol>
+
+ <h4>NetcdfSubset<a name="NetcdfSubset" id="NetcdfSubset"></a> Service</h4>
+
+ <p><strong>This service is an experimental prototype. As such it may be subject to change.</strong></p>
+
+ <pre>
+ &lt;NetcdfSubsetService&gt;
+   &lt;allow&gt;true&lt;/allow&gt;
+   &lt;dir&gt;/tmp/thredds/ncSubsetCache/&lt;/dir&gt;
+   &lt;scour&gt;15 min&lt;/scour&gt;
+   &lt;maxAge&gt;30 min&lt;/maxAge&gt;
+ &lt;/NetcdfSubsetService&gt;
+ </pre>
+
+ <p>
+   This controls the NetcdfSubset service (URL: "/thredds/ncss/grid/...") which supports
+   subset requests in terms of latitude/longitude bounding boxes and date ranges rather
+   than array index ranges. More information is available on the
+   <a href="../../interfaceSpec/NetcdfSubsetService.html">NetcdfSubset Service Reference</a>
+   page.
+ </p>
+ <p>By default, this service is not available. It can be enabled by setting the value
+   of the allow element to "true".</p>
+
+ <ol>
+   <li><strong>allow</strong>: Set to "true" to enable the NetcdfSubset service.</li>
+   <li><strong>dir</strong> : the working directory for creating files for download&nbsp;(See <a href="#Cache_Locations">choosing a cache directory</a>) </li>
+   <li> <strong>scour</strong> : how often to scour the working directory, to delete files that were not successfully downloaded. </li>
+   <li><strong>maxAge</strong>:
+     how long to leave the files in the working directory while the download
+     is occurring. The files are deleted after a successful download. </li>
+ </ol>
+
 <h3>Loadable Viewers</h3>
  <pre>   &lt;<strong>Viewer</strong>&gt;my.package.MyViewer&lt;/Viewer&gt;</pre>
  <p>You can place a link  to your own <em><strong>Viewer</strong></em>  on the TDS HTML page, by loading a <a href="../../reference/Viewers.html">viewer</a> at runtime. </p>
