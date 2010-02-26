@@ -106,7 +106,7 @@ public abstract class Aggregation implements ProxyReader {
     union
   }
 
-  static protected enum TypicalDataset {RANDOM, LATEST, PENULTIMATE }
+  static protected enum TypicalDataset {FIRST, RANDOM, LATEST, PENULTIMATE }
   static protected TypicalDataset typicalDatasetMode;
 
   static protected org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Aggregation.class);
@@ -129,8 +129,10 @@ public abstract class Aggregation implements ProxyReader {
     else if (mode.equalsIgnoreCase("latest"))
       typicalDatasetMode = TypicalDataset.LATEST;
     else if (mode.equalsIgnoreCase("penultimate"))
-      typicalDatasetMode = TypicalDataset.PENULTIMATE;
-    else
+       typicalDatasetMode = TypicalDataset.PENULTIMATE;
+    else if (mode.equalsIgnoreCase("first"))
+       typicalDatasetMode = TypicalDataset.FIRST;
+     else
       logger.error("Unknown setTypicalDatasetMode= " + mode);
   }
 
@@ -427,7 +429,6 @@ public abstract class Aggregation implements ProxyReader {
 
   /////////////////////////////////////////////////////////////////////////
 
-
   protected String getLocation() {
     return ncDataset.getLocation();
   }
@@ -449,6 +450,8 @@ public abstract class Aggregation implements ProxyReader {
       select = n - 1;
     else if (typicalDatasetMode == TypicalDataset.PENULTIMATE)
       select = (n < 2) ? 0 : n - 2;
+    else if (typicalDatasetMode == TypicalDataset.FIRST)
+      select = 0;
     else // random is default
       select = (n < 2) ? 0 : new Random().nextInt(n);
 

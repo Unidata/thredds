@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  14:
+  add Aggregation.FIRST as option for choosing prototype
   earth_radius attribute on grid_mapping variable must be in meters
  13:
   new visadNoDods.jar
