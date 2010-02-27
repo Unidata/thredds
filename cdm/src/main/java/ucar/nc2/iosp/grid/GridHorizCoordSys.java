@@ -1113,14 +1113,14 @@ public class GridHorizCoordSys {
     List<Variable> vars = ncfile.getRootGroup().getVariables();
     String latpp = null, lonpp = null, latU = null, lonU = null, latV = null, lonV = null;
     // has to be done twice because there's no guarantte that the coordinate variables will be accessed first
-    String timeDim = null;
+    String timeDimLL = null, timeDimV = null;
     for( Variable var : vars ) {
       if( var.getName().startsWith( "Latitude") ) {
         // remove time dependancy
         int[] shape = var.getShape();
         if (var.getRank() == 3 && shape[0] == 1) { // remove time dependcies - MAJOR KLUDGE
               List<Dimension> dims = var.getDimensions();
-              timeDim = dims.get( 0 ).getName();
+              timeDimLL = dims.get( 0 ).getName();
               dims.remove(0);
               var.setDimensions(dims);
         }
@@ -1161,8 +1161,8 @@ public class GridHorizCoordSys {
       }
    }
    // remove Latitude/Longitude  time dimension and variable
-   ncfile.getRootGroup().removeDimension( timeDim );
-   ncfile.getRootGroup().removeVariable( timeDim );
+   //ncfile.getRootGroup().removeDimension( timeDimLL );
+   //ncfile.getRootGroup().removeVariable( timeDimLL );
 
    // add coordinates to variables
    for( Variable var : vars ) {
