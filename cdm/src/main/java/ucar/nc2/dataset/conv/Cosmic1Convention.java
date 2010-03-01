@@ -446,58 +446,6 @@ public class Cosmic1Convention extends CoordSysBuilder {
     }
 
 
-    /**
-     *    @call gast.f
-     *     Compute hour angle dtheta
-     *
-     *     ! iyr, mon, iday, ihr, min and sec form a base (epoch) time,
-     *     ! t is an offset from the base time in seconds
-     *     ! dtheta is the output hour angle in radians
-     *
-     * Calculation of local time
-     *
-     * ! glon -- East longitude in degrees, -180 to 180
-     *
-     *
-     *      @call vprod.f   spin.f   rnorm.f
-     * Calculation of the unit vector normal to the occultation plane
-     * (clockwise rotated from GPS to LEO)
-     *
-     * @param iyr _more_
-     * @param imon _more_
-     * @param iday _more_
-     * @param ihr _more_
-     * @param imin _more_
-     * @param sec _more_
-     * @param dsec _more_
-     *
-     * @return _more_
-     */
-    /*
-         double dtheta = gast(iyr,mon,iday,ihr,min,sec,t)
-         utc=ihr*1.d0+min/60.d0
-         timloc=utc+24.d0*glon/360.d0
-         if (timloc.gt.24.d0) timloc=timloc-24.d0
-         if (timloc.lt.0.d0) timloc=timloc+24.d0
-     */
-
-    // In the inertial reference frame
-    /*
-     v_inertial(1)= ! Inertial GPS position vectors, XYZ
-     v_inertial(2)=
-     v_inertial(3)=
-    */
-    // In the Earth-fixed reference frame
-
-    //  Z axis to rotate around (unit vector Z)
-    /*
-       uvz(1)=0.0;
-       uvz(2)=0.0;
-       uvz(3)=1.0;
-
-       double [] v_ecf = spin(v_inertial,uvz,-180.d0*dtheta/pi)
-   */
-    // after this call, v_ecef should be in the (approximate) ECEF frame
 
 
 
@@ -505,7 +453,6 @@ public class Cosmic1Convention extends CoordSysBuilder {
      * ----------------------------------------------------------------------
      * This subroutine computes the Greenwich Apparent Siderial
      * Time angle given a UTC date and time.
-     * @parameter  Input parameters:
      * Inputs:
      * @param  iyr, integer, 1995
      * @param  imon, integer, 5
@@ -517,9 +464,8 @@ public class Cosmic1Convention extends CoordSysBuilder {
      * Outputs:
      * @return  angle in radians
      *
-     * @author     Bill Schreiner
-     * @since      May 1995
-     * @version    $URL: svn://ursa.cosmic.ucar.edu/trunk/src/roam/gast.f $ $Id: gast.f 10129 2008-07-30 17:10:52Z dhunt $
+     * author     Bill Schreiner
+     * since      May 1995
      * -----------------------------------------------------------------------
      */
     public double gast(int iyr, int imon, int iday, int ihr, int imin,
@@ -615,15 +561,15 @@ public class Cosmic1Convention extends CoordSysBuilder {
      * This subroutine rotates vector V1 around vector VS
      * at angle A. V2 is the vector after the rotation.
      *
-     * @parameter  Input parameters:
+     * Input parameters:
      * @param v1   - Vector to be rotated
      * @param vs   - Vector around which to rotate v1
      * @param a    - angle of rotation
-     * @ Output parameters:
+     * Output parameters:
      * @return   - output vector
      *
-     * @author     S.V.Sokolovskiy
-     * @version    $URL: svn://ursa.cosmic.ucar.edu/trunk/src/roam/spin.f $ $Id: spin.f 10129 2008-07-30 17:10:52Z dhunt $
+     * author     S.V.Sokolovskiy
+     * version
      * -----------------------------------------------------------------------
      *
      * @param v1 _more_
