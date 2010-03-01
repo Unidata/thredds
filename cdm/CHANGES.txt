@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  14:
+  clarify MSGnavigation parameters
+  improved Cosmic1Convention
   NsslRadarMosaic Convention: dont use the NcML, test for variable names
   Grib: Curvilinear Orthogonal projection now works
   add Aggregation.FIRST as option for choosing prototype

@@ -63,7 +63,7 @@ public class MSGnavigation extends AbstractCoordTransBuilder {
       double lat0 = readAttributeDouble( ctv, "latitude_of_projection_origin", Double.NaN);
       double minor_axis = readAttributeDouble( ctv, "semi_minor_axis", Double.NaN);
       double major_axis = readAttributeDouble( ctv, "semi_major_axis", Double.NaN);
-      double height = readAttributeDouble( ctv, "height_from_earth_center_km", Double.NaN);
+      double height = readAttributeDouble( ctv, "height_from_earth_center", Double.NaN);
       double scale_x = readAttributeDouble( ctv, "scale_x", Double.NaN);
       double scale_y = readAttributeDouble( ctv, "scale_y", Double.NaN);
 

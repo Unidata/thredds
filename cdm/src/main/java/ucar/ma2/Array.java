@@ -284,7 +284,11 @@ public abstract class Array {
    */
   static public void arraycopy(Array arraySrc, int srcPos, Array arrayDst, int dstPos, int len) {
     Object src = arraySrc.get1DJavaArray( arraySrc.getElementType()); // ensure canonical order
-    System.arraycopy(src, srcPos, arrayDst.getStorage(), dstPos, len);
+    //try {
+      System.arraycopy(src, srcPos, arrayDst.getStorage(), dstPos, len);
+    //} catch (Exception e) {
+    //  e.printStackTrace();
+    //}
   }
 
   /**

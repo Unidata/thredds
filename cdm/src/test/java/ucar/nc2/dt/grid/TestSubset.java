@@ -163,10 +163,10 @@ public class TestSubset extends TestCase {
     ProjectionImpl p = gcs.getProjection();
     ProjectionRect prect = p.latLonToProjBB(bbox); // must override default implementation
     System.out.printf("%s -> %s %n", bbox, prect);
-    assert TestAll.closeEnough( prect.getMinX(), -2120.3375);
-    assert TestAll.closeEnough( prect.getWidth(), 4279.2196);
-    assert TestAll.closeEnough( prect.getMinY(), -1809.0359);
-    assert TestAll.closeEnough( prect.getHeight(), 3338.2484);
+    assert TestAll.closeEnough( prect.getMinX(), -2120.3375) : prect;
+    assert TestAll.closeEnough( prect.getWidth(), 4279.2196)  : prect;
+    assert TestAll.closeEnough( prect.getMinY(), -1809.0359)  : prect;
+    assert TestAll.closeEnough( prect.getHeight(), 3338.2484)  : prect;
 
     LatLonRect bb2 = p.projToLatLonBB(prect);
     System.out.printf("%s -> %s %n", prect, bb2);

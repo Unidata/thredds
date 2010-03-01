@@ -50,7 +50,7 @@ public class TestCoordinates extends TestCase {
   }
 
   public void testAlias() throws IOException {
-    String filename = TestAll.cdmUnitTestDir + "fmrc/MM_cnrm_129_red.ncml";
+    String filename = TestAll.cdmUnitTestDir + "fmrc/ensemble/demeter/MM_cnrm_129_red.ncml";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset( filename);
     Variable v = ncd.findCoordinateAxis("number");
     assert v != null;

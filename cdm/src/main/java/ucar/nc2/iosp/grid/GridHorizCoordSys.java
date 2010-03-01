@@ -1033,12 +1033,11 @@ public class GridHorizCoordSys {
     double dx = gds.getDouble(GridDefRecord.DX);  // apparent diameter of earth in units of grid lengths
     double dy = gds.getDouble(GridDefRecord.DY);
 
-    // per Simon Eliot 1/18/2010, correct for ellipsoidal earth
-    // should check who the originating center is
-    // "Originating_center" = "EUMETSAT Operation Centre" in the GRIB id (section 1).
-    //if ( 1189 == dy ) dy = 1203;
-    //else if ( 3568 == dy) dy = 3610;
-    // we see dy = 1189 or 1188
+    // per Simon Eliot 1/18/2010, there is a bug in Eumetsat grib files,
+    // we need to "correct for ellipsoidal earth"
+    // (Note we should check who the originating center is
+    // "Originating_center" = "EUMETSAT Operation Centre" in the GRIB id (section 1))
+    // although AFAIK, eumetsat is only one using this projection.
     if (dy < 2100) {
       dx = 1207;
       dy = 1203;
@@ -1048,11 +1047,11 @@ public class GridHorizCoordSys {
     }
 
     // have to check both names because Grib1 and Grib2 used different names
-    double major_axis = gds.getDouble(GridDefRecord.MAJOR_AXIS_EARTH);  // km
+    double major_axis = gds.getDouble(GridDefRecord.MAJOR_AXIS_EARTH);  // m
     if (Double.isNaN(major_axis))
       major_axis = gds.getDouble("major_axis_earth");
 
-    double minor_axis = gds.getDouble(GridDefRecord.MINOR_AXIS_EARTH);  // km
+    double minor_axis = gds.getDouble(GridDefRecord.MINOR_AXIS_EARTH);  // m
     if (Double.isNaN(minor_axis))
       minor_axis = gds.getDouble("minor_axis_earth");
     // Nr = altitude of camera from center, in units of radius
@@ -1064,7 +1063,7 @@ public class GridHorizCoordSys {
     double lfac = dy / as;
 
     // use km, so scale by the earth radius
-    double scale_factor = (nr - 1) * major_axis; // this sets the units of the projection x,y coords in km
+    double scale_factor = (nr - 1) * major_axis / 1000; // this sets the units of the projection x,y coords in km
     double scale_x = scale_factor; // LOOK fake neg need scan value
     double scale_y = -scale_factor; // LOOK fake neg need scan value
     startx = scale_factor * (1 - x_off) / cfac;
@@ -1077,7 +1076,7 @@ public class GridHorizCoordSys {
     attributes.add(new Attribute(GridCF.LATITUDE_OF_PROJECTION_ORIGIN, new Double(Lat0)));
     //attributes.add(new Attribute("semi_major_axis", new Double(major_axis)));
     //attributes.add(new Attribute("semi_minor_axis", new Double(minor_axis)));
-    attributes.add(new Attribute("height_from_earth_center_km", new Double(nr * major_axis)));
+    attributes.add(new Attribute("height_from_earth_center", new Double(nr * major_axis)));
     attributes.add(new Attribute("scale_x", new Double(scale_x)));
     attributes.add(new Attribute("scale_y", new Double(scale_y)));
 
