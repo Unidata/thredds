@@ -503,31 +503,25 @@ public class Cosmic1Convention extends CoordSysBuilder {
 
     /**
      * ----------------------------------------------------------------------
-     * @file       gast.f
-     *
      * This subroutine computes the Greenwich Apparent Siderial
      * Time angle given a UTC date and time.
-     *
-     * @sub        gast
      * @parameter  Input parameters:
-     * @ Inputs:
-     * @  iyr, integer, 1995
-     * @  imon, integer, 5
-     * @  iday, integer, 5
-     * @  ihr, integer, 5
-     * @  imin, integer, 5
-     * @  sec, double, 31.0
-     * @  dsec, double, 0.0
-     * @ Outputs:
-     * @  theta, GAST angle in radians
+     * Inputs:
+     * @param  iyr, integer, 1995
+     * @param  imon, integer, 5
+     * @param  iday, integer, 5
+     * @param  ihr, integer, 5
+     * @param  imin, integer, 5
+     * @param  sec, double, 31.0
+     * @param  dsec, double, 0.0
+     * Outputs:
+     * @return  angle in radians
      *
      * @author     Bill Schreiner
      * @since      May 1995
      * @version    $URL: svn://ursa.cosmic.ucar.edu/trunk/src/roam/gast.f $ $Id: gast.f 10129 2008-07-30 17:10:52Z dhunt $
      * -----------------------------------------------------------------------
      */
-
-
     public double gast(int iyr, int imon, int iday, int ihr, int imin,
                        double sec, double dsec) {
         //
@@ -618,18 +612,15 @@ public class Cosmic1Convention extends CoordSysBuilder {
 
     /**
      * ----------------------------------------------------------------------
-     * @file       spin.f
-     *
      * This subroutine rotates vector V1 around vector VS
      * at angle A. V2 is the vector after the rotation.
      *
-     * @sub        spin
      * @parameter  Input parameters:
-     * @ v1   - Vector to be rotated
-     * @ vs   - Vector around which to rotate v1
-     * @ a    - angle of rotation
+     * @param v1   - Vector to be rotated
+     * @param vs   - Vector around which to rotate v1
+     * @param a    - angle of rotation
      * @ Output parameters:
-     * @ v2   - output vector
+     * @return   - output vector
      *
      * @author     S.V.Sokolovskiy
      * @version    $URL: svn://ursa.cosmic.ucar.edu/trunk/src/roam/spin.f $ $Id: spin.f 10129 2008-07-30 17:10:52Z dhunt $
