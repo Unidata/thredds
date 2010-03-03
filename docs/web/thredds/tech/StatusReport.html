@@ -10,7 +10,8 @@
 <h2>THREDDS and Unidata</h2>
 
 <p>The efforts of the THREDDS group focus mainly on two themes from the
-  Unidata 2013 proposal:<p>
+  Unidata 2013 proposal:
+
 <ul>
   <li>Theme 2 - Advancing data services;</li>
   <li>Theme 3 - Developing and deploying useful tools; and</li>
@@ -27,12 +28,13 @@
 
 <h3><a name="20100301" id="20100301"></a>Status update 1 March 2010 </h3>
 
-<p>TDS 4.1 and netCDF-java 4.1 are the current stable releases. The features and enhancements that
+<p>TDS 4.1 and CDM 4.1 are the current stable releases. The features and enhancements that
   have gone into those versions as well as plans for both 4.2 versions are given below.
 </p>
 
 <ul>
-  <li>THREDDS Data Server (TDS)
+  <li><strong>THREDDS Data Server (TDS)
+    </strong>
     <ul>
       <li>TDS 4.1 was promoted to our stable release in December. Includes:
         <ul>
@@ -57,10 +59,83 @@
       </li>
     </ul>
   </li>
-  <li>Common Data Model / netCDF-Java
-    <ul>
-      <li>good stuff</li>
-    </ul>
+  <li><strong>Common Data Model / netCDF-Java</strong>
+    <ol>
+      <li>Netcdf-Java
+        library version 4.1 is now the stable release
+        <ol>
+          <li>Point Features
+              <ol>
+                <li>CF-1.5 (provisional), Suomi, FslWindProfiler, Cosmic, GempakSurface, Madis, UnidataObs, GempakSounding, NLDN, USPLN, Madis-ACARS</li>
+                <li>Handle multiple profiles in the FslRaob plugin</li>
+                <li>Add new functionality to StationProfileFeature: getTimes(), getProfileByDate()</li>
+              </ol>
+          </li>
+          <li>Coordinate Systems
+            <ol>
+              <li>CEDRIC radar</li>
+              <li>Orthogonal Curvilinear (GRIB2)</li>
+              <li>MSGnavigation (GRIB2 from EUMETSAT)</li>
+              <li>AlbersEqualAreaEllipse, LambertConformalConicEllipse<br>
+                                                                      </li>
+            </ol>
+          </li>
+          <li>IOSP
+            <ol>
+              <li> H5iosp: deal with compressed, chunked compound types</li>
+              <li> BUFR: use WMO (prerelease) tables version 14, many other improvements</li>
+              <li> GEMPAK sounding IOSP</li>
+              <li> Improve HDF-EOS processing<br>
+              </li>
+            </ol>
+          </li>
+          <li>ToolsUI
+            <ol>
+              <li>New Tabs for for examining BUFR tables B and D</li>
+            </ol>
+          </li>
+          <li>General
+            <ol>
+              <li> Add -isLargeFile option to FileWriter to generate 64-bit offset files</li>
+              <li>Experimental filesystem caching<br>
+                </li>
+            </ol>
+          </li>
+        </ol>
+      </li>
+      <li>Netcdf-Java
+      library version 4.2 is  the experimental release
+        <ol>
+          <li>FMRC refactor
+            <ol>
+              <li>No longer have to specify file structure, all files are scanned as GridDatasets and FMRC is automatically created</li>
+              <li>no longer need fmrcDefinition.xml files, equivilent is generated automatically</li>
+              <li>UI  Tabs for  examining FMRC data structures</li>
+              <li>experimental caching using Berkely DB Java edition</li>
+            </ol>
+          </li>
+          <li>Collections specification
+            <ol>
+              <li>same functionality as scan, scanFmrc, and CrawlableDataset</li>
+              <li>specify a collection with a single string, eg &quot;
+/data/NCEP/GFS/Alaska_191km/**/GFS_Alaska_191km_#yyyyMMdd_HHmm#\.grib&quot;</li>
+              <li>specify collection from a THREDDS catalog</li>
+              <li>specify collection from NcML</li>
+            </ol>
+          </li>
+          <li>Improve support for arbitrary 2D Coordinates, like Orthogonal Curvilinear</li>
+        </ol>
+      </li>
+      <li>Six month plan:
+        <ol>
+          <li>Release version 4.2 with refactored FMRC</li>
+          <li>Complete CF point obs conventions, for CF version 1.5</li>
+          <li>Complete implementation for CF point obs.</li>
+          <li>Complete point collection services infrastructure</li>
+          <li>(Possible) JNA interface to netcdf-4 C library for writing netcdf-4.</li>
+        </ol>
+      </li>
+    </ol>
   </li>
 </ul>
 
