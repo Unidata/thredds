@@ -30,7 +30,11 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
+
 package ucar.nc2.iosp.nowrad;
+
+//~--- non-JDK imports --------------------------------------------------------
 
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -66,55 +70,59 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class NOWRadheader {
-    final private static boolean useStationDB = false; // use station db for loactions
-    static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NOWRadheader.class);
+    final static int                NEXET        = 2;        // Echo Tops Composite
+    final static int                NEXLH        = 5;        // Layer Reflectivity - High
+    final static int                NEXLL        = 3;        // Layer Reflectivity - Low
+    final static int                NEXLM        = 4;        // Layer Reflectivity - Mid
+    final static int                NEXVI        = 6;        // Vert. Integrated Liquid Water
+    final static int                NOWRADHF     = 0;        // 2km Base Reflectivity
+    final static int                USRADHF      = 1;        // 8km Base Reflectivity
+    static public String            mons[]       = {
+        "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
+    };
+    final private static boolean    useStationDB = false;    // use station db for loactions
+    static private org.slf4j.Logger log          = org.slf4j.LoggerFactory.getLogger(NOWRadheader.class);
+    DateFormatter                   formatter    = new DateFormatter();
+    private boolean                 isR          = false;
 
-    static public String mons[] = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP",
-                                    "OCT", "NOV", "DEC"};
-
-    final static int   NOWRADHF = 0; //   2km Base Reflectivity
-    final static int   USRADHF = 1;  //  8km Base Reflectivity
-    final static int   NEXET = 2;    //  Echo Tops Composite
-    final static int   NEXLL = 3;    //  Layer Reflectivity - Low
-    final static int   NEXLM = 4;    //  Layer Reflectivity - Mid
-    final static int   NEXLH = 5;    //  Layer Reflectivity - High
-    final static int   NEXVI = 6;    //  Vert. Integrated Liquid Water
+    // private PrintStream out = System.out;
+    // private Vinfo myInfo;
+    private String              cmemo, ctilt, ctitle, cunit, cname;
+    private ucar.nc2.NetcdfFile ncfile;
 
     // message header block
-
     // production dessciption block
-
-    private boolean noHeader;
-
-    DateFormatter formatter = new DateFormatter();
+    private boolean                          noHeader;
+    private int                              numX;
+    private int                              numY;
+    private ucar.unidata.io.RandomAccessFile raf;
 
     /**
      * check if this file is a nids / tdwr file
      * @param raf    input file
      * @return  true  if valid
      */
-    public boolean isValidFile( ucar.unidata.io.RandomAccessFile raf) {
-        try
-        {
+    public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
+        try {
             long t = raf.length();
-            if(t == 0){
+
+            if (t == 0) {
                 throw new IOException("zero length file ");
             }
-        }
-        catch ( IOException e )
-        {
-            return( false );
+        } catch (IOException e) {
+            return (false);
         }
 
-        try{
-            int p = this.readTop( raf );
-            if( p == 0 )
+        try {
+            int p = this.readTop(raf);
+
+            if (p == 0) {
                 return false;
+            }
+        } catch (IOException e) {
+            return (false);
         }
-        catch ( IOException e )
-        {
-            return( false );
-        }
+
         return true;
     }
 
@@ -124,60 +132,55 @@ public class NOWRadheader {
      * @return        1 if checking passing
      * @throws IOException
      */
-    int readTop(ucar.unidata.io.RandomAccessFile raf ) throws IOException
-    {
+    int readTop(ucar.unidata.io.RandomAccessFile raf) throws IOException {
         int pos = 0;
-        //long     actualSize = 0;
+
+        // long     actualSize = 0;
         raf.seek(pos);
+
         int readLen = 35;
-        int rc = 0;
+        int rc      = 0;
 
         // Read in the contents of the NEXRAD Level III product head
         byte[] b = new byte[readLen];
+
         rc = raf.read(b);
-        if ( rc != readLen )
-        {
+
+        if (rc != readLen) {
             return 0;
         }
 
         // check
-        if(convertunsignedByte2Short(b[0]) != 0x00
-                ||convertunsignedByte2Short(b[1])!= 0xF0
-                ||convertunsignedByte2Short(b[2])!= 0x09)
+        if ((convertunsignedByte2Short(b[0]) != 0x00) || (convertunsignedByte2Short(b[1]) != 0xF0)
+                || (convertunsignedByte2Short(b[2]) != 0x09)) {
             return 0;
+        }
 
-        
-        int hsize = b[3];
+        int    hsize = b[3];
+        String pidd  = new String(b, 15, 5);
 
-        String pidd = new String(b, 15, 5);
-        if(pidd.contains("NOWRA") || pidd.contains("USRAD") || pidd.contains("NEX") )
+        if (pidd.contains("NOWRA") || pidd.contains("USRAD") || pidd.contains("NEX")) {
             return 1;
-        else
+        } else {
             return 0;
-         
+        }
     }
 
-    public byte [] getData(int offset) throws Exception {
-        int readLen =(int)raf.length();
-        byte[] b = new byte[readLen];
-        int pos = 0;
+    public byte[] getData(int offset) throws Exception {
+        int    readLen = (int) raf.length();
+        byte[] b       = new byte[readLen];
+        int    pos     = 0;
+
         raf.seek(pos);
+
         int rc = raf.read(b);
 
         return b;
     }
- //////////////////////////////////////////////////////////////////////////////////
 
-    private ucar.unidata.io.RandomAccessFile raf;
-    private ucar.nc2.NetcdfFile ncfile;
-    //private PrintStream out = System.out;
-    //private Vinfo myInfo;
-    private String   cmemo, ctilt, ctitle, cunit, cname;
-    public void setProperty( String name, String value) { }
-    private   int numX ;
-    private   int numY ;
-    private   boolean isR = false;
+    // ////////////////////////////////////////////////////////////////////////////////
 
+    public void setProperty(String name, String value) {}
 
     /**
      * read and parse the header of the nids/tdwr file
@@ -185,529 +188,519 @@ public class NOWRadheader {
      * @param ncfile    output file
      * @throws IOException
      */
-
-    void read(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile ) throws Exception {
+    void read(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile) throws Exception {
         this.raf = raf;
 
-        int      rc;                      /* function return status        */
-        int      hoffset = 0;
-        int      readLen = 250 ;
+        int rc;    /* function return status */
+        int hoffset = 0;
+        int readLen = 250;
 
         this.ncfile = ncfile;
 
         int pos = 0;
+
         raf.seek(pos);
 
         byte[] b = new byte[readLen];
+
         rc = raf.read(b);
-        if ( rc != readLen )
-        {
-            log.warn(" error reading nids product header "+raf.getLocation());
+
+        if (rc != readLen) {
+            log.warn(" error reading nids product header " + raf.getLocation());
         }
 
-        int hsize = b[3];
+        int    hsize   = b[3];
         String product = new String(b, 15, 8);
-        int imgres = b[4+hsize];
+        int    imgres  = b[4 + hsize];
+
         // image lines
         String head = new String(b);
-        byte [] bt = new byte[]{(byte)0xF0, (byte)0x0A};
-        String t0 = new String(bt);
-        int t1 = head.indexOf(t0);
+        byte[] bt   = new byte[] { (byte) 0xF0, (byte) 0x0A };
+        String t0   = new String(bt);
+        int    t1   = head.indexOf(t0);
 
-        //if(convertunsignedByte2Short(b[6+hsize]) != 0xF0 ||
-        //        convertunsignedByte2Short(b[7+hsize]) != 0x0A )
-        //    return;
-
+        // if(convertunsignedByte2Short(b[6+hsize]) != 0xF0 ||
+        // convertunsignedByte2Short(b[7+hsize]) != 0x0A )
+        // return;
         String lstr = trim(new String(b, t1 + 2, 4));
-        numY =  Integer.parseInt(lstr);
+
+        numY = Integer.parseInt(lstr);
 
         String estr = trim(new String(b, t1 + 6, 5));
+
         numX = Integer.parseInt(estr);
+        bt   = new byte[] { (byte) 0xF0, (byte) 0x03 };
+        t0   = new String(bt);
+        t1   = head.indexOf(t0);
 
-        bt = new byte[]{(byte)0xF0, (byte)0x03};
-        t0 = new String(bt);
-        t1 = head.indexOf(t0);
-        //if((lstr.length()+estr.length() < 8))
-        //     hsize = hsize -2;
+        // if((lstr.length()+estr.length() < 8))
+        // hsize = hsize -2;
 
-        //if(convertunsignedByte2Short(b[18+hsize]) != 0xF0 ||
-        //        convertunsignedByte2Short(b[19+hsize]) != 0x03 )
-        //    return;
+        // if(convertunsignedByte2Short(b[18+hsize]) != 0xF0 ||
+        // convertunsignedByte2Short(b[19+hsize]) != 0x03 )
+        // return;
+        String ss  = new String(b, t1 + 2, 20);
+        int    off = 0;
 
-        String  ss = new String(b, t1 + 2, 20);
-        int off = 0  ;
-        if(product.contains("USRADHF"))
-               off = 3;
-       // Image time, HHMMSS.  The time will be in the form HH:MM, so look :
+        if (product.contains("USRADHF")) {
+            off = 3;
+        }
+
+        // Image time, HHMMSS.  The time will be in the form HH:MM, so look :
         String ts = new String(b, t1 + 22 + off, 2);
-        int hr = Integer.parseInt(ts);
+        int    hr = Integer.parseInt(ts);
+
         ts = new String(b, t1 + 25 + off, 2);
+
         int min = Integer.parseInt(ts);
+
         ts = new String(b, t1 + 28 + off, 2);
+
         int dd = Integer.parseInt(ts);
+
         ts = new String(b, t1 + 31 + off, 3);
-        String mon = ts;
-        int month = getMonth(mon);
+
+        String mon   = ts;
+        int    month = getMonth(mon);
+
         ts = new String(b, t1 + 35 + off, 2);
-        int year = Integer.parseInt(ts);
-        SimpleDateFormat sdf = new SimpleDateFormat();
+
+        int              year = Integer.parseInt(ts);
+        SimpleDateFormat sdf  = new SimpleDateFormat();
+
         sdf.setTimeZone(DateUtil.TIMEZONE_GMT);
         sdf.applyPattern("yyyy/MM/dd HH:mm");
-        
-        Date date = sdf.parse(year +"/"+ month +"/" + dd +" " + hr + ":"+ min);
 
-        String ot = new String(b, t1 + 40, 45);
-        bt = new byte[]{(byte)0xF0, (byte)0x0b};
+        Date   date = sdf.parse(year + "/" + month + "/" + dd + " " + hr + ":" + min);
+        String ot   = new String(b, t1 + 40, 45);
+
+        bt = new byte[] { (byte) 0xF0, (byte) 0x0b };
         t0 = new String(bt);
         t1 = head.indexOf(t0);
-       // if( convertunsignedByte2Short(b[101 + hsize]) != 0xF0 ||
-       //         convertunsignedByte2Short(b[102 + hsize]) != 0x0b )
-       //     return;
-        if(product.contains("NOWRAD")){
+
+        // if( convertunsignedByte2Short(b[101 + hsize]) != 0xF0 ||
+        // convertunsignedByte2Short(b[102 + hsize]) != 0x0b )
+        // return;
+        ProjectionImpl projection = null;
+        if (product.contains("NOWRAD")) {
             ot = new String(b, t1 + 2, 68);
+
             List<String> toks = StringUtil.split(ot, " ", true, true);
-            String pj = toks.get(0);
-            double nav1 = Math.toDegrees(Double.parseDouble(toks.get(1)));       //lon
-            double nav2 = Math.toDegrees(Double.parseDouble(toks.get(2)));        //lat
-            double nav3 = Math.toDegrees(Double.parseDouble(toks.get(3)));
-            double nav4 = Math.toDegrees(Double.parseDouble(toks.get(4)));       //lat sp
-            double nav5 = Math.toDegrees(Double.parseDouble(toks.get(5)));       // lon sp
+            String       pj   = toks.get(0);
+            double       nav1 = Math.toDegrees(Double.parseDouble(toks.get(1)));    // lon
+            double       nav2 = Math.toDegrees(Double.parseDouble(toks.get(2)));    // lat
+            double       nav3 = Math.toDegrees(Double.parseDouble(toks.get(3)));
+            double       nav4 = Math.toDegrees(Double.parseDouble(toks.get(4)));    // lat sp
+            double       nav5 = Math.toDegrees(Double.parseDouble(toks.get(5)));    // lon sp
+
             // lower left and upper right corner
             float rlat1;
             float rlon1;
             float rlat2;
             float rlon2;
 
-            rlat1 = (float)(nav2 - (numY-1)* nav4);
-            rlon1 = (float)(nav1 + nav3);
-            rlat2 = (float)nav2;
-            rlon2 = (float)(nav1 - nav3);
-
-            hoffset = t1 + 71; //172 + hsize;
+            rlat1   = (float) (nav2 - (numY - 1) * nav4);
+            rlon1   = (float) (nav1 + nav3);
+            rlat2   = (float) nav2;
+            rlon2   = (float) (nav1 - nav3);
+            hoffset = t1 + 71;    // 172 + hsize;
 
             // start of the image sequence
-            if( convertunsignedByte2Short(b[172 + hsize]) != 0xF0 ||
-                    convertunsignedByte2Short(b[173 + hsize]) != 0x0c )
+            if ((convertunsignedByte2Short(b[172 + hsize]) != 0xF0)
+                    || (convertunsignedByte2Short(b[173 + hsize]) != 0x0c)) {
                 return;
+            }
+
             // hoffset = 174 + hsize;
             // Set product-dependent information
             setProductInfo(product, date);
-            // data struct
-            nowrad( hoffset, rlat1, rlon1, rlat2, rlon2, (float)nav4, (float)nav5, date);
 
-        } else if(product.contains("USRADHF")){           
+            // data struct
+            nowrad(hoffset, rlat1, rlon1, rlat2, rlon2, (float) nav4, (float) nav5, date);
+        } else if (product.contains("USRADHF")) {
             ot = new String(b, t1 + 2, 107);
+
             List<String> toks = StringUtil.split(ot, " ", true, true);
-            String pj = toks.get(0);
-            double nav1 = Math.toDegrees(Double.parseDouble(toks.get(1)));       //standard lat 1
-            double nav2 = Math.toDegrees(Double.parseDouble(toks.get(2)));        //standard lat 2
-            double nav3 = Math.toDegrees(Double.parseDouble(toks.get(3)));       // lat. center of proj
-            double nav4 = Math.toDegrees(Double.parseDouble(toks.get(4)));       // lon. center of proj
-            double nav5 = Math.toDegrees(Double.parseDouble(toks.get(5)));       // upper left lat
-            double nav6 = Math.toDegrees(Double.parseDouble(toks.get(6)));       // upper left lon
-            double nav7 = Math.toDegrees(Double.parseDouble(toks.get(7)));       // lat sp
-            double nav8 = Math.toDegrees(Double.parseDouble(toks.get(8)));       // lon sp
+            String       pj   = toks.get(0);
+            double       nav1 = Math.toDegrees(Double.parseDouble(toks.get(1)));    // standard lat 1
+            double       nav2 = Math.toDegrees(Double.parseDouble(toks.get(2)));    // standard lat 2
+            double       nav3 = Math.toDegrees(Double.parseDouble(toks.get(3)));    // lat. center of proj
+            double       nav4 = Math.toDegrees(Double.parseDouble(toks.get(4)));    // lon. center of proj
+            double       nav5 = Math.toDegrees(Double.parseDouble(toks.get(5)));    // upper left lat
+            double       nav6 = Math.toDegrees(Double.parseDouble(toks.get(6)));    // upper left lon
+            double       nav7 = Math.toDegrees(Double.parseDouble(toks.get(7)));    // lat sp
+            double       nav8 = Math.toDegrees(Double.parseDouble(toks.get(8)));    // lon sp
+
             // lower left and upper right corner
-           //int offh = 39;
-            hoffset = t1 + 110; //172 + hsize+ offh;
+            // int offh = 39;
+            hoffset = t1 + 110;    // 172 + hsize+ offh;
 
             // start of the image sequence
-            if( convertunsignedByte2Short(b[t1 + 110]) != 0xF0 ||
-                    convertunsignedByte2Short(b[t1 + 111]) != 0x0c )
+            if ((convertunsignedByte2Short(b[t1 + 110]) != 0xF0) || (convertunsignedByte2Short(b[t1 + 111]) != 0x0c)) {
                 return;
+            }
 
             // Set product-dependent information
             setProductInfo(product, date);
 
             // data struct
-            nowradL( hoffset, (float)nav1, (float)nav2,(float)nav3, (float)nav4, (float)nav5,
-                    (float)nav6, (float)nav7,(float)nav8, date);
+            nowradL(hoffset, (float) nav1, (float) nav2, (float) nav4,  date);
         }
 
+
         ncfile.finish();
+    }
 
-     }
+    String trim(String str) {
+        int          len  = str.length();
+        StringBuffer ostr = new StringBuffer();
 
-     String trim(String str){
-         int len = str.length();
+        for (int i = 0; i < len; i++) {
+            char sc = str.charAt(i);
 
-         StringBuffer ostr = new StringBuffer();
-         for(int i = 0; i < len; i++){
-            char sc =str.charAt(i);
-            if (Character.isDigit(sc))
+            if (Character.isDigit(sc)) {
                 ostr.append(sc);
-         }
-         return ostr.toString();
-     }
+            }
+        }
 
-     int getMonth(String m) {
-         int i = 0;
+        return ostr.toString();
+    }
 
-         while(i < 12){
-            if(m.equalsIgnoreCase(mons[i]))
-                return i+1;
-             else
+    int getMonth(String m) {
+        int i = 0;
+
+        while (i < 12) {
+            if (m.equalsIgnoreCase(mons[i])) {
+                return i + 1;
+            } else {
                 i++;
-         }
-         return 0;
-     }
+            }
+        }
 
-    int nowradL(int hoff, float lat1, float lat2, float clat, float clon, float rlat, float rlon,
-                float dlat, float dlon, Date dd )
-    {
+        return 0;
+    }
 
-        ArrayList dims =  new ArrayList();
-        Dimension dimT  = new Dimension( "time", 1, true, false, false);
-        ncfile.addDimension( null, dimT);
+    ProjectionImpl  nowradL(int hoff, float lat1, float lat2, float clon,  Date dd) {
+        ArrayList dims = new ArrayList();
+        Dimension dimT = new Dimension("time", 1, true, false, false);
 
-        String timeCoordName = "time";
-        Variable taxis = new Variable(ncfile, null, null, timeCoordName);
+        ncfile.addDimension(null, dimT);
+
+        String   timeCoordName = "time";
+        Variable taxis         = new Variable(ncfile, null, null, timeCoordName);
+
         taxis.setDataType(DataType.DOUBLE);
         taxis.setDimensions("time");
-        taxis.addAttribute( new Attribute("long_name", "time since base date"));
-        taxis.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
-        double [] tdata = new double[1];
+        taxis.addAttribute(new Attribute("long_name", "time since base date"));
+        taxis.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
+
+        double[] tdata = new double[1];
+
         tdata[0] = dd.getTime();
-        Array dataT = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] {1}, tdata);
-        taxis.setCachedData( dataT, false);
+
+        Array dataT = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] { 1 }, tdata);
+
+        taxis.setCachedData(dataT, false);
+
         DateFormatter formatter = new DateFormatter();
-        taxis.addAttribute( new Attribute("units", "msecs since "+formatter.toDateTimeStringISO(new Date(0))));
+
+        taxis.addAttribute(new Attribute("units", "msecs since " + formatter.toDateTimeStringISO(new Date(0))));
         ncfile.addVariable(null, taxis);
-        dims.add( dimT);
+        dims.add(dimT);
+
         Dimension jDim = new Dimension("y", numY, true, false, false);
         Dimension iDim = new Dimension("x", numX, true, false, false);
-        dims.add( jDim);
-        dims.add( iDim);
-        ncfile.addDimension( null, iDim);
-        ncfile.addDimension( null, jDim);
+
+        dims.add(jDim);
+        dims.add(iDim);
+        ncfile.addDimension(null, iDim);
+        ncfile.addDimension(null, jDim);
         ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.GRID.toString()));
 
-        String coordinates = "time y x";
-        Variable v = new Variable(ncfile, null, null, cname);
+        String   coordinates = "time y x";
+        Variable v           = new Variable(ncfile, null, null, cname);
+
         v.setDataType(DataType.BYTE);
         v.setDimensions(dims);
         ncfile.addVariable(null, v);
-        v.addAttribute( new Attribute("long_name", ctitle));
-        v.addAttribute( new Attribute("units", cunit));
-        v.setSPobject( new Vinfo (numX, numY, hoff, false));
-        v.addAttribute( new Attribute(_Coordinate.Axes, coordinates));
-
+        v.addAttribute(new Attribute("long_name", ctitle));
+        v.addAttribute(new Attribute("units", cunit));
+        v.setSPobject(new Vinfo(numX, numY, hoff, false));
+        v.addAttribute(new Attribute(_Coordinate.Axes, coordinates));
 
         // create coordinate variables
-        Variable xaxis = new Variable( ncfile, null, null, "x");
-        xaxis.setDataType( DataType.DOUBLE);
+        Variable xaxis = new Variable(ncfile, null, null, "x");
+
+        xaxis.setDataType(DataType.DOUBLE);
         xaxis.setDimensions("x");
-        xaxis.addAttribute( new Attribute("long_name", "projection x coordinate"));
-        xaxis.addAttribute( new Attribute("units", "km"));
-        xaxis.addAttribute( new Attribute(_Coordinate.AxisType, "GeoX"));
-        double[] data1 = new double[numX];
+        xaxis.addAttribute(new Attribute("long_name", "projection x coordinate"));
+        xaxis.addAttribute(new Attribute("units", "km"));
+        xaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoX"));
 
-        ProjectionImpl  projection = new LambertConformal(clat, clon, lat1, lat2);
-
+        double[]       data1      = new double[numX];
+        ProjectionImpl projection = new LambertConformal(lat1, clon, lat1, lat2);
+        double llat = 17.2454;
+        double llon = -135.8736;
+        double dlon = (135.8736 - 70.1154 )/(numX - 1);
+         double [] tmp = new double[numX];
         for (int i = 0; i < numX; i++) {
-            double ln = rlon + i * dlon;
-            ProjectionPointImpl pt = (ProjectionPointImpl) projection.latLonToProj( new LatLonPointImpl( rlat, ln));
-            data1[i] = pt.getX();  // startx + i*dx;
+            double              ln = llon + i * dlon;
+            ProjectionPointImpl pt = (ProjectionPointImpl) projection.latLonToProj(new LatLonPointImpl(llat, ln));
+              tmp[i] = ln;
+            data1[i] = pt.getX();    // startx + i*dx;
         }
 
-        Array dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] {numX}, data1);
-        xaxis.setCachedData( dataA, false);
+        Array dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] { numX }, data1);
+
+        xaxis.setCachedData(dataA, false);
         ncfile.addVariable(null, xaxis);
 
-        Variable yaxis = new Variable( ncfile, null, null, "y");
-        yaxis.setDataType( DataType.DOUBLE);
-        yaxis.setDimensions( "y");
-        yaxis.addAttribute( new Attribute("long_name", "projection y coordinate"));
-        yaxis.addAttribute( new Attribute("units", "km"));
-        yaxis.addAttribute( new Attribute(_Coordinate.AxisType, "GeoY"));
+        Variable yaxis = new Variable(ncfile, null, null, "y");
+
+        yaxis.setDataType(DataType.DOUBLE);
+        yaxis.setDimensions("y");
+        yaxis.addAttribute(new Attribute("long_name", "projection y coordinate"));
+        yaxis.addAttribute(new Attribute("units", "km"));
+        yaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoY"));
         data1 = new double[numY];
 
+        double dlat = (51.8294 - 17.2454)/(numY - 1);
         for (int i = 0; i < numY; i++) {
-            double la = rlat - i*dlat;
-            ProjectionPointImpl pt = (ProjectionPointImpl) projection.latLonToProj( new LatLonPointImpl( la, rlon));
-            data1[i] = pt.getY();  //endyy - i*dy;
+            double              la = llat + i * dlat;
+            ProjectionPointImpl pt = (ProjectionPointImpl) projection.latLonToProj(new LatLonPointImpl(la, llon));
+
+            data1[i] = pt.getY();    // endyy - i*dy;
         }
 
-        dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] {numY}, data1);
-        yaxis.setCachedData( dataA, false);
+        dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] { numY }, data1);
+        yaxis.setCachedData(dataA, false);
         ncfile.addVariable(null, yaxis);
 
         // projection
         // lower left and upper right corner lat/lons
         // modified cylind. equidistant or  CED with lat/lon ration != 1
+        Variable ct = new Variable(ncfile, null, null, projection.getClassName());
 
-        Variable ct = new Variable( ncfile, null, null, projection.getClassName());
-        ct.setDataType( DataType.CHAR);
-        ct.setDimensions( "");
+        ct.setDataType(DataType.CHAR);
+        ct.setDimensions("");
+
         List params = projection.getProjectionParameters();
+
         for (int i = 0; i < params.size(); i++) {
-          Parameter p = (Parameter) params.get(i);
-          ct.addAttribute( new Attribute(p));
+            Parameter p = (Parameter) params.get(i);
+
+            ct.addAttribute(new Attribute(p));
         }
-        ct.addAttribute( new Attribute(_Coordinate.TransformType, "Projection"));
-        ct.addAttribute( new Attribute(_Coordinate.Axes, "lat lon"));
+
+        ct.addAttribute(new Attribute(_Coordinate.TransformType, "Projection"));
+        //ct.addAttribute(new Attribute(_Coordinate.Axes, "lat lon"));
+        ct.addAttribute( new Attribute(_Coordinate.Axes, "x y "));
         // fake data
         dataA = Array.factory(DataType.CHAR.getPrimitiveClassType(), new int[] {});
         dataA.setChar(dataA.getIndex(), ' ');
         ct.setCachedData(dataA, false);
-
         ncfile.addVariable(null, ct);
 
-
-        return 1;
-
+        return projection;
     }
 
-     /**
+    /**
      *  construct a raster dataset for NIDS raster products;
      *
      * @return  soff -- not used
      */
-    int nowrad(int hoff, float rlat1, float rlon1, float rlat2, float rlon2, float dlat, float dlon, Date dd )
-    {
+    ProjectionImpl  nowrad(int hoff, float rlat1, float rlon1, float rlat2, float rlon2, float dlat, float dlon, Date dd) {
+        ArrayList dims = new ArrayList();
+        Dimension dimT = new Dimension("time", 1, true, false, false);
 
-        ArrayList dims =  new ArrayList();
-        Dimension dimT  = new Dimension( "time", 1, true, false, false);
-        ncfile.addDimension( null, dimT);
+        ncfile.addDimension(null, dimT);
 
-        String timeCoordName = "time";
-        Variable taxis = new Variable(ncfile, null, null, timeCoordName);
+        String   timeCoordName = "time";
+        Variable taxis         = new Variable(ncfile, null, null, timeCoordName);
+
         taxis.setDataType(DataType.DOUBLE);
         taxis.setDimensions("time");
-        taxis.addAttribute( new Attribute("long_name", "time since base date"));
-        taxis.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
-        double [] tdata = new double[1];
+        taxis.addAttribute(new Attribute("long_name", "time since base date"));
+        taxis.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
+
+        double[] tdata = new double[1];
+
         tdata[0] = dd.getTime();
-        Array dataT = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] {1}, tdata);
-        taxis.setCachedData( dataT, false);
+
+        Array dataT = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] { 1 }, tdata);
+
+        taxis.setCachedData(dataT, false);
+
         DateFormatter formatter = new DateFormatter();
-        taxis.addAttribute( new Attribute("units", "msecs since "+formatter.toDateTimeStringISO(new Date(0))));
+
+        taxis.addAttribute(new Attribute("units", "msecs since " + formatter.toDateTimeStringISO(new Date(0))));
         ncfile.addVariable(null, taxis);
-        dims.add( dimT);
+        dims.add(dimT);
+
         Dimension jDim = new Dimension("lat", numY, true, false, false);
         Dimension iDim = new Dimension("lon", numX, true, false, false);
-        dims.add( jDim);
-        dims.add( iDim);
-        ncfile.addDimension( null, iDim);
-        ncfile.addDimension( null, jDim);
+
+        dims.add(jDim);
+        dims.add(iDim);
+        ncfile.addDimension(null, iDim);
+        ncfile.addDimension(null, jDim);
         ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.GRID.toString()));
 
-        String coordinates = "time latitude longitude";
-        Variable v = new Variable(ncfile, null, null, cname);
+        String   coordinates = "time lat lon";
+        Variable v           = new Variable(ncfile, null, null, cname);
+
         v.setDataType(DataType.BYTE);
         v.setDimensions(dims);
         ncfile.addVariable(null, v);
-        v.addAttribute( new Attribute("long_name", ctitle));
-        v.addAttribute( new Attribute("units", cunit));
-        v.setSPobject( new Vinfo (numX, numY, hoff, false));
-        v.addAttribute( new Attribute(_Coordinate.Axes, coordinates));
-
+        v.addAttribute(new Attribute("long_name", ctitle));
+        v.addAttribute(new Attribute("units", cunit));
+        v.setSPobject(new Vinfo(numX, numY, hoff, false));
+        v.addAttribute(new Attribute(_Coordinate.Axes, coordinates));
 
         // create coordinate variables
-        Variable xaxis = new Variable( ncfile, null, null, "lon");
-        xaxis.setDataType( DataType.DOUBLE);
+        Variable xaxis = new Variable(ncfile, null, null, "lon");
+        xaxis.setDataType(DataType.DOUBLE);
         xaxis.setDimensions("lon");
-        xaxis.addAttribute( new Attribute("long_name", "projection x coordinate"));
-        xaxis.addAttribute( new Attribute("units", "degree"));
-        xaxis.addAttribute( new Attribute(_Coordinate.AxisType, "GeoX"));
+        xaxis.addAttribute(new Attribute("long_name", "longitude"));
+        xaxis.addAttribute(new Attribute("units", "degree"));
+        xaxis.addAttribute(new Attribute(_Coordinate.AxisType, "Lon"));
+
         double[] data1 = new double[numX];
-        for (int i = 0; i < numX; i++)
-          data1[i] = (double) (rlon1 + i*dlon);
-        Array dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] {numX}, data1);
-        xaxis.setCachedData( dataA, false);
+
+        for (int i = 0; i < numX; i++) {
+            data1[i] = (double) (rlon1 + i * dlon);
+        }
+
+        Array dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] { numX }, data1);
+
+        xaxis.setCachedData(dataA, false);
         ncfile.addVariable(null, xaxis);
 
-        Variable yaxis = new Variable( ncfile, null, null, "lat");
-        yaxis.setDataType( DataType.DOUBLE);
-        yaxis.setDimensions( "lat");
-        yaxis.addAttribute( new Attribute("long_name", "projection y coordinate"));
-        yaxis.addAttribute( new Attribute("units", "degree"));
-        yaxis.addAttribute( new Attribute(_Coordinate.AxisType, "GeoY"));
+        Variable yaxis = new Variable(ncfile, null, null, "lat");
+        yaxis.setDataType(DataType.DOUBLE);
+        yaxis.setDimensions("lat");
+        yaxis.addAttribute(new Attribute("long_name", "latitude"));
+        yaxis.addAttribute(new Attribute("units", "degree"));
+        yaxis.addAttribute(new Attribute(_Coordinate.AxisType, "Lat"));
         data1 = new double[numY];
-        for (int i = 0; i < numY; i++)
-          data1[i] = rlat1 + i*dlat;
-        dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] {numY}, data1);
-        yaxis.setCachedData( dataA, false);
+
+        for (int i = 0; i < numY; i++) {
+            data1[i] = rlat1 + i * dlat;
+        }
+
+        dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] { numY }, data1);
+        yaxis.setCachedData(dataA, false);
         ncfile.addVariable(null, yaxis);
 
         // projection
         // lower left and upper right corner lat/lons
         // modified cylind. equidistant or  CED with lat/lon ration != 1
+    /*    LatLonProjection llproj = new LatLonProjection("LatitudeLongitudeProjection",
+                                  new ProjectionRect(rlat1, rlon1, rlat2, rlon2));
+        Variable ct = new Variable(ncfile, null, null, llproj.getClassName());
 
-        LatLonProjection ll = new LatLonProjection("LatitudeLongitudeProjection",
-                new ProjectionRect(rlat1, rlon1, rlat2, rlon2));
-        Variable ct = new Variable( ncfile, null, null, ll.getClassName());
-        ct.setDataType( DataType.CHAR);
-        ct.setDimensions( "");
-        List params = ll.getProjectionParameters();
+        ct.setDataType(DataType.CHAR);
+        ct.setDimensions("");
+
+        List params = llproj.getProjectionParameters();
+
         for (int i = 0; i < params.size(); i++) {
-          Parameter p = (Parameter) params.get(i);
-          ct.addAttribute( new Attribute(p));
+            Parameter p = (Parameter) params.get(i);
+
+            ct.addAttribute(new Attribute(p));
         }
-        ct.addAttribute( new Attribute(_Coordinate.TransformType, "Projection"));
-        ct.addAttribute( new Attribute(_Coordinate.Axes, "lat lon"));
+
+        ct.addAttribute(new Attribute(_Coordinate.TransformType, "Projection"));
+        ct.addAttribute(new Attribute(_Coordinate.Axes, "lat lon"));
+
         // fake data
         dataA = Array.factory(DataType.CHAR.getPrimitiveClassType(), new int[] {});
         dataA.setChar(dataA.getIndex(), ' ');
         ct.setCachedData(dataA, false);
-
         ncfile.addVariable(null, ct);
-
-
-        return 1;
-
-    }
- 
-
-    /**
-     * adding new variable to the netcdf file
-     * @param pName                 variable name
-     * @param longName              variable long name
-     * @param nc                    netcdf file
-     * @param dims                  variable dimensions
-     * @param coordinates            variable coordinate
-     * @param dtype                 variable type
-     * @param ut                     unit string
-
-     */
-    void addVariable(String pName, String longName, NetcdfFile nc, ArrayList dims, String coordinates,
-                    DataType dtype, int hoff, String ut)
-    {
-        Variable v = new Variable(nc, null, null, pName);
-        v.setDataType(dtype);
-        v.setDimensions(dims);
-        ncfile.addVariable(null, v);
-        v.addAttribute( new Attribute("long_name", longName));
-        v.addAttribute( new Attribute("units", ut));
-        v.addAttribute( new Attribute(_Coordinate.Axes, coordinates));
-        v.setSPobject( new Vinfo (numX, numY, hoff, isR));
-
+      */
+        return null;
     }
 
-    /**
-     *  adding new parameter to the netcdf file
-     * @param pName                variable name
-     * @param longName             variable long name
-     * @param nc                    netcdf file
-     * @param dims                 variable dimensions
-     * @param att                  attribute
-     * @param dtype                data type
-     * @param ut                   unit string
-     * @param hoff                 header offset
 
-     * @param y0                   reserved
-     */
-    void addParameter(String pName, String longName, NetcdfFile nc, ArrayList dims, Attribute att,
-                    DataType dtype, String ut, long hoff, int y0)
-    {
-          String vName = pName;
-          Variable vVar = new Variable(nc, null, null, vName);
-          vVar.setDataType(dtype);
-          if( dims != null ) vVar.setDimensions(dims);
-          else vVar.setDimensions("");
-          if(att != null ) vVar.addAttribute(att);
-          vVar.addAttribute( new Attribute("units", ut));
-          vVar.addAttribute( new Attribute("long_name", longName));
-          nc.addVariable(null, vVar);
-          vVar.setSPobject( new Vinfo (numX, numY, hoff, isR));
-    }
-
-    String StnIdFromLatLon(float lat, float lon )
-    {
-        return "ID";
-    }
 
     /**
      *  parsing the product information into netcdf dataset
      */
-    void setProductInfo(String prod, Date dd )
-    {
-
-        int radial = 0;
+    void setProductInfo(String prod, Date dd) {
+        int    radial  = 0;
         String summary = null;
 
-        if (prod.contains("NOWRADHF") ) {
-            radial = 0;
-            cmemo = "NOWRAD  Base Reflectivity at Tilt 1";
-            ctitle = "BREF: Base Reflectivity [dBZ]";
-            cunit = "dBZ";
-            cname = "Reflectivity";
-            summary =  "NOWRAD Product";
-        }
-        else if (prod.contains("USRADHF")) {
-            radial = 0;
-            cmemo = "NOWRAD  Base Reflectivity at Tilt 1";
-            ctitle = "BREF: Base Reflectivity [dBZ]";
-            cunit = "dBZ";
-            cname = "Reflectivity";
-            summary =  "NOWRAD Product";
-        }
-        else if (prod.contains("NEXET")) {
-            radial = 0;
-            cmemo = "NOWRAD Echo Tops";
-            ctitle = "Echo Tops Composite";
-            cunit = "K FT";
-            cname = "EchoTopsComposite";
-            summary =  "NOWRAD Product";
-
+        if (prod.contains("NOWRADHF")) {
+            radial  = 0;
+            cmemo   = "NOWRAD  Base Reflectivity at Tilt 1";
+            ctitle  = "BREF: Base Reflectivity [dBZ]";
+            cunit   = "dBZ";
+            cname   = "Reflectivity";
+            summary = "NOWRAD Product";
+        } else if (prod.contains("USRADHF")) {
+            radial  = 0;
+            cmemo   = "NOWRAD  Base Reflectivity at Tilt 1";
+            ctitle  = "BREF: Base Reflectivity [dBZ]";
+            cunit   = "dBZ";
+            cname   = "Reflectivity";
+            summary = "NOWRAD Product";
+        } else if (prod.contains("NEXET")) {
+            radial  = 0;
+            cmemo   = "NOWRAD Echo Tops";
+            ctitle  = "Echo Tops Composite";
+            cunit   = "K FT";
+            cname   = "EchoTopsComposite";
+            summary = "NOWRAD Product";
         } else if (prod.contains("NEXLL")) {
-            radial = 0;
-            cmemo = "NOWRAD Layer Comp. Reflectivity - Low";
-            ctitle = "LayerReflectivityLow";
-            cunit = "dBZ";
-            cname = "Reflectivity";
-            summary =  "NOWRAD Product";
-
+            radial  = 0;
+            cmemo   = "NOWRAD Layer Comp. Reflectivity - Low";
+            ctitle  = "LayerReflectivityLow";
+            cunit   = "dBZ";
+            cname   = "Reflectivity";
+            summary = "NOWRAD Product";
         } else if (prod.contains("NEXLM")) {
-            radial = 0;
-            cmemo = "NOWRAD Layer Comp. Reflectivity - Mid";
-            ctitle = "LayerReflectivityMid";
-            cunit = "dBZ";
-            cname = "Reflectivity";
-            summary =  "NOWRAD Product";
-
-
+            radial  = 0;
+            cmemo   = "NOWRAD Layer Comp. Reflectivity - Mid";
+            ctitle  = "LayerReflectivityMid";
+            cunit   = "dBZ";
+            cname   = "Reflectivity";
+            summary = "NOWRAD Product";
         } else if (prod.contains("NEXLH")) {
-            radial = 0;
-            cmemo = "NOWRAD Layer Comp. Reflectivity - High";
-            ctitle = "LayerReflectivityHigh";
-            cunit = "dBZ";
-            cname = "ReflectivityHigh";
-            summary =  "NOWRAD Product";
-
-
+            radial  = 0;
+            cmemo   = "NOWRAD Layer Comp. Reflectivity - High";
+            ctitle  = "LayerReflectivityHigh";
+            cunit   = "dBZ";
+            cname   = "ReflectivityHigh";
+            summary = "NOWRAD Product";
         } else if (prod.contains("NEXVI")) {
-            radial = 0;
-            cmemo = "NOWRAD ";
-            ctitle = "Vert. Integrated Liquid Water";
-            cunit = "Knots";
-            cname = "VILwater";
-            summary =  "NOWRAD ";
-
-
-        }  else {
-            ctilt = "error";
-            ctitle = "error" ;
-            cunit = "error" ;
-            cname = "error";
+            radial  = 0;
+            cmemo   = "NOWRAD ";
+            ctitle  = "Vert. Integrated Liquid Water";
+            cunit   = "Knots";
+            cname   = "VILwater";
+            summary = "NOWRAD ";
+        } else {
+            ctilt  = "error";
+            ctitle = "error";
+            cunit  = "error";
+            cname  = "error";
         }
-        /* add geo global att  */
-        ncfile.addAttribute(null, new Attribute("summary", "NOWRAD radar composite products." +
-                  summary ));
+
+        /* add geo global att */
+        ncfile.addAttribute(null, new Attribute("summary", "NOWRAD radar composite products." + summary));
         ncfile.addAttribute(null, new Attribute("title", "NOWRAD"));
         ncfile.addAttribute(null, new Attribute("keywords", "NOWRAD"));
         ncfile.addAttribute(null, new Attribute("creator_name", "NOAA/NWS"));
         ncfile.addAttribute(null, new Attribute("creator_url", "http://www.ncdc.noaa.gov/oa/radar/radarproducts.html"));
         ncfile.addAttribute(null, new Attribute("naming_authority", "NOAA/NCDC"));
-
         ncfile.addAttribute(null, new Attribute("base_date", formatter.toDateOnlyString(dd)));
         ncfile.addAttribute(null, new Attribute("conventions", _Coordinate.Convention));
-        ncfile.addAttribute(null, new Attribute("format", "Level3/NIDS"));
+        ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.GRID.toString()));
 
-        ncfile.addAttribute(null, new Attribute("isRadial", new Integer(radial)));
     }
-      /* thredds global att */
 
+    /* thredds global att */
 
     /**
      * convert two short into a integer
@@ -717,12 +710,14 @@ public class NOWRadheader {
      * @return
      */
     public static int shortsToInt(short s1, short s2, boolean swapBytes) {
-       byte[] b = new byte[4];
-       b[0] = (byte) (s1 >>> 8);
-       b[1] = (byte) (s1 >>> 0);
-       b[2] =  (byte) (s2 >>> 8);
-       b[3] =  (byte) (s2 >>> 0);
-       return bytesToInt(b, false);
+        byte[] b = new byte[4];
+
+        b[0] = (byte) (s1 >>> 8);
+        b[1] = (byte) (s1 >>> 0);
+        b[2] = (byte) (s2 >>> 8);
+        b[3] = (byte) (s2 >>> 0);
+
+        return bytesToInt(b, false);
     }
 
     /**
@@ -731,26 +726,18 @@ public class NOWRadheader {
      * @param swapBytes       if need to swap
      * @return
      */
-    public static int bytesToInt(byte [] bytes, boolean swapBytes) {
+    public static int bytesToInt(byte[] bytes, boolean swapBytes) {
         byte a = bytes[0];
         byte b = bytes[1];
         byte c = bytes[2];
         byte d = bytes[3];
+
         if (swapBytes) {
-            return ((a & 0xff) ) +
-                ((b & 0xff) << 8 ) +
-                ((c & 0xff) << 16 ) +
-                ((d & 0xff) << 24);
+            return ((a & 0xff)) + ((b & 0xff) << 8) + ((c & 0xff) << 16) + ((d & 0xff) << 24);
         } else {
-            return ((a & 0xff) << 24 ) +
-                ((b & 0xff) << 16 ) +
-                ((c & 0xff) << 8 ) +
-                ((d & 0xff) );
+            return ((a & 0xff) << 24) + ((b & 0xff) << 16) + ((c & 0xff) << 8) + ((d & 0xff));
         }
     }
-
-
-
 
     /**
      * get unsigned integer from byte array
@@ -758,24 +745,20 @@ public class NOWRadheader {
      * @param num
      * @return
      */
-    int getUInt( byte[] b, int num )
-    {
-        int            base=1;
-        int            i;
-        int            word=0;
-
+    int getUInt(byte[] b, int num) {
+        int base = 1;
+        int i;
+        int word = 0;
         int bv[] = new int[num];
 
-        for (i = 0; i<num; i++ )
-        {
+        for (i = 0; i < num; i++) {
             bv[i] = convertunsignedByte2Short(b[i]);
         }
 
         /*
-        ** Calculate the integer value of the byte sequence
-        */
-
-        for ( i = num-1; i >= 0; i-- ) {
+         * Calculate the integer value of the byte sequence
+         */
+        for (i = num - 1; i >= 0; i--) {
             word += base * bv[i];
             base *= 256;
         }
@@ -789,53 +772,50 @@ public class NOWRadheader {
      * @param num
      * @return
      */
-    int getInt( byte[] b, int num )
-    {
-        int            base=1;
-        int            i;
-        int            word=0;
-
+    int getInt(byte[] b, int num) {
+        int base = 1;
+        int i;
+        int word = 0;
         int bv[] = new int[num];
 
-        for (i = 0; i<num; i++ )
-        {
-        bv[i] = convertunsignedByte2Short(b[i]);
+        for (i = 0; i < num; i++) {
+            bv[i] = convertunsignedByte2Short(b[i]);
         }
 
-        if( bv[0] > 127 )
-        {
-         bv[0] -= 128;
-         base = -1;
+        if (bv[0] > 127) {
+            bv[0] -= 128;
+            base  = -1;
         }
+
         /*
-        ** Calculate the integer value of the byte sequence
-        */
+         * Calculate the integer value of the byte sequence
+         */
 
-        for ( i = num-1; i >= 0; i-- ) {
-        word += base * bv[i];
-        base *= 256;
+        for (i = num - 1; i >= 0; i--) {
+            word += base * bv[i];
+            base *= 256;
         }
 
         return word;
-
     }
-   /***
-    * Concatenate two bytes to a 32-bit int value.  <b>a</b> is the high order
-    * byte in the resulting int representation, unless swapBytes is true, in
-    * which <b>b</b> is the high order byte.
-    * @param a high order byte
-    * @param b low order byte
-    * @param swapBytes byte order swap flag
-    * @return 32-bit integer
-    */
 
+    /**
+     * Concatenate two bytes to a 32-bit int value.  <b>a</b> is the high order
+     * byte in the resulting int representation, unless swapBytes is true, in
+     * which <b>b</b> is the high order byte.
+     * @param a high order byte
+     * @param b low order byte
+     * @param swapBytes byte order swap flag
+     * @return 32-bit integer
+     */
     public static int bytesToInt(byte a, byte b, boolean swapBytes) {
-  		// again, high order bit is expressed left into 32-bit form
-  		if (swapBytes) {
-  			return (a & 0xff) + ((int)b << 8);
-  		} else {
-  			return ((int)a << 8) + (b & 0xff);
-  		}
+
+        // again, high order bit is expressed left into 32-bit form
+        if (swapBytes) {
+            return (a & 0xff) + ((int) b << 8);
+        } else {
+            return ((int) a << 8) + (b & 0xff);
+        }
     }
 
     /**
@@ -843,9 +823,10 @@ public class NOWRadheader {
      * @param b
      * @return
      */
-    public short convertunsignedByte2Short(byte b)
-    {
-        return (short)((b<0)? (short)b + 256 : (short)b);
+    public short convertunsignedByte2Short(byte b) {
+        return (short) ((b < 0)
+                        ? (short) b + 256
+                        : (short) b);
     }
 
     /**
@@ -853,9 +834,10 @@ public class NOWRadheader {
      * @param b
      * @return
      */
-    public int convertShort2unsignedInt(short b)
-    {
-        return (b<0)? (-1)*b + 32768 : b;
+    public int convertShort2unsignedInt(short b) {
+        return (b < 0)
+               ? (-1) * b + 32768
+               : b;
     }
 
     /**
@@ -866,47 +848,40 @@ public class NOWRadheader {
      */
     static public java.util.Date getDate(int julianDays, int msecs) {
         long total = ((long) (julianDays - 1)) * 24 * 3600 * 1000 + msecs;
-        return new Date( total);
+
+        return new Date(total);
     }
 
-
     /**
-    * Flush all data buffers to disk.
-    * @throws IOException
-    */
+     * Flush all data buffers to disk.
+     * @throws IOException
+     */
     public void flush() throws IOException {
         raf.flush();
     }
 
     /**
-    *  Close the file.
-    * @throws IOException
-    */
+     *  Close the file.
+     * @throws IOException
+     */
     public void close() throws IOException {
-        if (raf != null)
-          raf.close();
-    }
-
-  // variable info for reading/writing
-    class Vinfo {
-        int xt;
-
-        int yt;
-
-        boolean isRadial; // is it a radial variable?
-        long hoff;    // header offset
-
-        Vinfo( int xt, int yt, long hoff, boolean isRadial) {
-            this.xt = xt;
-            this.yt = yt;
-
-            this.hoff = hoff;
-            this.isRadial = isRadial;
-
+        if (raf != null) {
+            raf.close();
         }
     }
 
+    // variable info for reading/writing
+    class Vinfo {
+        long    hoff;        // header offset
+        boolean isRadial;    // is it a radial variable?
+        int     xt;
+        int     yt;
 
-
-
+        Vinfo(int xt, int yt, long hoff, boolean isRadial) {
+            this.xt       = xt;
+            this.yt       = yt;
+            this.hoff     = hoff;
+            this.isRadial = isRadial;
+        }
+    }
 }
