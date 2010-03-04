@@ -51,6 +51,7 @@ public class TestIosp {
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();
     suite.addTest( new TestSuite(ucar.nc2.iosp.grib.TestHybridData.class));
+    suite.addTest( new TestSuite(ucar.nc2.iosp.grib.TestOfsData.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestIndexUpdating.class));
 
     suite.addTest( new TestSuite( ucar.nc2.iosp.dmsp.TestDmspIosp.class));
@@ -71,7 +72,6 @@ public class TestIosp {
     // slow - comment out if needed
     suite.addTest(new TestSuite(ucar.nc2.iosp.hdf4.TestH4subset.class)); //
     suite.addTest(new TestSuite(ucar.nc2.iosp.hdf5.TestH5subset.class)); //
-
     return suite;
   }
 

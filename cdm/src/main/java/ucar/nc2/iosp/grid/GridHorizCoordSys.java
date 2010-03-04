@@ -1103,7 +1103,7 @@ public class GridHorizCoordSys {
    *
    * Make lat/lon axis from variables that start with Latitude/Longitude and then
    * add the coordinates to the variables. This code is based on the ofs_atl files
-   * received from Rich Signell. This code is ridgit because it expects coordinate names
+   * received from Rich Signell. This code is rigid because it expects coordinate names
    * to start with Latitude/Longitude and other coordinate of depth.
    * @param ncfile  NetcdfFile
    */
@@ -1111,15 +1111,18 @@ public class GridHorizCoordSys {
 
     List<Variable> vars = ncfile.getRootGroup().getVariables();
     String latpp = null, lonpp = null, latU = null, lonU = null, latV = null, lonV = null;
-    // has to be done twice because there's no guarantte that the coordinate variables will be accessed first
-    String timeDimLL = null, timeDimV = null;
+    // has to be done twice because there's no guarantee that the
+    // coordinate variables will be accessed first
+    List<String> timeDimLL = new ArrayList<String>();
+    List<String> timeDimV = new ArrayList<String>();
     for( Variable var : vars ) {
       if( var.getName().startsWith( "Latitude") ) {
-        // remove time dependancy
+        // remove time dependency
         int[] shape = var.getShape();
-        if (var.getRank() == 3 && shape[0] == 1) { // remove time dependcies - MAJOR KLUDGE
+        if (var.getRank() == 3 && shape[0] == 1) { // remove time dependencies - MAJOR KLUDGE
               List<Dimension> dims = var.getDimensions();
-              timeDimLL = dims.get( 0 ).getName();
+              if( ! timeDimLL.contains( dims.get( 0 ).getName() ))
+                timeDimLL.add( dims.get( 0 ).getName() );
               dims.remove(0);
               var.setDimensions(dims);
         }
@@ -1137,10 +1140,12 @@ public class GridHorizCoordSys {
         }
 
       } else if( var.getName().startsWith( "Longitude" )) {
-        // remove time dependancy
+        // remove time dependency
         int[] shape = var.getShape();
-        if (var.getRank() == 3 && shape[0] == 1) { // remove time dependcies - MAJOR KLUDGE
+        if (var.getRank() == 3 && shape[0] == 1) { // remove time dependencies - MAJOR KLUDGE
               List<Dimension> dims = var.getDimensions();
+              if( ! timeDimLL.contains( dims.get( 0 ).getName() ))
+                timeDimLL.add( dims.get( 0 ).getName() );
               dims.remove(0);
               var.setDimensions(dims);
         }
@@ -1159,21 +1164,17 @@ public class GridHorizCoordSys {
         }
       }
    }
-   // remove Latitude/Longitude  time dimension and variable
-   //ncfile.getRootGroup().removeDimension( timeDimLL );
-   //ncfile.getRootGroup().removeVariable( timeDimLL );
 
    // add coordinates to variables
    for( Variable var : vars ) {
-
+     List<Dimension> dims = var.getDimensions();
      if( var.getName().startsWith( "Latitude") || var.getName().startsWith( "Longitude" )) {
 
       // check for other coordinate variables
      } else if( var.getName().startsWith( "time") || var.getName().startsWith( "depth")) {
-        // remove time dependancy if it exists
+        // remove time dependency if it exists
         int[] shape = var.getShape();
-        if (var.getRank() == 3 && shape[0] == 1) { // remove time dependcies - MAJOR KLUDGE
-              List<Dimension> dims = var.getDimensions();
+        if (var.getRank() == 3 && shape[0] == 1) { // remove time dependencies - MAJOR KLUDGE
               dims.remove(0);
               var.setDimensions(dims);
         }
@@ -1181,13 +1182,27 @@ public class GridHorizCoordSys {
         // nothing at this time
       } else if( var.getName().startsWith( "U-component") ) {
         var.addAttribute(new Attribute("coordinates", latU +" "+ lonU));
-
+        if( ! timeDimV.contains( dims.get( 0 ).getName() ))
+                timeDimV.add( dims.get( 0 ).getName() );
       } else if( var.getName().startsWith( "V-component") ) {
         var.addAttribute(new Attribute("coordinates", latV +" "+ lonV));
+        if( ! timeDimV.contains( dims.get( 0 ).getName() ))
+                timeDimV.add( dims.get( 0 ).getName() );
+
         // rest of variables default to Pressure_Point
       } else {
         var.addAttribute(new Attribute("coordinates", latpp +" "+ lonpp));
-      }
+        if( ! timeDimV.contains( dims.get( 0 ).getName() ))
+                timeDimV.add( dims.get( 0 ).getName() );
+     }
+    }
+    // remove Latitude/Longitude time dimension and variable if possible
+    for( String tdLL : timeDimLL) {
+      if( timeDimV.contains( tdLL ))
+        continue;
+      // else only used with Lat/Lon
+      ncfile.getRootGroup().removeDimension( tdLL );
+      ncfile.getRootGroup().removeVariable( tdLL );
     }
 
   }
