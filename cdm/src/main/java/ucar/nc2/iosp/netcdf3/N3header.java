@@ -233,7 +233,7 @@ public class N3header {
 
       // track how big each record is
       if (isRecord) {
-        recsize += vsize; // LOOK vsize may be wrong
+        recsize += vsize;
         recStart = Math.min(recStart, begin);
       } else {
         nonRecordDataSize = Math.max(nonRecordDataSize, begin + vsize);
@@ -359,7 +359,7 @@ public class N3header {
           return false;
         }
         memberV.setParentStructure(recordStructure);
-        //memberV.createNewCache(); // decouple caching - LOOK could use this ??
+        //memberV.createNewCache(); // decouple caching - could use this ??
 
         //remove record dimension
         //List<Dimension> dims = new ArrayList<Dimension>(v.getDimensions());
@@ -543,8 +543,9 @@ public class N3header {
         return DataType.FLOAT;
       case 6:
         return DataType.DOUBLE;
+      default:
+        throw new IllegalArgumentException("unknown type == " + type);
     }
-    throw new IllegalArgumentException("unknown type == " + type);
   }
 
   static int getType(DataType dt) {
@@ -674,7 +675,7 @@ public class N3header {
         uvars.add(var); // track record variables
 
         // track how big each record is
-        recsize += vinfo.vsize; // LOOK vsize may be wrong
+        recsize += vinfo.vsize;
         recStart = Math.min(recStart, vinfo.begin);
       }
     }
@@ -871,7 +872,7 @@ public class N3header {
       writeString(var.getName());
 
       // dimensions
-      long vsize = var.getDataType().getSize(); // LOOK probably wrong - use n3-specific sizeof
+      long vsize = var.getDataType().getSize(); // works for all netcdf-3 data types
       List<Dimension> dims = var.getDimensions();
       raf.writeInt(dims.size());
       for (Dimension dim : dims) {
@@ -902,10 +903,6 @@ public class N3header {
 
       //if (debug) out.println(" name= "+name+" type="+type+" vsize="+vsize+" begin= "+begin+" isRecord="+isRecord+"\n");
       var.setSPobject(new Vinfo(vsize, pos, var.isUnlimited(), varAttsPos));
-
-      // keep track of the record size
-      if (var.isUnlimited())
-        recsize += vsize;
     }
   }
 

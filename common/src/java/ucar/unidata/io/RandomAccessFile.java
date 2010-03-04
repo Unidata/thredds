@@ -334,7 +334,8 @@ public class RandomAccessFile implements DataInput, DataOutput {
     // may need to extend file, in case no fill is being used
     // may need to truncate file in case overwriting a longer file
     // use only if minLength is set (by N3iosp)
-    if (!readonly && (minLength != 0) && (minLength != file.length())) {
+    long fileSize = file.length();
+    if (!readonly && (minLength != 0) && (minLength != fileSize)) {
       file.setLength(minLength);
       // System.out.println("TRUNCATE!!! minlength="+minLength);
     }

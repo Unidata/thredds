@@ -35,6 +35,7 @@ package ucar.nc2;
 
 import junit.framework.TestCase;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -191,4 +192,5 @@ public class TestWriteMiscProblems extends TestCase {
 
     nc.close();
   }
+  
 }

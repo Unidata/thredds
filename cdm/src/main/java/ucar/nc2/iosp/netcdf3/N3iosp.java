@@ -873,7 +873,8 @@ public String NC_check_name(String name) {
 
   public void close() throws java.io.IOException {
     if (raf != null) {
-      raf.setMinLength( header.calcFileSize());
+      long size = header.calcFileSize();
+      raf.setMinLength( size);
       raf.close();
     }
     raf = null;

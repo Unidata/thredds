@@ -34,6 +34,7 @@ package ucar.nc2;
 
 import junit.framework.*;
 import ucar.ma2.*;
+import ucar.nc2.util.CompareNetcdf;
 
 import java.io.*;
 import java.util.*;
@@ -389,6 +390,47 @@ public class TestWrite extends TestCase {
     data.setInt(2, 3);
     data.setInt(3, 4);
     ncfile.write("v", data);
+  }
+
+  // fix for bug introduced 2/9/10, reported by Christian Ward-Garrison cwardgar@usgs.gov
+  public void testRecordSizeBug() throws IOException, InvalidRangeException {
+    String filename = TestLocal.temporaryDataDir + "foo.nc";
+    //File tempFile = File.createTempFile("foo", "nc");
+    //tempFile.deleteOnExit();
+    NetcdfFileWriteable ncWriteable = NetcdfFileWriteable.createNew(filename, false);
+    Array result1;
+
+    try {
+      Dimension timeDim = ncWriteable.addUnlimitedDimension("time");
+      ncWriteable.addVariable("time", DataType.INT, new Dimension[]{timeDim});
+      ncWriteable.addVariableAttribute("time", "units", "hours since 1990-01-01");
+      ncWriteable.create();
+
+      Array timeData = Array.factory(DataType.INT, new int[]{1});
+      int[] time_origin = new int[]{0};
+
+      for (int time = 0; time < 10; time++) {
+        timeData.setInt(timeData.getIndex(), time * 12);
+        time_origin[0] = time;
+        ncWriteable.write("time", time_origin, timeData);
+      }
+
+      // Prints "0 12 24 36 48 60 72 84 96 108", the expected result.
+      result1 = ncWriteable.readSection("time");
+      System.out.println(result1);
+    } finally {
+      ncWriteable.close();
+    }
+
+    NetcdfFile ncFile = NetcdfFile.open(filename);
+    try {
+      // Prints "0 0 12 0 24 0 36 0 48 0".
+      Array result2 = ncFile.readSection("time");
+      System.out.println(result2);
+      CompareNetcdf.compareData(result1, result2);
+    } finally {
+      ncFile.close();
+    }
   }
 
 }
