@@ -198,8 +198,8 @@ public class NOWRadiosp extends AbstractIOServiceProvider {
 
             // int linenum = bytesToInt(b2[0], b2[1], true);
             // System.out.println("Line Number = " + linenum);
-            // if(linenum >= 254)
-            // System.out.println(" HHHHH");
+            if(linenum == 1225)
+              System.out.println(" HHHHH");
             short b = convertunsignedByte2Short(bos.get());
 
             color   = b & 0xF;
@@ -255,19 +255,17 @@ public class NOWRadiosp extends AbstractIOServiceProvider {
                 // System.out.println("c1 and c2 " + c1 + " " + c2);
 
                 if ((c0 == 0x00) && (c1 == 0xF0) && (c2 == 0x0C)) {
-
                     // beginning of next line
-                    // System.out.println("linenum   " + linenum + "   and this line total " + roffset);
+                    System.out.println("linenum   " + linenum + "   and this line total " + roffset);
                     if (roffset != 3661) {
                         System.out.println("ERROR missing data, this line total only " + roffset);
                     }
-
-                    System.arraycopy(ldata, 0, pdata, offset, datarun);
+                    System.arraycopy(ldata, 0, pdata, offset, roffset);
                     offset  = offset + vinfo.xt;
                     roffset = 0;
                     newline = true;
+                    ldata  = new byte[vinfo.xt];
                 } else if ((c1 == 0xF0) && (c2 == 0x02)) {
-
                     // end of the file
                     break;
                 } else {

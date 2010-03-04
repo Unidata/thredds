@@ -344,7 +344,7 @@ public class NOWRadheader {
             setProductInfo(product, date);
 
             // data struct
-            nowradL(hoffset, (float) nav1, (float) nav2, (float) nav4,  date);
+            nowradL(hoffset, (float) nav1, (float) nav2, (float) nav3, (float) nav4, (float) nav5, (float) nav6, date);
         }
 
 
@@ -380,7 +380,7 @@ public class NOWRadheader {
         return 0;
     }
 
-    ProjectionImpl  nowradL(int hoff, float lat1, float lat2, float clon,  Date dd) {
+    ProjectionImpl  nowradL(int hoff, float lat1, float lat2, float clat, float clon, float lat, float lon, Date dd) {
         ArrayList dims = new ArrayList();
         Dimension dimT = new Dimension("time", 1, true, false, false);
 
@@ -438,16 +438,20 @@ public class NOWRadheader {
         xaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoX"));
 
         double[]       data1      = new double[numX];
-        ProjectionImpl projection = new LambertConformal(lat1, clon, lat1, lat2);
+        ProjectionImpl projection = new LambertConformal(clat, clon, lat1, lat2);
         double llat = 17.2454;
         double llon = -135.8736;
-        double dlon = (135.8736 - 70.1154 )/(numX - 1);
-         double [] tmp = new double[numX];
+        double nlat = 51.8294;
+        double nlon = -70.1154;
+
+        ProjectionPointImpl pt0 = (ProjectionPointImpl) projection.latLonToProj(new LatLonPointImpl(llat, llon));
+        ProjectionPointImpl ptn = (ProjectionPointImpl) projection.latLonToProj(new LatLonPointImpl(nlat, nlon));
+        ProjectionPointImpl ptc = (ProjectionPointImpl) projection.latLonToProj(new LatLonPointImpl(clat, clon));
+        double startX = pt0.getX() - ptc.getX();
+        double startY = pt0.getY() - ptc.getY();
+        double dx = (ptn.getX() - pt0.getX())/(numX-1);
         for (int i = 0; i < numX; i++) {
-            double              ln = llon + i * dlon;
-            ProjectionPointImpl pt = (ProjectionPointImpl) projection.latLonToProj(new LatLonPointImpl(llat, ln));
-              tmp[i] = ln;
-            data1[i] = pt.getX();    // startx + i*dx;
+            data1[i] = startX + i*dx;
         }
 
         Array dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] { numX }, data1);
@@ -463,13 +467,10 @@ public class NOWRadheader {
         yaxis.addAttribute(new Attribute("units", "km"));
         yaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoY"));
         data1 = new double[numY];
+        double dy = (ptn.getY() - pt0.getY())/(numY-1);
 
-        double dlat = (51.8294 - 17.2454)/(numY - 1);
         for (int i = 0; i < numY; i++) {
-            double              la = llat + i * dlat;
-            ProjectionPointImpl pt = (ProjectionPointImpl) projection.latLonToProj(new LatLonPointImpl(la, llon));
-
-            data1[i] = pt.getY();    // endyy - i*dy;
+            data1[i] = startY + i*dy;
         }
 
         dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] { numY }, data1);
