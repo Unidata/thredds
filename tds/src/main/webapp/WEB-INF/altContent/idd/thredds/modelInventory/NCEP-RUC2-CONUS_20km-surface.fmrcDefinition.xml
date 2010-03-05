@@ -1,35 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fmrcDefinition dataset="http://motherlode.ucar.edu:9080/thredds/catalog/fmrc/NCEP/RUC2/CONUS_20km/surface/files/catalog.xml">
+<fmrcDefinition dataset="http://motherlode.ucar.edu:8081/thredds/catalog/fmrc/NCEP/RUC2/CONUS_20km/surface/files/catalog.xml">
   <vertCoord id="2" name="height_above_ground" units="m">10.0</vertCoord>
   <vertCoord id="1" name="height_above_ground1" units="m">2.0</vertCoord>
   <vertCoord id="0" name="pressure_difference_layer" units="Pa">0.0,25500.0</vertCoord>
-  <offsetHours id="0">0.0 1.0 2.0 3.0 6.0 9.0 12.0</offsetHours>
-  <offsetHours id="1">0.0 1.0 2.0 3.0 6.0 9.0</offsetHours>
-  <runSequence>
-    <run runHour="0.0" offsetHourSeq="0" />
-    <run runHour="1.0" offsetHourSeq="1" />
-    <run runHour="2.0" offsetHourSeq="1" />
-    <run runHour="3.0" offsetHourSeq="0" />
-    <run runHour="4.0" offsetHourSeq="1" />
-    <run runHour="5.0" offsetHourSeq="1" />
-    <run runHour="6.0" offsetHourSeq="0" />
-    <run runHour="7.0" offsetHourSeq="1" />
-    <run runHour="8.0" offsetHourSeq="1" />
-    <run runHour="9.0" offsetHourSeq="0" />
-    <run runHour="10.0" offsetHourSeq="1" />
-    <run runHour="11.0" offsetHourSeq="1" />
-    <run runHour="12.0" offsetHourSeq="0" />
-    <run runHour="13.0" offsetHourSeq="1" />
-    <run runHour="14.0" offsetHourSeq="1" />
-    <run runHour="15.0" offsetHourSeq="0" />
-    <run runHour="16.0" offsetHourSeq="1" />
-    <run runHour="17.0" offsetHourSeq="1" />
-    <run runHour="18.0" offsetHourSeq="0" />
-    <run runHour="19.0" offsetHourSeq="1" />
-    <run runHour="20.0" offsetHourSeq="1" />
-    <run runHour="21.0" offsetHourSeq="0" />
-    <run runHour="22.0" offsetHourSeq="1" />
-    <run runHour="23.0" offsetHourSeq="1" />
+  <offsetHours id="0">0.0 1.0 2.0 3.0 6.0 9.0 12.0 15.0 18.0</offsetHours>
+  <runSequence allUseSeq="0">
     <variable name="Best_lifted_index_to_500_hPa" />
     <variable name="Categorical_Freezing_Rain" />
     <variable name="Categorical_Ice_Pellets" />

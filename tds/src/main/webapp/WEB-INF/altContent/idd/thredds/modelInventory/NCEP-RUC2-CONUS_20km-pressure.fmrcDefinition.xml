@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fmrcDefinition dataset="http://motherlode.ucar.edu:9080/thredds/catalog/fmrc/NCEP/RUC2/CONUS_20km/pressure/files/catalog.xml">
+<fmrcDefinition dataset="http://motherlode.ucar.edu:8081/thredds/catalog/fmrc/NCEP/RUC2/CONUS_20km/pressure/files/catalog.xml">
   <vertCoord id="1" name="depth_below_surface" units="m">3.0</vertCoord>
   <vertCoord id="3" name="height_above_ground" units="m">1000.0 4000.0</vertCoord>
   <vertCoord id="8" name="height_above_ground1" units="m">10.0</vertCoord>
@@ -9,33 +9,8 @@
   <vertCoord id="0" name="pressure1" units="Pa">50000.0</vertCoord>
   <vertCoord id="6" name="pressure_difference_layer" units="Pa">0.0,3000.0 3000.0,6000.0 6000.0,9000.0 9000.0,12000.0 12000.0,15000.0 15000.0,18000.0</vertCoord>
   <vertCoord id="2" name="pressure_difference_layer1" units="Pa">0.0,25500.0</vertCoord>
-  <offsetHours id="0">0.0 1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0 10.0 11.0 12.0</offsetHours>
-  <offsetHours id="1">0.0 1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0</offsetHours>
-  <runSequence>
-    <run runHour="0.0" offsetHourSeq="0" />
-    <run runHour="1.0" offsetHourSeq="1" />
-    <run runHour="2.0" offsetHourSeq="1" />
-    <run runHour="3.0" offsetHourSeq="0" />
-    <run runHour="4.0" offsetHourSeq="1" />
-    <run runHour="5.0" offsetHourSeq="1" />
-    <run runHour="6.0" offsetHourSeq="0" />
-    <run runHour="7.0" offsetHourSeq="1" />
-    <run runHour="8.0" offsetHourSeq="1" />
-    <run runHour="9.0" offsetHourSeq="0" />
-    <run runHour="10.0" offsetHourSeq="1" />
-    <run runHour="11.0" offsetHourSeq="1" />
-    <run runHour="12.0" offsetHourSeq="0" />
-    <run runHour="13.0" offsetHourSeq="1" />
-    <run runHour="14.0" offsetHourSeq="1" />
-    <run runHour="15.0" offsetHourSeq="0" />
-    <run runHour="16.0" offsetHourSeq="1" />
-    <run runHour="17.0" offsetHourSeq="1" />
-    <run runHour="18.0" offsetHourSeq="0" />
-    <run runHour="19.0" offsetHourSeq="1" />
-    <run runHour="20.0" offsetHourSeq="1" />
-    <run runHour="21.0" offsetHourSeq="0" />
-    <run runHour="22.0" offsetHourSeq="1" />
-    <run runHour="23.0" offsetHourSeq="1" />
+  <offsetHours id="0">0.0 1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0 10.0 11.0 12.0 13.0 14.0 15.0 16.0 17.0 18.0</offsetHours>
+  <runSequence allUseSeq="0">
     <variable name="Absolute_vorticity" vertCoord="0" />
     <variable name="Baseflow-Groundwater_Runoff" vertCoord="1" />
     <variable name="Best_lifted_index_to_500_hPa" />
@@ -61,7 +36,7 @@
     <variable name="Geopotential_height_surface" />
     <variable name="Geopotential_height_zeroDegC_isotherm" />
     <variable name="Large_scale_precipitation_non-convective" />
-    <variable name="MSLP_MAPS_System_Reduction" />        
+    <variable name="MSLP_MAPS_System_Reduction" />
     <variable name="MaximumComposite_radar_reflectivity" />
     <variable name="Moisture_Availability" />
     <variable name="Planetary_Boundary_Layer_Height" />
