@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project relativePaths="true" version="4">
+<project version="4">
   <component name="AntConfiguration">
     <defaultAnt bundledAnt="true" />
     <buildFile url="file://$PROJECT_DIR$/../../cdm/build.xml">
@@ -26,6 +26,176 @@
       <maximumStackSize value="32" />
       <properties />
     </buildFile>
+  </component>
+  <component name="ArtifactManager">
+    <artifact type="exploded-war" name="opendap:opendap exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="opendap/web/opendap" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="opendap" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="tds:dqcServletRedirect exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="tds/web/dqcServletRedirect" />
+        <element id="directory" name="META-INF">
+          <element id="file-copy" path="$PROJECT_DIR$/../../tds/src/main/webapp-dqcServletRedirect/META-INF/context.xml" />
+        </element>
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="tds" />
+            <element id="dir-copy" path="$PROJECT_DIR$/../../cdm/src/main/resources" />
+          </element>
+          <element id="directory" name="lib">
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-logging-1.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jdom.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/prefsAll.jar" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="tds:expThredds exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="tds/web/expThredds" />
+        <element id="directory" name="META-INF">
+          <element id="file-copy" path="$PROJECT_DIR$/../../tds/src/main/webapp-expThredds/META-INF/context.xml" />
+        </element>
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="cdm" />
+            <element id="module-output" name="tds" />
+            <element id="dir-copy" path="$PROJECT_DIR$/../../cdm/src/main/resources" />
+          </element>
+          <element id="directory" name="lib">
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/casclient-2.1.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-codec-1.3.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-logging-1.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/gnu-getopt-1.0.6.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/gnu-regexp-1.1.4.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jdom.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jpeg2000.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/prefsAll.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/visadNoDods.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-fileupload-1.1.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-httpclient-3.0.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-io-1.2.jar" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="bufrTables:bufrTables exploded">
+      <output-path>$PROJECT_DIR$/../../bufrTables/target</output-path>
+      <root id="root">
+        <element id="javaee-facet-resources" facet="bufrTables/web/bufrTables" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="javaee-facet-classes" facet="bufrTables/web/bufrTables" />
+            <element id="module-output" name="cdm" />
+            <element id="module-output" name="common" />
+            <element id="dir-copy" path="$PROJECT_DIR$/../../cdm/src/main/resources" />
+          </element>
+          <element id="directory" name="lib">
+            <element id="library" level="project" name="Spring" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-codec-1.3.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-logging-1.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jdom.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-fileupload-1.2.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-io-1.4.jar" />
+            <element id="library" level="project" name="Logging" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-httpclient-3.1.jar" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="tds:CdmValidator exploded">
+      <output-path>$PROJECT_DIR$/../../tds/target/cdmvalidator</output-path>
+      <root id="root">
+        <element id="javaee-facet-resources" facet="tds/web/CdmValidator" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="cdm" />
+            <element id="module-output" name="common" />
+            <element id="module-output" name="tds" />
+            <element id="dir-copy" path="$PROJECT_DIR$/../../tds/src/main/webapp-cdmValidator/WEB-INF/classes" />
+            <element id="dir-copy" path="$PROJECT_DIR$/../../../grib/resources" />
+            <element id="dir-copy" path="$PROJECT_DIR$/../../cdm/src/main/resources" />
+          </element>
+          <element id="directory" name="lib">
+            <element id="library" level="module" name="JSTL" module-name="tds" />
+            <element id="library" level="module" name="Logging" module-name="tds" />
+            <element id="library" level="module" name="Spring" module-name="tds" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/bufrTables-1.5.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-codec-1.3.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-fileupload-1.2.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-httpclient-3.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-io-1.4.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-logging-1.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jdom.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jpeg2000.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/prefsAll.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/visadNoDods.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-lang-2.4.jar" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="tds:tds exploded">
+      <output-path>$PROJECT_DIR$/../../tds/target/war</output-path>
+      <root id="root">
+        <element id="javaee-facet-resources" facet="tds/web/tds" />
+        <element id="directory" name="WEB-INF">
+          <element id="file-copy" path="$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/log4j.xml" />
+          <element id="directory" name="classes">
+            <element id="module-output" name="cdm" />
+            <element id="module-output" name="common" />
+            <element id="module-output" name="tds" />
+            <element id="dir-copy" path="$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/classes" />
+            <element id="dir-copy" path="$PROJECT_DIR$/../../../grib/resources" />
+            <element id="dir-copy" path="$PROJECT_DIR$/../../cdm/src/main/resources" />
+          </element>
+          <element id="directory" name="lib">
+            <element id="library" level="module" name="JSTL" module-name="tds" />
+            <element id="library" level="module" name="Logging" module-name="tds" />
+            <element id="library" level="module" name="Spring" module-name="tds" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/acegi-security-1.0.4.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/casclient-2.1.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/collections-generic-4.01.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-codec-1.3.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-fileupload-1.2.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-httpclient-3.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-io-1.4.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-logging-1.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/geoapi-nogenerics-2.1.0.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/gnu-getopt-1.0.6.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/gnu-regexp-1.1.4.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/gt2-epsg-wkt-2.4.0.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/gt2-metadata-2.4.0.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/gt2-referencing-2.4.0.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/h2.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/httpunit.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/jakarta-oro-2.0.8.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/jcommon-1.0.8.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jna.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jpeg2000.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/json-taglib-0.4.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/jsr108-0.01.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/prefsAll.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/simple-xml-1.4.2.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/standard.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/vecmath-1.3.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/visadNoDods.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/joda-time-1.6.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jdom.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/protobuf-java-2.1.0.jar" />
+            <element id="library" level="project" name="ehcache" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/bufrTables-2.0.jar" />
+          </element>
+        </element>
+      </root>
+    </artifact>
   </component>
   <component name="BuildJarProjectSettings">
     <option name="BUILD_JARS_ON_MAKE" value="false" />
@@ -75,11 +245,9 @@
         </ADDITIONAL_INDENT_OPTIONS>
       </value>
     </option>
-    <option name="USE_PER_PROJECT_SETTINGS" value="false" />
   </component>
   <component name="CompilerConfiguration">
     <option name="DEFAULT_COMPILER" value="Javac" />
-    <option name="DEPLOY_AFTER_MAKE" value="2" />
     <excludeFromCompile>
       <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/ui/tools/CatalogSearcher.java" />
       <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/search/Indexer.java" />
@@ -104,11 +272,13 @@
       <entry name="?*.dtd" />
       <entry name="?*.tld" />
     </wildcardResourcePatterns>
+    <annotationProcessing enabled="false" useClasspath="true" />
   </component>
   <component name="CopyrightManager" default="default">
     <copyright>
       <option name="notice" value="Copyright (c) 1998 - &amp;#36;today.year. University Corporation for Atmospheric Research/Unidata&#10;Portions of this software were developed by the Unidata Program at the&#10;University Corporation for Atmospheric Research.&#10;&#10;Access and use of this software shall impose the following obligations&#10;and understandings on the user. The user is granted the right, without&#10;any fee or cost, to use, copy, modify, alter, enhance and distribute&#10;this software, and any derivative works thereof, and its supporting&#10;documentation for any purpose whatsoever, provided that this entire&#10;notice appears in all copies of the software, derivative works and&#10;supporting documentation.  Further, UCAR requests that the user credit&#10;UCAR/Unidata in any publications that result from the use of this&#10;software or in any product that includes this software. The names UCAR&#10;and/or Unidata, however, may not be used in any advertising or publicity&#10;to endorse or promote any products or commercial entity unless specific&#10;written permission is obtained from UCAR/Unidata. The user also&#10;understands that UCAR/Unidata is not obligated to provide the user with&#10;any support, consulting, training or assistance of any kind with regard&#10;to the use, operation and performance of this software nor to provide&#10;the user with any updates, revisions, new versions or &quot;bug fixes.&quot;&#10;&#10;THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA &quot;AS IS&quot; AND ANY EXPRESS OR&#10;IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED&#10;WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE&#10;DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,&#10;INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING&#10;FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,&#10;NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION&#10;WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE." />
       <option name="keyword" value="Copyright" />
+      <option name="allowReplaceKeyword" value="" />
       <option name="myName" value="default" />
       <option name="myLocal" value="true" />
     </copyright>
@@ -213,95 +383,95 @@
   </component>
   <component name="IdProvider" IDEtalkID="70822C482020A3B7F3AE070007C742C1" />
   <component name="InspectionProjectProfileManager">
-    <option name="PROJECT_PROFILE" value="Project Default" />
-    <option name="USE_PROJECT_LEVEL_SETTINGS" value="true" />
-    <scopes />
     <profiles>
       <profile version="1.0" is_locked="false">
         <option name="myName" value="Project Default" />
         <option name="myLocal" value="false" />
-        <inspection_tool class="InfiniteLoopStatement" level="WARNING" enabled="false" />
-        <inspection_tool class="TrivialIf" level="WARNING" enabled="false" />
-        <inspection_tool class="EmptyFinallyBlock" level="WARNING" enabled="false" />
-        <inspection_tool class="EmptyStatementBody" level="WARNING" enabled="false">
-          <option name="m_reportEmptyBlocks" value="false" />
-        </inspection_tool>
-        <inspection_tool class="StringEquality" level="WARNING" enabled="false" />
-        <inspection_tool class="StringToString" level="WARNING" enabled="false" />
-        <inspection_tool class="LoopStatementsThatDontLoop" level="WARNING" enabled="false" />
-        <inspection_tool class="InfiniteRecursion" level="WARNING" enabled="false" />
-        <inspection_tool class="ConstantConditions" level="WARNING" enabled="false">
+        <inspection_tool class="BooleanConstructor" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="CloneCallsSuperClone" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="CloneDeclaresCloneNotSupported" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="ConditionalExpressionWithIdenticalBranches" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="ConstantConditions" enabled="false" level="WARNING" enabled_by_default="false">
           <option name="SUGGEST_NULLABLE_ANNOTATIONS" value="false" />
           <option name="DONT_REPORT_TRUE_ASSERT_STATEMENTS" value="false" />
         </inspection_tool>
-        <inspection_tool class="EmptyCatchBlock" level="WARNING" enabled="false">
+        <inspection_tool class="ContinueOrBreakFromFinallyBlock" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="DoubleNegation" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="DuplicateBooleanBranch" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="DuplicateCondition" enabled="true" level="WARNING" enabled_by_default="true">
+          <option name="ignoreMethodCalls" value="false" />
+        </inspection_tool>
+        <inspection_tool class="EmptyCatchBlock" enabled="false" level="WARNING" enabled_by_default="false">
           <option name="m_includeComments" value="true" />
           <option name="m_ignoreTestCases" value="true" />
           <option name="m_ignoreIgnoreParameter" value="true" />
         </inspection_tool>
-        <inspection_tool class="UnnecessaryTemporaryOnConversionFromString" level="WARNING" enabled="false" />
-        <inspection_tool class="UnusedAssignment" level="WARNING" enabled="false">
+        <inspection_tool class="EmptyFinallyBlock" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="EmptyStatementBody" enabled="false" level="WARNING" enabled_by_default="false">
+          <option name="m_reportEmptyBlocks" value="false" />
+        </inspection_tool>
+        <inspection_tool class="EmptyTryBlock" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="EnumSwitchStatementWhichMissesCases" enabled="true" level="WARNING" enabled_by_default="true">
+          <option name="ignoreSwitchStatementsWithDefault" value="false" />
+        </inspection_tool>
+        <inspection_tool class="ExtendsObject" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="FinalPrivateMethod" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="FinalStaticMethod" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="FinalizeCallsSuperFinalize" enabled="false" level="WARNING" enabled_by_default="false">
+          <option name="m_ignoreForObjectSubclasses" value="false" />
+        </inspection_tool>
+        <inspection_tool class="ForCanBeForeach" enabled="false" level="WARNING" enabled_by_default="false">
+          <option name="REPORT_INDEXED_LOOP" value="true" />
+        </inspection_tool>
+        <inspection_tool class="ForLoopWithMissingComponent" enabled="true" level="WARNING" enabled_by_default="true">
+          <option name="ignoreCollectionLoops" value="false" />
+        </inspection_tool>
+        <inspection_tool class="IfStatementWithIdenticalBranches" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="InfiniteLoopStatement" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="InfiniteRecursion" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="LoopConditionNotUpdatedInsideLoop" enabled="true" level="WARNING" enabled_by_default="true">
+          <option name="ignoreIterators" value="false" />
+        </inspection_tool>
+        <inspection_tool class="LoopStatementsThatDontLoop" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="LoopWithImplicitTerminationCondition" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="ManualArrayCopy" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="NoExplicitFinalizeCalls" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="PointlessArithmeticExpression" enabled="false" level="WARNING" enabled_by_default="false">
+          <option name="m_ignoreExpressionsContainingConstants" value="false" />
+        </inspection_tool>
+        <inspection_tool class="PointlessIndexOfComparison" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="RedundantCast" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="ReturnFromFinallyBlock" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="SimplifiableConditionalExpression" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="StringConstructor" enabled="false" level="WARNING" enabled_by_default="false">
+          <option name="ignoreSubstringArguments" value="false" />
+        </inspection_tool>
+        <inspection_tool class="StringEquality" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="StringToString" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="SwitchStatementsWithoutDefault" enabled="true" level="WARNING" enabled_by_default="true">
+          <option name="m_ignoreFullyCoveredEnums" value="true" />
+        </inspection_tool>
+        <inspection_tool class="SynchronizeOnNonFinalField" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="ThrowFromFinallyBlock" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="TrivialIf" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="UnnecessaryBoxing" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="UnnecessaryDefault" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="UnnecessaryReturn" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="UnnecessarySemicolon" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="UnnecessaryTemporaryOnConversionFromString" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="UnnecessaryTemporaryOnConversionToString" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="UnnecessaryUnboxing" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="UnusedAssignment" enabled="false" level="WARNING" enabled_by_default="false">
           <option name="REPORT_PREFIX_EXPRESSIONS" value="false" />
           <option name="REPORT_POSTFIX_EXPRESSIONS" value="true" />
           <option name="REPORT_REDUNDANT_INITIALIZER" value="true" />
         </inspection_tool>
-        <inspection_tool class="ForCanBeForeach" level="WARNING" enabled="false">
-          <option name="REPORT_INDEXED_LOOP" value="true" />
-        </inspection_tool>
-        <inspection_tool class="FinalizeCallsSuperFinalize" level="WARNING" enabled="false">
-          <option name="m_ignoreForObjectSubclasses" value="false" />
-        </inspection_tool>
-        <inspection_tool class="UnnecessarySemicolon" level="WARNING" enabled="false" />
-        <inspection_tool class="PointlessArithmeticExpression" level="WARNING" enabled="false">
-          <option name="m_ignoreExpressionsContainingConstants" value="false" />
-        </inspection_tool>
-        <inspection_tool class="UnnecessaryTemporaryOnConversionToString" level="WARNING" enabled="false" />
-        <inspection_tool class="UnusedLabel" level="WARNING" enabled="false" />
-        <inspection_tool class="BooleanConstructor" level="WARNING" enabled="false" />
-        <inspection_tool class="ExtendsObject" level="WARNING" enabled="false" />
-        <inspection_tool class="UnnecessaryBoxing" level="WARNING" enabled="false" />
-        <inspection_tool class="CloneCallsSuperClone" level="WARNING" enabled="false" />
-        <inspection_tool class="ReturnFromFinallyBlock" level="WARNING" enabled="false" />
-        <inspection_tool class="EmptyTryBlock" level="WARNING" enabled="false" />
-        <inspection_tool class="ManualArrayCopy" level="WARNING" enabled="false" />
-        <inspection_tool class="ThrowFromFinallyBlock" level="WARNING" enabled="false" />
-        <inspection_tool class="CloneDeclaresCloneNotSupported" level="WARNING" enabled="false" />
-        <inspection_tool class="RedundantCast" level="WARNING" enabled="false" />
-        <inspection_tool class="StringConstructor" level="WARNING" enabled="false">
-          <option name="ignoreSubstringArguments" value="false" />
-        </inspection_tool>
-        <inspection_tool class="UnnecessaryReturn" level="WARNING" enabled="false" />
-        <inspection_tool class="FinalStaticMethod" level="WARNING" enabled="false" />
-        <inspection_tool class="UnnecessaryUnboxing" level="WARNING" enabled="false" />
-        <inspection_tool class="NoExplicitFinalizeCalls" level="WARNING" enabled="false" />
-        <inspection_tool class="FinalPrivateMethod" level="WARNING" enabled="false" />
-        <inspection_tool class="ContinueOrBreakFromFinallyBlock" level="WARNING" enabled="false" />
-        <inspection_tool class="SynchronizeOnNonFinalField" level="WARNING" enabled="false" />
-        <inspection_tool class="SimplifiableConditionalExpression" level="WARNING" enabled="false" />
-        <inspection_tool class="ConditionalExpressionWithIdenticalBranches" level="WARNING" enabled="true" />
-        <inspection_tool class="DoubleNegation" level="WARNING" enabled="true" />
-        <inspection_tool class="DuplicateCondition" level="WARNING" enabled="true">
-          <option name="ignoreMethodCalls" value="false" />
-        </inspection_tool>
-        <inspection_tool class="DuplicateBooleanBranch" level="WARNING" enabled="true" />
-        <inspection_tool class="EnumSwitchStatementWhichMissesCases" level="WARNING" enabled="true">
-          <option name="ignoreSwitchStatementsWithDefault" value="false" />
-        </inspection_tool>
-        <inspection_tool class="ForLoopWithMissingComponent" level="WARNING" enabled="true">
-          <option name="ignoreCollectionLoops" value="false" />
-        </inspection_tool>
-        <inspection_tool class="IfStatementWithIdenticalBranches" level="WARNING" enabled="true" />
-        <inspection_tool class="LoopConditionNotUpdatedInsideLoop" level="WARNING" enabled="true">
-          <option name="ignoreIterators" value="false" />
-        </inspection_tool>
-        <inspection_tool class="LoopWithImplicitTerminationCondition" level="WARNING" enabled="true" />
-        <inspection_tool class="PointlessIndexOfComparison" level="WARNING" enabled="true" />
-        <inspection_tool class="SwitchStatementsWithoutDefault" level="WARNING" enabled="true">
-          <option name="m_ignoreFullyCoveredEnums" value="true" />
-        </inspection_tool>
-        <inspection_tool class="UnnecessaryDefault" level="WARNING" enabled="true" />
+        <inspection_tool class="UnusedLabel" enabled="false" level="WARNING" enabled_by_default="false" />
       </profile>
     </profiles>
+    <option name="PROJECT_PROFILE" value="Project Default" />
+    <option name="USE_PROJECT_PROFILE" value="true" />
+    <version value="1.0" />
     <list size="4">
       <item index="0" class="java.lang.String" itemvalue="SERVER PROBLEM" />
       <item index="1" class="java.lang.String" itemvalue="INFO" />
@@ -310,7 +480,6 @@
     </list>
   </component>
   <component name="JavacSettings">
-    <option name="DEBUGGING_INFO" value="true" />
     <option name="GENERATE_NO_WARNINGS" value="true" />
     <option name="DEPRECATION" value="false" />
     <option name="ADDITIONAL_OPTIONS_STRING" value=" " />
@@ -471,7 +640,6 @@
   <component name="ProjectDetails">
     <option name="projectName" value="thredds" />
   </component>
-  <component name="ProjectFileVersion" converted="true" />
   <component name="ProjectKey">
     <option name="state" value="svn://zero/thredds/trunk/intelliJ/threddsFull/thredds.ipr" />
   </component>
@@ -501,19 +669,26 @@
       </value>
     </option>
   </component>
-  <component name="RmicSettings">
-    <option name="IS_EANABLED" value="false" />
-    <option name="DEBUGGING_INFO" value="true" />
-    <option name="GENERATE_NO_WARNINGS" value="false" />
-    <option name="GENERATE_IIOP_STUBS" value="false" />
-    <option name="ADDITIONAL_OPTIONS_STRING" value="" />
-  </component>
   <component name="SvnBranchConfigurationManager">
     <option name="myConfigurationMap">
       <map>
         <entry key="$PROJECT_DIR$/../../../Java-OPeNDAP">
           <value>
             <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="http://scm.opendap.org/svn/branch">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="http://scm.opendap.org/svn/tags">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
               <option name="branchUrls">
                 <list>
                   <option value="http://scm.opendap.org/svn/branch" />
@@ -527,6 +702,20 @@
         <entry key="$PROJECT_DIR$/../../../grib">
           <value>
             <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="svn://zero/grib/branch">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="svn://zero/grib/tag">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
               <option name="branchUrls">
                 <list>
                   <option value="svn://zero/grib/branch" />
@@ -540,6 +729,20 @@
         <entry key="$PROJECT_DIR$/../../bufrTables">
           <value>
             <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="svn://zero/thredds/branch">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="svn://zero/thredds/tag">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
               <option name="branchUrls">
                 <list>
                   <option value="svn://zero/thredds/branch" />
@@ -553,6 +756,20 @@
         <entry key="$PROJECT_DIR$/../../cdm">
           <value>
             <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="svn://zero/thredds/branch">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="svn://zero/thredds/tag">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
               <option name="branchUrls">
                 <list>
                   <option value="svn://zero/thredds/branch" />
@@ -566,6 +783,20 @@
         <entry key="$PROJECT_DIR$/../../common">
           <value>
             <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="svn://zero/thredds/branch">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="svn://zero/thredds/tag">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
               <option name="branchUrls">
                 <list>
                   <option value="svn://zero/thredds/branch" />
@@ -579,6 +810,20 @@
         <entry key="$PROJECT_DIR$/../../docs">
           <value>
             <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="svn://zero/thredds/branch">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="svn://zero/thredds/tag">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
               <option name="branchUrls">
                 <list>
                   <option value="svn://zero/thredds/branch" />
@@ -592,6 +837,20 @@
         <entry key="$PROJECT_DIR$/..">
           <value>
             <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="svn://zero/thredds/branch">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="svn://zero/thredds/tag">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
               <option name="branchUrls">
                 <list>
                   <option value="svn://zero/thredds/branch" />
@@ -605,6 +864,20 @@
         <entry key="$PROJECT_DIR$">
           <value>
             <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="svn://zero/thredds/branch">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="svn://zero/thredds/tag">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
               <option name="branchUrls">
                 <list>
                   <option value="svn://zero/thredds/branch" />
@@ -618,6 +891,20 @@
         <entry key="$PROJECT_DIR$/../../ldm">
           <value>
             <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="svn://zero/thredds/branch">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="svn://zero/thredds/tag">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
               <option name="branchUrls">
                 <list>
                   <option value="svn://zero/thredds/branch" />
@@ -631,6 +918,20 @@
         <entry key="$PROJECT_DIR$/../../lib">
           <value>
             <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="svn://zero/thredds/branch">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="svn://zero/thredds/tag">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
               <option name="branchUrls">
                 <list>
                   <option value="svn://zero/thredds/branch" />
@@ -644,6 +945,20 @@
         <entry key="$PROJECT_DIR$/../../tds">
           <value>
             <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="svn://zero/thredds/branch">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="svn://zero/thredds/tag">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
               <option name="branchUrls">
                 <list>
                   <option value="svn://zero/thredds/branch" />
@@ -657,6 +972,20 @@
         <entry key="$PROJECT_DIR$/../../ui">
           <value>
             <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="svn://zero/thredds/branch">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="svn://zero/thredds/tag">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
               <option name="branchUrls">
                 <list>
                   <option value="svn://zero/thredds/branch" />
@@ -664,19 +993,6 @@
                 </list>
               </option>
               <option name="trunkUrl" value="svn://zero/thredds/trunk" />
-            </SvnBranchConfiguration>
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/../../../unidataCommon">
-          <value>
-            <SvnBranchConfiguration>
-              <option name="branchUrls">
-                <list>
-                  <option value="svn://zero/common/java/branch" />
-                  <option value="svn://zero/common/java/tag" />
-                </list>
-              </option>
-              <option name="trunkUrl" value="svn://zero/common/java/trunk" />
             </SvnBranchConfiguration>
           </value>
         </entry>
