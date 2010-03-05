@@ -52,7 +52,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$APPLICATION_HOME_DIR$/lib/javaee.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/rt/servlet.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

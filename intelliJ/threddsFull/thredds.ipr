@@ -155,6 +155,7 @@
             <element id="dir-copy" path="$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/classes" />
             <element id="dir-copy" path="$PROJECT_DIR$/../../../grib/resources" />
             <element id="dir-copy" path="$PROJECT_DIR$/../../cdm/src/main/resources" />
+            <element id="dir-copy" path="$PROJECT_DIR$/../../tds/src/main/webapp-cdmValidator/WEB-INF/classes" />
           </element>
           <element id="directory" name="lib">
             <element id="library" level="module" name="JSTL" module-name="tds" />
@@ -192,6 +193,12 @@
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/protobuf-java-2.1.0.jar" />
             <element id="library" level="project" name="ehcache" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/bufrTables-2.0.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/junit-4.5.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/spring-test-2.5.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/jfreechart-1.0.4.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/backport-util-concurrent-3.0.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/je-3.2.23.jar" />
+            <element id="library" level="project" name="catalina" />
           </element>
         </element>
       </root>
@@ -418,7 +425,8 @@
         <inspection_tool class="FinalPrivateMethod" enabled="false" level="WARNING" enabled_by_default="false" />
         <inspection_tool class="FinalStaticMethod" enabled="false" level="WARNING" enabled_by_default="false" />
         <inspection_tool class="FinalizeCallsSuperFinalize" enabled="false" level="WARNING" enabled_by_default="false">
-          <option name="m_ignoreForObjectSubclasses" value="false" />
+          <option name="ignoreObjectSubclasses" value="false" />
+          <option name="ignoreTrivialFinalizers" value="true" />
         </inspection_tool>
         <inspection_tool class="ForCanBeForeach" enabled="false" level="WARNING" enabled_by_default="false">
           <option name="REPORT_INDEXED_LOOP" value="true" />
@@ -472,11 +480,12 @@
     <option name="PROJECT_PROFILE" value="Project Default" />
     <option name="USE_PROJECT_PROFILE" value="true" />
     <version value="1.0" />
-    <list size="4">
+    <list size="5">
       <item index="0" class="java.lang.String" itemvalue="SERVER PROBLEM" />
       <item index="1" class="java.lang.String" itemvalue="INFO" />
-      <item index="2" class="java.lang.String" itemvalue="WARNING" />
-      <item index="3" class="java.lang.String" itemvalue="ERROR" />
+      <item index="2" class="java.lang.String" itemvalue="TYPO" />
+      <item index="3" class="java.lang.String" itemvalue="WARNING" />
+      <item index="4" class="java.lang.String" itemvalue="ERROR" />
     </list>
   </component>
   <component name="JavacSettings">
@@ -672,60 +681,6 @@
   <component name="SvnBranchConfigurationManager">
     <option name="myConfigurationMap">
       <map>
-        <entry key="$PROJECT_DIR$/../../../Java-OPeNDAP">
-          <value>
-            <SvnBranchConfiguration>
-              <option name="branchMap">
-                <map>
-                  <entry key="http://scm.opendap.org/svn/branch">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                  <entry key="http://scm.opendap.org/svn/tags">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                </map>
-              </option>
-              <option name="branchUrls">
-                <list>
-                  <option value="http://scm.opendap.org/svn/branch" />
-                  <option value="http://scm.opendap.org/svn/tags" />
-                </list>
-              </option>
-              <option name="trunkUrl" value="http://scm.opendap.org/svn/trunk" />
-            </SvnBranchConfiguration>
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/../../../grib">
-          <value>
-            <SvnBranchConfiguration>
-              <option name="branchMap">
-                <map>
-                  <entry key="svn://zero/grib/branch">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                  <entry key="svn://zero/grib/tag">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                </map>
-              </option>
-              <option name="branchUrls">
-                <list>
-                  <option value="svn://zero/grib/branch" />
-                  <option value="svn://zero/grib/tag" />
-                </list>
-              </option>
-              <option name="trunkUrl" value="svn://zero/grib/trunk" />
-            </SvnBranchConfiguration>
-          </value>
-        </entry>
         <entry key="$PROJECT_DIR$/../../bufrTables">
           <value>
             <SvnBranchConfiguration>
