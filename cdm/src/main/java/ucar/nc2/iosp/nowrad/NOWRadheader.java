@@ -433,23 +433,23 @@ public class NOWRadheader {
 
         xaxis.setDataType(DataType.DOUBLE);
         xaxis.setDimensions("x");
-        xaxis.addAttribute(new Attribute("long_name", "projection x coordinate"));
+        xaxis.addAttribute(new Attribute("standard_name", "projection x coordinate"));
         xaxis.addAttribute(new Attribute("units", "km"));
         xaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoX"));
 
         double[]       data1      = new double[numX];
         ProjectionImpl projection = new LambertConformal(clat, clon, lat1, lat2);
-        double llat = 17.2454;
-        double llon = -135.8736;
-        double nlat = 51.8294;
-        double nlon = -70.1154;
+        double ullat = 51.8294;
+        double ullon = -135.8736;
+        double lrlat = 17.2454;
+        double lrlon = -70.1154;
 
-        ProjectionPointImpl pt0 = (ProjectionPointImpl) projection.latLonToProj(new LatLonPointImpl(llat, llon));
-        ProjectionPointImpl ptn = (ProjectionPointImpl) projection.latLonToProj(new LatLonPointImpl(nlat, nlon));
+        ProjectionPointImpl ptul = (ProjectionPointImpl) projection.latLonToProj(new LatLonPointImpl(ullat, ullon));
+        ProjectionPointImpl ptlr = (ProjectionPointImpl) projection.latLonToProj(new LatLonPointImpl(lrlat, lrlon));
         ProjectionPointImpl ptc = (ProjectionPointImpl) projection.latLonToProj(new LatLonPointImpl(clat, clon));
-        double startX = pt0.getX() - ptc.getX();
-        double startY = pt0.getY() - ptc.getY();
-        double dx = (ptn.getX() - pt0.getX())/(numX-1);
+        double startX = ptul.getX();
+        double startY = ptlr.getY();
+        double dx = (ptlr.getX() - ptul.getX())/(numX-1);
         for (int i = 0; i < numX; i++) {
             data1[i] = startX + i*dx;
         }
@@ -463,11 +463,11 @@ public class NOWRadheader {
 
         yaxis.setDataType(DataType.DOUBLE);
         yaxis.setDimensions("y");
-        yaxis.addAttribute(new Attribute("long_name", "projection y coordinate"));
+        yaxis.addAttribute(new Attribute("standard_name", "projection y coordinate"));
         yaxis.addAttribute(new Attribute("units", "km"));
         yaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoY"));
         data1 = new double[numY];
-        double dy = (ptn.getY() - pt0.getY())/(numY-1);
+        double dy = (ptul.getY() - ptlr.getY())/(numY-1);
 
         for (int i = 0; i < numY; i++) {
             data1[i] = startY + i*dy;
