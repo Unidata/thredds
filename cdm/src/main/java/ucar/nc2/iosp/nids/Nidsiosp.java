@@ -1410,7 +1410,8 @@ short arrowHeadValue = 0;    */
   public Object readOneArrayData1(ByteBuffer bos, Nidsheader.Vinfo vinfo) throws IOException, InvalidRangeException {
     int doff = 0;
     //byte[] odata = new byte[ vinfo.xt];
-    byte[] pdata = new byte[vinfo.yt * vinfo.xt];
+
+    short[] pdata = new short[vinfo.yt * vinfo.xt];
     //byte[] b2 = new byte[2];
     //int t = 0;
     bos.position(0);
@@ -1423,11 +1424,11 @@ short arrowHeadValue = 0;    */
       int tmpp = bos.remaining();
       bos.get(rdata, 0, runLen);
       doff += runLen;
-      byte[] bdata;
+      short[] bdata;
       if (vinfo.code == 17) {
         bdata = readOneRowData1(rdata, runLen, vinfo.xt);
       } else {
-        bdata = readOneRowData(rdata, runLen, vinfo.xt);
+        bdata = readOneRowData2(rdata, runLen, vinfo.xt);
       }
       // copy into odata
       System.arraycopy(bdata, 0, pdata, vinfo.xt * row, vinfo.xt);
@@ -1443,16 +1444,16 @@ short arrowHeadValue = 0;    */
    * @param ddata is encoded data values
    * @return the data array of row data
    */
-  public byte[] readOneRowData1(byte[] ddata, int rLen, int xt) throws IOException, InvalidRangeException {
+  public short[] readOneRowData1(byte[] ddata, int rLen, int xt) throws IOException, InvalidRangeException {
     int run;
-    byte[] bdata = new byte[xt];
+    short[] bdata = new short[xt];
 
     int nbin = 0;
     int total = 0;
-    for (run = 0; run < rLen / 2; run++) {
+    for (run = 0; run < rLen-1; run++) {
       int drun = convertunsignedByte2Short(ddata[run]);
       run++;
-      byte dcode1 = (byte) (convertunsignedByte2Short(ddata[run]));
+      short dcode1 = (convertunsignedByte2Short(ddata[run]));
       for (int i = 0; i < drun; i++) {
         bdata[nbin++] = dcode1;
         total++;
@@ -1467,6 +1468,35 @@ short arrowHeadValue = 0;    */
 
     return bdata;
   }
+    /**
+     * Read data from encoded values and run len into regular data array
+     *
+     * @param ddata is encoded data values
+     * @return the data array of row data
+     */
+    public short[] readOneRowData2(byte[] ddata, int rLen, int xt) throws IOException, InvalidRangeException {
+      int run;
+      short[] bdata = new short[xt];
+
+      int nbin = 0;
+      int total = 0;
+      for (run = 0; run < rLen; run++) {
+        int drun = convertunsignedByte2Short(ddata[run]) >> 4;
+        short dcode1 = (short)(convertunsignedByte2Short(ddata[run]) & 0Xf);
+        for (int i = 0; i < drun; i++) {
+          bdata[nbin++] = dcode1;
+          total++;
+        }
+      }
+
+      if (total < xt) {
+        for (run = total; run < xt; run++) {
+          bdata[run] = 0;
+        }
+      }
+
+      return bdata;
+    }
 
   /**
    * Read data from encoded values and run len into regular data array

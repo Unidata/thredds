@@ -1326,32 +1326,89 @@ class Nidsheader{
         numY = numRow;
         Dimension jDim = new Dimension("Row", numY);
         Dimension iDim = new Dimension("Box", numX);
-
-        dims.add( jDim);
-        dims.add( iDim);
-
-        Variable v = new Variable(ncfile, null, null, cname+"_"+slayer);
-        v.setDataType(DataType.BYTE);
-        v.setDimensions(dims);
-        ncfile.addVariable(null, v);
-        v.addAttribute( new Attribute("long_name", ctitle+" at Symbology Layer "+ slayer));
-        v.setSPobject( new Vinfo (numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, null, code, 0));
-        v.addAttribute( new Attribute("units", "KM"));
+        if(slayer == 0){
+            jDim = new Dimension("y", numY);
+            iDim = new Dimension("x", numX);
+            ncfile.addDimension( null, iDim);
+            ncfile.addDimension( null, jDim);
+             dims.add( jDim);
+             dims.add( iDim);
+            Variable v = new Variable(ncfile, null, null, cname+"_"+slayer);
+            v.setDataType(DataType.SHORT);
+            v.setDimensions(dims);
+            ncfile.addVariable(null, v);
+            v.addAttribute( new Attribute("long_name", ctitle+" at Symbology Layer "+ slayer));
+            v.setSPobject( new Vinfo (numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, null, code, 0));
+            v.addAttribute( new Attribute("units", cunit));
+        } //else  if(slayer == 1) {
+          //  ncfile.addDimension( null, iDim);
+          //  ncfile.addDimension( null, jDim);
+        //}
 
         for (int row=0; row < numRow; row++) {
 
-        int runLen = bos.getShort();
+            int runLen = bos.getShort();
 
-        byte[] rdata = new byte[runLen];
-        bos.get(rdata, 0, runLen);
-        if (runLen < 2) {
-            return soff;
-        } else {
-            soff += runLen + 2;
-        }
-
+            byte[] rdata = new byte[runLen];
+            bos.get(rdata, 0, runLen);
+            if (runLen < 2) {
+                return soff;
+            } else {
+                soff += runLen + 2;
+            }
         }   //end of for loop
 
+        if(slayer == 0){
+            double ddx = code_reslookup( pcode );
+            ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.GRID.toString()));
+            String coordinates = "x y time latitude longitude altitude";
+            // create coordinate variables
+            Variable xaxis = new Variable( ncfile, null, null, "x");
+            xaxis.setDataType( DataType.DOUBLE);
+            xaxis.setDimensions("x");
+            xaxis.addAttribute( new Attribute("long_name", "projection x coordinate"));
+            xaxis.addAttribute( new Attribute("units", "km"));
+            xaxis.addAttribute( new Attribute(_Coordinate.AxisType, "GeoX"));
+            double[] data1 = new double[numX];
+            for (int i = 0; i < numX; i++)
+              data1[i] = (double) (numX0 + i*ddx);
+            Array dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] {numX}, data1);
+            xaxis.setCachedData( dataA, false);
+            ncfile.addVariable(null, xaxis);
+
+            Variable yaxis = new Variable( ncfile, null, null, "y");
+            yaxis.setDataType( DataType.DOUBLE);
+            yaxis.setDimensions( "y");
+            yaxis.addAttribute( new Attribute("long_name", "projection y coordinate"));
+            yaxis.addAttribute( new Attribute("units", "km"));
+            yaxis.addAttribute( new Attribute(_Coordinate.AxisType, "GeoY"));
+            data1 = new double[numY];
+            for (int i = 0; i < numY; i++)
+              data1[i] = numY0 + i*ddx;
+            dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] {numY}, data1);
+            yaxis.setCachedData( dataA, false);
+            ncfile.addVariable(null, yaxis);
+
+            ProjectionImpl projection = new FlatEarth(lat_min, lon_max);
+            //ProjectionImpl projection = new LambertConformal(latitude, longitude, latitude, latitude);
+            // coordinate transform variable
+            Variable ct = new Variable( ncfile, null, null, projection.getClassName());
+            ct.setDataType( DataType.CHAR);
+            ct.setDimensions( "");
+            List params = projection.getProjectionParameters();
+            for (int i = 0; i < params.size(); i++) {
+              Parameter p = (Parameter) params.get(i);
+              ct.addAttribute( new Attribute(p));
+            }
+            ct.addAttribute( new Attribute(_Coordinate.TransformType, "Projection"));
+            ct.addAttribute( new Attribute(_Coordinate.Axes, "x y"));
+            // fake data
+            dataA = Array.factory(DataType.CHAR.getPrimitiveClassType(), new int[] {});
+            dataA.setChar(dataA.getIndex(), ' ');
+            ct.setCachedData(dataA, false);
+
+            ncfile.addVariable(null, ct);
+        }
         return soff;
      }
      /**
@@ -2128,14 +2185,14 @@ class Nidsheader{
             lon_min = longitude + t2;
             lon_max = longitude - t2;
          } else if (prod_type == Precip_Array) {
-            radial          = 0;
+            radial          = 3;
             prod_elevation  = -1;
             summary = "DPA is a raster image of hourly digital precipitation array at range 124 nm";
             endDate = getDate( pinfo.p7, pinfo.p8 * 60 * 1000);
             cmemo = "Precip Array [IN] " + cmode[pinfo.opmode] ;
             ctilt = pname_lookup(81, elevationNumber);
             ctitle = "PRET: Hourly Digital Precipitation Array" ;
-            cunit = "IN" ;
+            cunit = "dBA" ;
             cname = "PrecipArray";
         } else if (prod_type == Vert_Liquid) {
             radial               = 3;
@@ -3285,7 +3342,7 @@ class Nidsheader{
         0,    0,    0,    0,    0,  0.5,    1,    4,    0,    0,    /*  50- 59 */
         0,    0,    0,    4,    4,    4,    4,    0,    0,    0,    /*  60- 69 */
         0,    0,    0,    0,    0,    0,    0,    0,    1,    1,    /*  70- 79 */
-        1,    0,    0,    0,    0,    0,    0,    0,    0,    4,    /*  80- 89 */
+        1,    4,    0,    0,    0,    0,    0,    0,    0,    4,    /*  80- 89 */
         4,    0,    0,    0,    1,    0,    0,    0,    0, 0.25,    /*  90- 99 */
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 100-109 */
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 110-119 */
@@ -3327,7 +3384,7 @@ class Nidsheader{
         0,    0,    0,    0,    0,   16,   16,   16,    0,    0,    /*  50- 59 */
         0,    0,    0,    8,    8,    8,    8,    0,    0,    0,    /*  60- 69 */
         0,    0,    0,    0,    0,    0,    0,    0,   16,   16,    /*  70- 79 */
-       16,    0,    0,    0,    0,    0,    0,    0,    0,    8,    /*  80- 89 */
+       16,  256,    0,    0,    0,    0,    0,    0,    0,    8,    /*  80- 89 */
         8,    0,    0,    0,  256,    0,    0,    0,    0,  256,    /*  90- 99 */
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 100-109 */
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 110-119 */
