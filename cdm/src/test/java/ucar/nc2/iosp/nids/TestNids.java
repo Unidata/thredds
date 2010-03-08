@@ -365,7 +365,7 @@ public class TestNids extends TestCase {
 
     v = ncfile.findVariable("PrecipArray_0");
     testReadData(v);
-
+   /*
     v = ncfile.findVariable("PrecipArray_1");
     testReadData(v);
 
@@ -404,7 +404,7 @@ public class TestNids extends TestCase {
 
     v = ncfile.findVariable("PrecipArray_13");
     testReadData(v);
-
+     */
 
 
     assert(null != ncfile.findVariable("textStruct_code1").getDimension(0));
