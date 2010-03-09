@@ -1340,6 +1340,8 @@ class Nidsheader{
             v.addAttribute( new Attribute("long_name", ctitle+" at Symbology Layer "+ slayer));
             v.setSPobject( new Vinfo (numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, null, code, 0));
             v.addAttribute( new Attribute("units", cunit));
+            v.addAttribute( new Attribute("missing_value", 255));
+
         } //else  if(slayer == 1) {
           //  ncfile.addDimension( null, iDim);
           //  ncfile.addDimension( null, jDim);
