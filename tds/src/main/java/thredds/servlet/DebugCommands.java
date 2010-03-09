@@ -129,7 +129,7 @@ public class DebugCommands {
     act = new DebugHandler.Action("showVersion", "Show Build Version") {
       public void doAction(DebugHandler.Event e) {
         try {
-          IO.copyFile(ServletUtil.getRootPath() + "docs/README.txt", e.pw);
+          IO.copyFile(ServletUtil.getRootPath() + "/docs/README.txt", e.pw);
         } catch (Exception ioe) {
           e.pw.println(ioe.getMessage());
         }

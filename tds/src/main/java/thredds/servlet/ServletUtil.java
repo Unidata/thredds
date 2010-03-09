@@ -90,7 +90,7 @@ public class ServletUtil {
     if ( contentPath == null )
     {
       String tmpContentPath = "../../content" + getContextPath() + "/";
-      File cf = new File(getRootPath() + tmpContentPath);
+      File cf = new File(getRootPath(), tmpContentPath);
       try {
         contentPath = cf.getCanonicalPath() + "/";
         contentPath = contentPath.replace('\\', '/');
@@ -168,7 +168,7 @@ public class ServletUtil {
    * @return the default/initial content path for the given servlet.
    */
   public static String getInitialContentPath() {
-    return getRootPath() + "WEB-INF/altContent/startup/";
+    return getRootPath() + "/WEB-INF/altContent/startup/";
   }
 
   /**
