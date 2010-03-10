@@ -155,7 +155,8 @@
             <element id="dir-copy" path="$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/classes" />
             <element id="dir-copy" path="$PROJECT_DIR$/../../../grib/resources" />
             <element id="dir-copy" path="$PROJECT_DIR$/../../cdm/src/main/resources" />
-            <element id="dir-copy" path="$PROJECT_DIR$/../../tds/src/main/webapp-cdmValidator/WEB-INF/classes" />
+            <element id="module-output" name="grib" />
+            <element id="module-output" name="unidataCommon" />
           </element>
           <element id="directory" name="lib">
             <element id="library" level="module" name="JSTL" module-name="tds" />
@@ -199,6 +200,9 @@
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/backport-util-concurrent-3.0.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/je-3.2.23.jar" />
             <element id="library" level="project" name="catalina" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/slf4j-api-1.5.6.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/slf4j-jdk14-1.5.6.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jpeg-1.0.jar" />
           </element>
         </element>
       </root>
@@ -681,6 +685,60 @@
   <component name="SvnBranchConfigurationManager">
     <option name="myConfigurationMap">
       <map>
+        <entry key="$PROJECT_DIR$/../../../Java-OPeNDAP">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="http://scm.opendap.org/svn/branch">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="http://scm.opendap.org/svn/tags">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="branchUrls">
+                <list>
+                  <option value="http://scm.opendap.org/svn/branch" />
+                  <option value="http://scm.opendap.org/svn/tags" />
+                </list>
+              </option>
+              <option name="trunkUrl" value="http://scm.opendap.org/svn/trunk" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../../../grib">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="svn://zero/grib/branch">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="svn://zero/grib/tag">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="branchUrls">
+                <list>
+                  <option value="svn://zero/grib/branch" />
+                  <option value="svn://zero/grib/tag" />
+                </list>
+              </option>
+              <option name="trunkUrl" value="svn://zero/grib/trunk" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/../../bufrTables">
           <value>
             <SvnBranchConfiguration>
@@ -948,6 +1006,33 @@
                 </list>
               </option>
               <option name="trunkUrl" value="svn://zero/thredds/trunk" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../../../unidataCommon">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="svn://zero/common/java/branch">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="svn://zero/common/java/tag">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="branchUrls">
+                <list>
+                  <option value="svn://zero/common/java/branch" />
+                  <option value="svn://zero/common/java/tag" />
+                </list>
+              </option>
+              <option name="trunkUrl" value="svn://zero/common/java/trunk" />
             </SvnBranchConfiguration>
           </value>
         </entry>

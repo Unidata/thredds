@@ -151,17 +151,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$APPLICATION_HOME_DIR$/lib/rt/servlet.jar!/" />
-        </CLASSES>
-        <JAVADOC>
-          <root url="http://java.sun.com/javaee/5/docs/api" />
-        </JAVADOC>
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/junit-4.5.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -373,6 +362,15 @@
       </library>
     </orderEntry>
     <orderEntry type="library" exported="" name="catalina" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/servlet-api.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
 
