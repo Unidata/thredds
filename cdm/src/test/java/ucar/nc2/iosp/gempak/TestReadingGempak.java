@@ -76,20 +76,13 @@ public class TestReadingGempak extends TestCase {
       System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
       String[] children = dir.list();
       for (String child : children) {
-        //System.out.println( "children i ="+ children[ i ]);
-        File aChild = new File(dir, child);
-        //System.out.println( "child ="+ child.getName() );
-        if (aChild.isDirectory()) {
-          // skip index *gbx and inventory *xml files
-        } else if (
-            child.length() == 0) { // zero length file, ugh...
-        } else {
+        if ( child.endsWith( ".gem" ) ) {
+          if( child.startsWith( "air"))
+            continue;
           System.out.println("\n\nReading File " + child);
-          //compareNC( dirB1 +"/"+ child, dirB2 +"/"+ child);
           long start = System.currentTimeMillis();
 
           NetcdfFile ncfileBinary = NetcdfFile.open(dirB1 + "/" + child);
-          //throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException
           System.out.println("Time to create Netcdf object using Gempak Iosp " +
               (System.currentTimeMillis() - start) + "  ms");
           ncfileBinary.close();
