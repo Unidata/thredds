@@ -4,6 +4,9 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.1:
  14:
+  fix union aggregation when there's Groups
+  DPA added to NIDS
+  Nowrad iosp
   clarify MSGnavigation parameters
   improved Cosmic1Convention
   NsslRadarMosaic Convention: dont use the NcML, test for variable names

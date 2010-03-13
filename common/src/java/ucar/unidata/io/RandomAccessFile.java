@@ -140,8 +140,8 @@ public class RandomAccessFile implements DataInput, DataOutput {
   static protected boolean debugAccess = false;
   static protected Set<String> allFiles = new HashSet<String>();
   static protected List<String> openFiles = Collections.synchronizedList(new ArrayList<String>());
-  static private AtomicInteger debug_nseeks;
-  static private AtomicLong debug_nbytes;
+  static private AtomicInteger debug_nseeks = new AtomicInteger();
+  static private AtomicLong debug_nbytes = new AtomicLong();
 
   static protected boolean showOpen = false;
   static protected boolean showRead = false;

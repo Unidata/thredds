@@ -1121,6 +1121,29 @@ public class TestPointFeatureTypes extends TestCase {
     System.out.printf("countMissing=%d total=%d ratio=%f %n", countMissing, count, ratio);
   }
 
+  public void utestYuan() throws IOException {
+    Formatter buf = new Formatter();
+    FeatureDatasetPoint pods =
+        (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.TRAJECTORY,
+                "Q:/profile/cosmic/atmPhs_C001.2009.321.23.20.G16_0001.0001_nc", null, buf);
+
+    TrajectoryFeatureCollection tc = (TrajectoryFeatureCollection) pods.getPointFeatureCollectionList().get(0);
+    //TrajectoryFeatureCollection tcs = tc.subset("var1, var2, var3");
+    while (tc.hasNext()) {
+      int count = 0;
+      TrajectoryFeature tf = tc.next();
+      PointFeatureIterator pfi = tf.getPointFeatureIterator(5000);
+      while (pfi.hasNext()) {
+        PointFeature pf = pfi.next();
+        System.out.printf("%d ", count);
+        count++;
+      }
+    }
+
+    pods.close();
+
+  }
+
   public static void main(String arg[]) throws Exception {
     TestPointFeatureTypes test = new TestPointFeatureTypes("");
     test.testGempakMissing("C:\\data\\ft\\station\\20090524_sao.gem");

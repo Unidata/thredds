@@ -99,12 +99,16 @@ public class DatasetConstructor {
       }
     }
 
-    // nested groups
+    // nested groups - check if target already has it
     for (Group srcNested : src.getGroups()) {
-      Group nested = new Group(ds, target, srcNested.getShortName());
-      target.addGroup(nested);
+      Group nested = target.findGroup(srcNested.getShortName());
+      if (null == nested) {
+        nested = new Group(ds, target, srcNested.getShortName());
+        target.addGroup(nested);
+      }
       transferGroup(ds, srcNested, nested, replaceCheck);
     }
+
   }
 
   /**

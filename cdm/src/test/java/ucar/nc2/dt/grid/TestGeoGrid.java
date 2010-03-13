@@ -117,4 +117,24 @@ public class TestGeoGrid extends TestCase {
     return w;
   }
 
+  public void utestAxisId() throws IOException {
+    ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open("C:/data/20100314_v_000000_l_0118800.nc");
+
+    GeoGrid grid = dataset.findGridByName("wind_speed");
+    assert null != grid;
+    GridCoordSystem gcs = grid.getCoordinateSystem();
+    assert null != gcs;
+    assert grid.getRank() == 3;
+
+    CoordinateAxis axis = gcs.getXHorizAxis();
+    assert axis != null;
+    assert axis.getName().equals("x") : axis.getName();
+
+    axis = gcs.getYHorizAxis();
+    assert axis != null;
+    assert axis.getName().equals("y") : axis.getName();
+
+    dataset.close();
+  }
+
 }
