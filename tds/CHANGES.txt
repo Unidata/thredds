@@ -3,6 +3,9 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Release Details 4.1:
+ 4.1.x (2010-03-xx)
+   Update to latest CDM/netCDF-Java 4.1 library.
+   Switch to using Unidata Common (unidataCommon.jar).
  4.1.3 (2010-02-10)
    Fix WMS problem in sampling scheme when a slice results in a single value which is then reduce()-ed to an Array with rank=0 (from ncWMS changeset 464).
    Fix WMS handling of unknown layer request: catch NPE and throw WmsException.
