@@ -190,7 +190,8 @@ public class WMSController extends AbstractController {
     log.info(UsageLog.setupRequestContext(req));
 
     if (!allow) {
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, -1));
+      log.info( "handleRequestInternal(): WMS service not supported.");
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, -1));
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "WMS service not supported.");
       return null;
     }
@@ -200,8 +201,9 @@ public class WMSController extends AbstractController {
     String datasetURL = ServletUtil.getParameterIgnoreCase(req, "dataset");
     // ToDo LOOK - move this into TdsConfig?
     if (datasetURL != null && !allowRemote) {
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, -1));
-      res.sendError(HttpServletResponse.SC_FORBIDDEN, "WMS service not supported for remote datasets.");
+      log.info( "handleRequestInternal(): WMS service not supported for remote datasets." );
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, -1));
+      res.sendError( HttpServletResponse.SC_FORBIDDEN, "WMS service not supported for remote datasets.");
       return null;
     }
 
