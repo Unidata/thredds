@@ -290,6 +290,26 @@ public class Cosmic1Convention extends CoordSysBuilder {
             lonVar.setCachedData(lonData, false);
             altVar.setCachedData(altData, false);
             tVar.setCachedData(timeData, false);
+            // temp remove some variable
+            ds.removeVariable(null, "xGps");
+            ds.removeVariable(null, "yGps");
+            ds.removeVariable(null, "zGps");
+            ds.removeVariable(null, "xdGps");
+            ds.removeVariable(null, "ydGps");
+            ds.removeVariable(null, "zdGps");
+            ds.removeVariable(null, "xdLeo");
+            ds.removeVariable(null, "ydLeo");
+            ds.removeVariable(null, "zdLeo");
+            ds.removeVariable(null, "exL1");
+            ds.removeVariable(null, "exL2");
+            ds.removeVariable(null, "exLC");
+            ds.removeVariable(null, "xmdl");
+            ds.removeVariable(null, "xmdldd");
+            ds.removeVariable(null, "xmdldd2");
+            ds.removeVariable(null, "xrng");
+            ds.removeVariable(null, "xmdl2");
+            ds.removeVariable(null, "xrng2");
+
         }
         ds.finish();
 
