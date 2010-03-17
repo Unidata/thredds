@@ -76,6 +76,7 @@ public class TableAnalyzer {
     registerAnalyzer("Unidata Observation Dataset v1.0", UnidataPointObs.class, null);
 
     registerAnalyzer("Cosmic", Cosmic.class, null);
+    registerAnalyzer("Jason", Jason.class, null);
     registerAnalyzer("FslWindProfiler", FslWindProfiler.class, null);
     registerAnalyzer("MADIS-ACARS", MadisAcars.class, null); // must be before Madis
     registerAnalyzer("MADIS surface observations, v1.0", Madis.class, null);  // must be before FslRaob

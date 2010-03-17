@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pointConfig featureType="TRAJECTORY">
+  <tableConfigurer class="ucar.nc2.ft.point.standard.plug.Jason" />
+  <table type="Top" structName="traj">
+    <table type="Structure" subtype="PsuedoStructure" dim="time">
+      <coordinate type="Lat">lat</coordinate>
+      <coordinate type="Lon">lon</coordinate>
+      <coordinate type="Elev">alt</coordinate>  
+      <coordinate type="Time">time</coordinate>
+    </table>
+  </table>
+</pointConfig>

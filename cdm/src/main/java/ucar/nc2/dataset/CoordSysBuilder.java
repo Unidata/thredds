@@ -162,6 +162,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     registerConvention("epic-insitu-1.0", EpicInsitu.class, null);
     registerConvention("NCAR-RAF/nimbus", Nimbus.class, null);
     registerConvention("Cosmic1Convention", Cosmic1Convention.class, null);
+    registerConvention("Jason2Convention", Jason2Convention.class, null);  
     registerConvention("Suomi", Suomi.class, null);
 
     // new
