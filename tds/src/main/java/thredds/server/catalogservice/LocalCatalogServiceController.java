@@ -259,7 +259,7 @@ public class LocalCatalogServiceController extends AbstractController
     {
       log.error( "handleRequestInternal(): Problem handling request.", e );
       log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ) );
-      response.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
+      if ( ! response.isCommitted() ) response.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
       return null;
     }
   }

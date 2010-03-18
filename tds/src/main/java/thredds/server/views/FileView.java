@@ -248,7 +248,7 @@ public class FileView extends AbstractView
     {
       log.error( "returnFile(): FileNotFoundException= " + filename );
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, 0 ) );
-      res.sendError( HttpServletResponse.SC_NOT_FOUND );
+      if ( ! res.isCommitted() ) res.sendError( HttpServletResponse.SC_NOT_FOUND );
     }
     catch ( java.net.SocketException e )
     {

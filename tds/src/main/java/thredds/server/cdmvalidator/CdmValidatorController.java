@@ -204,7 +204,7 @@ public class CdmValidatorController extends AbstractController
     {
       log.info( "doPost(): Validator FileUploadException", e );
       log.info( "doPost(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, 0 ) );
-      res.sendError( HttpServletResponse.SC_BAD_REQUEST );
+      if ( ! res.isCommitted() ) res.sendError( HttpServletResponse.SC_BAD_REQUEST );
       return;
     }
 

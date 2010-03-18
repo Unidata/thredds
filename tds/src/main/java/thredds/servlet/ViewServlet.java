@@ -157,7 +157,7 @@ public class ViewServlet extends AbstractServlet {
     } catch (Throwable t) {
       log.error(" jnlp="+sbuff.toString(), t);
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 ));
-      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
   }
 

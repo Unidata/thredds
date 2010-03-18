@@ -417,7 +417,7 @@ public class ServletUtil {
     catch (URISyntaxException e) {
       log.error("sendPermanentRedirect(): Bad syntax on request URL <" + req.getRequestURL() + ">.", e);
       log.info( "sendPermanentRedirect(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
-      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       return;
     }
     String absolutePath = uri.resolve(targetPath).toString();
@@ -642,7 +642,7 @@ public class ServletUtil {
     catch (FileNotFoundException e) {
       log.error("returnFile(): FileNotFoundException= " + filename);
       log.info( "returnFile(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
-      res.sendError(HttpServletResponse.SC_NOT_FOUND);
+      if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
     catch (java.net.SocketException e) {
       log.info("returnFile(): SocketException sending file: " + filename + " " + e.getMessage());
@@ -658,7 +658,7 @@ public class ServletUtil {
 
       log.error("returnFile(): IOException (" + e.getClass().getName() + ") sending file ", e);
       log.error( "returnFile(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
-      res.sendError(HttpServletResponse.SC_NOT_FOUND, "Problem sending file: " + e.getMessage());
+      if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_NOT_FOUND, "Problem sending file: " + e.getMessage());
     }
   }
 

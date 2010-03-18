@@ -303,12 +303,12 @@ public class WMSController extends AbstractController {
         return null;
       }
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1), e);
-      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      if ( ! res.isCommitted()) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       return null;
 
     } catch (Throwable t) {
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1), t);
-      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       return null;
 
     } finally {

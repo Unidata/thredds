@@ -238,12 +238,12 @@ public class RadarServer extends AbstractServlet {
 
     } catch (FileNotFoundException e) {
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
-      res.sendError(HttpServletResponse.SC_NOT_FOUND);
+      if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_NOT_FOUND);
 
     } catch (Throwable e) {
       log.info("RadarServer.doGet", e);
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, 0));
-      res.sendError(HttpServletResponse.SC_FORBIDDEN);
+      if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_FORBIDDEN);
     }
 
   } // end doGet
@@ -297,7 +297,7 @@ public class RadarServer extends AbstractServlet {
     } catch (Throwable e) {
       log.info("RadarServer.level2level3catalog", e);
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, 0));
-      res.sendError(HttpServletResponse.SC_FORBIDDEN);
+      if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_FORBIDDEN);
     }
     return;
   }
