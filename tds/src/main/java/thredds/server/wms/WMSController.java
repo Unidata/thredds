@@ -301,12 +301,15 @@ public class WMSController extends AbstractController {
         log.info("ClientAbortException: " + e.getMessage());
         log.info(UsageLog.closingMessageForRequestContext(ServletUtil.STATUS_CLIENT_ABORT, -1));
         return null;
+      } else {
+        log.info( e.getClass().getName() + ": " + e.getMessage());
       }
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1), e);
       if ( ! res.isCommitted()) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       return null;
 
     } catch (Throwable t) {
+      log.info( t.getClass().getName() + ": " + t.getMessage() );
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1), t);
       if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       return null;
