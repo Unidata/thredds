@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmrcDefinition dataset="http://motherlode.ucar.edu:8081/thredds/catalog/fmrc/NCEP/WW3/Atlantic_4minute/files/catalog.xml">
+  <offsetHours id="0">0.0 3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 78.0 84.0 90.0 96.0 102.0 108.0 114.0 120.0 126.0 132.0 138.0 144.0 150.0 156.0 162.0 168.0 174.0 180.0</offsetHours>
+  <runSequence allUseSeq="0">
+    <variable name="Direction_of_swell_waves" />
+    <variable name="Direction_of_wind_waves" />
+    <variable name="Mean_period_of_swell_waves" />
+    <variable name="Mean_period_of_wind_waves" />
+    <variable name="Primary_wave_direction" />
+    <variable name="Primary_wave_mean_period" />
+    <variable name="Significant_height_of_combined_wind_waves_and_swell" />
+    <variable name="Significant_height_of_swell_waves" />
+    <variable name="Significant_height_of_wind_waves" />
+    <variable name="U-component_of_wind" />
+    <variable name="V-component_of_wind" />
+    <variable name="Wave_Steepness" />
+    <variable name="Wind_direction_from_which_blowing" />
+    <variable name="Wind_speed" />
+  </runSequence>
+</fmrcDefinition>
