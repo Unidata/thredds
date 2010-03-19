@@ -6,7 +6,7 @@
     <format property="build.time.number" pattern="yyyyMMdd.HHmm" timezone="GMT"/>
   </tstamp>
 
-  <property name="release.version" value="4.1"/>
+  <property name="release.version" value="4.2"/>
   <!-- TeamCity sets "build.number" property to value of its build counter. -->
   <property name="build.number" value="${build.time.number}" />
   <property name="release.version.minor" value="${release.version}.${build.number}"/>

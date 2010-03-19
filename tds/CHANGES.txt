@@ -2,6 +2,10 @@ CHANGES for THREDDS Data Server (TDS)
 Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
+Release Details 4.2:
+ 4.2.x (2010-xx-xx)
+   <good stuff>
+
 Release Details 4.1:
  4.1.4 (2010-03-19)
    Update to latest CDM/netCDF-Java 4.1 library.
