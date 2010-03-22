@@ -703,6 +703,15 @@ public class GridVariable {
   }
 
   /**
+   * Get the lookup
+   *
+   * @return GridTableLookup
+   */
+  public GridTableLookup getLookup() {
+    return lookup;
+  }
+  
+  /**
    * Override Object.hashCode() to implement equals.
    *
    * @return equals;
