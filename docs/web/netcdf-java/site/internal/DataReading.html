@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Data Reading</title>
+<style type="text/css">
+pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
+code {font-size: 11pt;}
+dl {margin: 10px 5px 5px 15px;)
+.style1 {font-style: italic}
+</style>
+</head>
+
+<body>
+<h1>Data Reading Control Flow</h1>
+<p>last updated Mar 2010, on version 4.2.</p>
+<hr />
+<h3><br />
+  Variable</h3>
+<p>all reading is channelled through:<br />
+</p>
+<pre> protected Array _read() throws IOException {
+   return proxyReader.reallyRead(this, null);
+ }</pre>
+ Bt default, a Variable is its own ProxyReader:
+ <pre>protected ProxyReader proxyReader = this;<br />
+
+public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
+  if (isMemberOfStructure()) {
+    List&lt;String&gt; memList = new ArrayList&lt;String&gt;();
+    memList.add(this.getShortName());
+    Structure s = parent.select(memList);
+    ArrayStructure as = (ArrayStructure) s.read();
+    return as.extractMemberArray( as.findMember( shortName));
+  }
+
+  // already cached
+  if (cache != null &amp;&amp; cache.data != null) {
+     return cache.data.copy();
+  } 
+
+  // read the data
+  Array data;
+  try {
+    <strong>data = ncfile.readData(this, getShapeAsSection())</strong>;
+  } catch (InvalidRangeException e) {
+    e.printStackTrace();
+    throw new IOException(e.getMessage()); // cant happen haha
+   }
+   
+   // optionally cache it
+   if (isCaching()) {
+     setCachedData(data);
+     if (debugCaching) System.out.println(&quot;cache &quot; + getName());
+     return cache.data.copy(); // dont let users get their nasty hands on cached data
+   } else {
+     return data;
+   }
+  }
+</pre>
+ <p>&nbsp;</p>
+ <h3>NetcdfFile </h3>
+ <p>all reading is channelled through </p>
+ <pre> protected Array readData(ucar.nc2.Variable v, Section ranges) throws IOException, InvalidRangeException  {
+   Array result = spi.readData(v, ranges);
+   result.setUnsigned(v.isUnsigned());
+   return result;
+ }</pre>
+  this is for reading variables that are members of structures
+ <pre>
+  public Array readSection(String variableSection) throws IOException, InvalidRangeException {
+   ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
+   if (cer.child == null) {
+     Array result = cer.v.read(cer.section);
+     result.setUnsigned(cer.v.isUnsigned());
+     return result;
+   }
+    
+   if (spi == null)
+     return IospHelper.readSection(cer);
+   else
+     // allow iosp to optimize
+     return spi.readSection(cer);
+   }
+ </pre>
+<p>So the call is eventually sent to <strong>ncfile.readData</strong>().So Variable  must be part of ncfile, ie known by the spi.  ncfile is thus the data source for a Variable, not necessarily the same as the logical container.</p>
+<p>&nbsp;</p>
+<h3>ProxyReader</h3>
+<p>Canonical use of ProxyReader is to create logical subsets, eg <strong>slice</strong>() and <strong>section</strong>(). Example:</p>
+<pre>  public Variable slice(int dim, int value) {
+    ...
+    sliceV.setProxyReader( new SliceReader(this.getProxyReader(), dim, slice));
+  }
+ </pre>
+<p>Note that the previous ProxyReader is passed into the SliceReader, which is used as the data source. This allows different ProxyReaders to coexist with each other, since they create a chain. (versions prior to 4.2 did not do this, this is the reason for ProxyReader design).</p>
+<p>&nbsp;</p>
+<h3>VariableDS</h3>
+<p>The usual way to wrap a Variable by a VariableDS (used by NcML, NetcdfDataset(NetcdfFile ncfile)) :</p>
+<pre> 
+public VariableDS(Group g, Variable orgVar, boolean enhance) {
+  super(orgVar);
+  if (g != null) this.group = g;
+  setDimensions( getDimensionsString()); 
+
+   // dont share cache, iosp : all IO is delegated
+  this.ncfile = null;
+  this.spiObject = null;
+  createNewCache();
+   
+  this.orgVar = orgVar;
+  this.orgDataType = orgVar.getDataType();
+   
+  if (orgVar instanceof VariableDS) {
+     VariableDS ncVarDS = (VariableDS) orgVar;
+     this.enhanceProxy = ncVarDS.enhanceProxy;
+     this.scaleMissingProxy = ncVarDS.scaleMissingProxy;
+     this.enhanceMode = ncVarDS.enhanceMode;
+  } else {
+     this.enhanceProxy = new EnhancementsImpl( this);
+     if (enhance) {
+       enhance(NetcdfDataset.getDefaultEnhanceMode());
+     } else {
+       this.scaleMissingProxy = new EnhanceScaleMissingImpl();
+     }  
+  }
+}</pre>
+
+<p>&nbsp;</p>
+<pre> 
+public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
+  Array result;
+  if (hasCachedData()) 
+    result = super.reallyRead(client, cancelTask);
+  else if (orgVar != null)
+    result = orgVar.read();
+  else if ((proxyReader != null) &amp;&amp; (proxyReader != this))
+    result = proxyReader.reallyRead(this, cancelTask);
+  else
+    return getMissingDataArray(shape);
+    
+  if (needScaleOffsetMissing)
+    return convertScaleOffsetMissing(result);
+  else if (needEnumConversion)
+    return convertEnums(result);
+  else
+    return result;
+}</pre>
+   
+<p> A VariableDS either</p>
+<ol>
+  <li>  has self contained data array (cacheData != null)</li>
+  <li>wraps another Variable (orgVar != null)</li>
+  <li>has a ProxyReader set</li>
+  <li> returns missing values, or default fill values if no data is set</li>
+</ol>
+</body>
+</html>
