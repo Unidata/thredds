@@ -22,7 +22,6 @@
     <run runHour="18.0" offsetHourSeq="6" />
     <variable name="Dew_point_temperature" vertCoord="0" />
     <variable name="Total_cloud_cover" />
-    <variable name="Total_cloud_cover_entire_atmosphere_layer" />
     <variable name="Wind_direction_from_which_blowing" vertCoord="1" />
     <variable name="Wind_speed" vertCoord="1" />
   </runSequence>
