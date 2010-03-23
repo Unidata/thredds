@@ -253,6 +253,11 @@ public class N3header {
 
     pos = (int) raf.getFilePointer();
 
+    // if nvars == 0
+    if (dataStart == Long.MAX_VALUE) {
+      dataStart = pos;
+    }
+
     if (nonRecordDataSize > 0) // if there are non-record variables
       nonRecordDataSize -= dataStart;
     if (uvars.size() == 0) // if there are no record variables
@@ -589,7 +594,7 @@ public class N3header {
     this.useLongOffset = largeFile;
     nonRecordDataSize = 0; // length of non-record data
     recsize = 0; // length of single record
-    recStart = Integer.MAX_VALUE; // where the record data starts
+    recStart = Long.MAX_VALUE; // where the record data starts
 
     // magic number
     raf.seek(0);

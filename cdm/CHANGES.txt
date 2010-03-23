@@ -3,6 +3,10 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.1:
+ 15:
+  VAriableDS.getEnhanceMode is public
+  GridCoordSys accepts runtime or time
+  bug in N3header when nvars = 0.
  14:
   fix union aggregation when there's Groups
   DPA added to NIDS

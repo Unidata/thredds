@@ -274,7 +274,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
   /** Get the enhancement mode
    * @return the enhancement mode
    */
-  EnumSet<NetcdfDataset.Enhance> getEnhanceMode() { return enhanceMode; }
+  public EnumSet<NetcdfDataset.Enhance> getEnhanceMode() { return enhanceMode; }
 
   // Enhancements interface
 

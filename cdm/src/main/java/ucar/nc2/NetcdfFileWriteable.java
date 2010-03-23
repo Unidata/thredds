@@ -67,6 +67,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
   private boolean defineMode;
 
   // state
+  private boolean isNewFile;
   private boolean isLargeFile;
   private boolean fill;
   private int extraHeader;
@@ -126,7 +127,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
   }
 
   /**
-   * Create a new Netcdf file, put it into define mode.
+   * Open or create a new Netcdf file, put it into define mode to allow writing.
    *
    * @param location open a new file at this location
    * @param fill set fill mode
@@ -147,6 +148,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
 
     } else {
       defineMode = true;
+      isNewFile = true;
     }
   }
 
@@ -616,16 +618,16 @@ public class NetcdfFileWriteable extends NetcdfFile {
       finish();
 
       // try to rewrite header, if it fails, then we have to rewrite entire file
-      boolean ok = spiw.rewriteHeader( isLargeFile);
+      boolean ok = spiw.rewriteHeader( isLargeFile);  // LOOK seems like we should be using isNewFile
       if (!ok)
         rewrite();
       return !ok;
     }
+
     return false;
   }
 
-  // for now, assume we have to rewrite
-  // should check if we can keep header (eg attributes only added)
+  // rewrite entire file
   private void rewrite() throws IOException {
     // close existing file, rename and open as read-only
     spiw.flush();
@@ -635,8 +637,8 @@ public class NetcdfFileWriteable extends NetcdfFile {
     File tmpFile = new File(location+".tmp");
     if (tmpFile.exists()) tmpFile.delete();
     if (!prevFile.renameTo(tmpFile)) {
-      System.out.println("prevFile.exists "+prevFile.exists()+" canRead = "+ prevFile.canRead());
-      System.out.println("tmpFile.exists "+tmpFile.exists()+" canWrite "+ tmpFile.canWrite());
+      System.out.println(prevFile.getPath()+ " prevFile.exists "+prevFile.exists()+" canRead = "+ prevFile.canRead());
+      System.out.println(tmpFile.getPath()+" tmpFile.exists "+tmpFile.exists()+" canWrite "+ tmpFile.canWrite());
       throw new RuntimeException("Cant rename "+prevFile.getAbsolutePath()+" to "+ tmpFile.getAbsolutePath());
     }
 
