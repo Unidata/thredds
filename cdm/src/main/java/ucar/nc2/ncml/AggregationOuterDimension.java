@@ -52,7 +52,7 @@ import thredds.inventory.MFile;
  * @since Aug 10, 2007
  */
 
-public abstract class AggregationOuterDimension extends Aggregation {
+public abstract class AggregationOuterDimension extends Aggregation implements ProxyReader  {
   static protected boolean debugCache = false, debugInvocation = false;
   static public int invocation = 0;  // debugging
 
@@ -109,8 +109,8 @@ public abstract class AggregationOuterDimension extends Aggregation {
   /**
    * Promote a global attribute to a variable
    *
-   * @param varName name of agg variable
-   * @param format java.util.Format string
+   * @param varName   name of agg variable
+   * @param format    java.util.Format string
    * @param gattNames space delimited list of global attribute names
    */
   void addVariableFromGlobalAttributeCompose(String varName, String format, String gattNames) {
@@ -122,7 +122,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
    * Useful for Variables that are used a lot, and not too large, like coordinate variables.
    *
    * @param varName name of variable to cache. must exist.
-   * @param dtype datatype of variable
+   * @param dtype   datatype of variable
    */
   void addCacheVariable(String varName, DataType dtype) {
     if (findCacheVariable(varName) != null) return; // no duplicates
@@ -212,7 +212,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
       } */
 
       ncDataset.addVariable(null, promotedVar);
-      promotedVar.setProxyReader(this);
+      // promotedVar.addProxyReader(new Reader(promotedVar));
       promotedVar.setSPobject(pv);
     }
   }
@@ -238,13 +238,12 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
     // reset the typical dataset, where non-agg variables live
     Dataset typicalDataset = getTypicalDataset();
-    DatasetProxyReader proxy = new DatasetProxyReader(typicalDataset);
     for (Variable var : ncDataset.getRootGroup().getVariables()) {
       VariableDS varDS = (VariableDS) var;
       if (aggVars.contains(varDS) || dimName.equals(var.getName()))
         continue;
-      VariableEnhanced ve = (VariableEnhanced) var;
-      ve.setProxyReader(proxy);
+      // DatasetProxyReader proxy = new DatasetProxyReader(typicalDataset, var);
+      // var.addProxyReader(proxy);
     }
 
     // reset cacheVars
@@ -253,150 +252,49 @@ public abstract class AggregationOuterDimension extends Aggregation {
     }
   }
 
+  /////////////////////////////////////////////////////////////////////////////////////
+
   /**
-   * Read an aggregation variable: A variable whose data spans multiple files.
-   * This is an implementation of ProxyReader, so must fulfill that contract.
+   * All non-agg variables use a proxy to acquire the file before reading.
+   * If the variable is caching, read data into cache now.
+   * If not caching, VariableEnhanced.setProxyReader() is called.
    *
-   * @param mainv      the aggregation variable
-   * @param cancelTask allow the user to cancel
-   * @return the data array
-   * @throws IOException
+   * @param typicalDataset read from a "typical dataset"
+   * @param newds          containing dataset
+   * @throws IOException on i/o error
    */
-  public Array read(Variable mainv, CancelTask cancelTask) throws IOException {
-    if (debugConvert && mainv instanceof VariableDS) {
-      DataType dtype = ((VariableDS) mainv).getOriginalDataType();
-      if ((dtype != null) && (dtype != mainv.getDataType())) {
-        System.out.printf("Original type = %s mainv type= %s%n", dtype, mainv.getDataType());
-      }
-    }
+  protected void setDatasetAcquireProxy(Dataset typicalDataset, NetcdfDataset newds) throws IOException {
+    if (debugProxy) System.out.println("setDatasetAcquireProxy on " + typicalDataset.getLocation());
 
-    // read the original type - if its been promoted to a new type, the conversion happens after this read
-    DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
+    // all normal (non agg) variables must use a proxy to acquire the file
+    List<Variable> allVars = newds.getRootGroup().getVariables();
+    for (Variable v : allVars) {
 
-    Object spObj = mainv.getSPobject();
-    if (spObj != null && spObj instanceof CacheVar) {
-      CacheVar pv = (CacheVar) spObj;
-      try {
-        Array cacheArray = pv.read(mainv.getShapeAsSection(), cancelTask);
-        return MAMath.convert(cacheArray, dtype); // // cache may keep data as different type
-
-      } catch (InvalidRangeException e) {
-        logger.error("readAgg " + getLocation(), e);
-        throw new IllegalArgumentException("readAgg " + getLocation(), e);
-      }
-    }
-
-    // the case of the agg coordinate var
-    //if (mainv.getShortName().equals(dimName))
-    //  return readAggCoord(mainv, cancelTask);
-
-    Array allData = Array.factory(dtype, mainv.getShape());
-    int destPos = 0;
-
-    List<Dataset> nestedDatasets = getDatasets();
-    if (executor != null) {
-      CompletionService<Result> completionService = new ExecutorCompletionService<Result>(executor);
-
-      int count = 0;
-      for (Dataset vnested : nestedDatasets)
-        completionService.submit(new ReaderTask(vnested, mainv, cancelTask, count++));
-
-      try {
-        int n = nestedDatasets.size();
-        for (int i = 0; i < n; ++i) {
-          Result r = completionService.take().get();
-          r.data =  MAMath.convert(r.data, dtype); // just in case it need to be converted
-          if (r != null) {
-            int size = (int) r.data.getSize();
-            Array.arraycopy(r.data, 0, allData, size * r.index, size);
-          }
+       if (v.isCaching()) {  // cache the small ones
+        if (!v.hasCachedData()) {
+          v.read();
+          if (debugProxy) System.out.println(" debugProxy: cached " + v.getName());
+        } else {
+          if (debugProxy) System.out.println(" debugProxy: already cached " + v.getName());
         }
-      } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-      } catch (ExecutionException e) {
-        throw new IOException(e.getMessage());
-      }
 
-    } else {
-
-      for (Dataset vnested : nestedDatasets) {
-        Array varData = vnested.read(mainv, cancelTask);
-        if ((cancelTask != null) && cancelTask.isCancel())
-          return null;
-        varData =  MAMath.convert(varData, dtype); // just in case it need to be converted
-
-        Array.arraycopy(varData, 0, allData, destPos, (int) varData.getSize());
-        destPos += varData.getSize();
+      } else  { // put proxy on the rest
+        v.setProxyReader( this);
       }
     }
-
-    return allData;
   }
-
-
-  private class ReaderTask implements Callable<Result> {
-    Dataset ds;
-    Variable mainv;
-    CancelTask cancelTask;
-    int index;
-
-    ReaderTask(Dataset ds, Variable mainv, CancelTask cancelTask, int index) {
-      this.ds = ds;
-      this.mainv = mainv;
-      this.cancelTask = cancelTask;
-      this.index = index;
-    }
-
-    public Result call() throws Exception {
-      Array data = ds.read(mainv, cancelTask);
-      return new Result(data, index);
-    }
-  }
-
-  private class Result {
-    Array data;
-    int index;
-
-    Result(Array data, int index) {
-      this.data = data;
-      this.index = index;
-    }
-  }
-
-  /* protected Array readAggCoord(Variable aggCoord, CancelTask cancelTask) throws IOException {
-    DataType dtype = aggCoord.getDataType();
-    Array allData = Array.factory(dtype, aggCoord.getShape());
-    IndexIterator result = allData.getIndexIterator();
-
-    List<Dataset> nestedDatasets = getDatasets();
-    for (Dataset vnested : nestedDatasets) {
-
-      try {
-        readAggCoord(aggCoord, cancelTask, (DatasetOuterDimension) vnested, dtype, result, null, null, null);
-      } catch (InvalidRangeException e) {
-        e.printStackTrace();  // cant happen
-      }
-
-      if ((cancelTask != null) && cancelTask.isCancel())
-        return null;
-    }
-
-    // cache it so we dont have to come here again; make sure we invalidate cache when data changes!
-    aggCoord.setCachedData(allData, false);
-
-    return allData;
-  } */
 
   /**
    * Read a section of an aggregation variable.
    *
-   * @param mainv      the aggregation variable
-   * @param cancelTask allow the user to cancel
    * @param section    read just this section of the data, array of Range
    * @return the data array section
    * @throws IOException
    */
-  public Array read(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
+  @Override
+  public Array reallyRead(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
+
+    // public Array reallyRead(Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
     if (debugConvert && mainv instanceof VariableDS) {
       DataType dtype = ((VariableDS) mainv).getOriginalDataType();
       if ((dtype != null) && (dtype != mainv.getDataType())) {
@@ -407,7 +305,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
     // If its full sized, then use full read, so that data gets cached.
     long size = section.computeSize();
     if (size == mainv.getSize())
-      return read(mainv, cancelTask);
+      return reallyRead(mainv, cancelTask);
 
     // read the original type - if its been promoted to a new type, the conversion happens after this read
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
@@ -454,13 +352,122 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
       if ((cancelTask != null) && cancelTask.isCancel())
         return null;
-      varData =  MAMath.convert(varData, dtype); // just in case it need to be converted
+      varData = MAMath.convert(varData, dtype); // just in case it need to be converted
 
       Array.arraycopy(varData, 0, sectionData, destPos, (int) varData.getSize());
       destPos += varData.getSize();
     }
 
     return sectionData;
+  }
+
+  /**
+   * Read an aggregation variable: A variable whose data spans multiple files.
+   * This is an implementation of ProxyReader, so must fulfill that contract.
+   *
+   * @param mainv      the aggregation variable
+   * @throws IOException
+   */
+   @Override
+  public Array reallyRead(Variable mainv, CancelTask cancelTask) throws IOException {
+
+    if (debugConvert && mainv instanceof VariableDS) {
+      DataType dtype = ((VariableDS) mainv).getOriginalDataType();
+      if ((dtype != null) && (dtype != mainv.getDataType())) {
+        System.out.printf("Original type = %s mainv type= %s%n", dtype, mainv.getDataType());
+      }
+    }
+
+    // read the original type - if its been promoted to a new type, the conversion happens after this read
+    DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
+
+    Object spObj = mainv.getSPobject();
+    if (spObj != null && spObj instanceof CacheVar) {
+      CacheVar pv = (CacheVar) spObj;
+      try {
+        Array cacheArray = pv.read(mainv.getShapeAsSection(), cancelTask);
+        return MAMath.convert(cacheArray, dtype); // // cache may keep data as different type
+
+      } catch (InvalidRangeException e) {
+        logger.error("readAgg " + getLocation(), e);
+        throw new IllegalArgumentException("readAgg " + getLocation(), e);
+      }
+    }
+
+    // the case of the agg coordinate var
+    //if (mainv.getShortName().equals(dimName))
+    //  return readAggCoord(mainv, cancelTask);
+
+    Array allData = Array.factory(dtype, mainv.getShape());
+    int destPos = 0;
+
+    List<Dataset> nestedDatasets = getDatasets();
+    if (executor != null) {
+      CompletionService<Result> completionService = new ExecutorCompletionService<Result>(executor);
+
+      int count = 0;
+      for (Dataset vnested : nestedDatasets)
+        completionService.submit(new ReaderTask(vnested, mainv, cancelTask, count++));
+
+      try {
+        int n = nestedDatasets.size();
+        for (int i = 0; i < n; ++i) {
+          Result r = completionService.take().get();
+          r.data = MAMath.convert(r.data, dtype); // just in case it need to be converted
+          if (r != null) {
+            int size = (int) r.data.getSize();
+            Array.arraycopy(r.data, 0, allData, size * r.index, size);
+          }
+        }
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+      } catch (ExecutionException e) {
+        throw new IOException(e.getMessage());
+      }
+
+    } else {
+
+      for (Dataset vnested : nestedDatasets) {
+        Array varData = vnested.read(mainv, cancelTask);
+        if ((cancelTask != null) && cancelTask.isCancel())
+          return null;
+        varData = MAMath.convert(varData, dtype); // just in case it need to be converted
+
+        Array.arraycopy(varData, 0, allData, destPos, (int) varData.getSize());
+        destPos += varData.getSize();
+      }
+    }
+
+    return allData;
+  }
+
+  private class ReaderTask implements Callable<Result> {
+    Dataset ds;
+    Variable mainv;
+    CancelTask cancelTask;
+    int index;
+
+    ReaderTask(Dataset ds, Variable mainv, CancelTask cancelTask, int index) {
+      this.ds = ds;
+      this.mainv = mainv;
+      this.cancelTask = cancelTask;
+      this.index = index;
+    }
+
+    public Result call() throws Exception {
+      Array data = ds.read(mainv, cancelTask);
+      return new Result(data, index);
+    }
+  }
+
+  private class Result {
+    Array data;
+    int index;
+
+    Result(Array data, int index) {
+      this.data = data;
+      this.index = index;
+    }
   }
 
   /* protected Array readAggCoord(Variable aggCoord, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
@@ -551,7 +558,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
   @Override
   protected Dataset makeDataset(String cacheName, String location, String id, String ncoordS, String coordValueS, String sectionSpec,
-          EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
+                                EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
     return new DatasetOuterDimension(cacheName, location, id, ncoordS, coordValueS, enhance, reader);
   }
 
@@ -589,7 +596,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
      * @param reader      factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
      */
     protected DatasetOuterDimension(String cacheName, String location, String id, String ncoordS, String coordValueS,
-            EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
+                                    EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
 
       super(cacheName, location, id, enhance, reader);
       this.coordValue = coordValueS;
@@ -643,7 +650,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
       if (null != dateFormatMark) {
         String filename = cd.getName(); // LOOK operates on name, not path
         coordValueDate = DateFromString.getDateUsingDemarkatedCount(filename, dateFormatMark, '#');
-        coordValue = dateFormatter.toDateTimeStringISO( coordValueDate);
+        coordValue = dateFormatter.toDateTimeStringISO(coordValueDate);
         if (debugDateParse) System.out.println("  adding " + cd.getPath() + " date= " + coordValue);
 
       } else {
@@ -653,6 +660,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
       if ((coordValue == null) && (type == Type.joinNew)) // use filename as coord value
         coordValue = cd.getName();
     }
+
     /**
      * Get the coordinate value(s) as a String for this Dataset
      *
@@ -796,17 +804,15 @@ public abstract class AggregationOuterDimension extends Aggregation {
         if ((cancelTask != null) && cancelTask.isCancel())
           return null;
 
-        if (debugRead) {
-          System.out.print("agg read " + ncd.getLocation() + " nested= " + getLocation());
-          for (Range range : section)
-            System.out.print(" " + range + ":");
-          System.out.println("");
-        }
-
         Variable v = findVariable(ncd, mainv);
         if (v == null) {
-          logger.error("AggOuterDimension cant find "+mainv.getName()+" in "+ ncd.getLocation()+"; return all zeroes!!!");
-          return Array.factory(mainv.getDataType(), new Section( section).getShape()); // all zeros LOOK need missing value
+          logger.error("AggOuterDimension cant find " + mainv.getName() + " in " + ncd.getLocation() + "; return all zeroes!!!");
+          return Array.factory(mainv.getDataType(), new Section(section).getShape()); // all zeros LOOK need missing value
+        }
+
+        if (debugRead) {
+          Section want = new Section(section);
+          System.out.printf("AggOuter.read(%s) %s from %s in %s%n", want, mainv.getNameAndDimensions(), v.getNameAndDimensions(), getLocation());
         }
 
         // its possible that we are asking for more of the time coordinate than actually exists (fmrc ragged time)
@@ -827,11 +833,11 @@ public abstract class AggregationOuterDimension extends Aggregation {
     }
 
     public int compareTo(Object o) {
-      if( coordValueDate == null)
+      if (coordValueDate == null)
         return super.compareTo(o);
       else {
         DatasetOuterDimension other = (DatasetOuterDimension) o;
-        return coordValueDate.compareTo( other.coordValueDate);
+        return coordValueDate.compareTo(other.coordValueDate);
       }
     }
   }
@@ -852,7 +858,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
     }
 
     public String toString() {
-      return varName +" ("+getClass().getName()+")";
+      return varName + " (" + getClass().getName() + ")";
     }
 
     // clear out old stuff from the Hash, so it doesnt grow forever
@@ -894,14 +900,14 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
         // which subset do we want?
         // bit tricky - assume returned array's rank depends on type LOOK is this true?
-        if ( ((type == Type.joinNew) || (type == Type.forecastModelRunCollection)) &&
-            ((innerSection != null) && (varData.getSize() != innerSection.computeSize()))) {
+        if (((type == Type.joinNew) || (type == Type.forecastModelRunCollection)) &&
+                ((innerSection != null) && (varData.getSize() != innerSection.computeSize()))) {
           varData = varData.section(innerSection.getRanges());
 
         } else if ((innerSection == null) && (varData.getSize() != nestedJoinRange.length())) {
           List<Range> nestedSection = new ArrayList<Range>(ranges); // make copy
           nestedSection.set(0, nestedJoinRange);
-          varData = varData.section( nestedSection);
+          varData = varData.section(nestedSection);
         }
 
         // may not know the data until now
@@ -1068,7 +1074,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
     protected PromoteVar(String varName, DataType dtype) {
       super(varName, dtype);
     }
-    
+
     PromoteVar(String varName, String gattName) {
       super(varName, null);
       this.gattName = (gattName != null) ? gattName : varName;
@@ -1081,7 +1087,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
       Attribute att = ncfile.findGlobalAttribute(gattName);
       if (att == null)
-        throw new IllegalArgumentException("Unknown attribute name= "+gattName);
+        throw new IllegalArgumentException("Unknown attribute name= " + gattName);
       data = att.getValues();
       if (dtype == null)
         dtype = DataType.getType(data.getElementType());
@@ -1132,7 +1138,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
       for (String gattName : gattNames) {
         Attribute att = ncfile.findGlobalAttribute(gattName);
         if (att == null)
-          throw new IllegalArgumentException("Unknown attribute name= "+gattName);
+          throw new IllegalArgumentException("Unknown attribute name= " + gattName);
         vals.add(att.getValue(0));
       }
 
@@ -1141,8 +1147,8 @@ public abstract class AggregationOuterDimension extends Aggregation {
       String result = f.toString();
 
       Array allData = Array.factory(dtype, new int[]{dset.ncoord});
-      for (int i=0; i<dset.ncoord; i++)
-       allData.setObject(i, result);
+      for (int i = 0; i < dset.ncoord; i++)
+        allData.setObject(i, result);
       putData(dset.getId(), allData);
       return allData;
     }
@@ -1176,7 +1182,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
     vals[3] = new Integer(23);
     vals[4] = new Integer(0);
     vals[5] = new Float(2.1);
-    f.format(format,vals);
+    f.format(format, vals);
     System.out.println(f);
   }
 

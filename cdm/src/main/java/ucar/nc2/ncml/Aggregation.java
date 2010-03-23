@@ -94,7 +94,7 @@ import thredds.inventory.DatasetCollectionManager;
  * </ol>
 
  */
-public abstract class Aggregation implements ProxyReader {
+public abstract class Aggregation {
 
   static protected enum Type {
     forecastModelRunCollection,
@@ -136,9 +136,8 @@ public abstract class Aggregation implements ProxyReader {
       logger.error("Unknown setTypicalDatasetMode= " + mode);
   }
 
-
-  static protected boolean debug = false, debugOpenFile = false, debugSyncDetail = false, debugProxy = false,
-      debugRead = false, debugDateParse = false, debugConvert = false;
+  static protected boolean debug = false, debugOpenFile = false, debugSyncDetail = false, debugProxy = true,
+      debugRead = true, debugDateParse = false, debugConvert = false;
 
   //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -152,6 +151,8 @@ public abstract class Aggregation implements ProxyReader {
   protected boolean cacheDirty = true; // aggCache persist file needs updating
 
   protected String dimName; // the aggregation dimension name
+
+  private Element mergeNcml = null;
 
   // experimental
   protected String dateFormatMark;
@@ -226,7 +227,6 @@ public abstract class Aggregation implements ProxyReader {
     datasetManager.addDirectoryScan(dirName, suffix, regexpPatternString, subdirs, olderThan, dateFormatMark, enhanceMode);
  }
 
-  private Element mergeNcml = null;
   public void setModifications(Element ncmlMods) {
     this.mergeNcml = ncmlMods;
   }
@@ -249,27 +249,117 @@ public abstract class Aggregation implements ProxyReader {
     return dimName;
   }
 
-  /**
-   * Release all resources associated with the aggregation
-   *
-   * @throws IOException on error
-   */
+
+  protected String getLocation() {
+    return ncDataset.getLocation();
+  }
+
+  /////////////////////////////////////////////////////////////////////
+
   public void close() throws IOException {
     persistWrite();
     closeDatasets();
   }
 
-  protected void closeDatasets() throws IOException {
-    datasets = null;
+  /**
+   * Check to see if its time to rescan directory, and if so, rescan and extend dataset if needed.
+   * Note that this just calls sync(), so structural metadata may be modified (!!)
+   *
+   * @return true if directory was rescanned and dataset may have been updated
+   * @throws IOException on io error
+   */
+  public synchronized boolean syncExtend() throws IOException {
+    if (!datasetManager.timeToRescan())
+      return false;
+
+    return _sync();
   }
 
-  public void getDetailInfo(Formatter f) {
-    f.format("  Type=%s%n", type);
-    f.format("  dimName=%s%n", dimName);
-    f.format("  Datasets%n");
-    for (Dataset ds : datasets)
-      ds.show(f);
+  public synchronized boolean sync() throws IOException {
+    return datasetManager.timeToRescan() && _sync();
   }
+
+  private boolean _sync() throws IOException {
+    if (!datasetManager.rescan())
+      return false; // nothing changed LOOK what about grib extention ??
+    cacheDirty = true;
+    closeDatasets();
+    makeDatasets(null);
+
+    // rebuild the metadata
+    rebuildDataset();
+    ncDataset.finish();
+    if (ncDataset.getEnhanceMode().contains(NetcdfDataset.Enhance.CoordSystems)) { // force recreation of the coordinate systems
+      ncDataset.clearCoordinateSystems();
+      ncDataset.enhance(ncDataset.getEnhanceMode());
+      ncDataset.finish();
+  }
+
+    return true;
+  }
+
+  public String getFileTypeId() { // LOOK - should cache ??
+     Dataset ds = null;
+     NetcdfFile ncfile = null;
+     try {
+       ds = getTypicalDataset();
+       ncfile = ds.acquireFile(null);
+       return ncfile.getFileTypeId();
+
+     } catch (IOException e) {
+       logger.error("failed to open "+ds);
+
+     } finally {
+       if (ds != null) try {
+         ds.close(ncfile);
+       } catch (IOException e) {
+         logger.error("failed to close "+ds);
+  }
+     }
+     return "N/A";
+   }
+
+   public String getFileTypeDescription() { // LOOK - should cache ??
+     Dataset ds = null;
+     NetcdfFile ncfile = null;
+     try {
+       ds = getTypicalDataset();
+       ncfile = ds.acquireFile(null);
+       return ncfile.getFileTypeDescription();
+
+     } catch (IOException e) {
+       logger.error("failed to open "+ds);
+
+     } finally {
+       if (ds != null) try {
+         ds.close(ncfile);
+       } catch (IOException e) {
+         logger.error("failed to close "+ds);
+       }
+     }
+     return "N/A";
+   }
+
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////
+  // stuff for subclasses to override
+
+  /**
+    * Call this to build the dataset objects in the NetcdfDataset
+    *
+    * @param cancelTask maybe cancel
+    * @throws IOException on read error
+    */
+   protected abstract void buildNetcdfDataset(CancelTask cancelTask) throws IOException;
+
+
+   /**
+    * Call this when rescan has found changed datasets
+    *
+    * @throws IOException on read error
+    */
+   protected abstract void rebuildDataset() throws IOException;
+
 
   /**
    * Allow information to be make persistent. Overridden in AggregationExisting
@@ -284,6 +374,20 @@ public abstract class Aggregation implements ProxyReader {
    */
   protected void persistRead() {
   }
+
+
+  protected void closeDatasets() throws IOException {
+    datasets = null;
+  }
+
+  public void getDetailInfo(Formatter f) {
+    f.format("  Type=%s%n", type);
+    f.format("  dimName=%s%n", dimName);
+    f.format("  Datasets%n");
+    for (Dataset ds : datasets)
+      ds.show(f);
+  }
+
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -372,68 +476,6 @@ public abstract class Aggregation implements ProxyReader {
   }
 
   /**
-   * Call this to build the dataset objects in the NetcdfDataset
-   *
-   * @param cancelTask maybe cancel
-   * @throws IOException on read error
-   */
-  protected abstract void buildNetcdfDataset(CancelTask cancelTask) throws IOException;
-
-
-  /**
-   * Call this when rescan has found changed datasets
-   *
-   * @throws IOException on read error
-   */
-  protected abstract void rebuildDataset() throws IOException;
-
-  //////////////////////////////////////////////////////////////
-
-  /**
-   * Check to see if its time to rescan directory, and if so, rescan and extend dataset if needed.
-   * Note that this just calls sync(), so structural metadata may be modified (!!)
-   *
-   * @param force if true, always rescan even if time not expired
-   * @return true if directory was rescanned and dataset may have been updated
-   * @throws IOException on io error
-   */
-  public synchronized boolean syncExtend(boolean force) throws IOException {
-    if (!force && !datasetManager.timeToRescan())
-      return false;
-
-    return _sync();
-  }
-
-  public synchronized boolean sync() throws IOException {
-    return datasetManager.timeToRescan() && _sync();
-  }
-
-  private boolean _sync() throws IOException {
-    if (!datasetManager.rescan())
-      return false; // nothing changed LOOK what about grib extention ??
-    cacheDirty = true;
-    closeDatasets();
-    makeDatasets(null);
-
-    // rebuild the metadata
-    rebuildDataset();
-    ncDataset.finish();
-    if (ncDataset.getEnhanceMode().contains(NetcdfDataset.Enhance.CoordSystems)) { // force recreation of the coordinate systems
-      ncDataset.clearCoordinateSystems();
-      ncDataset.enhance(ncDataset.getEnhanceMode());
-      ncDataset.finish();
-    }
-
-    return true;
-  }
-
-  /////////////////////////////////////////////////////////////////////////
-
-  protected String getLocation() {
-    return ncDataset.getLocation();
-  }
-
-  /**
    * Open one of the nested datasets as a template for the aggregation dataset.
    *
    * @return a typical Dataset
@@ -458,47 +500,6 @@ public abstract class Aggregation implements ProxyReader {
     return nestedDatasets.get(select);
   }
 
-  public String getFileTypeId() { // LOOK - should cache ??
-    Dataset ds = null;
-    NetcdfFile ncfile = null;
-    try {
-      ds = getTypicalDataset();
-      ncfile = ds.acquireFile(null);
-      return ncfile.getFileTypeId();
-
-    } catch (IOException e) {
-      logger.error("failed to open "+ds);
-
-    } finally {
-      if (ds != null) try {
-        ds.close(ncfile);
-      } catch (IOException e) {
-        logger.error("failed to close "+ds);
-      }
-    }
-    return "N/A";
-  }
-
-  public String getFileTypeDescription() { // LOOK - should cache ??
-    Dataset ds = null;
-    NetcdfFile ncfile = null;
-    try {
-      ds = getTypicalDataset();
-      ncfile = ds.acquireFile(null);
-      return ncfile.getFileTypeDescription();
-
-    } catch (IOException e) {
-      logger.error("failed to open "+ds);
-
-    } finally {
-      if (ds != null) try {
-        ds.close(ncfile);
-      } catch (IOException e) {
-        logger.error("failed to close "+ds);
-      }
-    }
-    return "N/A";
-  }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -510,7 +511,8 @@ public abstract class Aggregation implements ProxyReader {
    * @return the data array
    * @throws IOException
    */
-  public abstract Array read(Variable mainv, CancelTask cancelTask) throws IOException;
+  //public abstract Array read(Variable mainv, CancelTask cancelTask) throws IOException;
+  //public abstract Array reallyRead() throws IOException;
 
   /**
    * Read a section of an aggregation variable.
@@ -521,7 +523,8 @@ public abstract class Aggregation implements ProxyReader {
    * @return the data array section
    * @throws IOException
    */
-  public abstract Array read(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException;
+  //public abstract Array read(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException;
+  //public abstract Array reallyRead(Section section) throws IOException, InvalidRangeException;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -663,6 +666,10 @@ public abstract class Aggregation implements ProxyReader {
           return null;
 
         Variable v = findVariable(ncd, mainv);
+        if ((mainv == null) || (v == null))
+          System.out.println("HEY");
+        if (debugRead)
+          System.out.printf("Agg.read %s from %s in %s%n", mainv.getNameAndDimensions(), v.getNameAndDimensions(), getLocation());
         return v.read();
 
       } finally {
@@ -687,15 +694,26 @@ public abstract class Aggregation implements ProxyReader {
         if ((cancelTask != null) && cancelTask.isCancel())
           return null;
 
-        if (debugRead)
-          System.out.print("agg read " + ncd.getLocation() + " nested= " + getLocation() + " " + new Section(section));
-
         Variable v = findVariable(ncd, mainv);
+        if (debugRead) {
+          Section want = new Section(section);
+          System.out.printf("Agg.read(%s) %s from %s in %s%n", want, mainv.getNameAndDimensions(), v.getNameAndDimensions(), getLocation());
+        }
+
         return v.read(section);
 
       } finally {
         close( ncd);
       }
+    }
+
+    protected Variable findVariable(NetcdfFile ncfile, Variable mainV) {
+      Variable v = ncfile.findVariable(mainV.getName());
+      if (v == null) {  // might be renamed
+        VariableEnhanced ve = (VariableEnhanced) mainV;
+        v = ncfile.findVariable(ve.getOriginalName());
+      }
+      return v;
     }
 
     // Datasets with the same locations are equal
@@ -720,7 +738,7 @@ public abstract class Aggregation implements ProxyReader {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  /**
+  /*
    * All non-agg variables use a proxy to acquire the file before reading.
    * If the variable is caching, read data into cache now.
    * If not caching, VariableEnhanced.setProxyReader() is called.
@@ -728,59 +746,72 @@ public abstract class Aggregation implements ProxyReader {
    * @param typicalDataset read from a "typical dataset"
    * @param newds          containing dataset
    * @throws IOException on i/o error
-   */
+   *
   protected void setDatasetAcquireProxy(Dataset typicalDataset, NetcdfDataset newds) throws IOException {
+    if (debugProxy) System.out.println("setDatasetAcquireProxy on " + typicalDataset.getLocation());
 
-    // all normal (non agg) variables must use a proxy to lock the file
-    DatasetProxyReader proxy = new DatasetProxyReader(typicalDataset);
+    // all normal (non agg) variables must use a proxy to acquire the file
     List<Variable> allVars = newds.getRootGroup().getVariables();
     for (Variable v : allVars) {
-      VariableEnhanced ve = (VariableEnhanced) v;
+      //VariableEnhanced ve = (VariableEnhanced) v;
 
-      if (ve.getProxyReader() != null) {
-        if (debugProxy) System.out.println(" debugProxy: hasProxyReader " + ve.getName());
+      if (hasProxyReader(v)) { // skip if already has one
+        if (debugProxy) System.out.println(" debugProxy: hasProxyReader " + v.getName());
         continue; // dont mess with agg variables
       }
 
       if (v.isCaching()) {  // cache the small ones
         if (!v.hasCachedData()) {
-          ve.read();
-          if (debugProxy) System.out.println(" debugProxy: cached " + ve.getName());
+          v.read();
+          if (debugProxy) System.out.println(" debugProxy: cached " + v.getName());
         } else {
-          if (debugProxy) System.out.println(" debugProxy: already cached " + ve.getName());
+          if (debugProxy) System.out.println(" debugProxy: already cached " + v.getName());
         }
 
-      } else if (null == ve.getProxyReader()) { // put proxy on the rest
-        ve.setProxyReader(proxy);
-        if (debugProxy) System.out.println(" debugProxy: set proxy on " + ve.getName());
+      } else  { // put proxy on the rest
+        DatasetProxyReader proxy = new DatasetProxyReader(typicalDataset, v);
+        v.addProxyReader(proxy);
+        if (debugProxy) System.out.println(" debugProxy: set proxy on " + v.getName());
       }
     }
   }
 
+  boolean hasProxyReader(Variable v) {
+    List<ProxyReader> readers = v.getProxyReaders();
+    if (readers == null) return false;
+    for (ProxyReader r : readers) {
+      if (r instanceof DatasetProxyReader) return true; // ??
+    }
+    return false;
+  }
+
+  // all normal (non agg) variables must use a proxy to acquire the file
   protected class DatasetProxyReader implements ProxyReader {
     Dataset dataset;
+    Variable client;
 
-    DatasetProxyReader(Dataset dataset) {
+    DatasetProxyReader(Dataset dataset, Variable client) {
       this.dataset = dataset;
+      this.client = client;
     }
 
-    public Array read(Variable mainV, CancelTask cancelTask) throws IOException {
+    public Array reallyRead(CancelTask cancelTask) throws IOException {
       NetcdfFile ncfile = null;
       try {
         ncfile = dataset.acquireFile(cancelTask);
         if ((cancelTask != null) && cancelTask.isCancel()) return null;
-        Variable proxyV = findVariable(ncfile, mainV);
+        Variable proxyV = findVariable(ncfile, client);
         return proxyV.read();
       } finally {
         dataset.close( ncfile);
       }
     }
 
-    public Array read(Variable mainV, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
+    public Array reallyRead(Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
       NetcdfFile ncfile = null;
       try {
         ncfile = dataset.acquireFile(cancelTask);
-        Variable proxyV = findVariable(ncfile, mainV);
+        Variable proxyV = findVariable(ncfile, client);
         if ((cancelTask != null) && cancelTask.isCancel()) return null;
         return proxyV.read(section);
       } finally {
@@ -796,7 +827,7 @@ public abstract class Aggregation implements ProxyReader {
       v = ncfile.findVariable(ve.getOriginalName());
     }
     return v;
-  }
+  } */
 
   // debug
   public void detail(Formatter f) {

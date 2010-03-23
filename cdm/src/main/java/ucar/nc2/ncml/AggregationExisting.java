@@ -112,7 +112,7 @@ public class AggregationExisting extends AggregationOuterDimension {
       Group newGroup =  DatasetConstructor.findGroup(ncDataset, v.getParentGroup());
       VariableDS vagg = new VariableDS(ncDataset, newGroup, null, v.getShortName(), v.getDataType(),
               v.getDimensionsString(), null, null);
-      vagg.setProxyReader(this); // do the reading here
+      //vagg.addProxyReader( new Reader(vagg));
       DatasetConstructor.transferVariableAttributes(v, vagg);
 
       newGroup.removeVariable( v.getShortName());
@@ -136,7 +136,7 @@ public class AggregationExisting extends AggregationOuterDimension {
       }
       
       joinAggCoord = new VariableDS(ncDataset, null, null, dimName, DataType.STRING, dimName, null, null);
-      joinAggCoord.setProxyReader(this); // do the reading here
+      //joinAggCoord.addProxyReader( new Reader(joinAggCoord));
       ncDataset.getRootGroup().addVariable(joinAggCoord);
       aggVars.add(joinAggCoord);
       
@@ -155,7 +155,7 @@ public class AggregationExisting extends AggregationOuterDimension {
     // check persistence info - may have cached values other than coordinate  LOOK ????
     persistRead();
 
-    setDatasetAcquireProxy(typicalDataset, ncDataset);
+    //setDatasetAcquireProxy(typicalDataset, ncDataset);
     typicalDataset.close( typical);
 
     if (debugInvocation) System.out.println(ncDataset.getLocation()+" invocation count = "+AggregationOuterDimension.invocation);
@@ -186,7 +186,7 @@ public class AggregationExisting extends AggregationOuterDimension {
           logger.warn("readTimeCoordinates: variable = " + timeAxis.getName() + " not found in file " + dataset.getLocation());
           return;
         }
-        VariableDS vds = (v instanceof VariableDS) ? (VariableDS) v : new VariableDS(null, v, true);
+        VariableDS vds = (v instanceof VariableDS) ? (VariableDS) v : new VariableDS( null, v, true);
         CoordinateAxis1DTime timeCoordVar = CoordinateAxis1DTime.factory(ncDataset, vds, null);
         java.util.Date[] dates = timeCoordVar.getTimeDates();
         dateList.addAll(Arrays.asList(dates));

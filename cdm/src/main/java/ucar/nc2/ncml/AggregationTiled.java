@@ -47,10 +47,11 @@ import java.util.EnumSet;
 
 /**
  * Tiled Aggregation.
+ *
  * @author caron
  * @since Aug 16, 2007
  */
-public class AggregationTiled extends Aggregation {
+public class AggregationTiled extends Aggregation implements ProxyReader {
   private List<String> dimNames = new ArrayList<String>();
   private List<Dimension> dims = new ArrayList<Dimension>();
   private Section section;
@@ -116,20 +117,20 @@ public class AggregationTiled extends Aggregation {
     // run through all variables
     for (Variable v : typical.getVariables()) {
       if (isTiled(v)) {
-        Group newGroup =  DatasetConstructor.findGroup(ncDataset, v.getParentGroup());
+        Group newGroup = DatasetConstructor.findGroup(ncDataset, v.getParentGroup());
         VariableDS vagg = new VariableDS(ncDataset, newGroup, null, v.getShortName(), v.getDataType(),
                 v.getDimensionsString(), null, null);   // LOOK what about anon dimensions?
-        vagg.setProxyReader(this); // do the reading here
+        //vagg.addProxyReader(new Reader(vagg)); // do the reading here
         DatasetConstructor.transferVariableAttributes(v, vagg);
 
-        newGroup.removeVariable( v.getShortName());
-        newGroup.addVariable( vagg);
+        newGroup.removeVariable(v.getShortName());
+        newGroup.addVariable(vagg);
         // aggVars.add(vagg);
       }
       if (cancelTask != null && cancelTask.isCancel()) return;
     }
 
-    setDatasetAcquireProxy(typicalDataset, ncDataset);
+    //setDatasetAcquireProxy(typicalDataset, ncDataset);
     typicalDataset.close(typical); // close it because we use DatasetProxyReader to acquire    */
   }
 
@@ -152,12 +153,12 @@ public class AggregationTiled extends Aggregation {
   }
 
   @Override
-  public Array read(Variable mainv, CancelTask cancelTask) throws IOException {
+  public Array reallyRead(Variable mainv, CancelTask cancelTask) throws IOException {
 
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
     Array allData = Array.factory(dtype, mainv.getShape()); // LOOK need fill
     Section wantSection = mainv.getShapeAsSection();
-    if (debug) System.out.println("wantSection: " + wantSection+" for var "+mainv.getName());
+    if (debug) System.out.println("wantSection: " + wantSection + " for var " + mainv.getName());
 
     // make concurrent
     List<Dataset> nestedDatasets = getDatasets();
@@ -202,11 +203,12 @@ public class AggregationTiled extends Aggregation {
   }
 
   @Override
-  public Array read(Variable mainv, Section wantSection, CancelTask cancelTask) throws IOException {
+  public Array reallyRead(Variable mainv, Section wantSection, CancelTask cancelTask) throws IOException {
+
     // If its full sized, then use full read, so that data might get cached.
     long size = wantSection.computeSize();
     if (size == mainv.getSize())
-      return read(mainv, cancelTask);
+      return reallyRead(mainv, cancelTask);
 
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
     Array allData = Array.factory(dtype, wantSection.getShape()); // LOOK need fill
@@ -231,7 +233,7 @@ public class AggregationTiled extends Aggregation {
         // read in the desired section of data from this nested dataset
         Section needToRead = tiledSection.intersect(wantSection); // the part we need to read
 
-        if (debug) System.out.println(" tiledSection: " + tiledSection+" from file "+dtiled.getLocation());
+        if (debug) System.out.println(" tiledSection: " + tiledSection + " from file " + dtiled.getLocation());
         if (debug) System.out.println(" intersection: " + needToRead);
 
         Section localNeed = needToRead.shiftOrigin(tiledSection); // shifted to the tiled section
@@ -330,7 +332,7 @@ public class AggregationTiled extends Aggregation {
 
   @Override
   protected Dataset makeDataset(String cacheName, String location, String id, String ncoordS, String coordValueS, String sectionSpec,
-          EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
+                                EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
     return new DatasetTiled(cacheName, location, id, sectionSpec, enhance, reader);
   }
 
@@ -354,7 +356,7 @@ public class AggregationTiled extends Aggregation {
      * @param reader      factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
      */
     protected DatasetTiled(String cacheName, String location, String id, String sectionSpec, EnumSet<NetcdfDataset.Enhance> enhance,
-            ucar.nc2.util.cache.FileFactory reader) {
+                           ucar.nc2.util.cache.FileFactory reader) {
       super(cacheName, location, id, enhance, reader);
       this.sectionSpec = sectionSpec;
 

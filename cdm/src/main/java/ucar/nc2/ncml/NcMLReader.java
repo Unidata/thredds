@@ -848,7 +848,7 @@ public class NcMLReader {
 
     } else { //explicit - create new
       if (refv instanceof Structure) {
-        v = new StructureDS(g, null, name, (Structure) refv); 
+        v = new StructureDS(ds, g, null, name, (Structure) refv);
         v.setDimensions(shape);
       } else {
         v = new VariableDS(g, null, name, refv);

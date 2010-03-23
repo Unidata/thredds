@@ -37,10 +37,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.DatasetConstructor;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
-import ucar.ma2.Array;
-import ucar.ma2.Section;
-import ucar.ma2.InvalidRangeException;
 
 import java.io.IOException;
 import java.util.List;
@@ -49,12 +45,12 @@ import java.util.ArrayList;
 /**
  * Aggregation on datasets to be simply combined - aka "union".
  *
- * The variables are transferred from the component files to the
+ * The variables are transferred from the component files to the ncml dataset
  *
  * @author caron
  */
 public class AggregationUnion extends Aggregation {
-  List<NetcdfFile> openDatasets = new ArrayList<NetcdfFile>();
+  private List<NetcdfFile> openDatasets = new ArrayList<NetcdfFile>();
 
   public AggregationUnion(NetcdfDataset ncd, String dimName, String recheckS) {
     super(ncd, dimName, Aggregation.Type.union, recheckS);
@@ -77,16 +73,6 @@ public class AggregationUnion extends Aggregation {
   protected void rebuildDataset() throws IOException {
     ncDataset.empty();
     buildNetcdfDataset( null);
-  }
-
-  @Override
-  public Array read(Variable mainv, CancelTask cancelTask) throws IOException {
-    throw new IllegalStateException(); // should never be called
-  }
-
-  @Override
-  public Array read(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
-    throw new IllegalStateException(); // should never be called
   }
 
   @Override
