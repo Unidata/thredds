@@ -53,6 +53,7 @@ import java.util.*;
  * Date: Jul 14, 2009
  * Time: 1:30:40 PM
  * To change this template use File | Settings | File Templates.
+ * @deprecated use ucar.nc2.ft.*
  */
 public abstract class TrajectoryObsDatasetImpl extends TypedDatasetImpl implements TrajectoryObsDataset {
 

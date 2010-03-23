@@ -68,6 +68,7 @@ public class TestNcMLReadOverride extends TestCase {
 
   protected void tearDown() throws IOException {
     ncfile.close();
+    ncfile = null;
   }
 
   public void testRemoved() {

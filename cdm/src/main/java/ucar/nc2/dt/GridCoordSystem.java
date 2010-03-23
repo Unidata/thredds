@@ -152,6 +152,12 @@ public interface GridCoordSystem {
   public ucar.unidata.geoloc.ProjectionImpl getProjection();
 
   /**
+   * Use the bounding box to set the defaule map are of the projection.
+   * This can be expensive if its a 2D coordinate system.
+   */
+  public void setProjectionBoundingBox();
+
+  /**
    * Get the Vertical CoordinateTransform, it it exists.
    * @return VerticalCT or null.
    */

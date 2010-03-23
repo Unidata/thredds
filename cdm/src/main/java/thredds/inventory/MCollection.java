@@ -49,7 +49,7 @@ public class MCollection {
   private final Object auxInfo;
 
   /**
-   *
+   * Constructor
    * @param name name of collection
    * @param dirName top directory name
    * @param wantSubdirs if want subdirectories

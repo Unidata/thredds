@@ -47,35 +47,36 @@ import java.io.IOException;
 class SliceReader implements ProxyReader {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SliceReader.class);
 
-  private Variable orgVar;
+  private ProxyReader nextReader;
   private int sliceDim;    // dimension index into original
   private Section slice;   // section of the original
 
-  SliceReader(Variable orgVar, int dim, Section slice) throws InvalidRangeException {
-    this.orgVar = orgVar;
+  SliceReader(ProxyReader nextReader, int dim, Section slice) throws InvalidRangeException {
+    this.nextReader = nextReader;
     this.sliceDim = dim;
     this.slice = slice;
   }
 
-  public Array read(Variable mainv, CancelTask cancelTask) throws IOException {
+  @Override
+  public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
     Array data;
     try {
-      data = orgVar._read( slice);
+      data = nextReader.reallyRead( client, slice, cancelTask);
     } catch (InvalidRangeException e) {
-      log.error("InvalidRangeException in slice, var="+orgVar.getName());
+      log.error("InvalidRangeException in slice, var="+ nextReader);
       throw new IllegalStateException(e.getMessage());
     }
     data = data.reduce( sliceDim);
     return data;
   }
 
-  public Array read(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
+  @Override
+  public Array reallyRead(Variable client, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
     Section orgSection = new Section(section.getRanges());
     orgSection.insertRange(sliceDim, slice.getRange(sliceDim));
-    Array data = orgVar._read( orgSection);
+    Array data = nextReader.reallyRead( client, orgSection, cancelTask);
     data.reduce( sliceDim);
     return data;
   }
-
 
 }

@@ -101,87 +101,8 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
       throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
     Array data = readData(v2, section);
-    return copyToByteChannel(data,  channel);
+    return IospHelper.copyToByteChannel(data,  channel);
   }
-
-  public static long copyToByteChannel(Array data, WritableByteChannel channel)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException {
-
-    // ArrayStructureBB can be optimised
-    // LOOK not actually right until we define the on-the-wire protocol
-    if (data instanceof ArrayStructureBB) {
-      ArrayStructureBB dataBB = (ArrayStructureBB) data;
-      ByteBuffer bb = dataBB.getByteBuffer();
-      bb.rewind();
-      channel.write(bb);
-      return bb.limit();
-    }
-
-    DataOutputStream outStream = new DataOutputStream( Channels.newOutputStream( channel));
-
-    IndexIterator iterA = data.getIndexIterator();
-    Class classType = data.getElementType();
-
-    if (classType == double.class) {
-      while (iterA.hasNext())
-        outStream.writeDouble(iterA.getDoubleNext());
-
-    } else if (classType == float.class) {
-      while (iterA.hasNext())
-        outStream.writeFloat(iterA.getFloatNext());
-
-    } else if (classType == long.class) {
-      while (iterA.hasNext())
-        outStream.writeLong(iterA.getLongNext());
-
-    } else if (classType == int.class) {
-      while (iterA.hasNext())
-        outStream.writeInt(iterA.getIntNext());
-
-    } else if (classType == short.class) {
-      while (iterA.hasNext())
-        outStream.writeShort(iterA.getShortNext());
-
-    } else if (classType == char.class) {
-      while (iterA.hasNext())
-        outStream.writeChar(iterA.getCharNext());
-
-    } else if (classType == byte.class) {
-      while (iterA.hasNext())
-        outStream.writeByte(iterA.getByteNext());
-
-    } else if (classType == boolean.class) {
-      while (iterA.hasNext())
-        outStream.writeBoolean(iterA.getBooleanNext());
-
-    } else if (classType == String.class) {
-      long size = 0;
-      while (iterA.hasNext()) {
-        String s = (String) iterA.getObjectNext();
-        size += NcStream.writeVInt( outStream, s.length());
-        byte[] b = s.getBytes("UTF-8");
-        outStream.write(b);
-        size += b.length;
-      }
-      return size;
-
-    } else if (classType == ByteBuffer.class) { // OPAQUE
-      long size = 0;
-      while (iterA.hasNext()) {
-        ByteBuffer bb = (ByteBuffer) iterA.getObjectNext();
-        size += NcStream.writeVInt( outStream, bb.limit());
-        bb.rewind();
-        channel.write(bb);
-        size += bb.limit();
-      }
-      return size;
-
-    } else
-      throw new UnsupportedOperationException("Class type = " + classType.getName());
-
-    return data.getSizeBytes();
-  }
-
 
   @Override
   public ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException {

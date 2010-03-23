@@ -55,41 +55,41 @@ public class DatasetConstructor {
    *   replace if replaceCheck.replace( Variable v) is true
    */
   static public void transferDataset(NetcdfFile src, NetcdfDataset target, ReplaceVariableCheck replaceCheck) {
-    transferGroup(src, src.getRootGroup(), target.getRootGroup(), replaceCheck);
+    transferGroup(src, target, src.getRootGroup(), target.getRootGroup(), replaceCheck);
   }
 
   // transfer the objects in src group to the target group
-  static private void transferGroup(NetcdfFile ds, Group src, Group target, ReplaceVariableCheck replaceCheck) {
+  static private void transferGroup(NetcdfFile ds, NetcdfDataset targetDs, Group src, Group targetGroup, ReplaceVariableCheck replaceCheck) {
     boolean unlimitedOK = false; // LOOK why not allowed?
 
     // group attributes
-    transferGroupAttributes(src, target);
+    transferGroupAttributes(src, targetGroup);
 
     // dimensions
     for (Dimension d : src.getDimensions()) {
-      if (null == target.findDimensionLocal(d.getName())) {
+      if (null == targetGroup.findDimensionLocal(d.getName())) {
         Dimension newd = new Dimension(d.getName(), d.getLength(), d.isShared(), unlimitedOK && d.isUnlimited(), d.isVariableLength());
-        target.addDimension(newd);
+        targetGroup.addDimension(newd);
       }
     }
 
     // variables
     for (Variable v : src.getVariables()) {
-      Variable targetV = target.findVariable(v.getShortName());
+      Variable targetV = targetGroup.findVariable(v.getShortName());
       VariableEnhanced targetVe = (VariableEnhanced) targetV;
-      boolean replace = (replaceCheck != null) && replaceCheck.replace(v); // replace not currently used
+      boolean replace = (replaceCheck != null) && replaceCheck.replace(v); // replaceCheck not currently used
 
       if (replace || (null == targetV)) { // replace it
         if ((v instanceof Structure) && !(v instanceof StructureDS)) {
-           v = new StructureDS(target, (Structure) v);
+           v = new StructureDS(targetGroup, (Structure) v);
 
           // else if (!(v instanceof VariableDS) && !(v instanceof StructureDS)) Doug Lindolm
         } else if (!(v instanceof VariableDS)) {
-          v = new VariableDS(target, v, false);  // enhancement done by original variable, this is just to reparent to target dataset.
+          v = new VariableDS(targetGroup, v, false);  // enhancement done by original variable, this is just to reparent to target dataset.
         }
 
-        if (null != targetV) target.remove(targetV);
-        target.addVariable(v); // reparent group
+        if (null != targetV) targetGroup.remove(targetV);
+        targetGroup.addVariable(v); // reparent group
         v.resetDimensions(); // dimensions will be different
 
       } else if (!targetV.hasCachedData() && (targetVe.getOriginalVariable() == null)) {
@@ -101,14 +101,13 @@ public class DatasetConstructor {
 
     // nested groups - check if target already has it
     for (Group srcNested : src.getGroups()) {
-      Group nested = target.findGroup(srcNested.getShortName());
+      Group nested = targetGroup.findGroup(srcNested.getShortName());
       if (null == nested) {
-        nested = new Group(ds, target, srcNested.getShortName());
-        target.addGroup(nested);
+        nested = new Group(ds, targetGroup, srcNested.getShortName());
+        targetGroup.addGroup(nested);
       }
-      transferGroup(ds, srcNested, nested, replaceCheck);
+      transferGroup(ds, targetDs, srcNested, nested, replaceCheck);
     }
-
   }
 
   /**

@@ -361,7 +361,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       proj.setDefaultMapArea(getBoundingBox());  // LOOK too expensive for 2D
     }
 
-    // LOOK: require 1D vertical - need to generalize to nD vertical.
+   // LOOK: require 1D vertical - need to generalize to nD vertical.
     CoordinateAxis z_oneD = hAxis = cs.getHeightAxis();
     if ((z_oneD == null) || !(z_oneD instanceof CoordinateAxis1D)) z_oneD = pAxis = cs.getPressureAxis();
     if ((z_oneD == null) || !(z_oneD instanceof CoordinateAxis1D)) z_oneD = zAxis = cs.getZaxis();
@@ -729,6 +729,13 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    */
   public ProjectionImpl getProjection() {
     return proj;
+  }
+
+  public void setProjectionBoundingBox() {
+    // set canonical area
+    if (proj != null) {
+      proj.setDefaultMapArea(getBoundingBox());  // LOOK too expensive for 2D
+    }
   }
 
   /**

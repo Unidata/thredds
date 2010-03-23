@@ -133,6 +133,22 @@ public class TestTransforms extends TestCase {
     test(filename, "zpos", "temp", "time", VerticalCT.Type.OceanSigma, OceanSigma.class, SimpleUnit.meterUnit);
   }
 
+  public void testWrf() throws IOException, InvalidRangeException {
+    String filename = TestAll.cdmUnitTestDir + "wrf/global.nc";
+    test(filename, "z", "T", "Time", VerticalCT.Type.WRFEta, WRFEta.class, SimpleUnit.pressureUnit);
+    test(filename, "z", "U", "Time", VerticalCT.Type.WRFEta, WRFEta.class, SimpleUnit.pressureUnit);
+    test(filename, "z", "V", "Time", VerticalCT.Type.WRFEta, WRFEta.class, SimpleUnit.pressureUnit);
+    test(filename, "z_stag", "W", "Time", VerticalCT.Type.WRFEta, WRFEta.class, SimpleUnit.meterUnit);
+  }
+
+  public void testWrf2() throws IOException, InvalidRangeException {
+    String filename = TestAll.cdmUnitTestDir + "wrf/wrfout_mercator.nc";
+    test(filename, "z", "T", "Time", VerticalCT.Type.WRFEta, WRFEta.class, SimpleUnit.pressureUnit);
+    test(filename, "z", "U", "Time", VerticalCT.Type.WRFEta, WRFEta.class, SimpleUnit.pressureUnit);
+    test(filename, "z", "V", "Time", VerticalCT.Type.WRFEta, WRFEta.class, SimpleUnit.pressureUnit);
+    test(filename, "z_stag", "W", "Time", VerticalCT.Type.WRFEta, WRFEta.class, SimpleUnit.meterUnit);
+  }
+
   // LOOK these are failing
   public void btestOceanSigmaNcml() throws IOException, InvalidRangeException {
     String filename = "http://coast-enviro.er.usgs.gov/models/share/glos_test.ncml";
@@ -182,7 +198,6 @@ public class TestTransforms extends TestCase {
       throws IOException, InvalidRangeException {
 
     System.out.printf("file= %s%n", ncd.getLocation());
-
 
     VariableDS lev = (VariableDS) ncd.findVariable(levName);
     assert lev != null;
@@ -237,8 +252,8 @@ public class TestTransforms extends TestCase {
         ucar.ma2.ArrayDouble.D3 coordVals = vt.getCoordinateArray(i);
         assert (null != coordVals);
         Section cSection = new Section(coordVals.getShape());
-        System.out.printf(" varSection shape = %s %n", varSection);
-        System.out.printf(" coordVal shape = %s %n", cSection);
+        System.out.printf("%s: varSection shape = %s %n", v.getName(), varSection);
+        System.out.printf("%s: coordVal shape = %s %n", v.getName(), cSection);
         assert varSection.computeSize() == cSection.computeSize();
       }
     }

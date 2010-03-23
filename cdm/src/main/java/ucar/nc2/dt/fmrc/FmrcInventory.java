@@ -1477,7 +1477,7 @@ public class FmrcInventory {
      CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.USE_ALL_DIRECT, false,
              new MyListener(fmrCollection, maxDatasets, mode, cache));
 
-     crawler.crawl(catURL, null, System.out);
+     crawler.crawl(catURL, null, System.out, null);
      fmrCollection.finish();
 
      if (debugTiming) {
@@ -1502,7 +1502,7 @@ public class FmrcInventory {
       this.cache = cache;
     }
 
-    public void getDataset(InvDataset dd) {
+    public void getDataset(InvDataset dd, Object context) {
       if ((count > maxDatasets) && (maxDatasets > 0)) return;
 
       InvAccess access = dd.getAccess(ServiceType.OPENDAP);
@@ -1533,7 +1533,7 @@ public class FmrcInventory {
 
     }
 
-    public boolean getCatalogRef(InvCatalogRef dd) { return true; }
+    public boolean getCatalogRef(InvCatalogRef dd, Object context) { return true; }
 
   }
 

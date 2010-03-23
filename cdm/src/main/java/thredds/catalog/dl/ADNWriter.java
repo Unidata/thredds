@@ -72,17 +72,17 @@ public class ADNWriter {
       dir.mkdirs();
 
     CatalogCrawler.Listener listener = new CatalogCrawler.Listener() {
-      public void getDataset(InvDataset ds) {
+      public void getDataset(InvDataset ds, Object context) {
         doOneDataset(ds);
       }
-      public boolean getCatalogRef(InvCatalogRef dd) { return true; }
+      public boolean getCatalogRef(InvCatalogRef dd, Object context) { return true; }
       
     };
 
     ByteArrayOutputStream bis = new ByteArrayOutputStream();
     PrintStream ps = new PrintStream( bis);
     CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_ALL, true, listener);
-    crawler.crawl(cat, null, ps);
+    crawler.crawl(cat, null, ps, null);
     mess.append("\n*********************\n");
     mess.append(bis.toString());
   }

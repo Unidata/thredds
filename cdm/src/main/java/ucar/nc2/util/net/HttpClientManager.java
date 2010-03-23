@@ -91,7 +91,7 @@ public class HttpClientManager {
     // nick.bower@metoceanengineers.com
     String proxyHost = System.getProperty("http.proxyHost");
     String proxyPort = System.getProperty("http.proxyPort");
-    if ((proxyHost != null) && (proxyPort != null)) {
+    if ((proxyHost != null) && (proxyPort != null) && !proxyPort.trim().equals("")) {
         _client.getHostConfiguration().setProxy(proxyHost, Integer.parseInt(proxyPort));
     }
 

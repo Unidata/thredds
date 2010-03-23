@@ -40,7 +40,7 @@ import thredds.inventory.DateExtractor;
 import thredds.inventory.MFile;
 
 /**
- * Extract Date from filename, using DateFromString.getDateUsingSimpleDateFormat on the name (not path)
+ * Extract Date from filename, using DateFromString.getDateUsingSimpleDateFormat on the name or path
  *
  * @author caron
  * @since Jun 26, 2009
@@ -48,13 +48,17 @@ import thredds.inventory.MFile;
 public class DateExtractorFromName implements DateExtractor {
 
   private String dateFormatMark;
+  private boolean useName;
 
-  public DateExtractorFromName(String dateFormatMark) {
+  public DateExtractorFromName(String dateFormatMark, boolean useName) {
     this.dateFormatMark = dateFormatMark;
+    this.useName = useName;
   }
 
   public Date getDate(MFile mfile) {
-    return DateFromString.getDateUsingDemarkatedCount(mfile.getName(), dateFormatMark, '#');
-    // return DateFromString.getDateUsingSimpleDateFormat(mfile.getName(), dateFormatString);
+    if (useName)
+      return DateFromString.getDateUsingDemarkatedCount(mfile.getName(), dateFormatMark, '#');
+    else
+      return DateFromString.getDateUsingDemarkatedMatch(mfile.getPath(), dateFormatMark, '#');
   }
 }

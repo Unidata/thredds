@@ -56,6 +56,13 @@ public class Dimension implements Comparable {
   /** A variable-length dimension: the length is not known until the data is read. */
   static public Dimension VLEN = new Dimension( "*", -1, true, false, true).setImmutable(); // for Sequences, HDF5 VarLength
 
+  static public String makeDimensionList(List<Dimension> dimList) {
+    StringBuilder out = new StringBuilder();
+    for (Dimension dim : dimList)
+      out.append(dim.getName()).append(" ");
+    return out.toString();
+  }
+
   private boolean isUnlimited = false;
   private boolean isVariableLength = false;
   private boolean isShared = true; // shared means its in a group dimension list.

@@ -37,6 +37,7 @@ package ucar.nc2.ncml;
 import junit.framework.TestCase;
 
 import ucar.nc2.*;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.ma2.Range;
@@ -69,12 +70,14 @@ public class TestOffAggFmrcScan2 extends TestCase {
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null);
     System.out.println(" TestAggForecastModel.open "+ filename);
     System.out.println("file="+ncfile);
+    
+    TestAll.readAll(ncfile);
 
     ncfile.close();
   }
 
   public void testOpenNomads() throws Exception {
-    String dataDir = TestAll.cdmUnitTestDir + "nomads/gfs-hi/";
+    String dataDir = TestAll.cdmUnitTestDir + "nomads/new/";
     String ncml =
       "<?xml version='1.0' encoding='UTF-8'?>\n" +
       "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
@@ -89,6 +92,8 @@ public class TestOffAggFmrcScan2 extends TestCase {
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null);
     System.out.println(" TestAggForecastModel.open "+ filename);
     System.out.println("file="+ncfile);
+
+    TestAll.readAll(ncfile);
 
     ncfile.close();
   }
@@ -105,6 +110,13 @@ public class TestOffAggFmrcScan2 extends TestCase {
     System.out.println(" coordSys= "+subset.getCoordinateSystem());
 
     gridDataset.close();
+  }
+
+  public static void main(String[] args) throws IOException {
+    String fname = "D:/work/signell/rtofs/rtofs.ncml";
+    NetcdfFile ncfile = NetcdfDataset.openDataset(fname);
+    TestAll.readAll(ncfile);
+    ncfile.close();
   }
 
 

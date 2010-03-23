@@ -138,6 +138,11 @@ public class Group {
    */
   public java.util.List<Group> getGroups() { return groups; }
 
+  /** Get the owning NetcdfFile
+   * @return owning NetcdfFile.
+   */
+  public NetcdfFile getNetcdfFile() { return ncfile; }
+
   /**
    * Retrieve the Group with the specified (short) name.
    * @param groupShortName short name of the nested group you are looking for. May be escaped.

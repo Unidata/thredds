@@ -32,6 +32,7 @@
 
 package thredds.filesystem;
 
+import net.jcip.annotations.ThreadSafe;
 import thredds.inventory.MFile;
 
 /**
@@ -40,8 +41,9 @@ import thredds.inventory.MFile;
  * @author caron
  * @since Jun 30, 2009
  */
+@ThreadSafe
 public class MFileOS implements MFile {
-  private java.io.File file;
+  private final java.io.File file;
   private Object auxInfo;
   
   MFileOS(java.io.File file) {

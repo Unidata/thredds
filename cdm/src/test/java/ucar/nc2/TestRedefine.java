@@ -193,7 +193,6 @@ public class TestRedefine extends TestCase {
     file.close();
   }
 
-  // from Peter.Hollemans@noaa.gov 2/18/2010
   public void testRedefine3() throws IOException, InvalidRangeException {
     String filename = TestAll.temporaryLocalDataDir + "testRedefine3.nc";
     NetcdfFileWriteable ncFile = NetcdfFileWriteable.createNew (filename, false);
@@ -232,40 +231,4 @@ public class TestRedefine extends TestCase {
 
     nc.close();
   }
-
-  // from James.Dempsey@csiro.au 3/19/2010
-  public void testRedefine4() throws IOException, InvalidRangeException {
-
-    String dimensionName = "lat";
-    int dimensionSize = 20;
-    String variableName = "temp";
-    DataType variableDataType = DataType.getType("Float");
-
-    String outputFilename = TestAll.temporaryLocalDataDir + "testRedefine4.nc";
-
-    NetcdfFileWriteable ncFile = NetcdfFileWriteable.createNew(outputFilename, true);
-    try {
-      Dimension dimension = new Dimension(dimensionName, dimensionSize, true /* isShared */,
-          false /* isUnlimited */, false /* isVariableLength */);
-      ncFile.addDimension(null, dimension);
-      ncFile.create();
-    } catch (Exception e) {
-      e.printStackTrace();
-    } finally {
-      ncFile.close();
-    }
-
-    // note there are no variables in file !  this was the original bug
-    ncFile = NetcdfFileWriteable.openExisting(outputFilename, true);
-    try {
-      ncFile.setRedefineMode(true);
-      ncFile.addVariable(variableName, variableDataType, dimensionName);
-      ncFile.setRedefineMode(false);
-    } catch (Exception e) {
-      e.printStackTrace();
-    } finally {
-      ncFile.close();
-    }
-  }
-
 }

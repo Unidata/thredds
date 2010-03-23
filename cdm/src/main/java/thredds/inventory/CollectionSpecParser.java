@@ -35,23 +35,36 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.io.File;
 
+import net.jcip.annotations.ThreadSafe;
 import ucar.unidata.util.StringUtil;
 
 /**
  * Parses the collection specification string.
- * <p>the idea  is that one copies the fill path of an example dataset, then edits it</p>
- * <p>Example: &quot;/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/** /GFS_Alaska_191km_#yyyyMMdd_HHmm#.grib1&quot;</p>
+ * <p>the idea  is that one copies the full path of an example dataset, then edits it</p>
+ * <p>Example: "/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/** /GFS_Alaska_191km_#yyyyMMdd_HHmm#.grib1"</p>
   <ul>
-    <li> rootDir =&quot;/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km&quot;/</li>
-    <li>    subdirs=yes</li>
-    <li>    dateFormatMark=&quot;GFS_Alaska_191km_#yyyyMMdd_HHmm&quot;</li>
+    <li> rootDir ="/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km"/</li>
+    <li>    subdirs=yes (because ** is present) </li>
+    <li>    dateFormatMark="GFS_Alaska_191km_#yyyyMMdd_HHmm"</li>
     <li>    onName=yes</li>
-    <li>    regexp= &quot;GFS_Alaska_191km.........\.grib1&quot;</li>
+    <li>    regexp= "GFS_Alaska_191km.........\.grib1"</li>
   </ul>
+ * <p>Example: "Q:/grid/grib/grib1/data/agg/.*\.grb"</p>
+  <ul>
+    <li> rootDir ="Q:/grid/grib/grib1/data/agg/"/</li>
+    <li>    subdirs=no</li>
+    <li>    dateFormatMark=null</li>
+    <li>    onName=yes</li>
+    <li>    regexp= ".*\.grb" (anything ending with .grb)</li>
+  </ul>
+
+ "Q:/grid/grib/grib1/data/agg/"
  * @author caron
  * @since Jul 7, 2009
  */
+@ThreadSafe
 public class CollectionSpecParser {
+  private String spec;
   private String topDir;
   private boolean subdirs = false;
   private boolean error = false;
@@ -61,6 +74,7 @@ public class CollectionSpecParser {
   // not dealing yet with dateFormatMark being anywhere else than in the filename, ie not the path
 
   public CollectionSpecParser(String collectionSpec, Formatter errlog) {
+    this.spec = collectionSpec;
     int posFilter = -1;
 
     int posGlob = collectionSpec.indexOf("/**/");
@@ -113,6 +127,10 @@ public class CollectionSpecParser {
     }
   }
 
+  public String getSpec() {
+    return spec;
+  }
+
   public String getTopDir() {
     return topDir;
   }
@@ -143,7 +161,10 @@ public class CollectionSpecParser {
         '}';
   }
 
-  public static void doit(String spec, Formatter errlog) {
+  /////////////////////////////////////////////////////////
+  // debugging
+
+  private static void doit(String spec, Formatter errlog) {
     CollectionSpecParser specp = new CollectionSpecParser(spec, errlog);
     System.out.printf("spec= %s%n%s%n", spec, specp);
     String err = errlog.toString();

@@ -58,7 +58,7 @@ public class TestNcMLcaching {
 
     // filesystem caching test
     mc = thredds.filesystem.ControllerCaching.makeTestController("/data/thredds/ehcache/");
-    DatasetScanner.setController(mc);
+    //DatasetScanner.setController(mc);
 
     suite.addTest( ucar.nc2.ncml.TestNcML.suite());
     suite.addTest( ucar.nc2.ncml.TestNcMLoffsite.suite());  // */

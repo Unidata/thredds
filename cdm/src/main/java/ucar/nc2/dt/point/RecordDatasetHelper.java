@@ -54,6 +54,7 @@ import java.util.*;
 /**
  * Helper class for using the netcdf-3 record dimension. Can be used for PointObs or StationObs.
  *
+ * @deprecated use ucar.nc2.ft.*
  * @author caron
  */
 

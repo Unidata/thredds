@@ -63,26 +63,12 @@ public class CFpointObs extends TableConfigurerImpl {
   }
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
-    /* find datatype
-    String datatype = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt, null);
-    if (datatype == null)
-      datatype = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt2, null);
-    if (datatype == null)
-      datatype = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt3, null);
-    if (datatype == null)
-      return false;
-
-    if (CF.FeatureType.valueOf(datatype) == null)
-      return false;   */
-
     String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);
     if (conv == null) return false;
 
     StringTokenizer stoke = new StringTokenizer(conv, ",");
     while (stoke.hasMoreTokens()) {
       String toke = stoke.nextToken().trim();
-      //if (toke.startsWith("CF-1.0"))               LOOK also taking 1.0 ???
-      //  return false;  // let default analyser try
       if (toke.startsWith("CF"))
         return true;
     }
@@ -902,30 +888,6 @@ public class CFpointObs extends TableConfigurerImpl {
 
     return tableConfig;
   }
-
-  /* the middle table of Structure(outer, middle, inner)
-  private TableConfig makeMiddleTable(NetcdfDataset ds, FeatureType ftype, TableConfig parentTable, Dimension middle) throws IOException {
-    Table.Type middleTableType = parentTable.isPsuedoStructure ? Table.Type.MultidimInnerPsuedo : Table.Type.MultidimInner;
-    Dimension outer = parentTable.dim;
-
-    TableConfig middleTable = new TableConfig(middleTableType, ftype.toString());
-    middleTable.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, outer, middle);
-    middleTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, outer, middle);
-    middleTable.elev = matchAxisTypeAndDimension(ds, AxisType.Height, outer, middle);
-    middleTable.time = matchAxisTypeAndDimension(ds, AxisType.Time, outer, middle);
-    middleTable.featureType = ftype;
-
-    // set up structure
-    boolean stnIsStruct = Evaluator.hasRecordStructure(ds) && outer.isUnlimited();
-    middleTable.isPsuedoStructure = !stnIsStruct;
-    middleTable.dim = outer;
-    middleTable.outer = outer;
-    middleTable.inner = middle;
-    middleTable.structName = stnIsStruct ? "record" : outer.getName();
-
-    return middleTable;
-  }  */
-
 
   /////////////////////////////////////////////////////////////////////////////////
 

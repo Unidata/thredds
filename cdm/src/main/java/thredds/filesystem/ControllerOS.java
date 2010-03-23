@@ -32,6 +32,7 @@
 
 package thredds.filesystem;
 
+import net.jcip.annotations.ThreadSafe;
 import thredds.inventory.MCollection;
 import thredds.inventory.*;
 
@@ -45,7 +46,7 @@ import java.io.File;
  * @since Jun 25, 2009
  */
 
-
+@ThreadSafe
 public class ControllerOS implements MController {
 
   ////////////////////////////////////////

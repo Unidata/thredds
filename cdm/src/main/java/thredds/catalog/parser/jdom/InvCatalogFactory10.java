@@ -194,6 +194,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     for ( Element e : allChildren ) {
       if (e.getName().equals("dataset")) {
         catalog.addDataset( readDataset( catalog, null, e, baseURI ));
+      } else if (e.getName().equals("featureCollection")) {
+        catalog.addDataset( readFeatureCollection( catalog, null, e, baseURI ));
       } else if (e.getName().equals("datasetFmrc")) {
         catalog.addDataset( readDatasetFmrc( catalog, null, e, baseURI ));
       } else if (e.getName().equals("datasetScan")) {
@@ -329,10 +331,32 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
         dataset.addDataset( readDatasetScan( catalog, dataset, e, base));
       } else if (e.getName().equals("datasetFmrc")) {
         dataset.addDataset( readDatasetFmrc( catalog, dataset, e, base));
+      } else if (e.getName().equals("featureCollection")) {
+        dataset.addDataset( readFeatureCollection( catalog, dataset, e, base ));
       }
     }
   }
 
+  protected InvDatasetImpl readFeatureCollection( InvCatalogImpl catalog, InvDatasetImpl parent, Element dsElem, URI base) {
+    String name = dsElem.getAttributeValue("name");
+    String path = dsElem.getAttributeValue("path");
+    String featureType = dsElem.getAttributeValue("featureType");
+    InvDatasetFeatureCollection ds = new InvDatasetFeatureCollection( parent, name, path, featureType);
+
+    Element collElem = dsElem.getChild( "collection", defNS );
+    if (collElem == null) {
+      logger.error( "featureCollection "+name+" must have a <collection> element." );
+      return null;
+    }
+
+    String spec = collElem.getAttributeValue("spec");
+    String olderThan = collElem.getAttributeValue("olderThan");
+    String recheckEvery = collElem.getAttributeValue("recheckEvery");
+    ds.setCollection( spec, olderThan, recheckEvery);
+
+    readDatasetInfo( catalog, ds, dsElem, base);
+    return ds;
+  }
 
   protected InvDatasetImpl readDatasetFmrc( InvCatalogImpl catalog, InvDatasetImpl parent, Element dsElem, URI base) {
     String name = dsElem.getAttributeValue("name");

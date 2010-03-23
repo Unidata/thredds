@@ -32,6 +32,7 @@
 package ucar.nc2;
 
 import ucar.ma2.*;
+import ucar.nc2.util.CancelTask;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -155,7 +156,7 @@ public class StructurePseudo extends Structure {
   }
 
   @Override
-  protected Array _read() throws IOException {
+  public Array reallyRead(Variable mainv, CancelTask cancelTask) throws IOException {
     if (debugRecord) System.out.println(" read all psuedo records ");
     StructureMembers smembers = makeStructureMembers();
     ArrayStructureMA asma = new ArrayStructureMA( smembers, getShape());
@@ -170,7 +171,7 @@ public class StructurePseudo extends Structure {
   }
 
   @Override
-  protected Array _read(Section section) throws IOException, InvalidRangeException  {
+  public Array reallyRead(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException  {
     if (null == section)
       return _read();
 

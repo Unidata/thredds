@@ -119,9 +119,10 @@ public class CatalogCrawler {
    * @param catUrl url of catalog to open
    * @param task   user can cancel the task (may be null)
    * @param out    send status messages to here (may be null)
+   * @param context caller can pass this object in (used for thread safety)
    * @return number of catalog references opened and crawled
    */
-  public int crawl(String catUrl, CancelTask task, PrintStream out) {
+  public int crawl(String catUrl, CancelTask task, PrintStream out, Object context) {
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
     InvCatalogImpl cat = catFactory.readXML(catUrl);
     StringBuilder buff = new StringBuilder();
@@ -132,7 +133,7 @@ public class CatalogCrawler {
       out.println(" validation output=\n" + buff);
     }
     if (isValid)
-      return crawl(cat, task, out);
+      return crawl(cat, task, out, context);
     return 0;
   }
 
@@ -143,9 +144,10 @@ public class CatalogCrawler {
    * @param cat  the catalog
    * @param task user can cancel the task (may be null)
    * @param out  send status messages to here (may be null)
+   * @param context caller can pass this object in (used for thread safety)
    * @return number of catalog references opened and crawled
    */
-  public int crawl(InvCatalogImpl cat, CancelTask task, PrintStream out) {
+  public int crawl(InvCatalogImpl cat, CancelTask task, PrintStream out, Object context) {
 
     if (out != null)
       out.println("***CATALOG " + cat.getCreateFrom());
@@ -153,9 +155,9 @@ public class CatalogCrawler {
 
     for (InvDataset ds : cat.getDatasets()) {
       if (type == USE_ALL)
-        crawlDataset(ds, task, out);
+        crawlDataset(ds, task, out, context);
       else
-        crawlDirectDatasets(ds, task, out);
+        crawlDirectDatasets(ds, task, out, context);
       if ((task != null) && task.isCancel()) break;
     }
 
@@ -168,8 +170,9 @@ public class CatalogCrawler {
    * @param ds   the dataset
    * @param task user can cancel the task (may be null)
    * @param out  send status messages to here (may be null)
+   * @param context caller can pass this object in (used for thread safety)
    */
-  public void crawlDataset(InvDataset ds, CancelTask task, PrintStream out) {
+  public void crawlDataset(InvDataset ds, CancelTask task, PrintStream out, Object context) {
     boolean isCatRef = (ds instanceof InvCatalogRef);
     boolean isDataScan = ds.findProperty("DatasetScan") != null;
     boolean skipScanChildren = skipDatasetScan && (ds instanceof InvCatalogRef) && isDataScan;
@@ -180,13 +183,14 @@ public class CatalogCrawler {
         out.println(" **CATREF " + catref.getURI() + " (" + ds.getName() + ") ");
       countCatrefs++;
 
-      if (!listen.getCatalogRef( catref)) {
+      if (!listen.getCatalogRef( catref, context)) {
         catref.release();
         return;
       }
     }
 
-    if (!isCatRef || skipScanChildren || isDataScan) listen.getDataset(ds);
+    if (!isCatRef || skipScanChildren || isDataScan)
+      listen.getDataset(ds, context);
 
     // recurse - depth first
     if (!skipScanChildren) {
@@ -194,12 +198,12 @@ public class CatalogCrawler {
       if (isCatRef) {
         InvCatalogRef catref = (InvCatalogRef) ds;
         if (!isDataScan) {
-          listen.getDataset(catref.getProxyDataset()); // wait till a catref is read, so all metadata is there !
+          listen.getDataset(catref.getProxyDataset(), context); // wait till a catref is read, so all metadata is there !
         }
       }
 
       for (InvDataset dds : dlist) {
-        crawlDataset(dds, task, out);
+        crawlDataset(dds, task, out, context);
         if ((task != null) && task.isCancel())
           break;
       }
@@ -218,8 +222,9 @@ public class CatalogCrawler {
    * @param ds   the dataset
    * @param task user can cancel the task (may be null)
    * @param out  send status messages to here (may be null)
+   * @param context caller can pass this object in (used for thread safety)
    */
-  public void crawlDirectDatasets(InvDataset ds, CancelTask task, PrintStream out) {
+  public void crawlDirectDatasets(InvDataset ds, CancelTask task, PrintStream out, Object context) {
     boolean isCatRef = (ds instanceof InvCatalogRef);
     boolean skipScanChildren = skipDatasetScan && (ds instanceof InvCatalogRef) && (ds.findProperty("DatasetScan") != null);
 
@@ -229,7 +234,7 @@ public class CatalogCrawler {
         out.println(" **CATREF " + catref.getURI() + " (" + ds.getName() + ") ");
       countCatrefs++;
       
-      if (!listen.getCatalogRef( catref)) {
+      if (!listen.getCatalogRef( catref, context)) {
         catref.release();
         return;
       }
@@ -246,17 +251,17 @@ public class CatalogCrawler {
     if (leaves.size() > 0) {
       if (type == USE_FIRST_DIRECT) {
         InvDataset dds = (InvDataset) leaves.get(0);
-        listen.getDataset(dds);
+        listen.getDataset(dds, context);
 
       } else if (type == USE_RANDOM_DIRECT) {
-        listen.getDataset(chooseRandom(leaves));
+        listen.getDataset(chooseRandom(leaves), context);
 
       } else if (type == USE_RANDOM_DIRECT_NOT_FIRST_OR_LAST) {
-        listen.getDataset(chooseRandomNotFirstOrLast(leaves));
+        listen.getDataset(chooseRandomNotFirstOrLast(leaves), context);
 
       } else { // do all of them
         for (InvDataset dds : leaves) {
-          listen.getDataset(dds);
+          listen.getDataset(dds, context);
           if ((task != null) && task.isCancel()) break;
         }
       }
@@ -266,7 +271,7 @@ public class CatalogCrawler {
     if (!skipScanChildren) {
       for (InvDataset dds : dlist) {
         if (dds.hasNestedDatasets())
-          crawlDirectDatasets(dds, task, out);
+          crawlDirectDatasets(dds, task, out, context);
         if ((task != null) && task.isCancel())
           break;
       }
@@ -302,15 +307,17 @@ public class CatalogCrawler {
     /**
      * Gets called for each dataset found.
      * @param dd the dataset
+     * @param context caller can pass this object in (used for thread safety)
      */
-    public void getDataset(InvDataset dd);
+    public void getDataset(InvDataset dd, Object context);
 
     /**
      * Gets called for each catalogRef found
      * @param dd the dataset
      * @return true to process, false to skip
+     * @param context caller can pass this object in (used for thread safety)
      */
-    public boolean getCatalogRef(InvCatalogRef dd);
+    public boolean getCatalogRef(InvCatalogRef dd, Object context);
 
   }
 

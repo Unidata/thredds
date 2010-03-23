@@ -34,6 +34,7 @@
 package ucar.nc2.dataset;
 
 import ucar.nc2.*;
+import ucar.nc2.util.CancelTask;
 import ucar.ma2.*;
 
 import java.io.IOException;
@@ -99,8 +100,6 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     // dont share cache, iosp : all IO is delegated
     this.ncfile = null;
     this.spiObject = null;
-    this.preReader = null;
-    this.postReader = null;
     createNewCache();
 
     if (orgVar instanceof StructureDS)
@@ -134,22 +133,21 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
    * Does not share cache, iosp.
    * This is for NcML explicit mode
    *
+   * @param ds        the containing NetcdfDataset.
    * @param group     the containing group; may not be null
    * @param parent    parent Structure, may be null
    * @param shortName variable shortName, must be unique within the Group
    * @param orgVar    the original Structure to wrap.
    */
-  public StructureDS(Group group, Structure parent, String shortName, Structure orgVar) {
-    super(null, group, parent, shortName);
+  public StructureDS(NetcdfDataset ds, Group group, Structure parent, String shortName, Structure orgVar) {
+    super(ds, group, parent, shortName);
 
     if (orgVar instanceof Structure)
       throw new IllegalArgumentException("VariableDS must not wrap a Structure; name=" + orgVar.getName());
 
     // dont share cache, iosp : all IO is delegated
-    this.ncfile = null;
+    // this.ncfile = null;
     this.spiObject = null;
-    this.preReader = null;
-    this.postReader = null;
     createNewCache();
 
     this.orgVar = orgVar;
@@ -158,13 +156,13 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   // for section and slice and select
   @Override
   protected Variable copy() {
-    return new StructureDS(null, this); // why group == null ??
+    return new StructureDS(this.group, this);
   }
 
   // copy() doesnt work because convert gets called twice
   @Override
   public Structure select(List<String> memberNames) {
-    StructureDS result = new StructureDS(group, orgVar);   
+    StructureDS result = new StructureDS(this.group, orgVar);
     List<Variable> members = new ArrayList<Variable>();
     for (String name : memberNames) {
       Variable m = findVariable(name);
@@ -219,33 +217,13 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     super.setName(newName);
   }
 
-  /**
-   * Set the proxy reader.
-   *
-   * @param proxyReader set to this
-   */
-  public void setProxyReader(ProxyReader proxyReader) {
-    this.postReader = proxyReader;
-  }
-
-  /**
-   * Get the proxy reader, or null.
-   *
-   * @return return the proxy reader, if any
-   */
-  public ProxyReader getProxyReader() {
-    return this.postReader;
-  }
-
   // regular Variables.
   @Override
-  protected Array _read() throws IOException {
+  public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
     Array result;
 
     if (hasCachedData())
-      result = super._read();
-    else if (postReader != null)
-      result = postReader.read(this, null);
+      result = super.reallyRead(client, cancelTask);
     else if (orgVar != null)
       result = orgVar.read();
     else {
@@ -259,15 +237,13 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
   // section of regular Variable
   @Override
-  protected Array _read(Section section) throws IOException, InvalidRangeException {
+  public Array reallyRead(Variable client, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
     if (section.computeSize() == getSize())
       return _read();
 
     Array result;
     if (hasCachedData())
-      result = super._read(section);
-    else if (postReader != null)
-      result = postReader.read(this, section, null);
+      result = super.reallyRead(client, section, cancelTask);
     else if (orgVar != null)
       result = orgVar.read(section);
     else {

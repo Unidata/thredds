@@ -79,8 +79,6 @@ public class ThreddsDataFactory {
   static private boolean debugOpen = false;
   static private boolean debugTypeOpen = false;
 
-  private InvCatalogFactory catFactory = new InvCatalogFactory("", false);
-
   /**
    * The result of trying to open a THREDDS dataset.
    * If fatalError is true, the operation failed, errLog should indicate why.
@@ -167,6 +165,7 @@ public class ThreddsDataFactory {
       return null;
     }
 
+    InvCatalogFactory catFactory = new InvCatalogFactory("", false);
     String catalogLocation = location.substring(0, pos);
     catalog = catFactory.readXML(catalogLocation);
     StringBuilder buff = new StringBuilder();
@@ -199,7 +198,7 @@ public class ThreddsDataFactory {
     return openFeatureDataset(null, invDataset, task, new Result());
   }
 
-  private ThreddsDataFactory.Result openFeatureDataset(FeatureType wantFeatureType, InvDataset invDataset, ucar.nc2.util.CancelTask task, Result result) throws IOException {
+  public ThreddsDataFactory.Result openFeatureDataset(FeatureType wantFeatureType, InvDataset invDataset, ucar.nc2.util.CancelTask task, Result result) throws IOException {
 
     result.featureType = invDataset.getDataType();
     if (result.featureType == null)
@@ -557,6 +556,7 @@ public class ThreddsDataFactory {
   }
 
   private InvDatasetImpl openResolver(String urlString, ucar.nc2.util.CancelTask task, Result result) {
+    InvCatalogFactory catFactory = new InvCatalogFactory("", false);
     InvCatalogImpl catalog = catFactory.readXML(urlString);
     if (catalog == null) {
       result.errLog.format("Couldnt open Resolver %s %n ", urlString);

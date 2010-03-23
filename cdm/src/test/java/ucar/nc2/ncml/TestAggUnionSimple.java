@@ -178,7 +178,6 @@ public class TestAggUnionSimple extends TestCase {
 
     assert !(org instanceof VariableDS);
 
-    assert vds.getProxyReader() == null;
     assert v.getParentGroup().equals(org.getParentGroup());
     assert v.getParentGroup() != org.getParentGroup();
   }

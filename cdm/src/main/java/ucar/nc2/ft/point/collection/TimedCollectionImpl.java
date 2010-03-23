@@ -65,7 +65,7 @@ public class TimedCollectionImpl implements TimedCollection {
    */
   public TimedCollectionImpl(String collectionSpec, Formatter errlog) throws IOException {
     sp = new CollectionSpecParser(collectionSpec, errlog);
-    DatasetCollectionManager manager = new DatasetCollectionManager(sp, errlog);
+    CollectionManager manager = new DatasetCollectionManager(sp, errlog);
 
     // get the inventory, sorted by path
     manager.scan(null);

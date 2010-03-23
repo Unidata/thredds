@@ -49,7 +49,8 @@ import java.util.List;
 
 public class CoordinateAxis2D extends CoordinateAxis {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis2D.class);
-
+  static private final boolean debug = true;
+  
   /**
    * Create a 2D coordinate axis from an existing VariableDS
    * @param ncd the containing dataset
@@ -89,6 +90,8 @@ public class CoordinateAxis2D extends CoordinateAxis {
     data = data.reduce();
     if (data.getRank() != 2)
       throw new IllegalArgumentException("must be 2D");
+    if (debug)
+      System.out.printf("Coordinate2D read%n");
 
     midpoint = (ArrayDouble.D2) Array.factory(double.class, data.getShape(), data.get1DJavaArray( double.class) );
   }

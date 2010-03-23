@@ -543,7 +543,6 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
       if (invList == null) continue;
 
       addTime3Coordinates(newds, gridset, invList, type);
-      Subsetter subs = new Subsetter(invList);
 
       for (GridDatatype grid : gridset.gridList) {
         Variable orgVar = ncd_2dtime.findVariable(grid.getNameEscaped());
@@ -551,7 +550,7 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
         VariableDS v = new VariableDS(target, orgVar, false);
         v.clearCoordinateSystems();
         v.setDimensions(gridset.makeDimensions(v.getDimensions()));
-        v.setProxyReader(subs);
+        // v.addProxyReader(new Subsetter(invList, v));
         v.remove(v.findAttribute(_Coordinate.Axes));
         v.remove(v.findAttribute("coordinates"));
         v.remove(v.findAttribute("_CoordinateAxes"));
@@ -732,14 +731,16 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
   /////////////////////////////
   // assumes any Variable coming here has one time dimension, and orgVar has 2
 
-  private class Subsetter implements ProxyReader {
+  private class Subsetter {
     List<Inventory> invList;
+    Variable mainv;
 
-    Subsetter(List<Inventory> invList) {
+    Subsetter(List<Inventory> invList, Variable mainv) {
       this.invList = invList;
+      this.mainv = mainv;
     }
 
-    public Array read(Variable mainv, CancelTask cancelTask) throws IOException {
+    public Array reallyRead(CancelTask cancelTask) throws IOException {
       Variable orgVar = ncd_2dtime.findVariable(mainv.getNameEscaped());
       int[] orgVarShape = orgVar.getShape();
 
@@ -776,11 +777,11 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
       return allData;
     }
 
-    public Array read(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
+    public Array reallyRead(Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
       // If its full sized, then use full read, so that data gets cached. LOOK probably doesnt work, since mainv == orgVar
       long size = section.computeSize();
       if (size == mainv.getSize())
-        return read(mainv, cancelTask);
+        return reallyRead(cancelTask);
 
       Variable orgVar = ncd_2dtime.findVariable(mainv.getNameEscaped());
 

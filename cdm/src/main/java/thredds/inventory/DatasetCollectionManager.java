@@ -32,6 +32,7 @@
 
 package thredds.inventory;
 
+import net.jcip.annotations.ThreadSafe;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.util.CancelTask;
 
@@ -39,51 +40,93 @@ import java.util.*;
 import java.io.IOException;
 
 import thredds.inventory.filter.*;
+import thredds.inventory.bdb.MetadataManager;
 
 /**
- * Manage a list of Scanners that find MFiles
+ * Manage one or more Directory Scanners that find MFiles
  * Tracks when they need to be rescanned.
  * Used in:
  * <ul>
  *  <li> replaces older version in ncml.Aggregation
  *  <li> ucar.nc2.ft.point.collection.TimedCollectionImpl
- * </.ul>
+ * </ul>
+ *
+ * looks like we need to be thread safe, for InvDatasetFeatureCollection
  *
  * @author caron
  * @since Jul 8, 2009
  */
-public class DatasetCollectionManager {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DatasetCollectionManager.class);
-  static private boolean debugSyncDetail = false;
+@ThreadSafe
+public class DatasetCollectionManager implements CollectionManager {
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DatasetCollectionManager.class);
+  static private final boolean debugSyncDetail = false;
   static private MController controller;
 
+  /**
+   * Set the MController used by scan. Defaults to thredds.filesystem.ControllerOS() if not set.
+   * @param _controller use this MController
+   */
   static public void setController(MController _controller) {
     controller = _controller;
   }
 
   ////////////////////////////////////////////////////////////////////
 
-  private List<MCollection> scanList = new ArrayList<MCollection>();
-  private Map<String, MFile> map; // current map of MFile
+  protected String collectionName;
+  private final List<MCollection> scanList = new ArrayList<MCollection>();
+  protected TimeUnit recheck; // how often to recheck LOOK what should default be ?
 
-  private TimeUnit recheck; // how often to recheck
+  private Map<String, MFile> map; // current map of MFile
   private long lastScanned; // last time scanned
 
+  protected DatasetCollectionManager() {}
+
   public DatasetCollectionManager(String collectionSpec, Formatter errlog) {
+    this.collectionName = collectionSpec; // StringUtil.escape(collectionSpec, "");
     CollectionSpecParser sp = new CollectionSpecParser(collectionSpec, errlog);
 
     MFileFilter mfilter = (null == sp.getFilter()) ? null : new WildcardMatchOnName(sp.getFilter());
-    DateExtractor dateExtractor = (sp.getDateFormatMark() == null) ? null : new DateExtractorFromName(sp.getDateFormatMark());
+    DateExtractor dateExtractor = (sp.getDateFormatMark() == null) ? null : new DateExtractorFromName(sp.getDateFormatMark(), true);
     scanList.add(new MCollection(sp.getTopDir(), sp.getTopDir(), sp.wantSubdirs(), mfilter, dateExtractor, null));
   }
 
   public DatasetCollectionManager(CollectionSpecParser sp, Formatter errlog) {
+    this.collectionName = sp.getSpec();
     MFileFilter mfilter = (null == sp.getFilter()) ? null : new WildcardMatchOnName(sp.getFilter());
-    DateExtractor dateExtractor = (sp.getDateFormatMark() == null) ? null : new DateExtractorFromName(sp.getDateFormatMark());
+    DateExtractor dateExtractor = (sp.getDateFormatMark() == null) ? null : new DateExtractorFromName(sp.getDateFormatMark(), true);
     scanList.add(new MCollection(sp.getTopDir(), sp.getTopDir(), sp.wantSubdirs(), mfilter, dateExtractor, null));
   }
 
+  public DatasetCollectionManager(CollectionSpecParser sp, String olderThanFilter, Formatter errlog) {
+    this.collectionName = sp.getSpec();
+
+    List<MFileFilter> filters = new ArrayList<MFileFilter>(3);
+    if (null != sp.getFilter())
+      filters.add( new WildcardMatchOnName(sp.getFilter()));
+
+    if (olderThanFilter != null) {
+      try {
+        TimeUnit tu = new TimeUnit(olderThanFilter);
+        filters.add( new LastModifiedLimit((long) (1000 * tu.getValueInSeconds())));
+      } catch (Exception e) {
+        logger.error("Invalid time unit for olderThan = {}", olderThanFilter);
+      }
+    }
+
+    MFileFilter mfilter = (filters.size() == 0) ? null : ((filters.size() == 1) ? filters.get(0) : new Composite(filters));
+    DateExtractor dateExtractor = (sp.getDateFormatMark() == null) ? null : new DateExtractorFromName(sp.getDateFormatMark(), true);
+    scanList.add(new MCollection(sp.getTopDir(), sp.getTopDir(), sp.wantSubdirs(), mfilter, dateExtractor, null));
+  }
+
+  /**
+   * Must also call addDirectoryScan one or more times
+   * @param recheckS a undunit time unit, specifying how often to rscan
+   */
   public DatasetCollectionManager(String recheckS) {
+    setRecheck(recheckS);
+  }
+
+  public void setRecheck(String recheckS) {
     if (recheckS != null) {
       try {
         this.recheck = new TimeUnit(recheckS);
@@ -93,8 +136,18 @@ public class DatasetCollectionManager {
     }
   }
 
-  public void addDirectoryScan(String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS, String dateFormatString,
-                               Object auxInfo) {
+  /**
+   * Add a directory scan to the collection
+   * @param dirName scan this directory
+   * @param suffix  require this suffix (overriddden by regexp), may be null
+   * @param regexpPatternString if present, use this reqular expression to filter files , may be null
+   * @param subdirsS if "true", descend into subdirectories, may be null
+   * @param olderS udunit time unit - files must be older than this amount of time (now - lastModified > olderTime), may be null
+   * @param dateFormatString dateFormatMark string, may be null
+   * @param auxInfo attach this object to any MFile found by this scan
+   */
+  public void addDirectoryScan(String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS,
+                               String dateFormatString, Object auxInfo) {
     List<MFileFilter> filters = new ArrayList<MFileFilter>(3);
     if (null != regexpPatternString)
       filters.add(new RegExpMatchOnName(regexpPatternString));
@@ -110,7 +163,7 @@ public class DatasetCollectionManager {
       }
     }
 
-    DateExtractor dateExtractor = (dateFormatString == null) ? null : new DateExtractorFromName(dateFormatString);
+    DateExtractor dateExtractor = (dateFormatString == null) ? null : new DateExtractorFromName(dateFormatString, true);
 
     boolean wantSubdirs = true;
     if ((subdirsS != null) && subdirsS.equalsIgnoreCase("false"))
@@ -119,7 +172,24 @@ public class DatasetCollectionManager {
     MFileFilter filter = (filters.size() == 0) ? null : ((filters.size() == 1) ? filters.get(0) : new Composite(filters));
     MCollection mc = new thredds.inventory.MCollection(dirName, dirName, wantSubdirs, filter, dateExtractor, auxInfo);
 
+    // create name
+    StringBuilder sb = new StringBuilder(dirName);
+    if (wantSubdirs)
+      sb.append("**/");
+    if (null != regexpPatternString)
+      sb.append(regexpPatternString);
+    else if (suffix != null)
+      sb.append(suffix);
+    else
+      sb.append("noFilter");
+
+    collectionName = sb.toString();
     scanList.add(mc);
+  }
+
+  @Override
+  public String getCollectionName() {
+    return "fmrc:" + collectionName;
   }
 
   /**
@@ -132,8 +202,10 @@ public class DatasetCollectionManager {
   public void scan(CancelTask cancelTask) throws IOException {
     Map<String, MFile> newMap = new HashMap<String, MFile>();
     scan(newMap, cancelTask);
-    map = newMap;
-    this.lastScanned = System.currentTimeMillis();
+    synchronized(this) {
+      map = newMap;
+      this.lastScanned = System.currentTimeMillis();
+    }
   }
 
   /**
@@ -175,9 +247,9 @@ public class DatasetCollectionManager {
    */
   public boolean rescan() throws IOException {
     if (logger.isDebugEnabled()) logger.debug(" *Sync at " + new Date());
-    lastScanned = System.currentTimeMillis();
 
     // rescan
+    Map<String, MFile> oldMap = map;
     Map<String, MFile> newMap = new HashMap<String, MFile>();
     scan(newMap, null);
 
@@ -185,7 +257,7 @@ public class DatasetCollectionManager {
     boolean changed = false;
     for (MFile newDataset : newMap.values()) {
       String path = newDataset.getPath();
-      MFile oldDataset = map.get(path);
+      MFile oldDataset = oldMap.get(path);
       if (oldDataset != null) {
         newMap.put(path, oldDataset);
         if (debugSyncDetail) System.out.println("  sync using old Dataset= " + path);
@@ -196,7 +268,7 @@ public class DatasetCollectionManager {
     }
 
     if (!changed) { // check for deletions
-      for (MFile oldDataset : map.values()) {
+      for (MFile oldDataset : oldMap.values()) {
         String path = oldDataset.getPath();
         MFile newDataset = newMap.get(path);
         if (newDataset == null) {
@@ -207,8 +279,12 @@ public class DatasetCollectionManager {
       }
     }
 
-    if (changed)
-      map = newMap;
+    if (changed) {
+      synchronized (this) {
+        map = newMap;
+        this.lastScanned = System.currentTimeMillis();
+      }
+    }
 
     return changed;
   }
@@ -242,10 +318,10 @@ public class DatasetCollectionManager {
     return result;
   }
 
-  private void scan(java.util.Map<String, MFile> map, CancelTask cancelTask) throws IOException {
+  protected void scan(java.util.Map<String, MFile> map, CancelTask cancelTask) throws IOException {
     if (null == controller) controller = new thredds.filesystem.ControllerOS();  // default
 
-    // run through all scanners and collect MFile instances ito the Map
+    // run through all scanners and collect MFile instances into the Map
     for (MCollection mc : scanList) {
 
       Iterator<MFile> iter = (mc.wantSubdirs()) ? controller.getInventory(mc) : controller.getInventoryNoSubdirs(mc);
@@ -263,6 +339,31 @@ public class DatasetCollectionManager {
       if ((cancelTask != null) && cancelTask.isCancel())
         return;
     }
+  }
+
+  public String toString() { return collectionName; }
+
+  ///////////////////////
+  private MetadataManager mm;
+
+  private void initMM() {
+    try {
+      mm = new MetadataManager(collectionName);
+    } catch (IOException e) {
+      throw new RuntimeException(e.getMessage());
+    }
+  }
+
+  @Override
+  public void putMetadata(MFile file, String key, byte[] value) {
+    if (mm == null) initMM();
+    mm.put(file.getPath()+"#"+key, value);
+  }
+
+  @Override
+  public byte[] getMetadata(MFile file, String key) {
+    if (mm == null) initMM();
+    return mm.getBytes(file.getPath()+"#"+key);
   }
 
 

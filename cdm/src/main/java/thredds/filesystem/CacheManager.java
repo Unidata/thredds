@@ -135,25 +135,27 @@ public class CacheManager {
       if (cacheLog.isDebugEnabled()) cacheLog.debug("thredds.filesystem.CacheManager found in cache; path =" + path);
 
       CacheDirectory m = (CacheDirectory) e.getValue();
-      if (!recheck) return m;
+      if (m != null) { // not sure how a null m gets in here
+        if (!recheck) return m;
 
-      File f = new File(m.getPath()); // check if file exists and when last modified
-      if (!f.exists()) {
+        File f = new File(m.getPath()); // check if file exists and when last modified
+        if (!f.exists()) {
+          cache.put(new Element(path, null));
+          return null;
+        }
+
+        boolean modified = (f.lastModified() > m.lastModified);
+        if (cacheLog.isDebugEnabled()) cacheLog.debug("thredds.filesystem.CacheManager modified diff = "+
+                (f.lastModified() - m.lastModified) +
+                "; path=" + path);
+
+        if (!modified) {
+          hits.incrementAndGet();
+          return m;
+        }
+        // if modified, null it out and reread it
         cache.put(new Element(path, null));
-        return null;
       }
-
-      boolean modified = (f.lastModified() > m.lastModified);
-      if (cacheLog.isDebugEnabled()) cacheLog.debug("thredds.filesystem.CacheManager modified diff = "+
-              (f.lastModified() - m.lastModified) +
-              "; path=" + path);
-
-      if (!modified) {
-        hits.incrementAndGet();
-        return m;
-      }
-      // if modified, null it out and reread it
-      cache.put(new Element(path, null));
     }
 
     File p = new File(path);

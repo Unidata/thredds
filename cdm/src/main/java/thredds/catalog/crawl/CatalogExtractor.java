@@ -93,16 +93,16 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
     countNoOpen = 0;
     int countCatRefs = 0;
     CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.USE_ALL_DIRECT, false, new CatalogCrawler.Listener() {
-      public void getDataset(InvDataset dd) {
+      public void getDataset(InvDataset dd, Object context) {
         InvAccess access = tdataFactory.chooseDatasetAccess(dd.getAccess());
         if (null != access) transfer(access.getStandardUrlName(), copyDir);
       }
-      public boolean getCatalogRef(InvCatalogRef dd) { return true; }      
+      public boolean getCatalogRef(InvCatalogRef dd, Object context) { return true; }
     });
 
     long start = System.currentTimeMillis();
     try {
-      countCatRefs = crawler.crawl(cat, task, out);
+      countCatRefs = crawler.crawl(cat, task, out, null);
     } finally {
       int took = (int) (System.currentTimeMillis() - start) / 1000;
 
@@ -144,7 +144,7 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
     CatalogCrawler crawler = new CatalogCrawler(type, skipDatasetScan, this);
     long start = System.currentTimeMillis();
     try {
-      countCatRefs = crawler.crawl(cat, task, out);
+      countCatRefs = crawler.crawl(cat, task, out, null);
     } finally {
       int took = (int) (System.currentTimeMillis() - start) / 1000;
 
@@ -158,13 +158,13 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
     }
   }
 
-  public void getDataset(InvDataset ds) {
+  public void getDataset(InvDataset ds, Object context) {
     countDatasets++;
     openDataset(out, ds);
     //return extractTypedDatasetInfo( out, ds);
   }
 
-  public boolean getCatalogRef(InvCatalogRef dd) { return true; }
+  public boolean getCatalogRef(InvCatalogRef dd, Object context) { return true; }
   
 
   public boolean openDataset(PrintStream out, InvDataset ds) {

@@ -32,7 +32,6 @@
 
 package ucar.nc2.dataset;
 
-import ucar.nc2.Sequence;
 import ucar.nc2.Group;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureData;

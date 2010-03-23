@@ -553,7 +553,8 @@ abstract public class StructureData {
    */
   public String getScalarString(String memberName) {
     StructureMembers.Member m = findMember(memberName);
-    if (null == m) throw new IllegalArgumentException("Member not found= " + memberName);
+    if (null == m)
+      throw new IllegalArgumentException("Member not found= " + memberName);
     return getScalarString(m);
   }
 

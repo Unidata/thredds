@@ -746,7 +746,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
     // might as well cache the data
     if (data != null) {
-      v.setCachedData(data, false);
+      v.setCachedData(data);
       if (debugCached) System.out.println(" cache for <" + name + "> length =" + data.getSize());
     }
   }
@@ -1264,7 +1264,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
           }
 
           if (var.isCaching()) {
-            var.setCachedData(data, false);
+            var.setCachedData(data);
             if (debugCached) System.out.println(" cache for <" + var.getName() + "> length =" + data.getSize());
           }
         }

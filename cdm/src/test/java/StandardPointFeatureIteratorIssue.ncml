@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+
+  <dimension name="station" length="2" />
+  <dimension name="station_id_len" length="32" />
+  <dimension name="observation" length="5" isUnlimited="true" />
+
+  <attribute name="Conventions" value="Unidata Observation Dataset v1.0" />
+  <attribute name="cdm_datatype" value="STATION" />
+  <attribute name="stationDimension" value="station" />
+  <attribute name="observationDimension" value="observation" />
+  <attribute name="latitude_coordinate" value="lat" />
+  <attribute name="longitude_coordinate" value="lon" />
+  <attribute name="zaxis_coordinate" value="elev" />
+  <attribute name="time_coordinate" value="time" />
+
+  <variable name="station_id" shape="station station_id_len" type="char">
+    <attribute name="standard_name" value="station_id" />
+    <values>"station 1" "station2"</values>
+  </variable>
+  <variable name="lon" shape="station" type="float">
+    <attribute name="units" value="degrees_east" />
+    <attribute name="_FillValue" type="float" value="-999.999" />
+    <values>-89 -90</values>
+  </variable>
+  <variable name="lat" shape="station" type="float">
+    <attribute name="units" value="degrees_north" />
+    <attribute name="_FillValue" type="float" value="-99.999" />
+    <values>44 45</values>
+  </variable>
+  <variable name="elev" shape="station" type="float">
+    <attribute name="units" value="ft" />
+    <attribute name="positive" value="up" />
+    <attribute name="_FillValue" type="float" value="-99.999" />
+    <values>100 200</values>
+  </variable>
+  <variable name="numChildren" shape="station" type="int">
+    <attribute name="standard_name" value="ragged_row_size" />
+    <values>3 2</values>
+  </variable>
+  <variable name="firstChild" shape="station" type="int">
+    <values>0 3</values>
+  </variable>
+
+  <variable name="time" shape="observation" type="short">
+    <attribute name="units" value="days since 2000-01-01 00:00:00" />
+    <values>0 1 3 0 3</values>
+  </variable>
+
+  <variable name="temp" shape="observation" type="short">
+    <attribute name="units" value="degF" />
+    <attribute name="_FillValue" type="short" value="-9999" />
+    <attribute name="scale_factor" type="float" value="0.1" />
+    <attribute name="add_offset" type="float" value="0." />
+    <attribute name="coordinates" value="time lon lat elev" />
+    <values start="0" increment="1" />
+  </variable>
+
+</netcdf>
+

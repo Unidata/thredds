@@ -1776,7 +1776,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     }
 
     if (spi == null)
-      System.out.println("HEY");
+      System.out.println("HEY missing spi");
     Array result = spi.readData(v, ranges);
     result.setUnsigned(v.isUnsigned());
     return result;
@@ -1796,15 +1796,14 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    */
 
   protected long readToByteChannel(ucar.nc2.Variable v, Section section, WritableByteChannel wbc)
-       throws java.io.IOException, ucar.ma2.InvalidRangeException {
+          throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
     if (unlocked)
       throw new IllegalStateException("File is unlocked - cannot use");
 
-    if (spi == null)
-      return AbstractIOServiceProvider.copyToByteChannel( v.read(section), wbc);
+    if ((spi == null) || v.hasCachedData())
+      return IospHelper.copyToByteChannel(v.read(section), wbc);
 
-     // LOOK: should go through Variable for caching ??
     return spi.readToByteChannel(v, section, wbc);
   }
 
@@ -1929,7 +1928,53 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       f.format("  iosp= %s%n%n", spi.getClass());
       f.format( spi.getDetailInfo());
     }
+    showCached(f);
+    showProxies(f);
     return f.toString();
+  }
+
+  protected void showCached(Formatter f) {
+    int maxNameLen = 8;
+    for (Variable v : getVariables()) {
+      maxNameLen = Math.max(maxNameLen, v.getShortName().length());
+    }
+
+    long total = 0;
+    f.format( "%n%-"+maxNameLen+"s isCaching  size     cachedSize (bytes) %n", "Variable");
+    for (Variable v : getVariables()) {
+      f.format( " %-"+maxNameLen+"s %5s %8d ", v.getShortName(), v.isCaching(), v.getSize() * v.getElementSize());
+      if (v.hasCachedData()) {
+        Array data = null;
+        try {
+          data = v.read();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+        long size = data.getSizeBytes();
+        f.format( " %8d", size);
+        total += size;
+      }
+      f.format( "%n");
+    }
+    f.format(" %"+maxNameLen+"s                  --------%n", " ");
+    f.format(" %"+maxNameLen+"s                 %8d Kb total cached%n", " ", total/1000);
+  }
+
+  protected void showProxies(Formatter f) {
+    int maxNameLen = 8;
+    boolean hasProxy = false;
+    for (Variable v : getVariables()) {
+      if (v.proxyReader != v) hasProxy = true;
+      maxNameLen = Math.max(maxNameLen, v.getShortName().length());
+    }
+    if (!hasProxy) return;
+
+    f.format( "%n%-"+maxNameLen+"s  proxyReader   Variable.Class %n", "Variable");
+    for (Variable v : getVariables()) {
+      if (v.proxyReader != v)
+        f.format( " %-"+maxNameLen+"s  %s %s%n", v.getShortName(),  v.proxyReader.getClass().getName(), v.getClass().getName());
+    }
+    f.format( "%n");
   }
 
   /**
@@ -1990,6 +2035,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   public static void main(String[] arg) throws Exception {
     //NetcdfFile.registerIOProvider( ucar.nc2.grib.GribServiceProvider.class);
 
+    int wide=20;
+    Formatter f = new Formatter(System.out);
+    f.format( " %"+wide+"s %n", "test");
+    f.format( " %20s %n", "asiuasdipuasiud");
+
+    /*
     try {
       String filename = "R:/testdata/hdf5/npoess/ExampleFiles/AVAFO_NPP_d2003125_t10109_e101038_b9_c2005829155458_devl_Tst.h5";
       NetcdfFile ncfile = NetcdfFile.open(filename);
@@ -1999,7 +2050,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
     } catch (Exception e) {
       e.printStackTrace();
-    }
+    }            */
   }
 
 }

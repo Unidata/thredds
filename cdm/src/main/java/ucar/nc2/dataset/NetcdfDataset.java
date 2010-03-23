@@ -1069,7 +1069,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     unlocked = false;
 
     if (agg != null)
-      return agg.syncExtend(false);
+      return agg.syncExtend();
 
     // synch orgFile if it has an unlimited dimension
     if (orgFile != null) {
@@ -1469,18 +1469,21 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     f.format("  fileDesc= %s%n", getFileTypeDescription());
 
     f.format("  class= %s%n", getClass().getName());
-    if (orgFile == null) {
-      f.format("  has no referenced NetcdfFile%n");
-    } else {
-      f.format("%nReferenced File:%n");
-      f.format(orgFile.getDetailInfo());
-    }
 
     if (agg == null) {
       f.format("  has no Aggregation element%n");
     } else {
       f.format("%nAggregation:%n");
       agg.getDetailInfo(f);
+    }
+
+    if (orgFile == null) {
+      f.format("  has no referenced NetcdfFile%n");
+      showCached(f);
+      showProxies(f);
+    } else {
+      f.format("%nReferenced File:%n");
+      f.format(orgFile.getDetailInfo());
     }
 
     return f.toString();

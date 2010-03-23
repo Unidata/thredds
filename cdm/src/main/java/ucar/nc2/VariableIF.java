@@ -70,7 +70,6 @@ public interface VariableIF extends VariableSimpleIF {
 
     public ucar.ma2.Array read(int[] origin, int[] shape) throws java.io.IOException, ucar.ma2.InvalidRangeException;
     public ucar.ma2.Array read(java.lang.String rangeSpec) throws java.io.IOException, ucar.ma2.InvalidRangeException;
-    //public ucar.ma2.Array read(java.util.List<Range> ranges) throws java.io.IOException, ucar.ma2.InvalidRangeException;
     public ucar.ma2.Array read(ucar.ma2.Section section) throws java.io.IOException, ucar.ma2.InvalidRangeException;
     public ucar.ma2.Array read() throws java.io.IOException;
 

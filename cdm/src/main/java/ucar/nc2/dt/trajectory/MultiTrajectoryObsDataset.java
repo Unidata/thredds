@@ -69,6 +69,7 @@ import java.util.*;
  * varM( time, traj[, dim#]*)
  * </pre>
  *
+ * @deprecated use ucar.nc2.ft.*
  * @author edavis
  * @since 13 May 2005 16:12 -0600
  */
@@ -184,7 +185,7 @@ public class MultiTrajectoryObsDataset
            ! curVar.equals( this.elevVar) &&
            ( this.recordVar == null ? true : ! curVar.equals( this.recordVar)))
       {
-        MyTypedDataVariable typedVar = new MyTypedDataVariable( new VariableDS( null, curVar, true ) );
+        MyTypedDataVariable typedVar = new MyTypedDataVariable( new VariableDS(  null, curVar, true ) );
         dataVariables.add( typedVar);
         trajectoryVarsMap.put( typedVar.getName(), typedVar);
       }

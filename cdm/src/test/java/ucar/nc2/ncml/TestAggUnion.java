@@ -172,7 +172,6 @@ public class TestAggUnion extends TestCase {
     Variable org = vds.getOriginalVariable();
     assert vds.getOriginalDataType() == org.getDataType();
 
-    assert vds.getProxyReader() == null;
     assert v.getParentGroup().equals(org.getParentGroup());
     assert v.getParentGroup() != org.getParentGroup();
 
@@ -184,7 +183,6 @@ public class TestAggUnion extends TestCase {
     assert vds.getOriginalDataType() == org.getDataType();
     assert !(org instanceof VariableDS);
 
-    assert vds.getProxyReader() == null;
     assert v.getParentGroup().equals(org.getParentGroup());
     assert v.getParentGroup() != org.getParentGroup();
   }

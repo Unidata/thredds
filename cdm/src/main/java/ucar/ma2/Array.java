@@ -283,12 +283,21 @@ public abstract class Array {
    * @param len      number of elements to copy
    */
   static public void arraycopy(Array arraySrc, int srcPos, Array arrayDst, int dstPos, int len) {
-    Object src = arraySrc.get1DJavaArray( arraySrc.getElementType()); // ensure canonical order
-    //try {
-      System.arraycopy(src, srcPos, arrayDst.getStorage(), dstPos, len);
-    //} catch (Exception e) {
-    //  e.printStackTrace();
-    //}
+    // deal with special case
+    if (arraySrc.isConstant()) {
+      double d = arraySrc.getDouble(0);
+      for (int i=dstPos; i<dstPos+len; i++)
+        arrayDst.setDouble(i, d); 
+      return;
+    }
+
+    Object src = arraySrc.get1DJavaArray(arraySrc.getElementType()); // ensure canonical order
+    Object dst = arrayDst.getStorage();
+    try {
+      System.arraycopy(src, srcPos, dst, dstPos, len);
+    } catch (ArrayIndexOutOfBoundsException e) {
+      throw e;
+    }
   }
 
   /**
@@ -837,10 +846,12 @@ public abstract class Array {
    * Create a new Array using same backing store as this Array, by
    * eliminating any dimensions with length one.
    *
-   * @return the new Array
+   * @return the new Array, or the same array if no reduction was done
    */
   public Array reduce() {
-    return createView(indexCalc.reduce());
+    Index ri = indexCalc.reduce();
+    if (ri == indexCalc) return this;
+    return createView(ri);
   }
 
   /**
@@ -865,6 +876,14 @@ public abstract class Array {
    */
   public boolean isUnsigned() {
     return unsigned;
+  }
+
+  /**
+   * If this is a constant array
+   * @return If this is a constant array
+   */
+  public boolean isConstant() {
+    return indexCalc instanceof IndexConstant;
   }
 
   /**

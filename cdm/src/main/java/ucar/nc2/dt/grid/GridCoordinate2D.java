@@ -52,7 +52,7 @@ import java.io.IOException;
 
 
 public class GridCoordinate2D {
-  static final private boolean debug = false;
+  static private boolean debug = false;
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridCoordinate2D.class);
 
   private CoordinateAxis2D latCoord, lonCoord;
@@ -82,8 +82,40 @@ public class GridCoordinate2D {
     latMinMax = MAMath.getMinMax(latEdge);
     lonMinMax = MAMath.getMinMax(lonEdge);
 
-    System.out.printf("Range (%d %d): lat= (%f,%f) lon = (%f,%f) %n", nrows, ncols, latMinMax.min, latMinMax.max, lonMinMax.min, lonMinMax.max);
+    if (debug)
+      System.out.printf("Bounds (%d %d): lat= (%f,%f) lon = (%f,%f) %n", nrows, ncols, latMinMax.min, latMinMax.max, lonMinMax.min, lonMinMax.max);
   }
+
+  // brute force
+  public boolean findCoordElementForce(double wantLat, double wantLon, int[] rectIndex) {
+    findBounds();
+    if (wantLat < latMinMax.min) return false;
+    if (wantLat > latMinMax.max) return false;
+    if (wantLon < lonMinMax.min) return false;
+    if (wantLon > lonMinMax.max) return false;
+
+    boolean saveDebug = debug;
+    debug = false;
+    for (int row=0; row<nrows; row++) {
+      for (int col=0; col<ncols; col++) {
+
+        rectIndex[0] = row;
+        rectIndex[1] = col;
+
+        if (contains(wantLat, wantLon, rectIndex)) {
+          debug = saveDebug;
+          return true;
+        }
+      }
+    }
+    //debug = saveDebug;
+    return false;
+  }
+
+  public boolean findCoordElement(double wantLat, double wantLon, int[] rectIndex) {
+    return findCoordElementNoForce(wantLat, wantLon,rectIndex);
+  }  
+
 
   /**
    * Find the best index for the given lat,lon point.
@@ -93,7 +125,7 @@ public class GridCoordinate2D {
    *
    * @return false if not in the grid.
    */
-  public boolean findCoordElement(double wantLat, double wantLon, int[] rectIndex) {
+  public boolean findCoordElementNoForce(double wantLat, double wantLon, int[] rectIndex) {
     findBounds();
     if (wantLat < latMinMax.min) return false;
     if (wantLat > latMinMax.max) return false;
@@ -107,8 +139,8 @@ public class GridCoordinate2D {
     double diffLon = wantLon - lonMinMax.min;
 
     // initial guess
-    rectIndex[0] = (int) Math.round(diffLat / gradientLat);
-    rectIndex[1] =(int) Math.round(diffLon / gradientLon);
+    rectIndex[0] = (int) Math.round(diffLat / gradientLat);  // row
+    rectIndex[1] =(int) Math.round(diffLon / gradientLon);  // col
 
     int count = 0;
     while (true) {
@@ -117,12 +149,15 @@ public class GridCoordinate2D {
       if (contains(wantLat, wantLon, rectIndex))
         return true;
 
-      if (!jump(wantLat, wantLon, rectIndex)) return false;
+      if (!jump2(wantLat, wantLon, rectIndex)) return false;
 
       // bouncing around
-      if (count > 100) {
-        log.error("findCoordElement didnt converge lat,lon = "+wantLat+" "+ wantLon);
-        return false;
+      if (count > 10) {
+        // last ditch attempt
+        return incr(wantLat, wantLon, rectIndex);
+        //if (!ok)
+        //  log.error("findCoordElement didnt converge lat,lon = "+wantLat+" "+ wantLon);
+        //return ok;
       }
     }
   }
@@ -135,7 +170,7 @@ public class GridCoordinate2D {
    * @param rectIndex rectangle row, col, will be clipped to [0, nrows), [0, ncols)
    * @return true if contained
    */
-  private boolean contains(double wantLat, double wantLon, int[] rectIndex) {
+  private boolean containsOld(double wantLat, double wantLon, int[] rectIndex) {
     rectIndex[0] = Math.max( Math.min(rectIndex[0], nrows-1), 0);
     rectIndex[1] = Math.max( Math.min(rectIndex[1], ncols-1), 0);
 
@@ -153,7 +188,79 @@ public class GridCoordinate2D {
     return true;
   }
 
-  private boolean jump(double wantLat, double wantLon, int[] rectIndex) {
+  /**
+   * Is the point (lat,lon) contained in the (row, col) rectangle ?
+   *
+   * @param wantLat   lat of point
+   * @param wantLon   lon of point
+   * @param rectIndex rectangle row, col, will be clipped to [0, nrows), [0, ncols)
+   * @return true if contained
+   */
+
+/*
+  http://mathforum.org/library/drmath/view/54386.html
+
+      Given any three points on the plane (x0,y0), (x1,y1), and
+  (x2,y2), the area of the triangle determined by them is
+  given by the following formula:
+
+        1 | x0 y0 1 |
+    A = - | x1 y1 1 |,
+        2 | x2 y2 1 |
+
+  where the vertical bars represent the determinant.
+  the value of the expression above is:
+
+       (.5)(x1*y2 - y1*x2 -x0*y2 + y0*x2 + x0*y1 - y0*x1)
+
+  The amazing thing is that A is positive if the three points are
+  taken in a counter-clockwise orientation, and negative otherwise.
+
+  To be inside a rectangle (or any convex body), as you trace
+  around in a clockwise direction from p1 to p2 to p3 to p4 and
+  back to p1, the "areas" of triangles p1 p2 p, p2 p3 p, p3 p4 p,
+  and p4 p1 p must all be positive.  If you don't know the
+  orientation of your rectangle, then they must either all be
+  positive or all be negative.
+
+  this method works for arbitrary convex regions oo the plane.
+*/
+  private boolean contains(double wantLat, double wantLon, int[] rectIndex) {
+    rectIndex[0] = Math.max( Math.min(rectIndex[0], nrows-1), 0);
+    rectIndex[1] = Math.max( Math.min(rectIndex[1], ncols-1), 0);
+
+    int row = rectIndex[0];
+    int col = rectIndex[1];
+
+    double x1 = lonEdge.get(row, col);
+    double y1 = latEdge.get(row, col);
+
+    double x2 = lonEdge.get(row, col+1);
+    double y2 = latEdge.get(row, col+1);
+
+    double x3 = lonEdge.get(row+1, col+1);
+    double y3 = latEdge.get(row+1, col+1);
+
+    double x4 = lonEdge.get(row+1, col);
+    double y4 = latEdge.get(row+1, col);
+
+    // must all have same determinate sign
+    boolean sign = detIsPositive(x1, y1, x2, y2, wantLon, wantLat);
+    if (sign != detIsPositive(x2, y2, x3, y3, wantLon, wantLat)) return false;
+    if (sign != detIsPositive(x3, y3, x4, y4, wantLon, wantLat)) return false;
+    if (sign != detIsPositive(x4, y4, x1, y1, wantLon, wantLat)) return false;
+
+    return true;
+  }
+
+  private boolean detIsPositive(double x0, double y0, double x1, double y1, double x2, double y2) {
+    double det = (x1*y2 - y1*x2 -x0*y2 + y0*x2 + x0*y1 - y0*x1);
+    if (det == 0)
+      System.out.printf("determinate = 0%n");
+    return det > 0;
+  }
+
+  private boolean jumpOld(double wantLat, double wantLon, int[] rectIndex) {
     int row = Math.max( Math.min(rectIndex[0], nrows-1), 0);
     int col = Math.max( Math.min(rectIndex[1], ncols-1), 0);
     double gradientLat = latEdge.get(row + 1, col) - latEdge.get(row, col);
@@ -168,6 +275,63 @@ public class GridCoordinate2D {
     if (debug) System.out.printf("   jump from %d %d (grad=%f %f) (diff=%f %f) (delta=%d %d)",
             row, col, gradientLat, gradientLon,
             diffLat, diffLon, drow, dcol);
+
+    if ((drow == 0) && (dcol == 0)) {
+      if (debug) System.out.printf("%n   incr:");
+      return incr(wantLat, wantLon, rectIndex);
+    } else {
+      rectIndex[0] = Math.max( Math.min(row + drow, nrows-1), 0);
+      rectIndex[1] = Math.max( Math.min(col + dcol, ncols-1), 0);
+      if (debug) System.out.printf(" to (%d %d)%n", rectIndex[0], rectIndex[1]);
+      if ((row == rectIndex[0]) && (col == rectIndex[1])) return false; // nothing has changed
+    }
+
+    return true;
+  }
+
+  /**
+   * jump to a new row,col
+   * @param wantLat want this lat
+   * @param wantLon want this lon
+   * @param rectIndex starting row, col and replaced by new guess
+   * @return true if new guess, false if failure
+   */
+  /*
+    choose x, y such that (matrix multiply) :
+
+    (wantx) = (fxx fxy)  (x)
+    (wanty)   (fyx fyy)  (y)
+
+     where fxx = d(fx)/dx  ~= delta lon in lon direction
+     where fxy = d(fx)/dy  ~= delta lon in lat direction
+     where fyx = d(fy)/dx  ~= delta lat in lon direction
+     where fyy = d(fy)/dy  ~= delta lat in lat direction
+
+    2 linear equations in 2 unknowns, solve in usual way
+   */
+  private boolean jump2(double wantLat, double wantLon, int[] rectIndex) {
+    int row = Math.max( Math.min(rectIndex[0], nrows-1), 0);
+    int col = Math.max( Math.min(rectIndex[1], ncols-1), 0);
+    double dlatdy = latEdge.get(row + 1, col) - latEdge.get(row, col);
+    double dlatdx = latEdge.get(row, col+1) - latEdge.get(row, col);
+    double dlondx = lonEdge.get(row, col + 1) - lonEdge.get(row, col);
+    double dlondy = lonEdge.get(row + 1, col) - lonEdge.get(row, col);
+
+    double diffLat = wantLat - latEdge.get(row, col);
+    double diffLon = wantLon - lonEdge.get(row, col);
+
+    // solve for dlon
+
+    double dx =  (diffLon - dlondy * diffLat / dlatdy) / (dlondx - dlatdx * dlondy / dlatdy);
+    // double dy =  (diffLat - dlatdx * diffLon / dlondx) / (dlatdy - dlatdx * dlondy / dlondx);
+    double dy =  (diffLat - dlatdx * dx) / dlatdy;
+
+    if (debug) System.out.printf("   jump from %d %d (dlondx=%f dlondy=%f dlatdx=%f dlatdy=%f) (diffLat,Lon=%f %f) (deltalat,Lon=%f %f)",
+            row, col, dlondx, dlondy, dlatdx, dlatdy,
+            diffLat, diffLon, dy, dx);
+
+    int drow = (int) Math.round(dy);
+    int dcol = (int) Math.round(dx);
 
     if ((drow == 0) && (dcol == 0)) {
       if (debug) System.out.printf("%n   incr:");
@@ -229,6 +393,12 @@ public class GridCoordinate2D {
 
   private static void doOne(GridCoordinate2D g2d, double wantLat, double wantLon) {
     int[] result = new int[2];
+    if (g2d.findCoordElementForce(wantLat, wantLon, result))
+      System.out.printf("Brute (%f %f) == (%d %d) %n", wantLat, wantLon, result[0], result[1]);
+    else {
+      System.out.printf("Brute (%f %f) FAIL", wantLat, wantLon);
+      return;
+    }
 
     if (g2d.findCoordElement(wantLat, wantLon, result))
       System.out.printf("(%f %f) == (%d %d) %n", wantLat, wantLon, result[0], result[1]);
@@ -238,7 +408,7 @@ public class GridCoordinate2D {
 
   }
 
-  public static void main(String[] args) throws IOException {
+  public static void test1() throws IOException {
     String filename = "D:/work/asaScience/EGM200_3.ncml";
     GridDataset gds = GridDataset.open(filename);
     GeoGrid grid = gds.findGridByName("u_wind");
@@ -257,4 +427,43 @@ public class GridCoordinate2D {
 
     gds.close();
   }
+
+  public static void test2() throws IOException {
+    String filename = "C:/data/fmrc/apex_fmrc/Run_20091025_0000.nc";
+    GridDataset gds = GridDataset.open(filename);
+    GeoGrid grid = gds.findGridByName("temp");
+    GridCoordSystem gcs = grid.getCoordinateSystem();
+    CoordinateAxis lonAxis = gcs.getXHorizAxis();
+    assert lonAxis instanceof CoordinateAxis2D;
+    CoordinateAxis latAxis = gcs.getYHorizAxis();
+    assert latAxis instanceof CoordinateAxis2D;
+
+    GridCoordinate2D g2d = new GridCoordinate2D((CoordinateAxis2D) latAxis, (CoordinateAxis2D) lonAxis);
+    doOne(g2d, 40.166959,-73.954234);
+
+    gds.close();
+  }
+
+  public static void test3() throws IOException {
+    String filename = "/data/testdata/cdmUnitTest/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";
+    GridDataset gds = GridDataset.open(filename);
+    GeoGrid grid = gds.findGridByName("Sea_Surface_Height_Relative_to_Geoid");
+    GridCoordSystem gcs = grid.getCoordinateSystem();
+    CoordinateAxis lonAxis = gcs.getXHorizAxis();
+    assert lonAxis instanceof CoordinateAxis2D;
+    CoordinateAxis latAxis = gcs.getYHorizAxis();
+    assert latAxis instanceof CoordinateAxis2D;
+
+    GridCoordinate2D g2d = new GridCoordinate2D((CoordinateAxis2D) latAxis, (CoordinateAxis2D) lonAxis);
+    doOne(g2d, -15.554099426977835, -0.7742870290336263);
+
+    gds.close();
+  }
+
+
+
+  public static void main(String[] args) throws IOException {
+    test3();
+  }
+
 }

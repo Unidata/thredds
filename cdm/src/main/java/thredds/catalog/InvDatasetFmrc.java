@@ -188,6 +188,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
     }
   }
 
+  @Override
   public java.util.List<InvDataset> getDatasets() {
     if (!madeDatasets) {
       List<InvDataset> datasets = new ArrayList<InvDataset>();

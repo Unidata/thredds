@@ -307,7 +307,8 @@ public class InvCatalogImpl extends InvCatalog {
    * @param ds add this dataset
    */
   public void addDataset(InvDatasetImpl ds) {
-    datasets.add(ds);
+    if (ds != null)
+      datasets.add(ds);
   }
 
   /**

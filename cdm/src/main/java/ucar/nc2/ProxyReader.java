@@ -36,7 +36,7 @@ package ucar.nc2;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
-import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.CancelTask; // ??
 
 import java.io.IOException;
 
@@ -50,23 +50,23 @@ public interface ProxyReader {
   /**
    * Read all the data for a Variable.
 
-   * @param mainv the Variable
-   * @param cancelTask allow user to cancel, may be null.
+   * @param client the client Variable
+   * @param cancelTask user may cancel
    * @return memory resident Array containing the data. Will have same shape as the Variable.
    * @throws IOException on error
    */
-  public Array read(Variable mainv, CancelTask cancelTask) throws IOException;
+  public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException;
 
   /**
    * Read a section of the data for a Variable.
    *
-   * @param mainv the Variable
+   * @param client the client Variable
    * @param section the section of data to read.
-   * @param cancelTask allow user to cancel, may be null.
+   * @param cancelTask user may cancel
    *
    * @return memory resident Array containing the data. Will have same shape as the Section.
    * @throws IOException on error
-   * @throws ucar.ma2.InvalidRangeException if section has incorrect rank or shape.
+   * @throws ucar.ma2.InvalidRangeException if section has incorrect rank or illegal shape.
    */
-  public Array read(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException;
+  public Array reallyRead(Variable client, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException;
 }

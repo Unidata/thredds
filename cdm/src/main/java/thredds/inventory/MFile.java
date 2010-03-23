@@ -34,6 +34,7 @@ package thredds.inventory;
 
 /**
  * Inventory "Managed File". An abstraction for java.io.File.
+ * Replaces Crawlable Dataset.
  *
  * @author caron
  * @since Jun 30, 2009
@@ -41,21 +42,21 @@ package thredds.inventory;
 public interface MFile extends Comparable<MFile> {
   // time of last modification in Unix time (msecs since reference)
   // < 0 means dont know
-  long getLastModified();
+  public long getLastModified();
 
   // size of file
   // < 0 means dont know
-  long getLength();
+  public long getLength();
 
-  boolean isDirectory();
+  public boolean isDirectory();
 
-  String getPath();
+  public String getPath();
 
-  String getName();
+  public String getName();
 
-  int compareTo(MFile o);
+  public int compareTo(MFile o);
 
-  // does not survive serialization
-  Object getAuxInfo();
-  void setAuxInfo(Object info);
+  // does not survive serialization ??
+  public Object getAuxInfo();
+  public void setAuxInfo(Object info);
 }

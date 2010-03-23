@@ -282,7 +282,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       return null;
     }
 
-    Grid findGrid( String name) {
+    public Grid findGrid( String name) {
       if (name == null) return null;
 
       for (Grid grid : vars) {
@@ -295,7 +295,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
 
   } // RunSeq
 
-  RunSeq findSeqForVariable( String name) {
+  public RunSeq findSeqForVariable( String name) {
     for (RunSeq runSeq : runSequences) {
       if (runSeq.findGrid(name) != null)
         return runSeq;

@@ -31,6 +31,7 @@
  */
 package thredds.filesystem;
 
+import net.jcip.annotations.ThreadSafe;
 import thredds.inventory.MFile;
 
 /**
@@ -40,10 +41,10 @@ import thredds.inventory.MFile;
  * @since Jun 25, 2009
  */
 
-
+@ThreadSafe
 class MFileCached implements MFile {
-  private String parentDirName;
-  private CacheFile cfile;
+  private final String parentDirName;
+  private final CacheFile cfile;
   private Object auxInfo;
 
   MFileCached(String parentDirName, CacheFile cfile) {

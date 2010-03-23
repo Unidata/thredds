@@ -2,6 +2,14 @@ CHANGES for Netcdf-Java library
 Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
+Changes in version 4.2:
+ 1:
+  NetcdfFile.getDetailInfo : show cached variables, proxyReader
+  ToolsUI deferred construction, remove DQCchooser tab
+  DLCrawler improvememts
+  ComboBox - context menu to delete items
+  refactor Fmrc implementation
+
 Changes in version 4.1:
  15:
   VAriableDS.getEnhanceMode is public

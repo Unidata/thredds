@@ -35,6 +35,7 @@ package ucar.nc2.dataset;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.util.CancelTask;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -105,7 +106,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
   /**
    * Wrap the given Variable, making it into a VariableDS.
    * Delegate data reading to the original variable.
-   * Does not share cache, iosp.
+   * Does not share cache, iosp, proxies.
    *
    * @param g logical container, if null use orgVar's group
    * @param orgVar the original Variable to wrap. The original Variable is not modified.
@@ -115,7 +116,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
    *   You can also call enhance() later. If orgVar is VariableDS, then enhance is inherited from there,
    *   and this parameter is ignored.
    */
-  public VariableDS( Group g, Variable orgVar, boolean enhance) {
+  public VariableDS(Group g, Variable orgVar, boolean enhance) {
     super(orgVar);
     if (g != null) this.group = g; // otherwise super() sets group; this affects the long name and the dimensions.
     setDimensions( getDimensionsString()); // reset the dimensions
@@ -126,8 +127,6 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     // dont share cache, iosp : all IO is delegated
     this.ncfile = null;
     this.spiObject = null;
-    this.preReader = null;
-    this.postReader = null;
     createNewCache();
 
     this.orgVar = orgVar;
@@ -171,8 +170,6 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     // dont share cache, iosp : all IO is delegated
     this.ncfile = null;
     this.spiObject = null;
-    this.preReader = null;
-    this.postReader = null;
     createNewCache();
 
     this.orgVar = orgVar;
@@ -437,43 +434,23 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     super.setName(newName);
   }
 
-  /** Set the proxy reader.
-   * @param proxyReader set to this
-   */
-  public void setProxyReader( ProxyReader proxyReader) {
-    // LOOK: interactions with smProxy ??
-    this.postReader = proxyReader;
-  }
-
-  /** Get the proxy reader, or null.
-   * @return return the proxy reader, if any
-   */
-  public ProxyReader getProxyReader() {
-    return this.postReader;
-  }
-
   public String toStringDebug() {
     return (orgVar != null) ? orgVar.toStringDebug() : "";
   }
 
   // regular Variables.
   @Override
-  protected Array _read() throws IOException {
+  public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
     Array result;
 
-    // has a pre-reader proxy
-    if (preReader != null)
-      return preReader.read(this, null);
-    else if (hasCachedData())
-      result = super._read();
-    else if (postReader != null)
-      result = postReader.read( this, null);
+    if (hasCachedData()) // ??
+      result = super.reallyRead(client, cancelTask);
     else if (orgVar != null)
       result = orgVar.read();
-    else { // return fill value in a "constant array"; this allow NcML to act as ncgen
-      Object data = scaleMissingProxy.getFillValue( getDataType());
-      return Array.factoryConstant( dataType.getPrimitiveClassType(), shape, data);
-    }
+    else if ((proxyReader != null) && (proxyReader != this))
+      result = proxyReader.reallyRead(this, cancelTask);
+    else
+      return getMissingDataArray(shape);
 
     // LOOK not caching
     if (needScaleOffsetMissing)
@@ -486,25 +463,20 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
 
   // section of regular Variable
   @Override
-  protected Array _read(Section section) throws IOException, InvalidRangeException  {    
-    // really a full read
+  public Array reallyRead(Variable client, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException  {
+    // see if its really a full read
     if ((null == section) || section.computeSize() == getSize())
       return _read();
     
     Array result;
-    // has a pre-reader proxy
-    if (preReader != null)
-      return preReader.read(this, section, null);
-    else if (hasCachedData())
-      result = super._read(section);
-    else if (postReader != null)
-      result = postReader.read( this, section, null);
+    if (hasCachedData()) // ??
+      result = super.reallyRead(client, section, cancelTask);
     else if (orgVar != null)
       result = orgVar.read(section);
-    else  { // return fill value in a "constant array"
-      Object data = scaleMissingProxy.getFillValue( getDataType());
-      return Array.factoryConstant( dataType.getPrimitiveClassType(), section.getShape(), data);
-    }
+    else if ((proxyReader != null) && (proxyReader != this))
+      result = proxyReader.reallyRead(this, section, cancelTask);
+    else
+      return getMissingDataArray(section.getShape());
 
     if (needScaleOffsetMissing)
       return convertScaleOffsetMissing(result);
@@ -512,6 +484,16 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
       return convertEnums(result);
     else
       return result;
+  }
+
+  /**
+   * Return Array with missing data
+   * @param shape of this shape
+   * @return Array with given shape
+   */
+  public Array getMissingDataArray(int[] shape) {
+    Object data = scaleMissingProxy.getFillValue( getDataType());
+    return Array.factoryConstant( dataType.getPrimitiveClassType(), shape, data);
   }
 
   protected Array convertEnums(Array values) {

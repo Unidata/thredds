@@ -133,9 +133,6 @@ public class BufrTables {
   private static Map<String, TableB> tablesB = new ConcurrentHashMap<String, TableB>();
   private static Map<String, TableD> tablesD = new ConcurrentHashMap<String, TableD>();
 
-  private static final Pattern threeInts = Pattern.compile("^\\s*(\\d+)\\s+(\\d+)\\s+(\\d+)");  // get 3 integers from beginning of line
-  private static final Pattern negOne = Pattern.compile("^\\s*-1");  // check for -1 sequence terminator
-
   private static final String canonicalLookup = "resource:" + RESOURCE_PATH + "local/tablelookup.csv";
   private static List<String> lookups = null;
   static public void addLookupFile( String filename) throws FileNotFoundException {
@@ -453,6 +450,8 @@ public class BufrTables {
       readMelbufrTableB(ios, b);
     else if (format.equals("mel-tabs"))
       readMeltabTableB(ios, b);
+    else if (format.equals("wmo-xml"))
+      readWmoXmlTableB(ios, b);
     else {
       System.out.printf("Unknown format= %s %n",format);
       return null;
@@ -719,8 +718,85 @@ public class BufrTables {
         b.addDescriptor((short) x, (short) y, scale, reference, width, name, units);
       }
     }
+
+    ios.close();
   }
 
+  /*
+  <BC_TableB_BUFR14_1_0_CREX_6_1_0>
+    <SNo>1</SNo>
+    <Class>00</Class>
+    <FXY>000001</FXY>
+    <ElementName_E>Table A: entry</ElementName_E>
+    <ElementName_F>Table A : entr?e</ElementName_F>
+    <ElementName_R>??????? ?: ???????</ElementName_R>
+    <ElementName_S>Tabla A: elemento</ElementName_S>
+    <BUFR_Unit>CCITT IA5</BUFR_Unit>
+    <BUFR_Scale>0</BUFR_Scale>
+    <BUFR_ReferenceValue>0</BUFR_ReferenceValue>
+    <BUFR_DataWidth_Bits>24</BUFR_DataWidth_Bits>
+    <CREX_Unit>Character</CREX_Unit>
+    <CREX_Scale>0</CREX_Scale>
+    <CREX_DataWidth>3</CREX_DataWidth>
+    <Status>Operational</Status>
+    <NotesToTable_E>Notes: (see)#BUFR14_1_0_CREX6_1_0_Notes.doc#BC_Cl000</NotesToTable_E>
+</BC_TableB_BUFR14_1_0_CREX_6_1_0>
+   */
+
+  static private void readWmoXmlTableB(InputStream ios, TableB b) throws IOException {
+    org.jdom.Document doc;
+    try {
+      SAXBuilder builder = new SAXBuilder();
+      doc = builder.build(ios);
+    } catch (JDOMException e) {
+      throw new IOException(e.getMessage());
+    }
+
+    Element root = doc.getRootElement();
+    List<Element> featList = root.getChildren("BC_TableB_BUFR14_1_0_CREX_6_1_0");
+    for (Element elem : featList) {
+
+      String name = elem.getChildTextNormalize("ElementName_E");
+      String units = elem.getChildTextNormalize("BUFR_Unit");
+      int x = 0, y = 0, scale = 0, reference = 0, width = 0;
+
+      String fxy = null;
+      String s = null;
+      try {
+        fxy = elem.getChildTextNormalize("FXY");
+        int xy = Integer.parseInt(clean(fxy));
+        x = xy / 1000;
+        y = xy % 1000;
+
+      } catch (NumberFormatException e) {
+        System.out.printf(" key %s name '%s' has bad scale='%s'%n", fxy, name, s);
+      }
+
+      try {
+        s = elem.getChildTextNormalize("BUFR_Scale");
+        scale = Integer.parseInt(clean(s));
+      } catch (NumberFormatException e) {
+        System.out.printf(" key %s name '%s' has bad scale='%s'%n", fxy, name, s);
+      }
+
+      try {
+        s = elem.getChildTextNormalize("BUFR_ReferenceValue");
+        reference = Integer.parseInt(clean(s));
+      } catch (NumberFormatException e) {
+        System.out.printf(" key %s name '%s' has bad reference='%s' %n", fxy, name, s);
+      }
+
+      try {
+        s = elem.getChildTextNormalize("BUFR_DataWidth_Bits");
+        width = Integer.parseInt(clean(s));
+      } catch (NumberFormatException e) {
+        System.out.printf(" key %s name '%s' has bad width='%s' %n", fxy, name, s);
+      }
+
+      b.addDescriptor((short) x, (short) y, scale, reference, width, name, units);
+    }
+    ios.close();
+  }
 
   ///////////////////////////////////////////////////////
 
@@ -772,12 +848,13 @@ public class BufrTables {
       readNcepTableD(ios, d);
     else if (format.equals("ncep-nm")) {
       Tables t = new Tables(null, d, null);
-      NcepMnemonic reader = new NcepMnemonic();
       NcepMnemonic.read(ios, t);
     } else if (format.equals("ecmwf"))
       readEcmwfTableD(ios, d);
     else if (format.equals("mel-bufr"))
       readMelbufrTableD(ios, d);
+    else if (format.equals("wmo-xml"))
+      readWmoXmlTableD(ios, d);
     else {
       System.out.printf("Unknown format= %s %n", format);
       return null;
@@ -855,7 +932,63 @@ public class BufrTables {
         if (showReadErrs) System.out.printf("%d %d BAD line == %s : %s%n", count, fldidx, line, e.getMessage());
       }
     }
+    dataIS.close();
   }
+
+  /*
+  <B_TableD_BUFR14_1_0_CREX_6_1_0>
+    <SNo>2647</SNo>
+    <Category>10</Category>
+    <FXY1>310013</FXY1>
+    <ElementName1_E>(AVHRR (GAC) report)</ElementName1_E>
+    <FXY2>004005</FXY2>
+    <ElementName2_E>Minute</ElementName2_E>
+    <Remarks_E>Minute</Remarks_E>
+    <Status>Operational</Status>
+  </B_TableD_BUFR14_1_0_CREX_6_1_0>
+   */
+  static private void readWmoXmlTableD(InputStream ios, TableD tableD) throws IOException {
+    org.jdom.Document doc;
+    try {
+      SAXBuilder builder = new SAXBuilder();
+      doc = builder.build(ios);
+    } catch (JDOMException e) {
+      throw new IOException(e.getMessage());
+    }
+
+    int currSeqno = -1;
+    TableD.Descriptor currDesc = null;
+
+    Element root = doc.getRootElement();
+    List<Element> featList = root.getChildren("B_TableD_BUFR14_1_0_CREX_6_1_0");
+    for (Element elem : featList) {
+
+      String seqs = elem.getChildTextNormalize("FXY1");
+      int seq = Integer.parseInt(seqs);
+
+      if (currSeqno != seq) {
+        int y = seq % 1000;
+        int w = seq / 1000;
+        int x = w % 100;
+        String seqName = elem.getChildTextNormalize("ElementName1_E");
+        currDesc = tableD.addDescriptor((short) x, (short) y, seqName, new ArrayList<Short>());
+        currSeqno = seq;
+      }
+
+      String fnos = elem.getChildTextNormalize("FXY2");
+      int fno = Integer.parseInt(fnos);
+      int y = fno % 1000;
+      int w = fno / 1000;
+      int x = w % 100;
+      int f = w / 100;
+      int fxy = (f << 14) + (x << 8) + y;
+      currDesc.addFeature((short) fxy);
+    }
+    ios.close();
+  }
+
+  private static final Pattern threeInts = Pattern.compile("^\\s*(\\d+)\\s+(\\d+)\\s+(\\d+)");  // get 3 integers from beginning of line
+  private static final Pattern negOne = Pattern.compile("^\\s*-1");  // check for -1 sequence terminator
 
   static private void readMelbufrTableD(InputStream ios, TableD t) throws IOException {
 

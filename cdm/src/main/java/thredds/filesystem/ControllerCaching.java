@@ -41,7 +41,8 @@ import java.io.IOException;
 import net.jcip.annotations.ThreadSafe;
 
 /**
- * Inventory File Management Controller, with caching
+ * Inventory File Management Controller, with caching.
+ * Implements an MController using a CacheManager.
  *
  * @author caron
  * @since Jun 25, 2009
@@ -56,7 +57,7 @@ public class ControllerCaching implements MController {
     return new ControllerCaching(cm);
   }
 
-  public static MController makeTestController(String cacheDir) throws IOException {
+  public static MController makeTestController(String cacheDir) {
     CacheManager.makeTestCacheManager( cacheDir);
     CacheManager cm = new CacheManager("directories");
     return new ControllerCaching(cm);
@@ -65,7 +66,7 @@ public class ControllerCaching implements MController {
   ////////////////////////////////////////
   private CacheManager cacheManager;
 
-  public ControllerCaching(CacheManager cacheManager) {
+  private ControllerCaching(CacheManager cacheManager) {
     this.cacheManager = cacheManager;
   }
 
@@ -117,8 +118,8 @@ public class ControllerCaching implements MController {
 
   // handles filtering and removing subdirectories
   private class FilteredIterator implements Iterator<MFile> {
-    private Iterator<MFile> orgIter;
-    private MCollection mc;
+    private final Iterator<MFile> orgIter;
+    private final MCollection mc;
 
     private MFile next;
 
@@ -154,8 +155,8 @@ public class ControllerCaching implements MController {
   }
 
   private class MFileIterator implements Iterator<MFile> {
-    String path;
-    List<CacheFile> files;
+    final String path;
+    final List<CacheFile> files;
     int count = 0;
 
     MFileIterator(CacheDirectory cd) {
@@ -184,8 +185,8 @@ public class ControllerCaching implements MController {
 
   // recursively scans everything in the directory and in subdirectories, depth first, leaves before subdirs
   private class MFileIteratorWithSubdirs implements Iterator<MFile> {
-    boolean recheck;
-    Queue<Traversal> traverse;
+    final boolean recheck;
+    final Queue<Traversal> traverse;
     Traversal currTraversal;
     Iterator<MFile> currIter;
 
@@ -247,8 +248,8 @@ public class ControllerCaching implements MController {
   }
 
    private class Traversal {
-    CacheDirectory dir;
-    List<CacheFile> fileList;
+    final CacheDirectory dir;
+    final List<CacheFile> fileList;
     Iterator<CacheFile> subdirIterator;
     boolean leavesAreDone = false;
 

@@ -33,7 +33,8 @@
 package ucar.nc2;
 
 import ucar.ma2.*;
-import ucar.nc2.iosp.AbstractIOServiceProvider;
+import ucar.nc2.iosp.IospHelper;
+import ucar.nc2.util.CancelTask;
 
 import java.util.*;
 import java.io.IOException;
@@ -51,7 +52,7 @@ import java.nio.channels.WritableByteChannel;
  * @see ucar.ma2.DataType
  */
 
-public class Variable implements VariableIF {
+public class Variable implements VariableIF, ProxyReader {
   /** cache any variable whose size() < defaultSizeToCache */
   static public final int defaultSizeToCache = 4000; // bytes
   static protected boolean debugCaching = false;
@@ -61,7 +62,7 @@ public class Variable implements VariableIF {
   protected Group group; // logical container for this Variable. may not be null.
   protected String shortName; // may not be blank
   protected int[] shape;
-  protected Section shapeAsSection;  // derived from the shape, immutable; used for every read
+  protected Section shapeAsSection;  // derived from the shape, immutable; used for every read, deferred creation
 
   protected DataType dataType;
   protected int elementSize;
@@ -76,9 +77,7 @@ public class Variable implements VariableIF {
   protected int sizeToCache = defaultSizeToCache; // bytes
 
   protected Structure parent = null; // for variables inside a Structure, aka "structure members"
-  protected ProxyReader preReader;  // section, slice use this
-  protected ProxyReader postReader; // only used by VariableDS, StructureDS; put here because this is the common superclass
-
+  protected ProxyReader proxyReader = this;
 
   /**
    * Get the full name of this Variable, starting from rootGroup. The name is unique within the
@@ -419,189 +418,21 @@ public class Variable implements VariableIF {
     return shapeAsSection;
   }
 
-  /*
-   * Get index subsection as an array of Range objects, reletive to the original variable.
-   * If this is a section, will reflect the index range reletive to the original variable.
-   * If its a slice, it will have a rank different from this variable.
-   * Otherwise it will correspond to this Variable's shape, ie match getRanges().
+  public ProxyReader getProxyReader() {
+    return proxyReader;
+  }
+
+  public void setProxyReader(ProxyReader proxyReader) {
+    this.proxyReader = proxyReader;
+  }
+
+
+  /** Get the proxy reader, or null.
+   * @return return the proxy reader, if any
    *
-   * @return array of Ranges, one for each Dimension.
-   *
-  public List<Range> getSectionRanges() {
-    return getRanges();
+  public ProxyReader getProxyReader() {
+    return this.postReader;
   } */
-
-  /////////////////////////////////////////////////////////////////////////
-  /* section subset
-  protected NetcdfFile ncfileIO; // used for I/O calls
-  protected Variable ioVar = null; // if not null, do IO through here; matches ncfileIO
-
-  protected boolean isSection = false, isSlice = false;
-  protected Section slice;
-
-  //protected List sectionRanges = null;  // section of the original variable.
-  //protected List sliceRanges = null;  // section of the original variable.
-  protected int sliceDim = -1;  // dimension index into original
-
-
-  /**
-   * Get the shape as a ucar.ma2.Section.
-   * @return immutable Section
-   *
-  public Section getSection() {
-    if (section == null) {
-      try {
-        this.section = new Section(shape).finish();
-      } catch (InvalidRangeException e) {
-        log.error("InvalidRangeException", e);
-        throw new IllegalStateException("InvalidRangeException"); // Cant happen
-      }
-    }
-    return section;
-  }
-  protected Section section;
-
-  /**
-   * Get index subsection as a Section object, reletive to the original variable.
-   * If this is a section subset, will reflect the index range reletive to the original variable.
-   * If its a slice, it will have a rank different from this variable.
-   * Otherwise it will correspond to this Variable's shape, ie equal getShapeAsSection().
-   *
-   * @return Section containing List<Range>, one for each Dimension.
-   *
-  public Section getSectionSubset() {
-    if (!isSection)
-      return getShapeAsSection();
-    else
-      return new Section(section.getRanges());
-  }
-
-  /**
-   * @return true if this Variable is a "section subset" of another Variable
-   *
-  protected boolean isSection() {
-    return isSection;
-  }
-
-  /* work goes here so can be called by subclasses
-  protected void makeSection(Variable newVar, List<Range> ranges) throws InvalidRangeException {
-    if (isSlice)
-      throw new InvalidRangeException("Variable.section: cannot section a slice");
-
-    Section s = new Section(ranges);
-    s.setDefaults(newVar.shape);
-    String err = s.checkInRange(newVar.shape);
-    if (null != err)
-      throw new InvalidRangeException(err);
-
-    newVar.ioVar = this;
-    newVar.isSection = true;
-
-    newVar.section = makeSectionRanges(this, section);
-    newVar.shape = newVar.section.getShape();
-
-    // replace dimensions if needed
-    newVar.dimensions = new ArrayList<Dimension>();
-    for (int i = 0; i < getRank(); i++) {
-      Dimension oldD = getDimension(i);
-      Dimension newD = (oldD.getLength() == newVar.shape[i]) ? oldD : new Dimension(oldD.getName(), newVar.shape[i], false);
-      newD.setUnlimited(oldD.isUnlimited());
-      newVar.dimensions.add(newD);
-    }
-  }
-
-  /**
-   * Composes a variable's ranges with another list of ranges; resolves nulls.
-   * Makes sure that Variables that are sections are handled correctly.
-   *
-   * @param v       the variable
-   * @param section List of ucar.ma2.Range, same rank as v, may have nulls.
-   * @return List of ucar.ma2.Range, same rank as v, no nulls.
-   * @throws InvalidRangeException
-   *
-  static protected List makeSectionRanges(Variable v, List<Range> section) throws InvalidRangeException {
-    // all nulls
-    if (section == null) return v.getRanges();
-
-    // check individual nulls
-    List orgRanges = v.getSectionRanges();
-    List results = new ArrayList(v.getRank());
-    for (int i = 0; i < v.getRank(); i++) {
-      Range r = (Range) section.get(i);
-      Range result;
-      if (r == null)
-        result = new Range((Range) orgRanges.get(i)); // use entire range
-      else if (v.isSection())
-        result = new Range((Range) orgRanges.get(i), r); // compose
-      else
-        result = new Range(r); // use section
-      result.setName(v.getDimension(i).getName()); // used when composing slices and sections
-      results.add(result);
-    }
-
-    return results;
-  }
-
-  /**
-   * Composes a variable's ranges with another list of ranges; resolves nulls.
-   * Makes sure that Variables that are sections are handled correctly.
-   *
-   * @param v       the variable
-   * @param section List of ucar.ma2.Range, same rank as v, may have nulls.
-   * @return List of ucar.ma2.Range, same rank as v, no nulls.
-   * @throws InvalidRangeException
-   *
-  static protected Section makeSectionRanges(Variable v, Section section) throws InvalidRangeException {
-    // all nulls
-    if (section == null)
-      return v.getShapeAsSection();
-
-    // check individual nulls
-    List orgRanges = v.getSectionRanges();
-    List results = new ArrayList(v.getRank());
-    for (int i = 0; i < v.getRank(); i++) {
-      Range r = (Range) section.get(i);
-      Range result;
-      if (r == null)
-        result = new Range((Range) orgRanges.get(i)); // use entire range
-      else if (v.isSection())
-        result = new Range((Range) orgRanges.get(i), r); // compose
-      else
-        result = new Range(r); // use section
-      result.setName(v.getDimension(i).getName()); // used when composing slices and sections
-      results.add(result);
-    }
-
-    return results;
-  }
-
-  /**
-   * Composes this variable's ranges with another list of ranges, adding parent ranges; resolves nulls.
-   *
-   * @param section   List of ucar.ma2.Range, same rank as v, may have nulls.
-   * @param firstOnly if true, get first parent, else get all parrents.
-   * @return List of ucar.ma2.Range, rank of v and parents, no nulls
-   * @throws InvalidRangeException
-   *
-  private List makeSectionAddParents(List<Range> section, boolean firstOnly) throws InvalidRangeException {
-    List result = makeSectionRanges(this, section);
-
-    // add parents
-    Variable v = getParentStructure();
-    while (v != null) {
-      List parentSection = v.getRanges();
-      for (int i = parentSection.size() - 1; i >= 0; i--) { // reverse
-        Range r = (Range) parentSection.get(i);
-        int first = r.first();
-        int last = firstOnly ? first : r.last(); // first or all
-        Range newr = new Range(first, last);
-        result.add(0, newr);
-      }
-      v = v.getParentStructure();
-    }
-
-    return result;
-  }  */
 
   /**
    * Create a new Variable that is a logical subsection of this Variable.
@@ -633,9 +464,12 @@ public class Variable implements VariableIF {
 
     // create a copy of this variable with a proxy reader
     Variable sectionV = copy(); // subclasses must override
-    sectionV.preReader = new SectionReader(this, subsection);
+    sectionV.setProxyReader( new SectionReader(this.getProxyReader(), subsection));
+    sectionV.proxyReader = new SectionReader(this.proxyReader, subsection);
     sectionV.shape = subsection.getShape();
-
+    sectionV.createNewCache(); // dont share the cache
+    sectionV.setCaching(false); // dont cache
+    
     // replace dimensions if needed !! LOOK not shared
     sectionV.dimensions = new ArrayList<Dimension>();
     for (int i = 0; i < getRank(); i++) {
@@ -680,7 +514,9 @@ public class Variable implements VariableIF {
     Variable sliceV = copy(); // subclasses must override
     Section slice = new Section( getShapeAsSection());
     slice.replaceRange(dim, new Range(value, value)).makeImmutable();
-    sliceV.preReader = new SliceReader(this, dim, slice);
+    sliceV.setProxyReader( new SliceReader(this.getProxyReader(), dim, slice));
+    sliceV.createNewCache(); // dont share the cache
+    sliceV.setCaching(false); // dont cache
 
     // remove that dimension - reduce rank
     sliceV.dimensions.remove(dim);
@@ -935,9 +771,26 @@ public class Variable implements VariableIF {
   // non-structure-member Variables.
 
   protected Array _read() throws IOException {
-    // has a pre-reader proxy
-    if (preReader != null)
-      return preReader.read(this, null);
+    return proxyReader.reallyRead(this, null);
+  }
+
+  // section of non-structure-member Variable
+  // assume filled, validated Section
+  protected Array _read(Section section) throws IOException, InvalidRangeException {
+    // check if its really a full read
+    if ((null == section) || section.computeSize() == getSize())
+      return _read();
+
+    return proxyReader.reallyRead(this, section, null);
+  }
+
+  /**
+   * public by accident, do not call directly.
+   * @return Array
+   * @throws IOException on error
+   */
+  @Override
+  public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
 
     if (isMemberOfStructure()) {
       List<String> memList = new ArrayList<String>();
@@ -964,7 +817,7 @@ public class Variable implements VariableIF {
 
     // optionally cache it
     if (isCaching()) {
-      cache.data = data;
+      setCachedData(data);
       if (debugCaching) System.out.println("cache " + getName());
       return cache.data.copy(); // dont let users get their nasty hands on cached data
     } else {
@@ -972,24 +825,13 @@ public class Variable implements VariableIF {
     }
   }
 
-  // section of non-structure-member Variable
-  // assume filled, validated Section
-  protected Array _read(Section section) throws IOException, InvalidRangeException {
-    // really a full read
-    if ((null == section) || section.computeSize() == getSize())
-      return _read();
-
-    //if (dataType == DataType.OPAQUE)
-    //  throw new UnsupportedOperationException("Cannot subset an OPAQUE datatype");
-    
-    /* error checking already done
-    String err = section.checkInRange(getShape());
-    if (err != null)
-      throw new InvalidRangeException(err); */
-
-    // has a proxy
-    if (preReader != null)
-      return preReader.read(this, section, null);
+  /**
+   * public by accident, do not call directly.
+   * @return Array
+   * @throws IOException on error
+   */
+  @Override
+  public Array reallyRead(Variable client, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
 
     if (isMemberOfStructure()) {
       throw new UnsupportedOperationException("Cannot directly read section of Member Variable="+getName());
@@ -999,7 +841,7 @@ public class Variable implements VariableIF {
     // full read was cached
     if (isCaching()) {
       if (cache.data == null) {
-        cache.data = ncfile.readData(this, getShapeAsSection()); // read and cache entire array
+        setCachedData( ncfile.readData(this, getShapeAsSection())); // read and cache entire array
         if (debugCaching) System.out.println("cache " + getName());
       }
       if (debugCaching) System.out.println("got data from cache " + getName());
@@ -1020,7 +862,7 @@ public class Variable implements VariableIF {
 
   public long readToByteChannel(Section section, WritableByteChannel wbc) throws IOException, InvalidRangeException {
     if ((ncfile == null) || hasCachedData())
-      return AbstractIOServiceProvider.copyToByteChannel( read(section), wbc);      
+      return IospHelper.copyToByteChannel( read(section), wbc);
     
     return ncfile.readToByteChannel(this, section, wbc);
   }
@@ -1033,8 +875,19 @@ public class Variable implements VariableIF {
    * @return display name plus the dimensions
    */
   public String getNameAndDimensions() {
-    StringBuilder buf = new StringBuilder();
-    getNameAndDimensions(buf);
+    Formatter buf = new Formatter();
+    getNameAndDimensions(buf, true, false);
+    return buf.toString();
+  }
+
+  /**
+   * Get the display name plus the dimensions, eg 'float name(dim1, dim2)'
+   * @param strict strictly comply with ncgen syntax, with name escaping. otherwise, get extra info, no escaping
+   * @return display name plus the dimensions
+   */
+  public String getNameAndDimensions(boolean strict) {
+    Formatter buf = new Formatter();
+    getNameAndDimensions(buf, false, strict);
     return buf.toString();
   }
 
@@ -1260,7 +1113,8 @@ public class Variable implements VariableIF {
 
   /**
    * Copy constructor.
-   * The returned Variable is mutable. It shares the cache object and the iosp Object with the original.
+   * The returned Variable is mutable.
+   * It shares the cache object and the iosp Object, attributes and dimensions with the original.
    * Use for section, slice, "logical views" of original variable.
    *
    * @param from copy from this Variable.
@@ -1277,8 +1131,7 @@ public class Variable implements VariableIF {
     this.isVariableLength = from.isVariableLength;
     this.ncfile = from.ncfile;
     this.parent = from.parent;
-    this.preReader = from.preReader;
-    this.postReader = from.postReader;
+    this.proxyReader = from.proxyReader;
     this.shape = from.getShape();
     this.shortName = from.shortName;
     this.sizeToCache = from.sizeToCache;
@@ -1622,6 +1475,10 @@ public class Variable implements VariableIF {
    */
   public void invalidateCache() {
     cache.data = null;
+  }
+
+  public void setCachedData(Array cacheData) {
+    setCachedData(cacheData, false);
   }
 
   /**
