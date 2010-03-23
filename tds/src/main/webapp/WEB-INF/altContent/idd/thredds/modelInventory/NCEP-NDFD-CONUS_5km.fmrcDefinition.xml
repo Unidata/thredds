@@ -1,59 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fmrcDefinition dataset="http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/NDFD/CONUS_5km/files/catalog.xml">
-  <vertCoord id="0" name="height_above_ground" units="m">2.0</vertCoord>
-  <vertCoord id="1" name="height_above_ground1" units="m">10.0</vertCoord>
-  <offsetHours id="0">90.0 102.0 114.0 126.0 138.0 150.0 162.0 174.0</offsetHours>
-  <offsetHours id="1">84.0 90.0 96.0 102.0 108.0 114.0 120.0 126.0 132.0 138.0 144.0 150.0 156.0 162.0 168.0 174.0</offsetHours>
-  <offsetHours id="2">114.0 138.0 162.0 186.0</offsetHours>
-  <offsetHours id="3">102.0 126.0 150.0 174.0</offsetHours>
-  <offsetHours id="4">102.0 114.0 126.0 138.0 150.0 162.0 174.0 186.0</offsetHours>
-  <offsetHours id="5">96.0 108.0 120.0 132.0 144.0 156.0 168.0 180.0</offsetHours>
-  <offsetHours id="6">90.0 96.0 102.0 108.0 114.0 120.0 126.0 132.0 138.0 144.0 150.0 156.0 162.0 168.0 174.0 180.0</offsetHours>
-  <offsetHours id="7">120.0 144.0 168.0 192.0</offsetHours>
-  <offsetHours id="8">108.0 132.0 156.0 180.0</offsetHours>
-  <offsetHours id="9">108.0 120.0 132.0 144.0 156.0 168.0 180.0 192.0</offsetHours>
+<fmrcDefinition dataset="http://motherlode.ucar.edu:9080/thredds/catalog/fmrc/NCEP/NDFD/CONUS_5km/files/catalog.xml">
+  <vertCoord id="1" name="height_above_ground" units="m">10.0</vertCoord>
+  <vertCoord id="0" name="height_above_ground1" units="m">2.0</vertCoord>
+  <offsetHours id="0">96.0 108.0 120.0 132.0 144.0 156.0 168.0 180.0</offsetHours>
+  <offsetHours id="1">90.0 96.0 102.0 108.0 114.0 120.0 126.0 132.0 138.0 144.0 150.0 156.0 162.0 168.0 174.0 180.0</offsetHours>
+  <offsetHours id="2">120.0 144.0 168.0 192.0</offsetHours>
+  <offsetHours id="3">108.0 132.0 156.0 180.0</offsetHours>
+  <offsetHours id="4">108.0 120.0 132.0 144.0 156.0 168.0 180.0 192.0</offsetHours>
+  <offsetHours id="5">90.0 102.0 114.0 126.0 138.0 150.0 162.0 174.0</offsetHours>
+  <offsetHours id="6">84.0 90.0 96.0 102.0 108.0 114.0 120.0 126.0 132.0 138.0 144.0 150.0 156.0 162.0 168.0 174.0</offsetHours>
+  <offsetHours id="7">114.0 138.0 162.0 186.0</offsetHours>
+  <offsetHours id="8">102.0 126.0 150.0 174.0</offsetHours>
+  <offsetHours id="9">102.0 114.0 126.0 138.0 150.0 162.0 174.0 186.0</offsetHours>
   <runSequence>
-    <run runHour="12.0" offsetHourSeq="5" />
-    <run runHour="18.0" offsetHourSeq="0" />
-    <run runHour="12.0" offsetHourSeq="5" />
-    <run runHour="18.0" offsetHourSeq="0" />
-    <run runHour="24.0" offsetHourSeq="0" />
+    <run runHour="12.0" offsetHourSeq="0" />
+    <run runHour="18.0" offsetHourSeq="5" />
     <variable name="Categorical_Rain" />
   </runSequence>
   <runSequence>
-    <run runHour="12.0" offsetHourSeq="6" />
-    <run runHour="18.0" offsetHourSeq="1" />
-    <run runHour="12.0" offsetHourSeq="6" />
-    <run runHour="18.0" offsetHourSeq="1" />
-    <run runHour="24.0" offsetHourSeq="1" />
+    <run runHour="12.0" offsetHourSeq="1" />
+    <run runHour="18.0" offsetHourSeq="6" />
     <variable name="Dew_point_temperature" vertCoord="0" />
     <variable name="Total_cloud_cover" />
+    <variable name="Total_cloud_cover_entire_atmosphere_layer" />
     <variable name="Wind_direction_from_which_blowing" vertCoord="1" />
     <variable name="Wind_speed" vertCoord="1" />
   </runSequence>
   <runSequence>
-    <run runHour="12.0" offsetHourSeq="7" />
-    <run runHour="18.0" offsetHourSeq="2" />
-    <run runHour="12.0" offsetHourSeq="7" />
-    <run runHour="18.0" offsetHourSeq="2" />
-    <run runHour="24.0" offsetHourSeq="2" />
+    <run runHour="12.0" offsetHourSeq="2" />
+    <run runHour="18.0" offsetHourSeq="7" />
     <variable name="Maximum_temperature" vertCoord="0" />
   </runSequence>
   <runSequence>
-    <run runHour="12.0" offsetHourSeq="8" />
-    <run runHour="18.0" offsetHourSeq="3" />
-    <run runHour="12.0" offsetHourSeq="8" />
-    <run runHour="18.0" offsetHourSeq="3" />
-    <run runHour="24.0" offsetHourSeq="3" />
+    <run runHour="12.0" offsetHourSeq="3" />
+    <run runHour="18.0" offsetHourSeq="8" />
     <variable name="Minimum_temperature" vertCoord="0" />
   </runSequence>
   <runSequence>
-    <run runHour="12.0" offsetHourSeq="9" />
-    <run runHour="18.0" offsetHourSeq="4" />
-    <run runHour="12.0" offsetHourSeq="9" />
-    <run runHour="18.0" offsetHourSeq="4" />
-    <run runHour="24.0" offsetHourSeq="4" />
+    <run runHour="12.0" offsetHourSeq="4" />
+    <run runHour="18.0" offsetHourSeq="9" />
     <variable name="Probability_of_0p01_inch_Precipitation" />
   </runSequence>
 </fmrcDefinition>
-

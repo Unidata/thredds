@@ -1,0 +1,430 @@
+/*
+ * Copyright (c) 1998 - 2010. University Corporation for Atmospheric Research/Unidata
+ * Portions of this software were developed by the Unidata Program at the
+ * University Corporation for Atmospheric Research.
+ *
+ * Access and use of this software shall impose the following obligations
+ * and understandings on the user. The user is granted the right, without
+ * any fee or cost, to use, copy, modify, alter, enhance and distribute
+ * this software, and any derivative works thereof, and its supporting
+ * documentation for any purpose whatsoever, provided that this entire
+ * notice appears in all copies of the software, derivative works and
+ * supporting documentation.  Further, UCAR requests that the user credit
+ * UCAR/Unidata in any publications that result from the use of this
+ * software or in any product that includes this software. The names UCAR
+ * and/or Unidata, however, may not be used in any advertising or publicity
+ * to endorse or promote any products or commercial entity unless specific
+ * written permission is obtained from UCAR/Unidata. The user also
+ * understands that UCAR/Unidata is not obligated to provide the user with
+ * any support, consulting, training or assistance of any kind with regard
+ * to the use, operation and performance of this software nor to provide
+ * the user with any updates, revisions, new versions or "bug fixes."
+ *
+ * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+package ucar.nc2.ui;
+
+import thredds.inventory.bdb.MetadataManager;
+import ucar.unidata.util.StringUtil;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.nc2.ft.fmrc.*;
+import ucar.nc2.units.DateFormatter;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
+
+import thredds.ui.TextHistoryPane;
+import thredds.ui.IndependentWindow;
+import thredds.ui.BAMutil;
+
+import java.util.*;
+import java.awt.event.ActionEvent;
+import java.awt.*;
+import java.io.IOException;
+
+/**
+ * Describe
+ *
+ * @author caron
+ * @since Jan 11, 2010
+ */
+public class CollectionTable extends JPanel {
+  private PreferencesExt prefs;
+
+  private BeanTableSorted collectionNameTable, dataTable, coordTable, gridTable;
+  private JSplitPane split, split2, splitV;
+
+  private TextHistoryPane infoTA;
+  private IndependentWindow infoWindow;
+
+  private Fmrc fmrc;
+  private FmrcInv fmrcInv;
+
+  private Formatter debug;
+  private DateFormatter df = new DateFormatter();
+
+  public CollectionTable(PreferencesExt prefs) {
+    this.prefs = prefs;
+
+    collectionNameTable = new BeanTableSorted(CollectionBean.class, (PreferencesExt) prefs.node("DatasetBean"), false);
+    collectionNameTable.addListSelectionListener(new ListSelectionListener() {
+      public void valueChanged(ListSelectionEvent e) {
+        CollectionBean bean = (CollectionBean) collectionNameTable.getSelectedBean();
+        setCollection(bean.name);
+      }
+    });
+
+    thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(collectionNameTable.getJTable(), "Options");
+    varPopup.addAction("Show Collection Stats", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        CollectionBean bean = (CollectionBean) collectionNameTable.getSelectedBean();
+        if (bean == null) return;
+        showCollectionInfo(bean.name);
+      }
+    });
+    varPopup.addAction("delete", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        CollectionBean bean = (CollectionBean) collectionNameTable.getSelectedBean();
+        if (bean == null) return;
+        MetadataManager.deleteCollection(bean.name);
+        refresh();
+      }
+    });
+
+    dataTable = new BeanTableSorted(DataBean.class, (PreferencesExt) prefs.node("DataBean"), false);
+    dataTable.addListSelectionListener(new ListSelectionListener() {
+      public void valueChanged(ListSelectionEvent e) {
+        DataBean bean = (DataBean) dataTable.getSelectedBean();
+        showData(bean);
+      }
+    });
+    varPopup = new thredds.ui.PopupMenu(dataTable.getJTable(), "Options");
+    varPopup.addAction("delete", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        CollectionBean cbean = (CollectionBean) collectionNameTable.getSelectedBean();
+        DataBean bean = (DataBean) dataTable.getSelectedBean();
+        if ((cbean == null) || (bean == null)) return;
+        MetadataManager.delete(cbean.name, bean.getKey());
+        setCollection(cbean.name);
+      }
+    });
+
+    /* coordTable = new BeanTableSorted(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false);
+    coordTable.addListSelectionListener(new ListSelectionListener() {
+      public void valueChanged(ListSelectionEvent e) {
+        CoordBean coordBean = (CoordBean) coordTable.getSelectedBean();
+      }
+    });
+    coordTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
+    gridTable = new BeanTableSorted(GridBean.class, (PreferencesExt) prefs.node("GridBean"), false);
+    gridTable.addListSelectionListener(new ListSelectionListener() {
+      public void valueChanged(ListSelectionEvent e) {
+        GridBean gridBean = (GridBean) gridTable.getSelectedBean();
+        setSelectedCoord(gridBean);
+      }
+    });
+
+    thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(invTable.getJTable(), "Options");
+    varPopup.addAction("Open in NetcdfFile Viewer", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        DataBean dsb = (DataBean) invTable.getSelectedBean();
+        if (dsb == null) return;
+        CollectionTable.this.firePropertyChange("openNetcdfFile", null, dsb.fmrInv.getLocation());
+      }
+    });
+
+    varPopup.addAction("Open in CoordSys tab", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        DataBean dsb = (DataBean) invTable.getSelectedBean();
+        if (dsb == null) return;
+        CollectionTable.this.firePropertyChange("openCoordSys", null, dsb.fmrInv.getLocation());
+      }
+    });
+
+    varPopup.addAction("Open in GridDataset tab", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        DataBean dsb = (DataBean) invTable.getSelectedBean();
+        if (dsb == null) return;
+        CollectionTable.this.firePropertyChange("openGridDataset", null, dsb.fmrInv.getLocation());
+      }
+    });
+
+    varPopup.addAction("show GridInventory XML", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        DataBean dsb = (DataBean) invTable.getSelectedBean();
+        if (dsb == null) return;
+        infoTA.setText(dsb.fmrInv.writeXML(null));
+        infoWindow.showIfNotIconified();
+      }
+    });
+
+    varPopup = new thredds.ui.PopupMenu(coordTable.getJTable(), "Options");
+    varPopup.addAction("Show Inv", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        CoordBean bean = (CoordBean) coordTable.getSelectedBean();
+        if (bean == null) return;
+        showCoordInv(bean);
+      }
+    });
+
+    varPopup = new thredds.ui.PopupMenu(gridTable.getJTable(), "Options");
+    varPopup.addAction("Show Inv Coords", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        GridBean bean = (GridBean) gridTable.getSelectedBean();
+        if (bean == null) return;
+        showGridInv(bean);
+      }
+    });  */
+
+    // the info window
+    infoTA = new TextHistoryPane(false, 5000, 50, true, false, 14);
+    infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), infoTA);
+    infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
+
+    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, collectionNameTable, dataTable);
+    split.setDividerLocation(prefs.getInt("splitPos", 500));
+
+    /* split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split, gridTable);
+    split2.setDividerLocation(prefs.getInt("splitPos2", 500));
+
+    splitV = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, collectionNameTable, dataTable);
+    splitV.setDividerLocation(prefs.getInt("splitPosV", 500));   */
+
+
+    setLayout(new BorderLayout());
+    add(split, BorderLayout.CENTER);
+    refresh();
+  }
+
+  private void showData(DataBean bean) {
+    infoTA.setText(bean.getValue());
+    infoWindow.showIfNotIconified();
+  }
+
+  // private MetadataManager mm;
+
+  public void save() {
+    collectionNameTable.saveState(false);
+    dataTable.saveState(false);
+    // coordTable.saveState(false);
+    // gridTable.saveState(false);
+    prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
+    prefs.putInt("splitPos", split.getDividerLocation());
+    //prefs.putInt("splitPos2", split2.getDividerLocation());
+    //prefs.putInt("splitPosV", splitV.getDividerLocation());
+  }
+
+  public void refresh() {
+    java.util.List<CollectionBean> beanList = new ArrayList<CollectionBean>();
+    for (String name : MetadataManager.getCollectionNames()) {
+      beanList.add(new CollectionBean(name));
+    }
+    collectionNameTable.setBeans(beanList);
+  }
+
+  private void setCollection(String name) {
+    java.util.List<DataBean> beans = new ArrayList<DataBean>();
+    MetadataManager mm = null;
+    try {
+      mm = new MetadataManager(name);
+
+      for (MetadataManager.KeyValue data : mm.getContent()) {
+        beans.add(new DataBean(data));
+      }
+      dataTable.setBeans(beans);
+    } catch (IOException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    } finally {
+      if (mm != null) mm.close();
+    }
+  }
+
+  public void showInfo(Formatter result) throws IOException {
+    MetadataManager.showEnvStats(result);
+  }
+
+  public void showCollectionInfo(String name) {
+    MetadataManager mm = null;
+    try {
+      Formatter f = new Formatter();
+      mm = new MetadataManager(name);
+      mm.showStats(f);
+      infoTA.setText(f.toString());
+      infoTA.gotoTop();
+      infoWindow.show();
+    } catch (IOException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    }  finally {
+      if (mm != null) mm.close();
+    }
+  }
+
+  public class CollectionBean {
+    String name;
+
+    // no-arg constructor
+    public CollectionBean() {
+    }
+
+    // create from a dataset
+    public CollectionBean(String name) {
+      this.name = name;
+    }
+
+    public String getName() throws IOException {
+      return name;
+    }
+
+    public String getNameDecoded() throws IOException {
+      return StringUtil.unescape(name);
+    }
+
+  }
+
+  public class DataBean {
+    MetadataManager.KeyValue data;
+
+    // no-arg constructor
+    public DataBean() {
+    }
+
+    // create from a dataset
+    public DataBean(MetadataManager.KeyValue data) {
+      this.data = data;
+    }
+
+    public String getKey() {
+      return data.key;
+    }
+    public String getValue() {
+      return data.value;
+    }
+  }
+
+
+  public class GridBean {
+    FmrcInv.UberGrid grid;
+
+    // no-arg constructor
+    public GridBean() {
+    }
+
+    // create from a dataset
+    public GridBean(FmrcInv.UberGrid grid) {
+      this.grid = grid;
+    }
+
+    public String getName() {
+      return grid.getName();
+    }
+
+    public String getTimeCoordName() {
+      return grid.getTimeCoordName();
+    }
+
+    public String getVertCoordName() {
+      return grid.getVertCoordName();
+    }
+
+    public int getCount() {
+      return grid.countTotal();
+    }
+
+    public int getExpected() {
+      return grid.countExpected();
+    }
+
+    public boolean getStatus() {
+      return getExpected() == getCount();
+    }
+  }
+
+  abstract public class CoordBean {
+    // no-arg constructor
+    public CoordBean() {
+    }
+
+    abstract public String getType();
+
+    abstract public String getName();
+
+    abstract public String getCoords();
+  }
+
+  public class TimeCoordBean extends CoordBean {
+    FmrcInv.RunSeq tc;
+
+    // no-arg constructor
+    public TimeCoordBean() {
+    }
+
+    // create from a dataset
+    public TimeCoordBean(FmrcInv.RunSeq tc) {
+      this.tc = tc;
+    }
+
+    public String getType() {
+      return "time";
+    }
+
+    public String getName() {
+      return tc.getName();
+    }
+
+    public String getCoords() {
+      StringBuilder sb = new StringBuilder();
+      for (double off : tc.getOffsetHours())
+        sb.append(off).append(" ");
+      return sb.toString();
+    }
+  }
+
+  public class VertCoordBean extends CoordBean {
+    VertCoord vc;
+
+    // no-arg constructor
+    public VertCoordBean() {
+    }
+
+    // create from a dataset
+    public VertCoordBean(VertCoord tc) {
+      this.vc = tc;
+    }
+
+    public String getType() {
+      return "vert";
+    }
+
+    public String getName() {
+      return vc.getName();
+    }
+
+    public String getCoords() {
+      Formatter sb = new Formatter();
+      double[] values1 = vc.getValues1();
+      double[] values2 = vc.getValues2();
+      if (values2 == null) {
+        for (double lev : values1)
+          sb.format("%s ", lev);
+      } else {
+        for (int i = 0; i < values1.length; i++) {
+          sb.format("(%f,%f) ", values1[i], values2[i]);
+        }
+      }
+
+      return sb.toString();
+    }
+  }
+
+}

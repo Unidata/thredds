@@ -112,8 +112,7 @@ public class GridController {
   private javax.swing.JLabel dataValueLabel, posLabel;
 
     // event management
-  AbstractAction dataProjectionAction, exitAction, helpAction, showGridAction,
-    showContoursAction, showContourLabelsAction, showWindsAction;
+  AbstractAction dataProjectionAction, exitAction, helpAction, showGridAction, showContoursAction, showContourLabelsAction, showWindsAction;
   AbstractAction drawHorizAction, drawVertAction;
 
   JSpinner strideSpinner;
@@ -253,14 +252,14 @@ public class GridController {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
         // System.out.println("showGridAction state "+state);
-        renderGrid.setDrawGrid( state.booleanValue());
+        renderGrid.setDrawGridLines( state.booleanValue());
         draw(false);
       }
     };
-    BAMutil.setActionProperties( showGridAction, "Grid", "show grid", true, 'G', 0);
-    state = store.getBoolean( "showGridAction", true);
+    BAMutil.setActionProperties( showGridAction, "Grid", "show grid lines", true, 'G', 0);
+    state = store.getBoolean( "showGridAction", false);
     showGridAction.putValue(BAMutil.STATE, new Boolean(state));
-    renderGrid.setDrawGrid( state);
+    renderGrid.setDrawGridLines( state);
 
      // contouring
     showContoursAction = new AbstractAction() {
@@ -708,8 +707,10 @@ public class GridController {
     renderGrid.setGeoGrid(gg);
     currentField = gg;
 
-    // set levels
     GridCoordSystem gcs = gg.getCoordinateSystem();
+    gcs.setProjectionBoundingBox();
+
+    // set levels
     CoordinateAxis1D vaxis = gcs.getVerticalAxis();
     levelNames = (vaxis == null) ? new ArrayList() : vaxis.getNames();
     if ((levelNames == null) || (currentLevel >= levelNames.size()))

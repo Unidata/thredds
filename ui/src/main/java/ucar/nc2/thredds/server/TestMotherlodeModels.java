@@ -107,7 +107,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     CatalogCrawler crawler = new CatalogCrawler(type, skipDatasetScan, this);
     long start = System.currentTimeMillis();
     try {
-      countCatRefs = crawler.crawl(cat, stopButton, verbose ? out : null);
+      countCatRefs = crawler.crawl(cat, stopButton, verbose ? out : null, null);
     } finally {
       int took = (int) (System.currentTimeMillis() - start) / 1000;
 
@@ -117,7 +117,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     }
   }
 
-  public void getDataset(InvDataset ds) {
+  public void getDataset(InvDataset ds, Object context) {
     countDatasets++;
 
     ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
@@ -143,7 +143,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     }
 
   }
-  public boolean getCatalogRef(InvCatalogRef dd) { return true; }
+  public boolean getCatalogRef(InvCatalogRef dd, Object context) { return true; }
    
   public static JPanel main;
   public static void main(String args[]) throws IOException {

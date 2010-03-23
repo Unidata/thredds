@@ -61,12 +61,12 @@ public class TextHistoryPane extends JPanel {
 
   /** default constructor. */
   public TextHistoryPane() {
-    this( false, 5000, 50, true, 14);
+    this( false, 5000, 50, true, true, 14);
   }
 
   /** constructor allows editing. */
   public TextHistoryPane(boolean editable) {
-    this( editable, 5000, 50, true, 14);
+    this( editable, 5000, 50, true, true, 14);
   }
 
   /** constructor
@@ -75,13 +75,13 @@ public class TextHistoryPane extends JPanel {
      @param popupOK enable popup menu
      @param ptSize font point size
    */
-  public TextHistoryPane(boolean editable, int nlines, int removeIncr, boolean popupOK, int ptSize) {
+  public TextHistoryPane(boolean editable, int nlines, int removeIncr, boolean popupOK,  boolean lineWrap, int ptSize) {
     super(new BorderLayout());
     this.nlines = nlines-1;
     this.removeIncr = Math.min(nlines-1, removeIncr-1); // cant be bigger than nlines
 
     ta = new JTextArea();
-    ta.setLineWrap(true);
+    ta.setLineWrap(lineWrap);
     ta.setEditable(editable);
     fontu = FontUtil.getMonoFont( ptSize);
     ta.setFont(fontu.getFont());
@@ -89,6 +89,7 @@ public class TextHistoryPane extends JPanel {
     if (popupOK)
       ta.addMouseListener( new MyPopupMenu());
 
+    //JScrollPane sp = new JScrollPane(ta, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     JScrollPane sp = new JScrollPane(ta);
     add(sp, BorderLayout.CENTER);
 
@@ -185,6 +186,9 @@ public class TextHistoryPane extends JPanel {
       JMenuItem dissButt= new JMenuItem("Dismiss");
       popup.add(dissButt);
 
+      JMenuItem clearButt= new JMenuItem("Clear");
+      popup.add(clearButt);
+
         // listen to changes to the JTextField
       nlinesFld.addActionListener( new AbstractAction() {
         public void actionPerformed( ActionEvent e) {
@@ -242,6 +246,14 @@ public class TextHistoryPane extends JPanel {
           popup.setVisible(false);
         }
       });
+
+      clearButt.addActionListener( new AbstractAction() {
+        public void actionPerformed( ActionEvent e) {
+          clear();
+          popup.setVisible(false);
+        }
+      });
+
     }
 
     public void showPopup(MouseEvent e) {

@@ -1,4 +1,3 @@
-// $Id: CatalogFactoryCancellable.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -52,7 +51,6 @@ import ucar.nc2.util.net.HttpClientManager;
  * A subclass of InvCatalogFactory that allows the reading of a catalog to be cancelled by the user.
  * Pops up a ProgressMonitor widget.
  * @author John Caron
- * @version $Id: CatalogFactoryCancellable.java 50 2006-07-12 16:30:06Z caron $
  */
 
 public class CatalogFactoryCancellable extends InvCatalogFactory {

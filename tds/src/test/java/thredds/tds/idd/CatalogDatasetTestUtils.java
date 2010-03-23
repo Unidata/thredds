@@ -84,18 +84,18 @@ public class CatalogDatasetTestUtils
 
         CatalogCrawler.Listener listener = new CatalogCrawler.Listener()
         {
-            public void getDataset( InvDataset ds ) {
+            public void getDataset( InvDataset ds, Object context ) {
                 InvAccess bestAccess = threddsDataFactory.chooseDatasetAccess( ds.getAccess() );
                 accessibleDatasetUrls.add( bestAccess.getStandardUrlName() );
             }
 
-            public boolean getCatalogRef( InvCatalogRef dd ) {
+            public boolean getCatalogRef( InvCatalogRef dd, Object context ) {
                 return true;
             }
         };
         CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_RANDOM_DIRECT_NOT_FIRST_OR_LAST, false, listener );
 
-        int numDs = crawler.crawl( catalogUrl, null, psStatusMsg );
+        int numDs = crawler.crawl( catalogUrl, null, psStatusMsg, null );
         psStatusMsg.close();
 
         StringBuilder message = new StringBuilder()

@@ -172,6 +172,15 @@ public class DLCrawler extends JPanel {
 
     // access bean table
     daTable = new BeanTableSorted(AccessBean.class, (PreferencesExt) prefs.node("dsBeans"), false);
+    daTable.addListSelectionListener( new ListSelectionListener() {
+      public void valueChanged(ListSelectionEvent e) {
+        AccessBean bean = (AccessBean) daTable.getSelectedBean();
+        InvAccess access = bean.access;
+        DatasetBean dbean = findDatasetBean( access.getDataset());
+        if (dbean != null)
+          dsTable.setSelectedBean( dbean);
+      }
+    });
 
     /// put tables in tabbed pane
     tabbedPane = new JTabbedPane(JTabbedPane.TOP);
@@ -423,6 +432,7 @@ public class DLCrawler extends JPanel {
       }
       return null;
     }
+
     public AccessBean findAccessBean( InvDataset ds) {
       Iterator iter = daList.iterator();
       while (iter.hasNext()) {

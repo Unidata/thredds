@@ -1,4 +1,3 @@
-// $Id: CatalogTreeView.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -80,7 +79,6 @@ import ucar.nc2.constants.FeatureType;
  * @see ThreddsDatasetChooser
  *
  * @author John Caron
- * @version $Id: CatalogTreeView.java 50 2006-07-12 16:30:06Z caron $
  */
 
 public class CatalogTreeView extends JPanel implements CatalogSetCallback {
@@ -100,12 +98,6 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
     // ui
   private JTree tree;
   private InvCatalogTreeModel model;
-
-
-    /* popup DQC
-  private boolean useDQC = true;
-  private QueryChooser queryChooser;
-  private JDialog queryChooserDialog = null; */
 
   private boolean debugRef = false;
   private boolean debugTree = false;
@@ -152,6 +144,16 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
               node.readCatref();
           }
         }
+      }
+    });
+
+
+    thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(tree, "Options");
+    varPopup.addAction("Open all children", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        InvCatalogTreeNode node = (InvCatalogTreeNode) tree.getLastSelectedPathComponent();
+        if (node != null)
+          open(node, true);
       }
     });
 
@@ -260,8 +262,7 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
     Object node = tree.getLastSelectedPathComponent();
     if (node == null) return null;
     if ( !(node instanceof InvCatalogTreeNode)) return null;
-    InvCatalogTreeNode tnode = (InvCatalogTreeNode) node;
-    return tnode;
+    return (InvCatalogTreeNode) node;
   }
 
   /**
@@ -292,7 +293,7 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
    * @return the corresponding TreePath.
    */
   TreePath makeTreePath(TreeNode node) {
-    ArrayList path = new ArrayList();
+    ArrayList<TreeNode> path = new ArrayList<TreeNode>();
     path.add( node);
     TreeNode parent = node.getParent();
     while (parent != null) {
@@ -493,7 +494,7 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
   private class InvCatalogTreeNode implements javax.swing.tree.TreeNode, CatalogSetCallback {
     InvDataset ds;
     private InvCatalogTreeNode parent;
-    private ArrayList children = null;
+    private ArrayList<InvCatalogTreeNode> children = null;
     private boolean isReading = false;
 
     InvCatalogTreeNode( InvCatalogTreeNode parent, InvDatasetImpl ds) {
@@ -506,7 +507,7 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
 
     public Enumeration children() {
       if (debugTree) System.out.println("children="+ds.getName()+" ");
-      if (children == null) return Collections.enumeration( new ArrayList());
+      if (children == null) return Collections.enumeration( new ArrayList<InvCatalogTreeNode>());
       return Collections.enumeration(children);
     }
 
@@ -538,9 +539,9 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
         }
 
         if (debugRef) System.out.println("getChildCount on ds="+ds.getName()+" ");
-        children = new ArrayList();
-        for (Iterator iter = ds.getDatasets().iterator(); iter.hasNext(); )
-          children.add( new InvCatalogTreeNode( this, (InvDatasetImpl) iter.next()));
+        children = new ArrayList<InvCatalogTreeNode>();
+        for (InvDataset nested : ds.getDatasets())
+          children.add( new InvCatalogTreeNode( this, (InvDatasetImpl) nested));
       }
     }
 
@@ -572,7 +573,7 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
     public String toString() { return ds.getName(); }
 
     public void setCatalog(InvCatalogImpl catalog) {
-      children = new ArrayList();
+      children = new ArrayList<InvCatalogTreeNode>();
       java.util.List datasets = ds.getDatasets();
       int[] childIndices = new int[ datasets.size()];
       for (int count = 0; count < datasets.size(); count++) {
@@ -643,12 +644,10 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
       return c;
     }
 
-    private String makeDocs( java.util.List docs) {
+    private String makeDocs( java.util.List<InvDocumentation> docs) {
       if (docs == null) return null;
       StringBuffer sbuff = new StringBuffer(1000);
-      Iterator iter = docs.iterator();
-      while(iter.hasNext()) {
-        InvDocumentation doc = (InvDocumentation) iter.next();
+      for (InvDocumentation doc : docs) {
         sbuff.append( doc.getInlineContent());
       }
       return sbuff.toString();
@@ -657,69 +656,3 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
   }
 
 }
-
-/* Change History:
-   $Log: CatalogTreeView.java,v $
-   Revision 1.20  2005/09/30 17:34:58  caron
-   no message
-
-   Revision 1.19  2005/08/29 21:43:39  caron
-   change order of event firing
-
-   Revision 1.18  2005/08/26 00:30:02  caron
-   more TDS configurator work
-   variable now mixed content
-
-   Revision 1.17  2005/08/22 01:12:25  caron
-   DatasetEditor
-
-   Revision 1.16  2005/08/17 00:13:50  caron
-   Dataset Editor
-
-   Revision 1.15  2005/08/08 19:38:59  caron
-   minor
-
-   Revision 1.14  2005/08/05 18:40:22  caron
-   no message
-
-   Revision 1.13  2005/05/25 21:09:37  caron
-   no message
-
-   Revision 1.12  2005/04/27 22:08:04  caron
-   no message
-
-   Revision 1.11  2004/10/15 19:16:07  caron
-   enum now keyword in 1.5
-   SelectDateRange send ISO date string
-
-   Revision 1.10  2004/09/30 00:33:37  caron
-   *** empty log message ***
-
-   Revision 1.9  2004/09/24 03:26:31  caron
-   merge nj22
-
-   Revision 1.8  2004/06/12 02:01:11  caron
-   dqc 0.3
-
-   Revision 1.7  2004/06/09 00:27:28  caron
-   version 2.0a release; cleanup javadoc
-
-   Revision 1.6  2004/05/11 23:30:32  caron
-   release 2.0a
-
-   Revision 1.5  2004/03/05 23:35:48  caron
-   rel 1.3.1 javadoc
-
-   Revision 1.4  2004/03/05 17:21:50  caron
-   1.3.1 release
-
-   Revision 1.3  2004/02/20 00:49:53  caron
-   1.3 changes
-
-   Revision 1.2  2003/12/04 22:27:45  caron
-   *** empty log message ***
-
-   Revision 1.1  2003/05/29 22:59:49  john
-   refactor choosers into toolkit framework
-
- */

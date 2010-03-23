@@ -57,19 +57,19 @@ public class MakeGribAggXML implements CatalogCrawler.Listener {
     this.out = out;
 
     CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_ALL_DIRECT, false, this);
-    crawler.crawl( catalog, null, out);
+    crawler.crawl( catalog, null, out, null);
     report( out);
   }
 
   MakeGribAggXML(InvDataset top, PrintStream out) {
     this.out = out;
     CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_ALL_DIRECT, false, this);
-    crawler.crawlDirectDatasets( top, null, out);
+    crawler.crawlDirectDatasets( top, null, out, null);
     report( out);
   }
 
   private boolean first = true;
-  public void getDataset(InvDataset dd) {
+  public void getDataset(InvDataset dd, Object context) {
     if (null != dd.getAccess( ServiceType.RESOLVER))
       return;
 
@@ -94,7 +94,7 @@ public class MakeGribAggXML implements CatalogCrawler.Listener {
     }
   }
 
-  public boolean getCatalogRef(InvCatalogRef dd) { return true; }  
+  public boolean getCatalogRef(InvCatalogRef dd, Object context) { return true; }
 
   private HashMap varHash = new HashMap();
   private void process(NetcdfFile ncd) {

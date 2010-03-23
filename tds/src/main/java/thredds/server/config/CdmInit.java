@@ -59,7 +59,7 @@ import java.io.IOException;
  * @since Feb 20, 2009
  */
 public class CdmInit {
-  org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
+  static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
   private DiskCache2 aggCache;
   private Timer timer;
@@ -71,14 +71,26 @@ public class CdmInit {
   }
 
   void init(TdsContext tdsContext) {
+    // new for 4.2 - feature collection caching
+    String fcCache = ThreddsConfig.get("FeatureCollection.cacheDirectory", tdsContext.getContentDirectory().getPath() + "/collectionCache/");
+    try {
+      thredds.inventory.bdb.MetadataManager.setCacheDirectory(fcCache);
+      startupLog.info("FeatureCollection.cacheDirectory= "+fcCache);
+    } catch (Exception e) {
+      startupLog.error("Failed to open FeatureCollection.cacheDirectory= "+fcCache, e);
+    }
+
     // new for 4.1 - ehcache object caching
     String ehConfig = ThreddsConfig.get("ehcache.configFile", tdsContext.getWebinfPath() + "/ehcache.xml");
     String ehDirectory = ThreddsConfig.get("ehcache.directory", tdsContext.getContentDirectory().getPath() + "/ehcache/");
     try {
       cacheManager = thredds.filesystem.ControllerCaching.makeStandardController(ehConfig, ehDirectory);
       thredds.inventory.DatasetCollectionManager.setController(cacheManager);
+      startupLog.info("ehcache.config= "+ehConfig);
+      startupLog.info("ehcache.directory= "+ehDirectory);
+
     } catch (IOException ioe) {
-      logServerStartup.error("Cant read ehcache config file "+ehConfig, ioe);
+      startupLog.error("Cant read ehcache config file "+ehConfig, ioe);
     }
 
     boolean useBytesForDataSize = ThreddsConfig.getBoolean("catalogWriting.useBytesForDataSize", false);    
@@ -148,6 +160,7 @@ public class CdmInit {
     NetcdfDataset.shutdown();
     if (aggCache != null) aggCache.exit();
     if (cacheManager != null) cacheManager.close();
+    thredds.inventory.bdb.MetadataManager.closeAll();
   }
 
   private class CacheScourTask extends TimerTask {

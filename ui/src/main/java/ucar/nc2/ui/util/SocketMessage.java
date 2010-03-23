@@ -73,6 +73,11 @@ public class SocketMessage {
         sendMessage( port, message);
       isAlreadyRunning = true;
 
+    } catch (java.net.SocketException e) {
+      if (message != null)
+        sendMessage( port, message);
+      isAlreadyRunning = true;
+
     } catch (IOException e) {
       System.out.println("SocketMessage IOException= " + e);
       e.printStackTrace();

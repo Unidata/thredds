@@ -69,7 +69,7 @@ public class TimeTDSfixed {
     this.out = ps;
 
     CatalogCrawler.Listener listener = new CatalogCrawler.Listener() {
-      public void getDataset(InvDataset dd) {
+      public void getDataset(InvDataset dd, Object context) {
         extractDatasetInfo(dd, out);
         count++;
         long took = System.currentTimeMillis() - start;
@@ -77,14 +77,14 @@ public class TimeTDSfixed {
           cancel.isCancel = true;
         }
       }
-      public boolean getCatalogRef(InvCatalogRef dd) { return true; }
+      public boolean getCatalogRef(InvCatalogRef dd, Object context) { return true; }
       
     };
     CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.USE_ALL_DIRECT, false, listener);
 
     cancel = new CancelTaskImpl();
     start = System.currentTimeMillis();
-    crawler.crawl(catUrl, cancel, this.out);
+    crawler.crawl(catUrl, cancel, this.out, null);
     long took = System.currentTimeMillis() - start;
     System.out.println("FINISHED "+count+" datasets in " + took + " msecs ");
   }

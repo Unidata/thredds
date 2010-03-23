@@ -34,6 +34,8 @@
 
 package ucar.util.prefs.ui;
 
+import thredds.ui.IndependentDialog;
+import thredds.ui.IndependentWindow;
 import ucar.util.prefs.*;
 import java.util.*;
 import java.util.List;
@@ -41,6 +43,8 @@ import java.io.IOException;
 import java.awt.event.*;
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 //import thredds.ui.PopupMenu;
 
@@ -85,6 +89,10 @@ public class ComboBox extends JComboBox {
   private PersistenceManager prefs;
   private int nkeep = 20;
 
+  public ComboBox() {
+    this( null, 20);
+  }
+
   /**
    * Constructor.
    * @param prefs get/put list here; may be null.
@@ -108,6 +116,8 @@ public class ComboBox extends JComboBox {
       ArrayList list = (ArrayList) prefs.getList(LIST, null);
       setItemList(list);
     }
+
+    addContextMenu();
   }
 
   public JComponent getDeepEditComponent() { 
@@ -126,11 +136,20 @@ public class ComboBox extends JComboBox {
 
     AbstractAction deleteAction = new AbstractAction() {
       public void actionPerformed( java.awt.event.ActionEvent e) {
-        int index = getSelectedIndex();
-        deleting = true;
-        if (index >= 0)
-          removeItemAt( index);
-        deleting = false;
+        final JList delComp= new JList();
+        delComp.setModel( getModel());
+        delComp.addListSelectionListener(new ListSelectionListener() {
+          public void valueChanged(ListSelectionEvent e) {
+            int index = delComp.getSelectedIndex();
+            deleting = true;
+            if (index >= 0)
+              removeItemAt( index);
+            deleting = false;
+          }
+        });
+
+        IndependentDialog iw = new IndependentDialog(null, true, "delete items", delComp);
+        iw.show();
       }
     };
     deleteAction.putValue( Action.NAME, "Delete");

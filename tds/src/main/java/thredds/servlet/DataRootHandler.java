@@ -452,6 +452,10 @@ public class DataRootHandler {
         InvDatasetFmrc fmrc = (InvDatasetFmrc) invDataset;
         addRoot(fmrc);
 
+      } else if (invDataset instanceof InvDatasetFeatureCollection) {
+        InvDatasetFeatureCollection fmrc = (InvDatasetFeatureCollection) invDataset;
+        addRoot(fmrc);
+
         // not a DatasetScan or InvDatasetFmrc
       } else if (invDataset.getNcmlElement() != null) {
         DatasetHandler.putNcmlDataset(invDataset.getUrlPath(), invDataset);
@@ -578,6 +582,42 @@ public class DataRootHandler {
     return true;
   }
 
+
+
+  // Only called by synchronized methods
+  private boolean addRoot(InvDatasetFeatureCollection fmrc) {
+    // check for duplicates
+    String path = fmrc.getPath();
+
+    if (path == null) {
+      logCatalogInit.error(fmrc.getFullName() + " missing a path attribute.");
+      return false;
+    }
+
+    DataRoot droot = (DataRoot) pathMatcher.get(path);
+    if (droot != null) {
+      logCatalogInit.error("**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
+              " wanted to use by FMRC Dataset =<" + fmrc.getFullName() + ">");
+      return false;
+    }
+
+    // add it
+    droot = new DataRoot(fmrc);
+
+    if (droot.dirLocation != null) {
+      File file = new File(droot.dirLocation);
+      if (!file.exists()) {
+        logCatalogInit.error("**Error: DatasetFmrc =" + droot.path + " directory= <" + droot.dirLocation + "> does not exist");
+        return false;
+      }
+    }
+
+    pathMatcher.put(path, droot);
+
+    logCatalogInit.debug(" added rootPath=<" + path + ">  for fmrc= <" + fmrc.getFullName() + ">");
+    return true;
+  }
+
   // Only called by synchronized methods
   private boolean addRoot(String path, String dirLocation, boolean wantErr) {
     // check for duplicates
@@ -643,14 +683,20 @@ public class DataRootHandler {
 
   public class DataRoot {
     String path;         // match this path
-    String dirLocation; // to this directory
+    String dirLocation;  // to this directory
     InvDatasetScan scan; // the InvDatasetScan that created this (may be null)
     InvDatasetFmrc fmrc; // the InvDatasetFmrc that created this (may be null)
+    InvDatasetFeatureCollection featCollection; // the InvDatasetFeatureCollection that created this (may be null)
     boolean cache = true;
 
     // Use this to access CrawlableDataset in dirLocation.
     // I.e., used by datasets that reference a <datasetRoot>
     InvDatasetScan datasetRootProxy;
+
+    DataRoot(InvDatasetFeatureCollection featCollection) {
+      this.path = featCollection.getPath();
+      this.featCollection = featCollection;
+    }
 
     DataRoot(InvDatasetFmrc fmrc) {
       this.path = fmrc.getPath();
@@ -803,6 +849,9 @@ public class DataRootHandler {
 
     if (reqDataRoot.fmrc != null)
       return null; // if fmrc exists, bail out and deal with it in caller
+
+    if (reqDataRoot.featCollection != null)
+      return null; // if featCollection exists, bail out and deal with it in caller
 
     // must be a data root
     if (reqDataRoot.dirLocation != null) {
@@ -1251,9 +1300,9 @@ public class DataRootHandler {
     }
 
     // Check for tdr dynamic catalog.
-    if (catalog == null) {
-      catalog = makeTDRDynamicCatalog(workPath, baseURI);
-    }
+    //if (catalog == null) {
+    //  catalog = makeTDRDynamicCatalog(workPath, baseURI);
+    //}
 
     // Check for dynamic catalog.
     if (catalog == null)
@@ -1286,6 +1335,11 @@ public class DataRootHandler {
     // look for the fmrc
     if (match.dataRoot.fmrc != null) {
       return match.dataRoot.fmrc.makeCatalog(match.remaining, path, baseURI);
+    }
+
+    // look for the feature Collection
+    if (match.dataRoot.featCollection != null) {
+      return match.dataRoot.featCollection.makeCatalog(match.remaining, path, baseURI);
     }
 
     // Check that path is allowed, ie not filtered out

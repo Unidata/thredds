@@ -38,15 +38,30 @@ dl {margin: 10px 5px 5px 15px;)
                            boolean&nbsp;proxy)
                            throws <a href="http://jakarta.apache.org/commons/httpclient/apidocs/org/apache/commons/httpclient/auth/CredentialsNotAvailableException.html" title="class in org.apache.commons.httpclient.auth">CredentialsNotAvailableException</a>
 </pre>
-<p>You can write your own, or, for GUI programs, use the <strong>thredds.ui.UrlAuthenticatorDialog</strong> class, which pops up a Dialog Box, similar to how FireFox and other browsers work. Register your <em>CredentialsProvider </em> for both HTTP and OPeNDAP access, using  <strong>ucar.nc2.dataset.HttpClientManager.init</strong>(): </p>
-<pre>    CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(frame);<br>    ucar.nc2.dataset.HttpClientManager.init(provider, <strong>userAgent</strong>);
+<p>You can write your own, or, for GUI programs, use the <strong>thredds.ui.UrlAuthenticatorDialog</strong> class, which pops up a Dialog Box, similar to how FireFox and other browsers work. </p>
+<pre>    CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(frame);<br>    org.apache.commons.httpclient.HttpClient client = ucar.nc2.util.net.HttpClientManager.init(provider, <strong>userAgent</strong>);
 </pre>
 <p>The <strong>userAgent</strong> should be the name of your Application, which is added to the HTTP User-Agent header, and allows  servers to track which applications are accessing it. </p>
-<h2>&nbsp;</h2>
+<h3>Initializing</h3>
+<p>Once you have a org.apache.commons.httpclient.HttpClient, you must pass it into the various classes that require it. Here is the standarad initialization sequence used in ToolsUI (GUI):</p>
+<pre>
+   &nbsp; CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(frame);
+ &nbsp;&nbsp;&nbsp; HttpClient client = HttpClientManager.init(provider, "ToolsUI");
 
+ &nbsp;&nbsp;&nbsp; opendap.dap.DConnect2.setHttpClient(client);
+ &nbsp;&nbsp;&nbsp; HTTPRandomAccessFile.setHttpClient(client);
+ &nbsp;&nbsp;&nbsp; CdmRemote.setHttpClient(client);
+ &nbsp;&nbsp;&nbsp; NetcdfDataset.setHttpClient(client);
+ &nbsp;&nbsp;&nbsp; WmsViewer.setHttpClient(client);</pre>
+<p>You may initialize only the packages you are using.<br>
+</p>
+<h3>Warning: API will change in 4.2</h3>
+<p>We are in the midst of switching to use of HttpClient version 4,  which will affect the API, since the above org.apache.commons.httpclient.HttpClient class is from  HttpClient version 3.<br>
+  <br>
+</p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Feb 2010
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Mar 2010
 </address>
 </body>
 </html>

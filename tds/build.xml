@@ -85,6 +85,7 @@
   <property name="visadNoDods.jar" value="release/visadNoDods.jar"/>
 
   <!-- Third-party libraries needed for compile. -->
+  <property name="bdb.jar" value="external/je-4.0.71.jar"/>
   <property name="catalina.jar" value="external/catalina.jar"/>
   <property name="commons-lang.jar" value="external/commons-lang-2.4.jar"/>
   <property name="cas.jar" value="external/casclient-2.1.1.jar"/>
@@ -108,8 +109,6 @@
   <property name="http-codec.jar" value="external/commons-codec-1.3.jar"/>
   <property name="http-logging.jar" value="external/commons-logging-1.1.jar"/>
   <property name="jpeg2000.jar" value="external/jpeg2000.jar"/>
-  <!--property name="xml-apis.jar" value="external/xml-apis.jar"/>
-  <property name="xercesImpl.jar" value="external/xercesImpl.jar"/ -->
 
   <!-- The servlet jar file is needed to compile the servlet but is not needed
     by the servlet engine, therefore, it is not needed in the war file. -->
@@ -125,14 +124,16 @@
 
   <fileset id="compile.libraries" dir="${lib.dir}">
     <patternset id="compile.libs">
-      <include name="${bufrTables.jar}"/>
       <include name="${netcdf.jar}"/>
+
+      <include name="${bufrTables.jar}"/>
       <include name="${grib.jar}"/>
       <include name="${opendap.jar}"/>
       <include name="${prefs.jar}"/>
       <include name="${unidatacommon.jar}"/>
       <include name="${visadNoDods.jar}"/>
 
+      <include name="${bdb.jar}"/>
       <include name="${cas.jar}"/>
       <include name="${fileupload.jar}"/>
       <include name="${commons-lang.jar}"/>

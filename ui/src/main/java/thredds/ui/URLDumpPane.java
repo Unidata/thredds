@@ -33,10 +33,21 @@
 
 package thredds.ui;
 
+import org.apache.http.HeaderIterator;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.ExecutionContext;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.URLnaming;
 import ucar.nc2.util.net.HttpClientManager;
-import ucar.nc2.util.net.URLencode;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 
@@ -44,7 +55,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.net.*;
-import java.net.URI;
 import java.util.*;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
@@ -52,7 +62,6 @@ import java.util.zip.InflaterInputStream;
 import javax.swing.*;
 
 import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.methods.*;
 
@@ -66,12 +75,11 @@ import org.apache.commons.httpclient.methods.*;
  */
 
 public class URLDumpPane extends TextHistoryPane {
-  private static final int GET = 0;
-  private static final int PUT = 1;
-  private static final int HEAD = 2;
-  private static final int OPTIONS = 3;
+  private enum Library {Commons, java, HttpClient};
+  private enum Command {GET, PUT, HEAD, OPTIONS};
 
   private ComboBox cb;
+  private JComboBox implCB;
   private HttpURLConnection currentConnection = null;
 
   public URLDumpPane(PreferencesExt prefs) {
@@ -80,125 +88,181 @@ public class URLDumpPane extends TextHistoryPane {
     // combo box holds a list of urls
     cb = new ComboBox(prefs);
 
-    JButton headButton2 = new JButton("Head");
-    headButton2.setToolTipText("Open URL connection, Headers only using HttpClient");
-    headButton2.addActionListener(new ActionListener() {
+    // holds Library impl enum
+    implCB = new JComboBox();
+    for (Library e: Library.values())
+      implCB.addItem(e);
+
+    JButton buttHead = new JButton("Head");
+    buttHead.setToolTipText("Open URL connection, Headers only");
+    buttHead.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         String urlString = (String) cb.getSelectedItem();
-        openURL2(urlString, HEAD);
+        process(urlString, Command.HEAD);
         gotoTop();
         cb.addItem(urlString);
       }
     });
 
 
-    JButton read2Button = new JButton("Get");
-    read2Button.setToolTipText("Open URL connection, Get content using HttpClient");
-    read2Button.addActionListener(new ActionListener() {
+    JButton buttRead = new JButton("Get");
+    buttRead.setToolTipText("Open URL connection, Get content");
+    buttRead.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         String urlString = (String) cb.getSelectedItem();
-        openURL2(urlString, GET);
+        process(urlString, Command.GET);
         gotoTop();
         cb.addItem(urlString);
       }
     });
 
-    JButton opt2Button = new JButton("Options");
-    opt2Button.setToolTipText("Server options using HttpClient");
-    opt2Button.addActionListener(new ActionListener() {
+    JButton buttOpt = new JButton("Options");
+    buttOpt.setToolTipText("Server options using HttpClient");
+    buttOpt.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         String urlString = (String) cb.getSelectedItem();
-        openURL2(urlString, OPTIONS);
-        gotoTop();
-        cb.addItem(urlString);
-      }
-    });
-
-
-    JButton put2Button = new JButton("Put");
-    put2Button.setToolTipText("Put using HttpClient");
-    put2Button.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        String urlString = (String) cb.getSelectedItem();
-        openURL2(urlString, PUT);
-        gotoTop();
-        cb.addItem(urlString);
-      }
-    });
-
-    JButton headButton = new JButton("HEAD");
-    headButton.setToolTipText("Open URL connection, HEADERS only using HttpURLConnection");
-    headButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        String urlString = (String) cb.getSelectedItem();
-        openURL(urlString, "HEAD");
+        process(urlString, Command.OPTIONS);
         gotoTop();
         cb.addItem(urlString);
       }
     });
 
 
-    JButton readButton = new JButton("GET");
-    readButton.setToolTipText("Open URL connection, show content using HttpURLConnection");
-    readButton.addActionListener(new ActionListener() {
+    JButton buttPut = new JButton("Put");
+    buttPut.setToolTipText("Put using HttpClient");
+    buttPut.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         String urlString = (String) cb.getSelectedItem();
-        readURL(urlString);
-        gotoTop();
-        cb.addItem(urlString);
-      }
-    });
-
-
-    JButton optButton = new JButton("OPTIONS");
-    optButton.setToolTipText("Get server options using HttpURLConnection");
-    optButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        String urlString = (String) cb.getSelectedItem();
-        openURL(urlString, "OPTIONS");
-        gotoTop();
-        cb.addItem(urlString);
-      }
-    });
-
-
-    JButton putButton = new JButton("PUT");
-    putButton.setToolTipText("Send PUT command using HttpURLConnection");
-    putButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        String urlString = (String) cb.getSelectedItem();
-        openURL(urlString, "PUT");
+        process(urlString, Command.PUT);
         gotoTop();
         cb.addItem(urlString);
       }
     });
 
     JPanel buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-    buttPanel.add(headButton2);
-    buttPanel.add(read2Button);
-    buttPanel.add(opt2Button);
-    buttPanel.add(putButton);
-    buttPanel.add(put2Button);
-    buttPanel.add(headButton);
-    buttPanel.add(readButton);
-    buttPanel.add(optButton);
-    buttPanel.add(putButton);
+    buttPanel.add(implCB);
+    buttPanel.add(buttHead);
+    buttPanel.add(buttRead);
+    buttPanel.add(buttOpt);
+    buttPanel.add(buttPut);
 
     JPanel topPanel = new JPanel(new BorderLayout());
     topPanel.add(new JLabel("URL:"), BorderLayout.WEST);
     topPanel.add(cb, BorderLayout.CENTER);
     topPanel.add(buttPanel, BorderLayout.EAST);
 
-    // setLayout( new BorderLayout());
     add(topPanel, BorderLayout.NORTH);
-    // add( new JScrollPane(ta), BorderLayout.CENTER);
+  }
+
+  private void process(String urlString, Command cmd) {
+    clear();
+
+    Library impl = (Library) implCB.getSelectedItem();
+    if (impl == Library.HttpClient) {
+       openClient(urlString, cmd);
+    } else if (impl == Library.Commons) {
+       openURL2(urlString, cmd);
+    } else if (impl == Library.java) {
+      if (cmd == Command.GET)
+        readURL(urlString);
+      else if (cmd == Command.PUT)
+        putURL(urlString);
+      else
+        openURL(urlString, cmd);
+    }
+  }
+
+  ///////////////////////////////////////////////////////
+  // Uses apache HttpComponents
+
+  private void openClient(String urlString, Command cmd) {
+    HttpEntity entity = null;
+    try {
+      org.apache.http.client.HttpClient httpclient = new DefaultHttpClient();
+
+      // request
+      HttpGet httpget = new HttpGet(urlString);
+      appendLine("Request: " + httpget.getRequestLine());
+
+      HttpParams params = httpget.getParams();
+      appendLine("Params: ");
+      showParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, params);
+      showParameter(CoreProtocolPNames.HTTP_ELEMENT_CHARSET, params);
+      showParameter(CoreProtocolPNames.ORIGIN_SERVER, params);
+      showParameter(CoreProtocolPNames.PROTOCOL_VERSION, params);
+      showParameter(CoreProtocolPNames.STRICT_TRANSFER_ENCODING, params);
+      showParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, params);
+      showParameter(CoreProtocolPNames.USER_AGENT, params);
+      showParameter(CoreProtocolPNames.WAIT_FOR_CONTINUE, params);
+
+      //response
+      BasicHttpContext localContext = new BasicHttpContext();
+      HttpResponse response = httpclient.execute(httpget, localContext);
+
+      appendLine("\nHttpContext: " + localContext);
+      showAtribute(ExecutionContext.HTTP_CONNECTION, localContext);
+      showAtribute(ExecutionContext.HTTP_PROXY_HOST, localContext);
+      showAtribute(ExecutionContext.HTTP_REQ_SENT, localContext);
+      showAtribute(ExecutionContext.HTTP_REQUEST, localContext);
+      showAtribute(ExecutionContext.HTTP_RESPONSE, localContext);
+      showAtribute(ExecutionContext.HTTP_TARGET_HOST, localContext);
+
+      HttpRequest req = (HttpRequest) localContext.getAttribute(ExecutionContext.HTTP_REQUEST);
+      appendLine("\nRequest Headers:");
+      HeaderIterator it = req.headerIterator();
+      while (it.hasNext()) {
+        appendLine(" " + it.next().toString());
+      }
+
+      appendLine("\nResponse Headers:");
+      it = response.headerIterator();
+      while (it.hasNext()) {
+        appendLine(" " + it.next().toString());
+      }
+
+      // content
+      entity = response.getEntity();
+      if (entity != null) {
+        String contents = EntityUtils.toString(entity);
+        if (contents.length() > 50 * 1000)
+          contents = contents.substring(0, 50 * 1000);
+        appendLine("\nContent:");
+        appendLine(contents);
+      }
+
+    } catch (Exception e) {
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
+      e.printStackTrace(new PrintStream(bos));
+      appendLine(bos.toString());
+
+    } finally {
+      if (entity != null) try {
+        entity.consumeContent();
+
+      } catch (IOException e) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
+        e.printStackTrace(new PrintStream(bos));
+        appendLine(bos.toString());
+      }
+    }
+  }
+
+  private void showAtribute(String key, HttpContext localContext) {
+    Object value = localContext.getAttribute(key);
+    if (null != value)
+      appendLine(" " + key + ": " + value);
+  }
+
+  private void showParameter(String key, HttpParams params) {
+    Object value = params.getParameter(key);
+    if (null != value)
+      appendLine(" " + key + ": " + value);
   }
 
   ///////////////////////////////////////////////////////
   // Uses apache commons HttpClient
 
-  private void openURL2(String urlString, int cmd) {
-    clear();
+  private void openURL2(String urlString, Command cmd) {
 
     HttpClient httpclient = HttpClientManager.getHttpClient();
     HttpMethodBase m = null;
@@ -220,13 +284,13 @@ public class URLDumpPane extends TextHistoryPane {
 
       urlString = URLnaming.escapeQuery(urlString);
 
-      if (cmd == GET)
+      if (cmd == Command.GET)
         m = new GetMethod(urlString);
-      else if (cmd == HEAD)
+      else if (cmd == Command.HEAD)
         m = new HeadMethod(urlString);
-      else if (cmd == OPTIONS)
+      else if (cmd == Command.OPTIONS)
         m = new OptionsMethod(urlString);
-      else if (cmd == PUT) {
+      else if (cmd == Command.PUT) {
         PutMethod p = new PutMethod(urlString);
         try {
           p.setRequestEntity(new StringRequestEntity(ta.getText(), "application/text", "UTF-8"));
@@ -262,7 +326,7 @@ public class URLDumpPane extends TextHistoryPane {
       appendLine("Status = " + m.getStatusCode() + " " + m.getStatusText());
       appendLine("Status Line = " + m.getStatusLine());
       printHeaders("Response Headers = ", m.getResponseHeaders());
-      if (cmd == GET) {
+      if (cmd == Command.GET) {
         appendLine("\nResponseBody---------------");
 
         String charset = m.getResponseCharSet();
@@ -296,7 +360,7 @@ public class URLDumpPane extends TextHistoryPane {
           contents = contents.substring(0, 50 * 1000);
         appendLine(contents);
 
-      } else if (cmd == OPTIONS)
+      } else if (cmd == Command.OPTIONS)
         printEnum("AllowedMethods = ", ((OptionsMethod) m).getAllowedMethods());
 
       printHeaders("Response Footers = ", m.getResponseFooters());
@@ -309,12 +373,6 @@ public class URLDumpPane extends TextHistoryPane {
     } finally {
       if (m != null) m.releaseConnection();
     }
-  }
-
-  String readContents(InputStream is, String charset, int maxKbytes) throws IOException {
-    ByteArrayOutputStream bout = new ByteArrayOutputStream(1000 * maxKbytes);
-    IO.copy(is, bout, 1000 * maxKbytes);
-    return bout.toString(charset);
   }
 
   private void printHeaders(String title, Header[] heads) {
@@ -338,12 +396,12 @@ public class URLDumpPane extends TextHistoryPane {
   ///////////////////////////////////////////////////////
   // Uses java.net
 
-  private void openURL(String urlString, String command) {
+  private void openURL(String urlString, Command command) {
     try {
       //Open the URLConnection for reading
       URL u = new URL(urlString);
       currentConnection = (HttpURLConnection) u.openConnection();
-      currentConnection.setRequestMethod(command);
+      currentConnection.setRequestMethod(command.toString()); // GET or HEAD
       currentConnection.setAllowUserInteraction(true);
 
       clear();
@@ -488,25 +546,8 @@ public class URLDumpPane extends TextHistoryPane {
     cb.save();
   }
 
-  public void clear() {
-    ta.setText(null);
-  }
-
-  public void gotoTop() {
-    ta.setCaretPosition(0);
-  }
-
-  public void setText(String text) {
-    ta.setText(text);
-  }
-
   public void append(String text) {
     ta.append(text);
-  }
-
-  public void appendLine(String text) {
-    ta.append(text);
-    ta.append("\n");
   }
 
   /* public class ConsoleAuthPrompter implements CredentialsProvider {

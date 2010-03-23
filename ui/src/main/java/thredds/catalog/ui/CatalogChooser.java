@@ -1,4 +1,3 @@
-// $Id: CatalogChooser.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -48,7 +47,6 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -94,7 +92,6 @@ import javax.swing.event.*;
  * @see thredds.catalog.InvDataset
  *
  * @author John Caron
- * @version $Id: CatalogChooser.java 50 2006-07-12 16:30:06Z caron $
  */
 
 public class CatalogChooser extends JPanel {
@@ -132,6 +129,7 @@ public class CatalogChooser extends JPanel {
    * Constructor, with control over whether a comboBox of previous catalogs is shown.
    *
    * @param prefs           persistent storage, may be null.
+   * @param showComboChooser comboBox persists catalog URLs
    * @param showOpenButton  show the "open" button.
    * @param showFileChooser show a FileChooser (must have showComboChooser true)
    */
@@ -215,7 +213,7 @@ public class CatalogChooser extends JPanel {
                 // System.out.println( catFactory.writeXML( cat));
                 catFactory.writeXML( cat, filename+"/catalog.xml");
               } catch (IOException e1) {
-                e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                e1.printStackTrace();
               }
             }
           }
@@ -482,13 +480,14 @@ public class CatalogChooser extends JPanel {
 
   /**
    * Get the TreeView component.
+   * @return the TreeView component.
    */
   public CatalogTreeView getTreeView() { return tree; }
 
   /**
    * Get the current URL string. This may be the top catalog, or a catalogRef, depending on
    *  what was last selected. Used to implement the " showSource" debugging tool.
-   * @return
+   * @return current URL string
    */
   public String getCurrentURL() { return currentURL; }
   private void setCurrentURL( String currentURL) {
@@ -563,116 +562,3 @@ public class CatalogChooser extends JPanel {
   }
 
 }
-
-/* Change History:
-   $Log: CatalogChooser.java,v $
-   Revision 1.35  2005/11/18 17:47:41  caron
-   *** empty log message ***
-
-   Revision 1.34  2005/08/08 19:38:59  caron
-   minor
-
-   Revision 1.33  2005/08/05 18:40:22  caron
-   no message
-
-   Revision 1.32  2005/07/27 23:29:13  caron
-   minor
-
-   Revision 1.31  2005/07/22 16:19:49  edavis
-   Allow DatasetSource and InvDatasetScan to add dataset size metadata.
-
-   Revision 1.30  2005/07/11 20:06:17  caron
-   *** empty log message ***
-
-   Revision 1.29  2005/07/08 18:34:59  edavis
-   Fix problem dealing with service URLs that are relative
-   to the catalog (base="") and those that are relative to
-   the collection (base URL is not empty).
-
-   Revision 1.28  2005/07/01 02:50:12  caron
-   no message
-
-   Revision 1.27  2005/06/23 20:02:55  caron
-   add "View File" button to thredds dataset chooser
-
-   Revision 1.26  2005/06/23 19:18:50  caron
-   no message
-
-   Revision 1.25  2005/05/25 21:09:36  caron
-   no message
-
-   Revision 1.24  2005/05/04 03:37:05  edavis
-   Remove several unnecessary methods in DirectoryScanner.
-
-   Revision 1.23  2005/04/29 14:55:56  edavis
-   Fixes for change in InvCatalogFactory.writeXML( cat, filename) method
-   signature. And start on allowing wildcard characters in pathname given
-   to DirectoryScanner.
-
-   Revision 1.22  2005/04/28 23:15:11  caron
-   catChooser writes catalog to directory
-
-   Revision 1.21  2005/04/27 22:08:03  caron
-   no message
-
-   Revision 1.20  2005/01/14 22:44:03  caron
-   *** empty log message ***
-
-   Revision 1.19  2004/12/16 00:32:13  caron
-   *** empty log message ***
-
-   Revision 1.18  2004/12/15 00:11:45  caron
-   2.2.05
-
-   Revision 1.17  2004/12/14 15:41:01  caron
-   *** empty log message ***
-
-   Revision 1.16  2004/12/07 02:43:19  caron
-   *** empty log message ***
-
-   Revision 1.15  2004/12/01 05:54:23  caron
-   improve FileChooser
-
-   Revision 1.14  2004/09/30 00:33:36  caron
-   *** empty log message ***
-
-   Revision 1.13  2004/09/28 21:39:09  caron
-   *** empty log message ***
-
-   Revision 1.12  2004/09/24 03:26:30  caron
-   merge nj22
-
-   Revision 1.11  2004/06/12 02:01:11  caron
-   dqc 0.3
-
-   Revision 1.10  2004/06/09 00:27:28  caron
-   version 2.0a release; cleanup javadoc
-
-   Revision 1.9  2004/05/11 23:30:32  caron
-   release 2.0a
-
-   Revision 1.8  2004/03/11 23:35:20  caron
-   minor bugs
-
-   Revision 1.7  2004/03/05 23:35:48  caron
-   rel 1.3.1 javadoc
-
-   Revision 1.6  2004/03/05 17:21:50  caron
-   1.3.1 release
-
-   Revision 1.5  2004/02/20 00:49:53  caron
-   1.3 changes
-
-   Revision 1.4  2003/12/04 22:27:45  caron
-   *** empty log message ***
-
-   Revision 1.3  2003/05/29 22:59:48  john
-   refactor choosers into toolkit framework
-
-   Revision 1.2  2003/03/17 20:09:33  john
-   improve catalog chooser, use ucar.unidata.geoloc
-
-   Revision 1.1  2003/01/31 22:06:14  john
-   ThreddsDatasetChooser standalone
-
- */

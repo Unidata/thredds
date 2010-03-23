@@ -35,6 +35,9 @@ package ucar.nc2.ui;
 
 import ucar.nc2.*;
 
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.ui.dialog.CompareDialog;
+import ucar.nc2.util.CompareNetcdf;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 import ucar.ma2.Array;
@@ -46,9 +49,7 @@ import java.awt.event.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import java.util.*;
-import java.io.StringWriter;
-import java.io.PrintWriter;
-import java.io.IOException;
+import java.io.*;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -65,6 +66,8 @@ import javax.swing.event.ListSelectionEvent;
  */
 
 public class DatasetViewer extends JPanel {
+  private FileManager fileChooser;
+
   private PreferencesExt prefs;
   private NetcdfFile ds;
 
@@ -84,8 +87,9 @@ public class DatasetViewer extends JPanel {
 
   private boolean eventsOK = true;
 
-  public DatasetViewer(PreferencesExt prefs) {
+  public DatasetViewer(PreferencesExt prefs, FileManager fileChooser) {
     this.prefs = prefs;
+    this.fileChooser = fileChooser;
 
     // create the variable table(s)
     tablePanel = new JPanel( new BorderLayout());
@@ -95,7 +99,7 @@ public class DatasetViewer extends JPanel {
     datasetTree = new DatasetTreeView();
     datasetTree.addPropertyChangeListener(new PropertyChangeListener() {
       public void propertyChange(PropertyChangeEvent e) {
-        setSelected( (Variable) e.getNewValue());
+        setSelected((Variable) e.getNewValue());
       }
     });
 
@@ -121,6 +125,88 @@ public class DatasetViewer extends JPanel {
     dumpWindow = new IndependentWindow("NCDump Variable Data", BAMutil.getImage( "netcdfUI"), dumpPane);
     dumpWindow.setBounds( (Rectangle) prefs.getBean("DumpWindowBounds", new Rectangle( 300, 300, 300, 200)));
   }
+
+  public void addActions(JPanel buttPanel) {
+    AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to another file", false);
+    compareButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        compareDataset();
+      }
+    });
+    buttPanel.add(compareButton);
+
+    AbstractAction attAction = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        showAtts();
+      }
+    };
+    BAMutil.setActionProperties(attAction, "FontDecr", "global attributes", false, 'A', -1);
+    BAMutil.addActionToContainer(buttPanel, attAction);
+  }
+
+  ///////////////////////////////////////
+
+  private CompareDialog dialog = null;
+  public void compareDataset() {
+    if (ds == null) return;
+    if (dialog == null) {
+      dialog = new CompareDialog(null, fileChooser);
+      dialog.pack();
+      dialog.addPropertyChangeListener("OK", new PropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent evt) {
+          String name = evt.getPropertyName();
+          CompareDialog.Data data = (CompareDialog.Data) evt.getNewValue();
+          System.out.printf("name=%s %s%n", name, data);
+          compareDataset(data);
+        }
+      });
+    }
+    dialog.setVisible(true);
+  }
+
+  private void compareDataset(CompareDialog.Data data) {
+    if (data.name == null) return;
+
+    NetcdfFile compareFile = null;
+    try {
+      compareFile = NetcdfDataset.openFile(data.name, null);
+
+      Formatter f = new Formatter();
+      CompareNetcdf cn = new CompareNetcdf(data.showCompare, data.showDetails, data.readData);
+      if (data.howMuch == CompareDialog.HowMuch.All)
+        cn.compare(ds, compareFile, f);
+      else {
+        NestedTable nested = nestedTableList.get(0);
+        Variable org = getCurrentVariable(nested.table);
+        if (org == null) return;
+        Variable ov = compareFile.findVariable(org.getName());
+        if (ov != null)
+          cn.compareVariable(org, ov, f);
+      }      
+
+      infoTA.setText(f.toString());
+      infoTA.gotoTop();
+      infoWindow.setTitle("Compare");
+      infoWindow.show();
+
+    } catch (Throwable ioe) {
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      ioe.printStackTrace(new PrintStream(bos));
+      infoTA.setText(bos.toString());
+      infoTA.gotoTop();
+      infoWindow.show();
+
+    } finally {
+      if (compareFile != null)
+        try {
+          compareFile.close();
+        }
+        catch (Exception eek) {
+        }
+    }
+  }
+
+  ////////////////////////////////////////////////
 
   public void showAtts() {
     if (ds == null) return;
@@ -349,6 +435,7 @@ public class DatasetViewer extends JPanel {
       infoTA.appendLine(v.toStringDebug());
     }
     infoTA.gotoTop();
+    infoWindow.setTitle("Variable Info");
     infoWindow.show();
   }
 

@@ -75,6 +75,7 @@ import thredds.catalog.query.DqcFactory;
 import thredds.wcs.v1_0_0_1.GetCapabilities;
 import thredds.wcs.v1_0_0_1.WcsException;
 import thredds.inventory.MController;
+import thredds.inventory.bdb.MetadataManager;
 import thredds.ui.*;
 
 import java.awt.*;
@@ -125,9 +126,11 @@ public class ToolsUI extends JPanel {
   private BufrTableBPanel bufrTableBPanel;
   private BufrTableDPanel bufrTableDPanel;
   private CoordSysPanel coordSysPanel;
+  private CollectionPanel collectionPanel;
   private FeatureScanPanel ftPanel;
-  private FmrcPanel fmrcPanel;
+  private FmrcInvPanel fmrcInvPanel;
   private FmrcImplPanel fmrcImplPanel;
+  private FmrcPanel fmrcPanel;
   private GeoGridPanel gridPanel;
   private GribPanel gribPanel;
   private Grib2Panel grib2Panel;
@@ -279,7 +282,10 @@ public class ToolsUI extends JPanel {
     });
 
     // nested tab - fmrc
-    fmrcImplPanel = new FmrcImplPanel((PreferencesExt) mainPrefs.node("fmrcImpl"));
+    //fmrcPanel = new FmrcPanel((PreferencesExt) mainPrefs.node("fmrc2"));
+    //fmrcImplPanel = new FmrcImplPanel((PreferencesExt) mainPrefs.node("fmrcImpl"));
+    fmrcTabPane.addTab("Fmrc", new JLabel("Fmrc"));
+    fmrcTabPane.addTab("Collections", new JLabel("Collections"));
     fmrcTabPane.addTab("FmrcImpl", new JLabel("FmrcImpl"));
     fmrcTabPane.addTab("Inventory", new JLabel("Inventory"));
     fmrcTabPane.addChangeListener(new ChangeListener() {
@@ -409,9 +415,17 @@ public class ToolsUI extends JPanel {
       imagePanel = new ImagePanel((PreferencesExt) mainPrefs.node("images"));
       c = imagePanel;
 
-    } else if (title.equals("Inventory")) {
-      fmrcPanel = new FmrcPanel((PreferencesExt) mainPrefs.node("fmrc"));
+    } else if (title.equals("Fmrc")) {
+      fmrcPanel = new FmrcPanel((PreferencesExt) mainPrefs.node("fmrc2"));
       c = fmrcPanel;
+
+    } else if (title.equals("Collections")) {
+      collectionPanel = new CollectionPanel((PreferencesExt) mainPrefs.node("collections"));
+      c = collectionPanel;
+
+     } else if (title.equals("Inventory")) {
+      fmrcInvPanel = new FmrcInvPanel((PreferencesExt) mainPrefs.node("fmrc"));
+      c = fmrcInvPanel;
 
     } else if (title.equals("NCDump")) {
       ncdumpPanel = new NCdumpPanel((PreferencesExt) mainPrefs.node("NCDump"));
@@ -776,7 +790,7 @@ public class ToolsUI extends JPanel {
       }
     };
     BAMutil.setActionPropertiesToggle(a, null, "use _FillValue attribute for missing values",
-            NetcdfDataset.getFillValueIsMissing(), 'F', -1);
+        NetcdfDataset.getFillValueIsMissing(), 'F', -1);
     BAMutil.addActionToMenu(dsMenu, a);
 
     a = new AbstractAction() {
@@ -786,7 +800,7 @@ public class ToolsUI extends JPanel {
       }
     };
     BAMutil.setActionPropertiesToggle(a, null, "use valid_range attribute for missing values",
-            NetcdfDataset.getInvalidDataIsMissing(), 'V', -1);
+        NetcdfDataset.getInvalidDataIsMissing(), 'V', -1);
     BAMutil.addActionToMenu(dsMenu, a);
 
     a = new AbstractAction() {
@@ -796,7 +810,7 @@ public class ToolsUI extends JPanel {
       }
     };
     BAMutil.setActionPropertiesToggle(a, null, "use mssing_value attribute for missing values",
-            NetcdfDataset.getMissingDataIsMissing(), 'M', -1);
+        NetcdfDataset.getMissingDataIsMissing(), 'M', -1);
     BAMutil.addActionToMenu(dsMenu, a);
   }
 
@@ -811,7 +825,9 @@ public class ToolsUI extends JPanel {
     if (coordSysPanel != null) coordSysPanel.save();
     if (ftPanel != null) ftPanel.save();
     if (fmrcPanel != null) fmrcPanel.save();
+    if (collectionPanel != null) collectionPanel.save();
     if (fmrcImplPanel != null) fmrcImplPanel.save();
+    if (fmrcInvPanel != null) fmrcInvPanel.save();
     if (geotiffPanel != null) geotiffPanel.save();
     if (gribPanel != null) gribPanel.save();
     if (grib2Panel != null) grib2Panel.save();
@@ -883,6 +899,13 @@ public class ToolsUI extends JPanel {
   }
 
   private void openGridDataset(NetcdfDataset dataset) {
+    makeComponent(ftTabPane, "Grids");
+    gridPanel.setDataset(dataset);
+    tabbedPane.setSelectedComponent(ftTabPane);
+    ftTabPane.setSelectedComponent(gridPanel);
+  }
+
+  private void openGridDataset(GridDataset dataset) {
     makeComponent(ftTabPane, "Grids");
     gridPanel.setDataset(dataset);
     tabbedPane.setSelectedComponent(ftTabPane);
@@ -1460,7 +1483,7 @@ public class ToolsUI extends JPanel {
           String units = vs.getUnitsString();
           StringBuilder sb = new StringBuilder();
           sb.append("   ").append(vs.getName()).append(" has unit= <").append(units).append(">");
-          if (units != null)  {
+          if (units != null) {
             try {
               SimpleUnit su = SimpleUnit.factoryWithExceptions(units);
               sb.append(" unit convert = ").append(su.toString());
@@ -1553,7 +1576,7 @@ public class ToolsUI extends JPanel {
         SimpleUnit su1 = SimpleUnit.factoryWithExceptions(unitS1);
         SimpleUnit su2 = SimpleUnit.factoryWithExceptions(unitS2);
         ta.setText("<" + su1.toString() + "> isConvertable to <" + su2.toString() + ">=" +
-                SimpleUnit.isCompatibleWithExceptions(unitS1, unitS2));
+            SimpleUnit.isCompatibleWithExceptions(unitS1, unitS2));
 
       } catch (Exception e) {
 
@@ -1703,9 +1726,9 @@ public class ToolsUI extends JPanel {
               detailTA.gotoTop();
 
             } catch (IOException e1) {
-              PrintStream ps = new PrintStream(new ByteArrayOutputStream());
-              e1.printStackTrace(ps);
-              detailTA.setText(ps.toString());
+              ByteArrayOutputStream out = new ByteArrayOutputStream();
+              e1.printStackTrace(new PrintStream(out));
+              detailTA.setText(out.toString());
 
             } finally {
               if (info != null) try {
@@ -1970,7 +1993,7 @@ public class ToolsUI extends JPanel {
       BAMutil.setActionProperties(fileAction, "FileChooser", "open Local table...", false, 'L', -1);
       BAMutil.addActionToContainer(buttPanel, fileAction);
 
-      modes = new JComboBox(new String[] {"mel-bufr","ncep","ncep-nm","ecmwf","csv","ukmet","mel-tabs"});
+      modes = new JComboBox(new String[]{"mel-bufr", "ncep", "ncep-nm", "ecmwf", "csv", "ukmet", "mel-tabs", "wmo-xml"});
       buttPanel.add(modes);
 
       JButton accept = new JButton("Accept");
@@ -2018,7 +2041,7 @@ public class ToolsUI extends JPanel {
 
   }
 
-    /////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////
   private class BufrTableDPanel extends OpPanel {
     BufrTableDViewer bufrTable;
 
@@ -2042,7 +2065,7 @@ public class ToolsUI extends JPanel {
       BAMutil.setActionProperties(fileAction, "FileChooser", "open Local table...", false, 'L', -1);
       BAMutil.addActionToContainer(buttPanel, fileAction);
 
-      modes = new JComboBox(new String[] {"mel-bufr","ncep","ncep-nm","ecmwf","csv","ukmet"});
+      modes = new JComboBox(new String[]{"mel-bufr", "ncep", "ncep-nm", "ecmwf", "csv", "ukmet", "wmo-xml"});
       buttPanel.add(modes);
 
       JButton accept = new JButton("Accept");
@@ -2057,36 +2080,36 @@ public class ToolsUI extends JPanel {
       add(bufrTable, BorderLayout.CENTER);
     }
 
-      boolean process(Object command) {
-        return true;
+    boolean process(Object command) {
+      return true;
+    }
+
+    void accept() {
+      String command = (String) cb.getSelectedItem();
+      boolean err = false;
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        String mode = (String) modes.getSelectedItem();
+        bufrTable.setBufrTableD(command, mode);
+
+      } catch (FileNotFoundException ioe) {
+        JOptionPane.showMessageDialog(null, "BufrTableViewer cant open " + command + "\n" + ioe.getMessage());
+        detailTA.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
+        detailTA.setVisible(true);
+        err = true;
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        e.printStackTrace(new PrintStream(bos));
+        detailTA.setText(bos.toString());
+        detailTA.setVisible(true);
+        err = true;
       }
 
-      void accept() {
-        String command = (String) cb.getSelectedItem();
-        boolean err = false;
+    }
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-        try {
-          String mode = (String) modes.getSelectedItem();
-          bufrTable.setBufrTableD(command, mode);
-
-        } catch (FileNotFoundException ioe) {
-          JOptionPane.showMessageDialog(null, "BufrTableViewer cant open " + command + "\n" + ioe.getMessage());
-          detailTA.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
-          detailTA.setVisible(true);
-          err = true;
-
-        } catch (Exception e) {
-          e.printStackTrace();
-          e.printStackTrace(new PrintStream(bos));
-          detailTA.setText(bos.toString());
-          detailTA.setVisible(true);
-          err = true;
-        }
-
-      }
-
-      void save() {
+    void save() {
       bufrTable.save();
       super.save();
     }
@@ -2287,7 +2310,7 @@ public class ToolsUI extends JPanel {
       eosdump.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           try {
-            Formatter f  = new Formatter();
+            Formatter f = new Formatter();
             hdf4Table.getEosInfo(f);
             detailTA.setText(f.toString());
             detailWindow.show();
@@ -2724,7 +2747,7 @@ public class ToolsUI extends JPanel {
       if (ncmlLocation == null) return;
       try {
         NetcdfDataset ncd = NetcdfDataset.openDataset(ncmlLocation);
-        ncd.check( f);
+        ncd.check(f);
 
       } catch (IOException ioe) {
         JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
@@ -2750,28 +2773,28 @@ public class ToolsUI extends JPanel {
 
     void addProtoChoices() {
       String xml =
-              "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                      "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
-                      "  <variable name='time' type='int' shape='time'>\n" +
-                      "    <attribute name='long_name' type='string' value='time coordinate' />\n" +
-                      "    <attribute name='units' type='string' value='days since 2001-8-31 00:00:00 UTC' />\n" +
-                      "    <values start='0' increment='10' />\n" +
-                      "  </variable>\n" +
-                      "  <aggregation dimName='time' type='joinNew'>\n" +
-                      "    <variableAgg name='T'/>\n" +
-                      "    <scan location='src/test/data/ncml/nc/' suffix='.nc' subdirs='false'/>\n" +
-                      "  </aggregation>\n" +
-                      "</netcdf>";
+          "<?xml version='1.0' encoding='UTF-8'?>\n" +
+              "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
+              "  <variable name='time' type='int' shape='time'>\n" +
+              "    <attribute name='long_name' type='string' value='time coordinate' />\n" +
+              "    <attribute name='units' type='string' value='days since 2001-8-31 00:00:00 UTC' />\n" +
+              "    <values start='0' increment='10' />\n" +
+              "  </variable>\n" +
+              "  <aggregation dimName='time' type='joinNew'>\n" +
+              "    <variableAgg name='T'/>\n" +
+              "    <scan location='src/test/data/ncml/nc/' suffix='.nc' subdirs='false'/>\n" +
+              "  </aggregation>\n" +
+              "</netcdf>";
       protoMap.put("joinNew", xml);
       protoChooser.addItem("joinNew");
 
       xml =
-              "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                      "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
-                      "  <aggregation dimName='time' type='joinExisting'>\n" +
-                      "    <scan location='ncml/nc/pfeg/' suffix='.nc' />\n" +
-                      "  </aggregation>\n" +
-                      "</netcdf>";
+          "<?xml version='1.0' encoding='UTF-8'?>\n" +
+              "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
+              "  <aggregation dimName='time' type='joinExisting'>\n" +
+              "    <scan location='ncml/nc/pfeg/' suffix='.nc' />\n" +
+              "  </aggregation>\n" +
+              "</netcdf>";
       protoMap.put("joinExisting", xml);
       protoChooser.addItem("joinExisting");
 
@@ -2779,7 +2802,8 @@ public class ToolsUI extends JPanel {
 
   }
 
-  private class FmrcPanel extends OpPanel {
+  // the old inventory studd
+  private class FmrcInvPanel extends OpPanel {
     private boolean useDefinition = false;
     private JComboBox defComboBox, catComboBox, dirComboBox, suffixCB;
     private IndependentWindow defWindow, catWindow;
@@ -2787,7 +2811,7 @@ public class ToolsUI extends JPanel {
     private AbstractButton defButt;
     private JSpinner catSpinner;
 
-    FmrcPanel(PreferencesExt p) {
+    FmrcInvPanel(PreferencesExt p) {
       super(p, "ForecastModelRun:", true, false);
 
       // allow to set a definition file for GRIB
@@ -2994,7 +3018,7 @@ public class ToolsUI extends JPanel {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         FmrcInventory fmrCollection = FmrcInventory.makeFromDirectory(null, "test",
-                null, dirName, suffix, ForecastModelRunInventory.OPEN_FORCE_NEW);
+            null, dirName, suffix, ForecastModelRunInventory.OPEN_FORCE_NEW);
 
         FmrcDefinition def = new FmrcDefinition();
         def.makeFromCollectionInventory(fmrCollection);
@@ -3032,6 +3056,7 @@ public class ToolsUI extends JPanel {
 
   }
 
+  // the old Fmrc Impl stuff
   private class FmrcImplPanel extends OpPanel {
     FmrcImpl fmrc;
     FmrcTable table;
@@ -3107,6 +3132,212 @@ public class ToolsUI extends JPanel {
     }
   }
 
+  // new ucar.nc2.ft.fmrc stuff
+  private class FmrcPanel extends OpPanel {
+    Fmrc2Panel table;
+
+    FmrcPanel(PreferencesExt dbPrefs) {
+      super(dbPrefs, "collection:", true, false);
+      table = new Fmrc2Panel(prefs);
+      table.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+        public void propertyChange(java.beans.PropertyChangeEvent e) {
+
+          if (e.getPropertyName().equals("openNetcdfFile")) {
+            if (e.getNewValue() instanceof String)
+              openNetcdfFile((String) e.getNewValue());
+            else
+              openNetcdfFile((NetcdfFile) e.getNewValue());
+
+          } else if (e.getPropertyName().equals("openCoordSys")) {
+            if (e.getNewValue() instanceof String)
+              openCoordSystems((String) e.getNewValue());
+            else
+              openCoordSystems((NetcdfDataset) e.getNewValue());
+
+          } else if (e.getPropertyName().equals("openGridDataset")) {
+            if (e.getNewValue() instanceof String)
+              openGridDataset((String) e.getNewValue());
+            else
+              openGridDataset((GridDataset) e.getNewValue());
+          }
+        }
+      });
+      add(table, BorderLayout.CENTER);
+
+      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
+      infoButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          try {
+            table.showInfo(f);
+          } catch (IOException e1) {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
+            e1.printStackTrace(new PrintStream(bos));
+            f.format("%s", bos.toString());
+          }
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(infoButton);
+
+      AbstractButton collectionButton = BAMutil.makeButtcon("Information", "Collection Parsing Info", false);
+      collectionButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            table.showCollectionInfo(true);
+        }
+      });
+      buttPanel.add(collectionButton);
+
+      AbstractButton viewButton = BAMutil.makeButtcon("Dump", "Show in Netcdf Viewer", false);
+      viewButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          try {
+            table.showDataset();
+
+          } catch (IOException e1) {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
+            e1.printStackTrace(new PrintStream(bos));
+            detailTA.setText(bos.toString());
+            detailTA.gotoTop();
+            detailWindow.show();
+          }
+        }
+      });
+      buttPanel.add(viewButton);
+    }
+
+    boolean process(Object o) {
+      String command = (String) o;
+      if (command == null) return false;
+
+      /* if (fmrc != null) {
+        try {
+          fmrc.close();
+        } catch (IOException ioe) {
+        }
+      } */
+
+      try {
+        table.setFmrc(command);
+        return true;
+
+      } catch (Exception ioe) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+        ioe.printStackTrace();
+        ioe.printStackTrace(new PrintStream(bos));
+        detailTA.setText(bos.toString());
+        detailTA.gotoTop();
+        detailWindow.show();
+      }
+
+      return false;
+    }
+
+    void save() {
+      table.save();
+      super.save();
+    }
+  }
+
+  // new Fmrc
+  private class CollectionPanel extends OpPanel {
+    CollectionTable table;
+
+    CollectionPanel(PreferencesExt dbPrefs) {
+      super(dbPrefs, "collection:", true, false);
+      table = new CollectionTable(prefs);
+      /* table.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+        public void propertyChange(java.beans.PropertyChangeEvent e) {
+
+          if (e.getPropertyName().equals("openNetcdfFile")) {
+            if (e.getNewValue() instanceof String)
+              openNetcdfFile((String) e.getNewValue());
+            else
+              openNetcdfFile((NetcdfFile) e.getNewValue());
+
+          } else if (e.getPropertyName().equals("openCoordSys")) {
+            if (e.getNewValue() instanceof String)
+              openCoordSystems((String) e.getNewValue());
+            else
+              openCoordSystems((NetcdfDataset) e.getNewValue());
+
+          } else if (e.getPropertyName().equals("openGridDataset")) {
+            if (e.getNewValue() instanceof String)
+              openGridDataset((String) e.getNewValue());
+            else
+              openGridDataset((NetcdfDataset) e.getNewValue());
+          }
+        }
+      }); */
+      add(table, BorderLayout.CENTER); 
+
+      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
+      infoButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          try {
+            table.showInfo(f);
+          } catch (IOException e1) {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
+            e1.printStackTrace(new PrintStream(bos));
+            f.format("%s", bos.toString());
+          }
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(infoButton);
+
+      AbstractButton refreshButton = BAMutil.makeButtcon("Undo", "Refresh", false);
+      refreshButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          try {
+            table.refresh();
+            
+          } catch (Exception e1) {
+            Formatter f = new Formatter();
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
+            e1.printStackTrace(new PrintStream(bos));
+            f.format("%s", bos.toString());
+            detailTA.setText(f.toString());
+            detailTA.gotoTop();
+            detailWindow.show();
+          }
+        }
+      });
+      buttPanel.add(refreshButton);
+
+    }
+
+    boolean process(Object o) {
+      String command = (String) o;
+      if (command == null) return false;
+
+      try {
+        // table.setCacheRoot(command);
+        return true;
+
+      } catch (Exception ioe) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+        ioe.printStackTrace();
+        ioe.printStackTrace(new PrintStream(bos));
+        detailTA.setText(bos.toString());
+        detailTA.gotoTop();
+        detailWindow.show();
+      }
+
+      return false;
+    }
+
+    void save() {
+      table.save();
+      super.save();
+    }
+  }
+
   private class GeoGridPanel extends OpPanel {
     GeoGridTable dsTable;
     JSplitPane split;
@@ -3177,14 +3408,14 @@ public class ToolsUI extends JPanel {
               return;
             }
             GetCapabilities getCap =
-                    ((thredds.wcs.v1_0_0_1.GetCapabilitiesBuilder)
-                            thredds.wcs.v1_0_0_1.WcsRequestBuilder
-                                    .newWcsRequestBuilder("1.0.0",
-                                            thredds.wcs.Request.Operation.GetCapabilities,
-                                            gridDataset, ""))
-                            .setServerUri(gdUri)
-                            .setSection(GetCapabilities.Section.All)
-                            .buildGetCapabilities();
+                ((thredds.wcs.v1_0_0_1.GetCapabilitiesBuilder)
+                    thredds.wcs.v1_0_0_1.WcsRequestBuilder
+                        .newWcsRequestBuilder("1.0.0",
+                            thredds.wcs.Request.Operation.GetCapabilities,
+                            gridDataset, ""))
+                    .setServerUri(gdUri)
+                    .setSection(GetCapabilities.Section.All)
+                    .buildGetCapabilities();
             try {
               String gc = getCap.writeCapabilitiesReportAsString();
               detailTA.setText(gc);
@@ -3262,6 +3493,23 @@ public class ToolsUI extends JPanel {
         return;
       }
       setSelectedItem(newds.getLocation());
+    }
+
+    void setDataset(GridDataset gds) {
+      if (gds == null) return;
+      try {
+        if (ds != null) ds.close();
+      } catch (IOException ioe) {
+      }
+
+      this.ds = (NetcdfDataset) gds.getNetcdfFile(); // ??
+      try {
+        dsTable.setDataset(gds);
+      } catch (IOException e) {
+        e.printStackTrace();
+        return;
+      }
+      setSelectedItem(gds.getLocationURI());
     }
 
     void save() {
@@ -3363,7 +3611,7 @@ public class ToolsUI extends JPanel {
 
     ViewerPanel(PreferencesExt dbPrefs) {
       super(dbPrefs, "dataset:");
-      dsViewer = new DatasetViewer(dbPrefs);
+      dsViewer = new DatasetViewer(dbPrefs, fileChooser);
       add(dsViewer, BorderLayout.CENTER);
 
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
@@ -3409,50 +3657,8 @@ public class ToolsUI extends JPanel {
       BAMutil.setActionProperties(netcdfAction, "netcdf", "Write local netCDF file", false, 'S', -1);
       BAMutil.addActionToContainer(buttPanel, netcdfAction);
 
-      AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to another file", false);
-      compareButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          String filename = fileChooser.chooseFilename();
-          if (filename == null) return;
+      dsViewer.addActions( buttPanel);
 
-          NetcdfFile compareFile = null;
-          try {
-            compareFile = openFile(filename, addCoords, null);
-
-            Formatter f = new Formatter();
-            CompareNetcdf cn = new CompareNetcdf(true, false, false);
-            cn.compare(ncfile, compareFile, f);
-
-            detailTA.setText(f.toString());
-            detailTA.gotoTop();
-            detailWindow.show();
-
-          } catch (Throwable ioe) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-            ioe.printStackTrace(new PrintStream(bos));
-            detailTA.setText(bos.toString());
-            detailTA.gotoTop();
-            detailWindow.show();
-
-          } finally {
-            if (compareFile != null)
-              try {
-                compareFile.close();
-              }
-              catch (Exception eek) {
-              }
-          }
-        }
-      });
-      buttPanel.add(compareButton);
-
-      AbstractAction attAction = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          dsViewer.showAtts();
-        }
-      };
-      BAMutil.setActionProperties(attAction, "FontDecr", "global attributes", false, 'A', -1);
-      BAMutil.addActionToContainer(buttPanel, attAction);
 
       /* AbstractAction syncAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -4202,7 +4408,7 @@ public class ToolsUI extends JPanel {
         GridDatatype grid = (GridDatatype) grids.get(0);
         ucar.ma2.Array data = grid.readDataSlice(0, 0, -1, -1); // first time, level
 
-        String fileOut = fileChooser.chooseFilenameToSave(filename+".tif");
+        String fileOut = fileChooser.chooseFilenameToSave(filename + ".tif");
         if (fileOut == null) return false;
 
         ucar.nc2.geotiff.GeotiffWriter writer = new ucar.nc2.geotiff.GeotiffWriter(fileOut);
@@ -4342,26 +4548,26 @@ public class ToolsUI extends JPanel {
       super(parentFrame);
 
       JLabel lab1 = new JLabel("<html> <body bgcolor=\"#FFECEC\"> <center>" +
-              "<h1>Netcdf Tools User Interface (ToolsUI)</h1>" +
-              "<b>" + getVersion() + "</b>" +
-              "<br><i>http://www.unidata.ucar.edu/software/netcdf-java/</i>" +
-              "<br><b><i>Developers:</b>John Caron, Ethan Davis, Robb Kambic, Yuan Ho</i></b>" +
-              "</center>" +
-              "<br><br>With thanks to these <b>Open Source</b> contributers:" +
-              "<ul>" +
-              "<li><b>ADDE/VisAD</b>: Bill Hibbard, Don Murray, Tom Whittaker, et al (http://www.ssec.wisc.edu/~billh/visad.html)</li>" +
-              "<li><b>Apache Jakarta Commons</b> libraries: (http://http://jakarta.apache.org/commons/)</li>" +
-              "<li><b>Apache Log4J</b> library: (http://logging.apache.org/log4j/) </li>" +
-              "<li><b>IDV:</b> Don Murray, Jeff McWhirter (http://www.unidata.ucar.edu/software/IDV/)</li>" +
-              "<li><b>JDOM</b> library: Jason Hunter, Brett McLaughlin et al (www.jdom.org)</li>" +
-              "<li><b>JGoodies</b> library: Karsten Lentzsch (www.jgoodies.com)</li>" +
-              "<li><b>JPEG-2000</b> Java library: (http://www.jpeg.org/jpeg2000/)</li>" +
-              "<li><b>JUnit</b> library: Erich Gamma, Kent Beck, Erik Meade, et al (http://sourceforge.net/projects/junit/)</li>" +
-              "<li><b>OPeNDAP Java</b> library: Nathan Potter, James Gallagher, Don Denbo, et. al.(http://opendap.org)</li>" +
-              "<li><b>Spring lightweight framework</b> library: Rod Johnson, et. al.(http://www.springsource.org/)</li>" +
-              "<li><b>Imaging utilities:</b>: Richard Eigenmann</li>" +
-              "</ul><center>Special thanks to <b>Sun Microsystems</b> (java.sun.com) for the platform on which we stand." +
-              "</center></body></html> ");
+          "<h1>Netcdf Tools User Interface (ToolsUI)</h1>" +
+          "<b>" + getVersion() + "</b>" +
+          "<br><i>http://www.unidata.ucar.edu/software/netcdf-java/</i>" +
+          "<br><b><i>Developers:</b>John Caron, Ethan Davis, Robb Kambic, Yuan Ho</i></b>" +
+          "</center>" +
+          "<br><br>With thanks to these <b>Open Source</b> contributers:" +
+          "<ul>" +
+          "<li><b>ADDE/VisAD</b>: Bill Hibbard, Don Murray, Tom Whittaker, et al (http://www.ssec.wisc.edu/~billh/visad.html)</li>" +
+          "<li><b>Apache Jakarta Commons</b> libraries: (http://http://jakarta.apache.org/commons/)</li>" +
+          "<li><b>Apache Log4J</b> library: (http://logging.apache.org/log4j/) </li>" +
+          "<li><b>IDV:</b> Don Murray, Jeff McWhirter (http://www.unidata.ucar.edu/software/IDV/)</li>" +
+          "<li><b>JDOM</b> library: Jason Hunter, Brett McLaughlin et al (www.jdom.org)</li>" +
+          "<li><b>JGoodies</b> library: Karsten Lentzsch (www.jgoodies.com)</li>" +
+          "<li><b>JPEG-2000</b> Java library: (http://www.jpeg.org/jpeg2000/)</li>" +
+          "<li><b>JUnit</b> library: Erich Gamma, Kent Beck, Erik Meade, et al (http://sourceforge.net/projects/junit/)</li>" +
+          "<li><b>OPeNDAP Java</b> library: Nathan Potter, James Gallagher, Don Denbo, et. al.(http://opendap.org)</li>" +
+          "<li><b>Spring lightweight framework</b> library: Rod Johnson, et. al.(http://www.springsource.org/)</li>" +
+          "<li><b>Imaging utilities:</b>: Richard Eigenmann</li>" +
+          "</ul><center>Special thanks to <b>Sun Microsystems</b> (java.sun.com) for the platform on which we stand." +
+          "</center></body></html> ");
 
       JPanel main = new JPanel(new BorderLayout());
       main.setBorder(new javax.swing.border.LineBorder(Color.BLACK));
@@ -4400,7 +4606,7 @@ public class ToolsUI extends JPanel {
     String version;
     try {
       InputStream is = ucar.nc2.ui.util.Resource.getFileResource("/README");
-      if (is == null) return "N/A";
+      if (is == null) return "4.2";
 // DataInputStream dataIS = new DataInputStream( new BufferedInputStream(ios, 20000));
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(is));
       StringBuilder sbuff = new StringBuilder();
@@ -4457,6 +4663,7 @@ public class ToolsUI extends JPanel {
       cache.clearCache(true);
     NetcdfDataset.shutdown(); // shutdown threads
     cacheManager.close(); // shutdown ehcache
+    MetadataManager.closeAll(); // shutdown bdb
 
     System.exit(0);
   }
@@ -4544,7 +4751,7 @@ public class ToolsUI extends JPanel {
 
     // spring initialization
     ApplicationContext springContext =
-            new ClassPathXmlApplicationContext("classpath:resources/nj22/ui/spring/application-config.xml");
+        new ClassPathXmlApplicationContext("classpath:resources/nj22/ui/spring/application-config.xml");
 
     // look for run line arguments
     boolean configRead = false;
@@ -4595,12 +4802,8 @@ public class ToolsUI extends JPanel {
 
     // filesystem caching
     DiskCache2 cacheDir = new DiskCache2(".unidata/ehcache", true, -1, -1);
-    try {
-      cacheManager = thredds.filesystem.ControllerCaching.makeTestController(cacheDir.getRootDirectory());
-      thredds.inventory.DatasetCollectionManager.setController(cacheManager);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    cacheManager = thredds.filesystem.ControllerCaching.makeTestController(cacheDir.getRootDirectory());
+    thredds.inventory.DatasetCollectionManager.setController(cacheManager);
 
     // for efficiency, persist aggregations. every hour, delete stuff older than 30 days
     Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, 60 * 24 * 30, 60));
@@ -4610,7 +4813,7 @@ public class ToolsUI extends JPanel {
     // java.util.logging.Logger.getLogger("ucar.nc2").setLevel( java.util.logging.Level.SEVERE);
 
     // put UI in a JFrame
-    frame = new JFrame("NetCDF (4.1) Tools");
+    frame = new JFrame("NetCDF (4.2) Tools");
     ui = new ToolsUI(prefs, frame);
 
     frame.setIconImage(BAMutil.getImage("netcdfUI"));

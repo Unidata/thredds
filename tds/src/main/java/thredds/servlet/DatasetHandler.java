@@ -33,6 +33,7 @@
 
 package thredds.servlet;
 
+import thredds.catalog.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ncml.NcMLReader;
@@ -44,10 +45,6 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Set;
 
-import thredds.catalog.InvDatasetImpl;
-import thredds.catalog.InvDatasetFmrc;
-import thredds.catalog.InvDatasetScan;
-import thredds.catalog.InvAccess;
 import thredds.servlet.restrict.RestrictedDatasetServlet;
 
 import javax.servlet.http.HttpServletRequest;
@@ -172,6 +169,13 @@ public class DatasetHandler {
       if (ncfile == null) throw new FileNotFoundException(reqPath);
       return ncfile;
     }
+    if ((match != null) && (match.dataRoot.featCollection != null)) {
+      InvDatasetFeatureCollection featCollection = match.dataRoot.featCollection;
+      if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found InvDatasetFeatureCollection= " + featCollection);
+      NetcdfFile ncfile = featCollection.getNetcdfDataset(match.remaining);
+      if (ncfile == null) throw new FileNotFoundException(reqPath);
+      return ncfile;
+    }
 
     // might be a pluggable DatasetSource
     NetcdfFile ncfile = null;
@@ -252,15 +256,15 @@ public class DatasetHandler {
      * @throws IOException on read error
      */
   static public GridDataset openGridDataset( HttpServletRequest req, HttpServletResponse res, String reqPath, Set<NetcdfDataset.Enhance> enhanceMode) throws IOException {
-    /* first look for an fmrc dataset
+    // first look for a feature collection
     DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
-    if ((match != null) && (match.dataRoot.fmrc != null)) {
-      InvDatasetFmrc fmrc = match.dataRoot.fmrc;
-      if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found InvDatasetFmrc= " + fmrc);
-      GridDataset gridDataset = fmrc.getGridDataset(match.remaining);
-      if (gridDataset == null) throw new FileNotFoundException(reqPath);
-      return gridDataset;
-    } */
+    if ((match != null) && (match.dataRoot.featCollection != null)) {
+      InvDatasetFeatureCollection featCollection = match.dataRoot.featCollection;
+      if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found InvDatasetFeatureCollection= " + featCollection);
+      GridDataset gds = featCollection.getGridDataset(match.remaining);
+      if (gds == null) throw new FileNotFoundException(reqPath);
+      return gds;
+    }
 
     // fetch it as a NetcdfFile; this deals with possible NcML
     NetcdfFile ncfile = getNetcdfFile(req, res, reqPath);

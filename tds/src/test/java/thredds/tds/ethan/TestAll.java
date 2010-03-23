@@ -427,19 +427,19 @@ public class TestAll extends TestCase
 
     CatalogCrawler.Listener listener = new CatalogCrawler.Listener()
     {
-      public void getDataset( InvDataset ds )
+      public void getDataset( InvDataset ds, Object context )
       {
         if ( ds.hasAccess() && ds.getAccess( ServiceType.RESOLVER ) != null )
           checkLatestModelResolverDs( ds, failureMsgs );
       }
-      public boolean getCatalogRef(InvCatalogRef dd) { return true; }
+      public boolean getCatalogRef(InvCatalogRef dd, Object context) { return true; }
 
     };
     CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_ALL_DIRECT, false, listener );
 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     PrintStream out = new PrintStream( os );
-    crawler.crawl( catalogUrl, null, out );
+    crawler.crawl( catalogUrl, null, out, null );
     out.close();
     String crawlMsg = os.toString();
 
@@ -553,7 +553,7 @@ public class TestAll extends TestCase
 
     CatalogCrawler.Listener listener = new CatalogCrawler.Listener()
     {
-      public void getDataset( InvDataset ds )
+      public void getDataset( InvDataset ds, Object context )
       {
         Formatter localLog = new Formatter();
         NetcdfDataset ncd;
@@ -585,14 +585,14 @@ public class TestAll extends TestCase
           return;
         }
       }
-      public boolean getCatalogRef(InvCatalogRef dd) { return true; }
+      public boolean getCatalogRef(InvCatalogRef dd, Object context) { return true; }
 
     };
     CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_RANDOM_DIRECT, false, listener );
 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     PrintStream out = new PrintStream( os );
-    int numDs = crawler.crawl( catalogUrl, null, out );
+    int numDs = crawler.crawl( catalogUrl, null, out, null );
     out.close();
     String crawlMsg = os.toString();
 
@@ -667,7 +667,7 @@ public class TestAll extends TestCase
 
     CatalogCrawler.Listener listener = new CatalogCrawler.Listener()
     {
-      public void getDataset( InvDataset ds )
+      public void getDataset( InvDataset ds, Object context )
       {
         Formatter localLog = new Formatter();
 
@@ -789,7 +789,7 @@ public class TestAll extends TestCase
 
 
       }
-      public boolean getCatalogRef(InvCatalogRef dd) { return true; }
+      public boolean getCatalogRef(InvCatalogRef dd, Object context) { return true; }
       
     };
     CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_RANDOM_DIRECT, false, listener );
@@ -803,7 +803,7 @@ public class TestAll extends TestCase
       int numDs = 0;
       try
       {
-        numDs = crawler.crawl( curCat, null, out );
+        numDs = crawler.crawl( curCat, null, out, null );
       }
       catch ( Exception e )
       {

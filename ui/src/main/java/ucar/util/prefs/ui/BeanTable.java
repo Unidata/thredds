@@ -341,15 +341,18 @@ public class BeanTable extends JPanel {
 
   /**
    * Set which rows are selected.
-   * @param beans select these
+   * must also call setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+   * @param want select these
    */
-  public void setSelectedBeans( List beans) {
-    for (int i = 0; i < beans.size(); i++) {
-      Object bean =  beans.get(i);
+  public void setSelectedBeans( List want) {
+    jtable.getSelectionModel().clearSelection();
+    for (int i = 0; i < want.size(); i++) {
+      Object bean =  want.get(i);
       int row = beans.indexOf( bean);
-      int vr = viewIndex(row);
-      if (row >= 0)
-        jtable.getSelectionModel().setSelectionInterval(vr, vr);
+      if (row >= 0) {
+        int vr = viewIndex(row);
+        jtable.getSelectionModel().addSelectionInterval(vr, vr);
+      }
     }
   }
 

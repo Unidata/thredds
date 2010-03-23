@@ -66,6 +66,7 @@ public class GridRenderer {
 
   // draw state
   private boolean drawGrid = true;
+  private boolean drawGridLines = true;
   private boolean drawContours = false;
   private boolean drawContourLabels = false;
 
@@ -92,7 +93,7 @@ public class GridRenderer {
   private LatLonProjection projectll;       // special handling for LatLonProjection
 
   // working objects to minimize excessive gc
-  private StringBuffer sbuff = new StringBuffer(200);
+  //private StringBuffer sbuff = new StringBuffer(200);
   private LatLonPointImpl ptL1 = new LatLonPointImpl();
   private LatLonPointImpl ptL2 = new LatLonPointImpl();
   private ProjectionPointImpl ptP1 = new ProjectionPointImpl();
@@ -195,8 +196,8 @@ public class GridRenderer {
   }
 
   /* set whether grid should be drawn */
-  public void setDrawGrid(boolean drawGrid) {
-    this.drawGrid = drawGrid;
+  public void setDrawGridLines(boolean drawGrid) {
+    this.drawGridLines = drawGrid;
   }
 
   /* get whether countours  should be drawn */
@@ -358,10 +359,14 @@ public class GridRenderer {
     if ((wantx == -1) || (wanty == -1))
       return "outside grid area";
     else {
-      Index imaH = dataH.getIndex();
-      double value = dataH.getDouble(imaH.set(wanty, wantx));
-      int wantz = (geocs.getVerticalAxis() == null) ? -1 : lastLevel;
-      return makeXYZvalueStr(value, wantx, wanty, wantz);
+      try {
+        Index imaH = dataH.getIndex();
+        double value = dataH.getDouble(imaH.set(wanty, wantx));
+        int wantz = (geocs.getVerticalAxis() == null) ? -1 : lastLevel;
+        return makeXYZvalueStr(value, wantx, wanty, wantz);
+      } catch (Exception e) {
+        return "error " + wantx + " " + wanty;
+      }
     }
   }
 
@@ -385,6 +390,7 @@ public class GridRenderer {
     sbuff.setLength(0);
     sbuff.append(LatLonPointImpl.latToString(lpt.getLatitude(), 3)); */
 
+    StringBuilder sbuff = new StringBuilder();
     sbuff.setLength(0);
     sbuff.append(Format.d(loc.getX(), 3));
     CoordinateAxis yaxis = geocs.getYHorizAxis();
@@ -432,16 +438,22 @@ public class GridRenderer {
   private String makeXYZvalueStr(double value, int wantx, int wanty, int wantz) {
     if (stridedGrid.isMissingData(value)) {
       //if (debugMiss) System.out.println("debug miss = "+value+" "+cs.getIndexFromValue(value));
-      return "missing data";
+      if (Debug.isSet("pick/showGridIndexes"))
+        return ("missing data @ (" + wantx + "," + wanty + ")");
+      else
+        return "missing data";
     }
 
-    sbuff.setLength(0);
+    StringBuilder sbuff = new StringBuilder();
     sbuff.append(Format.d(value, 6));
     sbuff.append(" " + stridedGrid.getUnitsString());
 
     GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
-    if (!(geocs.getXHorizAxis() instanceof CoordinateAxis1D) || !(geocs.getXHorizAxis() instanceof CoordinateAxis1D))
+    if (!(geocs.getXHorizAxis() instanceof CoordinateAxis1D) || !(geocs.getXHorizAxis() instanceof CoordinateAxis1D)) {
+      if (Debug.isSet("pick/showGridIndexes"))
+        sbuff.append("@ (" + wantx + "," + wanty + ")");
       return sbuff.toString();
+    }
 
     CoordinateAxis1D xaxis = (CoordinateAxis1D) geocs.getXHorizAxis();
     CoordinateAxis1D yaxis = (CoordinateAxis1D) geocs.getYHorizAxis();
@@ -743,6 +755,8 @@ public class GridRenderer {
       drawGridHoriz(g, dataH);
     if (drawContours)
       drawContours(g, dataH.transpose(0, 1), dFromN);
+    if (drawGridLines)
+      drawGridLines(g);
 
     // LOOK removed this to allow 2D x, y coordinates 10/29/06
     /* draw the vertical line indicating current slice
@@ -848,6 +862,55 @@ public class GridRenderer {
     }
 
   }
+
+  private void drawGridLines(java.awt.Graphics2D g) {
+    int count = 0;
+
+    GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
+    CoordinateAxis xaxis = geocs.getXHorizAxis();
+    CoordinateAxis yaxis = geocs.getYHorizAxis();
+
+    if (!(xaxis instanceof CoordinateAxis2D) || !(yaxis instanceof CoordinateAxis2D))
+      return;
+
+    // 2D case
+    CoordinateAxis2D xaxis2D = (CoordinateAxis2D) xaxis;
+    CoordinateAxis2D yaxis2D = (CoordinateAxis2D) yaxis;
+
+    ArrayDouble.D2 edgex = CoordinateAxis2D.makeXEdges(xaxis2D.getMidpoints());
+    ArrayDouble.D2 edgey = CoordinateAxis2D.makeYEdges(yaxis2D.getMidpoints());
+
+    GeneralPath gp = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 5);
+    g.setColor(Color.BLACK);
+
+    int[] shape = xaxis2D.getShape(); // should both be the same
+    int ny = shape[0];
+    int nx = shape[1];
+
+    for (int y = 0; y < ny+1; y += 10) {
+      gp.reset();
+      for (int x = 0; x < nx+1; x++) {
+        if (x == 0)
+          gp.moveTo((float) edgex.get(y, x), (float) edgey.get(y, x));
+        else
+          gp.lineTo((float) edgex.get(y, x), (float) edgey.get(y, x));
+      }
+      g.draw(gp);
+    }
+
+    for (int x = 0; x < nx+1; x += 10) {
+      gp.reset();
+      for (int y = 0; y < ny+1; y++) {
+        if (y == 0)
+          gp.moveTo((float) edgex.get(y, x), (float) edgey.get(y, x));
+        else
+          gp.lineTo((float) edgex.get(y, x), (float) edgey.get(y, x));
+      }
+      g.draw(gp);
+    }
+
+  }
+
 
   private void drawGridHorizStaggered(java.awt.Graphics2D g, Array data, CoordinateAxis2D xaxis2D, CoordinateAxis2D yaxis2D) {
     ArrayDouble.D2 edgex = CoordinateAxis2D.makeXEdgesRotated(xaxis2D.getMidpoints());

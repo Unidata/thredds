@@ -13,6 +13,7 @@
 # mode = "wmoOnly", "wmoLocal", "localWmo"  (default "wmoOnly")
 #
 # center,subcenter,master,local,cat,tableB,tableBformat,                                           tableD,tableDformat, mode
+#0,     0,        14,    0,    -1,  /export/home/bert/docs/dataFormats/bufr/wmo/BUFR14_1_0_CREX_6_1_0_xml/BC_TableB_BUFR14_1_0_CREX_6_1_0.xml, wmo-xml, /export/home/bert/docs/dataFormats/bufr/wmo/BUFR14_1_0_CREX_6_1_0_xml/B_TableD_BUFR14_1_0_CREX_6_1_0.xml, wmo-xml
 0,     0,        14,    0,    -1,   resource:/resources/bufrTables/wmo/TableB-121109.v14.csv, csv, resource:/resources/bufrTables/wmo/TableD-121509.csv, csv
 0,     0,        13,    0,    -1,   resource:/resources/bufrTables/wmo/TableB.v13.csv, csv    , , ,
 #

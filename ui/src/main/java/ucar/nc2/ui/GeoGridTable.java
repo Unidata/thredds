@@ -197,6 +197,35 @@ public class GeoGridTable extends JPanel {
     }
   }
 
+  public void setDataset(GridDataset gds) throws IOException {
+    this.gridDataset = gds;
+
+    List<GeogridBean> beanList = new ArrayList<GeogridBean>();
+    java.util.List<GridDatatype> list = gridDataset.getGrids();
+    for (GridDatatype g : list)
+      beanList.add (new GeogridBean( g));
+    varTable.setBeans( beanList);
+
+    if (csTable != null) {
+      List<GeoCoordinateSystemBean> csList = new ArrayList<GeoCoordinateSystemBean>();
+      List<GeoAxisBean> axisList;
+      axisList = new ArrayList<GeoAxisBean>();
+      for (GridDataset.Gridset gset : gridDataset.getGridsets()) {
+        csList.add(new GeoCoordinateSystemBean(gset));
+        GridCoordSystem gsys = gset.getGeoCoordSystem();
+        List<CoordinateAxis> axes = gsys.getCoordinateAxes();
+        for (int i = 0; i < axes.size(); i++) {
+          CoordinateAxis axis = axes.get(i);
+          GeoAxisBean axisBean = new GeoAxisBean(axis);
+          if (!contains(axisList, axisBean.getName()))
+            axisList.add(axisBean);
+        }
+      }
+      csTable.setBeans( csList);
+      axisTable.setBeans( axisList);
+    }
+  }
+
   private boolean contains(List<GeoAxisBean> axisList, String name) {
     for (GeoAxisBean axis : axisList)
       if (axis.getName().equals(name)) return true;
@@ -231,7 +260,8 @@ public class GeoGridTable extends JPanel {
       setDescription( geogrid.getDescription());
       setUnits( geogrid.getUnitsString());
 
-      setCoordSystem( geogrid.getCoordinateSystem().getName());
+      GridCoordSystem gcs = geogrid.getCoordinateSystem();
+      setCoordSystem( gcs.getName());
 
             // collect dimensions
       StringBuffer buff = new StringBuffer();
@@ -243,7 +273,14 @@ public class GeoGridTable extends JPanel {
       }
       setShape( buff.toString());
 
-      Dimension d= geogrid.getXDimension();
+      setX(gcs.getXHorizAxis());
+      setY(gcs.getYHorizAxis());
+      setZ(gcs.getVerticalAxis());
+      setT(gcs.getTimeAxis());
+      setRt(gcs.getRunTimeAxis());
+      setEns(gcs.getEnsembleAxis());
+
+      /* Dimension d= geogrid.getXDimension();
       if (d != null) setX( d.getName());
       d= geogrid.getYDimension();
       if (d != null) setY( d.getName());
@@ -266,7 +303,7 @@ public class GeoGridTable extends JPanel {
 
       axis = gcs.getRunTimeAxis();
       if (axis != null)
-        setRt( axis.getDimension(0).getName());
+        setRt( axis.getDimension(0).getName()); */
     }
 
     public String getName() { return name; }
@@ -282,23 +319,37 @@ public class GeoGridTable extends JPanel {
     public void setCoordSystem(String csys) { this.csys = csys; }
 
     public String getX() { return x; }
-    public void setX(String x) { this.x = x; }
+    private void setX(CoordinateAxis axis) {
+      if (axis != null)
+        x = axis.getNameAndDimensions(true);
+    }
 
     public String getY() { return y; }
-    public void setY(String y) { this.y = y; }
+    private void setY(CoordinateAxis axis) { 
+      if (axis != null)
+        y = axis.getNameAndDimensions(true);
+    }
 
     public String getZ() { return z; }
-    public void setZ(String z) { this.z = z; }
-
+    private void setZ(CoordinateAxis axis) {
+      if (axis != null)
+        z = axis.getNameAndDimensions(true);
+    }
     public String getT() { return t; }
-    public void setT(String t) { this.t = t; }
-
+    private void setT(CoordinateAxis axis) {
+      if (axis != null)
+        t = axis.getNameAndDimensions(true);
+    }
     public String getEns() { return ens; }
-    public void setEns(String ens) { this.ens = ens; }
-
+    private void setEns(CoordinateAxis axis) {
+      if (axis != null)
+        ens = axis.getNameAndDimensions(true);
+    }
     public String getRt() { return rt; }
-    public void setRt(String rt) { this.rt = rt; }
-
+    private void setRt(CoordinateAxis axis) {
+      if (axis != null)
+        rt = axis.getNameAndDimensions(true);
+    }
     public String getShape() { return dims; }
     public void setShape(String dims) { this.dims = dims; }
 

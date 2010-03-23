@@ -74,7 +74,7 @@
                          xlink:title="NCEP Model Notes"/>
         </metadata>
 
-        <datasetCollection name="NCEP-GFS-Alaska_191km" featureType="FMRC" path="fmrc/NCEP/GFS/Alaska_191km">
+        <featureCollection name="NCEP-GFS-Alaska_191km" featureType="FMRC" path="fmrc/NCEP/GFS/Alaska_191km">
 
           <metadata>
             <documentation type="summary">NCEP GFS Model : AWIPS 203 (J) Grid. National - Alaska (polar stereographic).
@@ -88,11 +88,10 @@
           <documentation type="title">${@title} also this text ${@title2}</documentation>
 
           <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/GFS_Alaska_191km_#yyyyMMdd_HHmm#.grib1"
-                      recheckEvery="15 min" olderThan="5 min" />
-          
-          <fmrcDefinition>NCEP-GFS-Alaska_191km.fmrcDefinition.xml</fmrcDefinition>
+                      recheckEvery="15 min" 
+                      olderThan="5 min" />
 
-        </datasetCollection>
+        </featureCollection>
       </dataset>
     </dataset>
 
@@ -112,15 +111,15 @@
           <keyword>surface observations</keyword>
         </metadata>
 
-        <datasetCollection name="Metar Station Data" featureType="Station" harvest="true" path="station/metar">
+        <featureCollection name="Metar Station Data" featureType="Station" harvest="true" path="station/metar">
           <dataFormat>NetCDF</dataFormat>
 
           <collection  spec="/data/ldm/pub/decoded/netcdf/surface/metar/**/Surface_METAR_#yyyyMMdd_HHmm#.nc"
                       recheckEvery="15 min"olderThan="5 min" />
 
-        </datasetCollection>
+        </featureCollection>
 
-        <datasetCollection name="Realtime surface Data" featureType="Station" harvest="true" path="gempak/surface">
+        <featureCollection name="Realtime surface Data" featureType="Station" harvest="true" path="gempak/surface">
           <dataFormat>GEMPAK</dataFormat>
 
           <collection recheckEvery="15 min"
@@ -128,7 +127,7 @@
                       olderThan="5 min">
           </collection>
 
-        </datasetCollection>
+        </featureCollection>
       </dataset>
 
       <dataset name="NOAA Profiler Network">
@@ -145,20 +144,19 @@
 
         <dataset name="Wind Profilers">
 
-          <datasetCollection name="6 minute" featureType="STATION_PROFILE" harvest="true"
-                             path="station/profiler/wind/06min">
-            <documentation type="summary">Six minute average data.</documentation>
-            <collection spec="/data/ldm/pub/native/profiler/wind/06min/**/PROFILER_wind_06min_#yyyyMMdd#.nc"
-                        recheckEvery="15 min" olderThan="5 min" />
-          </datasetCollection>
+           <featureCollection name="6 minute" featureType="STATION_PROFILE" harvest="true" path="station/profiler/wind/06min">
+             <documentation type="summary">Six minute average data.</documentation>
+             <collection spec="/data/ldm/pub/native/profiler/wind/06min/**/PROFILER_wind_06min_#yyyyMMdd#.nc"
+                         recheckEvery="15 min"
+                         olderThan="5 min" />
+           </featureCollection>
 
-          <datasetCollection name="1 hour" featureType="STATION_PROFILE" harvest="true"
-                             path="station/profiler/wind/1hr">
+          <featureCollection name="1 hour" featureType="STATION_PROFILE" harvest="true" path="station/profiler/wind/1hr">
             <documentation type="summary">Hourly average data</documentation>
-            <collection recheckEvery="15 min"
-                        spec="/data/ldm/pub/native/profiler/wind/01hr/**/PROFILER_wind_01hr_#yyyyMMdd#.nc"
+            <collection spec="/data/ldm/pub/native/profiler/wind/01hr/**/PROFILER_wind_01hr_#yyyyMMdd#.nc"
+                        recheckEvery="15 min"
                         olderThan="5 min" />
-          </datasetCollection>
+          </featureCollection>
 
         </dataset>
 
@@ -170,19 +168,21 @@
             </documentation>
           </metadata>
 
-          <datasetCollection name="6 minute" featureType="ProfileTimeSeries" harvest="true" ID="NWS/RASS/6min"
+          <featureCollection name="6 minute" featureType="ProfileTimeSeries" harvest="true" ID="NWS/RASS/6min"
                              path="station/profiler/RASS/06min">
             <documentation xlink:type="summary">Six minute average data.</documentation>
             <collection spec="/data/ldm/pub/native/profiler/RASS/06min/**/*.nc"
-                        recheckEvery="15 min" olderThan="5 min" />
-          </datasetCollection>
+                        recheckEvery="15 min"
+                        olderThan="5 min" />
+          </featureCollection>
 
-          <datasetCollection name="1 hour" featureType="ProfileTimeSeries" harvest="true" ID="NWS/RASS/1hour"
+          <featureCollection name="1 hour" featureType="ProfileTimeSeries" harvest="true" ID="NWS/RASS/1hour"
                              path="station/profiler/RASS/1hr">
             <documentation xlink:type="summary">Hourly average data</documentation>
             <collection spec="/data/ldm/pub/native/profiler/RASS/01hr/**/*.nc"
-                        recheckEvery="15 min" olderThan="5 min" />
-          </datasetCollection>
+                        recheckEvery="15 min"
+                        olderThan="5 min" />
+          </featureCollection>
 
         </dataset>
       </dataset>
@@ -216,10 +216,11 @@
 
         <dataset name="3.9">
 
-          <datasetCollection name="WEST-CONUS_4km" featureType="Grid" harvest="true" path="satellite/3.9/WEST-CONUS_4km">
+          <featureCollection name="WEST-CONUS_4km" featureType="Grid" harvest="true" path="satellite/3.9/WEST-CONUS_4km">
             <collection spec="/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm#.gini"
-                        recheckEvery="15 min" olderThan="1 min" />
-          </datasetCollection>
+                        recheckEvery="15 min"
+                        olderThan="1 min" />
+          </featureCollection>
 
           <!-- cdmCollection name="WEST-CONUS_4km" location="satellite/3.9/WEST-CONUS_4km/*.gini">
             <aggregation dimName="time" type="joinExisting" dateFormatMark="WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm"/>

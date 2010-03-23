@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ui;
 
+import thredds.catalog.ui.query.QueryChooser;
 import thredds.ui.*;
 import thredds.catalog.*;
 import thredds.catalog.ui.*;
@@ -45,6 +46,8 @@ import java.awt.event.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
 /**
@@ -85,13 +88,10 @@ public class ThreddsUI extends JPanel {
   //private JDialog datasetChooserDialog;
   //private IndependentDialog datasetURLDialog = null;
 
-  // misc other stuff;
-  private int defaultWidth = 700;
-  private int defaultHeight = 350;
-
   // debugging
   //private boolean debugBeans = false, debugChooser = false, debugPrint = false, debugHelp = false;
   private boolean debugSelection = false;
+  private boolean debugTab = false;
 
   public ThreddsUI(JFrame parent, PreferencesExt store) {
     this.store = store;
@@ -100,6 +100,8 @@ public class ThreddsUI extends JPanel {
 
     enableEvents(AWTEvent.WINDOW_EVENT_MASK);
     Dimension d = (Dimension) store.getBean( VIEWER_SIZE, null);
+    int defaultWidth = 700;
+    int defaultHeight = 350;
     setPreferredSize((d != null) ? d : new Dimension(defaultWidth, defaultHeight));
 
     try  {
@@ -124,7 +126,23 @@ public class ThreddsUI extends JPanel {
     tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 
     /// catalog, DQC, query choosers
-    datasetChooser = makeDatasetChooser(tabbedPane); // adds itself to the JTabbedPane
+    datasetChooser = makeDatasetChooser(); // adds itself to the JTabbedPane
+
+    // all the other component are defferred for fast startup
+    tabbedPane.addTab("catCrawler", new JLabel("catCrawler"));
+    tabbedPane.addTab("Catalog Enhancer", new JLabel("Catalog Enhancer"));
+    tabbedPane.addTab("TDS Configure", new JLabel("TDS Configure"));
+    tabbedPane.setSelectedIndex(0);
+    tabbedPane.addChangeListener(new ChangeListener() {
+      public void stateChanged(ChangeEvent e) {
+        Component c = tabbedPane.getSelectedComponent();
+        if (c instanceof JLabel) {
+          int idx = tabbedPane.getSelectedIndex();
+          String title = tabbedPane.getTitleAt(idx);
+          makeComponent(tabbedPane, title);
+        }
+      }
+    });
 
      // panel to show source
     sourcePane = new TextGetPutPane( (PreferencesExt) store.node("getputPane"));
@@ -136,31 +154,16 @@ public class ThreddsUI extends JPanel {
     xmlWindow = new IndependentDialog( null, false, "XML data", xmlPane);
     xmlWindow.setBounds((Rectangle)store.getBean(XML_WINDOW_SIZE, new Rectangle(50, 50, 725, 450)));
 
-    // LOOK - should use deferred construction as in ToolsUI
-    boolean showSystemTools = Debug.isSet("thredds/showTools");
-    if (showSystemTools) {
-      catEditor = new thredds.catalog.ui.tools.CatalogEnhancer((PreferencesExt) store.node("catEditor"), parent);
-      tabbedPane.addTab("Catalog Enhancer", catEditor);
-
-      catCrawler = new thredds.catalog.ui.tools.DLCrawler((PreferencesExt) store.node("catCrawler"), parent);
-      tabbedPane.addTab("DLCrawler", catCrawler);
-
-      serverConfigure = new thredds.catalog.ui.tools.TDServerConfigurator((PreferencesExt) store.node("serverConfigure"), parent);
-      tabbedPane.addTab("TDS Configure", serverConfigure);
-
       //catIndexer = new thredds.catalog.search.ui.CatalogIndexer((PreferencesExt) store.node("catIndexer"), topLevel.getJFrame());
       // tabbedPane.addTab("Indexer", catIndexer);
-    }
 
     setLayout( new BorderLayout());
     add(tabbedPane, BorderLayout.CENTER);
-    //setTab(TAB_CHOOSER);
   }
 
-  private ThreddsDatasetChooser makeDatasetChooser( JTabbedPane tabbedPane) {
+  private ThreddsDatasetChooser makeDatasetChooser() {
 
-    datasetChooser = new ThreddsDatasetChooser( (PreferencesExt) store.node("ThreddsDatasetChooser"),
-                                                tabbedPane);
+    datasetChooser = new ThreddsDatasetChooser( (PreferencesExt) store.node("ThreddsDatasetChooser"), tabbedPane);
 
     if (Debug.isSet("System/filterDataset"))
       datasetChooser.setDatasetFilter( new DatasetFilter.ByServiceType( ServiceType.DODS));
@@ -189,7 +192,6 @@ public class ThreddsUI extends JPanel {
               return;
             }
           }
-
           firePropertyChangeEvent( e);
         }
       }
@@ -211,33 +213,75 @@ public class ThreddsUI extends JPanel {
     });
     datasetChooser.getCatalogChooser().addButton(catSource);
 
-    // add a show source button to dqc chooser
-    JButton dcqSource = new JButton("Source");
-    dcqSource.addActionListener( new ActionListener() {
-      public void actionPerformed(ActionEvent evt) {
-        String catURL = datasetChooser.getQueryChooser().getCurrentURL();
-        sourcePane.setURL( catURL);
-        sourcePane.gotoTop();
-        sourceWindow.show();
-      }
-    });
-    datasetChooser.getQueryChooser().addButton(dcqSource);
+    QueryChooser queryChooser = datasetChooser.getQueryChooser();
+    if (queryChooser != null) {
+      // add a show source button to dqc chooser
+      JButton dcqSource = new JButton("Source");
+      dcqSource.addActionListener( new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          String catURL = datasetChooser.getQueryChooser().getCurrentURL();
+          sourcePane.setURL( catURL);
+          sourcePane.gotoTop();
+          sourceWindow.show();
+        }
+      });
+      queryChooser.addButton(dcqSource);
 
-    // add a show source button to dqc catalog chooser
-    JButton dqcCatSource = new JButton("Source");
-    dqcCatSource.addActionListener( new ActionListener() {
-      public void actionPerformed(ActionEvent evt) {
-        String catURL = datasetChooser.getQueryChooser().getCatalogChooser().getCurrentURL();
-        System.out.println("DQC Catalog Source: url = "+catURL);
-        sourcePane.setURL( catURL);
-        sourcePane.gotoTop();
-        sourceWindow.show();
-      }
-    });
-    datasetChooser.getQueryChooser().getCatalogChooser().addButton(dqcCatSource);
+      // add a show source button to dqc catalog chooser
+      JButton dqcCatSource = new JButton("Source");
+      dqcCatSource.addActionListener( new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          String catURL = datasetChooser.getQueryChooser().getCatalogChooser().getCurrentURL();
+          System.out.println("DQC Catalog Source: url = "+catURL);
+          sourcePane.setURL( catURL);
+          sourcePane.gotoTop();
+          sourceWindow.show();
+        }
+      });
+      queryChooser.getCatalogChooser().addButton(dqcCatSource);
+    }
 
     return datasetChooser;
   }
+
+  // deferred creation of components to minimize startup
+  private void makeComponent(JTabbedPane parent, String title) {
+    if (parent == null) parent = tabbedPane;
+
+    // find the correct index
+    int n = parent.getTabCount();
+    int idx;
+    for (idx = 0; idx < n; idx++) {
+      String cTitle = parent.getTitleAt(idx);
+      if (cTitle.equals(title)) break;
+    }
+    if (idx >= n) {
+      if (debugTab) System.out.println("Cant find " + title + " in " + parent);
+      return;
+    }
+
+    Component c;
+    if (title.equals("catCrawler")) {
+      catCrawler = new thredds.catalog.ui.tools.DLCrawler((PreferencesExt) store.node("catCrawler"), parent);
+      c = catCrawler;
+
+    } else if (title.equals("TDS Configure")) {
+      serverConfigure = new thredds.catalog.ui.tools.TDServerConfigurator((PreferencesExt) store.node("serverConfigure"), parent);
+      c = serverConfigure;
+
+    } else if (title.equals("Catalog Enhancer")) {
+      catEditor = new thredds.catalog.ui.tools.CatalogEnhancer((PreferencesExt) store.node("catEditor"), parent);
+      c = catEditor;
+
+     } else {
+      System.out.println("tabbedPane unknown component " + title);
+      return;
+    }
+
+    parent.setComponentAt(idx, c);
+    if (debugTab) System.out.println("tabbedPane changed " + title + " added ");
+  }
+
 
       /** save all data in the PersistentStore */
   public void storePersistentData() {

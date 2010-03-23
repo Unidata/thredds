@@ -55,15 +55,15 @@ public class TimeTDS {
   TimeTDS(String catUrl) {
 
     CatalogCrawler.Listener listener = new CatalogCrawler.Listener() {
-      public void getDataset(InvDataset dd) {
+      public void getDataset(InvDataset dd, Object context) {
         extractDatasetInfo(dd, System.out);
       }
-      public boolean getCatalogRef(InvCatalogRef dd) { return true; }      
+      public boolean getCatalogRef(InvCatalogRef dd, Object context) { return true; }
     };
     CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.USE_ALL, false, listener);
 
     long start = System.currentTimeMillis();
-    crawler.crawl(catUrl, null, System.out);
+    crawler.crawl(catUrl, null, System.out, null);
     long took = System.currentTimeMillis() - start;
     System.out.println("that took= " + took + " msecs");
   }
