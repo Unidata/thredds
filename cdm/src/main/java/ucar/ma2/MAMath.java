@@ -176,6 +176,7 @@ public class MAMath {
    * @return converted data of desired type, or original array if it is already
    */
   public static Array convert( Array org, DataType wantType) {
+    if (org == null) return null;
     Class wantClass = wantType.getPrimitiveClassType();
     if (org.getElementType().equals(wantClass))
       return org;

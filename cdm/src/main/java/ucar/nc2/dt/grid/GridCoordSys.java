@@ -534,7 +534,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     ProjectionImpl projOrig = from.getProjection();
     if (projOrig != null) {
       proj = projOrig.constructCopy();
-      proj.setDefaultMapArea(getBoundingBox());
+      proj.setDefaultMapArea(getBoundingBox()); // LOOK expensive for 2D
     }
 
     CoordinateAxis1D zaxis = from.getVerticalAxis();

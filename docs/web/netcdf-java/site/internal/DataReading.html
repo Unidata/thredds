@@ -15,6 +15,44 @@ dl {margin: 10px 5px 5px 15px;)
 <h1>Data Reading Control Flow</h1>
 <p>last updated Mar 2010, on version 4.2.</p>
 <hr />
+<h3>NetcdfFile </h3>
+<p>All reading is channelled through:</p>
+<pre> protected Array readData(ucar.nc2.Variable v, Section ranges) throws IOException, InvalidRangeException  {
+   Array result = spi.readData(v, ranges);
+   result.setUnsigned(v.isUnsigned());
+   return result;
+ }</pre>
+<p>With these exceptions:</p>
+<ul>
+  <li>this is for reading variables that are members of structures </li>
+</ul>
+<pre>
+  public Array readSection(String variableSection) throws IOException, InvalidRangeException {
+   ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
+   if (cer.child == null) {
+     Array result = cer.v.read(cer.section);
+     result.setUnsigned(cer.v.isUnsigned());
+     return result;
+   }
+    
+   if (spi == null)
+     return IospHelper.readSection(cer);
+   else
+     // allow iosp to optimize
+     return spi.readSection(cer);
+   }
+ </pre>
+<ul>
+  <li>experimental version to try to use direct transfer I/O (read directly from file to socket)</li>
+</ul>
+<pre> protected long readToByteChannel(ucar.nc2.Variable v, Section section, WritableByteChannel wbc) {
+   if ((spi == null) || v.hasCachedData())
+     return IospHelper.copyToByteChannel(v.read(section), wbc);
+   else
+     return spi.readToByteChannel(v, section, wbc);
+   }
+ </pre>
+<p>These seem to break the normal Variable chain, so probably cant be used generally.</p>
 <h3><br />
   Variable</h3>
 <p>all reading is channelled through:<br />
@@ -58,42 +96,28 @@ public Array reallyRead(Variable client, CancelTask cancelTask) throws IOExcepti
    }
   }
 </pre>
- <p>&nbsp;</p>
- <h3>NetcdfFile </h3>
- <p>all reading is channelled through </p>
- <pre> protected Array readData(ucar.nc2.Variable v, Section ranges) throws IOException, InvalidRangeException  {
-   Array result = spi.readData(v, ranges);
-   result.setUnsigned(v.isUnsigned());
-   return result;
- }</pre>
-  this is for reading variables that are members of structures
- <pre>
-  public Array readSection(String variableSection) throws IOException, InvalidRangeException {
-   ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
-   if (cer.child == null) {
-     Array result = cer.v.read(cer.section);
-     result.setUnsigned(cer.v.isUnsigned());
-     return result;
-   }
-    
-   if (spi == null)
-     return IospHelper.readSection(cer);
-   else
-     // allow iosp to optimize
-     return spi.readSection(cer);
-   }
- </pre>
-<p>So the call is eventually sent to <strong>ncfile.readData</strong>().So Variable  must be part of ncfile, ie known by the spi.  ncfile is thus the data source for a Variable, not necessarily the same as the logical container.</p>
-<p>&nbsp;</p>
+ <p>So the call is eventually sent to <strong>ncfile.readData</strong>(). So Variable  must be part of ncfile, ie known by the spi.  ncfile is thus the data source for a Variable, not necessarily the same as the logical container.</p>
 <h3>ProxyReader</h3>
 <p>Canonical use of ProxyReader is to create logical subsets, eg <strong>slice</strong>() and <strong>section</strong>(). Example:</p>
 <pre>  public Variable slice(int dim, int value) {
     ...
-    sliceV.setProxyReader( new SliceReader(this.getProxyReader(), dim, slice));
+    // create a copy of this variable with a proxy reader<br />    Variable sliceV = copy(); // subclasses must override<br />    Section slice = new Section( getShapeAsSection());<br />    slice.replaceRange(dim, new Range(value, value)).makeImmutable();<br />    sliceV.<strong>setProxyReader</strong>( new SliceReader(this.getProxyReader(), dim, slice));<br />    sliceV.createNewCache(); // dont share the cache<br />    sliceV.setCaching(false); // dont cache
   }
- </pre>
-<p>Note that the previous ProxyReader is passed into the SliceReader, which is used as the data source. This allows different ProxyReaders to coexist with each other, since they create a chain. (versions prior to 4.2 did not do this, this is the reason for ProxyReader design).</p>
-<p>&nbsp;</p>
+</pre>
+<p>Note we are creating a new Variable and setting its proxyReader, not replacing the proxyReader on an existing Variable.</p>
+<p>Note that the previous ProxyReader is passed into the SliceReader, which is used as the data source. This allows multiple ProxyReaders to coexist with each other, since they create a chain. (versions prior to 4.2 did not do this, this is the reason for ProxyReader design). So ProxyReader implementations must do something like the following:</p>
+<pre>class SliceReader implements ProxyReader {
+  private ProxyReader nextReader;
+  SliceReader(ProxyReader nextReader, int dim, Section slice) {
+    this.nextReader = nextReader;
+    ..
+  }
+ 
+  public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
+    Array data = <strong>nextReader.reallyRead</strong>( client, slice, cancelTask); 
+     ...
+   }
+}</pre>
 <h3>VariableDS</h3>
 <p>The usual way to wrap a Variable by a VariableDS (used by NcML, NetcdfDataset(NetcdfFile ncfile)) :</p>
 <pre> 
@@ -125,7 +149,7 @@ public VariableDS(Group g, Variable orgVar, boolean enhance) {
   }
 }</pre>
 
-<p>&nbsp;</p>
+<p>The super(orgVar) constructor does not copy the proxyReader from orgVar. So VariableDS is by default also its own ProxyReader:</p>
 <pre> 
 public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
   Array result;
@@ -133,8 +157,7 @@ public Array reallyRead(Variable client, CancelTask cancelTask) throws IOExcepti
     result = super.reallyRead(client, cancelTask);
   else if (orgVar != null)
     result = orgVar.read();
-  else if ((proxyReader != null) &amp;&amp; (proxyReader != this))
-    result = proxyReader.reallyRead(this, cancelTask);
+
   else
     return getMissingDataArray(shape);
     
@@ -148,10 +171,31 @@ public Array reallyRead(Variable client, CancelTask cancelTask) throws IOExcepti
    
 <p> A VariableDS either</p>
 <ol>
-  <li>  has self contained data array (cacheData != null)</li>
+  <li>  has a ProxyReader set</li>
+  <li>has self contained data array (cacheData != null)</li>
   <li>wraps another Variable (orgVar != null)</li>
-  <li>has a ProxyReader set</li>
   <li> returns missing values, or default fill values if no data is set</li>
 </ol>
+<p>Therefore, those properties must be retained in any subclassing ,eg CoordinateAxis:</p>
+<pre>
+protected VariableDS( VariableDS vds) {
+  super(vds);
+  // how to read ??<br />  <strong>this.orgVar = vds.orgVar;<br />  if (vds.orgVar == null)<br />    this.proxyReader = vds.proxyReader;</strong>
+
+  this.orgDataType = vds.orgDataType;
+  this.orgName = vds.orgName;
+
+
+  this.scaleMissingProxy = vds.scaleMissingProxy;
+  this.enhanceProxy = new EnhancementsImpl( this); //decouple coordinate systems
+
+  // LOOK not sure of this
+  this.enhanceMode = vds.enhanceMode;
+  this.needScaleOffsetMissing = vds.needScaleOffsetMissing;
+  this.needEnumConversion = vds.needEnumConversion;
+}
+</pre>
+<h3>FmrcDataset</h3>
+<p>Aggregation datasets create synthetic VariableDS and set a ProxyReader to handle the data reading.</p>
 </body>
 </html>

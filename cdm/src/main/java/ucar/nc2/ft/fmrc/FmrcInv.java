@@ -312,7 +312,7 @@ public class FmrcInv {
         //timeCoordUnion.addGridVariable(this);
         grid.timeExpected = grid.timeCoordUnion; // if only one, not much else to do
         this.runSeq = findRunSeq(runs);
-        //grid.timeCoordUnion.addGridVariable(grid); // ??
+        this.runSeq.addVariable(this);
         return;
       }
 

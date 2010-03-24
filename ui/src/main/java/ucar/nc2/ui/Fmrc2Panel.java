@@ -309,11 +309,11 @@ public class Fmrc2Panel extends JPanel {
   }
 
   private void showDataset(Fmrc2Dialog.Data data) {
-    FmrcDataset fds = new FmrcDataset(fmrcInv);
+    FmrcDataset fds = new FmrcDataset();
     GridDataset gds = null;
     try {
       if (data.type.equals("Dataset2D"))
-        gds = fds.getNetcdfDataset2D( false);
+        gds = fds.getNetcdfDataset2D( fmrcInv, true, true);
       else
         gds = fds.getBest();
     } catch (IOException e) {

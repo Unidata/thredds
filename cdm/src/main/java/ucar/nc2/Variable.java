@@ -1131,7 +1131,7 @@ public class Variable implements VariableIF, ProxyReader {
     this.isVariableLength = from.isVariableLength;
     this.ncfile = from.ncfile;
     this.parent = from.parent;
-    this.proxyReader = from.proxyReader;
+    // this.proxyReader = from.proxyReader;
     this.shape = from.getShape();
     this.shortName = from.shortName;
     this.sizeToCache = from.sizeToCache;
@@ -1481,6 +1481,9 @@ public class Variable implements VariableIF, ProxyReader {
     setCachedData(cacheData, false);
   }
 
+  public Array getCachedData() {
+    return (cache == null) ? null : cache.data;
+  }
   /**
    * Set the data cache
    *

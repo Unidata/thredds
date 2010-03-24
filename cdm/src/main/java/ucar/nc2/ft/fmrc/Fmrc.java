@@ -105,6 +105,7 @@ public class Fmrc {
   public Fmrc(CollectionManager manager, DateExtractor dateExtractor) {
     this.manager = manager;
     this.dateExtractor = dateExtractor;
+    this.fmrcDataset = new FmrcDataset();
   }
 
   public void setNcml(Element ncmlOuter, Element ncmlInner) {
@@ -113,15 +114,7 @@ public class Fmrc {
   }
 
   public GridDataset getDataset2D(boolean force) throws IOException {
-    FmrcDataset fmrcDataset = getFmrcDataset( force);
-    return fmrcDataset.getNetcdfDataset2D( force);
-  }
-
-  private FmrcDataset getFmrcDataset(boolean force) throws IOException {
-    // LOOK what about testing for if the list hasnt changed ??
-    if (force || fmrcDataset == null || manager.timeToRescan())
-      fmrcDataset = new FmrcDataset(getFmrcInv( force));
-    return fmrcDataset;
+    return fmrcDataset.getNetcdfDataset2D( getFmrcInv( force), false, force);
   }
 
   /**

@@ -172,7 +172,7 @@ public class Index implements Cloneable {
 
   /**
    * Constructor that lets you set the strides yourself.
-   * This is used as a counter, not a desccription of an index section.
+   * This is used as a counter, not a description of an index section.
    * @param _shape Index shape
    * @param _stride Index stride
    */

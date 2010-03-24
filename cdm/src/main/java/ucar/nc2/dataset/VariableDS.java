@@ -186,7 +186,11 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
   protected VariableDS( VariableDS vds) {
     super(vds);
 
+    // how to read ??
     this.orgVar = vds.orgVar;
+    if (vds.orgVar == null)
+      this.proxyReader = vds.proxyReader;
+
     this.orgDataType = vds.orgDataType;
     this.orgName = vds.orgName;
 
@@ -438,7 +442,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     return (orgVar != null) ? orgVar.toStringDebug() : "";
   }
 
-  // regular Variables.
+  // do not call directly
   @Override
   public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
     Array result;
@@ -447,8 +451,9 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
       result = super.reallyRead(client, cancelTask);
     else if (orgVar != null)
       result = orgVar.read();
-    else if ((proxyReader != null) && (proxyReader != this))
-      result = proxyReader.reallyRead(this, cancelTask);
+        // should only be called through proxyReader.reallyRead, so not needed
+    // else if ((proxyReader != null) && (proxyReader != this))
+    //  result = proxyReader.reallyRead(this, cancelTask);
     else
       return getMissingDataArray(shape);
 
@@ -461,20 +466,20 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
       return result;
   }
 
-  // section of regular Variable
+  // do not call directly
   @Override
   public Array reallyRead(Variable client, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException  {
     // see if its really a full read
     if ((null == section) || section.computeSize() == getSize())
-      return _read();
+      return reallyRead(client, cancelTask);
     
     Array result;
     if (hasCachedData()) // ??
       result = super.reallyRead(client, section, cancelTask);
     else if (orgVar != null)
       result = orgVar.read(section);
-    else if ((proxyReader != null) && (proxyReader != this))
-      result = proxyReader.reallyRead(this, section, cancelTask);
+    // else if ((proxyReader != null) && (proxyReader != this))
+    //  result = proxyReader.reallyRead(this, section, cancelTask);
     else
       return getMissingDataArray(section.getShape());
 

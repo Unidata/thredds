@@ -32,6 +32,8 @@
  */
 package ucar.ma2;
 
+import java.util.List;
+
 /**
  * An Index into an Array that always returns 0. It can have any shape, so it allows you to create a
  * constant Array of any shape.
@@ -57,6 +59,56 @@ public class IndexConstant extends Index {
   public int currentElement() {
     return 0;
   }
+
+  @Override
+  Index flip(int index) {
+    return this;
+  }
+
+  @Override
+  Index sectionNoReduce(List<Range> ranges) throws InvalidRangeException {
+    Section curr = new Section(shape);
+    Section want = curr.compose(new Section(ranges));
+    return new IndexConstant( want.getShape());
+  }
+
+  @Override
+  Index section(List<Range> ranges) throws InvalidRangeException {
+    Section curr = new Section(shape);
+    Section want = curr.compose(new Section(ranges)).reduce();
+    return new IndexConstant( want.getShape());
+  }
+
+  @Override
+  Index reduce() {
+    Section curr = new Section(shape);
+    Section want = curr.reduce();
+    return new IndexConstant( want.getShape());
+  }
+
+  @Override
+  Index reduce(int dim) {
+    if ((dim < 0) || (dim >= rank))
+      throw new IllegalArgumentException("illegal reduce dim " + dim);
+    if (shape[dim] != 1)
+      throw new IllegalArgumentException("illegal reduce dim " + dim + " : length != 1");
+
+    Section curr = new Section(shape);
+    Section want = curr.removeRange(dim);
+    return new IndexConstant( want.getShape());
+  }
+
+  @Override
+  Index transpose(int index1, int index2) {
+    return this;
+  }
+
+  @Override          
+  Index permute(int[] dims) {
+    return this;
+  }
+
+  ///////////////////////
 
   IndexIterator getIndexIterator(Array maa) {
     return new IteratorConstant(size, maa);

@@ -596,6 +596,29 @@ public class Section {
   }
 
   /**
+   * Remove any ranges of length 1
+   *
+   * @return new Section if any Range had length 1, else this
+   */
+  public Section reduce() {
+    if (immutable) throw new IllegalStateException("Cant modify");
+    boolean needed = false;
+    for (Range r : list) {
+      if (r.length() == 1) needed = true;
+    }
+    if (!needed) return this;
+
+    List<Range> newList = new ArrayList<Range>( list.size());
+    for (Range r : list) {
+      if (r.length() > 1)
+        newList.add(r);
+    }
+    return new Section(newList);
+  }
+
+
+
+  /**
    * If any of the ranges are null, which means "all", set the Range from the
    * corresponding length in shape[].
    *

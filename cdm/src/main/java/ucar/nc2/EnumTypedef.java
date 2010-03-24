@@ -33,17 +33,22 @@
 
 package ucar.nc2;
 
+import net.jcip.annotations.Immutable;
+
 import java.util.*;
 
 /**
  * Enumeration Typedef map integers to Strings.
  * For ENUM1, ENUM2, ENUM4 enumeration types.
+ * Immutable.
  *
  * @author caron
  */
+@Immutable
 public class EnumTypedef {
-  private String name;
-  private Map<Integer, String> map;
+  private final String name;
+  private final Map<Integer, String> map;
+  private ArrayList<String> enumStrings;
 
   public EnumTypedef(String name, Map<Integer, String> map) {
     this.name = name;
@@ -53,8 +58,13 @@ public class EnumTypedef {
   public String getName() { return name; }
   public String getShortName() { return name; }
   public List<String> getEnumStrings() {
-    return new ArrayList<String>(map.values());
+    if (enumStrings != null) {
+      enumStrings = new ArrayList<String>(map.values());
+      Collections.sort(enumStrings);
+    }
+    return enumStrings;
   }
+
   public String lookupEnumString(int e) {
     String result = map.get(e);
     return (result == null) ? "Unknown enum value= "+e : result;

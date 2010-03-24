@@ -62,21 +62,31 @@ import java.util.Set;
  * @since Jan 19, 2010
  */
 public class FmrcDataset implements ProxyReader {
+  private NetcdfDataset proto;
   private FmrcInv fmrcInv;
   private GridDataset gds2D;
   private boolean debug = false, debugEnhance = false, debugRead = false;
   private DateFormatter dateFormatter = new DateFormatter();
 
-  public FmrcDataset(FmrcInv fmrcInv) {
-    this.fmrcInv = fmrcInv;
+  public FmrcDataset() {
   }
 
-  public GridDataset getNetcdfDataset2D(boolean force) throws IOException {
-    if (gds2D == null || force) {
+  // LOOK - concurency control needed
+  public GridDataset getNetcdfDataset2D(FmrcInv fmrcInv, boolean forceProto, boolean force) throws IOException {
+    this.fmrcInv = fmrcInv;
+
+    if (proto == null || forceProto) {
       HashMap<String, NetcdfDataset> openFilesProto = new HashMap<String, NetcdfDataset>();
-      gds2D = buildDataset2D(makeProto(openFilesProto));
+      proto = makeProto(openFilesProto);
+      gds2D = buildDataset2D(proto, true);
       closeAll(openFilesProto);
+      force = false;
     }
+
+    if (gds2D == null || force) {
+      gds2D = buildDataset2D(proto, false);
+    }
+
     return gds2D;
   }
 
@@ -86,11 +96,12 @@ public class FmrcDataset implements ProxyReader {
 
   /////////////////////////////////////////////////////////////////////////////
   // the prototypical dataset
+
   private NetcdfDataset makeProto(HashMap<String, NetcdfDataset> openFilesProto) throws IOException {
     System.out.printf("makeProto %n");
     NetcdfDataset result = new NetcdfDataset(); // empty
 
-    // choose the penultimate run in in the list
+    // choose some run in in the list
     List<FmrInv> list = fmrcInv.getFmrInv();
     int protoIdx = Math.max(list.size() - 2, 0); // LOOK control over which proto to use
     FmrInv proto = list.get(protoIdx);
@@ -100,8 +111,18 @@ public class FmrcDataset implements ProxyReader {
     Set<GridDatasetInv> files = proto.getFiles();
     for (GridDatasetInv file : files) {
       NetcdfDataset ncfile = open(file.getLocation(), openFilesProto);  // not acquiring, default enhance
-      transferGroup(ncfile.getRootGroup(), result.getRootGroup(), result); // this munges the variables so get rid of the original files when done
+      transferGroup(ncfile.getRootGroup(), result.getRootGroup(), result);
     }
+
+    // some additional global attributes
+    Group root = result.getRootGroup();
+    root.addAttribute(new Attribute("Conventions", "CF-1.0, " + _Coordinate.Convention));
+    root.addAttribute(new Attribute("cdm_data_type", FeatureType.GRID.toString()));
+
+    // remove some attributes that can cause trouble
+    root.remove(root.findAttribute(_Coordinate.ModelRunDate));
+    root.remove(root.findAttribute("location"));
+
     result.finish();
 
     // remove troublesome attributes
@@ -112,7 +133,9 @@ public class FmrcDataset implements ProxyReader {
     return result;
   }
 
-  // transfer the objects in src group to the target group
+  // transfer the objects in src group to the target group, unless that name already exists
+  // Dimensions, Variables, Groups are not transferred, but an equivilent object is created with same metadata
+  // Attributes and EnumTypedef are transferred, these are immutable with no references to container
   private void transferGroup(Group srcGroup, Group targetGroup, NetcdfDataset target) {
     // group attributes
     DatasetConstructor.transferGroupAttributes(srcGroup, targetGroup);
@@ -139,7 +162,9 @@ public class FmrcDataset implements ProxyReader {
         }
 
         DatasetConstructor.transferVariableAttributes(v, targetV);
-        targetV.setSPobject(v); //temporary
+        targetV.setSPobject(v); //temporary, for non-agg variables when proto is made
+        if (v.hasCachedData())
+          targetV.setCachedData(v.getCachedData()); //
         targetGroup.addVariable(targetV);
       }
     }
@@ -150,6 +175,9 @@ public class FmrcDataset implements ProxyReader {
       if (null == nested) {
         nested = new Group(target, targetGroup, srcNested.getShortName());
         targetGroup.addGroup(nested);
+        for (EnumTypedef et : srcNested.getEnumTypedefs()) {
+          targetGroup.addEnumeration(et);
+        }
       }
       transferGroup( srcNested, nested, target);
     }
@@ -173,23 +201,16 @@ public class FmrcDataset implements ProxyReader {
 
   /**
    * build the 2D time dataset
-   * @param result prototypical dataset
+   * @param proto prototypical dataset
    * @throws IOException on read error
    * @return resulting GridDataset
    */
-  private GridDataset buildDataset2D(NetcdfDataset result) throws IOException {
-    //NetcdfDataset result = new NetcdfDataset();
-    //DatasetConstructor.transferDataset(typicalFile, result, null);
+  private GridDataset buildDataset2D(NetcdfDataset proto, boolean buildProto) throws IOException {
+    // make a copy, so that this object can coexist with previous incarnations
+    NetcdfDataset result = new NetcdfDataset();
     result.setLocation(fmrcInv.getName());
-
-    // some additional global attributes
-    Group root = result.getRootGroup();
-    root.addAttribute(new Attribute("Conventions", "CF-1.0, " + _Coordinate.Convention));
-    root.addAttribute(new Attribute("cdm_data_type", FeatureType.GRID.toString()));
-
-    // remove some attributes that can cause trouble
-    root.remove(root.findAttribute(_Coordinate.ModelRunDate));
-    root.remove(root.findAttribute("location"));
+    transferGroup(proto.getRootGroup(), result.getRootGroup(), result);
+    result.finish();
 
     // create runtime aggregation dimension
     List<Date> runtimes = fmrcInv.getRunTimes();
@@ -264,22 +285,14 @@ public class FmrcDataset implements ProxyReader {
         dimList.add(0, timeDim);
         dimList.add(0, runDim);
 
-        // construct new variable, replace old one
-        //Group vGroup = DatasetConstructor.findGroup(result, v.getParentGroup());
-        //VariableDS aggVar = new VariableDS(result, vGroup, null, v.getShortName(), v.getDataType(), null, null, null);
         aggVar.setDimensions(dimList);
         aggVar.setProxyReader(this);
-        aggVar.setSPobject(new Vstate(ugrid, timeCoordVals)); // removes pointer to original
-        //DatasetConstructor.transferVariableAttributes(v, aggVar);
+        aggVar.setSPobject(new Vstate(ugrid, timeCoordVals));
 
         // we need to explicitly list the coordinate axes, because time coord is now 2D
         String coords = getCoordinateList(aggVar, ugrid);
         aggVar.removeAttribute(_Coordinate.Axes);
         aggVar.addAttribute(new Attribute(CF.COORDINATES, coords)); // CF
-
-        // vGroup.removeVariable(v.getShortName());
-        // vGroup.addVariable(aggVar);
-        // aggVars.add(vagg);
 
         if (debug) System.out.println("FmrcDataset: added grid " + aggVar.getName());
       }
@@ -287,22 +300,33 @@ public class FmrcDataset implements ProxyReader {
 
     result.finish();  // this puts the new dimensions into the global structures
 
+    if (buildProto) {
+      // these are the non-agg variables - store data or ProxyReader in proto
+      for (Variable v : allvars) {
+        Variable protoV = proto.findVariable(v.getName());
+        Variable orgV = (Variable) protoV.getSPobject();
+        if (v.isCaching() || v.isCoordinateVariable()) { // want to cache
+          protoV.setCachedData( orgV.read()); // read from original - store in proto
+        } else {
+          String location = orgV.getParentGroup().getNetcdfFile().getLocation(); // hmmmmm
+          protoV.setProxyReader( new DatasetProxyReader(location));  // keep track of original file
+        }
+        protoV.setSPobject( null); // clear the reference to orgV
+      }      
+    }
+
+    // these are the non-agg variables - get data or ProxyReader from proto
+    for (Variable v : allvars) {
+      Variable protoV = proto.findVariable(v.getName());
+      if (protoV.hasCachedData()) {
+        v.setCachedData( protoV.getCachedData()); // read from original
+      } else {
+        v.setProxyReader( protoV.getProxyReader());
+      }
+    }
+
     CoordSysBuilderIF builder = result.enhance();
     if (debugEnhance) System.out.printf("parseInfo = %s%n", builder.getParseInfo());
-
-    for (Variable v : allvars) {
-      if (v.isCaching() || v.isCoordinateVariable()) { // want to cache
-        if (!v.hasCachedData()) {
-          Variable orgV = (Variable) v.getSPobject();
-          v.setCachedData( orgV.read()); // read from original
-        }
-      } else {
-        Variable orgV = (Variable) v.getSPobject();
-        String location = orgV.getParentGroup().getNetcdfFile().getLocation(); // hmmmmm
-        v.setProxyReader( new DatasetProxyReader(location));  // keep track of original file
-      }
-      v.setSPobject( null); // clear the reference
-    }
 
     return new ucar.nc2.dt.grid.GridDataset( result);
   }
@@ -352,7 +376,6 @@ public class FmrcDataset implements ProxyReader {
 
   @Override
   public Array reallyRead(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
-
     Vstate vstate = (Vstate) mainv.getSPobject();
     FmrcInv.UberGrid ugrid = vstate.ugrid;
     ArrayDouble.D2 timeCoordVals = vstate.timeCoordVals;
@@ -383,22 +406,27 @@ public class FmrcDataset implements ProxyReader {
         // find the inventory for this grid, runtime, and hour
         double offsetHour = timeCoordVals.get(runIdx, timeIdx);
         InventoryHour inv = findInventory(ugrid, runDate, offsetHour);
-        Array result;
+        Array result = null;
         if (inv != null) {
           if (debugRead) System.out.printf("HIT %f ", offsetHour);
-          result = read(inv, ugrid, innerSection);
+          result = read(inv, ugrid, innerSection); // may return null
           result = MAMath.convert(result, dtype); // just in case it need to be converted
-        } else {
+        }
+
+        // missing data
+        if (result == null) {
           int[] shape = new Section(innerSection).getShape();
           result = ((VariableDS) mainv).getMissingDataArray(shape); // fill with missing values
           if (debugRead) System.out.printf("MISS %f ", offsetHour);
         }
+        
         if (debugRead) System.out.printf("%d %d reallyRead %s %d bytes start at %d total size is %d%n", runIdx, timeIdx, mainv.getName(), result.getSize(), destPos, allData.getSize());
         Array.arraycopy(result, 0, allData, destPos, (int) result.getSize());
         destPos += result.getSize();
       }
     }
 
+    closeAll(openFilesRead);
     return allData;
   }
 
@@ -437,15 +465,16 @@ public class FmrcDataset implements ProxyReader {
     NetcdfFile ncfile = open(invHour.inv.getLocation(), openFilesRead);
     Variable v = ncfile.findVariable(ugrid.getName());
 
-    // assume time is first dimension LOOK: out of-order; ensemble
+    // v could be missing, return missing data i think
+    if (v== null) return null;
+
+    // assume time is first dimension LOOK: out of-order; ensemble; section different ??
     Range timeRange = new Range(invHour.hourIndex, invHour.hourIndex);
     Section s = new Section(innerSection);
     s.insertRange(0, timeRange);
     return v.read(s);
   }
 
-  // LOOK - need to manage # of open files, in case theres a zillion of them; no close() yet !!
-  // LOOK change to use FileCache ?
   // this is mutable
   private HashMap<String, NetcdfDataset> openFilesRead = new HashMap<String, NetcdfDataset>();
 
@@ -453,14 +482,16 @@ public class FmrcDataset implements ProxyReader {
     NetcdfDataset ncfile = openFiles.get(location);
     if (ncfile != null) return ncfile;
 
-    ncfile = NetcdfDataset.openDataset(location);  // not acquiring, default enhance
+    ncfile = NetcdfDataset.acquireDataset(location, null);  // not acquiring, default enhance
     openFiles.put(location, ncfile);
     return ncfile;
   }
 
   private void closeAll(HashMap<String, NetcdfDataset> openFiles) throws IOException {
-    for (NetcdfDataset ncfile : openFiles.values())
+    for (NetcdfDataset ncfile : openFiles.values()) {
       ncfile.close();
+    }
+    openFiles.clear();
   }
   
   ////////////////////////////////////////////////////////////////////////////////////

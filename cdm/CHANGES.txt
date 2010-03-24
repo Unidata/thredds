@@ -4,6 +4,10 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  1:
+  try to get IndexConstant right
+  Section.reduce()
+  EnumTypedef is immutable
+  Variable.getCachedData() convenience
   NetcdfFile.getDetailInfo : show cached variables, proxyReader
   ToolsUI deferred construction, remove DQCchooser tab
   DLCrawler improvememts
