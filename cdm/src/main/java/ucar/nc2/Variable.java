@@ -1115,6 +1115,7 @@ public class Variable implements VariableIF, ProxyReader {
    * Copy constructor.
    * The returned Variable is mutable.
    * It shares the cache object and the iosp Object, attributes and dimensions with the original.
+   * Does not share the proxyReader.
    * Use for section, slice, "logical views" of original variable.
    *
    * @param from copy from this Variable.

@@ -275,7 +275,7 @@ public class FmrcDataset implements ProxyReader {
       for (FmrcInv.UberGrid ugrid : runSeq.getUberGrids()) {
         VariableDS aggVar = (VariableDS) result.findVariable(ugrid.getName());
         if (aggVar == null)
-          System.out.println("HEY");
+          System.out.println("HEY whereis "+ugrid.getName());
 
         allvars.remove(aggVar);
 

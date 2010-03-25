@@ -33,6 +33,7 @@
 package ucar.nc2.ft;
 
 import junit.framework.TestCase;
+import thredds.inventory.bdb.MetadataManager;
 import ucar.nc2.TestAll;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -66,14 +67,20 @@ public class TestFmrc extends TestCase {
   private static boolean showCount = true;
 
   public void testNcML() throws Exception {
-    doOne(datadir + "bom/BoM_test.ncml", 1, 1, 8, 0, "eta_t", 2, 7);
-    doOne(datadir + "ncom/ncom_fmrc.ncml", 1, 1, 5, 1, "surf_el", 3, 25);
-    doOne(datadir + "rtofs/rtofs.ncml", 7, 4, 10, 1, "Three-D_Temperature", 2, 3);
+    try {
+      doOne(datadir + "bom/BoM_test.ncml", 1, 3, 8, 0, "eta_t", 2, 7);
+      doOne(datadir + "bom/**/ocean_fc_#yyyyMMdd#_..._eta.nc", 1, 3, 8, 0, "eta_t", 2, 7);
+      doOne(datadir + "ncom/ncom_fmrc.ncml", 1, 1, 5, 1, "surf_el", 3, 25);
+      doOne(datadir + "rtofs/rtofs.ncml", 7, 4, 9, 1, "N3-D_Temperature", 2, 3);
+    } finally {
+      MetadataManager.closeAll();
+    }
   }
 
   static void doOne(String pathname, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes,
                     String gridName, int nruns, int ntimes) throws Exception {
-    System.out.println("test read Fmrc = " + pathname);
+
+    System.out.println("\ntest read Fmrc = " + pathname);
     Formatter errlog = new Formatter();
     Formatter debug = new Formatter();
     Fmrc fmrc = Fmrc.open(pathname, errlog, debug);
