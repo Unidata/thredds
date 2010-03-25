@@ -92,7 +92,7 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
   }
 
   public GridDataset getGridDataset(String name) throws IOException {
-    return fmrc.getDataset2D(false);
+    return fmrc.getDataset2D(false, false, null);
   }
 
   public InvCatalogImpl makeCatalog(String match, String orgPath, URI baseURI) {

@@ -515,6 +515,17 @@ public class ToolsUI extends JPanel {
     mb.add(sysMenu);
     //BAMutil.addActionToMenu( sysMenu, printAction);
 
+    MetadataManager.closeAll(); // shutdown bdb
+
+
+    AbstractAction act = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        MetadataManager.closeAll(); // shutdown bdb
+      }
+    };
+    BAMutil.setActionProperties(act, null, "Close BDB database", false, 'S', -1);
+    BAMutil.addActionToMenu(sysMenu, act);
+
     AbstractAction clearHttpStateAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         HttpClientManager.clearState();
@@ -523,7 +534,7 @@ public class ToolsUI extends JPanel {
     BAMutil.setActionProperties(clearHttpStateAction, null, "Clear Http State", false, 'S', -1);
     BAMutil.addActionToMenu(sysMenu, clearHttpStateAction);
 
-    AbstractAction showCacheAction = new AbstractAction() {
+     AbstractAction showCacheAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Formatter f = new Formatter();
         f.format("NetcdfFileCache contents\n");

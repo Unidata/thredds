@@ -264,6 +264,7 @@ public class MetadataManager {
   public void close() {
     database.close();
     openDatabases.remove(database);
+    myEnv = null;
   }
 
   public void showStats(Formatter f) {

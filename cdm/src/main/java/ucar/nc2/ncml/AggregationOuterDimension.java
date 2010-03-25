@@ -135,33 +135,6 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
     return null;
   }
 
-  @Override
-  public void getDetailInfo(Formatter f) {
-    super.getDetailInfo(f);
-    f.format("  timeUnitsChange=%s%n", timeUnitsChange);
-    f.format("  totalCoords=%d%n", totalCoords);
-
-    if (aggVarNames.size() > 0) {
-      f.format("  Aggregation Variables specified in NcML%n");
-      for (String vname : aggVarNames)
-        f.format("   %s%n", vname);
-    }
-
-    f.format("  Aggregation Variables%n");
-    for (VariableDS vds : aggVars) {
-      f.format("   ");
-      vds.getNameAndDimensions(f, true, false);
-      f.format("%n");
-    }
-
-    if (cacheList.size() > 0) {
-      f.format("  Cache Variables%n");
-      for (CacheVar cv : cacheList)
-        f.format("   %s%n", cv);
-    }
-  }
-
-
   /**
    * Get the list of aggregation variable names: variables whose data spans multiple files.
    * For type joinNew only.
@@ -212,7 +185,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
       } */
 
       ncDataset.addVariable(null, promotedVar);
-      // promotedVar.addProxyReader(new Reader(promotedVar));
+      promotedVar.setProxyReader( this);
       promotedVar.setSPobject(pv);
     }
   }
@@ -242,8 +215,8 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
       VariableDS varDS = (VariableDS) var;
       if (aggVars.contains(varDS) || dimName.equals(var.getName()))
         continue;
-      // DatasetProxyReader proxy = new DatasetProxyReader(typicalDataset, var);
-      // var.addProxyReader(proxy);
+      DatasetProxyReader proxy = new DatasetProxyReader(typicalDataset);
+      var.setProxyReader(proxy);
     }
 
     // reset cacheVars
@@ -253,36 +226,6 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
   }
 
   /////////////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * All non-agg variables use a proxy to acquire the file before reading.
-   * If the variable is caching, read data into cache now.
-   * If not caching, VariableEnhanced.setProxyReader() is called.
-   *
-   * @param typicalDataset read from a "typical dataset"
-   * @param newds          containing dataset
-   * @throws IOException on i/o error
-   */
-  protected void setDatasetAcquireProxy(Dataset typicalDataset, NetcdfDataset newds) throws IOException {
-    if (debugProxy) System.out.println("setDatasetAcquireProxy on " + typicalDataset.getLocation());
-
-    // all normal (non agg) variables must use a proxy to acquire the file
-    List<Variable> allVars = newds.getRootGroup().getVariables();
-    for (Variable v : allVars) {
-
-       if (v.isCaching()) {  // cache the small ones
-        if (!v.hasCachedData()) {
-          v.read();
-          if (debugProxy) System.out.println(" debugProxy: cached " + v.getName());
-        } else {
-          if (debugProxy) System.out.println(" debugProxy: already cached " + v.getName());
-        }
-
-      } else  { // put proxy on the rest
-        v.setProxyReader( this);
-      }
-    }
-  }
 
   /**
    * Read a section of an aggregation variable.
@@ -1157,19 +1100,40 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
 
 
   @Override
-  public void detail(Formatter f) {
-    super.detail(f);
-    f.format("AggVarNames:%n");
-    for (String name : aggVarNames)
-      f.format("   var = %s%n", name);
-    f.format("AggVars:%n");
-    for (VariableDS vars : aggVars)
-      f.format("   var = %s%n", vars.getNameAndDimensions());
-    f.format("CacheVars:%n");
-    for (CacheVar cv : cacheList)
-      f.format("  cvar = %s%n", cv);
-    f.format("totalCoords = %s%n", totalCoords);
-    f.format(" timeUnitsChange = %s%n", timeUnitsChange);
+  public void getDetailInfo(Formatter f) {
+    super.getDetailInfo(f);
+    f.format("  timeUnitsChange=%s%n", timeUnitsChange);
+    f.format("  totalCoords=%d%n", totalCoords);
+
+    if (aggVarNames.size() > 0) {
+      f.format("  Aggregation Variables specified in NcML%n");
+      for (String vname : aggVarNames)
+        f.format("   %s%n", vname);
+    }
+
+    f.format("%nAggregation Variables%n");
+    for (VariableDS vds : aggVars) {
+      f.format("   ");
+      vds.getNameAndDimensions(f, true, false);
+      f.format("%n");
+    }
+
+    if (cacheList.size() > 0) {
+      f.format("%nCache Variables%n");
+      for (CacheVar cv : cacheList)
+        f.format("   %s%n", cv);
+    }
+
+    f.format("%nVariable Proxies%n");
+    for (Variable v : ncDataset.getVariables()) {
+      if (v.hasCachedData()) {
+        f.format("   %20s cached%n", v.getShortName());
+      } else {
+        f.format("   %20s proxy %s%n", v.getShortName(), v.getProxyReader().getClass().getName());
+      }
+    }
+
+
   }
 
   public static void main(String args[]) throws IOException {

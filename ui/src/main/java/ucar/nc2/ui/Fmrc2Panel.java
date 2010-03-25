@@ -33,6 +33,7 @@
 package ucar.nc2.ui;
 
 import thredds.inventory.CollectionManager;
+import thredds.inventory.CollectionSpecParser;
 import thredds.inventory.MFile;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ui.dialog.Fmrc2Dialog;
@@ -53,6 +54,7 @@ import thredds.ui.BAMutil;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.PrintStream;
 import java.util.*;
 import java.util.List;
@@ -75,7 +77,7 @@ public class Fmrc2Panel extends JPanel {
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
 
-  private String collectionSpec;
+  // private String collectionSpec;
   private Fmrc fmrc;
   private FmrcInv fmrcInv;
 
@@ -200,7 +202,7 @@ public class Fmrc2Panel extends JPanel {
   }
 
   public void setFmrc(String collectionSpec) throws IOException {
-    //this.collectionSpec = collectionSpec;
+    // this.collectionSpec = collectionSpec;
     //if (!showCollectionInfo(false))
     //  return;
 
@@ -244,10 +246,16 @@ public class Fmrc2Panel extends JPanel {
       return false;
     }
 
-    //Formatter testLog = new Formatter();
-    //CollectionSpecParser sp = new CollectionSpecParser(collectionSpec, testLog);
+    infoTA.clear();
+    CollectionSpecParser sp = fmrc.getCollectionSpecParser();
+    if (sp != null) {
+      infoTA.appendLine("CollectionSpecParser= "+sp);
+      File dir = new File(sp.getTopDir());
+      infoTA.appendLine(" topdir exists = = "+dir.exists());
+    }
+
     CollectionManager cm = fmrc.getManager();
-    infoTA.setText("CollectionManager= ");
+    infoTA.appendLine("CollectionManager= ");
     infoTA.appendLine(cm.toString());
 
     try {
@@ -264,7 +272,7 @@ public class Fmrc2Panel extends JPanel {
     boolean status = false;
     List<MFile> files = cm.getFiles();
     if (files.size() == 0) {
-      infoTA.setText("No Files found\nlog=");
+      infoTA.appendLine("No Files found\nlog=");
       infoTA.appendLine(errlog.toString());
       infoTA.appendLine(cm.toString());
       alwaysShow = true;
@@ -313,7 +321,7 @@ public class Fmrc2Panel extends JPanel {
     GridDataset gds = null;
     try {
       if (data.type.equals("Dataset2D"))
-        gds = fds.getNetcdfDataset2D( fmrcInv, true, true);
+        gds = fds.getNetcdfDataset2D( fmrcInv, true, true, null);
       else
         gds = fds.getBest();
     } catch (IOException e) {

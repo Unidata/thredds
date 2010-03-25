@@ -170,7 +170,9 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   public void testProblem() throws IOException {
-    assert 6 == checkPointDataset(topdir + "cfPoint/station/kunicki.nc4", FeatureType.STATION, true);
+    // not picking up missing value
+    int n = checkPointDataset(CFpointObs_topdir + "stationRaggedMissing.ncml", FeatureType.STATION, false);
+    System.out.printf("n=%d%n", n);
   }
 
   public void testCF() throws IOException {

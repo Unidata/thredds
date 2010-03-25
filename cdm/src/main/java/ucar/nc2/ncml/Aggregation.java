@@ -136,7 +136,7 @@ public abstract class Aggregation {
       logger.error("Unknown setTypicalDatasetMode= " + mode);
   }
 
-  static protected boolean debug = false, debugOpenFile = false, debugSyncDetail = false, debugProxy = true,
+  static protected boolean debug = false, debugOpenFile = false, debugSyncDetail = false, debugProxy = false,
       debugRead = true, debugDateParse = false, debugConvert = false;
 
   //////////////////////////////////////////////////////////////////////////////////////////
@@ -159,7 +159,6 @@ public abstract class Aggregation {
   //protected EnumSet<NetcdfDataset.Enhance> enhance = null; // default no enhancement
   protected boolean isDate = false;
   protected DateFormatter dateFormatter = new DateFormatter();
-
 
   /**
    * Create an Aggregation for the given NetcdfDataset.
@@ -746,72 +745,54 @@ public abstract class Aggregation {
    * @param typicalDataset read from a "typical dataset"
    * @param newds          containing dataset
    * @throws IOException on i/o error
-   *
+   */
   protected void setDatasetAcquireProxy(Dataset typicalDataset, NetcdfDataset newds) throws IOException {
-    if (debugProxy) System.out.println("setDatasetAcquireProxy on " + typicalDataset.getLocation());
 
-    // all normal (non agg) variables must use a proxy to acquire the file
+    // all normal (non agg) variables must use a proxy to lock the file
+    DatasetProxyReader proxy = new DatasetProxyReader(typicalDataset);
     List<Variable> allVars = newds.getRootGroup().getVariables();
     for (Variable v : allVars) {
-      //VariableEnhanced ve = (VariableEnhanced) v;
 
-      if (hasProxyReader(v)) { // skip if already has one
+      if (v.getProxyReader() != v) {
         if (debugProxy) System.out.println(" debugProxy: hasProxyReader " + v.getName());
         continue; // dont mess with agg variables
       }
 
       if (v.isCaching()) {  // cache the small ones
-        if (!v.hasCachedData()) {
-          v.read();
-          if (debugProxy) System.out.println(" debugProxy: cached " + v.getName());
-        } else {
-          if (debugProxy) System.out.println(" debugProxy: already cached " + v.getName());
-        }
+          v.setCachedData( v.read()); // cache the variableDS directly
 
-      } else  { // put proxy on the rest
-        DatasetProxyReader proxy = new DatasetProxyReader(typicalDataset, v);
-        v.addProxyReader(proxy);
+      } else { // put proxy on the rest
+        v.setProxyReader(proxy);
         if (debugProxy) System.out.println(" debugProxy: set proxy on " + v.getName());
       }
     }
   }
 
-  boolean hasProxyReader(Variable v) {
-    List<ProxyReader> readers = v.getProxyReaders();
-    if (readers == null) return false;
-    for (ProxyReader r : readers) {
-      if (r instanceof DatasetProxyReader) return true; // ??
-    }
-    return false;
-  }
 
-  // all normal (non agg) variables must use a proxy to acquire the file
   protected class DatasetProxyReader implements ProxyReader {
     Dataset dataset;
-    Variable client;
 
-    DatasetProxyReader(Dataset dataset, Variable client) {
+    DatasetProxyReader(Dataset dataset) {
       this.dataset = dataset;
-      this.client = client;
     }
 
-    public Array reallyRead(CancelTask cancelTask) throws IOException {
+    public Array reallyRead(Variable mainV, CancelTask cancelTask) throws IOException {
       NetcdfFile ncfile = null;
       try {
         ncfile = dataset.acquireFile(cancelTask);
         if ((cancelTask != null) && cancelTask.isCancel()) return null;
-        Variable proxyV = findVariable(ncfile, client);
+        Variable proxyV = findVariable(ncfile, mainV);
         return proxyV.read();
       } finally {
         dataset.close( ncfile);
       }
     }
 
-    public Array reallyRead(Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
+    public Array reallyRead(Variable mainV, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
       NetcdfFile ncfile = null;
       try {
         ncfile = dataset.acquireFile(cancelTask);
-        Variable proxyV = findVariable(ncfile, client);
+        Variable proxyV = findVariable(ncfile, mainV);
         if ((cancelTask != null) && cancelTask.isCancel()) return null;
         return proxyV.read(section);
       } finally {
@@ -819,7 +800,6 @@ public abstract class Aggregation {
       }
     }
   }
-
   protected Variable findVariable(NetcdfFile ncfile, Variable mainV) {
     Variable v = ncfile.findVariable(mainV.getName());
     if (v == null) {  // might be renamed
@@ -827,13 +807,6 @@ public abstract class Aggregation {
       v = ncfile.findVariable(ve.getOriginalName());
     }
     return v;
-  } */
-
-  // debug
-  public void detail(Formatter f) {
-    f.format("   Type = %s%n", type);
-    f.format("dimName = %s%n", dimName);
-    f.format(" isDate = %s%n", isDate);
   }
 
 }

@@ -190,7 +190,7 @@ public class AggTable extends JPanel {
     messageTable.setBeans(beanList);
 
     Formatter f = new Formatter();
-    agg.detail(f);
+    agg.getDetailInfo(f);
     aggTA.setText(f.toString());
   }
 

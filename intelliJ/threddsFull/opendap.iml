@@ -9,7 +9,6 @@
         <webroots>
           <root url="file://$MODULE_DIR$/../../../Java-OPeNDAP/resources" relative="/" />
         </webroots>
-        <context-artifact name="opendap:opendap exploded" />
       </configuration>
     </facet>
   </component>

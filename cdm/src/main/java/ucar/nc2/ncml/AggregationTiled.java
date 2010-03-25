@@ -120,7 +120,7 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
         Group newGroup = DatasetConstructor.findGroup(ncDataset, v.getParentGroup());
         VariableDS vagg = new VariableDS(ncDataset, newGroup, null, v.getShortName(), v.getDataType(),
                 v.getDimensionsString(), null, null);   // LOOK what about anon dimensions?
-        //vagg.addProxyReader(new Reader(vagg)); // do the reading here
+        vagg.setProxyReader( this); // do the reading here
         DatasetConstructor.transferVariableAttributes(v, vagg);
 
         newGroup.removeVariable(v.getShortName());
@@ -130,7 +130,7 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
       if (cancelTask != null && cancelTask.isCancel()) return;
     }
 
-    //setDatasetAcquireProxy(typicalDataset, ncDataset);
+    setDatasetAcquireProxy(typicalDataset, ncDataset);
     typicalDataset.close(typical); // close it because we use DatasetProxyReader to acquire    */
   }
 

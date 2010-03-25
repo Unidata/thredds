@@ -35,6 +35,7 @@ package ucar.nc2.ft.fmrc;
 import net.jcip.annotations.ThreadSafe;
 import org.jdom.Element;
 import thredds.inventory.*;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 
 import java.util.*;
@@ -92,19 +93,22 @@ public class Fmrc {
   // the current state - changing must be thread safe
   private FmrcInv fmrc;
   private FmrcDataset fmrcDataset;
+  private  CollectionSpecParser sp = null;
 
   Fmrc(String collectionSpec, Formatter errlog, Formatter debug) {
-    CollectionSpecParser sp = new CollectionSpecParser(collectionSpec, errlog);
+    sp = new CollectionSpecParser(collectionSpec, errlog);
     manager = new DatasetCollectionManager(sp, errlog);
     
     // optional date extraction is used to get rundates when not embedded in the file
     dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), true);
     if (debug != null) debug.format("Datasets in collection for spec=%s%n", sp);
+
+    this.fmrcDataset = new FmrcDataset();    
   }
 
   public Fmrc(CollectionManager manager, DateExtractor dateExtractor) {
     this.manager = manager;
-    this.dateExtractor = dateExtractor;
+    this.dateExtractor = dateExtractor == null ? new DateExtractorNone() : dateExtractor;
     this.fmrcDataset = new FmrcDataset();
   }
 
@@ -113,9 +117,11 @@ public class Fmrc {
     this.ncmlInner = ncmlInner;
   }
 
-  public GridDataset getDataset2D(boolean force) throws IOException {
-    return fmrcDataset.getNetcdfDataset2D( getFmrcInv( force), false, force);
+  public GridDataset getDataset2D(boolean forceProto, boolean force, NetcdfDataset result) throws IOException {
+    return fmrcDataset.getNetcdfDataset2D( getFmrcInv( force), forceProto, force, result);
   }
+
+  public CollectionSpecParser getCollectionSpecParser() { return sp; }
 
   /**
    * Creates an FmrcInv - make a snapshot of the current state of inventory

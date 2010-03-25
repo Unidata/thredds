@@ -1213,21 +1213,9 @@ public class NcMLReader {
     } else if (type.equals("union")) {
       agg = new AggregationUnion(newds, dimName, recheck);
 
-    } else if (type.equals("forecastModelRunCollection")) {
+    } else if (type.equals("forecastModelRunCollection") || type.equals("forecastModelRunSingleCollection")) {
       AggregationFmrc aggc = new AggregationFmrc(newds, dimName, recheck);
       agg = aggc;
-
-      String fmrcDefinition = aggElem.getAttributeValue("fmrcDefinition");
-      if (fmrcDefinition != null)
-        aggc.setInventoryDefinition(fmrcDefinition);
-
-    } else if (type.equals("forecastModelRunSingleCollection")) {
-      AggregationFmrcSingle aggh = new AggregationFmrcSingle(newds, dimName, recheck);
-      agg = aggh;
-
-      String fmrcDefinition = aggElem.getAttributeValue("fmrcDefinition");
-      if (fmrcDefinition != null)
-        aggh.setInventoryDefinition(fmrcDefinition);
 
       // nested scanFmrc elements
       java.util.List<Element> scan2List = aggElem.getChildren("scanFmrc", ncNS);
@@ -1245,7 +1233,7 @@ public class NcMLReader {
         // possible relative location
         dirLocation = URLnaming.resolve(ncmlLocation, dirLocation);
 
-        aggh.addDirectoryScanFmrc(dirLocation, suffix, regexpPatternString, subdirs, olderS, runMatcher, forecastMatcher, offsetMatcher);
+        aggc.addDirectoryScanFmrc(dirLocation, suffix, regexpPatternString, subdirs, olderS, runMatcher, forecastMatcher, offsetMatcher);
 
         if ((cancelTask != null) && cancelTask.isCancel())
           return null;

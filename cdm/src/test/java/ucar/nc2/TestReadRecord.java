@@ -196,7 +196,7 @@ public class TestReadRecord extends TestCase {
       /* Read the times: unlimited dimension */
       Variable time = rs.findVariable("time");
       Array timeValues = time.read();
-      assert (timeValues instanceof ArrayInt.D0);
+      assert (timeValues instanceof ArrayInt.D0) : timeValues.getClass().getName();
       ArrayInt.D0 ta = (ArrayInt.D0) timeValues;
       assert (ta.get() == 6) : ta.get();
 

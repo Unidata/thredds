@@ -72,19 +72,19 @@ public class FmrcDataset implements ProxyReader {
   }
 
   // LOOK - concurency control needed
-  public GridDataset getNetcdfDataset2D(FmrcInv fmrcInv, boolean forceProto, boolean force) throws IOException {
+  public GridDataset getNetcdfDataset2D(FmrcInv fmrcInv, boolean forceProto, boolean force, NetcdfDataset result) throws IOException {
     this.fmrcInv = fmrcInv;
 
     if (proto == null || forceProto) {
       HashMap<String, NetcdfDataset> openFilesProto = new HashMap<String, NetcdfDataset>();
       proto = makeProto(openFilesProto);
-      gds2D = buildDataset2D(proto, true);
+      gds2D = buildDataset2D(proto, true, result);
       closeAll(openFilesProto);
       force = false;
     }
 
     if (gds2D == null || force) {
-      gds2D = buildDataset2D(proto, false);
+      gds2D = buildDataset2D(proto, false, result);
     }
 
     return gds2D;
@@ -205,9 +205,9 @@ public class FmrcDataset implements ProxyReader {
    * @throws IOException on read error
    * @return resulting GridDataset
    */
-  private GridDataset buildDataset2D(NetcdfDataset proto, boolean buildProto) throws IOException {
+  private GridDataset buildDataset2D(NetcdfDataset proto, boolean buildProto, NetcdfDataset result) throws IOException {
     // make a copy, so that this object can coexist with previous incarnations
-    NetcdfDataset result = new NetcdfDataset();
+    if (result == null) result = new NetcdfDataset();
     result.setLocation(fmrcInv.getName());
     transferGroup(proto.getRootGroup(), result.getRootGroup(), result);
     result.finish();

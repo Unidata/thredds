@@ -61,7 +61,7 @@ public class TestOffAggFmrcNonuniform extends TestCase {
     testDimensions(ncfile, 3, 113, 151);
     testCoordVar(ncfile, 113);
     testAggCoordVar(ncfile, 3);
-    testTimeCoordVar(ncfile, "time", 3, 11);
+    testTimeCoordVar(ncfile, "forecast_time5", 3, 11);
 
     ncfile.close();
   }
@@ -124,21 +124,24 @@ public class TestOffAggFmrcNonuniform extends TestCase {
     assert time.getRank() == 1;
     assert time.getSize() == nagg;
     assert time.getShape()[0] == nagg;
-    assert time.getDataType() == DataType.STRING;
+    assert time.getDataType() == DataType.DOUBLE;
 
-    DateFormatter formatter = new DateFormatter();
+
     try {
       Array data = time.read();
       assert data.getRank() == 1;
       assert data.getSize() == nagg;
       assert data.getShape()[0] == nagg;
-      assert data.getElementType() == String.class;
+      assert data.getElementType() == double.class;
 
+      NCdumpW.printArray(data);
+
+      int count = 0;
       IndexIterator dataI = data.getIndexIterator();
       while (dataI.hasNext()) {
-        String text = (String) dataI.getObjectNext();
-        Date date = formatter.getISODate(text);
-        assert date != null;
+        double val = dataI.getDoubleNext();
+        assert val == count;
+        count++;
       }
 
     } catch (IOException io) {

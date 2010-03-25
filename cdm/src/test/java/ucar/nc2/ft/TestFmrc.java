@@ -91,7 +91,7 @@ public class TestFmrc extends TestCase {
       return;
     }
 
-    ucar.nc2.dt.GridDataset gridDs = fmrc.getDataset2D(true);
+    ucar.nc2.dt.GridDataset gridDs = fmrc.getDataset2D(true, true, null);
     NetcdfDataset ncd = (NetcdfDataset) gridDs.getNetcdfFile();
 
     int countGrids = gridDs.getGrids().size();

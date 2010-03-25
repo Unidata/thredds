@@ -112,7 +112,7 @@ public class AggregationExisting extends AggregationOuterDimension {
       Group newGroup =  DatasetConstructor.findGroup(ncDataset, v.getParentGroup());
       VariableDS vagg = new VariableDS(ncDataset, newGroup, null, v.getShortName(), v.getDataType(),
               v.getDimensionsString(), null, null);
-      //vagg.addProxyReader( new Reader(vagg));
+      vagg.setProxyReader( this);
       DatasetConstructor.transferVariableAttributes(v, vagg);
 
       newGroup.removeVariable( v.getShortName());
@@ -136,7 +136,7 @@ public class AggregationExisting extends AggregationOuterDimension {
       }
       
       joinAggCoord = new VariableDS(ncDataset, null, null, dimName, DataType.STRING, dimName, null, null);
-      //joinAggCoord.addProxyReader( new Reader(joinAggCoord));
+      joinAggCoord.setProxyReader( this);
       ncDataset.getRootGroup().addVariable(joinAggCoord);
       aggVars.add(joinAggCoord);
       
@@ -155,7 +155,7 @@ public class AggregationExisting extends AggregationOuterDimension {
     // check persistence info - may have cached values other than coordinate  LOOK ????
     persistRead();
 
-    //setDatasetAcquireProxy(typicalDataset, ncDataset);
+    setDatasetAcquireProxy(typicalDataset, ncDataset);
     typicalDataset.close( typical);
 
     if (debugInvocation) System.out.println(ncDataset.getLocation()+" invocation count = "+AggregationOuterDimension.invocation);

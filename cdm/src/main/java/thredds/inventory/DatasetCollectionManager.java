@@ -341,7 +341,16 @@ public class DatasetCollectionManager implements CollectionManager {
     }
   }
 
-  public String toString() { return collectionName; }
+  @Override
+  public String toString() {
+    return "DatasetCollectionManager{" +
+            "collectionName='" + collectionName + '\'' +
+            ", scanList=" + scanList +
+            ", recheck=" + recheck +
+            ", lastScanned=" + lastScanned +
+            ", mm=" + mm +
+            '}';
+  }
 
   ///////////////////////
   private MetadataManager mm;

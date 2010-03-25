@@ -50,6 +50,11 @@ public class DateExtractorFromName implements DateExtractor {
   private String dateFormatMark;
   private boolean useName;
 
+  /**
+   * Ctor
+   * @param dateFormatMark DemarkatedCount or DemarkatedMatch
+   * @param useName use name if ture, else use path
+   */
   public DateExtractorFromName(String dateFormatMark, boolean useName) {
     this.dateFormatMark = dateFormatMark;
     this.useName = useName;

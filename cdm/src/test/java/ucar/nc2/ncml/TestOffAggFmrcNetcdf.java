@@ -63,6 +63,7 @@ public class TestOffAggFmrcNetcdf extends TestCase {
     testReadSlice(ncfile);
 
     ncfile.close();
+    
   }
 
   private void testDimensions(NetcdfFile ncfile, int nagg) {
@@ -127,7 +128,7 @@ public class TestOffAggFmrcNetcdf extends TestCase {
     assert time.getRank() == 1;
     assert time.getSize() == nagg;
     assert time.getShape()[0] == nagg;
-    assert time.getDataType() == DataType.STRING;
+    assert time.getDataType() == DataType.DOUBLE;
 
     DateFormatter formatter = new DateFormatter();
     try {
@@ -135,13 +136,16 @@ public class TestOffAggFmrcNetcdf extends TestCase {
       assert data.getRank() == 1;
       assert data.getSize() == nagg;
       assert data.getShape()[0] == nagg;
-      assert data.getElementType() == String.class;
+      assert data.getElementType() == double.class;
 
+      NCdumpW.printArray(data);
+
+      int count = 0;
       IndexIterator dataI = data.getIndexIterator();
       while (dataI.hasNext()) {
-        String text = (String) dataI.getObjectNext();
-        Date date = formatter.getISODate(text);
-        assert date != null;
+        double val = dataI.getDoubleNext();
+        assert val == count * 12;
+        count++;
       }
 
     } catch (IOException io) {
@@ -152,9 +156,9 @@ public class TestOffAggFmrcNetcdf extends TestCase {
   }
 
   private void testTimeCoordVar(NetcdfFile ncfile, int nagg, int noff) throws IOException {
-    Variable time = ncfile.findVariable("valtime");
+    Variable time = ncfile.findVariable("forecast_time");
     assert null != time;
-    assert time.getName().equals("valtime");
+    assert time.getName().equals("forecast_time");
     assert time.getRank() == 2;
     assert time.getSize() == nagg * noff;
     assert time.getShape()[0] == nagg;
@@ -168,21 +172,22 @@ public class TestOffAggFmrcNetcdf extends TestCase {
     assert data.getShape()[1] == noff;
     assert data.getElementType() == double.class;
 
-    double[][] result =  new double[][]
-       {{122100.0, 122106.0, 122112.0, 122118.0, 122124.0, 122130.0, 122136.0, 122142.0, 122148.0, 122154.0, 122160.0},
-        {122112.0, 122118.0, 122124.0, 122130.0, 122136.0, 122142.0, 122148.0, 122154.0, 122160.0, 122166.0, 122172.0},
-        {122124.0, 122130.0, 122136.0, 122142.0, 122148.0, 122154.0, 122160.0, 122166.0, 122172.0, 122178.0, 122184.0},
-        {122136.0, 122142.0, 122148.0, 122154.0, 122160.0, 122166.0, 122172.0, 122178.0, 122184.0, 122190.0, 122196.0},
-        {122148.0, 122154.0, 122160.0, 122166.0, 122172.0, 122178.0, 122184.0, 122190.0, 122196.0, 122202.0, 122208.0},
-        {122160.0, 122166.0, 122172.0, 122178.0, 122184.0, 122190.0, 122196.0, 122202.0, 122208.0, 122214.0, 122220.0},
-        {122172.0, 122178.0, 122184.0, 122190.0, 122196.0, 122202.0, 122208.0, 122214.0, 122220.0, 122226.0, 122232.0},
-        {122184.0, 122190.0, 122196.0, 122202.0, 122208.0, 122214.0, 122220.0, 122226.0, 122232.0, 122238.0, 122244.0},
-        {122196.0, 122202.0, 122208.0, 122214.0, 122220.0, 122226.0, 122232.0, 122238.0, 122244.0, 122250.0, 122256.0},
-        {122208.0, 122214.0, 122220.0, 122226.0, 122232.0, 122238.0, 122244.0, 122250.0, 122256.0, 122262.0, 122268.0},
-        {122220.0, 122226.0, 122232.0, 122238.0, 122244.0, 122250.0, 122256.0, 122262.0, 122268.0, 122274.0, 122280.0},
-        {122232.0, 122238.0, 122244.0, 122250.0, 122256.0, 122262.0, 122268.0, 122274.0, 122280.0, 122286.0, 122292.0},
-        {122244.0, 122250.0, 122256.0, 122262.0, 122268.0, 122274.0, 122280.0, 122286.0, 122292.0, 122298.0, 122304.0},
-        {122256.0, 122262.0, 122268.0, 122274.0, 122280.0, 122286.0, 122292.0, 122298.0, 122304.0, 122310.0, 122316.0}};
+    double[][] result =  new double[][]  {
+      {0.0, 6.0, 12.0, 18.0, 24.0, 30.0, 36.0, 42.0, 48.0, 54.0, 60.0},
+      {12.0, 18.0, 24.0, 30.0, 36.0, 42.0, 48.0, 54.0, 60.0, 66.0, 72.0},
+      {24.0, 30.0, 36.0, 42.0, 48.0, 54.0, 60.0, 66.0, 72.0, 78.0, 84.0},
+      {36.0, 42.0, 48.0, 54.0, 60.0, 66.0, 72.0, 78.0, 84.0, 90.0, 96.0},
+      {48.0, 54.0, 60.0, 66.0, 72.0, 78.0, 84.0, 90.0, 96.0, 102.0, 108.0},
+      {60.0, 66.0, 72.0, 78.0, 84.0, 90.0, 96.0, 102.0, 108.0, 114.0, 120.0},
+      {72.0, 78.0, 84.0, 90.0, 96.0, 102.0, 108.0, 114.0, 120.0, 126.0, 132.0},
+      {84.0, 90.0, 96.0, 102.0, 108.0, 114.0, 120.0, 126.0, 132.0, 138.0, 144.0},
+      {96.0, 102.0, 108.0, 114.0, 120.0, 126.0, 132.0, 138.0, 144.0, 150.0, 156.0},
+      {108.0, 114.0, 120.0, 126.0, 132.0, 138.0, 144.0, 150.0, 156.0, 162.0, 168.0},
+      {120.0, 126.0, 132.0, 138.0, 144.0, 150.0, 156.0, 162.0, 168.0, 174.0, 180.0},
+      {132.0, 138.0, 144.0, 150.0, 156.0, 162.0, 168.0, 174.0, 180.0, 186.0, 192.0},
+      {144.0, 150.0, 156.0, 162.0, 168.0, 174.0, 180.0, 186.0, 192.0, 198.0, 204.0},
+      {156.0, 162.0, 168.0, 174.0, 180.0, 186.0, 192.0, 198.0, 204.0, 210.0, 216.0}
+  };
 
     Index ima = data.getIndex();
     for (int i=0; i < nagg; i++)
@@ -210,7 +215,7 @@ public class TestOffAggFmrcNetcdf extends TestCase {
     assert !v.isCoordinateVariable();
 
     assert v.getDimension(0) == ncfile.findDimension("run");
-    assert v.getDimension(1) == ncfile.findDimension("record");
+    assert v.getDimension(1) == ncfile.findDimension("time");
     assert v.getDimension(2) == ncfile.findDimension("y");
     assert v.getDimension(3) == ncfile.findDimension("x");
 

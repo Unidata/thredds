@@ -38,7 +38,7 @@ import ucar.nc2.util.CancelTask;
 import java.io.IOException;
 
 /**
- * A ProxyReader for logical sections of a variable.
+ * A ProxyReader for logical sections of a Variable.
  *
  * @author caron
  * @see Variable#section(Section subsection)
@@ -46,19 +46,19 @@ import java.io.IOException;
 
 class SectionReader implements ProxyReader {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SectionReader.class);
-  private ProxyReader nextReader;
   private Section orgSection;   // section of the original
+  private Variable orgClient;
 
   // section must be filled
-  SectionReader(ProxyReader nextReader, Section section) throws InvalidRangeException {
-    this.nextReader = nextReader;
+  SectionReader(Variable orgClient, Section section) throws InvalidRangeException {
+    this.orgClient = orgClient;
     this.orgSection = section.isImmutable() ? section : new Section(section.getRanges());
   }
 
   @Override
   public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
     try {
-      return nextReader.reallyRead(client, orgSection, cancelTask);
+      return orgClient._read( orgSection);
     } catch (InvalidRangeException e) {
       throw new RuntimeException(e);
     }
@@ -67,7 +67,7 @@ class SectionReader implements ProxyReader {
   @Override
   public Array reallyRead(Variable client, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
     Section want = orgSection.compose( section);
-    return nextReader.reallyRead(client, want, cancelTask);
+    return orgClient._read( want);
   }
 
 }

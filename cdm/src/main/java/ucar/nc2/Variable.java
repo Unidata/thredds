@@ -464,8 +464,7 @@ public class Variable implements VariableIF, ProxyReader {
 
     // create a copy of this variable with a proxy reader
     Variable sectionV = copy(); // subclasses must override
-    sectionV.setProxyReader( new SectionReader(this.getProxyReader(), subsection));
-    sectionV.proxyReader = new SectionReader(this.proxyReader, subsection);
+    sectionV.setProxyReader( new SectionReader(this, subsection));
     sectionV.shape = subsection.getShape();
     sectionV.createNewCache(); // dont share the cache
     sectionV.setCaching(false); // dont cache
@@ -514,7 +513,7 @@ public class Variable implements VariableIF, ProxyReader {
     Variable sliceV = copy(); // subclasses must override
     Section slice = new Section( getShapeAsSection());
     slice.replaceRange(dim, new Range(value, value)).makeImmutable();
-    sliceV.setProxyReader( new SliceReader(this.getProxyReader(), dim, slice));
+    sliceV.setProxyReader( new SliceReader(this, dim, slice));
     sliceV.createNewCache(); // dont share the cache
     sliceV.setCaching(false); // dont cache
 
@@ -771,49 +770,14 @@ public class Variable implements VariableIF, ProxyReader {
   // non-structure-member Variables.
 
   protected Array _read() throws IOException {
-    return proxyReader.reallyRead(this, null);
-  }
-
-  // section of non-structure-member Variable
-  // assume filled, validated Section
-  protected Array _read(Section section) throws IOException, InvalidRangeException {
-    // check if its really a full read
-    if ((null == section) || section.computeSize() == getSize())
-      return _read();
-
-    return proxyReader.reallyRead(this, section, null);
-  }
-
-  /**
-   * public by accident, do not call directly.
-   * @return Array
-   * @throws IOException on error
-   */
-  @Override
-  public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
-
-    if (isMemberOfStructure()) {
-      List<String> memList = new ArrayList<String>();
-      memList.add(this.getShortName());
-      Structure s = parent.select(memList);
-      ArrayStructure as = (ArrayStructure) s.read();
-      return as.extractMemberArray( as.findMember( shortName));
-    }
-
-    // already cached
+    // caching overrides the proxyReader
+    // check if already cached
     if (cache != null && cache.data != null) {
       if (debugCaching) System.out.println("got data from cache " + getName());
       return cache.data.copy();
     }
 
-    // read the data
-    Array data;
-    try {
-      data = ncfile.readData(this, getShapeAsSection());
-    } catch (InvalidRangeException e) {
-      e.printStackTrace();
-      throw new IOException(e.getMessage()); // cant happen haha
-    }
+    Array data = proxyReader.reallyRead(this, null);
 
     // optionally cache it
     if (isCaching()) {
@@ -825,7 +789,50 @@ public class Variable implements VariableIF, ProxyReader {
     }
   }
 
-  /**
+ /**
+   * public by accident, do not call directly.
+   * @return Array
+   * @throws IOException on error
+   */
+  @Override
+  public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
+   if (isMemberOfStructure()) { // LOOK should be UnsupportedOperationException ??
+     List<String> memList = new ArrayList<String>();
+     memList.add(this.getShortName());
+     Structure s = parent.select(memList);
+     ArrayStructure as = (ArrayStructure) s.read();
+     return as.extractMemberArray( as.findMember( shortName));
+   }
+
+    try {
+      return ncfile.readData(this, getShapeAsSection());
+    } catch (InvalidRangeException e) {
+      e.printStackTrace();
+      throw new IOException(e.getMessage()); // cant happen haha
+    }
+  }
+
+  // section of non-structure-member Variable
+  // assume filled, validated Section
+  protected Array _read(Section section) throws IOException, InvalidRangeException {
+    // check if its really a full read
+    if ((null == section) || section.computeSize() == getSize())
+      return _read();
+
+    // full read was cached
+    if (isCaching()) {
+      if (cache.data == null) {
+        setCachedData(  _read()); // read and cache entire array
+        if (debugCaching) System.out.println("cache " + getName());
+      }
+      if (debugCaching) System.out.println("got data from cache " + getName());
+      return cache.data.sectionNoReduce(section.getRanges()).copy(); // subset it, return copy
+    }
+
+    return proxyReader.reallyRead(this, section, null);
+  }
+
+   /**
    * public by accident, do not call directly.
    * @return Array
    * @throws IOException on error
@@ -835,17 +842,6 @@ public class Variable implements VariableIF, ProxyReader {
 
     if (isMemberOfStructure()) {
       throw new UnsupportedOperationException("Cannot directly read section of Member Variable="+getName());
-      //return readMemberOfStructureFlatten(section);
-    }
-
-    // full read was cached
-    if (isCaching()) {
-      if (cache.data == null) {
-        setCachedData( ncfile.readData(this, getShapeAsSection())); // read and cache entire array
-        if (debugCaching) System.out.println("cache " + getName());
-      }
-      if (debugCaching) System.out.println("got data from cache " + getName());
-      return cache.data.sectionNoReduce(section.getRanges()).copy(); // subset it, return copy
     }
 
     // read just this section
@@ -1122,7 +1118,7 @@ public class Variable implements VariableIF, ProxyReader {
    */
   public Variable(Variable from) {
     this.attributes = new ArrayList<Attribute>(from.attributes); // attributes are immutable
-    this.cache = from.cache; // LOOK do we always want to share?
+    this.cache = from.cache; // caller should do createNewCache() if dont want to share
     this.dataType = from.getDataType();
     this.dimensions = new ArrayList<Dimension>(from.dimensions); // dimensions are shared
     this.elementSize = from.getElementSize();
@@ -1132,7 +1128,7 @@ public class Variable implements VariableIF, ProxyReader {
     this.isVariableLength = from.isVariableLength;
     this.ncfile = from.ncfile;
     this.parent = from.parent;
-    // this.proxyReader = from.proxyReader;
+    // this.proxyReader = from.proxyReader; // not sharing the proxyReader
     this.shape = from.getShape();
     this.shortName = from.shortName;
     this.sizeToCache = from.sizeToCache;

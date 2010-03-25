@@ -65,14 +65,24 @@ public class TestOffAggFmrcGrib extends TestCase {
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), "aggFmrcGrib", null);
     TestAll.showMem("TestAggFmrcGrib start ");
 
-    String timeDimName = "time";
     int naggs = 8;
 
-    testDimensions(ncfile, naggs, timeDimName);
+    testDimensions(ncfile, naggs, "time");
     testCoordVar(ncfile, 257);
     int[] runhours = new int[] {0,12,18,24,30, 4194, 4200, 4206};
+    double[][] timevals = new double[][]  {
+    {0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 18.0, 21.0, 24.0, 27.0, 30.0, 33.0, 36.0, 39.0, 42.0, 45.0, 48.0, 51.0, 54.0, 57.0, 60.0, 63.0, 66.0, 69.0, 72.0, 75.0, 78.0, 81.0, 84.0},
+    {12.0, 15.0, 18.0, 21.0, 24.0, 27.0, 30.0, 33.0, 36.0, 39.0, 42.0, 45.0, 48.0, 51.0, 54.0, 57.0, 60.0, 63.0, 66.0, 69.0, 72.0, 75.0, 78.0, 81.0, 84.0, 87.0, 90.0, 93.0, 96.0},
+    {18.0, 21.0, 24.0, 27.0, 30.0, 33.0, 36.0, 39.0, 42.0, 45.0, 48.0, 51.0, 54.0, 57.0, 60.0, 63.0, 66.0, 69.0, 72.0, 75.0, 78.0, 81.0, 84.0, 87.0, 90.0, 93.0, 96.0, 99.0, 102.0},
+    {24.0, 27.0, 30.0, 33.0, 36.0, 39.0, 42.0, 48.0, 51.0, 54.0, 57.0, 60.0, 63.0, 66.0, 69.0, 72.0, 75.0, 78.0, 81.0, 84.0, 87.0, 90.0, 93.0, 96.0, 99.0, 102.0, 105.0, 108.0, Double.NaN},
+    {30.0, 33.0, 36.0, 39.0, 42.0, 45.0, 48.0, 51.0, 54.0, 57.0, 60.0, 63.0, 66.0, 69.0, 72.0, 75.0, 78.0, 81.0, 84.0, 87.0, 90.0, 93.0, 96.0, 99.0, 102.0, 105.0, 108.0, 111.0, 114.0},
+    {4194.0, 4197.0, 4200.0, 4203.0, 4206.0, 4209.0, 4212.0, 4215.0, 4218.0, 4221.0, 4224.0, 4227.0, 4230.0, 4233.0, 4236.0, 4239.0, 4242.0, 4245.0, 4248.0, 4251.0, 4254.0, 4257.0, 4260.0, 4263.0, 4266.0, 4269.0, 4272.0, 4275.0, 4278.0},
+    {4200.0, 4203.0, 4206.0, 4209.0, 4212.0, 4215.0, 4218.0, 4221.0, 4224.0, 4227.0, 4230.0, 4233.0, 4236.0, 4239.0, 4242.0, 4245.0, 4248.0, 4251.0, 4254.0, 4257.0, 4260.0, 4263.0, 4266.0, 4269.0, 4272.0, 4275.0, 4278.0, 4281.0, 4284.0},
+    {4206.0, 4209.0, 4212.0, 4215.0, 4218.0, 4221.0, 4224.0, 4227.0, 4230.0, 4233.0, 4236.0, 4239.0, 4242.0, 4245.0, 4248.0, 4251.0, 4254.0, 4257.0, 4260.0, 4263.0, 4266.0, 4269.0, 4272.0, 4275.0, 4278.0, 4281.0, 4284.0, 4287.0, 4290.0}
+  };
+
     testAggCoordVar(ncfile, naggs, new DateUnit("hours since 2006-03-15T18:00:00Z"), runhours);
-    testTimeCoordVar(ncfile, naggs, 29, timeDimName, runhours, 3);
+    testTimeCoordVar(ncfile, naggs, 29, "forecast_time", timevals);
 
     System.out.println("TestAggForecastModel.testReadData ");    
     testReadData(ncfile, naggs);
@@ -93,14 +103,22 @@ public class TestOffAggFmrcGrib extends TestCase {
       "  </aggregation>\n" +
       "</netcdf>";
 
+        double[][] evals = new double[][]   {
+    {0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 18.0, 21.0, 24.0, 27.0, 30.0, 33.0, 36.0, 39.0, 42.0, 45.0, 48.0, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN},
+    {6.0, 9.0, 12.0, 15.0, 18.0, 21.0, 24.0, 27.0, 30.0, 33.0, 36.0, 39.0, 42.0, 45.0, 48.0, 51.0, 54.0, 57.0, 60.0, 63.0, 66.0, 69.0, 72.0, 75.0, 78.0, 81.0, 84.0, 87.0, 90.0},
+    {12.0, 15.0, 18.0, 21.0, 24.0, 27.0, 30.0, 33.0, 36.0, 39.0, 42.0, 45.0, 48.0, 51.0, 54.0, 57.0, 60.0, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN},
+    {18.0, 21.0, 24.0, 27.0, 30.0, 33.0, 36.0, 39.0, 42.0, 45.0, 48.0, 51.0, 54.0, 57.0, 60.0, 63.0, 66.0, 69.0, 72.0, 75.0, 78.0, 81.0, 84.0, 87.0, 90.0, 93.0, 96.0, 99.0, 102.0}
+  };
+
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), "aggFmrcGribRunseq", null);
     int naggs = 4;
+    String timeVarName = "forecast_time";
     String timeDimName = "time";
     testDimensions(ncfile, naggs, timeDimName);
     testCoordVar(ncfile, 257);
     int[] runtimes = new int[] {0,6,12,18};
     testAggCoordVar(ncfile, naggs, new DateUnit("hours since 2006-07-29T18:00:00Z"), runtimes);
-    testTimeCoordVar(ncfile, naggs, 29, timeDimName, runtimes, 3);
+    testTimeCoordVar(ncfile, naggs, 29, timeVarName, evals);
 
     ncfile.close();
   }
@@ -171,7 +189,7 @@ public class TestOffAggFmrcGrib extends TestCase {
     assert time.getRank() == 1;
     assert time.getSize() == nagg;
     assert time.getShape()[0] == nagg;
-    assert time.getDataType() == DataType.STRING;
+    assert time.getDataType() == DataType.DOUBLE;
 
     DateFormatter formatter = new DateFormatter();
     try {
@@ -179,17 +197,16 @@ public class TestOffAggFmrcGrib extends TestCase {
       assert data.getRank() == 1;
       assert data.getSize() == nagg;
       assert data.getShape()[0] == nagg;
-      assert data.getElementType() == String.class;
+      assert data.getElementType() == double.class;
+
+      NCdumpW.printArray(data);
 
       int count = 0;
       IndexIterator dataI = data.getIndexIterator();
       while (dataI.hasNext()) {
-        String text = (String) dataI.getObjectNext();
-        Date date = formatter.getISODate(text);
-        assert date != null;
-        double dval = du.makeValue(date);
-        if (runhours != null) assert dval == runhours[count++];
-        if (showValues) System.out.println(" date= "+ formatter.toDateTimeStringISO(date)+" == "+dval);
+        double val = dataI.getDoubleNext();
+        assert val == runhours[count];
+        count++;
       }
 
     } catch (IOException io) {
@@ -199,10 +216,10 @@ public class TestOffAggFmrcGrib extends TestCase {
 
   }
 
-  private void testTimeCoordVar(NetcdfFile ncfile, int nagg, int ntimes, String timeDimName, int[] runhours, int incr) throws Exception {
-    Variable time = ncfile.findVariable(timeDimName);
+  private void testTimeCoordVar(NetcdfFile ncfile, int nagg, int ntimes, String timeVarName, double[][] timevals) throws Exception {
+    Variable time = ncfile.findVariable(timeVarName);
     assert null != time;
-    assert time.getName().equals(timeDimName);
+    assert time.getName().equals(timeVarName);
     assert time.getRank() == 2;
     assert time.getSize() == nagg * ntimes;
     assert time.getShape()[0] == nagg;
@@ -237,7 +254,7 @@ public class TestOffAggFmrcGrib extends TestCase {
         double val = data.getDouble(ima.set(run, tidx));
         if (showValues) System.out.println(" run= "+ run + " tidx= "+ tidx +  " val= "+ val );
         if (!Double.isNaN(val))
-          assert val == (runhours[run] + tidx * incr) : val +" != "+ (runhours[run] + tidx * incr);
+          assert val == timevals[run][tidx] : "("+run+","+tidx+"): "+val+" != "+ timevals[run][tidx];
       }
 
   }

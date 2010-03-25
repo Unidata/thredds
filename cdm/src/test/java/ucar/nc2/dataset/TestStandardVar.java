@@ -406,11 +406,12 @@ public class TestStandardVar extends TestCase {
 
     // reread with useNans off
     v.setUseNaNs(false);
+    v.createNewCache();
     A = v.read();
     ima = A.getIndex();
 
     val = A.getFloat(ima.set(1,1));
-    assert TestAll.closeEnough(val, -999.99);
+    assert TestAll.closeEnough(val, -999.99) : val;
     assert v.isMissing(val);
   }
 

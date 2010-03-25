@@ -44,7 +44,7 @@ import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
 
 public class TestOffAggForecastModel extends TestCase {
-  private int nruns = 15;
+  private int nruns = 14;
   private int nfore = 11;
   public TestOffAggForecastModel( String name) {
     super(name);
@@ -130,9 +130,9 @@ public class TestOffAggForecastModel extends TestCase {
     assert lonDim.getLength() == 65;
     assert !lonDim.isUnlimited();
 
-    Dimension timeDim = ncfile.findDimension("runtime");
+    Dimension timeDim = ncfile.findDimension("run");
     assert null != timeDim;
-    assert timeDim.getName().equals("runtime");
+    assert timeDim.getName().equals("run");
     assert timeDim.getLength() == nagg : nagg +" != "+ timeDim.getLength();
   }
 
@@ -172,13 +172,13 @@ public class TestOffAggForecastModel extends TestCase {
   }
 
   public void testAggCoordVar(NetcdfFile ncfile, int nagg) {
-    Variable time = ncfile.findVariable("runtime");
+    Variable time = ncfile.findVariable("run");
     assert null != time;
-    assert time.getName().equals("runtime");
+    assert time.getName().equals("run");
     assert time.getRank() == 1;
     assert time.getSize() == nagg;
     assert time.getShape()[0] == nagg;
-    assert time.getDataType() == DataType.STRING;
+    assert time.getDataType() == DataType.DOUBLE;
 
     assert time.isCoordinateVariable();
 
@@ -187,23 +187,23 @@ public class TestOffAggForecastModel extends TestCase {
       assert data.getRank() == 1;
       assert data.getSize() == nagg;
       assert data.getShape()[0] == nagg;
-      assert data.getElementType() == String.class;
+      assert data.getElementType() == double.class;
 
-      DateFormatter df = new DateFormatter();
+      NCdumpW.printArray(data);
+
+      int count = 0;
       IndexIterator dataI = data.getIndexIterator();
       while (dataI.hasNext()) {
-        String d = (String) dataI.getObjectNext();
-        assert df.isoDateTimeFormat(d) != null : d;
+        double val = dataI.getDoubleNext();
+        assert val == count * 12;
+        count++;
       }
 
     } catch (IOException io) {
       io.printStackTrace();
       assert false;
-    } catch (ParseException e) {
-      e.printStackTrace();
-      assert false;
-    }
 
+    }
   }
 
   public void testReadData(NetcdfFile ncfile, int nagg, int nfore) throws IOException {
@@ -219,8 +219,8 @@ public class TestOffAggForecastModel extends TestCase {
 
     assert !v.isCoordinateVariable();
 
-    assert v.getDimension(0) == ncfile.findDimension("runtime");
-    assert v.getDimension(1) == ncfile.findDimension("record");
+    assert v.getDimension(0) == ncfile.findDimension("run");
+    assert v.getDimension(1) == ncfile.findDimension("time");
     assert v.getDimension(2) == ncfile.findDimension("y");
     assert v.getDimension(3) == ncfile.findDimension("x");
 

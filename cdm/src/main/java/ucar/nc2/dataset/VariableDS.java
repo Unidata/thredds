@@ -186,10 +186,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
   protected VariableDS( VariableDS vds) {
     super(vds);
 
-    // how to read ??
-    this.orgVar = vds.orgVar;
-    if (vds.orgVar == null)
-      this.proxyReader = vds.proxyReader;
+    this.orgVar = vds;
 
     this.orgDataType = vds.orgDataType;
     this.orgName = vds.orgName;
@@ -442,22 +439,52 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     return (orgVar != null) ? orgVar.toStringDebug() : "";
   }
 
+    @Override
+  protected Array _read() throws IOException {
+    // check if already cached-only done explicitly
+    if (cache != null && cache.data != null) {
+      return cache.data.copy();
+    }
+
+    Array result;
+    if (super.hasCachedData())
+      result = super._read(); // cache only raw data, so not twice room
+    else
+      result =  proxyReader.reallyRead(this, null);
+
+    // LOOK not caching
+    if (needScaleOffsetMissing)
+      return convertScaleOffsetMissing(result);
+    else if (needEnumConversion)
+      return convertEnums(result);
+    else
+      return result;
+  }
+
   // do not call directly
   @Override
   public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
-    Array result;
-
-    if (hasCachedData()) // ??
-      result = super.reallyRead(client, cancelTask);
-    else if (orgVar != null)
-      result = orgVar.read();
-        // should only be called through proxyReader.reallyRead, so not needed
-    // else if ((proxyReader != null) && (proxyReader != this))
-    //  result = proxyReader.reallyRead(this, cancelTask);
-    else
+    if (orgVar == null)
       return getMissingDataArray(shape);
 
-    // LOOK not caching
+    return orgVar.read();
+  }
+
+
+  // section of regular Variable
+  @Override
+  protected Array _read(Section section) throws IOException, InvalidRangeException  {
+    // really a full read
+    if ((null == section) || section.computeSize() == getSize())
+      return _read();
+
+    Array result;
+    // has a pre-reader proxy
+    if (hasCachedData())
+      result = super._read(section);
+    else
+      result =  proxyReader.reallyRead(this, section, null);
+
     if (needScaleOffsetMissing)
       return convertScaleOffsetMissing(result);
     else if (needEnumConversion)
@@ -472,23 +499,11 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     // see if its really a full read
     if ((null == section) || section.computeSize() == getSize())
       return reallyRead(client, cancelTask);
-    
-    Array result;
-    if (hasCachedData()) // ??
-      result = super.reallyRead(client, section, cancelTask);
-    else if (orgVar != null)
-      result = orgVar.read(section);
-    // else if ((proxyReader != null) && (proxyReader != this))
-    //  result = proxyReader.reallyRead(this, section, cancelTask);
-    else
+
+    if (orgVar == null)
       return getMissingDataArray(section.getShape());
 
-    if (needScaleOffsetMissing)
-      return convertScaleOffsetMissing(result);
-    else if (needEnumConversion)
-      return convertEnums(result);
-    else
-      return result;
+    return orgVar.read(section);
   }
 
   /**

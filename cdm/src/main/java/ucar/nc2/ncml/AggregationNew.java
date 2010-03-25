@@ -76,7 +76,7 @@ public class AggregationNew extends AggregationOuterDimension {
     DataType coordType = getCoordinateType();
     VariableDS joinAggCoord = new VariableDS(ncDataset, null, null, dimName, coordType, dimName, null, null);
     ncDataset.addVariable(null, joinAggCoord);
-    //joinAggCoord.addProxyReader( new Reader(joinAggCoord));
+    joinAggCoord.setProxyReader( this);
     if (isDate)
       joinAggCoord.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, "Time"));
 
@@ -110,7 +110,7 @@ public class AggregationNew extends AggregationOuterDimension {
       Group newGroup =  DatasetConstructor.findGroup(ncDataset, aggVar.getParentGroup());
       VariableDS vagg = new VariableDS(ncDataset, newGroup, null, aggVar.getShortName(), aggVar.getDataType(),
           dimName + " " + aggVar.getDimensionsString(), null, null);
-      //vagg.addProxyReader( new Reader(vagg));
+      vagg.setProxyReader( this);
       DatasetConstructor.transferVariableAttributes(aggVar, vagg);
 
       // _CoordinateAxes if it exists must be modified
@@ -127,7 +127,7 @@ public class AggregationNew extends AggregationOuterDimension {
       if (cancelTask != null && cancelTask.isCancel()) return;
     }
 
-    //setDatasetAcquireProxy(typicalDataset, ncDataset);
+    setDatasetAcquireProxy(typicalDataset, ncDataset);
     typicalDataset.close( typical); // close it because we use DatasetProxyReader to acquire
   }
 
