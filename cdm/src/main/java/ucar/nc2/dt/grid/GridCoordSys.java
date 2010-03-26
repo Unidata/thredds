@@ -558,6 +558,12 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       coordAxes.add(runTimeAxis);
     }
 
+    CoordinateAxis1D eaxis = from.getEnsembleAxis();
+    if (eaxis != null) {
+      ensembleAxis = (e_range == null) ? eaxis : (CoordinateAxis1D) eaxis.section(e_range);
+      coordAxes.add(ensembleAxis);
+    }
+
     CoordinateAxis taxis = from.getTimeAxis();
     if (taxis != null) {
       if (taxis instanceof CoordinateAxis1DTime) {
