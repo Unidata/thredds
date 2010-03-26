@@ -107,7 +107,8 @@ public class DatasetCollectionManager implements CollectionManager {
     if (olderThanFilter != null) {
       try {
         TimeUnit tu = new TimeUnit(olderThanFilter);
-        filters.add( new LastModifiedLimit((long) (1000 * tu.getValueInSeconds())));
+        olderThanFilterInSecs = tu.getValueInSeconds();
+        filters.add( new LastModifiedLimit((long) (1000 * olderThanFilterInSecs)));
       } catch (Exception e) {
         logger.error("Invalid time unit for olderThan = {}", olderThanFilter);
       }
@@ -116,6 +117,11 @@ public class DatasetCollectionManager implements CollectionManager {
     MFileFilter mfilter = (filters.size() == 0) ? null : ((filters.size() == 1) ? filters.get(0) : new Composite(filters));
     DateExtractor dateExtractor = (sp.getDateFormatMark() == null) ? null : new DateExtractorFromName(sp.getDateFormatMark(), true);
     scanList.add(new MCollection(sp.getTopDir(), sp.getTopDir(), sp.wantSubdirs(), mfilter, dateExtractor, null));
+  }
+
+  private double olderThanFilterInSecs = -1;
+  public double getOlderThanFilterInSecs() {
+    return olderThanFilterInSecs;
   }
 
   /**

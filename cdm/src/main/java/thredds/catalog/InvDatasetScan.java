@@ -111,18 +111,10 @@ public class InvDatasetScan extends InvCatalogRef {
     setID( id);
   }
 
-  public InvDatasetScan( InvCatalogImpl catalog, InvDatasetImpl parent, String name, String path, String scanLocation, String filter,
-                         boolean addDatasetSize, String addLatest, boolean sortOrderIncreasing,
-                         String datasetNameMatchPattern, String startTimeSubstitutionPattern, String duration ) {
-
-    this( catalog,  parent,  name,  path,  scanLocation,  filter, addDatasetSize, addLatest, sortOrderIncreasing,
-                         datasetNameMatchPattern, startTimeSubstitutionPattern, duration, 0);
-  }
-
   /**
-   * Constructor.
+   * Constructor. Old stuff.
    *
-   * @param catalog containing catalog
+   * @param catalog parent catalog
    * @param parent parent dataset
    * @param name dataset name
    * @param path url path
@@ -134,11 +126,10 @@ public class InvDatasetScan extends InvCatalogRef {
    * @param datasetNameMatchPattern dataset naming
    * @param startTimeSubstitutionPattern time range using the file name
    * @param duration  time range using the file name
-   * @param lastModifiedLimit only use datasets whose lastModified() time is at least this many msecs in the past. Ignore if <= 0
    */
   public InvDatasetScan( InvCatalogImpl catalog, InvDatasetImpl parent, String name, String path, String scanLocation, String filter,
                          boolean addDatasetSize, String addLatest, boolean sortOrderIncreasing,
-                         String datasetNameMatchPattern, String startTimeSubstitutionPattern, String duration, long lastModifiedLimit ) {
+                         String datasetNameMatchPattern, String startTimeSubstitutionPattern, String duration ) {
 
     super(parent, name, makeHref(path));
     log.debug(  "InvDatasetScan(): parent="+ parent + ", name="+ name +" , path="+ path +" , scanLocation="+ scanLocation +" , filter="+ filter +" , addLatest="+ addLatest +" , sortOrderIncreasing="+ sortOrderIncreasing +" , datasetNameMatchPattern="+ datasetNameMatchPattern +" , startTimeSubstitutionPattern= "+ startTimeSubstitutionPattern +", duration="+duration);
@@ -171,21 +162,98 @@ public class InvDatasetScan extends InvCatalogRef {
               .append( ">: CrawlableDataset for scanLocation not a collection." );
     }
 
-    ArrayList selectors = new ArrayList();
-    if (lastModifiedLimit > 0) {
-      selectors.add( new MultiSelectorFilter.Selector( new LastModifiedLimitFilter(lastModifiedLimit), false, true, false));
-    }
-
-    if ( filter != null )
-    {
+    if ( filter != null ) {
       // Include atomic datasets that match the given filter string.
-      selectors.add( new MultiSelectorFilter.Selector( new RegExpMatchOnNameFilter( filter), true, true, false ));
+      this.filter = new RegExpMatchOnNameFilter( filter);
+    } else
+      this.filter = null;
+
+    this.identifier = null;
+    this.namer = null;
+    this.addDatasetSize = addDatasetSize;
+
+    this.sorter = new LexigraphicByNameSorter( sortOrderIncreasing );
+
+    // Add latest resolver dataset to Map of ProxyDatasetHandlers
+    this.proxyDatasetHandlers = new HashMap();
+    if ( addLatest != null )
+    {
+      if ( addLatest.equalsIgnoreCase( "true" ) )
+      {
+        InvService service = catalog.findService( "latest" );
+        if ( service != null )
+        {
+          ProxyDatasetHandler proxyDsHandler = new SimpleLatestProxyDsHandler( "latest.xml", true, service, true );
+          this.proxyDatasetHandlers.put( "latest.xml", proxyDsHandler );
+        }
+      }
     }
 
-    if (selectors.size() > 0) {
-      this.filter = new MultiSelectorFilter( selectors );
-    } else {
-      this.filter = null;
+    if ( datasetNameMatchPattern != null
+         && startTimeSubstitutionPattern != null
+         && duration != null )
+    {
+      childEnhancerList = new ArrayList<DatasetEnhancer>();
+      childEnhancerList.add(
+              RegExpAndDurationTimeCoverageEnhancer
+                      .getInstanceToMatchOnDatasetName( datasetNameMatchPattern,
+                                                        startTimeSubstitutionPattern,
+                                                        duration ) );
+    }
+
+    // catalogRefExpander = new BooleanCatalogRefExpander( this.datasetScan.??? );
+  }
+
+  /**
+   * Constructor. Used by InvDatasetFeatureCollection
+   *
+   * @param catalog parent catalog
+   * @param parent parent dataset
+   * @param name dataset name
+   * @param path url path
+   * @param scanLocation scan this directory
+   * @param filter CrawlableDatasetFilter, may be null
+   * @param addDatasetSize add a size element
+   * @param addLatest add a latest element
+   * @param sortOrderIncreasing sort
+   * @param datasetNameMatchPattern dataset naming
+   * @param startTimeSubstitutionPattern time range using the file name
+   * @param duration  time range using the file name
+   */
+  public InvDatasetScan( InvCatalogImpl catalog, InvDatasetImpl parent, String name, String path, String scanLocation, CrawlableDatasetFilter filter,
+                         boolean addDatasetSize, String addLatest, boolean sortOrderIncreasing,
+                         String datasetNameMatchPattern, String startTimeSubstitutionPattern, String duration ) {
+
+    super(parent, name, makeHref(path));
+    log.debug(  "InvDatasetScan(): parent="+ parent + ", name="+ name +" , path="+ path +" , scanLocation="+ scanLocation +" , filter="+ filter +" , addLatest="+ addLatest +" , sortOrderIncreasing="+ sortOrderIncreasing +" , datasetNameMatchPattern="+ datasetNameMatchPattern +" , startTimeSubstitutionPattern= "+ startTimeSubstitutionPattern +", duration="+duration);
+
+    this.rootPath = path;
+    this.scanLocation = scanLocation;
+    this.filter = filter;
+    this.crDsClassName = null;
+    this.crDsConfigObj = null;
+    this.scanLocationCrDs = createScanLocationCrDs();
+    this.isValid = true;
+    if ( this.scanLocationCrDs == null )
+    {
+      isValid = false;
+      invalidMessage = new StringBuilder( "Invalid InvDatasetScan <path=").append( path)
+              .append( "; scanLocation=" ).append( scanLocation )
+              .append(">: could not create CrawlableDataset for scanLocation." );
+    }
+    else if ( ! this.scanLocationCrDs.exists() )
+    {
+      isValid = false;
+      invalidMessage = new StringBuilder( "Invalid InvDatasetScan <path=" ).append( path )
+              .append( "; scanLocation=").append( scanLocation )
+              .append(">: CrawlableDataset for scanLocation does not exist." );
+    }
+    else if ( ! this.scanLocationCrDs.isCollection() )
+    {
+      isValid = false;
+      invalidMessage = new StringBuilder( "Invalid InvDatasetScan <path=" ).append( path )
+              .append( "; scanLocation=" ).append( scanLocation )
+              .append( ">: CrawlableDataset for scanLocation not a collection." );
     }
 
     this.identifier = null;

@@ -51,7 +51,7 @@ public class TestWrite extends TestCase {
   }
 
   public void testNC3Write() throws IOException {
-    String filename = TestLocal.cdmTestDataDir + "testWrite.nc";
+    String filename = TestLocal.temporaryDataDir + "testWrite.nc";
     NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(filename, false);
 
     // define dimensions

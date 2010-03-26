@@ -696,6 +696,7 @@ public class DataRootHandler {
     DataRoot(InvDatasetFeatureCollection featCollection) {
       this.path = featCollection.getPath();
       this.featCollection = featCollection;
+      // dirLocation = featCollection.getTopDirLocation();
     }
 
     DataRoot(InvDatasetFmrc fmrc) {
@@ -1298,11 +1299,6 @@ public class DataRootHandler {
       // LOOK however, this causes a possible thread safety problem
       catalog.setBaseURI(baseURI);
     }
-
-    // Check for tdr dynamic catalog.
-    //if (catalog == null) {
-    //  catalog = makeTDRDynamicCatalog(workPath, baseURI);
-    //}
 
     // Check for dynamic catalog.
     if (catalog == null)

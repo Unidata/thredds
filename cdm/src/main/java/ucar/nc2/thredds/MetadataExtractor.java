@@ -244,7 +244,7 @@ public class MetadataExtractor {
         dateRange = time1D.getDateRange();
       } else {
         CoordinateAxis time = gsys.getTimeAxis();
-        if (time1D == null)
+        if (time == null)
           continue;
         
         try {

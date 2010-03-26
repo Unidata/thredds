@@ -246,8 +246,9 @@ public class InvDatasetFmrc extends InvCatalogRef {
                            String datasetNameMatchPattern, String startTimeSubstitutionPattern, String duration,
                            long lastModifiedMsecs ) */
 
+          InvDatasetFeatureCollection.ScanFilter filter = new InvDatasetFeatureCollection.ScanFilter(java.util.regex.Pattern.compile(".*"+params.suffix), params.lastModifiedLimit);
           scan = new InvDatasetScan( (InvCatalogImpl) this.getParentCatalog(), this, "File_Access", path+"/"+SCAN,
-                  params.location, ".*"+params.suffix, true, "true", false, null, null, null, params.lastModifiedLimit );
+                  params.location, filter, true, "true", false, null, null, null );
 
           ThreddsMetadata tmi = scan.getLocalMetadataInheritable();
           tmi.setServiceName("fileServices");

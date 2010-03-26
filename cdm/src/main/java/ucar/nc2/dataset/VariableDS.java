@@ -441,13 +441,14 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
 
     @Override
   protected Array _read() throws IOException {
-    // check if already cached-only done explicitly
-    if (cache != null && cache.data != null) {
-      return cache.data.copy();
-    }
+      Array result;
 
-    Array result;
-    if (super.hasCachedData())
+    // check if already cached - only done explicitly
+    if (cache != null && cache.data != null) {
+      result = cache.data.copy();
+
+    // check if Variable is cached
+    } else if (super.hasCachedData())
       result = super._read(); // cache only raw data, so not twice room
     else
       result =  proxyReader.reallyRead(this, null);

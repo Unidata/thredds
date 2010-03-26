@@ -97,7 +97,7 @@ public class CdmInit {
     InvCatalogFactory10.useBytesForDataSize(useBytesForDataSize);
 
     ////////////////////////////////////
-    AggregationFmrc.setDefinitionDirectory(new File(tdsContext.getRootDirectory(), fmrcDefinitionDirectory));
+    //AggregationFmrc.setDefinitionDirectory(new File(tdsContext.getRootDirectory(), fmrcDefinitionDirectory));
     FmrcInventoryServlet.setDefinitionDirectory(new File(tdsContext.getRootDirectory(), fmrcDefinitionDirectory));
 
     // NetcdfFileCache : default is allow 200 - 400 open files, cleanup every 10 minutes

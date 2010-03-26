@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ucar.ma2.*;
+import ucar.nc2.dataset.NetcdfDataset;
 
 /**
  * Class Description.
@@ -56,7 +57,7 @@ public class TestWriteMiscProblems extends TestCase {
   }
 
   public void testWriteBigString() throws IOException {
-    String filename = TestLocal.cdmTestDataDir + "testWriteMisc.nc";
+    String filename = TestLocal.temporaryDataDir + "testWriteMisc.nc";
     NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(filename, false);
 
     int len = 120000;
@@ -156,7 +157,7 @@ public class TestWriteMiscProblems extends TestCase {
     final int DateStrLen_len = 19;
 
     /* enter define mode */
-    String filename = TestLocal.cdmTestDataDir + "testCharMultidim.nc";
+    String filename = TestLocal.temporaryDataDir + "testCharMultidim.nc";
     NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(filename, true);
 
     /* define dimensions */
@@ -192,5 +193,32 @@ public class TestWriteMiscProblems extends TestCase {
 
     nc.close();
   }
+
+  public void testRemove() throws IOException, InvalidRangeException {
+    try {
+      String inName = TestLocal.cdmTestDataDir + "testWrite.nc";
+      String outName = TestLocal.temporaryDataDir + "testRemove.nc";
+
+      NetcdfDataset ncd = NetcdfDataset.acquireDataset(inName, null);
+      System.out.println(ncd);
+      System.out.println(ncd.removeVariable(null, "temperature"));
+      System.out.println(ncd);
+
+      ncd.finish();
+
+      NetcdfFile ncdnew = ucar.nc2.FileWriter.writeToFile(ncd, outName, true);
+      ncdnew.close();
+      ncd.close();
+
+      NetcdfDataset ncdnew2 = NetcdfDataset.acquireDataset(outName, null);
+      assert ncdnew2.findVariable("temperature") == null;
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+  }
+
+
   
 }
