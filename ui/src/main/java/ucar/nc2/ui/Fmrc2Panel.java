@@ -41,7 +41,6 @@ import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.nc2.ft.fmrc.*;
 import ucar.nc2.units.DateFormatter;
-import ucar.nc2.dataset.NetcdfDataset;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -63,7 +62,7 @@ import java.awt.*;
 import java.io.IOException;
 
 /**
- * Describe
+ * ucar.nc2.ft.fmrc Fmrc refactor.
  *
  * @author caron
  * @since Jan 11, 2010
@@ -84,10 +83,15 @@ public class Fmrc2Panel extends JPanel {
   private Formatter errlog, debug;
   private DateFormatter df = new DateFormatter();
 
+  private static final String fmrBeanDesc = "FmrInv: one for each runtime";
+  private static final String dataBeanDesc = "GridDatasetInv: one for each file in the run";
+  private static final String coordBeanDesc = "unique TimeCoords (from RunSeq), VertCoords";
+  private static final String gridBeanDesc = "UberGrids from the FmrcInv";
+
   public Fmrc2Panel(PreferencesExt prefs) {
     this.prefs = prefs;
 
-    fmrTable = new BeanTableSorted(FmrBean.class, (PreferencesExt) prefs.node("DatasetBean"), false);
+    fmrTable = new BeanTableSorted(FmrBean.class, (PreferencesExt) prefs.node("DatasetBean"), false, "FmrInv", fmrBeanDesc);
     fmrTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         FmrBean fmrBean = (FmrBean) fmrTable.getSelectedBean();
@@ -95,7 +99,7 @@ public class Fmrc2Panel extends JPanel {
       }
     });
 
-    invTable = new BeanTableSorted(InvBean.class, (PreferencesExt) prefs.node("DataBean"), false);
+    invTable = new BeanTableSorted(InvBean.class, (PreferencesExt) prefs.node("DataBean"), false, "GridDatasetInv", dataBeanDesc);
     invTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         InvBean invBean = (InvBean) invTable.getSelectedBean();
@@ -104,7 +108,7 @@ public class Fmrc2Panel extends JPanel {
       }
     });
 
-    coordTable = new BeanTableSorted(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false);
+    coordTable = new BeanTableSorted(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Time,Vert coords", coordBeanDesc);
     coordTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         CoordBean coordBean = (CoordBean) coordTable.getSelectedBean();
@@ -112,7 +116,7 @@ public class Fmrc2Panel extends JPanel {
     });
     coordTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
-    gridTable = new BeanTableSorted(GridBean.class, (PreferencesExt) prefs.node("GridBean"), false);
+    gridTable = new BeanTableSorted(GridBean.class, (PreferencesExt) prefs.node("GridBean"), false, "UberGrids", gridBeanDesc);
     gridTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         GridBean gridBean = (GridBean) gridTable.getSelectedBean();

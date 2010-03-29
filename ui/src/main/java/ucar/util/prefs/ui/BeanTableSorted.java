@@ -64,7 +64,11 @@ public class BeanTableSorted extends BeanTable {
   private TableSorter sortedModel;
 
   public BeanTableSorted( Class bc, PreferencesExt pstore, boolean canAddDelete) {
-    super( bc, pstore, canAddDelete);
+    this( bc, pstore, canAddDelete, null, null);
+  }
+
+  public BeanTableSorted( Class bc, PreferencesExt pstore, boolean canAddDelete, String header, String tooltip) {
+    super( bc, pstore, canAddDelete, header, tooltip);
 
     sortedModel = new TableSorter(model);
     jtable.setModel( sortedModel);

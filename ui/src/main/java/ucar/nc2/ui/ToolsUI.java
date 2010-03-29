@@ -515,9 +515,6 @@ public class ToolsUI extends JPanel {
     mb.add(sysMenu);
     //BAMutil.addActionToMenu( sysMenu, printAction);
 
-    MetadataManager.closeAll(); // shutdown bdb
-
-
     AbstractAction act = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MetadataManager.closeAll(); // shutdown bdb

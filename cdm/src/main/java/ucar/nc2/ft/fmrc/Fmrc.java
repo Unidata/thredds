@@ -61,7 +61,13 @@ public class Fmrc {
 
   /**
    * Factory method
-   * @param collection collectionSpec or catalog:catalogURL. collectionSpec date extraction is used to get rundates
+   * @param collection describes a collection May be:
+   * <ol>
+   * <li>collectionSpec
+   * <li>catalog:catalogURL
+   * <li>filename.ncml
+   * <li>
+   * collectionSpec date extraction is used to get rundates
    * @param errlog  place error messages here
    * @param debug  place debug messages here
    * @return Fmrc or null on error

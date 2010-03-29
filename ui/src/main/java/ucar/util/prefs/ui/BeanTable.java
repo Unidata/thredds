@@ -83,13 +83,17 @@ public class BeanTable extends JPanel {
 
   protected boolean debug = false, debugStore = false, debugBean = false, debugSelected = false;
 
+  public BeanTable( Class bc, PreferencesExt pstore, boolean canAddDelete) {
+    this( bc, pstore, canAddDelete, null, null);
+  }
   /**
    *  Constructor.
    * @param bc JavaBean class
    * @param pstore store data in this PreferencesExt store.
+   * @param canAddDelete allow changes to the jtable - adds a New and Delete button to bottom panel
+   * @param header optional header label
    */
-
-  public BeanTable( Class bc, PreferencesExt pstore, boolean canAddDelete) {
+  public BeanTable( Class bc, PreferencesExt pstore, boolean canAddDelete, String header, String tooltip) {
     this.beanClass = bc;
     this.store = pstore;
 
@@ -99,8 +103,7 @@ public class BeanTable extends JPanel {
     //jtable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); default = multiple
     jtable.setAutoResizeMode( JTable.AUTO_RESIZE_NEXT_COLUMN);
     jtable.setDefaultRenderer(java.util.Date.class, new DateRenderer());
-    //JToolTip tt = jtable.createToolTip();
-    //tt.setTipText( "test");
+
     ToolTipManager.sharedInstance().registerComponent( jtable);
 
     restoreState();
@@ -121,6 +124,21 @@ public class BeanTable extends JPanel {
     setLayout(new BorderLayout());
     scrollPane = new JScrollPane(jtable);
     add(scrollPane, BorderLayout.CENTER);
+
+    if (header != null) {
+      JLabel headerLabel;
+      if (tooltip != null) {
+        headerLabel = new JLabel(header, SwingConstants.CENTER) {
+          public JToolTip createToolTip() {
+            return new thredds.ui.MultilineTooltip();
+          }
+        };
+        headerLabel.setToolTipText(tooltip);
+      } else {
+        headerLabel = new JLabel(header, SwingConstants.CENTER);
+      }
+      add(headerLabel, BorderLayout.NORTH);
+    }
 
     if (canAddDelete) {
         // button panel
@@ -883,7 +901,7 @@ public class BeanTable extends JPanel {
 
     xstore = XMLStore.createFromFile("C:/dev/prefs/test/data/testBeanTable.xml", null);
     store = xstore.getPreferences();
-    final BeanTable bt = new BeanTable(TestBean.class, store, true);
+    final BeanTable bt = new BeanTable(TestBean.class, store, true, "header", "header\ntooltip");
 
     JFrame frame = new JFrame("Test BeanTable");
     frame.addWindowListener(new WindowAdapter() {
@@ -905,56 +923,4 @@ public class BeanTable extends JPanel {
     frame.setLocation(300, 300);
     frame.setVisible(true);
   }
-
-
 }
-
-/* Change History:
-   $Log: BeanTable.java,v $
-   Revision 1.13  2006/05/08 02:47:23  caron
-   cleanup code for 1.5 compile
-   modest performance improvements
-   dapper reading, deal with coordinate axes as structure members
-   improve DL writing
-   TDS unit testing
-
-   Revision 1.12  2006/04/20 22:17:01  caron
-   add revalidate when bean list is set
-
-   Revision 1.11  2005/08/17 18:36:27  caron
-   no message
-
-   Revision 1.10  2005/08/17 00:13:58  caron
-   Dataset Editor
-
-   Revision 1.9  2005/07/09 23:27:46  caron
-   test for no selection in getSelectedBean()
-
-   Revision 1.8  2004/12/03 04:46:17  caron
-   no message
-
-   Revision 1.7  2004/10/22 00:59:45  caron
-   get selection correct when sorting
-
-   Revision 1.6  2004/08/26 17:55:17  caron
-   no message
-
-   Revision 1.5  2004/02/20 02:04:14  caron
-   add addBeans
-
-   Revision 1.4  2003/05/29 23:33:27  john
-   latest release
-
-   Revision 1.3  2003/01/14 19:37:11  john
-   minor
-
-   Revision 1.2  2002/12/24 22:04:49  john
-   add bean, beanObject methods
-
-   Revision 1.1.1.1  2002/12/20 16:40:25  john
-   start new cvs root: prefs
-
-   Revision 1.1  2002/03/09 01:51:52  caron
-   add BeanTable, fix FieldResizable
-
-*/
