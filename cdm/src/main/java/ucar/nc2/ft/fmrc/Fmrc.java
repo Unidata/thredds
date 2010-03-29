@@ -61,17 +61,19 @@ public class Fmrc {
 
   /**
    * Factory method
-   * @param collection describes a collection May be:
+   * @param collection describes the collection. May be one of:
    * <ol>
-   * <li>collectionSpec
+   * <li>collection specification string
    * <li>catalog:catalogURL
    * <li>filename.ncml
    * <li>
+   * </ol>
    * collectionSpec date extraction is used to get rundates
    * @param errlog  place error messages here
    * @param debug  place debug messages here
    * @return Fmrc or null on error
    * @throws IOException on read error
+   * @see "http://www.unidata.ucar.edu/software/netcdf-java/reference/collections/CollectionSpecification.html"
    */
   public static Fmrc open(String collection, Formatter errlog, Formatter debug) throws IOException {
     if (collection.startsWith(CAT)) {
