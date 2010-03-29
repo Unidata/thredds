@@ -59,9 +59,8 @@ public interface CollectionManager {
 
   /**
    * Compute if rescan is needed.
-   * True if scanList not empty, recheckEvery not null, and recheckEvery time has passed since last scanned.
    *
-   * @return true is rescan time has passed
+   * @return true if rescan is needed.
    */
   public boolean timeToRescan();
 

@@ -154,11 +154,11 @@ public class CollectionSpecParser {
   @Override
   public String toString() {
     return "CollectionSpecParser{" +
-        "topDir='" + topDir + '\'' +
-        ", subdirs=" + subdirs +
-        ", filter='" + pattern + '\'' +
-        ", dateFormatMark='" + dateFormatMark + '\'' +
-        '}';
+        "\n   topDir='" + topDir + '\'' +
+        "\n   subdirs=" + subdirs +
+        "\n   regExp='" + pattern + '\'' +
+        "\n   dateFormatMark='" + dateFormatMark + '\'' +
+        "\n}";
   }
 
   /////////////////////////////////////////////////////////
