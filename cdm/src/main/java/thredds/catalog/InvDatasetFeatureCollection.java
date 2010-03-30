@@ -54,7 +54,10 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * Feature Collection (experimental)
+ * Feature Collection (experimental).
+ * Like InvDatasetFmrc, this is a InvCatalogRef subclass. So the reference is placed in the parent, but
+ * the catalog itself isnt constructed until it is dereferenced by DataRootHandler.makeDynamicCatalog().
+ *
  *
  * @author caron
  * @since Mar 3, 2010
@@ -102,15 +105,9 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
     return sp.getTopDir();
   }
 
-  public NetcdfDataset getNetcdfDataset(String name) throws IOException {
-    GridDataset gds = getGridDataset(name);
-    return (NetcdfDataset) gds.getNetcdfFile();
-  }
+  ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-  public GridDataset getGridDataset(String name) throws IOException {
-    return fmrc.getDataset2D(false, false, null);
-  }
-
+  // called by DataRootHandler.makeDynamicCatalog() when the catref is requested
   public InvCatalogImpl makeCatalog(String match, String orgPath, URI baseURI) {
     logger.debug("FMRC make catalog for " + match + " " + baseURI);
     try {
@@ -126,19 +123,15 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
         return makeCatalogScan(orgPath, baseURI);
       else
         return null;
+
     } catch (Exception e) {
       logger.error("Error making catalog for " + path, e);
       return null;
     }
   }
 
-  private InvCatalogImpl makeCatalogScan(String orgPath, URI baseURI) {
-    if (!madeDatasets) getDatasets();
-    return scan.makeCatalogForDirectory(orgPath, baseURI);
-  }
-
   /**
-   * Make the top catalog.
+   * Make the top catalog of this catref.
    *
    * @param baseURI base URI of the request
    * @return the top FMRC catalog
@@ -146,6 +139,9 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
    * @throws java.net.URISyntaxException if path is misformed
    */
   private InvCatalogImpl makeCatalog(URI baseURI) throws IOException, URISyntaxException {
+
+    // LOOK when does the topcatalog need to be recreated ??
+    // LOOK need thread safety
 
     if (topCatalog == null) {
       InvCatalogImpl parentCatalog = (InvCatalogImpl) getParentCatalog();
@@ -163,9 +159,9 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
         id = getPath();
       top.setID(id);
 
-      GridDataset gds = getGridDataset(null);
-
       // add Variables, GeospatialCoverage, TimeCoverage
+      GridDataset gds = getGridDataset(null); // LOOK may take a long time here
+
       ThreddsMetadata tmi = top.getLocalMetadataInheritable();
       if (tmi.getVariables().size() == 0) {
         ThreddsMetadata.Variables vars = MetadataExtractor.extractVariables(this, gds);
@@ -218,8 +214,13 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
     }
   }
 
+  // these are the child datasets of this catalog
+  // the names here are passed back into getNetcdfDataset(), getGridDataset()
+
   @Override
   public java.util.List<InvDataset> getDatasets() {
+    // LOOK do we need to make sure topcatalog has been constructed ??
+    // LOOK need thread safety
     if (!madeDatasets) {
       List<InvDataset> datasets = new ArrayList<InvDataset>();
 
@@ -254,25 +255,27 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
         long olderThan = (long) (1000 * manager.getOlderThanFilterInSecs());
         ScanFilter filter = new ScanFilter(sp.getFilter(), olderThan);
         scan = new InvDatasetScan((InvCatalogImpl) this.getParentCatalog(), this, "File_Access", path + "/" + SCAN,
-                sp.getTopDir(), filter, true, "true", false, null, null, null);
+            sp.getTopDir(), filter, true, "true", false, null, null, null);
 
         ThreddsMetadata tmi = scan.getLocalMetadataInheritable();
         tmi.setServiceName("all");
         tmi.addDocumentation("summary", "Individual data file, which comprise the Forecast Model Run Collection.");
-        tmi.setGeospatialCoverage( null);
-        tmi.setTimeCoverage( null);
+        tmi.setGeospatialCoverage(null);
+        tmi.setTimeCoverage(null);
 
         scan.finish();
         datasets.add(scan);
       }
 
       this.datasets = datasets;
+      finish();
       madeDatasets = true;
     }
 
-    finish();
     return datasets;
   }
+
+  // specialized filter handles olderThan and/or filename pattern matching
 
   public static class ScanFilter implements CrawlableDatasetFilter {
     Pattern p;
@@ -310,5 +313,21 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
     }
   }
 
+  // called by DatasetHandler
 
+  public NetcdfDataset getNetcdfDataset(String name) throws IOException {
+    GridDataset gds = getGridDataset(name);
+    return (NetcdfDataset) gds.getNetcdfFile();
+  }
+
+  // called by DatasetHandler
+
+  public GridDataset getGridDataset(String name) throws IOException {
+    return fmrc.getDataset2D(false, false, null);
+  }
+
+  private InvCatalogImpl makeCatalogScan(String orgPath, URI baseURI) {
+    if (!madeDatasets) getDatasets();
+    return scan.makeCatalogForDirectory(orgPath, baseURI);
+  }
 }

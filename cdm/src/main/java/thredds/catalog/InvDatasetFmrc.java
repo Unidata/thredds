@@ -59,6 +59,7 @@ import ucar.unidata.util.StringUtil;
 /**
  * InvDatasetFmrc represents an <datasetFmrc> element in a TDS catalog.
  *
+ * @deprecated use InvDatasetFeatureCollection (must replace datasetFmrc with featureCollection in the TDS config catalog)
  * @author caron
  */
 public class InvDatasetFmrc extends InvCatalogRef {

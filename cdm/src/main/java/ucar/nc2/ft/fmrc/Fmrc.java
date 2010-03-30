@@ -101,7 +101,7 @@ public class Fmrc {
   // the current state - changing must be thread safe
   private FmrcInv fmrc;
   private FmrcDataset fmrcDataset;
-  private  CollectionSpecParser sp = null;
+  private CollectionSpecParser sp = null;
 
   Fmrc(String collectionSpec, Formatter errlog, Formatter debug) {
     sp = new CollectionSpecParser(collectionSpec, errlog);
@@ -125,11 +125,14 @@ public class Fmrc {
     this.ncmlInner = ncmlInner;
   }
 
-  public GridDataset getDataset2D(boolean forceProto, boolean force, NetcdfDataset result) throws IOException {
-    return fmrcDataset.getNetcdfDataset2D( getFmrcInv( force), forceProto, force, result);
+  // exposed for debugging
+  public CollectionManager getManager() {
+    return manager;
   }
 
   public CollectionSpecParser getCollectionSpecParser() { return sp; }
+
+  /////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Creates an FmrcInv - make a snapshot of the current state of inventory
@@ -143,6 +146,10 @@ public class Fmrc {
     if (force || fmrc == null || manager.timeToRescan())
       fmrc = new FmrcInv(manager.getCollectionName(), scan(null));
     return fmrc;
+  }
+
+  public GridDataset getDataset2D(boolean forceProto, boolean force, NetcdfDataset result) throws IOException {
+    return fmrcDataset.getNetcdfDataset2D( getFmrcInv( force), forceProto, force, result);
   }
 
   private List<FmrInv> scan(Formatter debug) throws IOException {
@@ -179,10 +186,6 @@ public class Fmrc {
     return fmrList;
   }
 
-  // exposed for debugging
-  public CollectionManager getManager() {
-    return manager;
-  }
 
   public static void main(String[] args) throws IOException {
     Formatter errlog = new Formatter();

@@ -54,7 +54,7 @@ import java.util.Set;
  * Turn an FmrcInv into a GridDataset.
  * Curently only the 2D time dataset is supported.
  * Time coordinate values come from the FmrcInv, which are (typically) persistent, so there is little I/O.
- * THe main io at construction is for the prototype.
+ * The main io at construction is for the prototype.
  *
  * This replaces ucar.nc2.dt.fmrc.FmrcImpl
  *
@@ -62,9 +62,11 @@ import java.util.Set;
  * @since Jan 19, 2010
  */
 public class FmrcDataset implements ProxyReader {
-  private NetcdfDataset proto;
-  private FmrcInv fmrcInv;
-  private GridDataset gds2D;
+  private NetcdfDataset proto; //once built, the proto doesnt change
+
+  private FmrcInv fmrcInv; // a snapshot of the inventory
+  private GridDataset gds2D; // result dataset
+
   private boolean debug = false, debugEnhance = false, debugRead = false;
   private DateFormatter dateFormatter = new DateFormatter();
 
@@ -202,6 +204,8 @@ public class FmrcDataset implements ProxyReader {
   /**
    * build the 2D time dataset
    * @param proto prototypical dataset
+   * @param buildProto if true, finish building proto by adding data or ProxyReader to non-agg variables
+   * @param result place results in here, if null create a new one
    * @throws IOException on read error
    * @return resulting GridDataset
    */
@@ -354,6 +358,7 @@ public class FmrcDataset implements ProxyReader {
 
   /////////////////////////////////////////////////////////////////////////
 
+  // keep track of the ugrid and 2D time coords for each variable, put in SPobject
   private class Vstate {
     FmrcInv.UberGrid ugrid;
     ArrayDouble.D2 timeCoordVals;
@@ -461,7 +466,6 @@ public class FmrcDataset implements ProxyReader {
 
   // the general case is to get only one time per read - probably not too inefficient, eg GRIB, except maybe for remote reads
   private Array read(InventoryHour invHour, FmrcInv.UberGrid ugrid, List<Range> innerSection) throws IOException, InvalidRangeException {
-    // if (openFilesRead == null) openFilesRead = new HashMap<String, NetcdfDataset>();
     NetcdfFile ncfile = open(invHour.inv.getLocation(), openFilesRead);
     Variable v = ncfile.findVariable(ugrid.getName());
 

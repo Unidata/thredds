@@ -113,8 +113,10 @@ public class InvCatalogRef extends InvDatasetImpl {
   }
 
   /**
+   * Get a list of all the nested datasets.
    * @return Datasets. This triggers a read of the referenced catalog the first time its called.
    */
+  @Override
   public java.util.List<InvDataset> getDatasets() {
     read();
     return useProxy ? proxy.getDatasets() : super.getDatasets();
@@ -148,6 +150,7 @@ public class InvCatalogRef extends InvDatasetImpl {
 
 
   //////////////////////////////////////////////
+  @Override
   public boolean finish() {
     return super.finish();
   }
@@ -352,98 +355,122 @@ public class InvCatalogRef extends InvDatasetImpl {
   }
 
   //// proxy
+  @Override
   public thredds.catalog.InvDatasetImpl findDatasetByName(java.lang.String p0) {
     return !useProxy ? super.findDatasetByName(p0) : proxy.findDatasetByName(p0);
   }
 
+  @Override
   public java.lang.String findProperty(java.lang.String p0) {
     return !useProxy ? super.findProperty(p0) : proxy.findProperty(p0);
   }
 
+  @Override
   public thredds.catalog.InvService findService(java.lang.String p0) {
     return !useProxy ? super.findService(p0) : proxy.findService(p0);
   }
 
+  @Override
   public thredds.catalog.InvAccess getAccess(thredds.catalog.ServiceType p0) {
     return !useProxy ? super.getAccess(p0) : proxy.getAccess(p0);
   }
 
+  @Override
   public java.util.List<InvAccess> getAccess() {
     return !useProxy ? super.getAccess() : proxy.getAccess();
   }
 
+  @Override
   public java.lang.String getAlias() {
     return !useProxy ? super.getAlias() : proxy.getAlias();
   }
 
+  @Override
   public String getAuthority() {
     return useProxy ? proxy.getAuthority() : super.getAuthority();
   }
 
+  @Override
   public thredds.catalog.CollectionType getCollectionType() {
     return !useProxy ? super.getCollectionType() : proxy.getCollectionType();
   }
 
+  @Override
   public java.util.List<ThreddsMetadata.Contributor> getContributors() {
     return !useProxy ? super.getContributors() : proxy.getContributors();
   }
 
+  @Override
   public java.util.List<ThreddsMetadata.Source> getCreators() {
     return !useProxy ? super.getCreators() : proxy.getCreators();
   }
 
+  @Override
   public thredds.catalog.DataFormatType getDataFormatType() {
     return !useProxy ? super.getDataFormatType() : proxy.getDataFormatType();
   }
 
+  @Override
   public FeatureType getDataType() {
     return !useProxy ? super.getDataType() : proxy.getDataType();
   }
 
+  @Override
   public java.util.List<DateType> getDates() {
     return !useProxy ? super.getDates() : proxy.getDates();
   }
 
+  @Override
   public java.util.List<InvDocumentation> getDocumentation() {
     return !useProxy ? super.getDocumentation() : proxy.getDocumentation();
   }
 
+  @Override
   public java.lang.String getDocumentation(java.lang.String p0) {
     return !useProxy ? super.getDocumentation(p0) : proxy.getDocumentation(p0);
   }
 
+  @Override
   public java.lang.String getFullName() {
     return !useProxy ? super.getFullName() : proxy.getFullName();
   }
 
+  @Override
   public thredds.catalog.ThreddsMetadata.GeospatialCoverage getGeospatialCoverage() {
     return !useProxy ? super.getGeospatialCoverage() : proxy.getGeospatialCoverage();
   }
 
+  @Override
   public java.lang.String getID() {
     return !useProxy ? super.getID() : proxy.getID();
   }
 
+  @Override
   public java.util.List<ThreddsMetadata.Vocab> getKeywords() {
     return !useProxy ? super.getKeywords() : proxy.getKeywords();
   }
 
+  @Override
   protected boolean getMark() {
     return !useProxy ? super.getMark() : proxy.getMark();
   }
 
+  @Override
   public java.util.List<InvMetadata> getMetadata(thredds.catalog.MetadataType p0) {
     return !useProxy ? super.getMetadata(p0) : proxy.getMetadata(p0);
   }
 
+  @Override
   public java.util.List<InvMetadata> getMetadata() {
     return !useProxy ? super.getMetadata() : proxy.getMetadata();
   }
 
+  @Override
   public java.lang.String getName() {
     return !useProxy ? super.getName() : proxy.getName();
   }
 
+  @Override
   public thredds.catalog.InvDataset getParent() {
     return !useProxy ? super.getParent() : proxy.getParent();
   }
@@ -453,50 +480,62 @@ public class InvCatalogRef extends InvDatasetImpl {
     return !useProxy ? super.getParentCatalog() : proxy.getParentCatalog();
   } */
 
+  @Override
   public java.util.List<ThreddsMetadata.Vocab> getProjects() {
     return !useProxy ? super.getProjects() : proxy.getProjects();
   }
 
+  @Override
   public java.util.List<InvProperty> getProperties() {
     return !useProxy ? super.getProperties() : proxy.getProperties();
   }
 
+  @Override
   public java.util.List<ThreddsMetadata.Source> getPublishers() {
     return !useProxy ? super.getPublishers() : proxy.getPublishers();
   }
 
+  @Override
   public thredds.catalog.InvService getServiceDefault() {
     return !useProxy ? super.getServiceDefault() : proxy.getServiceDefault();
   }
 
+  @Override
   public DateRange getTimeCoverage() {
     return !useProxy ? super.getTimeCoverage() : proxy.getTimeCoverage();
   }
 
+  @Override
   public java.lang.String getUniqueID() {
     return !useProxy ? super.getUniqueID() : proxy.getUniqueID();
   }
 
+  @Override
   public java.lang.String getUrlPath() {
     return !useProxy ? super.getUrlPath() : proxy.getUrlPath();
   }
 
+  @Override
   public java.lang.Object getUserProperty(java.lang.Object p0) {
     return !useProxy ? super.getUserProperty(p0) : proxy.getUserProperty(p0);
   }
 
+  @Override
   public java.util.List<ThreddsMetadata.Variables> getVariables() {
     return !useProxy ? super.getVariables() : proxy.getVariables();
   }
 
+  @Override
   public boolean hasAccess() {
     return !useProxy ? super.hasAccess() : proxy.hasAccess();
   }
 
+  @Override
   public boolean hasNestedDatasets() {
     return useProxy ? proxy.hasNestedDatasets() : true;
   }
 
+  @Override
   public boolean isHarvest() {
     return !useProxy ? super.isHarvest() : proxy.isHarvest();
   }
