@@ -16,6 +16,19 @@ dl {margin: 10px 5px 5px 15px;)
 <p>The file collections are managed with a <a href="FeatureCollections.html">CollectionManager</a>. Datasets are opened as GridDatasets, so that the coordinate system information is available.</p>
 <p>Generally, datasets can be broken up by forecast time and/or variable, and the code automatically figures out what everything is. However, one cannot put output from multiple runs in the same file.</p>
 <p>The ToolsUI FMRC tab (4.2) allows you to view internal strurctures of an FMRC.</p>
+<h3>Opening an FMRC </h3>
+<p>Use static method on ucar.nc2.ft.fmrc.Fmrc: </p>
+<p><strong>public static Fmrc open(String collection, Formatter errlog, Formatter debug);</strong><br />
+</p>
+<p>
+   The collection may be one of:
+ <ol>
+   <li><a href="CollectionSpecification.html">collection specification</a> string
+    <li>catalog:catalogURL
+   
+    <li>filename.ncml
+ </ol>
+ </p>
 <h3>Run Date</h3>
 <p>If a dateFormatMark is given, a DateExtractor extracts the rundate from the filename or URL. Otherwise there must be  global attributes <strong>_CoordinateModelBaseDate</strong> or <strong>_CoordinateModelRunDate</strong> inside each dataset.</p>
 <h3>Forecast Date</h3>

@@ -58,7 +58,6 @@ import java.util.regex.Pattern;
  * Like InvDatasetFmrc, this is a InvCatalogRef subclass. So the reference is placed in the parent, but
  * the catalog itself isnt constructed until it is dereferenced by DataRootHandler.makeDynamicCatalog().
  *
- *
  * @author caron
  * @since Mar 3, 2010
  */
@@ -67,6 +66,8 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
   static private final String FMRC = "fmrc.ncd";
   static private final String BEST = "best.ncd";
   static private final String SCAN = "files";
+
+  private Object lock = new Object();
 
   private final String path;
   private final FeatureType featureType;
@@ -86,15 +87,15 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
     this.featureType = FeatureType.getType(featureType);
   }
 
-  public void setCollection(String spec, String olderThan, String recheckEvery) {
+  public void setConfig(FeatureCollection.Config config) {
     Formatter errlog = new Formatter();
-    sp = new CollectionSpecParser(spec, errlog);
-    manager = new DatasetCollectionManager(sp, olderThan, errlog);
-    manager.setRecheck(recheckEvery);
+    sp = new CollectionSpecParser(config.spec, errlog);
+    manager = new DatasetCollectionManager(sp, config.olderThan, errlog);
+    manager.setRecheck(config.recheckEvery);
 
     // optional date extraction is used to get rundates when not embedded in the file
     DateExtractor dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), true);
-    fmrc = new Fmrc(manager, dateExtractor);
+    fmrc = new Fmrc(manager, dateExtractor, config);
   }
 
   public String getPath() {
@@ -108,11 +109,12 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
   ///////////////////////////////////////////////////////////////////////////////////////////////////
 
   // called by DataRootHandler.makeDynamicCatalog() when the catref is requested
+
   public InvCatalogImpl makeCatalog(String match, String orgPath, URI baseURI) {
     logger.debug("FMRC make catalog for " + match + " " + baseURI);
     try {
       if ((match == null) || (match.length() == 0))
-        return makeCatalog(baseURI);
+        return makeTopCatalog(baseURI);
         /* else if (match.equals(RUNS))
       return makeCatalogRuns(baseURI);
     else if (match.equals(OFFSET))
@@ -138,64 +140,67 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
    * @throws java.io.IOException         on I/O error
    * @throws java.net.URISyntaxException if path is misformed
    */
-  private InvCatalogImpl makeCatalog(URI baseURI) throws IOException, URISyntaxException {
+  private InvCatalogImpl makeTopCatalog(URI baseURI) throws IOException, URISyntaxException {
 
     // LOOK when does the topcatalog need to be recreated ??
-    // LOOK need thread safety
 
     if (topCatalog == null) {
-      InvCatalogImpl parentCatalog = (InvCatalogImpl) getParentCatalog();
-      URI myURI = baseURI.resolve(getXlinkHref());
-      InvCatalogImpl mainCatalog = new InvCatalogImpl(getName(), parentCatalog.getVersion(), myURI);
+      synchronized (lock) {
+        if (topCatalog == null) {
+          InvCatalogImpl parentCatalog = (InvCatalogImpl) getParentCatalog();
+          URI myURI = baseURI.resolve(getXlinkHref());
+          InvCatalogImpl mainCatalog = new InvCatalogImpl(getName(), parentCatalog.getVersion(), myURI);
 
-      InvDatasetImpl top = new InvDatasetImpl(this); // LOOK clone correct ??
-      top.setParent(null);
-      InvDatasetImpl parent = (InvDatasetImpl) this.getParent();
-      if (parent != null)
-        top.transferMetadata(parent); // make all inherited metadata local
+          InvDatasetImpl top = new InvDatasetImpl(this); // LOOK clone correct ??
+          top.setParent(null);
+          InvDatasetImpl parent = (InvDatasetImpl) this.getParent();
+          if (parent != null)
+            top.transferMetadata(parent); // make all inherited metadata local
 
-      String id = getID();
-      if (id == null)
-        id = getPath();
-      top.setID(id);
+          String id = getID();
+          if (id == null)
+            id = getPath();
+          top.setID(id);
 
-      // add Variables, GeospatialCoverage, TimeCoverage
-      GridDataset gds = getGridDataset(null); // LOOK may take a long time here
+          // add Variables, GeospatialCoverage, TimeCoverage
+          GridDataset gds = getGridDataset(FMRC); // LOOK may take a long time here
 
-      ThreddsMetadata tmi = top.getLocalMetadataInheritable();
-      if (tmi.getVariables().size() == 0) {
-        ThreddsMetadata.Variables vars = MetadataExtractor.extractVariables(this, gds);
-        if (vars != null)
-          tmi.addVariables(vars);
+          ThreddsMetadata tmi = top.getLocalMetadataInheritable();
+          if (tmi.getVariables().size() == 0) {
+            ThreddsMetadata.Variables vars = MetadataExtractor.extractVariables(this, gds);
+            if (vars != null)
+              tmi.addVariables(vars);
+          }
+          if (tmi.getGeospatialCoverage() == null) {
+            ThreddsMetadata.GeospatialCoverage gc = MetadataExtractor.extractGeospatial(gds);
+            if (gc != null)
+              tmi.setGeospatialCoverage(gc);
+          }
+          if (tmi.getTimeCoverage() == null) {
+            DateRange dateRange = MetadataExtractor.extractDateRange(gds);
+            if (dateRange != null)
+              tmi.setTimeCoverage(dateRange);
+          }
+
+          mainCatalog.addDataset(top);
+
+          // any referenced services need to be local
+          List serviceLocal = getServicesLocal();
+          for (InvService service : parentCatalog.getServices()) {
+            if (!serviceLocal.contains(service))
+              mainCatalog.addService(service);
+          }
+          findDODSService(parentCatalog.getServices()); // LOOK kludgey
+
+          for (InvDataset ds : getDatasets()) {
+            top.addDataset((InvDatasetImpl) ds);
+          }
+          mainCatalog.finish();
+
+          // wait till completely constructed before switching pointer, for concurrency
+          topCatalog = mainCatalog;
+        }
       }
-      if (tmi.getGeospatialCoverage() == null) {
-        ThreddsMetadata.GeospatialCoverage gc = MetadataExtractor.extractGeospatial(gds);
-        if (gc != null)
-          tmi.setGeospatialCoverage(gc);
-      }
-      if (tmi.getTimeCoverage() == null) {
-        DateRange dateRange = MetadataExtractor.extractDateRange(gds);
-        if (dateRange != null)
-          tmi.setTimeCoverage(dateRange);
-      }
-
-      mainCatalog.addDataset(top);
-
-      // any referenced services need to be local
-      List serviceLocal = getServicesLocal();
-      for (InvService service : parentCatalog.getServices()) {
-        if (!serviceLocal.contains(service))
-          mainCatalog.addService(service);
-      }
-      findDODSService(parentCatalog.getServices()); // LOOK kludgey
-
-      for (InvDataset ds : getDatasets()) {
-        top.addDataset((InvDatasetImpl) ds);
-      }
-      mainCatalog.finish();
-
-      // wait till completely constructed before switching pointer, for concurrency
-      topCatalog = mainCatalog;
     }
 
     return topCatalog;
@@ -222,54 +227,60 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
     // LOOK do we need to make sure topcatalog has been constructed ??
     // LOOK need thread safety
     if (!madeDatasets) {
-      List<InvDataset> datasets = new ArrayList<InvDataset>();
+      synchronized (lock) {
+        if (!madeDatasets) {
 
-      String id = getID();
-      if (id == null)
-        id = getPath();
+          List<InvDataset> datasets = new ArrayList<InvDataset>();
 
-      InvDatasetImpl ds = new InvDatasetImpl(this, "Forecast Model Run Collection (2D time coordinates)");
-      String name = getName() + "_" + FMRC;
-      name = StringUtil.replace(name, ' ', "_");
-      ds.setUrlPath(path + "/" + name);
-      ds.setID(id + "/" + name);
-      ThreddsMetadata tm = ds.getLocalMetadata();
-      tm.addDocumentation("summary", "Forecast Model Run Collection (2D time coordinates).");
-      ds.getLocalMetadataInheritable().setServiceName(dodsService); // LOOK why ??
-      ds.finish();
-      datasets.add(ds);
+          String id = getID();
+          if (id == null)
+            id = getPath();
 
-      ds = new InvDatasetImpl(this, "Best Time Series");
-      name = getName() + "_" + BEST;
-      name = StringUtil.replace(name, ' ', "_");
-      ds.setUrlPath(path + "/" + name);
-      ds.setID(id + "/" + name);
-      tm = ds.getLocalMetadata();
-      tm.addDocumentation("summary", "Best time series, taking the data from the most recent run available.");
-      ds.finish();
-      datasets.add(ds);
+          InvDatasetImpl ds = new InvDatasetImpl(this, "Forecast Model Run Collection (2D time coordinates)");
+          String name = getName() + "_" + FMRC;
+          name = StringUtil.replace(name, ' ', "_");
+          ds.setUrlPath(path + "/" + name);
+          ds.setID(id + "/" + name);
+          ThreddsMetadata tm = ds.getLocalMetadata();
+          tm.addDocumentation("summary", "Forecast Model Run Collection (2D time coordinates).");
+          ds.getLocalMetadataInheritable().setServiceName(dodsService); // LOOK why ??
+          ds.finish();
+          datasets.add(ds);
 
-      if (wantFiles) {
+          ds = new InvDatasetImpl(this, "Best Time Series");
+          name = getName() + "_" + BEST;
+          name = StringUtil.replace(name, ' ', "_");
+          ds.setUrlPath(path + "/" + name);
+          ds.setID(id + "/" + name);
+          tm = ds.getLocalMetadata();
+          tm.addDocumentation("summary", "Best time series, taking the data from the most recent run available.");
+          ds.getLocalMetadataInheritable().setServiceName(dodsService); // LOOK why ??
+          ds.finish();
+          datasets.add(ds);
 
-        // LOOK - replace this with InvDatasetScan( collectionManager) or something
-        long olderThan = (long) (1000 * manager.getOlderThanFilterInSecs());
-        ScanFilter filter = new ScanFilter(sp.getFilter(), olderThan);
-        scan = new InvDatasetScan((InvCatalogImpl) this.getParentCatalog(), this, "File_Access", path + "/" + SCAN,
-            sp.getTopDir(), filter, true, "true", false, null, null, null);
+          if (wantFiles) {
 
-        ThreddsMetadata tmi = scan.getLocalMetadataInheritable();
-        tmi.setServiceName("all");
-        tmi.addDocumentation("summary", "Individual data file, which comprise the Forecast Model Run Collection.");
-        tmi.setGeospatialCoverage(null);
-        tmi.setTimeCoverage(null);
+            // LOOK - replace this with InvDatasetScan( collectionManager) or something
+            long olderThan = (long) (1000 * manager.getOlderThanFilterInSecs());
+            ScanFilter filter = new ScanFilter(sp.getFilter(), olderThan);
+            scan = new InvDatasetScan((InvCatalogImpl) this.getParentCatalog(), this, "File_Access", path + "/" + SCAN,
+                    sp.getTopDir(), filter, true, "true", false, null, null, null);
 
-        scan.finish();
-        datasets.add(scan);
+            ThreddsMetadata tmi = scan.getLocalMetadataInheritable();
+            tmi.setServiceName("all");
+            tmi.addDocumentation("summary", "Individual data file, which comprise the Forecast Model Run Collection.");
+            tmi.setGeospatialCoverage(null);
+            tmi.setTimeCoverage(null);
+
+            scan.finish();
+            datasets.add(scan);
+          }
+
+          this.datasets = datasets;
+          finish();
+          madeDatasets = true;
+        }
       }
-
-      this.datasets = datasets;
-      finish();
-      madeDatasets = true;
     }
 
     return datasets;
@@ -313,17 +324,86 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
     }
   }
 
-  // called by DatasetHandler
+  // called by DatasetHandler.getNetcdfFile()
+  /**
+   * Get the dataset named by the path
+   *
+   * @param path URL path
+   * @return requested dataset
+   * @throws IOException if read error
+   */
+  public NetcdfDataset getNetcdfDataset(String path) throws IOException {
+    int pos = path.indexOf("/");
+    String type = (pos > -1) ? path.substring(0, pos) : path;
+    String name = (pos > -1) ? path.substring(pos + 1) : "";
 
-  public NetcdfDataset getNetcdfDataset(String name) throws IOException {
-    GridDataset gds = getGridDataset(name);
-    return (NetcdfDataset) gds.getNetcdfFile();
+    // this assumes that these are files. also might be remote datasets from a catalog
+    if (type.equals(SCAN)) {
+      String filename = new StringBuilder(getTopDirLocation())
+              .append(getTopDirLocation().endsWith("/") ? "" : "/")
+              .append(name).toString();
+      return NetcdfDataset.acquireDataset(null, filename, null, -1, null, null); // no enhancement
+    }
+
+    // makeFmrc();
+    NetcdfDataset result = null;
+    // String location = path;
+
+    if (path.endsWith(FMRC)) {
+      GridDataset gds = getGridDataset(FMRC);
+      result = (NetcdfDataset) gds.getNetcdfFile();
+
+    } else if (path.endsWith(BEST)) {
+      GridDataset gds = getGridDataset(BEST);
+      result = (NetcdfDataset) gds.getNetcdfFile();
+
+    } /* else {
+      location = name;
+
+      if (type.equals(OFFSET)) {
+        int pos1 = name.indexOf(OFFSET_NAME);
+        int pos2 = name.indexOf("hr");
+        if ((pos1<0) || (pos2<0)) return null;
+        String id = name.substring(pos1+OFFSET_NAME.length(), pos2);
+        double hour = Double.parseDouble(id);
+        result = fmrc.getForecastOffsetDataset( hour);
+
+      } else if (type.equals(RUNS)) {
+        int pos1 = name.indexOf(RUN_NAME);
+        if (pos1<0) return null;
+        String id = name.substring(pos1+RUN_NAME.length());
+
+        DateFormatter formatter = new DateFormatter();
+        Date date = formatter.getISODate(id);
+        result = fmrc.getRunTimeDataset(date);
+
+      } else if (type.equals(FORECAST)) {
+        int pos1 = name.indexOf(FORECAST_NAME);
+        if (pos1<0) return null;
+        String id = name.substring(pos1+FORECAST_NAME.length());
+
+        DateFormatter formatter = new DateFormatter();
+        Date date = formatter.getISODate(id);
+        result = fmrc.getForecastTimeDataset(date);
+      }
+    }    */
+
+    if (null != result) result.setLocation(path); // LOOK seems fishy ??
+    return result;
   }
 
-  // called by DatasetHandler
+
+  // called by DatasetHandler.openGridDataset()
 
   public GridDataset getGridDataset(String name) throws IOException {
-    return fmrc.getDataset2D(false, false, null);
+    if (name.endsWith(FMRC)) {
+      return fmrc.getDataset2D(false, false, null);
+
+    } else if (name.endsWith(BEST)) {
+      return fmrc.getDatasetBest(false, false, null);
+    }
+
+    return null;
   }
 
   private InvCatalogImpl makeCatalogScan(String orgPath, URI baseURI) {

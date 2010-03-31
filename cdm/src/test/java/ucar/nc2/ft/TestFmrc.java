@@ -82,12 +82,10 @@ public class TestFmrc extends TestCase {
 
     System.out.println("\ntest read Fmrc = " + pathname);
     Formatter errlog = new Formatter();
-    Formatter debug = new Formatter();
-    Fmrc fmrc = Fmrc.open(pathname, errlog, debug);
+    Fmrc fmrc = Fmrc.open(pathname, errlog);
     if (fmrc == null) {
       System.out.printf("Fmrc failed to open %s%n", pathname);
       System.out.printf("errlog= %s%n", errlog.toString());
-      System.out.printf("debug=  %s%n", debug.toString());
       return;
     }
 

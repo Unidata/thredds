@@ -258,7 +258,7 @@ public class GridIndexToNC {
     ncfile.addAttribute(null,
         new Attribute("location", ncfile.getLocation()));
     ncfile.addAttribute(null, new Attribute(
-            "history", "Direct read of "+ lookup.getGridType() +" into NetCDF-Java 4.0 API"));
+            "history", "Direct read of "+ lookup.getGridType() +" into NetCDF-Java 4 API"));
 
     ncfile.addAttribute(
         null,

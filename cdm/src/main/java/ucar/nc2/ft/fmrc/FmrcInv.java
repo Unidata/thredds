@@ -87,8 +87,8 @@ public class FmrcInv {
   private final Calendar cal = new GregorianCalendar(); // for date computations
   private final DateFormatter dateFormatter = new DateFormatter();
 
-  private final boolean regularize = false; // hack for now: used on motherlode to detect missing inventory
-
+  // use on motherlode to regularize the missing inventory
+  private boolean regularize = false;
 
   /////////////////////////////////////////////////////
 
@@ -98,8 +98,10 @@ public class FmrcInv {
    * @param name name of collection
    * @param fmrList the component runs FmrInv
    */
-  FmrcInv(String name, List<FmrInv> fmrList) {
+  FmrcInv(String name, List<FmrInv> fmrList, boolean regularize) {
     this.name = name;
+    this.regularize = regularize;
+
     this.fmrList = new ArrayList<FmrInv>(fmrList);
     runTimeList = new ArrayList<Date>();
 
@@ -525,6 +527,7 @@ public class FmrcInv {
   }
 
   ////////////////////////////////////////////////
+  // debugging
 
   public void showRuntimeOffsetMatrix(Formatter out) {
     out.format("                                  Forecast Time Offset %n");
@@ -606,6 +609,29 @@ public class FmrcInv {
       if (name.length() > 27) name = name.substring(0, 27);
       out.format(" %-27s ", name);
       showInv(inv, out);
+      out.format("%n");
+    }
+  }
+
+  public void showBest2(Formatter out) {
+    out.format("%nRun used in best dataset by RunSeq%n");
+    out.format("Seq  Forecast Time Offset %n    ");
+    for (double offsetHour : tcAll.getOffsetHours())
+      out.format("%3.0f ", offsetHour);
+    out.format("%n");
+
+    int count = 0;
+    for (RunSeq seq : getRunSeqs()) {
+      out.format("%3d ", count++);
+      List<FmrcInv.UberGrid> ugrids = seq.getUberGrids();
+      TimeInventory inv = makeBestInventory(ugrids.get(0));
+      showInv(inv, out);
+      for (FmrcInv.UberGrid ugrid : seq.getUberGrids()) {
+        TimeInventory inv2 = makeBestInventory(ugrid);
+        out.format(", %s ", ugrid.getName());
+        if (!testInv(inv, inv2))  out.format("BAD ");
+      }
+      out.format("%n");
     }
   }
 
@@ -645,12 +671,14 @@ public class FmrcInv {
       }
       out.format(" %-27s ", dateFormatter.toDateTimeString(grid.getRunDate()));
       showInv(invRun, out);
+      out.format("%n");
     }
 
     String name = ugrid.getName();
     if (name.length() > 27) name = name.substring(0, 27);
     out.format(" %-27s ", "result");
     showInv(inv, out);
+    out.format("%n");
   }
 
   private void showInv(TimeInventory tinv, Formatter out) {
@@ -661,12 +689,21 @@ public class FmrcInv {
       else
         out.format("%3d ", tinv.runIndex[i]);
     }
-    out.format("%n");
+  }
+
+  private boolean testInv(TimeInventory tinv1, TimeInventory tinv2) {
+    if (tinv1.useGrid.length != tinv2.useGrid.length) return false;
+
+    for (int i = 0; i < tinv1.useGrid.length; i++) {
+      if (tinv1.runIndex[i] != tinv2.runIndex[i])
+        return false;
+    }
+    return true;
   }
 
   // immutable after UberGrid.finish() is called.
   public class TimeInventory {
-    final TimeCoord tc; // the TimeCoord
+    final TimeCoord tc; // all the TimeCoords possible
     final FmrcInv.UberGrid ugrid; // for this grid
     final FmrInv.GridVariable[] useGrid; // use this run and grid for this offset
     final int[] runIndex; // the index of the run in the fmrList. ie findFmrIndex()

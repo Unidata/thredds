@@ -33,6 +33,7 @@
 
 package thredds.catalog.parser.jdom;
 
+import thredds.inventory.FeatureCollection;
 import thredds.util.PathAliasReplacement;
 import thredds.catalog.*;
 import thredds.crawlabledataset.*;
@@ -352,7 +353,24 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     String spec = collElem.getAttributeValue("spec");
     String olderThan = collElem.getAttributeValue("olderThan");
     String recheckEvery = collElem.getAttributeValue("recheckEvery");
-    ds.setCollection( spec, olderThan, recheckEvery);
+
+    FeatureCollection.Config config = new FeatureCollection.Config(spec, olderThan, recheckEvery);
+
+    Element protoElem = dsElem.getChild( "protoDataset", defNS );
+    if (protoElem != null) {
+      String choice = protoElem.getAttributeValue("choice");
+      String change = protoElem.getAttributeValue("change");
+      String content = protoElem.getTextNormalize();
+      config.protoConfig = new FeatureCollection.ProtoConfig(choice, change, content);
+    }
+
+    Element fmrcElem = dsElem.getChild( "fmrcConfig", defNS );
+    if (fmrcElem != null) {
+      String regularize = protoElem.getAttributeValue("regularize");
+      config.fmrcConfig = new FeatureCollection.FmrcConfig(regularize);
+    }
+
+    ds.setConfig( config);
 
     readDatasetInfo( catalog, ds, dsElem, base);
     return ds;

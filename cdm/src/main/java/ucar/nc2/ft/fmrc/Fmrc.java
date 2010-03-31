@@ -45,7 +45,7 @@ import java.io.IOException;
  * Forecast Model Run Collection, manages dynamic collections of GridDatasets.
  * Fmrc represents a virtual dataset.
  * To instantiate, you obtain an FmrcInv "snapshot" from which you can call getDatatset().
- *
+ * <p/>
  * Assumes that we dont have multiple runtimes in the same file.
  * Can handle different time steps in different files.
  * Can handle different grids in different files. However this creates problems for the "typical dataset".
@@ -61,21 +61,21 @@ public class Fmrc {
 
   /**
    * Factory method
+   *
    * @param collection describes the collection. May be one of:
-   * <ol>
-   * <li>collection specification string
-   * <li>catalog:catalogURL
-   * <li>filename.ncml
-   * <li>
-   * </ol>
-   * collectionSpec date extraction is used to get rundates
-   * @param errlog  place error messages here
-   * @param debug  place debug messages here
+   *                   <ol>
+   *                   <li>collection specification string
+   *                   <li>catalog:catalogURL
+   *                   <li>filename.ncml
+   *                   <li>
+   *                   </ol>
+   *                   collectionSpec date extraction is used to get rundates
+   * @param errlog     place error messages here
    * @return Fmrc or null on error
    * @throws IOException on read error
    * @see "http://www.unidata.ucar.edu/software/netcdf-java/reference/collections/CollectionSpecification.html"
    */
-  public static Fmrc open(String collection, Formatter errlog, Formatter debug) throws IOException {
+  public static Fmrc open(String collection, Formatter errlog) throws IOException {
     if (collection.startsWith(CAT)) {
       String catUrl = collection.substring(CAT.length());
       DatasetCollectionFromCatalog manager = new DatasetCollectionFromCatalog(catUrl, null);
@@ -90,12 +90,14 @@ public class Fmrc {
       return fmrc;
     }
 
-    return new Fmrc(collection, errlog, debug);
+    return new Fmrc(collection, errlog);
   }
 
   ////////////////////////////////////////////////////////////////////////
   private CollectionManager manager;
   private DateExtractor dateExtractor;
+  private FeatureCollection.Config config = new FeatureCollection.Config();
+
   private Element ncmlOuter, ncmlInner;
 
   // the current state - changing must be thread safe
@@ -103,21 +105,27 @@ public class Fmrc {
   private FmrcDataset fmrcDataset;
   private CollectionSpecParser sp = null;
 
-  Fmrc(String collectionSpec, Formatter errlog, Formatter debug) {
+  Fmrc(String collectionSpec, Formatter errlog) {
     sp = new CollectionSpecParser(collectionSpec, errlog);
     manager = new DatasetCollectionManager(sp, errlog);
-    
+
     // optional date extraction is used to get rundates when not embedded in the file
     dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), true);
-    if (debug != null) debug.format("Datasets in collection for spec=%s%n", sp);
 
-    this.fmrcDataset = new FmrcDataset();    
+    this.fmrcDataset = new FmrcDataset(config);
   }
 
   public Fmrc(CollectionManager manager, DateExtractor dateExtractor) {
     this.manager = manager;
     this.dateExtractor = dateExtractor == null ? new DateExtractorNone() : dateExtractor;
-    this.fmrcDataset = new FmrcDataset();
+    this.fmrcDataset = new FmrcDataset(config);
+  }
+
+  public Fmrc(CollectionManager manager, DateExtractor dateExtractor, FeatureCollection.Config config) {
+    this.manager = manager;
+    this.dateExtractor = dateExtractor == null ? new DateExtractorNone() : dateExtractor;
+    this.config = config;
+    this.fmrcDataset = new FmrcDataset(config);
   }
 
   public void setNcml(Element ncmlOuter, Element ncmlInner) {
@@ -126,11 +134,14 @@ public class Fmrc {
   }
 
   // exposed for debugging
+
   public CollectionManager getManager() {
     return manager;
   }
 
-  public CollectionSpecParser getCollectionSpecParser() { return sp; }
+  public CollectionSpecParser getCollectionSpecParser() {
+    return sp;
+  }
 
   /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -138,18 +149,24 @@ public class Fmrc {
    * Creates an FmrcInv - make a snapshot of the current state of inventory
    * Check to see if a rescan is needed.
    * public for debugging
+   *
    * @param force ignore rescan rules
    * @return FmrcInv - current state of inventory
    * @throws java.io.IOException on read error
    */
   public FmrcInv getFmrcInv(boolean force) throws IOException {
-    if (force || fmrc == null || manager.timeToRescan())
-      fmrc = new FmrcInv(manager.getCollectionName(), scan(null));
+    if (force || fmrc == null || manager.timeToRescan()) {
+      fmrc = new FmrcInv(manager.getCollectionName(), scan(null), config.fmrcConfig.regularize);
+    }
     return fmrc;
   }
 
   public GridDataset getDataset2D(boolean forceProto, boolean force, NetcdfDataset result) throws IOException {
-    return fmrcDataset.getNetcdfDataset2D( getFmrcInv( force), forceProto, force, result);
+    return fmrcDataset.getNetcdfDataset2D(getFmrcInv(force), forceProto, force, result);
+  }
+
+  public GridDataset getDatasetBest(boolean forceProto, boolean force, NetcdfDataset result) throws IOException {
+    return fmrcDataset.getBest(getFmrcInv(force), forceProto, force, result);
   }
 
   private List<FmrInv> scan(Formatter debug) throws IOException {
@@ -189,7 +206,6 @@ public class Fmrc {
 
   public static void main(String[] args) throws IOException {
     Formatter errlog = new Formatter();
-    Formatter debug = new Formatter();
 
     String spec1 = "/data/testdata/ncml/nc/nam_c20s/NAM_CONUS_20km_surface_#yyyyMMdd_HHmm#.grib1";
     String spec2 = "/data/testdata/grid/grib/grib1/data/agg/.*grb";
@@ -202,8 +218,7 @@ public class Fmrc {
     String specH = "C:/data/datasets/nogaps/US058GMET-GR1mdl.*air_temp";
     String specH2 = "C:/data/ft/grid/cg/.*nc$";
     String specH3 = "C:/data/ft/grid/namExtract/#yyyyMMdd_HHmm#.*nc$";
-    Fmrc fmrc = new Fmrc(specH3, errlog, debug);
+    Fmrc fmrc = new Fmrc(specH3, errlog);
     System.out.printf("errlog = %s%n", errlog);
-    System.out.printf("debug = %s%n", debug);
   }
 }

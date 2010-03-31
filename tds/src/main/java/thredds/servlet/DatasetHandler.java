@@ -256,7 +256,8 @@ public class DatasetHandler {
      * @throws IOException on read error
      */
   static public GridDataset openGridDataset( HttpServletRequest req, HttpServletResponse res, String reqPath, Set<NetcdfDataset.Enhance> enhanceMode) throws IOException {
-    // first look for a feature collection
+
+    // first look for a grid feature collection
     DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
     if ((match != null) && (match.dataRoot.featCollection != null)) {
       InvDatasetFeatureCollection featCollection = match.dataRoot.featCollection;

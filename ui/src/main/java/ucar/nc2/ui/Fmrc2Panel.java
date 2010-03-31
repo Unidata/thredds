@@ -34,6 +34,7 @@ package ucar.nc2.ui;
 
 import thredds.inventory.CollectionManager;
 import thredds.inventory.CollectionSpecParser;
+import thredds.inventory.FeatureCollection;
 import thredds.inventory.MFile;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ui.dialog.Fmrc2Dialog;
@@ -211,12 +212,9 @@ public class Fmrc2Panel extends JPanel {
     //  return;
 
     errlog = new Formatter();
-    debug = new Formatter();
-    fmrc = Fmrc.open(collectionSpec, errlog, debug);
+    fmrc = Fmrc.open(collectionSpec, errlog);
     if (fmrc == null) {
       infoTA.setText(errlog.toString());
-      infoTA.appendLine("\ndebug=");
-      infoTA.appendLine(debug.toString());
       infoTA.gotoTop();
       infoWindow.show();
       return;
@@ -299,6 +297,7 @@ public class Fmrc2Panel extends JPanel {
     if (fmrc != null) {
       fmrcInv.showRuntimeOffsetMatrix(result);
       fmrcInv.showBest(result);
+      fmrcInv.showBest2(result);
     }
   }
 
@@ -321,13 +320,14 @@ public class Fmrc2Panel extends JPanel {
   }
 
   private void showDataset(Fmrc2Dialog.Data data) {
-    FmrcDataset fds = new FmrcDataset();
+    FmrcDataset fds = new FmrcDataset( new FeatureCollection.Config());
     GridDataset gds = null;
     try {
       if (data.type.equals("Dataset2D"))
         gds = fds.getNetcdfDataset2D( fmrcInv, true, true, null);
       else
-        gds = fds.getBest();
+        gds = fds.getBest( fmrcInv, true, true, null);
+      
     } catch (IOException e) {
       e.printStackTrace();
     }
