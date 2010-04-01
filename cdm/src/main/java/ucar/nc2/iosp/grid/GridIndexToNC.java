@@ -220,15 +220,23 @@ public class GridIndexToNC {
       pv.addProduct(gribRecord);
     }
 
-    // global stuff
+    // global CF Conventions
     ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.0"));
-    String creator = null;
+    ncfile.addAttribute(null, new Attribute("title", "Original data format is GRIB (GRIdded Binary)"));
+
+    String center = null;
+    String subcenter = null;
+    String model = null;
     if ( lookup instanceof Grib2GridTableLookup ) {
       Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
-      creator = g2lookup.getFirstCenterName()
-          + " subcenter = " + g2lookup.getFirstSubcenterId();
-      if (creator != null)
-        ncfile.addAttribute(null, new Attribute("Originating_center", creator));
+      center = g2lookup.getFirstCenterName();
+      subcenter = g2lookup.getFirstSubcenterName();
+      ncfile.addAttribute(null, new Attribute("Originating_center", center));
+      ncfile.addAttribute(null, new Attribute("Originating_subcenter", subcenter));
+
+      model = g2lookup.getModelName();
+      //ncfile.addAttribute(null, new Attribute("source", model));
+
       String genType = g2lookup.getTypeGenProcessName(firstRecord);
       if (genType != null)
         ncfile.addAttribute(null, new Attribute("Generating_Process_or_Model", genType));
@@ -238,10 +246,13 @@ public class GridIndexToNC {
 
     } else if ( lookup instanceof Grib1GridTableLookup ) {
       Grib1GridTableLookup g1lookup = (Grib1GridTableLookup) lookup;
-      creator = g1lookup.getFirstCenterName()
-          + " subcenter = " + g1lookup.getFirstSubcenterId();
-      if (creator != null)
-        ncfile.addAttribute(null, new Attribute("Originating_center", creator));
+      center = g1lookup.getFirstCenterName();
+      subcenter = g1lookup.getFirstSubcenterName();
+      ncfile.addAttribute(null, new Attribute("Originating_center", center));
+      ncfile.addAttribute(null, new Attribute("Originating_subcenter", subcenter));
+
+      model = g1lookup.getModelName();
+
       String genType = g1lookup.getTypeGenProcessName(firstRecord);
       if (genType != null)
         ncfile.addAttribute(null, new Attribute("Generating_Process_or_Model", genType));
@@ -250,20 +261,24 @@ public class GridIndexToNC {
       ncfile.addAttribute(null, new Attribute("Product_Type", g1lookup.getFirstProductTypeName()));
     }
 
-    // dataset discovery
-    ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.GRID.toString()));
-    if ( creator != null)
-      ncfile.addAttribute(null, new Attribute("creator_name", creator));
-    ncfile.addAttribute(null, new Attribute("file_format", lookup.getGridType()));
-    ncfile.addAttribute(null,
-        new Attribute("location", ncfile.getLocation()));
+    if ( center != null)
+      ncfile.addAttribute(null, new Attribute("institution", "Center "+ center +" Subcenter "+ subcenter));
+    if ( model != null)
+      ncfile.addAttribute(null, new Attribute("source", model));
+
     ncfile.addAttribute(null, new Attribute(
             "history", "Direct read of "+ lookup.getGridType() +" into NetCDF-Java 4 API"));
 
-    ncfile.addAttribute(
-        null,
-        new Attribute(
-            _Coordinate.ModelRunDate,
+    // dataset discovery
+    if ( center != null)
+      ncfile.addAttribute(null, new Attribute("center_name", center));
+
+    // CDM attributes
+    ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.GRID.toString()));
+    ncfile.addAttribute(null, new Attribute("file_format", lookup.getGridType()));
+    ncfile.addAttribute(null,
+        new Attribute("location", ncfile.getLocation()));
+    ncfile.addAttribute(null, new Attribute(_Coordinate.ModelRunDate,
             formatter.toDateTimeStringISO(lookup.getFirstBaseTime())));
 
     if (fmrcCoordSys != null) {
@@ -548,7 +563,7 @@ public class GridIndexToNC {
    */
   private void makeDefinedCoordSys(NetcdfFile ncfile,
     GridTableLookup lookup, FmrcCoordSys fmr) throws IOException {
- 
+
     List<GridTimeCoord> timeCoords = new ArrayList<GridTimeCoord>();
     List<GridVertCoord> vertCoords = new ArrayList<GridVertCoord>();
     List<GridEnsembleCoord> ensembleCoords = new ArrayList<GridEnsembleCoord>();
@@ -828,4 +843,3 @@ public class GridIndexToNC {
   }
 
 }
-

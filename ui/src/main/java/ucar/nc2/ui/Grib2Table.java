@@ -33,6 +33,7 @@
 
 package ucar.nc2.ui;
 
+import ucar.grib.grib1.Grib1Tables;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.unidata.io.RandomAccessFile;
@@ -238,7 +239,7 @@ public class Grib2Table extends JPanel {
     }
 
     public final String getCenterName() {
-      return id.getCenter_idName();
+      return Grib1Tables.getCenter_idName( id.getCenter_id() );
     }
 
     public final String getTable() {
