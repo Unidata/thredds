@@ -73,58 +73,64 @@ public class DatasetCollectionManager implements CollectionManager {
   ////////////////////////////////////////////////////////////////////
 
   protected String collectionName;
+  private CollectionSpecParser sp;
+  private DateExtractor dateExtractor;
+  public FeatureCollection.CollectionChange changes = FeatureCollection.CollectionChange.False;
+
   private final List<MCollection> scanList = new ArrayList<MCollection>();
   protected TimeUnit recheck; // how often to recheck LOOK what should default be ?
+  private double olderThanFilterInSecs = -1;
 
   private Map<String, MFile> map; // current map of MFile
   private long lastScanned; // last time scanned
 
-  protected DatasetCollectionManager() {}
-
   public DatasetCollectionManager(String collectionSpec, Formatter errlog) {
     this.collectionName = collectionSpec; // StringUtil.escape(collectionSpec, "");
-    CollectionSpecParser sp = new CollectionSpecParser(collectionSpec, errlog);
+    this.sp = new CollectionSpecParser(collectionSpec, errlog);
 
     MFileFilter mfilter = (null == sp.getFilter()) ? null : new WildcardMatchOnName(sp.getFilter());
-    DateExtractor dateExtractor = (sp.getDateFormatMark() == null) ? null : new DateExtractorFromName(sp.getDateFormatMark(), true);
+    dateExtractor = (sp.getDateFormatMark() == null) ? null : new DateExtractorFromName(sp.getDateFormatMark(), true);
     scanList.add(new MCollection(sp.getTopDir(), sp.getTopDir(), sp.wantSubdirs(), mfilter, dateExtractor, null));
   }
 
   public DatasetCollectionManager(CollectionSpecParser sp, Formatter errlog) {
     this.collectionName = sp.getSpec();
+    this.sp = sp;
     MFileFilter mfilter = (null == sp.getFilter()) ? null : new WildcardMatchOnName(sp.getFilter());
-    DateExtractor dateExtractor = (sp.getDateFormatMark() == null) ? null : new DateExtractorFromName(sp.getDateFormatMark(), true);
+    this.dateExtractor = (sp.getDateFormatMark() == null) ? null : new DateExtractorFromName(sp.getDateFormatMark(), true);
     scanList.add(new MCollection(sp.getTopDir(), sp.getTopDir(), sp.wantSubdirs(), mfilter, dateExtractor, null));
   }
 
-  public DatasetCollectionManager(CollectionSpecParser sp, String olderThanFilter, Formatter errlog) {
+  public DatasetCollectionManager(FeatureCollection.Config config, Formatter errlog) {
+    this.changes = config.changes;
+    this.sp = new CollectionSpecParser(config.spec, errlog);
     this.collectionName = sp.getSpec();
+    this.dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), true);
 
     List<MFileFilter> filters = new ArrayList<MFileFilter>(3);
     if (null != sp.getFilter())
       filters.add( new WildcardMatchOnName(sp.getFilter()));
 
-    if (olderThanFilter != null) {
+    if (config.olderThan != null) {
       try {
-        TimeUnit tu = new TimeUnit(olderThanFilter);
+        TimeUnit tu = new TimeUnit(config.olderThan);
         olderThanFilterInSecs = tu.getValueInSeconds();
         filters.add( new LastModifiedLimit((long) (1000 * olderThanFilterInSecs)));
       } catch (Exception e) {
-        logger.error("Invalid time unit for olderThan = {}", olderThanFilter);
+        logger.error(collectionName+": Invalid time unit for olderThan = {}", config.olderThan);
       }
     }
 
     MFileFilter mfilter = (filters.size() == 0) ? null : ((filters.size() == 1) ? filters.get(0) : new Composite(filters));
-    DateExtractor dateExtractor = (sp.getDateFormatMark() == null) ? null : new DateExtractorFromName(sp.getDateFormatMark(), true);
+    dateExtractor = (sp.getDateFormatMark() == null) ? null : new DateExtractorFromName(sp.getDateFormatMark(), true);
     scanList.add(new MCollection(sp.getTopDir(), sp.getTopDir(), sp.wantSubdirs(), mfilter, dateExtractor, null));
   }
 
-  private double olderThanFilterInSecs = -1;
-  public double getOlderThanFilterInSecs() {
-    return olderThanFilterInSecs;
-  }
+  // for subclasses
+  protected DatasetCollectionManager() {}
 
   /**
+   * For retrofitting to Aggregation
    * Must also call addDirectoryScan one or more times
    * @param recheckS a undunit time unit, specifying how often to rscan
    */
@@ -136,8 +142,10 @@ public class DatasetCollectionManager implements CollectionManager {
     if (recheckS != null) {
       try {
         this.recheck = new TimeUnit(recheckS);
+        this.changes = FeatureCollection.CollectionChange.True;
+
       } catch (Exception e) {
-        logger.error("Invalid time unit for recheckEvery = {}", recheckS);
+        logger.error(collectionName+": Invalid time unit for recheckEvery = {}", recheckS);
       }
     }
   }
@@ -165,7 +173,7 @@ public class DatasetCollectionManager implements CollectionManager {
         TimeUnit tu = new TimeUnit(olderS);
         filters.add(new LastModifiedLimit((long) (1000 * tu.getValueInSeconds())));
       } catch (Exception e) {
-        logger.error("Invalid time unit for olderThan = {}", olderS);
+        logger.error(collectionName+": Invalid time unit for olderThan = {}", olderS);
       }
     }
 
@@ -198,6 +206,14 @@ public class DatasetCollectionManager implements CollectionManager {
     return "fmrc:" + collectionName;
   }
 
+  public CollectionSpecParser getCollectionSpecParser() {
+    return sp;
+  }
+
+  public double getOlderThanFilterInSecs() {
+    return olderThanFilterInSecs;
+  }
+
   /**
    * Scan the directory(ies) and create MFile objects.
    * Get the results from getFiles()
@@ -212,6 +228,7 @@ public class DatasetCollectionManager implements CollectionManager {
       map = newMap;
       this.lastScanned = System.currentTimeMillis();
     }
+    if (logger.isInfoEnabled()) logger.info(collectionName+": initial scan found n datasets = "+map.keySet().size());
   }
 
   /**
@@ -220,15 +237,16 @@ public class DatasetCollectionManager implements CollectionManager {
    *
    * @return true is rescan time has passed
    */
-  public boolean timeToRescan() {
+  @Override
+  public boolean isRescanNeeded() {
     if (scanList.isEmpty()) {
-      if (debugSyncDetail) System.out.println(" *Sync not needed, no scanners");
+      if (debugSyncDetail && logger.isDebugEnabled()) logger.debug(collectionName+": rescan not needed, no scanners");
       return false;
     }
 
     // see if we need to recheck
-    if (recheck == null) {
-      if (debugSyncDetail) System.out.println(" *Sync not needed, recheck is null");
+    if (changes == FeatureCollection.CollectionChange.False || changes == FeatureCollection.CollectionChange.Trigger) {
+      if (debugSyncDetail && logger.isDebugEnabled()) logger.debug(collectionName+": rescan not needed, changes == "+changes);
       return false;
     }
 
@@ -236,7 +254,7 @@ public class DatasetCollectionManager implements CollectionManager {
     Date lastCheckedDate = new Date(lastScanned);
     Date need = recheck.add(lastCheckedDate);
     if (now.before(need)) {
-      if (logger.isDebugEnabled()) logger.debug(" *Sync not needed, last= " + lastCheckedDate + " now = " + now);
+      if (debugSyncDetail && logger.isDebugEnabled()) logger.debug(collectionName+": rescan not needed, last= " + lastCheckedDate + " now = " + now);
       return false;
     }
 
@@ -251,8 +269,9 @@ public class DatasetCollectionManager implements CollectionManager {
    * @return true if anything actually changed.
    * @throws IOException on I/O error
    */
+  @Override
   public boolean rescan() throws IOException {
-    if (logger.isDebugEnabled()) logger.debug(" *Sync at " + new Date());
+    if (logger.isInfoEnabled()) logger.info(collectionName+": rescan at " + new Date());
 
     // rescan
     Map<String, MFile> oldMap = map;
@@ -260,35 +279,42 @@ public class DatasetCollectionManager implements CollectionManager {
     scan(newMap, null);
 
     // replace with previous datasets if they exist
-    boolean changed = false;
+    int nnew = 0;
     for (MFile newDataset : newMap.values()) {
       String path = newDataset.getPath();
       MFile oldDataset = oldMap.get(path);
       if (oldDataset != null) {
         newMap.put(path, oldDataset);
-        if (debugSyncDetail) System.out.println("  sync using old Dataset= " + path);
+        if (debugSyncDetail && logger.isDebugEnabled()) logger.debug(collectionName+": rescan retains old Dataset= " + path);
       } else {
-        changed = true;
-        if (debugSyncDetail) System.out.println("  sync found new Dataset= " + path);
+        nnew++;
+        if (debugSyncDetail && logger.isDebugEnabled()) logger.debug(collectionName+": rescan found new Dataset= " + path);
       }
     }
 
-    if (!changed) { // check for deletions
-      for (MFile oldDataset : oldMap.values()) {
-        String path = oldDataset.getPath();
-        MFile newDataset = newMap.get(path);
-        if (newDataset == null) {
-          changed = true;
-          if (debugSyncDetail) System.out.println("  sync found deleted Dataset= " + path);
-          break;
-        }
+    // check for deletions
+    int ndelete = 0;
+    for (MFile oldDataset : oldMap.values()) {
+      String path = oldDataset.getPath();
+      MFile newDataset = newMap.get(path);
+      if (newDataset == null) {
+        ndelete++;
+        if (logger.isDebugEnabled()) logger.debug(collectionName+": rescan found deleted Dataset= " + path);
+        break;
       }
     }
+
+    boolean changed = (nnew > 0) || (ndelete > 0);
 
     if (changed) {
+      if (logger.isInfoEnabled()) logger.info(collectionName+": rescan found changes new = "+nnew+" delete= "+ndelete);
       synchronized (this) {
         map = newMap;
         this.lastScanned = System.currentTimeMillis();
+      }
+    } else {
+       synchronized (this) {
+         this.lastScanned = System.currentTimeMillis();
       }
     }
 
@@ -300,6 +326,7 @@ public class DatasetCollectionManager implements CollectionManager {
    *
    * @return time dureation of rescan period, or null if none.
    */
+  @Override
   public TimeUnit getRecheck() {
     return recheck;
   }
@@ -309,6 +336,7 @@ public class DatasetCollectionManager implements CollectionManager {
    *
    * @return msecs since 1970
    */
+  @Override
   public long getLastScanned() {
     return lastScanned;
   }
@@ -318,10 +346,16 @@ public class DatasetCollectionManager implements CollectionManager {
    *
    * @return current list of MFile, sorted by name
    */
+  @Override
   public List<MFile> getFiles() {
     List<MFile> result = new ArrayList<MFile>(map.values());
     Collections.sort(result);
     return result;
+  }
+
+  @Override
+  public Date extractRunDate(MFile mfile) {
+    return (dateExtractor == null) ? null : dateExtractor.getDate(mfile);
   }
 
   protected void scan(java.util.Map<String, MFile> map, CancelTask cancelTask) throws IOException {
@@ -332,7 +366,7 @@ public class DatasetCollectionManager implements CollectionManager {
 
       Iterator<MFile> iter = (mc.wantSubdirs()) ? controller.getInventory(mc) : controller.getInventoryNoSubdirs(mc);
       if (iter == null) {
-        logger.error("DatasetCollectionManager Invalid collection= " + mc);
+        logger.error(collectionName+": DatasetCollectionManager Invalid collection= " + mc);
         continue;
       }
 

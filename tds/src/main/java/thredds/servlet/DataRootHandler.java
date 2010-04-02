@@ -696,7 +696,7 @@ public class DataRootHandler {
     DataRoot(InvDatasetFeatureCollection featCollection) {
       this.path = featCollection.getPath();
       this.featCollection = featCollection;
-      //this.dirLocation = featCollection.getTopDirLocation();
+      this.dirLocation = featCollection.getTopDirectoryLocation();
     }
 
     DataRoot(InvDatasetFmrc fmrc) {

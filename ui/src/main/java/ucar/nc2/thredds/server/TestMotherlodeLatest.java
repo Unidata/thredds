@@ -32,7 +32,6 @@
  */
 package ucar.nc2.thredds.server;
 
-import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.GridDataset;

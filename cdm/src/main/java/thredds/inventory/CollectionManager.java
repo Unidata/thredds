@@ -36,6 +36,7 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.units.TimeUnit;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -65,7 +66,7 @@ public interface CollectionManager {
    *
    * @return true if rescan is needed.
    */
-  public boolean timeToRescan();
+  public boolean isRescanNeeded();
 
   /**
    * Rescan directories. Files may be deleted or added.
@@ -97,6 +98,13 @@ public interface CollectionManager {
    * @return current list of MFile, sorted by name
    */
   public List<MFile> getFiles();
+
+  /**
+   * Use the date extractor to extract the date from the filename
+   * @param mfile extract from here
+   * @return Date, or null if none
+   */
+  public Date extractRunDate(MFile mfile);
 
   /////////////////////////////////////////////////////////////////////
   // experimental

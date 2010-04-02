@@ -34,7 +34,6 @@ package ucar.nc2.ncml;
 
 import thredds.inventory.DateExtractor;
 import thredds.inventory.DateExtractorFromName;
-import thredds.inventory.DateExtractorNone;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.ft.fmrc.Fmrc;

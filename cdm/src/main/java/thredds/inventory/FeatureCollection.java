@@ -45,6 +45,10 @@ import java.util.Set;
  * @since Mar 30, 2010
  */
 public class FeatureCollection {
+  static public enum CollectionChange {
+    True, False, Trigger, AppendOnly, Rolling
+  }
+
   static public enum ProtoChoice {
     First, Random, Latest, Penultimate
   }
@@ -57,16 +61,25 @@ public class FeatureCollection {
 
   static public class Config {
     public String spec, olderThan, recheckEvery;
+    public CollectionChange changes = CollectionChange.False;
     public ProtoConfig protoConfig = new ProtoConfig();
     public FmrcConfig fmrcConfig = new FmrcConfig();
 
     public Config() {
     }
 
-    public Config(String spec, String olderThan, String recheckEvery) {
+    public Config(String spec, String olderThan, String changes, String recheckEvery) {
       this.spec = spec;
       this.olderThan = olderThan;
       this.recheckEvery = recheckEvery;
+
+      if (changes != null) {
+        try {
+          this.changes = CollectionChange.valueOf(changes);
+        } catch (Exception e) {
+          log.warn("Dont recognize CollectionChange " + changes);
+        }
+      }
     }
   }
 
@@ -74,15 +87,18 @@ public class FeatureCollection {
     public ProtoChoice choice = ProtoChoice.Penultimate;
     public String change = null;
     public String filename = null;
+    public boolean cacheAll = true;
 
     public ProtoConfig() { // defaults
     }
 
     public ProtoConfig(String choice, String change, String filename) {
-      try {
-        this.choice = ProtoChoice.valueOf(choice);
-      } catch (Exception e) {
-        log.warn("Dont recognize ProtoChoice " + choice);
+      if (choice != null) {
+        try {
+          this.choice = ProtoChoice.valueOf(choice);
+        } catch (Exception e) {
+          log.warn("Dont recognize ProtoChoice " + choice);
+        }
       }
 
       this.choice = ProtoChoice.valueOf(choice);
@@ -91,8 +107,8 @@ public class FeatureCollection {
     }
   }
 
-  static private Set<FmrcDatasetType> defaultDatasetTypes = Collections.unmodifiableSet(EnumSet.of(FmrcDatasetType.TwoD, FmrcDatasetType.Best,
-          FmrcDatasetType.Files, FmrcDatasetType.Runs));
+  static private Set<FmrcDatasetType> defaultDatasetTypes =
+          Collections.unmodifiableSet(EnumSet.of(FmrcDatasetType.TwoD, FmrcDatasetType.Best, FmrcDatasetType.Files, FmrcDatasetType.Runs));
 
   static public class FmrcConfig {
     public boolean regularize = false;

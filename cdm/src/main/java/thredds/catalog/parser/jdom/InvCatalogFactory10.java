@@ -351,9 +351,14 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
     String spec = collElem.getAttributeValue("spec");
     String olderThan = collElem.getAttributeValue("olderThan");
+    String changes = collElem.getAttributeValue("changes");
     String recheckEvery = collElem.getAttributeValue("recheckEvery");
+    if (spec == null) {
+      logger.error( "featureCollection "+name+" must have a spec attribute." );
+      return null;
+    }
 
-    FeatureCollection.Config config = new FeatureCollection.Config(spec, olderThan, recheckEvery);
+    FeatureCollection.Config config = new FeatureCollection.Config(spec, olderThan, changes, recheckEvery);
 
     Element protoElem = dsElem.getChild( "protoDataset", defNS );
     if (protoElem != null) {

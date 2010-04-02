@@ -63,6 +63,7 @@ class FmrcDataset {
   private final FeatureCollection.Config config;
 
   private NetcdfDataset proto; // once built, the proto doesnt change
+  private List<String> protoList; // the list of datasets in the proto that have proxy reader, so these need to exist. not implemented yet
   private GridDataset gds2D; // result dataset. must be threadsafe (immutable?)
   private GridDataset best; // must be threadsafe (immutable?)
   private DateFormatter dateFormatter = new DateFormatter();
@@ -117,7 +118,7 @@ class FmrcDataset {
   // the prototypical dataset
 
   private NetcdfDataset makeProto(FmrcInv fmrcInv, FeatureCollection.ProtoConfig protoConfig, HashMap<String, NetcdfDataset> openFilesProto) throws IOException {
-    System.out.printf("makeProto %n");
+    // System.out.printf("makeProto %n");
     NetcdfDataset result = new NetcdfDataset(); // empty
 
     // choose some run in in the list
@@ -144,7 +145,7 @@ class FmrcDataset {
     // this covers the case where the variables are split across files
     Set<GridDatasetInv> files = proto.getFiles();
     for (GridDatasetInv file : files) {
-      NetcdfDataset ncfile = open(file.getLocation(), openFilesProto);  // not acquiring, default enhance
+      NetcdfDataset ncfile = open(file.getLocation(), openFilesProto);
       transferGroup(ncfile.getRootGroup(), result.getRootGroup(), result);
     }
 
@@ -159,7 +160,7 @@ class FmrcDataset {
 
     result.finish();
 
-    // remove troublesome attributes
+    // remove more troublesome attributes
     for (Variable v : result.getVariables()) {
       v.removeAttribute(_Coordinate.Axes);
     }
@@ -356,15 +357,17 @@ class FmrcDataset {
     result.finish();  // this puts the new dimensions into the global structures
 
     if (buildProto) {
+      protoList = new ArrayList<String>();
       // these are the non-agg variables - store data or ProxyReader in proto
       for (Variable v : nonAggVars) {
         Variable protoV = proto.findVariable(v.getName());
         Variable orgV = (Variable) protoV.getSPobject();
-        if (v.isCaching() || v.isCoordinateVariable()) { // want to cache
+        if (config.protoConfig.cacheAll || v.isCaching() || v.isCoordinateVariable()) { // want to cache
           protoV.setCachedData(orgV.read()); // read from original - store in proto
         } else {
           String location = orgV.getParentGroup().getNetcdfFile().getLocation(); // hmmmmm
           protoV.setProxyReader(new DatasetProxyReader(location));  // keep track of original file
+          protoList.add(location);
         }
       }
 
@@ -381,6 +384,7 @@ class FmrcDataset {
       } else {
         v.setProxyReader(protoV.getProxyReader());
       }
+      v.setSPobject(null); // clean up
     }
 
     CoordSysBuilderIF builder = result.enhance();
@@ -622,15 +626,17 @@ class FmrcDataset {
     result.finish();  // this puts the new dimensions into the global structures
 
     if (buildProto) {
+      protoList = new ArrayList<String>();
       // these are the non-agg variables - store data or ProxyReader in proto
       for (Variable v : nonAggVars) {
         Variable protoV = proto.findVariable(v.getName());
         Variable orgV = (Variable) protoV.getSPobject();
-        if (v.isCaching() || v.isCoordinateVariable()) { // want to cache
+        if (config.protoConfig.cacheAll || v.isCaching() || v.isCoordinateVariable()) { // want to cache
           protoV.setCachedData(orgV.read()); // read from original - store in proto
         } else {
           String location = orgV.getParentGroup().getNetcdfFile().getLocation(); // hmmmmm
           protoV.setProxyReader(new DatasetProxyReader(location));  // keep track of original file
+          protoList.add(location);
         }
       }
 

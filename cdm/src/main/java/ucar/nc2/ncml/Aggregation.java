@@ -32,7 +32,6 @@
  */
 package ucar.nc2.ncml;
 
-import thredds.inventory.CollectionManager;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
@@ -269,14 +268,14 @@ public abstract class Aggregation {
    * @throws IOException on io error
    */
   public synchronized boolean syncExtend() throws IOException {
-    if (!datasetManager.timeToRescan())
+    if (!datasetManager.isRescanNeeded())
       return false;
 
     return _sync();
   }
 
   public synchronized boolean sync() throws IOException {
-    return datasetManager.timeToRescan() && _sync();
+    return datasetManager.isRescanNeeded() && _sync();
   }
 
   private boolean _sync() throws IOException {

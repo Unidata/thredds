@@ -42,7 +42,6 @@ import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.constants._Coordinate;
-import ucar.unidata.geoloc.LatLonRect;
 
 import java.util.*;
 import java.io.*;
@@ -79,7 +78,7 @@ public class GridDatasetInv {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridDatasetInv.class);
   private static final boolean debugCache = false;
 
-  public static GridDatasetInv open(CollectionManager cm, MFile mfile, DateExtractor de) throws IOException {
+  public static GridDatasetInv open(CollectionManager cm, MFile mfile) throws IOException {
     // do we already have it ?
     byte[] xmlBytes = cm.getMetadata(mfile, "fmrInv.xml");
     if (xmlBytes != null) {
@@ -96,7 +95,7 @@ public class GridDatasetInv {
     GridDataset gds = null;
     try {
       gds = GridDataset.open( mfile.getPath());
-      GridDatasetInv inv = new GridDatasetInv(gds, de.getDate(mfile));
+      GridDatasetInv inv = new GridDatasetInv(gds, cm.extractRunDate(mfile));
       String xmlString = inv.writeXML( new Date(mfile.getLastModified()));
       cm.putMetadata(mfile, "fmrInv.xml", xmlString.getBytes("UTF-8"));
       if (debugCache) System.out.printf(" added xmlFile %s to cache %n", mfile.getPath()+".fmrInv.xml");

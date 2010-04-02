@@ -86,7 +86,6 @@ public class TestFmrc extends TestCase {
 
   }
 
-
   static void doOne2D(String pathname, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes,
                     String gridName, int nruns, int ntimes) throws Exception {
 

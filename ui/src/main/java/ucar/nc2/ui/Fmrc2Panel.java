@@ -34,6 +34,7 @@ package ucar.nc2.ui;
 
 import thredds.inventory.CollectionManager;
 import thredds.inventory.CollectionSpecParser;
+import thredds.inventory.DatasetCollectionManager;
 import thredds.inventory.MFile;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ui.dialog.Fmrc2Dialog;
@@ -249,14 +250,18 @@ public class Fmrc2Panel extends JPanel {
     }
 
     infoTA.clear();
-    CollectionSpecParser sp = fmrc.getCollectionSpecParser();
+
+    CollectionSpecParser sp = null;
+    CollectionManager cm = fmrc.getManager();
+    if (cm instanceof DatasetCollectionManager) {
+      sp = ((DatasetCollectionManager) cm).getCollectionSpecParser();
+    }
     if (sp != null) {
       infoTA.appendLine("CollectionSpecParser= "+sp);
       File dir = new File(sp.getTopDir());
       infoTA.appendLine(" topdir exists = = "+dir.exists());
     }
 
-    CollectionManager cm = fmrc.getManager();
     infoTA.appendLine("CollectionManager= ");
     infoTA.appendLine(cm.toString());
 

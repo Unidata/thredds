@@ -36,6 +36,17 @@
     </layout>
   </appender>
 
+  <!-- keep track of Cache messages in a seperate file. -->
+  <appender name="ftScan" class="org.apache.log4j.RollingFileAppender">
+    <param name="File" value="${tds.log.dir}/ftScan.log"/>
+    <param name="MaxFileSize" value="1MB"/>
+    <param name="MaxBackupIndex" value="2"/>
+    <param name="Append" value="false"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="[%d{dd/MMM/yyyy:HH:mm:ss}] %m%n"/>
+    </layout>
+  </appender>
+
   <!-- serverStartup.log is recreated each time Tomcat is started -->
   <appender name="serverStartupAppender" class="org.apache.log4j.FileAppender">
     <param name="File" value="${tds.log.dir}/serverStartup.log"/>
@@ -127,22 +138,14 @@
   </logger>
   <!-- end grib debugging -->
 
-  <!-- fmrc debugging
-  <logger name="ucar.nc2.dt.fmrc" additivity="false">
+  <!-- fmrc debugging -->
+
+  <logger name="thredds.inventory.DatasetCollectionManager" additivity="false">
     <level value="INFO"/>
-    <appender-ref ref="modelLog"/>
+    <appender-ref ref="ftScan"/>
   </logger>
 
-  <logger name="thredds.catalog.InvDatasetFmrc" additivity="false">
-    <level value="INFO"/>
-    <appender-ref ref="modelLog"/>
-  </logger>
-
-  <logger name="ucar.nc2.ncml" additivity="false">
-    <level value="INFO"/>
-    <appender-ref ref="threddsServlet"/>
-  </logger>
-  end fmrc debuggimg -->
+  <!-- end fmrc debuggimg -->
 
   <!-- All normal logging messages go to threddsServlet.log -->
   <logger name="opendap" additivity="false">

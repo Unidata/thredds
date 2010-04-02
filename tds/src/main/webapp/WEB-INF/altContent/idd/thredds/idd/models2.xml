@@ -59,8 +59,7 @@
 
     <dataset ID="NCEP/GFS" name="Global Forecast System (GFS) Model">
       <metadata inherited="true">
-        <documentation type="summary">NCEP Global Forecast System Model, previously called AVN/MRF (Medium Range
-          Forecast)
+        <documentation type="summary">NCEP Global Forecast System Model, previously called AVN/MRF (Medium Range Forecast)
         </documentation>
         <documentation xlink:href="http://meted.ucar.edu/nwp/pcu2/avintro.htm"
                        xlink:title="COMET MetEd (Meteorology Education and Training) documentation"/>
@@ -212,19 +211,18 @@
         <fmrcConfig regularize="true"/>
       </featureCollection>
 
-      <featureCollection name="NCEP-GFS-N_Hemispheric_381km" featureType="FMRC" harvest="true"
-                         path="ft/NCEP/GFS/N_Hemispheric_381km">
+      <featureCollection name="NCEP-GFS-N_Hemisphere_381km" featureType="FMRC" harvest="true"
+                         path="ft/NCEP/GFS/N_Hemisphere_381km">
         <metadata inherited="true">
-          <documentation type="summary">NCEP GFS Model : AWIPS 201 (A) Grid. Northern Hemispheric (polar stereographic).
+          <documentation type="summary">NCEP GFS Model : AWIPS 201 (A) Grid. Northern Hemisphere (polar stereographic).
             Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 5 days.
             Horizontal = 65 by 65 points, resolution 381.0 km, Polar Stereographic projection.
-            Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure
-            layers.
+            Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure layers.
           </documentation>
         </metadata>
 
         <collection
-            spec="/data/ldm/pub/native/grid/NCEP/GFS/N_Hemispheric_381km/GFS_N_Hemispheric_381km_#yyyyMMdd_HHmm#.grib1"
+            spec="/data/ldm/pub/native/grid/NCEP/GFS/N_Hemisphere_381km/GFS_N_Hemisphere_381km_#yyyyMMdd_HHmm#.grib1"
             recheckEvery="15 min"
             olderThan="5 min"/>
         <protoDataset choice="Penultimate" change="2 3 * * ?"/>
@@ -1193,6 +1191,158 @@
 
     </dataset>
 
+    <dataset ID="NCEP/WW3" name="NCEP Wave Watch III">
+        <metadata inherited="true">
+          <documentation type="summary">NCEP Wave Watch III (WW3): US National Weather Service gridded forecasts of sensible weather elements. </documentation>
+          <documentation xlink:href="http://polar.ncep.noaa.gov/waves/products.shtml" xlink:title="NWS/WW3 Website" />
+          <dataFormat>GRIB-2</dataFormat>
+        </metadata>
+
+      <datasetFmrc name="NCEP-WW3-Alaskan_4minute" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/WW3/Alaskan_4minute">
+        <metadata inherited="true">
+          <documentation type="summary">
+            548 by 391 points, resolution 4 minute. Models are run daily at 0Z, 6Z, 12Z and 18Z. Forecasts every 3 hours from 0 to 72, every 6 hours from 72 to 180 hours.
+          </documentation>
+        </metadata>
+
+        <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+          <aggregation dimName="run" type="forecastModelRunCollection" fmrcDefinition="NCEP-WW3-Alaskan_4minute.fmrcDefinition.xml" recheckEvery="15 min">
+            <scan  location="/data/ldm/pub/native/grid/NCEP/WW3/Alaskan_4minute/" suffix=".grib2" dateFormatMark="WW3_Alaskan_4minute_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
+          </aggregation>
+        </netcdf>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/WW3/Alaskan_4minute/" suffix=".grib2" fmrcDefinition="NCEP-WW3-Alaskan_4minute.fmrcDefinition.xml" />
+        <addTimeCoverage
+                datasetNameMatchPattern="WW3_Alaskan_4minute_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).grib2"
+                startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="180 hours"/>
+      </datasetFmrc>
+
+      <datasetFmrc name="NCEP-WW3-Alaskan_10minute" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/WW3/Alaskan_10minute">
+        <metadata inherited="true">
+          <documentation type="summary">
+            401 by 187 points, resolution 10 minute. Models are run daily at 0Z, 6Z, 12Z and 18Z. Forecasts every 3 hours from 0 to 72, every 6 hours from 72 to 180 hours.
+          </documentation>
+        </metadata>
+
+        <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+          <aggregation dimName="run" type="forecastModelRunCollection" fmrcDefinition="NCEP-WW3-Alaskan_10minute.fmrcDefinition.xml" recheckEvery="15 min">
+            <scan  location="/data/ldm/pub/native/grid/NCEP/WW3/Alaskan_10minute/" suffix=".grib2" dateFormatMark="WW3_Alaskan_10minute_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
+          </aggregation>
+        </netcdf>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/WW3/Alaskan_10minute/" suffix=".grib2" fmrcDefinition="NCEP-WW3-Alaskan_10minute.fmrcDefinition.xml" />
+        <addTimeCoverage
+                datasetNameMatchPattern="WW3_Alaskan_10minute_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).grib2"
+                startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="180 hours"/>
+      </datasetFmrc>
+
+      <datasetFmrc name="NCEP-WW3-Atlantic_4minute" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/WW3/Atlantic_4minute">
+        <metadata inherited="true">
+          <documentation type="summary">
+            586 by 481 points, resolution 4 minute. Models are run daily at 0Z, 6Z, 12Z and 18Z. Forecasts every 3 hours from 0 to 72, every 6 hours from 72 to 180 hours.
+          </documentation>
+        </metadata>
+
+        <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+          <aggregation dimName="run" type="forecastModelRunCollection" fmrcDefinition="NCEP-WW3-Atlantic_4minute.fmrcDefinition.xml" recheckEvery="15 min">
+            <scan  location="/data/ldm/pub/native/grid/NCEP/WW3/Atlantic_4minute/" suffix=".grib2" dateFormatMark="WW3_Atlantic_4minute_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
+          </aggregation>
+        </netcdf>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/WW3/Atlantic_4minute/" suffix=".grib2" fmrcDefinition="NCEP-WW3-Atlantic_4minute.fmrcDefinition.xml" />
+        <addTimeCoverage
+                datasetNameMatchPattern="WW3_Atlantic_4minute_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).grib2"
+                startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="180 hours"/>
+      </datasetFmrc>
+
+      <datasetFmrc name="NCEP-WW3-Atlantic_10minute" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/WW3/Atlantic_10minute">
+        <metadata inherited="true">
+          <documentation type="summary">
+            301 by 331 points, resolution 10 minute. Models are run daily at 0Z, 6Z, 12Z and 18Z. Forecasts every 3 hours from 0 to 72, every 6 hours from 72 to 180 hours.
+          </documentation>
+        </metadata>
+
+        <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+          <aggregation dimName="run" type="forecastModelRunCollection" fmrcDefinition="NCEP-WW3-Atlantic_10minute.fmrcDefinition.xml" recheckEvery="15 min">
+            <scan  location="/data/ldm/pub/native/grid/NCEP/WW3/Atlantic_10minute/" suffix=".grib2" dateFormatMark="WW3_Atlantic_10minute_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
+          </aggregation>
+        </netcdf>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/WW3/Atlantic_10minute/" suffix=".grib2" fmrcDefinition="NCEP-WW3-Atlantic_10minute.fmrcDefinition.xml" />
+        <addTimeCoverage
+                datasetNameMatchPattern="WW3_Atlantic_10minute_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).grib2"
+                startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="180 hours"/>
+      </datasetFmrc>
+
+      <datasetFmrc name="NCEP-WW3-EasternPacific_10minute" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/WW3/EasternPacific_10minute">
+        <metadata inherited="true">
+          <documentation type="summary">
+            511 by 301 points, resolution 10 minute. Models are run daily at 0Z, 6Z, 12Z and 18Z. Forecasts every 3 hours from 0 to 72, every 6 hours from 72 to 180 hours.
+          </documentation>
+        </metadata>
+
+        <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+          <aggregation dimName="run" type="forecastModelRunCollection" fmrcDefinition="NCEP-WW3-EasternPacific_10minute.fmrcDefinition.xml" recheckEvery="15 min">
+            <scan  location="/data/ldm/pub/native/grid/NCEP/WW3/EasternPacific_10minute/" suffix=".grib2" dateFormatMark="WW3_EasternPacific_10minute_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
+          </aggregation>
+        </netcdf>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/WW3/EasternPacific_10minute/" suffix=".grib2" fmrcDefinition="NCEP-WW3-EasternPacific_10minute.fmrcDefinition.xml" />
+        <addTimeCoverage
+                datasetNameMatchPattern="WW3_EasternPacific_10minute_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).grib2"
+                startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="180 hours"/>
+      </datasetFmrc>
+
+      <datasetFmrc name="NCEP-WW3-Global_30minute" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/WW3/Global_30minute">
+        <metadata inherited="true">
+          <documentation type="summary">
+            720 by 336 points, resolution 30 minute. Models are run daily at 0Z, 6Z, 12Z and 18Z. Forecasts every 3 hours from 0 to 72, every 6 hours from 72 to 180 hours.
+          </documentation>
+        </metadata>
+
+        <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+          <aggregation dimName="run" type="forecastModelRunCollection" fmrcDefinition="NCEP-WW3-GLOBAL_30minute.fmrcDefinition.xml" recheckEvery="15 min">
+            <scan  location="/data/ldm/pub/native/grid/NCEP/WW3/Global_30minute/" suffix=".grib2" dateFormatMark="WW3_Global_30minute_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
+          </aggregation>
+        </netcdf>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/WW3/Global_30minute/" suffix=".grib2" fmrcDefinition="NCEP-WW3-GLOBAL_30minute.fmrcDefinition.xml" />
+        <addTimeCoverage
+                datasetNameMatchPattern="WW3_Global_30minute_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).grib2"
+                startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="180 hours"/>
+      </datasetFmrc>
+
+      <datasetFmrc name="NCEP-WW3-WestCoast_4minute" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/WW3/WestCoast_4minute">
+        <metadata inherited="true">
+          <documentation type="summary">
+            736 by 526 points, resolution 4 minute. Models are run daily at 0Z, 6Z, 12Z and 18Z. Forecasts every 3 hours from 0 to 72, every 6 hours from 72 to 180 hours.
+          </documentation>
+        </metadata>
+
+        <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+          <aggregation dimName="run" type="forecastModelRunCollection" fmrcDefinition="NCEP-WW3-WestCoast_4minute.fmrcDefinition.xml" recheckEvery="15 min">
+            <scan  location="/data/ldm/pub/native/grid/NCEP/WW3/WestCoast_4minute/" suffix=".grib2" dateFormatMark="WW3_WestCoast_4minute_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
+          </aggregation>
+        </netcdf>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/WW3/WestCoast_4minute/" suffix=".grib2" fmrcDefinition="NCEP-WW3-WestCoast_4minute.fmrcDefinition.xml" />
+        <addTimeCoverage
+                datasetNameMatchPattern="WW3_WestCoast_4minute_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).grib2"
+                startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="180 hours"/>
+      </datasetFmrc>
+
+      <datasetFmrc name="NCEP-WW3-WestCoast_10minute" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/WW3/WestCoast_10minute">
+        <metadata inherited="true">
+          <documentation type="summary">
+            241 by 151 points, resolution 10 minute. Models are run daily at 0Z, 6Z, 12Z and 18Z. Forecasts every 3 hours from 0 to 72, every 6 hours from 72 to 180 hours.
+          </documentation>
+        </metadata>
+
+        <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+          <aggregation dimName="run" type="forecastModelRunCollection" fmrcDefinition="NCEP-WW3-WestCoast_10minute.fmrcDefinition.xml" recheckEvery="15 min">
+            <scan  location="/data/ldm/pub/native/grid/NCEP/WW3/WestCoast_10minute/" suffix=".grib2" dateFormatMark="WW3_WestCoast_10minute_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
+          </aggregation>
+        </netcdf>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/WW3/WestCoast_10minute/" suffix=".grib2" fmrcDefinition="NCEP-WW3-WestCoast_10minute.fmrcDefinition.xml" />
+        <addTimeCoverage
+                datasetNameMatchPattern="WW3_WestCoast_10minute_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).grib2"
+                startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="180 hours"/>
+      </datasetFmrc>
+
+  </dataset>
   </dataset>
 
 

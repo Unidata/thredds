@@ -201,10 +201,10 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
    */
   protected RandomAccessFile raf;
 
-  /**
+  /*
    * place to store debug stuff
    */
-  protected StringBuilder parseInfo = new StringBuilder();
+  //protected StringBuilder parseInfo = new StringBuilder();
 
   /**
    * Use the given index to fill the NetcdfFile object with attributes and variables.
@@ -246,7 +246,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
    * @return the detail info
    */
   public String getDetailInfo() {
-    return parseInfo.toString();
+    return ""; // parseInfo.toString();
   }
 
   /**

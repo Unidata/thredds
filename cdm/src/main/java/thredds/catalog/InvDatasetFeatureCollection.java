@@ -71,10 +71,10 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
   private final String path;
   private final FeatureType featureType;
 
-  private final CollectionSpecParser sp;
-  private final DatasetCollectionManager manager;
   private final Fmrc fmrc;
   private final Set<FeatureCollection.FmrcDatasetType> wantDatasets;
+  private final String topDirectory;
+  private final Pattern filter;
 
   private Object lock = new Object();
 
@@ -89,27 +89,32 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
     this.featureType = FeatureType.getType(featureType);
     this.wantDatasets = config.fmrcConfig.datasets;
 
-    // one could just pass the config into Fmrc and let it do the management
     Formatter errlog = new Formatter();
     try {
-      sp = new CollectionSpecParser(config.spec, errlog);
-      manager = new DatasetCollectionManager(sp, config.olderThan, errlog);
-      manager.setRecheck(config.recheckEvery);
+      fmrc = Fmrc.open(config, errlog);
     } catch (Exception e) {
       throw new RuntimeException(errlog.toString());
     }
 
-    // optional date extraction is used to get rundates when not embedded in the file
-    DateExtractor dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), true);
-    fmrc = new Fmrc(manager, dateExtractor, config);
+    /// hmmmm not so good
+    CollectionManager cm = fmrc.getManager();
+    if (cm instanceof DatasetCollectionManager) {
+      CollectionSpecParser sp = ((DatasetCollectionManager) cm).getCollectionSpecParser();
+      topDirectory = sp.getTopDir();
+      filter = sp.getFilter();
+    } else {
+      topDirectory = null;
+      filter = null;
+    }
   }
 
   public String getPath() {
     return path;
   }
 
-  public String getTopDirLocation() {
-    return sp.getTopDir();
+
+  public String getTopDirectoryLocation() {
+    return topDirectory;
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -251,7 +256,7 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
             ds.setID(id + "/" + name);
             ThreddsMetadata tm = ds.getLocalMetadata();
             tm.addDocumentation("summary", "Forecast Model Run Collection (2D time coordinates).");
-            ds.getLocalMetadataInheritable().setServiceName(this.dodsService); // LOOK why ??
+            //ds.getLocalMetadataInheritable().setServiceName(this.dodsService); // LOOK why ??
             ds.finish();
             datasets.add(ds);
           }
@@ -265,18 +270,18 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
             ds.setID(id + "/" + name);
             ThreddsMetadata tm = ds.getLocalMetadata();
             tm.addDocumentation("summary", "Best time series, taking the data from the most recent run available.");
-            ds.getLocalMetadataInheritable().setServiceName(this.dodsService); // LOOK why ??
+            //ds.getLocalMetadataInheritable().setServiceName(this.dodsService); // LOOK why ??
             ds.finish();
             datasets.add(ds);
           }
 
-          if (wantDatasets.contains(FeatureCollection.FmrcDatasetType.Files)) {
+          if (wantDatasets.contains(FeatureCollection.FmrcDatasetType.Files) && (topDirectory != null)) {
 
             // LOOK - replace this with InvDatasetScan( collectionManager) or something
-            long olderThan = (long) (1000 * manager.getOlderThanFilterInSecs());
-            ScanFilter filter = new ScanFilter(sp.getFilter(), olderThan);
+            long olderThan = (long) (1000 * fmrc.getOlderThanFilterInSecs());
+            ScanFilter scanFilter = new ScanFilter(filter, olderThan);
             InvDatasetScan scanDataset = new InvDatasetScan((InvCatalogImpl) this.getParentCatalog(), this, "File_Access", path + "/" + SCAN,
-                    sp.getTopDir(), filter, true, "true", false, null, null, null);
+                   topDirectory, scanFilter, true, "true", false, null, null, null);
 
             ThreddsMetadata tmi = scanDataset.getLocalMetadataInheritable();
             tmi.setServiceName("all");
@@ -286,6 +291,10 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
 
             scanDataset.finish();
             datasets.add(scanDataset);
+
+            List<InvService> services = scanDataset.getParentCatalog().getServices();
+            //for (InvService s : services)
+            //        System.out.printf("%s%n", s);
 
             // replace all at once
             this.scan = scanDataset;
@@ -355,9 +364,9 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
     String name = (pos > -1) ? path.substring(pos + 1) : "";
 
     // this assumes that these are files. also might be remote datasets from a catalog
-    if (type.equals(SCAN)) {
-      String filename = new StringBuilder(getTopDirLocation())
-              .append(getTopDirLocation().endsWith("/") ? "" : "/")
+    if (type.equals(SCAN) && (topDirectory != null)) {
+      String filename = new StringBuilder(topDirectory)
+              .append(topDirectory.endsWith("/") ? "" : "/")
               .append(name).toString();
       return NetcdfDataset.acquireDataset(null, filename, null, -1, null, null); // no enhancement
     }
@@ -423,13 +432,13 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
     return null;
   }
 
-  // called by DataRoorHandler.getCrawlableDatasetAsFile()
+  // called by DataRootHandler.getCrawlableDatasetAsFile()
   // have to remove the extra "files" from the path
   public File getFile(String remaining) {
-    if( null == getTopDirLocation()) return null;
+    if( null == topDirectory) return null;
     int pos = remaining.indexOf(SCAN);
-    StringBuilder fname = new StringBuilder( getTopDirLocation());
-    if ( ! getTopDirLocation().endsWith( "/"))
+    StringBuilder fname = new StringBuilder( topDirectory);
+    if ( ! topDirectory.endsWith( "/"))
       fname.append( "/");
     fname.append( ( pos > -1 ) ? remaining.substring( pos + SCAN.length() + 1 ) : remaining);
     return new File( fname.toString() );

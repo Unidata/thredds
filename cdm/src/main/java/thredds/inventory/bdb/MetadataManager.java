@@ -54,6 +54,7 @@ public class MetadataManager {
   private static Environment myEnv = null;
   private static List<Database> openDatabases = new ArrayList<Database>();
   private static boolean readOnly;
+  private static boolean debug = true;
 
   static public void setCacheDirectory( String dir ) {
     root = dir;
@@ -103,10 +104,10 @@ public class MetadataManager {
 
    // Close the store and environment
   static public void closeAll() {
-    System.out.println("close MetadataManager");
+    if (debug) System.out.println("close MetadataManager");
 
     for (Database db : openDatabases) {
-      System.out.println("  close database " + db.getDatabaseName());
+      if (debug) System.out.println("  close database " + db.getDatabaseName());
       db.close();
     }
 
