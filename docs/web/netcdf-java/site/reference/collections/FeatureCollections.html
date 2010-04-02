@@ -76,8 +76,9 @@ dl {margin: 10px 5px 5px 15px;)
    &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/GFS_Alaska_191km_#yyyyMMdd_HHmm#.grib1&quot; 
        recheckEvery=&quot;15 min&quot; olderThan=&quot;5 min&quot; check=&quot;startup&quot;/&gt;
    &lt;protoDataset choice=&quot;Penultimate&quot; change = &quot;2 3 * * ?&quot; /&gt;
+   &lt;fmrcConfig regularize=&quot;true&quot; datasetTypes=&quot;TwoD Best Files Runs&quot; /&gt;
 &lt;/featureCollection&gt;
-</pre>
+have</pre>
 <p><strong> point data:</strong></p>
 <pre>&lt;<strong>featureCollection </strong><strong>name</strong>=&quot;6 minute&quot; <strong>featureType</strong>=&quot;STATION_PROFILE&quot; harvest=&quot;true&quot; <strong>path</strong>=&quot;station/profiler/wind/06min&quot;&gt;<br />  &lt;documentation type=&quot;summary&quot;&gt;Six minute average data.&lt;/documentation&gt;<br />  &lt;collection spec=&quot;/data/ldm/pub/native/profiler/wind/06min/**/PROFILER_wind_06min_#yyyyMMdd#.nc&quot; 
      recheckEvery=&quot;15 min&quot; olderThan=&quot;5 min&quot; /&gt;

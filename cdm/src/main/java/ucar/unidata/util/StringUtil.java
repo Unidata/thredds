@@ -1474,6 +1474,17 @@ public class StringUtil {
         return result;
     }
 
+  /**
+   * Split a string on one or more whitespace.
+   * Cover for STring.split, because who can remember regexp?
+   * @param source split this string
+   * @return space-seperated tokens
+   */
+    public static String[] split(String source) {
+      return source.trim().split("\\s+"); // Separated by "whitespace"
+    }
+
+
     /**
      * Tokenize the  toString value of the given source object,
      * splitting on the given delimiter.

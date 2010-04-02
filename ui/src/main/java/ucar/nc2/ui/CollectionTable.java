@@ -53,7 +53,7 @@ import java.awt.*;
 import java.io.IOException;
 
 /**
- * Describe
+ * Show the info stored in the MetadataManager
  *
  * @author caron
  * @since Jan 11, 2010
@@ -61,14 +61,11 @@ import java.io.IOException;
 public class CollectionTable extends JPanel {
   private PreferencesExt prefs;
 
-  private BeanTableSorted collectionNameTable, dataTable, coordTable, gridTable;
+  private BeanTableSorted collectionNameTable, dataTable;
   private JSplitPane split, split2, splitV;
 
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
-
-  private Fmrc fmrc;
-  private FmrcInv fmrcInv;
 
   private Formatter debug;
   private DateFormatter df = new DateFormatter();
@@ -118,74 +115,6 @@ public class CollectionTable extends JPanel {
         setCollection(cbean.name);
       }
     });
-
-    /* coordTable = new BeanTableSorted(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false);
-    coordTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        CoordBean coordBean = (CoordBean) coordTable.getSelectedBean();
-      }
-    });
-    coordTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-
-    gridTable = new BeanTableSorted(GridBean.class, (PreferencesExt) prefs.node("GridBean"), false);
-    gridTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        GridBean gridBean = (GridBean) gridTable.getSelectedBean();
-        setSelectedCoord(gridBean);
-      }
-    });
-
-    thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(invTable.getJTable(), "Options");
-    varPopup.addAction("Open in NetcdfFile Viewer", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        DataBean dsb = (DataBean) invTable.getSelectedBean();
-        if (dsb == null) return;
-        CollectionTable.this.firePropertyChange("openNetcdfFile", null, dsb.fmrInv.getLocation());
-      }
-    });
-
-    varPopup.addAction("Open in CoordSys tab", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        DataBean dsb = (DataBean) invTable.getSelectedBean();
-        if (dsb == null) return;
-        CollectionTable.this.firePropertyChange("openCoordSys", null, dsb.fmrInv.getLocation());
-      }
-    });
-
-    varPopup.addAction("Open in GridDataset tab", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        DataBean dsb = (DataBean) invTable.getSelectedBean();
-        if (dsb == null) return;
-        CollectionTable.this.firePropertyChange("openGridDataset", null, dsb.fmrInv.getLocation());
-      }
-    });
-
-    varPopup.addAction("show GridInventory XML", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        DataBean dsb = (DataBean) invTable.getSelectedBean();
-        if (dsb == null) return;
-        infoTA.setText(dsb.fmrInv.writeXML(null));
-        infoWindow.showIfNotIconified();
-      }
-    });
-
-    varPopup = new thredds.ui.PopupMenu(coordTable.getJTable(), "Options");
-    varPopup.addAction("Show Inv", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        CoordBean bean = (CoordBean) coordTable.getSelectedBean();
-        if (bean == null) return;
-        showCoordInv(bean);
-      }
-    });
-
-    varPopup = new thredds.ui.PopupMenu(gridTable.getJTable(), "Options");
-    varPopup.addAction("Show Inv Coords", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        GridBean bean = (GridBean) gridTable.getSelectedBean();
-        if (bean == null) return;
-        showGridInv(bean);
-      }
-    });  */
 
     // the info window
     infoTA = new TextHistoryPane(false, 5000, 50, true, false, 14);
@@ -264,7 +193,7 @@ public class CollectionTable extends JPanel {
       infoTA.gotoTop();
       infoWindow.show();
     } catch (IOException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      e.printStackTrace();
     }  finally {
       if (mm != null) mm.close();
     }
@@ -309,121 +238,6 @@ public class CollectionTable extends JPanel {
     }
     public String getValue() {
       return data.value;
-    }
-  }
-
-
-  public class GridBean {
-    FmrcInv.UberGrid grid;
-
-    // no-arg constructor
-    public GridBean() {
-    }
-
-    // create from a dataset
-    public GridBean(FmrcInv.UberGrid grid) {
-      this.grid = grid;
-    }
-
-    public String getName() {
-      return grid.getName();
-    }
-
-    public String getTimeCoordName() {
-      return grid.getTimeCoordName();
-    }
-
-    public String getVertCoordName() {
-      return grid.getVertCoordName();
-    }
-
-    public int getCount() {
-      return grid.countTotal();
-    }
-
-    public int getExpected() {
-      return grid.countExpected();
-    }
-
-    public boolean getStatus() {
-      return getExpected() == getCount();
-    }
-  }
-
-  abstract public class CoordBean {
-    // no-arg constructor
-    public CoordBean() {
-    }
-
-    abstract public String getType();
-
-    abstract public String getName();
-
-    abstract public String getCoords();
-  }
-
-  public class TimeCoordBean extends CoordBean {
-    FmrcInv.RunSeq tc;
-
-    // no-arg constructor
-    public TimeCoordBean() {
-    }
-
-    // create from a dataset
-    public TimeCoordBean(FmrcInv.RunSeq tc) {
-      this.tc = tc;
-    }
-
-    public String getType() {
-      return "time";
-    }
-
-    public String getName() {
-      return tc.getName();
-    }
-
-    public String getCoords() {
-      StringBuilder sb = new StringBuilder();
-      for (double off : tc.getOffsetHours())
-        sb.append(off).append(" ");
-      return sb.toString();
-    }
-  }
-
-  public class VertCoordBean extends CoordBean {
-    VertCoord vc;
-
-    // no-arg constructor
-    public VertCoordBean() {
-    }
-
-    // create from a dataset
-    public VertCoordBean(VertCoord tc) {
-      this.vc = tc;
-    }
-
-    public String getType() {
-      return "vert";
-    }
-
-    public String getName() {
-      return vc.getName();
-    }
-
-    public String getCoords() {
-      Formatter sb = new Formatter();
-      double[] values1 = vc.getValues1();
-      double[] values2 = vc.getValues2();
-      if (values2 == null) {
-        for (double lev : values1)
-          sb.format("%s ", lev);
-      } else {
-        for (int i = 0; i < values1.length; i++) {
-          sb.format("(%f,%f) ", values1[i], values2[i]);
-        }
-      }
-
-      return sb.toString();
     }
   }
 

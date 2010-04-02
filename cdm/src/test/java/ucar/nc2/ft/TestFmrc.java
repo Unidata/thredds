@@ -41,11 +41,8 @@ import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.grid.GeoGrid;
-import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.fmrc.Fmrc;
-import ucar.nc2.ft.fmrc.FmrcInv;
 
 import java.util.Formatter;
 import java.util.Iterator;
@@ -68,19 +65,32 @@ public class TestFmrc extends TestCase {
 
   public void testNcML() throws Exception {
     try {
-      doOne(datadir + "bom/BoM_test.ncml", 1, 3, 8, 0, "eta_t", 2, 7);
-      doOne(datadir + "bom/**/ocean_fc_#yyyyMMdd#_..._eta.nc", 1, 3, 8, 0, "eta_t", 2, 7);
-      doOne(datadir + "ncom/ncom_fmrc.ncml", 1, 1, 5, 1, "surf_el", 3, 25);
-      doOne(datadir + "rtofs/rtofs.ncml", 7, 4, 9, 1, "N3-D_Temperature", 2, 3);
+      doOne(TestAll.cdmUnitTestDir + "ncml/nc/ruc_conus40/RUC_CONUS_40km_#yyyyMMdd_HHmm#.grib1", 48, 12, 16, 6, "Pressure", 3, 9, 9);
+
+      doOne(datadir + "bom/BoM_test.ncml", 1, 3, 8, 0, "eta_t", 2, 7, 7);
+      doOne(datadir + "bom/**/ocean_fc_#yyyyMMdd#_..._eta.nc", 1, 3, 8, 0, "eta_t", 2, 7, 7);
+      doOne(datadir + "ncom/ncom_fmrc.ncml", 1, 1, 5, 1, "surf_el", 3, 25, 41);
+      doOne(datadir + "rtofs/rtofs.ncml", 7, 4, 9, 1, "N3-D_Temperature", 2, 3, 3);
+
     } finally {
       MetadataManager.closeAll();
     }
   }
 
   static void doOne(String pathname, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes,
+                    String gridName, int nruns, int ntimes, int nbest) throws Exception {
+
+     System.out.println("\ntest read Fmrc = " + pathname);
+     doOne2D(pathname, ngrids, ncoordSys, ncoordAxes, nVertCooordAxes, gridName, nruns,  ntimes);
+     doOneBest(pathname, ngrids, ncoordSys, ncoordAxes-1, nVertCooordAxes, gridName, nruns,  nbest);
+
+  }
+
+
+  static void doOne2D(String pathname, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes,
                     String gridName, int nruns, int ntimes) throws Exception {
 
-    System.out.println("\ntest read Fmrc = " + pathname);
+    System.out.println("2D dataset");
     Formatter errlog = new Formatter();
     Fmrc fmrc = Fmrc.open(pathname, errlog);
     if (fmrc == null) {
@@ -89,7 +99,7 @@ public class TestFmrc extends TestCase {
       return;
     }
 
-    ucar.nc2.dt.GridDataset gridDs = fmrc.getDataset2D(true, true, null);
+    ucar.nc2.dt.GridDataset gridDs = fmrc.getDataset2D(null);
     NetcdfDataset ncd = (NetcdfDataset) gridDs.getNetcdfFile();
 
     int countGrids = gridDs.getGrids().size();
@@ -106,6 +116,13 @@ public class TestFmrc extends TestCase {
         countVertCooordAxes++;
     }
 
+    if (showCount) {
+      System.out.println(" grids=" + countGrids + ((ngrids < 0) ? " *" : ""));
+      System.out.println(" coordSys=" + countCoordSys + ((ncoordSys < 0) ? " *" : ""));
+      System.out.println(" coordAxes=" + countCoordAxes + ((ncoordAxes < 0) ? " *" : ""));
+      System.out.println(" vertAxes=" + countVertCooordAxes + ((nVertCooordAxes < 0) ? " *" : ""));
+    }
+
     Iterator iter = gridDs.getGridsets().iterator();
     while (iter.hasNext()) {
       GridDataset.Gridset gridset = (GridDataset.Gridset) iter.next();
@@ -118,19 +135,13 @@ public class TestFmrc extends TestCase {
     GridCoordSystem gcs = grid.getCoordinateSystem();
     CoordinateAxis1DTime runtime = gcs.getRunTimeAxis();
     assert (runtime != null) : "Cant find runtime for "+gridName;
-    assert runtime.getSize() == nruns : runtime.getSize()+" != "+ nruns;
-
     CoordinateAxis time = gcs.getTimeAxis();
     assert (time != null) : "Cant find time for "+gridName;
     assert (time.getRank() == 2) : "Time should be 2D "+gridName;
-    assert time.getDimension(0).getLength() == nruns : " nruns should ne "+ nruns;
-    assert time.getDimension(1).getLength() == ntimes : " ntimes should ne "+ ntimes;
 
     if (showCount) {
-      System.out.println(" grids=" + countGrids + ((ngrids < 0) ? " *" : ""));
-      System.out.println(" coordSys=" + countCoordSys + ((ncoordSys < 0) ? " *" : ""));
-      System.out.println(" coordAxes=" + countCoordAxes + ((ncoordAxes < 0) ? " *" : ""));
-      System.out.println(" vertAxes=" + countVertCooordAxes + ((nVertCooordAxes < 0) ? " *" : ""));
+      System.out.println(" runtimes=" + runtime.getSize());
+      System.out.println(" ntimes=" +  time.getDimension(1).getLength());
     }
 
     if (ngrids >= 0)
@@ -141,6 +152,84 @@ public class TestFmrc extends TestCase {
       assert ncoordAxes == countCoordAxes : "CoordAxes " + ncoordAxes + " != " + countCoordAxes;
     if (nVertCooordAxes >= 0)
       assert nVertCooordAxes == countVertCooordAxes : "VertAxes" + nVertCooordAxes + " != " + countVertCooordAxes;
+
+    if (nruns >= 0)
+      assert runtime.getSize() == nruns : runtime.getSize()+" != "+ nruns;
+    if (nruns >= 0)
+      assert time.getDimension(0).getLength() == nruns : " nruns should be "+ nruns;
+    if (ntimes >= 0)
+      assert time.getDimension(1).getLength() == ntimes : " ntimes should be "+ ntimes;
+
+    gridDs.close();
+  }
+
+  static void doOneBest(String pathname, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes,
+                    String gridName, int nruns, int ntimes) throws Exception {
+
+    System.out.println("Best dataset");
+    Formatter errlog = new Formatter();
+    Fmrc fmrc = Fmrc.open(pathname, errlog);
+    if (fmrc == null) {
+      System.out.printf("Fmrc failed to open %s%n", pathname);
+      System.out.printf("errlog= %s%n", errlog.toString());
+      return;
+    }
+
+    ucar.nc2.dt.GridDataset gridDs = fmrc.getDatasetBest();
+    NetcdfDataset ncd = (NetcdfDataset) gridDs.getNetcdfFile();
+
+    int countGrids = gridDs.getGrids().size();
+    int countCoordAxes = ncd.getCoordinateAxes().size();
+    int countCoordSys = ncd.getCoordinateSystems().size();
+
+    // count vertical axes
+    int countVertCooordAxes = 0;
+    List axes = ncd.getCoordinateAxes();
+    for (int i = 0; i < axes.size(); i++) {
+      CoordinateAxis axis =  (CoordinateAxis) axes.get(i);
+      AxisType t = axis.getAxisType();
+      if ((t == AxisType.GeoZ) || (t == AxisType.Height) || (t == AxisType.Pressure) )
+        countVertCooordAxes++;
+    }
+
+    if (showCount) {
+      System.out.println(" grids=" + countGrids + ((ngrids < 0) ? " *" : ""));
+      System.out.println(" coordSys=" + countCoordSys + ((ncoordSys < 0) ? " *" : ""));
+      System.out.println(" coordAxes=" + countCoordAxes + ((ncoordAxes < 0) ? " *" : ""));
+      System.out.println(" vertAxes=" + countVertCooordAxes + ((nVertCooordAxes < 0) ? " *" : ""));
+    }
+
+    Iterator iter = gridDs.getGridsets().iterator();
+    while (iter.hasNext()) {
+      GridDataset.Gridset gridset = (GridDataset.Gridset) iter.next();
+      gridset.getGeoCoordSystem();
+    }
+
+    GridDatatype grid = gridDs.findGridDatatype(gridName);
+    assert (grid != null) : "Cant find grid "+gridName;
+
+    GridCoordSystem gcs = grid.getCoordinateSystem();
+    CoordinateAxis1DTime runtime = gcs.getRunTimeAxis();
+    assert (runtime == null) : "Should not have runtime coord= "+runtime;
+
+    CoordinateAxis time = gcs.getTimeAxis();
+    assert (time != null) : "Cant find time for "+gridName;
+
+    if (showCount) {
+      System.out.println(" ntimes=" +  time.getDimension(0).getLength());
+    }
+
+    if (ngrids >= 0)
+      assert ngrids == countGrids : "Grids " + ngrids + " != " + countGrids;
+    if (ncoordSys >= 0)
+      assert ncoordSys == countCoordSys : "CoordSys " + ncoordSys + " != " + countCoordSys;
+    if (ncoordAxes >= 0)
+      assert ncoordAxes == countCoordAxes : "CoordAxes " + ncoordAxes + " != " + countCoordAxes;
+    if (nVertCooordAxes >= 0)
+      assert nVertCooordAxes == countVertCooordAxes : "VertAxes" + nVertCooordAxes + " != " + countVertCooordAxes;
+    if (ntimes >= 0)
+      assert time.getDimension(0).getLength() == ntimes : " ntimes should be "+ ntimes;
+
 
     gridDs.close();
   }

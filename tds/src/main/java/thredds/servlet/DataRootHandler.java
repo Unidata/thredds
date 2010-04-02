@@ -696,7 +696,7 @@ public class DataRootHandler {
     DataRoot(InvDatasetFeatureCollection featCollection) {
       this.path = featCollection.getPath();
       this.featCollection = featCollection;
-      // dirLocation = featCollection.getTopDirLocation();
+      //this.dirLocation = featCollection.getTopDirLocation();
     }
 
     DataRoot(InvDatasetFmrc fmrc) {
@@ -886,9 +886,11 @@ public class DataRootHandler {
     DataRootMatch match = findDataRootMatch(path);
     if (match == null)
       return null;
-    if (match.dataRoot.fmrc != null) {
+    if (match.dataRoot.fmrc != null)
       return match.dataRoot.fmrc.getFile(match.remaining);
-    }
+    if (match.dataRoot.featCollection != null)
+      return match.dataRoot.featCollection.getFile(match.remaining);
+
 
     CrawlableDataset crDs;
     try {

@@ -3,6 +3,12 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
+ 2:
+  StringUtil.split()
+  refactor Fmrc implementation to eliminate retained fmrcInv, orgVar..
+  ucar.nc2.util.NamedAnything
+  CoordinateAxis1D: defer constructing edge, bounds arrays.
+  GridCoordSys: defer constructing times, levels arrays.
  1:
   try to get IndexConstant right
   Section.reduce()
@@ -16,7 +22,7 @@ Changes in version 4.2:
 
 Changes in version 4.1:
  15:
-  VAriableDS.getEnhanceMode is public
+  VariableDS.getEnhanceMode is public
   GridCoordSys accepts runtime or time
   bug in N3header when nvars = 0.
  14:

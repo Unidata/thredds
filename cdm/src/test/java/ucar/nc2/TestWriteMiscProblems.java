@@ -91,7 +91,7 @@ public class TestWriteMiscProblems extends TestCase {
     System.out.println("File size  (B)  = " + (long) timeSize * latSize * lonSize * 4);
     System.out.println("File size~ (MB) = " + Math.round((long) timeSize * latSize * lonSize * 4 / Math.pow(2, 20)));
 
-    NetcdfFileWriteable ncFile = NetcdfFileWriteable.createNew("D:/temp/bigFile2.nc");
+    NetcdfFileWriteable ncFile = NetcdfFileWriteable.createNew(TestAll.temporaryLocalDataDir + "bigFile2.nc");
     ncFile.setFill(false);
     ncFile.setLargeFile(true);
 

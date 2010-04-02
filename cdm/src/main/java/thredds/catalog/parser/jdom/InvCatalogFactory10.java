@@ -342,7 +342,6 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     String name = dsElem.getAttributeValue("name");
     String path = dsElem.getAttributeValue("path");
     String featureType = dsElem.getAttributeValue("featureType");
-    InvDatasetFeatureCollection ds = new InvDatasetFeatureCollection( parent, name, path, featureType);
 
     Element collElem = dsElem.getChild( "collection", defNS );
     if (collElem == null) {
@@ -368,9 +367,13 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     if (fmrcElem != null) {
       String regularize = protoElem.getAttributeValue("regularize");
       config.fmrcConfig = new FeatureCollection.FmrcConfig(regularize);
+
+      String datasetTypes = protoElem.getAttributeValue("datasetTypes");
+      if (null != datasetTypes)
+        config.fmrcConfig.addDatasetType(datasetTypes);
     }
 
-    ds.setConfig( config);
+    InvDatasetFeatureCollection ds = new InvDatasetFeatureCollection( parent, name, path, featureType, config);
 
     readDatasetInfo( catalog, ds, dsElem, base);
     return ds;

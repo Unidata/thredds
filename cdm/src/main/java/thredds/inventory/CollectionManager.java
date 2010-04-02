@@ -40,6 +40,9 @@ import java.util.List;
 
 /**
  * Manages a dynamic collection of MFile objects. Allows storing key/value pairs on MFiles.
+ * An MFile must have the property that
+ * <pre>  NetcdfDataset.open(MFile.getPath, ...); </pre>
+ * should work.
  *
  * @author caron
  * @since Jan 19, 2010

@@ -34,7 +34,6 @@ package ucar.nc2.ui;
 
 import thredds.inventory.CollectionManager;
 import thredds.inventory.CollectionSpecParser;
-import thredds.inventory.FeatureCollection;
 import thredds.inventory.MFile;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ui.dialog.Fmrc2Dialog;
@@ -223,7 +222,8 @@ public class Fmrc2Panel extends JPanel {
     if (!showCollectionInfo(false))
       return;
 
-    fmrcInv = fmrc.getFmrcInv(true);
+    debug = new Formatter();
+    fmrcInv = fmrc.getFmrcInv( debug);
 
     java.util.List<FmrBean> beanList = new ArrayList<FmrBean>();
     for (FmrInv fmr : fmrcInv.getFmrList()) {
@@ -320,13 +320,12 @@ public class Fmrc2Panel extends JPanel {
   }
 
   private void showDataset(Fmrc2Dialog.Data data) {
-    FmrcDataset fds = new FmrcDataset( new FeatureCollection.Config());
     GridDataset gds = null;
     try {
       if (data.type.equals("Dataset2D"))
-        gds = fds.getNetcdfDataset2D( fmrcInv, true, true, null);
+        gds = fmrc.getDataset2D( null);
       else
-        gds = fds.getBest( fmrcInv, true, true, null);
+        gds = fmrc.getDatasetBest();
       
     } catch (IOException e) {
       e.printStackTrace();
@@ -389,7 +388,7 @@ public class Fmrc2Panel extends JPanel {
     for (CoordBean bean : beans) {
       if (bean instanceof TimeCoordBean) {
         TimeCoordBean tbean = (TimeCoordBean) bean;
-        if (tbean.tc.getName().equals(gridBean.getTimeCoordName()))
+        if (tbean.runSeq.getName().equals(gridBean.getTimeCoordName()))
           selected.add(bean);
       } else if (bean instanceof VertCoordBean) {
         VertCoordBean vbean = (VertCoordBean) bean;
@@ -403,7 +402,7 @@ public class Fmrc2Panel extends JPanel {
   private void showCoordInv(CoordBean coordBean) {
     Formatter out = new Formatter();
     if (coordBean instanceof TimeCoordBean) {
-      FmrcInv.RunSeq runSeq = ((TimeCoordBean) coordBean).tc;
+      FmrcInv.RunSeq runSeq = ((TimeCoordBean) coordBean).runSeq;
       out.format("Time coordinate %s %n%n", runSeq.getName());
       for (TimeCoord tc : runSeq.getTimes()) {
         if (tc == null)
@@ -447,7 +446,7 @@ public class Fmrc2Panel extends JPanel {
 
     out.format("                             Forecast Time Offset %n");
     out.format(" RunTime             Total ");
-    double[] offsets = ugrid.getOffsetHours();
+    double[] offsets = ugrid.getUnionOffsetHours();
     for (double wantOffset : offsets) {
       out.format("%6.0f ", wantOffset);
     }
@@ -464,7 +463,7 @@ public class Fmrc2Panel extends JPanel {
 
     out.format("                             Forecast Time Offset %n");
     out.format(" RunTime               ");
-    for (double wantOffset : ugrid.getOffsetHours())
+    for (double wantOffset : ugrid.getUnionOffsetHours())
       out.format("%9.0f ", wantOffset);
     out.format("%n");
     
@@ -638,7 +637,7 @@ public class Fmrc2Panel extends JPanel {
   }
 
   public class TimeCoordBean extends CoordBean {
-    FmrcInv.RunSeq tc;
+    FmrcInv.RunSeq runSeq;
 
     // no-arg constructor
     public TimeCoordBean() {
@@ -646,7 +645,7 @@ public class Fmrc2Panel extends JPanel {
 
     // create from a dataset
     public TimeCoordBean(FmrcInv.RunSeq tc) {
-      this.tc = tc;
+      this.runSeq = tc;
     }
 
     public String getType() {
@@ -654,12 +653,12 @@ public class Fmrc2Panel extends JPanel {
     }
 
     public String getName() {
-      return tc.getName();
+      return runSeq.getName();
     }
 
     public String getCoords() {
       StringBuilder sb = new StringBuilder();
-      for (double off : tc.getOffsetHours())
+      for (double off : runSeq.getUnionOffsetHours())
         sb.append(off).append(" ");
       return sb.toString();
     }

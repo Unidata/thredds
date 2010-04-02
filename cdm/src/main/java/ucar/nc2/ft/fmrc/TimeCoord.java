@@ -48,10 +48,8 @@ public class TimeCoord implements Comparable {
   
   private Date runDate;
   private List<GridDatasetInv.Grid> gridInv; // all use this coord
-  //private List<FmrInv.GridVariable> vars;  // all use this coord
-  //private List<FmrcInv.UberGrid> ugrids;  // all use this coord
   private int id; // unique id for serialization
-  private double[] offset; // hours since runTime
+  private double[] offset; // hours since runDate
   private String axisName; // time coordinate axis
 
   TimeCoord(Date runDate) {
@@ -95,18 +93,6 @@ public class TimeCoord implements Comparable {
     gridInv.add(grid);
   }
 
-  /* void addGridVariable(FmrInv.GridVariable grid) {
-    if (vars == null)
-      vars = new ArrayList<FmrInv.GridVariable>();
-    vars.add(grid);
-  }
-
-  void addGridVariable(FmrcInv.UberGrid grid) {
-    if (ugrids == null)
-      ugrids = new ArrayList<FmrcInv.UberGrid>();
-    ugrids.add(grid);
-  } */
-
   public Date getRunDate() {
     return runDate;
   }
@@ -119,14 +105,6 @@ public class TimeCoord implements Comparable {
   public List<GridDatasetInv.Grid> getGridInventory() {
     return (gridInv == null) ? new ArrayList<GridDatasetInv.Grid>() : gridInv;
   }
-
-  /* public List<FmrInv.GridVariable> getGridVariables() {
-    return (vars == null) ? new ArrayList<FmrInv.GridVariable>() : vars;
-  }
-
-  public List<FmrcInv.UberGrid> getUberGrids() {
-    return (ugrids == null) ? new ArrayList<FmrcInv.UberGrid>() : ugrids;
-  } */
 
   /**
    * A unique id for this TimeCoord
@@ -146,14 +124,6 @@ public class TimeCoord implements Comparable {
     this.id = id;
   }
 
-  /* private boolean uberIdSet  = false;
-  public void setUberId(int id) {
-    if (uberIdSet && (this.id != id))
-      throw new IllegalStateException(); // look for inconsistencies in assigning the id
-    this.id = id;
-    uberIdSet = true;
-  } */
-
   public String getName() {
     if (this == EMPTY) return "EMPTY";
     return id == 0 ? "time" : "time" + id;
@@ -162,9 +132,9 @@ public class TimeCoord implements Comparable {
   public String getAxisName() {
     return axisName;
   }
+
    /**
    * The list of valid times, in units of hours since the run time
-   *
    * @return list of valid times, in units of hours since the run time
    */
   public double[] getOffsetHours() {
@@ -222,6 +192,7 @@ public class TimeCoord implements Comparable {
   /**
    * Look through timeCoords to see if equivilent to want exists.
    * Equiv means runDate is the same, and offsets match.
+   * If not found, make a new one and add to timeCoords.
    *
    * @param timeCoords look through this list
    * @param want find equivilent
@@ -242,24 +213,21 @@ public class TimeCoord implements Comparable {
   }
 
   /**
-   * Create the union of all the values in the list of TimeCoord
+   * Create the union of all the values in the list of TimeCoord, ignoring the TimeCoord's runDate
    * @param timeCoords list of TimeCoord
-   * @param baseDate all are reletive to this base date
+   * @param baseDate resulting union timeCoord uses this as a base date
    * @return union TimeCoord
    */
   static public TimeCoord makeUnion(List<TimeCoord> timeCoords, Date baseDate) {
-    //String timeName = null;
     // put into a set for uniqueness
     Set<Double> offsets = new HashSet<Double>();
     for (TimeCoord tc : timeCoords) {
-      // assert baseDate.equals(tc.getRunDate());
       for (double off : tc.getOffsetHours())
         offsets.add(off);
     }
 
     // extract into a List
-    List<Double> offsetList = new ArrayList<Double>();
-    for (Double offset1 : offsets) offsetList.add(offset1);
+    List<Double> offsetList = Arrays.asList((Double[]) offsets.toArray(new Double[offsets.size()]));
 
     // sort and extract into double[]
     Collections.sort(offsetList);
@@ -274,5 +242,34 @@ public class TimeCoord implements Comparable {
     return result;
   }
   
+  /**
+   * Create the union of all the values in the list of TimeCoord, converting all to a common baseDate
+   * @param timeCoords list of TimeCoord
+   * @param baseDate resulting union timeCoord uses this as a base date
+   * @return union TimeCoord
+   */
+  static public TimeCoord makeUnionConvert(List<TimeCoord> timeCoords, Date baseDate) {
+    // put into a set for uniqueness
+    Set<Double> offsets = new HashSet<Double>();
+    for (TimeCoord tc : timeCoords) {
+      double tcOffset = FmrcInv.getOffsetInHours(baseDate, tc.getRunDate());
+      for (double offset : tc.getOffsetHours()) {
+        offsets.add(tcOffset + offset); // track all offset hours, calculated from baseDate
+      }
+    }
+
+    List<Double> offsetList = Arrays.asList((Double[]) offsets.toArray(new Double[offsets.size()]));
+    Collections.sort(offsetList);
+
+    int counto = 0;
+    double[] offs = new double[offsetList.size()];
+    for (double off : offsets) offs[counto++] = off;
+
+    // make the resulting time coord
+    TimeCoord result = new TimeCoord(baseDate);
+    result.setOffsetHours(offs);
+    return result;
+  }
+
 
 }

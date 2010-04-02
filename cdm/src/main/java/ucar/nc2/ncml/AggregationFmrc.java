@@ -109,7 +109,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
     fmrc = new Fmrc(datasetManager, dateExtractor);
 
     // fill in the ncDataset
-    fmrc.getDataset2D(true, true, ncDataset);
+    fmrc.getDataset2D( ncDataset);
   }
 
   // we assume the variables are complete, but the time dimensions and values have to be recomputed

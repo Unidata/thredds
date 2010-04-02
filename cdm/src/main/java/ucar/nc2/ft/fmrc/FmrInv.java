@@ -37,7 +37,7 @@ import java.util.*;
 /**
  * Inventory for a Forecast Model Run - one runtime.
  * Track inventory by coordinate value, not index.
- * Composed of one or more gridDatasets, each described by a GridDatasetInv.
+ * Composed of one or more GridDatasets, each described by a GridDatasetInv.
  * For each Grid, the vert, time and ens coordinates are created as the union of the components. 
  * We make sure we are sharing coordinates across grids where they are equivilent.
  * We are thus making a rectangular array var(time, ens, level).

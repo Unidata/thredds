@@ -32,6 +32,12 @@
 
 package thredds.inventory;
 
+import ucar.unidata.util.StringUtil;
+
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
+
 /**
  * Beans for FeatureCollection configuration
  *
@@ -39,7 +45,15 @@ package thredds.inventory;
  * @since Mar 30, 2010
  */
 public class FeatureCollection {
-  public enum ProtoChoice {First, Random, Latest, Penultimate }
+  static public enum ProtoChoice {
+    First, Random, Latest, Penultimate
+  }
+
+  static public enum FmrcDatasetType {
+    TwoD, Best, Files, Runs
+  }
+
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FeatureCollection.class);
 
   static public class Config {
     public String spec, olderThan, recheckEvery;
@@ -57,7 +71,7 @@ public class FeatureCollection {
   }
 
   static public class ProtoConfig {
-    public ProtoChoice choice  = ProtoChoice.Penultimate;
+    public ProtoChoice choice = ProtoChoice.Penultimate;
     public String change = null;
     public String filename = null;
 
@@ -65,20 +79,47 @@ public class FeatureCollection {
     }
 
     public ProtoConfig(String choice, String change, String filename) {
+      try {
+        this.choice = ProtoChoice.valueOf(choice);
+      } catch (Exception e) {
+        log.warn("Dont recognize ProtoChoice " + choice);
+      }
+
       this.choice = ProtoChoice.valueOf(choice);
       this.change = change;
       this.filename = filename;
     }
   }
 
+  static private Set<FmrcDatasetType> defaultDatasetTypes = Collections.unmodifiableSet(EnumSet.of(FmrcDatasetType.TwoD, FmrcDatasetType.Best,
+          FmrcDatasetType.Files, FmrcDatasetType.Runs));
+
   static public class FmrcConfig {
     public boolean regularize = false;
+    public Set<FmrcDatasetType> datasets = defaultDatasetTypes;
+    private boolean explicit = false;
 
     public FmrcConfig() { // defaults
     }
 
     public FmrcConfig(String regularize) {
       this.regularize = (regularize != null) && (regularize.equalsIgnoreCase("true"));
+    }
+
+    public void addDatasetType(String datasetTypes) {
+      // if they list datasetType explicitly, remove defaults
+      if (!explicit) datasets = EnumSet.noneOf(FmrcDatasetType.class);
+      explicit = true;
+
+      String[] types = StringUtil.split(datasetTypes);
+      for (String type : types) {
+        try {
+          FmrcDatasetType fdt = FmrcDatasetType.valueOf(type);
+          datasets.add(fdt);
+        } catch (Exception e) {
+          log.warn("Dont recognize FmrcDatasetType " + type);
+        }
+      }
     }
   }
 

@@ -77,7 +77,7 @@ import thredds.inventory.CollectionManager;
  */
 public class GridDatasetInv {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridDatasetInv.class);
-  private static final boolean debugCache = true;
+  private static final boolean debugCache = false;
 
   public static GridDatasetInv open(CollectionManager cm, MFile mfile, DateExtractor de) throws IOException {
     // do we already have it ?

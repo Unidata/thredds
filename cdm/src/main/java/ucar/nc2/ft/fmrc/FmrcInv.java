@@ -88,7 +88,7 @@ public class FmrcInv {
   private final DateFormatter dateFormatter = new DateFormatter();
 
   // use on motherlode to regularize the missing inventory
-  private boolean regularize = false;
+  private final boolean regularize;
 
   /////////////////////////////////////////////////////
 
@@ -185,7 +185,7 @@ public class FmrcInv {
     return null;
   }
 
-  private int findFmrIndex(Date runDate) {
+  public int findFmrIndex(Date runDate) {
     for (int i = 0; i < fmrList.size(); i++) {
       FmrInv fmr = fmrList.get(i);
       if (fmr.getRunDate().equals(runDate)) return i;
@@ -229,14 +229,18 @@ public class FmrcInv {
     return baseDate;
   }
 
+  public TimeCoord getTimeCoordsAll() {
+    return tcAll;
+  }
+
   /**
    * Find the difference between two dates in hours
-   * @param run date1
+   * @param base date1
    * @param forecast date2
-   * @return difference in hours
+   * @return (forecast - base) difference in hours
    */
-  public static double getOffsetInHours(Date run, Date forecast) {
-    double diff = forecast.getTime() - run.getTime();
+  public static double getOffsetInHours(Date base, Date forecast) {
+    double diff = forecast.getTime() - base.getTime();
     return diff / 1000.0 / 60.0 / 60.0;
   }
 
@@ -251,7 +255,6 @@ public class FmrcInv {
     private VertCoord vertCoordUnion = null;
     private EnsCoord ensCoordUnion = null;
     private RunSeq runSeq = null;
-    //private TimeCoord timeCoordUnion = null; // if not regularized
 
     UberGrid(String name) {
       this.name = name;
@@ -265,8 +268,9 @@ public class FmrcInv {
       return name;
     }
 
-    public double[] getOffsetHours() {
-      return runSeq.getOffsetHours();
+    // the union of all offset hours, ignoring rundate
+    public double[] getUnionOffsetHours() {
+      return runSeq.getUnionOffsetHours();
     }
 
     public String getTimeCoordName() {
@@ -371,11 +375,14 @@ public class FmrcInv {
         for (HourGroup hg : hourMap.values()) {
           // run over all timeCoords in this group and construct the union
           List<TimeCoord> timeListExp = new ArrayList<TimeCoord>();
-          for (FmrInv.GridVariable grid : hg.runs)
-            timeListExp.add(grid.timeCoordUnion);
+          for (FmrInv.GridVariable run : hg.runs)
+            timeListExp.add(run.timeCoordUnion);
+          // note that in this case, the baseDates of the TiemCoords in timeListExp are not the same
+          // we are just using this routine to get the union of offset hours.
+          // we discard the resulting TimeCoord and just use the offset array of doubles.
           hg.expected = TimeCoord.makeUnion(timeListExp, baseDate); // add the other coords
-          for (FmrInv.GridVariable grid : hg.runs) {
-            grid.timeExpected = new TimeCoord(grid.getRunDate(), hg.expected.getOffsetHours());
+          for (FmrInv.GridVariable run : hg.runs) {
+            run.timeExpected = new TimeCoord(run.getRunDate(), hg.expected.getOffsetHours());
           }
         }
 
@@ -448,12 +455,12 @@ public class FmrcInv {
 
       // overwrite with actual coords
       for (FmrInv.GridVariable grid : runs)
-        this.coordMap.put(grid.getRunDate(), grid.getTimeExpected()); // match on expectedtime
+        this.coordMap.put(grid.getRunDate(), grid.getTimeExpected()); // match on timeExpected
     }
 
     public List<TimeCoord> getTimes() {
       if (timeList == null)
-        getOffsetHours();
+        getUnionOffsetHours();
       return timeList;
     }
 
@@ -468,7 +475,9 @@ public class FmrcInv {
       return n;
     }
 
-    public double[] getOffsetHours() {
+    // appears to be the union of all offset hours, ignoring rundate
+    // has the side effect of constructing timeList, the list of expected TimeCoords, one for each run
+    public double[] getUnionOffsetHours() {
       if (timeCoordUnion == null) { // defer creation
         // eliminate the empties
         timeList = new ArrayList<TimeCoord>();
@@ -484,7 +493,8 @@ public class FmrcInv {
             return o1.getRunDate().compareTo(o2.getRunDate());
           }
         });
-        timeCoordUnion = TimeCoord.makeUnion(timeList, baseDate); // create the union of all time coords used by this grid
+        // here again the timeList has differing runDates
+        timeCoordUnion = TimeCoord.makeUnion(timeList, baseDate); // create the union of all offsets used by this grid
       }
       return timeCoordUnion.getOffsetHours();
     }
@@ -636,7 +646,7 @@ public class FmrcInv {
   }
 
   // select best inventory for each forecast time
-  public TimeInventory makeBestInventory(FmrcInv.UberGrid ugrid) {
+  private TimeInventory makeBestInventory(FmrcInv.UberGrid ugrid) {
     TimeInventory inv = new TimeInventory(tcAll, ugrid);
     for (FmrInv.GridVariable grid : ugrid.getRuns()) {
       double forecastOffset = getOffsetInHours(baseDate, grid.getRunDate());
@@ -702,7 +712,7 @@ public class FmrcInv {
   }
 
   // immutable after UberGrid.finish() is called.
-  public class TimeInventory {
+  private class TimeInventory {
     final TimeCoord tc; // all the TimeCoords possible
     final FmrcInv.UberGrid ugrid; // for this grid
     final FmrInv.GridVariable[] useGrid; // use this run and grid for this offset
@@ -723,33 +733,6 @@ public class FmrcInv {
       this.runIndex[offsetIndex] = runIndex;
     }
   }
-
-  /* private TimeCoord makeUnion(List<TimeCoord> timeCoords, Date baseDate) {
-    //String timeName = null;
-    // put into a set for uniqueness
-    Set<Double> offsets = new HashSet<Double>();
-    for (TimeCoord tc : timeCoords) {
-      double forecastOffset = Fmrc.getOffsetInHours(baseDate, tc.getRunDate());
-      for (double off : tc.getOffsetHours())
-        offsets.add(forecastOffset + off);
-    }
-
-    // extract into a List
-    List<Double> offsetList = new ArrayList<Double>();
-    for (Double offset1 : offsets) offsetList.add(offset1);
-
-    // sort and extract into double[]
-    Collections.sort(offsetList);
-    double[] offset = new double[offsetList.size()];
-    int count = 0;
-    for (double off : offsetList)
-      offset[count++] = off;
-
-    // make the resulting time coord
-    TimeCoord result = new TimeCoord(baseDate);
-    result.setOffsetHours(offset);
-    return result;
-  } */
 
   //////////////////////////////////////
 

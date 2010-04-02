@@ -94,16 +94,17 @@ public class Fmrc {
   }
 
   ////////////////////////////////////////////////////////////////////////
-  private CollectionManager manager;
-  private DateExtractor dateExtractor;
-  private FeatureCollection.Config config = new FeatureCollection.Config();
+  private final CollectionManager manager;
+  private final DateExtractor dateExtractor;
+  private final FeatureCollection.Config config;
+  private final CollectionSpecParser sp;
 
+  // should be final
   private Element ncmlOuter, ncmlInner;
 
   // the current state - changing must be thread safe
-  private FmrcInv fmrc;
+  private Object lock = new Object();
   private FmrcDataset fmrcDataset;
-  private CollectionSpecParser sp = null;
 
   Fmrc(String collectionSpec, Formatter errlog) {
     sp = new CollectionSpecParser(collectionSpec, errlog);
@@ -112,20 +113,21 @@ public class Fmrc {
     // optional date extraction is used to get rundates when not embedded in the file
     dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), true);
 
-    this.fmrcDataset = new FmrcDataset(config);
+    config = new FeatureCollection.Config();
   }
 
   public Fmrc(CollectionManager manager, DateExtractor dateExtractor) {
     this.manager = manager;
     this.dateExtractor = dateExtractor == null ? new DateExtractorNone() : dateExtractor;
-    this.fmrcDataset = new FmrcDataset(config);
+    this.config = new FeatureCollection.Config();
+    this.sp = null;
   }
 
   public Fmrc(CollectionManager manager, DateExtractor dateExtractor, FeatureCollection.Config config) {
     this.manager = manager;
     this.dateExtractor = dateExtractor == null ? new DateExtractorNone() : dateExtractor;
     this.config = config;
-    this.fmrcDataset = new FmrcDataset(config);
+    this.sp = null;
   }
 
   public void setNcml(Element ncmlOuter, Element ncmlInner) {
@@ -143,40 +145,48 @@ public class Fmrc {
     return sp;
   }
 
+  public FmrcInv getFmrcInv(Formatter debug) throws IOException {
+    return makeFmrcInv( debug);
+  }
+
   /////////////////////////////////////////////////////////////////////////////////////////
+  private boolean forceProto = false; // LOOK when does this change?
 
-  /**
-   * Creates an FmrcInv - make a snapshot of the current state of inventory
-   * Check to see if a rescan is needed.
-   * public for debugging
-   *
-   * @param force ignore rescan rules
-   * @return FmrcInv - current state of inventory
-   * @throws java.io.IOException on read error
-   */
-  public FmrcInv getFmrcInv(boolean force) throws IOException {
-    if (force || fmrc == null || manager.timeToRescan()) {
-      fmrc = new FmrcInv(manager.getCollectionName(), scan(null), config.fmrcConfig.regularize);
+  public GridDataset getDataset2D(NetcdfDataset result) throws IOException {
+    checkNeeded( result);
+    return fmrcDataset.getNetcdfDataset2D();
+  }
+
+  public GridDataset getDatasetBest() throws IOException {
+    checkNeeded( null);
+    return fmrcDataset.getBest();
+  }
+
+  private void checkNeeded(NetcdfDataset result) throws IOException {
+    synchronized (lock) {
+      if (fmrcDataset == null) {
+        fmrcDataset = new FmrcDataset(config);
+        manager.scan(null);
+        FmrcInv fmrc = makeFmrcInv(null);
+        fmrcDataset.make(fmrc, forceProto, result);
+        return;
+      }
+
+      if (!manager.timeToRescan()) return;
+      
+      if (!manager.rescan()) return;
+
+      FmrcInv fmrc = makeFmrcInv(null);
+      fmrcDataset.make(fmrc, forceProto, result);
     }
-    return fmrc;
   }
 
-  public GridDataset getDataset2D(boolean forceProto, boolean force, NetcdfDataset result) throws IOException {
-    return fmrcDataset.getNetcdfDataset2D(getFmrcInv(force), forceProto, force, result);
-  }
-
-  public GridDataset getDatasetBest(boolean forceProto, boolean force, NetcdfDataset result) throws IOException {
-    return fmrcDataset.getBest(getFmrcInv(force), forceProto, force, result);
-  }
-
-  private List<FmrInv> scan(Formatter debug) throws IOException {
-    if (dateExtractor == null) dateExtractor = new DateExtractorNone();
-
+  // scan has been done, create FmrcInv
+  private FmrcInv makeFmrcInv(Formatter debug) throws IOException {
     Map<Date, FmrInv> fmrMap = new HashMap<Date, FmrInv>(); // all files are grouped by run date in an FmrInv
     List<FmrInv> fmrList = new ArrayList<FmrInv>(); // an fmrc is a collection of fmr
 
     // get the inventory, sorted by path
-    manager.scan(null);
     List<MFile> fileList = manager.getFiles();
     for (MFile f : fileList) {
       GridDatasetInv inv = GridDatasetInv.open(manager, f, dateExtractor); // inventory is discovered for each GDS
@@ -200,9 +210,8 @@ public class Fmrc {
       fmr.finish();
     }
 
-    return fmrList;
+    return new FmrcInv(manager.getCollectionName(), fmrList, config.fmrcConfig.regularize);
   }
-
 
   public static void main(String[] args) throws IOException {
     Formatter errlog = new Formatter();

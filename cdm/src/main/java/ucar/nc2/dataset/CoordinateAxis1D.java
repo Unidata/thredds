@@ -61,6 +61,19 @@ import java.util.List;
 public class CoordinateAxis1D extends CoordinateAxis {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis1D.class);
 
+  private boolean wasRead = false;
+  private boolean hasBounds = false;
+  private boolean wasCalc = false;
+  private boolean isAscending;
+
+  // read in on doRead()
+  private double[] midpoint; // n midpoints
+  private String[] names = null; // only set if String or char values
+
+  // defer until ask, use makeBounds()
+  private double[] edge; // n+1 edges, edge[k] < midpoint[k] < edge[k+1]
+  private double[] bound1, bound2; // not contiguous
+
   /**
    * Create a 1D coordinate axis from an existing Variable
    *
@@ -202,6 +215,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordEdge() on non-numeric");
     if (!wasRead) doRead();
+    if (!hasBounds) makeBounds();
     return edge[index];
   }
 
@@ -229,6 +243,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordEdges() on non-numeric");
     if (!wasRead) doRead();
+    if (!hasBounds) makeBounds();
     return edge.clone();
   }
 
@@ -244,6 +259,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getBound1() on non-numeric");
     if (!wasRead) doRead();
+    if (!hasBounds) makeBounds();
     return bound1.clone();
   }
 
@@ -259,6 +275,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getBound2() on non-numeric");
     if (!wasRead) doRead();
+    if (!hasBounds) makeBounds();
     return bound2.clone();
   }
 
@@ -272,6 +289,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
    */
   public double[] getCoordEdges(int i) {
     if (!wasRead) doRead();
+    if (!hasBounds) makeBounds();
+
     double[] e = new double[2];
     if (isContiguous()) {
       e[0] = getCoordEdge(i);
@@ -500,6 +519,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
    */
   private int findCoordElementIrregular(double target, boolean bounded) {
     if (!wasRead) doRead();
+    if (!hasBounds) makeBounds();
 
     int n = (int) this.getSize();
     int low = 0;
@@ -645,12 +665,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
     wasCalc = true;
   }
 
-  private boolean wasCalc = false;
-
   ///////////////////////////////////////////////////////////////////////////////
 
-  private boolean isAscending;
-  private boolean wasRead = false;
 
   private void doRead() {
     if (isNumeric()) {
@@ -673,7 +689,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   // only used if String
-  private String[] names = null;
   private void readStringValues() {
     int count = 0;
     Array data;
@@ -705,10 +720,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
       names[count++] = iter.next();
   }
 
-
-  private double[] midpoint; // n midpoints
-  private double[] edge; // n+1 edges, edge[k] < midpoint[k] < edge[k+1]
-
   private void readValues() {
     midpoint = new double[(int) getSize()];
     int count = 0;
@@ -725,14 +736,15 @@ public class CoordinateAxis1D extends CoordinateAxis {
     IndexIterator iter = data.getIndexIterator();
     while (iter.hasNext())
       midpoint[count++] = iter.getDoubleNext();
+  }
 
+  private void makeBounds() {
     if (!makeBoundsFromAux()) {
       makeEdges();
       makeBoundsFromEdges();
     }
+    hasBounds = true;
   }
-
-  private double[] bound1, bound2; // not contiguous
 
   private boolean makeBoundsFromAux() {
     Attribute boundsAtt = findAttributeIgnoreCase("bounds");
@@ -839,16 +851,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
     }
   }
 
-  ////////////////////////////////////////////////////////////////////
-  // protected ArrayList<NamedObject> named;
-
-  /* private void makeNames() {
-    named = new ArrayList<NamedObject>();
-    int n = (int) getSize();
-    for (int i = 0; i < n; i++)
-      named.add(new NamedAnything(getCoordName(i), getUnitsString()));
-  } */
-
   /**
    * Get the list of names, to be used for user selection.
    * The ith one refers to the ith coordinate.
@@ -859,44 +861,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
     int n = (int) getSize();
     List<NamedObject> names = new ArrayList<NamedObject>(n);
     for (int i = 0; i < n; i++)
-      names.add(new NamedAnything(getCoordName(i), getUnitsString()));
+      names.add(new ucar.nc2.util.NamedAnything(getCoordName(i), getUnitsString()));
     return names;
-  }
-
-  /*
-   * Get the index corresponding to the name. Reverse of getCoordName(i)
-   *
-   * @param name getCoordName(i)
-   * @return index, or -1 if not found
-   *
-  public int getIndex(String name) {
-    if (named == null) makeNames();
-    for (int i = 0; i < named.size(); i++) {
-      NamedObject level = named.get(i);
-      if (level.getName().trim().equals(name)) return i;
-    }
-    return -1;
-  } */
-
-  protected static class NamedAnything implements NamedObject {
-    private String name, desc;
-
-    NamedAnything(String name, String desc) {
-      this.name = name;
-      this.desc = desc;
-    }
-
-    public String getName() {
-      return name;
-    }
-
-    public String getDescription() {
-      return desc;
-    }
-
-    public String toString() {
-      return name;
-    }
   }
 
 }
