@@ -38,23 +38,25 @@ dl {margin: 10px 5px 5px 15px;)
 <h2>Proposed elements in TDS Configuration catalogs</h2>
 <h3>collection element</h3>
 <p>Defines the collection of datasets and provides control over dynamically changing datasets. Takes the place of NcML aggregation element (scan and scanFmrc). Eventually replace datasetScan (?).</p>
-<pre>&lt;<strong>collection</strong> <strong>spec</strong>=&quot;/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm#.gini&quot;<br />            <strong>recheckEvery</strong>=&quot;15 min&quot; <strong>olderThan</strong>=&quot;1 min&quot; <strong>changes</strong>=&quot;appendOnly&quot; /&gt;
+<pre>&lt;<strong>collection</strong> <strong>spec</strong>=&quot;/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm#.gini&quot;
+            <strong>olderThan</strong>=&quot;1 min&quot; <strong>changes</strong>=&quot;appendOnly&quot; <strong>recheckEvery</strong>=&quot;15 min&quot; /&gt;
 </pre>
 <blockquote>
   <p>where</p>
   <ol>
     <li><strong>spec</strong>: <a href="CollectionSpecification.html">collection specification</a> string</li>
-    <li><strong>recheckEvery</strong>: allow collection to be out-of-date by this much time. This will cause a directory scan whenever a request comes in and this much time has elapsed since the last scan.</li>
     <li><strong>olderThan</strong>: only files whose lastModified date is older than this are included. This excludes files that are in the process of being written.</li>
     <li><strong>changes</strong>: 
       <ul>
-        <li><strong>false</strong> : collection does not change (default)</li>
-        <li><strong>appendOnly</strong> : collection may be appended to, but datasets are not deleted</li>
-        <li><strong>true</strong>: datasets may be added and removed from collection</li>
-        <li><strong>rolling</strong> : datasets may be appended, and removed from the beginning of a list sorted by filename / date <br />
-          </li>
+        <li><em>false</em> : collection does not change (default)</li>
+        <li><em>trigger</em>: application will manually trigger a rescan of the collection when needed</li>
+        <li><em>appendOnly</em> : collection may be appended to, but datasets are not deleted</li>
+        <li><em>true</em>: datasets may be added and removed from collection</li>
+        <li><em>rolling</em> : datasets may be appended, and removed from the beginning of a list sorted by filename / date</li>
       </ul>
     </li>
+    <li><strong>recheckEvery</strong>: applies if <strong>changes</strong> is not set to <em>false </em>or<em> trigger</em>.This will cause a directory scan whenever a request comes in and this much time has elapsed since the last scan. Effectively, it indicates that the collection may be out-of-date by this much time. <br />
+        </li>
   </ol>
 </blockquote>
 <h3>protoDataset element</h3>
