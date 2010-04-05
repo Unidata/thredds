@@ -221,12 +221,15 @@ public class GridIndexToNC {
     }
 
     // global CF Conventions
-    ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.0"));
-    ncfile.addAttribute(null, new Attribute("title", "Original data format is GRIB (GRIdded Binary)"));
+    //ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.0"));
+    ncfile.addAttribute(null, new Attribute("Conventions", "CF-1"));
+    //ncfile.addAttribute(null, new Attribute("title", "Original data format is GRIB (GRIdded Binary)"));
 
+    String title = FeatureType.GRID.toString() +" data";
     String center = null;
     String subcenter = null;
     String model = null;
+    String comment = null;
     if ( lookup instanceof Grib2GridTableLookup ) {
       Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
       center = g2lookup.getFirstCenterName();
@@ -242,7 +245,9 @@ public class GridIndexToNC {
         ncfile.addAttribute(null, new Attribute("Generating_Process_or_Model", genType));
       if (null != g2lookup.getFirstProductStatusName())
         ncfile.addAttribute(null, new Attribute("Product_Status", g2lookup.getFirstProductStatusName()));
+      comment = g2lookup.getFirstProductStatusName();
       ncfile.addAttribute(null, new Attribute("Product_Type", g2lookup.getFirstProductTypeName()));
+      title = g2lookup.getFirstProductTypeName();
 
     } else if ( lookup instanceof Grib1GridTableLookup ) {
       Grib1GridTableLookup g1lookup = (Grib1GridTableLookup) lookup;
@@ -256,19 +261,23 @@ public class GridIndexToNC {
       String genType = g1lookup.getTypeGenProcessName(firstRecord);
       if (genType != null)
         ncfile.addAttribute(null, new Attribute("Generating_Process_or_Model", genType));
+      comment = g1lookup.getFirstProductStatusName();
       if (null != g1lookup.getFirstProductStatusName())
         ncfile.addAttribute(null, new Attribute("Product_Status", g1lookup.getFirstProductStatusName()));
       ncfile.addAttribute(null, new Attribute("Product_Type", g1lookup.getFirstProductTypeName()));
     }
 
+    ncfile.addAttribute(null, new Attribute("title", title ));
     if ( center != null)
       ncfile.addAttribute(null, new Attribute("institution", "Center "+ center +" Subcenter "+ subcenter));
-    if ( model != null)
+    if ( model != null && ! model.startsWith( "Unknown"))
       ncfile.addAttribute(null, new Attribute("source", model));
 
     ncfile.addAttribute(null, new Attribute(
             "history", "Direct read of "+ lookup.getGridType() +" into NetCDF-Java 4 API"));
-
+    if ( comment != null)
+      ncfile.addAttribute(null, new Attribute("comment", comment));
+    
     // dataset discovery
     if ( center != null)
       ncfile.addAttribute(null, new Attribute("center_name", center));
